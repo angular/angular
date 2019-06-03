@@ -22,3 +22,21 @@ export class ArraySliceBuiltinFn extends BuiltinFn {
     }
   }
 }
+
+export class ArrayConcatBuiltinFn extends BuiltinFn {
+  constructor(private node: ts.Node, private lhs: ResolvedValueArray) { super(); }
+
+  evaluate(args: ResolvedValueArray): ResolvedValue {
+    const result: ResolvedValueArray = [...this.lhs];
+    for (const arg of args) {
+      if (arg instanceof DynamicValue) {
+        result.push(DynamicValue.fromDynamicInput(this.node, arg));
+      } else if (Array.isArray(arg)) {
+        result.push(...arg);
+      } else {
+        result.push(arg);
+      }
+    }
+    return result;
+  }
+}

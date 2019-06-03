@@ -30,7 +30,7 @@ $ yarn bazel test //tools/ts-api-guardian:all
 Publish to NPM:
 
 ```sh
-$ npm whoami # should be logged in as angular
+$ yarn bazel run @nodejs//:npm whoami # should be logged in as angular
 $ grep version tools/ts-api-guardian/package.json # advance as needed
 $ yarn bazel run //tools/ts-api-guardian:ts-api-guardian.publish
 ```

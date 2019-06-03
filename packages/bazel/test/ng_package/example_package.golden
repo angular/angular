@@ -42,15 +42,11 @@ fesm5
   fesm5/secondary.js.map
   fesm5/waffels.js
   fesm5/waffels.js.map
-index.d.ts
-mymodule.d.ts
 package.json
 secondary
-  secondary/index.d.ts
   secondary/package.json
   secondary/secondary.d.ts
   secondary/secondary.metadata.json
-  secondary/secondarymodule.d.ts
 secondary.d.ts
 secondary.metadata.json
 some-file.txt
@@ -304,7 +300,7 @@ export * from './index';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -320,7 +316,7 @@ export { MyModule } from './mymodule';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -341,7 +337,7 @@ MyModule.decorators = [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -375,7 +371,7 @@ export * from './index';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -482,14 +478,22 @@ export var a = 1;
 --- example.d.ts ---
 
 /**
- * Generated bundle index. Do not edit.
+ * @license Angular v0.0.0
+ * (c) 2010-2019 Google LLC. https://angular.io/
+ * License: MIT
  */
-export * from './index';
+
+
+
+export declare class MyModule {
+}
+
+export { }
 
 
 --- example.metadata.json ---
 
-{"__symbolic":"module","version":4,"metadata":{"MyModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":11,"character":1},"arguments":[{}]}],"members":{}}},"origins":{"MyModule":"./mymodule"},"importAs":"example"}
+{"__symbolic":"module","version":4,"metadata":{"MyModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":11,"character":1},"arguments":[{}]}],"members":{}}},"origins":{"MyModule":"./example"},"importAs":"example"}
 
 --- extra-styles.css ---
 
@@ -510,7 +514,7 @@ import { NgModule } from '@angular/core';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 class SecondaryModule {
 }
@@ -522,7 +526,7 @@ const a = 1;
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
@@ -545,7 +549,7 @@ import { NgModule } from '@angular/core';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 class MyModule {
 }
@@ -555,7 +559,7 @@ MyModule.decorators = [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
@@ -653,31 +657,6 @@ export { MyModule };
 //# sourceMappingURL=waffels.js.map
 
 
---- index.d.ts ---
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-export * from './mymodule';
-
-
---- mymodule.d.ts ---
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-export declare class MyModule {
-}
-
-
 --- package.json ---
 
 {
@@ -692,18 +671,6 @@ export declare class MyModule {
   "module": "./fesm5/example.js",
   "es2015": "./fesm2015/example.js"
 }
-
---- secondary/index.d.ts ---
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-export * from './secondarymodule';
-
 
 --- secondary/package.json ---
 
@@ -722,28 +689,24 @@ export * from './secondarymodule';
 --- secondary/secondary.d.ts ---
 
 /**
- * Generated bundle index. Do not edit.
+ * @license Angular v0.0.0
+ * (c) 2010-2019 Google LLC. https://angular.io/
+ * License: MIT
  */
-export * from './index';
+
+
+export declare const a = 1;
+
+
+export declare class SecondaryModule {
+}
+
+export { }
 
 
 --- secondary/secondary.metadata.json ---
 
-{"__symbolic":"module","version":4,"metadata":{"SecondaryModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":10,"character":1},"arguments":[{}]}],"members":{}},"a":1},"origins":{"SecondaryModule":"./secondarymodule","a":"./secondarymodule"},"importAs":"example/secondary"}
-
---- secondary/secondarymodule.d.ts ---
-
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-export declare class SecondaryModule {
-}
-export declare const a = 1;
-
+{"__symbolic":"module","version":4,"metadata":{"SecondaryModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":10,"character":1},"arguments":[{}]}],"members":{}},"a":1},"origins":{"SecondaryModule":"./secondary","a":"./secondary"},"importAs":"example/secondary"}
 
 --- secondary.d.ts ---
 

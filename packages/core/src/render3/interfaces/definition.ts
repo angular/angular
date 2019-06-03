@@ -6,22 +6,49 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '../../core';
+import {SchemaMetadata, ViewEncapsulation} from '../../core';
+import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
 import {CssSelectorList} from './projection';
+import {TView} from './view';
 
 
 /**
  * Definition of what a template rendering function should look like for a component.
  */
 export type ComponentTemplate<T> = {
-  (rf: RenderFlags, ctx: T): void; ngPrivateData?: never;
+  // Note: the ctx parameter is typed as T|U, as using only U would prevent a template with
+  // e.g. ctx: {} from being assigned to ComponentTemplate<any> as TypeScript won't infer U = any
+  // in that scenario. By including T this incompatibility is resolved.
+  <U extends T>(rf: RenderFlags, ctx: T | U): void;
 };
 
 /**
- * Definition of what a query function should look like.
+ * Definition of what a view queries function should look like.
  */
-export type ComponentQuery<T> = ComponentTemplate<T>;
+export type ViewQueriesFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => void;
+
+/**
+ * Definition of what a content queries function should look like.
+ */
+export type ContentQueriesFunction<T> =
+    <U extends T>(rf: RenderFlags, ctx: U, directiveIndex: number) => void;
+
+/**
+ * Definition of what a factory function should look like.
+ */
+export type FactoryFn<T> = {
+  /**
+   * Subclasses without an explicit constructor call through to the factory of their base
+   * definition, providing it with their own constructor to instantiate.
+   */
+  <U extends T>(t: Type<U>): U;
+
+  /**
+   * If no constructor to instantiate is provided, an instance of type T itself is created.
+   */
+  (t: null): T;
+};
 
 /**
  * Flags passed into template functions to determine which blocks (i.e. creation, update)
@@ -59,7 +86,10 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
  */
 export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
 
-export type DirectiveDefWithMeta<
+/**
+ * @codeGenApi
+ */
+export type ɵɵDirectiveDefWithMeta<
     T, Selector extends string, ExportAs extends string[], InputMap extends{[key: string]: string},
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = DirectiveDef<T>;
 
@@ -67,12 +97,14 @@ export type DirectiveDefWithMeta<
  * Runtime information for classes that are inherited by components or directives
  * that aren't defined as components or directives.
  *
- * This is an internal data structure used by the render to determine what inputs
+ * This is an internal data structure used by the renderer to determine what inputs
  * and outputs should be inherited.
  *
  * See: {@link defineBase}
+ *
+ * @codeGenApi
  */
-export interface BaseDef<T> {
+export interface ɵɵBaseDef<T> {
   /**
    * A dictionary mapping the inputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
@@ -92,6 +124,23 @@ export interface BaseDef<T> {
    * (as in `@Output('alias') propertyName: any;`).
    */
   readonly outputs: {[P in keyof T]: string};
+
+  /**
+   * Function to create and refresh content queries associated with a given directive.
+   */
+  contentQueries: ContentQueriesFunction<T>|null;
+
+  /**
+   * Query-related instructions for a directive. Note that while directives don't have a
+   * view and as such view queries won't necessarily do anything, there might be
+   * components that extend the directive.
+   */
+  viewQuery: ViewQueriesFunction<T>|null;
+
+  /**
+   * Refreshes host bindings on the associated directive.
+   */
+  hostBindings: HostBindingsFunction<T>|null;
 }
 
 /**
@@ -108,12 +157,14 @@ export interface BaseDef<T> {
  *
  * See: {@link defineDirective}
  */
-export interface DirectiveDef<T> extends BaseDef<T> {
+export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
   /** Token representing the directive. Used by DI. */
   type: Type<T>;
 
   /** Function that resolves providers and publishes them into the DI system. */
-  providersResolver: ((def: DirectiveDef<T>) => void)|null;
+  providersResolver:
+      (<U extends T>(def: DirectiveDef<U>, processProvidersFn?: ProcessProvidersFunction) =>
+           void)|null;
 
   /** The selectors that will be used to match nodes to this directive. */
   readonly selectors: CssSelectorList;
@@ -126,18 +177,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   /**
    * Factory function used to create a new directive instance.
    */
-  factory: (t: Type<T>|null) => T;
-
-  /**
-   * Function to create instances of content queries associated with a given directive.
-   */
-  contentQueries: ((directiveIndex: number) => void)|null;
-
-  /** Refreshes content queries associated with directives in a given view */
-  contentQueriesRefresh: ((directiveIndex: number) => void)|null;
-
-  /** Refreshes host bindings on the associated directive. */
-  hostBindings: HostBindingsFunction<T>|null;
+  factory: FactoryFn<T>;
 
   /* The following are lifecycle hooks for this component */
   onChanges: (() => void)|null;
@@ -155,11 +195,15 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   readonly features: DirectiveDefFeature[]|null;
 
   setInput:
-      ((this: DirectiveDef<T>, instance: T, value: any, publicName: string,
-        privateName: string) => void)|null;
+      (<U extends T>(
+           this: DirectiveDef<U>, instance: U, value: any, publicName: string,
+           privateName: string) => void)|null;
 }
 
-export type ComponentDefWithMeta<
+/**
+ * @codeGenApi
+ */
+export type ɵɵComponentDefWithMeta<
     T, Selector extends String, ExportAs extends string[], InputMap extends{[key: string]: string},
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = ComponentDef<T>;
 
@@ -216,7 +260,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   /**
    * Query-related instructions for a component.
    */
-  viewQuery: ComponentQuery<T>|null;
+  viewQuery: ViewQueriesFunction<T>|null;
 
   /**
    * The view encapsulation type, which determines how styles are applied to
@@ -239,7 +283,6 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   readonly onPush: boolean;
 
   /**
-
    * Registry of directives and components that may be found in this view.
    *
    * The property is either an array of `DirectiveDef`s or a function which returns the array of
@@ -254,6 +297,17 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * `PipeDefs`s. The function is necessary to be able to support forward declarations.
    */
   pipeDefs: PipeDefListOrFactory|null;
+
+  /**
+   * The set of schemas that declare elements to be allowed in the component's template.
+   */
+  schemas: SchemaMetadata[]|null;
+
+  /**
+   * Ivy runtime uses this place to store the computed tView for the component. This gets filled on
+   * the first run of component.
+   */
+  tView: TView|null;
 
   /**
    * Used to store the result of `noSideEffects` function so that it is not removed by closure
@@ -285,7 +339,7 @@ export interface PipeDef<T> {
   /**
    * Factory function used to create a new pipe instance.
    */
-  factory: (t: Type<T>|null) => T;
+  factory: FactoryFn<T>;
 
   /**
    * Whether or not the pipe is pure.
@@ -299,7 +353,10 @@ export interface PipeDef<T> {
   onDestroy: (() => void)|null;
 }
 
-export type PipeDefWithMeta<T, Name extends string> = PipeDef<T>;
+/**
+ * @codeGenApi
+ */
+export type ɵɵPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
 
 export interface DirectiveDefFeature {
   <T>(directiveDef: DirectiveDef<T>): void;
@@ -343,7 +400,8 @@ export type DirectiveTypeList =
     (DirectiveDef<any>| ComponentDef<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
-export type HostBindingsFunction<T> = (rf: RenderFlags, ctx: T, elementIndex: number) => void;
+export type HostBindingsFunction<T> =
+    <U extends T>(rf: RenderFlags, ctx: U, elementIndex: number) => void;
 
 /**
  * Type used for PipeDefs on component definition.

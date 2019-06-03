@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
+load("//tools:defaults.bzl", "ng_module")
 
-load("//tools:defaults.bzl", "ng_module", "ts_library")
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "app",
@@ -17,7 +17,7 @@ ng_module(
         "//packages/platform-browser",
         "//packages/platform-server",
         "//packages/router",
-        "@ngdeps//reflect-metadata",
-        "@rxjs",
+        "@npm//reflect-metadata",
+        "@npm//rxjs",
     ],
 )

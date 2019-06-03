@@ -1,21 +1,12 @@
 const { dirname } = require('canonical-path');
 
-module.exports = function processPackages() {
+module.exports = function processPackages(collectPackageContentDocsProcessor) {
   return {
-    $runAfter: ['extractDecoratedClassesProcessor', 'computeStability'],
-    $runBefore: ['computing-ids', 'generateKeywordsProcessor'],
+    $runAfter: ['processAliasDocs', 'collectPackageContentDocsProcessor'],
+    $runBefore: ['rendering-docs', 'checkContentRules'],
     $process(docs) {
-      const packageContentFiles = {};
+      const packageContentFiles = collectPackageContentDocsProcessor.packageContentFiles;
       const packageMap = {};
-
-      docs = docs.filter(doc => {
-        if (doc.docType === 'package-content') {
-          packageContentFiles[dirname(doc.fileInfo.filePath)] = doc;
-          return false;
-        } else {
-          return true;
-        }
-      });
 
       docs.forEach(doc => {
         if (doc.docType === 'module') {
@@ -26,15 +17,16 @@ module.exports = function processPackages() {
 
           // Partition the exports into groups by type
           if (doc.exports) {
-            doc.ngmodules = doc.exports.filter(doc => doc.docType === 'ngmodule').sort(byId);
-            doc.classes = doc.exports.filter(doc => doc.docType === 'class').sort(byId);
-            doc.decorators = doc.exports.filter(doc => doc.docType === 'decorator').sort(byId);
-            doc.functions = doc.exports.filter(doc => doc.docType === 'function').sort(byId);
-            doc.structures = doc.exports.filter(doc => doc.docType === 'enum' || doc.docType === 'interface').sort(byId);
-            doc.directives = doc.exports.filter(doc => doc.docType === 'directive').sort(byId);
-            doc.pipes = doc.exports.filter(doc => doc.docType === 'pipe').sort(byId);
-            doc.types = doc.exports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const').sort(byId);
-            if (doc.exports.every(doc => !!doc.deprecated)) {
+            const publicExports = doc.exports.filter(doc => !doc.privateExport);
+            doc.ngmodules = publicExports.filter(doc => doc.docType === 'ngmodule').sort(byId);
+            doc.classes = publicExports.filter(doc => doc.docType === 'class').sort(byId);
+            doc.decorators = publicExports.filter(doc => doc.docType === 'decorator').sort(byId);
+            doc.functions = publicExports.filter(doc => doc.docType === 'function').sort(byId);
+            doc.structures = publicExports.filter(doc => doc.docType === 'enum' || doc.docType === 'interface').sort(byId);
+            doc.directives = publicExports.filter(doc => doc.docType === 'directive').sort(byId);
+            doc.pipes = publicExports.filter(doc => doc.docType === 'pipe').sort(byId);
+            doc.types = publicExports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const').sort(byId);
+            if (publicExports.every(doc => !!doc.deprecated)) {
               doc.deprecated = 'all exports of this entry point are deprecated.';
             }
           }
@@ -66,8 +58,6 @@ module.exports = function processPackages() {
         const pkg = packageMap[key];
         pkg.primary.packageDeprecated = pkg.primary.deprecated !== undefined && pkg.secondary.every(entryPoint => entryPoint.deprecated !== undefined);
       });
-
-      return docs;
     }
   };
 };

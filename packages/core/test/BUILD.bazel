@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "test_lib",
@@ -11,11 +11,14 @@ ts_library(
             "**/*_node_only_spec.ts",
         ],
     ),
+    # Visible to //:test_web_all target
+    visibility = ["//:__pkg__"],
     deps = [
         "//packages/animations",
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
         "//packages/common",
+        "//packages/common/locales",
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",
@@ -31,9 +34,8 @@ ts_library(
         "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
-        "@ngdeps//zone.js",
-        "@rxjs",
-        "@rxjs//operators",
+        "@npm//rxjs",
+        "@npm//zone.js",
     ],
 )
 
@@ -46,6 +48,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",
+        "//packages/core/src/compiler",
         "//packages/core/testing",
         "//packages/platform-server",
         "//packages/platform-server/testing",
@@ -62,9 +65,9 @@ jasmine_node_test(
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//tools/testing:node",
-        "@ngdeps//base64-js",
-        "@ngdeps//source-map",
-        "@ngdeps//zone.js",
+        "@npm//base64-js",
+        "@npm//source-map",
+        "@npm//zone.js",
     ],
 )
 

@@ -39,12 +39,14 @@
 #  (just to make this file easier to understand)
 # ================================================
 
+#  alan-agius4 - Alan Agius
 #  alexeagle - Alex Eagle
 #  alxhub - Alex Rickabaugh
 #  AndrewKushnir - Andrew Kushnir
 #  andrewseguin - Andrew Seguin
 #  benlesh - Ben Lesh
 #  brandonroberts - Brandon Roberts
+#  devversion - Paul Gschwendtner
 #  filipesilva - Filipe Silva
 #  gkalpak - George Kalpakas
 #  hansl - Hans Larsen
@@ -54,6 +56,7 @@
 #  kara - Kara Erickson
 #  kyliau - Keen Yee Liau
 #  matsko - Matias Niemelä
+#  mgechev - Minko Gechev
 #  mhevery - Misko Hevery
 #  ocombe - Olivier Combe
 #  petebacondarwin - Pete Bacon Darwin
@@ -85,6 +88,7 @@
 #   - IgorMinar
 #   - kara
 #   - mhevery
+#   - alexeagle
 
 
 # ===========================================================
@@ -113,6 +117,7 @@
 #   - alexeagle
 #   - kyliau
 #   - IgorMinar
+#   - mgechev
 
 
 # ===========================================================
@@ -122,6 +127,7 @@
 #   - alexeagle
 #   - filipesilva
 #   - hansl
+#   - mgechev
 
 
 # ===========================================================
@@ -212,6 +218,7 @@
 #
 #   - gkalpak
 #   - petebacondarwin
+#   - jasonaden
 
 
 # ===========================================================
@@ -269,6 +276,7 @@
 #  @angular/fw-docs-intro
 # ===========================================================
 #
+#   - jenniferfell
 #   - brandonroberts
 #   - IgorMinar
 #   - stephenfluin
@@ -291,6 +299,29 @@
 
 
 # ===========================================================
+#  @angular/tools-docs-libraries
+# ===========================================================
+#
+#   - alan-agius4
+#   - alexeagle
+#   - hansl
+#   - IgorMinar
+#   - mgechev
+
+
+# ===========================================================
+#  @angular/tools-docs-schematics
+# ===========================================================
+#
+#   - alan-agius4
+#   - alexeagle
+#   - hansl
+#   - IgorMinar
+#   - mgechev
+
+
+
+# ===========================================================
 #  @angular/fw-docs-marketing
 # ===========================================================
 #
@@ -310,6 +341,9 @@
 # ===========================================================
 #
 #   - alexeagle
+#   - devversion
+#   - filipesilva
+#   - gkalpak
 #   - IgorMinar
 
 
@@ -344,9 +378,18 @@
 
 /packages/animations/**                                         @angular/fw-animations @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /packages/platform-browser/animations/**                        @angular/fw-animations @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
 /aio/content/guide/animations.md                                @angular/fw-animations @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/animations/**                             @angular/fw-animations @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/guide/animations/**                         @angular/fw-animations @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+/aio/content/guide/complex-animation-sequences.md               @angular/fw-animations @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+/aio/content/guide/reusable-animations.md                       @angular/fw-animations @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+/aio/content/guide/route-animations.md                          @angular/fw-animations @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+/aio/content/guide/transition-and-triggers.md                   @angular/fw-animations @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 
@@ -370,20 +413,22 @@
 
 
 # ================================================
-#  packages/compiler-cli/src/ngcc/
+#  packages/compiler-cli/ngcc/
 # ================================================
 
-/packages/compiler-cli/src/ngcc/**                              @angular/fw-ngcc @angular/framework-global-approvers
+/packages/compiler-cli/ngcc/**                                  @angular/fw-ngcc @angular/framework-global-approvers
 
 
 
 # ================================================
-#  @angular/compiler-cli/ngtools
+#  Framework/cli integration
 #
 #  a rule to control API changes between @angular/compiler-cli and @angular/cli
 # ================================================
 
 /packages/compiler-cli/src/ngtools/**                           @angular/tools-cli @angular/framework-global-approvers
+/aio/content/guide/ivy.md                                       @angular/tools-cli @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/web-worker.md                                @angular/tools-cli @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 
@@ -402,6 +447,15 @@
 /packages/platform-browser-dynamic/**                           @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /packages/platform-webworker/**                                 @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /packages/platform-webworker-dynamic/**                         @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/packages/examples/common/**                                    @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+/aio/content/guide/architecture-components.md                   @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/architecture-modules.md                      @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/architecture-next-steps.md                   @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/architecture-services.md                     @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/architecture.md                              @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/architecture/**                           @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/guide/architecture/**                       @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 /aio/content/guide/attribute-directives.md                      @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/attribute-directives/**                   @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
@@ -409,6 +463,8 @@
 
 /aio/content/guide/bootstrapping.md                             @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/bootstrapping/**                          @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+/aio/content/guide/cheatsheet.md                                @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 /aio/content/guide/component-interaction.md                     @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/component-interaction/**                  @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
@@ -425,7 +481,13 @@
 /aio/content/examples/dependency-injection-in-action/**         @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/guide/dependency-injection-in-action/**     @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
-/aio/content/guide/dependency-injection-pattern.md              @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/dependency-injection-navtree.md              @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+/aio/content/guide/dependency-injection-providers.md            @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+/aio/content/guide/displaying-data.md                           @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/displaying-data/**                        @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/guide/displaying-data/**                    @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 /aio/content/guide/dynamic-component-loader.md                  @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/dynamic-component-loader/**               @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
@@ -452,12 +514,9 @@
 /aio/content/images/guide/lifecycle-hooks/**                    @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 /aio/content/examples/ngcontainer/**                            @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/images/guide/ngcontainer/**                        @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 /aio/content/guide/ngmodules.md                                 @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/ngmodules/**                              @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/examples/ngmodule/**                               @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/images/guide/ngmodule/**                           @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 /aio/content/guide/ngmodule-api.md                              @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
@@ -469,6 +528,9 @@
 /aio/content/guide/module-types.md                              @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 /aio/content/guide/template-syntax.md                           @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/built-in-template-functions/**            @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/event-binding/**                          @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/interpolation/**                          @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/template-syntax/**                        @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/guide/template-syntax/**                    @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
@@ -490,6 +552,10 @@
 /aio/content/guide/structural-directives.md                     @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/structural-directives/**                  @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/guide/structural-directives/**              @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+/aio/content/guide/user-input.md                                @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/user-input/**                             @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/guide/user-input/**                         @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 
@@ -514,6 +580,7 @@
 /aio/content/examples/elements/**                               @angular/fw-elements @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/guide/elements/**                           @angular/fw-elements @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/elements.md                                  @angular/fw-elements @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
 
 
 # ================================================
@@ -577,6 +644,7 @@
 /packages/service-worker/**                                     @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/service-worker-getting-started.md            @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/service-worker-getting-started/**         @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/app-shell.md                                 @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/service-worker-communications.md             @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/service-worker-config.md                     @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/service-worker-devops.md                     @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
@@ -590,8 +658,10 @@
 # ================================================
 
 /packages/upgrade/**                                            @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/packages/common/upgrade/**                                     @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /packages/examples/upgrade/**                                   @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/upgrade.md                                   @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/upgrade-lazy-load-ajs/**                  @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/upgrade-module/**                         @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/guide/upgrade/**                            @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/upgrade-phonecat-1-typescript/**          @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
@@ -646,6 +716,7 @@ testing/**                                                      @angular/fw-test
 /packages/platform-browser/src/security/**                      @angular/fw-security
 /aio/content/guide/security.md                                  @angular/fw-security @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/security/**                               @angular/fw-security @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/guide/security/**                           @angular/fw-security @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 
@@ -671,10 +742,19 @@ testing/**                                                      @angular/fw-test
 
 /aio/*                                                          @angular/docs-infra @angular/framework-global-approvers
 /aio/aio-builds-setup/**                                        @angular/docs-infra @angular/framework-global-approvers
+/aio/content/examples/*                                         @angular/docs-infra @angular/framework-global-approvers
 /aio/scripts/**                                                 @angular/docs-infra @angular/framework-global-approvers
 /aio/src/**                                                     @angular/docs-infra @angular/framework-global-approvers
 /aio/tests/**                                                   @angular/docs-infra @angular/framework-global-approvers
 /aio/tools/**                                                   @angular/docs-infra @angular/framework-global-approvers
+
+# Hidden docs
+/aio/content/guide/change-log.md                                @angular/docs-infra @angular/framework-global-approvers
+/aio/content/guide/docs-style-guide.md                          @angular/docs-infra @angular/framework-global-approvers
+/aio/content/examples/docs-style-guide/**                       @angular/docs-infra @angular/framework-global-approvers
+/aio/content/images/guide/docs-style-guide/**                   @angular/docs-infra @angular/framework-global-approvers
+/aio/content/guide/visual-studio-2015.md                        @angular/docs-infra @angular/framework-global-approvers
+/aio/content/examples/visual-studio-2015/**                     @angular/docs-infra @angular/framework-global-approvers
 
 
 
@@ -683,25 +763,36 @@ testing/**                                                      @angular/fw-test
 # ================================================
 
 /aio/content/guide/quickstart.md                                @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/cli-quickstart/**                         @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/guide/cli-quickstart/**                     @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/tutorial/**                                        @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-
+/aio/content/images/guide/toh/**                                @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/toh-pt0/**                                @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/toh-pt1/**                                @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/toh-pt2/**                                @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/toh-pt3/**                                @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/toh-pt4/**                                @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/toh-pt5/**                                @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/toh-pt6/**                                @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/getting-started-v0/**                     @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/getting-started/**                        @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/getting-started/**                                 @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/guide/getting-started/**                    @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 # ================================================
 #  Docs: observables
 # ================================================
 
-/aio/content/examples/observables/**                            @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/images/guide/observables/**                        @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/observables.md                               @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/observables/**                            @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/comparing-observables.md                     @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/examples/observables-in-angular/**                 @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/images/guide/observables-in-angular/**             @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/observables-in-angular.md                    @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/examples/practical-observable-usage/**             @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/observables-in-angular/**                 @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/practical-observable-usage.md                @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/examples/rx-library/**                             @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/practical-observable-usage/**             @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/rx-library.md                                @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/rx-library/**                             @angular/fw-docs-observables @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 
@@ -712,12 +803,37 @@ testing/**                                                      @angular/fw-test
 /aio/content/guide/npm-packages.md                              @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/browser-support.md                           @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/typescript-configuration.md                  @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/guide/setup-systemjs-anatomy.md                    @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/setup.md                                     @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/setup/**                                  @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/build.md                                     @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/guide/build/**                              @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/deployment.md                                @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/file-structure.md                            @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/releases.md                                  @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/updating.md                                  @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/workspace-config.md                          @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/deprecations.md                              @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+
+
+# ================================================
+#  Docs: libraries
+# ================================================
+
+/aio/content/guide/creating-libraries.md                        @angular/tools-docs-libraries @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/libraries.md                                 @angular/tools-docs-libraries @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/using-libraries.md                           @angular/tools-docs-libraries @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+
+# ================================================
+#  Docs: schematics
+# ================================================
+
+/aio/content/guide/schematics.md                               @angular/tools-docs-schematics @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/schematics-authoring.md                     @angular/tools-docs-schematics @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/schematics-for-libraries.md                 @angular/tools-docs-schematics @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/guide/schematics/**                        @angular/tools-docs-schematics @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/schematics-for-libraries/**              @angular/tools-docs-schematics @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 
@@ -726,6 +842,7 @@ testing/**                                                      @angular/fw-test
 # ================================================
 
 /aio/content/marketing/**                                       @angular/fw-docs-marketing @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/bios/**                                     @angular/fw-docs-marketing @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/marketing/**                                @angular/fw-docs-marketing @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/navigation.json                                    @angular/fw-docs-marketing @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/license.md                                         @angular/fw-docs-marketing @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
@@ -739,12 +856,39 @@ testing/**                                                      @angular/fw-test
 /*                                                              @angular/fw-dev-infra
 /.buildkite/**                                                  @angular/fw-dev-infra
 /.circleci/**                                                   @angular/fw-dev-infra
+/.codefresh/**                                                  @angular/fw-dev-infra
+/.devcontainer/**                                               @angular/fw-dev-infra
 /.github/**                                                     @angular/fw-dev-infra
+/.vscode/**                                                     @angular/fw-dev-infra
 /docs/BAZEL.md                                                  @angular/fw-dev-infra
+/packages/*                                                     @angular/fw-dev-infra
 /scripts/**                                                     @angular/fw-dev-infra
 /third_party/**                                                 @angular/fw-dev-infra
-/tools/**                                                       @angular/fw-dev-infra
+/tools/build/**                                                 @angular/fw-dev-infra
+/tools/cjs-jasmine/**                                           @angular/fw-dev-infra
+/tools/gulp-tasks/**                                            @angular/fw-dev-infra
+/tools/ngcontainer/**                                           @angular/fw-dev-infra
+/tools/npm/**                                                   @angular/fw-dev-infra
+/tools/npm_workspace/**                                         @angular/fw-dev-infra
+/tools/public_api_guard/**                                      @angular/fw-dev-infra
+/tools/rxjs/**                                                  @angular/fw-dev-infra
+/tools/source-map-test/**                                       @angular/fw-dev-infra
+/tools/symbol-extractor/**                                      @angular/fw-dev-infra
+/tools/testing/**                                               @angular/fw-dev-infra
+/tools/ts-api-guardian/**                                       @angular/fw-dev-infra
+/tools/tslint/**                                                @angular/fw-dev-infra
+/tools/validate-commit-message/**                               @angular/fw-dev-infra
+/tools/yarn/**                                                  @angular/fw-dev-infra
+/tools/*
 *.bzl                                                           @angular/fw-dev-infra
+
+
+
+# ================================================
+#  Material CI
+# ================================================
+
+/tools/material-ci/**                                           @angular/fw-core @angular/framework-global-approvers
 
 
 
@@ -753,6 +897,10 @@ testing/**                                                      @angular/fw-test
 # ================================================
 
 /tools/public_api_guard/**                                      @angular/fw-public-api
+/aio/content/guide/glossary.md                                  @angular/fw-public-api
+/aio/content/guide/styleguide.md                                @angular/fw-public-api
+/aio/content/examples/styleguide/**                             @angular/fw-public-api
+/aio/content/images/guide/styleguide/**                         @angular/fw-public-api
 
 
 

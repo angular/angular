@@ -1,14 +1,15 @@
 module.exports = function createSitemap() {
   return {
-    blacklistedDocTypes: [
-      'navigation-json',
+    ignoredDocTypes: [
+      'announcements-json',
       'contributors-json',
+      'navigation-json',
       'resources-json',
     ],
-    blacklistedPaths: [
-      'test',
+    ignoredPaths: [
       'file-not-found',
-      'overview-dump'
+      'overview-dump',
+      'test',
     ],
     $runAfter: ['paths-computed'],
     $runBefore: ['rendering-docs'],
@@ -22,8 +23,8 @@ module.exports = function createSitemap() {
           // Filter out docs that are not outputted
           .filter(doc => doc.outputPath)
           // Filter out unwanted docs
-          .filter(doc => this.blacklistedDocTypes.indexOf(doc.docType) === -1)
-          .filter(doc => this.blacklistedPaths.indexOf(doc.path) === -1)
+          .filter(doc => this.ignoredDocTypes.indexOf(doc.docType) === -1)
+          .filter(doc => this.ignoredPaths.indexOf(doc.path) === -1)
           // Capture the path of each doc
           .map(doc => doc.path)
           // Convert the homepage: `index` to `/`

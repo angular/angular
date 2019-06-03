@@ -15,7 +15,7 @@ There are three kinds of directives in Angular:
 1. Attribute directives&mdash;change the appearance or behavior of an element, component, or another directive.
 
 *Components* are the most common of the three directives.
-You saw a component for the first time in the [Getting Started](guide/quickstart).
+You saw a component for the first time in the [Getting Started](start "Getting Started with Angular") tutorial.
 
 *Structural Directives* change the structure of the view.
 Two examples are [NgFor](guide/template-syntax#ngFor) and [NgIf](guide/template-syntax#ngIf).
@@ -41,6 +41,10 @@ when the user hovers over that element. You can apply it like this:
 
 {@a write-directive}
 
+Please note that directives _do not_ support namespaces.
+
+<code-example path="attribute-directives/src/app/app.component.avoid.html" linenums="false" header="src/app/app.component.avoid.html (unsupported)" region="unsupported"></code-example>
+
 ### Write the directive code
 
 Create the directive class file in a terminal window with the CLI command [`ng generate directive`](cli/generate).
@@ -49,7 +53,7 @@ Create the directive class file in a terminal window with the CLI command [`ng g
 ng generate directive highlight
 </code-example>
 
-The CLI creates `src/app/highlight.directive.ts`, a corresponding test file (`.../spec.ts`, and _declares_ the directive class in the root `AppModule`.
+The CLI creates `src/app/highlight.directive.ts`, a corresponding test file `src/app/highlight.directive.spec.ts`, and _declares_ the directive class in the root `AppModule`.
 
 <div class="alert is-helpful">
 

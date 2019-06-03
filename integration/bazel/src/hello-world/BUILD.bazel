@@ -1,8 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@angular//:index.bzl", "ng_module", "ng_package")
+load("@npm_bazel_karma//:index.bzl", "ts_web_test_suite")
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library", "ts_web_test_suite")
+load("@npm_angular_bazel//:index.bzl", "ng_module", "ng_package")
 
 sass_binary(
     name = "hello-world-styles",
@@ -17,7 +18,7 @@ ng_module(
     ),
     assets = [":hello-world-styles"],
     deps = [
-        "@angular//packages/core",
+        "@npm//@angular/core",
         "@npm//@types",
     ],
 )
@@ -34,10 +35,9 @@ ts_library(
     srcs = glob(["*.spec.ts"]),
     deps = [
         ":hello-world",
-        "@angular//packages/core",
-        "@angular//packages/core/testing",
-        "@angular//packages/platform-browser",
-        "@angular//packages/platform-browser-dynamic/testing",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
         "@npm//jasmine",
     ],
@@ -45,7 +45,6 @@ ts_library(
 
 ts_web_test_suite(
     name = "test",
-    srcs = ["@npm//node_modules/tslib:tslib.js"],
     bootstrap = [
         "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
         "@npm//node_modules/reflect-metadata:Reflect.js",
@@ -58,5 +57,6 @@ ts_web_test_suite(
     ],
     deps = [
         ":test_lib",
+        "//src:rxjs_umd_modules",
     ],
 )

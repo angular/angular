@@ -1,6 +1,6 @@
 # Service worker in production
 
-This page is a reference for deploying and supporting production apps that use the Angular service worker. It explains how the Angular service worker fits into the larger production environment, the service worker's behavior under various conditions, and available recourses and fail-safes.
+This page is a reference for deploying and supporting production apps that use the Angular service worker. It explains how the Angular service worker fits into the larger production environment, the service worker's behavior under various conditions, and available resources and fail-safes.
 
 #### Prerequisites
 
@@ -147,6 +147,15 @@ normally. However, occasionally a bugfix or feature in the Angular
 service worker requires the invalidation of old caches. In this case,
 the app will be refreshed transparently from the network.
 
+### Bypassing the service worker
+
+In some cases, you may want to bypass the service worker entirely and let the browser handle the
+request instead. An example is when you rely on a feature that is currently not supported in service
+workers (e.g.
+[reporting progress on uploaded files](https://github.com/w3c/ServiceWorker/issues/1141)).
+
+To bypass the service worker you can set `ngsw-bypass` as a request header, or as a query parameter.
+(The value of the header or query parameter is ignored and can be empty or omitted.)
 
 ## Debugging the Angular service worker
 
@@ -301,7 +310,7 @@ an administrator ever needs to deactivate the service worker quickly.
 ### Fail-safe
 
 To deactivate the service worker, remove or rename the
-`ngsw-config.json` file. When the service worker's request
+`ngsw.json` file. When the service worker's request
 for `ngsw.json` returns a `404`, then the service worker
 removes all of its caches and de-registers itself,
 essentially self-destructing.

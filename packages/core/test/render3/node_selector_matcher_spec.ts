@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
+import {createTNode} from '@angular/core/src/render3/instructions/shared';
 
-import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags,} from '../../src/render3/interfaces/projection';
-import {getProjectAsAttrValue, isNodeMatchingSelectorList, isNodeMatchingSelector} from '../../src/render3/node_selector_matcher';
+import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
+import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';
+import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList} from '../../src/render3/node_selector_matcher';
 import {initializeStaticContext} from '../../src/render3/styling/class_and_style_bindings';
-import {createTNode} from '@angular/core/src/render3/instructions';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
   return createTNode(null, TNodeType.Element, 0, tagName, attrs);
@@ -181,14 +181,14 @@ describe('css selector matching', () => {
       });
 
       it('should take optional binding attribute names into account', () => {
-        expect(isMatching('span', [AttributeMarker.SelectOnly, 'directive'], [
+        expect(isMatching('span', [AttributeMarker.Bindings, 'directive'], [
           '', 'directive', ''
         ])).toBeTruthy(`Selector '[directive]' should match <span [directive]="exp">`);
       });
 
       it('should not match optional binding attribute names if attribute selector has value',
          () => {
-           expect(isMatching('span', [AttributeMarker.SelectOnly, 'directive'], [
+           expect(isMatching('span', [AttributeMarker.Bindings, 'directive'], [
              '', 'directive', 'value'
            ])).toBeFalsy(`Selector '[directive=value]' should not match <span [directive]="exp">`);
          });
@@ -196,11 +196,35 @@ describe('css selector matching', () => {
       it('should not match optional binding attribute names if attribute selector has value and next name equals to value',
          () => {
            expect(isMatching(
-                      'span', [AttributeMarker.SelectOnly, 'directive', 'value'],
+                      'span', [AttributeMarker.Bindings, 'directive', 'value'],
                       ['', 'directive', 'value']))
                .toBeFalsy(
                    `Selector '[directive=value]' should not match <span [directive]="exp" [value]="otherExp">`);
          });
+
+      it('should match bound attributes that come after classes', () => {
+        expect(isMatching(
+                   'span',
+                   [
+                     AttributeMarker.Classes, 'my-class', 'other-class', AttributeMarker.Bindings,
+                     'title', 'directive'
+                   ],
+                   ['', 'directive', '']))
+            .toBeTruthy(
+                `Selector '[directive]' should match <span class="my-class other-class" [title]="title" [directive]="exp">`);
+      });
+
+      it('should match NOT match classes when looking for directives', () => {
+        expect(isMatching(
+                   'span',
+                   [
+                     AttributeMarker.Classes, 'directive', 'other-class', AttributeMarker.Bindings,
+                     'title'
+                   ],
+                   ['', 'directive', '']))
+            .toBeFalsy(
+                `Selector '[directive]' should NOT match <span class="directive other-class" [title]="title">`);
+      });
     });
 
     describe('class matching', () => {
@@ -317,7 +341,7 @@ describe('css selector matching', () => {
            expect(isMatching('div', tNode, selector)).toBeTruthy();
 
            // <div class="abc"> (with styling context but without attrs)
-           tNode.stylingTemplate = initializeStaticContext([AttributeMarker.Classes, 'abc']);
+           tNode.stylingTemplate = initializeStaticContext([AttributeMarker.Classes, 'abc'], 0);
            tNode.attrs = null;
            expect(isMatching('div', tNode, selector)).toBeTruthy();
          });
@@ -466,11 +490,11 @@ describe('css selector matching', () => {
 
   describe('reading the ngProjectAs attribute value', function() {
 
-    function testTNode(attrs: string[] | null) { return testLStaticData('tag', attrs); }
+    function testTNode(attrs: TAttributes | null) { return testLStaticData('tag', attrs); }
 
     it('should get ngProjectAs value if present', function() {
-      expect(getProjectAsAttrValue(testTNode([NG_PROJECT_AS_ATTR_NAME, 'tag[foo=bar]'])))
-          .toBe('tag[foo=bar]');
+      expect(getProjectAsAttrValue(testTNode([AttributeMarker.ProjectAs, ['tag', 'foo', 'bar']])))
+          .toEqual(['tag', 'foo', 'bar']);
     });
 
     it('should return null if there are no attributes',
@@ -481,7 +505,7 @@ describe('css selector matching', () => {
     });
 
     it('should not accidentally identify ngProjectAs in attribute values', function() {
-      expect(getProjectAsAttrValue(testTNode(['foo', NG_PROJECT_AS_ATTR_NAME]))).toBe(null);
+      expect(getProjectAsAttrValue(testTNode(['foo', AttributeMarker.ProjectAs]))).toBe(null);
     });
 
   });

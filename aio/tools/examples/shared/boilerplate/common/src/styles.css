@@ -1,4 +1,4 @@
-/* Master Styles */
+/* Global Styles */
 h1 {
   color: #369;
   font-family: Arial, Helvetica, sans-serif;
@@ -13,7 +13,7 @@ body {
   margin: 2em;
 }
 body, input[text], button {
-  color: #888;
+  color: #333;
   font-family: Cambria, Georgia;
 }
 a {

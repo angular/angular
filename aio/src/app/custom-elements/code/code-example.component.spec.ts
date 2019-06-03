@@ -23,10 +23,10 @@ describe('CodeExampleComponent', () => {
     });
 
     fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
     hostComponent = fixture.componentInstance;
     codeExampleComponent = hostComponent.codeExampleComponent;
-
-    fixture.detectChanges();
   });
 
   it('should be able to capture the code snippet provided in content', () => {
@@ -96,5 +96,5 @@ class HostComponent {
   path = 'code-path';
   hidecopy: boolean | string = false;
 
-  @ViewChild(CodeExampleComponent) codeExampleComponent: CodeExampleComponent;
+  @ViewChild(CodeExampleComponent, {static: true}) codeExampleComponent: CodeExampleComponent;
 }

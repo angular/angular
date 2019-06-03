@@ -7,46 +7,28 @@
  */
 
 import {Type} from '../interface/type';
-import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {inject} from './injector_compatibility';
-import {defineInjectable} from './interface/defs';
+import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, formatError, ɵɵinject} from './injector_compatibility';
+import {ɵɵdefineInjectable} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
+import {createInjector} from './r3_injector';
 
-export const SOURCE = '__source';
-const _THROW_IF_NOT_FOUND = new Object();
-export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
-
-/**
- * An InjectionToken that gets the current `Injector` for `createInjector()`-style injectors.
- *
- * Requesting this token instead of `Injector` allows `StaticInjector` to be tree-shaken from a
- * project.
- *
- * @publicApi
- */
-export const INJECTOR = new InjectionToken<Injector>(
-    'INJECTOR',
-    -1 as any  // `-1` is used by Ivy DI system as special value to recognize it as `Injector`.
-    );
-
-export class NullInjector implements Injector {
-  get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
-    if (notFoundValue === _THROW_IF_NOT_FOUND) {
-      // Intentionally left behind: With dev tools open the debugger will stop here. There is no
-      // reason why correctly written application should cause this exception.
-      // TODO(misko): uncomment the next line once `ngDevMode` works with closure.
-      // if(ngDevMode) debugger;
-      throw new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
-    }
-    return notFoundValue;
-  }
+export function INJECTOR_IMPL__PRE_R3__(
+    providers: StaticProvider[], parent: Injector | undefined, name: string) {
+  return new StaticInjector(providers, parent, name);
 }
+
+export function INJECTOR_IMPL__POST_R3__(
+    providers: StaticProvider[], parent: Injector | undefined, name: string) {
+  return createInjector({name: name}, parent, providers, name);
+}
+
+export const INJECTOR_IMPL = INJECTOR_IMPL__PRE_R3__;
 
 /**
  * Concrete injectors implement this interface.
@@ -65,7 +47,7 @@ export class NullInjector implements Injector {
  * @publicApi
  */
 export abstract class Injector {
-  static THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
+  static THROW_IF_NOT_FOUND = THROW_IF_NOT_FOUND;
   static NULL: Injector = new NullInjector();
 
   /**
@@ -99,16 +81,16 @@ export abstract class Injector {
       options: StaticProvider[]|{providers: StaticProvider[], parent?: Injector, name?: string},
       parent?: Injector): Injector {
     if (Array.isArray(options)) {
-      return new StaticInjector(options, parent);
+      return INJECTOR_IMPL(options, parent, '');
     } else {
-      return new StaticInjector(options.providers, options.parent, options.name || null);
+      return INJECTOR_IMPL(options.providers, options.parent, options.name || '');
     }
   }
 
   /** @nocollapse */
-  static ngInjectableDef = defineInjectable({
+  static ngInjectableDef = ɵɵdefineInjectable({
     providedIn: 'any' as any,
-    factory: () => inject(INJECTOR),
+    factory: () => ɵɵinject(INJECTOR),
   });
 
   /**
@@ -128,18 +110,13 @@ const CIRCULAR = IDENT;
 const MULTI_PROVIDER_FN = function(): any[] {
   return Array.prototype.slice.call(arguments);
 };
-export const USE_VALUE =
-    getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
-const NG_TOKEN_PATH = 'ngTokenPath';
-const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
+
 const enum OptionFlags {
   Optional = 1 << 0,
   CheckSelf = 1 << 1,
   CheckParent = 1 << 2,
   Default = CheckSelf | CheckParent
 }
-const NULL_INJECTOR = Injector.NULL;
-const NEW_LINE = /\n/gm;
 const NO_NEW_LINE = 'ɵ';
 
 export class StaticInjector implements Injector {
@@ -149,7 +126,7 @@ export class StaticInjector implements Injector {
   private _records: Map<any, Record>;
 
   constructor(
-      providers: StaticProvider[], parent: Injector = NULL_INJECTOR, source: string|null = null) {
+      providers: StaticProvider[], parent: Injector = Injector.NULL, source: string|null = null) {
     this.parent = parent;
     this.source = source;
     const records = this._records = new Map<any, Record>();
@@ -167,14 +144,7 @@ export class StaticInjector implements Injector {
     try {
       return tryResolveToken(token, record, this._records, this.parent, notFoundValue, flags);
     } catch (e) {
-      const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
-      if (token[SOURCE]) {
-        tokenPath.unshift(token[SOURCE]);
-      }
-      e.message = formatError('\n' + e.message, tokenPath, this.source);
-      e[NG_TOKEN_PATH] = tokenPath;
-      e[NG_TEMP_TOKEN_PATH] = null;
-      throw e;
+      return catchInjectorError(e, token, 'StaticInjectorError', this.source);
     }
   }
 
@@ -199,8 +169,6 @@ interface DependencyRecord {
   token: any;
   options: number;
 }
-
-type TokenPath = Array<any>;
 
 function resolveProvider(provider: SupportedProvider): Record {
   const deps = computeDeps(provider);
@@ -335,7 +303,7 @@ function resolveToken(
               records,
               // If we don't know how to resolve dependency and we should not check parent for it,
               // than pass in Null injector.
-              !childRecord && !(options & OptionFlags.CheckParent) ? NULL_INJECTOR : parent,
+              !childRecord && !(options & OptionFlags.CheckParent) ? Injector.NULL : parent,
               options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND,
               InjectFlags.Default));
         }
@@ -385,25 +353,6 @@ function computeDeps(provider: StaticProvider): DependencyRecord[] {
   return deps;
 }
 
-function formatError(text: string, obj: any, source: string | null = null): string {
-  text = text && text.charAt(0) === '\n' && text.charAt(1) == NO_NEW_LINE ? text.substr(2) : text;
-  let context = stringify(obj);
-  if (obj instanceof Array) {
-    context = obj.map(stringify).join(' -> ');
-  } else if (typeof obj === 'object') {
-    let parts = <string[]>[];
-    for (let key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        let value = obj[key];
-        parts.push(
-            key + ':' + (typeof value === 'string' ? JSON.stringify(value) : stringify(value)));
-      }
-    }
-    context = `{${parts.join(', ')}}`;
-  }
-  return `StaticInjectorError${source ? '(' + source + ')' : ''}[${context}]: ${text.replace(NEW_LINE, '\n  ')}`;
-}
-
 function staticError(text: string, obj: any): Error {
-  return new Error(formatError(text, obj));
+  return new Error(formatError(text, obj, 'StaticInjectorError'));
 }

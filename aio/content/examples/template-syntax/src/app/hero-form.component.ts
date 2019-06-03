@@ -13,7 +13,7 @@ import { Hero } from './hero';
 })
 export class HeroFormComponent {
   @Input() hero: Hero;
-  @ViewChild('heroForm') form: NgForm;
+  @ViewChild('heroForm', {static: false}) form: NgForm;
 
   private _submitMessage = '';
 

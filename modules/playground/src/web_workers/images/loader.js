@@ -6,19 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-importScripts(
-    '../../../vendor/core.js', '../../../vendor/zone.js',
-    '../../../vendor/long-stack-trace-zone.js', '../../../vendor/system.src.js',
-    '../../../vendor/Reflect.js');
-importScripts('../worker-systemjs-configure.js');
+importScripts('angular/modules/playground/src/web_workers/worker-configure.js');
 
-System.import('playground/src/web_workers/images/background_index')
-    .then(
-        function(m) {
-          try {
-            m.main();
-          } catch (e) {
-            console.error(e);
-          }
-        },
-        function(error) { console.error('error loading background', error); });
+System.config({
+  map: {
+    'base64-js': 'npm/node_modules/base64-js/base64js.min.js',
+  },
+  packages: {'angular/modules/playground/src/web_workers': {defaultExtension: 'js'}}
+});
+
+System.import('./background_index.js')
+    .catch(error => console.error('error loading background', error));

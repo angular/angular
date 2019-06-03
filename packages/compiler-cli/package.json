@@ -5,7 +5,7 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "bin": {
-    "ivy-ngcc": "./src/ngcc/main-ngcc.js",
+    "ivy-ngcc": "./ngcc/main-ngcc.js",
     "ngc": "./src/main.js",
     "ng-xi18n": "./src/extract_i18n.js"
   },
@@ -13,18 +13,18 @@
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0",
     "canonical-path": "1.0.0",
-    "chokidar": "^1.4.2",
+    "chokidar": "^2.1.1",
     "convert-source-map": "^1.5.1",
     "dependency-graph": "^0.7.2",
     "magic-string": "^0.25.0",
     "shelljs": "^0.8.1",
     "source-map": "^0.6.1",
     "tslib": "^1.9.0",
-    "yargs": "9.0.1"
+    "yargs": "13.1.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=3.1.1 <3.3"
+    "typescript": ">=3.4 <3.5"
   },
   "engines": {
     "node": ">=8.0"
@@ -36,10 +36,6 @@
   "keywords": [
     "angular",
     "compiler"
-  ],
-  "contributors": [
-    "Tobias Bosch <tbosch@google.com> (https://angular.io/)",
-    "Alex Eagle <alexeagle@google.com> (https://angular.io/)"
   ],
   "license": "MIT",
   "bugs": {

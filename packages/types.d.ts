@@ -10,7 +10,7 @@
 
 /// <reference types="hammerjs" />
 /// <reference types="zone.js" />
-/// <reference path="./es6-subset.d.ts" />
+/// <reference lib="es2015" />
 /// <reference path="./goog.d.ts" />
 /// <reference path="./system.d.ts" />
 

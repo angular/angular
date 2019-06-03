@@ -476,7 +476,7 @@ That's easy to implement with RxJS operators, as shown in this excerpt.
 <code-example 
   path="http/src/app/package-search/package-search.component.ts"
   region="debounce" 
-  header="app/package-search/package-search.component.ts (excerpt))">
+  header="app/package-search/package-search.component.ts (excerpt)">
 </code-example>
 
 The `searchText$` is the sequence of search-box values coming from the user.
@@ -750,7 +750,7 @@ with the injected `MessageService`.
   header="app/http-interceptors/logging-interceptor.ts)">
 </code-example>
 
-The RxJS `tap` operator captures whether the request succeed or failed.
+The RxJS `tap` operator captures whether the request succeeded or failed.
 The RxJS `finalize` operator is called when the response observable either errors or completes (which it must),
 and reports the outcome to the `MessageService`.
 
@@ -864,6 +864,9 @@ with the `reportProgress` option set true to enable tracking of progress events.
 <div class="alert is-important">
 
 Every progress event triggers change detection, so only turn them on if you truly intend to report progress in the UI.
+
+When using [`HttpClient#request()`](api/common/http/HttpClient#request) with an HTTP method, configure with
+[`observe: 'events'`](api/common/http/HttpClient#request) to see all events, including the progress of transfers.
 
 </div>
 

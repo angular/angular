@@ -7,27 +7,45 @@ please use with caution. For feedbacks and comments, please open an issue on
 GitHub and ping [@mgechev](https://github.com/mgechev) or
 [@kyliau](https://github.com/kyliau).
 
+## Requirements
+
+To create a new Angular project that builds with Bazel + CLI, the following
+packages have to be installed.
+
+|     Package    | Minimum Version
+|----------------|-----------------
+| @angular/cli   | v8.0.x
+| @angular/bazel | v8.0.x
+
+The `@angular/bazel` package contains schematics to generate necessary Bazel
+build files.
+
+If the packages are not on your system yet, install them with the following
+commands:
+
+```
+yarn global add @angular/cli@next @angular/bazel@next
+```
+
+It is very *important* to meet the minimum version requirement of `@angular/cli`
+because Bazel schematics rely on some of the new APIs that are missing in older
+versions of the CLI. Invoking `@angular/bazel` schematics with an older version
+of CLI would very likely result in unexpected errors.
+
+<details>
+<summary>
+More details
+</summary>
+Bazel schematics rely on the new
+<a href="https://github.com/angular/angular-cli/commit/a0ac4b0e3dd60c75e1edafd6bb8cced47d10a8d3">
+<code>ScopedTree</code></a> in <code>@angular-devkit/schematics</code>.
+There is currently no way for a schematic to mandate a minimum
+"schematic runtime" version. The version of <code>@angular-devkit/schematics</code>
+that is installed with the CLI is used to run the schematic even though a different
+version is used in the schematic itself.
+</details>
+
 ## Create a Bazel-managed Angular project
-
-To create a new Angular project that builds with Bazel, all you need to do is install the `@angular/bazel` package.
-
-The example below assumes that you have a global installation of Angular CLI.
-If not, please run `yarn global add @angular/cli@next`.
-
-Note, it is very *important* to install the **cutting-edge** (`@next`) version of
-`@angular/cli` because the Bazel schematics relies on some of the new APIs in
-`@angular-devkit/schematics`. There is currently no way for a schematic to
-mandate a minimum "schematic runtime" version. The version of
-`@angular-devkit/schematics` that is installed with the CLI is used to run the
-schematic even though a different version is used in the schematic itself.
-Invoking `@angular/bazel` schematics with an older version of CLI would very
-likely result in unexpected errors.
-
-Install the latest `@angular/bazel` for generating Bazel schematics.
-
-```
-$ yarn global add @angular/bazel
-```
 
 Create a new project using `@angular/bazel` schematics for `ng new`.
 

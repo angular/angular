@@ -19,28 +19,50 @@
 import {SanitizerFn} from './sanitization';
 
 export const enum I18nMutateOpCode {
-  /// Stores shift amount for bits 17-3 that contain reference index.
+  /**
+   * Stores shift amount for bits 17-3 that contain reference index.
+   */
   SHIFT_REF = 3,
-  /// Stores shift amount for bits 31-17 that contain parent index.
+  /**
+   * Stores shift amount for bits 31-17 that contain parent index.
+   */
   SHIFT_PARENT = 17,
-  /// Mask for OpCode
+  /**
+   * Mask for OpCode
+   */
   MASK_OPCODE = 0b111,
-  /// Mask for reference index.
+  /**
+   * Mask for reference index
+   */
   MASK_REF = ((2 ^ 16) - 1) << SHIFT_REF,
 
-  /// OpCode to select a node. (next OpCode will contain the operation.)
+  /**
+   * OpCode to select a node. (next OpCode will contain the operation.)
+   */
   Select = 0b000,
-  /// OpCode to append the current node to `PARENT`.
+  /**
+   * OpCode to append the current node to `PARENT`.
+   */
   AppendChild = 0b001,
-  /// OpCode to insert the current node to `PARENT` before `REF`.
+  /**
+   * OpCode to insert the current node to `PARENT` before `REF`.
+   */
   InsertBefore = 0b010,
-  /// OpCode to remove the `REF` node from `PARENT`.
+  /**
+   * OpCode to remove the `REF` node from `PARENT`.
+   */
   Remove = 0b011,
-  /// OpCode to set the attribute of a node.
+  /**
+   * OpCode to set the attribute of a node.
+   */
   Attr = 0b100,
-  /// OpCode to simulate elementEnd()
+  /**
+   * OpCode to simulate elementEnd()
+   */
   ElementEnd = 0b101,
-  /// OpCode to read the remove OpCodes for the nested ICU
+  /**
+   * OpCode to read the remove OpCodes for the nested ICU
+   */
   RemoveNestedIcu = 0b110,
 }
 
@@ -69,7 +91,7 @@ export interface COMMENT_MARKER { marker: 'comment'; }
  * Array storing OpCode for dynamically creating `i18n` blocks.
  *
  * Example:
- * ```
+ * ```ts
  * <I18nCreateOpCode>[
  *   // For adding text nodes
  *   // ---------------------
@@ -143,22 +165,38 @@ export interface I18nMutateOpCodes extends Array<number|string|ELEMENT_MARKER|CO
 }
 
 export const enum I18nUpdateOpCode {
-  /// Stores shift amount for bits 17-2 that contain reference index.
+  /**
+   * Stores shift amount for bits 17-2 that contain reference index.
+   */
   SHIFT_REF = 2,
-  /// Stores shift amount for bits 31-17 that contain which ICU in i18n block are we referring to.
+  /**
+   * Stores shift amount for bits 31-17 that contain which ICU in i18n block are we referring to.
+   */
   SHIFT_ICU = 17,
-  /// Mask for OpCode
+  /**
+   * Mask for OpCode
+   */
   MASK_OPCODE = 0b11,
-  /// Mask for reference index.
+  /**
+   * Mask for reference index.
+   */
   MASK_REF = ((2 ^ 16) - 1) << SHIFT_REF,
 
-  /// OpCode to update a text node.
+  /**
+   * OpCode to update a text node.
+   */
   Text = 0b00,
-  /// OpCode to update a attribute of a node.
+  /**
+   * OpCode to update a attribute of a node.
+   */
   Attr = 0b01,
-  /// OpCode to switch the current ICU case.
+  /**
+   * OpCode to switch the current ICU case.
+   */
   IcuSwitch = 0b10,
-  /// OpCode to update the current ICU case.
+  /**
+   * OpCode to update the current ICU case.
+   */
   IcuUpdate = 0b11,
 }
 
@@ -176,7 +214,7 @@ export const enum I18nUpdateOpCode {
  * ## Example
  *
  * Assume
- * ```
+ * ```ts
  *   if (rf & RenderFlags.Update) {
  *    i18nExp(bind(ctx.exp1)); // If changed set mask bit 1
  *    i18nExp(bind(ctx.exp2)); // If changed set mask bit 2
@@ -188,8 +226,8 @@ export const enum I18nUpdateOpCode {
  * We can assume that each call to `i18nExp` sets an internal `changeMask` bit depending on the
  * index of `i18nExp`.
  *
- * OpCodes
- * ```
+ * ### OpCodes
+ * ```ts
  * <I18nUpdateOpCodes>[
  *   // The following OpCodes represent: `<div i18n-title="pre{{exp1}}in{{exp2}}post">`
  *   // If `changeMask & 0b11`
@@ -244,14 +282,6 @@ export interface TI18n {
    * write into them.
    */
   vars: number;
-
-  /**
-   * Index in EXPANDO where the i18n stores its DOM nodes.
-   *
-   * When the bindings are processed by the `i18nEnd` instruction it is necessary to know where the
-   * newly created DOM nodes will be inserted.
-   */
-  expandoStartIndex: number;
 
   /**
    * A set of OpCodes which will create the Text Nodes and ICU anchors for the translation blocks.
@@ -320,7 +350,7 @@ export interface TIcu {
    * to know which child ICUs to run clean up for as well.
    *
    * In the above example this would be:
-   * ```
+   * ```ts
    * [
    *   [],   // `=0` has no sub ICUs
    *   [1],  // `other` has one subICU at `1`st index.
@@ -331,14 +361,6 @@ export interface TIcu {
    * represents the child ICUs to clean up. There may be more than one child ICUs per case.
    */
   childIcus: number[][];
-
-  /**
-   * Index in EXPANDO where the i18n stores its DOM nodes.
-   *
-   * When the bindings are processed by the `i18nEnd` instruction it is necessary to know where the
-   * newly created DOM nodes will be inserted.
-   */
-  expandoStartIndex: number;
 
   /**
    * A list of case values which the current ICU will try to match.

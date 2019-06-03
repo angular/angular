@@ -54,7 +54,10 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
               isMetadataImportedSymbolReferenceExpression(d.expression) &&
               d.expression.module === '@angular/core' && d.expression.name === 'Component' &&
               d.arguments) {
-            d.arguments = d.arguments.map(this.updateDecoratorMetadata.bind(this, loader));
+            // Arguments to an @Component that was compiled successfully are always
+            // MetadataObject(s).
+            d.arguments = (d.arguments as MetadataObject[])
+                              .map(this.updateDecoratorMetadata.bind(this, loader));
           }
         });
       }
@@ -65,7 +68,7 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
   updateDecoratorMetadata(loader: StaticResourceLoader, arg: MetadataObject): MetadataObject {
     if (arg['templateUrl']) {
       arg['template'] = loader.get(arg['templateUrl']);
-      delete arg.templateUrl;
+      delete arg['templateUrl'];
     }
 
     const styles = arg['styles'] || [];
@@ -76,7 +79,7 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
     styles.push(...styleUrls.map(styleUrl => loader.get(styleUrl)));
     if (styles.length > 0) {
       arg['styles'] = styles;
-      delete arg.styleUrls;
+      delete arg['styleUrls'];
     }
 
     return arg;
@@ -95,8 +98,8 @@ export function getInlineResourcesTransformFactory(
 
       // Decorator case - before or without decorator downleveling
       // @Component()
-      const newDecorators = ts.visitNodes(node.decorators, (node: ts.Decorator) => {
-        if (isComponentDecorator(node, program.getTypeChecker())) {
+      const newDecorators = ts.visitNodes(node.decorators, (node: ts.Node) => {
+        if (ts.isDecorator(node) && isComponentDecorator(node, program.getTypeChecker())) {
           return updateDecorator(node, loader);
         }
         return node;
@@ -104,9 +107,13 @@ export function getInlineResourcesTransformFactory(
 
       // Annotation case - after decorator downleveling
       // static decorators: {type: Function, args?: any[]}[]
-      const newMembers = ts.visitNodes(
-          node.members,
-          (node: ts.ClassElement) => updateAnnotations(node, loader, program.getTypeChecker()));
+      const newMembers = ts.visitNodes(node.members, (node: ts.Node) => {
+        if (ts.isClassElement(node)) {
+          return updateAnnotations(node, loader, program.getTypeChecker());
+        } else {
+          return node;
+        }
+      });
 
       // Create a new AST subtree with our modifications
       return ts.updateClassDeclaration(

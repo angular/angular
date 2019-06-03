@@ -235,20 +235,16 @@ export class NodeInjectorFactory {
        * Set to `true` if the token is declared in `viewProviders` (or if it is component).
        */
       isViewProvider: boolean,
-      /**
-       * Set to `true` if the token is a provider, and not a directive.
-       */
-      public isProvider: boolean,
       injectImplementation: null|(<T>(token: Type<T>|InjectionToken<T>, flags: InjectFlags) => T)) {
     this.canSeeViewProviders = isViewProvider;
     this.injectImpl = injectImplementation;
   }
 }
 
-const FactoryPrototype = NodeInjectorFactory.prototype;
 export function isFactory(obj: any): obj is NodeInjectorFactory {
   // See: https://jsperf.com/instanceof-vs-getprototypeof
-  return obj != null && typeof obj == 'object' && Object.getPrototypeOf(obj) == FactoryPrototype;
+  return obj !== null && typeof obj == 'object' &&
+      Object.getPrototypeOf(obj) == NodeInjectorFactory.prototype;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

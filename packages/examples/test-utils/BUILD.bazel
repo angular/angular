@@ -6,6 +6,6 @@ ts_library(
     name = "test-utils",
     srcs = ["index.ts"],
     deps = [
-        "@ngdeps//@types/selenium-webdriver",
+        "@npm//@types/selenium-webdriver",
     ],
 )

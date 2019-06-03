@@ -7,8 +7,9 @@
  */
 
 import {Type} from '../../interface/type';
-import {inject} from '../injector_compatibility';
-import {defineInjectable, defineInjector, getInjectableDef, getInjectorDef} from '../interface/defs';
+import {ɵɵinject} from '../injector_compatibility';
+import {getInjectableDef, getInjectorDef, ɵɵdefineInjectable, ɵɵdefineInjector} from '../interface/defs';
+
 
 
 /**
@@ -17,10 +18,10 @@ import {defineInjectable, defineInjector, getInjectableDef, getInjectorDef} from
  * This should be kept up to date with the public exports of @angular/core.
  */
 export const angularCoreDiEnv: {[name: string]: Function} = {
-  'defineInjectable': defineInjectable,
-  'defineInjector': defineInjector,
-  'inject': inject,
-  'ɵgetFactoryOf': getFactoryOf,
+  'ɵɵdefineInjectable': ɵɵdefineInjectable,
+  'ɵɵdefineInjector': ɵɵdefineInjector,
+  'ɵɵinject': ɵɵinject,
+  'ɵɵgetFactoryOf': getFactoryOf,
 };
 
 function getFactoryOf<T>(type: Type<any>): ((type: Type<T>| null) => T)|null {

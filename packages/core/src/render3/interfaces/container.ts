@@ -6,30 +6,36 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {TNode} from './node';
 import {LQueries} from './query';
 import {RComment, RElement} from './renderer';
 import {StylingContext} from './styling';
-import {HOST, LView, NEXT, PARENT, QUERIES} from './view';
+import {HOST, LView, NEXT, PARENT, QUERIES, T_HOST} from './view';
 
 
+/**
+ * Special location which allows easy identification of type. If we have an array which was
+ * retrieved from the `LView` and that array has `true` at `TYPE` location, we know it is
+ * `LContainer`.
+ */
+export const TYPE = 1;
 /**
  * Below are constants for LContainer indices to help us look up LContainer members
  * without having to remember the specific indices.
  * Uglify will inline these when minifying so there shouldn't be a cost.
  */
-export const ACTIVE_INDEX = 0;
-export const VIEWS = 1;
-// PARENT, NEXT, QUERIES, and HOST are indices 2, 3, 4, and 5.
+export const ACTIVE_INDEX = 2;
+// PARENT, NEXT, QUERIES and T_HOST are indices 3, 4, 5 and 6.
 // As we already have these constants in LView, we don't need to re-create them.
-export const NATIVE = 6;
-// Because interfaces in TS/JS cannot be instanceof-checked this means that we
-// need to rely on predictable characteristics of data-structures to check if they
-// are what we expect for them to be. The `LContainer` interface code below has a
-// fixed length and the constant value below references that. Using the length value
-// below we can predictably gaurantee that we are dealing with an `LContainer` array.
-// This value MUST be kept up to date with the length of the `LContainer` array
-// interface below so that runtime type checking can work.
-export const LCONTAINER_LENGTH = 7;
+export const NATIVE = 7;
+
+/**
+ * Size of LContainer's header. Represents the index after which all views in the
+ * container will be inserted. We need to keep a record of current views so we know
+ * which views are already in the DOM (and don't need to be re-added) and so we can
+ * remove views from the DOM when they are no longer required.
+ */
+export const CONTAINER_HEADER_OFFSET = 8;
 
 /**
  * The state associated with a container.
@@ -41,6 +47,23 @@ export const LCONTAINER_LENGTH = 7;
  */
 export interface LContainer extends Array<any> {
   /**
+   * The host element of this LContainer.
+   *
+   * The host could be an LView if this container is on a component node.
+   * In that case, the component LView is its HOST.
+   *
+   * It could also be a styling context if this is a node with a style/class
+   * binding.
+   */
+  readonly[HOST]: RElement|RComment|StylingContext|LView;
+
+  /**
+   * This is a type field which allows us to differentiate `LContainer` from `StylingContext` in an
+   * efficient way. The value is always set to `true`
+   */
+  [TYPE]: true;
+
+  /**
    * The next active index in the views array to read or write to. This helps us
    * keep track of where we are in the views array.
    * In the case the LContainer is created for a ViewContainerRef,
@@ -50,19 +73,10 @@ export interface LContainer extends Array<any> {
   [ACTIVE_INDEX]: number;
 
   /**
-   * A list of the container's currently active child views. Views will be inserted
-   * here as they are added and spliced from here when they are removed. We need
-   * to keep a record of current views so we know which views are already in the DOM
-   * (and don't need to be re-added) and so we can remove views from the DOM when they
-   * are no longer required.
-   */
-  [VIEWS]: LView[];
-
-  /**
    * Access to the parent view is necessary so we can propagate back
    * up from inside a container to parent[NEXT].
    */
-  [PARENT]: LView|null;
+  [PARENT]: LView;
 
   /**
    * This allows us to jump from a container to a sibling container or component
@@ -74,21 +88,17 @@ export interface LContainer extends Array<any> {
    * Queries active for this container - all the views inserted to / removed from
    * this container are reported to queries referenced here.
    */
-  [QUERIES]: LQueries|null;
+  [QUERIES]: LQueries|null;  // TODO(misko): This is abuse of `LContainer` since we are storing
+  // `[QUERIES]` in it which are not needed for `LContainer` (only needed for Template)
 
   /**
-   * The host element of this LContainer.
-   *
-   * The host could be an LView if this container is on a component node.
-   * In that case, the component LView is its HOST.
-   *
-   * It could also be a styling context if this is a node with a style/class
-   * binding.
+   * Pointer to the `TNode` which represents the host of the container.
    */
-  [HOST]: RElement|RComment|StylingContext|LView;
+  [T_HOST]: TNode;
 
   /** The comment element that serves as an anchor for this LContainer. */
-  [NATIVE]: RComment;
+  readonly[NATIVE]:
+      RComment;  // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

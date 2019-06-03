@@ -36,6 +36,9 @@ const compilerCompilerFacade: compiler.CompilerFacade = null !as core.CompilerFa
 const coreCoreEnvironment: core.CoreEnvironment = null !as compiler.CoreEnvironment;
 const compilerCoreEnvironment: compiler.CoreEnvironment = null !as core.CoreEnvironment;
 
+const coreResourceLoader: core.ResourceLoader = null !as compiler.ResourceLoader;
+const compilerResourceLoader: compiler.ResourceLoader = null !as core.ResourceLoader;
+
 const coreStringMap: core.StringMap = null !as compiler.StringMap;
 const compilerStringMap: compiler.StringMap = null !as core.StringMap;
 

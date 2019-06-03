@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser, by, element, protractor} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
 describe('WebWorkers Todo', function() {
   afterEach(() => {
@@ -15,7 +16,7 @@ describe('WebWorkers Todo', function() {
     browser.ignoreSynchronization = false;
   });
 
-  const URL = 'all/playground/src/web_workers/todo/index.html';
+  const URL = '/';
 
   it('should bootstrap', () => {
     // This test can't wait for Angular as Testability is not available when using WebWorker

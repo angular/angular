@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "testing",
@@ -8,6 +8,6 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/core",
-        "@rxjs",
+        "@npm//rxjs",
     ],
 )

@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "common",
@@ -12,7 +12,7 @@ ng_module(
     ),
     deps = [
         "//packages/core",
-        "@rxjs",
+        "@npm//rxjs",
     ],
 )
 
@@ -23,6 +23,7 @@ ng_package(
         "//packages/common/http:package.json",
         "//packages/common/http/testing:package.json",
         "//packages/common/testing:package.json",
+        "//packages/common/upgrade:package.json",
     ],
     entry_point = "packages/common/index.js",
     packages = ["//packages/common/locales:package"],
@@ -34,9 +35,9 @@ ng_package(
     visibility = [
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/ngcc/test:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
         "//packages/compiler-cli/test/diagnostics:__pkg__",
-        "//packages/compiler-cli/test/ngcc:__pkg__",
         "//packages/compiler-cli/test/transformers:__pkg__",
         "//packages/compiler/test:__pkg__",
         "//packages/language-service/test:__pkg__",
@@ -46,5 +47,6 @@ ng_package(
         "//packages/common/http",
         "//packages/common/http/testing",
         "//packages/common/testing",
+        "//packages/common/upgrade",
     ],
 )

@@ -24,13 +24,25 @@
     "name": "InjectionToken"
   },
   {
+    "name": "NEW_LINE"
+  },
+  {
     "name": "NG_INJECTABLE_DEF"
   },
   {
     "name": "NG_INJECTOR_DEF"
   },
   {
+    "name": "NG_TEMP_TOKEN_PATH"
+  },
+  {
+    "name": "NG_TOKEN_PATH"
+  },
+  {
     "name": "NOT_YET"
+  },
+  {
+    "name": "NO_NEW_LINE"
   },
   {
     "name": "NULL_INJECTOR"
@@ -51,6 +63,9 @@
     "name": "R3Injector"
   },
   {
+    "name": "SOURCE"
+  },
+  {
     "name": "ScopedService"
   },
   {
@@ -69,9 +84,6 @@
     "name": "UnsubscriptionErrorImpl"
   },
   {
-    "name": "_THROW_IF_NOT_FOUND"
-  },
-  {
     "name": "__forward_ref__"
   },
   {
@@ -84,6 +96,12 @@
     "name": "_currentInjector"
   },
   {
+    "name": "_global"
+  },
+  {
+    "name": "catchInjectorError"
+  },
+  {
     "name": "couldBeInjectableType"
   },
   {
@@ -93,16 +111,19 @@
     "name": "deepForEach"
   },
   {
-    "name": "defineInjectable"
-  },
-  {
-    "name": "defineInjector"
+    "name": "formatError"
   },
   {
     "name": "forwardRef"
   },
   {
     "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getGlobal"
+  },
+  {
+    "name": "getInheritedInjectableDef"
   },
   {
     "name": "getInjectableDef"
@@ -114,13 +135,13 @@
     "name": "getNullInjector"
   },
   {
+    "name": "getUndecoratedInjectableFactory"
+  },
+  {
     "name": "hasDeps"
   },
   {
     "name": "hasOnDestroy"
-  },
-  {
-    "name": "inject"
   },
   {
     "name": "injectArgs"
@@ -169,5 +190,23 @@
   },
   {
     "name": "stringify"
+  },
+  {
+    "name": "throwCyclicDependencyError"
+  },
+  {
+    "name": "throwInvalidProviderError"
+  },
+  {
+    "name": "throwMixedMultiProviderError"
+  },
+  {
+    "name": "ɵɵdefineInjectable"
+  },
+  {
+    "name": "ɵɵdefineInjector"
+  },
+  {
+    "name": "ɵɵinject"
   }
 ]

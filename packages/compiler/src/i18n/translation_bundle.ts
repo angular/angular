@@ -83,7 +83,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
 
     // text to html
     const url = srcMsg.nodes[0].sourceSpan.start.file.url;
-    const html = new HtmlParser().parse(text, url, true);
+    const html = new HtmlParser().parse(text, url, {tokenizeExpansionForms: true});
 
     return {
       nodes: html.rootNodes,

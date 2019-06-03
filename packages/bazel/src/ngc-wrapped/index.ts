@@ -49,6 +49,70 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
     return false;
   }
   const {options: tsOptions, bazelOpts, files, config} = parsedOptions;
+  const angularCompilerOptions: {[k: string]: unknown} = config['angularCompilerOptions'] || {};
+
+  // Allow Bazel users to control some of the bazel options.
+  // Since TypeScript's "extends" mechanism applies only to "compilerOptions"
+  // we have to repeat some of their logic to get the user's "angularCompilerOptions".
+  if (config['extends']) {
+    // Load the user's config file
+    // Note: this doesn't handle recursive extends so only a user's top level
+    // `angularCompilerOptions` will be considered. As this code is going to be
+    // removed with Ivy, the added complication of handling recursive extends
+    // is likely not needed.
+    let userConfigFile = resolveNormalizedPath(path.dirname(project), config['extends']);
+    if (!userConfigFile.endsWith('.json')) userConfigFile += '.json';
+    const {config: userConfig, error} = ts.readConfigFile(userConfigFile, ts.sys.readFile);
+    if (error) {
+      console.error(ng.formatDiagnostics([error]));
+      return false;
+    }
+
+    // All user angularCompilerOptions values that a user has control
+    // over should be collected here
+    if (userConfig.angularCompilerOptions) {
+      angularCompilerOptions['diagnostics'] =
+          angularCompilerOptions['diagnostics'] || userConfig.angularCompilerOptions.diagnostics;
+      angularCompilerOptions['trace'] =
+          angularCompilerOptions['trace'] || userConfig.angularCompilerOptions.trace;
+
+      angularCompilerOptions['disableExpressionLowering'] =
+          angularCompilerOptions['disableExpressionLowering'] ||
+          userConfig.angularCompilerOptions.disableExpressionLowering;
+      angularCompilerOptions['disableTypeScriptVersionCheck'] =
+          angularCompilerOptions['disableTypeScriptVersionCheck'] ||
+          userConfig.angularCompilerOptions.disableTypeScriptVersionCheck;
+
+      angularCompilerOptions['i18nOutLocale'] = angularCompilerOptions['i18nOutLocale'] ||
+          userConfig.angularCompilerOptions.i18nOutLocale;
+      angularCompilerOptions['i18nOutFormat'] = angularCompilerOptions['i18nOutFormat'] ||
+          userConfig.angularCompilerOptions.i18nOutFormat;
+      angularCompilerOptions['i18nOutFile'] =
+          angularCompilerOptions['i18nOutFile'] || userConfig.angularCompilerOptions.i18nOutFile;
+
+      angularCompilerOptions['i18nInFormat'] =
+          angularCompilerOptions['i18nInFormat'] || userConfig.angularCompilerOptions.i18nInFormat;
+      angularCompilerOptions['i18nInLocale'] =
+          angularCompilerOptions['i18nInLocale'] || userConfig.angularCompilerOptions.i18nInLocale;
+      angularCompilerOptions['i18nInFile'] =
+          angularCompilerOptions['i18nInFile'] || userConfig.angularCompilerOptions.i18nInFile;
+
+      angularCompilerOptions['i18nInMissingTranslations'] =
+          angularCompilerOptions['i18nInMissingTranslations'] ||
+          userConfig.angularCompilerOptions.i18nInMissingTranslations;
+      angularCompilerOptions['i18nUseExternalIds'] = angularCompilerOptions['i18nUseExternalIds'] ||
+          userConfig.angularCompilerOptions.i18nUseExternalIds;
+
+      angularCompilerOptions['preserveWhitespaces'] =
+          angularCompilerOptions['preserveWhitespaces'] ||
+          userConfig.angularCompilerOptions.preserveWhitespaces;
+
+      angularCompilerOptions.createExternalSymbolFactoryReexports =
+          angularCompilerOptions.createExternalSymbolFactoryReexports ||
+          userConfig.angularCompilerOptions.createExternalSymbolFactoryReexports;
+    }
+  }
+
   const expectedOuts = config['angularCompilerOptions']['expectedOut'];
 
   const {basePath} = ng.calcProjectFileAndBasePath(project);
@@ -138,7 +202,7 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
     throw new Error(`Couldn't find bazel bin in the rootDirs: ${compilerOpts.rootDirs}`);
   }
 
-  const writtenExpectedOuts = [...expectedOuts];
+  const writtenExpectedOuts = expectedOuts.map(p => p.replace(/\\/g, '/'));
 
   const originalWriteFile = tsHost.writeFile.bind(tsHost);
   tsHost.writeFile =
@@ -248,6 +312,31 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
       // File does not exist or parse error. Ignore this case and continue onto the
       // other methods of resolving the module below.
     }
+
+    // It can happen that the ViewEngine compiler needs to write an import in a factory file,
+    // and is using an ngsummary file to get the symbols.
+    // The ngsummary comes from an upstream ng_module rule.
+    // The upstream rule based its imports on ngsummary file which was generated from a
+    // metadata.json file that was published to npm in an Angular library.
+    // However, the ngsummary doesn't propagate the 'importAs' from the original metadata.json
+    // so we would normally not be able to supply the correct module name for it.
+    // For example, if the rootDir-relative filePath is
+    //  node_modules/@angular/material/toolbar/typings/index
+    // we would supply a module name
+    //  @angular/material/toolbar/typings/index
+    // but there is no JavaScript file to load at this path.
+    // This is a workaround for https://github.com/angular/angular/issues/29454
+    if (importedFilePath.indexOf('node_modules') >= 0) {
+      const maybeMetadataFile = importedFilePath.replace(EXT, '') + '.metadata.json';
+      if (fs.existsSync(maybeMetadataFile)) {
+        const moduleName =
+            JSON.parse(fs.readFileSync(maybeMetadataFile, {encoding: 'utf-8'})).importAs;
+        if (moduleName) {
+          return moduleName;
+        }
+      }
+    }
+
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
       return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
@@ -292,6 +381,7 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
           cancellationToken, emitOnlyDtsFiles, {
             beforeTs: customTransformers.before,
             afterTs: customTransformers.after,
+            afterDeclarations: customTransformers.afterDeclarations,
           });
 
   if (!gatherDiagnostics) {

@@ -1,28 +1,22 @@
-load(
-    "@build_bazel_rules_nodejs//:defs.bzl",
-    "jasmine_node_test",
-    "node_modules_filegroup",
-    "nodejs_binary",
-    "npm_package",
-)
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
-
-exports_files(["bin/ts-api-guardian"])
+# BEGIN-INTERNAL
+load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
+load("@npm_bazel_jasmine//:index.bzl", "jasmine_node_test")
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
 
 ts_library(
     name = "lib",
     srcs = glob(["lib/*.ts"]),
     module_name = "ts-api-guardian",
-    node_modules = "@ts-api-guardian_deps//typescript:typescript__typings",
     tsconfig = "//tools:tsconfig.json",
     visibility = ["//visibility:public"],
     deps = [
-        "@ts-api-guardian_deps//@types/diff",
-        "@ts-api-guardian_deps//@types/minimist",
-        "@ts-api-guardian_deps//@types/node",
-        "@ts-api-guardian_deps//diff",
-        "@ts-api-guardian_deps//minimist",
-        "@ts-api-guardian_deps//typescript",
+        "@npm//@types/diff",
+        "@npm//@types/minimist",
+        "@npm//@types/node",
+        "@npm//chalk",
+        "@npm//diff",
+        "@npm//minimist",
+        "@npm//typescript",
     ],
 )
 
@@ -38,10 +32,17 @@ genrule(
 npm_package(
     name = "ts-api-guardian",
     srcs = [
+        "BUILD.bazel",
         "README.md",
         "bin/ts-api-guardian",
+        "index.bzl",
         "package.json",
     ],
+    replacements = {
+        "@angular//tools/ts-api-guardian:bin": "@npm_ts_api_guardian//:bin",
+        "@angular//tools/ts-api-guardian:lib": "@npm//ts-api-guardian",
+        "angular/tools/ts-api-guardian/": "npm_ts_api_guardian/",
+    },
     deps = [
         ":lib",
         ":license",
@@ -55,16 +56,15 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["test/*.ts"]),
-    node_modules = "@ts-api-guardian_deps//typescript:typescript__typings",
     tsconfig = "//tools:tsconfig-test",
     deps = [
         ":lib",
-        "@ts-api-guardian_deps//@types/chai",
-        "@ts-api-guardian_deps//@types/jasmine",
-        "@ts-api-guardian_deps//@types/node",
-        "@ts-api-guardian_deps//chai",
-        "@ts-api-guardian_deps//jasmine",
-        "@ts-api-guardian_deps//typescript",
+        "@npm//@types/chai",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//chai",
+        "@npm//jasmine",
+        "@npm//typescript",
     ],
 )
 
@@ -77,10 +77,15 @@ jasmine_node_test(
         "test/fixtures/*.patch",
     ]) + [
         ":ts-api-guardian",
-        "@ts-api-guardian_deps//chalk",
         # TODO: remove this once the boostrap.js workaround has been removed.
         ":package.json",
     ],
-    node_modules = "@ts-api-guardian_deps//typescript:typescript__typings",
     tags = ["local"],
+)
+# END-INTERNAL
+
+filegroup(
+    name = "bin",
+    srcs = glob(["lib/*.js"]) + ["bin/ts-api-guardian"],
+    visibility = ["//visibility:public"],
 )

@@ -7,17 +7,19 @@ ts_library(
     testonly = True,
     srcs = [
         "mocks.ts",
+        "runfile_helpers.ts",
         "test_support.ts",
     ],
     visibility = [
         ":__subpackages__",
+        "//packages/compiler-cli/ngcc/test:__subpackages__",
         "//packages/language-service/test:__subpackages__",
     ],
     deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 
@@ -32,7 +34,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 
@@ -52,7 +54,7 @@ jasmine_node_test(
         "//packages/common:npm_package",
         "//packages/core",
         "//tools/testing:node",
-        "@ngdeps//minimist",
+        "@npm//minimist",
     ],
 )
 
@@ -67,7 +69,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 
@@ -90,8 +92,9 @@ jasmine_node_test(
         ":ngc_lib",
         "//packages/core",
         "//tools/testing:node",
-        "@ngdeps//minimist",
-        "@ngdeps//tsickle",
+        "@npm//minimist",
+        "@npm//rxjs",
+        "@npm//tsickle",
     ],
 )
 
@@ -107,7 +110,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/private/testing",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 
@@ -136,7 +139,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 

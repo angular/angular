@@ -223,9 +223,19 @@ function isEligibleForLowering(node: ts.Node | undefined): boolean {
         // Don't lower expressions in a declaration.
         return false;
       case ts.SyntaxKind.VariableDeclaration:
-        // Avoid lowering expressions already in an exported variable declaration
-        return (ts.getCombinedModifierFlags(node as ts.VariableDeclaration) &
-                ts.ModifierFlags.Export) == 0;
+        const isExported = (ts.getCombinedModifierFlags(node as ts.VariableDeclaration) &
+                            ts.ModifierFlags.Export) == 0;
+        // This might be unnecessary, as the variable might be exported and only used as a reference
+        // in another expression. However, the variable also might be involved in provider
+        // definitions. If that's the case, there is a specific token (`ROUTES`) which the compiler
+        // attempts to understand deeply. Sub-expressions within that token (`loadChildren` for
+        // example) might also require lowering even if the top-level declaration is already
+        // properly exported.
+        const varNode = node as ts.VariableDeclaration;
+        return isExported || (varNode.initializer !== undefined &&
+                              (ts.isObjectLiteralExpression(varNode.initializer) ||
+                               ts.isArrayLiteralExpression(varNode.initializer) ||
+                               ts.isCallExpression(varNode.initializer)));
     }
     return isEligibleForLowering(node.parent);
   }

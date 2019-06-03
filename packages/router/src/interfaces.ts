@@ -47,7 +47,7 @@ import {UrlSegment, UrlTree} from './url_tree';
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         canActivate: [CanActivateTeam]
  *       }
  *     ])
@@ -65,7 +65,7 @@ import {UrlSegment, UrlTree} from './url_tree';
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         canActivate: ['canActivateTeam']
  *       }
  *     ])
@@ -128,7 +128,7 @@ export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSn
  *         children: [
  *           {
  *              path: 'team/:id',
- *              component: Team
+ *              component: TeamComponent
  *           }
  *         ]
  *       }
@@ -151,7 +151,7 @@ export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSn
  *         children: [
  *           {
  *             path: 'team/:id',
- *             component: Team
+ *             component: TeamComponent
  *           }
  *         ]
  *       }
@@ -213,7 +213,7 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         canDeactivate: [CanDeactivateTeam]
  *       }
  *     ])
@@ -231,7 +231,7 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         canDeactivate: ['canDeactivateTeam']
  *       }
  *     ])
@@ -264,7 +264,7 @@ export type CanDeactivateFn<T> =
 /**
  * @description
  *
- * Interface that class can implement to be a data provider.
+ * Interface that classes can implement to be a data provider.
  *
  * ```
  * class Backend {
@@ -290,7 +290,7 @@ export type CanDeactivateFn<T> =
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         resolve: {
  *           team: TeamResolver
  *         }
@@ -310,7 +310,7 @@ export type CanDeactivateFn<T> =
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         resolve: {
  *           team: 'teamResolver'
  *         }
@@ -361,7 +361,7 @@ export interface Resolve<T> {
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         loadChildren: 'team.js',
  *         canLoad: [CanLoadTeamSection]
  *       }
@@ -380,7 +380,7 @@ export interface Resolve<T> {
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         loadChildren: 'team.js',
  *         canLoad: ['canLoadTeamSection']
  *       }

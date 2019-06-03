@@ -31,8 +31,7 @@ The easiest way to display a component property
 is to bind the property name through interpolation.
 With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.
 
-Follow the [Getting Started](guide/quickstart) instructions for creating a new project
-named <code>displaying-data</code>.
+Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`. 
 
 Delete the <code>app.component.html</code> file. It is not needed for this example.
 
@@ -149,7 +148,7 @@ In either style, the template data bindings have the same access to the componen
 Although this example uses variable assignment to initialize the components, you could instead declare and initialize the properties using a constructor:
 
 
-<code-example path="displaying-data/src/app/app-ctor.component.ts" linenums="false" region="class">
+<code-example path="displaying-data/src/app/app-ctor.component.1.ts" linenums="false" region="class">
 
 </code-example>
 
@@ -357,7 +356,7 @@ big chunks of HTML with many data bindings.
 
 
 Try it out. Because the array has four items, the message should appear.
-Go back into <code>app.component.ts</code> and delete or comment out one of the elements from the hero array.
+Go back into <code>app.component.ts</code> and delete or comment out one of the elements from the heroes array.
 The browser should refresh automatically and the message should disappear.
 
 

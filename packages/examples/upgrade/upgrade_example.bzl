@@ -1,6 +1,6 @@
 load("//packages/bazel:index.bzl", "protractor_web_test_suite")
 load("//tools:defaults.bzl", "ng_module", "ts_library")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 
 """
   Macro that can be used to create the Bazel targets for an "upgrade" example. Since the
@@ -16,7 +16,7 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         # TODO: FW-1004 Type checking is currently not complete.
         type_check = False,
         deps = [
-            "@ngdeps//@types/angular",
+            "@npm//@types/angular",
             "//packages/core",
             "//packages/platform-browser",
             "//packages/platform-browser-dynamic",
@@ -30,8 +30,8 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         srcs = e2e_srcs,
         testonly = True,
         deps = [
-            "@ngdeps//@types/jasminewd2",
-            "@ngdeps//protractor",
+            "@npm//@types/jasminewd2",
+            "@npm//protractor",
             "//packages/examples/test-utils",
             "//packages/private/testing",
         ],
@@ -43,12 +43,15 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         port = 4200,
         entry_module = entry_module,
         static_files = [
-            "@ngdeps//node_modules/zone.js:dist/zone.js",
-            "@ngdeps//node_modules/angular:angular.js",
-            "@ngdeps//node_modules/reflect-metadata:Reflect.js",
+            "@npm//node_modules/zone.js:dist/zone.js",
+            "@npm//node_modules/angular:angular.js",
+            "@npm//node_modules/reflect-metadata:Reflect.js",
         ],
         index_html = "//packages/examples:index.html",
-        scripts = ["@ngdeps//node_modules/tslib:tslib.js"],
+        scripts = [
+            "@npm//node_modules/tslib:tslib.js",
+            "//tools/rxjs:rxjs_umd_modules",
+        ],
         deps = [":%s_sources" % name],
         data = assets,
     )
@@ -60,7 +63,7 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         server = ":devserver",
         deps = [
             ":%s_e2e_lib" % name,
-            "@ngdeps//protractor",
-            "@ngdeps//selenium-webdriver",
+            "@npm//protractor",
+            "@npm//selenium-webdriver",
         ],
     )

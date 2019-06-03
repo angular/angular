@@ -10,7 +10,7 @@ import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, ɵivy
 import {Console} from '@angular/core/src/console';
 import {noComponentFactoryError} from '@angular/core/src/linker/component_factory_resolver';
 import {TestBed} from '@angular/core/testing';
-import {fixmeIvy} from '@angular/private/testing';
+import {obsoleteInIvy} from '@angular/private/testing';
 
 
 if (ivyEnabled) {
@@ -69,8 +69,7 @@ function declareTests(config?: {useJit: boolean}) {
       expect(childComp.cfr.resolveComponentFactory(ChildComp) !.componentType).toBe(ChildComp);
     });
 
-    fixmeIvy(
-        'FW-805: Ivy\'s implementation of ComponentFactoryResolver doesn\'t have checks present in the view engine')
+    obsoleteInIvy('In Ivy, the ComponentFactoryResolver can resolve any component factory')
         .it('should not be able to get components from a parent component (content hierarchy)',
             () => {
               TestBed.overrideComponent(

@@ -1,7 +1,7 @@
-package(default_visibility = ["//visibility:public"])
-
-load("//tools:defaults.bzl", "jasmine_node_test", "ng_rollup_bundle", "ts_library")
 load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_rollup_bundle", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "injection",
@@ -32,6 +32,7 @@ ng_rollup_bundle(
     deps = [
         ":injection",
         "//packages/core",
+        "@npm//rxjs",
     ],
 )
 

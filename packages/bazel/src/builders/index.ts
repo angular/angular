@@ -8,36 +8,32 @@
  * @fileoverview Bazel builder
  */
 
-import {BuildEvent, Builder, BuilderConfiguration, BuilderContext} from '@angular-devkit/architect';
-import {getSystemPath, resolve} from '@angular-devkit/core';
-import {Observable, of } from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
-
-import {checkInstallation, runBazel} from './bazel';
+import {BuilderContext, BuilderOutput, createBuilder,} from '@angular-devkit/architect';
+import {JsonObject} from '@angular-devkit/core';
+import {checkInstallation, copyBazelFiles, deleteBazelFiles, getTemplateDir, runBazel} from './bazel';
 import {Schema} from './schema';
 
-class BazelBuilder implements Builder<Schema> {
-  constructor(private context: BuilderContext) {}
+async function _bazelBuilder(options: JsonObject & Schema, context: BuilderContext, ):
+    Promise<BuilderOutput> {
+      const {logger, workspaceRoot} = context;
+      const {bazelCommand, leaveBazelFilesOnDisk, targetLabel, watch} = options;
+      const executable = watch ? 'ibazel' : 'bazel';
+      const binary = checkInstallation(executable, workspaceRoot);
+      const templateDir = getTemplateDir(workspaceRoot);
+      const bazelFiles = copyBazelFiles(workspaceRoot, templateDir);
 
-  run(builderConfig: BuilderConfiguration<Partial<Schema>>): Observable<BuildEvent> {
-    const projectRoot = getSystemPath(resolve(this.context.workspace.root, builderConfig.root));
-    const targetLabel = builderConfig.options.targetLabel;
-
-    const executable = builderConfig.options.watch ? 'ibazel' : 'bazel';
-
-    if (!checkInstallation(executable, projectRoot)) {
-      throw new Error(
-          `Could not run ${executable}. Please make sure that the ` +
-          `"${executable}" command is installed by running ` +
-          `"npm install" or "yarn install".`);
+      try {
+        const flags: string[] = [];
+        await runBazel(workspaceRoot, binary, bazelCommand, targetLabel, flags);
+        return {success: true};
+      } catch (err) {
+        logger.error(err.message);
+        return {success: false};
+      } finally {
+        if (!leaveBazelFilesOnDisk) {
+          deleteBazelFiles(bazelFiles);  // this will never throw
+        }
+      }
     }
 
-    // TODO: Support passing flags.
-    return runBazel(
-               projectRoot, executable, builderConfig.options.bazelCommand !, targetLabel !,
-               [] /* flags */)
-        .pipe(map(() => ({success: true})), catchError(() => of ({success: false})), );
-  }
-}
-
-export default BazelBuilder;
+export default createBuilder(_bazelBuilder);

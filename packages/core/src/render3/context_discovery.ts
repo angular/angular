@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '../util/ng_dev_mode';
+
 import {assertDomNode} from '../util/assert';
+
 import {EMPTY_ARRAY} from './empty';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
-import {RElement} from './interfaces/renderer';
+import {RElement, RNode} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
-import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './util';
+import {getComponentViewByIndex, getNativeByTNode, readPatchedData, unwrapRNode} from './util/view_utils';
 
 
 
@@ -69,7 +71,7 @@ export function getLContext(target: any): LContext|null {
       // are expensive. Instead, only the target data (the element, component, container, ICU
       // expression or directive details) are filled into the context. If called multiple times
       // with different target values then the missing target data will be filled in.
-      const native = readElementValue(lView[nodeIndex]);
+      const native = unwrapRNode(lView[nodeIndex]);
       const existingCtx = readPatchedData(native);
       const context: LContext = (existingCtx && !Array.isArray(existingCtx)) ?
           existingCtx :
@@ -117,7 +119,7 @@ export function getLContext(target: any): LContext|null {
 
         const index = findViaNativeElement(lView, rElement);
         if (index >= 0) {
-          const native = readElementValue(lView[index]);
+          const native = unwrapRNode(lView[index]);
           const context = createLContext(lView, index, native);
           attachPatchData(native, context);
           mpValue = context;
@@ -132,7 +134,7 @@ export function getLContext(target: any): LContext|null {
 /**
  * Creates an empty instance of a `LContext` context
  */
-function createLContext(lView: LView, nodeIndex: number, native: RElement): LContext {
+function createLContext(lView: LView, nodeIndex: number, native: RNode): LContext {
   return {
     lView,
     nodeIndex,

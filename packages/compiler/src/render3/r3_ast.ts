@@ -50,13 +50,15 @@ export class BoundAttribute implements Node {
 export class BoundEvent implements Node {
   constructor(
       public name: string, public type: ParsedEventType, public handler: AST,
-      public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan) {}
+      public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan,
+      public handlerSpan: ParseSourceSpan) {}
 
   static fromParsedEvent(event: ParsedEvent) {
     const target: string|null = event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
     const phase: string|null =
         event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
-    return new BoundEvent(event.name, event.type, event.handler, target, phase, event.sourceSpan);
+    return new BoundEvent(
+        event.name, event.type, event.handler, target, phase, event.sourceSpan, event.handlerSpan);
   }
 
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundEvent(this); }
@@ -67,17 +69,22 @@ export class Element implements Node {
       public name: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
       public outputs: BoundEvent[], public children: Node[], public references: Reference[],
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
-      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {}
+      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {
+    // If the element is empty then the source span should include any closing tag
+    if (children.length === 0 && startSourceSpan && endSourceSpan) {
+      this.sourceSpan = {...sourceSpan, end: endSourceSpan.end};
+    }
+  }
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitElement(this); }
 }
 
 export class Template implements Node {
   constructor(
       public tagName: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
-      public outputs: BoundEvent[], public children: Node[], public references: Reference[],
-      public variables: Variable[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan|null, public endSourceSpan: ParseSourceSpan|null,
-      public i18n?: I18nAST) {}
+      public outputs: BoundEvent[], public templateAttrs: (BoundAttribute|TextAttribute)[],
+      public children: Node[], public references: Reference[], public variables: Variable[],
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
+      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTemplate(this); }
 }
 
@@ -182,15 +189,18 @@ export class TransformVisitor implements Visitor<Node> {
     const newAttributes = transformAll(this, template.attributes);
     const newInputs = transformAll(this, template.inputs);
     const newOutputs = transformAll(this, template.outputs);
+    const newTemplateAttrs = transformAll(this, template.templateAttrs);
     const newChildren = transformAll(this, template.children);
     const newReferences = transformAll(this, template.references);
     const newVariables = transformAll(this, template.variables);
     if (newAttributes != template.attributes || newInputs != template.inputs ||
-        newChildren != template.children || newVariables != template.variables ||
-        newReferences != template.references) {
+        newOutputs != template.outputs || newTemplateAttrs != template.templateAttrs ||
+        newChildren != template.children || newReferences != template.references ||
+        newVariables != template.variables) {
       return new Template(
-          template.tagName, newAttributes, newInputs, newOutputs, newChildren, newReferences,
-          newVariables, template.sourceSpan, template.startSourceSpan, template.endSourceSpan);
+          template.tagName, newAttributes, newInputs, newOutputs, newTemplateAttrs, newChildren,
+          newReferences, newVariables, template.sourceSpan, template.startSourceSpan,
+          template.endSourceSpan);
     }
     return template;
   }

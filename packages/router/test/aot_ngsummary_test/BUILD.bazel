@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library", "ts_web_test_suite")
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library")
 
 ng_module(
     name = "aot_routing_module",
@@ -7,7 +7,7 @@ ng_module(
     deps = [
         "//packages/core",
         "//packages/router",
-        "@rxjs",
+        "@npm//rxjs",
     ],
 )
 

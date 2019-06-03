@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-const promise: Promise<any> = Promise.resolve(0);
+const promise: Promise<any> = (() => Promise.resolve(0))();
 
 declare const Zone: any;
 

@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, Component, Directive} from '@angular/core';
+import {Attribute, Component, Directive, TemplateRef, ViewChild} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -26,7 +26,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        declarations: [TestComponent],
+        declarations: [TestComponent, ComplexComponent],
         imports: [CommonModule],
       });
     });
@@ -171,6 +171,20 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         getComponent().switchValue = 'b';
         detectChangesAndExpectText('when b1;when b2;');
       });
+
+      it('should support nested NgSwitch on ng-container with ngTemplateOutlet', () => {
+        fixture = TestBed.createComponent(ComplexComponent);
+        detectChangesAndExpectText('Foo');
+
+        fixture.componentInstance.state = 'case2';
+        detectChangesAndExpectText('Bar');
+
+        fixture.componentInstance.state = 'notACase';
+        detectChangesAndExpectText('Default');
+
+        fixture.componentInstance.state = 'case1';
+        detectChangesAndExpectText('Foo');
+      });
     });
   });
 }
@@ -180,6 +194,38 @@ class TestComponent {
   switchValue: any = null;
   when1: any = null;
   when2: any = null;
+}
+
+@Component({
+  selector: 'complex-cmp',
+  template: `
+<div [ngSwitch]="state">
+  <ng-container *ngSwitchCase="'case1'" [ngSwitch]="true">
+    <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="foo"></ng-container>
+    <span *ngSwitchDefault>Should never render</span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'case2'" [ngSwitch]="true">
+    <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="bar"></ng-container>
+    <span *ngSwitchDefault>Should never render</span>
+  </ng-container>
+  <ng-container *ngSwitchDefault [ngSwitch]="false">
+    <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="foo"></ng-container>
+    <span *ngSwitchDefault>Default</span>
+  </ng-container>
+</div>
+
+<ng-template #foo>
+  <span>Foo</span>
+</ng-template>
+<ng-template #bar>
+  <span>Bar</span>
+</ng-template>
+`
+})
+class ComplexComponent {
+  @ViewChild('foo', {static: true}) foo !: TemplateRef<any>;
+  @ViewChild('bar', {static: true}) bar !: TemplateRef<any>;
+  state: string = 'case1';
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {

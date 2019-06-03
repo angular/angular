@@ -46,7 +46,7 @@ export class SitePage {
     await browser.executeScript('document.body.classList.add(\'no-animations\')');
     await browser.waitForAngular();
     await this.unregisterSw();
-  };
+  }
 
   /**
    * Initialize the page object and get it ready for further requests.

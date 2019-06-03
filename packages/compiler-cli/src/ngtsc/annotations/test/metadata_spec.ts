@@ -8,11 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {NoopImportRewriter} from '../../imports';
+import {NOOP_DEFAULT_IMPORT_RECORDER, NoopImportRewriter} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {ImportManager, translateStatement} from '../../translator';
-
 import {generateSetClassMetadataCall} from '../src/metadata';
 
 const CORE = {
@@ -46,7 +45,7 @@ describe('ngtsc setClassMetadata converter', () => {
     }
     `);
     expect(res).toContain(
-        `function () { return [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: Injector }]; }, null);`);
+        `function () { return [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: i0.Injector }]; }, null);`);
   });
 
   it('should convert decorated field metadata', () => {
@@ -83,13 +82,13 @@ function compileAndPrint(contents: string): string {
   ]);
   const host = new TypeScriptReflectionHost(program.getTypeChecker());
   const target = getDeclaration(program, 'index.ts', 'Target', ts.isClassDeclaration);
-  const call = generateSetClassMetadataCall(target, host, false);
+  const call = generateSetClassMetadataCall(target, host, NOOP_DEFAULT_IMPORT_RECORDER, false);
   if (call === null) {
     return '';
   }
   const sf = program.getSourceFile('index.ts') !;
   const im = new ImportManager(new NoopImportRewriter(), 'i');
-  const tsStatement = translateStatement(call, im);
+  const tsStatement = translateStatement(call, im, NOOP_DEFAULT_IMPORT_RECORDER);
   const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tsStatement, sf);
   return res.replace(/\s+/g, ' ');
 }

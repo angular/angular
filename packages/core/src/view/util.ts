@@ -7,7 +7,7 @@
  */
 
 import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
-import {SOURCE} from '../di/injector';
+import {SOURCE} from '../di/injector_compatibility';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api';
 import {looseIdentical} from '../util/comparison';

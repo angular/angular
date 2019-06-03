@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
 
 ts_library(
     name = "test_lib",
@@ -14,7 +14,7 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/testing",
-        "@rxjs",
+        "@npm//rxjs",
     ],
 )
 
@@ -23,10 +23,10 @@ filegroup(
     testonly = True,
     # do not sort
     srcs = [
-        "@ngdeps//node_modules/@webcomponents/custom-elements:src/native-shim.js",
-        "@ngdeps//node_modules/reflect-metadata:Reflect.js",
-        "@ngdeps//node_modules/zone.js:dist/zone.js",
-        "@ngdeps//node_modules/zone.js:dist/zone-testing.js",
+        "@npm//node_modules/@webcomponents/custom-elements:src/native-shim.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
+        "@npm//node_modules/zone.js:dist/zone-testing.js",
     ],
 )
 

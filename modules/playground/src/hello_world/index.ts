@@ -6,13 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, Injectable, NgModule, Renderer} from '@angular/core';
+import {Component, Directive, ElementRef, Injectable, NgModule, Renderer2} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
@@ -26,8 +22,8 @@ export class GreetingService {
 export class RedDec {
   // ElementRef is always injectable and it wraps the element on which the
   // directive was found by the compiler.
-  constructor(el: ElementRef, renderer: Renderer) {
-    renderer.setElementStyle(el.nativeElement, 'color', 'red');
+  constructor(el: ElementRef, renderer: Renderer2) {
+    renderer.setStyle(el.nativeElement, 'color', 'red');
   }
 }
 
@@ -58,5 +54,7 @@ export class HelloCmp {
 }
 
 @NgModule({declarations: [HelloCmp, RedDec], bootstrap: [HelloCmp], imports: [BrowserModule]})
-class ExampleModule {
+export class ExampleModule {
 }
+
+platformBrowserDynamic().bootstrapModule(ExampleModule);

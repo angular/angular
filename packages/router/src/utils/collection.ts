@@ -21,9 +21,13 @@ export function shallowEqualArrays(a: any[], b: any[]): boolean {
 }
 
 export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): boolean {
-  const k1 = Object.keys(a);
-  const k2 = Object.keys(b);
-  if (k1.length != k2.length) {
+  // Casting Object.keys return values to include `undefined` as there are some cases
+  // in IE 11 where this can happen. Cannot provide a test because the behavior only
+  // exists in certain circumstances in IE 11, therefore doing this cast ensures the
+  // logic is correct for when this edge case is hit.
+  const k1 = Object.keys(a) as string[] | undefined;
+  const k2 = Object.keys(b) as string[] | undefined;
+  if (!k1 || !k2 || k1.length != k2.length) {
     return false;
   }
   let key: string;

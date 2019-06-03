@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+import {Inject, Injectable, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {formatDate} from '../i18n/format_date';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -125,7 +125,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * {{ dateObj | date }}               // output is 'Jun 15, 2015'
  * {{ dateObj | date:'medium' }}      // output is 'Jun 15, 2015, 9:43:11 PM'
  * {{ dateObj | date:'shortTime' }}   // output is '9:43 PM'
- * {{ dateObj | date:'mmss' }}        // output is '43:11'
+ * {{ dateObj | date:'mm:ss' }}       // output is '43:11'
  * ```
  *
  * ### Usage example
@@ -150,6 +150,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @publicApi
  */
 // clang-format on
+@Injectable()
 @Pipe({name: 'date', pure: true})
 export class DatePipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private locale: string) {}

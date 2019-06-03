@@ -81,7 +81,8 @@ export function parseR3(
     input: string, options: {preserveWhitespaces?: boolean} = {}): Render3ParseResult {
   const htmlParser = new HtmlParser();
 
-  const parseResult = htmlParser.parse(input, 'path:://to/template', true);
+  const parseResult =
+      htmlParser.parse(input, 'path:://to/template', {tokenizeExpansionForms: true});
 
   if (parseResult.errors.length > 0) {
     const msg = parseResult.errors.map(e => e.toString()).join('\n');

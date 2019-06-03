@@ -103,7 +103,7 @@ export declare function getLocaleNumberFormat(locale: string, type: NumberFormat
 
 export declare function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): string;
 
-export declare function getLocalePluralCase(locale: string): (value: number) => Plural;
+export declare const getLocalePluralCase: (locale: string) => ((value: number) => Plural);
 
 export declare function getLocaleTimeFormat(locale: string, width: FormatWidth): string;
 
@@ -166,12 +166,14 @@ export declare class KeyValuePipe implements PipeTransform {
 }
 
 export declare class Location {
-    constructor(platformStrategy: LocationStrategy);
+    constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation);
     back(): void;
     forward(): void;
+    getState(): unknown;
     go(path: string, query?: string, state?: any): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
+    onUrlChange(fn: (url: string, state: unknown) => void): void;
     path(includeHash?: boolean): string;
     prepareExternalUrl(url: string): string;
     replaceState(path: string, query?: string, state?: any): void;
@@ -207,13 +209,22 @@ export declare class LowerCasePipe implements PipeTransform {
     transform(value: string): string;
 }
 
-export declare class NgClass implements DoCheck {
+export declare class NgClass extends NgClassBase implements DoCheck {
     klass: string;
     ngClass: string | string[] | Set<string> | {
         [klass: string]: any;
     };
-    constructor(_iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer2);
+    constructor(delegate: NgClassImpl);
     ngDoCheck(): void;
+}
+
+export declare class NgClassBase {
+    protected _delegate: NgClassImpl;
+    constructor(_delegate: NgClassImpl);
+    getValue(): {
+        [key: string]: any;
+    } | null;
+    static ngDirectiveDef: any;
 }
 
 export declare class NgComponentOutlet implements OnChanges, OnDestroy {
@@ -252,7 +263,7 @@ export declare class NgIf {
     ngIfElse: TemplateRef<NgIfContext> | null;
     ngIfThen: TemplateRef<NgIfContext> | null;
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>);
-    static ngTemplateGuard_ngIf<E>(dir: NgIf, expr: E): expr is NonNullable<E>;
+    static ngTemplateGuard_ngIf: 'binding';
 }
 
 export declare class NgIfContext {
@@ -283,12 +294,21 @@ export declare class NgPluralCase {
     constructor(value: string, template: TemplateRef<Object>, viewContainer: ViewContainerRef, ngPlural: NgPlural);
 }
 
-export declare class NgStyle implements DoCheck {
+export declare class NgStyle extends NgStyleBase implements DoCheck {
     ngStyle: {
-        [key: string]: string;
-    };
-    constructor(_differs: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer2);
+        [klass: string]: any;
+    } | null;
+    constructor(delegate: NgStyleImpl);
     ngDoCheck(): void;
+}
+
+export declare class NgStyleBase {
+    protected _delegate: NgStyleImpl;
+    constructor(_delegate: NgStyleImpl);
+    getValue(): {
+        [key: string]: any;
+    } | null;
+    static ngDirectiveDef: any;
 }
 
 export declare class NgSwitch {
@@ -355,11 +375,16 @@ export declare class PercentPipe implements PipeTransform {
 
 export declare abstract class PlatformLocation {
     abstract readonly hash: string;
+    abstract readonly hostname: string;
+    abstract readonly href: string;
     abstract readonly pathname: string;
+    abstract readonly port: string;
+    abstract readonly protocol: string;
     abstract readonly search: string;
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHrefFromDOM(): string;
+    abstract getState(): unknown;
     abstract onHashChange(fn: LocationChangeListener): void;
     abstract onPopState(fn: LocationChangeListener): void;
     abstract pushState(state: any, title: string, url: string): void;
@@ -385,7 +410,10 @@ export interface PopStateEvent {
 export declare function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
 
 export declare class SlicePipe implements PipeTransform {
-    transform(value: any, start: number, end?: number): any;
+    transform<T>(value: ReadonlyArray<T>, start: number, end?: number): Array<T>;
+    transform(value: string, start: number, end?: number): string;
+    transform(value: null, start: number, end?: number): null;
+    transform(value: undefined, start: number, end?: number): undefined;
 }
 
 export declare type Time = {

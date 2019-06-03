@@ -22,8 +22,10 @@ export interface HttpParameterCodec {
 }
 
 /**
- * A `HttpParameterCodec` that uses `encodeURIComponent` and `decodeURIComponent` to
- * serialize and parse URL parameter keys and values.
+ * A class that uses `encodeURIComponent` and `decodeURIComponent` to
+ * serialize and parse URL parameter keys and values. If you pass URL query parameters
+ * without encoding, the query parameters can get misinterpreted at the receiving end.
+ * Use the `HttpParameterCodec` class to encode and decode the query-string values.
  *
  * @publicApi
  */
@@ -81,7 +83,7 @@ export interface HttpParamsOptions {
    */
   fromString?: string;
 
-  /** Object map of the HTTP params. Mutally exclusive with `fromString`. */
+  /** Object map of the HTTP params. Mutually exclusive with `fromString`. */
   fromObject?: {[param: string]: string | string[]};
 
   /** Encoding codec used to parse and serialize the params. */
@@ -225,7 +227,7 @@ export class HttpParams {
             }
         }
       });
-      this.cloneFrom = null;
+      this.cloneFrom = this.updates = null;
     }
   }
 }

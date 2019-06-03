@@ -35,7 +35,7 @@ export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
   const rendererFactory =
-      new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
+      new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document), 'dummyappid');
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function() {
     const renderer = origCreateRenderer.apply(this, arguments);

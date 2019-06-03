@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "http",
@@ -13,7 +13,7 @@ ng_module(
     deps = [
         "//packages/core",
         "//packages/platform-browser",
-        "@rxjs",
+        "@npm//rxjs",
     ],
 )
 
@@ -25,7 +25,8 @@ ng_package(
     ],
     entry_point = "packages/http/index.js",
     tags = [
-        "release-with-framework",
+        # Currently the plan for Angular v8 is to exclude @angular/http package from publishing
+        # "release-with-framework",
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.

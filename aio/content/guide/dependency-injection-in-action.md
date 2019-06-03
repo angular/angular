@@ -52,16 +52,16 @@ When all dependencies are in place, `AppComponent` displays the user information
 
 ## Limit service scope to a component subtree
 
-An Angular application has multiple injectors, arranged in a tree hierarchy that parallels the component tree. 
-Each injector creates a singleton instance of a dependency. 
+An Angular application has multiple injectors, arranged in a tree hierarchy that parallels the component tree.
+Each injector creates a singleton instance of a dependency.
 That same instance is injected wherever that injector provides that service.
 A particular service can be provided and created at any level of the injector hierarchy,
 which means that there can be multiple instances of a service if it is provided by multiple injectors.
 
-Dependencies provided by the root injector can be injected into *any* component *anywhere* in the application. 
-In some cases, you might want to restrict service availability to a particular region of the application. 
+Dependencies provided by the root injector can be injected into *any* component *anywhere* in the application.
+In some cases, you might want to restrict service availability to a particular region of the application.
 For instance, you might want to let users explicitly opt in to use a service,
-rather than letting the root injector provide it automatically. 
+rather than letting the root injector provide it automatically.
 
 You can limit the scope of an injected service to a *branch* of the application hierarchy
 by providing that service *at the sub-root component for that branch*.
@@ -146,34 +146,34 @@ and confirm that the three `HeroBioComponent` instances have their own cached he
 When a class requires a dependency, that dependency is added to the constructor as a parameter.
 When Angular needs to instantiate the class, it calls upon the DI framework to supply the dependency.
 By default, the DI framework searches for a provider in the injector hierarchy,
-starting at the component's local injector of the component, and if necessary bubbling up 
+starting at the component's local injector of the component, and if necessary bubbling up
 through the injector tree until it reaches the root injector.
 
-* The first injector configured with a provider supplies the dependency (a service instance or value) to the constructor.  
+* The first injector configured with a provider supplies the dependency (a service instance or value) to the constructor.
 
-* If no provider is found in the root injector, the DI framework returns null to the constructor.
+* If no provider is found in the root injector, the DI framework throws an error.
 
 There are a number of options for modifying the default search behavior, using _parameter decorators_
-on the service-valued parameters of a class constructor. 
+on the service-valued parameters of a class constructor.
 
 {@a optional}
 
 ### Make a dependency `@Optional` and limit search with `@Host`
 
-Dependencies can be registered at any level in the component hierarchy. 
-When a component requests a dependency, Angular starts with that component's injector 
-and walks up the injector tree until it finds the first suitable provider.  
+Dependencies can be registered at any level in the component hierarchy.
+When a component requests a dependency, Angular starts with that component's injector
+and walks up the injector tree until it finds the first suitable provider.
 Angular throws an error if it can't find the dependency during that walk.
 
 In some cases, you need to limit the search or accommodate a missing dependency.
 You can modify Angular's search behavior with the `@Host` and `@Optional` qualifying
-decorators on a service-valued parameter of the component's constructor. 
+decorators on a service-valued parameter of the component's constructor.
 
 * The `@Optional` property decorator tells Angular to return null when it can't find the dependency.
 
-* The `@Host` property decorator stops the upward search at the *host component*. 
-The host component is typically the component requesting the dependency. 
-However, when this component is projected into a *parent* component, 
+* The `@Host` property decorator stops the upward search at the *host component*.
+The host component is typically the component requesting the dependency.
+However, when this component is projected into a *parent* component,
 that parent component becomes the host. The following example covers this second case.
 
 These decorators can be used individually or together, as shown in the example.
@@ -238,8 +238,8 @@ Here's `HeroBiosAndContactsComponent` in action.
 
 
 If you comment out the `@Host()` decorator, Angular walks up the injector ancestor tree
-until it finds the logger at the `AppComponent` level. 
-The logger logic kicks in and the hero display updates 
+until it finds the logger at the `AppComponent` level.
+The logger logic kicks in and the hero display updates
 with the "!!!" marker to indicate that the logger was found.
 
 <figure>
@@ -254,13 +254,15 @@ the app throws an exception when it cannot find the required logger at the host 
 
 ### Supply a custom provider with `@Inject`
 
-Using a custom provider allows you to provide a concrete implementation for implicit dependencies, such as built-in browser APIs. The following example uses an `InjectionToken` to provide the [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) browser API as a dependency in the `BrowserStorageService`. 
+Using a custom provider allows you to provide a concrete implementation for implicit dependencies, such as built-in browser APIs. The following example uses an `InjectionToken` to provide the [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) browser API as a dependency in the `BrowserStorageService`.
 
 <code-example path="dependency-injection-in-action/src/app/storage.service.ts" header="src/app/storage.service.ts">
 
 </code-example>
 
 The `factory` function returns the `localStorage` property that is attached to the browser window object. The `Inject` decorator is a constructor parameter used to specify a custom provider of a dependency. This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interactive with real browser APIs.
+
+{@a skip}
 
 ### Modify the provider search with `@Self` and `@SkipSelf`
 
@@ -291,7 +293,7 @@ The directive sets the background to a highlight color when the user mouses over
 DOM element to which the directive is applied.
 
 Angular sets the constructor's `el` parameter to the injected `ElementRef`.
-(An `ElementRef` is a wrapper around a DOM element, 
+(An `ElementRef` is a wrapper around a DOM element,
 whose `nativeElement` property exposes the DOM element for the directive to manipulate.)
 
 The sample code applies the directive's `myHighlight` attribute to two `<div>` tags,
@@ -332,7 +334,7 @@ Angular asks the injector for the service associated with `LoggerService`
 and assigns the returned value to the `logger` parameter.
 
 If the injector has already cached an instance of the service associated with the token,
-it provides that instance. 
+it provides that instance.
 If it doesn't, it needs to make one using the provider associated with the token.
 
 <div class="alert is-helpful">
@@ -346,7 +348,7 @@ If the search fails, the injector throws an error&mdash;unless the request was [
 
 A new injector has no providers.
 Angular initializes the injectors it creates with a set of preferred providers.
-You have to configure providers for your own app-specific dependencies. 
+You have to configure providers for your own app-specific dependencies.
 
 
 {@a defining-providers}
@@ -355,7 +357,7 @@ You have to configure providers for your own app-specific dependencies.
 ### Defining providers
 
 A dependency can't always be created by the default method of instantiating a class.
-You learned about some other methods in [Dependency Providers](guide/dependency-injection-providers). 
+You learned about some other methods in [Dependency Providers](guide/dependency-injection-providers).
 The following `HeroOfTheMonthComponent` example demonstrates many of the alternatives and why you need them.
 It's visually simple: a few properties and the logs produced by a logger.
 
@@ -364,7 +366,7 @@ It's visually simple: a few properties and the logs produced by a logger.
 </figure>
 
 The code behind it customizes how and where the DI framework provides dependencies.
-The use cases illustrate different ways to use the [*provide* object literal](guide/dependency-injection-providers#provide) to associate a definition object with a DI token. 
+The use cases illustrate different ways to use the [*provide* object literal](guide/dependency-injection-providers#provide) to associate a definition object with a DI token.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="hero-of-the-month" header="hero-of-the-month.component.ts">
 
@@ -389,13 +391,13 @@ The `HeroOfTheMonthComponent` example has two value providers.
 </code-example>
 
 * The first provides an existing instance of the `Hero` class to use for the `Hero` token, rather than
-requiring the injector to create a new instance with `new` or use its own cached instance. 
+requiring the injector to create a new instance with `new` or use its own cached instance.
 Here, the token is the class itself.
 
 * The second specifies a literal string resource to use for the `TITLE` token.
 The `TITLE` provider token is *not* a class, but is instead a
 special kind of provider lookup key called an [injection token](guide/dependency-injection-in-action#injection-token), represented by
-an `InjectionToken` instance. 
+an `InjectionToken` instance.
 
 You can use an injection token for any kind of provider but it's particularly
 helpful when the dependency is a simple value like a string, a number, or a function.
@@ -414,12 +416,12 @@ Other types of providers can create their values *lazily*; that is, when they're
 {@a useclass}
 
 
-#### Class providers: `useClass` 
+#### Class providers: `useClass`
 
 The `useClass` provider key lets you create and return a new instance of the specified class.
 
 You can use this type of provider to substitute an *alternative implementation*
-for a common or default class. 
+for a common or default class.
 The alternative implementation could, for example, implement a different strategy,
 extend the default class, or emulate the behavior of the real class in a test case.
 
@@ -502,7 +504,7 @@ This is illustrated in the following image, which displays the logging date.
 
 {@a usefactory}
 
-#### Factory providers: `useFactory` 
+#### Factory providers: `useFactory`
 
 The `useFactory` provider key lets you create a dependency object by calling a factory function,
 as in the following example.
@@ -537,7 +539,7 @@ the passed-in state value and the injected services `Hero` and `HeroService`.
 The provider factory function (returned by `runnersUpFactory()`) returns the actual dependency object,
 the string of names.
 
-* The function takes a winning `Hero` and a `HeroService` as arguments. 
+* The function takes a winning `Hero` and a `HeroService` as arguments.
 Angular supplies these arguments from injected values identified by
 the two *tokens* in the `deps` array.
 
@@ -588,7 +590,7 @@ But they did neither.
 `MinimalLogger` is used only as a dependency injection token.
 
 When you use a class this way, it's called a *class interface*.
-  
+
 As mentioned in [DI Providers](guide/dependency-injection-providers#interface-not-valid-token),
 an interface is not a valid DI token because it is a TypeScript artifact that doesn't exist at run time.
 Use this abstract class interface to get the strong typing of an interface,
@@ -609,7 +611,7 @@ The `MinimalLogger` transpiles to this unoptimized, pre-minified JavaScript for 
 </code-example>
 
 Notice that it doesn't have any members. It never grows no matter how many members you add to the class,
-as long as those members are typed but not implemented. 
+as long as those members are typed but not implemented.
 
 Look again at the TypeScript `MinimalLogger` class to confirm that it has no implementation.
 
@@ -736,7 +738,7 @@ Break the circularity with `forwardRef`.
 </code-example>
 
 
-<!--- Waiting for good examples 
+<!--- Waiting for good examples
 
 {@a directive-level-providers}
 
@@ -744,15 +746,15 @@ Break the circularity with `forwardRef`.
 
 ## Element-level providers
 
-A component is a specialization of directive, and the `@Component()` decorator inherits the `providers` property from `@Directive`. The injector is at the element level, so a provider configured with any element-level injector is available to any component, directive, or pipe attached to the same element. 
+A component is a specialization of directive, and the `@Component()` decorator inherits the `providers` property from `@Directive`. The injector is at the element level, so a provider configured with any element-level injector is available to any component, directive, or pipe attached to the same element.
 
 Here's a live example that implements a custom form control, taking advantage of an injector that is shared by a component and a directive on the same element.
 
 https://stackblitz.com/edit/basic-form-control
 
-The component, `custom-control`, configures a provider for the DI token `NG_VALUE_ACCESSOR`. 
+The component, `custom-control`, configures a provider for the DI token `NG_VALUE_ACCESSOR`.
 In the template, the `FormControlName` directive is instantiated along with the custom component.
-It can inject the `NG_VALUE_ACCESSOR` dependency because they share the same injector. 
+It can inject the `NG_VALUE_ACCESSOR` dependency because they share the same injector.
 (Notice that this example also makes use of `forwardRef()` to resolve a circularity in the definitions.)
 
 ### Sharing a service among components
@@ -784,4 +786,3 @@ If you want to show only one of them, use the directive to make sure __??of what
 `<hero-overview heroCache></hero-overview>`
 
  --->
-

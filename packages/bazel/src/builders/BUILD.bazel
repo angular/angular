@@ -1,3 +1,5 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
@@ -8,8 +10,6 @@ filegroup(
     visibility = ["//packages/bazel:__subpackages__"],
 )
 
-load("//tools:defaults.bzl", "ts_library")
-
 ts_library(
     name = "builders",
     srcs = [
@@ -19,13 +19,12 @@ ts_library(
     ],
     data = [
         "schema.json",
-    ],
+    ] + glob(["files/**/*"]),
     module_name = "@angular/bazel/src/builders",
     deps = [
-        "@ngdeps//@angular-devkit/architect",
-        "@ngdeps//@angular-devkit/core",
-        "@ngdeps//@types/node",
-        "@rxjs",
-        "@rxjs//operators",
+        "@npm//@angular-devkit/architect",
+        "@npm//@angular-devkit/core",
+        "@npm//@types/node",
+        "@npm//rxjs",
     ],
 )

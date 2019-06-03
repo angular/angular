@@ -1,6 +1,6 @@
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { first } from 'rxjs/operators';
@@ -284,7 +284,7 @@ class HostComponent implements AfterViewInit {
   region: string;
   header: string;
 
-  @ViewChild(CodeComponent) codeComponent: CodeComponent;
+  @ViewChild(CodeComponent, {static: false}) codeComponent: CodeComponent;
 
   ngAfterViewInit() {
     this.setCode(oneLineCode);

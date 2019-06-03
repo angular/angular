@@ -65,6 +65,13 @@
             "title": "AngularAir",
             "url": "https://angularair.com/"
           },
+          "sdlkfjsldfkz": {
+            "desc": "A weekly German podcast for Angular on the go",
+            "logo": "",
+            "rev": true,
+            "title": "Happy Angular Podcast",
+            "url": "https://happy-angular.de/"
+          },
           "sldkfjsldjf": {
             "desc": "The live broadcast podcast all about JavaScript",
             "logo": "",
@@ -409,6 +416,18 @@
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
           },
+          "fancygrid": {
+            "desc": "Angular grid library with charts integration and server communication for Enterprise.",
+            "rev": true,
+            "title": "FancyGrid",
+            "url": "https://fancygrid.com/docs/getting-started/angular"
+          },
+          "ngx-smart-modal": {
+            "desc": "Angular smart, light and fast modal handler to manage modals and data everywhere.",
+            "rev": true,
+            "title": "ngx-smart-modal",
+            "url": "https://biig-io.github.io/ngx-smart-modal"
+          },
           "jqwidgets": {
             "desc": "Angular UI Components including data grid, tree grid, pivot grid, scheduler, charts, editors and other multi-purpose components",
             "rev": true,
@@ -459,6 +478,24 @@
             "rev": true,
             "title": "Alyle UI",
             "url": "https://alyle-ui.firebaseapp.com/"
+          },
+          "nebular": {
+            "desc": "Theme System, UI Components, Auth and Security for your next Angular application.",
+            "rev": true,
+            "title": "Nebular",
+            "url": "https://akveo.github.io/nebular/"
+          },
+          "carbondesignsystem": {
+            "desc": "An Angular implementation of the Carbon Design System for IBM.",
+            "rev": true,
+            "title": "Carbon Components Angular",
+            "url": "https://angular.carbondesignsystem.com/"
+          },
+          "jigsaw": {
+            "desc": "Jigsaw provides a set of web components based on Angular. It is supporting the development of all applications of Big Data Product of ZTE (http://www.zte.com.cn).",
+            "rev": true,
+            "title": "Awade Jigsaw (Chinese)",
+            "url": "http://rdk.zte.com.cn/components"
           }
         }
       }
@@ -812,6 +849,12 @@
             "title": "Formation JavaScript (French)",
             "url": "https://formationjavascript.com/formation-angular/"
           },
+          "humancoders-angular": {
+            "desc": "Angular trainings delivered by Human Coders (France)",
+            "rev": true,
+            "title": "Formation Angular (French)",
+            "url": "https://www.humancoders.com/formations/angular"
+          },
           "wao": {
             "desc": "Onsite Angular Training delivered by We Are One Sàrl in Switzerland",
             "logo": "https://weareone.ch/wordpress/wao-content/uploads/2014/12/logo_200_2x.png",
@@ -831,6 +874,13 @@
             "rev": true,
             "title": "StrongBrew",
             "url": "https://strongbrew.io/"
+          },
+          "angular.de": {
+            "desc": "Onsite Angular Training delivered by the greatest community in the german speaking area in Germany, Austria and Switzerland. We also regularly post articles and tutorials on our blog.",
+            "logo": "https://angular.de/assets/img/angular-de-logo.svg",
+            "rev": true,
+            "title": "Angular.de (German)",
+            "url": "https://angular.de/"
           }
         }
       }

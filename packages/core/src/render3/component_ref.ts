@@ -9,7 +9,8 @@
 import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {inject} from '../di/injector_compatibility';
+import {ɵɵinject} from '../di/injector_compatibility';
+import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -25,13 +26,14 @@ import {assertComponentType} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
-import {addToViewTree, assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
+import {addToViewTree, assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, refreshDescendantViews} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
-import {HEADER_OFFSET, LView, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {LView, LViewFlags, RootContext, TVIEW} from './interfaces/view';
 import {enterView, leaveView} from './state';
-import {defaultScheduler, getTNode} from './util';
+import {defaultScheduler} from './util/misc_utils';
+import {getTNode} from './util/view_utils';
 import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
 
@@ -64,7 +66,7 @@ function toRefArray(map: {[key: string]: string}): {propName: string; templateNa
  */
 export const ROOT_CONTEXT = new InjectionToken<RootContext>(
     'ROOT_CONTEXT_TOKEN',
-    {providedIn: 'root', factory: () => createRootContext(inject(SCHEDULER))});
+    {providedIn: 'root', factory: () => createRootContext(ɵɵinject(SCHEDULER))});
 
 /**
  * A change detection scheduler token for {@link RootContext}. This token is the default value used
@@ -77,8 +79,8 @@ export const SCHEDULER = new InjectionToken<((fn: () => void) => void)>('SCHEDUL
 
 function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injector): Injector {
   return {
-    get: <T>(token: Type<T>| InjectionToken<T>, notFoundValue?: T): T => {
-      const value = rootViewInjector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR);
+    get: <T>(token: Type<T>| InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T => {
+      const value = rootViewInjector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as T, flags);
 
       if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
           notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
@@ -90,7 +92,7 @@ function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injec
         return value;
       }
 
-      return moduleInjector.get(token, notFoundValue);
+      return moduleInjector.get(token, notFoundValue, flags);
     }
   };
 }
@@ -121,10 +123,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     super();
     this.componentType = componentDef.type;
     this.selector = componentDef.selectors[0][0] as string;
-    // The component definition does not include the wildcard ('*') selector in its list.
-    // It is implicitly expected as the first item in the projectable nodes array.
     this.ngContentSelectors =
-        componentDef.ngContentSelectors ? ['*', ...componentDef.ngContentSelectors] : [];
+        componentDef.ngContentSelectors ? componentDef.ngContentSelectors : [];
     this.isBoundToModule = !!ngModule;
   }
 
@@ -147,8 +147,17 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
-    const rootContext: RootContext =
-        !isInternalRootView ? rootViewInjector.get(ROOT_CONTEXT) : createRootContext();
+
+    // Check whether this Component needs to be isolated from other components, i.e. whether it
+    // should be placed into its own (empty) root context or existing root context should be used.
+    // Note: this is internal-only convention and might change in the future, so it should not be
+    // relied upon externally.
+    const isIsolated = typeof rootSelectorOrNode === 'string' &&
+        /^#root-ng-internal-isolated-\d+/.test(rootSelectorOrNode);
+
+    const rootContext: RootContext = (isInternalRootView || isIsolated) ?
+        createRootContext() :
+        rootViewInjector.get(ROOT_CONTEXT);
 
     const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
 
@@ -161,8 +170,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootLView = createLView(
-        null, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags,
-        rendererFactory, renderer, sanitizer, rootViewInjector);
+        null, createTView(-1, null, 1, 0, null, null, null, null), rootContext, rootFlags, null,
+        null, rendererFactory, renderer, sanitizer, rootViewInjector);
 
     // rootView is the parent when bootstrapping
     const oldLView = enterView(rootLView, null);
@@ -189,7 +198,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       component = createRootComponent(
           componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
 
-      addToViewTree(rootLView, HEADER_OFFSET, componentView);
+      addToViewTree(rootLView, componentView);
       refreshDescendantViews(rootLView);
     } finally {
       leaveView(oldLView);

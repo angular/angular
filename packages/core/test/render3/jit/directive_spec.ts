@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedNodeExpr} from '@angular/compiler';
-import {convertToR3QueryMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive';
+import {Directive, HostListener, Input} from '@angular/core';
+import {setClassMetadata} from '@angular/core/src/render3/metadata';
+
+import {convertToR3QueryMetadata, directiveMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive';
 
 describe('jit directive helper functions', () => {
 
@@ -50,13 +52,15 @@ describe('jit directive helper functions', () => {
         descendants: false,
         first: false,
         isViewQuery: false,
-        read: undefined
+        read: undefined,
+        static: false,
       })).toEqual({
         propertyName: 'propName',
         predicate: ['localRef'],
         descendants: false,
         first: false,
-        read: null
+        read: null,
+        static: false
       });
     });
 
@@ -66,13 +70,15 @@ describe('jit directive helper functions', () => {
         descendants: true,
         first: true,
         isViewQuery: true,
-        read: undefined
+        read: undefined,
+        static: false,
       })).toEqual({
         propertyName: 'propName',
         predicate: ['foo', 'bar', 'baz'],
         descendants: true,
         first: true,
-        read: null
+        read: null,
+        static: false
       });
     });
 
@@ -85,12 +91,70 @@ describe('jit directive helper functions', () => {
         descendants: true,
         first: true,
         isViewQuery: true,
-        read: Directive
+        read: Directive,
+        static: false
       });
 
       expect(converted.predicate).toEqual(Directive);
       expect(converted.read).toEqual(Directive);
     });
+
+  });
+
+  describe('directiveMetadata', () => {
+    it('should not inherit propMetadata from super class', () => {
+      class SuperDirective {}
+      setClassMetadata(
+          SuperDirective, [{type: Directive, args: []}], null,
+          {handleClick: [{type: HostListener, args: ['click']}]});
+
+      class SubDirective extends SuperDirective {}
+      setClassMetadata(SubDirective, [{type: Directive, args: []}], null, null);
+
+      expect(directiveMetadata(SuperDirective, {}).propMetadata.handleClick).toBeTruthy();
+      expect(directiveMetadata(SubDirective, {}).propMetadata.handleClick).toBeFalsy();
+    });
+
+    it('should not inherit propMetadata from grand super class', () => {
+      class SuperSuperDirective {}
+      setClassMetadata(
+          SuperSuperDirective, [{type: Directive, args: []}], null,
+          {handleClick: [{type: HostListener, args: ['click']}]});
+
+      class SuperDirective {}
+      setClassMetadata(SuperDirective, [{type: Directive, args: []}], null, null);
+
+      class SubDirective extends SuperDirective {}
+
+      setClassMetadata(SubDirective, [{type: Directive, args: []}], null, null);
+
+      expect(directiveMetadata(SuperSuperDirective, {}).propMetadata.handleClick).toBeTruthy();
+      expect(directiveMetadata(SuperDirective, {}).propMetadata.handleClick).toBeFalsy();
+      expect(directiveMetadata(SubDirective, {}).propMetadata.handleClick).toBeFalsy();
+    });
+
+    it('should not inherit propMetadata from super class when sub class has its own propMetadata',
+       () => {
+         class SuperDirective {}
+         setClassMetadata(SuperDirective, [{type: Directive}], null, {
+           someInput: [{type: Input}],
+           handleClick: [{type: HostListener, args: ['click', ['$event']]}]
+         });
+
+         class SubDirective extends SuperDirective {}
+         setClassMetadata(
+             SubDirective, [{type: Directive}], null, {someOtherInput: [{type: Input}]});
+
+         const superPropMetadata = directiveMetadata(SuperDirective, {}).propMetadata;
+         const subPropMetadata = directiveMetadata(SubDirective, {}).propMetadata;
+
+         expect(superPropMetadata.handleClick).toBeTruthy();
+         expect(superPropMetadata.someInput).toBeTruthy();
+
+         expect(subPropMetadata.handleClick).toBeFalsy();
+         expect(subPropMetadata.someInput).toBeFalsy();
+         expect(subPropMetadata.someOtherInput).toBeTruthy();
+       });
 
   });
 });

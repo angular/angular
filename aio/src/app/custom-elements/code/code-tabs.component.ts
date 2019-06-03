@@ -1,5 +1,5 @@
 /* tslint:disable component-selector */
-import { Component, AfterViewInit, ViewChild, Input, ViewChildren, QueryList, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CodeComponent } from './code.component';
 
 export interface TabInfo {
@@ -48,16 +48,15 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
 
   @Input() linenums: string;
 
-  @ViewChild('content') content;
+  @ViewChild('content', { static: true }) content: ElementRef<HTMLDivElement>;
 
   @ViewChildren(CodeComponent) codeComponents: QueryList<CodeComponent>;
 
   ngOnInit() {
     this.tabs = [];
-    const codeExamples = this.content.nativeElement.querySelectorAll('code-pane');
+    const codeExamples = Array.from(this.content.nativeElement.querySelectorAll('code-pane'));
 
-    for (let i = 0; i < codeExamples.length; i++) {
-      const tabContent = codeExamples[i];
+    for (const tabContent of codeExamples) {
       this.tabs.push(this.getTabInfo(tabContent));
     }
   }
@@ -69,7 +68,7 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
   }
 
   /** Gets the extracted TabInfo data from the provided code-pane element. */
-  private getTabInfo(tabContent: HTMLElement): TabInfo {
+  private getTabInfo(tabContent: Element): TabInfo {
     return {
       class: tabContent.getAttribute('class'),
       code: tabContent.innerHTML,

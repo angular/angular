@@ -32,8 +32,13 @@ describe('plugin', () => {
   });
 
 
-  let plugin = create(
-      {ts: ts, languageService: service, project: mockProject, languageServiceHost: mockHost});
+  let plugin = create({
+    languageService: service,
+    project: mockProject as any,
+    languageServiceHost: mockHost,
+    serverHost: {} as any,
+    config: {},
+  });
 
   it('should not report template errors on tour of heroes', () => {
     for (let source of program !.getSourceFiles()) {
@@ -205,12 +210,6 @@ describe('plugin', () => {
     const location = getMarkerLocation(fileName, locationMarker);
     expectEntries(
         locationMarker, plugin.getCompletionsAtPosition(fileName, location, undefined) !, ...names);
-  }
-
-  function expectEmpty(fileName: string, locationMarker: string) {
-    const location = getMarkerLocation(fileName, locationMarker);
-    expect(plugin.getCompletionsAtPosition(fileName, location, undefined) !.entries || []).toEqual([
-    ]);
   }
 
   function expectSemanticError(fileName: string, locationMarker: string, message: string) {

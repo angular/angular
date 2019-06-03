@@ -1,0 +1,50 @@
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
+
+ts_library(
+    name = "e2e_lib",
+    testonly = 1,
+    srcs = glob(["src/**/*.ts"]),
+    tsconfig = ":tsconfig.e2e.json" if len(glob(["tsconfig.e2e.json"])) else ":tsconfig.json",
+    deps = [
+      "@npm//@types/jasmine",
+      "@npm//@types/jasminewd2",
+      "@npm//@types/node",
+      "@npm//jasmine",
+      "@npm//protractor",
+      "@npm//tslib",
+    ],
+    data = [
+      "//:tsconfig.json",
+    ],
+)
+
+protractor_web_test_suite(
+    name = "prodserver_test",
+    data = [
+      "@npm//@angular/bazel",
+      "@npm//protractor",
+    ],
+    on_prepare = ":protractor.on-prepare.js",
+    server = "//src:prodserver",
+    deps = [":e2e_lib"],
+)
+
+protractor_web_test_suite(
+    name = "devserver_test",
+    data = [
+      "@npm//@angular/bazel",
+      "@npm//protractor",
+    ],
+    on_prepare = ":protractor.on-prepare.js",
+    server = "//src:devserver",
+    deps = [":e2e_lib"],
+)
+
+# Default target in this package is to run the e2e tests on the devserver.
+# This is a faster round-trip but doesn't exercise production optimizations like
+# code-splitting and lazy loading.
+alias(
+    name = "e2e",
+    actual = "devserver_test",
+)

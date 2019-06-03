@@ -1,9 +1,9 @@
+load("//tools:defaults.bzl", "ts_library")
+
 package(default_visibility = [
     "//packages/core:__subpackages__",
     "//tools/public_api_guard:__pkg__",
 ])
-
-load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
     name = "interface",
@@ -15,7 +15,6 @@ ts_library(
     deps = [
         "//packages/core/src/interface",
         "//packages/core/src/util",
-        "@rxjs",
-        "@rxjs//operators",
+        "@npm//rxjs",
     ],
 )

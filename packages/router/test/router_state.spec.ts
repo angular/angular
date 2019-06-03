@@ -199,7 +199,7 @@ describe('RouterState & Snapshot', () => {
 
 function createActivatedRouteSnapshot(cmp: string) {
   return new (ActivatedRouteSnapshot as any)(
-      <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null,
+      <any>[], <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null,
       <any>null, -1, null !);
 }
 

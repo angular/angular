@@ -22,13 +22,16 @@ interface OtherMetadataType extends SomeMetadataType {
 class SomeMetadata implements SomeMetadataType {
   plainProp: string;
   private _getterProp: string;
-  get getterProp(): string { return this._getterProp; }
   arrayProp: any[];
 
   constructor(options: SomeMetadataType) {
     this.plainProp = options.plainProp !;
     this._getterProp = options.getterProp !;
     this.arrayProp = options.arrayProp !;
+    Object.defineProperty(this, 'getterProp', {
+      enumerable: true,  // getters are non-enumerable by default in es2015
+      get: () => this._getterProp,
+    });
   }
 }
 

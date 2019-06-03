@@ -34,11 +34,6 @@ describe('ScrollService', () => {
     'viewportScroller',
     ['getScrollPosition', 'scrollToPosition']);
 
-
-  beforeEach(() => {
-    spyOn(window, 'scrollBy');
-  });
-
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
         ScrollService,
@@ -52,7 +47,23 @@ describe('ScrollService', () => {
     document = injector.get(DOCUMENT);
     scrollService = injector.get(ScrollService);
     location = injector.get(Location);
+
+    spyOn(window, 'scrollBy');
   });
+
+  it('should debounce `updateScrollPositonInHistory()`', fakeAsync(() => {
+    const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
+
+    window.dispatchEvent(new Event('scroll'));
+    tick(249);
+    window.dispatchEvent(new Event('scroll'));
+    tick(249);
+    window.dispatchEvent(new Event('scroll'));
+    tick(249);
+    expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
+    tick(1);
+    expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
+  }));
 
   it('should set `scrollRestoration` to `manual` if supported', () => {
     if (scrollService.supportManualScrollRestoration) {
@@ -219,7 +230,7 @@ describe('ScrollService', () => {
 
   describe('#scrollToTop', () => {
     it('should scroll to top', () => {
-      const topOfPageElement = <Element><any> new MockElement();
+      const topOfPageElement = new MockElement() as any as Element;
       document.getElementById.and.callFake(
         (id: string) => id === 'top-of-page' ? topOfPageElement : null
       );
@@ -242,7 +253,7 @@ describe('ScrollService', () => {
     });
   });
 
-  describe('#needToFixScrollPosition', async() => {
+  describe('#needToFixScrollPosition', async () => {
     it('should return true when popState event was fired after a back navigation if the browser supports ' +
       'scrollRestoration`. Otherwise, needToFixScrollPosition() returns false', () => {
 
@@ -253,16 +264,14 @@ describe('ScrollService', () => {
         location.go('/initial-url2');
         location.back();
 
-        expect(scrollService.popStateFired).toBe(true);
-        expect(scrollService.scrollPosition).toEqual([2000, 0]);
+        expect(scrollService.poppedStateScrollPosition).toEqual([2000, 0]);
         expect(scrollService.needToFixScrollPosition()).toBe(true);
       } else {
         location.go('/initial-url1');
         location.go('/initial-url2');
         location.back();
 
-        expect(scrollService.popStateFired).toBe(false); // popStateFired is always false
-        expect(scrollService.scrollPosition).toEqual([0, 0]); // scrollPosition always equals [0, 0]
+        expect(scrollService.poppedStateScrollPosition).toBe(null);
         expect(scrollService.needToFixScrollPosition()).toBe(false);
       }
 
@@ -278,12 +287,10 @@ describe('ScrollService', () => {
         location.replaceState('/initial-url1', 'hack', {scrollPosition: [2000, 0]});
 
         location.back();
-        scrollService.popStateFired = false;
-        scrollService.scrollPosition = [0, 0];
+        scrollService.poppedStateScrollPosition = [0, 0];
         location.forward();
 
-        expect(scrollService.popStateFired).toBe(true);
-        expect(scrollService.scrollPosition).toEqual([2000, 0]);
+        expect(scrollService.poppedStateScrollPosition).toEqual([2000, 0]);
         expect(scrollService.needToFixScrollPosition()).toBe(true);
       } else {
         location.go('/initial-url1');
@@ -291,15 +298,14 @@ describe('ScrollService', () => {
         location.back();
         location.forward();
 
-        expect(scrollService.popStateFired).toBe(false); // popStateFired is always false
-        expect(scrollService.scrollPosition).toEqual([0, 0]); // scrollPosition always equals [0, 0]
+        expect(scrollService.poppedStateScrollPosition).toBe(null);
         expect(scrollService.needToFixScrollPosition()).toBe(false);
       }
 
     });
   });
 
-  describe('#scrollAfterRender', async() => {
+  describe('#scrollAfterRender', async () => {
 
     let scrollSpy: jasmine.Spy;
     let scrollToTopSpy: jasmine.Spy;

@@ -202,7 +202,7 @@ Specify size values in the following formats:
 
 * 12%: Percentage of size relative to baseline. (Not valid for baseline values.)
 
-When you configure a budget, the build system warns or reports and error when a given part of the app reaches or exceeds a boundary size that you set.
+When you configure a budget, the build system warns or reports an error when a given part of the app reaches or exceeds a boundary size that you set.
 
 Each budget entry is a JSON object with the following properties:
 
@@ -273,8 +273,8 @@ The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure c
 You may find it necessary to target specific browsers or exclude certain browser versions from your build.
 
 Internally, Autoprefixer relies on a library called [Browserslist](https://github.com/browserslist/browserslist) to figure out which browsers to support with prefixing. 
-Browserlist looks for configuration options in a `browserlist` property of the package configuration file, or in a configuration file named `.browserslistrc`. 
-Autoprefixer looks for the Browserlist configuration when it prefixes your CSS. 
+Browserlist looks for configuration options in a `browserslist` property of the package configuration file, or in a configuration file named `.browserslistrc`. 
+Autoprefixer looks for the `browserslist` configuration when it prefixes your CSS. 
 
 * You can tell Autoprefixer what browsers to target by adding a browserslist property to the package configuration file, `package.json`:
 ```
@@ -315,7 +315,7 @@ If you want to produce a progressive web app and are using [Lighthouse](https://
 You can use the [proxying support](https://webpack.js.org/configuration/dev-server/#devserver-proxy) in the `webpack` dev server to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
 For example, to divert all calls for `http://localhost:4200/api` to a server running on `http://localhost:3000/api`, take the following steps.
 
-1. Create a file `proxy.conf.json` in the projects `src/` folder, next to `package.json`.
+1. Create a file `proxy.conf.json` in the projects `src/` folder, in the same directory as `package.json`.
 
 1. Add the following content to the new proxy file:
     ```

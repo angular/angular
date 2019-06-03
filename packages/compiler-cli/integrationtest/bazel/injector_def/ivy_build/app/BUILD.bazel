@@ -1,7 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module")
-load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "app",
@@ -14,6 +13,6 @@ ng_module(
     tags = ["ivy-only"],
     deps = [
         "//packages/core",
-        "@rxjs",
+        "@npm//rxjs",
     ],
 )

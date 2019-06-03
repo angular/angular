@@ -1,8 +1,0 @@
-package(default_visibility = ["//visibility:public"])
-
-# Alias here so that @npm//@bazel/typescript is a valid Bazel target
-# which is reference in build_bazel_rules_typescript/BUILD.bazel
-alias(
-    name = "typescript",
-    actual = "@ngdeps//@bazel/typescript",
-)

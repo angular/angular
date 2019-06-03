@@ -4,6 +4,8 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
+    # Visible to //:test_web_all target
+    visibility = ["//:__pkg__"],
     deps = [
         "//packages/core",
         "//packages/core/testing",
@@ -11,8 +13,7 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "@rxjs",
-        "@rxjs//operators",
+        "@npm//rxjs",
     ],
 )
 

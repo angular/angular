@@ -7,17 +7,15 @@
  */
 
 import {AnimationBuilder, animate, state, style, transition, trigger} from '@angular/animations';
-import {PlatformLocation, isPlatformServer} from '@angular/common';
+import {DOCUMENT, PlatformLocation, isPlatformServer} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Injectable, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {async, inject} from '@angular/core/testing';
-import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
-import {MockBackend, MockConnection} from '@angular/http/testing';
-import {BrowserModule, DOCUMENT, Title, TransferState, makeStateKey} from '@angular/platform-browser';
+import {BrowserModule, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
-import {fixmeIvy, ivyEnabled} from '@angular/private/testing';
+import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -29,10 +27,6 @@ class MyServerApp {
   bootstrap: [MyServerApp],
   declarations: [MyServerApp],
   imports: [ServerModule],
-  providers: [
-    MockBackend,
-    {provide: XHRBackend, useExisting: MockBackend},
-  ]
 })
 class ExampleModule {
 }
@@ -54,6 +48,24 @@ function getMetaRenderHook(doc: any) {
     const metaElement = doc.createElement('meta');
     metaElement.setAttribute('name', 'description');
     doc.head.appendChild(metaElement);
+  };
+}
+
+function getAsyncTitleRenderHook(doc: any) {
+  return () => {
+    // Async set the title as part of the render hook.
+    return new Promise(resolve => {
+      setTimeout(() => {
+        doc.title = 'AsyncRenderHook';
+        resolve();
+      });
+    });
+  };
+}
+
+function asyncRejectRenderHook() {
+  return () => {
+    return new Promise((_resolve, reject) => { setTimeout(() => { reject('reject'); }); });
   };
 }
 
@@ -81,6 +93,39 @@ class RenderHookModule {
 class MultiRenderHookModule {
 }
 
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  providers: [
+    {
+      provide: BEFORE_APP_SERIALIZED,
+      useFactory: getAsyncTitleRenderHook,
+      multi: true,
+      deps: [DOCUMENT]
+    },
+  ]
+})
+class AsyncRenderHookModule {
+}
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  providers: [
+    {provide: BEFORE_APP_SERIALIZED, useFactory: getMetaRenderHook, multi: true, deps: [DOCUMENT]},
+    {
+      provide: BEFORE_APP_SERIALIZED,
+      useFactory: getAsyncTitleRenderHook,
+      multi: true,
+      deps: [DOCUMENT]
+    },
+    {provide: BEFORE_APP_SERIALIZED, useFactory: asyncRejectRenderHook, multi: true},
+  ]
+})
+class AsyncMultiRenderHookModule {
+}
+
 @Component({selector: 'app', template: `Works too!`})
 class MyServerApp2 {
 }
@@ -99,7 +144,7 @@ class TitleApp {
 class TitleAppModule {
 }
 
-@Component({selector: 'app', template: '{{text}}<h1 [innerText]="h1"></h1>'})
+@Component({selector: 'app', template: '{{text}}<h1 [textContent]="h1"></h1>'})
 class MyAsyncServerApp {
   text = '';
   h1 = '';
@@ -184,30 +229,6 @@ class ExampleStylesModule {
 @NgModule({
   bootstrap: [MyServerApp],
   declarations: [MyServerApp],
-  imports: [HttpModule, ServerModule],
-  providers: [
-    MockBackend,
-    {provide: XHRBackend, useExisting: MockBackend},
-  ]
-})
-export class HttpBeforeExampleModule {
-}
-
-@NgModule({
-  bootstrap: [MyServerApp],
-  declarations: [MyServerApp],
-  imports: [ServerModule, HttpModule],
-  providers: [
-    MockBackend,
-    {provide: XHRBackend, useExisting: MockBackend},
-  ]
-})
-export class HttpAfterExampleModule {
-}
-
-@NgModule({
-  bootstrap: [MyServerApp],
-  declarations: [MyServerApp],
   imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
 })
 export class HttpClientExampleModule {
@@ -274,6 +295,19 @@ class MyHostComponent {
   imports: [ServerModule, BrowserModule.withServerTransition({appId: 'false-attributes'})]
 })
 class FalseAttributesModule {
+}
+
+@Component({selector: 'app', template: '<div [innerText]="foo"></div>'})
+class InnerTextComponent {
+  foo = 'Some text';
+}
+
+@NgModule({
+  declarations: [InnerTextComponent],
+  bootstrap: [InnerTextComponent],
+  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'inner-text'})]
+})
+class InnerTextModule {
 }
 
 @Component({selector: 'app', template: '<input [name]="name">'})
@@ -482,6 +516,22 @@ class HiddenModule {
               expect(location.hash).toBe('#hash');
             });
       });
+      it('parses component pieces of a URL', () => {
+        platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://test.com:80/deep/path?query#hash'}
+        }])
+            .bootstrapModule(ExampleModule)
+            .then(appRef => {
+              const location: PlatformLocation = appRef.injector.get(PlatformLocation);
+              expect(location.hostname).toBe('test.com');
+              expect(location.protocol).toBe('http:');
+              expect(location.port).toBe('80');
+              expect(location.pathname).toBe('/deep/path');
+              expect(location.search).toBe('?query');
+              expect(location.hash).toBe('#hash');
+            });
+      });
       it('handles empty search and hash portions of the url', () => {
         platformDynamicServer([{
           provide: INITIAL_CONFIG,
@@ -528,7 +578,7 @@ class HiddenModule {
       let doc: string;
       let called: boolean;
       let expectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 innertext="fine">fine</h1></app></body></html>';
+          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 textcontent="fine">fine</h1></app></body></html>';
 
       beforeEach(() => {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
@@ -566,6 +616,15 @@ class HiddenModule {
              called = true;
            });
          }));
+
+      modifiedInIvy('Will not support binding to innerText in Ivy since domino does not')
+          .it('should support binding to innerText', async(() => {
+                renderModule(InnerTextModule, {document: doc}).then(output => {
+                  expect(output).toBe(
+                      '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER"><div innertext="Some text">Some text</div></app></body></html>');
+                  called = true;
+                });
+              }));
 
       it('using renderModuleFactory should work',
          async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
@@ -677,106 +736,26 @@ class HiddenModule {
              called = true;
            });
          }));
-    });
 
-    describe('http', () => {
-      it('can inject Http', async(() => {
-           const platform = platformDynamicServer(
-               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(ExampleModule).then(ref => {
-             expect(ref.injector.get(Http) instanceof Http).toBeTruthy();
+      it('should call async render hooks', async(() => {
+           renderModule(AsyncRenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><title>AsyncRenderHook</title></head><body>' +
+                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             called = true;
            });
          }));
 
-      it('can make Http requests', async(() => {
-           const platform = platformDynamicServer(
-               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(ExampleModule).then(ref => {
-             const mock = ref.injector.get(MockBackend);
-             const http = ref.injector.get(Http);
-             ref.injector.get<NgZone>(NgZone).run(() => {
-               NgZone.assertInAngularZone();
-               mock.connections.subscribe((mc: MockConnection) => {
-                 NgZone.assertInAngularZone();
-                 expect(mc.request.url).toBe('http://localhost/testing');
-                 mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
-               });
-               http.get('http://localhost/testing').subscribe(resp => {
-                 NgZone.assertInAngularZone();
-                 expect(resp.text()).toBe('success!');
-               });
-             });
-           });
-         }));
-
-      it('requests are macrotasks', async(() => {
-           const platform = platformDynamicServer(
-               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(ExampleModule).then(ref => {
-             const mock = ref.injector.get(MockBackend);
-             const http = ref.injector.get(Http);
-             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get<NgZone>(NgZone).run(() => {
-               NgZone.assertInAngularZone();
-               mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
-                 mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
-               });
-               http.get('http://localhost/testing').subscribe(resp => {
-                 expect(resp.text()).toBe('success!');
-               });
-             });
-           });
-         }));
-
-      it('works when HttpModule is included before ServerModule', async(() => {
-           const platform = platformDynamicServer(
-               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpBeforeExampleModule).then(ref => {
-             const mock = ref.injector.get(MockBackend);
-             const http = ref.injector.get(Http);
-             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get<NgZone>(NgZone).run(() => {
-               NgZone.assertInAngularZone();
-               mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
-                 mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
-               });
-               http.get('http://localhost/testing').subscribe(resp => {
-                 expect(resp.text()).toBe('success!');
-               });
-             });
-           });
-         }));
-
-      it('works when HttpModule is included after ServerModule', async(() => {
-           const platform = platformDynamicServer(
-               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpAfterExampleModule).then(ref => {
-             const mock = ref.injector.get(MockBackend);
-             const http = ref.injector.get(Http);
-             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get<NgZone>(NgZone).run(() => {
-               NgZone.assertInAngularZone();
-               mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
-                 mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
-               });
-               http.get('http://localhost/testing').subscribe(resp => {
-                 expect(resp.text()).toBe('success!');
-               });
-             });
-           });
-         }));
-
-      it('throws when given a relative URL', async(() => {
-           const platform = platformDynamicServer(
-               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(ExampleModule).then(ref => {
-             const http = ref.injector.get(Http);
-             expect(() => http.get('/testing'))
-                 .toThrowError(
-                     'URLs requested via Http on the server must be absolute. URL: /testing');
+      it('should call multiple async and sync render hooks', async(() => {
+           const consoleSpy = spyOn(console, 'warn');
+           renderModule(AsyncMultiRenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
+                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             expect(consoleSpy).toHaveBeenCalled();
+             called = true;
            });
          }));
     });

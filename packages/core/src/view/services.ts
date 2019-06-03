@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DebugElement__PRE_R3__, DebugNode__PRE_R3__, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
+import {DebugElement__PRE_R3__, DebugEventListener, DebugNode__PRE_R3__, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
 import {InjectableType} from '../di/injectable';
-import {InjectableDef, getInjectableDef} from '../di/interface/defs';
+import {getInjectableDef, ɵɵInjectableDef} from '../di/interface/defs';
 import {ErrorHandler} from '../error_handler';
 import {Type} from '../interface/type';
 import {ComponentFactory} from '../linker/component_factory';
@@ -170,7 +170,7 @@ const viewDefOverrides = new Map<any, ViewDefinition>();
 
 function debugOverrideProvider(override: ProviderOverride) {
   providerOverrides.set(override.token, override);
-  let injectableDef: InjectableDef<any>|null;
+  let injectableDef: ɵɵInjectableDef<any>|null;
   if (typeof override.token === 'function' && (injectableDef = getInjectableDef(override.token)) &&
       typeof injectableDef.providedIn === 'function') {
     providerOverridesWithScope.set(override.token as InjectableType<any>, override);
@@ -827,7 +827,7 @@ export class DebugRenderer2 implements Renderer2 {
     if (typeof target !== 'string') {
       const debugEl = getDebugNode(target);
       if (debugEl) {
-        debugEl.listeners.push(new EventListener(eventName, callback));
+        debugEl.listeners.push(new DebugEventListener(eventName, callback));
       }
     }
 

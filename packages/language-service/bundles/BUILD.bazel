@@ -4,14 +4,15 @@ ls_rollup_bundle(
     name = "language-service",
     entry_point = "packages/language-service/index.js",
     globals = {
-        "typescript": "ts",
-        "path": "path",
         "fs": "fs",
+        "path": "path",
+        "typescript": "ts",
     },
     license_banner = "banner.js.txt",
     visibility = ["//packages/language-service:__pkg__"],
     deps = [
         "//packages/language-service",
-        "@ngdeps//tslib",
+        "@npm//rxjs",
+        "@npm//tslib",
     ],
 )

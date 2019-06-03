@@ -1,30 +1,30 @@
 [
   {
-    "startDate": "2018-02-14",
-    "endDate": "2018-04-18",
-    "message": "Join us for ng-conf<br/>Apr 18th-20th, 2018",
+    "startDate": "2019-04-02",
+    "endDate": "2019-04-20",
+    "message": "Join us for ng-conf<br/>May 1st-3rd, 2019",
     "imageUrl": "generated/images/marketing/home/ng-conf.png",
-    "linkUrl": "http://ng-conf.org/"
+    "linkUrl": "http://ng-conf.org/?utm_source=angular.io&utm_medium=referral"
   },
   {
-    "startDate": "2018-04-18",
-    "endDate": "2018-04-22",
-    "message": "Watch ng-conf live stream <br/>Apr 18th-20th, 2018",
+    "startDate": "2019-05-01",
+    "endDate": "2019-05-03",
+    "message": "Watch ng-conf live stream <br/>May 1st-3rd, 2019",
     "imageUrl": "generated/images/marketing/home/ng-conf.png",
-    "linkUrl": "https://www.ng-conf.org/livestream/"
+    "linkUrl": "https://www.ng-conf.org/livestream/?utm_source=angular.io&utm_medium=referral"
   },
   {
-    "startDate": "2018-06-01",
-    "endDate": "2018-08-15",
-    "message": "Join us for Angular Mix<br/>October 10th-12th, 2018",
+    "startDate": "2019-05-03",
+    "endDate": "2019-06-01",
+    "message": "Join us for AngularMix<br/>June 11th-13th, 2019",
     "imageUrl": "generated/images/marketing/home/angular-mix.png",
-    "linkUrl": "https://angularmix.com/"
+    "linkUrl": "https://bit.ly/AngularMix_Reg"
   },
   {
-    "startDate": "2018-08-15",
-    "endDate": "2018-11-06",
-    "message": "Join us for Angular Connect<br/>November 6th-7th, 2018",
+    "startDate": "2019-06-02",
+    "endDate": "2019-09-18",
+    "message": "Join us for Angular Connect<br/>September 19th-20th, 2019",
     "imageUrl": "generated/images/marketing/home/angular-connect.png",
-    "linkUrl": "https://angularconnect.com/"
+    "linkUrl": "https://www.angularconnect.com/?utm_source=angular.io&utm_medium=referral"
   }
 ]

@@ -7,10 +7,16 @@
  */
 
 import '@angular/core/test/bundling/util/src/reflect_metadata';
+/**
+ * TODO(ocombe): replace this with the real runtime i18n service configuration
+ * For now we define inline translations that are added with the function `ɵi18nConfigureLocalize`,
+ * but this function will go away once we have finished designing and implementing the new runtime
+ * service. At this point we should revisit this code and update it to use that new service.
+ * See FW-114.
+ */
+import './translations';
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
-// TODO(ocombe): replace this with the real runtime i18n service
-import {localize} from './translations';
+import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent, ɵɵi18nLocalize as localize} from '@angular/core';
 
 class Todo {
   editing: boolean;

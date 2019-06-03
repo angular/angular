@@ -79,9 +79,9 @@ export class CodeExampleComponent implements AfterViewInit {
 
   @HostBinding('class.avoidFile') isAvoid = false;
 
-  @ViewChild('content') content: ElementRef;
+  @ViewChild('content', { static: true }) content: ElementRef;
 
-  @ViewChild(CodeComponent) aioCode: CodeComponent;
+  @ViewChild(CodeComponent, { static: true }) aioCode: CodeComponent;
 
   ngAfterViewInit() {
     this.aioCode.code = this.content.nativeElement.innerHTML;

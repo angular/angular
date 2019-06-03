@@ -1,0 +1,28 @@
+version: '1.0'
+
+steps:
+  BuildImage:
+    title: Build Docker image
+    type: build
+    image_name: node-bazel-windows
+    working_directory: ./.codefresh
+    no_cf_cache: true
+    build_arguments:
+      - node_version=10.13.0
+      - yarn_version=1.13.0
+    dockerfile: ./Dockerfile.win-1809
+
+  RunTests:
+    title: Run Bazel tests
+    image: ${{BuildImage}}
+    commands:
+    # Install dependencies
+    - yarn install --frozen-lockfile --non-interactive --network-timeout 100000 --no-progress
+    # Add Bazel CI config
+    - copy .codefresh\bazel.rc %ProgramData%\bazel.bazelrc
+    # Run tests
+    # At the moment 'browser:chromium-local' are broken in CI while locally they work
+    # VE
+    - yarn bazel test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-browser:chromium-local //...
+    # Ivy
+    - yarn bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local //...

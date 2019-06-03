@@ -477,8 +477,9 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
 
   visitMethodCall(ast: MethodCall, context: any): AST {
     const receiver = ast.receiver.visit(this);
-    if (receiver !== ast.receiver) {
-      return new MethodCall(ast.span, receiver, ast.name, this.visitAll(ast.args));
+    const args = this.visitAll(ast.args);
+    if (receiver !== ast.receiver || args !== ast.args) {
+      return new MethodCall(ast.span, receiver, ast.name, args);
     }
     return ast;
   }
@@ -546,7 +547,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const condition = ast.condition.visit(this);
     const trueExp = ast.trueExp.visit(this);
     const falseExp = ast.falseExp.visit(this);
-    if (condition !== ast.condition || trueExp !== ast.trueExp || falseExp !== falseExp) {
+    if (condition !== ast.condition || trueExp !== ast.trueExp || falseExp !== ast.falseExp) {
       return new Conditional(ast.span, condition, trueExp, falseExp);
     }
     return ast;
@@ -698,7 +699,8 @@ export class ParsedEvent {
   // Animation events have a phase
   constructor(
       public name: string, public targetOrPhase: string, public type: ParsedEventType,
-      public handler: AST, public sourceSpan: ParseSourceSpan) {}
+      public handler: AST, public sourceSpan: ParseSourceSpan,
+      public handlerSpan: ParseSourceSpan) {}
 }
 
 export class ParsedVariable {

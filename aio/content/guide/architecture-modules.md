@@ -1,6 +1,6 @@
 # Introduction to modules
 
-Angular apps are modular and Angular has its own modularity system called *NgModules*. 
+Angular apps are modular and Angular has its own modularity system called *NgModules*.
 NgModules are containers for a cohesive block of code dedicated to an application domain, a workflow, or a closely related set of capabilities. They can contain components, service providers, and other code files whose scope is defined by the containing NgModule. They can import functionality that is exported from other NgModules, and export selected functionality for use by other NgModules.
 
 Every Angular app has at least one NgModule class, [the *root module*](guide/bootstrapping), which is conventionally named `AppModule` and resides in a file named `app.module.ts`. You launch your app by *bootstrapping* the root NgModule.
@@ -27,7 +27,7 @@ Here's a simple root NgModule definition.
 
 <div class="alert is-helpful">
 
-   The `export` property of `AppComponent` is included here for illustration; it isn't actually necessary in this example. A root NgModule has no reason to *export* anything because other modules don't need to *import* the root NgModule.
+  `AppComponent` is included in the `exports` list here for illustration; it isn't actually necessary in this example. A root NgModule has no reason to *export* anything because other modules don't need to *import* the root NgModule.
 
 </div>
 
@@ -89,7 +89,7 @@ For example, import Angular's `Component` decorator from the `@angular/core` lib
 
 <code-example path="architecture/src/app/app.component.ts" region="import" linenums="false"></code-example>
 
-You also import NgModules from Angular *libraries* using JavaScript import statements. 
+You also import NgModules from Angular *libraries* using JavaScript import statements.
 For example, the following code imports the `BrowserModule` NgModule from the `platform-browser` library.
 
 <code-example path="architecture/src/app/mini-app.ts" region="import-browser-module" linenums="false"></code-example>

@@ -8,11 +8,11 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteReference, NodeReference, Reference} from '../../imports';
+import {Reference} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 
 import {NgModuleRawRouteData} from './analyzer';
-import {RouterEntryPoint, RouterEntryPointManager} from './route';
+import {RouterEntryPoint, RouterEntryPointManager, entryPointKeyFor} from './route';
 
 const ROUTES_MARKER = '__ngRoutesMarker__';
 
@@ -20,6 +20,35 @@ export interface LazyRouteEntry {
   loadChildren: string;
   from: RouterEntryPoint;
   resolvedTo: RouterEntryPoint;
+}
+
+export function scanForCandidateTransitiveModules(
+    expr: ts.Expression | null, evaluator: PartialEvaluator): string[] {
+  if (expr === null) {
+    return [];
+  }
+
+  const candidateModuleKeys: string[] = [];
+  const entries = evaluator.evaluate(expr);
+
+  function recursivelyAddModules(entry: ResolvedValue) {
+    if (Array.isArray(entry)) {
+      for (const e of entry) {
+        recursivelyAddModules(e);
+      }
+    } else if (entry instanceof Map) {
+      if (entry.has('ngModule')) {
+        recursivelyAddModules(entry.get('ngModule') !);
+      }
+    } else if ((entry instanceof Reference) && hasIdentifier(entry.node)) {
+      const filePath = entry.node.getSourceFile().fileName;
+      const moduleName = entry.node.name.text;
+      candidateModuleKeys.push(entryPointKeyFor(filePath, moduleName));
+    }
+  }
+
+  recursivelyAddModules(entries);
+  return candidateModuleKeys;
 }
 
 export function scanForRouteEntryPoints(
@@ -111,7 +140,7 @@ function scanForLazyRoutes(routes: ResolvedValue[]): string[] {
       } else if (route.has('children')) {
         const children = route.get('children');
         if (Array.isArray(children)) {
-          recursivelyScanRoutes(routes);
+          recursivelyScanRoutes(children);
         }
       }
     }
@@ -134,7 +163,9 @@ const routerModuleFFR: ForeignFunctionResolver =
     null {
       if (!isMethodNodeReference(ref) || !ts.isClassDeclaration(ref.node.parent)) {
         return null;
-      } else if (ref.moduleName !== '@angular/router') {
+      } else if (
+          ref.bestGuessOwningModule === null ||
+          ref.bestGuessOwningModule.specifier !== '@angular/router') {
         return null;
       } else if (
           ref.node.parent.name === undefined || ref.node.parent.name.text !== 'RouterModule') {
@@ -152,13 +183,18 @@ const routerModuleFFR: ForeignFunctionResolver =
       ]);
     };
 
+function hasIdentifier(node: ts.Node): node is ts.Node&{name: ts.Identifier} {
+  const node_ = node as ts.NamedDeclaration;
+  return (node_.name !== undefined) && ts.isIdentifier(node_.name);
+}
+
 function isMethodNodeReference(
     ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>):
-    ref is NodeReference<ts.MethodDeclaration> {
-  return ref instanceof NodeReference && ts.isMethodDeclaration(ref.node);
+    ref is Reference<ts.MethodDeclaration> {
+  return ts.isMethodDeclaration(ref.node);
 }
 
 function isRouteToken(ref: ResolvedValue): boolean {
-  return ref instanceof AbsoluteReference && ref.moduleName === '@angular/router' &&
-      ref.symbolName === 'ROUTES';
+  return ref instanceof Reference && ref.bestGuessOwningModule !== null &&
+      ref.bestGuessOwningModule.specifier === '@angular/router' && ref.debugName === 'ROUTES';
 }

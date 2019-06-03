@@ -230,7 +230,7 @@ In this example, `address group` combines the current `firstName` and `lastName`
 
 After you update the model in the component class, update the template to connect the form group instance and its input elements.
 
-Add the `address` form group containing the `firstName` and `lastName` fields to the `ProfileEditor` template.
+Add the `address` form group containing the `street`, `city`, `state`, and `zip` fields to the `ProfileEditor` template.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroupname" linenums="false" header="src/app/profile-editor/profile-editor.component.html (template nested form group)">
 

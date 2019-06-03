@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {MetadataCache} from '../transformers/metadata_cache';
 
 import {MetadataCollector} from './collector';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, METADATA_VERSION, MemberMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMethodMetadata} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, METADATA_VERSION, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicCallExpression, isMetadataSymbolicExpression, isMethodMetadata} from './schema';
 
 
 
@@ -180,6 +180,7 @@ export class MetadataBundler {
 
     // Export all the re-exports from this module
     if (module && module.exports) {
+      let unnamedModuleExportsIdx = 0;
       for (const exportDeclaration of module.exports) {
         const exportFrom = resolveModule(exportDeclaration.from, moduleName);
         // Record all the exports from the module even if we don't use it directly.
@@ -202,7 +203,12 @@ export class MetadataBundler {
           // Re-export all the symbols from the module
           const exportedSymbols = this.exportAll(exportFrom);
           for (const exportedSymbol of exportedSymbols) {
-            const name = exportedSymbol.name;
+            // In case the exported symbol does not have a name, we need to give it an unique
+            // name for the current module. This is necessary because there can be multiple
+            // unnamed re-exports in a given module.
+            const name = exportedSymbol.name === '*' ?
+                `unnamed_reexport_${unnamedModuleExportsIdx++}` :
+                exportedSymbol.name;
             exportSymbol(exportedSymbol, name);
           }
         }
@@ -412,7 +418,17 @@ export class MetadataBundler {
     let result: StaticsMetadata = {};
     for (const key in statics) {
       const value = statics[key];
-      result[key] = isFunctionMetadata(value) ? this.convertFunction(moduleName, value) : value;
+
+      if (isFunctionMetadata(value)) {
+        result[key] = this.convertFunction(moduleName, value);
+      } else if (isMetadataSymbolicCallExpression(value)) {
+        // Class members can also contain static members that call a function with module
+        // references. e.g. "static ngInjectableDef = ɵɵdefineInjectable(..)". We also need to
+        // convert these module references because otherwise these resolve to non-existent files.
+        result[key] = this.convertValue(moduleName, value);
+      } else {
+        result[key] = value;
+      }
     }
     return result;
   }

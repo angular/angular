@@ -170,6 +170,7 @@ export declare class FormArray extends AbstractControl {
     readonly length: number;
     constructor(controls: AbstractControl[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     at(index: number): AbstractControl;
+    clear(): void;
     getRawValue(): any[];
     insert(index: number, control: AbstractControl): void;
     patchValue(value: any[], options?: {

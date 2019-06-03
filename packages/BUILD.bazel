@@ -2,19 +2,25 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "tsconfig-build.json",
-    "tsconfig-test.json",
     "tsconfig.json",
 ])
 
+load("@npm_bazel_typescript//:index.bzl", "ts_config")
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
     name = "types",
     srcs = glob(["*.ts"]),
     deps = [
-        "@ngdeps//@types/hammerjs",
-        "@ngdeps//zone.js",
+        "@npm//@types/hammerjs",
+        "@npm//zone.js",
     ],
+)
+
+ts_config(
+    name = "tsconfig-test",
+    src = "tsconfig-test.json",
+    deps = [":tsconfig-build.json"],
 )
 
 exports_files([

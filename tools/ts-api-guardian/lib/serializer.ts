@@ -17,9 +17,10 @@ const baseTsOptions: ts.CompilerOptions = {
 
 export interface JsDocTagOptions {
   /**
-   * An array of names of jsdoc tags that must exist.
+   * An array of names of jsdoc tags, one of which must exist. If no tags are provided, there are no
+   * required tags.
    */
-  required?: string[];
+  requireAtLeastOne?: string[];
 
   /**
    * An array of names of jsdoc tags that must not exist.
@@ -38,14 +39,14 @@ export interface SerializationOptions {
    */
   stripExportPattern?: RegExp|RegExp[];
   /**
-   * Whitelists these identifiers as modules in the output. For example,
+   * Allows these identifiers as modules in the output. For example,
    * ```
    * import * as angular from './angularjs';
    *
    * export class Foo extends angular.Bar {}
    * ```
-   * will produce `export class Foo extends angular.Bar {}` and requires
-   * whitelisting angular.
+   * will produce `export class Foo extends angular.Bar {}` and requires explicitly allowing
+   * `angular` as a module identifier.
    */
   allowModuleIdentifiers?: string[];
 
@@ -242,7 +243,7 @@ class ResolvedDeclarationEmitter {
           message: createErrorMessage(
               firstQualifier,
               `Module identifier "${firstQualifier.text}" is not allowed. Remove it ` +
-                  `from source or whitelist it via --allowModuleIdentifiers.`)
+                  `from source or allow it via --allowModuleIdentifiers.`)
         });
       }
     }
@@ -297,7 +298,7 @@ class ResolvedDeclarationEmitter {
         const jsdocComment = this.processJsDocTags(node, tagOptions);
         if (jsdocComment) {
           // Add the annotation after the leading whitespace
-          output = output.replace(/^(\n\s*)/, `$1${jsdocComment} `);
+          output = output.replace(/^(\r?\n\s*)/, `$1${jsdocComment} `);
         }
       }
 
@@ -316,15 +317,16 @@ class ResolvedDeclarationEmitter {
 
   private processJsDocTags(node: ts.Node, tagOptions: JsDocTagOptions) {
     const jsDocTags = getJsDocTags(node);
-    const missingRequiredTags =
-        tagOptions.required.filter(requiredTag => jsDocTags.every(tag => tag !== requiredTag));
-    if (missingRequiredTags.length) {
+    const requireAtLeastOne = tagOptions.requireAtLeastOne;
+    const isMissingAnyRequiredTag = requireAtLeastOne != null && requireAtLeastOne.length > 0 &&
+        jsDocTags.every(tag => requireAtLeastOne.indexOf(tag) === -1);
+    if (isMissingAnyRequiredTag) {
       this.diagnostics.push({
         type: 'error',
         message: createErrorMessage(
-            node, 'Required jsdoc tags - ' +
-                missingRequiredTags.map(tag => `"@${tag}"`).join(', ') +
-                ` - are missing on ${getName(node)}.`)
+            node, 'Required jsdoc tags - One of the tags: ' +
+                requireAtLeastOne.map(tag => `"@${tag}"`).join(', ') +
+                ` - must exist on ${getName(node)}.`)
       });
     }
     const bannedTagsFound =
@@ -436,7 +438,7 @@ function hasModifier(node: ts.Node, modifierKind: ts.SyntaxKind): boolean {
 }
 
 function applyDefaultTagOptions(tagOptions: JsDocTagOptions | undefined): JsDocTagOptions {
-  return {required: [], banned: [], toCopy: [], ...tagOptions};
+  return {requireAtLeastOne: [], banned: [], toCopy: [], ...tagOptions};
 }
 
 function getName(node: any) {

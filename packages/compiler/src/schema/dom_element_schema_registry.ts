@@ -328,9 +328,9 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
    * Tag and property name are statically known and cannot change at runtime, i.e. it is not
    * possible to bind a value into a changing attribute or tag name.
    *
-   * The filtering is white list based. All attributes in the schema above are assumed to have the
-   * 'NONE' security context, i.e. that they are safe inert string values. Only specific well known
-   * attack vectors are assigned their appropriate context.
+   * The filtering is based on a list of allowed tags|attributes. All attributes in the schema
+   * above are assumed to have the 'NONE' security context, i.e. that they are safe inert
+   * string values. Only specific well known attack vectors are assigned their appropriate context.
    */
   securityContext(tagName: string, propName: string, isAttribute: boolean): SecurityContext {
     if (isAttribute) {

@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "service-worker",
@@ -13,8 +13,7 @@ ng_module(
     deps = [
         "//packages/common",
         "//packages/core",
-        "@rxjs",
-        "@rxjs//operators",
+        "@npm//rxjs",
     ],
 )
 
@@ -27,7 +26,7 @@ genrule(
 
 genrule(
     name = "ngsw_worker_renamed",
-    srcs = ["//packages/service-worker/worker:ngsw_worker.es6.js"],
+    srcs = ["//packages/service-worker/worker:ngsw_worker.es2015.js"],
     outs = ["ngsw-worker.js"],
     # Remove sourcemap since this file will be served in production site
     # See https://github.com/angular/angular/issues/23596
@@ -38,13 +37,14 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
-        "safety-worker.js",
         "//packages/service-worker/config:package.json",
     ],
     data = [
+        "safety-worker.js",
         ":ngsw_config_binary",
         ":ngsw_worker_renamed",
         "//packages/service-worker/config",
+        "//packages/service-worker/config:schema.json",
     ],
     entry_point = "packages/service-worker/index.js",
     tags = [

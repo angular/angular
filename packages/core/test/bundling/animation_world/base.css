@@ -137,5 +137,10 @@ hr {
 
 	.learn-bar > .learn {
 		left: 8px;
-	}
+  }
+}
+
+.border {
+  outline:2px solid maroon;
+  display:block;
 }

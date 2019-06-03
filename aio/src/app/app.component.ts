@@ -85,13 +85,13 @@ export class AppComponent implements OnInit {
   searchResults: Observable<SearchResults>;
   @ViewChildren('searchBox, searchResultsView', { read: ElementRef })
   searchElements: QueryList<ElementRef>;
-  @ViewChild(SearchBoxComponent)
+  @ViewChild(SearchBoxComponent, { static: true })
   searchBox: SearchBoxComponent;
 
-  @ViewChild(MatSidenav)
+  @ViewChild(MatSidenav, { static: true })
   sidenav: MatSidenav;
 
-  @ViewChild(NotificationComponent)
+  @ViewChild(NotificationComponent, { static: true })
   notification: NotificationComponent;
   notificationAnimating = false;
 
@@ -110,7 +110,7 @@ export class AppComponent implements OnInit {
     // Do not initialize the search on browsers that lack web worker support
     if ('Worker' in window) {
       // Delay initialization by up to 2 seconds
-      this.searchService.initWorker('app/search/search-worker.js', 2000);
+      this.searchService.initWorker(2000);
     }
 
     this.onResize(window.innerWidth);
@@ -284,10 +284,10 @@ export class AppComponent implements OnInit {
 
   notificationDismissed() {
     this.notificationAnimating = true;
-      // this should be kept in sync with the animation durations in:
-      // - aio/src/styles/2-modules/_notification.scss
-      // - aio/src/app/layout/notification/notification.component.ts
-      setTimeout(() => this.notificationAnimating = false, 250);
+    // this should be kept in sync with the animation durations in:
+    // - aio/src/styles/2-modules/_notification.scss
+    // - aio/src/app/layout/notification/notification.component.ts
+    setTimeout(() => this.notificationAnimating = false, 250);
     this.updateHostClasses();
   }
 
@@ -339,9 +339,6 @@ export class AppComponent implements OnInit {
   // Dynamically change height of table of contents container
   @HostListener('window:scroll')
   onScroll() {
-
-    this.scrollService.updateScrollPositionInHistory();
-
     if (!this.tocMaxHeightOffset) {
       // Must wait until `mat-toolbar` is measurable.
       const el = this.hostElement.nativeElement as Element;

@@ -72,7 +72,7 @@ export class AppVersion implements UpdateSource {
     this.assetGroups = (manifest.assetGroups || []).map(config => {
       // Every asset group has a cache that's prefixed by the manifest hash and the name of the
       // group.
-      const prefix = `ngsw:${this.manifestHash}:assets`;
+      const prefix = `${adapter.cacheNamePrefix}:${this.manifestHash}:assets`;
       // Check the caching mode, which determines when resources will be fetched/updated.
       switch (config.installMode) {
         case 'prefetch':
@@ -89,7 +89,7 @@ export class AppVersion implements UpdateSource {
                           .map(
                               config => new DataGroup(
                                   this.scope, this.adapter, config, this.database,
-                                  `ngsw:${config.version}:data`));
+                                  `${adapter.cacheNamePrefix}:${config.version}:data`));
 
     // This keeps backwards compatibility with app versions without navigation urls.
     // Fix: https://github.com/angular/angular/issues/27209

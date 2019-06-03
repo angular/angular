@@ -10,7 +10,7 @@ import {assertEqual} from '../util/assert';
 
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
-import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, TView} from './interfaces/view';
+import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
 
 
 
@@ -19,34 +19,50 @@ import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, TView} from './inter
  *
  * Must be run *only* on the first template pass.
  *
- * The TView's hooks arrays are arranged in alternating pairs of directiveIndex and hookFunction,
- * i.e.: `[directiveIndexA, hookFunctionA, directiveIndexB, hookFunctionB, ...]`. For `OnChanges`
- * hooks, the `directiveIndex` will be *negative*, signaling {@link callHooks} that the
- * `hookFunction` must be passed the the appropriate {@link SimpleChanges} object.
+ * Sets up the pre-order hooks on the provided `tView`,
+ * see {@link HookData} for details about the data structure.
  *
  * @param directiveIndex The index of the directive in LView
  * @param directiveDef The definition containing the hooks to setup in tView
  * @param tView The current TView
+ * @param nodeIndex The index of the node to which the directive is attached
+ * @param initialPreOrderHooksLength the number of pre-order hooks already registered before the
+ * current process, used to know if the node index has to be added to the array. If it is -1,
+ * the node index is never added.
+ * @param initialPreOrderCheckHooksLength same as previous for pre-order check hooks
  */
 export function registerPreOrderHooks(
-    directiveIndex: number, directiveDef: DirectiveDef<any>, tView: TView): void {
+    directiveIndex: number, directiveDef: DirectiveDef<any>, tView: TView, nodeIndex: number,
+    initialPreOrderHooksLength: number, initialPreOrderCheckHooksLength: number): void {
   ngDevMode &&
       assertEqual(tView.firstTemplatePass, true, 'Should only be called on first template pass');
 
   const {onChanges, onInit, doCheck} = directiveDef;
+  if (initialPreOrderHooksLength >= 0 &&
+      (!tView.preOrderHooks || initialPreOrderHooksLength === tView.preOrderHooks.length) &&
+      (onChanges || onInit || doCheck)) {
+    (tView.preOrderHooks || (tView.preOrderHooks = [])).push(nodeIndex);
+  }
+
+  if (initialPreOrderCheckHooksLength >= 0 &&
+      (!tView.preOrderCheckHooks ||
+       initialPreOrderCheckHooksLength === tView.preOrderCheckHooks.length) &&
+      (onChanges || doCheck)) {
+    (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [])).push(nodeIndex);
+  }
 
   if (onChanges) {
-    (tView.initHooks || (tView.initHooks = [])).push(directiveIndex, onChanges);
-    (tView.checkHooks || (tView.checkHooks = [])).push(directiveIndex, onChanges);
+    (tView.preOrderHooks || (tView.preOrderHooks = [])).push(directiveIndex, onChanges);
+    (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [])).push(directiveIndex, onChanges);
   }
 
   if (onInit) {
-    (tView.initHooks || (tView.initHooks = [])).push(-directiveIndex, onInit);
+    (tView.preOrderHooks || (tView.preOrderHooks = [])).push(-directiveIndex, onInit);
   }
 
   if (doCheck) {
-    (tView.initHooks || (tView.initHooks = [])).push(directiveIndex, doCheck);
-    (tView.checkHooks || (tView.checkHooks = [])).push(directiveIndex, doCheck);
+    (tView.preOrderHooks || (tView.preOrderHooks = [])).push(directiveIndex, doCheck);
+    (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [])).push(directiveIndex, doCheck);
   }
 }
 
@@ -59,9 +75,8 @@ export function registerPreOrderHooks(
  * preserve hook execution order. Content, view, and destroy hooks for projected
  * components and directives must be called *before* their hosts.
  *
- * Sets up the content, view, and destroy hooks on the provided `tView` such that
- * they're added in alternating pairs of directiveIndex and hookFunction,
- * i.e.: `[directiveIndexA, hookFunctionA, directiveIndexB, hookFunctionB, ...]`
+ * Sets up the content, view, and destroy hooks on the provided `tView`,
+ * see {@link HookData} for details about the data structure.
  *
  * NOTE: This does not set up `onChanges`, `onInit` or `doCheck`, those are set up
  * separately at `elementStart`.
@@ -104,24 +119,48 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
 }
 
 /**
+ * Executing hooks requires complex logic as we need to deal with 2 constraints.
+ *
+ * 1. Init hooks (ngOnInit, ngAfterContentInit, ngAfterViewInit) must all be executed once and only
+ * once, across many change detection cycles. This must be true even if some hooks throw, or if
+ * some recursively trigger a change detection cycle.
+ * To solve that, it is required to track the state of the execution of these init hooks.
+ * This is done by storing and maintaining flags in the view: the {@link InitPhaseState},
+ * and the index within that phase. They can be seen as a cursor in the following structure:
+ * [[onInit1, onInit2], [afterContentInit1], [afterViewInit1, afterViewInit2, afterViewInit3]]
+ * They are are stored as flags in LView[FLAGS].
+ *
+ * 2. Pre-order hooks can be executed in batches, because of the select instruction.
+ * To be able to pause and resume their execution, we also need some state about the hook's array
+ * that is being processed:
+ * - the index of the next hook to be executed
+ * - the number of init hooks already found in the processed part of the  array
+ * They are are stored as flags in LView[PREORDER_HOOK_FLAGS].
+ */
+
+/**
  * Executes necessary hooks at the start of executing a template.
  *
  * Executes hooks that are to be run during the initialization of a directive such
  * as `onChanges`, `onInit`, and `doCheck`.
  *
- * Has the side effect of updating the RunInit flag in `lView` to be `0`, so that
- * this isn't run a second time.
- *
  * @param lView The current view
  * @param tView Static data for the view containing the hooks to be executed
  * @param checkNoChangesMode Whether or not we're in checkNoChanges mode.
+ * @param @param currentNodeIndex 2 cases depending the the value:
+ * - undefined: execute hooks only from the saved index until the end of the array (pre-order case,
+ * when flushing the remaining hooks)
+ * - number: execute hooks only from the saved index until that node index exclusive (pre-order
+ * case, when executing select(number))
  */
-export function executeInitHooks(
-    currentView: LView, tView: TView, checkNoChangesMode: boolean): void {
+export function executePreOrderHooks(
+    currentView: LView, tView: TView, checkNoChangesMode: boolean,
+    currentNodeIndex: number | undefined): void {
   if (!checkNoChangesMode) {
     executeHooks(
-        currentView, tView.initHooks, tView.checkHooks, checkNoChangesMode,
-        InitPhaseState.OnInitHooksToBeRun);
+        currentView, tView.preOrderHooks, tView.preOrderCheckHooks, checkNoChangesMode,
+        InitPhaseState.OnInitHooksToBeRun,
+        currentNodeIndex !== undefined ? currentNodeIndex : null);
   }
 }
 
@@ -129,24 +168,33 @@ export function executeInitHooks(
  * Executes hooks against the given `LView` based off of whether or not
  * This is the first pass.
  *
- * @param lView The view instance data to run the hooks against
+ * @param currentView The view instance data to run the hooks against
  * @param firstPassHooks An array of hooks to run if we're in the first view pass
  * @param checkHooks An Array of hooks to run if we're not in the first view pass.
  * @param checkNoChangesMode Whether or not we're in no changes mode.
+ * @param initPhaseState the current state of the init phase
+ * @param currentNodeIndex 3 cases depending the the value:
+ * - undefined: all hooks from the array should be executed (post-order case)
+ * - null: execute hooks only from the saved index until the end of the array (pre-order case, when
+ * flushing the remaining hooks)
+ * - number: execute hooks only from the saved index until that node index exclusive (pre-order
+ * case, when executing select(number))
  */
 export function executeHooks(
     currentView: LView, firstPassHooks: HookData | null, checkHooks: HookData | null,
-    checkNoChangesMode: boolean, initPhase: number): void {
+    checkNoChangesMode: boolean, initPhaseState: InitPhaseState,
+    currentNodeIndex: number | null | undefined): void {
   if (checkNoChangesMode) return;
-  const hooksToCall = (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase ?
+  const hooksToCall = (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhaseState ?
       firstPassHooks :
       checkHooks;
   if (hooksToCall) {
-    callHooks(currentView, hooksToCall, initPhase);
+    callHooks(currentView, hooksToCall, initPhaseState, currentNodeIndex);
   }
   // The init phase state must be always checked here as it may have been recursively updated
-  if ((currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase &&
-      initPhase !== InitPhaseState.InitPhaseCompleted) {
+  if (currentNodeIndex == null &&
+      (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhaseState &&
+      initPhaseState !== InitPhaseState.InitPhaseCompleted) {
     currentView[FLAGS] &= LViewFlags.IndexWithinInitPhaseReset;
     currentView[FLAGS] += LViewFlags.InitPhaseStateIncrementer;
   }
@@ -158,25 +206,68 @@ export function executeHooks(
  *
  * @param currentView The current view
  * @param arr The array in which the hooks are found
+ * @param initPhaseState the current state of the init phase
+ * @param currentNodeIndex 3 cases depending the the value:
+ * - undefined: all hooks from the array should be executed (post-order case)
+ * - null: execute hooks only from the saved index until the end of the array (pre-order case, when
+ * flushing the remaining hooks)
+ * - number: execute hooks only from the saved index until that node index exclusive (pre-order
+ * case, when executing select(number))
  */
-export function callHooks(currentView: LView, arr: HookData, initPhase?: number): void {
-  let initHooksCount = 0;
-  for (let i = 0; i < arr.length; i += 2) {
-    const isInitHook = arr[i] < 0;
-    const directiveIndex = isInitHook ? -arr[i] : arr[i] as number;
-    const directive = currentView[directiveIndex];
+function callHooks(
+    currentView: LView, arr: HookData, initPhase: InitPhaseState,
+    currentNodeIndex: number | null | undefined): void {
+  const startIndex = currentNodeIndex !== undefined ?
+      (currentView[PREORDER_HOOK_FLAGS] & PreOrderHookFlags.IndexOfTheNextPreOrderHookMaskMask) :
+      0;
+  const nodeIndexLimit = currentNodeIndex != null ? currentNodeIndex : -1;
+  let lastNodeIndexFound = 0;
+  for (let i = startIndex; i < arr.length; i++) {
     const hook = arr[i + 1] as() => void;
-    if (isInitHook) {
-      initHooksCount++;
-      const indexWithintInitPhase = currentView[FLAGS] >> LViewFlags.IndexWithinInitPhaseShift;
-      // The init phase state must be always checked here as it may have been recursively updated
-      if (indexWithintInitPhase < initHooksCount &&
-          (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
-        currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
-        hook.call(directive);
+    if (typeof hook === 'number') {
+      lastNodeIndexFound = arr[i] as number;
+      if (currentNodeIndex != null && lastNodeIndexFound >= currentNodeIndex) {
+        break;
       }
     } else {
+      const isInitHook = arr[i] < 0;
+      if (isInitHook)
+        currentView[PREORDER_HOOK_FLAGS] += PreOrderHookFlags.NumberOfInitHooksCalledIncrementer;
+      if (lastNodeIndexFound < nodeIndexLimit || nodeIndexLimit == -1) {
+        callHook(currentView, initPhase, arr, i);
+        currentView[PREORDER_HOOK_FLAGS] =
+            (currentView[PREORDER_HOOK_FLAGS] & PreOrderHookFlags.NumberOfInitHooksCalledMask) + i +
+            2;
+      }
+      i++;
+    }
+  }
+}
+
+/**
+ * Execute one hook against the current `LView`.
+ *
+ * @param currentView The current view
+ * @param initPhaseState the current state of the init phase
+ * @param arr The array in which the hooks are found
+ * @param i The current index within the hook data array
+ */
+function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, i: number) {
+  const isInitHook = arr[i] < 0;
+  const hook = arr[i + 1] as() => void;
+  const directiveIndex = isInitHook ? -arr[i] : arr[i] as number;
+  const directive = currentView[directiveIndex];
+  if (isInitHook) {
+    const indexWithintInitPhase = currentView[FLAGS] >> LViewFlags.IndexWithinInitPhaseShift;
+    // The init phase state must be always checked here as it may have been recursively
+    // updated
+    if (indexWithintInitPhase <
+            (currentView[PREORDER_HOOK_FLAGS] >> PreOrderHookFlags.NumberOfInitHooksCalledShift) &&
+        (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
+      currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
       hook.call(directive);
     }
+  } else {
+    hook.call(directive);
   }
 }

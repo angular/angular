@@ -4,6 +4,12 @@
 # https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
 set -u -e -E -o pipefail
 
+BOLD='printf \e[1m'
+RESET_STYLES='printf \e[0m'
+LIGHT_CYAN='printf \e[96m'
+LIGHT_MAGENTA='printf \e[95m'
+GREEN='printf \e[32m'
+RED='printf \e[31m'
 
 BASEDIR=$(dirname "$0")
 BASEDIR=`(cd $BASEDIR; pwd)`
@@ -42,11 +48,13 @@ if [ "$PR_NUMBER" -eq 0 ]; then
 fi
 
 if [ -z ${TOKEN:-''} ]; then
+    $RED
     echo "############################################################"
     echo "############################################################"
     echo "WARNING: you should set the TOKEN variable to a github token"
     echo "############################################################"
     echo "############################################################"
+    $RESET_STYLES
     GH_AUTH=""
 else
     GH_AUTH="Authorization: token $TOKEN"
@@ -63,21 +71,28 @@ PR_CLA=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^cla"`
 MASTER_BRANCH='master'
 
 if [[ ! "$PR_ACTION" =~ "PR action: merge" ]]; then
+  $RED
   echo The PR is missing 'PR action: merge(-assistance)' label, found: $PR_ACTION
+  $RESET_STYLES
   exit 1
 fi
 
 if [[ "$PR_CLA" != "cla: yes" ]]; then
+  $RED
   echo The PR is missing 'cla: Yes' label, found: $PR_CLA
+  $RESET_STYLES
   exit 1
 fi
 
 if [[ "$STATUS" != "All checks passed!" ]]; then
   echo PR $PR_NUMBER is failing with: $STATUS
   if [[ $FORCE == 1 ]]; then
+    $BOLD
+    $LIGHT_MAGENTA
     echo FORCING: --force flag used to ignore PR status.
+    $RESET_STYLES
   else
-    echo Exting...
+    echo Exiting...
     exit 1
   fi
 fi
@@ -92,7 +107,9 @@ elif [[ $PR_TARGET == "PR target: patch-only" ]]; then
   MERGE_MASTER=0
   MERGE_PATCH=1
 else
+  $RED
   echo "Unknown PR target format: $PR_TARGET"
+  $RESET_STYLES
   exit 1;
 fi
 
@@ -114,8 +131,8 @@ CHERRY_PICK_PR="git cherry-pick merge_pr_base..merge_pr"
 #
 # This check is used to enforce that we don't merge PRs that have not been rebased recently and could result in merging
 # of non-approved or otherwise bad changes.
-REQUIRED_BASE_SHA_MASTER="3fba6eff79a9b50909199eaa4ebf754c1c4adba6" # pullapprove => CODEOWNERS migration
-REQUIRED_BASE_SHA_PATCH="e3853e842ea5c10fafbc310a76a4a7f47ed8c65e"  # pullapprove => CODEOWNERS migration
+REQUIRED_BASE_SHA_MASTER="a03a9236f2aed5d00012d25f032aa43a046d91da" # pullapprove => CODEOWNERS migration
+REQUIRED_BASE_SHA_PATCH="a03a9236f2aed5d00012d25f032aa43a046d91da"  # pullapprove => CODEOWNERS migration
 if [[ $MERGE_MASTER == 1 ]]; then
   REQUIRED_BASE_SHA="$REQUIRED_BASE_SHA_MASTER"
 # check patch only if patch-only PR
@@ -124,6 +141,8 @@ elif [[ $MERGE_PATCH == 1 ]]; then
 fi
 CHECK_IF_PR_REBASED="git branch --quiet merge_pr --contains $REQUIRED_BASE_SHA"
 
+$BOLD
+$LIGHT_CYAN
 echo "======================"
 echo "GitHub Merge PR Steps"
 echo "======================"
@@ -141,46 +160,76 @@ fi
 echo "   $PUSH_BRANCHES"
 echo "   $RESTORE_BRANCH"
 echo "----------------------"
+$RESET_STYLES
+$BOLD
+echo ""
 echo ">>> Fetch PR: $FETCH_PR"
+$RESET_STYLES
 $FETCH_PR
+$BOLD
+echo ""
 echo ">>> Mark base: $BASE_PR"
+$RESET_STYLES
 $BASE_PR
+$BOLD
+echo ""
 echo ">>> Check if PR rebased: $CHECK_IF_PR_REBASED"
+$RESET_STYLES
 if [[ $($CHECK_IF_PR_REBASED) != "" ]]; then
+  $GREEN
   echo "The PR is sufficiently rebased!"
+  $RESET_STYLES
 else
+  $RED
   echo ""
   echo ""
   echo "Failed to merge pull request #${PR_NUMBER} because it hasn't been rebased recently and could be bypassing new or updated CI checks!"
   echo ""
   echo "Please rebase the PR and try again."
-  echo ""
+  echo ""|
+  $RESET_STYLES
   $RESTORE_BRANCH
   exit 1
 fi
+$BOLD
+echo ""
 echo ">>> Autosquash: $SQUASH_PR"
+$RESET_STYLES
 GIT_EDITOR=echo $SQUASH_PR
+$BOLD
+echo ""
 echo ">>> Rewrite message: $REWRITE_MESSAGE"
 # Next line should work, but it errors, hence copy paste the command.
 # $REWRITE_MESSAGE
+$RESET_STYLES
 git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" merge_pr_base..merge_pr
 if [[ $MERGE_MASTER == 1 ]]; then
+  $BOLD
   echo
   echo ">>> Cherry pick to master: $CHECKOUT_MASTER && $CHERRY_PICK_PR"
+  $RESET_STYLES
   $CHECKOUT_MASTER
   $CHERRY_PICK_PR
 fi
 if [[ $MERGE_PATCH == 1 ]]; then
+  $BOLD
   echo
-  echo ">>> Cherry pick to path: $CHECKOUT_PATCH && $CHERRY_PICK_PR"
+  echo ">>> Cherry pick to patch: $CHECKOUT_PATCH && $CHERRY_PICK_PR"
+  $RESET_STYLES
   $CHECKOUT_PATCH
   $CHERRY_PICK_PR
 fi
 $RESTORE_BRANCH
 
 if [[ $PUSH_UPSTREAM == 1 ]]; then
+  $BOLD
+  echo
   echo ">>> Push branches to angular repo"
+  $RESET_STYLES
   $PUSH_BRANCHES
 fi
+$BOLD
+$GREEN
 echo
 echo ">>>>>> SUCCESS <<<<<< PR#$PR_NUMBER merged."
+$RESET_STYLES

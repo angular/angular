@@ -1,0 +1,33 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    data = [
+        "test-migrations.json",
+        "//packages/core/schematics:migrations.json",
+    ],
+    deps = [
+        "//packages/core/schematics/migrations/injectable-pipe",
+        "//packages/core/schematics/migrations/injectable-pipe/google3",
+        "//packages/core/schematics/migrations/move-document",
+        "//packages/core/schematics/migrations/static-queries",
+        "//packages/core/schematics/migrations/static-queries/google3",
+        "//packages/core/schematics/migrations/template-var-assignment",
+        "//packages/core/schematics/migrations/template-var-assignment/google3",
+        "//packages/core/schematics/utils",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@types/shelljs",
+        "@npm//tslint",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    deps = [
+        ":test_lib",
+        "@npm//shelljs",
+    ],
+)

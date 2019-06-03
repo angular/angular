@@ -956,7 +956,7 @@ The following event binding listens for the button's click events, calling
 the component's `onSave()` method whenever a click occurs:
 
 <figure>
-  <img src='generated/images/guide/event-binding/syntax-diagram.svg' alt="Syntax diagram">
+  <img src='generated/images/guide/template-syntax/syntax-diagram.svg' alt="Syntax diagram">
 </figure>
 
 ### Target event
@@ -1027,7 +1027,7 @@ Although the `ItemDetailComponent` has a delete button, it doesn't know how to d
 Here are the pertinent excerpts from that `ItemDetailComponent`:
 
 
-<code-example path="event-binding/src/app/item-detail/item-detail.component.html" linenums="false" header="src/app/item-detail/item-detail.component.ts (template)" region="line-through">
+<code-example path="event-binding/src/app/item-detail/item-detail.component.html" linenums="false" header="src/app/item-detail/item-detail.component.html (template)" region="line-through">
 </code-example>
 
 <code-example path="event-binding/src/app/item-detail/item-detail.component.ts" linenums="false" header="src/app/item-detail/item-detail.component.ts (deleteRequest)" region="deleteRequest">
@@ -1997,29 +1997,29 @@ You'll need this template operator when you turn on strict null checks. It's opt
 
 <hr/>
 
+{@a built-in-template-functions}
+
+## Built-in template functions
+
 {@a any-type-cast-function}
 
-## The `$any` type cast function (`$any( <expression> )`)
+### The `$any()` type cast function
 
-Sometimes a binding expression will be reported as a type error and it is not possible or difficult
-to fully specify the type. To silence the error, you can use the `$any` cast function to cast
-the expression to [the `any` type](http://www.typescriptlang.org/docs/handbook/basic-types.html#any).
+Sometimes a binding expression triggers a type error during [AOT compilation](guide/aot-compiler) and it is not possible or difficult
+to fully specify the type. To silence the error, you can use the `$any()` cast function to cast
+the expression to [the `any` type](http://www.typescriptlang.org/docs/handbook/basic-types.html#any) as in the following example:
 
-<code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-1" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-In this example, when the Angular compiler turns your template into TypeScript code,
-it prevents TypeScript from reporting that `marker` is not a member of the `Hero`
-interface.
+When the Angular compiler turns this template into TypeScript code,
+it prevents TypeScript from reporting that `bestByDate` is not a member of the `item`
+object when it runs type checking on the template.
 
-The `$any` cast function can be used in conjunction with `this` to allow access to undeclared members of
+The `$any()` cast function also works with `this` to allow access to undeclared members of
 the component.
 
-<code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-2" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-The `$any` cast function can be used anywhere in a binding expression where a method call is valid.
-
-## Summary
-You've completed this survey of template syntax.
-Now it's time to put that knowledge to work on your own components and directives.
+The `$any()` cast function works anywhere in a binding expression where a method call is valid.

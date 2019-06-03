@@ -10,6 +10,7 @@ import {AnimationPlayer, ɵStyleData} from '@angular/animations';
 import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle} from '../../util';
 import {AnimationDriver} from '../animation_driver';
 import {containsElement, hypenatePropsObject, invokeQuery, matchesElement, validateStyleProperty} from '../shared';
+import {packageNonAnimatableStyles} from '../special_cased_styles';
 
 import {CssKeyframesPlayer} from './css_keyframes_player';
 import {DirectStylePlayer} from './direct_style_player';
@@ -44,7 +45,7 @@ export class CssKeyframesDriver implements AnimationDriver {
     let tab = '';
     keyframes.forEach(kf => {
       tab = TAB_SPACE;
-      const offset = parseFloat(kf.offset);
+      const offset = parseFloat(kf['offset']);
       keyframeStr += `${tab}${offset * 100}% {\n`;
       tab += TAB_SPACE;
       Object.keys(kf).forEach(prop => {
@@ -105,8 +106,9 @@ export class CssKeyframesDriver implements AnimationDriver {
     const kfElm = this.buildKeyframeElement(element, animationName, keyframes);
     document.querySelector('head') !.appendChild(kfElm);
 
+    const specialStyles = packageNonAnimatableStyles(element, keyframes);
     const player = new CssKeyframesPlayer(
-        element, keyframes, animationName, duration, delay, easing, finalStyles);
+        element, keyframes, animationName, duration, delay, easing, finalStyles, specialStyles);
 
     player.onDestroy(() => removeElement(kfElm));
     return player;

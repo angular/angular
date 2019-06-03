@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LocationChangeListener, PlatformLocation} from '@angular/common';
+import {DOCUMENT, LocationChangeListener, PlatformLocation} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 
 import {getDOM} from '../../dom/dom_adapter';
-import {DOCUMENT} from '../../dom/dom_tokens';
 
 import {supportsState} from './history';
 
@@ -50,6 +49,10 @@ export class BrowserPlatformLocation extends PlatformLocation {
     getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('hashchange', fn, false);
   }
 
+  get href(): string { return this.location.href; }
+  get protocol(): string { return this.location.protocol; }
+  get hostname(): string { return this.location.hostname; }
+  get port(): string { return this.location.port; }
   get pathname(): string { return this.location.pathname; }
   get search(): string { return this.location.search; }
   get hash(): string { return this.location.hash; }
@@ -74,4 +77,6 @@ export class BrowserPlatformLocation extends PlatformLocation {
   forward(): void { this._history.forward(); }
 
   back(): void { this._history.back(); }
+
+  getState(): unknown { return this._history.state; }
 }

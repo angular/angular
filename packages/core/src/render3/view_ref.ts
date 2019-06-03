@@ -11,11 +11,12 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
-import {checkNoChanges, checkNoChangesInRootView, checkView, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
-import {TNode, TNodeType, TViewNode} from './interfaces/node';
-import {FLAGS, HOST, HOST_NODE, LView, LViewFlags, PARENT, RENDERER_FACTORY} from './interfaces/view';
-import {destroyLView} from './node_manipulation';
-import {getNativeByTNode} from './util';
+import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions/shared';
+import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
+import {FLAGS, HOST, LView, LViewFlags, T_HOST} from './interfaces/view';
+import {destroyLView, renderDetachView} from './node_manipulation';
+import {findComponentView, getLViewParent} from './util/view_traversal_utils';
+import {getNativeByTNode} from './util/view_utils';
 
 
 
@@ -41,7 +42,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   get rootNodes(): any[] {
     if (this._lView[HOST] == null) {
-      const tView = this._lView[HOST_NODE] as TViewNode;
+      const tView = this._lView[T_HOST] as TViewNode;
       return collectNativeNodes(this._lView, tView, []);
     }
     return [];
@@ -252,7 +253,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * This is used in development mode to verify that running change detection doesn't
    * introduce other changes.
    */
-  checkNoChanges(): void { checkNoChanges(this.context); }
+  checkNoChanges(): void { checkNoChangesInternal(this._lView, this.context); }
 
   attachToViewContainerRef(vcRef: viewEngine_ViewContainerRef) {
     if (this._appRef) {
@@ -261,7 +262,10 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     this._viewContainerRef = vcRef;
   }
 
-  detachFromAppRef() { this._appRef = null; }
+  detachFromAppRef() {
+    this._appRef = null;
+    renderDetachView(this._lView);
+  }
 
   attachToAppRef(appRef: ApplicationRef) {
     if (this._viewContainerRef) {
@@ -271,7 +275,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   }
 
   private _lookUpContext(): T {
-    return this._context = this._lView[PARENT] ![this._componentIndex] as T;
+    return this._context = getLViewParent(this._lView) ![this._componentIndex] as T;
   }
 }
 
@@ -290,9 +294,21 @@ function collectNativeNodes(lView: LView, parentTNode: TNode, result: any[]): an
   let tNodeChild = parentTNode.child;
 
   while (tNodeChild) {
-    result.push(getNativeByTNode(tNodeChild, lView));
+    const nativeNode = getNativeByTNode(tNodeChild, lView);
+    nativeNode && result.push(nativeNode);
     if (tNodeChild.type === TNodeType.ElementContainer) {
       collectNativeNodes(lView, tNodeChild, result);
+    } else if (tNodeChild.type === TNodeType.Projection) {
+      const componentView = findComponentView(lView);
+      const componentHost = componentView[T_HOST] as TElementNode;
+      const parentView = getLViewParent(componentView);
+      let currentProjectedNode: TNode|null =
+          (componentHost.projection as(TNode | null)[])[tNodeChild.projection as number];
+
+      while (currentProjectedNode && parentView) {
+        result.push(getNativeByTNode(currentProjectedNode, parentView));
+        currentProjectedNode = currentProjectedNode.next;
+      }
     }
     tNodeChild = tNodeChild.next;
   }

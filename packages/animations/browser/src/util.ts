@@ -157,10 +157,13 @@ function writeStyleAttribute(element: any) {
   element.setAttribute('style', styleAttrValue);
 }
 
-export function setStyles(element: any, styles: ɵStyleData) {
+export function setStyles(element: any, styles: ɵStyleData, formerStyles?: {[key: string]: any}) {
   if (element['style']) {
     Object.keys(styles).forEach(prop => {
       const camelProp = dashCaseToCamelCase(prop);
+      if (formerStyles && !formerStyles.hasOwnProperty(prop)) {
+        formerStyles[prop] = element.style[camelProp];
+      }
       element.style[camelProp] = styles[prop];
     });
     // On the server set the 'style' attribute since it's not automatically reflected.

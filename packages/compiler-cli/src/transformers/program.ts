@@ -72,14 +72,14 @@ const defaultEmitCallback: TsEmitCallback =
  * Minimum supported TypeScript version
  * ∀ supported typescript version v, v >= MIN_TS_VERSION
  */
-const MIN_TS_VERSION = '3.1.1';
+const MIN_TS_VERSION = '3.4.0';
 
 /**
  * Supremum of supported TypeScript versions
  * ∀ supported typescript version v, v < MAX_TS_VERSION
  * MAX_TS_VERSION is not considered as a supported TypeScript version
  */
-const MAX_TS_VERSION = '3.3.0';
+const MAX_TS_VERSION = '3.5.0';
 
 class AngularCompilerProgram implements Program {
   private rootNames: string[];
@@ -263,11 +263,10 @@ class AngularCompilerProgram implements Program {
     emitCallback?: TsEmitCallback,
     mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
   } = {}): ts.EmitResult {
-    if (this.options.enableIvy === 'ngtsc' || this.options.enableIvy === 'tsc') {
+    if (this.options.enableIvy) {
       throw new Error('Cannot run legacy compiler in ngtsc mode');
     }
-    return this.options.enableIvy === true ? this._emitRender3(parameters) :
-                                             this._emitRender2(parameters);
+    return this._emitRender2(parameters);
   }
 
   private _emitRender3(
@@ -464,14 +463,14 @@ class AngularCompilerProgram implements Program {
     // Match behavior of tsc: only produce emit diagnostics if it would block
     // emit. If noEmitOnError is false, the emit will happen in spite of any
     // errors, so we should not report them.
-    if (this.options.noEmitOnError === true) {
+    if (emitResult && this.options.noEmitOnError === true) {
       // translate the diagnostics in the emitResult as well.
       const translatedEmitDiags = translateDiagnostics(this.hostAdapter, emitResult.diagnostics);
       emitResult.diagnostics = translatedEmitDiags.ts.concat(
           this.structuralDiagnostics.concat(translatedEmitDiags.ng).map(ngToTsDiagnostic));
     }
 
-    if (!outSrcMapping.length) {
+    if (emitResult && !outSrcMapping.length) {
       // if no files were emitted by TypeScript, also don't emit .json files
       emitResult.diagnostics =
           emitResult.diagnostics.concat([createMessageDiagnostic(`Emitted no files.`)]);
@@ -507,7 +506,7 @@ class AngularCompilerProgram implements Program {
       });
     }
     const emitEnd = Date.now();
-    if (this.options.diagnostics) {
+    if (emitResult && this.options.diagnostics) {
       emitResult.diagnostics = emitResult.diagnostics.concat([createMessageDiagnostic([
         `Emitted in ${emitEnd - emitStart}ms`,
         `- ${emittedUserTsCount} user ts files`,
@@ -899,8 +898,8 @@ export function createProgram({rootNames, options, host, oldProgram}: {
   options: CompilerOptions,
   host: CompilerHost, oldProgram?: Program
 }): Program {
-  if (options.enableIvy === 'ngtsc') {
-    return new NgtscProgram(rootNames, options, host, oldProgram);
+  if (options.enableIvy === true) {
+    return new NgtscProgram(rootNames, options, host, oldProgram as NgtscProgram);
   } else if (options.enableIvy === 'tsc') {
     return new TscPassThroughProgram(rootNames, options, host, oldProgram);
   }
@@ -942,6 +941,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
     fullTemplateTypeCheck: options.fullTemplateTypeCheck,
     allowEmptyCodegenFiles: options.allowEmptyCodegenFiles,
     enableIvy: options.enableIvy,
+    createExternalSymbolFactoryReexports: options.createExternalSymbolFactoryReexports,
   };
 }
 

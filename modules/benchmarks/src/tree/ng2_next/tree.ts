@@ -94,7 +94,7 @@ export class AppModule implements Injector, NgModuleRef<any> {
   constructor() {
     initServicesIfNeeded();
     this.sanitizer = new DomSanitizerImpl(document);
-    this.renderer2 = new DomRendererFactory2(null, null);
+    this.renderer2 = new DomRendererFactory2(null, null, null);
     trustedEmptyColor = this.sanitizer.bypassSecurityTrustStyle('');
     trustedGreyColor = this.sanitizer.bypassSecurityTrustStyle('grey');
     this.componentFactory =

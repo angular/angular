@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fixmeIvy} from '@angular/private/testing';
+import {modifiedInIvy} from '@angular/private/testing';
 import {$, ExpectedConditions, browser, by, element} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../test-utils';
@@ -17,34 +17,24 @@ function waitForElement(selector: string) {
   browser.wait(EC.presenceOf($(selector)), 20000);
 }
 
-fixmeIvy(
-    'unknown. Run "yarn bazel run packages/examples/common:devserver --define=compile=aot" ' +
-    'to debug')
-    .describe('ngComponentOutlet', () => {
-      const URL = '/ngComponentOutlet';
-      afterEach(verifyNoBrowserErrors);
+describe('ngComponentOutlet', () => {
+  const URL = '/ngComponentOutlet';
+  afterEach(verifyNoBrowserErrors);
 
-      describe('ng-component-outlet-example', () => {
-        it('should render simple', () => {
-          browser.get(URL);
-          waitForElement('ng-component-outlet-simple-example');
-          expect(element.all(by.css('hello-world')).getText()).toEqual(['Hello World!']);
-        });
+  describe('ng-component-outlet-example', () => {
+    it('should render simple', () => {
+      browser.get(URL);
+      waitForElement('ng-component-outlet-simple-example');
+      expect(element.all(by.css('hello-world')).getText()).toEqual(['Hello World!']);
+    });
 
-        it('should render complete', () => {
+    modifiedInIvy('Different behavior for projectableNodes in ViewContainerRef.createComponent')
+        .it('should render complete', () => {
           browser.get(URL);
           waitForElement('ng-component-outlet-complete-example');
           expect(element.all(by.css('complete-component')).getText()).toEqual([
             'Complete: AhojSvet!'
           ]);
         });
-
-        it('should render other module', () => {
-          browser.get(URL);
-          waitForElement('ng-component-outlet-other-module-example');
-          expect(element.all(by.css('other-module-component')).getText()).toEqual([
-            'Other Module Component!'
-          ]);
-        });
-      });
-    });
+  });
+});

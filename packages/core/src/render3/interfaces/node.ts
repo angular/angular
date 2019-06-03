@@ -5,24 +5,41 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {TStylingContext} from '../styling_next/interfaces';
+import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {StylingContext} from './styling';
 import {LView, TView} from './view';
 
 
 /**
- * TNodeType corresponds to the TNode.type property. It contains information
- * on how to map a particular set of bits in TNode.flags to the node type.
+ * TNodeType corresponds to the {@link TNode} `type` property.
  */
 export const enum TNodeType {
-  Container = 0b000,
-  Projection = 0b001,
-  View = 0b010,
-  Element = 0b011,
-  ViewOrElement = 0b010,
-  ElementContainer = 0b100,
-  IcuContainer = 0b101,
+  /**
+   * The TNode contains information about an {@link LContainer} for embedded views.
+   */
+  Container = 0,
+  /**
+   * The TNode contains information about an `<ng-content>` projection
+   */
+  Projection = 1,
+  /**
+   * The TNode contains information about an {@link LView}
+   */
+  View = 2,
+  /**
+   * The TNode contains information about a DOM element aka {@link RNode}.
+   */
+  Element = 3,
+  /**
+   * The TNode contains information about an `<ng-container>` element {@link RNode}.
+   */
+  ElementContainer = 4,
+  /**
+   * The TNode contains information about an ICU comment used in `i18n`.
+   */
+  IcuContainer = 5,
 }
 
 /**
@@ -30,16 +47,19 @@ export const enum TNodeType {
  */
 export const enum TNodeFlags {
   /** This bit is set if the node is a component */
-  isComponent = 0b0001,
+  isComponent = 0b00001,
 
   /** This bit is set if the node has been projected */
-  isProjected = 0b0010,
+  isProjected = 0b00010,
 
-  /** This bit is set if the node has any content queries */
-  hasContentQuery = 0b0100,
+  /** This bit is set if any directive on this node has content queries */
+  hasContentQuery = 0b00100,
 
-  /** This bit is set if the node has any directives that contain [class properties */
-  hasClassInput = 0b1000,
+  /** This bit is set if the node has any "class" inputs */
+  hasClassInput = 0b01000,
+
+  /** This bit is set if the node has any "style" inputs */
+  hasStyleInput = 0b10000,
 }
 
 /**
@@ -104,20 +124,88 @@ export const enum AttributeMarker {
   Styles = 2,
 
   /**
-   * This marker indicates that the following attribute names were extracted from bindings (ex.:
-   * [foo]="exp") and / or event handlers (ex. (bar)="doSth()").
-   * Taking the above bindings and outputs as an example an attributes array could look as follows:
-   * ['class', 'fade in', AttributeMarker.SelectOnly, 'foo', 'bar']
+   * Signals that the following attribute names were extracted from input or output bindings.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div moo="car" [foo]="exp" (bar)="doSth()">
+   * ```
+   *
+   * the generated code is:
+   *
+   * ```
+   * var _c1 = ['moo', 'car', AttributeMarker.Bindings, 'foo', 'bar'];
+   * ```
    */
-  SelectOnly = 3,
+  Bindings = 3,
+
+  /**
+   * Signals that the following attribute names were hoisted from an inline-template declaration.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div *ngFor="let value of values; trackBy:trackBy" dirA [dirB]="value">
+   * ```
+   *
+   * the generated code for the `template()` instruction would include:
+   *
+   * ```
+   * ['dirA', '', AttributeMarker.Bindings, 'dirB', AttributeMarker.Template, 'ngFor', 'ngForOf',
+   * 'ngForTrackBy', 'let-value']
+   * ```
+   *
+   * while the generated code for the `element()` instruction inside the template function would
+   * include:
+   *
+   * ```
+   * ['dirA', '', AttributeMarker.Bindings, 'dirB']
+   * ```
+   */
+  Template = 4,
+
+  /**
+   * Signals that the following attribute is `ngProjectAs` and its value is a parsed `CssSelector`.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <h1 attr="value" ngProjectAs="[title]">
+   * ```
+   *
+   * the generated code for the `element()` instruction would include:
+   *
+   * ```
+   * ['attr', 'value', AttributeMarker.ProjectAs, ['', 'title', '']]
+   * ```
+   */
+  ProjectAs = 5,
+
+  /**
+   * Signals that the following attribute will be translated by runtime i18n
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div moo="car" foo="value" i18n-foo [bar]="binding" i18n-bar>
+   * ```
+   *
+   * the generated code is:
+   *
+   * ```
+   * var _c1 = ['moo', 'car', AttributeMarker.I18n, 'foo', 'bar'];
+   */
+  I18n,
 }
 
 /**
  * A combination of:
- * - attribute names and values
- * - special markers acting as flags to alter attributes processing.
+ * - Attribute names and values.
+ * - Special markers acting as flags to alter attributes processing.
+ * - Parsed ngProjectAs selectors.
  */
-export type TAttributes = (string | AttributeMarker)[];
+export type TAttributes = (string | AttributeMarker | CssSelector)[];
 
 /**
  * Binding data (flyweight) for a particular node that is shared between all templates
@@ -182,7 +270,7 @@ export interface TNode {
   propertyMetadataEndIndex: number;
 
   /**
-   * Stores if Node isComponent, isProjected, hasContentQuery and hasClassInput
+   * Stores if Node isComponent, isProjected, hasContentQuery, hasClassInput and hasStyleInput
    */
   flags: TNodeFlags;
 
@@ -281,6 +369,14 @@ export interface TNode {
   next: TNode|null;
 
   /**
+   * The next projected sibling. Since in Angular content projection works on the node-by-node basis
+   * the act of projecting nodes might change nodes relationship at the insertion point (target
+   * view). At the same time we need to keep initial relationship between nodes as expressed in
+   * content view.
+   */
+  projectionNext: TNode|null;
+
+  /**
    * First child of the current node.
    *
    * For component nodes, the child will always be a ContentChild (in same view).
@@ -303,12 +399,6 @@ export interface TNode {
    * If this is an inline view node (V), the parent will be its container.
    */
   parent: TElementNode|TContainerNode|null;
-
-  /**
-   * If this node is part of an i18n block, it indicates whether this node is part of the DOM.
-   * If this node is not part of an i18n block, this field is null.
-   */
-  detached: boolean|null;
 
   stylingTemplate: StylingContext|null;
   /**
@@ -351,6 +441,23 @@ export interface TNode {
    * projectable nodes during dynamic component creation.
    */
   projection: (TNode|RNode[])[]|number|null;
+
+  /**
+   * A buffer of functions that will be called once `elementEnd` (or `element`) completes.
+   *
+   * Due to the nature of how directives work in Angular, some directive code may
+   * need to fire after any template-level code runs. If present, this array will
+   * be flushed (each function will be invoked) once the associated element is
+   * created.
+   *
+   * If an element is created multiple times then this function will be populated
+   * with functions each time the creation block is called.
+   */
+  onElementCreationFns: Function[]|null;
+  // TODO (matsko): rename this to `styles` once the old styling impl is gone
+  newStyles: TStylingContext|null;
+  // TODO (matsko): rename this to `classes` once the old styling impl is gone
+  newClasses: TStylingContext|null;
 }
 
 /** Static data for an element  */

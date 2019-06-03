@@ -15,7 +15,7 @@ const squareOddVals = pipe(
 // Create an Observable that will run the filter and map functions
 const squareOdd = squareOddVals(nums);
 
-// Suscribe to run the combined functions
+// Subscribe to run the combined functions
 squareOdd.subscribe(x => console.log(x));
 
 // #enddocregion

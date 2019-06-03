@@ -13,6 +13,11 @@ export enum ErrorCode {
   DECORATOR_ON_ANONYMOUS_CLASS = 1004,
   DECORATOR_UNEXPECTED = 1005,
 
+  /**
+   * This error code indicates that there are incompatible decorators on a type.
+   */
+  DECORATOR_COLLISION = 1006,
+
   VALUE_HAS_WRONG_TYPE = 1010,
   VALUE_NOT_LITERAL = 1011,
 
@@ -24,6 +29,33 @@ export enum ErrorCode {
   SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
 
   CONFIG_FLAT_MODULE_NO_INDEX = 4001,
+
+  /**
+   * Raised when a host expression has a parse error, such as a host listener or host binding
+   * expression containing a pipe.
+   */
+  HOST_BINDING_PARSE_ERROR = 5001,
+
+  /**
+   * Raised when an NgModule contains an invalid reference in `declarations`.
+   */
+  NGMODULE_INVALID_DECLARATION = 6001,
+
+  /**
+   * Raised when an NgModule contains an invalid type in `imports`.
+   */
+  NGMODULE_INVALID_IMPORT = 6002,
+
+  /**
+   * Raised when an NgModule contains an invalid type in `exports`.
+   */
+  NGMODULE_INVALID_EXPORT = 6003,
+
+  /**
+   * Raised when an NgModule contains a type in `exports` which is neither in `declarations` nor
+   * otherwise imported.
+   */
+  NGMODULE_INVALID_REEXPORT = 6004,
 }
 
 export function ngErrorCode(code: ErrorCode): number {

@@ -1,56 +1,50 @@
-# How to update the CLI boilerplate
+# How to update the CLI project 
 
-The boilerplate is updated by hand so you normally update it every minor version unless there is a major bug to fix.
+The Angular CLI default setup is updated using `ng update`. Any necessary file changes will be done automatically through migration schematics.
 
-## Getting a new boilerplate
-
-The first thing would be updating the CLI globally
+In the `cli` folder, update the Angular CLI depedencies to the latest version:
 
 ```
-npm i -g @angular/cli
+ng update @angular/cli --next
 ```
 
-Then create a new dummy project in a temporary folder outside angular
+Then update the Angular Framework dependencies to the latest version:
 
 ```
-ng new dummy
+ng update @angular/core --next
 ```
 
-Now you have a fresh application to get our new boilerplate files.
+Commit any changes to the `cli` folder to the repository.
 
-## Updating files
+## Updating other CLI-based projects
 
-From `dummy` you can replace the following files into `aio/tools/examples/shared/boilerplate/cli`:
+Along with the boilerplate files for the `cli` folder, the other cli-based projects need to be updated also. Each cli-based project has slightly modified files specific to the project type. Make sure any necessary changes to these projects are made also to be in alignment with the `cli` project files.
 
-* .editorconfig
-* angular.json
-* package.json
-* tsconfig.json
-* tslint.json
-* e2e/src/app.po.ts
-* e2e/protractor.conf.js
-* e2e/tsconfig.e2e.json
-* src/environments/environment.prod.ts
-* src/environments/environment.ts
-* src/browserslist
-* src/favicon.ico
-* src/karma.conf.js
-* src/polyfills.js
-* src/styles.css
-* src/test.ts
-* src/tsconfig.app.json
-* src/tsconfig.spec.json
-* src/tslint.json
-* src/typings.d.ts
+The specific changes to each project type are listed below:
 
-### angular.json
-
-Update the `project > name` to `angular.io-example`.
-
-### package.json
-
-Update the `name` to `angular.io-example`.
-
-### src/tsconfig.app.json
-
-This file is small enough and there are a few new excludes, update by hand.
+* i18n
+  - angular.json
+    - Includes additional configurations for `build`, `serve`, and `e2e` for different locales
+  - package.json
+    - Includes custom scripts for building and serving different locales
+* ivy
+  - cli/tsconfig.app.json
+    - Includes an `angularCompilerOptions` object with `enableIvy` set to `true`
+* schematics
+  - angular.json
+    - Includes a `my-lib` project that contains a library with example schematics
+* service-worker
+  - angular.json
+    - Has `serviceWorker` set to `true` in the `production` build target
+  - package.json
+    - Includes `@angular/service-worker` in `dependencies`
+* testing
+  - angular.json
+    - Includes `src/test.css` in the `styles` for the `test` target
+* universal
+  - angular.json
+    - Includes a `server` target in the `build` architect runners
+  - package.json
+    - Includes custom scripts for building the `server`
+    - Includes additional `dependencies` on `@nguniversal/common`, `@nguniversal/express-engine`, and `@nguniversal/module-map-ngfactory-loader`
+    - Includes `devDependencies` on `@angular/platform-server`, and `ts-loader`

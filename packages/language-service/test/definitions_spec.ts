@@ -26,22 +26,22 @@ describe('definitions', () => {
 
   it('should be able to find field in an interpolation', () => {
     localReference(
-        ` @Component({template: '{{«name»}}'}) export class MyComponent { «∆name∆: string;» }`);
+        ` @Component({template: '{{«name»}}'}) export class MyComponent { «ᐱnameᐱ: string;» }`);
   });
 
   it('should be able to find a field in a attribute reference', () => {
     localReference(
-        ` @Component({template: '<input [(ngModel)]="«name»">'}) export class MyComponent { «∆name∆: string;» }`);
+        ` @Component({template: '<input [(ngModel)]="«name»">'}) export class MyComponent { «ᐱnameᐱ: string;» }`);
   });
 
   it('should be able to find a method from a call', () => {
     localReference(
-        ` @Component({template: '<div (click)="«myClick»();"></div>'}) export class MyComponent { «∆myClick∆() { }»}`);
+        ` @Component({template: '<div (click)="«myClick»();"></div>'}) export class MyComponent { «ᐱmyClickᐱ() { }»}`);
   });
 
   it('should be able to find a field reference in an *ngIf', () => {
     localReference(
-        ` @Component({template: '<div *ngIf="«include»"></div>'}) export class MyComponent { «∆include∆ = true;»}`);
+        ` @Component({template: '<div *ngIf="«include»"></div>'}) export class MyComponent { «ᐱincludeᐱ = true;»}`);
   });
 
   it('should be able to find a reference to a component', () => {
@@ -64,7 +64,7 @@ describe('definitions', () => {
 
   it('should be able to find a pipe', () => {
     reference(
-        'async_pipe.d.ts',
+        'common.d.ts',
         ` @Component({template: '<div *ngIf="input | «async»"></div>'}) export class MyComponent { input: EventEmitter; }`);
   });
 

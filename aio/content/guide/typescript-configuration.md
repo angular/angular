@@ -34,7 +34,21 @@ For details about `tsconfig.json`, see the official
 
 The [Setup](guide/setup) guide uses the following `tsconfig.json`:
 
-<code-example path="quickstart/src/tsconfig.1.json" header="tsconfig.json" linenums="false"></code-example>
+<code-example lang="json" header="tsconfig.json" linenums="false">
+  {
+    "compilerOptions": {
+      "target": "es5",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "lib": [ "es2015", "dom" ],
+      "noImplicitAny": true,
+      "suppressImplicitAnyIndexErrors": true
+    }
+  }
+</code-example>
 
 This file contains options and flags that are essential for Angular applications.
 
@@ -92,7 +106,7 @@ Many libraries include definition files in their npm packages where both the Typ
 can find them. Angular is one such library.
 The `node_modules/@angular/core/` folder of any Angular application contains several `d.ts` files that describe parts of Angular.
 
-**You need do nothing to get *typings* files for library packages that include `d.ts` files.
+**You don't need to do anything to get *typings* files for library packages that include `d.ts` files.
 Angular packages include them already.**
 
 ### lib.d.ts

@@ -11,6 +11,8 @@ import * as ts from 'typescript';
 import {CompilerHost} from '../transformers/api';
 import {ResourceLoader} from './annotations/src/api';
 
+const CSS_PREPROCESSOR_EXT = /(\.scss|\.less|\.styl)$/;
+
 /**
  * `ResourceLoader` which delegates to a `CompilerHost` resource loading method.
  */
@@ -113,6 +115,9 @@ export class HostResourceLoader implements ResourceLoader {
     // Strip a leading '/' if one is present.
     if (url.startsWith('/')) {
       url = url.substr(1);
+
+      // Do not take current file location into account if we process absolute path.
+      fromFile = '';
     }
     // Turn absolute paths into relative paths.
     if (!url.startsWith('.')) {
@@ -123,6 +128,16 @@ export class HostResourceLoader implements ResourceLoader {
     for (const candidate of candidateLocations) {
       if (fs.existsSync(candidate)) {
         return candidate;
+      } else if (CSS_PREPROCESSOR_EXT.test(candidate)) {
+        /**
+         * If the user specified styleUrl points to *.scss, but the Sass compiler was run before
+         * Angular, then the resource may have been generated as *.css. Simply try the resolution
+         * again.
+         */
+        const cssFallbackUrl = candidate.replace(CSS_PREPROCESSOR_EXT, '.css');
+        if (fs.existsSync(cssFallbackUrl)) {
+          return cssFallbackUrl;
+        }
       }
     }
     return null;

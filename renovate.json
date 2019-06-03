@@ -1,0 +1,50 @@
+{
+	"pinVersions": false,
+	"semanticCommits": true,
+	"semanticPrefix": "build",
+	"commitMessage": "{{semanticPrefix}} update {{depName}} to version {{newVersion}}",
+	"separateMajorMinor": false,
+	"labels": [
+		"PR target: master-only",
+		"comp: build & ci"
+	],
+	"baseBranches": [
+		"master"
+	],
+	"ignoreDeps": [
+		"source-map",
+		"@types/node"
+	],
+	"packageFiles": [
+		"integration/cli-hello-world-ivy-compat/package.json",
+		"integration/cli-hello-world-ivy-minimal/package.json",
+		"integration/cli-hello-world/package.json"
+	],
+	"major": {
+		"devDependencies": {
+			"enabled": false
+		}
+	},
+	"packageRules": [
+		{
+			"packagePatterns": [
+				"^@angular.*"
+			],
+			"groupName": "angular",
+			"pinVersions": false
+		},
+		{
+			"packagePatterns": [
+				"^@bazel\/.*"
+			],
+			"groupName": "bazel",
+			"pinVersions": false
+		},
+		{
+			"packageNames": [
+				"typescript"
+			],
+			"updateTypes": "patch"
+		}
+	]
+}

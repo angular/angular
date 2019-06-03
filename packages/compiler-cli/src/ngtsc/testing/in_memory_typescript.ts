@@ -117,26 +117,7 @@ export function getDeclaration<T extends ts.Declaration>(
   if (!sf) {
     throw new Error(`No such file: ${fileName}`);
   }
-
-  let chosenDecl: ts.Declaration|null = null;
-
-  sf.statements.forEach(stmt => {
-    if (chosenDecl !== null) {
-      return;
-    } else if (ts.isVariableStatement(stmt)) {
-      stmt.declarationList.declarations.forEach(decl => {
-        if (bindingNameEquals(decl.name, name)) {
-          chosenDecl = decl;
-        }
-      });
-    } else if (ts.isClassDeclaration(stmt) || ts.isFunctionDeclaration(stmt)) {
-      if (stmt.name !== undefined && stmt.name.text === name) {
-        chosenDecl = stmt;
-      }
-    }
-  });
-
-  chosenDecl = chosenDecl as ts.Declaration | null;
+  const chosenDecl = walkForDeclaration(sf);
 
   if (chosenDecl === null) {
     throw new Error(`No such symbol: ${name} in ${fileName}`);
@@ -144,6 +125,33 @@ export function getDeclaration<T extends ts.Declaration>(
   if (!assert(chosenDecl)) {
     throw new Error(`Symbol ${name} from ${fileName} is a ${ts.SyntaxKind[chosenDecl.kind]}`);
   }
-
   return chosenDecl;
+
+  // We walk the AST tree looking for a declaration that matches
+  function walkForDeclaration(rootNode: ts.Node): ts.Declaration|null {
+    let chosenDecl: ts.Declaration|null = null;
+    rootNode.forEachChild(node => {
+      if (chosenDecl !== null) {
+        return;
+      }
+      if (ts.isVariableStatement(node)) {
+        node.declarationList.declarations.forEach(decl => {
+          if (bindingNameEquals(decl.name, name)) {
+            chosenDecl = decl;
+          }
+        });
+      } else if (ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node)) {
+        if (node.name !== undefined && node.name.text === name) {
+          chosenDecl = node;
+        }
+      } else if (
+          ts.isImportDeclaration(node) && node.importClause !== undefined &&
+          node.importClause.name !== undefined && node.importClause.name.text === name) {
+        chosenDecl = node.importClause;
+      } else {
+        chosenDecl = walkForDeclaration(node);
+      }
+    });
+    return chosenDecl;
+  }
 }

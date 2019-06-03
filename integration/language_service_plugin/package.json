@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "cleanup": "rm -rf ti-*.log tsserver.log",
-    "golden": "node generate.js",
+    "golden": "yarn build && node generate.js",
     "test": "yarn cleanup && yarn build && jasmine test.js"
   }
 }

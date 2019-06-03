@@ -10,7 +10,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {ImportRewriter} from '../../imports';
-import {normalizeSeparators} from '../../util/src/path';
+import {AbsoluteFsPath} from '../../path/src/types';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 import {ShimGenerator} from './host';
@@ -28,10 +28,10 @@ export class FactoryGenerator implements ShimGenerator {
 
   get factoryFileMap(): Map<string, string> { return this.map; }
 
-  recognize(fileName: string): boolean { return this.map.has(fileName); }
+  recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
 
-  generate(genFilePath: string, readFile: (fileName: string) => ts.SourceFile | null): ts.SourceFile
-      |null {
+  generate(genFilePath: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
+      ts.SourceFile|null {
     const originalPath = this.map.get(genFilePath) !;
     const original = readFile(originalPath);
     if (original === null) {
@@ -56,14 +56,26 @@ export class FactoryGenerator implements ShimGenerator {
                             // Grab the symbol name.
                             .map(decl => decl.name !.text);
 
-    let sourceText = '';
+
+    // If there is a top-level comment in the original file, copy it over at the top of the
+    // generated factory file. This is important for preserving any load-bearing jsdoc comments.
+    let comment: string = '';
+    if (original.statements.length > 0) {
+      const firstStatement = original.statements[0];
+      if (firstStatement.getLeadingTriviaWidth() > 0) {
+        comment = firstStatement.getFullText().substr(0, firstStatement.getLeadingTriviaWidth());
+      }
+    }
+
+    let sourceText = comment;
     if (symbolNames.length > 0) {
       // For each symbol name, generate a constant export of the corresponding NgFactory.
       // This will encompass a lot of symbols which don't need factories, but that's okay
       // because it won't miss any that do.
       const varLines = symbolNames.map(
-          name => `export const ${name}NgFactory = new i0.ɵNgModuleFactory(${name});`);
-      sourceText = [
+          name =>
+              `export const ${name}NgFactory: i0.ɵNgModuleFactory<any> = new i0.ɵNgModuleFactory(${name});`);
+      sourceText += [
         // This might be incorrect if the current package being compiled is Angular core, but it's
         // okay to leave in at type checking time. TypeScript can handle this reference via its path
         // mapping, but downstream bundlers can't. If the current package is core itself, this will
@@ -87,11 +99,13 @@ export class FactoryGenerator implements ShimGenerator {
     return genFile;
   }
 
-  static forRootFiles(files: ReadonlyArray<string>): FactoryGenerator {
-    const map = new Map<string, string>();
+  static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): FactoryGenerator {
+    const map = new Map<AbsoluteFsPath, string>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
-        .map(sourceFile => normalizeSeparators(sourceFile))
-        .forEach(sourceFile => map.set(sourceFile.replace(/\.ts$/, '.ngfactory.ts'), sourceFile));
+        .forEach(
+            sourceFile => map.set(
+                AbsoluteFsPath.fromUnchecked(sourceFile.replace(/\.ts$/, '.ngfactory.ts')),
+                sourceFile));
     return new FactoryGenerator(map);
   }
 }

@@ -36,18 +36,18 @@ The size of the `CONSTS` section is declared in the property `consts` of the com
 })
 class MyApp {
 
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...,
     consts: 5,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div');
-        text(1, 'Hello ');
-        elementStart(2, 'b');
-        text(3, 'World');
-        elementEnd();
-        text(4, '!');
-        elementEnd();
+        ɵɵelementStart(0, 'div');
+        ɵɵtext(1, 'Hello ');
+        ɵɵelementStart(2, 'b');
+        ɵɵtext(3, 'World');
+        ɵɵelementEnd();
+        ɵɵtext(4, '!');
+        ɵɵelementEnd();
       }
       ...
     }
@@ -87,19 +87,19 @@ The size of the `VARS `section is declared in the property `vars` of the compone
 class MyApp {
   name = 'World';
 
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...,
     consts: 2, // Two DOM Elements.
     vars: 2,   // Two bindings.
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div');
-        text(1);
-        elementEnd();
+        ɵɵelementStart(0, 'div');
+        ɵɵtext(1);
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'title', bind(ctx.name));
-        textBinding(1, interpolation1('Hello ', ctx.name, '!'));
+        ɵɵelementProperty(0, 'title', ɵɵbind(ctx.name));
+        ɵɵtextBinding(1, ɵɵinterpolation1('Hello ', ctx.name, '!'));
       }
       ...
     }
@@ -139,12 +139,12 @@ Examples include:
 })
 class MyApp {
 
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...,
     consts: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
-        element(0, 'child', ['tooltip', null]);
+        ɵɵelement(0, 'child', ['tooltip', null]);
       }
       ...
     },
@@ -159,7 +159,7 @@ class MyApp {
 })
 class Child {
   @HostBinding('tooltip') hostTitle = 'Hello World!';
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...
     hostVars: 1
   });
@@ -171,7 +171,7 @@ class Child {
 })
 class Tooltip {
   @HostBinding('title') hostTitle = 'greeting';
-  static ngDirectiveDef = defineDirective({
+  static ngDirectiveDef = ɵɵdefineDirective({
     ...
     hostVars: 1
   });
@@ -273,12 +273,12 @@ Injection tokens are sorted into three sections:
 })
 class MyApp {
 
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...,
     consts: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
-        element(0, 'child');
+        ɵɵelement(0, 'child');
       }
       ...
     },
@@ -301,7 +301,7 @@ class MyApp {
 })
 class Child {
   construction(injector: Injector) {}
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...
     features: [
       ProvidesFeature(
@@ -348,7 +348,7 @@ NOTICE:
 Where `factory` is a function which wraps the factory into object which can be monomorphically detected at runtime in an efficient way.
 ```TypeScript
 class Factory {
-  /// Marker set to true during factory invocation to see if we get into recursive loop. 
+  /// Marker set to true during factory invocation to see if we get into recursive loop.
   /// Recursive loop causes an error to be displayed.
   resolving = false;
   constructor(public factory: Function) { }
@@ -376,13 +376,13 @@ There are several special objects such as `ElementRef`, `ViewContainerRef`, etc.
 These objects behave as if they are always included in the `providers` array of every component and directive.
 Adding them always there would prevent tree shaking so they need to be lazily included.
 
-NOTE: 
+NOTE:
 An interesting thing about these objects is that they are not memoized `injector.get(ElementRef) !== injector.get(ElementRef)`.
 This could be considered a bug, it means that we don't have to allocate storage space for them.
 
 We should treat these special objects like any other token. `directiveInject()` already reads a special `NG_ELEMENT_ID`
-property set on directives to locate their bit in the bloom filter. We can set this same property on special objects, 
-but point to a factory function rather than an element ID number. When we check that property in `directiveInject()` 
+property set on directives to locate their bit in the bloom filter. We can set this same property on special objects,
+but point to a factory function rather than an element ID number. When we check that property in `directiveInject()`
 and see that it's a function, we know to invoke the factory function directly instead of searching the node tree.
 
 ```typescript
@@ -422,7 +422,7 @@ function inject(token: any): any {
   if (typeof token === 'function' && injectableDef = token.ngInjectableDef) {
     const provideIn = injectableDef.provideIn;
    if (provideIn === '__node_injector__') {
-      // if we are injecting `Injector` than create a wrapper object around the inject but which 
+      // if we are injecting `Injector` than create a wrapper object around the inject but which
       // is bound to the current node.
       return createInjector();
     }

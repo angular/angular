@@ -4,23 +4,30 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
+    "@angular/animations": "packages-dist:animations",
+    "@angular/common": "packages-dist:common",
+    "@angular/core": "packages-dist:core",
+    "@angular/platform-browser": "packages-dist:platform-browser",
+    "@angular/platform-browser-dynamic": "packages-dist:platform-browser-dynamic",
+    "@angular/router": "packages-dist:router",
     "reflect-metadata": "0.1.12",
-    "rxjs": "6.3.3",
+    "rxjs": "6.4.0",
     "tslib": "1.9.3",
-    "zone.js": "0.8.26"
+    "zone.js": "0.9.1"
   },
   "devDependencies": {
-    "@angular/bazel": "file:../angular/dist/packages-dist/bazel",
-    "@angular/compiler": "file:../angular/dist/packages-dist/compiler",
-    "@angular/compiler-cli": "file:../angular/dist/packages-dist/compiler-cli",
-    "@bazel/karma": "0.22.1",
-    "@bazel/typescript": "0.22.1",
+    "@angular/bazel": "packages-dist:bazel",
+    "@angular/compiler": "packages-dist:compiler",
+    "@angular/compiler-cli": "packages-dist:compiler-cli",
+    "@bazel/karma": "0.29.0",
+    "@bazel/typescript": "0.29.0",
     "@types/jasmine": "2.8.8",
     "@types/source-map": "0.5.1",
     "protractor": "5.1.2",
-    "typescript": "3.1.1"
+    "typescript": "3.4.2"
   },
   "scripts": {
+    "postinstall": "ngc -p ./angular-metadata.tsconfig.json",
     "//": "TODO(gregmagolan): figure out how to keep dependencies here up to date with the root package.json"
   }
 }

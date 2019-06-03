@@ -1,6 +1,6 @@
-package(default_visibility = ["//packages/bazel/test:__subpackages__"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package", "npm_package")
+
+package(default_visibility = ["//packages/bazel/test:__subpackages__"])
 
 ng_module(
     name = "example",
@@ -8,7 +8,7 @@ ng_module(
     module_name = "example",
     deps = [
         "//packages/bazel/test/ng_package/example/secondary",
-        "@ngdeps//@types",
+        "@npm//@types",
     ],
 )
 

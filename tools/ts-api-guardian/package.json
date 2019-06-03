@@ -1,9 +1,15 @@
 {
   "name": "ts-api-guardian",
-  "version": "0.4.1",
+  "version": "0.4.4",
   "description": "Guards the API of TypeScript libraries!",
   "main": "lib/main.js",
   "typings": "lib/main.d.ts",
+  "bazelWorkspaces": {
+    "npm_ts_api_guardian": {
+      "version": "0.4.4",
+      "rootPath": "."
+    }
+  },
   "bin": {
     "ts-api-guardian": "./bin/ts-api-guardian"
   },
@@ -11,11 +17,11 @@
     "test": "test"
   },
   "peerDependencies": {
-    "typescript": "~3.2.2"
+    "typescript": "~3.4.0"
   },
   "dependencies": {
     "chalk": "^2.3.1",
-    "diff": "^3.4.0",
+    "diff": "^3.5.0",
     "minimist": "^1.2.0"
   },
   "devDependencies": {
@@ -23,11 +29,11 @@
     "@types/diff": "^3.5.1",
     "@types/jasmine": "^2.8.8",
     "@types/minimist": "^1.2.0",
-    "@types/node": "^10.9.2",
+    "@types/node": "^10.9.4",
     "chai": "^4.1.2",
     "jasmine": "^3.1.0",
     "source-map-support": "^0.5.9",
-    "typescript": "~3.2.2"
+    "typescript": "~3.4.2"
   },
   "repository": {},
   "keywords": [

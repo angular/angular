@@ -23,14 +23,6 @@
         property renaming.
     -->
     <script>
-      // `goog.getMsg()` will be provided by Closure
-      const translations = {
-        'Hello World!': 'Bonjour Monde!',
-        'Hello Title!': 'Bonjour Titre!',
-      };
-      window.goog = window.goog || {};
-      window.goog.getMsg = (key) => translations[key] || key;
-
       document.write('<script src="' +
         (document.location.search.endsWith('debug') ? '/bundle.min_debug.js' : '/bundle.min.js') +
         '"></' + 'script>');

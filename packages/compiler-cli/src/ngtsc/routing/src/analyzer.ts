@@ -11,8 +11,8 @@ import * as ts from 'typescript';
 import {ModuleResolver} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 
-import {scanForRouteEntryPoints} from './lazy';
-import {RouterEntryPointManager} from './route';
+import {scanForCandidateTransitiveModules, scanForRouteEntryPoints} from './lazy';
+import {RouterEntryPointManager, entryPointKeyFor} from './route';
 
 export interface NgModuleRawRouteData {
   sourceFile: ts.SourceFile;
@@ -38,9 +38,9 @@ export class NgModuleRouteAnalyzer {
 
   add(sourceFile: ts.SourceFile, moduleName: string, imports: ts.Expression|null,
       exports: ts.Expression|null, providers: ts.Expression|null): void {
-    const key = `${sourceFile.fileName}#${moduleName}`;
+    const key = entryPointKeyFor(sourceFile.fileName, moduleName);
     if (this.modules.has(key)) {
-      throw new Error(`Double route analyzing ${key}`);
+      throw new Error(`Double route analyzing for '${key}'.`);
     }
     this.modules.set(
         key, {
@@ -48,18 +48,53 @@ export class NgModuleRouteAnalyzer {
              });
   }
 
-  listLazyRoutes(): LazyRoute[] {
+  listLazyRoutes(entryModuleKey?: string|undefined): LazyRoute[] {
+    if ((entryModuleKey !== undefined) && !this.modules.has(entryModuleKey)) {
+      throw new Error(`Failed to list lazy routes: Unknown module '${entryModuleKey}'.`);
+    }
+
     const routes: LazyRoute[] = [];
-    for (const key of Array.from(this.modules.keys())) {
+    const scannedModuleKeys = new Set<string>();
+    const pendingModuleKeys = entryModuleKey ? [entryModuleKey] : Array.from(this.modules.keys());
+
+    // When listing lazy routes for a specific entry module, we need to recursively extract
+    // "transitive" routes from imported/exported modules. This is not necessary when listing all
+    // lazy routes, because all analyzed modules will be scanned anyway.
+    const scanRecursively = entryModuleKey !== undefined;
+
+    while (pendingModuleKeys.length > 0) {
+      const key = pendingModuleKeys.pop() !;
+
+      if (scannedModuleKeys.has(key)) {
+        continue;
+      } else {
+        scannedModuleKeys.add(key);
+      }
+
       const data = this.modules.get(key) !;
       const entryPoints = scanForRouteEntryPoints(
           data.sourceFile, data.moduleName, data, this.entryPointManager, this.evaluator);
+
       routes.push(...entryPoints.map(entryPoint => ({
                                        route: entryPoint.loadChildren,
                                        module: entryPoint.from,
                                        referencedModule: entryPoint.resolvedTo,
                                      })));
+
+      if (scanRecursively) {
+        pendingModuleKeys.push(
+            ...[
+                // Scan the retrieved lazy route entry points.
+                ...entryPoints.map(
+                    ({resolvedTo}) => entryPointKeyFor(resolvedTo.filePath, resolvedTo.moduleName)),
+                // Scan the current module's imported modules.
+                ...scanForCandidateTransitiveModules(data.imports, this.evaluator),
+                // Scan the current module's exported modules.
+                ...scanForCandidateTransitiveModules(data.exports, this.evaluator),
+        ].filter(key => this.modules.has(key)));
+      }
     }
+
     return routes;
   }
 }

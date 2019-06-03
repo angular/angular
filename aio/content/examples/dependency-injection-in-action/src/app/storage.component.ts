@@ -29,10 +29,10 @@ export class StorageComponent implements OnInit {
   }
 
   setSession() {
-    this.sessionStorageService.set('hero', 'Mr. Nice - Session');
+    this.sessionStorageService.set('hero', 'Dr Nice - Session');
   }
 
   setLocal() {
-    this.localStorageService.set('hero', 'Mr. Nice - Local');
+    this.localStorageService.set('hero', 'Dr Nice - Local');
   }
 }

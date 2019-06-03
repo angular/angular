@@ -67,8 +67,8 @@ describe('AngularJS to Angular Quick Reference Tests', function () {
     testFavoriteHero('Magneta', 'No movie, sorry!');
   });
 
-  it('should display a movie for Mr. Nice', function () {
-    testFavoriteHero('Mr. Nice', 'Excellent choice!');
+  it('should display a movie for Dr Nice', function () {
+    testFavoriteHero('Dr Nice', 'Excellent choice!');
   });
 
   function testImagesAreDisplayed(isDisplayed: boolean) {

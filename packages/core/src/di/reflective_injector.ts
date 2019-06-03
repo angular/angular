@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, THROW_IF_NOT_FOUND} from './injector';
+import {Injector} from './injector';
+import {THROW_IF_NOT_FOUND} from './injector_compatibility';
 import {Provider} from './interface/provider';
 import {Self, SkipSelf} from './metadata';
 import {cyclicDependencyError, instantiationError, noProviderError, outOfBoundsError} from './reflective_errors';

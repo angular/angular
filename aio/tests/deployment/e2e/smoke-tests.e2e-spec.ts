@@ -23,9 +23,9 @@ describe(browser.baseUrl, () => {
     });
 
     describe('(marketing pages)', () => {
-      const textPerUrl = {
+      const textPerUrl: { [key: string]: string } = {
         features: 'features & benefits',
-        docs: 'what is angular?',
+        docs: 'introduction to the angular docs',
         events: 'events',
         resources: 'explore angular resources',
       };
@@ -41,13 +41,13 @@ describe(browser.baseUrl, () => {
     });
 
     describe('(docs pages)', () => {
-      const textPerUrl = {
+      const textPerUrl: { [key: string]: string } = {
         api: 'api list',
         'guide/architecture': 'architecture',
         'guide/http': 'httpclient',
-        'guide/quickstart': 'getting started',
         'guide/security': 'security',
         tutorial: 'tutorial',
+        start: 'getting started',
       };
 
       Object.keys(textPerUrl).forEach(url => {
@@ -61,7 +61,7 @@ describe(browser.baseUrl, () => {
     });
 
     describe('(api docs pages)', () => {
-      const textPerUrl = {
+      const textPerUrl: { [key: string]: string } = {
         /* Class */ 'api/core/Injector': 'class injector',
         /* Const */ 'api/forms/NG_VALIDATORS': 'const ng_validators',
         /* Decorator */ 'api/core/Component': '@component',

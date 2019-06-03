@@ -11,7 +11,6 @@ import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
 import {NG_PIPE_DEF} from '../fields';
-import {renderStringify} from '../util';
 
 import {angularCoreEnv} from './environment';
 
@@ -20,10 +19,12 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
   Object.defineProperty(type, NG_PIPE_DEF, {
     get: () => {
       if (ngPipeDef === null) {
-        ngPipeDef = getCompilerFacade().compilePipe(
-            angularCoreEnv, `ng://${renderStringify(type)}/ngPipeDef.js`, {
+        const typeName = type.name;
+        ngPipeDef =
+            getCompilerFacade().compilePipe(angularCoreEnv, `ng:///${typeName}/ngPipeDef.js`, {
               type: type,
-              name: type.name,
+              typeArgumentCount: 0,
+              name: typeName,
               deps: reflectDependencies(type),
               pipeName: meta.name,
               pure: meta.pure !== undefined ? meta.pure : true

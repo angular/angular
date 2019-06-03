@@ -67,6 +67,7 @@ for (var i = 0, keys = Object.keys(obj); i < keys.length; i++) {
 
 ## Recursive functions
 Avoid recursive functions when possible because they cannot be inlined.
+https://jsperf.com/cost-of-recursion
 
 ## Function Inlining
 
@@ -103,8 +104,18 @@ export function i18nStartFirstTemplatePass(tView: TView, index: number, message:
 }
 ```
 
-
-
 ## Loops
 Don't use `forEach`, it can cause megamorphic function calls (depending on the browser) and function allocations.
 It is [a lot slower than regular `for` loops](https://jsperf.com/for-vs-foreach-misko)
+
+## Limit global state access
+
+Ivy implementation uses some variables in `packages/core/src/render3/state.ts` that could be considered "global state" (those are not truly global variables exposed on `window` but still those variables are easily accessible from anywhere in the ivy codebase). Usage of this global state should be limited to avoid unnecessary function calls (state getters) and improve code readability. 
+
+As a rule, the global state should be accessed _only_ from instructions (functions invoked from the generated code). 
+
+## Instructions should be only called from the generated code
+
+Instruction functions should be called only from the generated template code. As a consequence of this rule, instructions shouldn't call other instructions.
+
+Calling instructions from other instructions (or any part of the ivy codebase) multiplies global state access (see previous rule) and makes reasoning about code more difficult.

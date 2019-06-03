@@ -176,11 +176,16 @@ export class Driver implements Debuggable, UpdateSource {
    */
   private onFetch(event: FetchEvent): void {
     const req = event.request;
+    const scopeUrl = this.scope.registration.scope;
+    const requestUrlObj = this.adapter.parseUrl(req.url, scopeUrl);
+
+    if (req.headers.has('ngsw-bypass') || /[?&]ngsw-bypass(?:[=&]|$)/i.test(requestUrlObj.search)) {
+      return;
+    }
 
     // The only thing that is served unconditionally is the debug page.
-    if (this.adapter.parseUrl(req.url, this.scope.registration.scope).path === '/ngsw/state') {
-      // Allow the debugger to handle the request, but don't affect SW state in any
-      // other way.
+    if (requestUrlObj.path === '/ngsw/state') {
+      // Allow the debugger to handle the request, but don't affect SW state in any other way.
       event.respondWith(this.debugger.handleFetch(req));
       return;
     }
@@ -197,6 +202,16 @@ export class Driver implements Debuggable, UpdateSource {
       return;
     }
 
+    // Although "passive mixed content" (like images) only produces a warning without a
+    // ServiceWorker, fetching it via a ServiceWorker results in an error. Let such requests be
+    // handled by the browser, since handling with the ServiceWorker would fail anyway.
+    // See https://github.com/angular/angular/issues/23012#issuecomment-376430187 for more details.
+    if (requestUrlObj.origin.startsWith('http:') && scopeUrl.startsWith('https:')) {
+      // Still, log the incident for debugging purposes.
+      this.debugger.log(`Ignoring passive mixed content request: Driver.fetch(${req.url})`);
+      return;
+    }
+
     // When opening DevTools in Chrome, a request is made for the current URL (and possibly related
     // resources, e.g. scripts) with `cache: 'only-if-cached'` and `mode: 'no-cors'`. These request
     // will eventually fail, because `only-if-cached` is only allowed to be used with
@@ -204,7 +219,7 @@ export class Driver implements Debuggable, UpdateSource {
     // This is likely a bug in Chrome DevTools. Avoid handling such requests.
     // (See also https://github.com/angular/angular/issues/22362.)
     // TODO(gkalpak): Remove once no longer necessary (i.e. fixed in Chrome DevTools).
-    if ((req.cache as string) === 'only-if-cached' && req.mode !== 'same-origin') {
+    if (req.cache === 'only-if-cached' && req.mode !== 'same-origin') {
       // Log the incident only the first time it happens, to avoid spamming the logs.
       if (!this.loggedInvalidOnlyIfCachedRequest) {
         this.loggedInvalidOnlyIfCachedRequest = true;
@@ -694,7 +709,7 @@ export class Driver implements Debuggable, UpdateSource {
 
   private async deleteAllCaches(): Promise<void> {
     await(await this.scope.caches.keys())
-        .filter(key => key.startsWith('ngsw:'))
+        .filter(key => key.startsWith(`${this.adapter.cacheNamePrefix}:`))
         .reduce(async(previous, key) => {
           await Promise.all([
             previous,
@@ -913,9 +928,7 @@ export class Driver implements Debuggable, UpdateSource {
    */
   async cleanupOldSwCaches(): Promise<void> {
     const cacheNames = await this.scope.caches.keys();
-    const oldSwCacheNames =
-        cacheNames.filter(name => /^ngsw:(?:active|staged|manifest:.+)$/.test(name));
-
+    const oldSwCacheNames = cacheNames.filter(name => /^ngsw:(?!\/)/.test(name));
     await Promise.all(oldSwCacheNames.map(name => this.scope.caches.delete(name)));
   }
 

@@ -11,6 +11,7 @@ import {getDebugContext} from '@angular/core/src/errors';
 import {ArgumentType, DepFlags, NodeFlags, Services, anchorDef, asElementData, directiveDef, elementDef, providerDef, textDef} from '@angular/core/src/view/index';
 import {TestBed, withModule} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {ivyEnabled} from '@angular/private/testing';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetRootNodes, compViewDef, compViewDefFactory} from './helper';
 
@@ -147,7 +148,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
 
           expect(() => createAndGetRootNodes(compViewDef(rootElNodes)))
               .toThrowError(
-                  'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
+                  `${ivyEnabled ? 'R3InjectorError' : 'StaticInjectorError'}(DynamicTestModule)[SomeService -> Dep]: \n` +
                   '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
                   '    NullInjectorError: No provider for Dep!');
 
@@ -161,7 +162,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
 
           expect(() => createAndGetRootNodes(compViewDef(nonRootElNodes)))
               .toThrowError(
-                  'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
+                  `${ivyEnabled ? 'R3InjectorError' : 'StaticInjectorError'}(DynamicTestModule)[SomeService -> Dep]: \n` +
                   '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
                   '    NullInjectorError: No provider for Dep!');
         });
@@ -186,7 +187,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
                    directiveDef(1, NodeFlags.None, null, 0, SomeService, ['nonExistingDep'])
                  ])))
               .toThrowError(
-                  'StaticInjectorError(DynamicTestModule)[nonExistingDep]: \n' +
+                  `${ivyEnabled ? 'R3InjectorError' : 'StaticInjectorError'}(DynamicTestModule)[nonExistingDep]: \n` +
                   '  StaticInjectorError(Platform: core)[nonExistingDep]: \n' +
                   '    NullInjectorError: No provider for nonExistingDep!');
         });

@@ -22,7 +22,9 @@ import {performWatchCompilation, createPerformWatchHost} from './perform_watch'
 
 export function main(
     args: string[], consoleError: (s: string) => void = console.error,
-    config?: NgcParsedConfiguration, customTransformers?: api.CustomTransformers): number {
+    config?: NgcParsedConfiguration, customTransformers?: api.CustomTransformers, programReuse?: {
+      program: api.Program | undefined,
+    }): number {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
@@ -32,12 +34,22 @@ export function main(
     const result = watchMode(project, options, consoleError);
     return reportErrorsAndExit(result.firstCompileResult, options, consoleError);
   }
-  const {diagnostics: compileDiags} = performCompilation({
+
+  let oldProgram: api.Program|undefined;
+  if (programReuse !== undefined) {
+    oldProgram = programReuse.program;
+  }
+
+  const {diagnostics: compileDiags, program} = performCompilation({
     rootNames,
     options,
     emitFlags,
+    oldProgram,
     emitCallback: createEmitCallback(options), customTransformers
   });
+  if (programReuse !== undefined) {
+    programReuse.program = program;
+  }
   return reportErrorsAndExit(compileDiags, options, consoleError);
 }
 
@@ -54,8 +66,7 @@ export function mainDiagnosticsForTest(
 }
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
-  const transformDecorators = options.enableIvy !== 'ngtsc' && options.enableIvy !== 'tsc' &&
-      options.annotationsAs !== 'decorators';
+  const transformDecorators = !options.enableIvy && options.annotationsAs !== 'decorators';
   const transformTypesToClosure = options.annotateForClosureCompiler;
   if (!transformDecorators && !transformTypesToClosure) {
     return undefined;
@@ -166,18 +177,33 @@ export function readCommandLineAndConfiguration(
   };
 }
 
+function getFormatDiagnosticsHost(options?: api.CompilerOptions): ts.FormatDiagnosticsHost {
+  const basePath = options ? options.basePath : undefined;
+  return {
+    getCurrentDirectory: () => basePath || ts.sys.getCurrentDirectory(),
+    // We need to normalize the path separators here because by default, TypeScript
+    // compiler hosts use posix canonical paths. In order to print consistent diagnostics,
+    // we also normalize the paths.
+    getCanonicalFileName: fileName => fileName.replace(/\\/g, '/'),
+    getNewLine: () => {
+      // Manually determine the proper new line string based on the passed compiler
+      // options. There is no public TypeScript function that returns the corresponding
+      // new line string. see: https://github.com/Microsoft/TypeScript/issues/29581
+      if (options && options.newLine !== undefined) {
+        return options.newLine === ts.NewLineKind.LineFeed ? '\n' : '\r\n';
+      }
+      return ts.sys.newLine;
+    },
+  };
+}
+
 function reportErrorsAndExit(
     allDiagnostics: Diagnostics, options?: api.CompilerOptions,
     consoleError: (s: string) => void = console.error): number {
   const errorsAndWarnings = filterErrorsAndWarnings(allDiagnostics);
   if (errorsAndWarnings.length) {
-    let currentDir = options ? options.basePath : undefined;
-    const formatHost: ts.FormatDiagnosticsHost = {
-      getCurrentDirectory: () => currentDir || ts.sys.getCurrentDirectory(),
-      getCanonicalFileName: fileName => fileName,
-      getNewLine: () => ts.sys.newLine
-    };
-    if (options && (options.enableIvy === true || options.enableIvy === 'ngtsc')) {
+    const formatHost = getFormatDiagnosticsHost(options);
+    if (options && options.enableIvy === true) {
       const ngDiagnostics = errorsAndWarnings.filter(api.isNgDiagnostic);
       const tsDiagnostics = errorsAndWarnings.filter(api.isTsDiagnostic);
       consoleError(replaceTsWithNgInErrors(
@@ -193,7 +219,7 @@ function reportErrorsAndExit(
 export function watchMode(
     project: string, options: api.CompilerOptions, consoleError: (s: string) => void) {
   return performWatchCompilation(createPerformWatchHost(project, diagnostics => {
-    consoleError(formatDiagnostics(diagnostics));
+    consoleError(formatDiagnostics(diagnostics, getFormatDiagnosticsHost(options)));
   }, options, options => createEmitCallback(options)));
 }
 

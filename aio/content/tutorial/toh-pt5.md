@@ -101,7 +101,7 @@ configure it with the `routes` in one step by calling
 
 ## Add _RouterOutlet_
 
-Open the `AppComponent` template replace the `<app-heroes>` element with a `<router-outlet>` element.
+Open the `AppComponent` template and replace the `<app-heroes>` element with a `<router-outlet>` element.
 
 <code-example path="toh-pt5/src/app/app.component.html" 
   region="outlet"
@@ -475,7 +475,7 @@ The browser refreshes and the app is working again.
 You can click a hero in the dashboard or in the heroes list and navigate to that hero's detail view.
 
 If you paste `localhost:4200/detail/11` in the browser address bar,
-the router navigates to the detail view for the hero with `id: 11`,  "Mr. Nice".
+the router navigates to the detail view for the hero with `id: 11`,  "Dr Nice".
 
 {@a goback}
 

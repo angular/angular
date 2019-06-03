@@ -143,18 +143,32 @@ export class RouterModule {
    * Creates a module with all the router providers and directives. It also optionally sets up an
    * application listener to perform an initial navigation.
    *
-   * Options (see `ExtraOptions`):
-   * * `enableTracing` makes the router log all its internal events to the console.
-   * * `useHash` enables the location strategy that uses the URL fragment instead of the history
+   * Configuration Options:
+   *
+   * * `enableTracing` Toggles whether the router should log all navigation events to the console.
+   * * `useHash` Enables the location strategy that uses the URL fragment instead of the history
    * API.
-   * * `initialNavigation` disables the initial navigation.
-   * * `errorHandler` provides a custom error handler.
-   * * `preloadingStrategy` configures a preloading strategy (see `PreloadAllModules`).
-   * * `onSameUrlNavigation` configures how the router handles navigation to the current URL. See
-   * `ExtraOptions` for more details.
-   * * `paramsInheritanceStrategy` defines how the router merges params, data and resolved data
-   * from parent to child routes.
-   */
+   * * `initialNavigation` Disables the initial navigation.
+   * * `errorHandler` Defines a custom error handler for failed navigations.
+   * * `preloadingStrategy` Configures a preloading strategy. See `PreloadAllModules`.
+   * * `onSameUrlNavigation` Define what the router should do if it receives a navigation request to
+   * the current URL.
+   * * `scrollPositionRestoration` Configures if the scroll position needs to be restored when
+   * navigating back.
+   * * `anchorScrolling` Configures if the router should scroll to the element when the url has a
+   * fragment.
+   * * `scrollOffset` Configures the scroll offset the router will use when scrolling to an element.
+   * * `paramsInheritanceStrategy` Defines how the router merges params, data and resolved data from
+   * parent to child routes.
+   * * `malformedUriErrorHandler` Defines a custom malformed uri error handler function. This
+   * handler is invoked when encodedURI contains invalid character sequences.
+   * * `urlUpdateStrategy` Defines when the router updates the browser URL. The default behavior is
+   * to update after successful navigation.
+   * * `relativeLinkResolution` Enables the correct relative link resolution in components with
+   * empty paths.
+   *
+   * See `ExtraOptions` for more details about the above options.
+  */
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule> {
     return {
       ngModule: RouterModule,
@@ -317,51 +331,34 @@ export interface ExtraOptions {
   /**
    * Configures if the scroll position needs to be restored when navigating back.
    *
-   * * 'disabled'--does nothing (default).
-   * * 'top'--set the scroll position to 0,0..
-   * * 'enabled'--set the scroll position to the stored position. This option will be the default in
-   * the future.
+   * * 'disabled'--does nothing (default).  Scroll position will be maintained on navigation.
+   * * 'top'--set the scroll position to x = 0, y = 0 on all navigation.
+   * * 'enabled'--restores the previous scroll position on backward navigation, else sets the
+   * position to the anchor if one is provided, or sets the scroll position to [0, 0] (forward
+   * navigation). This option will be the default in the future.
    *
-   * When enabled, the router stores and restores scroll positions during navigation.
-   * When navigating forward, the scroll position will be set to [0, 0], or to the anchor
-   * if one is provided.
-   *
-   * You can implement custom scroll restoration behavior as follows.
+   * You can implement custom scroll restoration behavior by adapting the enabled behavior as
+   * follows:
    * ```typescript
    * class AppModule {
-   *  constructor(router: Router, viewportScroller: ViewportScroller, store: Store<AppState>) {
-   *    router.events.pipe(filter(e => e instanceof Scroll), switchMap(e => {
-   *      return store.pipe(first(), timeout(200), map(() => e));
-   *    }).subscribe(e => {
-   *      if (e.position) {
-   *        viewportScroller.scrollToPosition(e.position);
-   *      } else if (e.anchor) {
-   *        viewportScroller.scrollToAnchor(e.anchor);
-   *      } else {
-   *        viewportScroller.scrollToPosition([0, 0]);
-   *      }
-   *    });
-   *  }
-   * }
-   * ```
-   *
-   * You can also implement component-specific scrolling like this:
-   *
-   * ```typescript
-   * class ListComponent {
-   *   list: any[];
-   *   constructor(router: Router, viewportScroller: ViewportScroller, fetcher: ListFetcher) {
-   *     const scrollEvents = router.events.filter(e => e instanceof Scroll);
-   *     listFetcher.fetch().pipe(withLatestFrom(scrollEvents)).subscribe(([list, e]) => {
-   *       this.list = list;
-   *       if (e.position) {
-   *         viewportScroller.scrollToPosition(e.position);
-   *       } else {
-   *         viewportScroller.scrollToPosition([0, 0]);
-   *       }
-   *     });
-   *   }
-   * }
+    *   constructor(router: Router, viewportScroller: ViewportScroller) {
+    *     router.events.pipe(
+    *       filter((e: Event): e is Scroll => e instanceof Scroll)
+    *     ).subscribe(e => {
+    *       if (e.position) {
+    *         // backward navigation
+    *         viewportScroller.scrollToPosition(e.position);
+    *       } else if (e.anchor) {
+    *         // anchor navigation
+    *         viewportScroller.scrollToAnchor(e.anchor);
+    *       } else {
+    *         // forward navigation
+    *         viewportScroller.scrollToPosition([0, 0]);
+    *       }
+    *     });
+    *   }
+    * }
+    * ```
    */
   scrollPositionRestoration?: 'disabled'|'enabled'|'top';
 
@@ -444,8 +441,8 @@ export interface ExtraOptions {
    *
    * `<a [routerLink]="['../a']">Link to A</a>`
    *
-   * In other words, you're required to use `../` rather than `./`. The current default in v6
-   * is `legacy`, and this option will be removed in v7 to default to the corrected behavior.
+   * In other words, you're required to use `../` rather than `./`. This is currently the default
+   * behavior. Setting this option to `corrected` enables the fix.
    */
   relativeLinkResolution?: 'legacy'|'corrected';
 }

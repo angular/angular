@@ -29,7 +29,7 @@ export function originalPositionFor(
 export function extractSourceMap(source: string): SourceMap|null {
   let idx = source.lastIndexOf('\n//#');
   if (idx == -1) return null;
-  const smComment = source.slice(idx).trim();
+  const smComment = source.slice(idx).split('\n', 2)[1].trim();
   const smB64 = smComment.split('sourceMappingURL=data:application/json;base64,')[1];
   return smB64 ? JSON.parse(decodeB64String(smB64)) : null;
 }

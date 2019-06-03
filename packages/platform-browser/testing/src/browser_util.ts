@@ -107,7 +107,7 @@ export function normalizeCSS(css: string): string {
       .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
 }
 
-const _singleTagWhitelist = ['br', 'hr', 'input'];
+const _selfClosingTags = ['br', 'hr', 'input'];
 export function stringifyElement(el: any /** TODO #9100 */): string {
   let result = '';
   if (getDOM().isElementNode(el)) {
@@ -144,7 +144,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     }
 
     // Closing tag
-    if (_singleTagWhitelist.indexOf(tagName) == -1) {
+    if (_selfClosingTags.indexOf(tagName) == -1) {
       result += `</${tagName}>`;
     }
   } else if (getDOM().isCommentNode(el)) {

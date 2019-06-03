@@ -9,9 +9,11 @@
 import '../util/ng_dev_mode';
 
 import {assertDefined, assertNotEqual} from '../util/assert';
+
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
-import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
+import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 import {getInitialClassNameValue} from './styling/class_and_style_bindings';
+import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
 
@@ -34,34 +36,39 @@ function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): 
 /**
  * Function that checks whether a given tNode matches tag-based selector and has a valid type.
  *
- * Matching can be perfomed in 2 modes: projection mode (when we project nodes) and regular
- * directive matching mode. In "projection" mode, we do not need to check types, so if tag name
- * matches selector, we declare a match. In "directive matching" mode, we also check whether tNode
- * is of expected type:
- * - whether tNode has either Element or ElementContainer type
- * - or if we want to match "ng-template" tag, we check for Container type
+ * Matching can be performed in 2 modes: projection mode (when we project nodes) and regular
+ * directive matching mode:
+ * - in the "directive matching" mode we do _not_ take TContainer's tagName into account if it is
+ * different from NG_TEMPLATE_SELECTOR (value different from NG_TEMPLATE_SELECTOR indicates that a
+ * tag name was extracted from * syntax so we would match the same directive twice);
+ * - in the "projection" mode, we use a tag name potentially extracted from the * syntax processing
+ * (applicable to TNodeType.Container only).
  */
 function hasTagAndTypeMatch(
     tNode: TNode, currentSelector: string, isProjectionMode: boolean): boolean {
-  return currentSelector === tNode.tagName &&
-      (isProjectionMode ||
-       (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) ||
-       (tNode.type === TNodeType.Container && currentSelector === NG_TEMPLATE_SELECTOR));
+  const tagNameToCompare = tNode.type === TNodeType.Container && !isProjectionMode ?
+      NG_TEMPLATE_SELECTOR :
+      tNode.tagName;
+  return currentSelector === tagNameToCompare;
 }
 
 /**
  * A utility function to match an Ivy node static data against a simple CSS selector
  *
- * @param node static data to match
- * @param selector
+ * @param node static data of the node to match
+ * @param selector The selector to try matching against the node.
+ * @param isProjectionMode if `true` we are matching for content projection, otherwise we are doing
+ * directive matching.
  * @returns true if node matches the selector.
  */
 export function isNodeMatchingSelector(
     tNode: TNode, selector: CssSelector, isProjectionMode: boolean): boolean {
   ngDevMode && assertDefined(selector[0], 'Selector should have a tag name');
   let mode: SelectorFlags = SelectorFlags.ELEMENT;
-  const nodeAttrs = tNode.attrs !;
-  const selectOnlyMarkerIdx = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SelectOnly) : -1;
+  const nodeAttrs = tNode.attrs || [];
+
+  // Find the index of first attribute that has no value, only a name.
+  const nameOnlyMarkerIdx = getNameOnlyMarkerIndex(nodeAttrs);
 
   // When processing ":not" selectors, we skip to the next ":not" if the
   // current one doesn't match
@@ -104,8 +111,11 @@ export function isNodeMatchingSelector(
         continue;
       }
 
+      const isInlineTemplate =
+          tNode.type == TNodeType.Container && tNode.tagName !== NG_TEMPLATE_SELECTOR;
       const attrName = (mode & SelectorFlags.CLASS) ? 'class' : current;
-      const attrIndexInNode = findAttrIndexInNode(attrName, nodeAttrs);
+      const attrIndexInNode =
+          findAttrIndexInNode(attrName, nodeAttrs, isInlineTemplate, isProjectionMode);
 
       if (attrIndexInNode === -1) {
         if (isPositive(mode)) return false;
@@ -115,12 +125,11 @@ export function isNodeMatchingSelector(
 
       if (selectorAttrValue !== '') {
         let nodeAttrValue: string;
-        const maybeAttrName = nodeAttrs[attrIndexInNode];
-        if (selectOnlyMarkerIdx > -1 && attrIndexInNode > selectOnlyMarkerIdx) {
+        if (attrIndexInNode > nameOnlyMarkerIdx) {
           nodeAttrValue = '';
         } else {
           ngDevMode && assertNotEqual(
-                           maybeAttrName, AttributeMarker.NamespaceURI,
+                           nodeAttrs[attrIndexInNode], AttributeMarker.NamespaceURI,
                            'We do not match directives on namespaced attributes');
           nodeAttrValue = nodeAttrs[attrIndexInNode + 1] as string;
         }
@@ -154,34 +163,74 @@ function readClassValueFromTNode(tNode: TNode): string {
 }
 
 /**
- * Examines an attributes definition array from a node to find the index of the
- * attribute with the specified name.
+ * Examines the attribute's definition array for a node to find the index of the
+ * attribute that matches the given `name`.
  *
- * NOTE: Will not find namespaced attributes.
+ * NOTE: This will not match namespaced attributes.
+ *
+ * Attribute matching depends upon `isInlineTemplate` and `isProjectionMode`.
+ * The following table summarizes which types of attributes we attempt to match:
+ *
+ * ===========================================================================================================
+ * Modes                   | Normal Attributes | Bindings Attributes | Template Attributes | I18n
+ * Attributes
+ * ===========================================================================================================
+ * Inline + Projection     | YES               | YES                 | NO                  | YES
+ * -----------------------------------------------------------------------------------------------------------
+ * Inline + Directive      | NO                | NO                  | YES                 | NO
+ * -----------------------------------------------------------------------------------------------------------
+ * Non-inline + Projection | YES               | YES                 | NO                  | YES
+ * -----------------------------------------------------------------------------------------------------------
+ * Non-inline + Directive  | YES               | YES                 | NO                  | YES
+ * ===========================================================================================================
  *
  * @param name the name of the attribute to find
  * @param attrs the attribute array to examine
+ * @param isInlineTemplate true if the node being matched is an inline template (e.g. `*ngFor`)
+ * rather than a manually expanded template node (e.g `<ng-template>`).
+ * @param isProjectionMode true if we are matching against content projection otherwise we are
+ * matching against directives.
  */
-function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
+function findAttrIndexInNode(
+    name: string, attrs: TAttributes | null, isInlineTemplate: boolean,
+    isProjectionMode: boolean): number {
   if (attrs === null) return -1;
-  let selectOnlyMode = false;
-  let i = 0;
-  while (i < attrs.length) {
-    const maybeAttrName = attrs[i];
-    if (maybeAttrName === name) {
-      return i;
-    } else if (maybeAttrName === AttributeMarker.NamespaceURI) {
-      // NOTE(benlesh): will not find namespaced attributes. This is by design.
-      i += 4;
-    } else {
-      if (maybeAttrName === AttributeMarker.SelectOnly) {
-        selectOnlyMode = true;
-      }
-      i += selectOnlyMode ? 1 : 2;
-    }
-  }
 
-  return -1;
+  let i = 0;
+
+  if (isProjectionMode || !isInlineTemplate) {
+    let bindingsMode = false;
+    while (i < attrs.length) {
+      const maybeAttrName = attrs[i];
+      if (maybeAttrName === name) {
+        return i;
+      } else if (
+          maybeAttrName === AttributeMarker.Bindings || maybeAttrName === AttributeMarker.I18n) {
+        bindingsMode = true;
+      } else if (maybeAttrName === AttributeMarker.Classes) {
+        let value = attrs[++i];
+        // We should skip classes here because we have a separate mechanism for
+        // matching classes in projection mode.
+        while (typeof value === 'string') {
+          value = attrs[++i];
+        }
+        continue;
+      } else if (maybeAttrName === AttributeMarker.Template) {
+        // We do not care about Template attributes in this scenario.
+        break;
+      } else if (maybeAttrName === AttributeMarker.NamespaceURI) {
+        // Skip the whole namespaced attribute and value. This is by design.
+        i += 4;
+        continue;
+      }
+      // In binding mode there are only names, rather than name-value pairs.
+      i += bindingsMode ? 1 : 2;
+    }
+    // We did not match the attribute
+    return -1;
+  } else {
+    return matchTemplateAttribute(attrs, name);
+  }
 }
 
 export function isNodeMatchingSelectorList(
@@ -195,37 +244,58 @@ export function isNodeMatchingSelectorList(
   return false;
 }
 
-export function getProjectAsAttrValue(tNode: TNode): string|null {
+export function getProjectAsAttrValue(tNode: TNode): CssSelector|null {
   const nodeAttrs = tNode.attrs;
   if (nodeAttrs != null) {
-    const ngProjectAsAttrIdx = nodeAttrs.indexOf(NG_PROJECT_AS_ATTR_NAME);
+    const ngProjectAsAttrIdx = nodeAttrs.indexOf(AttributeMarker.ProjectAs);
     // only check for ngProjectAs in attribute names, don't accidentally match attribute's value
     // (attribute names are stored at even indexes)
     if ((ngProjectAsAttrIdx & 1) === 0) {
-      return nodeAttrs[ngProjectAsAttrIdx + 1] as string;
+      return nodeAttrs[ngProjectAsAttrIdx + 1] as CssSelector;
     }
   }
   return null;
 }
 
-/**
- * Checks a given node against matching selectors and returns
- * selector index (or 0 if none matched).
- *
- * This function takes into account the ngProjectAs attribute: if present its value will be compared
- * to the raw (un-parsed) CSS selector instead of using standard selector matching logic.
- */
-export function matchingSelectorIndex(
-    tNode: TNode, selectors: CssSelectorList[], textSelectors: string[]): number {
-  const ngProjectAsAttrVal = getProjectAsAttrValue(tNode);
-  for (let i = 0; i < selectors.length; i++) {
-    // if a node has the ngProjectAs attribute match it against unparsed selector
-    // match a node against a parsed selector only if ngProjectAs attribute is not present
-    if (ngProjectAsAttrVal === textSelectors[i] ||
-        ngProjectAsAttrVal === null &&
-            isNodeMatchingSelectorList(tNode, selectors[i], /* isProjectionMode */ true)) {
-      return i + 1;  // first matching selector "captures" a given node
+function getNameOnlyMarkerIndex(nodeAttrs: TAttributes) {
+  for (let i = 0; i < nodeAttrs.length; i++) {
+    const nodeAttr = nodeAttrs[i];
+    if (isNameOnlyAttributeMarker(nodeAttr)) {
+      return i;
     }
   }
-  return 0;
+  return nodeAttrs.length;
+}
+
+function matchTemplateAttribute(attrs: TAttributes, name: string): number {
+  let i = attrs.indexOf(AttributeMarker.Template);
+  if (i > -1) {
+    i++;
+    while (i < attrs.length) {
+      if (attrs[i] === name) return i;
+      i++;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Checks whether a selector is inside a CssSelectorList
+ * @param selector Selector to be checked.
+ * @param list List in which to look for the selector.
+ */
+export function isSelectorInSelectorList(selector: CssSelector, list: CssSelectorList): boolean {
+  selectorListLoop: for (let i = 0; i < list.length; i++) {
+    const currentSelectorInList = list[i];
+    if (selector.length !== currentSelectorInList.length) {
+      continue;
+    }
+    for (let j = 0; j < selector.length; j++) {
+      if (selector[j] !== currentSelectorInList[j]) {
+        continue selectorListLoop;
+      }
+    }
+    return true;
+  }
+  return false;
 }

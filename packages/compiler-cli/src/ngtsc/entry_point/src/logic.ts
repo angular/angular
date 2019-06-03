@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalizeSeparators} from '../../util/src/path';
+import {AbsoluteFsPath} from '../../path/src/types';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
-export function findFlatIndexEntryPoint(rootFiles: ReadonlyArray<string>): string|null {
+export function findFlatIndexEntryPoint(rootFiles: ReadonlyArray<AbsoluteFsPath>): string|null {
   // There are two ways for a file to be recognized as the flat module index:
   // 1) if it's the only file!!!!!!
   // 2) (deprecated) if it's named 'index.ts' and has the shortest path of all such files.
@@ -33,5 +33,5 @@ export function findFlatIndexEntryPoint(rootFiles: ReadonlyArray<string>): strin
     }
   }
 
-  return resolvedEntryPoint ? normalizeSeparators(resolvedEntryPoint) : null;
+  return resolvedEntryPoint;
 }

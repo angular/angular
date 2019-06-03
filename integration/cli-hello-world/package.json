@@ -7,7 +7,7 @@
     "e2e": "ng e2e --webdriver-update=false",
     "lint": "ng lint",
     "ng": "ng",
-    "postinstall": "webdriver-manager update --gecko=false --standalone=false $CHROMEDRIVER_VERSION_ARG",
+    "postinstall": "webdriver-manager update --gecko=false --standalone=false $CI_CHROMEDRIVER_VERSION_ARG",
     "start": "ng serve",
     "pretest": "ng version",
     "test": "ng test --progress=false --watch=false && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production"
@@ -19,7 +19,6 @@
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/forms": "file:../../dist/packages-dist/forms",
-    "@angular/http": "file:../../dist/packages-dist/http",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/router": "file:../../dist/packages-dist/router",
@@ -29,7 +28,7 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.12.1",
+    "@angular-devkit/build-angular": "0.800.0-rc.2",
     "@angular/cli": "file:../../node_modules/@angular/cli",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
@@ -46,7 +45,7 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "file:../../node_modules/protractor",
     "ts-node": "~4.1.0",
-    "tslint": "~5.9.1",
+    "tslint": "~5.13.0",
     "typescript": "file:../../node_modules/typescript"
   }
 }

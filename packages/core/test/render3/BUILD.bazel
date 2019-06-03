@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "render3_lib",
@@ -30,6 +30,7 @@ ts_library(
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
+        "@npm//rxjs",
     ],
 )
 
@@ -44,7 +45,7 @@ ts_library(
         "//packages/compiler",
         "//packages/platform-browser",
         "//packages/platform-server",
-        "@ngdeps//zone.js",
+        "@npm//zone.js",
     ],
 )
 
@@ -65,7 +66,7 @@ jasmine_node_test(
     ],
     deps = [
         ":render3_node_lib",
-        "@ngdeps//zone.js",
+        "@npm//zone.js",
     ],
 )
 

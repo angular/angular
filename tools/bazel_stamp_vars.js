@@ -18,8 +18,6 @@ function _exec(str) {
   return execSync(str).toString().trim();
 }
 
-console.error('Running', process.argv.join(' '));
-
 function onError() {
   console.error('Failed to execute:,', process.argv.join(' '));
   console.error('');

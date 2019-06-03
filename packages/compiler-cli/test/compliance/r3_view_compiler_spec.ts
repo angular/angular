@@ -93,7 +93,7 @@ describe('r3_view_compiler', () => {
 
   describe('interpolations', () => {
     // Regression #21927
-    it('should generate a correct call to bV with more than 8 interpolations', () => {
+    it('should generate a correct call to textInterpolateV with more than 8 interpolations', () => {
       const files: MockDirectory = {
         app: {
           'example.ts': `
@@ -112,10 +112,19 @@ describe('r3_view_compiler', () => {
         }
       };
 
-      const bV_call =
-          `$r3$.ɵinterpolationV([" ",ctx.list[0]," ",ctx.list[1]," ",ctx.list[2]," ",ctx.list[3],
-        " ",ctx.list[4]," ",ctx.list[5]," ",ctx.list[6]," ",ctx.list[7]," ",ctx.list[8],
-        " "])`;
+      const bV_call = `
+      …
+      function MyApp_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵɵtext(0);
+        }
+        if (rf & 2) {
+          $i0$.ɵɵselect(0);
+          $i0$.ɵɵtextInterpolateV([" ", ctx.list[0], " ", ctx.list[1], " ", ctx.list[2], " ", ctx.list[3], " ", ctx.list[4], " ", ctx.list[5], " ", ctx.list[6], " ", ctx.list[7], " ", ctx.list[8], " "]);
+        }
+      }
+      …
+      `;
       const result = compile(files, angularFiles);
       expectEmit(result.source, bV_call, 'Incorrect bV call');
     });
@@ -143,11 +152,12 @@ describe('r3_view_compiler', () => {
       const template = `
       template: function MyApp_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelement(0, "div");
+          $i0$.ɵɵelement(0, "div");
         }
         if (rf & 2) {
-          $i0$.ɵelementProperty(0, "@attr", …);
-          $i0$.ɵelementProperty(0, "@binding", …);
+          $i0$.ɵɵselect(0);
+          $i0$.ɵɵproperty("@attr", …);
+          $i0$.ɵɵproperty("@binding", …);
         }
       }`;
       const result = compile(files, angularFiles);
@@ -175,9 +185,10 @@ describe('r3_view_compiler', () => {
       const template = `
       template: function MyApp_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "div");
+          $i0$.ɵɵelementStart(0, "div");
           …
-          $i0$.ɵelementProperty(0, "@mySelector", …);
+          $i0$.ɵɵselect(0);
+          $i0$.ɵɵproperty("@mySelector", …);
         }
       }`;
       const result = compile(files, angularFiles);

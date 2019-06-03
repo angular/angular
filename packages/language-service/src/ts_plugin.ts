@@ -6,18 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import * as ts from 'typescript'; // used as value, passed in by tsserver at runtime
+import * as tss from 'typescript/lib/tsserverlibrary'; // used as type only
 
 import {createLanguageService} from './language_service';
-import {Completion, Diagnostic, DiagnosticMessageChain} from './types';
+import {Completion, Diagnostic, DiagnosticMessageChain, Location} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
-const projectHostMap = new WeakMap<any, TypeScriptServiceHost>();
+const projectHostMap = new WeakMap<tss.server.Project, TypeScriptServiceHost>();
 
-export function getExternalFiles(project: any): string[]|undefined {
+export function getExternalFiles(project: tss.server.Project): string[]|undefined {
   const host = projectHostMap.get(project);
   if (host) {
-    return host.getTemplateReferences();
+    const externalFiles = host.getTemplateReferences();
+    return externalFiles;
   }
 }
 
@@ -62,7 +64,7 @@ function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnost
   return result;
 }
 
-export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageService {
+export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
   const oldLS: ts.LanguageService = info.languageService;
   const proxy: ts.LanguageService = Object.assign({}, oldLS);
   const logger = info.project.projectService.logger;
@@ -78,7 +80,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   }
 
   const serviceHost = new TypeScriptServiceHost(info.languageServiceHost, oldLS);
-  const ls = createLanguageService(serviceHost as any);
+  const ls = createLanguageService(serviceHost);
   serviceHost.setSite(ls);
   projectHostMap.set(info.project, serviceHost);
 
@@ -154,36 +156,61 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
     return base;
   };
 
-  proxy.getDefinitionAtPosition = function(
-      fileName: string, position: number): ReadonlyArray<ts.DefinitionInfo> {
-    let base = oldLS.getDefinitionAtPosition(fileName, position);
-    if (base && base.length) {
-      return base;
-    }
+  proxy.getDefinitionAtPosition = function(fileName: string, position: number):
+                                      ReadonlyArray<ts.DefinitionInfo>|
+      undefined {
+        const base = oldLS.getDefinitionAtPosition(fileName, position);
+        if (base && base.length) {
+          return base;
+        }
+        const ours = ls.getDefinitionAt(fileName, position);
+        if (ours && ours.length) {
+          return ours.map((loc: Location) => {
+            return {
+              fileName: loc.fileName,
+              textSpan: {
+                start: loc.span.start,
+                length: loc.span.end - loc.span.start,
+              },
+              name: '',
+              kind: ts.ScriptElementKind.unknown,
+              containerName: loc.fileName,
+              containerKind: ts.ScriptElementKind.unknown,
+            };
+          });
+        }
+      };
 
-    return tryOperation('get definition', () => {
-             const ours = ls.getDefinitionAt(fileName, position);
-             let combined;
-
-             if (ours && ours.length) {
-               combined = base && base.concat([]) || [];
-               for (const loc of ours) {
-                 combined.push({
-                   fileName: loc.fileName,
-                   textSpan: {start: loc.span.start, length: loc.span.end - loc.span.start},
-                   name: '',
-                   // TODO: remove any and fix type error.
-                   kind: 'definition' as any,
-                   containerName: loc.fileName,
-                   containerKind: 'file' as any,
-                 });
-               }
-             } else {
-               combined = base;
-             }
-             return combined;
-           }) || [];
-  };
+  proxy.getDefinitionAndBoundSpan = function(fileName: string, position: number):
+                                        ts.DefinitionInfoAndBoundSpan |
+      undefined {
+        const base = oldLS.getDefinitionAndBoundSpan(fileName, position);
+        if (base && base.definitions && base.definitions.length) {
+          return base;
+        }
+        const ours = ls.getDefinitionAt(fileName, position);
+        if (ours && ours.length) {
+          return {
+            definitions: ours.map((loc: Location) => {
+              return {
+                fileName: loc.fileName,
+                textSpan: {
+                  start: loc.span.start,
+                  length: loc.span.end - loc.span.start,
+                },
+                name: '',
+                kind: ts.ScriptElementKind.unknown,
+                containerName: loc.fileName,
+                containerKind: ts.ScriptElementKind.unknown,
+              };
+            }),
+            textSpan: {
+              start: ours[0].span.start,
+              length: ours[0].span.end - ours[0].span.start,
+            },
+          };
+        }
+      };
 
   return proxy;
 }

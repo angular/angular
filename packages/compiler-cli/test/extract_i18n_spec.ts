@@ -8,17 +8,9 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
 
 import {mainXi18n} from '../src/extract_i18n';
-
-import {isInBazel, makeTempDir, setup} from './test_support';
-
-function getNgRootDir() {
-  const moduleFilename = module.filename.replace(/\\/g, '/');
-  const distIndex = moduleFilename.indexOf('/dist/all');
-  return moduleFilename.substr(0, distIndex);
-}
+import {makeTempDir, setup} from './test_support';
 
 const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE messagebundle [
@@ -214,31 +206,10 @@ describe('extract_i18n command line', () => {
 
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    if (isInBazel()) {
-      const support = setup();
-      write = (fileName: string, content: string) => { support.write(fileName, content); };
-      basePath = support.basePath;
-      outDir = path.join(basePath, 'built');
-    } else {
-      basePath = makeTempDir();
-      write = (fileName: string, content: string) => {
-        const dir = path.dirname(fileName);
-        if (dir !== '.') {
-          const newDir = path.join(basePath, dir);
-          if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
-        }
-        fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
-      };
-      outDir = path.resolve(basePath, 'built');
-      const ngRootDir = getNgRootDir();
-      const nodeModulesPath = path.resolve(basePath, 'node_modules');
-      fs.mkdirSync(nodeModulesPath);
-      fs.symlinkSync(
-          path.resolve(ngRootDir, 'dist', 'all', '@angular'),
-          path.resolve(nodeModulesPath, '@angular'));
-      fs.symlinkSync(
-          path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
-    }
+    const support = setup();
+    write = (fileName: string, content: string) => { support.write(fileName, content); };
+    basePath = support.basePath;
+    outDir = path.join(basePath, 'built');
     write('tsconfig-base.json', `{
       "compilerOptions": {
         "experimentalDecorators": true,

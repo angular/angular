@@ -22,7 +22,7 @@ You can access Bazel with the `yarn bazel` command
 
 The `WORKSPACE` file indicates that our root directory is a
 Bazel project. It contains the version of the Bazel rules we
-use to execute build steps, from `build_bazel_rules_typescript`.
+use to execute build steps, from `npm_bazel_typescript`.
 The sources on [GitHub] are published from Google's internal
 repository (google3).
 
@@ -81,6 +81,9 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
 
 The process should automatically connect to the debugger. For additional info and testing options, see the [nodejs_test documentation](https://bazelbuild.github.io/rules_nodejs/node/node.html#nodejs_test).
 
+- Click on "Resume script execution" to let the code run until the first `debugger` statement or a previously set breakpoint.
+- If you're debugging an ivy test and you want to inspect the generated template instructions, find the template of your component in the call stack and click on `(source mapped from [CompName].js)` at the bottom of the code. You can also disable sourcemaps in the options or go to sources and look into ng:// namespace to see all the generated code.
+
 ### Debugging a Node Test in VSCode
 
 First time setup:
@@ -92,7 +95,7 @@ First time setup:
       "type": "node",
       "request": "attach",
       "name": "Attach to Remote",
-      "port": 9229,
+      "port": 9229
     }
 ```
 
@@ -247,11 +250,6 @@ Usually there is a single item (or multiple items of the same kind) where the ov
 
 
 ## Known issues
-
-### Webstorm
-
-The autocompletion in WebStorm can be added via a Bazel plugin intended for IntelliJ IDEA, but the plugin needs to be installed in a special way.
-See [bazelbuild/intellij#246](https://github.com/bazelbuild/intellij/issues/246) for more info.
 
 ### Xcode
 

@@ -422,7 +422,12 @@ describe('compiler (unbundled Angular)', () => {
 
                 @Component({
                   selector: 'my-comp',
-                  template: '<ng-content></ng-content><ng-content select="child"></ng-content>'
+                  template:
+                  '<ng-content select="child1"></ng-content>' +
+                  '<ng-content></ng-content>' +
+                  '<ng-template><ng-content select="child2"></ng-content></ng-template>' +
+                  '<ng-content select="child3"></ng-content>' +
+                  '<ng-content select="child1"></ng-content>'
                 })
                 export class MyComp {
                   @Input('aInputName')
@@ -449,8 +454,8 @@ describe('compiler (unbundled Angular)', () => {
       expect(createComponentFactoryCall).toContain(`{aInputProp:'aInputName'}`);
       // outputs
       expect(createComponentFactoryCall).toContain(`{aOutputProp:'aOutputName'}`);
-      // ngContentSelectors
-      expect(createComponentFactoryCall).toContain(`['*','child']`);
+      // ngContentSelectors - note that the catch-all doesn't have to appear at the start
+      expect(createComponentFactoryCall).toContain(`['child1','*','child2','child3','child1']`);
     });
   });
 
@@ -486,130 +491,142 @@ describe('compiler (unbundled Angular)', () => {
 
     inheritanceWithSummariesSpecs(() => angularSummaryFiles);
 
-    it('should not reexport type symbols mentioned in constructors', () => {
-      const libInput: MockDirectory = {
-        'lib': {
-          'base.ts': `
-            export class AValue {}
-            export type AType = {};
+    describe('external symbol re-exports enabled', () => {
 
-            export class AClass {
-              constructor(a: AType, b: AValue) {}
-            }
-          `
-        }
-      };
-      const appInput: MockDirectory = {
-        'app': {
-          'main.ts': `
-            export {AClass} from '../lib/base';
-          `
-        }
-      };
+      it('should not reexport type symbols mentioned in constructors', () => {
+        const libInput: MockDirectory = {
+          'lib': {
+            'base.ts': `
+              export class AValue {}
+              export type AType = {};
+  
+              export class AClass {
+                constructor(a: AType, b: AValue) {}
+              }
+            `
+          }
+        };
+        const appInput: MockDirectory = {
+          'app': {
+            'main.ts': `
+              export {AClass} from '../lib/base';
+            `
+          }
+        };
 
-      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
-      const {genFiles: appGenFiles} =
-          compile([appInput, libOutDir, angularSummaryFiles], {useSummaries: true});
-      const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts') !;
-      const appNgFactoryTs = toTypeScript(appNgFactory);
-      expect(appNgFactoryTs).not.toContain('AType');
-      expect(appNgFactoryTs).toContain('AValue');
-    });
+        const {outDir: libOutDir} = compile(
+            [libInput, angularSummaryFiles],
+            {useSummaries: true, createExternalSymbolFactoryReexports: true});
+        const {genFiles: appGenFiles} = compile(
+            [appInput, libOutDir, angularSummaryFiles],
+            {useSummaries: true, createExternalSymbolFactoryReexports: true});
+        const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts') !;
+        const appNgFactoryTs = toTypeScript(appNgFactory);
+        expect(appNgFactoryTs).not.toContain('AType');
+        expect(appNgFactoryTs).toContain('AValue');
+      });
 
-    it('should not reexport complex function calls', () => {
-      const libInput: MockDirectory = {
-        'lib': {
-          'base.ts': `
-            export class AClass {
-              constructor(arg: any) {}
+      it('should not reexport complex function calls', () => {
+        const libInput: MockDirectory = {
+          'lib': {
+            'base.ts': `
+              export class AClass {
+                constructor(arg: any) {}
+  
+                static create(arg: any = null): AClass { return new AClass(arg); }
+  
+                call(arg: any) {}
+              }
+  
+              export function simple(arg: any) { return [arg]; }
+  
+              export const ctor_arg = {};
+              export const ctor_call = new AClass(ctor_arg);
+  
+              export const static_arg = {};
+              export const static_call = AClass.create(static_arg);
+  
+              export const complex_arg = {};
+              export const complex_call = AClass.create().call(complex_arg);
+  
+              export const simple_arg = {};
+              export const simple_call = simple(simple_arg);
+            `
+          }
+        };
+        const appInput: MockDirectory = {
+          'app': {
+            'main.ts': `
+              import {ctor_call, static_call, complex_call, simple_call} from '../lib/base';
+  
+              export const calls = [ctor_call, static_call, complex_call, simple_call];
+            `,
+          }
+        };
 
-              static create(arg: any = null): AClass { return new AClass(arg); }
+        const {outDir: libOutDir} = compile(
+            [libInput, angularSummaryFiles],
+            {useSummaries: true, createExternalSymbolFactoryReexports: true});
+        const {genFiles: appGenFiles} = compile(
+            [appInput, libOutDir, angularSummaryFiles],
+            {useSummaries: true, createExternalSymbolFactoryReexports: true});
+        const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts') !;
+        const appNgFactoryTs = toTypeScript(appNgFactory);
 
-              call(arg: any) {}
-            }
+        // metadata of ctor calls is preserved, so we reexport the argument
+        expect(appNgFactoryTs).toContain('ctor_arg');
+        expect(appNgFactoryTs).toContain('ctor_call');
 
-            export function simple(arg: any) { return [arg]; }
+        // metadata of static calls is preserved, so we reexport the argument
+        expect(appNgFactoryTs).toContain('static_arg');
+        expect(appNgFactoryTs).toContain('AClass');
+        expect(appNgFactoryTs).toContain('static_call');
 
-            export const ctor_arg = {};
-            export const ctor_call = new AClass(ctor_arg);
+        // metadata of complex calls is elided, so we don't reexport the argument
+        expect(appNgFactoryTs).not.toContain('complex_arg');
+        expect(appNgFactoryTs).toContain('complex_call');
 
-            export const static_arg = {};
-            export const static_call = AClass.create(static_arg);
+        // metadata of simple calls is preserved, so we reexport the argument
+        expect(appNgFactoryTs).toContain('simple_arg');
+        expect(appNgFactoryTs).toContain('simple_call');
+      });
 
-            export const complex_arg = {};
-            export const complex_call = AClass.create().call(complex_arg);
+      it('should not reexport already exported symbols except for lowered symbols', () => {
+        const libInput: MockDirectory = {
+          'lib': {
+            'base.ts': `
+              export const exportedVar = 1;
 
-            export const simple_arg = {};
-            export const simple_call = simple(simple_arg);
-          `
-        }
-      };
-      const appInput: MockDirectory = {
-        'app': {
-          'main.ts': `
-            import {ctor_call, static_call, complex_call, simple_call} from '../lib/base';
+              // A symbol introduced by lowering expressions
+              export const ɵ1 = 'lowered symbol';
+            `
+          }
+        };
+        const appInput: MockDirectory = {
+          'app': {
+            'main.ts': `export * from '../lib/base';`,
+          }
+        };
 
-            export const calls = [ctor_call, static_call, complex_call, simple_call];
-          `,
-        }
-      };
+        const {outDir: libOutDir} = compile(
+            [libInput, angularSummaryFiles],
+            {useSummaries: true, createExternalSymbolFactoryReexports: true});
+        const {genFiles: appGenFiles} = compile(
+            [appInput, libOutDir, angularSummaryFiles],
+            {useSummaries: true, createExternalSymbolFactoryReexports: true});
+        const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts') !;
+        const appNgFactoryTs = toTypeScript(appNgFactory);
 
-      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
-      const {genFiles: appGenFiles} =
-          compile([appInput, libOutDir, angularSummaryFiles], {useSummaries: true});
-      const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts') !;
-      const appNgFactoryTs = toTypeScript(appNgFactory);
+        // we don't need to reexport exported symbols via the .ngfactory
+        // as we can refer to them via the reexport.
+        expect(appNgFactoryTs).not.toContain('exportedVar');
 
-      // metadata of ctor calls is preserved, so we reexport the argument
-      expect(appNgFactoryTs).toContain('ctor_arg');
-      expect(appNgFactoryTs).toContain('ctor_call');
-
-      // metadata of static calls is preserved, so we reexport the argument
-      expect(appNgFactoryTs).toContain('static_arg');
-      expect(appNgFactoryTs).toContain('AClass');
-      expect(appNgFactoryTs).toContain('static_call');
-
-      // metadata of complex calls is elided, so we don't reexport the argument
-      expect(appNgFactoryTs).not.toContain('complex_arg');
-      expect(appNgFactoryTs).toContain('complex_call');
-
-      // metadata of simple calls is preserved, so we reexport the argument
-      expect(appNgFactoryTs).toContain('simple_arg');
-      expect(appNgFactoryTs).toContain('simple_call');
-    });
-
-    it('should not reexport already exported symbols except for lowered symbols', () => {
-      const libInput: MockDirectory = {
-        'lib': {
-          'base.ts': `
-            export const exportedVar = 1;
-
-            // A symbol introduced by lowering expressions
-            export const ɵ1 = 'lowered symbol';
-          `
-        }
-      };
-      const appInput: MockDirectory = {
-        'app': {
-          'main.ts': `export * from '../lib/base';`,
-        }
-      };
-
-      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
-      const {genFiles: appGenFiles} =
-          compile([appInput, libOutDir, angularSummaryFiles], {useSummaries: true});
-      const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts') !;
-      const appNgFactoryTs = toTypeScript(appNgFactory);
-
-      // we don't need to reexport exported symbols via the .ngfactory
-      // as we can refer to them via the reexport.
-      expect(appNgFactoryTs).not.toContain('exportedVar');
-
-      // although ɵ1 is reexported via `export *`, we still need to reexport it
-      // via the .ngfactory as tsickle expands `export *` into named exports,
-      // and doesn't know about our lowered symbols as we introduce them
-      // after the typecheck phase.
-      expect(appNgFactoryTs).toContain('ɵ1');
+        // although ɵ1 is reexported via `export *`, we still need to reexport it
+        // via the .ngfactory as tsickle expands `export *` into named exports,
+        // and doesn't know about our lowered symbols as we introduce them
+        // after the typecheck phase.
+        expect(appNgFactoryTs).toContain('ɵ1');
+      });
     });
   });
 
@@ -741,12 +758,14 @@ describe('compiler (unbundled Angular)', () => {
              compile([lib1Input, getAngularSummaryFiles()], {useSummaries: true});
          const {outDir: lib2OutDir} =
              compile([lib1OutDir, lib2Input, getAngularSummaryFiles()], {useSummaries: true});
-         const {genFiles} =
-             compile([lib2OutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
+         const {genFiles} = compile(
+             [lib1OutDir, lib2OutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
+
          const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts') !;
          const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
-         expect(toTypeScript(mainNgFactory))
-             .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam_2]`);
+         const mainNgFactorySource = toTypeScript(mainNgFactory);
+         expect(mainNgFactorySource).toContain(`import * as i2 from '/lib1/base';`);
+         expect(mainNgFactorySource).toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam]`);
        });
 
     describe('Injectable', () => {

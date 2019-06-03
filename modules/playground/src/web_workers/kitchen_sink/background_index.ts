@@ -10,12 +10,14 @@ import {NgModule} from '@angular/core';
 import {WorkerAppModule} from '@angular/platform-webworker';
 import {platformWorkerAppDynamic} from '@angular/platform-webworker-dynamic';
 
-import {HelloCmp} from './index_common';
+import {HelloCmp, RedDec} from './index_common';
 
-@NgModule({imports: [WorkerAppModule], bootstrap: [HelloCmp], declarations: [HelloCmp]})
-class ExampleModule {
+@NgModule({
+  imports: [WorkerAppModule],
+  bootstrap: [HelloCmp],
+  declarations: [HelloCmp, RedDec],
+})
+export class ExampleModule {
 }
 
-export function main() {
-  platformWorkerAppDynamic().bootstrapModule(ExampleModule);
-}
+platformWorkerAppDynamic().bootstrapModule(ExampleModule);

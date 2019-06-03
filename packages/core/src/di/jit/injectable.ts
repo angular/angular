@@ -43,7 +43,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
           typeArgumentCount: 0,
           providedIn: meta.providedIn,
           ctorDeps: reflectDependencies(type),
-          userDeps: undefined
+          userDeps: undefined,
         };
         if ((isUseClassProvider(meta) || isUseFactoryProvider(meta)) && meta.deps !== undefined) {
           compilerMeta.userDeps = convertDependencies(meta.deps);
@@ -71,7 +71,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
           throw new Error(`Unreachable state.`);
         }
         def = getCompilerFacade().compileInjectable(
-            angularCoreDiEnv, `ng://${type.name}/ngInjectableDef.js`, compilerMeta);
+            angularCoreDiEnv, `ng:///${type.name}/ngInjectableDef.js`, compilerMeta);
       }
       return def;
     },

@@ -129,10 +129,12 @@ if (process.env['WEB_TEST_METADATA']) {
     if (webTestNamedFiles['CHROMIUM']) {
       const chromeBin = require.resolve(webTestNamedFiles['CHROMIUM']);
       const chromeDriver = require.resolve(webTestNamedFiles['CHROMEDRIVER']);
-      const args = [];
+
+      // The sandbox needs to be disabled, because it causes Chrome to crash on some environments.
+      // See: http://chromedriver.chromium.org/help/chrome-doesn-t-start
+      const args = ['--no-sandbox'];
       if (headless) {
-        args.push('--headless');
-        args.push('--disable-gpu');
+        args.push('--headless', '--disable-gpu');
       }
       setConf(conf, 'directConnect', true, 'is set to true for chrome');
       setConf(conf, 'chromeDriver', chromeDriver, 'is determined by the browsers attribute');

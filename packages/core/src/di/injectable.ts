@@ -8,7 +8,8 @@
 
 import {Type} from '../interface/type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
-import {InjectableDef, InjectableType, defineInjectable, getInjectableDef} from './interface/defs';
+
+import {InjectableType, getInjectableDef, ɵɵInjectableDef, ɵɵdefineInjectable} from './interface/defs';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider';
 import {compileInjectable as render3CompileInjectable} from './jit/injectable';
 import {convertInjectableProviderToFactory} from './util';
@@ -30,19 +31,17 @@ export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
  */
 export interface InjectableDecorator {
   /**
-   * A marker metadata that marks a class as available to `Injector` for creation.
+   * Marks a class as available to `Injector` for creation.
    *
-   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
+   * @see [Introduction to Services and DI](guide/architecture-services)
+   * @see [Dependency Injection Guide](guide/dependency-injection)
    *
    * @usageNotes
-   * ### Example
    *
-   * {@example core/di/ts/metadata_spec.ts region='Injectable'}
-   *
-   * `Injector` will throw an error when trying to instantiate a class that
-   * does not have `@Injectable` marker, as shown in the example below.
-   *
-   * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
+   * The following example shows how service classes are properly marked as
+   * injectable.
+   *Z
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"></code-example>
    *
    */
   (): TypeDecorator;
@@ -56,7 +55,15 @@ export interface InjectableDecorator {
  *
  * @publicApi
  */
-export interface Injectable { providedIn?: Type<any>|'root'|null; }
+export interface Injectable {
+  /**
+   * Determines which injectors will provide the injectable,
+   * by either associating it with an @NgModule or other `InjectorType`,
+   * or by specifying that this injectable should be provided in the
+   * 'root' injector, which will be the application-level injector in most apps.
+   */
+  providedIn?: Type<any>|'root'|null;
+}
 
 /**
  * Injectable decorator and metadata.
@@ -73,7 +80,7 @@ export const Injectable: InjectableDecorator = makeDecorator(
  *
  * @publicApi
  */
-export interface InjectableType<T> extends Type<T> { ngInjectableDef: InjectableDef<T>; }
+export interface InjectableType<T> extends Type<T> { ngInjectableDef: ɵɵInjectableDef<T>; }
 
 /**
  * Supports @Injectable() in JIT mode for Render2.
@@ -82,7 +89,7 @@ function render2CompileInjectable(
     injectableType: InjectableType<any>,
     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
   if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
-    injectableType.ngInjectableDef = defineInjectable({
+    injectableType.ngInjectableDef = ɵɵdefineInjectable({
       providedIn: options.providedIn,
       factory: convertInjectableProviderToFactory(injectableType, options),
     });

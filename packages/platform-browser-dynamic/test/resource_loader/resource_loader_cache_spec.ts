@@ -21,17 +21,6 @@ if (isBrowser) {
       setTemplateCache({'test.html': '<div>Hello</div>'});
       return new CachedResourceLoader();
     }
-    beforeEach(fakeAsync(() => {
-      TestBed.configureCompiler({
-        providers: [
-          {provide: UrlResolver, useClass: TestUrlResolver, deps: []},
-          {provide: ResourceLoader, useFactory: createCachedResourceLoader, deps: []}
-        ]
-      });
-
-      TestBed.configureTestingModule({declarations: [TestComponent]});
-      TestBed.compileComponents();
-    }));
 
     it('should throw exception if $templateCache is not found', () => {
       setTemplateCache(null);
@@ -41,20 +30,25 @@ if (isBrowser) {
     });
 
     it('should resolve the Promise with the cached file content on success', async(() => {
-         setTemplateCache({'test.html': '<div>Hello</div>'});
-         resourceLoader = new CachedResourceLoader();
+         resourceLoader = createCachedResourceLoader();
          resourceLoader.get('test.html').then((text) => { expect(text).toBe('<div>Hello</div>'); });
        }));
 
     it('should reject the Promise on failure', async(() => {
-         resourceLoader = new CachedResourceLoader();
-         resourceLoader.get('unknown.html')
-             .then((text) => { throw new Error('Not expected to succeed.'); })
-             .catch((error) => {/** success */});
+         resourceLoader = createCachedResourceLoader();
+         resourceLoader.get('unknown.html').then(() => {
+           throw new Error('Not expected to succeed.');
+         }, () => {/* success */});
        }));
 
     it('should allow fakeAsync Tests to load components with templateUrl synchronously',
        fakeAsync(() => {
+         TestBed.configureCompiler({
+           providers: [
+             {provide: UrlResolver, useClass: TestUrlResolver, deps: []},
+             {provide: ResourceLoader, useFactory: createCachedResourceLoader, deps: []}
+           ]
+         });
          TestBed.configureTestingModule({declarations: [TestComponent]});
          TestBed.compileComponents();
          tick();

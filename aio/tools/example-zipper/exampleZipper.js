@@ -102,7 +102,9 @@ class ExampleZipper {
       'src/typings.d.ts',
       'src/environments/**/*',
       'src/tsconfig.*',
-      'src/tslint.*'
+      'src/tslint.*',
+      // Only ignore root package.json
+      '!package.json'
     ];
     var alwaysExcludes = [
       '!**/bs-config.e2e.json',
@@ -110,7 +112,6 @@ class ExampleZipper {
       '!**/*zipper.*',
       '!**/systemjs.config.js',
       '!**/npm-debug.log',
-      '!**/package.json',
       '!**/example-config.json',
       '!**/wallaby.js',
       // AoT related files

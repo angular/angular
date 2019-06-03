@@ -6,16 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Determine if we run under bazel
-const isBazel = !!process.env.RUNFILES;
-// isBazel needed while 'scripts/ci/test-e2e.sh test.e2e.protractor-e2e' is run
-// on Travis
-// TODO: port remaining protractor e2e tests to bazel protractor_web_test_suite rule
-
 // Make sure that the command line is read as the first thing
 // as this could exit node if the help script should be printed.
-const BASE = isBazel ? 'angular/modules' : 'dist/all';
-require(`./${BASE}/e2e_util/perf_util`).readCommandLine();
+require('angular/modules/e2e_util/perf_util').readCommandLine();
 
 const CHROME_OPTIONS = {
   'args': ['--js-flags=--expose-gc', '--no-sandbox', '--headless', '--disable-dev-shm-usage'],
@@ -25,7 +18,7 @@ const CHROME_OPTIONS = {
   }
 };
 
-const config = {
+exports.config = {
   onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
   restartBrowserBetweenTests: true,
   allScriptsTimeout: 11000,
@@ -41,19 +34,8 @@ const config = {
   framework: 'jasmine2',
   jasmineNodeOpts: {
     showColors: true,
-    defaultTimeoutInterval: 60000,
+    defaultTimeoutInterval: 90000,
     print: function(msg) { console.log(msg); },
   },
   useAllAngular2AppRoots: true
 };
-
-// Bazel has different strategy for how specs and baseUrl are specified
-if (!isBazel) {
-  config.baseUrl = 'http://localhost:8000/';
-  config.specs = [
-    'dist/all/**/e2e_test/**/*_perf.spec.js',
-    'dist/all/**/e2e_test/**/*_perf.js',
-  ]
-}
-
-exports.config = config;

@@ -7,12 +7,13 @@
  */
 
 import * as ts from 'typescript';
+import {AbsoluteFsPath} from '../../path/src/types';
 
 export interface ShimGenerator {
   /**
    * Returns `true` if this generator is intended to handle the given file.
    */
-  recognize(fileName: string): boolean;
+  recognize(fileName: AbsoluteFsPath): boolean;
 
   /**
    * Generate a shim's `ts.SourceFile` for the given original file.
@@ -22,8 +23,8 @@ export interface ShimGenerator {
    *
    * If `generate` returns null, then the shim generator declines to generate the file after all.
    */
-  generate(genFileName: string, readFile: (fileName: string) => ts.SourceFile | null): ts.SourceFile
-      |null;
+  generate(genFileName: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
+      ts.SourceFile|null;
 }
 
 /**
@@ -31,6 +32,13 @@ export interface ShimGenerator {
  */
 export class GeneratedShimsHostWrapper implements ts.CompilerHost {
   constructor(private delegate: ts.CompilerHost, private shimGenerators: ShimGenerator[]) {
+    if (delegate.resolveModuleNames !== undefined) {
+      this.resolveModuleNames =
+          (moduleNames: string[], containingFile: string, reusedNames?: string[],
+           redirectedReference?: ts.ResolvedProjectReference) =>
+              delegate.resolveModuleNames !(
+                  moduleNames, containingFile, reusedNames, redirectedReference);
+    }
     if (delegate.resolveTypeReferenceDirectives) {
       // Backward compatibility with TypeScript 2.9 and older since return
       // type has changed from (ts.ResolvedTypeReferenceDirective | undefined)[]
@@ -44,7 +52,14 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
     if (delegate.directoryExists !== undefined) {
       this.directoryExists = (directoryName: string) => delegate.directoryExists !(directoryName);
     }
+    if (delegate.getDirectories !== undefined) {
+      this.getDirectories = (path: string) => delegate.getDirectories !(path);
+    }
   }
+
+  resolveModuleNames?:
+      (moduleNames: string[], containingFile: string, reusedNames?: string[],
+       redirectedReference?: ts.ResolvedProjectReference) => (ts.ResolvedModule | undefined)[];
 
   resolveTypeReferenceDirectives?:
       (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
@@ -57,14 +72,16 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
       shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
     for (let i = 0; i < this.shimGenerators.length; i++) {
       const generator = this.shimGenerators[i];
-      if (generator.recognize(fileName)) {
+      // TypeScript internal paths are guaranteed to be POSIX-like absolute file paths.
+      const absoluteFsPath = AbsoluteFsPath.fromUnchecked(fileName);
+      if (generator.recognize(absoluteFsPath)) {
         const readFile = (originalFile: string) => {
           return this.delegate.getSourceFile(
                      originalFile, languageVersion, onError, shouldCreateNewSourceFile) ||
               null;
         };
 
-        return generator.generate(fileName, readFile) || undefined;
+        return generator.generate(absoluteFsPath, readFile) || undefined;
       }
     }
     return this.delegate.getSourceFile(
@@ -78,13 +95,13 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
   writeFile(
       fileName: string, data: string, writeByteOrderMark: boolean,
       onError: ((message: string) => void)|undefined,
-      sourceFiles: ReadonlyArray<ts.SourceFile>): void {
+      sourceFiles: ReadonlyArray<ts.SourceFile>|undefined): void {
     return this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
   }
 
   getCurrentDirectory(): string { return this.delegate.getCurrentDirectory(); }
 
-  getDirectories(path: string): string[] { return this.delegate.getDirectories(path); }
+  getDirectories?: (path: string) => string[];
 
   getCanonicalFileName(fileName: string): string {
     return this.delegate.getCanonicalFileName(fileName);
@@ -95,11 +112,13 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
   getNewLine(): string { return this.delegate.getNewLine(); }
 
   fileExists(fileName: string): boolean {
-    const canonical = this.getCanonicalFileName(fileName);
-    // Consider the file as existing whenever 1) it really does exist in the delegate host, or
-    // 2) at least one of the shim generators recognizes it.
+    // Consider the file as existing whenever
+    //  1) it really does exist in the delegate host, or
+    //  2) at least one of the shim generators recognizes it
+    // Note that we can pass the file name as branded absolute fs path because TypeScript
+    // internally only passes POSIX-like paths.
     return this.delegate.fileExists(fileName) ||
-        this.shimGenerators.some(gen => gen.recognize(canonical));
+        this.shimGenerators.some(gen => gen.recognize(AbsoluteFsPath.fromUnchecked(fileName)));
   }
 
   readFile(fileName: string): string|undefined { return this.delegate.readFile(fileName); }

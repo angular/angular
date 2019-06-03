@@ -25,6 +25,7 @@ export enum TokenType {
   CDATA_START,
   CDATA_END,
   ATTR_NAME,
+  ATTR_QUOTE,
   ATTR_VALUE,
   DOC_TYPE,
   EXPANSION_FORM_START,
@@ -36,11 +37,12 @@ export enum TokenType {
 }
 
 export class Token {
-  constructor(public type: TokenType, public parts: string[], public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public type: TokenType|null, public parts: string[], public sourceSpan: ParseSourceSpan) {}
 }
 
 export class TokenError extends ParseError {
-  constructor(errorMsg: string, public tokenType: TokenType, span: ParseSourceSpan) {
+  constructor(errorMsg: string, public tokenType: TokenType|null, span: ParseSourceSpan) {
     super(span, errorMsg);
   }
 }
@@ -49,14 +51,62 @@ export class TokenizeResult {
   constructor(public tokens: Token[], public errors: TokenError[]) {}
 }
 
+export interface LexerRange {
+  startPos: number;
+  startLine: number;
+  startCol: number;
+  endPos: number;
+}
+
+/**
+ * Options that modify how the text is tokenized.
+ */
+export interface TokenizeOptions {
+  /** Whether to tokenize ICU messages (considered as text nodes when false). */
+  tokenizeExpansionForms?: boolean;
+  /** How to tokenize interpolation markers. */
+  interpolationConfig?: InterpolationConfig;
+  /**
+   * The start and end point of the text to parse within the `source` string.
+   * The entire `source` string is parsed if this is not provided.
+   * */
+  range?: LexerRange;
+  /**
+   * If this text is stored in a JavaScript string, then we have to deal with escape sequences.
+   *
+   * **Example 1:**
+   *
+   * ```
+   * "abc\"def\nghi"
+   * ```
+   *
+   * - The `\"` must be converted to `"`.
+   * - The `\n` must be converted to a new line character in a token,
+   *   but it should not increment the current line for source mapping.
+   *
+   * **Example 2:**
+   *
+   * ```
+   * "abc\
+   *  def"
+   * ```
+   *
+   * The line continuation (`\` followed by a newline) should be removed from a token
+   * but the new line should increment the current line for source mapping.
+   */
+  escapedString?: boolean;
+  /**
+   * An array of characters that should be considered as leading trivia.
+   * Leading trivia are characters that are not important to the developer, and so should not be
+   * included in source-map segments.  A common example is whitespace.
+   */
+  leadingTriviaChars?: string[];
+}
+
 export function tokenize(
     source: string, url: string, getTagDefinition: (tagName: string) => TagDefinition,
-    tokenizeExpansionForms: boolean = false,
-    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): TokenizeResult {
-  return new _Tokenizer(
-             new ParseSourceFile(source, url), getTagDefinition, tokenizeExpansionForms,
-             interpolationConfig)
-      .tokenize();
+    options: TokenizeOptions = {}): TokenizeResult {
+  return new _Tokenizer(new ParseSourceFile(source, url), getTagDefinition, options).tokenize();
 }
 
 const _CR_OR_CRLF_REGEXP = /\r\n?/g;
@@ -76,37 +126,38 @@ class _ControlFlowError {
 
 // See http://www.w3.org/TR/html51/syntax.html#writing
 class _Tokenizer {
-  private _input: string;
-  private _length: number;
-  // Note: this is always lowercase!
-  private _peek: number = -1;
-  private _nextPeek: number = -1;
-  private _index: number = -1;
-  private _line: number = 0;
-  private _column: number = -1;
-  // TODO(issue/24571): remove '!'.
-  private _currentTokenStart !: ParseLocation;
-  // TODO(issue/24571): remove '!'.
-  private _currentTokenType !: TokenType;
+  private _cursor: CharacterCursor;
+  private _tokenizeIcu: boolean;
+  private _interpolationConfig: InterpolationConfig;
+  private _leadingTriviaCodePoints: number[]|undefined;
+  private _currentTokenStart: CharacterCursor|null = null;
+  private _currentTokenType: TokenType|null = null;
   private _expansionCaseStack: TokenType[] = [];
   private _inInterpolation: boolean = false;
-
   tokens: Token[] = [];
   errors: TokenError[] = [];
 
   /**
-   * @param _file The html source
-   * @param _getTagDefinition
-   * @param _tokenizeIcu Whether to tokenize ICU messages (considered as text nodes when false)
-   * @param _interpolationConfig
+   * @param _file The html source file being tokenized.
+   * @param _getTagDefinition A function that will retrieve a tag definition for a given tag name.
+   * @param options Configuration of the tokenization.
    */
   constructor(
-      private _file: ParseSourceFile, private _getTagDefinition: (tagName: string) => TagDefinition,
-      private _tokenizeIcu: boolean,
-      private _interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {
-    this._input = _file.content;
-    this._length = _file.content.length;
-    this._advance();
+      _file: ParseSourceFile, private _getTagDefinition: (tagName: string) => TagDefinition,
+      options: TokenizeOptions) {
+    this._tokenizeIcu = options.tokenizeExpansionForms || false;
+    this._interpolationConfig = options.interpolationConfig || DEFAULT_INTERPOLATION_CONFIG;
+    this._leadingTriviaCodePoints =
+        options.leadingTriviaChars && options.leadingTriviaChars.map(c => c.codePointAt(0) || 0);
+    const range =
+        options.range || {endPos: _file.content.length, startPos: 0, startLine: 0, startCol: 0};
+    this._cursor = options.escapedString ? new EscapedCharacterCursor(_file, range) :
+                                           new PlainCharacterCursor(_file, range);
+    try {
+      this._cursor.init();
+    } catch (e) {
+      this.handleError(e);
+    }
   }
 
   private _processCarriageReturns(content: string): string {
@@ -118,8 +169,8 @@ class _Tokenizer {
   }
 
   tokenize(): TokenizeResult {
-    while (this._peek !== chars.$EOF) {
-      const start = this._getLocation();
+    while (this._cursor.peek() !== chars.$EOF) {
+      const start = this._cursor.clone();
       try {
         if (this._attemptCharCode(chars.$LT)) {
           if (this._attemptCharCode(chars.$BANG)) {
@@ -139,11 +190,7 @@ class _Tokenizer {
           this._consumeText();
         }
       } catch (e) {
-        if (e instanceof _ControlFlowError) {
-          this.errors.push(e.error);
-        } else {
-          throw e;
-        }
+        this.handleError(e);
       }
     }
     this._beginToken(TokenType.EOF);
@@ -156,17 +203,17 @@ class _Tokenizer {
    * @internal
    */
   private _tokenizeExpansionForm(): boolean {
-    if (isExpansionFormStart(this._input, this._index, this._interpolationConfig)) {
+    if (this.isExpansionFormStart()) {
       this._consumeExpansionFormStart();
       return true;
     }
 
-    if (isExpansionCaseStart(this._peek) && this._isInExpansionForm()) {
+    if (isExpansionCaseStart(this._cursor.peek()) && this._isInExpansionForm()) {
       this._consumeExpansionCaseStart();
       return true;
     }
 
-    if (this._peek === chars.$RBRACE) {
+    if (this._cursor.peek() === chars.$RBRACE) {
       if (this._isInExpansionCase()) {
         this._consumeExpansionCaseEnd();
         return true;
@@ -181,27 +228,28 @@ class _Tokenizer {
     return false;
   }
 
-  private _getLocation(): ParseLocation {
-    return new ParseLocation(this._file, this._index, this._line, this._column);
-  }
-
-  private _getSpan(
-      start: ParseLocation = this._getLocation(),
-      end: ParseLocation = this._getLocation()): ParseSourceSpan {
-    return new ParseSourceSpan(start, end);
-  }
-
-  private _beginToken(type: TokenType, start: ParseLocation = this._getLocation()) {
+  private _beginToken(type: TokenType, start = this._cursor.clone()) {
     this._currentTokenStart = start;
     this._currentTokenType = type;
   }
 
-  private _endToken(parts: string[], end: ParseLocation = this._getLocation()): Token {
-    const token =
-        new Token(this._currentTokenType, parts, new ParseSourceSpan(this._currentTokenStart, end));
+  private _endToken(parts: string[], end = this._cursor.clone()): Token {
+    if (this._currentTokenStart === null) {
+      throw new TokenError(
+          'Programming error - attempted to end a token when there was no start to the token',
+          this._currentTokenType, this._cursor.getSpan(end));
+    }
+    if (this._currentTokenType === null) {
+      throw new TokenError(
+          'Programming error - attempted to end a token which has no token type', null,
+          this._cursor.getSpan(this._currentTokenStart));
+    }
+    const token = new Token(
+        this._currentTokenType, parts,
+        this._cursor.getSpan(this._currentTokenStart, this._leadingTriviaCodePoints));
     this.tokens.push(token);
-    this._currentTokenStart = null !;
-    this._currentTokenType = null !;
+    this._currentTokenStart = null;
+    this._currentTokenType = null;
     return token;
   }
 
@@ -210,62 +258,57 @@ class _Tokenizer {
       msg += ` (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`;
     }
     const error = new TokenError(msg, this._currentTokenType, span);
-    this._currentTokenStart = null !;
-    this._currentTokenType = null !;
+    this._currentTokenStart = null;
+    this._currentTokenType = null;
     return new _ControlFlowError(error);
   }
 
-  private _advance() {
-    if (this._index >= this._length) {
-      throw this._createError(_unexpectedCharacterErrorMsg(chars.$EOF), this._getSpan());
+  private handleError(e: any) {
+    if (e instanceof CursorError) {
+      e = this._createError(e.msg, this._cursor.getSpan(e.cursor));
     }
-    if (this._peek === chars.$LF) {
-      this._line++;
-      this._column = 0;
-    } else if (this._peek !== chars.$LF && this._peek !== chars.$CR) {
-      this._column++;
+    if (e instanceof _ControlFlowError) {
+      this.errors.push(e.error);
+    } else {
+      throw e;
     }
-    this._index++;
-    this._peek = this._index >= this._length ? chars.$EOF : this._input.charCodeAt(this._index);
-    this._nextPeek =
-        this._index + 1 >= this._length ? chars.$EOF : this._input.charCodeAt(this._index + 1);
   }
 
   private _attemptCharCode(charCode: number): boolean {
-    if (this._peek === charCode) {
-      this._advance();
+    if (this._cursor.peek() === charCode) {
+      this._cursor.advance();
       return true;
     }
     return false;
   }
 
   private _attemptCharCodeCaseInsensitive(charCode: number): boolean {
-    if (compareCharCodeCaseInsensitive(this._peek, charCode)) {
-      this._advance();
+    if (compareCharCodeCaseInsensitive(this._cursor.peek(), charCode)) {
+      this._cursor.advance();
       return true;
     }
     return false;
   }
 
   private _requireCharCode(charCode: number) {
-    const location = this._getLocation();
+    const location = this._cursor.clone();
     if (!this._attemptCharCode(charCode)) {
       throw this._createError(
-          _unexpectedCharacterErrorMsg(this._peek), this._getSpan(location, location));
+          _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan(location));
     }
   }
 
   private _attemptStr(chars: string): boolean {
     const len = chars.length;
-    if (this._index + len > this._length) {
+    if (this._cursor.charsLeft() < len) {
       return false;
     }
-    const initialPosition = this._savePosition();
+    const initialPosition = this._cursor.clone();
     for (let i = 0; i < len; i++) {
       if (!this._attemptCharCode(chars.charCodeAt(i))) {
         // If attempting to parse the string fails, we want to reset the parser
         // to where it was before the attempt
-        this._restorePosition(initialPosition);
+        this._cursor = initialPosition;
         return false;
       }
     }
@@ -282,159 +325,164 @@ class _Tokenizer {
   }
 
   private _requireStr(chars: string) {
-    const location = this._getLocation();
+    const location = this._cursor.clone();
     if (!this._attemptStr(chars)) {
-      throw this._createError(_unexpectedCharacterErrorMsg(this._peek), this._getSpan(location));
+      throw this._createError(
+          _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan(location));
     }
   }
 
   private _attemptCharCodeUntilFn(predicate: (code: number) => boolean) {
-    while (!predicate(this._peek)) {
-      this._advance();
+    while (!predicate(this._cursor.peek())) {
+      this._cursor.advance();
     }
   }
 
   private _requireCharCodeUntilFn(predicate: (code: number) => boolean, len: number) {
-    const start = this._getLocation();
+    const start = this._cursor.clone();
     this._attemptCharCodeUntilFn(predicate);
-    if (this._index - start.offset < len) {
+    const end = this._cursor.clone();
+    if (end.diff(start) < len) {
       throw this._createError(
-          _unexpectedCharacterErrorMsg(this._peek), this._getSpan(start, start));
+          _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan(start));
     }
   }
 
   private _attemptUntilChar(char: number) {
-    while (this._peek !== char) {
-      this._advance();
+    while (this._cursor.peek() !== char) {
+      this._cursor.advance();
     }
   }
 
   private _readChar(decodeEntities: boolean): string {
-    if (decodeEntities && this._peek === chars.$AMPERSAND) {
+    if (decodeEntities && this._cursor.peek() === chars.$AMPERSAND) {
       return this._decodeEntity();
     } else {
-      const index = this._index;
-      this._advance();
-      return this._input[index];
+      // Don't rely upon reading directly from `_input` as the actual char value
+      // may have been generated from an escape sequence.
+      const char = String.fromCodePoint(this._cursor.peek());
+      this._cursor.advance();
+      return char;
     }
   }
 
   private _decodeEntity(): string {
-    const start = this._getLocation();
-    this._advance();
+    const start = this._cursor.clone();
+    this._cursor.advance();
     if (this._attemptCharCode(chars.$HASH)) {
       const isHex = this._attemptCharCode(chars.$x) || this._attemptCharCode(chars.$X);
-      const numberStart = this._getLocation().offset;
+      const codeStart = this._cursor.clone();
       this._attemptCharCodeUntilFn(isDigitEntityEnd);
-      if (this._peek != chars.$SEMICOLON) {
-        throw this._createError(_unexpectedCharacterErrorMsg(this._peek), this._getSpan());
+      if (this._cursor.peek() != chars.$SEMICOLON) {
+        throw this._createError(
+            _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan());
       }
-      this._advance();
-      const strNum = this._input.substring(numberStart, this._index - 1);
+      const strNum = this._cursor.getChars(codeStart);
+      this._cursor.advance();
       try {
         const charCode = parseInt(strNum, isHex ? 16 : 10);
         return String.fromCharCode(charCode);
       } catch {
-        const entity = this._input.substring(start.offset + 1, this._index - 1);
-        throw this._createError(_unknownEntityErrorMsg(entity), this._getSpan(start));
+        throw this._createError(
+            _unknownEntityErrorMsg(this._cursor.getChars(start)), this._cursor.getSpan());
       }
     } else {
-      const startPosition = this._savePosition();
+      const nameStart = this._cursor.clone();
       this._attemptCharCodeUntilFn(isNamedEntityEnd);
-      if (this._peek != chars.$SEMICOLON) {
-        this._restorePosition(startPosition);
+      if (this._cursor.peek() != chars.$SEMICOLON) {
+        this._cursor = nameStart;
         return '&';
       }
-      this._advance();
-      const name = this._input.substring(start.offset + 1, this._index - 1);
+      const name = this._cursor.getChars(nameStart);
+      this._cursor.advance();
       const char = NAMED_ENTITIES[name];
       if (!char) {
-        throw this._createError(_unknownEntityErrorMsg(name), this._getSpan(start));
+        throw this._createError(_unknownEntityErrorMsg(name), this._cursor.getSpan(start));
       }
       return char;
     }
   }
 
-  private _consumeRawText(
-      decodeEntities: boolean, firstCharOfEnd: number, attemptEndRest: () => boolean): Token {
-    let tagCloseStart: ParseLocation;
-    const textStart = this._getLocation();
-    this._beginToken(decodeEntities ? TokenType.ESCAPABLE_RAW_TEXT : TokenType.RAW_TEXT, textStart);
+  private _consumeRawText(decodeEntities: boolean, endMarkerPredicate: () => boolean): Token {
+    this._beginToken(decodeEntities ? TokenType.ESCAPABLE_RAW_TEXT : TokenType.RAW_TEXT);
     const parts: string[] = [];
     while (true) {
-      tagCloseStart = this._getLocation();
-      if (this._attemptCharCode(firstCharOfEnd) && attemptEndRest()) {
+      const tagCloseStart = this._cursor.clone();
+      const foundEndMarker = endMarkerPredicate();
+      this._cursor = tagCloseStart;
+      if (foundEndMarker) {
         break;
       }
-      if (this._index > tagCloseStart.offset) {
-        // add the characters consumed by the previous if statement to the output
-        parts.push(this._input.substring(tagCloseStart.offset, this._index));
-      }
-      while (this._peek !== firstCharOfEnd) {
-        parts.push(this._readChar(decodeEntities));
-      }
+      parts.push(this._readChar(decodeEntities));
     }
-    return this._endToken([this._processCarriageReturns(parts.join(''))], tagCloseStart);
+    return this._endToken([this._processCarriageReturns(parts.join(''))]);
   }
 
-  private _consumeComment(start: ParseLocation) {
+  private _consumeComment(start: CharacterCursor) {
     this._beginToken(TokenType.COMMENT_START, start);
     this._requireCharCode(chars.$MINUS);
     this._endToken([]);
-    const textToken = this._consumeRawText(false, chars.$MINUS, () => this._attemptStr('->'));
-    this._beginToken(TokenType.COMMENT_END, textToken.sourceSpan.end);
+    this._consumeRawText(false, () => this._attemptStr('-->'));
+    this._beginToken(TokenType.COMMENT_END);
+    this._requireStr('-->');
     this._endToken([]);
   }
 
-  private _consumeCdata(start: ParseLocation) {
+  private _consumeCdata(start: CharacterCursor) {
     this._beginToken(TokenType.CDATA_START, start);
     this._requireStr('CDATA[');
     this._endToken([]);
-    const textToken = this._consumeRawText(false, chars.$RBRACKET, () => this._attemptStr(']>'));
-    this._beginToken(TokenType.CDATA_END, textToken.sourceSpan.end);
+    this._consumeRawText(false, () => this._attemptStr(']]>'));
+    this._beginToken(TokenType.CDATA_END);
+    this._requireStr(']]>');
     this._endToken([]);
   }
 
-  private _consumeDocType(start: ParseLocation) {
+  private _consumeDocType(start: CharacterCursor) {
     this._beginToken(TokenType.DOC_TYPE, start);
+    const contentStart = this._cursor.clone();
     this._attemptUntilChar(chars.$GT);
-    this._advance();
-    this._endToken([this._input.substring(start.offset + 2, this._index - 1)]);
+    const content = this._cursor.getChars(contentStart);
+    this._cursor.advance();
+    this._endToken([content]);
   }
 
   private _consumePrefixAndName(): string[] {
-    const nameOrPrefixStart = this._index;
-    let prefix: string = null !;
-    while (this._peek !== chars.$COLON && !isPrefixEnd(this._peek)) {
-      this._advance();
+    const nameOrPrefixStart = this._cursor.clone();
+    let prefix: string = '';
+    while (this._cursor.peek() !== chars.$COLON && !isPrefixEnd(this._cursor.peek())) {
+      this._cursor.advance();
     }
-    let nameStart: number;
-    if (this._peek === chars.$COLON) {
-      this._advance();
-      prefix = this._input.substring(nameOrPrefixStart, this._index - 1);
-      nameStart = this._index;
+    let nameStart: CharacterCursor;
+    if (this._cursor.peek() === chars.$COLON) {
+      prefix = this._cursor.getChars(nameOrPrefixStart);
+      this._cursor.advance();
+      nameStart = this._cursor.clone();
     } else {
       nameStart = nameOrPrefixStart;
     }
-    this._requireCharCodeUntilFn(isNameEnd, this._index === nameStart ? 1 : 0);
-    const name = this._input.substring(nameStart, this._index);
+    this._requireCharCodeUntilFn(isNameEnd, prefix === '' ? 0 : 1);
+    const name = this._cursor.getChars(nameStart);
     return [prefix, name];
   }
 
-  private _consumeTagOpen(start: ParseLocation) {
-    const savedPos = this._savePosition();
+  private _consumeTagOpen(start: CharacterCursor) {
     let tagName: string;
-    let lowercaseTagName: string;
+    let prefix: string;
+    let openTagToken: Token|undefined;
+    let tokensBeforeTagOpen = this.tokens.length;
+    const innerStart = this._cursor.clone();
     try {
-      if (!chars.isAsciiLetter(this._peek)) {
-        throw this._createError(_unexpectedCharacterErrorMsg(this._peek), this._getSpan());
+      if (!chars.isAsciiLetter(this._cursor.peek())) {
+        throw this._createError(
+            _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan(start));
       }
-      const nameStart = this._index;
-      this._consumeTagOpenStart(start);
-      tagName = this._input.substring(nameStart, this._index);
-      lowercaseTagName = tagName.toLowerCase();
+
+      openTagToken = this._consumeTagOpenStart(start);
+      prefix = openTagToken.parts[0];
+      tagName = openTagToken.parts[1];
       this._attemptCharCodeUntilFn(isNotWhitespace);
-      while (this._peek !== chars.$SLASH && this._peek !== chars.$GT) {
+      while (this._cursor.peek() !== chars.$SLASH && this._cursor.peek() !== chars.$GT) {
         this._consumeAttributeName();
         this._attemptCharCodeUntilFn(isNotWhitespace);
         if (this._attemptCharCode(chars.$EQ)) {
@@ -446,8 +494,11 @@ class _Tokenizer {
       this._consumeTagOpenEnd();
     } catch (e) {
       if (e instanceof _ControlFlowError) {
-        // When the start tag is invalid, assume we want a "<"
-        this._restorePosition(savedPos);
+        // When the start tag is invalid (including invalid "attributes"), assume we want a "<"
+        this._cursor = innerStart;
+        if (openTagToken) {
+          this.tokens.length = tokensBeforeTagOpen;
+        }
         // Back to back text tokens are merged at the end
         this._beginToken(TokenType.TEXT, start);
         this._endToken(['<']);
@@ -460,54 +511,67 @@ class _Tokenizer {
     const contentTokenType = this._getTagDefinition(tagName).contentType;
 
     if (contentTokenType === TagContentType.RAW_TEXT) {
-      this._consumeRawTextWithTagClose(lowercaseTagName, false);
+      this._consumeRawTextWithTagClose(prefix, tagName, false);
     } else if (contentTokenType === TagContentType.ESCAPABLE_RAW_TEXT) {
-      this._consumeRawTextWithTagClose(lowercaseTagName, true);
+      this._consumeRawTextWithTagClose(prefix, tagName, true);
     }
   }
 
-  private _consumeRawTextWithTagClose(lowercaseTagName: string, decodeEntities: boolean) {
-    const textToken = this._consumeRawText(decodeEntities, chars.$LT, () => {
+  private _consumeRawTextWithTagClose(prefix: string, tagName: string, decodeEntities: boolean) {
+    const textToken = this._consumeRawText(decodeEntities, () => {
+      if (!this._attemptCharCode(chars.$LT)) return false;
       if (!this._attemptCharCode(chars.$SLASH)) return false;
       this._attemptCharCodeUntilFn(isNotWhitespace);
-      if (!this._attemptStrCaseInsensitive(lowercaseTagName)) return false;
+      if (!this._attemptStrCaseInsensitive(tagName)) return false;
       this._attemptCharCodeUntilFn(isNotWhitespace);
       return this._attemptCharCode(chars.$GT);
     });
-    this._beginToken(TokenType.TAG_CLOSE, textToken.sourceSpan.end);
-    this._endToken([null !, lowercaseTagName]);
+    this._beginToken(TokenType.TAG_CLOSE);
+    this._requireCharCodeUntilFn(code => code === chars.$GT, 3);
+    this._cursor.advance();  // Consume the `>`
+    this._endToken([prefix, tagName]);
   }
 
-  private _consumeTagOpenStart(start: ParseLocation) {
+  private _consumeTagOpenStart(start: CharacterCursor) {
     this._beginToken(TokenType.TAG_OPEN_START, start);
     const parts = this._consumePrefixAndName();
-    this._endToken(parts);
+    return this._endToken(parts);
   }
 
   private _consumeAttributeName() {
+    const attrNameStart = this._cursor.peek();
+    if (attrNameStart === chars.$SQ || attrNameStart === chars.$DQ) {
+      throw this._createError(_unexpectedCharacterErrorMsg(attrNameStart), this._cursor.getSpan());
+    }
     this._beginToken(TokenType.ATTR_NAME);
     const prefixAndName = this._consumePrefixAndName();
     this._endToken(prefixAndName);
   }
 
   private _consumeAttributeValue() {
-    this._beginToken(TokenType.ATTR_VALUE);
     let value: string;
-    if (this._peek === chars.$SQ || this._peek === chars.$DQ) {
-      const quoteChar = this._peek;
-      this._advance();
+    if (this._cursor.peek() === chars.$SQ || this._cursor.peek() === chars.$DQ) {
+      this._beginToken(TokenType.ATTR_QUOTE);
+      const quoteChar = this._cursor.peek();
+      this._cursor.advance();
+      this._endToken([String.fromCodePoint(quoteChar)]);
+      this._beginToken(TokenType.ATTR_VALUE);
       const parts: string[] = [];
-      while (this._peek !== quoteChar) {
+      while (this._cursor.peek() !== quoteChar) {
         parts.push(this._readChar(true));
       }
       value = parts.join('');
-      this._advance();
+      this._endToken([this._processCarriageReturns(value)]);
+      this._beginToken(TokenType.ATTR_QUOTE);
+      this._cursor.advance();
+      this._endToken([String.fromCodePoint(quoteChar)]);
     } else {
-      const valueStart = this._index;
+      this._beginToken(TokenType.ATTR_VALUE);
+      const valueStart = this._cursor.clone();
       this._requireCharCodeUntilFn(isNameEnd, 1);
-      value = this._input.substring(valueStart, this._index);
+      value = this._cursor.getChars(valueStart);
+      this._endToken([this._processCarriageReturns(value)]);
     }
-    this._endToken([this._processCarriageReturns(value)]);
   }
 
   private _consumeTagOpenEnd() {
@@ -518,7 +582,7 @@ class _Tokenizer {
     this._endToken([]);
   }
 
-  private _consumeTagClose(start: ParseLocation) {
+  private _consumeTagClose(start: CharacterCursor) {
     this._beginToken(TokenType.TAG_CLOSE, start);
     this._attemptCharCodeUntilFn(isNotWhitespace);
     const prefixAndName = this._consumePrefixAndName();
@@ -528,50 +592,50 @@ class _Tokenizer {
   }
 
   private _consumeExpansionFormStart() {
-    this._beginToken(TokenType.EXPANSION_FORM_START, this._getLocation());
+    this._beginToken(TokenType.EXPANSION_FORM_START);
     this._requireCharCode(chars.$LBRACE);
     this._endToken([]);
 
     this._expansionCaseStack.push(TokenType.EXPANSION_FORM_START);
 
-    this._beginToken(TokenType.RAW_TEXT, this._getLocation());
+    this._beginToken(TokenType.RAW_TEXT);
     const condition = this._readUntil(chars.$COMMA);
-    this._endToken([condition], this._getLocation());
+    this._endToken([condition]);
     this._requireCharCode(chars.$COMMA);
     this._attemptCharCodeUntilFn(isNotWhitespace);
 
-    this._beginToken(TokenType.RAW_TEXT, this._getLocation());
+    this._beginToken(TokenType.RAW_TEXT);
     const type = this._readUntil(chars.$COMMA);
-    this._endToken([type], this._getLocation());
+    this._endToken([type]);
     this._requireCharCode(chars.$COMMA);
     this._attemptCharCodeUntilFn(isNotWhitespace);
   }
 
   private _consumeExpansionCaseStart() {
-    this._beginToken(TokenType.EXPANSION_CASE_VALUE, this._getLocation());
+    this._beginToken(TokenType.EXPANSION_CASE_VALUE);
     const value = this._readUntil(chars.$LBRACE).trim();
-    this._endToken([value], this._getLocation());
+    this._endToken([value]);
     this._attemptCharCodeUntilFn(isNotWhitespace);
 
-    this._beginToken(TokenType.EXPANSION_CASE_EXP_START, this._getLocation());
+    this._beginToken(TokenType.EXPANSION_CASE_EXP_START);
     this._requireCharCode(chars.$LBRACE);
-    this._endToken([], this._getLocation());
+    this._endToken([]);
     this._attemptCharCodeUntilFn(isNotWhitespace);
 
     this._expansionCaseStack.push(TokenType.EXPANSION_CASE_EXP_START);
   }
 
   private _consumeExpansionCaseEnd() {
-    this._beginToken(TokenType.EXPANSION_CASE_EXP_END, this._getLocation());
+    this._beginToken(TokenType.EXPANSION_CASE_EXP_END);
     this._requireCharCode(chars.$RBRACE);
-    this._endToken([], this._getLocation());
+    this._endToken([]);
     this._attemptCharCodeUntilFn(isNotWhitespace);
 
     this._expansionCaseStack.pop();
   }
 
   private _consumeExpansionFormEnd() {
-    this._beginToken(TokenType.EXPANSION_FORM_END, this._getLocation());
+    this._beginToken(TokenType.EXPANSION_FORM_END);
     this._requireCharCode(chars.$RBRACE);
     this._endToken([]);
 
@@ -579,7 +643,7 @@ class _Tokenizer {
   }
 
   private _consumeText() {
-    const start = this._getLocation();
+    const start = this._cursor.clone();
     this._beginToken(TokenType.TEXT, start);
     const parts: string[] = [];
 
@@ -601,17 +665,17 @@ class _Tokenizer {
   }
 
   private _isTextEnd(): boolean {
-    if (this._peek === chars.$LT || this._peek === chars.$EOF) {
+    if (this._cursor.peek() === chars.$LT || this._cursor.peek() === chars.$EOF) {
       return true;
     }
 
     if (this._tokenizeIcu && !this._inInterpolation) {
-      if (isExpansionFormStart(this._input, this._index, this._interpolationConfig)) {
+      if (this.isExpansionFormStart()) {
         // start of an expansion form
         return true;
       }
 
-      if (this._peek === chars.$RBRACE && this._isInExpansionCase()) {
+      if (this._cursor.peek() === chars.$RBRACE && this._isInExpansionCase()) {
         // end of and expansion case
         return true;
       }
@@ -620,26 +684,10 @@ class _Tokenizer {
     return false;
   }
 
-  private _savePosition(): [number, number, number, number, number] {
-    return [this._peek, this._index, this._column, this._line, this.tokens.length];
-  }
-
   private _readUntil(char: number): string {
-    const start = this._index;
+    const start = this._cursor.clone();
     this._attemptUntilChar(char);
-    return this._input.substring(start, this._index);
-  }
-
-  private _restorePosition(position: [number, number, number, number, number]): void {
-    this._peek = position[0];
-    this._index = position[1];
-    this._column = position[2];
-    this._line = position[3];
-    const nbTokens = position[4];
-    if (nbTokens < this.tokens.length) {
-      // remove any extra tokens
-      this.tokens = this.tokens.slice(0, nbTokens);
-    }
+    return this._cursor.getChars(start);
   }
 
   private _isInExpansionCase(): boolean {
@@ -652,6 +700,19 @@ class _Tokenizer {
     return this._expansionCaseStack.length > 0 &&
         this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
         TokenType.EXPANSION_FORM_START;
+  }
+
+  private isExpansionFormStart(): boolean {
+    if (this._cursor.peek() !== chars.$LBRACE) {
+      return false;
+    }
+    if (this._interpolationConfig) {
+      const start = this._cursor.clone();
+      const isInterpolation = this._attemptStr(this._interpolationConfig.start);
+      this._cursor = start;
+      return !isInterpolation;
+    }
+    return true;
   }
 }
 
@@ -677,14 +738,6 @@ function isNamedEntityEnd(code: number): boolean {
   return code == chars.$SEMICOLON || code == chars.$EOF || !chars.isAsciiLetter(code);
 }
 
-function isExpansionFormStart(
-    input: string, offset: number, interpolationConfig: InterpolationConfig): boolean {
-  const isInterpolationStart =
-      interpolationConfig ? input.indexOf(interpolationConfig.start, offset) == offset : false;
-
-  return input.charCodeAt(offset) == chars.$LBRACE && !isInterpolationStart;
-}
-
 function isExpansionCaseStart(peek: number): boolean {
   return peek === chars.$EQ || chars.isAsciiLetter(peek) || chars.isDigit(peek);
 }
@@ -703,7 +756,7 @@ function mergeTextTokens(srcTokens: Token[]): Token[] {
   for (let i = 0; i < srcTokens.length; i++) {
     const token = srcTokens[i];
     if (lastDstToken && lastDstToken.type == TokenType.TEXT && token.type == TokenType.TEXT) {
-      lastDstToken.parts[0] += token.parts[0];
+      lastDstToken.parts[0] ! += token.parts[0];
       lastDstToken.sourceSpan.end = token.sourceSpan.end;
     } else {
       lastDstToken = token;
@@ -712,4 +765,265 @@ function mergeTextTokens(srcTokens: Token[]): Token[] {
   }
 
   return dstTokens;
+}
+
+
+/**
+ * The _Tokenizer uses objects of this type to move through the input text,
+ * extracting "parsed characters". These could be more than one actual character
+ * if the text contains escape sequences.
+ */
+interface CharacterCursor {
+  /** Initialize the cursor. */
+  init(): void;
+  /** The parsed character at the current cursor position. */
+  peek(): number;
+  /** Advance the cursor by one parsed character. */
+  advance(): void;
+  /** Get a span from the marked start point to the current point. */
+  getSpan(start?: this, leadingTriviaCodePoints?: number[]): ParseSourceSpan;
+  /** Get the parsed characters from the marked start point to the current point. */
+  getChars(start: this): string;
+  /** The number of characters left before the end of the cursor. */
+  charsLeft(): number;
+  /** The number of characters between `this` cursor and `other` cursor. */
+  diff(other: this): number;
+  /** Make a copy of this cursor */
+  clone(): CharacterCursor;
+}
+
+interface CursorState {
+  peek: number;
+  offset: number;
+  line: number;
+  column: number;
+}
+
+class PlainCharacterCursor implements CharacterCursor {
+  protected state: CursorState;
+  protected file: ParseSourceFile;
+  protected input: string;
+  protected end: number;
+
+  constructor(fileOrCursor: PlainCharacterCursor);
+  constructor(fileOrCursor: ParseSourceFile, range: LexerRange);
+  constructor(fileOrCursor: ParseSourceFile|PlainCharacterCursor, range?: LexerRange) {
+    if (fileOrCursor instanceof PlainCharacterCursor) {
+      this.file = fileOrCursor.file;
+      this.input = fileOrCursor.input;
+      this.end = fileOrCursor.end;
+      this.state = {...fileOrCursor.state};
+    } else {
+      if (!range) {
+        throw new Error(
+            'Programming error: the range argument must be provided with a file argument.');
+      }
+      this.file = fileOrCursor;
+      this.input = fileOrCursor.content;
+      this.end = range.endPos;
+      this.state = {
+        peek: -1,
+        offset: range.startPos,
+        line: range.startLine,
+        column: range.startCol,
+      };
+    }
+  }
+
+  clone(): PlainCharacterCursor { return new PlainCharacterCursor(this); }
+
+  peek() { return this.state.peek; }
+  charsLeft() { return this.end - this.state.offset; }
+  diff(other: this) { return this.state.offset - other.state.offset; }
+
+  advance(): void { this.advanceState(this.state); }
+
+  init(): void { this.updatePeek(this.state); }
+
+  getSpan(start?: this, leadingTriviaCodePoints?: number[]): ParseSourceSpan {
+    start = start || this;
+    if (leadingTriviaCodePoints) {
+      start = start.clone() as this;
+      while (this.diff(start) > 0 && leadingTriviaCodePoints.indexOf(start.peek()) !== -1) {
+        start.advance();
+      }
+    }
+    return new ParseSourceSpan(
+        new ParseLocation(start.file, start.state.offset, start.state.line, start.state.column),
+        new ParseLocation(this.file, this.state.offset, this.state.line, this.state.column));
+  }
+
+  getChars(start: this): string {
+    return this.input.substring(start.state.offset, this.state.offset);
+  }
+
+  charAt(pos: number): number { return this.input.charCodeAt(pos); }
+
+  protected advanceState(state: CursorState) {
+    if (state.offset >= this.end) {
+      this.state = state;
+      throw new CursorError('Unexpected character "EOF"', this);
+    }
+    const currentChar = this.charAt(state.offset);
+    if (currentChar === chars.$LF) {
+      state.line++;
+      state.column = 0;
+    } else if (!chars.isNewLine(currentChar)) {
+      state.column++;
+    }
+    state.offset++;
+    this.updatePeek(state);
+  }
+
+  protected updatePeek(state: CursorState): void {
+    state.peek = state.offset >= this.end ? chars.$EOF : this.charAt(state.offset);
+  }
+}
+
+class EscapedCharacterCursor extends PlainCharacterCursor {
+  protected internalState: CursorState;
+
+  constructor(fileOrCursor: EscapedCharacterCursor);
+  constructor(fileOrCursor: ParseSourceFile, range: LexerRange);
+  constructor(fileOrCursor: ParseSourceFile|EscapedCharacterCursor, range?: LexerRange) {
+    if (fileOrCursor instanceof EscapedCharacterCursor) {
+      super(fileOrCursor);
+      this.internalState = {...fileOrCursor.internalState};
+    } else {
+      super(fileOrCursor, range !);
+      this.internalState = this.state;
+    }
+  }
+
+  advance(): void {
+    this.state = this.internalState;
+    super.advance();
+    this.processEscapeSequence();
+  }
+
+  init(): void {
+    super.init();
+    this.processEscapeSequence();
+  }
+
+  clone(): EscapedCharacterCursor { return new EscapedCharacterCursor(this); }
+
+  getChars(start: this): string {
+    const cursor = start.clone();
+    let chars = '';
+    while (cursor.internalState.offset < this.internalState.offset) {
+      chars += String.fromCodePoint(cursor.peek());
+      cursor.advance();
+    }
+    return chars;
+  }
+
+  /**
+   * Process the escape sequence that starts at the current position in the text.
+   *
+   * This method is called to ensure that `peek` has the unescaped value of escape sequences.
+   */
+  protected processEscapeSequence(): void {
+    const peek = () => this.internalState.peek;
+
+    if (peek() === chars.$BACKSLASH) {
+      // We have hit an escape sequence so we need the internal state to become independent
+      // of the external state.
+      this.internalState = {...this.state};
+
+      // Move past the backslash
+      this.advanceState(this.internalState);
+
+      // First check for standard control char sequences
+      if (peek() === chars.$n) {
+        this.state.peek = chars.$LF;
+      } else if (peek() === chars.$r) {
+        this.state.peek = chars.$CR;
+      } else if (peek() === chars.$v) {
+        this.state.peek = chars.$VTAB;
+      } else if (peek() === chars.$t) {
+        this.state.peek = chars.$TAB;
+      } else if (peek() === chars.$b) {
+        this.state.peek = chars.$BSPACE;
+      } else if (peek() === chars.$f) {
+        this.state.peek = chars.$FF;
+      }
+
+      // Now consider more complex sequences
+      else if (peek() === chars.$u) {
+        // Unicode code-point sequence
+        this.advanceState(this.internalState);  // advance past the `u` char
+        if (peek() === chars.$LBRACE) {
+          // Variable length Unicode, e.g. `\x{123}`
+          this.advanceState(this.internalState);  // advance past the `{` char
+          // Advance past the variable number of hex digits until we hit a `}` char
+          const digitStart = this.clone();
+          let length = 0;
+          while (peek() !== chars.$RBRACE) {
+            this.advanceState(this.internalState);
+            length++;
+          }
+          this.state.peek = this.decodeHexDigits(digitStart, length);
+        } else {
+          // Fixed length Unicode, e.g. `\u1234`
+          const digitStart = this.clone();
+          this.advanceState(this.internalState);
+          this.advanceState(this.internalState);
+          this.advanceState(this.internalState);
+          this.state.peek = this.decodeHexDigits(digitStart, 4);
+        }
+      }
+
+      else if (peek() === chars.$x) {
+        // Hex char code, e.g. `\x2F`
+        this.advanceState(this.internalState);  // advance past the `x` char
+        const digitStart = this.clone();
+        this.advanceState(this.internalState);
+        this.state.peek = this.decodeHexDigits(digitStart, 2);
+      }
+
+      else if (chars.isOctalDigit(peek())) {
+        // Octal char code, e.g. `\012`,
+        let octal = '';
+        let length = 0;
+        let previous = this.clone();
+        while (chars.isOctalDigit(peek()) && length < 3) {
+          previous = this.clone();
+          octal += String.fromCodePoint(peek());
+          this.advanceState(this.internalState);
+          length++;
+        }
+        this.state.peek = parseInt(octal, 8);
+        // Backup one char
+        this.internalState = previous.internalState;
+      }
+
+      else if (chars.isNewLine(this.internalState.peek)) {
+        // Line continuation `\` followed by a new line
+        this.advanceState(this.internalState);  // advance over the newline
+        this.state = this.internalState;
+      }
+
+      else {
+        // If none of the `if` blocks were executed then we just have an escaped normal character.
+        // In that case we just, effectively, skip the backslash from the character.
+        this.state.peek = this.internalState.peek;
+      }
+    }
+  }
+
+  protected decodeHexDigits(start: EscapedCharacterCursor, length: number): number {
+    const hex = this.input.substr(start.internalState.offset, length);
+    const charCode = parseInt(hex, 16);
+    if (!isNaN(charCode)) {
+      return charCode;
+    } else {
+      start.state = start.internalState;
+      throw new CursorError('Invalid hexadecimal escape sequence', start);
+    }
+  }
+}
+
+export class CursorError {
+  constructor(public msg: string, public cursor: CharacterCursor) {}
 }

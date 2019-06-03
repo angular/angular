@@ -7,10 +7,11 @@
  */
 
 import {ApplicationRef} from '../application_ref';
-import {InjectorType, defineInjector} from '../di/interface/defs';
+import {InjectorType, ɵɵdefineInjector} from '../di/interface/defs';
 import {Provider} from '../di/interface/provider';
 import {convertInjectableProviderToFactory} from '../di/util';
 import {Type} from '../interface/type';
+import {SchemaMetadata} from '../metadata/schema';
 import {NgModuleType} from '../render3';
 import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
@@ -28,9 +29,13 @@ import {TypeDecorator, makeDecorator} from '../util/decorators';
 export interface NgModuleTransitiveScopes {
   compilation: {directives: Set<any>; pipes: Set<any>;};
   exported: {directives: Set<any>; pipes: Set<any>;};
+  schemas: SchemaMetadata[]|null;
 }
 
-export type NgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef<T>;
+/**
+ * @publicApi
+ */
+export type ɵɵNgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef<T>;
 
 /**
  * Runtime link information for NgModules.
@@ -38,7 +43,7 @@ export type NgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef
  * This is the internal data structure used by the runtime to assemble components, directives,
  * pipes, and injectors.
  *
- * NOTE: Always use `defineNgModule` function to create this object,
+ * NOTE: Always use `ɵɵdefineNgModule` function to create this object,
  * never create the object directly since the shape of this object
  * can change between versions.
  */
@@ -47,19 +52,19 @@ export interface NgModuleDef<T> {
   type: T;
 
   /** List of components to bootstrap. */
-  bootstrap: Type<any>[];
+  bootstrap: Type<any>[]|(() => Type<any>[]);
 
   /** List of components, directives, and pipes declared by this module. */
-  declarations: Type<any>[];
+  declarations: Type<any>[]|(() => Type<any>[]);
 
   /** List of modules or `ModuleWithProviders` imported by this module. */
-  imports: Type<any>[];
+  imports: Type<any>[]|(() => Type<any>[]);
 
   /**
    * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
    * module.
    */
-  exports: Type<any>[];
+  exports: Type<any>[]|(() => Type<any>[]);
 
   /**
    * Cached value of computed `transitiveCompileScopes` for this module.
@@ -67,6 +72,12 @@ export interface NgModuleDef<T> {
    * This should never be read directly, but accessed via `transitiveScopesFor`.
    */
   transitiveCompileScopes: NgModuleTransitiveScopes|null;
+
+  /** The set of schemas that declare elements to be allowed in the NgModule. */
+  schemas: SchemaMetadata[]|null;
+
+  /** Unique ID for the module with which it should be registered.  */
+  id: string|null;
 }
 
 /**
@@ -83,45 +94,15 @@ export interface ModuleWithProviders<
   providers?: Provider[];
 }
 
-/**
- * A schema definition associated with an NgModule.
- *
- * @see `@NgModule`, `CUSTOM_ELEMENTS_SCHEMA`, `NO_ERRORS_SCHEMA`
- *
- * @param name The name of a defined schema.
- *
- * @publicApi
- */
-export interface SchemaMetadata { name: string; }
-
-/**
- * Defines a schema that allows an NgModule to contain the following:
- * - Non-Angular elements named with dash case (`-`).
- * - Element properties named with dash case (`-`).
- * Dash case is the naming convention for custom elements.
- *
- * @publicApi
- */
-export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
-  name: 'custom-elements'
-};
-
-/**
- * Defines a schema that allows any property on any element.
- *
- * @publicApi
- */
-export const NO_ERRORS_SCHEMA: SchemaMetadata = {
-  name: 'no-errors-schema'
-};
-
 
 /**
  * Type of the NgModule decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface NgModuleDecorator {
   /**
-   * Marks a class as an NgModule and supplies configuration metadata.
+   * Decorator that marks a class as an NgModule and supplies configuration metadata.
    */
   (obj?: NgModule): TypeDecorator;
   new (obj?: NgModule): NgModule;
@@ -225,7 +206,7 @@ export interface NgModule {
    *
    * ### Example
    *
-   * The following example allows MainModule to use anthing exported by
+   * The following example allows MainModule to use anything exported by
    * `CommonModule`:
    *
    * ```javascript
@@ -369,7 +350,7 @@ function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule)
     imports = [...imports, metadata.exports];
   }
 
-  moduleType.ngInjectorDef = defineInjector({
+  moduleType.ngInjectorDef = ɵɵdefineInjector({
     factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
     providers: metadata && metadata.providers,
     imports: imports,

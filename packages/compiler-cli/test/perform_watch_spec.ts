@@ -71,9 +71,10 @@ describe('perform watch', () => {
       `,
     });
 
-    const mainTsPath = path.resolve(testSupport.basePath, 'src', 'main.ts');
-    const utilTsPath = path.resolve(testSupport.basePath, 'src', 'util.ts');
-    const mainNgFactory = path.resolve(outDir, 'src', 'main.ngfactory.js');
+    const mainTsPath = path.posix.join(testSupport.basePath, 'src', 'main.ts');
+    const utilTsPath = path.posix.join(testSupport.basePath, 'src', 'util.ts');
+    const mainNgFactory = path.posix.join(outDir, 'src', 'main.ngfactory.js');
+
     performWatchCompilation(host);
     expect(fs.existsSync(mainNgFactory)).toBe(true);
     expect(fileExistsSpy !).toHaveBeenCalledWith(mainTsPath);

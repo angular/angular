@@ -81,18 +81,18 @@ In `ngtsc` this is instead emitted as,
 ```js
 const i0 = require("@angular/core");
 class GreetComponent {}
-GreetComponent.ngComponentDef = i0.ɵdefineComponent({
+GreetComponent.ngComponentDef = i0.ɵɵdefineComponent({
     type: GreetComponent,
     tag: 'greet',
     factory: () => new GreetComponent(),
     template: function (rf, ctx) {
         if (rf & RenderFlags.Create) {
-            i0.ɵelementStart(0, 'div');
-            i0.ɵtext(1);
-            i0.ɵelementEnd();
+            i0.ɵɵelementStart(0, 'div');
+            i0.ɵɵtext(1);
+            i0.ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-            i0.ɵtextBinding(1, i0.ɵinterpolation1('Hello ', ctx.name, '!'));
+            i0.ɵɵtextBinding(1, i0.ɵɵinterpolation1('Hello ', ctx.name, '!'));
         }
     }
 });
@@ -104,14 +104,14 @@ and the `.d.ts` contains:
 import * as i0 from '@angular/core';
 export class GreetComponent {
   static ngComponentDef: i0.NgComponentDef<
-    GreetComponent, 
-    'greet', 
+    GreetComponent,
+    'greet',
     {input: 'input'}
   >;
 }
 ```
 
-The information needed by reference inversion and type-checking is included in 
+The information needed by reference inversion and type-checking is included in
 the type declaration of the `ngComponentDef` in the `.d.ts`.
 
 #### TypeScript architecture
@@ -127,18 +127,18 @@ The overall architecure of TypeScript is:
     | TypeScript | -parse-> | AST | ->transform-> | AST | ->print-> | JavaScript |
     |   source   |    |     |-----|       |       |-----|           |   source   |
     |------------|    |        |          |                         |------------|
-                      |    type-check     |          
-                      |        |          |         
-                      |        v          |        
-                      |    |--------|     |                        
-                      |--> | errors | <---|                         
+                      |    type-check     |
+                      |        |          |
+                      |        v          |
+                      |    |--------|     |
+                      |--> | errors | <---|
                            |--------|
 
-The parse step is a traditional recursive descent parser, augmented to support incremental parsing, that emits an abstract syntax tree (AST). 
+The parse step is a traditional recursive descent parser, augmented to support incremental parsing, that emits an abstract syntax tree (AST).
 
 The type-checker construct a symbol table and then performs type analysis of every expression in the file, reporting errors it finds. This process not extended or modified by `ngtsc`.
 
-The transform step is a set of AST to AST transformations that perform various tasks such as, removing type declarations, lowering module and class declarations to ES5, converting `async` methods to state-machines, etc. 
+The transform step is a set of AST to AST transformations that perform various tasks such as, removing type declarations, lowering module and class declarations to ES5, converting `async` methods to state-machines, etc.
 
 #### Extension points
 
@@ -229,7 +229,7 @@ The `ngtsc` metadata evaluator will be built as a partial Typescript interpreter
 
 A template is compiled in `TemplateCompiler` by performing the following:
 
-1. Tokenizes the template 
+1. Tokenizes the template
 2. Parses the tokens into an HTML AST
 3. Converts the HTML AST into an Angular Template AST.
 4. Translates the Angular Template AST to a template function
@@ -244,7 +244,7 @@ As part of this conversion an exhaustive list of selector targets is also produc
 
 The `TemplateCompiler` can produce a template function from a string without additional information. However, correct interpretation of that string requires a selector scope discussed below. The selector scope is built at runtime allowing the runtime to use a function built from just a string as long as it is given a selector scope (e.g. an NgModule) to use during instantiation.
 
-#### The selector problem 
+#### The selector problem
 
 To interpret the content of a template, the runtime needs to know what component and directives to apply to the element and what pipes are referenced by binding expressions. The list of candidate components, directives and pipes are determined by the `NgModule` in which the component is declared. Since the module and component are in separate source files, mapping which components, directives and pipes referenced is left to the runtime. Unfortunately, this leads to a tree-shaking problem. Since there no direct link between the component and types the component references then all components, directives and pipes declared in the module, and any module imported from the module, must be available at runtime or risk the template failing to be interpreted correctly. Including everything can lead to a very large program which contains many components the application doesn't actually use.
 

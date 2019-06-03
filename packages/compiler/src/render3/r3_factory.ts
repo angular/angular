@@ -40,9 +40,11 @@ export interface R3ConstructorFactoryMetadata {
    * Regardless of whether `fnOrClass` is a constructor function or a user-defined factory, it
    * may have 0 or more parameters, which will be injected according to the `R3DependencyMetadata`
    * for those parameters. If this is `null`, then the type's constructor is nonexistent and will
-   * be inherited from `fnOrClass` which is interpreted as the current type.
+   * be inherited from `fnOrClass` which is interpreted as the current type. If this is `'invalid'`,
+   * then one or more of the parameters wasn't resolvable and any attempt to use these deps will
+   * result in a runtime error.
    */
-  deps: R3DependencyMetadata[]|null;
+  deps: R3DependencyMetadata[]|'invalid'|null;
 
   /**
    * An expression for the function which will be used to inject dependencies. The API of this
@@ -152,7 +154,9 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
   let ctorExpr: o.Expression|null = null;
   if (meta.deps !== null) {
     // There is a constructor (either explicitly or implicitly defined).
-    ctorExpr = new o.InstantiateExpr(typeForCtor, injectDependencies(meta.deps, meta.injectFn));
+    if (meta.deps !== 'invalid') {
+      ctorExpr = new o.InstantiateExpr(typeForCtor, injectDependencies(meta.deps, meta.injectFn));
+    }
   } else {
     const baseFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
     const getInheritedFactory = o.importExpr(R3.getInheritedFactory);
@@ -173,7 +177,13 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
   function makeConditionalFactory(nonCtorExpr: o.Expression): o.ReadVarExpr {
     const r = o.variable('r');
     body.push(r.set(o.NULL_EXPR).toDeclStmt());
-    body.push(o.ifStmt(t, [r.set(ctorExprFinal).toStmt()], [r.set(nonCtorExpr).toStmt()]));
+    let ctorStmt: o.Statement|null = null;
+    if (ctorExprFinal !== null) {
+      ctorStmt = r.set(ctorExprFinal).toStmt();
+    } else {
+      ctorStmt = makeErrorStmt(meta.name);
+    }
+    body.push(o.ifStmt(t, [ctorStmt], [r.set(nonCtorExpr).toStmt()]));
     return r;
   }
 
@@ -207,10 +217,16 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
     retExpr = ctorExpr;
   }
 
+  if (retExpr !== null) {
+    body.push(new o.ReturnStatement(retExpr));
+  } else {
+    body.push(makeErrorStmt(meta.name));
+  }
+
   return {
     factory: o.fn(
-        [new o.FnParam('t', o.DYNAMIC_TYPE)], [...body, new o.ReturnStatement(retExpr)],
-        o.INFERRED_TYPE, undefined, `${meta.name}_Factory`),
+        [new o.FnParam('t', o.DYNAMIC_TYPE)], body, o.INFERRED_TYPE, undefined,
+        `${meta.name}_Factory`),
     statements,
   };
 }
@@ -290,6 +306,13 @@ export function dependenciesFromGlobalMetadata(
   }
 
   return deps;
+}
+
+function makeErrorStmt(name: string): o.Statement {
+  return new o.ThrowStmt(new o.InstantiateExpr(new o.ReadVarExpr('Error'), [
+    o.literal(
+        `${name} has a constructor which is not compatible with Dependency Injection. It should probably not be @Injectable().`)
+  ]));
 }
 
 function isDelegatedMetadata(meta: R3FactoryMetadata): meta is R3DelegatedFactoryMetadata|

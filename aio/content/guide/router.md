@@ -96,7 +96,7 @@ When the browser's URL changes, that router looks for a corresponding `Route`
 from which it can determine the component to display.
 
 A router has no routes until you configure it.
-The following example creates five route definitions, configures the router via the `RouterModule.forRoot` method,
+The following example creates five route definitions, configures the router via the `RouterModule.forRoot()` method,
 and adds the result to the `AppModule`'s `imports` array.
 
 
@@ -110,7 +110,7 @@ and adds the result to the `AppModule`'s `imports` array.
 
 
 The `appRoutes` array of *routes* describes how to navigate.
-Pass it to the `RouterModule.forRoot` method in the module `imports` to configure the router.
+Pass it to the `RouterModule.forRoot()` method in the module `imports` to configure the router.
 
 Each `Route` maps a URL `path` to a component.
 There are _no leading slashes_ in the _path_.
@@ -148,8 +148,8 @@ If you need to see what events are happening during the navigation lifecycle, th
 
 ### Router outlet
 
-The `RouterOutlet` is a directive from the router library that is used like a component. 
-It acts as a placeholder that marks the spot in the template where the router should 
+The `RouterOutlet` is a directive from the router library that is used like a component.
+It acts as a placeholder that marks the spot in the template where the router should
 display the components for that outlet.
 
 
@@ -199,9 +199,9 @@ The `RouterLinkActive` directive toggles css classes for active `RouterLink` bin
 On each anchor tag, you see a [property binding](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes
-that the Router will add when this link is active (and remove when the link is inactive). You set the `RouterLinkActive` 
-directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component 
-property that returns such a string. 
+that the Router will add when this link is active (and remove when the link is inactive). You set the `RouterLinkActive`
+directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component
+property that returns such a string.
 
 Active route links cascade down through each level of the route tree, so parent and child router links can be active at the same time. To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression. By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
 
@@ -896,11 +896,11 @@ Replace the contents of each component with the sample HTML below.
 
 <code-tabs>
 
-  <code-pane header="src/app/crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.html">
+  <code-pane header="src/app/crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.1.html">
 
   </code-pane>
 
-  <code-pane header="src/app/hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.html" region="template">
+  <code-pane header="src/app/hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.1.html" region="template">
 
   </code-pane>
 
@@ -912,9 +912,10 @@ In order to use the Router, you must first register the `RouterModule` from the 
 
 <div class="alert is-important">
 
-  **Note:** The `RouterModule.forRoot` method is a pattern used to register application-wide providers. Read more about application-wide providers in the [Singleton services](guide/singleton-services#forroot) guide.
+  **Note:** The `RouterModule.forRoot` method is a pattern used to register application-wide providers. Read more about application-wide providers in the [Singleton services](guide/singleton-services#forRoot-router) guide.
 
 </div>
+
 
 <code-example path="router/src/app/app.module.1.ts" linenums="false" header="src/app/app.module.ts (first-config)" region="first-config">
 
@@ -972,7 +973,7 @@ Be sure it is the _last_ route in the configuration.
 
 To test this feature, add a button with a `RouterLink` to the `HeroListComponent` template and set the link to `"/sidekicks"`.
 
-<code-example path="router/src/app/hero-list/hero-list.component.html" linenums="false" header="src/app/hero-list/hero-list.component.html (excerpt)">
+<code-example path="router/src/app/hero-list/hero-list.component.1.html" linenums="false" header="src/app/hero-list/hero-list.component.html (excerpt)">
 
 </code-example>
 
@@ -1071,7 +1072,7 @@ You've learned how to do the following:
 * Load the router library.
 * Add a nav bar to the shell template with anchor tags, `routerLink`  and `routerLinkActive` directives.
 * Add a `router-outlet` to the shell template where views will be displayed.
-* Configure the router module with `RouterModule.forRoot`.
+* Configure the router module with `RouterModule.forRoot()`.
 * Set the router to compose HTML5 browser URLs.
 * handle invalid routes with a `wildcard` route.
 * navigate to the default route when the app launches with an empty path.
@@ -1147,7 +1148,7 @@ The starter app's structure looks like this:
             hero-list.component.ts
 
           </div>
-          
+
         </div>
 
         <div class='file'>
@@ -1173,7 +1174,7 @@ The starter app's structure looks like this:
             page-not-found.component.ts
 
           </div>
-          
+
         </div>
 
         <div class='file'>
@@ -1239,11 +1240,11 @@ Here are the files discussed in this milestone.
 
   </code-pane>
 
-  <code-pane header="hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.html">
+  <code-pane header="hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.1.html">
 
   </code-pane>
 
-  <code-pane header="crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.html">
+  <code-pane header="crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.1.html">
 
   </code-pane>
 
@@ -1280,7 +1281,7 @@ The **Routing Module** has several characteristics:
 ### Integrate routing with your app
 
 The sample routing application does not include routing by default.
-When you use the [Angular CLI](cli) to create a project that will use routing, set the `--routing` option for the project or app, and for each NgModule. 
+When you use the [Angular CLI](cli) to create a project that will use routing, set the `--routing` option for the project or app, and for each NgModule.
 When you create or initialize a new project (using the CLI [`ng new`](cli/new) command) or a new app (using the [`ng generate app`](cli/generate) command), specify the `--routing` option.  This tells the CLI to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
 You can then use routing in any NgModule that you add to the project or app.
 
@@ -1306,7 +1307,7 @@ Create an `AppRouting` module in the `/app` folder to contain the routing config
 
 Import the `CrisisListComponent`, `HeroListComponent`, and `PageNotFoundComponent` symbols
 just like you did in the `app.module.ts`. Then move the `Router` imports
-and routing configuration, including `RouterModule.forRoot`, into this routing module.
+and routing configuration, including `RouterModule.forRoot()`, into this routing module.
 
 Re-export the Angular `RouterModule` by adding it to the module `exports` array.
 By re-exporting the `RouterModule` here the components declared in `AppModule` will have access to router directives such as `RouterLink` and `RouterOutlet`.
@@ -1317,7 +1318,7 @@ After these steps, the file should look like this.
 
 </code-example>
 
-Next, update the `app.module.ts` file, removing `RouterModule.forRoot` in 
+Next, update the `app.module.ts` file, removing `RouterModule.forRoot` in
 the `imports` array.
 
 <code-example path="router/src/app/app.module.2.ts" header="src/app/app.module.ts">
@@ -1426,7 +1427,7 @@ Follow these steps:
 
   * Change the component class name to `HeroListComponent`.
   * Change the `selector` to `app-hero-list`.
-  
+
 <div class="alert is-helpful">
 
    Selectors are **not required** for _routed components_ due to the components are dynamically inserted when the page is rendered, but are useful for identifying and targeting them in your HTML element tree.
@@ -1500,7 +1501,7 @@ When you're done, you'll have these *hero management* files:
 
     <div class='file'>
       hero.service.ts
-    </div>    
+    </div>
 
     <div class='file'>
       hero.ts
@@ -1508,7 +1509,7 @@ When you're done, you'll have these *hero management* files:
 
     <div class='file'>
       heroes-routing.module.ts
-    </div>    
+    </div>
 
     <div class='file'>
       heroes.module.ts
@@ -1550,7 +1551,7 @@ Now that you have routes for the `Heroes` module, register them with the `Router
 `RouterModule` _almost_ as you did in the `AppRoutingModule`.
 
 There is a small but critical difference.
-In the `AppRoutingModule`, you used the static **`RouterModule.forRoot`** method to register the routes and application level service providers.
+In the `AppRoutingModule`, you used the static **`RouterModule.forRoot()`** method to register the routes and application level service providers.
 In a feature module you use the static **`forChild`** method.
 
 
@@ -1558,7 +1559,7 @@ In a feature module you use the static **`forChild`** method.
 
 
 
-Only call `RouterModule.forRoot` in the root `AppRoutingModule`
+Only call `RouterModule.forRoot()` in the root `AppRoutingModule`
 (or the `AppModule` if that's where you register top level application routes).
 In any other module, you must call the **`RouterModule.forChild`** method to register additional routes.
 
@@ -1733,7 +1734,7 @@ Accordingly, the _link parameters array_ has *two* items:  the routing _path_ an
 `id` of the selected hero.
 
 
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (link-parameters-array)" region="link-parameters-array">
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array">
 
 </code-example>
 
@@ -2028,7 +2029,7 @@ When navigating to the `HeroDetailComponent` you specified the _required_ `id` o
 *route parameter* and made it the second item of the [_link parameters array_](#link-parameters-array).
 
 
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (link-parameters-array)" region="link-parameters-array">
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array">
 
 </code-example>
 
@@ -2242,10 +2243,10 @@ This file does the following:
 
 You could also create more transitions for other routes. This trigger is sufficient for the current milestone.
 
-Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/router` package and the `slideInDownAnimation` from 
+Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/router` package and the `slideInAnimation` from
 `'./animations.ts`.
 
-Add an `animations` array to the `@Component` metadata's that contains the `slideInDownAnimation`.
+Add an `animations` array to the `@Component` metadata's that contains the `slideInAnimation`.
 
 <code-example path="router/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (animations)" region="animation-imports">
 
@@ -2260,7 +2261,7 @@ For the `@routeAnimation` transitions to key off states, you'll need to provide 
 
 </code-example>
 
-The `@routeAnimation` property is bound to the `getAnimationData` with the provided `routerOutlet` reference, so you'll need to define that function in the `AppComponent`. The `getAnimationData` function returns the animation property from the `data` provided through the `ActivatedRoute`. The `animation` property matches the `transition` names you used in the `slideDownAnimation` defined in `animations.ts`.
+The `@routeAnimation` property is bound to the `getAnimationData` with the provided `routerOutlet` reference, so you'll need to define that function in the `AppComponent`. The `getAnimationData` function returns the animation property from the `data` provided through the `ActivatedRoute`. The `animation` property matches the `transition` names you used in the `slideInAnimation` defined in `animations.ts`.
 
 <code-example path="router/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (router outlet)" region="function-binding">
 
@@ -2324,7 +2325,7 @@ After these changes, the folder structure looks like this:
               crisis-list.component.ts
             </div>
 
-          </div>      
+          </div>
 
         <div class='file'>
           heroes
@@ -2374,7 +2375,7 @@ After these changes, the folder structure looks like this:
 
           <div class='file'>
             hero.service.ts
-          </div>    
+          </div>
 
           <div class='file'>
             hero.ts
@@ -2382,7 +2383,7 @@ After these changes, the folder structure looks like this:
 
           <div class='file'>
             heroes-routing.module.ts
-          </div>    
+          </div>
 
           <div class='file'>
             heroes.module.ts
@@ -2417,7 +2418,7 @@ After these changes, the folder structure looks like this:
             page-not-found.component.ts
 
           </div>
-          
+
         </div>
 
       </div>
@@ -2452,7 +2453,7 @@ After these changes, the folder structure looks like this:
 
       <div class='file'>
         message.service.ts
-      </div>      
+      </div>
 
       <div class='file'>
         index.html
@@ -2486,7 +2487,7 @@ Here are the relevant files for this version of the sample application.
 
   <code-pane header="animations.ts" path="router/src/app/animations.ts">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane header="app.component.html" path="router/src/app/app.component.2.html">
 
@@ -2506,11 +2507,11 @@ Here are the relevant files for this version of the sample application.
 
   <code-pane header="hero-list.component.css" path="router/src/app/heroes/hero-list/hero-list.component.css">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane header="hero-list.component.html" path="router/src/app/heroes/hero-list/hero-list.component.html">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane header="hero-list.component.ts" path="router/src/app/heroes/hero-list/hero-list.component.ts">
 
@@ -2538,7 +2539,7 @@ Here are the relevant files for this version of the sample application.
 
   <code-pane header="message.service.ts" path="router/src/app/message.service.ts">
 
-  </code-pane>  
+  </code-pane>
 
 </code-tabs>
 
@@ -2676,7 +2677,7 @@ display the `Crisis Center Home` and `Crisis Detail` route components.
 
 The `Crisis Detail` route is a child of the `Crisis List`. The router [reuses components](#reuse)
 by default, so the `Crisis Detail` component will be re-used as you select different crises.
-In contrast, back in the `Hero Detail` route, the component was recreated each time you selected a different hero.
+In contrast, back in the `Hero Detail` route, [the component was recreated](#snapshot-the-no-observable-alternative) each time you selected a different hero from the list of heroes.
 
 At the top level, paths that begin with `/` refer to the root of the application.
 But child routes *extend* the path of the parent route.
@@ -2720,7 +2721,7 @@ _before_ the `AppRoutingModule`:
 
   <code-pane path="router/src/app/crisis-center/crisis-center.module.ts"header="src/app/crisis-center/crisis-center.module.ts">
 
-  </code-pane> 
+  </code-pane>
 
   <code-pane path="router/src/app/app.module.4.ts" linenums="false" header="src/app/app.module.ts (import CrisisCenterModule)" region="crisis-center-module">
 
@@ -3381,7 +3382,7 @@ update the admin route with a `canActivate` guard property that references it:
 </code-example>
 
 
- 
+
 The admin feature is now protected by the guard, albeit protected poorly.
 
 
@@ -3460,7 +3461,7 @@ Register a `/login` route in the `auth/auth-routing.module.ts`. In `app.module.t
 
   <code-pane header="src/app/auth/login/login.component.html" path="router/src/app/auth/login/login.component.html">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane header="src/app/auth/login/login.component.ts" path="router/src/app/auth/login/login.component.1.ts">
 
@@ -3849,7 +3850,7 @@ Update the `AuthGuard` to provide a `session_id` query that will remain after na
 
 Add an `anchor` element so you can jump to a certain point on the page.
 
-Add the `NavigationExtras` object to the `router.navigate` method that navigates you to the `/login` route.
+Add the `NavigationExtras` object to the `router.navigate()` method that navigates you to the `/login` route.
 
 
 <code-example path="router/src/app/auth/auth.guard.4.ts" linenums="false" header="src/app/auth/auth.guard.ts (v3)">
@@ -3860,7 +3861,7 @@ Add the `NavigationExtras` object to the `router.navigate` method that navigates
 
 You can also preserve query parameters and fragments across navigations without having to provide them
 again when navigating. In the `LoginComponent`, you'll add an *object* as the
-second argument in the `router.navigate` function
+second argument in the `router.navigateUrl()` function
 and provide the `queryParamsHandling` and `preserveFragment` to pass along the current query parameters
 and fragment to the next route.
 
@@ -3953,10 +3954,10 @@ Users will still visit `/admin` and the `AdminComponent` still serves as the *Ro
 
 Open the `AppRoutingModule` and add a new `admin` route to its `appRoutes` array.
 
-Give it a `loadChildren` property instead of a `children` property, set to the address of the `AdminModule`.
-The address is the `AdminModule` file location (relative to the app root),
-followed by a `#` separator, followed by the name of the exported module class, `AdminModule`.
-
+Give it a `loadChildren` property instead of a `children` property.
+The `loadChildren` property takes a function that returns a promise using the browser's built-in syntax for lazy loading code using dynamic imports `import('...')`.
+The path is the location of the `AdminModule` (relative to the app root).
+After the code is requested and loaded, the `Promise` resolves an object that contains the `NgModule`, in this case the `AdminModule`.
 
 <code-example path="router/src/app/app-routing.module.5.ts" region="admin-1" header="app-routing.module.ts (load children)">
 
@@ -4130,9 +4131,9 @@ You could try this now and confirm that the  `CrisisCenterModule` loads after yo
 
 To enable preloading of all lazy loaded modules, import the `PreloadAllModules` token from the Angular router package.
 
-The second argument in the `RouterModule.forRoot` method takes an object for additional configuration options.
+The second argument in the `RouterModule.forRoot()` method takes an object for additional configuration options.
 The `preloadingStrategy` is one of those options.
-Add the `PreloadAllModules` token to the `forRoot` call:
+Add the `PreloadAllModules` token to the `forRoot()` call:
 
 <code-example path="router/src/app/app-routing.module.6.ts" linenums="false" header="src/app/app-routing.module.ts (preload all)" region="forRoot">
 
@@ -4219,7 +4220,7 @@ Shortly, you'll extend the `AdminDashboardComponent` to inject this service and 
 But first, make a few changes to the `AppRoutingModule`.
 
 1. Import `SelectivePreloadingStrategyService` into `AppRoutingModule`.
-1. Replace the `PreloadAllModules` strategy in the call to `forRoot` with this `SelectivePreloadingStrategyService`.
+1. Replace the `PreloadAllModules` strategy in the call to `forRoot()` with this `SelectivePreloadingStrategyService`.
 1. Add the `SelectivePreloadingStrategyService` strategy to the `AppRoutingModule` providers array so it can be injected
 elsewhere in the app.
 
@@ -4476,7 +4477,7 @@ The router supports both styles with two `LocationStrategy` providers:
 1. `PathLocationStrategy`&mdash;the default "HTML5 pushState" style.
 1. `HashLocationStrategy`&mdash;the "hash URL" style.
 
-The `RouterModule.forRoot` function sets the `LocationStrategy` to the `PathLocationStrategy`,
+The `RouterModule.forRoot()` function sets the `LocationStrategy` to the `PathLocationStrategy`,
 making it the default strategy.
 You can switch to the `HashLocationStrategy` with an override during the bootstrapping process if you prefer it.
 
@@ -4591,7 +4592,7 @@ Those developers may still use HTML5 URLs by taking two remedial steps:
 #### *HashLocationStrategy*
 
 You can go old-school with the `HashLocationStrategy` by
-providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot`
+providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot()`
 in the `AppModule`.
 
 

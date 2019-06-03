@@ -15,10 +15,8 @@ export abstract class RouterEntryPoint {
 
   abstract readonly moduleName: string;
 
-  // Alias of moduleName.
+  // Alias of moduleName for compatibility with what `ngtools_api` returned.
   abstract readonly name: string;
-
-  abstract toString(): string;
 }
 
 class RouterEntryPointImpl implements RouterEntryPoint {
@@ -26,7 +24,8 @@ class RouterEntryPointImpl implements RouterEntryPoint {
 
   get name(): string { return this.moduleName; }
 
-  toString(): string { return `${this.filePath}#${this.moduleName}`; }
+  // For debugging purposes.
+  toString(): string { return `RouterEntryPoint(name: ${this.name}, filePath: ${this.filePath})`; }
 }
 
 export class RouterEntryPointManager {
@@ -48,11 +47,15 @@ export class RouterEntryPointManager {
   }
 
   fromNgModule(sf: ts.SourceFile, moduleName: string): RouterEntryPoint {
-    const absoluteFile = sf.fileName;
-    const key = `${absoluteFile}#${moduleName}`;
+    const key = entryPointKeyFor(sf.fileName, moduleName);
     if (!this.map.has(key)) {
-      this.map.set(key, new RouterEntryPointImpl(absoluteFile, moduleName));
+      this.map.set(key, new RouterEntryPointImpl(sf.fileName, moduleName));
     }
     return this.map.get(key) !;
   }
+}
+
+export function entryPointKeyFor(filePath: string, moduleName: string): string {
+  // Drop the extension to be compatible with how cli calls `listLazyRoutes(entryRoute)`.
+  return `${filePath.replace(/\.tsx?$/i, '')}#${moduleName}`;
 }

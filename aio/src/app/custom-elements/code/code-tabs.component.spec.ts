@@ -23,10 +23,10 @@ describe('CodeTabsComponent', () => {
     });
 
     fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
     hostComponent = fixture.componentInstance;
     codeTabsComponent = hostComponent.codeTabsComponent;
-
-    fixture.detectChanges();
   });
 
   it('should get correct tab info', () => {
@@ -92,5 +92,5 @@ describe('CodeTabsComponent', () => {
   `
 })
 class HostComponent {
-  @ViewChild(CodeTabsComponent) codeTabsComponent: CodeTabsComponent;
+  @ViewChild(CodeTabsComponent, {static: true}) codeTabsComponent: CodeTabsComponent;
 }

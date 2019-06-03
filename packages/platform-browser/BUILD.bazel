@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "platform-browser",
@@ -14,8 +14,8 @@ ng_module(
         "//packages:types",
         "//packages/common",
         "//packages/core",
-        "@ngdeps//@types/hammerjs",
-        "@ngdeps//zone.js",
+        "@npm//@types/hammerjs",
+        "@npm//zone.js",
     ],
 )
 

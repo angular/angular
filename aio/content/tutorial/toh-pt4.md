@@ -267,7 +267,7 @@ Use the CLI to create the `MessagesComponent`.
   ng generate component messages
 </code-example>
 
-The CLI creates the component files in the `src/app/messages` folder and declare `MessagesComponent` in `AppModule`.
+The CLI creates the component files in the `src/app/messages` folder and declares the `MessagesComponent` in `AppModule`.
 
 Modify the `AppComponent` template to display the generated `MessagesComponent`
 

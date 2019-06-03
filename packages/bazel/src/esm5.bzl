@@ -108,7 +108,7 @@ def _esm5_outputs_aspect(target, ctx):
 
     ctx.actions.run(
         progress_message = "Compiling TypeScript (ES5 with ES Modules) %s" % target.label,
-        inputs = target.typescript.replay_params.inputs + [tsconfig],
+        inputs = target.typescript.replay_params.inputs.to_list() + [tsconfig],
         outputs = outputs,
         arguments = [tsconfig.path],
         executable = compiler,
@@ -157,7 +157,7 @@ esm5_outputs_aspect = aspect(
             cfg = "host",
         ),
         "_tsc_wrapped": attr.label(
-            default = Label("@build_bazel_rules_typescript//:@bazel/typescript/tsc_wrapped"),
+            default = Label("@npm//@bazel/typescript/bin:tsc_wrapped"),
             executable = True,
             cfg = "host",
         ),
