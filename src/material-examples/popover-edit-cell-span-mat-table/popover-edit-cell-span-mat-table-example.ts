@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
-import {DomSanitizer} from '@angular/platform-browser';
 import {NgForm} from '@angular/forms';
-import {MatIconRegistry} from '@angular/material/icon';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 export interface Person {
@@ -37,12 +35,6 @@ export class PopoverEditCellSpanMatTableExample {
   dataSource = new ExampleDataSource();
 
   readonly preservedValues = new WeakMap<Person, any>();
-
-  constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
-    iconRegistry.addSvgIcon(
-        'edit',
-        sanitizer.bypassSecurityTrustResourceUrl('assets/img/examples/edit-icon.svg'));
-  }
 
   onSubmit(person: Person, f: NgForm) {
     if (!f.valid) {

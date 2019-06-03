@@ -13,11 +13,22 @@ export function matches(element: Element, selector: string): boolean {
       (element as any)['msMatchesSelector'](selector);
 }
 
-/** IE 11 compatible closest implementation. */
-export function closest(element: EventTarget|Element|null|undefined, selector: string): Element|
-    null {
+/** IE 11 compatible closest implementation that is able to start from non-Element Nodes. */
+export function closest(element: EventTarget|Element|null|undefined, selector: string):
+    Element|null {
   if (!(element instanceof Node)) { return null; }
 
+  let curr: Node|null = element;
+  while (curr != null && !(curr instanceof Element)) {
+    curr = curr.parentNode;
+  }
+
+  return curr && (hasNativeClosest ?
+      curr.closest(selector) : polyfillClosest(curr, selector)) as Element|null;
+}
+
+/** Polyfill for browsers without Element.closest. */
+function polyfillClosest(element: Element, selector: string): Element|null {
   let curr: Node|null = element;
   while (curr != null && !(curr instanceof Element && matches(curr, selector))) {
     curr = curr.parentNode;
@@ -25,3 +36,5 @@ export function closest(element: EventTarget|Element|null|undefined, selector: s
 
   return (curr || null) as Element|null;
 }
+
+const hasNativeClosest = !!Element.prototype.closest;

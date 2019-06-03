@@ -15,6 +15,10 @@
 
   $background-color: mat-color($background, 'card');
 
+  .mat-row-hover-content-host-cell {
+    position: relative;
+  }
+
   .mat-row-hover-content {
     align-items: center;
     background: mat-edit-hover-content-background(90deg, $background-color);

@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
-import {DomSanitizer} from '@angular/platform-browser';
 import {NgForm} from '@angular/forms';
-import {MatIconRegistry} from '@angular/material/icon';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 export interface PeriodicElement {
@@ -49,12 +47,6 @@ export class PopoverEditMatTableFlexExample {
 
   readonly preservedNameValues = new WeakMap<PeriodicElement, any>();
   readonly preservedWeightValues = new WeakMap<PeriodicElement, any>();
-
-  constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
-    iconRegistry.addSvgIcon(
-        'edit',
-        sanitizer.bypassSecurityTrustResourceUrl('assets/img/examples/edit-icon.svg'));
-  }
 
   onSubmitName(element: PeriodicElement, f: NgForm) {
     if (!f.valid) { return; }

@@ -10,7 +10,12 @@ import {BidiModule, Direction} from '@angular/cdk/bidi';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {BehaviorSubject} from 'rxjs';
 
-import {CdkPopoverEditColspan, CdkPopoverEditModule, PopoverEditClickOutBehavior} from './index';
+import {
+  CdkPopoverEditColspan,
+  CdkPopoverEditModule,
+  HoverContentState,
+  PopoverEditClickOutBehavior,
+} from './index';
 
 const NAME_EDIT_TEMPLATE = `
     <div style="background-color: white;">
@@ -76,7 +81,8 @@ abstract class BaseTestComponent {
     row.dispatchEvent(new Event('mouseover', {bubbles: true}));
     row.dispatchEvent(new Event('mousemove', {bubbles: true}));
 
-    tick(31);
+    // Wait for the mouse hover debounce in edit-event-dispatcher.
+    tick(41);
   }
 
   getRows() {
@@ -90,6 +96,16 @@ abstract class BaseTestComponent {
 
   focusEditCell(rowIndex = 0, cellIndex = 1) {
     this.getEditCell(rowIndex, cellIndex).focus();
+  }
+
+  hoverContentStateForRow(rowIndex = 0) {
+    const openButton = this.getOpenButton(rowIndex);
+
+    if (!openButton) {
+      return HoverContentState.OFF;
+    }
+    return parseInt(getComputedStyle(openButton.parentNode as Element).opacity || '', 10) === 0 ?
+        HoverContentState.FOCUSABLE : HoverContentState.ON;
   }
 
   getOpenButton(rowIndex = 0) {
@@ -325,7 +341,7 @@ describe('CDK Popover Edit', () => {
       let fixture: ComponentFixture<BaseTestComponent>;
       let overlayContainer: OverlayContainer;
 
-      beforeEach(() => {
+      beforeEach(fakeAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkTableModule, CdkPopoverEditModule, CommonModule, FormsModule, BidiModule],
           declarations: [componentClass],
@@ -336,7 +352,8 @@ describe('CDK Popover Edit', () => {
         fixture = TestBed.createComponent(componentClass);
         component = fixture.componentInstance;
         fixture.detectChanges();
-      });
+        tick(10);
+      }));
 
       afterEach(() => {
         // The overlay container's `ngOnDestroy` won't be called between test runs so we need
@@ -345,41 +362,107 @@ describe('CDK Popover Edit', () => {
         overlayContainer.ngOnDestroy();
       });
 
+      describe('row hover content', () => {
+        it('makes the first and last rows focusable but invisible', fakeAsync(() => {
+          const rows = component.getRows();
+
+          expect(component.hoverContentStateForRow(0)).toBe(HoverContentState.FOCUSABLE);
+          expect(component.hoverContentStateForRow(rows.length - 1))
+              .toBe(HoverContentState.FOCUSABLE);
+        }));
+      });
+
       describe('triggering edit', () => {
         it('shows and hides on-hover content only after a delay', fakeAsync(() => {
-             const [row0, row1] = component.getRows();
-             row0.dispatchEvent(new Event('mouseover', {bubbles: true}));
-             row0.dispatchEvent(new Event('mousemove', {bubbles: true}));
+          const [row0, row1] = component.getRows();
+          row0.dispatchEvent(new Event('mouseover', {bubbles: true}));
+          row0.dispatchEvent(new Event('mousemove', {bubbles: true}));
 
-             expect(component.getOpenButton(0)).toBe(null);
+          expect(component.hoverContentStateForRow(0)).toBe(HoverContentState.FOCUSABLE);
 
-             tick(20);
-             row0.dispatchEvent(new Event('mousemove', {bubbles: true}));
-             tick(20);
+          tick(20);
+          row0.dispatchEvent(new Event('mousemove', {bubbles: true}));
+          tick(20);
 
-             expect(component.getOpenButton(0)).toBe(null);
+          expect(component.hoverContentStateForRow(0)).toBe(HoverContentState.FOCUSABLE);
 
-             tick(11);
+          tick(31);
 
-             expect(component.getOpenButton(0)).toEqual(jasmine.any(HTMLElement));
+          expect(component.hoverContentStateForRow(0)).toBe(HoverContentState.ON);
 
-             row1.dispatchEvent(new Event('mouseover', {bubbles: true}));
-             row1.dispatchEvent(new Event('mousemove', {bubbles: true}));
+          row1.dispatchEvent(new Event('mouseover', {bubbles: true}));
+          row1.dispatchEvent(new Event('mousemove', {bubbles: true}));
 
-             expect(component.getOpenButton(0)).toEqual(jasmine.any(HTMLElement));
-             expect(component.getOpenButton(1)).toBe(null);
+          expect(component.hoverContentStateForRow(0)).toBe(HoverContentState.ON);
+          expect(component.hoverContentStateForRow(1)).toBe(HoverContentState.OFF);
 
-             tick(31);
+          tick(41);
 
-             expect(component.getOpenButton(0)).toBe(null);
-             expect(component.getOpenButton(1)).toEqual(jasmine.any(HTMLElement));
-           }));
+          expect(component.hoverContentStateForRow(0)).toBe(HoverContentState.FOCUSABLE);
+          expect(component.hoverContentStateForRow(1)).toBe(HoverContentState.ON);
+        }));
 
+        it('shows hover content for the focused row and makes the rows above and below focusable',
+            fakeAsync(() => {
+          expect(component.hoverContentStateForRow(1)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(2)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(3)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(4)).toBe(HoverContentState.FOCUSABLE);
+
+          component.focusEditCell(2);
+          tick(1);
+
+          expect(component.hoverContentStateForRow(2)).toBe(HoverContentState.ON);
+          expect(component.hoverContentStateForRow(1)).toBe(HoverContentState.FOCUSABLE);
+          expect(component.hoverContentStateForRow(3)).toBe(HoverContentState.FOCUSABLE);
+
+          component.focusEditCell(4);
+          tick(1);
+
+          expect(component.hoverContentStateForRow(2)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(4)).toBe(HoverContentState.ON);
+          expect(component.hoverContentStateForRow(3)).toBe(HoverContentState.FOCUSABLE);
+
+          component.getEditCell(4).blur();
+          tick(1);
+
+          expect(component.hoverContentStateForRow(1)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(2)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(3)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(4)).toBe(HoverContentState.FOCUSABLE);
+        }));
+
+        it('shows hover content for the editing row and makes the rows above and below ' +
+            'focusable unless focus is in a different table row in which case it takes priority',
+            fakeAsync(() => {
+          expect(component.hoverContentStateForRow(1)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(2)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(3)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(4)).toBe(HoverContentState.FOCUSABLE);
+
+          component.openLens(2);
+          tick(1);
+
+          expect(component.hoverContentStateForRow(2)).toBe(HoverContentState.ON);
+          expect(component.hoverContentStateForRow(1)).toBe(HoverContentState.FOCUSABLE);
+          expect(component.hoverContentStateForRow(3)).toBe(HoverContentState.FOCUSABLE);
+
+          component.focusEditCell(4);
+          tick(1);
+
+          expect(component.hoverContentStateForRow(2)).toBe(HoverContentState.OFF);
+          expect(component.hoverContentStateForRow(4)).toBe(HoverContentState.ON);
+          expect(component.hoverContentStateForRow(3)).toBe(HoverContentState.FOCUSABLE);
+        }));
+      });
+
+      describe('triggering edit', () => {
         it('opens edit from on-hover button', fakeAsync(() => {
           component.triggerHoverState();
           component.clickOpenButton();
 
           expect(component.lensIsOpen()).toBe(true);
+          clearLeftoverTimers();
         }));
 
         it('opens edit from Enter on focued cell', fakeAsync(() => {
@@ -387,6 +470,7 @@ describe('CDK Popover Edit', () => {
           component.openLens();
 
           expect(component.lensIsOpen()).toBe(true);
+          clearLeftoverTimers();
         }));
       });
 
@@ -475,6 +559,7 @@ describe('CDK Popover Edit', () => {
                // Focus should have moved to the top of the lens.
                expect(document.activeElement).toBe(focusableElements[1]);
                expect(component.lensIsOpen()).toBe(true);
+               clearLeftoverTimers();
              }));
 
           it('moves focus to the next cell when focus leaves end of lens with cdkPopoverEditTabOut',
@@ -491,6 +576,7 @@ describe('CDK Popover Edit', () => {
                // Focus should have moved to the next editable cell.
                expect(document.activeElement).toBe(component.getEditCell(1, 1));
                expect(component.lensIsOpen()).toBe(false);
+               clearLeftoverTimers();
              }));
 
           it(`moves focus to the previous cell when focus leaves end of lens with
@@ -507,6 +593,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
                // Focus should have moved to the next editable cell.
                expect(document.activeElement).toBe(component.getEditCell(0, 1));
                expect(component.lensIsOpen()).toBe(false);
+               clearLeftoverTimers();
              }));
         });
       });
@@ -516,6 +603,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.openLens();
 
           expect(component.getInput()!.value).toBe('Hydrogen');
+          clearLeftoverTimers();
         }));
 
         it('positions the lens at the top left corner and spans the full width of the cell',
@@ -528,6 +616,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
              expect(paneRect.width).toBe(cellRect.width);
              expect(paneRect.left).toBe(cellRect.left);
              expect(paneRect.top).toBe(cellRect.top);
+             clearLeftoverTimers();
            }));
 
         it('adjusts the positioning of the lens based on colspan', fakeAsync(() => {
@@ -559,6 +648,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
              expect(paneRect.top).toBe(cellRects[0].top);
              expect(paneRect.left).toBe(cellRects[0].left);
              expect(paneRect.right).toBe(cellRects[2].right);
+             clearLeftoverTimers();
            }));
 
         it('updates the form and submits, closing the lens', fakeAsync(() => {
@@ -569,9 +659,9 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
 
           component.clickSubmitButton();
           fixture.detectChanges();
-
-          expect(component.getEditCell().textContent!.trim()).toBe('Hydragon');
+          expect(component.getEditCell().firstChild!.textContent!.trim()).toBe('Hydragon');
           expect(component.lensIsOpen()).toBe(false);
+          clearLeftoverTimers();
         }));
 
         it('does not close the lens on submit when form is invalid', fakeAsync(() => {
@@ -583,6 +673,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.clickSubmitButton();
 
           expect(component.lensIsOpen()).toBe(true);
+          clearLeftoverTimers();
         }));
 
         it('closes lens on submit when form is invalid with ' +
@@ -596,6 +687,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.clickSubmitButton();
 
           expect(component.lensIsOpen()).toBe(false);
+          clearLeftoverTimers();
         }));
 
         it('closes the lens on close', fakeAsync(() => {
@@ -604,6 +696,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.clickCloseButton();
 
           expect(component.lensIsOpen()).toBe(false);
+          clearLeftoverTimers();
         }));
 
         it('closes and reopens a lens with modified value persisted', fakeAsync(() => {
@@ -615,12 +708,13 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.clickCloseButton();
           fixture.detectChanges();
 
-          expect(component.getEditCell().textContent!.trim()).toBe('Hydrogen');
+          expect(component.getEditCell().firstChild!.textContent!.trim()).toBe('Hydrogen');
           expect(component.lensIsOpen()).toBe(false);
 
           component.openLens();
 
           expect(component.getInput()!.value).toBe('Hydragon');
+          clearLeftoverTimers();
         }));
 
         it('resets the lens to original value', fakeAsync(() => {
@@ -632,6 +726,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.clickRevertButton();
 
           expect(component.getInput()!.value).toBe('Hydrogen');
+          clearLeftoverTimers();
         }));
 
         it('resets the lens to previously submitted value', fakeAsync(() => {
@@ -651,6 +746,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.clickRevertButton();
 
           expect(component.getInput()!.value).toBe('Hydragon');
+          clearLeftoverTimers();
         }));
 
         it('closes the lens on escape', fakeAsync(() => {
@@ -660,6 +756,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
               new KeyboardEvent('keyup', {bubbles: true, key: 'Escape'}));
 
           expect(component.lensIsOpen()).toBe(false);
+          clearLeftoverTimers();
         }));
 
         it('does not close the lens on click within lens', fakeAsync(() => {
@@ -668,6 +765,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.getInput()!.dispatchEvent(new Event('click', {bubbles: true}));
 
           expect(component.lensIsOpen()).toBe(true);
+          clearLeftoverTimers();
         }));
 
         it('closes the lens on outside click', fakeAsync(() => {
@@ -679,8 +777,8 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           fixture.detectChanges();
 
           expect(component.lensIsOpen()).toBe(false);
-          expect(component.getEditCell().textContent!.trim()).toBe('Hydrogen');
-
+          expect(component.getEditCell().firstChild!.textContent!.trim()).toBe('Hydrogen');
+          clearLeftoverTimers();
         }));
 
         it('submits the lens on outside click with ' +
@@ -694,7 +792,8 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           fixture.detectChanges();
 
           expect(component.lensIsOpen()).toBe(false);
-          expect(component.getEditCell().textContent!.trim()).toBe('Hydragon');
+          expect(component.getEditCell().firstChild!.textContent!.trim()).toBe('Hydragon');
+          clearLeftoverTimers();
         }));
 
         it('does nothing on outside click with ' +
@@ -708,13 +807,15 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           fixture.detectChanges();
 
           expect(component.lensIsOpen()).toBe(true);
-          expect(component.getEditCell().textContent!.trim()).toBe('Hydrogen');
+          expect(component.getEditCell().firstChild!.textContent!.trim()).toBe('Hydrogen');
+          clearLeftoverTimers();
         }));
 
         it('sets focus on the first input in the lens', fakeAsync(() => {
           component.openLens();
 
           expect(document.activeElement).toBe(component.getInput());
+          clearLeftoverTimers();
         }));
 
         it('returns focus to the edited cell after closing', fakeAsync(() => {
@@ -723,6 +824,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.clickCloseButton();
 
           expect(document.activeElement).toBe(component.getEditCell());
+          clearLeftoverTimers();
         }));
 
         it('does not focus to the edited cell after closing if another element ' +
@@ -733,6 +835,7 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.getEditCell(1).dispatchEvent(new Event('click', {bubbles: true}));
 
           expect(document.activeElement).toBe(component.getEditCell(1));
+          clearLeftoverTimers();
         }));
 
         it('should pass the directionality to the overlay', fakeAsync(() => {
@@ -742,10 +845,10 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
           component.openLens();
 
           expect(component.getEditBoundingBox()!.getAttribute('dir')).toBe('rtl');
+          clearLeftoverTimers();
         }));
-
       });
-     });
+    });
   }
 });
 
@@ -773,4 +876,11 @@ function getCells(row: Element): HTMLElement[] {
   }
 
   return getElements(row, '.cdk-cell, td');
+}
+
+// Common actions like mouse events and focus/blur cause timers to be fired off.
+// When not testing this behavior directly, use this function to clear any timers that were
+// created in passing.
+function clearLeftoverTimers() {
+  tick(100);
 }

@@ -1,8 +1,7 @@
 import {Component} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
-import {DomSanitizer} from '@angular/platform-browser';
 import {NgForm} from '@angular/forms';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 export interface PeriodicElement {
@@ -50,11 +49,7 @@ export class PopoverEditMatTableExample {
   readonly preservedNameValues = new WeakMap<PeriodicElement, any>();
   readonly preservedWeightValues = new WeakMap<PeriodicElement, any>();
 
-  constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
-    iconRegistry.addSvgIcon(
-        'edit',
-        sanitizer.bypassSecurityTrustResourceUrl('assets/img/examples/edit-icon.svg'));
-  }
+  constructor(private readonly _snackBar: MatSnackBar) {}
 
   onSubmitName(element: PeriodicElement, f: NgForm) {
     if (!f.valid) { return; }
@@ -66,6 +61,15 @@ export class PopoverEditMatTableExample {
     if (!f.valid) { return; }
 
     element.weight = f.value.weight;
+  }
+
+  goodJob(element: PeriodicElement) {
+    this._snackBar.open(`Way to go, ${element.name}!`, undefined, {duration: 2000});
+  }
+
+  badJob(element: PeriodicElement) {
+    this._snackBar.open(`You have failed me for the last time, #${element.position}.`, undefined,
+        {duration: 2000});
   }
 }
 

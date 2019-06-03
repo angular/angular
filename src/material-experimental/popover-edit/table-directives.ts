@@ -7,6 +7,8 @@
  */
 import {Directive} from '@angular/core';
 import {
+  _CELL_SELECTOR,
+  _closest,
   CdkPopoverEdit,
   CdkPopoverEditTabOut,
   CdkRowHoverContent,
@@ -26,6 +28,11 @@ const POPOVER_EDIT_INPUTS = [
 ];
 
 const EDIT_PANE_CLASS = 'mat-edit-pane';
+
+const MAT_ROW_HOVER_CLASS = 'mat-row-hover-content';
+const MAT_ROW_HOVER_RTL_CLASS = MAT_ROW_HOVER_CLASS + '-rtl';
+const MAT_ROW_HOVER_ANIMATE_CLASS = MAT_ROW_HOVER_CLASS + '-visible';
+const MAT_ROW_HOVER_CELL_CLASS = MAT_ROW_HOVER_CLASS + '-host-cell';
 
 /**
  * Attaches an ng-template to a cell and shows it when instructed to by the
@@ -61,16 +68,7 @@ export class MatPopoverEditTabOut<C> extends CdkPopoverEditTabOut<C> {
 
 /**
  * A structural directive that shows its contents when the table row containing
- * it is hovered.
- *
- * Note that the contents of this directive are invisible to screen readers.
- * Typically this is used to show a button that launches the edit popup, which
- * is ok because screen reader users can trigger edit by pressing Enter on a focused
- * table cell.
- *
- * If this directive contains buttons for functionality other than opening edit then
- * care should be taken to make sure that this functionality is also exposed in
- * an accessible way.
+ * it is hovered or when an element in the row has focus.
  */
 @Directive({
   selector: '[matRowHoverContent]',
@@ -78,24 +76,27 @@ export class MatPopoverEditTabOut<C> extends CdkPopoverEditTabOut<C> {
 export class MatRowHoverContent extends CdkRowHoverContent {
   protected initElement(element: HTMLElement) {
     super.initElement(element);
-    element.classList.add('mat-row-hover-content');
+    element.classList.add(MAT_ROW_HOVER_CLASS);
   }
 
-  protected prepareElement(element: HTMLElement) {
-    super.prepareElement(element);
+  protected makeElementHiddenButFocusable(element: HTMLElement): void {
+    element.classList.remove(MAT_ROW_HOVER_ANIMATE_CLASS);
+  }
 
-    const RTL_CLASS = 'mat-row-hover-content-rtl';
+  protected makeElementVisible(element: HTMLElement): void {
+    _closest(this.elementRef.nativeElement!, _CELL_SELECTOR)!
+        .classList.add(MAT_ROW_HOVER_CELL_CLASS);
+
     if (this.services.directionality.value === 'rtl') {
-      element.classList.add(RTL_CLASS);
+      element.classList.add(MAT_ROW_HOVER_RTL_CLASS);
     } else {
-      element.classList.remove(RTL_CLASS);
+      element.classList.remove(MAT_ROW_HOVER_RTL_CLASS);
     }
 
-    const ANIMATE_CLASS = 'mat-row-hover-content-visible';
-    element.classList.remove(ANIMATE_CLASS);
+    element.classList.remove(MAT_ROW_HOVER_ANIMATE_CLASS);
     this.services.ngZone.runOutsideAngular(() => {
       setTimeout(() => {
-        element.classList.add(ANIMATE_CLASS);
+        element.classList.add(MAT_ROW_HOVER_ANIMATE_CLASS);
       });
     });
   }
