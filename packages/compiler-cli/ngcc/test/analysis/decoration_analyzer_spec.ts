@@ -95,8 +95,13 @@ describe('DecorationAnalyzer', () => {
       ]);
       // Only detect the Component and Directive decorators
       handler.detect.and.callFake(
-          (node: ts.Declaration, decorators: Decorator[]): DetectResult<any>| undefined => {
-            logs.push(`detect: ${(node as any).name.text}@${decorators.map(d => d.name)}`);
+          (node: ts.Declaration, decorators: Decorator[] | null): DetectResult<any>| undefined => {
+            const className = (node as any).name.text;
+            if (decorators === null) {
+              logs.push(`detect: ${className} (no decorators)`);
+            } else {
+              logs.push(`detect: ${className}@${decorators.map(d => d.name)}`);
+            }
             if (!decorators) {
               return undefined;
             }
@@ -160,12 +165,13 @@ describe('DecorationAnalyzer', () => {
 
       it('should call detect on the decorator handlers with each class from the parsed file',
          () => {
-           expect(testHandler.detect).toHaveBeenCalledTimes(4);
-           expect(testHandler.detect.calls.allArgs().map(args => args[1][0])).toEqual([
-             jasmine.objectContaining({name: 'Component'}),
-             jasmine.objectContaining({name: 'Directive'}),
-             jasmine.objectContaining({name: 'Injectable'}),
-             jasmine.objectContaining({name: 'Component'}),
+           expect(testHandler.detect).toHaveBeenCalledTimes(5);
+           expect(testHandler.detect.calls.allArgs().map(args => args[1])).toEqual([
+             null,
+             jasmine.arrayContaining([jasmine.objectContaining({name: 'Component'})]),
+             jasmine.arrayContaining([jasmine.objectContaining({name: 'Directive'})]),
+             jasmine.arrayContaining([jasmine.objectContaining({name: 'Injectable'})]),
+             jasmine.arrayContaining([jasmine.objectContaining({name: 'Component'})]),
            ]);
          });
 
@@ -190,6 +196,8 @@ describe('DecorationAnalyzer', () => {
 
       it('should analyze, resolve and compile the classes that are detected', () => {
         expect(logs).toEqual([
+          // Classes without decorators should also be detected.
+          'detect: InjectionToken (no decorators)',
           // First detect and (potentially) analyze.
           'detect: MyComponent@Component',
           'analyze: MyComponent@Component',

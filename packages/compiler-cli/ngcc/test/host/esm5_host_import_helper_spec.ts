@@ -309,24 +309,46 @@ describe('Esm5ReflectionHost [import helper style]', () => {
         });
       });
 
-      describe('findDecoratedClasses', () => {
-        it('should return an array of all decorated classes in the given source file', () => {
+      describe('findClassSymbols()', () => {
+        it('should return an array of all classes in the given source file', () => {
           const program = makeTestProgram(...fileSystem.files);
           const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
 
           const ngModuleFile = program.getSourceFile('/ngmodule.js') !;
-          const ngModuleClasses = host.findDecoratedClasses(ngModuleFile);
+          const ngModuleClasses = host.findClassSymbols(ngModuleFile);
           expect(ngModuleClasses.length).toEqual(1);
-          const ngModuleClass = ngModuleClasses.find(c => c.name === 'HttpClientXsrfModule') !;
-          expect(ngModuleClass.decorators.map(decorator => decorator.name)).toEqual(['NgModule']);
+          expect(ngModuleClasses[0].name).toBe('HttpClientXsrfModule');
 
           const someDirectiveFile = program.getSourceFile('/some_directive.js') !;
-          const someDirectiveClasses = host.findDecoratedClasses(someDirectiveFile);
-          expect(someDirectiveClasses.length).toEqual(1);
-          const someDirectiveClass = someDirectiveClasses.find(c => c.name === 'SomeDirective') !;
-          expect(someDirectiveClass.decorators.map(decorator => decorator.name)).toEqual([
-            'Directive'
-          ]);
+          const someDirectiveClasses = host.findClassSymbols(someDirectiveFile);
+          expect(someDirectiveClasses.length).toEqual(3);
+          expect(someDirectiveClasses[0].name).toBe('ViewContainerRef');
+          expect(someDirectiveClasses[1].name).toBe('TemplateRef');
+          expect(someDirectiveClasses[2].name).toBe('SomeDirective');
+        });
+      });
+
+      describe('getDecoratorsOfSymbol()', () => {
+        it('should return decorators of class symbol', () => {
+          const program = makeTestProgram(...fileSystem.files);
+          const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+
+          const ngModuleFile = program.getSourceFile('/ngmodule.js') !;
+          const ngModuleClasses = host.findClassSymbols(ngModuleFile);
+          const ngModuleDecorators = ngModuleClasses.map(s => host.getDecoratorsOfSymbol(s));
+
+          expect(ngModuleClasses.length).toEqual(1);
+          expect(ngModuleDecorators[0] !.map(d => d.name)).toEqual(['NgModule']);
+
+          const someDirectiveFile = program.getSourceFile('/some_directive.js') !;
+          const someDirectiveClasses = host.findClassSymbols(someDirectiveFile);
+          const someDirectiveDecorators =
+              someDirectiveClasses.map(s => host.getDecoratorsOfSymbol(s));
+
+          expect(someDirectiveDecorators.length).toEqual(3);
+          expect(someDirectiveDecorators[0]).toBe(null);
+          expect(someDirectiveDecorators[1]).toBe(null);
+          expect(someDirectiveDecorators[2] !.map(d => d.name)).toEqual(['Directive']);
         });
       });
 
