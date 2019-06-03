@@ -464,7 +464,6 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 6, ctx.valueA)));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueB));
             $r3$.ɵɵi18nApply(2);
@@ -514,7 +513,6 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 1, ctx.valueA)));
             $r3$.ɵɵi18nApply(2);
           }
@@ -574,7 +572,6 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵproperty("ngForOf", ctx.items);
           }
         }
@@ -598,7 +595,7 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = [
-          "id", "dynamic-1", 
+          "id", "dynamic-1",
           ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"
         ];
         var $I18N_1$;
@@ -693,7 +690,6 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 6, ctx.valueA)));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueB));
             $r3$.ɵɵi18nApply(2);
@@ -761,7 +757,6 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵproperty("ngForOf", ctx.items);
           }
         }
@@ -1470,7 +1465,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r1$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r1$.id));
             $r3$.ɵɵi18nApply(1);
           }
@@ -1533,7 +1527,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r2$ = $r3$.ɵɵnextContext(2);
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r2$.valueC));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r2$.valueD));
             $r3$.ɵɵi18nApply(0);
@@ -1603,7 +1596,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r1$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r1$.valueE + $ctx_r1$.valueF));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(3, 2, $ctx_r1$.valueG)));
             $r3$.ɵɵi18nApply(0);
@@ -1680,7 +1672,6 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 1, "div", $_c0$);
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵproperty("ngIf", ctx.visible);
           }
         }
@@ -1934,7 +1925,6 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵpipe(1, "uppercase");
           } if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 1, $ctx_r0$.valueA)));
             $r3$.ɵɵi18nApply(0);
           }
@@ -1990,7 +1980,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 1, $ctx_r0$.valueA)));
             $r3$.ɵɵi18nApply(0);
           }
@@ -2055,7 +2044,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.gender));
             $r3$.ɵɵi18nApply(0);
           }
@@ -2103,7 +2091,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r2$ = $r3$.ɵɵnextContext(3);
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r2$.valueC));
             $r3$.ɵɵi18nApply(0);
           }
@@ -2116,7 +2103,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r1$ = $r3$.ɵɵnextContext(2);
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r1$.valueB));
             $r3$.ɵɵi18nApply(0);
           }
@@ -2151,7 +2137,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 1, $ctx_r0$.valueA)));
             $r3$.ɵɵi18nApply(0);
           }
@@ -2208,7 +2193,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.age));
             $r3$.ɵɵi18nApply(0);
           }
@@ -2484,7 +2468,6 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵi18n(0, $I18N_0$);
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.age));
             $r3$.ɵɵi18nApply(0);
           }
@@ -2912,7 +2895,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.gender));
             $r3$.ɵɵi18nApply(0);
           }
@@ -3053,7 +3035,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.age));
             $r3$.ɵɵi18nApply(0);
           }
@@ -3151,7 +3132,6 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.age));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.otherAge));
             $r3$.ɵɵi18nApply(0);

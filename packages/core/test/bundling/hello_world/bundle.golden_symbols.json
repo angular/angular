@@ -453,6 +453,9 @@
     "name": "resetPreOrderHookFlags"
   },
   {
+    "name": "selectInternal"
+  },
+  {
     "name": "setActiveHostElement"
   },
   {
