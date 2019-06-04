@@ -1,0 +1,173 @@
+# Accessibility in Angular
+
+The web is used by a wide variety of people, including those who have visual or motor impairments.
+A variety of assistive technologies are available that make it much easier for these groups to
+interact with web-based software applications.
+In addition, designing an application to be more accessible generally improves the user experience for all users.
+
+For an in-depth introduction to issues and techniques for designing accessible applications, see the [Accessibility](https://developers.google.com/web/fundamentals/accessibility/#what_is_accessibility) section of the Google's [Web Fundamentals](https://developers.google.com/web/fundamentals/).
+
+This page discusses best practices for designing Angular applications that
+work well for all users, including those who rely on assistive technologies.
+
+## Accessibility attributes
+
+Building accessible web experience often involves setting [ARIA attributes](https://developers.google.com/web/fundamentals/accessibility/semantics-aria)
+to provide semantic meaning where it might otherwise be missing.
+Use [attribute binding](guide/template-syntax#attribute-binding) template syntax to control the values of accessibility-related attributes.
+
+When binding to ARIA attributes in Angular, you must use the `attr.` prefix, as the ARIA
+specification depends specifically on HTML attributes rather than properties on DOM elements.
+
+```html
+<!-- Use attr. when binding to an ARIA attribute -->
+<button [attr.aria-label]="myActionLabel">...</button>
+```
+
+Note that this syntax is only necessary for attribute _bindings_.
+Static ARIA attributes require no extra syntax.
+
+```html
+<!-- Static ARIA attributes require no extra syntax -->
+<button aria-label="Save document">...</button>
+```
+
+NOTE:
+
+<div class="alert is-helpful">
+
+   By convention, HTML attributes use lowercase names (`tabindex`), while properties use camelCase names (`tabIndex`).
+
+   See the [Template Syntax](https://angular.io/guide/template-syntax#html-attribute-vs-dom-property) guide for more background on the difference between attributes and properties.
+
+</div>
+
+
+## Angular UI components
+
+The [Angular Material](https://material.angular.io/) library, which is maintained by the Angular team, is a suite of reusable UI components that aims to be fully accessible.
+The [Component Development Kit (CDK)](https://material.angular.io/cdk/categories) includes the `a11y` package that provides tools to support various areas of accessibility.
+For example:
+
+* `LiveAnnouncer` is used to announce messages for screen-reader users using an `aria-live` region. See the W3C documentation for more information on [aria-live regions](https://www.w3.org/WAI/PF/aria-1.1/states_and_properties#aria-live).
+
+* The `cdkTrapFocus` directive traps Tab-key focus within an element. Use it to create accessible experience for components like modal dialogs, where focus must be constrained.
+
+For full details of these and other tools, see the [Angular CDK accessibility overview](https://material.angular.io/cdk/a11y/overview).
+
+
+### Augmenting native elements
+
+Native HTML elements capture a number of standard interaction patterns that are important to accessibility.
+When authoring Angular components, you should re-use these native elements directly when possible, rather than re-implementing well-supported behaviors.
+
+For example, instead of creating a custom element for a new variety of button, you can create a component that uses an attribute selector with a native `<button>` element.
+This most commonly applies to `<button>` and `<a>`, but can be used with many other types of element.
+
+You can see examples of this pattern in Angular Material: [`MatButton`](https://github.com/angular/components/blob/master/src/material/button/button.ts#L66-L68), [`MatTabNav`](https://github.com/angular/components/blob/master/src/material/tabs/tab-nav-bar/tab-nav-bar.ts#L67), [`MatTable`](https://github.com/angular/components/blob/master/src/material/table/table.ts#L17).
+
+### Using containers for native elements
+
+You can create a container for native elements in order to apply accessibility features consistently. An example is the [`MatFormField`](https://github.com/angular/components/blob/master/src/material/form-field/form-field), a component used to wrap other Angular Material components and apply common Text field styles, including floating labels. A floating label specified in the wrapper is automatically used as the label for the contained form field controls.  Without it, you would have to label the form field controls individually, using `aria-label`, `aria-labelledby` or `<label for=...>`. In addtion, any errors and hints added to the form field are automatically added to the form field control's `aria-describedby` set.
+
+## Case study: Building a custom progress bar
+
+The following example shows how to make a simple progress bar accessible by using host binding to control accessibility-related attributes.
+
+* The component defines an accessibility-enabled element with both the standard HTML attribute `role`, and ARIA attributes. The ARIA attribute `aria-valuenow` is bound to the user's input.
+
+   ```ts
+  import { Component, Input } from '@angular/core';
+   /**
+    * Example progressbar component.
+    */
+   @Component({
+     selector: 'example-progressbar',
+     template: `<div class="bar" [style.width.%]="value"></div>`,
+     styleUrls: ['./progress-bar.css'],
+     host: {
+       // Sets the role for this component to "progressbar"
+       role: 'progressbar',
+
+      // Sets the minimum and maximum values for the progressbar role.
+       'aria-valuemin': '0',
+       'aria-valuemax': '0',
+
+       // Binding that updates the current value of the progressbar.
+       '[attr.aria-valuenow]': 'value',
+     }
+   })
+   export class ExampleProgressbar  {
+     /** Current value of the progressbar. */
+     @Input() progress: number = 0;
+   }
+   ```
+
+* In the template, the `aria-label` attribute ensures that the control is accessible to screen readers.
+
+   ```html
+   <label>
+      Enter an example progress value
+      <input type="number" min="0" max="100"
+         [value]="progress" (input)="progress = $event.target.value">
+   </label>
+
+   <!-- The user of the progressbar sets an aria-label to communicate what the progress means. -->
+   <example-progressbar [value]="progress" aria-label="Example of a progress bar">
+   </example-progressbar>
+   ```
+
+[See the full example in StackBlitz](https://stackblitz.com/edit/angular-kn5jdi?file=src%2Fapp%2Fapp.component.html).
+
+## Routing and focus management
+
+Tracking and controlling [focus](https://developers.google.com/web/fundamentals/accessibility/focus/) in a UI is an important consideration in designing for accessibility.
+When using Angular routing, you should decide where page focus goes upon navigation.
+
+To avoid relying solely on visual cues, you need to make sure your routing code updates focus after page navigation.
+Use the `NavigationEnd` event from the `Router` service to know when to update
+focus.
+
+The following example shows how to find and focus the main content header in the DOM after navigation.
+
+```ts
+
+router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
+  const mainHeader = document.querySelector('#main-content-header')
+  if (mainHeader) {
+    mainHeader.focus();
+  }
+});
+
+```
+In a real application, the element that receives focus will depend on your specific
+application structure and layout.
+The focused element should put users in a position to immediately move into the main content that has just been routed into view.
+You should avoid situations where focus returns to the `body` element after a route change.
+
+
+## Additional resources
+
+* [Accessibility - Google Web Fundamentals](https://developers.google.com/web/fundamentals/accessibility)
+
+* [ARIA specification and authoring practices](https://www.w3.org/TR/wai-aria/)
+
+* [Material Design - Accessibility](https://material.io/design/usability/accessibility.html)
+
+* [Smashing Magazine](https://www.smashingmagazine.com/search/?q=accessibility)
+
+* [Inclusive Components](https://inclusive-components.design/)
+
+* [Accessibility Resources and Code Examples](https://dequeuniversity.com/resources/)
+
+* [W3C - Web Accessibility Initiative](https://www.w3.org/WAI/people-use-web/)
+
+* [Rob Dodson A11ycasts](https://www.youtube.com/watch?v=HtTyRajRuyY)
+
+* [Codelyzer](http://codelyzer.com/rules/) provides linting rules that can help you make sure your code meets accessibility standards.
+
+Books
+
+* "A Web for Everyone: Designing Accessible User Experiences", Sarah Horton and Whitney Quesenbery
+
+* "Inclusive Design Patterns", Heydon Pickering
