@@ -26,7 +26,7 @@ describe('MatOption component', () => {
     const optionInstance: MatOption =
         fixture.debugElement.query(By.directive(MatOption)).componentInstance;
     const completeSpy = jasmine.createSpy('complete spy');
-    const subscription = optionInstance._stateChanges.subscribe(undefined, undefined, completeSpy);
+    const subscription = optionInstance._stateChanges.subscribe({complete: completeSpy});
 
     fixture.destroy();
     expect(completeSpy).toHaveBeenCalled();

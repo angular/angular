@@ -434,8 +434,7 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
 
       const spy = jasmine.createSpy('move spy');
-      const subscription = fixture.componentInstance.dragInstance.moved
-          .subscribe(undefined, undefined, spy);
+      const subscription = fixture.componentInstance.dragInstance.moved.subscribe({complete: spy});
 
       fixture.destroy();
       expect(spy).toHaveBeenCalled();

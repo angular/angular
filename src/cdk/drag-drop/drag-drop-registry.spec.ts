@@ -143,9 +143,8 @@ describe('DragDropRegistry', () => {
   it('should complete the pointer event streams on destroy', () => {
     const pointerUpSpy = jasmine.createSpy('pointerUp complete spy');
     const pointerMoveSpy = jasmine.createSpy('pointerMove complete spy');
-    const pointerUpSubscription = registry.pointerUp.subscribe(undefined, undefined, pointerUpSpy);
-    const pointerMoveSubscription =
-        registry.pointerMove.subscribe(undefined, undefined, pointerMoveSpy);
+    const pointerUpSubscription = registry.pointerUp.subscribe({complete: pointerUpSpy});
+    const pointerMoveSubscription = registry.pointerMove.subscribe({complete: pointerMoveSpy});
 
     registry.ngOnDestroy();
 

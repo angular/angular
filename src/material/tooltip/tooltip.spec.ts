@@ -487,7 +487,7 @@ describe('MatTooltip', () => {
 
       const spy = jasmine.createSpy('complete spy');
       const subscription = tooltipDirective._tooltipInstance!.afterHidden()
-          .subscribe(undefined, undefined, spy);
+          .subscribe({complete: spy});
 
       tooltipDirective.hide(0);
       tick(0);

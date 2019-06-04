@@ -261,8 +261,8 @@ describe('Overlay', () => {
     let attachCompleteSpy = jasmine.createSpy('attachCompleteSpy spy');
     let detachCompleteSpy = jasmine.createSpy('detachCompleteSpy spy');
 
-    overlayRef.attachments().subscribe(undefined, undefined, attachCompleteSpy);
-    overlayRef.detachments().subscribe(disposeSpy, undefined, detachCompleteSpy);
+    overlayRef.attachments().subscribe({complete: attachCompleteSpy});
+    overlayRef.detachments().subscribe({next: disposeSpy, complete: detachCompleteSpy});
 
     overlayRef.attach(componentPortal);
     overlayRef.dispose();
@@ -276,8 +276,8 @@ describe('Overlay', () => {
     let overlayRef = overlay.create();
     let callbackOrder: string[] = [];
 
-    overlayRef.attachments().subscribe(undefined, undefined, () => callbackOrder.push('attach'));
-    overlayRef.detachments().subscribe(undefined, undefined, () => callbackOrder.push('detach'));
+    overlayRef.attachments().subscribe({complete: () => callbackOrder.push('attach')});
+    overlayRef.detachments().subscribe({complete: () => callbackOrder.push('detach')});
 
     overlayRef.attach(componentPortal);
     overlayRef.dispose();
@@ -677,7 +677,7 @@ describe('Overlay', () => {
 
       let completeHandler = jasmine.createSpy('backdrop complete handler');
 
-      overlayRef.backdropClick().subscribe(undefined, undefined, completeHandler);
+      overlayRef.backdropClick().subscribe({complete: completeHandler});
       overlayRef.dispose();
 
       expect(completeHandler).toHaveBeenCalled();

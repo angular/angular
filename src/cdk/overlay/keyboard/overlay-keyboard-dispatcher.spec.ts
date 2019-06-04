@@ -90,7 +90,7 @@ describe('OverlayKeyboardDispatcher', () => {
     const overlayRef = overlay.create();
     const completeSpy = jasmine.createSpy('keydown complete spy');
 
-    overlayRef.keydownEvents().subscribe(undefined, undefined, completeSpy);
+    overlayRef.keydownEvents().subscribe({complete: completeSpy});
 
     overlayRef.dispose();
 

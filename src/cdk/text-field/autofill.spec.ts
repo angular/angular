@@ -143,7 +143,7 @@ describe('AutofillMonitor', () => {
     const autofillStream = autofillMonitor.monitor(element);
     const spy = jasmine.createSpy('autofillStream complete');
 
-    autofillStream.subscribe(undefined, undefined, spy);
+    autofillStream.subscribe({complete: spy});
     expect(spy).not.toHaveBeenCalled();
 
     autofillMonitor.stopMonitoring(element);

@@ -174,7 +174,7 @@ describe('MatSnackBar', () => {
     expect(overlayContainerElement.childElementCount)
         .toBeGreaterThan(0, 'Expected overlay container element to have at least one child');
 
-    snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
+    snackBarRef.afterDismissed().subscribe({complete: dismissCompleteSpy});
 
     snackBarRef.dismiss();
     viewContainerFixture.detectChanges();  // Run through animations for dismissal
@@ -278,7 +278,7 @@ describe('MatSnackBar', () => {
     let snackBarRef2 = snackBar.open(simpleMessage, undefined, config2);
 
     viewContainerFixture.detectChanges();
-    snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
+    snackBarRef.afterDismissed().subscribe({complete: dismissCompleteSpy});
     flush();
 
     expect(dismissCompleteSpy).toHaveBeenCalled();
@@ -344,8 +344,8 @@ describe('MatSnackBar', () => {
       const snackBarRef = snackBar.open('Some content', 'Dismiss');
       viewContainerFixture.detectChanges();
 
-      snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
-      snackBarRef.onAction().subscribe(undefined, undefined, actionCompleteSpy);
+      snackBarRef.afterDismissed().subscribe({complete: dismissCompleteSpy});
+      snackBarRef.onAction().subscribe({complete: actionCompleteSpy});
 
       let actionButton =
         overlayContainerElement.querySelector('button.mat-button') as HTMLButtonElement;
@@ -365,8 +365,8 @@ describe('MatSnackBar', () => {
     const snackBarRef = snackBar.open('Some content');
     viewContainerFixture.detectChanges();
 
-    snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
-    snackBarRef.onAction().subscribe(undefined, undefined, actionCompleteSpy);
+    snackBarRef.afterDismissed().subscribe({complete: dismissCompleteSpy});
+    snackBarRef.onAction().subscribe({complete: actionCompleteSpy});
 
     snackBarRef.dismissWithAction();
     viewContainerFixture.detectChanges();
@@ -398,7 +398,7 @@ describe('MatSnackBar', () => {
     const snackBarRef = snackBar.open('Some content');
     viewContainerFixture.detectChanges();
 
-    snackBarRef.onAction().subscribe(undefined, undefined, actionCompleteSpy);
+    snackBarRef.onAction().subscribe({complete: actionCompleteSpy});
     snackBarRef.dismiss();
     viewContainerFixture.detectChanges();
     tick();
@@ -531,8 +531,8 @@ describe('MatSnackBar', () => {
       const snackBarRef = snackBar.openFromComponent(BurritosNotification);
       viewContainerFixture.detectChanges();
 
-      snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
-      snackBarRef.onAction().subscribe(undefined, undefined, actionCompleteSpy);
+      snackBarRef.afterDismissed().subscribe({complete: dismissCompleteSpy});
+      snackBarRef.onAction().subscribe({complete: actionCompleteSpy});
 
       snackBarRef.dismissWithAction();
       viewContainerFixture.detectChanges();

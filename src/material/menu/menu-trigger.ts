@@ -294,9 +294,10 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
             // Interrupt if the content got re-attached.
             takeUntil(menu.lazyContent._attached)
           )
-          .subscribe(() => menu.lazyContent!.detach(), undefined, () => {
+          .subscribe({
+            next: () => menu.lazyContent!.detach(),
             // No matter whether the content got re-attached, reset the menu.
-            this._resetMenu();
+            complete: () => this._resetMenu()
           });
       } else {
         this._resetMenu();

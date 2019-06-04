@@ -148,7 +148,7 @@ describe('MatCalendar', () => {
 
     it('should complete the stateChanges stream', () => {
       const spy = jasmine.createSpy('complete spy');
-      const subscription = calendarInstance.stateChanges.subscribe(undefined, undefined, spy);
+      const subscription = calendarInstance.stateChanges.subscribe({complete: spy});
 
       fixture.destroy();
 

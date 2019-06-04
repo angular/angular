@@ -71,9 +71,9 @@ describe('BreakpointObserver', () => {
 
   it('completes all events when the breakpoint manager is destroyed', fakeAsync(() => {
     const firstTest = jasmine.createSpy('test1');
-    breakpointObserver.observe('test1').subscribe(undefined, undefined, firstTest);
+    breakpointObserver.observe('test1').subscribe({complete: firstTest});
     const secondTest = jasmine.createSpy('test2');
-    breakpointObserver.observe('test2').subscribe(undefined, undefined, secondTest);
+    breakpointObserver.observe('test2').subscribe({complete: secondTest});
 
     flush();
     expect(firstTest).not.toHaveBeenCalled();

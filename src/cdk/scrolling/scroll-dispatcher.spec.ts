@@ -93,7 +93,7 @@ describe('ScrollDispatcher', () => {
 
     it('should complete the `scrolled` stream on destroy', () => {
       const completeSpy = jasmine.createSpy('complete spy');
-      const subscription = scroll.scrolled(0).subscribe(undefined, undefined, completeSpy);
+      const subscription = scroll.scrolled(0).subscribe({complete: completeSpy});
 
       scroll.ngOnDestroy();
 
@@ -105,7 +105,7 @@ describe('ScrollDispatcher', () => {
     it('should complete the scrollable stream when it is destroyed', () => {
       const scrollable = fixture.componentInstance.scrollable;
       const spy = jasmine.createSpy('complete spy');
-      const subscription = scrollable.elementScrolled().subscribe(undefined, undefined, spy);
+      const subscription = scrollable.elementScrolled().subscribe({complete: spy});
 
       fixture.destroy();
       expect(spy).toHaveBeenCalled();
