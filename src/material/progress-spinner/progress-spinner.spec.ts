@@ -1,14 +1,16 @@
-import {TestBed, async} from '@angular/core/testing';
-import {Component} from '@angular/core';
+import {TestBed, async, inject} from '@angular/core/testing';
+import {Component, ViewEncapsulation} from '@angular/core';
 import {By} from '@angular/platform-browser';
+import {Platform} from '@angular/cdk/platform';
+import {_getShadowRoot} from './progress-spinner';
 import {
   MatProgressSpinnerModule,
   MatProgressSpinner,
   MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
 } from './index';
 
-
 describe('MatProgressSpinner', () => {
+  const supportsShadowDom = typeof document.createElement('div').attachShadow !== 'undefined';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -22,6 +24,7 @@ describe('MatProgressSpinner', () => {
         ProgressSpinnerCustomDiameter,
         SpinnerWithColor,
         ProgressSpinnerWithStringValues,
+        IndeterminateSpinnerInShadowDom,
       ],
     }).compileComponents();
   }));
@@ -153,6 +156,35 @@ describe('MatProgressSpinner', () => {
     expect(svgElement.getAttribute('viewBox'))
         .toBe('0 0 25.2 25.2', 'Expected the custom diameter to be applied to the svg viewBox.');
   });
+
+  it('should add a style tag with the indeterminate animation to the document head when using a ' +
+    'non-default diameter', inject([Platform], (platform: Platform) => {
+      // On Edge and IE we use a fallback animation because the
+      // browser doesn't support animating SVG correctly.
+      if (platform.EDGE || platform.TRIDENT) {
+        return;
+      }
+
+      const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
+      fixture.componentInstance.diameter = 32;
+      fixture.detectChanges();
+
+      expect(document.head.querySelectorAll('style[mat-spinner-animation="32"]').length).toBe(1);
+
+      // Change to something different so we get another tag.
+      fixture.componentInstance.diameter = 64;
+      fixture.detectChanges();
+
+      expect(document.head.querySelectorAll('style[mat-spinner-animation="32"]').length).toBe(1);
+      expect(document.head.querySelectorAll('style[mat-spinner-animation="64"]').length).toBe(1);
+
+      // Change back to the initial one.
+      fixture.componentInstance.diameter = 32;
+      fixture.detectChanges();
+
+      expect(document.head.querySelectorAll('style[mat-spinner-animation="32"]').length).toBe(1);
+      expect(document.head.querySelectorAll('style[mat-spinner-animation="64"]').length).toBe(1);
+  }));
 
   it('should allow a custom stroke width', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerCustomStrokeWidth);
@@ -321,6 +353,57 @@ describe('MatProgressSpinner', () => {
     expect(progressElement.nativeElement.hasAttribute('aria-valuenow')).toBe(false);
   });
 
+  it('should add the indeterminate animation style tag to the Shadow root', () => {
+    // The test is only relevant in browsers that support Shadow DOM.
+    if (!supportsShadowDom) {
+      return;
+    }
+
+    const fixture = TestBed.createComponent(IndeterminateSpinnerInShadowDom);
+    fixture.componentInstance.diameter = 27;
+    fixture.detectChanges();
+
+    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner')).nativeElement;
+    const shadowRoot = _getShadowRoot(spinner, document) as HTMLElement;
+
+    expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
+
+    fixture.componentInstance.diameter = 15;
+    fixture.detectChanges();
+
+    expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
+  });
+
+  it('should not duplicate style tags inside the Shadow root', () => {
+    // The test is only relevant in browsers that support Shadow DOM.
+    if (!supportsShadowDom) {
+      return;
+    }
+
+    const fixture = TestBed.createComponent(IndeterminateSpinnerInShadowDom);
+    fixture.componentInstance.diameter = 39;
+    fixture.detectChanges();
+
+    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner')).nativeElement;
+    const shadowRoot = _getShadowRoot(spinner, document) as HTMLElement;
+
+    expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="39"]').length).toBe(1);
+
+    // Change to something different so we get another tag.
+    fixture.componentInstance.diameter = 61;
+    fixture.detectChanges();
+
+    expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="39"]').length).toBe(1);
+    expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="61"]').length).toBe(1);
+
+    // Change back to the initial one.
+    fixture.componentInstance.diameter = 39;
+    fixture.detectChanges();
+
+    expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="39"]').length).toBe(1);
+    expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="61"]').length).toBe(1);
+  });
+
 });
 
 
@@ -360,3 +443,14 @@ class ProgressSpinnerWithColor { color: string = 'primary'; }
   `
 })
 class ProgressSpinnerWithStringValues { }
+
+
+@Component({
+  template: `
+    <mat-progress-spinner mode="indeterminate" [diameter]="diameter"></mat-progress-spinner>
+  `,
+  encapsulation: ViewEncapsulation.ShadowDom,
+})
+class IndeterminateSpinnerInShadowDom {
+  diameter: number;
+}

@@ -50,6 +50,7 @@ ng_test_library(
     ),
     deps = [
         ":progress-spinner",
+        "//src/cdk/platform",
         "@npm//@angular/platform-browser",
     ],
 )
