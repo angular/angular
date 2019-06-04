@@ -26,7 +26,6 @@ export function isDifferent(a: any, b: any): boolean {
  * be extra careful not to introduce megamorphic reads in it.
  */
 export function renderStringify(value: any): string {
-  if (typeof value === 'function') return value.name || value;
   if (typeof value === 'string') return value;
   if (value == null) return '';
   return '' + value;
@@ -38,9 +37,10 @@ export function renderStringify(value: any): string {
  * Important! This function contains a megamorphic read and should only be
  * used for error messages.
  */
-export function stringifyForError(value: any) {
+export function stringifyForError(value: any): string {
+  if (typeof value === 'function') return value.name || value.toString();
   if (typeof value === 'object' && value != null && typeof value.type === 'function') {
-    return value.type.name || value.type;
+    return value.type.name || value.type.toString();
   }
 
   return renderStringify(value);
