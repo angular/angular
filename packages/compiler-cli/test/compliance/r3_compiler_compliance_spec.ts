@@ -2932,6 +2932,28 @@ describe('compiler compliance', () => {
       expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ngDirectiveDef');
     });
 
+    it('should not throw for empty property bindings on ng-template', () => {
+      const files = {
+        app: {
+          'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-app',
+            template: '<ng-template [id]=""></ng-template>'
+          })
+          export class MyComponent {
+          }
+
+          @NgModule({declarations: [MyComponent]})
+          export class MyModule {}`
+        }
+      };
+
+      expect(() => compile(files, angularFiles)).not.toThrow();
+    });
+
+
   });
 
   describe('inherited base classes', () => {
