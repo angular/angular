@@ -115,10 +115,11 @@ export function ngswAppInitializer(
       }
     }
 
-    // Don't return anything to avoid blocking the application until the SW is registered or
-    // causing a crash if the SW registration fails.
+    // Don't return anything to avoid blocking the application until the SW is registered.
+    // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
     readyToRegister$.pipe(take(1)).subscribe(
-        () => navigator.serviceWorker.register(script, {scope: options.scope}));
+        () => navigator.serviceWorker.register(script, {scope: options.scope})
+                  .catch(err => console.error('Service worker registration failed with:', err)));
   };
   return initializer;
 }
