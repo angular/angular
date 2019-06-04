@@ -121,7 +121,7 @@ function extractParts(pattern: string): (string | IcuExpression)[] {
         const block = pattern.substring(prevPos, pos);
         if (ICU_BLOCK_REGEXP.test(block)) {
           results.push(parseICUBlock(block));
-        } else if (block) {  // Don't push empty strings
+        } else {
           results.push(block);
         }
 
@@ -138,10 +138,7 @@ function extractParts(pattern: string): (string | IcuExpression)[] {
   }
 
   const substring = pattern.substring(prevPos);
-  if (substring != '') {
-    results.push(substring);
-  }
-
+  results.push(substring);
   return results;
 }
 
@@ -180,7 +177,7 @@ function parseICUBlock(pattern: string): IcuExpression {
     }
 
     const blocks = extractParts(parts[pos++]) as string[];
-    if (blocks.length) {
+    if (cases.length > values.length) {
       values.push(blocks);
     }
   }
