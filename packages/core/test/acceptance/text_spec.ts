@@ -112,4 +112,20 @@ describe('text instructions', () => {
 
     expect(div.innerHTML).toBe('&lt;h1&gt;LOL, big text&lt;/h1&gt;');
   });
+
+  it('should stringify functions used in bindings', () => {
+    @Component({
+      template: '<div>{{test}}</div>',
+    })
+    class App {
+      test = function foo() {};
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const div = fixture.nativeElement.querySelector('div');
+
+    expect(div.innerHTML).toBe('function foo() { }');
+  });
 });
