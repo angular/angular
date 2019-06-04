@@ -57,7 +57,9 @@ describe('InjectorDef-based createInjector()', () => {
 
     static ngInjectableDef = ɵɵdefineInjectable({
       providedIn: null,
-      factory: () => new ServiceWithDep(ɵɵinject(Service)),
+      // ChildService is derived from ServiceWithDep, so the factory function here must do the right
+      // thing and create an instance of the requested type if one is given.
+      factory: (t?: typeof ServiceWithDep) => new (t || ServiceWithDep)(ɵɵinject(Service)),
     });
   }
 
@@ -152,11 +154,14 @@ describe('InjectorDef-based createInjector()', () => {
     });
   }
 
+  class ChildService extends ServiceWithDep {}
+
   class Module {
     static ngInjectorDef = ɵɵdefineInjector({
       factory: () => new Module(),
       imports: [IntermediateModule],
       providers: [
+        ChildService,
         ServiceWithDep,
         ServiceWithOptionalDep,
         ServiceWithMultiDep,
@@ -344,6 +349,11 @@ describe('InjectorDef-based createInjector()', () => {
     const instance = injector.get(ScopedService);
     expect(instance instanceof ScopedService).toBeTruthy();
     expect(instance).toBe(injector.get(ScopedService));
+  });
+
+  it('allows injecting an inherited service', () => {
+    const instance = injector.get(ChildService);
+    expect(instance instanceof ChildService).toBe(true);
   });
 
   it('does not create instances of a service not in scope',
