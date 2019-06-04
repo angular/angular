@@ -438,7 +438,7 @@ function getUndecoratedInjectableFactory(token: Function) {
   // just instantiates the zero-arg constructor.
   const inheritedInjectableDef = getInheritedInjectableDef(token);
   if (inheritedInjectableDef !== null) {
-    return inheritedInjectableDef.factory;
+    return () => inheritedInjectableDef.factory(token as Type<any>);
   } else {
     return () => new (token as Type<any>)();
   }
