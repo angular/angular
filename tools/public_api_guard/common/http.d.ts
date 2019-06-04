@@ -1508,7 +1508,8 @@ export declare class HttpErrorResponse extends HttpResponseBase implements Error
     });
 }
 
-export declare type HttpEvent<T> = HttpSentEvent | HttpHeaderResponse | HttpResponse<T> | HttpProgressEvent | HttpUserEvent<T>;
+export declare type HttpEvent<T> = HttpSentEvent | HttpHeaderResponse | HttpResponse<T> | HttpProgressEvent
+  | HttpUploadProgressEvent | HttpUserEvent<T>;
 
 export declare enum HttpEventType {
     Sent = 0,
@@ -1579,6 +1580,10 @@ export interface HttpProgressEvent {
     loaded: number;
     total?: number;
     type: HttpEventType.DownloadProgress | HttpEventType.UploadProgress;
+}
+
+export interface HttpUploadProgressEvent {
+  type: HttpEventType.UploadProgress;
 }
 
 export declare class HttpRequest<T> {
