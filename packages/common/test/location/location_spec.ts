@@ -107,5 +107,20 @@ describe('Location Class', () => {
 
        }));
 
+    it('should notify url change listeners about pop state events (once per event)',
+       inject([Location], (location: Location) => {
+         let notificationCount1 = 0;
+         let notificationCount2 = 0;
+
+         (location as any)._subject.emit({});
+         location.onUrlChange(() => notificationCount1++);
+         (location as any)._subject.emit({});
+         location.onUrlChange(() => notificationCount2++);
+         (location as any)._subject.emit({});
+
+         expect(notificationCount1).toBe(2);
+         expect(notificationCount2).toBe(1);
+       }));
+
   });
 });

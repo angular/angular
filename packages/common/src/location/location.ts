@@ -73,6 +73,7 @@ export class Location {
         'type': ev.type,
       });
     });
+    this.subscribe(v => { this._notifyUrlChangeListeners(v.url, v.state); });
   }
 
   /**
@@ -180,10 +181,7 @@ export class Location {
    * Register URL change listeners. This API can be used to catch updates performed by the Angular
    * framework. These are not detectible through "popstate" or "hashchange" events.
    */
-  onUrlChange(fn: (url: string, state: unknown) => void) {
-    this._urlChangeListeners.push(fn);
-    this.subscribe(v => { this._notifyUrlChangeListeners(v.url, v.state); });
-  }
+  onUrlChange(fn: (url: string, state: unknown) => void) { this._urlChangeListeners.push(fn); }
 
   /** @internal */
   _notifyUrlChangeListeners(url: string = '', state: unknown) {

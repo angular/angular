@@ -31,6 +31,10 @@ export class SpyLocation implements Location {
   /** @internal */
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
 
+  constructor() {
+    this.subscribe(v => { this._notifyUrlChangeListeners(v.url, v.state); });
+  }
+
   setInitialPath(url: string) { this._history[this._historyIndex].path = url; }
 
   setBaseHref(url: string) { this._baseHref = url; }
@@ -113,10 +117,8 @@ export class SpyLocation implements Location {
       this._subject.emit({'url': this.path(), 'state': this.getState(), 'pop': true});
     }
   }
-  onUrlChange(fn: (url: string, state: unknown) => void) {
-    this._urlChangeListeners.push(fn);
-    this.subscribe(v => { this._notifyUrlChangeListeners(v.url, v.state); });
-  }
+
+  onUrlChange(fn: (url: string, state: unknown) => void) { this._urlChangeListeners.push(fn); }
 
   /** @internal */
   _notifyUrlChangeListeners(url: string = '', state: unknown) {
