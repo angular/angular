@@ -47,7 +47,7 @@ export interface ɵɵInjectableDef<T> {
   /**
    * Factory method to execute to create an instance of the injectable.
    */
-  factory: () => T;
+  factory: (t?: Type<any>) => T;
 
   /**
    * In a case of no explicit injector, a location where the instance of the injectable is stored.
