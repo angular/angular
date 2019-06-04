@@ -836,7 +836,7 @@ export declare function ɵɵenableBindings(): void;
 
 export declare function ɵɵgetCurrentView(): OpaqueViewState;
 
-export declare function ɵɵgetFactoryOf<T>(type: Type<any>): ((type: Type<T> | null) => T) | null;
+export declare function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T> | null;
 
 export declare function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T;
 
@@ -867,7 +867,7 @@ export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>): T;
 export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
 
 export interface ɵɵInjectableDef<T> {
-    factory: () => T;
+    factory: (t?: Type<any>) => T;
     providedIn: InjectorType<any> | 'root' | 'any' | null;
     value: T | undefined;
 }
