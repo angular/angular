@@ -15,7 +15,7 @@ import {assertDefined, assertEqual} from '../util/assert';
 
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
-import {DirectiveDef} from './interfaces/definition';
+import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
@@ -637,7 +637,7 @@ export class NodeInjector implements Injector {
 /**
  * @codeGenApi
  */
-export function ɵɵgetFactoryOf<T>(type: Type<any>): ((type: Type<T>| null) => T)|null {
+export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
   const typeAny = type as any;
   const def = getComponentDef<T>(typeAny) || getDirectiveDef<T>(typeAny) ||
       getPipeDef<T>(typeAny) || getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);

@@ -42,7 +42,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
     pipeDef = tView.data[adjustedIndex] as PipeDef<any>;
   }
 
-  const pipeInstance = pipeDef.factory(null);
+  const pipeInstance = pipeDef.factory();
   store(index, pipeInstance);
   return pipeInstance;
 }

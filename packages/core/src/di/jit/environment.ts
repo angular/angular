@@ -24,7 +24,7 @@ export const angularCoreDiEnv: {[name: string]: Function} = {
   'ɵɵgetFactoryOf': getFactoryOf,
 };
 
-function getFactoryOf<T>(type: Type<any>): ((type: Type<T>| null) => T)|null {
+function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {
   const typeAny = type as any;
   const def = getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
   if (!def || def.factory === undefined) {
