@@ -59,6 +59,13 @@ With the server running, you can point your browser at http://localhost:8080/. Y
 
 **Tip:** When testing Angular service workers, it's a good idea to use an incognito or private window in your browser to ensure the service worker doesn't end up reading from a previous leftover state, which can cause unexpected behavior.
 
+<div class="alert is-helpful">
+
+**Reminder:**
+If you are not using HTTPS, the service worker will only be registered when accessing the app on `localhost`.
+
+</div>
+
 ### Simulating a network issue
 
 To simulate a network issue, disable network interaction for your application. In Chrome:
