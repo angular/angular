@@ -21,6 +21,7 @@ import {
   EventEmitter,
   forwardRef,
   Inject,
+  InjectionToken,
   Input,
   OnDestroy,
   OnInit,
@@ -42,6 +43,22 @@ import {
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
+
+export interface MatRadioDefaultOptions {
+  color: ThemePalette;
+}
+
+export const MAT_RADIO_DEFAULT_OPTIONS =
+  new InjectionToken<MatRadioDefaultOptions>('mat-radio-default-options', {
+  providedIn: 'root',
+  factory: MAT_RADIO_DEFAULT_OPTIONS_FACTORY
+});
+
+export function MAT_RADIO_DEFAULT_OPTIONS_FACTORY(): MatRadioDefaultOptions {
+  return {
+    color: 'accent'
+  };
+}
 
 // Increasing integer for generating unique ids for radio components.
 let nextUniqueId = 0;
@@ -433,7 +450,9 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   /** Theme color of the radio button. */
   @Input()
   get color(): ThemePalette {
-    return this._color || (this.radioGroup && this.radioGroup.color) || 'accent';
+    return this._color ||
+      (this.radioGroup && this.radioGroup.color) ||
+      this._providerOverride && this._providerOverride.color || 'accent';
   }
   set color(newValue: ThemePalette) { this._color = newValue; }
   private _color: ThemePalette;
@@ -474,7 +493,9 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
               private _changeDetector: ChangeDetectorRef,
               private _focusMonitor: FocusMonitor,
               private _radioDispatcher: UniqueSelectionDispatcher,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+                @Optional() @Inject(MAT_RADIO_DEFAULT_OPTIONS)
+                private _providerOverride?: MatRadioDefaultOptions) {
     super(elementRef);
 
     // Assertions. Ideally these should be stripped out by the compiler.

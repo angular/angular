@@ -3,6 +3,8 @@ import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/f
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
+
+import {MAT_RADIO_DEFAULT_OPTIONS} from './radio';
 import {MatRadioButton, MatRadioChange, MatRadioGroup, MatRadioModule} from './index';
 
 describe('MatRadio', () => {
@@ -796,6 +798,43 @@ describe('MatRadio', () => {
   });
 });
 
+describe('MatRadioDefaultOverrides', () => {
+  describe('when MAT_RADIO_DEFAULT_OPTIONS overridden', () => {
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [MatRadioModule, FormsModule],
+        declarations: [DefaultRadioButton, RadioButtonWithColorBinding],
+        providers: [{
+          provide: MAT_RADIO_DEFAULT_OPTIONS,
+          useValue: {color: 'primary'},
+        }],
+      });
+
+      TestBed.compileComponents();
+    }));
+    it('should override default color in Component', () => {
+      const fixture: ComponentFixture<DefaultRadioButton> =
+        TestBed.createComponent(DefaultRadioButton);
+      fixture.detectChanges();
+      const radioDebugElement: DebugElement =
+        fixture.debugElement.query(By.directive(MatRadioButton));
+      expect(
+        radioDebugElement.nativeElement.classList
+      ).toContain('mat-primary');
+    });
+    it('should not override explicit input bindings', () => {
+      const fixture: ComponentFixture<RadioButtonWithColorBinding> =
+        TestBed.createComponent(RadioButtonWithColorBinding);
+      fixture.detectChanges();
+      const radioDebugElement: DebugElement =
+        fixture.debugElement.query(By.directive(MatRadioButton));
+      expect(
+        radioDebugElement.nativeElement.classList
+      ).not.toContain('mat-primary');
+      expect(radioDebugElement.nativeElement.classList).toContain('mat-warn');
+    });
+  });
+});
 
 @Component({
   template: `
@@ -937,3 +976,13 @@ class TranscludingWrapper {}
   template: `<mat-radio-button tabindex="0"></mat-radio-button>`
 })
 class RadioButtonWithPredefinedTabindex {}
+
+@Component({
+  template: `<mat-radio-button></mat-radio-button>`
+})
+class DefaultRadioButton {}
+
+@Component({
+  template: `<mat-radio-button color="warn"></mat-radio-button>`
+})
+class RadioButtonWithColorBinding {}

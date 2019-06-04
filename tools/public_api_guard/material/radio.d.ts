@@ -1,3 +1,7 @@
+export declare const MAT_RADIO_DEFAULT_OPTIONS: InjectionToken<MatRadioDefaultOptions>;
+
+export declare function MAT_RADIO_DEFAULT_OPTIONS_FACTORY(): MatRadioDefaultOptions;
+
 export declare const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any;
 
 export declare class MatRadioButton extends _MatRadioButtonMixinBase implements OnInit, AfterViewInit, OnDestroy, CanDisableRipple, HasTabIndex {
@@ -17,7 +21,7 @@ export declare class MatRadioButton extends _MatRadioButtonMixinBase implements 
     radioGroup: MatRadioGroup;
     required: boolean;
     value: any;
-    constructor(radioGroup: MatRadioGroup, elementRef: ElementRef, _changeDetector: ChangeDetectorRef, _focusMonitor: FocusMonitor, _radioDispatcher: UniqueSelectionDispatcher, _animationMode?: string | undefined);
+    constructor(radioGroup: MatRadioGroup, elementRef: ElementRef, _changeDetector: ChangeDetectorRef, _focusMonitor: FocusMonitor, _radioDispatcher: UniqueSelectionDispatcher, _animationMode?: string | undefined, _providerOverride?: MatRadioDefaultOptions | undefined);
     _isRippleDisabled(): boolean;
     _markForCheck(): void;
     _onInputChange(event: Event): void;
@@ -34,6 +38,10 @@ export declare class MatRadioChange {
     constructor(
     source: MatRadioButton,
     value: any);
+}
+
+export interface MatRadioDefaultOptions {
+    color: ThemePalette;
 }
 
 export declare class MatRadioGroup implements AfterContentInit, ControlValueAccessor {

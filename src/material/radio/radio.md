@@ -34,3 +34,13 @@ This internal radio button receives focus and is automatically labelled by the t
 `<mat-radio-button>` element.
 
 Radio button groups should be given a meaningful label via `aria-label` or `aria-labelledby`.
+
+### Default Color Configuration
+The default color for radio buttons can be configured globally using the `MAT_RADIO_DEFAULT_OPTIONS` provider
+
+```
+providers: [
+    provide: MAT_RADIO_DEFAULT_OPTIONS,
+    useValue: { color: 'accent' },
+]
+```
