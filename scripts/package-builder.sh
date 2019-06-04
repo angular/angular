@@ -23,8 +23,10 @@ readonly bazel_bin=$(yarn bin)/bazel
 readonly bin=$(${bazel_bin} info bazel-bin)
 
 function buildTargetPackages() {
-  # List of targets to build, e.g. core, common, compiler, etc.
-  targets=$(${bazel_bin} query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)')
+  # List of targets to build, e.g. core, common, compiler, etc. Note that we want to
+  # remove all carriage return ("\r") characters form the query output because otherwise
+  # the carriage return is part of the bazel target name and bazel will complain.
+  targets=$(${bazel_bin} query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)' | tr -d "\r")
 
   # Path to the output directory into which we copy the npm packages.
   dest_path="$1"
