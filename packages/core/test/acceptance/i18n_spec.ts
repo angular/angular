@@ -618,6 +618,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
       expect(fixture.nativeElement.innerHTML).toContain('at least');
     });
+
+    it('with empty values', () => {
+      const fixture = initWithTemplate(AppComp, `{count, select, 10 {} 20 {twenty} other {other}}`);
+
+      const element = fixture.nativeElement;
+      expect(element).toHaveText('other');
+    });
   });
 
   describe('should support attributes', () => {
