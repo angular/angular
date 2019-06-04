@@ -1024,10 +1024,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     attrs.forEach(input => {
       if (input instanceof t.BoundAttribute) {
         const value = input.value.visit(this._valueConverter);
-        this.allocateBindingSlots(value);
-        this.updateInstruction(
-            templateIndex, template.sourceSpan, R3.property,
-            () => [o.literal(input.name), this.convertPropertyBinding(context, value, true)]);
+
+        if (value !== undefined) {
+          this.allocateBindingSlots(value);
+          this.updateInstruction(
+              templateIndex, template.sourceSpan, R3.property,
+              () => [o.literal(input.name), this.convertPropertyBinding(context, value, true)]);
+        }
       }
     });
   }
