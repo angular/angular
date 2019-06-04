@@ -61,7 +61,7 @@ With the server running, you can point your browser at http://localhost:8080/. Y
 
 <div class="alert is-helpful">
 
-**Reminder:**
+**Note:**
 If you are not using HTTPS, the service worker will only be registered when accessing the app on `localhost`.
 
 </div>
