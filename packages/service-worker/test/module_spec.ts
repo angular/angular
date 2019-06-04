@@ -28,7 +28,9 @@ describe('ServiceWorkerModule', () => {
     return appRef.isStable.pipe(filter(Boolean), take(1)).toPromise();
   };
 
-  beforeEach(() => swRegisterSpy = spyOn(navigator.serviceWorker, 'register'));
+  beforeEach(
+      () => swRegisterSpy =
+          spyOn(navigator.serviceWorker, 'register').and.returnValue(Promise.resolve()));
 
   describe('register()', () => {
     const configTestBed = async(opts: SwRegistrationOptions) => {
@@ -66,6 +68,15 @@ describe('ServiceWorkerModule', () => {
 
       expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+    });
+
+    it('catches and a logs registration errors', async() => {
+      const consoleErrorSpy = spyOn(console, 'error');
+      swRegisterSpy.and.returnValue(Promise.reject('no reason'));
+
+      await configTestBed({enabled: true, scope: 'foo'});
+      expect(consoleErrorSpy)
+          .toHaveBeenCalledWith('Service worker registration failed with:', 'no reason');
     });
   });
 
