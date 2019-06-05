@@ -20,6 +20,10 @@
     font-size: 14px;
   }
 
+  > *:not(:first-child) {
+    padding: 16px 24px;
+  }
+
   &.is-critical {
     border-color: $brightred;
     background: rgba($brightred, 0.05);
