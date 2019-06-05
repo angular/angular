@@ -784,15 +784,17 @@ export function appendProjectedNodes(
     appendChild(nodeToProject, tProjectionNode, lView);
   } else {
     while (nodeToProject) {
-      if (nodeToProject.type === TNodeType.Projection) {
-        appendProjectedNodes(
-            lView, tProjectionNode, (nodeToProject as TProjectionNode).projection,
-            findComponentView(projectedView));
-      } else {
-        // This flag must be set now or we won't know that this node is projected
-        // if the nodes are inserted into a container later.
-        nodeToProject.flags |= TNodeFlags.isProjected;
-        appendProjectedNode(nodeToProject, tProjectionNode, lView, projectedView);
+      if (!(nodeToProject.flags & TNodeFlags.isDetached)) {
+        if (nodeToProject.type === TNodeType.Projection) {
+          appendProjectedNodes(
+              lView, tProjectionNode, (nodeToProject as TProjectionNode).projection,
+              findComponentView(projectedView));
+        } else {
+          // This flag must be set now or we won't know that this node is projected
+          // if the nodes are inserted into a container later.
+          nodeToProject.flags |= TNodeFlags.isProjected;
+          appendProjectedNode(nodeToProject, tProjectionNode, lView, projectedView);
+        }
       }
       nodeToProject = nodeToProject.projectionNext;
     }

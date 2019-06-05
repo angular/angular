@@ -19,7 +19,7 @@ import {attachI18nOpCodesDebug} from './instructions/lview_debug';
 import {allocExpando, elementPropertyInternal, getOrCreateTNode, setInputsForProperty} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
-import {TElementNode, TIcuContainerNode, TNode, TNodeType, TProjectionNode} from './interfaces/node';
+import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
@@ -910,6 +910,8 @@ function removeNode(index: number, viewData: LView) {
     }
   }
 
+  // Define this node as detached so that we don't risk projecting it
+  removedPhTNode.flags |= TNodeFlags.isDetached;
   ngDevMode && ngDevMode.rendererRemoveNode++;
 }
 

@@ -47,19 +47,22 @@ export const enum TNodeType {
  */
 export const enum TNodeFlags {
   /** This bit is set if the node is a component */
-  isComponent = 0b00001,
+  isComponent = 0b000001,
 
   /** This bit is set if the node has been projected */
-  isProjected = 0b00010,
+  isProjected = 0b000010,
 
   /** This bit is set if any directive on this node has content queries */
-  hasContentQuery = 0b00100,
+  hasContentQuery = 0b000100,
 
   /** This bit is set if the node has any "class" inputs */
-  hasClassInput = 0b01000,
+  hasClassInput = 0b001000,
 
   /** This bit is set if the node has any "style" inputs */
-  hasStyleInput = 0b10000,
+  hasStyleInput = 0b010000,
+
+  /** This bit is set if the node has been detached by i18n */
+  isDetached = 0b100000,
 }
 
 /**

@@ -939,8 +939,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
           .toEqual('<child><grand-child><div><b>Bonjour</b> monde!</div></grand-child></child>');
     });
 
-    // FW-1319 Runtime i18n should be able to remove projected placeholders
-    xit('should be able to remove projected placeholders', () => {
+    it('should be able to remove projected placeholders', () => {
       @Component({selector: 'grand-child', template: '<div><ng-content></ng-content></div>'})
       class GrandChild {
       }
