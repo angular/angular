@@ -32,8 +32,16 @@ import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
 class QueryPredicate_<T> implements QueryPredicate<T> {
-  constructor(
-      public type: Type<T>|null, public selector: string[]|null, public read: Type<T>|null) {}
+  public type: Type<T>|null = null;
+  public selector: string[]|null = null;
+  constructor(predicate: Type<T>|string[], public read: Type<any>|null) {
+    const isCssSelectorsArray = Array.isArray(predicate);
+    if (isCssSelectorsArray) {
+      this.selector = predicate as string[];
+    } else {
+      this.type = predicate as Type<T>;
+    }
+  }
 }
 
 /**
@@ -402,7 +410,7 @@ function viewQueryInternal<T>(
   const headerAdjustedIdx = index - HEADER_OFFSET;
   if (tView.firstTemplatePass) {
     tView.expandoStartIndex++;
-    tView.data[headerAdjustedIdx] = createPredicate<T>(predicate, read);
+    tView.data[headerAdjustedIdx] = new QueryPredicate_<T>(predicate, read);
   }
   const queryList: QueryList<T> = createQueryListInLView<T>(
       lView, tView.data[headerAdjustedIdx] as QueryPredicate<T>, descend, isStatic, -1);
@@ -445,21 +453,13 @@ export function ɵɵcontentQuery<T>(
       lView, tView, directiveIndex, predicate, descend, read, false, tNode.index);
 }
 
-function createPredicate<T>(predicate: Type<any>| string[], read: any): QueryPredicate<T> {
-  const isCssSelectorsArray = Array.isArray(predicate);
-  return new QueryPredicate_(
-      isCssSelectorsArray ? null : predicate as Type<T>,
-      isCssSelectorsArray ? predicate as string[] : null, read);
-}
-
 function contentQueryInternal<T>(
     lView: LView, tView: TView, directiveIndex: number, predicate: Type<any>| string[],
     descend: boolean,
     // TODO(FW-486): "read" should be an AbstractType
     read: any, isStatic: boolean, nodeIndex: number): QueryList<T> {
-  const predicateObj = createPredicate<T>(predicate, read);
-  const contentQuery: QueryList<T> =
-      createQueryListInLView<T>(lView, predicateObj, descend, isStatic, nodeIndex);
+  const contentQuery: QueryList<T> = createQueryListInLView<T>(
+      lView, new QueryPredicate_(predicate, read), descend, isStatic, nodeIndex);
   (lView[CONTENT_QUERIES] || (lView[CONTENT_QUERIES] = [])).push(contentQuery);
   if (tView.firstTemplatePass) {
     const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
