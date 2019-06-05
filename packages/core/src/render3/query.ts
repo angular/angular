@@ -398,13 +398,15 @@ export function ɵɵviewQuery<T>(
 function viewQueryInternal<T>(
     lView: LView, tView: TView, predicate: Type<any>| string[], descend: boolean, read: any,
     isStatic: boolean): QueryList<T> {
+  const index = getCurrentQueryIndex();
+  const headerAdjustedIdx = index - HEADER_OFFSET;
   if (tView.firstTemplatePass) {
     tView.expandoStartIndex++;
+    tView.data[headerAdjustedIdx] = createPredicate<T>(predicate, read);
   }
-  const index = getCurrentQueryIndex();
-  const queryList: QueryList<T> =
-      createQueryListInLView<T>(lView, createPredicate<T>(predicate, read), descend, isStatic, -1);
-  store(index - HEADER_OFFSET, queryList);
+  const queryList: QueryList<T> = createQueryListInLView<T>(
+      lView, tView.data[headerAdjustedIdx] as QueryPredicate<T>, descend, isStatic, -1);
+  store(headerAdjustedIdx, queryList);
   setCurrentQueryIndex(index + 1);
   return queryList;
 }

@@ -18,7 +18,7 @@ import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBin
 import {I18nUpdateOpCodes, TI18n} from './i18n';
 import {TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
-import {LQueries} from './query';
+import {LQueries, QueryPredicate} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
 import {StylingContext} from './styling';
 
@@ -642,11 +642,14 @@ export type HookData = (number | (() => void))[];
  *  v1 value   |   'b'
  *  v2 value   |   id � prefix � suffix
  *
+ * Each view query predicate is stored here at the same index as its QueryList instance in
+ * the data array.
+ *
  * Injector bloom filters are also stored here.
  */
 export type TData =
     (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | Type<any>|
-     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null | string)[];
+     InjectionToken<any>| TI18n | I18nUpdateOpCodes | QueryPredicate<any>| null | string)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
