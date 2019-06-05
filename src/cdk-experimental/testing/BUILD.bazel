@@ -1,0 +1,42 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_web_test_suite")
+load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
+
+ng_module(
+    name = "testing",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "tests/**",
+        ],
+    ),
+    module_name = "@angular/cdk-experimental/testing",
+    deps = [
+        "//src/cdk/testing",
+        "@npm//@angular/core",
+        "@npm//protractor",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    deps = ["//src/cdk-experimental/testing/tests:unit_test_sources"],
+)
+
+protractor_web_test_suite(
+    name = "e2e_tests",
+    configuration = "//src/e2e-app:protractor.conf.js",
+    data = [
+        "//tools/axe-protractor",
+        "@npm//@angular/bazel",
+    ],
+    on_prepare = "//src/e2e-app:start-devserver.js",
+    server = "//src/e2e-app:devserver",
+    tags = ["e2e"],
+    deps = [
+        "//src/cdk-experimental/testing/tests:e2e_test_sources",
+        "@npm//protractor",
+    ],
+)

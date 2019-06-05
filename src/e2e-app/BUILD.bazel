@@ -26,6 +26,7 @@ ng_module(
     deps = [
         "//src/cdk-experimental/dialog",
         "//src/cdk-experimental/scrolling",
+        "//src/cdk-experimental/testing/tests:test_components",
         "//src/cdk/drag-drop",
         "//src/cdk/overlay",
         "//src/cdk/scrolling",

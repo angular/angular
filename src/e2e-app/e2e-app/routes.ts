@@ -4,6 +4,7 @@ import {ButtonToggleE2e} from '../button-toggle/button-toggle-e2e';
 import {ButtonE2E} from '../button/button-e2e';
 import {CardE2e} from '../card/card-e2e';
 import {SimpleCheckboxes} from '../checkbox/checkbox-e2e';
+import {ComponentHarnessE2e} from '../component-harness/component-harness-e2e';
 import {DialogE2E} from '../dialog/dialog-e2e';
 import {ExpansionE2e} from '../expansion/expansion-e2e';
 import {GridListE2E} from '../grid-list/grid-list-e2e';
@@ -34,7 +35,9 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'block-scroll-strategy', component: BlockScrollStrategyE2E},
   {path: 'button', component: ButtonE2E},
   {path: 'button-toggle', component: ButtonToggleE2e},
+  {path: 'cards', component: CardE2e},
   {path: 'checkbox', component: SimpleCheckboxes},
+  {path: 'component-harness', component: ComponentHarnessE2e},
   {path: 'dialog', component: DialogE2E},
   {path: 'expansion', component: ExpansionE2e},
   {path: 'grid-list', component: GridListE2E},
@@ -56,7 +59,6 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'slide-toggle', component: SlideToggleE2E},
   {path: 'stepper', component: StepperE2e},
   {path: 'tabs', component: BasicTabs},
-  {path: 'cards', component: CardE2e},
   {path: 'toolbar', component: ToolbarE2e},
   {path: 'virtual-scroll', component: VirtualScrollE2E},
 ];

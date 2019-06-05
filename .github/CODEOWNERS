@@ -98,8 +98,9 @@
 # CDK experimental package
 /src/cdk-experimental/**                           @jelbourn
 /src/cdk-experimental/dialog/**                    @jelbourn @josephperrott @crisbeto
-/src/cdk-experimental/scrolling/**                 @mmalerba
 /src/cdk-experimental/popover-edit/**              @kseamon @andrewseguin
+/src/cdk-experimental/scrolling/**                 @mmalerba
+/src/cdk-experimental/testing/**                   @mmalerba
 
 # Docs examples & guides
 /guides/**                                         @jelbourn
@@ -177,6 +178,7 @@
 /src/e2e-app/button-toggle/**                      @jelbourn
 /src/e2e-app/card/**                               @jelbourn
 /src/e2e-app/checkbox/**                           @jelbourn @devversion
+/src/e2e-app/component-harness/**                  @mmalerba
 /src/e2e-app/dialog/**                             @jelbourn @crisbeto
 /src/e2e-app/e2e-app/**                            @jelbourn
 /src/e2e-app/example-viewer/**                     @andrewseguin

@@ -47,9 +47,9 @@ const rollupCdkExperimentalEntryPoints =
 /** Map of globals that are used inside of the different packages. */
 export const rollupGlobals = {
   'moment': 'moment',
-  'tslib': 'tslib',
   'protractor': 'protractor',
   'selenium-webdriver': 'selenium-webdriver',
+  'tslib': 'tslib',
 
   // MDC Web
   '@material/animation': 'mdc.animation',

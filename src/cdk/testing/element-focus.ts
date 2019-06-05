@@ -17,3 +17,22 @@ export function patchElementFocus(element: HTMLElement) {
   element.focus = () => dispatchFakeEvent(element, 'focus');
   element.blur = () => dispatchFakeEvent(element, 'blur');
 }
+
+function triggerFocusChange(element: HTMLElement, event: 'focus' | 'blur') {
+  let eventFired = false;
+  const handler = () => eventFired = true;
+  element.addEventListener(event, handler);
+  element[event]();
+  element.removeEventListener(event, handler);
+  if (!eventFired) {
+    dispatchFakeEvent(element, event);
+  }
+}
+
+export function triggerFocus(element: HTMLElement) {
+  triggerFocusChange(element, 'focus');
+}
+
+export function triggerBlur(element: HTMLElement) {
+  triggerFocusChange(element, 'blur');
+}

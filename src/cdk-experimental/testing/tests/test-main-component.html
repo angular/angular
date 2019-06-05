@@ -1,0 +1,12 @@
+<h1 style="height: 50px">Main Component</h1>
+<div id="username">Hello {{username}} from Angular 2!</div>
+<button (click)="click()">Up</button><br>
+<label>Count:</label>
+<div id="counter">{{counter}}</div>
+<label>AsyncCounter:</label>
+<div id="asyncCounter">{{asyncCounter}}</div>
+<input [(ngModel)]="input" id="input" aria-label="input">
+<div id="value">Input: {{input}}</div>
+<textarea id="memo" aria-label="memo">{{memo}}</textarea>
+<test-sub title="test tools" [items]="testTools"></test-sub>
+<test-sub title="test methods" [items]="testMethods"></test-sub>

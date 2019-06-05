@@ -1,0 +1,49 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ts_library")
+
+ng_module(
+    name = "test_components",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "harnesses/**",
+        ],
+    ),
+    assets = glob(["**/*.html"]),
+    module_name = "@angular/cdk-experimental/testing/tests",
+    deps = [
+        "@npm//@angular/forms",
+    ],
+)
+
+ts_library(
+    name = "test_harnesses",
+    srcs = glob(["harnesses/**/*.ts"]),
+    deps = [
+        "//src/cdk-experimental/testing",
+    ],
+)
+
+ng_test_library(
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":test_components",
+        ":test_harnesses",
+        "//src/cdk-experimental/testing",
+    ],
+)
+
+ng_e2e_test_library(
+    name = "e2e_test_sources",
+    srcs = glob(["**/*.e2e.spec.ts"]),
+    deps = [
+        ":test_harnesses",
+        "//src/cdk-experimental/testing",
+    ],
+)
