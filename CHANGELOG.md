@@ -1,3 +1,13 @@
+<a name="8.1.0-next.1"></a>
+# [8.1.0-next.1](https://github.com/angular/angular/compare/8.1.0-beta.0...8.1.0-next.1) (2019-06-05)
+
+
+### Bug Fixes
+
+* **core:** TypeScript related migrations should cater for BOM ([#30719](https://github.com/angular/angular/issues/30719)) ([80394ce](https://github.com/angular/angular/commit/80394ce)), closes [/github.com/angular/angular-cli/blob/master/packages/angular_devkit/schematics/src/tree/recorder.ts#L72](https://github.com//github.com/angular/angular-cli/blob/master/packages/angular_devkit/schematics/src/tree/recorder.ts/issues/L72) [#30713](https://github.com/angular/angular/issues/30713)
+
+
+
 <a name="8.1.0-beta.0"></a>
 # [8.1.0-beta.0](https://github.com/angular/angular/compare/8.0.0...8.1.0-beta.0) (2019-05-30)
 
