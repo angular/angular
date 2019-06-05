@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ESCAPE} from '@angular/cdk/keycodes';
+import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {GlobalPositionStrategy, OverlayRef} from '@angular/cdk/overlay';
 import {Location} from '@angular/common';
 import {Observable, Subject} from 'rxjs';
@@ -78,8 +78,13 @@ export class MatDialogRef<T, R = any> {
     });
 
     _overlayRef.keydownEvents()
-      .pipe(filter(event => event.keyCode === ESCAPE && !this.disableClose))
-      .subscribe(() => this.close());
+      .pipe(filter(event => {
+        return event.keyCode === ESCAPE && !this.disableClose && !hasModifierKey(event);
+      }))
+      .subscribe(event => {
+        event.preventDefault();
+        this.close();
+      });
   }
 
   /**

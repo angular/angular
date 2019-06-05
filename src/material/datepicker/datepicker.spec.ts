@@ -193,11 +193,12 @@ describe('MatDatepicker', () => {
 
         expect(testComponent.datepicker.opened).toBe(true, 'Expected datepicker to be open.');
 
-        dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+        const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
         fixture.detectChanges();
         flush();
 
         expect(testComponent.datepicker.opened).toBe(false, 'Expected datepicker to be closed.');
+        expect(event.defaultPrevented).toBe(true);
       }));
 
       it('should set the proper role on the popup', fakeAsync(() => {

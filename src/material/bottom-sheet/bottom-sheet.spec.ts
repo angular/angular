@@ -2,7 +2,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {A, ESCAPE} from '@angular/cdk/keycodes';
 import {OverlayContainer, ScrollStrategy} from '@angular/cdk/overlay';
 import {ViewportRuler} from '@angular/cdk/scrolling';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
 import {Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {
@@ -155,11 +155,25 @@ describe('MatBottomSheet', () => {
   it('should close a bottom sheet via the escape key', fakeAsync(() => {
     bottomSheet.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
 
-    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+    const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
     viewContainerFixture.detectChanges();
     flush();
 
     expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeNull();
+    expect(event.defaultPrevented).toBe(true);
+  }));
+
+  it('should not close a bottom sheet via the escape key with a modifier', fakeAsync(() => {
+    bottomSheet.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+
+    const event = createKeyboardEvent('keydown', ESCAPE);
+    Object.defineProperty(event, 'altKey', {get: () => true});
+    dispatchEvent(document.body, event);
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
+    expect(event.defaultPrevented).toBe(false);
   }));
 
   it('should close when clicking on the overlay backdrop', fakeAsync(() => {

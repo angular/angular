@@ -9,7 +9,7 @@ import {AnimationEvent} from '@angular/animations';
 import {FocusMonitor, FocusOrigin, FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ESCAPE} from '@angular/cdk/keycodes';
+import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
 import {CdkScrollable, ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
@@ -267,11 +267,14 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
      */
     this._ngZone.runOutsideAngular(() => {
         (fromEvent(this._elementRef.nativeElement, 'keydown') as Observable<KeyboardEvent>).pipe(
-            filter(event => event.keyCode === ESCAPE && !this.disableClose),
+            filter(event => {
+              return event.keyCode === ESCAPE && !this.disableClose && !hasModifierKey(event);
+            }),
             takeUntil(this._destroyed)
         ).subscribe(event => this._ngZone.run(() => {
             this.close();
             event.stopPropagation();
+            event.preventDefault();
         }));
     });
 

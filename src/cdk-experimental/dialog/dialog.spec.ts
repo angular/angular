@@ -26,7 +26,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {CdkDialogContainer} from './dialog-container';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {A, ESCAPE} from '@angular/cdk/keycodes';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
 import {DIALOG_DATA, Dialog, DialogModule, DialogRef} from './index';
 
 describe('Dialog', () => {
@@ -216,11 +216,26 @@ describe('Dialog', () => {
     dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
 
     viewContainerFixture.detectChanges();
-    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+    const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
     viewContainerFixture.detectChanges();
     flush();
 
     expect(overlayContainerElement.querySelector('cdk-dialog-container')).toBeNull();
+    expect(event.defaultPrevented).toBe(true);
+  }));
+
+  it('should not close a dialog via the escape key if a modifier is pressed', fakeAsync(() => {
+    dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
+
+    viewContainerFixture.detectChanges();
+    const event = createKeyboardEvent('keydown', ESCAPE);
+    Object.defineProperty(event, 'altKey', {get: () => true});
+    dispatchEvent(document.body, event);
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelector('cdk-dialog-container')).toBeTruthy();
+    expect(event.defaultPrevented).toBe(false);
   }));
 
   it('should close from a ViewContainerRef with OnPush change detection', fakeAsync(() => {

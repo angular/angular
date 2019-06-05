@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {ESCAPE} from '@angular/cdk/keycodes';
+import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {OverlayRef} from '@angular/cdk/overlay';
 import {merge, Observable, Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
@@ -72,8 +72,10 @@ export class MatBottomSheetRef<T = any, R = any> {
     merge(
       _overlayRef.backdropClick(),
       _overlayRef.keydownEvents().pipe(filter(event => event.keyCode === ESCAPE))
-    ).subscribe(() => {
-      if (!this.disableClose) {
+    ).subscribe(event => {
+      if (!this.disableClose &&
+        (event.type !== 'keydown' || !hasModifierKey(event as KeyboardEvent))) {
+        event.preventDefault();
         this.dismiss();
       }
     });

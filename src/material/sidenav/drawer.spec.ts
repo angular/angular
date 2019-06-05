@@ -15,7 +15,7 @@ import {Direction} from '@angular/cdk/bidi';
 import {A11yModule} from '@angular/cdk/a11y';
 import {PlatformModule} from '@angular/cdk/platform';
 import {ESCAPE} from '@angular/cdk/keycodes';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
 import {CdkScrollable} from '@angular/cdk/scrolling';
 
 
@@ -202,12 +202,39 @@ describe('MatDrawer', () => {
       expect(testComponent.closeCount).toBe(0, 'Expected no close events.');
       expect(testComponent.closeStartCount).toBe(0, 'Expected no close start events.');
 
-      dispatchKeyboardEvent(drawer.nativeElement, 'keydown', ESCAPE);
+      const event = dispatchKeyboardEvent(drawer.nativeElement, 'keydown', ESCAPE);
       fixture.detectChanges();
       flush();
 
       expect(testComponent.closeCount).toBe(1, 'Expected one close event.');
       expect(testComponent.closeStartCount).toBe(1, 'Expected one close start event.');
+      expect(event.defaultPrevented).toBe(true);
+    }));
+
+    it('should not close when pressing escape with a modifier', fakeAsync(() => {
+      let fixture = TestBed.createComponent(BasicTestApp);
+
+      fixture.detectChanges();
+
+      let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
+      let drawer = fixture.debugElement.query(By.directive(MatDrawer));
+
+      drawer.componentInstance.open();
+      fixture.detectChanges();
+      tick();
+
+      expect(testComponent.closeCount).toBe(0, 'Expected no close events.');
+      expect(testComponent.closeStartCount).toBe(0, 'Expected no close start events.');
+
+      const event = createKeyboardEvent('keydown', ESCAPE);
+      Object.defineProperty(event, 'altKey', {get: () => true});
+      dispatchEvent(drawer.nativeElement, event);
+      fixture.detectChanges();
+      flush();
+
+      expect(testComponent.closeCount).toBe(0, 'Expected still no close events.');
+      expect(testComponent.closeStartCount).toBe(0, 'Expected still no close start events.');
+      expect(event.defaultPrevented).toBe(false);
     }));
 
     it('should fire the open event when open on init', fakeAsync(() => {

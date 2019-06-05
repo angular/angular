@@ -27,7 +27,7 @@ import {MatDialogContainer} from './dialog-container';
 import {OverlayContainer, ScrollStrategy, Overlay} from '@angular/cdk/overlay';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {A, ESCAPE} from '@angular/cdk/keycodes';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchKeyboardEvent, createKeyboardEvent} from '@angular/cdk/testing';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -240,11 +240,26 @@ describe('MatDialog', () => {
       viewContainerRef: testViewContainerRef
     });
 
-    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+    const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
     viewContainerFixture.detectChanges();
     flush();
 
     expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
+    expect(event.defaultPrevented).toBe(true);
+  }));
+
+  it('should not close a dialog via the escape key with a modifier', fakeAsync(() => {
+    dialog.open(PizzaMsg, {
+      viewContainerRef: testViewContainerRef
+    });
+
+    const event = createKeyboardEvent('keydown', ESCAPE);
+    Object.defineProperty(event, 'altKey', {get: () => true});
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeTruthy();
+    expect(event.defaultPrevented).toBe(false);
   }));
 
   it('should close from a ViewContainerRef with OnPush change detection', fakeAsync(() => {

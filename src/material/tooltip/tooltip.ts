@@ -9,7 +9,7 @@ import {AnimationEvent} from '@angular/animations';
 import {AriaDescriber, FocusMonitor} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ESCAPE} from '@angular/cdk/keycodes';
+import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
 import {
   FlexibleConnectedPositionStrategy,
@@ -331,7 +331,8 @@ export class MatTooltip implements OnDestroy, OnInit {
 
   /** Handles the keydown events on the host element. */
   _handleKeydown(e: KeyboardEvent) {
-    if (this._isTooltipVisible() && e.keyCode === ESCAPE) {
+    if (this._isTooltipVisible() && e.keyCode === ESCAPE && !hasModifierKey(e)) {
+      e.preventDefault();
       e.stopPropagation();
       this.hide(0);
     }

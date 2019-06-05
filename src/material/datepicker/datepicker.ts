@@ -459,7 +459,13 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
         return event.keyCode === ESCAPE ||
                (this._datepickerInput && event.altKey && event.keyCode === UP_ARROW);
       }))
-    ).subscribe(() => this.close());
+    ).subscribe(event => {
+      if (event) {
+        event.preventDefault();
+      }
+
+      this.close();
+    });
   }
 
   /** Create the popup PositionStrategy. */

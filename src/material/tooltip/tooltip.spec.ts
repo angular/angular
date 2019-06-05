@@ -27,6 +27,8 @@ import {
   dispatchKeyboardEvent,
   patchElementFocus,
   dispatchMouseEvent,
+  createKeyboardEvent,
+  dispatchEvent,
 } from '@angular/cdk/testing';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {FocusMonitor} from '@angular/cdk/a11y';
@@ -633,6 +635,32 @@ describe('MatTooltip', () => {
 
       // Flush due to the additional tick that is necessary for the FocusMonitor.
       flush();
+    }));
+
+    it('should preventDefault when pressing ESCAPE', fakeAsync(() => {
+      tooltipDirective.show();
+      tick(0);
+      fixture.detectChanges();
+
+      const event = dispatchKeyboardEvent(buttonElement, 'keydown', ESCAPE);
+      fixture.detectChanges();
+      flush();
+
+      expect(event.defaultPrevented).toBe(true);
+    }));
+
+    it('should not preventDefault when pressing ESCAPE with a modifier', fakeAsync(() => {
+      tooltipDirective.show();
+      tick(0);
+      fixture.detectChanges();
+
+      const event = createKeyboardEvent('keydown', ESCAPE);
+      Object.defineProperty(event, 'altKey', {get: () => true});
+      dispatchEvent(buttonElement, event);
+      fixture.detectChanges();
+      flush();
+
+      expect(event.defaultPrevented).toBe(false);
     }));
 
     it('should not show the tooltip on progammatic focus', fakeAsync(() => {

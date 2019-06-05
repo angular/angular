@@ -346,6 +346,24 @@ describe('MatMenu', () => {
     tick(500);
 
     expect(overlayContainerElement.textContent).toBe('');
+    expect(event.defaultPrevented).toBe(true);
+  }));
+
+  it('should not close the menu when pressing ESCAPE with a modifier', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
+    const event = createKeyboardEvent('keydown', ESCAPE);
+
+    Object.defineProperty(event, 'altKey', {get: () => true});
+    dispatchEvent(panel, event);
+    fixture.detectChanges();
+    tick(500);
+
+    expect(overlayContainerElement.textContent).toBeTruthy();
+    expect(event.defaultPrevented).toBe(false);
   }));
 
   it('should open a custom menu', () => {
