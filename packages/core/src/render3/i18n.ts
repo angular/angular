@@ -958,9 +958,7 @@ export function ɵɵi18n(index: number, message: string, subTemplateIndex?: numb
 export function ɵɵi18nAttributes(index: number, values: string[]): void {
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
-    i18nAttributesFirstPass(tView, index, values);
-  }
+  i18nAttributesFirstPass(tView, index, values);
 }
 
 /**
@@ -985,8 +983,10 @@ function i18nAttributesFirstPass(tView: TView, index: number, values: string[]) 
         // Even indexes are text (including bindings)
         const hasBinding = !!value.match(BINDING_REGEXP);
         if (hasBinding) {
-          addAllToArray(
-              generateBindingUpdateOpCodes(value, previousElementIndex, attrName), updateOpCodes);
+          if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
+            addAllToArray(
+                generateBindingUpdateOpCodes(value, previousElementIndex, attrName), updateOpCodes);
+          }
         } else {
           const lView = getLView();
           elementAttributeInternal(previousElementIndex, attrName, value, lView);
@@ -1001,7 +1001,9 @@ function i18nAttributesFirstPass(tView: TView, index: number, values: string[]) 
     }
   }
 
-  tView.data[index + HEADER_OFFSET] = updateOpCodes;
+  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
+    tView.data[index + HEADER_OFFSET] = updateOpCodes;
+  }
 }
 
 let changeMask = 0b0;
