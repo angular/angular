@@ -23,7 +23,7 @@ import {storeCleanupWithContext} from './instructions/shared';
 import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
-import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
+import {LQueries, QueryPredicate, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {CONTENT_QUERIES, HEADER_OFFSET, LView, QUERIES, TVIEW, TView} from './interfaces/view';
 import {getCurrentQueryIndex, getIsParent, getLView, getPreviousOrParentTNode, isCreationMode, setCurrentQueryIndex} from './state';
 import {isContentQueryHost, loadInternal} from './util/view_utils';
@@ -31,25 +31,9 @@ import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
-/**
- * A predicate which determines if a given element/directive should be included in the query
- * results.
- */
-export interface QueryPredicate<T> {
-  /**
-   * If looking for directives then it contains the directive type.
-   */
-  type: Type<T>|null;
-
-  /**
-   * If selector then contains local names to query for.
-   */
-  selector: string[]|null;
-
-  /**
-   * Indicates which token should be read from DI for this query.
-   */
-  read: Type<T>|null;
+class QueryPredicate_<T> implements QueryPredicate<T> {
+  constructor(
+      public type: Type<T>|null, public selector: string[]|null, public read: Type<T>|null) {}
 }
 
 /**
@@ -94,12 +78,14 @@ export class LQueries_ implements LQueries {
       public parent: LQueries_|null, private shallow: LQuery<any>|null,
       private deep: LQuery<any>|null, public nodeIndex: number = -1) {}
 
-  track<T>(queryList: QueryList<T>, predicate: Type<T>|string[], descend?: boolean, read?: Type<T>):
-      void {
+  track<T>(queryList: QueryList<T>, predicate: QueryPredicate<T>, descend?: boolean): void {
     if (descend) {
-      this.deep = createLQuery(this.deep, queryList, predicate, read != null ? read : null);
+      this.deep = new LQuery(
+          this.deep, queryList, predicate, (queryList as any as QueryList_<T>)._valuesTree, null);
     } else {
-      this.shallow = createLQuery(this.shallow, queryList, predicate, read != null ? read : null);
+      this.shallow = new LQuery(
+          this.shallow, queryList, predicate, (queryList as any as QueryList_<T>)._valuesTree,
+          null);
     }
   }
 
@@ -327,23 +313,6 @@ function addMatch(query: LQuery<any>, matchingValue: any, insertBeforeViewMatche
   query.list.setDirty();
 }
 
-function createPredicate<T>(predicate: Type<T>| string[], read: Type<T>| null): QueryPredicate<T> {
-  const isArray = Array.isArray(predicate);
-  return {
-    type: isArray ? null : predicate as Type<T>,
-    selector: isArray ? predicate as string[] : null,
-    read: read
-  };
-}
-
-function createLQuery<T>(
-    previous: LQuery<any>| null, queryList: QueryList<T>, predicate: Type<T>| string[],
-    read: Type<T>| null): LQuery<T> {
-  return new LQuery(
-      previous, queryList, createPredicate(predicate, read),
-      (queryList as any as QueryList_<T>)._valuesTree, null);
-}
-
 type QueryList_<T> = QueryList<T>& {_valuesTree: any[], _static: boolean};
 
 /**
@@ -356,14 +325,14 @@ type QueryList_<T> = QueryList<T>& {_valuesTree: any[], _static: boolean};
  */
 function createQueryListInLView<T>(
     // TODO: "read" should be an AbstractType (FW-486)
-    lView: LView, predicate: Type<any>| string[], descend: boolean, read: any, isStatic: boolean,
+    lView: LView, predicate: QueryPredicate<T>, descend: boolean, isStatic: boolean,
     nodeIndex: number): QueryList<T> {
   ngDevMode && assertPreviousIsParent(getIsParent());
   const queryList = new QueryList<T>() as QueryList_<T>;
   const queries = lView[QUERIES] || (lView[QUERIES] = new LQueries_(null, null, null, nodeIndex));
   queryList._valuesTree = [];
   queryList._static = isStatic;
-  queries.track(queryList, predicate, descend, read);
+  queries.track(queryList, predicate, descend);
   storeCleanupWithContext(lView, queryList, queryList.destroy);
   return queryList;
 }
@@ -434,7 +403,7 @@ function viewQueryInternal<T>(
   }
   const index = getCurrentQueryIndex();
   const queryList: QueryList<T> =
-      createQueryListInLView<T>(lView, predicate, descend, read, isStatic, -1);
+      createQueryListInLView<T>(lView, createPredicate<T>(predicate, read), descend, isStatic, -1);
   store(index - HEADER_OFFSET, queryList);
   setCurrentQueryIndex(index + 1);
   return queryList;
@@ -474,13 +443,21 @@ export function ɵɵcontentQuery<T>(
       lView, tView, directiveIndex, predicate, descend, read, false, tNode.index);
 }
 
+function createPredicate<T>(predicate: Type<any>| string[], read: any): QueryPredicate<T> {
+  const isCssSelectorsArray = Array.isArray(predicate);
+  return new QueryPredicate_(
+      isCssSelectorsArray ? null : predicate as Type<T>,
+      isCssSelectorsArray ? predicate as string[] : null, read);
+}
+
 function contentQueryInternal<T>(
     lView: LView, tView: TView, directiveIndex: number, predicate: Type<any>| string[],
     descend: boolean,
     // TODO(FW-486): "read" should be an AbstractType
     read: any, isStatic: boolean, nodeIndex: number): QueryList<T> {
+  const predicateObj = createPredicate<T>(predicate, read);
   const contentQuery: QueryList<T> =
-      createQueryListInLView<T>(lView, predicate, descend, read, isStatic, nodeIndex);
+      createQueryListInLView<T>(lView, predicateObj, descend, isStatic, nodeIndex);
   (lView[CONTENT_QUERIES] || (lView[CONTENT_QUERIES] = [])).push(contentQuery);
   if (tView.firstTemplatePass) {
     const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);

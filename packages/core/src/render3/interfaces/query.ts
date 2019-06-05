@@ -11,6 +11,26 @@ import {QueryList} from '../../linker';
 
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './node';
 
+/**
+ * A predicate which determines if a given element/directive should be included in the query
+ * results.
+ */
+export interface QueryPredicate<T> {
+  /**
+   * If looking for directives then it contains the directive type.
+   */
+  type: Type<T>|null;
+
+  /**
+   * If selector then contains local names to query for.
+   */
+  selector: string[]|null;
+
+  /**
+   * Indicates which token should be read from DI for this query.
+   */
+  read: Type<T>|null;
+}
 
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
 export interface LQueries {
@@ -93,13 +113,11 @@ export interface LQueries {
    * Add additional `QueryList` to track.
    *
    * @param queryList `QueryList` to update with changes.
-   * @param predicate Either `Type` or selector array of [key, value] predicates.
+   * @param predicate A predicate which determines if a given element/directive should be included
+   * in the query results.
    * @param descend If true the query will recursively apply to the children.
-   * @param read Indicates which token should be read from DI for this query.
    */
-  track<T>(
-      queryList: QueryList<T>, predicate: Type<any>|string[], descend?: boolean,
-      read?: Type<T>): void;
+  track<T>(queryList: QueryList<T>, predicate: QueryPredicate<T>, descend?: boolean): void;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
