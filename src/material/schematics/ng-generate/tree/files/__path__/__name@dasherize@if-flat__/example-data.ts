@@ -1,7 +1,7 @@
 /** Example file/folder data. */
 export const files = [
   {
-    name: 'material2',
+    name: 'components',
     type: 'folder',
     children: [
       {
