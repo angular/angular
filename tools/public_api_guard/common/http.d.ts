@@ -1694,6 +1694,10 @@ export interface HttpSentEvent {
     type: HttpEventType.Sent;
 }
 
+export interface HttpUploadProgressEvent extends HttpProgressEvent {
+    type: HttpEventType.UploadProgress;
+}
+
 export declare class HttpUrlEncodingCodec implements HttpParameterCodec {
     decodeKey(key: string): string;
     decodeValue(value: string): string;
