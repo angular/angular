@@ -5,7 +5,6 @@ code-example, code-tabs {
 
 code-example {
 
-
   &:not(.no-box) {
     background-color: rgba($backgroundgray, 0.2);
     border: 0.5px solid $lightgray;
@@ -36,6 +35,10 @@ code-example, code-tabs {
   code {
     overflow: auto;
   }
+}
+
+code-tabs {
+  margin: 16px 0;
 }
 
 // TERMINAL / SHELL TEXT STYLES
@@ -151,6 +154,7 @@ ol.linenums {
   margin: 0;
   font-family: $main-font;
   color: #B3B6B7;
+
   li {
     margin: 0;
     font-family: $code-font;
