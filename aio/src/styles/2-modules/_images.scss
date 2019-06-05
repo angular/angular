@@ -41,6 +41,8 @@
     padding: 32px;
     box-sizing: border-box;
     display: inline-block;
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, .2);
+    margin: 16px 0;
 
     &.lightbox {
       background-color: $lightboxgray;
