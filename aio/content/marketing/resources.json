@@ -28,6 +28,11 @@
             "rev": true,
             "title": "Angular Subreddit",
             "url": "https://www.reddit.com/r/Angular2/"
+          },
+          "angular-devto" : {
+            "url": "https://dev.to/t/angular",
+            "rev": true,
+            "title": "Read and share content and chat about Angular on DEV Community."
           }
         }
       },
