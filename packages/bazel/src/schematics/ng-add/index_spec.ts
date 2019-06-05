@@ -228,29 +228,6 @@ describe('ng-add schematic', () => {
     expect(builder).toBe('@angular/bazel:build');
   });
 
-  it('should create a backup for original tsconfig.json', async() => {
-    expect(host.files).toContain('/tsconfig.json');
-    const original = host.readContent('/tsconfig.json');
-    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
-    expect(host.files).toContain('/tsconfig.json.bak');
-    const content = host.readContent('/tsconfig.json.bak');
-    expect(content.startsWith('// This is a backup file')).toBe(true);
-    expect(content).toMatch(original);
-  });
-
-  it('should remove Bazel-controlled options from tsconfig.json', async() => {
-    host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
-    expect(host.files).toContain('/tsconfig.json');
-    const content = host.readContent('/tsconfig.json');
-    expect(() => JSON.parse(content)).not.toThrow();
-    expect(JSON.parse(content)).toEqual({
-      compileOnSave: false,
-      compilerOptions: {
-        outDir: './dist/out-tsc',
-      }
-    });
-  });
-
   describe('rxjs', () => {
     const cases = [
       // version|upgrade
