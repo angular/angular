@@ -12,6 +12,7 @@ import {BehaviorSubject} from 'rxjs';
 import {
   CdkPopoverEditColspan,
   HoverContentState,
+  FormValueContainer,
   PopoverEditClickOutBehavior,
 } from '@angular/cdk-experimental/popover-edit';
 import {MatPopoverEditModule} from './index';
@@ -21,8 +22,7 @@ const NAME_EDIT_TEMPLATE = `
       <form #f="ngForm"
           matEditLens
           (ngSubmit)="onSubmit(element, f)"
-          [matEditLensPreservedFormValue]="preservedValues.get(element)"
-          (matEditLensPreservedFormValueChange)="preservedValues.set(element, $event)"
+          [(matEditLensPreservedFormValue)]="preservedValues.for(element).value"
           [matEditLensIgnoreSubmitUnlessValid]="ignoreSubmitUnlessValid"
           [matEditLensClickOutBehavior]="clickOutBehavior">
         <input [ngModel]="element.name" name="name" required>
@@ -62,7 +62,7 @@ interface PeriodicElement {
 abstract class BaseTestComponent {
   @ViewChild('table', {static: false}) table: ElementRef;
 
-  preservedValues = new Map<number, PeriodicElement>();
+  preservedValues = new FormValueContainer<PeriodicElement, {'name': string}>();
 
   ignoreSubmitUnlessValid = true;
   clickOutBehavior: PopoverEditClickOutBehavior = 'close';

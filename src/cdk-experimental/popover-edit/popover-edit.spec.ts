@@ -14,6 +14,7 @@ import {
   CdkPopoverEditColspan,
   CdkPopoverEditModule,
   HoverContentState,
+  FormValueContainer,
   PopoverEditClickOutBehavior,
 } from './index';
 
@@ -22,8 +23,7 @@ const NAME_EDIT_TEMPLATE = `
       <form #f="ngForm"
           cdkEditControl
           (ngSubmit)="onSubmit(element, f)"
-          [cdkEditControlPreservedFormValue]="preservedValues.get(element)"
-          (cdkEditControlPreservedFormValueChange)="preservedValues.set(element, $event)"
+          [(cdkEditControlPreservedFormValue)]="preservedValues.for(element).value"
           [cdkEditControlIgnoreSubmitUnlessValid]="ignoreSubmitUnlessValid"
           [cdkEditControlClickOutBehavior]="clickOutBehavior">
         <input [ngModel]="element.name" name="name" required>
@@ -63,7 +63,7 @@ interface PeriodicElement {
 abstract class BaseTestComponent {
   @ViewChild('table', {static: false}) table: ElementRef;
 
-  preservedValues = new Map<number, PeriodicElement>();
+  preservedValues = new FormValueContainer<PeriodicElement, {'name': string}>();
 
   ignoreSubmitUnlessValid = true;
   clickOutBehavior: PopoverEditClickOutBehavior = 'close';

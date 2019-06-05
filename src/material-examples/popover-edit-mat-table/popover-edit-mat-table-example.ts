@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
+import {FormValueContainer} from '@angular/cdk-experimental/popover-edit';
 import {NgForm} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -46,8 +47,8 @@ export class PopoverEditMatTableExample {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new ExampleDataSource();
 
-  readonly preservedNameValues = new WeakMap<PeriodicElement, any>();
-  readonly preservedWeightValues = new WeakMap<PeriodicElement, any>();
+  readonly nameValues = new FormValueContainer<PeriodicElement, any>();
+  readonly weightValues = new FormValueContainer<PeriodicElement, any>();
 
   constructor(private readonly _snackBar: MatSnackBar) {}
 
