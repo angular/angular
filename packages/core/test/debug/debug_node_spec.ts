@@ -7,7 +7,7 @@
  */
 
 
-import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -734,6 +734,59 @@ class TestCmptWithPropBindings {
       expect(firstDivChildren.map(child => child.nativeNode.textContent.trim())).toEqual([
         'span.1', 'span.2', 'span.3', 'span.4'
       ]);
+    });
+
+    it('should preserve the attribute case in DebugNode.attributes', () => {
+      @Component({selector: 'my-icon', template: ''})
+      class Icon {
+        @Input() svgIcon: any = '';
+      }
+      @Component({template: `<my-icon svgIcon="test"></my-icon>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Icon]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const element = fixture.debugElement.children[0];
+
+      // Assert that the camel-case attribute is correct.
+      expect(element.attributes.svgIcon).toBe('test');
+
+      // Make sure that we somehow didn't preserve the native lower-cased value.
+      expect(element.attributes.svgicon).toBeFalsy();
+    });
+
+
+    it('should include namespaced attributes in DebugNode.attributes', () => {
+      @Component({
+        template: `<div xlink:href="foo"></div>`,
+      })
+      class Comp {
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp]});
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('div')).attributes['xlink:href']).toBe('foo');
+    });
+
+    it('should include attributes added via Renderer2 in DebugNode.attributes', () => {
+      @Component({
+        template: '<div></div>',
+      })
+      class Comp {
+        constructor(public renderer: Renderer2) {}
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp]});
+      const fixture = TestBed.createComponent(Comp);
+      const div = fixture.debugElement.query(By.css('div'));
+
+      fixture.componentInstance.renderer.setAttribute(div.nativeElement, 'foo', 'bar');
+
+      expect(div.attributes.foo).toBe('bar');
     });
 
   });
