@@ -408,7 +408,7 @@ export interface Route {
    * to the redirect destination, creating an endless loop.
    *
    */
-  pathMatch?: string;
+  pathMatch?: 'prefix' | 'full';
   /**
    * A URL-matching function to use as a custom strategy for path matching.
    * If present, supersedes `path` and `pathMatch`.
