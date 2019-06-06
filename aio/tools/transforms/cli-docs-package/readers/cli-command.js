@@ -9,7 +9,7 @@
  * }
  * ```
  */
-module.exports = function cliCommandFileReader(log) {
+module.exports = function cliCommandFileReader() {
   const json5 = require('json5');
   return {
     name: 'cliCommandFileReader',
@@ -38,7 +38,8 @@ module.exports = function cliCommandFileReader(log) {
         }
         return [result];
       } catch (e) {
-        log.warn(`Failed to read cli command file: "${fileInfo.relativePath}" - ${e.message}`);
+        throw new Error(
+            `Failed to read cli command file: "${fileInfo.relativePath}" - ${e.message}`);
       }
     }
   };
@@ -58,12 +59,13 @@ module.exports = function cliCommandFileReader(log) {
    * file, which was passed to the `cliCommandFileReader.getDocs()` method.
    */
   function createLongDescriptionDoc(fileInfo) {
-    try {
-      const path = require('canonical-path');
-      const fs = require('fs');
-      const json5 = require('json5');
+    const path = require('canonical-path');
+    const fs = require('fs');
+    const json5 = require('json5');
 
-      const schemaJsonPath = path.resolve(fileInfo.basePath, '../commands', fileInfo.relativePath);
+    const schemaJsonPath = path.resolve(fileInfo.basePath, '../commands', fileInfo.relativePath);
+
+    try {
       const schemaJson = fs.readFileSync(schemaJsonPath);
       const schema = json5.parse(schemaJson);
       if (schema.$longDescription) {
@@ -77,8 +79,8 @@ module.exports = function cliCommandFileReader(log) {
         };
       }
     } catch (e) {
-      log.warn('Unable to read CLI long description file info', e, fileInfo);
-      return undefined;
+      throw new Error(
+          `Unable to read CLI "$longDescription" info from the schema: "${schemaJsonPath}" - ${e.message}`);
     }
   }
 };
