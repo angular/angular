@@ -9,8 +9,8 @@
 import {BoundTarget} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
-import {AbsoluteFsPath} from '../../path';
 import {ClassDeclaration} from '../../reflection';
 import {ImportManager} from '../../translator';
 

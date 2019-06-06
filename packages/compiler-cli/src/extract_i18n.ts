@@ -7,7 +7,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * Extract i18n messages from source code
  */
@@ -16,11 +15,12 @@ import 'reflect-metadata';
 import * as api from './transformers/api';
 import {ParsedConfiguration} from './perform_compile';
 import {main, readCommandLineAndConfiguration} from './main';
+import {setFileSystem, NodeJSFileSystem} from './ngtsc/file_system';
 
 export function mainXi18n(
     args: string[], consoleError: (msg: string) => void = console.error): number {
   const config = readXi18nCommandLineAndConfiguration(args);
-  return main(args, consoleError, config);
+  return main(args, consoleError, config, undefined, undefined, undefined);
 }
 
 function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfiguration {
@@ -42,5 +42,7 @@ function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfigurati
 // Entry point
 if (require.main === module) {
   const args = process.argv.slice(2);
+  // We are running the real compiler so run against the real file-system
+  setFileSystem(new NodeJSFileSystem());
   process.exitCode = mainXi18n(args);
 }

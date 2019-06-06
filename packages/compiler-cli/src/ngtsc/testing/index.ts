@@ -5,6 +5,4 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-export {LogicalFileSystem, LogicalProjectPath} from './src/logical';
-export {AbsoluteFsPath, PathSegment} from './src/types';
+export {getDeclaration, makeProgram} from './src/utils';

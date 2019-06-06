@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
@@ -1281,7 +1282,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param dtsProgram The program containing all the typings files.
    * @returns a map of class names to class declarations.
    */
-  protected computeDtsDeclarationMap(dtsRootFileName: string, dtsProgram: ts.Program):
+  protected computeDtsDeclarationMap(dtsRootFileName: AbsoluteFsPath, dtsProgram: ts.Program):
       Map<string, ts.Declaration> {
     const dtsDeclarationMap = new Map<string, ts.Declaration>();
     const checker = dtsProgram.getTypeChecker();

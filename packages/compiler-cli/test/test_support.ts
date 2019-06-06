@@ -5,12 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+/// <reference types="node" />
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
+
 import * as ng from '../index';
-import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from './runfile_helpers';
+import {NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
+import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../test/helpers';
 
 // TEST_TMPDIR is always set by Bazel.
 const tmpdir = process.env.TEST_TMPDIR !;
@@ -143,6 +145,9 @@ export function setupBazelTo(tmpDirPath: string) {
 }
 
 export function setup(): TestSupport {
+  // // `TestSupport` provides its own file-system abstraction so we just use
+  // // the native `NodeJSFileSystem` under the hood.
+  setFileSystem(new NodeJSFileSystem());
   const tmpDirPath = makeTempDir();
   setupBazelTo(tmpDirPath);
   return createTestSupportFor(tmpDirPath);

@@ -5,14 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {AotCompilerOptions} from '@angular/compiler';
 import {escapeRegExp} from '@angular/compiler/src/util';
-import {MockCompilerHost, MockData, MockDirectory, arrayToMockDir, settings, toMockFileArray} from '@angular/compiler/test/aot/test_util';
+import {MockCompilerHost, MockData, MockDirectory, arrayToMockDir, toMockFileArray} from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';
-
+import {NodeJSFileSystem, setFileSystem} from '../../src/ngtsc/file_system';
 import {NgtscProgram} from '../../src/ngtsc/program';
-
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
@@ -169,6 +167,7 @@ export function compile(
     errorCollector: (error: any, fileName?: string) => void = error => { throw error;}): {
   source: string,
 } {
+  setFileSystem(new NodeJSFileSystem());
   const testFiles = toMockFileArray(data);
   const scripts = testFiles.map(entry => entry.fileName);
   const angularFilesArray = toMockFileArray(angularFiles);

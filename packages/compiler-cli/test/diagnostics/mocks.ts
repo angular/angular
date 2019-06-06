@@ -114,8 +114,6 @@ export class DiagnosticContext {
   _reflector: StaticReflector|undefined;
   _errors: {e: any, path?: string}[] = [];
   _resolver: CompileMetadataResolver|undefined;
-  // TODO(issue/24571): remove '!'.
-  _refletor !: StaticReflector;
   // tslint:enable
 
   constructor(

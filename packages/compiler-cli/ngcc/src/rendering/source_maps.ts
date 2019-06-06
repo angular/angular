@@ -9,8 +9,7 @@ import {SourceMapConverter, commentRegex, fromJSON, fromObject, fromSource, gene
 import MagicString from 'magic-string';
 import {RawSourceMap, SourceMapConsumer, SourceMapGenerator} from 'source-map';
 import * as ts from 'typescript';
-import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
+import {resolve, FileSystem, absoluteFromSourceFile, dirname, basename, absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
 import {FileToWrite} from './utils';
 
@@ -39,19 +38,18 @@ export function extractSourceMap(
     let externalSourceMap: SourceMapConverter|null = null;
     try {
       const fileName = external[1] || external[2];
-      const filePath = AbsoluteFsPath.resolve(
-          AbsoluteFsPath.dirname(AbsoluteFsPath.fromSourceFile(file)), fileName);
+      const filePath = resolve(dirname(absoluteFromSourceFile(file)), fileName);
       const mappingFile = fs.readFile(filePath);
       externalSourceMap = fromJSON(mappingFile);
     } catch (e) {
       if (e.code === 'ENOENT') {
         logger.warn(
             `The external map file specified in the source code comment "${e.path}" was not found on the file system.`);
-        const mapPath = AbsoluteFsPath.fromUnchecked(file.fileName + '.map');
-        if (PathSegment.basename(e.path) !== PathSegment.basename(mapPath) && fs.exists(mapPath) &&
+        const mapPath = absoluteFrom(file.fileName + '.map');
+        if (basename(e.path) !== basename(mapPath) && fs.exists(mapPath) &&
             fs.stat(mapPath).isFile()) {
           logger.warn(
-              `Guessing the map file name from the source file name: "${PathSegment.basename(mapPath)}"`);
+              `Guessing the map file name from the source file name: "${basename(mapPath)}"`);
           try {
             externalSourceMap = fromObject(JSON.parse(fs.readFile(mapPath)));
           } catch (e) {
@@ -76,9 +74,9 @@ export function extractSourceMap(
  */
 export function renderSourceAndMap(
     sourceFile: ts.SourceFile, input: SourceMapInfo, output: MagicString): FileToWrite[] {
-  const outputPath = AbsoluteFsPath.fromSourceFile(sourceFile);
-  const outputMapPath = AbsoluteFsPath.fromUnchecked(`${outputPath}.map`);
-  const relativeSourcePath = PathSegment.basename(outputPath);
+  const outputPath = absoluteFromSourceFile(sourceFile);
+  const outputMapPath = absoluteFrom(`${outputPath}.map`);
+  const relativeSourcePath = basename(outputPath);
   const relativeMapPath = `${relativeSourcePath}.map`;
 
   const outputMap = output.generateMap({

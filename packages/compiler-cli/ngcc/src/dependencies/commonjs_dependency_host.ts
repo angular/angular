@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-
-import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
+import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
 import {isRequireCall} from '../host/commonjs_host';
-
 import {DependencyHost, DependencyInfo} from './dependency_host';
 import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
 
