@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import * as ts from 'typescript';
-import {AbsoluteFsPath} from '../../path/src/types';
+import {AbsoluteFsPath, absoluteFrom, resolve} from '../../file_system';
 
 export interface ShimGenerator {
   /**
@@ -73,7 +72,7 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
     for (let i = 0; i < this.shimGenerators.length; i++) {
       const generator = this.shimGenerators[i];
       // TypeScript internal paths are guaranteed to be POSIX-like absolute file paths.
-      const absoluteFsPath = AbsoluteFsPath.fromUnchecked(fileName);
+      const absoluteFsPath = resolve(fileName);
       if (generator.recognize(absoluteFsPath)) {
         const readFile = (originalFile: string) => {
           return this.delegate.getSourceFile(
@@ -118,7 +117,7 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
     // Note that we can pass the file name as branded absolute fs path because TypeScript
     // internally only passes POSIX-like paths.
     return this.delegate.fileExists(fileName) ||
-        this.shimGenerators.some(gen => gen.recognize(AbsoluteFsPath.fromUnchecked(fileName)));
+        this.shimGenerators.some(gen => gen.recognize(absoluteFrom(fileName)));
   }
 
   readFile(fileName: string): string|undefined { return this.delegate.readFile(fileName); }

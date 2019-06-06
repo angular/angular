@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
 import * as ts from 'typescript';
 import {CompilerHost} from '../transformers/api';
 import {ResourceLoader} from './annotations/src/api';
@@ -99,7 +98,7 @@ export class HostResourceLoader implements ResourceLoader {
     }
 
     const result = this.host.readResource ? this.host.readResource(resolvedUrl) :
-                                            fs.readFileSync(resolvedUrl, 'utf8');
+                                            this.host.readFile(resolvedUrl);
     if (typeof result !== 'string') {
       throw new Error(`HostResourceLoader: loader(${resolvedUrl}) returned a Promise`);
     }
@@ -126,7 +125,7 @@ export class HostResourceLoader implements ResourceLoader {
 
     const candidateLocations = this.getCandidateLocations(url, fromFile);
     for (const candidate of candidateLocations) {
-      if (fs.existsSync(candidate)) {
+      if (this.host.fileExists(candidate)) {
         return candidate;
       } else if (CSS_PREPROCESSOR_EXT.test(candidate)) {
         /**
@@ -135,7 +134,7 @@ export class HostResourceLoader implements ResourceLoader {
          * again.
          */
         const cssFallbackUrl = candidate.replace(CSS_PREPROCESSOR_EXT, '.css');
-        if (fs.existsSync(cssFallbackUrl)) {
+        if (this.host.fileExists(cssFallbackUrl)) {
           return cssFallbackUrl;
         }
       }

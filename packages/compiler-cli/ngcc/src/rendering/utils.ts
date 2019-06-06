@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter} from '../../../src/ngtsc/imports';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {NgccFlatImportRewriter} from './ngcc_import_rewriter';
 
 /**

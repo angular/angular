@@ -8,7 +8,7 @@
  */
 import * as yargs from 'yargs';
 
-import {AbsoluteFsPath} from '../src/ngtsc/path';
+import {resolve, setFileSystem, NodeJSFileSystem} from '../src/ngtsc/file_system';
 import {mainNgcc} from './src/main';
 import {ConsoleLogger, LogLevel} from './src/logging/console_logger';
 
@@ -56,7 +56,10 @@ if (require.main === module) {
         'The formats option (-f/--formats) has been removed. Consider the properties option (-p/--properties) instead.');
     process.exit(1);
   }
-  const baseSourcePath = AbsoluteFsPath.resolve(options['s'] || './node_modules');
+
+  setFileSystem(new NodeJSFileSystem());
+
+  const baseSourcePath = resolve(options['s'] || './node_modules');
   const propertiesToConsider: string[] = options['p'];
   const targetEntryPointPath = options['t'] ? options['t'] : undefined;
   const compileAllFormats = !options['first-only'];

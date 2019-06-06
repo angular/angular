@@ -5,18 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {Expression, ExternalExpr, WrappedNodeExpr} from '@angular/compiler';
 import {ExternalReference} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
-
-import {LogicalFileSystem, LogicalProjectPath} from '../../path';
+import {LogicalFileSystem, LogicalProjectPath, absoluteFrom} from '../../file_system';
 import {ReflectionHost} from '../../reflection';
-import {getSourceFile, isDeclaration, nodeNameForError, resolveModuleName} from '../../util/src/typescript';
-
+import {getSourceFile, getSourceFileOrNull, isDeclaration, nodeNameForError, resolveModuleName} from '../../util/src/typescript';
 import {findExportedNameOfNode} from './find_export';
 import {ImportMode, Reference} from './references';
-
 
 /**
  * A host which supports an operation to convert a file name into a module name.
@@ -170,8 +166,9 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
       return null;
     }
 
-    const entryPointFile = this.program.getSourceFile(resolvedModule.resolvedFileName);
-    if (entryPointFile === undefined) {
+    const entryPointFile =
+        getSourceFileOrNull(this.program, absoluteFrom(resolvedModule.resolvedFileName));
+    if (entryPointFile === null) {
       return null;
     }
 
