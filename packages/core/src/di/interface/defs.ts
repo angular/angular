@@ -7,7 +7,7 @@
  */
 
 import {Type} from '../../interface/type';
-import {getClosureSafeProperty} from '../../util/property';
+import {getClosureSafeProperty, typeHasOwnPropertySafe} from '../../util/property';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, ValueProvider} from './provider';
 
 
@@ -181,7 +181,7 @@ export function ɵɵdefineInjector(options: {factory: () => any, providers?: any
  * @param type A type which may have its own (non-inherited) `ngInjectableDef`.
  */
 export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
-  return type && type.hasOwnProperty(NG_INJECTABLE_DEF) ? type[NG_INJECTABLE_DEF] : null;
+  return type && typeHasOwnPropertySafe(type, NG_INJECTABLE_DEF) ? type[NG_INJECTABLE_DEF] : null;
 }
 
 /**
@@ -211,7 +211,8 @@ export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|nu
  * @param type type which may have `ngInjectorDef`
  */
 export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T>|null {
-  return type && type.hasOwnProperty(NG_INJECTOR_DEF) ? (type as any)[NG_INJECTOR_DEF] : null;
+  return type && typeHasOwnPropertySafe(type, NG_INJECTOR_DEF) ? (type as any)[NG_INJECTOR_DEF] :
+                                                                 null;
 }
 
 export const NG_INJECTABLE_DEF = getClosureSafeProperty({ngInjectableDef: getClosureSafeProperty});

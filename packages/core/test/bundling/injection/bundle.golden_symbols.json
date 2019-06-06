@@ -84,6 +84,9 @@
     "name": "UnsubscriptionErrorImpl"
   },
   {
+    "name": "__extends"
+  },
+  {
     "name": "__forward_ref__"
   },
   {
@@ -96,6 +99,9 @@
     "name": "_currentInjector"
   },
   {
+    "name": "canTrustHasOwnProperty"
+  },
+  {
     "name": "catchInjectorError"
   },
   {
@@ -106,6 +112,9 @@
   },
   {
     "name": "deepForEach"
+  },
+  {
+    "name": "extendStatics"
   },
   {
     "name": "formatError"
@@ -193,6 +202,9 @@
   },
   {
     "name": "throwMixedMultiProviderError"
+  },
+  {
+    "name": "typeHasOwnPropertySafe"
   },
   {
     "name": "ɵɵdefineInjectable"

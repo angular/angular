@@ -531,6 +531,9 @@
     "name": "callHooks"
   },
   {
+    "name": "canTrustHasOwnProperty"
+  },
+  {
     "name": "checkNoChangesInternal"
   },
   {
@@ -1522,6 +1525,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "typeHasOwnPropertySafe"
   },
   {
     "name": "unwrapRNode"
