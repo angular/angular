@@ -6,9 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, InjectionToken, Optional, Inject, isDevMode} from '@angular/core';
+import {NgModule, InjectionToken, Optional, Inject, isDevMode, Version} from '@angular/core';
 import {HammerLoader, HAMMER_LOADER} from '@angular/platform-browser';
 import {BidiModule} from '@angular/cdk/bidi';
+import {VERSION as CDK_VERSION} from '@angular/cdk';
+
+// Private version constant to circumvent test/build issues,
+// i.e. avoid core to depend on the @angular/material primary entry-point
+// Can be removed once the Material primary entry-point no longer
+// re-exports all secondary entry-points
+const VERSION = new Version('0.0.0-PLACEHOLDER');
 
 
 /** Injection token that configures whether the Material sanity checks are enabled. */
@@ -52,6 +59,7 @@ export class MatCommonModule {
     if (this._areChecksEnabled() && !this._hasDoneGlobalChecks) {
       this._checkDoctypeIsDefined();
       this._checkThemeIsPresent();
+      this._checkCdkVersionMatch();
       this._hasDoneGlobalChecks = true;
     }
   }
@@ -102,6 +110,17 @@ export class MatCommonModule {
     }
 
     this._document.body.removeChild(testElement);
+  }
+
+  /** Checks whether the material version matches the cdk version */
+  private _checkCdkVersionMatch(): void {
+    if (VERSION.full !== CDK_VERSION.full) {
+      console.warn(
+          'The Angular Material version (' + VERSION.full + ') does not match ' +
+          'the Angular CDK version (' + CDK_VERSION.full + ').\n' +
+          'Please ensure the versions of these two packages exactly match.'
+      );
+    }
   }
 
   /** Checks whether HammerJS is available. */

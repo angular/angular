@@ -22,6 +22,7 @@
     "baseUrl": ".",
     "paths": {
       "@angular/material": ["./material"],
+      "@angular/cdk": ["./cdk"],
       "@angular/cdk/*": ["./cdk/*"],
       "@angular/material/*": ["./material/*"],
       "@angular/cdk-experimental": ["./cdk-experimental"],
