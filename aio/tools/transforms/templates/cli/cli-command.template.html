@@ -14,7 +14,10 @@
     {$ cli.renderSyntax(doc) $}
 
     {% if doc.longDescription.length %}
-    <h2 class="no-anchor">Description</h2>
+    <h2 class="no-anchor">
+        {$ github.githubLinks(doc.longDescriptionDoc, cliVersionInfo) $}
+        Description
+    </h2>
     {$ doc.longDescription | marked $}
     {% endif%}
 
