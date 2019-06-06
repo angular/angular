@@ -42,8 +42,10 @@ const canTrustHasOwnProperty = (function() {
   (Base as any)['p'] = true;
   class Child extends Base {}
   // If 'p' shows up as an own property of Child, then hasOwnProperty is not to be trusted.
-  return !Child.hasOwnProperty('p');
-});
+  const res = !Child.hasOwnProperty('p');
+  console.warn('canTrustHasOwnProperty', res);
+  return res;
+})();
 
 /**
  * Check whether a given `Type` has an own property of a certain name.
@@ -64,8 +66,10 @@ export function typeHasOwnPropertySafe<T extends Type<any>, N extends string>(
   // present, as static properties on a type will always be own properties, regardless of whether
   // they were defined directly or inherited.
   if (canTrustHasOwnProperty) {
+    console.warn('trusting has own property');
     return type.hasOwnProperty(name);
   } else {
+    console.warn(`falling back to ${type.name}.hasOwnProperty(${name})`);
     // `hasOwnProperty` is unreliable. We determine whether a class has its own static property by
     // taking the property from the parent constructor and checking whether it's the same as the
     // subclass property. We can't use `hasOwnProperty` here because it doesn't work correctly in
@@ -79,6 +83,8 @@ export function typeHasOwnPropertySafe<T extends Type<any>, N extends string>(
     const parentPrototype = type.prototype ? Object.getPrototypeOf(type.prototype) : null;
     const parentConstructor: Type<any>&{[key in N]?: unknown} =
         parentPrototype ? parentPrototype.constructor : null;
+    console.warn(
+        `detected IE10 case: ${type[name] !== undefined} ${!parentConstructor} ${parentConstructor ? parentConstructor[name] !== type[name] : 'n/a'}`);
 
     return type[name] !== undefined &&
         (!parentConstructor || parentConstructor[name] !== type[name]);

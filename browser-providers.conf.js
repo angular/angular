@@ -141,9 +141,7 @@ var customLaunchers = {
 };
 
 var sauceAliases = {
-  'ALL': Object.keys(customLaunchers).filter(function(item) {
-    return customLaunchers[item].base == 'SauceLabs';
-  }),
+  'ALL': ['SL_IE10'],
   'DESKTOP': [
     'SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE', 'SL_SAFARI7',
     'SL_SAFARI8', 'SL_SAFARI9', 'SL_SAFARI10'

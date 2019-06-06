@@ -59,7 +59,14 @@ describe('InjectorDef-based createInjector()', () => {
       providedIn: null,
       // ChildService is derived from ServiceWithDep, so the factory function here must do the right
       // thing and create an instance of the requested type if one is given.
-      factory: (t?: typeof ServiceWithDep) => new (t || ServiceWithDep)(ɵɵinject(Service)),
+      factory: (t?: typeof ServiceWithDep) => {
+        if (t) {
+          console.log('ServiceWithDep.factory called with type', t.name);
+        } else {
+          console.log('ServiceWithDep.factory called bare');
+        }
+        return new (t || ServiceWithDep)(ɵɵinject(Service));
+      }
     });
   }
 
@@ -351,8 +358,12 @@ describe('InjectorDef-based createInjector()', () => {
     expect(instance).toBe(injector.get(ScopedService));
   });
 
-  it('allows injecting an inherited service', () => {
+  fit('allows injecting an inherited service', () => {
     const instance = injector.get(ChildService);
+    if (!(instance instanceof ChildService)) {
+      const proto = Object.getPrototypeOf(instance).constructor;
+      throw new Error(`Got an instance of: ${proto.name}`);
+    }
     expect(instance instanceof ChildService).toBe(true);
   });
 

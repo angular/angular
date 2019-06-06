@@ -396,15 +396,18 @@ export class R3Injector {
 }
 
 function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): () => any {
+  console.warn('injectableDefOrInjectableDefFactory', (token as any).name);
   // Most tokens will have an ngInjectableDef directly on them, which specifies a factory directly.
   const injectableDef = getInjectableDef(token);
   if (injectableDef !== null) {
+    console.warn('returning direct factory', (token as any).name);
     return injectableDef.factory;
   }
 
   // If the token is an NgModule, it's also injectable but the factory is on its ngInjectorDef.
   const injectorDef = getInjectorDef(token);
   if (injectorDef !== null) {
+    console.warn('returning injectordef factory', (token as any).name);
     return injectorDef.factory;
   }
 
@@ -416,6 +419,7 @@ function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>
 
   // Undecorated types can sometimes be created if they have no constructor arguments.
   if (token instanceof Function) {
+    console.warn('returning undecorated factory', (token as any).name);
     return getUndecoratedInjectableFactory(token);
   }
 
@@ -424,6 +428,7 @@ function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>
 }
 
 function getUndecoratedInjectableFactory(token: Function) {
+  console.warn('getUndecoratedInjectableFactory', token.name);
   // If the token has parameters then it has dependencies that we cannot resolve implicitly.
   const paramLength = token.length;
   if (paramLength > 0) {
@@ -438,8 +443,10 @@ function getUndecoratedInjectableFactory(token: Function) {
   // just instantiates the zero-arg constructor.
   const inheritedInjectableDef = getInheritedInjectableDef(token);
   if (inheritedInjectableDef !== null) {
+    console.warn('inherited factory', token.name);
     return () => inheritedInjectableDef.factory(token as Type<any>);
   } else {
+    console.warn('raw factory', token.name);
     return () => new (token as Type<any>)();
   }
 }
