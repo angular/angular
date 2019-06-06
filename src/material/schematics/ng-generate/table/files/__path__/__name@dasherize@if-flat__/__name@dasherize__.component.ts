@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild<% if(!!viewEncapsulation) { %>, ViewEncapsulation<% }%><% if(changeDetection !== 'Default') { %>, ChangeDetectionStrategy<% }%> } from '@angular/core';
-import { MatPaginator, MatSort } from '@angular/material';
+import { MatPaginator, MatSort, MatTable } from '@angular/material';
 import { <%= classify(name) %>DataSource, <%= classify(name) %>Item } from './<%= dasherize(name) %>-datasource';
 
 @Component({
@@ -16,9 +16,9 @@ import { <%= classify(name) %>DataSource, <%= classify(name) %>Item } from './<%
   changeDetection: ChangeDetectionStrategy.<%= changeDetection %><% } %>
 })
 export class <%= classify(name) %>Component implements AfterViewInit, OnInit {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatTable) table: MatTable<<%= classify(name) %>Item>;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static: false}) sort: MatSort;
+  @ViewChild(MatTable, {static: false}) table: MatTable<<%= classify(name) %>Item>;
   dataSource: <%= classify(name) %>DataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
