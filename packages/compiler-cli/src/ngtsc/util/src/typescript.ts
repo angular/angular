@@ -10,7 +10,7 @@ const TS = /\.tsx?$/i;
 const D_TS = /\.d\.ts$/i;
 
 import * as ts from 'typescript';
-import {AbsoluteFsPath} from '../../path';
+import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 
 export function isDtsPath(filePath: string): boolean {
   return D_TS.test(filePath);
@@ -46,6 +46,12 @@ export function getSourceFile(node: ts.Node): ts.SourceFile {
   const directSf = node.getSourceFile() as ts.SourceFile | undefined;
   return directSf !== undefined ? directSf : ts.getOriginalNode(node).getSourceFile();
 }
+
+export function getSourceFileOrNull(program: ts.Program, fileName: AbsoluteFsPath): ts.SourceFile|
+    null {
+  return program.getSourceFile(fileName) || null;
+}
+
 
 export function identifierOfNode(decl: ts.Node & {name?: ts.Node}): ts.Identifier|null {
   if (decl.name !== undefined && ts.isIdentifier(decl.name)) {
@@ -83,7 +89,7 @@ export function getRootDirs(host: ts.CompilerHost, options: ts.CompilerOptions):
   // See:
   // https://github.com/Microsoft/TypeScript/blob/3f7357d37f66c842d70d835bc925ec2a873ecfec/src/compiler/sys.ts#L650
   // Also compiler options might be set via an API which doesn't normalize paths
-  return rootDirs.map(rootDir => AbsoluteFsPath.from(rootDir));
+  return rootDirs.map(rootDir => absoluteFrom(rootDir));
 }
 
 export function nodeDebugInfo(node: ts.Node): string {

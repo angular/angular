@@ -5,25 +5,29 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {AbsoluteFsPath, resolve} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {AbsoluteSourceSpan, IdentifierKind} from '@angular/compiler-cli/src/ngtsc/indexer';
 import {ParseSourceFile} from '@angular/compiler/src/compiler';
-import * as path from 'path';
+
 import {NgtscTestEnvironment} from './env';
 
-describe('ngtsc component indexing', () => {
-  let env !: NgtscTestEnvironment;
+runInEachFileSystem(() => {
+  describe('ngtsc component indexing', () => {
+    let env !: NgtscTestEnvironment;
+    let testSourceFile: AbsoluteFsPath;
+    let testTemplateFile: AbsoluteFsPath;
 
-  function testPath(testFile: string): string { return path.posix.join(env.basePath, testFile); }
+    beforeEach(() => {
+      env = NgtscTestEnvironment.setup();
+      env.tsconfig();
+      testSourceFile = resolve(env.basePath, 'test.ts');
+      testTemplateFile = resolve(env.basePath, 'test.html');
+    });
 
-  beforeEach(() => {
-    env = NgtscTestEnvironment.setup();
-    env.tsconfig();
-  });
-
-  describe('indexing metadata', () => {
-    it('should generate component metadata', () => {
-      const componentContent = `
+    describe('indexing metadata', () => {
+      it('should generate component metadata', () => {
+        const componentContent = `
         import {Component} from '@angular/core';
 
         @Component({
@@ -32,22 +36,22 @@ describe('ngtsc component indexing', () => {
         })
         export class TestCmp {}
     `;
-      env.write('test.ts', componentContent);
-      const indexed = env.driveIndexer();
-      expect(indexed.size).toBe(1);
+        env.write(testSourceFile, componentContent);
+        const indexed = env.driveIndexer();
+        expect(indexed.size).toBe(1);
 
-      const [[decl, indexedComp]] = Array.from(indexed.entries());
+        const [[decl, indexedComp]] = Array.from(indexed.entries());
 
-      expect(decl.getText()).toContain('export class TestCmp {}');
-      expect(indexedComp).toEqual(jasmine.objectContaining({
-        name: 'TestCmp',
-        selector: 'test-cmp',
-        file: new ParseSourceFile(componentContent, testPath('test.ts')),
-      }));
-    });
+        expect(decl.getText()).toContain('export class TestCmp {}');
+        expect(indexedComp).toEqual(jasmine.objectContaining({
+          name: 'TestCmp',
+          selector: 'test-cmp',
+          file: new ParseSourceFile(componentContent, testSourceFile),
+        }));
+      });
 
-    it('should index inline templates', () => {
-      const componentContent = `
+      it('should index inline templates', () => {
+        const componentContent = `
         import {Component} from '@angular/core';
 
         @Component({
@@ -56,25 +60,25 @@ describe('ngtsc component indexing', () => {
         })
         export class TestCmp { foo = 0; }
       `;
-      env.write('test.ts', componentContent);
-      const indexed = env.driveIndexer();
-      const [[_, indexedComp]] = Array.from(indexed.entries());
-      const template = indexedComp.template;
+        env.write(testSourceFile, componentContent);
+        const indexed = env.driveIndexer();
+        const [[_, indexedComp]] = Array.from(indexed.entries());
+        const template = indexedComp.template;
 
-      expect(template).toEqual({
-        identifiers: new Set([{
-          name: 'foo',
-          kind: IdentifierKind.Property,
-          span: new AbsoluteSourceSpan(127, 130),
-        }]),
-        usedComponents: new Set(),
-        isInline: true,
-        file: new ParseSourceFile(componentContent, testPath('test.ts')),
+        expect(template).toEqual({
+          identifiers: new Set([{
+            name: 'foo',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(127, 130),
+          }]),
+          usedComponents: new Set(),
+          isInline: true,
+          file: new ParseSourceFile(componentContent, testSourceFile),
+        });
       });
-    });
 
-    it('should index external templates', () => {
-      env.write('test.ts', `
+      it('should index external templates', () => {
+        env.write(testSourceFile, `
         import {Component} from '@angular/core';
 
         @Component({
@@ -83,29 +87,29 @@ describe('ngtsc component indexing', () => {
         })
         export class TestCmp { foo = 0; }
       `);
-      env.write('test.html', '{{foo}}');
-      const indexed = env.driveIndexer();
-      const [[_, indexedComp]] = Array.from(indexed.entries());
-      const template = indexedComp.template;
+        env.write(testTemplateFile, '{{foo}}');
+        const indexed = env.driveIndexer();
+        const [[_, indexedComp]] = Array.from(indexed.entries());
+        const template = indexedComp.template;
 
-      expect(template).toEqual({
-        identifiers: new Set([{
-          name: 'foo',
-          kind: IdentifierKind.Property,
-          span: new AbsoluteSourceSpan(2, 5),
-        }]),
-        usedComponents: new Set(),
-        isInline: false,
-        file: new ParseSourceFile('{{foo}}', testPath('test.html')),
-      });
-    });
-
-    it('should index templates compiled without preserving whitespace', () => {
-      env.tsconfig({
-        preserveWhitespaces: false,
+        expect(template).toEqual({
+          identifiers: new Set([{
+            name: 'foo',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(2, 5),
+          }]),
+          usedComponents: new Set(),
+          isInline: false,
+          file: new ParseSourceFile('{{foo}}', testTemplateFile),
+        });
       });
 
-      env.write('test.ts', `
+      it('should index templates compiled without preserving whitespace', () => {
+        env.tsconfig({
+          preserveWhitespaces: false,
+        });
+
+        env.write(testSourceFile, `
         import {Component} from '@angular/core';
 
         @Component({
@@ -114,25 +118,25 @@ describe('ngtsc component indexing', () => {
         })
         export class TestCmp { foo = 0; }
       `);
-      env.write('test.html', '<div>  \n  {{foo}}</div>');
-      const indexed = env.driveIndexer();
-      const [[_, indexedComp]] = Array.from(indexed.entries());
-      const template = indexedComp.template;
+        env.write(testTemplateFile, '<div>  \n  {{foo}}</div>');
+        const indexed = env.driveIndexer();
+        const [[_, indexedComp]] = Array.from(indexed.entries());
+        const template = indexedComp.template;
 
-      expect(template).toEqual({
-        identifiers: new Set([{
-          name: 'foo',
-          kind: IdentifierKind.Property,
-          span: new AbsoluteSourceSpan(12, 15),
-        }]),
-        usedComponents: new Set(),
-        isInline: false,
-        file: new ParseSourceFile('<div>  \n  {{foo}}</div>', testPath('test.html')),
+        expect(template).toEqual({
+          identifiers: new Set([{
+            name: 'foo',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(12, 15),
+          }]),
+          usedComponents: new Set(),
+          isInline: false,
+          file: new ParseSourceFile('<div>  \n  {{foo}}</div>', testTemplateFile),
+        });
       });
-    });
 
-    it('should generated information about used components', () => {
-      env.write('test.ts', `
+      it('should generate information about used components', () => {
+        env.write(testSourceFile, `
         import {Component} from '@angular/core';
 
         @Component({
@@ -141,8 +145,8 @@ describe('ngtsc component indexing', () => {
         })
         export class TestCmp {}
       `);
-      env.write('test.html', '<div></div>');
-      env.write('test_import.ts', `
+        env.write(testTemplateFile, '<div></div>');
+        env.write('test_import.ts', `
         import {Component, NgModule} from '@angular/core';
         import {TestCmp} from './test';
 
@@ -160,21 +164,22 @@ describe('ngtsc component indexing', () => {
         })
         export class TestModule {}
       `);
-      env.write('test_import.html', '<test-cmp></test-cmp>');
-      const indexed = env.driveIndexer();
-      expect(indexed.size).toBe(2);
+        env.write('test_import.html', '<test-cmp></test-cmp>');
+        const indexed = env.driveIndexer();
+        expect(indexed.size).toBe(2);
 
-      const indexedComps = Array.from(indexed.values());
-      const testComp = indexedComps.find(comp => comp.name === 'TestCmp');
-      const testImportComp = indexedComps.find(cmp => cmp.name === 'TestImportCmp');
-      expect(testComp).toBeDefined();
-      expect(testImportComp).toBeDefined();
+        const indexedComps = Array.from(indexed.values());
+        const testComp = indexedComps.find(comp => comp.name === 'TestCmp');
+        const testImportComp = indexedComps.find(cmp => cmp.name === 'TestImportCmp');
+        expect(testComp).toBeDefined();
+        expect(testImportComp).toBeDefined();
 
-      expect(testComp !.template.usedComponents.size).toBe(0);
-      expect(testImportComp !.template.usedComponents.size).toBe(1);
+        expect(testComp !.template.usedComponents.size).toBe(0);
+        expect(testImportComp !.template.usedComponents.size).toBe(1);
 
-      const [usedComp] = Array.from(testImportComp !.template.usedComponents);
-      expect(indexed.get(usedComp)).toEqual(testComp);
+        const [usedComp] = Array.from(testImportComp !.template.usedComponents);
+        expect(indexed.get(usedComp)).toEqual(testComp);
+      });
     });
   });
 });

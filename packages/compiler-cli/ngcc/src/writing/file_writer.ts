@@ -10,7 +10,6 @@ import {EntryPoint} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';
 
-
 /**
  * Responsible for writing out the transformed files to disk.
  */

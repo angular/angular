@@ -2028,7 +2028,7 @@ describe('ngc transformer command-line', () => {
       const exitCode =
           main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
       expect(exitCode).toBe(1, 'Compile was expected to fail');
-      const srcPathWithSep = `lib${path.sep}`;
+      const srcPathWithSep = `lib/`;
       expect(messages[0])
           .toEqual(
               `${srcPathWithSep}test.component.ts(6,21): Error during template compile of 'TestComponent'
