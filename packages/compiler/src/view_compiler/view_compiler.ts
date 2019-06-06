@@ -687,6 +687,12 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return null;
   }
 
+  notifyImplicitReceiverUse(): void {
+    // Not needed in View Engine as View Engine walks through the generated
+    // expressions to figure out if the implicit receiver is used and needs
+    // to be generated as part of the pre-update statements.
+  }
+
   private _createLiteralArrayConverter(sourceSpan: ParseSourceSpan, argCount: number):
       BuiltinConverter {
     if (argCount === 0) {

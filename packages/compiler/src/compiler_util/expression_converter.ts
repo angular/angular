@@ -13,7 +13,10 @@ import {ParseSourceSpan} from '../parse_util';
 
 export class EventHandlerVars { static event = o.variable('$event'); }
 
-export interface LocalResolver { getLocal(name: string): o.Expression|null; }
+export interface LocalResolver {
+  getLocal(name: string): o.Expression|null;
+  notifyImplicitReceiverUse(): void;
+}
 
 export class ConvertActionBindingResult {
   /**
@@ -99,6 +102,11 @@ export function convertActionBinding(
   const actionStmts: o.Statement[] = [];
   flattenStatements(actionWithoutBuiltins.visit(visitor, _Mode.Statement), actionStmts);
   prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
+
+  if (visitor.usesImplicitReceiver) {
+    localResolver.notifyImplicitReceiverUse();
+  }
+
   const lastIndex = actionStmts.length - 1;
   let preventDefaultVar: o.ReadVarExpr = null !;
   if (lastIndex >= 0) {
@@ -160,6 +168,10 @@ export function convertPropertyBinding(
   const outputExpr: o.Expression = expressionWithoutBuiltins.visit(visitor, _Mode.Expression);
   const stmts: o.Statement[] = getStatementsFromVisitor(visitor, bindingId);
 
+  if (visitor.usesImplicitReceiver) {
+    localResolver.notifyImplicitReceiverUse();
+  }
+
   if (visitor.temporaryCount === 0 && form == BindingForm.TrySimple) {
     return new ConvertPropertyBindingResult([], outputExpr);
   }
@@ -191,6 +203,10 @@ export function convertUpdateArguments(
       new _AstToIrVisitor(localResolver, contextVariableExpression, bindingId, undefined);
   const outputExpr: o.InvokeFunctionExpr =
       expressionWithArgumentsToExtract.visit(visitor, _Mode.Expression);
+
+  if (visitor.usesImplicitReceiver) {
+    localResolver.notifyImplicitReceiverUse();
+  }
 
   const stmts = getStatementsFromVisitor(visitor, bindingId);
 
@@ -290,6 +306,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   private _resultMap = new Map<cdAst.AST, o.Expression>();
   private _currentTemporary: number = 0;
   public temporaryCount: number = 0;
+  public usesImplicitReceiver: boolean = false;
 
   constructor(
       private _localResolver: LocalResolver, private _implicitReceiver: o.Expression,
@@ -387,6 +404,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   visitImplicitReceiver(ast: cdAst.ImplicitReceiver, mode: _Mode): any {
     ensureExpressionMode(mode, ast);
+    this.usesImplicitReceiver = true;
     return this._implicitReceiver;
   }
 
@@ -462,11 +480,15 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return this.convertSafeAccess(ast, leftMostSafe, mode);
     } else {
       const args = this.visitAll(ast.args, _Mode.Expression);
+      const prevUsesImplicitReceiver = this.usesImplicitReceiver;
       let result: any = null;
       const receiver = this._visit(ast.receiver, _Mode.Expression);
       if (receiver === this._implicitReceiver) {
         const varExpr = this._getLocal(ast.name);
         if (varExpr) {
+          // Restore the previous "usesImplicitReceiver" state since the implicit
+          // receiver has been replaced with a resolved local expression.
+          this.usesImplicitReceiver = prevUsesImplicitReceiver;
           result = varExpr.callFn(args);
         }
       }
@@ -492,9 +514,15 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return this.convertSafeAccess(ast, leftMostSafe, mode);
     } else {
       let result: any = null;
+      const prevUsesImplicitReceiver = this.usesImplicitReceiver;
       const receiver = this._visit(ast.receiver, _Mode.Expression);
       if (receiver === this._implicitReceiver) {
         result = this._getLocal(ast.name);
+        if (result) {
+          // Restore the previous "usesImplicitReceiver" state since the implicit
+          // receiver has been replaced with a resolved local expression.
+          this.usesImplicitReceiver = prevUsesImplicitReceiver;
+        }
       }
       if (result == null) {
         result = receiver.prop(ast.name);
@@ -505,6 +533,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   visitPropertyWrite(ast: cdAst.PropertyWrite, mode: _Mode): any {
     const receiver: o.Expression = this._visit(ast.receiver, _Mode.Expression);
+    const prevUsesImplicitReceiver = this.usesImplicitReceiver;
 
     let varExpr: o.ReadPropExpr|null = null;
     if (receiver === this._implicitReceiver) {
@@ -515,6 +544,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
           // to a 'context.property' value and will be used as the target of the
           // write expression.
           varExpr = localExpr;
+          // Restore the previous "usesImplicitReceiver" state since the implicit
+          // receiver has been replaced with a resolved local expression.
+          this.usesImplicitReceiver = prevUsesImplicitReceiver;
         } else {
           // Otherwise it's an error.
           throw new Error('Cannot assign to a reference or variable!');
@@ -753,6 +785,7 @@ function flattenStatements(arg: any, output: o.Statement[]) {
 }
 
 class DefaultLocalResolver implements LocalResolver {
+  notifyImplicitReceiverUse(): void {}
   getLocal(name: string): o.Expression|null {
     if (name === EventHandlerVars.event.name) {
       return EventHandlerVars.event;

@@ -79,6 +79,7 @@ interface Expression {
 const DYNAMIC_VAR_NAME = '_any';
 
 class TypeCheckLocalResolver implements LocalResolver {
+  notifyImplicitReceiverUse(): void {}
   getLocal(name: string): o.Expression|null {
     if (name === EventHandlerVars.event.name) {
       // References to the event should not be type-checked.
@@ -284,6 +285,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     }
   }
 
+  notifyImplicitReceiverUse(): void {}
   getLocal(name: string): o.Expression|null {
     if (name == EventHandlerVars.event.name) {
       return o.variable(this.getOutputVar(o.BuiltinTypeName.Dynamic));
