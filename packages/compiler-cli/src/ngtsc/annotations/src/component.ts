@@ -7,11 +7,11 @@
  */
 
 import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, ParseTemplateOptions, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {IndexingContext} from '../../indexer';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
@@ -156,7 +156,7 @@ export class ComponentDecoratorHandler implements
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
     const relativeContextFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
-      const candidate = path.posix.relative(rootDir, containingFile);
+      const candidate = relative(absoluteFrom(rootDir), absoluteFrom(containingFile));
       if (previous === undefined || candidate.length < previous.length) {
         return candidate;
       } else {
@@ -205,7 +205,7 @@ export class ComponentDecoratorHandler implements
             /* escapedString */ false, options);
       } else {
         // Expect an inline template to be present.
-        const inlineTemplate = this._extractInlineTemplate(component, relativeContextFilePath);
+        const inlineTemplate = this._extractInlineTemplate(component, containingFile);
         if (inlineTemplate === null) {
           throw new FatalDiagnosticError(
               ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node,
@@ -583,8 +583,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  private _extractInlineTemplate(
-      component: Map<string, ts.Expression>, relativeContextFilePath: string): {
+  private _extractInlineTemplate(component: Map<string, ts.Expression>, containingFile: string): {
     templateStr: string,
     templateUrl: string,
     templateRange: LexerRange|undefined,
@@ -606,7 +605,7 @@ export class ComponentDecoratorHandler implements
       // strip
       templateRange = getTemplateRange(templateExpr);
       templateStr = templateExpr.getSourceFile().text;
-      templateUrl = relativeContextFilePath;
+      templateUrl = containingFile;
       escapedString = true;
     } else {
       const resolvedTemplate = this.evaluator.evaluate(templateExpr);

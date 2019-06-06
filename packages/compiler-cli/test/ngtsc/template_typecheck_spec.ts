@@ -8,10 +8,21 @@
 
 import * as ts from 'typescript';
 
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
+
 import {NgtscTestEnvironment} from './env';
 
-function setupCommon(env: NgtscTestEnvironment): void {
-  env.write('node_modules/@angular/common/index.d.ts', `
+const testFiles = loadStandardTestFiles();
+
+runInEachFileSystem(() => {
+  describe('ngtsc type checking', () => {
+    let env !: NgtscTestEnvironment;
+
+    beforeEach(() => {
+      env = NgtscTestEnvironment.setup(testFiles);
+      env.tsconfig({fullTemplateTypeCheck: true});
+      env.write('node_modules/@angular/common/index.d.ts', `
 import * as i0 from '@angular/core';
 
 export declare class NgForOfContext<T> {
@@ -47,19 +58,10 @@ export declare class CommonModule {
   static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe]>;
 }
 `);
-}
+    });
 
-describe('ngtsc type checking', () => {
-  let env !: NgtscTestEnvironment;
-
-  beforeEach(() => {
-    env = NgtscTestEnvironment.setup();
-    env.tsconfig({fullTemplateTypeCheck: true});
-    setupCommon(env);
-  });
-
-  it('should check a simple component', () => {
-    env.write('test.ts', `
+    it('should check a simple component', () => {
+      env.write('test.ts', `
     import {Component, NgModule} from '@angular/core';
 
     @Component({
@@ -74,11 +76,11 @@ describe('ngtsc type checking', () => {
     class Module {}
     `);
 
-    env.driveMain();
-  });
+      env.driveMain();
+    });
 
-  it('should check basic usage of NgIf', () => {
-    env.write('test.ts', `
+    it('should check basic usage of NgIf', () => {
+      env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -97,11 +99,11 @@ describe('ngtsc type checking', () => {
     class Module {}
     `);
 
-    env.driveMain();
-  });
+      env.driveMain();
+    });
 
-  it('should check usage of NgIf with explicit non-null guard', () => {
-    env.write('test.ts', `
+    it('should check usage of NgIf with explicit non-null guard', () => {
+      env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -120,11 +122,11 @@ describe('ngtsc type checking', () => {
     class Module {}
     `);
 
-    env.driveMain();
-  });
+      env.driveMain();
+    });
 
-  it('should check basic usage of NgFor', () => {
-    env.write('test.ts', `
+    it('should check basic usage of NgFor', () => {
+      env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -143,11 +145,11 @@ describe('ngtsc type checking', () => {
     class Module {}
     `);
 
-    env.driveMain();
-  });
+      env.driveMain();
+    });
 
-  it('should report an error inside the NgFor template', () => {
-    env.write('test.ts', `
+    it('should report an error inside the NgFor template', () => {
+      env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -166,13 +168,13 @@ describe('ngtsc type checking', () => {
     export class Module {}
     `);
 
-    const diags = env.driveDiagnostics();
-    expect(diags.length).toBe(1);
-    expect(diags[0].messageText).toContain('does_not_exist');
-  });
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain('does_not_exist');
+    });
 
-  it('should accept an NgFor iteration over an any-typed value', () => {
-    env.write('test.ts', `
+    it('should accept an NgFor iteration over an any-typed value', () => {
+      env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -191,11 +193,11 @@ describe('ngtsc type checking', () => {
     export class Module {}
     `);
 
-    env.driveMain();
-  });
+      env.driveMain();
+    });
 
-  it('should report an error with pipe bindings', () => {
-    env.write('test.ts', `
+    it('should report an error with pipe bindings', () => {
+      env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -227,26 +229,27 @@ describe('ngtsc type checking', () => {
     class Module {}
     `);
 
-    const diags = env.driveDiagnostics();
-    expect(diags.length).toBe(4);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(4);
 
-    const allErrors = [
-      `'does_not_exist' does not exist on type '{ name: string; }'`,
-      `Expected 2 arguments, but got 3.`,
-      `Argument of type '"test"' is not assignable to parameter of type 'number'`,
-      `Argument of type '{ name: string; }' is not assignable to parameter of type '{}[]'`,
-    ];
+      const allErrors = [
+        `'does_not_exist' does not exist on type '{ name: string; }'`,
+        `Expected 2 arguments, but got 3.`,
+        `Argument of type '"test"' is not assignable to parameter of type 'number'`,
+        `Argument of type '{ name: string; }' is not assignable to parameter of type '{}[]'`,
+      ];
 
-    for (const error of allErrors) {
-      if (!diags.some(
-              diag => ts.flattenDiagnosticMessageText(diag.messageText, '').indexOf(error) > -1)) {
-        fail(`Expected a diagnostic message with text: ${error}`);
+      for (const error of allErrors) {
+        if (!diags.some(
+                diag =>
+                    ts.flattenDiagnosticMessageText(diag.messageText, '').indexOf(error) > -1)) {
+          fail(`Expected a diagnostic message with text: ${error}`);
+        }
       }
-    }
-  });
+    });
 
-  it('should constrain types using type parameter bounds', () => {
-    env.write('test.ts', `
+    it('should constrain types using type parameter bounds', () => {
+      env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, Input, NgModule} from '@angular/core';
 
@@ -265,14 +268,14 @@ describe('ngtsc type checking', () => {
     class Module {}
     `);
 
-    const diags = env.driveDiagnostics();
-    expect(diags.length).toBe(1);
-    expect(diags[0].messageText).toContain('does_not_exist');
-  });
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain('does_not_exist');
+    });
 
-  it('should property type-check a microsyntax variable with the same name as the expression',
-     () => {
-       env.write('test.ts', `
+    it('should property type-check a microsyntax variable with the same name as the expression',
+       () => {
+         env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, Input, NgModule} from '@angular/core';
 
@@ -291,12 +294,12 @@ describe('ngtsc type checking', () => {
     export class Module {}
     `);
 
-       const diags = env.driveDiagnostics();
-       expect(diags.length).toBe(0);
-     });
+         const diags = env.driveDiagnostics();
+         expect(diags.length).toBe(0);
+       });
 
-  it('should properly type-check inherited directives', () => {
-    env.write('test.ts', `
+    it('should properly type-check inherited directives', () => {
+      env.write('test.ts', `
     import {Component, Directive, Input, NgModule} from '@angular/core';
 
     @Directive({
@@ -325,15 +328,16 @@ describe('ngtsc type checking', () => {
     class Module {}
     `);
 
-    const diags = env.driveDiagnostics();
-    expect(diags.length).toBe(2);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(2);
 
-    // Error from the binding to [fromBase].
-    expect(diags[0].messageText)
-        .toBe(`Type 'number' is not assignable to type 'string | undefined'.`);
+      // Error from the binding to [fromBase].
+      expect(diags[0].messageText)
+          .toBe(`Type 'number' is not assignable to type 'string | undefined'.`);
 
-    // Error from the binding to [fromChild].
-    expect(diags[1].messageText)
-        .toBe(`Type 'number' is not assignable to type 'boolean | undefined'.`);
+      // Error from the binding to [fromChild].
+      expect(diags[1].messageText)
+          .toBe(`Type 'number' is not assignable to type 'boolean | undefined'.`);
+    });
   });
 });

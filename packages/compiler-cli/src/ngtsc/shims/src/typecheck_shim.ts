@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../path';
+import {AbsoluteFsPath} from '../../file_system';
 
 import {ShimGenerator} from './host';
 

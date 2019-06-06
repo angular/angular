@@ -8,14 +8,13 @@
 import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-
-import {NOOP_DEFAULT_IMPORT_RECORDER} from '@angular/compiler-cli/src/ngtsc/imports';
+import {NOOP_DEFAULT_IMPORT_RECORDER} from '../../../src/ngtsc/imports';
 import {translateStatement, ImportManager} from '../../../src/ngtsc/translator';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
 import {PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../constants';
-import {FileSystem} from '../file_system/file_system';
+import {FileSystem} from '../../../src/ngtsc/file_system';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {Logger} from '../logging/logger';

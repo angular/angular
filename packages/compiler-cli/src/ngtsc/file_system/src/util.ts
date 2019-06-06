@@ -5,11 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-//  TODO(alxhub): Unify this file with `util/src/path`.
+import * as ts from 'typescript';
+import {AbsoluteFsPath} from './types';
 
 const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
-const ABSOLUTE_PATH = /^([a-zA-Z]:\/|\/)/;
 
 /**
  * Convert Windows-style separators to POSIX separators.
@@ -26,10 +25,11 @@ export function stripExtension(path: string): string {
   return path.replace(TS_DTS_JS_EXTENSION, '');
 }
 
-/**
- * Returns true if the normalized path is an absolute path.
- */
-export function isAbsolutePath(path: string): boolean {
-  // TODO: use regExp based on OS in the future
-  return ABSOLUTE_PATH.test(path);
+export function getSourceFileOrError(program: ts.Program, fileName: AbsoluteFsPath): ts.SourceFile {
+  const sf = program.getSourceFile(fileName);
+  if (sf === undefined) {
+    throw new Error(
+        `Program does not contain "${fileName}" - available files are ${program.getSourceFiles().map(sf => sf.fileName).join(', ')}`);
+  }
+  return sf;
 }

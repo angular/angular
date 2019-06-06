@@ -7,21 +7,19 @@
  */
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-import {fromObject} from 'convert-source-map';
+import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {loadTestFiles} from '../../../test/helpers';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {CompiledClass, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {ModuleWithProvidersAnalyzer, ModuleWithProvidersInfo} from '../../src/analysis/module_with_providers_analyzer';
 import {PrivateDeclarationsAnalyzer, ExportInfo} from '../../src/analysis/private_declarations_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {DtsRenderer} from '../../src/rendering/dts_renderer';
-import {makeTestEntryPointBundle, createFileSystemFromProgramFiles} from '../helpers/utils';
-import {MockLogger} from '../helpers/mock_logger';
 import {RenderingFormatter, RedundantDecoratorMap} from '../../src/rendering/rendering_formatter';
-import {MockFileSystem} from '../helpers/mock_file_system';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/path';
-
-const _ = AbsoluteFsPath.fromUnchecked;
+import {DtsRenderer} from '../../src/rendering/dts_renderer';
+import {MockLogger} from '../helpers/mock_logger';
+import {makeTestEntryPointBundle, getRootFiles} from '../helpers/utils';
 
 class TestRenderingFormatter implements RenderingFormatter {
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile) {
@@ -50,13 +48,19 @@ class TestRenderingFormatter implements RenderingFormatter {
 }
 
 function createTestRenderer(
-    packageName: string, files: {name: string, contents: string}[],
-    dtsFiles?: {name: string, contents: string}[],
-    mappingFiles?: {name: string, contents: string}[]) {
+    packageName: string, files: TestFile[], dtsFiles?: TestFile[], mappingFiles?: TestFile[]) {
   const logger = new MockLogger();
-  const fs = new MockFileSystem(createFileSystemFromProgramFiles(files, dtsFiles, mappingFiles));
+  loadTestFiles(files);
+  if (dtsFiles) {
+    loadTestFiles(dtsFiles);
+  }
+  if (mappingFiles) {
+    loadTestFiles(mappingFiles);
+  }
+  const fs = getFileSystem();
   const isCore = packageName === '@angular/core';
-  const bundle = makeTestEntryPointBundle('es2015', 'esm2015', isCore, files, dtsFiles);
+  const bundle = makeTestEntryPointBundle(
+      'es2015', 'esm2015', isCore, getRootFiles(files), dtsFiles && getRootFiles(dtsFiles));
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm2015ReflectionHost(logger, isCore, typeChecker, bundle.dts);
   const referencesRegistry = new NgccReferencesRegistry(host);
@@ -87,95 +91,75 @@ function createTestRenderer(
           bundle};
 }
 
+runInEachFileSystem(() => {
+  describe('DtsRenderer', () => {
+    let _: typeof absoluteFrom;
+    let INPUT_PROGRAM: TestFile;
+    let INPUT_DTS_PROGRAM: TestFile;
 
-describe('DtsRenderer', () => {
-  const INPUT_PROGRAM = {
-    name: '/src/file.js',
-    contents:
-        `import { Directive } from '@angular/core';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: '[a]' }] }\n];\n`
-  };
-  const INPUT_DTS_PROGRAM = {
-    name: '/typings/file.d.ts',
-    contents: `export declare class A {\nfoo(x: number): number;\n}\n`
-  };
+    beforeEach(() => {
+      _ = absoluteFrom;
+      INPUT_PROGRAM = {
+        name: _('/src/file.js'),
+        contents:
+            `import { Directive } from '@angular/core';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: '[a]' }] }\n];\n`
+      };
+      INPUT_DTS_PROGRAM = {
+        name: _('/typings/file.d.ts'),
+        contents: `export declare class A {\nfoo(x: number): number;\n}\n`
+      };
+    });
 
-  const INPUT_PROGRAM_MAP = fromObject({
-    'version': 3,
-    'file': '/src/file.js',
-    'sourceRoot': '',
-    'sources': ['/src/file.ts'],
-    'names': [],
-    'mappings':
-        'AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,eAAe,CAAC;AAC1C,MAAM;IACF,GAAG,CAAC,CAAS;QACT,OAAO,CAAC,CAAC;IACb,CAAC;;AACM,YAAU,GAAG;IAChB,EAAE,IAAI,EAAE,SAAS,EAAE,IAAI,EAAE,CAAC,EAAE,QAAQ,EAAE,KAAK,EAAE,CAAC,EAAE;CACnD,CAAC',
-    'sourcesContent': [INPUT_PROGRAM.contents]
-  });
+    it('should render extract types into typings files', () => {
+      const {renderer, decorationAnalyses, privateDeclarationsAnalyses,
+             moduleWithProvidersAnalyses} =
+          createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
+      const result = renderer.renderProgram(
+          decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-  const RENDERED_CONTENTS = `
-// ADD IMPORTS
+      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      expect(typingsFile.contents)
+          .toContain(
+              'foo(x: number): number;\n    static ngDirectiveDef: ɵngcc0.ɵɵDirectiveDefWithMeta');
+    });
 
-// ADD EXPORTS
+    it('should render imports into typings files', () => {
+      const {renderer, decorationAnalyses, privateDeclarationsAnalyses,
+             moduleWithProvidersAnalyses} =
+          createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
+      const result = renderer.renderProgram(
+          decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-// ADD CONSTANTS
+      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      expect(typingsFile.contents).toContain(`\n// ADD IMPORTS\n`);
+    });
 
-// ADD DEFINITIONS
+    it('should render exports into typings files', () => {
+      const {renderer, decorationAnalyses, privateDeclarationsAnalyses,
+             moduleWithProvidersAnalyses} =
+          createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
 
-// REMOVE DECORATORS
-` + INPUT_PROGRAM.contents;
+      // Add a mock export to trigger export rendering
+      privateDeclarationsAnalyses.push(
+          {identifier: 'ComponentB', from: _('/src/file.js'), dtsFrom: _('/typings/b.d.ts')});
 
-  const MERGED_OUTPUT_PROGRAM_MAP = fromObject({
-    'version': 3,
-    'sources': ['/src/file.ts'],
-    'names': [],
-    'mappings': ';;;;;;;;;;AAAA',
-    'file': 'file.js',
-    'sourcesContent': [INPUT_PROGRAM.contents]
-  });
+      const result = renderer.renderProgram(
+          decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-  it('should render extract types into typings files', () => {
-    const {renderer, decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses} =
-        createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
-    const result = renderer.renderProgram(
-        decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
+      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      expect(typingsFile.contents).toContain(`\n// ADD EXPORTS\n`);
+    });
 
-    const typingsFile = result.find(f => f.path === '/typings/file.d.ts') !;
-    expect(typingsFile.contents)
-        .toContain(
-            'foo(x: number): number;\n    static ngDirectiveDef: ɵngcc0.ɵɵDirectiveDefWithMeta');
-  });
+    it('should render ModuleWithProviders type params', () => {
+      const {renderer, decorationAnalyses, privateDeclarationsAnalyses,
+             moduleWithProvidersAnalyses} =
+          createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
 
-  it('should render imports into typings files', () => {
-    const {renderer, decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses} =
-        createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
-    const result = renderer.renderProgram(
-        decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
+      const result = renderer.renderProgram(
+          decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
-    const typingsFile = result.find(f => f.path === '/typings/file.d.ts') !;
-    expect(typingsFile.contents).toContain(`\n// ADD IMPORTS\n`);
-  });
-
-  it('should render exports into typings files', () => {
-    const {renderer, decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses} =
-        createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
-
-    // Add a mock export to trigger export rendering
-    privateDeclarationsAnalyses.push(
-        {identifier: 'ComponentB', from: _('/src/file.js'), dtsFrom: _('/typings/b.d.ts')});
-
-    const result = renderer.renderProgram(
-        decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
-
-    const typingsFile = result.find(f => f.path === '/typings/file.d.ts') !;
-    expect(typingsFile.contents).toContain(`\n// ADD EXPORTS\n`);
-  });
-
-  it('should render ModuleWithProviders type params', () => {
-    const {renderer, decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses} =
-        createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
-
-    const result = renderer.renderProgram(
-        decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
-
-    const typingsFile = result.find(f => f.path === '/typings/file.d.ts') !;
-    expect(typingsFile.contents).toContain(`\n// ADD MODUlE WITH PROVIDERS PARAMS\n`);
+      const typingsFile = result.find(f => f.path === _('/typings/file.d.ts')) !;
+      expect(typingsFile.contents).toContain(`\n// ADD MODUlE WITH PROVIDERS PARAMS\n`);
+    });
   });
 });

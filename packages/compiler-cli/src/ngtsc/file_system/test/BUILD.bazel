@@ -10,7 +10,8 @@ ts_library(
     ]),
     deps = [
         "//packages:types",
-        "//packages/compiler-cli/src/ngtsc/path",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
     ],
 )
 

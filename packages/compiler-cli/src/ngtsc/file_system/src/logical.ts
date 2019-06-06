@@ -5,14 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-/// <reference types="node" />
-import * as path from 'path';
-
 import * as ts from 'typescript';
 
+import {absoluteFrom, dirname, relative, resolve} from './helpers';
 import {AbsoluteFsPath, BrandedPath, PathSegment} from './types';
 import {stripExtension} from './util';
+
+
 
 /**
  * A path that's relative to the logical root of a TypeScript project (one of the project's
@@ -30,9 +29,9 @@ export const LogicalProjectPath = {
    * importing from `to`.
    */
   relativePathBetween: function(from: LogicalProjectPath, to: LogicalProjectPath): PathSegment {
-    let relativePath = path.posix.relative(path.posix.dirname(from), to);
+    let relativePath = relative(dirname(resolve(from)), resolve(to));
     if (!relativePath.startsWith('../')) {
-      relativePath = ('./' + relativePath);
+      relativePath = ('./' + relativePath) as PathSegment;
     }
     return relativePath as PathSegment;
   },
@@ -64,10 +63,10 @@ export class LogicalFileSystem {
    * Get the logical path in the project of a `ts.SourceFile`.
    *
    * This method is provided as a convenient alternative to calling
-   * `logicalPathOfFile(AbsoluteFsPath.fromSourceFile(sf))`.
+   * `logicalPathOfFile(absoluteFromSourceFile(sf))`.
    */
   logicalPathOfSf(sf: ts.SourceFile): LogicalProjectPath|null {
-    return this.logicalPathOfFile(AbsoluteFsPath.from(sf.fileName));
+    return this.logicalPathOfFile(absoluteFrom(sf.fileName));
   }
 
   /**

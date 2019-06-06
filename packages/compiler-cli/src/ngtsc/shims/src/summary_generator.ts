@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../path/src/types';
+import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 import {ShimGenerator} from './host';
@@ -81,9 +81,8 @@ export class SummaryGenerator implements ShimGenerator {
     const map = new Map<AbsoluteFsPath, string>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
         .forEach(
-            sourceFile => map.set(
-                AbsoluteFsPath.fromUnchecked(sourceFile.replace(/\.ts$/, '.ngsummary.ts')),
-                sourceFile));
+            sourceFile =>
+                map.set(absoluteFrom(sourceFile.replace(/\.ts$/, '.ngsummary.ts')), sourceFile));
     return new SummaryGenerator(map);
   }
 }

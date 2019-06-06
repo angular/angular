@@ -17,13 +17,13 @@ import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
+import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from './file_system';
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
 import {IndexedComponent, IndexingContext} from './indexer';
 import {generateAnalysis} from './indexer/src/transform';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
 import {PartialEvaluator} from './partial_evaluator';
-import {AbsoluteFsPath, LogicalFileSystem} from './path';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
@@ -35,7 +35,7 @@ import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from '
 import {aliasTransformFactory} from './transform/src/alias';
 import {TypeCheckContext, TypeCheckingConfig, typeCheckFilePath} from './typecheck';
 import {normalizeSeparators} from './util/src/path';
-import {getRootDirs, isDtsPath, resolveModuleName} from './util/src/typescript';
+import {getRootDirs, getSourceFileOrNull, isDtsPath, resolveModuleName} from './util/src/typescript';
 
 export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
@@ -84,7 +84,7 @@ export class NgtscProgram implements api.Program {
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceManager = new HostResourceLoader(host, options);
     const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
-    const normalizedRootNames = rootNames.map(n => AbsoluteFsPath.from(n));
+    const normalizedRootNames = rootNames.map(n => absoluteFrom(n));
     if (host.fileNameToModuleName !== undefined) {
       this.fileToModuleHost = host as FileToModuleHost;
     }
@@ -115,7 +115,7 @@ export class NgtscProgram implements api.Program {
     generators.push(new TypeCheckShimGenerator(this.typeCheckFilePath));
     rootFiles.push(this.typeCheckFilePath);
 
-    let entryPoint: string|null = null;
+    let entryPoint: AbsoluteFsPath|null = null;
     if (options.flatModuleOutFile !== undefined) {
       entryPoint = findFlatIndexEntryPoint(normalizedRootNames);
       if (entryPoint === null) {
@@ -154,7 +154,7 @@ export class NgtscProgram implements api.Program {
         ts.createProgram(rootFiles, options, this.host, oldProgram && oldProgram.reuseTsProgram);
     this.reuseTsProgram = this.tsProgram;
 
-    this.entryPoint = entryPoint !== null ? this.tsProgram.getSourceFile(entryPoint) || null : null;
+    this.entryPoint = entryPoint !== null ? getSourceFileOrNull(this.tsProgram, entryPoint) : null;
     this.moduleResolver = new ModuleResolver(this.tsProgram, options, this.host);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
     this.defaultImportTracker = new DefaultImportTracker();
@@ -345,7 +345,7 @@ export class NgtscProgram implements api.Program {
     const emitSpan = this.perfRecorder.start('emit');
     const emitResults: ts.EmitResult[] = [];
 
-    const typeCheckFile = this.tsProgram.getSourceFile(this.typeCheckFilePath);
+    const typeCheckFile = getSourceFileOrNull(this.tsProgram, this.typeCheckFilePath);
 
     for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
       if (targetSourceFile.isDeclarationFile || targetSourceFile === typeCheckFile) {

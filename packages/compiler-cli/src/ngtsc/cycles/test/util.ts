@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import * as ts from 'typescript';
-
-import {makeProgram} from '../../testing/in_memory_typescript';
+import {FileSystem} from '../../file_system';
+import {TestFile} from '../../file_system/testing';
+import {makeProgram} from '../../testing';
 
 /**
  * Construct a TS program consisting solely of an import graph, from a string-based representation
@@ -31,12 +31,12 @@ import {makeProgram} from '../../testing/in_memory_typescript';
  *
  * represents a program where a.ts exports from b.ts and imports from c.ts.
  */
-export function makeProgramFromGraph(graph: string): {
+export function makeProgramFromGraph(fs: FileSystem, graph: string): {
   program: ts.Program,
   host: ts.CompilerHost,
   options: ts.CompilerOptions,
 } {
-  const files = graph.split(';').map(fileSegment => {
+  const files: TestFile[] = graph.split(';').map(fileSegment => {
     const [name, importList] = fileSegment.split(':');
     const contents = (importList ? importList.split(',') : [])
                          .map(i => {
@@ -50,7 +50,7 @@ export function makeProgramFromGraph(graph: string): {
                          .join('\n') +
         `export const ${name} = '${name}';\n`;
     return {
-      name: `${name}.ts`,
+      name: fs.resolve(`/${name}.ts`),
       contents,
     };
   });

@@ -5,12 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import * as path from 'path';
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath, absoluteFrom, basename} from '../../file_system';
 import {ImportRewriter} from '../../imports';
-import {AbsoluteFsPath} from '../../path/src/types';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 import {ShimGenerator} from './host';
@@ -38,8 +36,7 @@ export class FactoryGenerator implements ShimGenerator {
       return null;
     }
 
-    const relativePathToSource =
-        './' + path.posix.basename(original.fileName).replace(TS_DTS_SUFFIX, '');
+    const relativePathToSource = './' + basename(original.fileName).replace(TS_DTS_SUFFIX, '');
     // Collect a list of classes that need to have factory types emitted for them. This list is
     // overly broad as at this point the ts.TypeChecker hasn't been created, and can't be used to
     // semantically understand which decorated types are actually decorated with Angular decorators.
@@ -103,9 +100,8 @@ export class FactoryGenerator implements ShimGenerator {
     const map = new Map<AbsoluteFsPath, string>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
         .forEach(
-            sourceFile => map.set(
-                AbsoluteFsPath.fromUnchecked(sourceFile.replace(/\.ts$/, '.ngfactory.ts')),
-                sourceFile));
+            sourceFile =>
+                map.set(absoluteFrom(sourceFile.replace(/\.ts$/, '.ngfactory.ts')), sourceFile));
     return new FactoryGenerator(map);
   }
 }

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
+import {AbsoluteFsPath, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
 import {parseStatementForUmdModule} from '../host/umd_host';
 import {Logger} from '../logging/logger';
 
@@ -70,7 +69,7 @@ export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
 export function getEntryPointInfo(
     fs: FileSystem, logger: Logger, packagePath: AbsoluteFsPath,
     entryPointPath: AbsoluteFsPath): EntryPoint|null {
-  const packageJsonPath = AbsoluteFsPath.resolve(entryPointPath, 'package.json');
+  const packageJsonPath = resolve(entryPointPath, 'package.json');
   if (!fs.exists(packageJsonPath)) {
     return null;
   }
@@ -88,15 +87,14 @@ export function getEntryPointInfo(
   }
 
   // Also there must exist a `metadata.json` file next to the typings entry-point.
-  const metadataPath =
-      AbsoluteFsPath.resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
+  const metadataPath = resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
 
   const entryPointInfo: EntryPoint = {
     name: entryPointPackageJson.name,
     packageJson: entryPointPackageJson,
     package: packagePath,
     path: entryPointPath,
-    typings: AbsoluteFsPath.resolve(entryPointPath, typings),
+    typings: resolve(entryPointPath, typings),
     compiledByAngular: fs.exists(metadataPath),
   };
 
@@ -127,7 +125,7 @@ export function getEntryPointFormat(
       if (mainFile === undefined) {
         return undefined;
       }
-      const pathToMain = AbsoluteFsPath.join(entryPoint.path, mainFile);
+      const pathToMain = join(entryPoint.path, mainFile);
       return isUmdModule(fs, pathToMain) ? 'umd' : 'commonjs';
     case 'module':
       return 'esm5';

@@ -10,6 +10,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler/test:test_utils",
         "@npm//typescript",
     ],

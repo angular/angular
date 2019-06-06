@@ -8,22 +8,25 @@
 
 import {BoundTarget, CssSelector, ParseTemplateOptions, R3TargetBinder, SelectorMatcher, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
+import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {Reference} from '../../imports';
 import {DirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
+import {getDeclaration, makeProgram} from '../../testing';
 
 /** Dummy file URL */
-export const TESTFILE = '/TESTFILE.ts';
+export function getTestFilePath(): AbsoluteFsPath {
+  return absoluteFrom('/TEST_FILE.ts');
+}
 
 /**
  * Creates a class declaration from a component source code.
  */
 export function getComponentDeclaration(componentStr: string, className: string): ClassDeclaration {
-  const program = makeProgram([{name: TESTFILE, contents: componentStr}]);
+  const program = makeProgram([{name: getTestFilePath(), contents: componentStr}]);
 
   return getDeclaration(
-      program.program, TESTFILE, className,
+      program.program, getTestFilePath(), className,
       (value: ts.Declaration): value is ClassDeclaration => ts.isClassDeclaration(value));
 }
 
@@ -57,5 +60,5 @@ export function getBoundTemplate(
   });
   const binder = new R3TargetBinder(matcher);
 
-  return binder.bind({template: parseTemplate(template, TESTFILE, options).nodes});
+  return binder.bind({template: parseTemplate(template, getTestFilePath(), options).nodes});
 }

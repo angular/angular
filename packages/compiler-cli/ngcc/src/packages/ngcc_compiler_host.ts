@@ -5,66 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as os from 'os';
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
+import {FileSystem} from '../../../src/ngtsc/file_system';
+import {NgtscCompilerHost} from '../../../src/ngtsc/file_system/src/compiler_host';
 import {isRelativePath} from '../utils';
-
-export class NgccCompilerHost implements ts.CompilerHost {
-  private _caseSensitive = this.fs.exists(AbsoluteFsPath.fromUnchecked(__filename.toUpperCase()));
-
-  constructor(protected fs: FileSystem, protected options: ts.CompilerOptions) {}
-
-  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
-    const text = this.readFile(fileName);
-    return text !== undefined ? ts.createSourceFile(fileName, text, languageVersion) : undefined;
-  }
-
-  getDefaultLibFileName(options: ts.CompilerOptions): string {
-    return this.getDefaultLibLocation() + '/' + ts.getDefaultLibFileName(options);
-  }
-
-  getDefaultLibLocation(): string {
-    const nodeLibPath = AbsoluteFsPath.from(require.resolve('typescript'));
-    return AbsoluteFsPath.join(nodeLibPath, '..');
-  }
-
-  writeFile(fileName: string, data: string): void {
-    this.fs.writeFile(AbsoluteFsPath.fromUnchecked(fileName), data);
-  }
-
-  getCurrentDirectory(): string { return this.fs.pwd(); }
-
-  getCanonicalFileName(fileName: string): string {
-    return this.useCaseSensitiveFileNames ? fileName : fileName.toLowerCase();
-  }
-
-  useCaseSensitiveFileNames(): boolean { return this._caseSensitive; }
-
-  getNewLine(): string {
-    switch (this.options.newLine) {
-      case ts.NewLineKind.CarriageReturnLineFeed:
-        return '\r\n';
-      case ts.NewLineKind.LineFeed:
-        return '\n';
-      default:
-        return os.EOL;
-    }
-  }
-
-  fileExists(fileName: string): boolean {
-    return this.fs.exists(AbsoluteFsPath.fromUnchecked(fileName));
-  }
-
-  readFile(fileName: string): string|undefined {
-    if (!this.fileExists(fileName)) {
-      return undefined;
-    }
-    return this.fs.readFile(AbsoluteFsPath.fromUnchecked(fileName));
-  }
-}
 
 /**
  * Represents a compiler host that resolves a module import as a JavaScript source file if
@@ -72,7 +17,7 @@ export class NgccCompilerHost implements ts.CompilerHost {
  * is necessary for packages that have their typings in the same directory as the sources, which
  * would otherwise let TypeScript prefer the .d.ts file instead of the JavaScript source file.
  */
-export class NgccSourcesCompilerHost extends NgccCompilerHost {
+export class NgccSourcesCompilerHost extends NgtscCompilerHost {
   private cache = ts.createModuleResolutionCache(
       this.getCurrentDirectory(), file => this.getCanonicalFileName(file));
 

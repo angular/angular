@@ -10,14 +10,13 @@ import * as ts from 'typescript';
 
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
+import {AbsoluteFsPath, FileSystem, LogicalFileSystem, absoluteFrom, dirname, resolve} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {AbsoluteFsPath, LogicalFileSystem} from '../../../src/ngtsc/path';
 import {ClassDeclaration, ClassSymbol, Decorator} from '../../../src/ngtsc/reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
 import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
-import {FileSystem} from '../file_system/file_system';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {isDefined} from '../utils';
 
@@ -57,9 +56,9 @@ class NgccResourceLoader implements ResourceLoader {
   constructor(private fs: FileSystem) {}
   canPreload = false;
   preload(): undefined|Promise<void> { throw new Error('Not implemented.'); }
-  load(url: string): string { return this.fs.readFile(AbsoluteFsPath.resolve(url)); }
+  load(url: string): string { return this.fs.readFile(resolve(url)); }
   resolve(url: string, containingFile: string): string {
-    return AbsoluteFsPath.resolve(AbsoluteFsPath.dirname(AbsoluteFsPath.from(containingFile)), url);
+    return resolve(dirname(absoluteFrom(containingFile)), url);
   }
 }
 

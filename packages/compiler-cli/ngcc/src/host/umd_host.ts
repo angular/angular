@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
@@ -154,13 +155,13 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     if (this.compilerHost.resolveModuleNames) {
       const moduleInfo =
           this.compilerHost.resolveModuleNames([moduleName], containingFile.fileName)[0];
-      return moduleInfo && this.program.getSourceFile(moduleInfo.resolvedFileName);
+      return moduleInfo && this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedFileName));
     } else {
       const moduleInfo = ts.resolveModuleName(
           moduleName, containingFile.fileName, this.program.getCompilerOptions(),
           this.compilerHost);
       return moduleInfo.resolvedModule &&
-          this.program.getSourceFile(moduleInfo.resolvedModule.resolvedFileName);
+          this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedModule.resolvedFileName));
     }
   }
 }

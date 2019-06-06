@@ -3,7 +3,7 @@ package(default_visibility = ["//visibility:public"])
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
-    name = "path",
+    name = "file_system",
     srcs = ["index.ts"] + glob([
         "src/*.ts",
     ]),
