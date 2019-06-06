@@ -76,7 +76,7 @@ class StageReleaseTask extends BaseReleaseTask {
 
     const newVersion = await promptForNewVersion(this.currentVersion);
     const newVersionName = newVersion.format();
-    const needsVersionBump = !newVersion.equalsTo(this.currentVersion);
+    const needsVersionBump = !newVersion.equals(this.currentVersion);
     const stagingBranch = `release-stage/${newVersionName}`;
 
     // After the prompt for the new version, we print a new line because we want the

@@ -7,7 +7,6 @@ import {spawnSync, SpawnSyncReturns} from 'child_process';
  * guaranteed that the working directory is always the target project directory.
  */
 export class GitClient {
-
   constructor(public projectDir: string, public remoteGitUrl: string) {}
 
   /**
@@ -29,9 +28,9 @@ export class GitClient {
 
   /** Gets the commit SHA for the specified remote repository branch. */
   getRemoteCommitSha(branchName: string): string {
-    return this._spawnGitProcess(['ls-remote', this.remoteGitUrl, '-h',
-        `refs/heads/${branchName}`])
-      .stdout.split('\t')[0].trim();
+    return this._spawnGitProcess(['ls-remote', this.remoteGitUrl, '-h', `refs/heads/${branchName}`])
+        .stdout.split('\t')[0]
+        .trim();
   }
 
   /** Gets the latest commit SHA for the specified git reference. */
@@ -83,13 +82,18 @@ export class GitClient {
 
   /** Gets the Git SHA of the specified local tag. */
   getShaOfLocalTag(tagName: string) {
-    return this._spawnGitProcess(['rev-parse', `refs/tags/${tagName}`]).stdout.trim();
+    // We need to use the "^{}" suffix to instruct Git to deference the tag to
+    // the actual commit. See: https://www.git-scm.com/docs/git-rev-parse
+    return this._spawnGitProcess(['rev-parse', `refs/tags/${tagName}^{}`]).stdout.trim();
   }
 
   /** Gets the Git SHA of the specified remote tag. */
   getShaOfRemoteTag(tagName: string): string {
-    return this._spawnGitProcess(['ls-remote', this.remoteGitUrl, '-t', `refs/tags/${tagName}`])
-      .stdout.split('\t')[0].trim();
+    // We need to use the "^{}" suffix to instruct Git to deference the tag to
+    // the actual commit. See: https://www.git-scm.com/docs/git-rev-parse
+    return this._spawnGitProcess(['ls-remote', this.remoteGitUrl, '-t', `refs/tags/${tagName}^{}`])
+        .stdout.split('\t')[0]
+        .trim();
   }
 
   /** Pushes the specified tag to the remote git repository. */
@@ -108,4 +112,3 @@ export class GitClient {
     return this._spawnGitProcess(['remote']).stdout.trim().split('\n');
   }
 }
-

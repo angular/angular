@@ -91,6 +91,10 @@ class PublishReleaseTask extends BaseReleaseTask {
       await this._promptStableVersionForNextTag();
     }
 
+    // Ensure that we are authenticated, so that we can run "npm publish" for
+    // each package once the release output is built.
+    this._checkNpmAuthentication();
+
     this._buildReleasePackages();
     console.info(green(`  ✓   Built the release output.`));
 
@@ -98,20 +102,19 @@ class PublishReleaseTask extends BaseReleaseTask {
     checkReleaseOutput(this.releaseOutputPath);
 
     // Extract the release notes for the new version from the changelog file.
-    const {releaseNotes, releaseTitle} = extractReleaseNotes(
+    const extractedReleaseNotes = extractReleaseNotes(
       join(this.projectDir, CHANGELOG_FILE_NAME), newVersionName);
 
-    if (!releaseNotes) {
+    if (!extractedReleaseNotes) {
       console.error(red(`  ✘   Could not find release notes in the changelog.`));
       process.exit(1);
     }
 
+    const {releaseNotes, releaseTitle} = extractedReleaseNotes;
+
     // Create and push the release tag before publishing to NPM.
     this._createReleaseTag(newVersionName, releaseNotes);
     this._pushReleaseTag(newVersionName, upstreamRemote);
-
-    // Ensure that we are authenticated before running "npm publish" for each package.
-    this._checkNpmAuthentication();
 
     // Just in order to double-check that the user is sure to publish to NPM, we want
     // the user to interactively confirm that the script should continue.
