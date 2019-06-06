@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalize} from '@angular-devkit/core';
+import {JsonParseMode, normalize, parseJson} from '@angular-devkit/core';
 import {Tree} from '@angular-devkit/schematics';
 
 /** Name of the default Angular CLI workspace configuration files. */
@@ -63,7 +63,9 @@ function getWorkspaceConfigGracefully(tree: Tree): any {
   }
 
   try {
-    return JSON.parse(configBuffer.toString());
+    // Parse the workspace file as JSON5 which is also supported for CLI
+    // workspace configurations.
+    return parseJson(configBuffer.toString(), JsonParseMode.Json5);
   } catch {
     return null;
   }
