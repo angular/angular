@@ -173,6 +173,7 @@ def protractor_web_test(
         data = [],
         server = None,
         tags = [],
+        protractor = "@npm//node_modules/protractor:bin/protractor",
         **kwargs):
     """Runs a protractor test in a browser.
 
@@ -187,6 +188,9 @@ def protractor_web_test(
       data: Runtime dependencies
       server: Optional server executable target
       tags: Standard Bazel tags, this macro adds one for ibazel
+      protractor: Protractor entry_point. Defaults to @npm//node_modules/protractor:bin/protractor
+          but should be changed to @your_npm_workspace//node_modules/protractor:bin/protractor if
+          you are not using @npm for your npm dependencies.
       **kwargs: passed through to `_protractor_web_test`
     """
 
@@ -194,7 +198,7 @@ def protractor_web_test(
 
     nodejs_binary(
         name = protractor_bin_name,
-        entry_point = "protractor/bin/protractor",
+        entry_point = protractor,
         data = srcs + deps + data,
         testonly = 1,
         visibility = ["//visibility:private"],
@@ -244,6 +248,7 @@ def protractor_web_test_suite(
         visibility = None,
         web_test_data = [],
         wrapped_test_tags = None,
+        protractor = "@npm//node_modules/protractor:bin/protractor",
         **remaining_keyword_args):
     """Defines a test_suite of web_test targets that wrap a protractor_web_test target.
 
@@ -277,6 +282,9 @@ def protractor_web_test_suite(
       visibility: List of labels; optional.
       web_test_data: Data dependencies for the web_test.
       wrapped_test_tags: A list of test tag strings to use for the wrapped test
+      protractor: Protractor entry_point. Defaults to @npm//node_modules/protractor:bin/protractor
+          but should be changed to @your_npm_workspace//node_modules/protractor:bin/protractor if
+          you are not using @npm for your npm dependencies.
       **remaining_keyword_args: Arguments for the wrapped test target.
     """
 
@@ -294,7 +302,7 @@ def protractor_web_test_suite(
 
     nodejs_binary(
         name = protractor_bin_name,
-        entry_point = "protractor/bin/protractor",
+        entry_point = protractor,
         data = srcs + deps + data,
         testonly = 1,
         visibility = ["//visibility:private"],
