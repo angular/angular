@@ -36,6 +36,12 @@ describe('AriaDescriber', () => {
     expectMessages(['My Message']);
   });
 
+  it('should be able to describe using an element', () => {
+    const descriptionNode = fixture.nativeElement.querySelector('#description-with-existing-id');
+    ariaDescriber.describe(component.element1, descriptionNode);
+    expectMessage(component.element1, 'Hello');
+  });
+
   it('should not register empty strings', () => {
     ariaDescriber.describe(component.element1, '');
     expect(getMessageElements()).toBe(null);
@@ -58,6 +64,16 @@ describe('AriaDescriber', () => {
     expectMessage(component.element1, 'My Message');
     expectMessage(component.element2, 'My Message');
     expectMessage(component.element3, 'My Message');
+  });
+
+  it('should de-dupe a message registered multiple via an element node', () => {
+    const descriptionNode = fixture.nativeElement.querySelector('#description-with-existing-id');
+    ariaDescriber.describe(component.element1, descriptionNode);
+    ariaDescriber.describe(component.element2, descriptionNode);
+    ariaDescriber.describe(component.element3, descriptionNode);
+    expectMessage(component.element1, 'Hello');
+    expectMessage(component.element2, 'Hello');
+    expectMessage(component.element3, 'Hello');
   });
 
   it('should be able to register multiple messages', () => {
@@ -85,6 +101,43 @@ describe('AriaDescriber', () => {
     ariaDescriber.removeDescription(component.element2, 'My Message');
     expect(component.element2.hasAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE)).toBeFalsy();
     expect(getMessagesContainer()).toBeNull();
+  });
+
+  it('should not remove nodes that were set as messages when unregistering', () => {
+    const descriptionNode = fixture.nativeElement.querySelector('#description-with-existing-id');
+
+    expect(document.body.contains(descriptionNode))
+        .toBe(true, 'Expected node to be inside the document to begin with.');
+    expect(getMessagesContainer()).toBeNull('Expected no messages container on init.');
+
+    ariaDescriber.describe(component.element1, descriptionNode);
+
+    expectMessage(component.element1, 'Hello');
+    expect(getMessagesContainer())
+        .toBeNull('Expected no messages container after the element was described.');
+
+    ariaDescriber.removeDescription(component.element1, descriptionNode);
+
+    expect(document.body.contains(descriptionNode)).toBe(true,
+        'Expected description node to still be in the DOM after it is no longer being used.');
+  });
+
+  it('should keep nodes set as descriptions inside their original position in the DOM', () => {
+    const descriptionNode = fixture.nativeElement.querySelector('#description-with-existing-id');
+    const initialParent = descriptionNode.parentNode;
+
+    expect(initialParent).toBeTruthy('Expected node to have a parent initially.');
+
+    ariaDescriber.describe(component.element1, descriptionNode);
+
+    expectMessage(component.element1, 'Hello');
+    expect(descriptionNode.parentNode).toBe(initialParent,
+        'Expected node to stay inside the same parent when used as a description.');
+
+    ariaDescriber.removeDescription(component.element1, descriptionNode);
+
+    expect(descriptionNode.parentNode).toBe(initialParent,
+      'Expected node to stay inside the same parent after not being used as a description.');
   });
 
   it('should be able to unregister messages while having others registered', () => {
@@ -140,6 +193,39 @@ describe('AriaDescriber', () => {
     ariaDescriber.describe(component.element1, 'Hi');
     expectMessages(['Hi']);
   });
+
+  it('should assign an id to the description element, if it does not have one', () => {
+    const descriptionNode = fixture.nativeElement.querySelector('[description-without-id]');
+    expect(descriptionNode.getAttribute('id')).toBeFalsy();
+    ariaDescriber.describe(component.element1, descriptionNode);
+    expect(descriptionNode.getAttribute('id')).toBeTruthy();
+  });
+
+  it('should not overwrite the existing id of the description element', () => {
+    const descriptionNode = fixture.nativeElement.querySelector('#description-with-existing-id');
+    expect(descriptionNode.id).toBe('description-with-existing-id');
+    ariaDescriber.describe(component.element1, descriptionNode);
+    expect(descriptionNode.id).toBe('description-with-existing-id');
+  });
+
+  it('should not remove pre-existing description nodes on destroy', () => {
+    const descriptionNode = fixture.nativeElement.querySelector('#description-with-existing-id');
+
+    expect(document.body.contains(descriptionNode))
+        .toBe(true, 'Expected node to be inside the document to begin with.');
+
+    ariaDescriber.describe(component.element1, descriptionNode);
+
+    expectMessage(component.element1, 'Hello');
+    expect(component.element1.hasAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE)).toBe(true);
+
+    ariaDescriber.ngOnDestroy();
+
+    expect(component.element1.hasAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE)).toBe(false);
+    expect(document.body.contains(descriptionNode)).toBe(true,
+        'Expected description node to still be in the DOM after it is no longer being used.');
+  });
+
 });
 
 function getMessagesContainer() {
@@ -186,6 +272,8 @@ function expectMessage(el: Element, message: string) {
     <div #element2></div>
     <div #element3></div>
     <div #element4 aria-describedby="existing-aria-describedby1 existing-aria-describedby2"></div>
+    <div id="description-with-existing-id">Hello</div>
+    <div description-without-id>Hey</div>
   `,
 })
 class TestApp {

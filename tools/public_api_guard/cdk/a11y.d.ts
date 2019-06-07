@@ -16,9 +16,9 @@ export declare function ARIA_DESCRIBER_PROVIDER_FACTORY(parentDispatcher: AriaDe
 
 export declare class AriaDescriber implements OnDestroy {
     constructor(_document: any);
-    describe(hostElement: Element, message: string): void;
+    describe(hostElement: Element, message: string | HTMLElement): void;
     ngOnDestroy(): void;
-    removeDescription(hostElement: Element, message: string): void;
+    removeDescription(hostElement: Element, message: string | HTMLElement): void;
 }
 
 export declare type AriaLivePoliteness = 'off' | 'polite' | 'assertive';
