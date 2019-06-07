@@ -752,7 +752,7 @@ export declare function ɵɵcontainerRefreshEnd(): void;
 
 export declare function ɵɵcontainerRefreshStart(index: number): void;
 
-export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read: any): QueryList<T>;
+export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read: any): void;
 
 export declare const ɵɵdefaultStyleSanitizer: StyleSanitizeFn;
 
@@ -926,7 +926,7 @@ export declare function ɵɵload<T>(index: number): T;
 
 export declare function ɵɵloadContentQuery<T>(): QueryList<T>;
 
-export declare function ɵɵloadViewQuery<T>(): T;
+export declare function ɵɵloadViewQuery<T>(): QueryList<T>;
 
 export declare function ɵɵnamespaceHTML(): void;
 
@@ -1115,7 +1115,7 @@ export declare function ɵɵtextInterpolateV(values: any[]): TsickleIssue1009;
 
 export declare function ɵɵupdateSyntheticHostBinding<T>(propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null): TsickleIssue1009;
 
-export declare function ɵɵviewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): QueryList<T>;
+export declare function ɵɵviewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): void;
 
 export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
 
@@ -1182,7 +1182,7 @@ export declare class QueryList<T> {
     map<U>(fn: (item: T, index: number, array: T[]) => U): U[];
     notifyOnChanges(): void;
     reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U;
-    reset(resultsTree: Array<T | any[]>): void;
+    reset(resultsTree: Array<T | any[]>, shouldFlatten?: boolean): void;
     setDirty(): void;
     some(fn: (value: T, index: number, array: T[]) => boolean): boolean;
     toArray(): T[];

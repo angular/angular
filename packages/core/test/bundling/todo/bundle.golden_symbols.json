@@ -39,6 +39,18 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+<<<<<<< HEAD
+=======
+    "name": "ClassAndStylePlayerBuilder"
+  },
+  {
+    "name": "CorePlayerHandler"
+  },
+  {
+    "name": "DECLARATION_LCONTAINER"
+  },
+  {
+>>>>>>> perf(ivy): match query results on the TView level
     "name": "DECLARATION_VIEW"
   },
   {
@@ -115,6 +127,9 @@
   },
   {
     "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
+    "name": "MOVED_VIEWS"
   },
   {
     "name": "NATIVE"
@@ -438,9 +453,6 @@
     "name": "addRemoveViewFromContainer"
   },
   {
-    "name": "addTContainerToQueries"
-  },
-  {
     "name": "addToViewTree"
   },
   {
@@ -601,6 +613,9 @@
   },
   {
     "name": "destroyViewTree"
+  },
+  {
+    "name": "detachMovedView"
   },
   {
     "name": "detachView"
@@ -1366,6 +1381,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "trackMovedView"
   },
   {
     "name": "unwrapRNode"

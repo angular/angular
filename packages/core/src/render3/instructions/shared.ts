@@ -23,7 +23,6 @@ import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/c
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, FactoryFn, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
-import {LQueries} from '../interfaces/query';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {StylingContext} from '../interfaces/styling';
@@ -157,16 +156,20 @@ export function setHostBindings(tView: TView, viewData: LView): void {
   }
 }
 
-/** Refreshes content queries for all directives in the given view. */
+/** Refreshes all content queries declared by directives in a given view */
 function refreshContentQueries(tView: TView, lView: LView): void {
-  if (tView.contentQueries != null) {
-    setCurrentQueryIndex(0);
-    for (let i = 0; i < tView.contentQueries.length; i++) {
-      const directiveDefIdx = tView.contentQueries[i];
-      const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
-      ngDevMode &&
-          assertDefined(directiveDef.contentQueries, 'contentQueries function should be defined');
-      directiveDef.contentQueries !(RenderFlags.Update, lView[directiveDefIdx], directiveDefIdx);
+  const contentQueries = tView.contentQueries;
+  if (contentQueries !== null) {
+    for (let i = 0; i < contentQueries.length; i += 2) {
+      const queryStartIdx = contentQueries[i];
+      const directiveDefIdx = contentQueries[i + 1];
+      if (directiveDefIdx !== -1) {
+        const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
+        ngDevMode &&
+            assertDefined(directiveDef.contentQueries, 'contentQueries function should be defined');
+        setCurrentQueryIndex(queryStartIdx);
+        directiveDef.contentQueries !(RenderFlags.Update, lView[directiveDefIdx], directiveDefIdx);
+      }
     }
   }
 }
@@ -361,8 +364,7 @@ export function allocExpando(view: LView, numSlotsToAlloc: number) {
  * Such lViewNode will then be renderer with renderEmbeddedTemplate() (see below).
  */
 export function createEmbeddedViewAndNode<T>(
-    tView: TView, context: T, declarationView: LView, queries: LQueries | null,
-    injectorIndex: number): LView {
+    tView: TView, context: T, declarationView: LView, injectorIndex: number): LView {
   const _isParent = getIsParent();
   const _previousOrParentTNode = getPreviousOrParentTNode();
   setPreviousOrParentTNode(null !, true);
@@ -370,9 +372,6 @@ export function createEmbeddedViewAndNode<T>(
   const lView = createLView(declarationView, tView, context, LViewFlags.CheckAlways, null, null);
   lView[DECLARATION_VIEW] = declarationView;
 
-  if (queries) {
-    lView[QUERIES] = queries.createView();
-  }
   assignTViewNodeToLView(tView, null, -1, lView);
 
   if (tView.firstTemplatePass) {
@@ -513,14 +512,8 @@ export function executeContentQueries(tView: TView, tNode: TNode, lView: LView) 
  */
 export function createDirectivesAndLocals(
     tView: TView, lView: LView, tNode: TElementNode | TContainerNode | TElementContainerNode,
-    localRefs: string[] | null | undefined,
     localRefExtractor: LocalRefExtractor = getNativeByTNode) {
   if (!getBindingsEnabled()) return;
-  if (tView.firstTemplatePass) {
-    ngDevMode && ngDevMode.firstTemplatePass++;
-    resolveDirectives(
-        tView, lView, findDirectiveMatches(tView, lView, tNode), tNode, localRefs || null);
-  }
   instantiateAllDirectives(tView, lView, tNode);
   invokeDirectivesHostBindings(tView, lView, tNode);
   saveResolvedLocalsInData(lView, tNode, localRefExtractor);
@@ -588,11 +581,11 @@ export function createTView(
              viewIndex,   // id: number,
              blueprint,   // blueprint: LView,
              templateFn,  // template: ComponentTemplate<{}>|null,
+             null,        // queries: TQueries|null
              viewQuery,   // viewQuery: ViewQueriesFunction<{}>|null,
              null !,      // node: TViewNode|TElementNode|null,
              cloneToTViewData(blueprint).fill(null, bindingStartIndex),  // data: TData,
              bindingStartIndex,  // bindingStartIndex: number,
-             initialViewLength,  // viewQueryStartIndex: number,
              initialViewLength,  // expandoStartIndex: number,
              null,               // expandoInstructions: ExpandoInstructions|null,
              true,               // firstTemplatePass: boolean,
@@ -619,11 +612,11 @@ export function createTView(
         id: viewIndex,
         blueprint: blueprint,
         template: templateFn,
+        queries: null,
         viewQuery: viewQuery,
         node: null !,
         data: blueprint.slice().fill(null, bindingStartIndex),
         bindingStartIndex: bindingStartIndex,
-        viewQueryStartIndex: initialViewLength,
         expandoStartIndex: initialViewLength,
         expandoInstructions: null,
         firstTemplatePass: true,
@@ -1031,13 +1024,18 @@ export function instantiateRootComponent<T>(
 /**
  * Resolve the matched directives on a node.
  */
-function resolveDirectives(
-    tView: TView, viewData: LView, directives: DirectiveDef<any>[] | null, tNode: TNode,
+export function resolveDirectives(
+    tView: TView, lView: LView, tNode: TElementNode | TContainerNode | TElementContainerNode,
     localRefs: string[] | null): void {
   // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in
   // tsickle.
   ngDevMode && assertEqual(tView.firstTemplatePass, true, 'should run on first template pass only');
+
+  if (!getBindingsEnabled()) return;
+
+  const directives: DirectiveDef<any>[]|null = findDirectiveMatches(tView, lView, tNode);
   const exportsMap: ({[key: string]: number} | null) = localRefs ? {'': -1} : null;
+
   if (directives) {
     initNodeFlags(tNode, tView.data.length, directives.length);
     // When the same token is provided by several directives on the same node, some rules apply in
@@ -1059,7 +1057,7 @@ function resolveDirectives(
       const def = directives[i] as DirectiveDef<any>;
 
       const directiveDefIdx = tView.data.length;
-      baseResolveDirective(tView, viewData, def, def.factory);
+      baseResolveDirective(tView, lView, def, def.factory);
 
       saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
 
@@ -1766,8 +1764,8 @@ export function checkView<T>(hostView: LView, component: T) {
 
 function executeViewQueryFn<T>(flags: RenderFlags, tView: TView, component: T): void {
   const viewQuery = tView.viewQuery;
-  if (viewQuery) {
-    setCurrentQueryIndex(tView.viewQueryStartIndex);
+  if (viewQuery !== null) {
+    setCurrentQueryIndex(0);
     viewQuery(flags, component);
   }
 }
