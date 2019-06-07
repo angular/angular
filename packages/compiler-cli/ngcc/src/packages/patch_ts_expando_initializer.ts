@@ -6,6 +6,57 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+import {hasNameIdentifier} from '../utils';
+
+/**
+ * Verifies whether TS issue 31778 has been fixed by inspecting a symbol from a minimum
+ * reproduction. If the symbol does in fact have the "expando" as export, the issue has been fixed.
+ *
+ * See https://github.com/microsoft/TypeScript/issues/31778 for details.
+ */
+const ts31778GetExpandoInitializerFixed = (() => {
+  const sourceText = `
+    (function() {
+      var A = (function() {
+        function A() {}
+        return A;
+      }());
+      A.expando = true;
+    }());`;
+  const sourceFile =
+      ts.createSourceFile('test.js', sourceText, ts.ScriptTarget.ES5, true, ts.ScriptKind.JS);
+  const host: ts.CompilerHost = {
+    getSourceFile(): ts.SourceFile | undefined{return sourceFile;},
+    fileExists(): boolean{return true;},
+    readFile(): string | undefined{return '';},
+    writeFile() {},
+    getDefaultLibFileName(): string{return '';},
+    getCurrentDirectory(): string{return '';},
+    getDirectories(): string[]{return [];},
+    getCanonicalFileName(fileName: string): string{return fileName;},
+    useCaseSensitiveFileNames(): boolean{return true;},
+    getNewLine(): string{return '\n';},
+  };
+  const options = {noResolve: true, noLib: true, noEmit: true, allowJs: true};
+  const program = ts.createProgram(['test.js'], options, host);
+
+  function visitor(node: ts.Node): ts.VariableDeclaration|undefined {
+    if (ts.isVariableDeclaration(node) && hasNameIdentifier(node) && node.name.text === 'A') {
+      return node;
+    }
+    return ts.forEachChild(node, visitor);
+  }
+  const declaration = ts.forEachChild(sourceFile, visitor);
+  if (declaration === undefined) {
+    throw new Error('Unable to find declaration of outer A');
+  }
+
+  const symbol = program.getTypeChecker().getSymbolAtLocation(declaration.name);
+  if (symbol === undefined) {
+    throw new Error('Unable to resolve symbol of outer A');
+  }
+  return symbol.exports !== undefined && symbol.exports.has('expando' as ts.__String);
+})();
 
 /**
  * Consider the following ES5 code that may have been generated for a class:
@@ -41,12 +92,22 @@ import * as ts from 'typescript';
  * IIFE notation. The original implementation can be found at:
  * https://github.com/Microsoft/TypeScript/blob/v3.4.5/src/compiler/utilities.ts#L1864-L1887
  *
- * @returns the function to pass to `restoreGetExpandoInitializer` to undo the patch.
+ * Issue tracked in https://github.com/microsoft/TypeScript/issues/31778
+ *
+ * @returns the function to pass to `restoreGetExpandoInitializer` to undo the patch, or null if
+ * the issue is known to have been fixed.
  */
 export function patchTsGetExpandoInitializer(): unknown {
+  if (ts31778GetExpandoInitializerFixed) {
+    return null;
+  }
+
   const originalGetExpandoInitializer = (ts as any).getExpandoInitializer;
   (ts as any).getExpandoInitializer =
       (initializer: ts.Node, isPrototypeAssignment: boolean): ts.Expression | undefined => {
+        // If the initializer is a call expression within parenthesis, unwrap the parenthesis
+        // upfront such that unsupported IIFE syntax `(function(){}())` becomes `function(){}()`,
+        // which is supported.
         if (ts.isParenthesizedExpression(initializer) &&
             ts.isCallExpression(initializer.expression)) {
           initializer = initializer.expression;
@@ -57,5 +118,7 @@ export function patchTsGetExpandoInitializer(): unknown {
 }
 
 export function restoreGetExpandoInitializer(originalGetExpandoInitializer: unknown): void {
-  (ts as any).getExpandoInitializer = originalGetExpandoInitializer;
+  if (originalGetExpandoInitializer !== null) {
+    (ts as any).getExpandoInitializer = originalGetExpandoInitializer;
+  }
 }
