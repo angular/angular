@@ -488,10 +488,10 @@ function i18nStartFirstPass(
   tView.data[index + HEADER_OFFSET] = tI18n;
 }
 
-function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode | null): TNode {
+function appendI18nNode(
+    tNode: TNode, parentTNode: TNode, previousTNode: TNode | null, viewData: LView): TNode {
   ngDevMode && ngDevMode.rendererMoveNode++;
   const nextNode = tNode.next;
-  const viewData = getLView();
   if (!previousTNode) {
     previousTNode = parentTNode;
   }
@@ -737,7 +737,7 @@ function readCreateOpCodes(
               assertDefined(
                   currentTNode !,
                   `You need to create or select a node before you can insert it into the DOM`);
-          previousTNode = appendI18nNode(currentTNode !, destinationTNode, previousTNode);
+          previousTNode = appendI18nNode(currentTNode !, destinationTNode, previousTNode, viewData);
           break;
         case I18nMutateOpCode.Select:
           const nodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
