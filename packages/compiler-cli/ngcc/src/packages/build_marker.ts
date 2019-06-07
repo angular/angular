@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {writeFileSync, writeFile} from 'fs';
+import {writeFileSync} from 'fs';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 
