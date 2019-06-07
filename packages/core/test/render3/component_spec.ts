@@ -63,8 +63,11 @@ describe('component', () => {
 
     class MyService {
       constructor(public value: string) {}
-      static ngInjectableDef =
-          ɵɵdefineInjectable({providedIn: 'root', factory: () => new MyService('no-injector')});
+      static ngInjectableDef = ɵɵdefineInjectable({
+        token: MyService,
+        providedIn: 'root',
+        factory: () => new MyService('no-injector'),
+      });
     }
     class MyComponent {
       constructor(public myService: MyService) {}

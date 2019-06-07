@@ -38,6 +38,13 @@ export interface ɵɵInjectableDef<T> {
   providedIn: InjectorType<any>|'root'|'any'|null;
 
   /**
+   * The token to which this definition belongs.
+   *
+   * Note that this may not be the same as the type that the `factory` will create.
+   */
+  token: unknown;
+
+  /**
    * Factory method to execute to create an instance of the injectable.
    */
   factory: () => T;
@@ -132,11 +139,13 @@ export interface InjectorTypeWithProviders<T> {
  * @codeGenApi
  */
 export function ɵɵdefineInjectable<T>(opts: {
+  token: unknown,
   providedIn?: Type<any>| 'root' | 'any' | null,
   factory: () => T,
 }): never {
   return ({
-    providedIn: opts.providedIn as any || null, factory: opts.factory, value: undefined,
+    token: opts.token, providedIn: opts.providedIn as any || null, factory: opts.factory,
+        value: undefined,
   } as ɵɵInjectableDef<T>) as never;
 }
 
