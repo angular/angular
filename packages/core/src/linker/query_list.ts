@@ -119,7 +119,7 @@ export class QueryList<T>/* implements Iterable<T> */ {
    * on change detection, it will not notify of changes to the queries, unless a new change
    * occurs.
    *
-   * @param resultsTree The results tree to store
+   * @param resultsTree The query results to store
    */
   reset(resultsTree: Array<T|any[]>): void {
     this._results = flatten(resultsTree);

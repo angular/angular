@@ -69,3 +69,7 @@ export function assertLView(value: any) {
   assertDefined(value, 'LView must be defined');
   assertEqual(isLView(value), true, 'Expecting LView');
 }
+
+export function assertFirstTemplatePass(tView: TView, errMessage: string) {
+  assertEqual(tView.firstTemplatePass, true, errMessage);
+}

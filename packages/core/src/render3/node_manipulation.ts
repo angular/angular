@@ -11,18 +11,18 @@ import {assertDefined, assertDomNode} from '../util/assert';
 
 import {assertLContainer, assertLView} from './assert';
 import {attachPatchData} from './context_discovery';
-import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
-import {CHILD_HEAD, CLEANUP, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, getNativeByTNodeOrNull, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
+import {getNativeByTNode, getNativeByTNodeOrNull, unwrapRNode} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -217,13 +217,44 @@ export function insertView(lView: LView, lContainer: LContainer, index: number) 
 
   lView[PARENT] = lContainer;
 
-  // Notify query that a new view has been added
-  if (lView[QUERIES]) {
-    lView[QUERIES] !.insertView(index);
+  // track views where declaration and insertion points are different
+  const declarationLContainer = lView[DECLARATION_LCONTAINER];
+  if (declarationLContainer !== null && lContainer !== declarationLContainer) {
+    trackMovedView(declarationLContainer, lView);
+  }
+
+  // notify query that a new view has been added
+  const lQueries = lView[QUERIES];
+  if (lQueries !== null) {
+    lQueries.insertView(lView[TVIEW]);
   }
 
   // Sets the attached flag
   lView[FLAGS] |= LViewFlags.Attached;
+}
+
+/**
+ * Track views created from the declaration container (TemplateRef) and inserted into a
+ * different LContainer.
+ */
+function trackMovedView(declarationContainer: LContainer, lView: LView) {
+  ngDevMode && assertLContainer(declarationContainer);
+  const declaredViews = declarationContainer[MOVED_VIEWS];
+  if (declaredViews === null) {
+    declarationContainer[MOVED_VIEWS] = [lView];
+  } else {
+    declaredViews.push(lView);
+  }
+}
+
+function detachMovedView(declarationContainer: LContainer, lView: LView) {
+  ngDevMode && assertLContainer(declarationContainer);
+  ngDevMode && assertDefined(
+                   declarationContainer[MOVED_VIEWS],
+                   'A projected view should belong to a non-empty projected views collection');
+  const projectedViews = declarationContainer[MOVED_VIEWS] !;
+  const declaredViewIndex = projectedViews.indexOf(lView);
+  projectedViews.splice(declaredViewIndex, 1);
 }
 
 /**
@@ -241,17 +272,26 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
 
   const indexInContainer = CONTAINER_HEADER_OFFSET + removeIndex;
   const viewToDetach = lContainer[indexInContainer];
+
   if (viewToDetach) {
+    const declarationLContainer = viewToDetach[DECLARATION_LCONTAINER];
+    if (declarationLContainer !== null && declarationLContainer !== lContainer) {
+      detachMovedView(declarationLContainer, viewToDetach);
+    }
+
+
     if (removeIndex > 0) {
       lContainer[indexInContainer - 1][NEXT] = viewToDetach[NEXT] as LView;
     }
-    lContainer.splice(CONTAINER_HEADER_OFFSET + removeIndex, 1);
+    const removedLView = lContainer.splice(CONTAINER_HEADER_OFFSET + removeIndex, 1)[0];
     addRemoveViewFromContainer(viewToDetach, false);
 
-    if ((viewToDetach[FLAGS] & LViewFlags.Attached) &&
-        !(viewToDetach[FLAGS] & LViewFlags.Destroyed) && viewToDetach[QUERIES]) {
-      viewToDetach[QUERIES] !.removeView();
+    // notify query that a view has been removed
+    const lQueries = removedLView[QUERIES];
+    if (lQueries !== null) {
+      lQueries.detachView(removedLView[TVIEW]);
     }
+
     viewToDetach[PARENT] = null;
     viewToDetach[NEXT] = null;
     // Unsets the attached flag
@@ -342,9 +382,20 @@ function cleanUpView(view: LView | LContainer): void {
       ngDevMode && ngDevMode.rendererDestroy++;
       (view[RENDERER] as ProceduralRenderer3).destroy();
     }
-    // For embedded views still attached to a container: remove query result from this view.
-    if (viewAttachedToContainer(view) && view[QUERIES]) {
-      view[QUERIES] !.removeView();
+
+    const declarationContainer = view[DECLARATION_LCONTAINER];
+    // we are dealing with an embedded view that is still inserted into a container
+    if (declarationContainer !== null && isLContainer(view[PARENT])) {
+      // and this is a projected view
+      if (declarationContainer !== view[PARENT]) {
+        detachMovedView(declarationContainer, view);
+      }
+
+      // For embedded views still attached to a container: remove query result from this view.
+      const lQueries = view[QUERIES];
+      if (lQueries !== null) {
+        lQueries.detachView(view[TVIEW]);
+      }
     }
   }
 }
@@ -878,16 +929,18 @@ function executeActionOnNode(
     renderer: Renderer3, action: WalkTNodeTreeAction, lView: LView, tNode: TNode,
     renderParent: RElement | null, beforeNode: RNode | null | undefined): void {
   const nodeType = tNode.type;
-  if (nodeType === TNodeType.ElementContainer || nodeType === TNodeType.IcuContainer) {
-    executeActionOnElementContainerOrIcuContainer(
-        renderer, action, lView, tNode as TElementContainerNode | TIcuContainerNode, renderParent,
-        beforeNode);
-  } else if (nodeType === TNodeType.Projection) {
-    executeActionOnProjection(
-        renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
-  } else {
-    ngDevMode && assertNodeOfPossibleTypes(tNode, TNodeType.Element, TNodeType.Container);
-    executeActionOnElementOrContainer(
-        action, renderer, renderParent, lView[tNode.index], beforeNode);
+  if (!(tNode.flags & TNodeFlags.isDetached)) {
+    if (nodeType === TNodeType.ElementContainer || nodeType === TNodeType.IcuContainer) {
+      executeActionOnElementContainerOrIcuContainer(
+          renderer, action, lView, tNode as TElementContainerNode | TIcuContainerNode, renderParent,
+          beforeNode);
+    } else if (nodeType === TNodeType.Projection) {
+      executeActionOnProjection(
+          renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
+    } else {
+      ngDevMode && assertNodeOfPossibleTypes(tNode, TNodeType.Element, TNodeType.Container);
+      executeActionOnElementOrContainer(
+          action, renderer, renderParent, lView[tNode.index], beforeNode);
+    }
   }
 }

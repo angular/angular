@@ -49,10 +49,6 @@ export function ɵɵembeddedViewStart(
         getOrCreateEmbeddedTView(viewBlockId, consts, vars, containerTNode as TContainerNode), null,
         LViewFlags.CheckAlways, null, null);
 
-    if (lContainer[QUERIES]) {
-      viewToRender[QUERIES] = lContainer[QUERIES] !.createView();
-    }
-
     const tParentNode = getIsParent() ? previousOrParentTNode :
                                         previousOrParentTNode && previousOrParentTNode.parent;
     assignTViewNodeToLView(viewToRender[TVIEW], tParentNode, viewBlockId, viewToRender);
