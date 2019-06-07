@@ -28,7 +28,7 @@ ng_package(
         "package.json",
         "//packages/core/testing:package.json",
     ],
-    entry_point = "packages/core/index.js",
+    entry_point = ":index.ts",
     packages = [
         "//packages/core/schematics:npm_package",
     ],

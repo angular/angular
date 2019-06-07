@@ -447,7 +447,7 @@ def ngc_compile_action(
         if _should_produce_flat_module_outs(ctx):
             dts_entry_points = ["%s.d.ts" % _flat_module_out_file(ctx)]
         else:
-            dts_entry_points = [ctx.attr.entry_point.replace(".ts", ".d.ts")]
+            dts_entry_points = [ctx.attr.entry_point.label.name.replace(".ts", ".d.ts")]
 
         if _should_produce_r3_symbols_bundle(ctx):
             dts_entry_points.append(_R3_SYMBOLS_DTS_FILE)
@@ -719,7 +719,7 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
         """,
         default = Label("@npm//typescript:typescript__typings"),
     ),
-    "entry_point": attr.string(),
+    "entry_point": attr.label(allow_single_file = True),
 
     # Default is %{name}_public_index
     # The suffix points to the generated "bundle index" files that users import from
