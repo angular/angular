@@ -278,7 +278,9 @@ function createTNodeAtIndex(
   const tParentNode = parentInSameView ? parent as TElementNode | TContainerNode : null;
   const tNode = tView.data[adjustedIndex] =
       createTNode(tParentNode, type, adjustedIndex, name, attrs);
-  if (index === 0) {
+  // The first node is not always the one at index 0, in case of i18n, index 0 can be the
+  // instruction `i18nStart` and the first node has the index 1 or more
+  if (index === 0 || !tView.firstChild) {
     tView.firstChild = tNode;
   }
   // Now link ourselves into the tree.

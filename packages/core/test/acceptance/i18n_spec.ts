@@ -11,6 +11,7 @@ import localeRo from '@angular/common/locales/ro';
 import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
@@ -371,6 +372,38 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         const child = spans[i];
         expect(child).toHaveText('Mon logo');
       }
+    });
+
+    it('should correctly find context for an element inside i18n section in <ng-template>', () => {
+      @Directive({selector: '[myDir]'})
+      class Dir {
+        condition = true;
+      }
+
+      @Component({
+        selector: 'my-cmp',
+        template: `
+              <div *ngIf="isLogged; else notLoggedIn">
+                <span>Logged in</span>
+              </div>
+              <ng-template #notLoggedIn i18n>
+                <a myDir>Not logged in</a>
+              </ng-template>
+            `,
+      })
+      class Cmp {
+        isLogged = false;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Cmp, Dir],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      const a = fixture.debugElement.query(By.css('a'));
+      const dir = a.injector.get(Dir);
+      expect(dir.condition).toEqual(true);
     });
   });
 
