@@ -9,7 +9,6 @@
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {Type} from '../../interface/type';
-import {QueryList} from '../../linker';
 import {SchemaMetadata} from '../../metadata';
 import {Sanitizer} from '../../sanitization/security';
 
@@ -18,7 +17,7 @@ import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBin
 import {I18nUpdateOpCodes, TI18n} from './i18n';
 import {TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
-import {LQueries} from './query';
+import {LQueries, TQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
 
 
@@ -42,11 +41,11 @@ export const RENDERER = 12;
 export const SANITIZER = 13;
 export const CHILD_HEAD = 14;
 export const CHILD_TAIL = 15;
-export const CONTENT_QUERIES = 16;
-export const DECLARATION_VIEW = 17;
+export const DECLARATION_VIEW = 16;
+export const DECLARATION_LCONTAINER = 17;
 export const PREORDER_HOOK_FLAGS = 18;
 /** Size of LView's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 20;
+export const HEADER_OFFSET = 19;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -180,13 +179,6 @@ export interface LView extends Array<any> {
   [CHILD_TAIL]: LView|LContainer|null;
 
   /**
-   * Stores QueryLists associated with content queries of a directive. This data structure is
-   * filled-in as part of a directive creation process and is later used to retrieve a QueryList to
-   * be refreshed.
-   */
-  [CONTENT_QUERIES]: QueryList<any>[]|null;
-
-  /**
    * View where this view's template was declared.
    *
    * Only applicable for dynamically created views. Will be null for inline/component views.
@@ -211,6 +203,16 @@ export interface LView extends Array<any> {
    * context.
    */
   [DECLARATION_VIEW]: LView|null;
+
+  /**
+   * A declaration point of embedded views (ones instantiated based on the content of a
+   * <ng-template>), null for other types of views.
+   *
+   * We need to track all embedded views created from a given declaration point so we can prepare
+   * query matches in a proper order (query matches are ordered based on their declaration point and
+   * _not_ the insertion point).
+   */
+  [DECLARATION_LCONTAINER]: LContainer|null;
 
   /**
    * More flags for this view. See PreOrderHookFlags for more info.
@@ -411,17 +413,6 @@ export interface TView {
   staticContentQueries: boolean;
 
   /**
-   * The index where the viewQueries section of `LView` begins. This section contains
-   * view queries defined for a component/directive.
-   *
-   * We store this start index so we know where the list of view queries starts.
-   * This is required when we invoke view queries at runtime. We invoke queries one by one and
-   * increment query index after each iteration. This information helps us to reset index back to
-   * the beginning of view query list before we invoke view queries again.
-   */
-  viewQueryStartIndex: number;
-
-  /**
    * A reference to the first child node located in the view.
    */
   firstChild: TNode|null;
@@ -550,7 +541,19 @@ export interface TView {
   components: number[]|null;
 
   /**
-   * A list of indices for child directives that have content queries.
+   * A collection of queries tracked in a given view.
+   */
+  queries: TQueries|null;
+
+  /**
+   * An array of indices pointing to directives with content queries alongside with the
+   * corresponding
+   * query index. Each entry in this array is a tuple of:
+   * - index of the first content query index declared by a given directive;
+   * - index of a directive.
+   *
+   * We are storing those indexes so we can refresh content queries as part of a view refresh
+   * process.
    */
   contentQueries: number[]|null;
 
