@@ -58,8 +58,10 @@ describe('providers', () => {
       public greet: string;
       constructor(private provider: GreeterProvider) { this.greet = this.provider.provide(); }
 
-      static ngInjectableDef =
-          ɵɵdefineInjectable({factory: () => new GreeterInj(ɵɵinject(GreeterProvider as any))});
+      static ngInjectableDef = ɵɵdefineInjectable({
+        token: GreeterInj,
+        factory: () => new GreeterInj(ɵɵinject(GreeterProvider as any)),
+      });
     }
 
     it('TypeProvider', () => {
@@ -814,8 +816,11 @@ describe('providers', () => {
     it('should work with root', () => {
       @Injectable({providedIn: 'root'})
       class FooForRoot {
-        static ngInjectableDef =
-            ɵɵdefineInjectable({factory: () => new FooForRoot(), providedIn: 'root'});
+        static ngInjectableDef = ɵɵdefineInjectable({
+          token: FooForRoot,
+          factory: () => new FooForRoot(),
+          providedIn: 'root',
+        });
       }
 
       expectProvidersScenario({
@@ -836,8 +841,11 @@ describe('providers', () => {
 
       @Injectable({providedIn: MyModule})
       class FooForModule {
-        static ngInjectableDef =
-            ɵɵdefineInjectable({factory: () => new FooForModule(), providedIn: MyModule});
+        static ngInjectableDef = ɵɵdefineInjectable({
+          token: FooForModule,
+          factory: () => new FooForModule(),
+          providedIn: MyModule,
+        });
       }
 
       expectProvidersScenario({
@@ -1153,8 +1161,10 @@ describe('providers', () => {
          class MyService {
            constructor(public value: String) {}
 
-           static ngInjectableDef =
-               ɵɵdefineInjectable({factory: () => new MyService(ɵɵinject(String))});
+           static ngInjectableDef = ɵɵdefineInjectable({
+             token: MyService,
+             factory: () => new MyService(ɵɵinject(String)),
+           });
          }
 
          expectProvidersScenario({
@@ -1171,7 +1181,10 @@ describe('providers', () => {
 
     it('should make sure that parent service does not see overrides in child directives', () => {
       class Greeter {
-        static ngInjectableDef = ɵɵdefineInjectable({factory: () => new Greeter(ɵɵinject(String))});
+        static ngInjectableDef = ɵɵdefineInjectable({
+          token: Greeter,
+          factory: () => new Greeter(ɵɵinject(String)),
+        });
         constructor(public greeting: String) {}
       }
 
@@ -1213,7 +1226,10 @@ describe('providers', () => {
     class SomeInj implements Some {
       constructor(public location: String) {}
 
-      static ngInjectableDef = ɵɵdefineInjectable({factory: () => new SomeInj(ɵɵinject(String))});
+      static ngInjectableDef = ɵɵdefineInjectable({
+        token: SomeInj,
+        factory: () => new SomeInj(ɵɵinject(String)),
+      });
     }
 
     @Component({
