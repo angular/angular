@@ -11,7 +11,7 @@
 import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/security';
-import {assertDataInRange, assertEqual} from '../util/assert';
+import {assertDataInRange} from '../util/assert';
 
 import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';

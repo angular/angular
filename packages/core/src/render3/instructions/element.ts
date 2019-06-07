@@ -5,13 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {PropertyAliases, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {BINDING_INDEX, HEADER_OFFSET, LView, QUERIES, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {isContentQueryHost} from '../interfaces/type_checks';
+import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
@@ -22,7 +24,7 @@ import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../styling_n
 import {setUpAttributes} from '../util/attrs_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
-import {createDirectivesAndLocals, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, renderInitialStyling, setInputsForProperty} from './shared';
+import {createDirectivesAndLocals, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, renderInitialStyling, resolveDirectives, setInputsForProperty} from './shared';
 
 
 
@@ -66,7 +68,6 @@ export function ɵɵelementStart(
   renderInitialStyling(renderer, native, tNode);
 
   appendChild(native, tNode, lView);
-  createDirectivesAndLocals(tView, lView, tNode, localRefs);
 
   // any immediate children of a component or template container must be pre-emptively
   // monkey-patched with the component view data so that the element can be inspected
@@ -81,6 +82,9 @@ export function ɵɵelementStart(
   // static class values as well. (Note that this will be fixed once map-based `[style]`
   // and `[class]` bindings work for multiple directives.)
   if (tView.firstTemplatePass) {
+    ngDevMode && ngDevMode.firstTemplatePass++;
+    resolveDirectives(tView, lView, tNode, localRefs || null);
+
     const inputData = initializeTNodeInputs(tNode);
     if (inputData && inputData.hasOwnProperty('class')) {
       tNode.flags |= TNodeFlags.hasClassInput;
@@ -89,13 +93,13 @@ export function ɵɵelementStart(
     if (inputData && inputData.hasOwnProperty('style')) {
       tNode.flags |= TNodeFlags.hasStyleInput;
     }
+
+    if (tView.queries !== null) {
+      tView.queries.elementStart(tView, tNode);
+    }
   }
 
-  const currentQueries = lView[QUERIES];
-  if (currentQueries) {
-    currentQueries.addNode(tNode);
-    lView[QUERIES] = currentQueries.clone(tNode);
-  }
+  createDirectivesAndLocals(tView, lView, tNode);
   executeContentQueries(tView, tNode, lView);
 }
 
@@ -123,14 +127,15 @@ export function ɵɵelementEnd(): void {
 
   ngDevMode && assertNodeType(tNode, TNodeType.Element);
   const lView = getLView();
-  const currentQueries = lView[QUERIES];
-  // Go back up to parent queries only if queries have been cloned on this element.
-  if (currentQueries && tNode.index === currentQueries.nodeIndex) {
-    lView[QUERIES] = currentQueries.parent;
-  }
+  const tView = lView[TVIEW];
 
-  registerPostOrderHooks(lView[TVIEW], tNode);
+  registerPostOrderHooks(tView, previousOrParentTNode);
   decreaseElementDepthCount();
+
+  if (tView.firstTemplatePass && tView.queries !== null &&
+      isContentQueryHost(previousOrParentTNode)) {
+    tView.queries !.elementEnd(previousOrParentTNode);
+  }
 
   if (hasClassInput(tNode) && tNode.classes) {
     setDirectiveStylingInput(tNode.classes, lView, tNode.inputs !['class']);

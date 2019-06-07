@@ -9,9 +9,9 @@
 import {ViewRef} from '../../linker/view_ref';
 
 import {TNode} from './node';
-import {LQueries} from './query';
 import {RComment, RElement} from './renderer';
-import {HOST, LView, NEXT, PARENT, QUERIES, T_HOST} from './view';
+
+import {HOST, LView, NEXT, PARENT, T_HOST} from './view';
 
 
 /**
@@ -26,8 +26,15 @@ export const TYPE = 1;
  * Uglify will inline these when minifying so there shouldn't be a cost.
  */
 export const ACTIVE_INDEX = 2;
-// PARENT, NEXT, QUERIES and T_HOST are indices 3, 4, 5 and 6.
+
+// PARENT and NEXT are indices 3 and 4
 // As we already have these constants in LView, we don't need to re-create them.
+
+export const MOVED_VIEWS = 5;
+
+// T_HOST is index 6
+// We already have this constants in LView, we don't need to re-create it.
+
 export const NATIVE = 7;
 export const VIEW_REFS = 8;
 
@@ -84,11 +91,11 @@ export interface LContainer extends Array<any> {
   [NEXT]: LView|LContainer|null;
 
   /**
-   * Queries active for this container - all the views inserted to / removed from
-   * this container are reported to queries referenced here.
+   * A collection of views created based on the underlying `<ng-template>` element but inserted into
+   * a different `LContainer`. We need to track views created from a given declaration point since
+   * queries collect matches from the embedded view declaration point and _not_ the insertion point.
    */
-  [QUERIES]: LQueries|null;  // TODO(misko): This is abuse of `LContainer` since we are storing
-  // `[QUERIES]` in it which are not needed for `LContainer` (only needed for Template)
+  [MOVED_VIEWS]: LView[]|null;
 
   /**
    * Pointer to the `TNode` which represents the host of the container.
