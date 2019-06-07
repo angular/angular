@@ -14,7 +14,7 @@ ts_library(
 
 ng_rollup_bundle(
     name = "bundle",
-    entry_point = "packages/core/test/bundling/core_all/index.js",
+    entry_point = ":index.ts",
     tags = [
         "ivy-only",
     ],

@@ -25,7 +25,7 @@ nodejs_binary(
         "@npm//@bazel/typescript",
         "@npm//@microsoft/api-extractor",
     ],
-    entry_point = "angular/packages/bazel/src/api-extractor/index.js",
+    entry_point = ":index.ts",
     visibility = ["//visibility:public"],
 )
 

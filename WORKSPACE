@@ -72,13 +72,13 @@ yarn_install(
         "//:tools/yarn/check-yarn.js",
     ],
     package_json = "//:package.json",
-    yarn_lock = "//:yarn.lock",
+    # Don't install devDependencies, they are large and not used under Bazel
+    prod_only = True,
     # Temporarily disable node_modules symlinking until the fix for
     # https://github.com/bazelbuild/bazel/issues/8487 makes it into a
     # future Bazel release
     symlink_node_modules = False,
-    # Don't install devDependencies, they are large and not used under Bazel
-    prod_only = True,
+    yarn_lock = "//:yarn.lock",
 )
 
 # Install all bazel dependencies of the @npm npm packages

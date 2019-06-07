@@ -106,9 +106,15 @@ def _esm5_outputs_aspect(target, ctx):
     else:
         fail("Unknown replay compiler", target.typescript.replay_params.compiler.path)
 
+    inputs = [tsconfig]
+    if (type(target.typescript.replay_params.inputs) == type([])):
+        inputs.extend(target.typescript.replay_params.inputs)
+    else:
+        inputs.extend(target.typescript.replay_params.inputs.to_list())
+
     ctx.actions.run(
         progress_message = "Compiling TypeScript (ES5 with ES Modules) %s" % target.label,
-        inputs = target.typescript.replay_params.inputs.to_list() + [tsconfig],
+        inputs = inputs,
         outputs = outputs,
         arguments = [tsconfig.path],
         executable = compiler,

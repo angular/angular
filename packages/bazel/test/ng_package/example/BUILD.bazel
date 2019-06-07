@@ -23,7 +23,7 @@ ng_package(
         ":arbitrary_genfiles_file",
         ":extra-styles.css",
     ],
-    entry_point = "packages/bazel/test/ng_package/example/index.js",
+    entry_point = ":index.ts",
     entry_point_name = "waffels",
     packages = [
         ":arbitrary_npm_package",

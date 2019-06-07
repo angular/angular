@@ -50,8 +50,10 @@ const requiredNodeModules = {
 
   // Fine grained dependencies which are used by the integration test Angular modules, and
   // need to be symlinked so that they can be resolved by NodeJS or NGC.
+  'buffer-from': resolveNpmTreeArtifact('npm/node_modules/buffer-from'),
   'reflect-metadata': resolveNpmTreeArtifact('npm/node_modules/reflect-metadata'),
   'rxjs': resolveNpmTreeArtifact('npm/node_modules/rxjs'),
+  'source-map': resolveNpmTreeArtifact('npm/node_modules/source-map'),
   'source-map-support': resolveNpmTreeArtifact('npm/node_modules/source-map-support'),
   'typescript': resolveNpmTreeArtifact('npm/node_modules/typescript'),
   'zone.js': resolveNpmTreeArtifact('npm/node_modules/zone.js'),

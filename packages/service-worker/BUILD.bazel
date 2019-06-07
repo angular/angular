@@ -46,7 +46,7 @@ ng_package(
         "//packages/service-worker/config",
         "//packages/service-worker/config:schema.json",
     ],
-    entry_point = "packages/service-worker/index.js",
+    entry_point = ":index.ts",
     tags = [
         "release-with-framework",
     ],

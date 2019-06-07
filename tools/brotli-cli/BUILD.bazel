@@ -6,6 +6,6 @@ nodejs_binary(
         "cli.js",
         "@npm//brotli",
     ],
-    entry_point = "angular/tools/brotli-cli/cli.js",
+    entry_point = ":cli.js",
     visibility = ["//:__subpackages__"],
 )

@@ -17,13 +17,7 @@ ng_module(
 
 ng_rollup_bundle(
     name = "bundle",
-    # TODO(alexeagle): This is inconsistent.
-    # We try to teach users to always have their workspace at the start of a
-    # path, to disambiguate from other workspaces.
-    # Here, the rule implementation is looking in an execroot where the layout
-    # has an "external" directory for external dependencies.
-    # This should probably start with "angular/" and let the rule deal with it.
-    entry_point = "packages/core/test/bundling/hello_world_r2/index.js",
+    entry_point = ":index.ts",
     tags = [
         "ivy-only",
     ],

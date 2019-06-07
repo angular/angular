@@ -455,13 +455,20 @@ def primary_entry_point_name(name, entry_point, entry_point_name):
     Returns:
       name of the entry point, which will appear in the name of generated bundles
     """
+    if (type(entry_point) == "Target"):
+        ep = entry_point.label
+    elif (type(entry_point) == "Label"):
+        ep = entry_point
+    else:
+        fail("entry_point should be a Target or Label but got %s" % type(entry_point))
+
     if entry_point_name:
         # If an explicit entry_point_name is given, use that.
         return entry_point_name
-    elif entry_point.find("/") >= 0:
-        # If the entry_point has multiple path segments, use the second one.
-        # E.g., for "@angular/cdk/a11y", use "cdk".
-        return entry_point.split("/")[-2]
+    elif ep.package.find("/") >= 0:
+        # If the entry_point package has multiple path segments, use the last one.
+        # E.g., for "//packages/angular/cdk:a11y", use "cdk".
+        return ep.package.split("/")[-1]
     else:
         # Fall back to the name of the ng_package rule.
         return name
