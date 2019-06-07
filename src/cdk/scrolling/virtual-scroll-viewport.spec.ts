@@ -12,7 +12,9 @@ import {
   NgZone,
   TrackByFunction,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
+  Directive,
+  ViewContainerRef
 } from '@angular/core';
 import {async, ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {animationFrameScheduler, Subject} from 'rxjs';
@@ -797,6 +799,36 @@ describe('CdkVirtualScrollViewport', () => {
           'Error: cdk-virtual-scroll-viewport requires the "itemSize" property to be set.');
     }));
   });
+
+  describe('with item that injects ViewContainerRef', () => {
+    let fixture: ComponentFixture<VirtualScrollWithItemInjectingViewContainer>;
+    let testComponent: VirtualScrollWithItemInjectingViewContainer;
+    let viewport: CdkVirtualScrollViewport;
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule],
+        declarations: [VirtualScrollWithItemInjectingViewContainer, InjectsViewContainer],
+      }).compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(VirtualScrollWithItemInjectingViewContainer);
+      testComponent = fixture.componentInstance;
+      viewport = testComponent.viewport;
+    });
+
+    it('should render the values in the correct sequence when an item is ' +
+      'injecting ViewContainerRef', fakeAsync(() => {
+        finishInit(fixture);
+
+        const contentWrapper =
+            viewport.elementRef.nativeElement.querySelector('.cdk-virtual-scroll-content-wrapper')!;
+
+        expect(Array.from(contentWrapper.children).map(child => child.textContent!.trim()))
+          .toEqual(['0', '1', '2', '3', '4', '5', '6', '7']);
+      }));
+  });
 });
 
 
@@ -938,3 +970,42 @@ class FixedSizeVirtualScrollWithRtlDirection {
 class VirtualScrollWithNoStrategy {
   items = [];
 }
+
+@Directive({
+  selector: '[injects-view-container]'
+})
+class InjectsViewContainer {
+  constructor(public viewContainerRef: ViewContainerRef) {
+  }
+}
+
+@Component({
+  template: `
+    <cdk-virtual-scroll-viewport itemSize="50">
+      <div injects-view-container class="item" *cdkVirtualFor="let item of items">{{item}}</div>
+    </cdk-virtual-scroll-viewport>
+  `,
+  styles: [`
+    .cdk-virtual-scroll-content-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cdk-virtual-scroll-viewport {
+      width: 200px;
+      height: 200px;
+    }
+
+    .item {
+      width: 100%;
+      height: 50px;
+    }
+  `],
+  encapsulation: ViewEncapsulation.None
+})
+class VirtualScrollWithItemInjectingViewContainer {
+  @ViewChild(CdkVirtualScrollViewport, {static: true}) viewport: CdkVirtualScrollViewport;
+  itemSize = 50;
+  items = Array(20000).fill(0).map((_, i) => i);
+}
+

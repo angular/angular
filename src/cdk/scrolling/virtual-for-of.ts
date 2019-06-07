@@ -357,20 +357,20 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
 
   /** Creates a new embedded view and moves it to the given index */
   private _createEmbeddedViewAt(index: number): EmbeddedViewRef<CdkVirtualForOfContext<T>> {
-    const view = this._viewContainerRef.createEmbeddedView(this._template, {
-        $implicit: null!,
-        cdkVirtualForOf: this._cdkVirtualForOf,
-        index: -1,
-        count: -1,
-        first: false,
-        last: false,
-        odd: false,
-        even: false
-    });
-    if (index < this._viewContainerRef.length) {
-      this._viewContainerRef.move(view, index);
-    }
-    return view;
+    // Note that it's important that we insert the item directly at the proper index,
+    // rather than inserting it and the moving it in place, because if there's a directive
+    // on the same node that injects the `ViewContainerRef`, Angular will insert another
+    // comment node which can throw off the move when it's being repeated for all items.
+    return this._viewContainerRef.createEmbeddedView(this._template, {
+      $implicit: null!,
+      cdkVirtualForOf: this._cdkVirtualForOf,
+      index: -1,
+      count: -1,
+      first: false,
+      last: false,
+      odd: false,
+      even: false
+    }, index);
   }
 
   /** Inserts a recycled view from the cache at the given index. */
