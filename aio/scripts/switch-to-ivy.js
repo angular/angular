@@ -13,8 +13,6 @@ const ROOT_DIR = resolve(__dirname, '..');
 const NG_JSON = join(ROOT_DIR, 'angular.json');
 const NG_COMPILER_OPTS = {
   angularCompilerOptions: {
-    // Related Jira issue: FW-737
-    allowEmptyCodegenFiles: true,
     enableIvy: true,
   },
 };
