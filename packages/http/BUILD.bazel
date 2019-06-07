@@ -23,7 +23,7 @@ ng_package(
         "package.json",
         "//packages/http/testing:package.json",
     ],
-    entry_point = "packages/http/index.js",
+    entry_point = ":index.ts",
     tags = [
         # Currently the plan for Angular v8 is to exclude @angular/http package from publishing
         # "release-with-framework",
