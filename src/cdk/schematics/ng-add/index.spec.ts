@@ -17,7 +17,9 @@ describe('CDK ng-add', () => {
     const dependencies = packageJson.dependencies;
 
     expect(dependencies['@angular/cdk']).toBeDefined();
-    expect(Object.keys(dependencies)).toEqual(Object.keys(dependencies).sort(),
-        'Expected the modified "dependencies" to be sorted alphabetically.');
+    expect(Object.keys(dependencies))
+        .toEqual(
+            Object.keys(dependencies).sort(),
+            'Expected the modified "dependencies" to be sorted alphabetically.');
   });
 });

@@ -46,7 +46,8 @@ export function postUpdate(): Rule {
     console.log();
     console.log(green('  ✓  Angular CDK update complete'));
     console.log();
-    console.log(yellow('  ⚠  Please check the output above for any issues that were detected ' +
-      'but could not be automatically fixed.'));
+    console.log(yellow(
+        '  ⚠  Please check the output above for any issues that were detected ' +
+        'but could not be automatically fixed.'));
   };
 }

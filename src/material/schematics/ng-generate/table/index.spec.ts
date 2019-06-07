@@ -29,14 +29,14 @@ describe('material-table-schematic', () => {
     expect(moduleContent).toMatch(/import.*Foo.*from '.\/foo\/foo.component'/);
     expect(moduleContent).toMatch(/declarations:\s*\[[^\]]+?,\r?\n\s+FooComponent\r?\n/m);
 
-    const datasourceContent = getFileContent(tree,
-        '/projects/material/src/app/foo/foo-datasource.ts');
+    const datasourceContent =
+        getFileContent(tree, '/projects/material/src/app/foo/foo-datasource.ts');
 
     expect(datasourceContent).toContain('FooItem');
     expect(datasourceContent).toContain('FooDataSource');
 
-    const componentContent = getFileContent(tree,
-        '/projects/material/src/app/foo/foo.component.ts');
+    const componentContent =
+        getFileContent(tree, '/projects/material/src/app/foo/foo.component.ts');
 
     expect(componentContent).toContain('FooDataSource');
   });
@@ -51,12 +51,12 @@ describe('material-table-schematic', () => {
     expect(moduleContent).toContain('MatSortModule');
 
     expect(moduleContent).toContain(
-      `import { MatTableModule, MatPaginatorModule, MatSortModule } from '@angular/material';`);
+        `import { MatTableModule, MatPaginatorModule, MatSortModule } from '@angular/material';`);
   });
 
   it('should throw if no name has been specified', async () => {
     const appTree = await createTestApp(runner);
-    let message: string | null = null;
+    let message: string|null = null;
 
     try {
       await runner.runSchematicAsync('table', {project: 'material'}, appTree).toPromise();
@@ -69,15 +69,19 @@ describe('material-table-schematic', () => {
 
   describe('style option', () => {
     it('should respect the option value', async () => {
-      const tree = await runner.runSchematicAsync(
-          'table', {style: 'scss', ...baseOptions}, await createTestApp(runner)).toPromise();
+      const tree = await runner
+                       .runSchematicAsync(
+                           'table', {style: 'scss', ...baseOptions}, await createTestApp(runner))
+                       .toPromise();
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
     });
 
     it('should fall back to the @schematics/angular:component option value', async () => {
-      const tree = await runner.runSchematicAsync(
-          'table', baseOptions, await createTestApp(runner, {style: 'less'})).toPromise();
+      const tree =
+          await runner
+              .runSchematicAsync('table', baseOptions, await createTestApp(runner, {style: 'less'}))
+              .toPromise();
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.less');
     });
@@ -85,15 +89,20 @@ describe('material-table-schematic', () => {
 
   describe('inlineStyle option', () => {
     it('should respect the option value', async () => {
-      const tree = await runner.runSchematicAsync(
-          'table', {inlineStyle: true, ...baseOptions}, await createTestApp(runner)).toPromise();
+      const tree =
+          await runner
+              .runSchematicAsync(
+                  'table', {inlineStyle: true, ...baseOptions}, await createTestApp(runner))
+              .toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
     });
 
     it('should fall back to the @schematics/angular:component option value', async () => {
-      const tree = await runner.runSchematicAsync(
-          'table', baseOptions, await createTestApp(runner, {inlineStyle: true})).toPromise();
+      const tree = await runner
+                       .runSchematicAsync(
+                           'table', baseOptions, await createTestApp(runner, {inlineStyle: true}))
+                       .toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
     });
@@ -101,15 +110,21 @@ describe('material-table-schematic', () => {
 
   describe('inlineTemplate option', () => {
     it('should respect the option value', async () => {
-      const tree = await runner.runSchematicAsync(
-          'table', {inlineTemplate: true, ...baseOptions}, await createTestApp(runner)).toPromise();
+      const tree =
+          await runner
+              .runSchematicAsync(
+                  'table', {inlineTemplate: true, ...baseOptions}, await createTestApp(runner))
+              .toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
     });
 
     it('should fall back to the @schematics/angular:component option value', async () => {
-      const tree = await runner.runSchematicAsync(
-          'table', baseOptions, await createTestApp(runner, {inlineTemplate: true})).toPromise();
+      const tree =
+          await runner
+              .runSchematicAsync(
+                  'table', baseOptions, await createTestApp(runner, {inlineTemplate: true}))
+              .toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
     });
@@ -117,15 +132,19 @@ describe('material-table-schematic', () => {
 
   describe('skipTests option', () => {
     it('should respect the option value', async () => {
-      const tree = await runner.runSchematicAsync(
-          'table', {skipTests: true, ...baseOptions}, await createTestApp(runner)).toPromise();
+      const tree = await runner
+                       .runSchematicAsync(
+                           'table', {skipTests: true, ...baseOptions}, await createTestApp(runner))
+                       .toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });
 
     it('should fall back to the @schematics/angular:component option value', async () => {
-      const tree = await runner.runSchematicAsync(
-          'table', baseOptions, await createTestApp(runner, {skipTests: true})).toPromise();
+      const tree = await runner
+                       .runSchematicAsync(
+                           'table', baseOptions, await createTestApp(runner, {skipTests: true}))
+                       .toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });

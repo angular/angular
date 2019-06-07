@@ -25,7 +25,7 @@ export default function(options: Schema): Rule {
     // of the CLI project. This tag should be preferred because all Angular dependencies should
     // have the same version tag if possible.
     const ngCoreVersionTag = getPackageVersionFromPackageJson(host, '@angular/core');
-    const angularDependencyVersion =  ngCoreVersionTag || requiredAngularVersionRange;
+    const angularDependencyVersion = ngCoreVersionTag || requiredAngularVersionRange;
 
     // In order to align the Material and CDK version with the other Angular dependencies,
     // we use tilde instead of caret. This is default for Angular dependencies in new CLI projects.
