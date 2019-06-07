@@ -778,6 +778,7 @@ export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
 }) => never;
 
 export declare function ɵɵdefineInjectable<T>(opts: {
+    token: unknown;
     providedIn?: Type<any> | 'root' | 'any' | null;
     factory: () => T;
 }): never;
@@ -869,6 +870,7 @@ export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>, flags?
 export interface ɵɵInjectableDef<T> {
     factory: () => T;
     providedIn: InjectorType<any> | 'root' | 'any' | null;
+    token: unknown;
     value: T | undefined;
 }
 

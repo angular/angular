@@ -1397,6 +1397,7 @@ function declareTests(config?: {useJit: boolean}) {
 
               class Bar {
                 static ngInjectableDef: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                  token: Bar,
                   factory: () => new Bar(),
                   providedIn: SomeModule,
                 });
@@ -1429,6 +1430,7 @@ function declareTests(config?: {useJit: boolean}) {
 
               class Bar {
                 static ngInjectableDef: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                  token: Bar,
                   factory: () => new Bar(),
                   providedIn: SomeModule,
                 });

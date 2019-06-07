@@ -90,6 +90,7 @@ function render2CompileInjectable(
     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
   if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
     injectableType.ngInjectableDef = ɵɵdefineInjectable({
+      token: injectableType,
       providedIn: options.providedIn,
       factory: convertInjectableProviderToFactory(injectableType, options),
     });

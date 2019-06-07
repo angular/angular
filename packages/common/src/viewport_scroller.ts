@@ -22,6 +22,7 @@ export abstract class ViewportScroller {
   // See #23917
   /** @nocollapse */
   static ngInjectableDef = ɵɵdefineInjectable({
+    token: ViewportScroller,
     providedIn: 'root',
     factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window, ɵɵinject(ErrorHandler))
   });

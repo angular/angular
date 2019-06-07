@@ -168,6 +168,7 @@ ivyEnabled && describe('render3 jit', () => {
   it('compiles a module to an ngInjectorDef with the providers', () => {
     class Token {
       static ngInjectableDef = ɵɵdefineInjectable({
+        token: Token,
         providedIn: 'root',
         factory: () => 'default',
       });
