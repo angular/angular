@@ -10,15 +10,16 @@ import {AttributeMarker, ComponentTemplate} from '..';
 import {SchemaMetadata} from '../../core';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
-import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../interfaces/container';
+import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
 import {PropertyAliases, TContainerNode, TElementNode, TNode as ITNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
-import {LQueries} from '../interfaces/query';
+import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
 import {StylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
+
+import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
 import {TStylingContext} from '../styling_next/interfaces';
 import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling_next/styling_debug';
 import {isStylingContext} from '../styling_next/util';
@@ -78,11 +79,11 @@ export const TViewConstructor = class TView implements ITView {
       public id: number,                                     //
       public blueprint: LView,                               //
       public template: ComponentTemplate<{}>|null,           //
+      public queries: TQueries|null,                         //
       public viewQuery: ViewQueriesFunction<{}>|null,        //
       public node: TViewNode|TElementNode|null,              //
       public data: TData,                                    //
       public bindingStartIndex: number,                      //
-      public viewQueryStartIndex: number,                    //
       public expandoStartIndex: number,                      //
       public expandoInstructions: ExpandoInstructions|null,  //
       public firstTemplatePass: boolean,                     //
@@ -287,8 +288,7 @@ export class LViewDebug {
       next: toDebug(this._raw_lView[NEXT]),
       childTail: toDebug(this._raw_lView[CHILD_TAIL]),
       declarationView: toDebug(this._raw_lView[DECLARATION_VIEW]),
-      contentQueries: this._raw_lView[CONTENT_QUERIES],
-      queries: this._raw_lView[QUERIES],
+      queries: null,
       tHost: this._raw_lView[T_HOST],
       bindingIndex: this._raw_lView[BINDING_INDEX],
     };
@@ -361,7 +361,7 @@ export class LContainerDebug {
         .map(toDebug as(l: LView) => LViewDebug);
   }
   get parent(): LViewDebug|LContainerDebug|null { return toDebug(this._raw_lContainer[PARENT]); }
-  get queries(): LQueries|null { return this._raw_lContainer[QUERIES]; }
+  get movedViews(): LView[]|null { return this._raw_lContainer[MOVED_VIEWS]; }
   get host(): RElement|RComment|StylingContext|LView { return this._raw_lContainer[HOST]; }
   get native(): RComment { return this._raw_lContainer[NATIVE]; }
   get __other__() {

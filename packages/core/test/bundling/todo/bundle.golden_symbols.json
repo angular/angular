@@ -39,6 +39,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "DECLARATION_LCONTAINER"
+  },
+  {
     "name": "DECLARATION_VIEW"
   },
   {
@@ -115,6 +118,9 @@
   },
   {
     "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
+    "name": "MOVED_VIEWS"
   },
   {
     "name": "NATIVE"
@@ -438,9 +444,6 @@
     "name": "addRemoveViewFromContainer"
   },
   {
-    "name": "addTContainerToQueries"
-  },
-  {
     "name": "addToViewTree"
   },
   {
@@ -601,6 +604,9 @@
   },
   {
     "name": "destroyViewTree"
+  },
+  {
+    "name": "detachMovedView"
   },
   {
     "name": "detachView"
@@ -1366,6 +1372,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "trackMovedView"
   },
   {
     "name": "unwrapRNode"
