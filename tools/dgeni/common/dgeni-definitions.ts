@@ -33,7 +33,7 @@ export interface CategorizedClassDoc extends ClassExportDoc, CategorizedClassLik
   directiveExportAs?: string | null;
   directiveSelectors?: string[];
   directiveMetadata: Map<string, any> | null;
-  extendedDoc: ClassLikeExportDoc | null;
+  extendedDoc: ClassLikeExportDoc | undefined;
 }
 
 /** Extended Dgeni property-member document that includes extracted Angular metadata. */

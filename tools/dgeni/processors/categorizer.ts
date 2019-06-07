@@ -20,6 +20,7 @@ import {
 } from '../common/dgeni-definitions';
 import {getDirectiveMetadata} from '../common/directive-metadata';
 import {normalizeFunctionParameters} from '../common/normalize-function-parameters';
+import {isPublicDoc} from '../common/private-docs';
 import {getInputBindingData, getOutputBindingData} from '../common/property-bindings';
 import {sortCategorizedMethodMembers, sortCategorizedPropertyMembers} from '../common/sort-members';
 
@@ -37,21 +38,16 @@ export class Categorizer implements Processor {
   $runBefore = ['docs-processed'];
 
   $process(docs: DocCollection) {
-    docs
-      .filter(doc => doc.docType === 'class' || doc.docType === 'interface')
-      .forEach(doc => this._decorateClassLikeDoc(doc));
+    docs.filter(doc => doc.docType === 'class' || doc.docType === 'interface')
+        .forEach(doc => this._decorateClassLikeDoc(doc));
 
-    docs
-      .filter(doc => doc.docType === 'function')
-      .forEach(doc => this._decorateFunctionExportDoc(doc));
+    docs.filter(doc => doc.docType === 'function')
+        .forEach(doc => this._decorateFunctionExportDoc(doc));
 
-    docs
-      .filter(doc => doc.docType === 'const')
-      .forEach(doc => this._decorateConstExportDoc(doc));
+    docs.filter(doc => doc.docType === 'const').forEach(doc => this._decorateConstExportDoc(doc));
 
-    docs
-      .filter(doc => doc.docType === 'type-alias')
-      .forEach(doc => this._decorateTypeAliasExportDoc(doc));
+    docs.filter(doc => doc.docType === 'type-alias')
+        .forEach(doc => this._decorateTypeAliasExportDoc(doc));
   }
 
   /**
@@ -60,13 +56,12 @@ export class Categorizer implements Processor {
    */
   private _decorateClassLikeDoc(classLikeDoc: CategorizedClassLikeDoc) {
     // Resolve all methods and properties from the classDoc.
-    classLikeDoc.methods = classLikeDoc.members
-      .filter(isMethod)
-      .filter(filterDuplicateMembers) as CategorizedMethodMemberDoc[];
+    classLikeDoc.methods = classLikeDoc.members.filter(isMethod).filter(filterDuplicateMembers) as
+        CategorizedMethodMemberDoc[];
 
-    classLikeDoc.properties = classLikeDoc.members
-      .filter(isProperty)
-      .filter(filterDuplicateMembers) as CategorizedPropertyMemberDoc[];
+    classLikeDoc.properties =
+        classLikeDoc.members.filter(isProperty).filter(filterDuplicateMembers) as
+        CategorizedPropertyMemberDoc[];
 
     // Special decorations for real class documents that don't apply for interfaces.
     if (classLikeDoc.docType === 'class') {
@@ -94,8 +89,15 @@ export class Categorizer implements Processor {
     // Classes can only extend a single class. This means that there can't be multiple extend
     // clauses for the Dgeni document. To make the template syntax simpler and more readable,
     // store the extended class in a variable.
-    classDoc.extendedDoc = classDoc.extendsClauses[0] ? classDoc.extendsClauses[0].doc! : null;
+    classDoc.extendedDoc = classDoc.extendsClauses[0] ? classDoc.extendsClauses[0].doc! : undefined;
     classDoc.directiveMetadata = getDirectiveMetadata(classDoc);
+
+    // In case the extended document is not public, we don't want to print it in the
+    // rendered class API doc. This causes confusion and also is not helpful as the
+    // extended document is not part of the docs and cannot be viewed.
+    if (classDoc.extendedDoc !== undefined && !isPublicDoc(classDoc.extendedDoc)) {
+      classDoc.extendedDoc = undefined;
+    }
 
     // Categorize the current visited classDoc into its Angular type.
     if (isDirective(classDoc) && classDoc.directiveMetadata) {
@@ -151,7 +153,8 @@ export class Categorizer implements Processor {
     decorateDeprecatedDoc(propertyDoc);
 
     const metadata = propertyDoc.containerDoc.docType === 'class' ?
-        (propertyDoc.containerDoc as CategorizedClassDoc).directiveMetadata : null;
+        (propertyDoc.containerDoc as CategorizedClassDoc).directiveMetadata :
+        null;
 
     const inputMetadata = metadata ? getInputBindingData(propertyDoc, metadata) : null;
     const outputMetadata = metadata ? getOutputBindingData(propertyDoc, metadata) : null;
@@ -172,7 +175,6 @@ export class Categorizer implements Processor {
 
     classDoc.methods.forEach((methodDoc, index) => {
       if (methodDoc.overloads.length > 0) {
-
         // Add each method overload to the methods that will be shown in the docs.
         // Note that we cannot add the overloads immediately to the methods array because
         // that would cause the iteration to visit the new overloads.

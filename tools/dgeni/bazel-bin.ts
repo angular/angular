@@ -101,9 +101,11 @@ if (require.main === module) {
   // Run the docs generation. The process will be automatically kept alive until Dgeni
   // completed. In case the returned promise has been rejected, we need to manually exit the
   // process with the proper exit code because Dgeni doesn't use native promises which would
-  // automatically cause the error to propagate. The error message will be automatically
-  // printed internally by Dgeni (so we don't want to repeat here)
-  new Dgeni([apiDocsPackage]).generate().catch(() => process.exit(1));
+  // automatically cause the error to propagate.
+  new Dgeni([apiDocsPackage]).generate().catch((e: any) => {
+    console.error(e);
+    process.exit(1);
+  });
 }
 
 

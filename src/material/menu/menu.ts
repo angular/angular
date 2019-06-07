@@ -416,6 +416,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   }
 }
 
+/** @docs-private We show the "_MatMenu" class as "MatMenu" in the docs. */
 export class MatMenu extends _MatMenuBase {}
 
 // Note on the weird inheritance setup: we need three classes, because the MDC-based menu has to
@@ -429,6 +430,7 @@ export class MatMenu extends _MatMenuBase {}
 // * _MatMenu - the actual menu component implementation with the Angular metadata that should
 // be tree shaken away for MDC.
 
+/** @docs-public MatMenu */
 @Component({
   moduleId: module.id,
   selector: 'mat-menu',
