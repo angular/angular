@@ -190,7 +190,15 @@ export function ɵɵdefineInjector(options: {factory: () => any, providers?: any
  * @param type A type which may have its own (non-inherited) `ngInjectableDef`.
  */
 export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
-  return type && type.hasOwnProperty(NG_INJECTABLE_DEF) ? type[NG_INJECTABLE_DEF] : null;
+  const def = type[NG_INJECTABLE_DEF] as ɵɵInjectableDef<T>;
+  // The definition read above may come from a base class. `hasOwnProperty` is not sufficient to
+  // distinguish this case, as in older browsers (e.g. IE10) static property inheritance is
+  // implemented by copying the properties.
+  //
+  // Instead, the ngInjectableDef's token is compared to the type, and if they don't match then the
+  // property was not defined directly on the type itself, and was likely inherited. The definition
+  // is only returned if the type matches the def.token.
+  return def && def.token === type ? def : null;
 }
 
 /**
