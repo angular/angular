@@ -80,5 +80,6 @@ export function assertDomNode(node: any) {
 
 
 export function assertDataInRange(arr: any[], index: number) {
-  assertLessThan(index, arr ? arr.length : 0, 'index expected to be a valid data index');
+  const maxLen = arr ? arr.length : 0;
+  assertLessThan(index, maxLen, `Index expected to be less than ${maxLen} but got ${index}`);
 }
