@@ -47,7 +47,7 @@ ts_devserver(
 
 rollup_bundle(
     name = "bundle",
-    entry_point = "src/main",
+    entry_point = ":main.ts",
     deps = [
         "//src",
         # TODO(kyliau): These are not necessary. Bundle compiles fine without

@@ -32,7 +32,7 @@ ts_library(
 
 ng_rollup_bundle(
     name = "bundle",
-    entry_point = "modules/benchmarks/src/expanding_rows/index.js",
+    entry_point = ":index.ts",
     deps = [
         ":application_lib",
         "@npm//rxjs",

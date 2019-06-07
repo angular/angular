@@ -36,7 +36,7 @@ nodejs_binary(
         "@npm//source-map-support",
         "@npm//tslib",
     ],
-    entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js",
+    entry_point = ":index.ts",
     visibility = ["//visibility:public"],
 )
 
@@ -46,7 +46,7 @@ nodejs_binary(
         ":ngc_lib",
         "@npm//source-map-support",
     ],
-    entry_point = "angular/packages/bazel/src/ngc-wrapped/extract_i18n.js",
+    entry_point = ":extract_i18n.ts",
     visibility = ["//visibility:public"],
 )
 
