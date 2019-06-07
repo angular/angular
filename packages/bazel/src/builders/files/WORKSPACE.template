@@ -15,8 +15,8 @@ workspace(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-RULES_NODEJS_VERSION = "0.30.1"
-RULES_NODEJS_SHA256 = "abcf497e89cfc1d09132adfcd8c07526d026e162ae2cb681dcb896046417ce91"
+RULES_NODEJS_VERSION = "0.31.1"
+RULES_NODEJS_SHA256 = "e04a82a72146bfbca2d0575947daa60fda1878c8d3a3afe868a8ec39a6b968bb"
 http_archive(
     name = "build_bazel_rules_nodejs",
     sha256 = RULES_NODEJS_SHA256,
@@ -49,8 +49,13 @@ Try running `yarn bazel` instead.
 )
 yarn_install(
     name = "npm",
+    data = ["//:angular-metadata.tsconfig.json"],
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
+    # Temporarily disable node_modules symlinking until the fix for
+    # https://github.com/bazelbuild/bazel/issues/8487 makes it into a
+    # future Bazel release
+    symlink_node_modules = False,
 )
 
 load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
