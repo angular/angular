@@ -57,6 +57,6 @@ export function ɵɵtextBinding<T>(value: T | NO_CHANGE): void {
   const index = getSelectedIndex();
   const bound = ɵɵbind(value);
   if (bound !== NO_CHANGE) {
-    textBindingInternal(lView, index, bound);
+    textBindingInternal(lView, index, renderStringify(bound));
   }
 }

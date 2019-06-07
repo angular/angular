@@ -62,7 +62,7 @@ export function ɵɵtextInterpolate1(prefix: string, v0: any, suffix: string): T
   const lView = getLView();
   const interpolated = ɵɵinterpolation1(prefix, v0, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, index, interpolated);
+    textBindingInternal(lView, index, interpolated as string);
   }
   return ɵɵtextInterpolate1;
 }
@@ -92,7 +92,7 @@ export function ɵɵtextInterpolate2(
   const lView = getLView();
   const interpolated = ɵɵinterpolation2(prefix, v0, i0, v1, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, index, interpolated);
+    textBindingInternal(lView, index, interpolated as string);
   }
   return ɵɵtextInterpolate2;
 }
@@ -124,7 +124,7 @@ export function ɵɵtextInterpolate3(
   const lView = getLView();
   const interpolated = ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, index, interpolated);
+    textBindingInternal(lView, index, interpolated as string);
   }
   return ɵɵtextInterpolate3;
 }
@@ -156,7 +156,7 @@ export function ɵɵtextInterpolate4(
   const lView = getLView();
   const interpolated = ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, index, interpolated);
+    textBindingInternal(lView, index, interpolated as string);
   }
   return ɵɵtextInterpolate4;
 }
@@ -188,7 +188,7 @@ export function ɵɵtextInterpolate5(
   const lView = getLView();
   const interpolated = ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, index, interpolated);
+    textBindingInternal(lView, index, interpolated as string);
   }
   return ɵɵtextInterpolate5;
 }
@@ -222,7 +222,7 @@ export function ɵɵtextInterpolate6(
   const lView = getLView();
   const interpolated = ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, index, interpolated);
+    textBindingInternal(lView, index, interpolated as string);
   }
   return ɵɵtextInterpolate6;
 }
@@ -256,7 +256,7 @@ export function ɵɵtextInterpolate7(
   const interpolated =
       ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, index, interpolated);
+    textBindingInternal(lView, index, interpolated as string);
   }
   return ɵɵtextInterpolate7;
 }
@@ -290,7 +290,7 @@ export function ɵɵtextInterpolate8(
   const interpolated =
       ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, index, interpolated);
+    textBindingInternal(lView, index, interpolated as string);
   }
   return ɵɵtextInterpolate8;
 }
@@ -324,7 +324,7 @@ export function ɵɵtextInterpolateV(values: any[]): TsickleIssue1009 {
   const lView = getLView();
   const interpolated = ɵɵinterpolationV(values);
   if (interpolated !== NO_CHANGE) {
-    textBindingInternal(lView, index, interpolated);
+    textBindingInternal(lView, index, interpolated as string);
   }
   return ɵɵtextInterpolateV;
 }
