@@ -156,7 +156,7 @@ export function ɵɵelementEnd(): void {
     lView[QUERIES] = currentQueries.parent;
   }
 
-  registerPostOrderHooks(getLView()[TVIEW], previousOrParentTNode);
+  registerPostOrderHooks(lView[TVIEW], previousOrParentTNode);
   decreaseElementDepthCount();
 
   // this is fired at the end of elementEnd because ALL of the stylingBindings code
