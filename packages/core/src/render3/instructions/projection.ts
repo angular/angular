@@ -8,11 +8,13 @@
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
 import {TVIEW, T_HOST} from '../interfaces/view';
-import {appendProjectedNodes} from '../node_manipulation';
+import {applyProjection} from '../node_manipulation';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
 import {getLView, setIsNotParent} from '../state';
 import {findComponentView} from '../util/view_traversal_utils';
+
 import {getOrCreateTNode} from './shared';
+
 
 
 /**
@@ -134,6 +136,6 @@ export function ɵɵprojection(
   // We might need to delay the projection of nodes if they are in the middle of an i18n block
   if (!delayProjection) {
     // re-distribution of projectable nodes is stored on a component's view level
-    appendProjectedNodes(lView, tProjectionNode, selectorIndex, findComponentView(lView));
+    applyProjection(lView, tProjectionNode);
   }
 }

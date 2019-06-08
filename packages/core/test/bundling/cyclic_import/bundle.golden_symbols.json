@@ -150,9 +150,6 @@
     "name": "__self"
   },
   {
-    "name": "__values"
-  },
-  {
     "name": "__window"
   },
   {
@@ -316,9 +313,6 @@
   },
   {
     "name": "getElementDepthCount"
-  },
-  {
-    "name": "getHighestElementOrICUContainer"
   },
   {
     "name": "getHostNative"
