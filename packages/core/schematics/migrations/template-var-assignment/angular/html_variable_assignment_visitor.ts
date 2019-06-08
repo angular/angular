@@ -74,6 +74,6 @@ class ExpressionAstVisitor extends RecursiveAstVisitor {
         end: span.end.offset,
       });
     }
-    super.visitPropertyWrite(node, span);
+    return super.visitPropertyWrite(node, span);
   }
 }

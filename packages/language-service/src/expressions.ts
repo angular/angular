@@ -48,10 +48,11 @@ export function getExpressionCompletions(
   // If the completion request is in a not in a pipe or property access then the global scope
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
   // beginning of an expression.
-  tail.visit({
+  tail.visit<void>({
     visitBinary(ast) {},
     visitChain(ast) {},
     visitConditional(ast) {},
+    visitEmptyExpr(ast) {},
     visitFunctionCall(ast) {},
     visitImplicitReceiver(ast) {},
     visitInterpolation(ast) { result = undefined; },
@@ -110,10 +111,11 @@ export function getExpressionSymbol(
   // If the completion request is in a not in a pipe or property access then the global scope
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
   // beginning of an expression.
-  tail.visit({
+  tail.visit<void>({
     visitBinary(ast) {},
     visitChain(ast) {},
     visitConditional(ast) {},
+    visitEmptyExpr(ast) {},
     visitFunctionCall(ast) {},
     visitImplicitReceiver(ast) {},
     visitInterpolation(ast) {},

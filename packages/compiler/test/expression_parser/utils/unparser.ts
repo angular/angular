@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '../../../src/expression_parser/ast';
+import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '../../../src/expression_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
 
-class Unparser implements AstVisitor {
+class Unparser implements AstVisitor<void> {
   private static _quoteRegExp = /"/g;
   // TODO(issue/24571): remove '!'.
   private _expression !: string;
@@ -40,6 +40,8 @@ class Unparser implements AstVisitor {
     this._expression += ` ${ast.operation} `;
     this._visit(ast.right);
   }
+
+  visitEmptyExpr(ast: EmptyExpr, context: any): void {}
 
   visitChain(ast: Chain, context: any) {
     const len = ast.expressions.length;

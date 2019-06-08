@@ -26,6 +26,7 @@ import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
+import {isEmptyExpression} from '../../template_parser/template_parser';
 import {error} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
@@ -753,7 +754,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         if (input.i18n) return;
 
         const value = input.value.visit(this._valueConverter);
-        if (value !== undefined) {
+        if (!isEmptyExpression(value)) {
           const params: any[] = [];
           const [attrNamespace, attrName] = splitNsName(input.name);
           const isAttributeBinding = inputType === BindingType.Attribute;
@@ -1053,7 +1054,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (input instanceof t.BoundAttribute) {
         const value = input.value.visit(this._valueConverter);
 
-        if (value !== undefined) {
+        if (!isEmptyExpression(value)) {
           this.allocateBindingSlots(value);
           propertyBindings.push({
             name: input.name,

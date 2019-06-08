@@ -10,7 +10,7 @@ import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {escapeRegExp} from '../util';
 
-import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
+import {AST, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, NullAstVisitor, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
 import {EOF, Lexer, Token, TokenType, isIdentifier, isQuote} from './lexer';
 
 export class SplitInterpolation {
@@ -774,7 +774,7 @@ export class _ParseAST {
   }
 }
 
-class SimpleExpressionChecker implements AstVisitor {
+class SimpleExpressionChecker extends NullAstVisitor {
   static check(ast: AST): string[] {
     const s = new SimpleExpressionChecker();
     ast.visit(s);
@@ -783,45 +783,11 @@ class SimpleExpressionChecker implements AstVisitor {
 
   errors: string[] = [];
 
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any) {}
-
-  visitInterpolation(ast: Interpolation, context: any) {}
-
-  visitLiteralPrimitive(ast: LiteralPrimitive, context: any) {}
-
-  visitPropertyRead(ast: PropertyRead, context: any) {}
-
-  visitPropertyWrite(ast: PropertyWrite, context: any) {}
-
-  visitSafePropertyRead(ast: SafePropertyRead, context: any) {}
-
-  visitMethodCall(ast: MethodCall, context: any) {}
-
-  visitSafeMethodCall(ast: SafeMethodCall, context: any) {}
-
-  visitFunctionCall(ast: FunctionCall, context: any) {}
-
   visitLiteralArray(ast: LiteralArray, context: any) { this.visitAll(ast.expressions); }
 
   visitLiteralMap(ast: LiteralMap, context: any) { this.visitAll(ast.values); }
 
-  visitBinary(ast: Binary, context: any) {}
-
-  visitPrefixNot(ast: PrefixNot, context: any) {}
-
-  visitNonNullAssert(ast: NonNullAssert, context: any) {}
-
-  visitConditional(ast: Conditional, context: any) {}
-
   visitPipe(ast: BindingPipe, context: any) { this.errors.push('pipes'); }
 
-  visitKeyedRead(ast: KeyedRead, context: any) {}
-
-  visitKeyedWrite(ast: KeyedWrite, context: any) {}
-
   visitAll(asts: any[]): any[] { return asts.map(node => node.visit(this)); }
-
-  visitChain(ast: Chain, context: any) {}
-
-  visitQuote(ast: Quote, context: any) {}
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, visitAstChildren} from '@angular/compiler';
+import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, visitAstChildren} from '@angular/compiler';
 
 import {BuiltinType, Signature, Span, Symbol, SymbolQuery, SymbolTable} from './symbols';
 
@@ -22,7 +22,7 @@ export class TypeDiagnostic {
 }
 
 // AstType calculatetype of the ast given AST element.
-export class AstType implements AstVisitor {
+export class AstType implements AstVisitor<Symbol> {
   // TODO(issue/24571): remove '!'.
   public diagnostics !: TypeDiagnostic[];
 
@@ -192,6 +192,10 @@ export class AstType implements AstVisitor {
       visitAstChildren(ast, this);
     }
     return this.query.getTypeUnion(this.getType(ast.trueExp), this.getType(ast.falseExp));
+  }
+
+  visitEmptyExpr(ast: EmptyExpr, context: any): Symbol {
+    return this.query.getBuiltinType(BuiltinType.Undefined);
   }
 
   visitFunctionCall(ast: FunctionCall) {
@@ -402,7 +406,7 @@ export class AstType implements AstVisitor {
       this.reportWarning(
           `Identifier '${ast.name}' refers to a private member of ${receiverInfo}`, ast);
     }
-    return member.type;
+    return member.type !== undefined ? member.type : this.anyType;
   }
 
   private reportError(message: string, ast: AST): Symbol {

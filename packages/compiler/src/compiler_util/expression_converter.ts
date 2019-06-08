@@ -301,7 +301,7 @@ class _BuiltinAstConverter extends cdAst.AstTransformer {
   }
 }
 
-class _AstToIrVisitor implements cdAst.AstVisitor {
+class _AstToIrVisitor implements cdAst.AstVisitor<any> {
   private _nodeMap = new Map<cdAst.AST, cdAst.AST>();
   private _resultMap = new Map<cdAst.AST, o.Expression>();
   private _currentTemporary: number = 0;
@@ -383,6 +383,10 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         mode, value.conditional(
                   this._visit(ast.trueExp, _Mode.Expression),
                   this._visit(ast.falseExp, _Mode.Expression), this.convertSourceSpan(ast.span)));
+  }
+
+  visitEmptyExpr(ast: cdAst.EmptyExpr, mode: _Mode): any {
+    throw new Error('Illegal state: EmptyExpr should not have been emitted');
   }
 
   visitPipe(ast: cdAst.BindingPipe, mode: _Mode): any {
@@ -674,14 +678,18 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   //   a == null ? null : a.c.b.c?.d.e
   // then to:
   //   a == null ? null : a.b.c == null ? null : a.b.c.d.e
-  private leftMostSafeNode(ast: cdAst.AST): cdAst.SafePropertyRead|cdAst.SafeMethodCall {
-    const visit = (visitor: cdAst.AstVisitor, ast: cdAst.AST): any => {
+  private leftMostSafeNode(ast: cdAst.SafePropertyRead|
+                           cdAst.SafeMethodCall): cdAst.SafePropertyRead|cdAst.SafeMethodCall;
+  private leftMostSafeNode(ast: cdAst.AST): cdAst.SafePropertyRead|cdAst.SafeMethodCall|null;
+  private leftMostSafeNode(ast: cdAst.AST): cdAst.SafePropertyRead|cdAst.SafeMethodCall|null {
+    const visit = (visitor: cdAst.AstVisitor<any>, ast: cdAst.AST): any => {
       return (this._nodeMap.get(ast) || ast).visit(visitor);
     };
     return ast.visit({
       visitBinary(ast: cdAst.Binary) { return null; },
       visitChain(ast: cdAst.Chain) { return null; },
       visitConditional(ast: cdAst.Conditional) { return null; },
+      visitEmptyExpr(ast: cdAst.EmptyExpr) { return null; },
       visitFunctionCall(ast: cdAst.FunctionCall) { return null; },
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) { return null; },
       visitInterpolation(ast: cdAst.Interpolation) { return null; },
@@ -708,10 +716,10 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   // expression is used as the target of a safe property or method access then
   // the expression should be stored into a temporary variable.
   private needsTemporary(ast: cdAst.AST): boolean {
-    const visit = (visitor: cdAst.AstVisitor, ast: cdAst.AST): boolean => {
+    const visit = (visitor: cdAst.AstVisitor<boolean>, ast: cdAst.AST): boolean => {
       return ast && (this._nodeMap.get(ast) || ast).visit(visitor);
     };
-    const visitSome = (visitor: cdAst.AstVisitor, ast: cdAst.AST[]): boolean => {
+    const visitSome = (visitor: cdAst.AstVisitor<boolean>, ast: cdAst.AST[]): boolean => {
       return ast.some(ast => visit(visitor, ast));
     };
     return ast.visit({
@@ -721,6 +729,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitConditional(ast: cdAst.Conditional):
           boolean{return visit(this, ast.condition) || visit(this, ast.trueExp) ||
                       visit(this, ast.falseExp);},
+      visitEmptyExpr(ast: cdAst.EmptyExpr) { return false; },
       visitFunctionCall(ast: cdAst.FunctionCall) { return true; },
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) { return false; },
       visitInterpolation(ast: cdAst.Interpolation) { return visitSome(this, ast.expressions); },

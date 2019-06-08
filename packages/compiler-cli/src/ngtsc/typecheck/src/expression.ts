@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
+import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
@@ -46,7 +46,7 @@ export function astToTypescript(
   return translator.translate(ast);
 }
 
-class AstTranslator implements AstVisitor {
+class AstTranslator implements AstVisitor<ts.Expression> {
   constructor(
       private maybeResolve: (ast: AST) => ts.Expression | null,
       private config: TypeCheckingConfig) {}
@@ -85,6 +85,8 @@ class AstTranslator implements AstVisitor {
     const falseExpr = this.translate(ast.falseExp);
     return ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
   }
+
+  visitEmptyExpr(ast: EmptyExpr, context: any): ts.Expression { return undefined!; }
 
   visitFunctionCall(ast: FunctionCall): never { throw new Error('Method not implemented.'); }
 

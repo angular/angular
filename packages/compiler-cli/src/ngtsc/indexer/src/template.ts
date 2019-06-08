@@ -60,12 +60,12 @@ class ExpressionVisitor extends RecursiveAstVisitor {
 
   visitMethodCall(ast: MethodCall, context: {}) {
     this.visitIdentifier(ast, IdentifierKind.Method);
-    super.visitMethodCall(ast, context);
+    return super.visitMethodCall(ast, context);
   }
 
   visitPropertyRead(ast: PropertyRead, context: {}) {
     this.visitIdentifier(ast, IdentifierKind.Property);
-    super.visitPropertyRead(ast, context);
+    return super.visitPropertyRead(ast, context);
   }
 
   /**
