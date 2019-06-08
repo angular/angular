@@ -235,7 +235,6 @@ function createTNodeAtIndex(
   if (index === 0 || !tView.firstChild) {
     tView.firstChild = tNode;
   }
-  // Now link ourselves into the tree.
   if (previousOrParentTNode) {
     if (isParent && previousOrParentTNode.child == null &&
         (tNode.parent !== null || previousOrParentTNode.type === TNodeType.View)) {

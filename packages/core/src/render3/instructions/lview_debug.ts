@@ -102,6 +102,12 @@ export const TViewConstructor = class TView implements ITView {
       public firstChild: TNode|null,                         //
       public schemas: SchemaMetadata[]|null,                 //
       ) {}
+
+  get template_(): string {
+    const buf: string[] = [];
+    processTNodeChildren(this.firstChild, buf);
+    return buf.join('');
+  }
 };
 
 export const TNodeConstructor = class TNode implements ITNode {
@@ -161,7 +167,33 @@ export const TNodeConstructor = class TNode implements ITNode {
     if (this.flags & TNodeFlags.isProjected) flags.push('TNodeFlags.isProjected');
     return flags.join('|');
   }
+
+  get template_(): string {
+    const buf: string[] = [];
+    buf.push('<', this.tagName || this.type_);
+    if (this.attrs) {
+      for (let i = 0; i < this.attrs.length;) {
+        const attrName = this.attrs[i++];
+        if (typeof attrName == 'number') {
+          break;
+        }
+        const attrValue = this.attrs[i++];
+        buf.push(' ', attrName as string, '="', attrValue as string, '"');
+      }
+    }
+    buf.push('>');
+    processTNodeChildren(this.child, buf);
+    buf.push('</', this.tagName || this.type_, '>');
+    return buf.join('');
+  }
 };
+
+function processTNodeChildren(tNode: TNode | null, buf: string[]) {
+  while (tNode) {
+    buf.push((tNode as any as{template_: string}).template_);
+    tNode = tNode.next;
+  }
+}
 
 const TViewData = ngDevMode && createNamedArrayType('TViewData');
 let TVIEWDATA_EMPTY:
@@ -226,8 +258,8 @@ function toHtml(value: any, includeChildren: boolean = false): string|null {
     if (includeChildren || isTextNode) {
       return outerHTML;
     } else {
-      const innerHTML = node.innerHTML;
-      return outerHTML.split(innerHTML)[0] || null;
+      const innerHTML = '>' + node.innerHTML + '<';
+      return (outerHTML.split(innerHTML)[0]) + '>';
     }
   } else {
     return null;
@@ -257,6 +289,7 @@ export class LViewDebug {
   }
   get parent(): LViewDebug|LContainerDebug|null { return toDebug(this._raw_lView[PARENT]); }
   get host(): string|null { return toHtml(this._raw_lView[HOST], true); }
+  get html(): string { return (this.nodes || []).map(node => toHtml(node.native, true)).join(''); }
   get context(): {}|null { return this._raw_lView[CONTEXT]; }
   /**
    * The tree of nodes associated with the current `LView`. The nodes have been normalized into a
@@ -267,38 +300,30 @@ export class LViewDebug {
     const tNode = lView[TVIEW].firstChild;
     return toDebugNodes(tNode, lView);
   }
-  /**
-   * Additional information which is hidden behind a property. The extra level of indirection is
-   * done so that the debug view would not be cluttered with properties which are only rarely
-   * relevant to the developer.
-   */
-  get __other__() {
-    return {
-      tView: this._raw_lView[TVIEW],
-      cleanup: this._raw_lView[CLEANUP],
-      injector: this._raw_lView[INJECTOR],
-      rendererFactory: this._raw_lView[RENDERER_FACTORY],
-      renderer: this._raw_lView[RENDERER],
-      sanitizer: this._raw_lView[SANITIZER],
-      childHead: toDebug(this._raw_lView[CHILD_HEAD]),
-      next: toDebug(this._raw_lView[NEXT]),
-      childTail: toDebug(this._raw_lView[CHILD_TAIL]),
-      declarationView: toDebug(this._raw_lView[DECLARATION_VIEW]),
-      queries: null,
-      tHost: this._raw_lView[T_HOST],
-      bindingIndex: this._raw_lView[BINDING_INDEX],
-    };
-  }
+
+  get tView() { return this._raw_lView[TVIEW]; }
+  get cleanup() { return this._raw_lView[CLEANUP]; }
+  get injector() { return this._raw_lView[INJECTOR]; }
+  get rendererFactory() { return this._raw_lView[RENDERER_FACTORY]; }
+  get renderer() { return this._raw_lView[RENDERER]; }
+  get sanitizer() { return this._raw_lView[SANITIZER]; }
+  get childHead() { return toDebug(this._raw_lView[CHILD_HEAD]); }
+  get next() { return toDebug(this._raw_lView[NEXT]); }
+  get childTail() { return toDebug(this._raw_lView[CHILD_TAIL]); }
+  get declarationView() { return toDebug(this._raw_lView[DECLARATION_VIEW]); }
+  get queries() { return this._raw_lView[QUERIES]; }
+  get tHost() { return this._raw_lView[T_HOST]; }
+  get bindingIndex() { return this._raw_lView[BINDING_INDEX]; }
 
   /**
    * Normalized view of child views (and containers) attached at this location.
    */
   get childViews(): Array<LViewDebug|LContainerDebug> {
     const childViews: Array<LViewDebug|LContainerDebug> = [];
-    let child = this.__other__.childHead;
+    let child = this.childHead;
     while (child) {
       childViews.push(child);
-      child = child.__other__.next;
+      child = child.next;
     }
     return childViews;
   }
@@ -359,11 +384,7 @@ export class LContainerDebug {
   get movedViews(): LView[]|null { return this._raw_lContainer[MOVED_VIEWS]; }
   get host(): RElement|RComment|LView { return this._raw_lContainer[HOST]; }
   get native(): RComment { return this._raw_lContainer[NATIVE]; }
-  get __other__() {
-    return {
-      next: toDebug(this._raw_lContainer[NEXT]),
-    };
-  }
+  get next() { return toDebug(this._raw_lContainer[NEXT]); }
 }
 
 /**

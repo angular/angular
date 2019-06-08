@@ -770,7 +770,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       @Component({
         selector: 'my-app',
         template: `
-            <my-cmp i18n="test">{
+            <my-cmp i18n="test" *ngIf="condition">{
               count,
               plural,
               =1 {ONE}
@@ -780,6 +780,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       })
       class App {
         count = 1;
+        condition = true;
       }
 
       TestBed.configureTestingModule({
@@ -788,25 +789,40 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML)
-          .toBe('<my-cmp><div>ONE<!--ICU 13--></div><!--container--></my-cmp>');
+          .toContain('<my-cmp><div>ONE<!--ICU 13--></div><!--container--></my-cmp>');
 
       fixture.componentRef.instance.count = 2;
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML)
-          .toBe('<my-cmp><div>OTHER<!--ICU 13--></div><!--container--></my-cmp>');
+          .toContain('<my-cmp><div>OTHER<!--ICU 13--></div><!--container--></my-cmp>');
+
+      // destroy component
+      fixture.componentInstance.condition = false;
+      fixture.detectChanges();
+      expect(fixture.debugElement.nativeElement.textContent).toBe('');
+
+      // render it again and also change ICU case
+      fixture.componentInstance.condition = true;
+      fixture.componentInstance.count = 1;
+      fixture.detectChanges();
+      expect(fixture.debugElement.nativeElement.innerHTML)
+          .toContain('<my-cmp><div>ONE<!--ICU 13--></div><!--container--></my-cmp>');
     });
 
     it('with nested ICU expression and inside a container when creating a view via vcr.createEmbeddedView',
        () => {
+         let dir: Dir|null = null;
          @Directive({
            selector: '[someDir]',
          })
          class Dir {
            constructor(
                private readonly viewContainerRef: ViewContainerRef,
-               private readonly templateRef: TemplateRef<any>) {}
+               private readonly templateRef: TemplateRef<any>) {
+             dir = this;
+           }
 
-           ngOnInit() { this.viewContainerRef.createEmbeddedView(this.templateRef); }
+           attachEmbeddedView() { this.viewContainerRef.createEmbeddedView(this.templateRef); }
          }
 
          @Component({
@@ -844,6 +860,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
          });
          const fixture = TestBed.createComponent(App);
          fixture.componentRef.instance.count = 2;
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement.innerHTML)
+             .toBe('<my-cmp><!--container--></my-cmp>');
+
+         dir !.attachEmbeddedView();
          fixture.detectChanges();
          expect(fixture.debugElement.nativeElement.innerHTML)
              .toBe(
@@ -1519,6 +1540,51 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML).toEqual(`<child><div>Contenu enfant</div></child>`);
+    });
+
+    it('should display/destroy projected i18n content', () => {
+
+      @Component({
+        selector: 'app',
+        template: `
+            <ng-container>(<ng-content></ng-content>)</ng-container>
+        `
+      })
+      class MyContentApp {
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: `
+          <app i18n *ngIf="condition">{type, select, A {A} B {B} other {other}}</app>
+        `
+      })
+      class MyApp {
+        type = 'A';
+        condition = true;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyApp, MyContentApp]});
+
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('(A)');
+
+      // change `condition` to remove <app>
+      fixture.componentInstance.condition = false;
+      fixture.detectChanges();
+
+      // should not contain 'A'
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // display <app> again
+      fixture.componentInstance.type = 'B';
+      fixture.componentInstance.condition = true;
+      fixture.detectChanges();
+
+      // expect that 'B' is now displayed
+      expect(fixture.nativeElement.textContent).toContain('(B)');
     });
   });
 
