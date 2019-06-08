@@ -346,6 +346,101 @@ describe('projection', () => {
     expect(fixture.nativeElement.querySelectorAll('div').length).toBe(3);
   });
 
+  it('should handle projection into element containers at the view root', () => {
+    @Component({
+      selector: 'root-comp',
+      template: `
+        <ng-template [ngIf]="show">
+          <ng-container>
+            <ng-content></ng-content>
+          </ng-container>
+        </ng-template>`,
+    })
+    class RootComp {
+      @Input() show: boolean = true;
+    }
+
+    @Component({
+      selector: 'my-app',
+      template: `<root-comp [show]="show"><div></div></root-comp>
+      `
+    })
+    class MyApp {
+      show = true;
+    }
+
+    TestBed.configureTestingModule({declarations: [MyApp, RootComp]});
+    const fixture = TestBed.createComponent(MyApp);
+
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('div').length).toBe(1);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('div').length).toBe(0);
+  });
+
+  it('should handle projection of views with element containers at the root', () => {
+    @Component({
+      selector: 'root-comp',
+      template: `<ng-template [ngIf]="show"><ng-content></ng-content></ng-template>`,
+    })
+    class RootComp {
+      @Input() show: boolean = true;
+    }
+
+    @Component({
+      selector: 'my-app',
+      template: `<root-comp [show]="show"><ng-container><div></div></ng-container></root-comp>`
+    })
+    class MyApp {
+      show = true;
+    }
+
+    TestBed.configureTestingModule({declarations: [MyApp, RootComp]});
+    const fixture = TestBed.createComponent(MyApp);
+
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('div').length).toBe(1);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('div').length).toBe(0);
+  });
+
+  it('should handle re-projection at the root of an embedded view', () => {
+    @Component({
+      selector: 'child-comp',
+      template: `<ng-template [ngIf]="show"><ng-content></ng-content></ng-template>`,
+    })
+    class ChildComp {
+      @Input() show: boolean = true;
+    }
+
+    @Component({
+      selector: 'parent-comp',
+      template: `<child-comp [show]="show"><ng-content></ng-content></child-comp>`
+    })
+    class ParentComp {
+      @Input() show: boolean = true;
+    }
+
+    @Component(
+        {selector: 'my-app', template: `<parent-comp [show]="show"><div></div></parent-comp>`})
+    class MyApp {
+      show = true;
+    }
+
+    TestBed.configureTestingModule({declarations: [MyApp, ParentComp, ChildComp]});
+    const fixture = TestBed.createComponent(MyApp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('div').length).toBe(1);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('div').length).toBe(0);
+  });
+
   describe('with selectors', () => {
     // https://stackblitz.com/edit/angular-psokum?file=src%2Fapp%2Fapp.module.ts
     it('should project nodes where attribute selector matches a binding', () => {

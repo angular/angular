@@ -10,6 +10,8 @@
 // about state in an instruction are correct before implementing any logic.
 // They are meant only to be called in dev mode as sanity checks.
 
+import {stringify} from './stringify';
+
 export function assertNumber(actual: any, msg: string) {
   if (typeof actual != 'number') {
     throwError(msg);
@@ -75,7 +77,7 @@ export function assertDomNode(node: any) {
   assertEqual(
       (typeof Node !== 'undefined' && node instanceof Node) ||
           (typeof node === 'object' && node.constructor.name === 'WebWorkerRenderNode'),
-      true, 'The provided value must be an instance of a DOM Node');
+      true, `The provided value must be an instance of a DOM Node but got ${stringify(node)}`);
 }
 
 
