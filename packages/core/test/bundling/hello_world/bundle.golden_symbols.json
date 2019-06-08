@@ -132,9 +132,6 @@
     "name": "__self"
   },
   {
-    "name": "__values"
-  },
-  {
     "name": "__window"
   },
   {
@@ -253,9 +250,6 @@
   },
   {
     "name": "getDirectiveDef"
-  },
-  {
-    "name": "getHighestElementOrICUContainer"
   },
   {
     "name": "getHostNative"

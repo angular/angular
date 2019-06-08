@@ -318,9 +318,6 @@
     "name": "__spread"
   },
   {
-    "name": "__values"
-  },
-  {
     "name": "__window"
   },
   {
@@ -465,7 +462,22 @@
     "name": "appendChild"
   },
   {
+    "name": "applyContainer"
+  },
+  {
+    "name": "applyNodes"
+  },
+  {
+    "name": "applyProjectionRecursive"
+  },
+  {
     "name": "applyStyling"
+  },
+  {
+    "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyView"
   },
   {
     "name": "assertTemplate"
@@ -621,24 +633,6 @@
     "name": "enterView"
   },
   {
-    "name": "executeActionOnContainer"
-  },
-  {
-    "name": "executeActionOnElementContainerOrIcuContainer"
-  },
-  {
-    "name": "executeActionOnElementOrContainer"
-  },
-  {
-    "name": "executeActionOnNode"
-  },
-  {
-    "name": "executeActionOnProjection"
-  },
-  {
-    "name": "executeActionOnView"
-  },
-  {
     "name": "executeContentQueries"
   },
   {
@@ -772,9 +766,6 @@
   },
   {
     "name": "getGuardMask"
-  },
-  {
-    "name": "getHighestElementOrICUContainer"
   },
   {
     "name": "getHostNative"
