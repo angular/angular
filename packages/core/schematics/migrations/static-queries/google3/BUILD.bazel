@@ -6,6 +6,7 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = ["//packages/core/schematics/test:__pkg__"],
     deps = [
+        "//packages/compiler-cli",
         "//packages/core/schematics/migrations/static-queries",
         "//packages/core/schematics/utils",
         "@npm//tslint",

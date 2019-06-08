@@ -7,7 +7,7 @@
  */
 
 import {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompileStylesheetMetadata, NgAnalyzedModules, StaticSymbol, TemplateAst, findStaticQueryIds, staticViewQueryIds} from '@angular/compiler';
-import {Diagnostic, createProgram, readConfiguration} from '@angular/compiler-cli';
+import {Diagnostic, Program as NgProgram, createProgram, readConfiguration} from '@angular/compiler-cli';
 import {resolve} from 'path';
 import * as ts from 'typescript';
 
@@ -28,13 +28,18 @@ export class QueryTemplateStrategy implements TimingStrategy {
       private projectPath: string, private classMetadata: ClassMetadataMap,
       private host: ts.CompilerHost) {}
 
+  /** Creates the Angular compiler TypeScript program. */
+  createNgProgram(): NgProgram {
+    const {rootNames, options} = readConfiguration(this.projectPath);
+    return createProgram({rootNames, options, host: this.host});
+  }
+
   /**
    * Sets up the template strategy by creating the AngularCompilerProgram. Returns false if
    * the AOT compiler program could not be created due to failure diagnostics.
    */
   setup() {
-    const {rootNames, options} = readConfiguration(this.projectPath);
-    const aotProgram = createProgram({rootNames, options, host: this.host});
+    const aotProgram = this.createNgProgram();
 
     // The "AngularCompilerProgram" does not expose the "AotCompiler" instance, nor does it
     // expose the logic that is necessary to analyze the determined modules. We work around

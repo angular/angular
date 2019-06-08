@@ -26,10 +26,15 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
     tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
     shx.mkdir('-p', tmpDir);
 
-    writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
+    writeFile(
+        'tsconfig.json',
+        JSON.stringify({compilerOptions: {moduleResolution: 'node', module: 'es2015'}}));
+    writeFakeAngular();
   });
 
   afterEach(() => shx.rm('-r', tmpDir));
+
+  function writeFakeAngular() { writeFile('/node_modules/@angular/core/index.d.ts', ``); }
 
   /**
    * Runs TSLint with the static-query timing TSLint rule. By default the rule fixes
@@ -50,6 +55,7 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
 
   /** Writes a file to the current temporary directory. */
   function writeFile(fileName: string, content: string) {
+    shx.mkdir('-p', dirname(join(tmpDir, fileName)));
     writeFileSync(join(tmpDir, fileName), content);
   }
 
@@ -60,40 +66,33 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
 
   it('should properly apply query timing replacements', () => {
     writeFile('index.ts', `
-      import {Component, ViewChild} from '@angular/core';
+      import {Component, NgModule, ViewChild} from '@angular/core';
       
-      @Component({template: '<span #test></span>'})
+      @Component({template: '<span #static><ng-template><p #dynamic></p></ng-template></span>'})
       export class MyComp {
-        @ViewChild('test') query: any;
-        @ViewChild('test') query2: any;
-        @ViewChild('test') query3: any;
+        @ViewChild('static') query: any;
+        @ViewChild('dynamic') query2: any;
+        @ViewChild('no_match') query3: any;
         
-        ngAfterContentInit() {
-          this.query.classList.add('test');
-        }
+        @ViewChild('static') set myQuery(res: any) {}
       }
-    `);
-
-    writeFile('external.ts', `
-      import {MyComp} from './index';
-    
-      export class Test extends MyComp {
-        ngOnInit() {
-          this.query3.doSomething();
-        }
-      }
+      
+      @NgModule({declarations: [MyComp]})
+      export class MyModule {}
     `);
 
     runTSLint();
 
-    expectFileToContain('index.ts', `@ViewChild('test', { static: true }) query: any;`);
-    expectFileToContain('index.ts', `@ViewChild('test', { static: false }) query2: any;`);
-    expectFileToContain('index.ts', `@ViewChild('test', { static: true }) query3: any;`);
+    expectFileToContain('index.ts', `@ViewChild('static', { static: true }) query: any;`);
+    expectFileToContain('index.ts', `@ViewChild('dynamic', { static: false }) query2: any;`);
+    expectFileToContain('index.ts', `@ViewChild('no_match', { static: false }) query3: any;`);
+    expectFileToContain(
+        'index.ts', `@ViewChild('static', { static: true }) set myQuery(res: any) {`);
   });
 
   it('should report non-explicit static query definitions', () => {
     writeFile('index.ts', `
-      import {Component, ViewChild} from '@angular/core';
+      import {Component, NgModule, ViewChild} from '@angular/core';
       
       @Component({template: '<span #test></span>'})
       export class MyComp {
@@ -103,6 +102,9 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
           this.query.classList.add('test');
         }
       }
+      
+      @NgModule({declarations: [MyComp]})
+      export class MyModule {}
     `);
 
     const linter = runTSLint(false);
@@ -114,12 +116,15 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
 
   it('should report non-explicit dynamic query definitions', () => {
     writeFile('index.ts', `
-      import {Component, ContentChild} from '@angular/core';
+      import {Component, NgModule, ViewChild} from '@angular/core';
       
-      @Component({template: '<span #test></span>'})
+      @Component({template: '<ng-template><p #test></p></ng-template>'})
       export class MyComp {
-        @ContentChild('test') query: any;
+        @ViewChild('test') query: any;
       }
+      
+      @NgModule({declarations: [MyComp]})
+      export class MyModule {}
     `);
 
     const linter = runTSLint(false);
@@ -129,23 +134,27 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
     expect(failures[0].getFailure()).toMatch(/analysis of the query.*"{static: false}"/);
   });
 
-  it('should detect query usage in component template', () => {
+  it('should add a failure for content queries which cannot be migrated', () => {
     writeFile('index.ts', `
-      import {Component, ViewChild} from '@angular/core';
+      import {Component, NgModule, ContentChild} from '@angular/core';
       
       @Component({
-        template: \`
-          <span #test></span>
-          <my-comp [binding]="query"></my-comp>
-        \`
+        template: ''
       })
       export class MyComp {
-        @ViewChild('test') query: any;
+        @ContentChild('test') query: any;
       }
+      
+      @NgModule({declarations: [MyComp]})
+      export class MyModule {}
     `);
 
-    runTSLint();
+    const linter = runTSLint();
+    const failures = linter.getResult().failures;
 
-    expectFileToContain('index.ts', `@ViewChild('test', { static: true }) query: any;`);
+    expectFileToContain(
+        'index.ts', `@ContentChild('test', /* TODO: add static flag */ {}) query: any;`);
+    expect(failures.length).toBe(1);
+    expect(failures[0].getFailure()).toMatch(/Content queries cannot be migrated automatically/);
   });
 });
