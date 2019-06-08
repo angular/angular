@@ -44,7 +44,7 @@ export function getRootView(componentOrLView: LView | {}): LView {
 }
 
 /**
- * Given an `LView`, find the closest declaration view which is not an embedded view.
+ * Given an `LView` find the closest declaration view which is not and embedded view.
  *
  * This method searches for the `LView` associated with the component which declared the `LView`.
  *

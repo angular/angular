@@ -5,14 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
+import {TAttributes, TElementNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
-import {TVIEW, T_HOST} from '../interfaces/view';
-import {appendProjectedNodes} from '../node_manipulation';
+import {RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {WalkTNodeTreeAction, appendProjectedNodes, applyProjection, getContainerRenderParent, getNativeAnchorNode, getRenderParent} from '../node_manipulation';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
 import {getLView, setIsNotParent} from '../state';
 import {findComponentView} from '../util/view_traversal_utils';
+
+import {toDebug} from './lview_debug';
 import {getOrCreateTNode} from './shared';
+
 
 
 /**
@@ -134,6 +137,16 @@ export function ɵɵprojection(
   // We might need to delay the projection of nodes if they are in the middle of an i18n block
   if (!delayProjection) {
     // re-distribution of projectable nodes is stored on a component's view level
-    appendProjectedNodes(lView, tProjectionNode, selectorIndex, findComponentView(lView));
+    // appendProjectedNodes(lView, tProjectionNode, selectorIndex, findComponentView(lView));
+    const renderer = lView[RENDERER];
+    // TODO(misko): can we do this in a better way?
+    // const tProjectionNodeParent = tProjectionNode.parent;
+    // const renderParent = tProjectionNodeParent == null ? null :
+    // lView[tProjectionNodeParent.index]
+    const renderParent = getRenderParent(tProjectionNode, lView);
+    const parentTNode: TNode = tProjectionNode.parent || lView[T_HOST] !;
+    const anchorNode = getNativeAnchorNode(parentTNode, lView);
+    applyProjection(
+        renderer, WalkTNodeTreeAction.Create, lView, tProjectionNode, renderParent, anchorNode);
   }
 }

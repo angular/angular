@@ -234,8 +234,7 @@ function createTNodeAtIndex(
   // instruction `i18nStart` and the first node has the index 1 or more
   if (index === 0 || !tView.firstChild) {
     tView.firstChild = tNode;
-  }
-  // Now link ourselves into the tree.
+  }  // Now link ourselves into the tree.
   if (previousOrParentTNode) {
     if (isParent && previousOrParentTNode.child == null &&
         (tNode.parent !== null || previousOrParentTNode.type === TNodeType.View)) {
