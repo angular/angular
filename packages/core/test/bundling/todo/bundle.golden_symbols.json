@@ -486,13 +486,25 @@
     "name": "applyClasses"
   },
   {
+    "name": "applyContainer"
+  },
+  {
+    "name": "applyElementContainer"
+  },
+  {
     "name": "applyOnCreateInstructions"
+  },
+  {
+    "name": "applyProjection"
   },
   {
     "name": "applyStyles"
   },
   {
     "name": "applyStyling"
+  },
+  {
+    "name": "applyView"
   },
   {
     "name": "assertTemplate"
@@ -1281,9 +1293,6 @@
     "name": "prepareInitialFlag"
   },
   {
-    "name": "projectionNodeStack"
-  },
-  {
     "name": "queueComponentIndexForCheck"
   },
   {
@@ -1570,9 +1579,6 @@
   },
   {
     "name": "viewAttachedToContainer"
-  },
-  {
-    "name": "walkTNodeTree"
   },
   {
     "name": "walkUpViews"
