@@ -26,7 +26,7 @@ StackBlitz projects are public by default, allowing you to share your Angular ap
 
 To build your application locally or for production, you will need to download the source code from your StackBlitz project. Click the `Download Project` icon in the left menu across from `Project` to download your files.
 
-Once you have the source code downloaded and unzipped, use the [Angular Console](https://angularconsole.com "Angular Console web site") to serve the application, or you install Node and have the Angular CLI installed.
+Once you have the source code downloaded and unzipped, use the [Angular Console](https://angularconsole.com "Angular Console web site") to serve the application, or you install `Node.js` and have the Angular CLI installed.
 
 From the terminal, install the Angular CLI globally with:
 
@@ -52,7 +52,7 @@ This will produce the files that you need to deploy.
 
 #### Hosting the built project
 
-The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (Node, Java, .NET) or any backend (Firebase, Google Cloud, App Engine, others).
+The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (`Node.js`, Java, .NET) or any backend (Firebase, Google Cloud, App Engine, others).
 
 ### Hosting an Angular app on Firebase
 
