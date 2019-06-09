@@ -435,8 +435,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * Try to retrieve the symbol of a static property on a class.
    *
    * In ES5, a static property can either be set on the inner function declaration inside the class'
-   * IIFE, or it can be set on the outer variable declaration. Therefore, the ES2015 host's behavior
-   * is extended to check both places.
+   * IIFE, or it can be set on the outer variable declaration. Therefore, the ES5 host checks both
+   * places, first looking up the property on the inner symbol, and if the property is not found it
+   * will fall back to looking up the property on the outer symbol.
    *
    * @param symbol the class whose property we are interested in.
    * @param propertyName the name of static property.

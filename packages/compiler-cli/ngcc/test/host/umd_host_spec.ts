@@ -90,26 +90,6 @@ const TOPLEVEL_DECORATORS_FILE = {
 })));`,
 };
 
-const CTOR_DECORATORS_ARRAY_FILE = {
-  name: '/ctor_decorated_as_array.js',
-  contents: `
-  (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
-    typeof define === 'function' && define.amd ? define('ctor_decorated_as_array', ['exports', '@angular/core'], factory) :
-    (factory(global.ctor_decorated_as_array,global.ng.core));
-  }(this, (function (exports,core) { 'use strict';
-      var CtorDecoratedAsArray = (function() {
-      function CtorDecoratedAsArray(arg1) {
-      }
-      CtorDecoratedAsArray.ctorParameters = [{ type: ParamType, decorators: [{ type: Inject },] }];
-      return CtorDecoratedAsArray;
-    }());
-    exports.CtorDecoratedAsArray = CtorDecoratedAsArray;
-  })));`,
-};
-
-
-
 const SIMPLE_ES2015_CLASS_FILE = {
   name: '/simple_es2015_class.d.ts',
   contents: `

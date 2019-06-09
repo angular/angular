@@ -9,56 +9,6 @@ import * as ts from 'typescript';
 import {hasNameIdentifier} from '../utils';
 
 /**
- * Verifies whether TS issue 31778 has been fixed by inspecting a symbol from a minimum
- * reproduction. If the symbol does in fact have the "expando" as export, the issue has been fixed.
- *
- * See https://github.com/microsoft/TypeScript/issues/31778 for details.
- */
-const ts31778GetExpandoInitializerFixed = (() => {
-  const sourceText = `
-    (function() {
-      var A = (function() {
-        function A() {}
-        return A;
-      }());
-      A.expando = true;
-    }());`;
-  const sourceFile =
-      ts.createSourceFile('test.js', sourceText, ts.ScriptTarget.ES5, true, ts.ScriptKind.JS);
-  const host: ts.CompilerHost = {
-    getSourceFile(): ts.SourceFile | undefined{return sourceFile;},
-    fileExists(): boolean{return true;},
-    readFile(): string | undefined{return '';},
-    writeFile() {},
-    getDefaultLibFileName(): string{return '';},
-    getCurrentDirectory(): string{return '';},
-    getDirectories(): string[]{return [];},
-    getCanonicalFileName(fileName: string): string{return fileName;},
-    useCaseSensitiveFileNames(): boolean{return true;},
-    getNewLine(): string{return '\n';},
-  };
-  const options = {noResolve: true, noLib: true, noEmit: true, allowJs: true};
-  const program = ts.createProgram(['test.js'], options, host);
-
-  function visitor(node: ts.Node): ts.VariableDeclaration|undefined {
-    if (ts.isVariableDeclaration(node) && hasNameIdentifier(node) && node.name.text === 'A') {
-      return node;
-    }
-    return ts.forEachChild(node, visitor);
-  }
-  const declaration = ts.forEachChild(sourceFile, visitor);
-  if (declaration === undefined) {
-    throw new Error('Unable to find declaration of outer A');
-  }
-
-  const symbol = program.getTypeChecker().getSymbolAtLocation(declaration.name);
-  if (symbol === undefined) {
-    throw new Error('Unable to resolve symbol of outer A');
-  }
-  return symbol.exports !== undefined && symbol.exports.has('expando' as ts.__String);
-})();
-
-/**
  * Consider the following ES5 code that may have been generated for a class:
  *
  * ```
@@ -98,11 +48,16 @@ const ts31778GetExpandoInitializerFixed = (() => {
  * the issue is known to have been fixed.
  */
 export function patchTsGetExpandoInitializer(): unknown {
-  if (ts31778GetExpandoInitializerFixed) {
+  if (isTs31778GetExpandoInitializerFixed()) {
     return null;
   }
 
   const originalGetExpandoInitializer = (ts as any).getExpandoInitializer;
+  if (originalGetExpandoInitializer === undefined) {
+    throw makeUnsupportedTypeScriptError();
+  }
+
+  // Override the function to add support for recognizing the IIFE structure used in ES5 bundles.
   (ts as any).getExpandoInitializer =
       (initializer: ts.Node, isPrototypeAssignment: boolean): ts.Expression | undefined => {
         // If the initializer is a call expression within parenthesis, unwrap the parenthesis
@@ -121,4 +76,88 @@ export function restoreGetExpandoInitializer(originalGetExpandoInitializer: unkn
   if (originalGetExpandoInitializer !== null) {
     (ts as any).getExpandoInitializer = originalGetExpandoInitializer;
   }
+}
+
+let ts31778FixedResult: boolean|null = null;
+
+function isTs31778GetExpandoInitializerFixed(): boolean {
+  // If the result has already been computed, return early.
+  if (ts31778FixedResult !== null) {
+    return ts31778FixedResult;
+  }
+
+  // Determine if the issue has been fixed by checking if an expando property is present in a
+  // minimum reproduction using unpatched TypeScript.
+  ts31778FixedResult = checkIfExpandoPropertyIsPresent();
+
+  // If the issue does not appear to have been fixed, verify that applying the patch has the desired
+  // effect.
+  if (!ts31778FixedResult) {
+    const originalGetExpandoInitializer = patchTsGetExpandoInitializer();
+    try {
+      const patchIsSuccessful = checkIfExpandoPropertyIsPresent();
+      if (!patchIsSuccessful) {
+        throw makeUnsupportedTypeScriptError();
+      }
+    } finally {
+      restoreGetExpandoInitializer(originalGetExpandoInitializer);
+    }
+  }
+
+  return ts31778FixedResult;
+}
+
+/**
+ * Verifies whether TS issue 31778 has been fixed by inspecting a symbol from a minimum
+ * reproduction. If the symbol does in fact have the "expando" as export, the issue has been fixed.
+ *
+ * See https://github.com/microsoft/TypeScript/issues/31778 for details.
+ */
+function checkIfExpandoPropertyIsPresent(): boolean {
+  const sourceText = `
+    (function() {
+      var A = (function() {
+        function A() {}
+        return A;
+      }());
+      A.expando = true;
+    }());`;
+  const sourceFile =
+      ts.createSourceFile('test.js', sourceText, ts.ScriptTarget.ES5, true, ts.ScriptKind.JS);
+  const host: ts.CompilerHost = {
+    getSourceFile(): ts.SourceFile | undefined{return sourceFile;},
+    fileExists(): boolean{return true;},
+    readFile(): string | undefined{return '';},
+    writeFile() {},
+    getDefaultLibFileName(): string{return '';},
+    getCurrentDirectory(): string{return '';},
+    getDirectories(): string[]{return [];},
+    getCanonicalFileName(fileName: string): string{return fileName;},
+    useCaseSensitiveFileNames(): boolean{return true;},
+    getNewLine(): string{return '\n';},
+  };
+  const options = {noResolve: true, noLib: true, noEmit: true, allowJs: true};
+  const program = ts.createProgram(['test.js'], options, host);
+
+  function visitor(node: ts.Node): ts.VariableDeclaration|undefined {
+    if (ts.isVariableDeclaration(node) && hasNameIdentifier(node) && node.name.text === 'A') {
+      return node;
+    }
+    return ts.forEachChild(node, visitor);
+  }
+
+  const declaration = ts.forEachChild(sourceFile, visitor);
+  if (declaration === undefined) {
+    throw new Error('Unable to find declaration of outer A');
+  }
+
+  const symbol = program.getTypeChecker().getSymbolAtLocation(declaration.name);
+  if (symbol === undefined) {
+    throw new Error('Unable to resolve symbol of outer A');
+  }
+  return symbol.exports !== undefined && symbol.exports.has('expando' as ts.__String);
+}
+
+function makeUnsupportedTypeScriptError(): Error {
+  return new Error('The TypeScript version used is not supported by ngcc.');
 }

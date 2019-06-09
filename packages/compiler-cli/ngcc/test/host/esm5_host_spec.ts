@@ -79,18 +79,6 @@ const TOPLEVEL_DECORATORS_FILE = {
   `,
 };
 
-const CTOR_DECORATORS_ARRAY_FILE = {
-  name: '/ctor_decorated_as_array.js',
-  contents: `
-    var CtorDecoratedAsArray = (function() {
-      function CtorDecoratedAsArray(arg1) {
-      }
-      CtorDecoratedAsArray.ctorParameters = [{ type: ParamType, decorators: [{ type: Inject },] }];
-      return CtorDecoratedAsArray;
-    }());
-  `,
-};
-
 const ACCESSORS_FILE = {
   name: '/accessors.js',
   contents: `
