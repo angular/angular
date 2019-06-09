@@ -7,11 +7,12 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSidenav } from '@angular/material/sidenav';
 import { By } from '@angular/platform-browser';
 
-import { of, timer } from 'rxjs';
+import { Subject, of, timer } from 'rxjs';
 import { first, mapTo } from 'rxjs/operators';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
+import { CurrentNodes } from 'app/navigation/navigation.model';
 import { DocumentService } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Deployment } from 'app/shared/deployment.service';
@@ -22,7 +23,7 @@ import { Logger } from 'app/shared/logger.service';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
-import { NavigationNode } from 'app/navigation/navigation.service';
+import { NavigationNode, NavigationService } from 'app/navigation/navigation.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
@@ -826,43 +827,24 @@ describe('AppComponent', () => {
 
         it(description, () => {
           createTestingModule('', mode);
+
+          const navService = TestBed.get(NavigationService) as NavigationService;
+          const testCurrentNodes = navService.currentNodes = new Subject<CurrentNodes>();
+
           initializeTest(false);
+
+          testCurrentNodes.next({SideNav: {url: 'foo', view: 'SideNav', nodes: []}});
+          verifyNoRedirection();
+
+          testCurrentNodes.next({NoSideNav: {url: 'bar', view: 'SideNav', nodes: []}});
           verifyPossibleRedirection();
 
-          createTestingModule('resources', mode);
-          initializeTest(false);
+          locationService.replace.calls.reset();
+          testCurrentNodes.next({});
           verifyPossibleRedirection();
 
-          createTestingModule('guide/aot-compiler', mode);
-          initializeTest(false);
-          verifyNoRedirection();
-
-          createTestingModule('start', mode);
-          initializeTest(false);
-          verifyNoRedirection();
-
-          createTestingModule('tutorial', mode);
-          initializeTest(false);
-          verifyNoRedirection();
-
-          createTestingModule('tutorial/toh-pt1', mode);
-          initializeTest(false);
-          verifyNoRedirection();
-
-          createTestingModule('docs', mode);
-          initializeTest(false);
-          verifyNoRedirection();
-
-          createTestingModule('cli', mode);
-          initializeTest(false);
-          verifyNoRedirection();
-
-          createTestingModule('api', mode);
-          initializeTest(false);
-          verifyNoRedirection();
-
-          createTestingModule('api/core/getPlatform', mode);
-          initializeTest(false);
+          locationService.replace.calls.reset();
+          testCurrentNodes.next({SideNav: {url: 'baz', view: 'SideNav', nodes: []}});
           verifyNoRedirection();
         });
       });
