@@ -86,7 +86,7 @@ class AstTranslator implements AstVisitor<ts.Expression> {
     return ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
   }
 
-  visitEmptyExpr(ast: EmptyExpr, context: any): ts.Expression { return undefined!; }
+  visitEmptyExpr(ast: EmptyExpr, context: any): ts.Expression { return UNDEFINED; }
 
   visitFunctionCall(ast: FunctionCall): never { throw new Error('Method not implemented.'); }
 
