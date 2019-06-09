@@ -39,6 +39,16 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('_t1.htmlFor = ("test");');
   });
 
+  it('should handle empty bindings', () => {
+    const TEMPLATE = `<input [type]="">`;
+    expect(tcb(TEMPLATE)).toContain('_t1.type = undefined;');
+  });
+
+  it('should handle bindings without value', () => {
+    const TEMPLATE = `<input [type]>`;
+    expect(tcb(TEMPLATE)).toContain('_t1.type = undefined;');
+  });
+
   it('should handle implicit vars on ng-template', () => {
     const TEMPLATE = `<ng-template let-a></ng-template>`;
     expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');
