@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
+import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
@@ -58,6 +58,11 @@ class AstTranslator implements AstVisitor {
     // which would prevent any custom resolution through `maybeResolve` for that node.
     if (ast instanceof ASTWithSource) {
       ast = ast.ast;
+    }
+
+    // The `EmptyExpr` doesn't have a dedicated method on `AstVisitor`, so it's special cased here.
+    if (ast instanceof EmptyExpr) {
+      return UNDEFINED;
     }
 
     // First attempt to let any custom resolution logic provide a translation for the given node.
