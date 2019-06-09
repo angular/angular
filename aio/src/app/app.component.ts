@@ -122,7 +122,7 @@ export class AppComponent implements OnInit {
     this.locationService.currentPath.subscribe(path => {
       // Redirect to docs if we are in archive mode and are not hitting a docs page
       // (i.e. we have arrived at a marketing page)
-      if (this.deployment.mode === 'archive' && !/^(docs$|api|guide|tutorial)/.test(path)) {
+      if (this.deployment.mode === 'archive' && !/^(docs$|api|cli|guide|start|tutorial)/.test(path)) {
         this.locationService.replace('docs');
       }
       if (path === this.currentPath) {

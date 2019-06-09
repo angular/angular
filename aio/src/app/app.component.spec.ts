@@ -837,6 +837,10 @@ describe('AppComponent', () => {
           initializeTest(false);
           verifyNoRedirection();
 
+          createTestingModule('start', mode);
+          initializeTest(false);
+          verifyNoRedirection();
+
           createTestingModule('tutorial', mode);
           initializeTest(false);
           verifyNoRedirection();
@@ -846,6 +850,10 @@ describe('AppComponent', () => {
           verifyNoRedirection();
 
           createTestingModule('docs', mode);
+          initializeTest(false);
+          verifyNoRedirection();
+
+          createTestingModule('cli', mode);
           initializeTest(false);
           verifyNoRedirection();
 
