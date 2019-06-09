@@ -120,11 +120,6 @@ export class AppComponent implements OnInit {
     this.documentService.currentDocument.subscribe(doc => this.currentDocument = doc);
 
     this.locationService.currentPath.subscribe(path => {
-      // Redirect to docs if we are in archive mode and are not hitting a docs page
-      // (i.e. we have arrived at a marketing page)
-      if (this.deployment.mode === 'archive' && !/^(docs$|api|cli|guide|start|tutorial)/.test(path)) {
-        this.locationService.replace('docs');
-      }
       if (path === this.currentPath) {
         // scroll only if on same page (most likely a change to the hash)
         this.scrollService.scroll();
@@ -138,7 +133,15 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.navigationService.currentNodes.subscribe(currentNodes => this.currentNodes = currentNodes);
+    this.navigationService.currentNodes.subscribe(currentNodes => {
+      this.currentNodes = currentNodes;
+
+      // Redirect to docs if we are in archive mode and are not hitting a docs page
+      // (i.e. we have arrived at a marketing page)
+      if (this.deployment.mode === 'archive' && !currentNodes[sideNavView]) {
+        this.locationService.replace('docs');
+      }
+    });
 
     // Compute the version picker list from the current version and the versions in the navigation map
     combineLatest(
