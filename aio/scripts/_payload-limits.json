@@ -2,12 +2,12 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "runtime-es5": 2516,
-        "runtime-es2015": 2522,
-        "main-es5": 504760,
-        "main-es2015": 443497,
-        "polyfills-es5": 128751,
-        "polyfills-es2015": 53147
+        "runtime-es5": 3005,
+        "runtime-es2015": 3011,
+        "main-es5": 504448,
+        "main-es2015": 443713,
+        "polyfills-es5": 129161,
+        "polyfills-es2015": 53295
       }
     }
   }
