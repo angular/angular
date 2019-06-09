@@ -14,6 +14,11 @@
       "version": "8-beta",
       "description": "Warns developers if values are assigned to template variables",
       "factory": "./migrations/template-var-assignment/index"
+    },
+    "migration-v9-renderer-to-renderer2": {
+      "version": "9-beta",
+      "description": "Migrates usages of Renderer to Renderer2",
+      "factory": "./migrations/renderer-to-renderer2/index"
     }
   }
 }

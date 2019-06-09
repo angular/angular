@@ -12,6 +12,7 @@ npm_package(
     deps = [
         "//packages/core/schematics/migrations/injectable-pipe",
         "//packages/core/schematics/migrations/move-document",
+        "//packages/core/schematics/migrations/renderer-to-renderer2",
         "//packages/core/schematics/migrations/static-queries",
         "//packages/core/schematics/migrations/template-var-assignment",
     ],
