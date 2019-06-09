@@ -12,6 +12,8 @@ ts_library(
         "//packages/core/schematics/migrations/injectable-pipe",
         "//packages/core/schematics/migrations/injectable-pipe/google3",
         "//packages/core/schematics/migrations/move-document",
+        "//packages/core/schematics/migrations/renderer-to-renderer2",
+        "//packages/core/schematics/migrations/renderer-to-renderer2/google3",
         "//packages/core/schematics/migrations/static-queries",
         "//packages/core/schematics/migrations/static-queries/google3",
         "//packages/core/schematics/migrations/template-var-assignment",
