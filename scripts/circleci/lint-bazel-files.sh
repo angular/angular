@@ -7,6 +7,6 @@ YELLOW='\033[0;33m'
 yarn -s bazel:format-lint || {
   echo ""
   echo -e "${RED}Please fix all warnings. Some warnings can" \
-    "be fixed automatically by running: ${YELLOW}yarn bazel:format"
+    "be fixed automatically by running: ${YELLOW}yarn format:bazel"
   exit 1
 }
