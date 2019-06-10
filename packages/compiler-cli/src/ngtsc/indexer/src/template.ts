@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, HtmlParser, Lexer, MethodCall, ParseSourceFile, PropertyRead, RecursiveAstVisitor, TmplAstNode, TokenType, visitAll} from '@angular/compiler';
+import {AST, HtmlParser, Lexer, MethodCall, ParseSourceFile, ParseSpan, PropertyRead, RecursiveAstVisitor, TmplAstNode, TokenType, visitAll} from '@angular/compiler';
 import {BoundText, Element, Node, RecursiveVisitor as RecursiveTemplateVisitor, Template} from '@angular/compiler/src/render3/r3_ast';
 import {htmlAstToRender3Ast} from '@angular/compiler/src/render3/r3_template_transform';
 import {I18nMetaVisitor} from '@angular/compiler/src/render3/view/i18n/meta';
@@ -158,8 +158,6 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
  * parsed with leading trivial characters (see `parseTemplate` from the compiler package API).
  * Both of these are detrimental for indexing as they result in a manipulated AST not representing
  * the template source code.
- *
- * TODO(ayazhafiz): Remove once issues with `leadingTriviaChars` and `parseTemplate` are resolved.
  */
 function restoreTemplate(template: TmplAstNode[], options: RestoreTemplateOptions): TmplAstNode[] {
   // try to recapture the template content and URL
@@ -202,6 +200,8 @@ function restoreTemplate(template: TmplAstNode[], options: RestoreTemplateOption
  */
 export function getTemplateIdentifiers(
     template: TmplAstNode[], options: RestoreTemplateOptions): Set<TemplateIdentifier> {
+  // TODO(ayazhafiz): template restoration is the most expensive step in the indexing pipeline.
+  // Consider removing this if/when `leadingTriviaChars` inconsistency issues are resolved.
   const restoredTemplate = restoreTemplate(template, options);
   const visitor = new TemplateVisitor();
   visitor.visitAll(restoredTemplate);
