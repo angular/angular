@@ -38,6 +38,15 @@ describe('ngcc main()', () => {
         .not.toThrow();
   });
 
+  it('should run ngcc without errors when "main" property is not present', () => {
+    expect(() => mainNgcc({
+             basePath: '/dist',
+             propertiesToConsider: ['main', 'es2015'],
+             logger: new MockLogger(),
+           }))
+        .not.toThrow();
+  });
+
   describe('with targetEntryPointPath', () => {
     it('should only compile the given package entry-point (and its dependencies).', () => {
       const STANDARD_MARKERS = {
