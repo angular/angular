@@ -39,6 +39,7 @@ function setupFakeCore(support: TestSupport): void {
 export class NgtscTestEnvironment {
   private multiCompileHostExt: MultiCompileHostExt|null = null;
   private oldProgram: Program|null = null;
+  private changedResources: Set<string>|undefined = undefined;
 
   private constructor(private support: TestSupport, readonly outDir: string) {}
 
@@ -106,6 +107,7 @@ export class NgtscTestEnvironment {
   }
 
   enableMultipleCompilations(): void {
+    this.changedResources = new Set();
     this.multiCompileHostExt = new MultiCompileHostExt();
     setWrapHostForTest(makeWrapHost(this.multiCompileHostExt));
   }
@@ -114,6 +116,7 @@ export class NgtscTestEnvironment {
     if (this.multiCompileHostExt === null) {
       throw new Error(`Not tracking written files - call enableMultipleCompilations()`);
     }
+    this.changedResources !.clear();
     this.multiCompileHostExt.flushWrittenFileTracking();
   }
 
@@ -133,8 +136,9 @@ export class NgtscTestEnvironment {
 
   write(fileName: string, content: string) {
     if (this.multiCompileHostExt !== null) {
-      const absFilePath = path.posix.resolve(this.support.basePath, fileName);
+      const absFilePath = path.resolve(this.support.basePath, fileName).replace(/\\/g, '/');
       this.multiCompileHostExt.invalidate(absFilePath);
+      this.changedResources !.add(absFilePath);
     }
     this.support.write(fileName, content);
   }
@@ -175,8 +179,9 @@ export class NgtscTestEnvironment {
         program: this.oldProgram || undefined,
       };
     }
-    const exitCode =
-        main(['-p', this.basePath], errorSpy, undefined, customTransformers, reuseProgram);
+    const exitCode = main(
+        ['-p', this.basePath], errorSpy, undefined, customTransformers, reuseProgram,
+        this.changedResources);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
     if (this.multiCompileHostExt !== null) {
