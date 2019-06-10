@@ -281,6 +281,12 @@ export interface CompilerHost extends ts.CompilerHost {
    * rather than by path. See http://requirejs.org/docs/whyamd.html#namedmodules
    */
   amdModuleName?(sf: ts.SourceFile): string|undefined;
+
+  /**
+   * Get the absolute paths to the changed files that triggered the current compilation
+   * or `undefined` if this is not an incremental build.
+   */
+  getModifiedResourceFiles?(): Set<string>|undefined;
 }
 
 export enum EmitFlags {
