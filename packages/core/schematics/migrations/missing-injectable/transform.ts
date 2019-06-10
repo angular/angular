@@ -50,7 +50,7 @@ export class MissingInjectableTransform {
 
     const evaluatedExpr = this.partialEvaluator.evaluate(module.providersExpr);
 
-    if (!(evaluatedExpr instanceof Array)) {
+    if (!Array.isArray(evaluatedExpr)) {
       return [{
         node: module.providersExpr,
         message: 'Providers of module are not statically analyzable.'
@@ -105,7 +105,7 @@ export class MissingInjectableTransform {
       } else {
         return this._visitProviderResolvedValue(value.get('provide') !);
       }
-    } else if (value instanceof Array) {
+    } else if (Array.isArray(value)) {
       return value.reduce(
           (res, v) => res.concat(this._visitProviderResolvedValue(v)), [] as AnalysisFailure[]);
     } else if (value instanceof DynamicValue) {

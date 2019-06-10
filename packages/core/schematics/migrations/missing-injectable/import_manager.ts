@@ -68,7 +68,7 @@ export class ImportManager {
         continue;
       }
 
-      if (!importStartIndex) {
+      if (importStartIndex === 0) {
         importStartIndex = statement.getEnd();
       }
 
@@ -118,7 +118,7 @@ export class ImportManager {
       // specified source file and we want to add the identifiers to the existing
       // import declaration, we need to keep track of the updated import declarations.
       // We can't directly update the import declaration for each identifier as this
-      // would throw of the recorder offsets. We need to keep track of the new identifiers
+      // would throw off the recorder offsets. We need to keep track of the new identifiers
       // for the import and perform the import transformation as batches per source-file.
       this.updatedImports.set(
           existingImport, (this.updatedImports.get(existingImport) || []).concat({
@@ -156,10 +156,8 @@ export class ImportManager {
           ts.createStringLiteral(moduleName));
     }
 
-    this.getUpdateRecorder(sourceFile)
-        .addNewImport(
-            importStartIndex,
-            `\n${this.printer.printNode(ts.EmitHint.Unspecified, newImport, sourceFile)}`);
+    const newImportText = this.printer.printNode(ts.EmitHint.Unspecified, newImport, sourceFile);
+    this.getUpdateRecorder(sourceFile).addNewImport(importStartIndex, `\n${newImportText}`);
 
     // Keep track of all generated imports so that we don't generate duplicate
     // similar imports as these can't be statically analyzed in the source-file yet.
@@ -183,9 +181,9 @@ export class ImportManager {
           namedBindings.elements.concat(expressions.map(
               ({propertyName, importName}) => ts.createImportSpecifier(propertyName, importName))));
 
-      recorder.updateExistingImport(
-          namedBindings,
-          this.printer.printNode(ts.EmitHint.Unspecified, newNamedBindings, sourceFile));
+      const newNamedBindingsText =
+          this.printer.printNode(ts.EmitHint.Unspecified, newNamedBindings, sourceFile);
+      recorder.updateExistingImport(namedBindings, newNamedBindingsText);
     });
   }
 

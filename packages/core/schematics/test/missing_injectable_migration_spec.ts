@@ -486,4 +486,21 @@ describe('Missing injectable migration', () => {
     expect(warnOutput[0])
         .toMatch(/\s+index\.ts@4:29: Providers of module.*not statically analyzable./);
   });
+
+  it('should not throw if an empty @NgModule is analyzed', async() => {
+    writeFile('/index.ts', `
+      import {NgModule} from '@angular/core';
+              
+      @NgModule()
+      export class MyModule {}
+    `);
+
+    try {
+      await runMigration();
+    } catch (e) {
+      fail(e);
+    }
+
+    expect(warnOutput.length).toBe(0);
+  });
 });

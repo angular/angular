@@ -66,10 +66,11 @@ function runMissingInjectableMigration(
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
   const moduleCollector = new NgModuleCollector(typeChecker);
-  const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+  const sourceFiles = program.getSourceFiles().filter(
+      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
   // Analyze source files by detecting all modules.
-  rootSourceFiles.forEach(sourceFile => moduleCollector.visitNode(sourceFile));
+  sourceFiles.forEach(sourceFile => moduleCollector.visitNode(sourceFile));
 
   const {resolvedModules} = moduleCollector;
   const transformer = new MissingInjectableTransform(typeChecker, getUpdateRecorder);

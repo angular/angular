@@ -50,12 +50,12 @@ export class NgModuleCollector {
 
   private _visitNgModuleClass(node: ts.ClassDeclaration, decorator: NgDecorator) {
     const decoratorCall = decorator.node.expression;
+    const metadata = decoratorCall.arguments[0];
 
-    if (!ts.isObjectLiteralExpression(decoratorCall.arguments[0])) {
+    if (!metadata || !ts.isObjectLiteralExpression(metadata)) {
       return;
     }
 
-    const metadata = decoratorCall.arguments[0] as ts.ObjectLiteralExpression;
     const providersNode = metadata.properties.filter(ts.isPropertyAssignment)
                               .find(p => getPropertyNameText(p.name) === 'providers');
     this.resolvedModules.push({
