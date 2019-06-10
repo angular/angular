@@ -103,6 +103,11 @@ interface CacheEntry {
   content?: string;
 }
 
+interface QueuedCompilationInfo {
+  timerHandle: any;
+  modifiedResourceFiles: Set<string>;
+}
+
 /**
  * The logic in this function is adapted from `tsc.ts` from TypeScript.
  */
@@ -111,7 +116,8 @@ export function performWatchCompilation(host: PerformWatchHost):
   let cachedProgram: api.Program|undefined;            // Program cached from last compilation
   let cachedCompilerHost: api.CompilerHost|undefined;  // CompilerHost cached from last compilation
   let cachedOptions: ParsedConfiguration|undefined;  // CompilerOptions cached from last compilation
-  let timerHandleForRecompilation: any;  // Handle for 0.25s wait timer to trigger recompilation
+  let timerHandleForRecompilation: QueuedCompilationInfo|
+      undefined;  // Handle for 0.25s wait timer to trigger recompilation
 
   const ignoreFilesForWatch = new Set<string>();
   const fileCache = new Map<string, CacheEntry>();
@@ -141,13 +147,13 @@ export function performWatchCompilation(host: PerformWatchHost):
   function close() {
     fileWatcher.close();
     if (timerHandleForRecompilation) {
-      host.clearTimeout(timerHandleForRecompilation);
+      host.clearTimeout(timerHandleForRecompilation.timerHandle);
       timerHandleForRecompilation = undefined;
     }
   }
 
   // Invoked to perform initial compilation or re-compilation in watch mode
-  function doCompilation(): Diagnostics {
+  function doCompilation(modifiedResourceFiles?: Set<string>): Diagnostics {
     if (!cachedOptions) {
       cachedOptions = host.readConfiguration();
     }
@@ -190,6 +196,9 @@ export function performWatchCompilation(host: PerformWatchHost):
         }
         return ce.content !;
       };
+      // Provide access to the file paths that triggered this rebuild
+      cachedCompilerHost.getModifiedResourceFiles =
+          modifiedResourceFiles !== undefined ? () => modifiedResourceFiles : undefined;
     }
     ignoreFilesForWatch.clear();
     const oldProgram = cachedProgram;
@@ -255,24 +264,30 @@ export function performWatchCompilation(host: PerformWatchHost):
 
     if (!ignoreFilesForWatch.has(path.normalize(fileName))) {
       // Ignore the file if the file is one that was written by the compiler.
-      startTimerForRecompilation();
+      startTimerForRecompilation(fileName);
     }
   }
 
   // Upon detecting a file change, wait for 250ms and then perform a recompilation. This gives batch
   // operations (such as saving all modified files in an editor) a chance to complete before we kick
   // off a new compilation.
-  function startTimerForRecompilation() {
+  function startTimerForRecompilation(changedPath: string) {
     if (timerHandleForRecompilation) {
-      host.clearTimeout(timerHandleForRecompilation);
+      host.clearTimeout(timerHandleForRecompilation.timerHandle);
+    } else {
+      timerHandleForRecompilation = {
+        modifiedResourceFiles: new Set<string>(),
+        timerHandle: undefined
+      };
     }
-    timerHandleForRecompilation = host.setTimeout(recompile, 250);
+    timerHandleForRecompilation.timerHandle = host.setTimeout(recompile, 250);
+    timerHandleForRecompilation.modifiedResourceFiles.add(changedPath);
   }
 
   function recompile() {
-    timerHandleForRecompilation = undefined;
     host.reportDiagnostics(
         [createMessageDiagnostic('File change detected. Starting incremental compilation.')]);
-    doCompilation();
+    doCompilation(timerHandleForRecompilation !.modifiedResourceFiles);
+    timerHandleForRecompilation = undefined;
   }
 }

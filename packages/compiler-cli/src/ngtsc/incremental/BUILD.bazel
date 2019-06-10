@@ -12,6 +12,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/util",
         "@npm//typescript",
     ],
 )

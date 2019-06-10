@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/path';
+
 import {NgtscTestEnvironment} from './env';
 
 describe('ngtsc incremental compilation', () => {
@@ -63,6 +65,33 @@ describe('ngtsc incremental compilation', () => {
     // Pretend a change was made to Cmp1
     env.flushWrittenFileTracking();
     env.invalidateCachedFile('component1.ts');
+    env.driveMain();
+    const written = env.getFilesWrittenSinceLastFlush();
+    expect(written).toContain('/component1.js');
+    expect(written).not.toContain('/component2.js');
+  });
+
+  it('should rebuild components whose templates have changed', () => {
+    env.write('component1.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'cmp', templateUrl: './component1.template.html'})
+      export class Cmp1 {}
+    `);
+    env.write('component1.template.html', 'cmp1');
+    env.write('component2.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'cmp2', templateUrl: './component2.template.html'})
+      export class Cmp2 {}
+    `);
+    env.write('component2.template.html', 'cmp2');
+
+    env.driveMain();
+
+    // Make a change to Cmp1 template
+    env.flushWrittenFileTracking();
+    env.write('component1.template.html', 'changed');
     env.driveMain();
     const written = env.getFilesWrittenSinceLastFlush();
     expect(written).toContain('/component1.js');

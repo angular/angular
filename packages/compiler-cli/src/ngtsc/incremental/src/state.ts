@@ -7,21 +7,26 @@
  */
 
 import * as ts from 'typescript';
+
 import {Reference} from '../../imports';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
 import {DependencyTracker} from '../../partial_evaluator';
 import {ClassDeclaration} from '../../reflection';
+import {ResourceDependencyRecorder} from '../../util/src/resource_recorder';
 
 /**
  * Accumulates state between compilations.
  */
-export class IncrementalState implements DependencyTracker, MetadataReader, MetadataRegistry {
+export class IncrementalState implements DependencyTracker, MetadataReader, MetadataRegistry,
+    ResourceDependencyRecorder {
   private constructor(
       private unchangedFiles: Set<ts.SourceFile>,
-      private metadata: Map<ts.SourceFile, FileMetadata>) {}
+      private metadata: Map<ts.SourceFile, FileMetadata>,
+      private modifiedResourceFiles: Set<string>|null) {}
 
-  static reconcile(previousState: IncrementalState, oldProgram: ts.Program, newProgram: ts.Program):
-      IncrementalState {
+  static reconcile(
+      previousState: IncrementalState, oldProgram: ts.Program, newProgram: ts.Program,
+      modifiedResourceFiles: Set<string>|null): IncrementalState {
     const unchangedFiles = new Set<ts.SourceFile>();
     const metadata = new Map<ts.SourceFile, FileMetadata>();
     const oldFiles = new Set<ts.SourceFile>(oldProgram.getSourceFiles());
@@ -46,14 +51,17 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
       }
     }
 
-    return new IncrementalState(unchangedFiles, metadata);
+    return new IncrementalState(unchangedFiles, metadata, modifiedResourceFiles);
   }
 
   static fresh(): IncrementalState {
-    return new IncrementalState(new Set<ts.SourceFile>(), new Map<ts.SourceFile, FileMetadata>());
+    return new IncrementalState(
+        new Set<ts.SourceFile>(), new Map<ts.SourceFile, FileMetadata>(), null);
   }
 
-  safeToSkip(sf: ts.SourceFile): boolean { return this.unchangedFiles.has(sf); }
+  safeToSkip(sf: ts.SourceFile): boolean|Promise<boolean> {
+    return this.unchangedFiles.has(sf) && !this.hasChangedResourceDependencies(sf);
+  }
 
   trackFileDependency(dep: ts.SourceFile, src: ts.SourceFile) {
     const metadata = this.ensureMetadata(src);
@@ -92,10 +100,24 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
     metadata.pipeMeta.set(meta.ref.node, meta);
   }
 
+  recordResourceDependency(file: ts.SourceFile, resourcePath: string): void {
+    const metadata = this.ensureMetadata(file);
+    metadata.resourcePaths.add(resourcePath);
+  }
+
   private ensureMetadata(sf: ts.SourceFile): FileMetadata {
     const metadata = this.metadata.get(sf) || new FileMetadata();
     this.metadata.set(sf, metadata);
     return metadata;
+  }
+
+  private hasChangedResourceDependencies(sf: ts.SourceFile): boolean {
+    if (this.modifiedResourceFiles === undefined || !this.metadata.has(sf)) {
+      return false;
+    }
+    const resourceDeps = this.metadata.get(sf) !.resourcePaths;
+    return Array.from(resourceDeps.keys())
+        .some(resourcePath => this.modifiedResourceFiles !.has(resourcePath));
   }
 }
 
@@ -105,6 +127,7 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
 class FileMetadata {
   /** A set of source files that this file depends upon. */
   fileDependencies = new Set<ts.SourceFile>();
+  resourcePaths = new Set<string>();
   directiveMeta = new Map<ClassDeclaration, DirectiveMeta>();
   ngModuleMeta = new Map<ClassDeclaration, NgModuleMeta>();
   pipeMeta = new Map<ClassDeclaration, PipeMeta>();

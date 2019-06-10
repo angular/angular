@@ -20,6 +20,7 @@ import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from 
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TypeCheckContext} from '../../typecheck';
+import {NoopResourceDependencyRecorder, ResourceDependencyRecorder} from '../../util/src/resource_recorder';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 
 import {ResourceLoader} from './api';
@@ -48,7 +49,9 @@ export class ComponentDecoratorHandler implements
       private resourceLoader: ResourceLoader, private rootDirs: string[],
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
-      private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder) {}
+      private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
+      private resourceDependencies:
+          ResourceDependencyRecorder = new NoopResourceDependencyRecorder()) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -182,6 +185,7 @@ export class ComponentDecoratorHandler implements
         }
         const templateUrl = this.resourceLoader.resolve(evalTemplateUrl, containingFile);
         const templateStr = this.resourceLoader.load(templateUrl);
+        this.resourceDependencies.recordResourceDependency(node.getSourceFile(), templateUrl);
 
         template = this._parseTemplate(
             component, templateStr, sourceMapUrl(templateUrl), /* templateRange */ undefined,
@@ -236,7 +240,9 @@ export class ComponentDecoratorHandler implements
       }
       for (const styleUrl of styleUrls) {
         const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
-        styles.push(this.resourceLoader.load(resourceUrl));
+        const resourceStr = this.resourceLoader.load(resourceUrl);
+        styles.push(resourceStr);
+        this.resourceDependencies.recordResourceDependency(node.getSourceFile(), resourceUrl);
       }
     }
     if (component.has('styles')) {
@@ -506,6 +512,7 @@ export class ComponentDecoratorHandler implements
       if (templatePromise !== undefined) {
         return templatePromise.then(() => {
           const templateStr = this.resourceLoader.load(resourceUrl);
+          this.resourceDependencies.recordResourceDependency(node.getSourceFile(), resourceUrl);
           const template = this._parseTemplate(
               component, templateStr, sourceMapUrl(resourceUrl), /* templateRange */ undefined,
               /* escapedString */ false);
