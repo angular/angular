@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
 import {IncrementalState} from '../../incremental';
+import {IndexingContext} from '../../indexer';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
@@ -249,6 +250,11 @@ export class IvyCompilation {
       return undefined;
     }
   }
+
+  /**
+   * Feeds components discovered in the compilation to a context for indexing.
+   */
+  index(context: IndexingContext) { throw new Error('Method not implemented.'); }
 
   resolve(): void {
     const resolveSpan = this.perf.start('resolve');
