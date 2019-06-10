@@ -548,7 +548,7 @@ It displays the same hero data in JSON format by chaining through to the built-i
 
 
 The [JsonPipe](api/common/JsonPipe)
-provides an easy way to diagnosis a mysteriously failing data binding or
+provides an easy way to diagnose a mysteriously failing data binding or
 inspect an object for future binding.
 
 
