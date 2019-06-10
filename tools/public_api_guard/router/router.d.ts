@@ -255,7 +255,7 @@ export declare const PRIMARY_OUTLET = "primary";
 
 export declare function provideRoutes(routes: Routes): any;
 
-export QueryParamsHandling;
+export declare type QueryParamsHandling = 'merge' | 'preserve' | '';
 
 export interface Resolve<T> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T> | Promise<T> | T;
