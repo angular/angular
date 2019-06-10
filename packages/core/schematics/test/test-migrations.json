@@ -5,6 +5,10 @@
     "migration-injectable-pipe": {
       "description": "Migrates all Pipe classes so that they have an Injectable annotation",
       "factory": "../migrations/injectable-pipe/index"
+    },
+    "migration-missing-injectable": {
+      "description": "Migrates all declared undecorated providers with the @Injectable decorator",
+      "factory": "../migrations/missing-injectable/index"
     }
   }
 }
