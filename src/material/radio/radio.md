@@ -39,8 +39,8 @@ Radio button groups should be given a meaningful label via `aria-label` or `aria
 The default color for radio buttons can be configured globally using the `MAT_RADIO_DEFAULT_OPTIONS` provider
 
 ```
-providers: [
+providers: [{
     provide: MAT_RADIO_DEFAULT_OPTIONS,
     useValue: { color: 'accent' },
-]
+}]
 ```
