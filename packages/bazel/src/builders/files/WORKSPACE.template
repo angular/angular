@@ -28,9 +28,12 @@ RULES_SASS_VERSION = "3a4f31c74513ccfacce3f955b5c006352f7e9587"
 RULES_SASS_SHA256 = "4c87befcb17282b039ba8341df9a6cc45f461bf05776dcf35c7e40c7e79ce374"
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = RULES_SASS_SHA256,
-    url = "https://github.com/bazelbuild/rules_sass/archive/%s.zip" % RULES_SASS_VERSION,
-    strip_prefix = "rules_sass-%s" % RULES_SASS_VERSION,
+#    sha256 = RULES_SASS_SHA256,
+#    url = "https://github.com/bazelbuild/rules_sass/archive/%s.zip" % RULES_SASS_VERSION,
+#    strip_prefix = "rules_sass-%s" % RULES_SASS_VERSION,
+    # TODO: change back to upstream release after https://github.com/bazelbuild/rules_sass/pull/87 merged and released
+    strip_prefix = "rules_sass-9862dfc96a4a1f66fe171ef5e043b29853e8445b",
+    url = "https://github.com/manekinekko/rules_sass/archive/9862dfc96a4a1f66fe171ef5e043b29853e8445b.zip",
 )
 
 ####################################
@@ -49,13 +52,8 @@ Try running `yarn bazel` instead.
 )
 yarn_install(
     name = "npm",
-    data = ["//:angular-metadata.tsconfig.json"],
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
-    # Temporarily disable node_modules symlinking until the fix for
-    # https://github.com/bazelbuild/bazel/issues/8487 makes it into a
-    # future Bazel release
-    symlink_node_modules = False,
 )
 
 load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
