@@ -80,6 +80,10 @@ export interface ClassProvider extends ClassSansProvider {
     provide: any;
 }
 
+export interface ClassSansProvider {
+    useClass: Type<any>;
+}
+
 /** @deprecated */
 export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {
 }
@@ -1386,6 +1390,10 @@ export interface TypeProvider extends Type<any> {
 export interface ValueProvider extends ValueSansProvider {
     multi?: boolean;
     provide: any;
+}
+
+export interface ValueSansProvider {
+    useValue: any;
 }
 
 export declare class Version {

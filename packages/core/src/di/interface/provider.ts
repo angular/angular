@@ -14,6 +14,7 @@ import {Type} from '../../interface/type';
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ValueSansProvider'}
@@ -33,6 +34,7 @@ export interface ValueSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ValueProvider'}
@@ -62,6 +64,7 @@ export interface ValueProvider extends ValueSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='StaticClassSansProvider'}
@@ -88,6 +91,7 @@ export interface StaticClassSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='StaticClassProvider'}
@@ -99,6 +103,8 @@ export interface StaticClassSansProvider {
  * ### Multi-value example
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @publicApi
  */
 export interface StaticClassProvider extends StaticClassSansProvider {
   /**
@@ -119,6 +125,7 @@ export interface StaticClassProvider extends StaticClassSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * ```
@@ -142,6 +149,7 @@ export interface ConstructorSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
@@ -149,6 +157,8 @@ export interface ConstructorSansProvider {
  * ### Multi-value example
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @publicApi
  */
 export interface ConstructorProvider extends ConstructorSansProvider {
   /**
@@ -169,9 +179,12 @@ export interface ConstructorProvider extends ConstructorSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ExistingSansProvider'}
+ *
+ * @publicApi
  */
 export interface ExistingSansProvider {
   /**
@@ -186,6 +199,7 @@ export interface ExistingSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ExistingProvider'}
@@ -241,6 +255,7 @@ export interface FactorySansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='FactoryProvider'}
@@ -292,6 +307,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='TypeProvider'}
@@ -306,6 +322,7 @@ export interface TypeProvider extends Type<any> {}
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ClassSansProvider'}
@@ -325,6 +342,7 @@ export interface ClassSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ClassProvider'}
