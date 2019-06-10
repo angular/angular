@@ -6,17 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, InjectionToken, Optional, Inject, isDevMode, Version} from '@angular/core';
-import {HammerLoader, HAMMER_LOADER} from '@angular/platform-browser';
-import {BidiModule} from '@angular/cdk/bidi';
 import {VERSION as CDK_VERSION} from '@angular/cdk';
-
-// Private version constant to circumvent test/build issues,
-// i.e. avoid core to depend on the @angular/material primary entry-point
-// Can be removed once the Material primary entry-point no longer
-// re-exports all secondary entry-points
-const VERSION = new Version('0.0.0-PLACEHOLDER');
-
+import {BidiModule} from '@angular/cdk/bidi';
+import {Inject, InjectionToken, isDevMode, NgModule, Optional} from '@angular/core';
+import {HAMMER_LOADER, HammerLoader} from '@angular/platform-browser';
+import {VERSION as MAT_VERSION} from '../version';
 
 /** Injection token that configures whether the Material sanity checks are enabled. */
 export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('mat-sanity-checks', {
@@ -114,9 +108,9 @@ export class MatCommonModule {
 
   /** Checks whether the material version matches the cdk version */
   private _checkCdkVersionMatch(): void {
-    if (VERSION.full !== CDK_VERSION.full) {
+    if (MAT_VERSION.full !== CDK_VERSION.full) {
       console.warn(
-          'The Angular Material version (' + VERSION.full + ') does not match ' +
+          'The Angular Material version (' + MAT_VERSION.full + ') does not match ' +
           'the Angular CDK version (' + CDK_VERSION.full + ').\n' +
           'Please ensure the versions of these two packages exactly match.'
       );
