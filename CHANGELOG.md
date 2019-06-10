@@ -1,3 +1,25 @@
+## 8.0.1 "yarn-barn" (2019-06-10)
+
+
+### Bug Fixes
+
+* **drag-drop:** error if drag sequence is started while another one is finishing ([#16081](https://github.com/angular/components/issues/16081)) ([23df7aa](https://github.com/angular/components/commit/23df7aa))
+* **drag-n-drop:** ignore consecutive touchmove events on drag item on multitouch ([#15923](https://github.com/angular/components/issues/15923)) ([208d43f](https://github.com/angular/components/commit/208d43f))
+* prevent default on escape key presses ([#16202](https://github.com/angular/components/issues/16202)) ([0871d88](https://github.com/angular/components/commit/0871d88))
+* **ng-update:** fix table generator schematic ([#16204](https://github.com/angular/components/issues/16204)) ([7386ea1](https://github.com/angular/components/commit/7386ea1))
+* **ng-update:** do not report form-field breaking change from v6 ([#16161](https://github.com/angular/components/issues/16161)) ([7b78cb7](https://github.com/angular/components/commit/7b78cb7)), closes [#16143](https://github.com/angular/components/issues/16143)
+* **ng-update:** parse cli workspace config as json5 ([#16218](https://github.com/angular/components/issues/16218)) ([0fe2711](https://github.com/angular/components/commit/0fe2711))
+* **overlay:** stop using capture phase for overlay keyboard handling ([#16019](https://github.com/angular/components/issues/16019)) ([67b3e5f](https://github.com/angular/components/commit/67b3e5f)), closes [#9928](https://github.com/angular/components/issues/9928)
+* **popover-edit:** unable to change type of popover buttons ([#16058](https://github.com/angular/components/issues/16058)) ([ba9fd14](https://github.com/angular/components/commit/ba9fd14))
+* **progress-spinner:** non-default diameter indeterminate animation not working inside Shadow DOM ([#16177](https://github.com/angular/components/issues/16177)) ([e391869](https://github.com/angular/components/commit/e391869))
+* **scrolling:** virtual scroll throw off if directive injects ViewContainerRef ([#16137](https://github.com/angular/components/issues/16137)) ([af56441](https://github.com/angular/components/commit/af56441)), closes [#16130](https://github.com/angular/components/issues/16130)
+* **bottom-sheet:** allow for scroll strategy to be configured ([#15535](https://github.com/angular/components/issues/15535)) ([4d0d080](https://github.com/angular/components/commit/4d0d080)), closes [#15533](https://github.com/angular/components/issues/15533)
+
+
+### Features
+* **popover-edit (experimental):** accessible row hover content ([#15917](https://github.com/angular/components/issues/15917)) ([c979484](https://github.com/angular/components/commit/c979484))
+* **popover-edit (experimental):** Helper class to reduce form state preservation boilerplate ([#15939](https://github.com/angular/components/issues/15939)) ([3bc6020](https://github.com/angular/components/commit/3bc6020))
+
 # 8.0.0 "osmium-octothorpe" (2019-05-28)
 
 

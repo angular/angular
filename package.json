@@ -32,7 +32,7 @@
     "format:bazel": "yarn -s bazel:buildifier --lint=fix --mode=fix",
     "format": "yarn -s format:ts && yarn -s format:bazel"
   },
-  "version": "8.0.0",
+  "version": "8.0.1",
   "requiredAngularVersion": "^8.0.0 || ^9.0.0-0",
   "requiredMDCVersion": "^1.1.0",
   "dependencies": {
