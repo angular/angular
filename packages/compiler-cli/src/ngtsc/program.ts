@@ -19,6 +19,7 @@ import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
+import {IndexedComponent} from './indexer';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
 import {PartialEvaluator} from './partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from './path';
@@ -262,6 +263,10 @@ export class NgtscProgram implements api.Program {
 
     this.ensureAnalyzed();
     return this.routeAnalyzer !.listLazyRoutes(entryRoute);
+  }
+
+  getIndexedComponents(): Map<ts.Declaration, IndexedComponent> {
+    throw new Error('Method not implemented.');
   }
 
   getLibrarySummaries(): Map<string, api.LibrarySummary> {
