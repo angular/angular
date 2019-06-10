@@ -6,23 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InterpolationConfig, ParseSourceFile} from '@angular/compiler';
-import {ParseTemplateOptions} from '@angular/compiler/src/render3/view/template';
+import {ParseSourceFile, ParseSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
 /**
  * Describes the kind of identifier found in a template.
  */
 export enum IdentifierKind {
-  Property,
-  Method,
-}
-
-/**
- * Describes the absolute byte offsets of a text anchor in a source code.
- */
-export class AbsoluteSourceSpan {
-  constructor(public start: number, public end: number) {}
 }
 
 /**
@@ -31,7 +21,7 @@ export class AbsoluteSourceSpan {
  */
 export interface TemplateIdentifier {
   name: string;
-  span: AbsoluteSourceSpan;
+  span: ParseSpan;
   kind: IdentifierKind;
   file: ParseSourceFile;
 }
@@ -48,15 +38,4 @@ export interface IndexedComponent {
     identifiers: Set<TemplateIdentifier>,
     usedComponents: Set<ts.ClassDeclaration>,
   };
-}
-
-/**
- * Options for restoring a parsed template. See `template.ts#restoreTemplate`.
- */
-export interface RestoreTemplateOptions extends ParseTemplateOptions {
-  /**
-   * The interpolation configuration of the template is lost after it already
-   * parsed, so it must be respecified.
-   */
-  interpolationConfig: InterpolationConfig;
 }
