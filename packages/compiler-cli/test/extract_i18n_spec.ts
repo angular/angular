@@ -379,4 +379,24 @@ describe('extract_i18n command line', () => {
     const moduleOutput = path.join(outDir, 'src', 'module.js');
     expect(fs.existsSync(moduleOutput)).toBeFalsy();
   });
+
+  it('should extract with enableIvy activated', () => {
+    const tsconfig = `{
+      "extends": "./tsconfig-base.json",
+      "angularCompilerOptions": {"enableIvy": true},
+    }`;
+
+    writeConfig(tsconfig);
+    writeSources();
+
+    const exitCode =
+        mainXi18n(['-p', basePath, '--i18nFormat=xmb', '--outFile=custom_file.xmb'], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const xmbOutput = path.join(outDir, 'custom_file.xmb');
+    expect(fs.existsSync(xmbOutput)).toBeTruthy();
+    const xmb = fs.readFileSync(xmbOutput, {encoding: 'utf-8'});
+    expect(xmb).toEqual(EXPECTED_XMB);
+  });
 });

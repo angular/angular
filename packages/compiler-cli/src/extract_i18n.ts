@@ -20,6 +20,9 @@ import {main, readCommandLineAndConfiguration} from './main';
 export function mainXi18n(
     args: string[], consoleError: (msg: string) => void = console.error): number {
   const config = readXi18nCommandLineAndConfiguration(args);
+  // We disable ivy to use VE extraction mechanisms as a temporary solution for now
+  // TODO(ocombe): FW-1375 - make extraction work with ivy enabled
+  config.options.enableIvy = false;
   return main(args, consoleError, config);
 }
 
