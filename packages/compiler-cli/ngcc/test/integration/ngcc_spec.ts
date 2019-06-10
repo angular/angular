@@ -38,6 +38,19 @@ describe('ngcc main()', () => {
         .not.toThrow();
   });
 
+  it('should run ngcc without errors when "main" property is not present', () => {
+    mainNgcc({
+      basePath: '/dist',
+      propertiesToConsider: ['main', 'es2015'],
+      logger: new MockLogger(),
+    });
+
+    expect(loadPackage('local-package', '/dist').__processed_by_ivy_ngcc__).toEqual({
+      es2015: '0.0.0-PLACEHOLDER',
+      typings: '0.0.0-PLACEHOLDER',
+    });
+  });
+
   describe('with targetEntryPointPath', () => {
     it('should only compile the given package entry-point (and its dependencies).', () => {
       const STANDARD_MARKERS = {
