@@ -65,19 +65,7 @@ node_repositories(
 
 yarn_install(
     name = "npm",
-    data = [
-        "//:tools/npm/@angular_bazel/index.js",
-        "//:tools/npm/@angular_bazel/package.json",
-        "//:tools/postinstall-patches.js",
-        "//:tools/yarn/check-yarn.js",
-    ],
     package_json = "//:package.json",
-    # Don't install devDependencies, they are large and not used under Bazel
-    prod_only = True,
-    # Temporarily disable node_modules symlinking until the fix for
-    # https://github.com/bazelbuild/bazel/issues/8487 makes it into a
-    # future Bazel release
-    symlink_node_modules = False,
     yarn_lock = "//:yarn.lock",
 )
 
