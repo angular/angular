@@ -10,13 +10,7 @@ import {Type} from '../../interface/type';
 
 /**
  * Configures the `Injector` to return a value for a token.
- *
- * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='ValueSansProvider'}
+ * Base for `ValueProvider` decorator.
  *
  * @publicApi
  */
@@ -33,6 +27,7 @@ export interface ValueSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ValueProvider'}
@@ -58,13 +53,7 @@ export interface ValueProvider extends ValueSansProvider {
 
 /**
  * Configures the `Injector` to return an instance of `useClass` for a token.
- *
- * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='StaticClassSansProvider'}
+ * Base for `StaticClassProvider` decorator.
  *
  * @publicApi
  */
@@ -88,6 +77,7 @@ export interface StaticClassSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='StaticClassProvider'}
@@ -99,6 +89,8 @@ export interface StaticClassSansProvider {
  * ### Multi-value example
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @publicApi
  */
 export interface StaticClassProvider extends StaticClassSansProvider {
   /**
@@ -119,6 +111,7 @@ export interface StaticClassProvider extends StaticClassSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * ```
@@ -142,6 +135,7 @@ export interface ConstructorSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
@@ -149,6 +143,8 @@ export interface ConstructorSansProvider {
  * ### Multi-value example
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @publicApi
  */
 export interface ConstructorProvider extends ConstructorSansProvider {
   /**
@@ -169,9 +165,12 @@ export interface ConstructorProvider extends ConstructorSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ExistingSansProvider'}
+ *
+ * @publicApi
  */
 export interface ExistingSansProvider {
   /**
@@ -186,6 +185,7 @@ export interface ExistingSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ExistingProvider'}
@@ -241,6 +241,7 @@ export interface FactorySansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='FactoryProvider'}
@@ -292,6 +293,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='TypeProvider'}
@@ -302,13 +304,9 @@ export interface TypeProvider extends Type<any> {}
 
 /**
  * Configures the `Injector` to return a value by invoking a `useClass` function.
+ * Base for `ClassProvider` decorator.
  *
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='ClassSansProvider'}
  *
  * @publicApi
  */
@@ -325,6 +323,7 @@ export interface ClassSansProvider {
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @usageNotes
+ *
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ClassProvider'}
