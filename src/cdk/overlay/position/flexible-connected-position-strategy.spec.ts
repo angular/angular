@@ -1927,6 +1927,82 @@ describe('FlexibleConnectedPositionStrategy', () => {
       expect(Math.floor(overlayRect.bottom)).toBe(Math.floor(originRect.bottom));
     });
 
+    it('should position an overlay that is flowing to the left correctly on a page that is ' +
+      'scrolled horizontally', () => {
+        const veryLargeElement: HTMLElement = document.createElement('div');
+        veryLargeElement.style.width = '4000px';
+        veryLargeElement.style.height = '4000px';
+        document.body.appendChild(veryLargeElement);
+        window.scroll(2100, 0);
+
+        originElement.style.position = 'absolute';
+        originElement.style.top = '100px';
+        originElement.style.left = '300px';
+
+        positionStrategy
+          .withFlexibleDimensions()
+          .withPush(false)
+          .withPositions([{
+            overlayY: 'top',
+            overlayX: 'end',
+            originY: 'top',
+            originX: 'end'
+          }]);
+
+        attachOverlay({positionStrategy});
+
+        const originRect = originElement.getBoundingClientRect();
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+
+        expect(Math.floor(overlayRect.right)).toBe(Math.floor(originRect.right));
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top));
+
+        window.scroll(0, 0);
+        document.body.removeChild(veryLargeElement);
+      });
+
+    it('should size the bounding box that is flowing to the left correctly on a page that is ' +
+      'scrolled horizontally', () => {
+        const veryLargeElement: HTMLElement = document.createElement('div');
+        veryLargeElement.style.width = '4000px';
+        veryLargeElement.style.height = '4000px';
+        document.body.appendChild(veryLargeElement);
+        window.scroll(100, 0);
+
+        originElement.style.position = 'absolute';
+        originElement.style.top = '100px';
+        originElement.style.left = '300px';
+
+        positionStrategy
+          .withFlexibleDimensions()
+          .withPush(false)
+          .withPositions([{
+            overlayY: 'top',
+            overlayX: 'end',
+            originY: 'top',
+            originX: 'end'
+          }]);
+
+        attachOverlay({positionStrategy});
+
+        let originRect = originElement.getBoundingClientRect();
+        let boundingBoxRect = overlayRef.hostElement.getBoundingClientRect();
+
+        expect(Math.floor(originRect.right)).toBe(Math.floor(boundingBoxRect.width));
+
+        window.scroll(200, 0);
+        overlayRef.updatePosition();
+
+        originRect = originElement.getBoundingClientRect();
+        boundingBoxRect = overlayRef.hostElement.getBoundingClientRect();
+
+        expect(Math.floor(originRect.right)).toBe(Math.floor(boundingBoxRect.width));
+
+        window.scroll(0, 0);
+        document.body.removeChild(veryLargeElement);
+      });
+
+
   });
 
   describe('onPositionChange with scrollable view properties', () => {
