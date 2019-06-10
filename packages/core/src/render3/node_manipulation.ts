@@ -16,7 +16,7 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {CHILD_HEAD, CLEANUP, FLAGS, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
@@ -68,11 +68,14 @@ const enum WalkTNodeTreeAction {
  */
 function executeNodeAction(
     action: WalkTNodeTreeAction, renderer: Renderer3, parent: RElement | null,
-    nodeOrLContainer: RNode | LContainer | LView, beforeNode?: RNode | null) {
-  ngDevMode && assertDefined(nodeOrLContainer, '\'nodeOrLContainer\' is undefined');
-  let wrappedNode: any = nodeOrLContainer;
+    nodeOrLContainerOrLView: RNode | LContainer | LView, beforeNode?: RNode | null) {
+  ngDevMode && assertDefined(nodeOrLContainerOrLView, '\'nodeOrLContainer\' is undefined');
+  let wrappedNode: any = nodeOrLContainerOrLView;
   let lContainer: LContainer|undefined;
   let isComponent = false;
+  // We are expecting an RNode, but in the case of a component or LContainer the `RNode` is wrapped
+  // in an array which needs to be unwrapped. We need to know if it is a component and if
+  // it has LContainer so that we can process all of those cases appropriately.
   while (Array.isArray(wrappedNode)) {
     if (isLContainer(wrappedNode)) {
       lContainer = wrappedNode;
@@ -80,18 +83,18 @@ function executeNodeAction(
     if (isLView(wrappedNode)) {
       isComponent = true;
     }
-    wrappedNode = wrappedNode[0];
+    wrappedNode = wrappedNode[HOST];
   }
-  const node: RNode = wrappedNode;
-  ngDevMode && assertDomNode(node);
+  const rNode: RNode = wrappedNode;
+  ngDevMode && assertDomNode(rNode);
 
   if (action === WalkTNodeTreeAction.Insert) {
-    nativeInsertBefore(renderer, parent !, node, beforeNode || null);
+    nativeInsertBefore(renderer, parent !, rNode, beforeNode || null);
   } else if (action === WalkTNodeTreeAction.Detach) {
-    nativeRemoveNode(renderer, node, isComponent);
+    nativeRemoveNode(renderer, rNode, isComponent);
   } else if (action === WalkTNodeTreeAction.Destroy) {
     ngDevMode && ngDevMode.rendererDestroyNode++;
-    (renderer as ProceduralRenderer3).destroyNode !(node);
+    (renderer as ProceduralRenderer3).destroyNode !(rNode);
   }
   if (lContainer != null) {
     applyContainer(renderer, action, lContainer, parent, beforeNode);
@@ -110,13 +113,13 @@ export function createTextNode(value: any, renderer: Renderer3): RText {
  * to propagate deeply into the nested containers to remove all elements in the
  * views beneath it.
  *
- * @param viewToWalk The view from which elements should be added or removed
+ * @param lView The view from which elements should be added or removed
  * @param insertMode Whether or not elements should be added (if false, removing)
  * @param beforeNode The node before which elements should be added, if insert mode
  */
 export function addRemoveViewFromContainer(
-    viewToWalk: LView, insertMode: true, beforeNode: RNode | null): void;
-export function addRemoveViewFromContainer(viewToWalk: LView, insertMode: false): void;
+    lView: LView, insertMode: true, beforeNode: RNode | null): void;
+export function addRemoveViewFromContainer(lView: LView, insertMode: false): void;
 export function addRemoveViewFromContainer(
     lView: LView, insertMode: boolean, beforeNode?: RNode | null): void {
   const renderParent = getContainerRenderParent(lView[TVIEW].node as TViewNode, lView);
@@ -351,7 +354,7 @@ function cleanUpView(view: LView | LContainer): void {
 /** Removes listeners and unsubscribes from output subscriptions */
 function removeListeners(lView: LView): void {
   const tCleanup = lView[TVIEW].cleanup !;
-  if (tCleanup != null) {
+  if (tCleanup != null) {  // !`null` and !`undefined`
     const lCleanup = lView[CLEANUP] !;
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
       if (typeof tCleanup[i] === 'string') {
@@ -769,10 +772,7 @@ function applyView(
       applyProjection(
           renderer, action, lView, viewRootTNode as TProjectionNode, renderParent, beforeNode);
     } else {
-      ngDevMode && assertNotEqual(viewRootTNodeType, TNodeType.View, 'Unexpected TNodeType.View');
-      ngDevMode &&
-          assertNotEqual(
-              viewRootTNodeType, TNodeType.IcuContainer, 'Unexpected TNodeType.IcuContainer');
+      ngDevMode && assertNodeOfPossibleTypes(viewRootTNode, TNodeType.Element, TNodeType.Container);
       executeNodeAction(action, renderer, renderParent, lView[viewRootTNode.index], beforeNode);
     }
     viewRootTNode = viewRootTNode.next;
@@ -850,16 +850,16 @@ function applyContainer(
 
 
 /**
- * `applyContainer` performs operation on the container and its views as specified by `action`
- * (insert, detach, destroy)
+ * `applyElementContainer` performs operation on the element-container and its views as specified by
+ * `action` (insert, detach, destroy)
  *
- * Inserting a Container is complicated by the fact that the container may have Views which
- * themselves
- * have container or projections.
+ * Inserting an ElementContainer is complicated by the fact that the container may have Views which
+ * themselves have container or projections.
  *
  * @param renderer Render to use
  * @param action action to perform (insert, detach, destroy)
  * @param lView The LView which needs to be inserted, detached, destroyed.
+ * @param tElementContainerNode The TNode associated with the ElementContainer.
  * @param renderParent parent DOM element for insertion/removal.
  * @param beforeNode Before which node the insertions should happen.
  */
