@@ -820,11 +820,10 @@ describe('AppComponent', () => {
         const doRedirect = redirectionPerMode[mode];
         const description =
             `should ${doRedirect ? '' : 'not '}redirect to 'docs' if deployment mode is '${mode}' ` +
-            'and not at a docs page';
+            'and at a marketing page';
         const verifyNoRedirection = () => expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-        const verifyPossibleRedirection = doRedirect
-            ? () => expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs')
-            : verifyNoRedirection;
+        const verifyRedirection = () => expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+        const verifyPossibleRedirection = doRedirect ? verifyRedirection : verifyNoRedirection;
 
         it(description, () => {
           createTestingModule('', mode);
