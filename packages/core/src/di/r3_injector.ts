@@ -11,6 +11,7 @@ import '../util/ng_dev_mode';
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors';
+import {deepForEach} from '../util/array_utils';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
@@ -495,10 +496,6 @@ function makeRecord<T>(
     value: value,
     multi: multi ? [] : undefined,
   };
-}
-
-function deepForEach<T>(input: (T | any[])[], fn: (value: T) => void): void {
-  input.forEach(value => Array.isArray(value) ? deepForEach(value, fn) : fn(value));
 }
 
 function isValueProvider(value: SingleProvider): value is ValueProvider {
