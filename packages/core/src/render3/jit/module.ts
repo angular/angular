@@ -13,7 +13,7 @@ import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Component} from '../../metadata';
 import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
-import {flatten} from '../../util/array_utils';
+import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
@@ -183,9 +183,10 @@ function verifySemanticsOfNgModuleDef(
         flatten(ngModule.imports)
             .map(unwrapModuleWithProvidersImports)
             .forEach(mod => verifySemanticsOfNgModuleDef(mod, false));
-    ngModule.bootstrap && ngModule.bootstrap.forEach(verifyCorrectBootstrapType);
-    ngModule.bootstrap && ngModule.bootstrap.forEach(verifyComponentIsPartOfNgModule);
-    ngModule.entryComponents && ngModule.entryComponents.forEach(verifyComponentIsPartOfNgModule);
+    ngModule.bootstrap && deepForEach(ngModule.bootstrap, verifyCorrectBootstrapType);
+    ngModule.bootstrap && deepForEach(ngModule.bootstrap, verifyComponentIsPartOfNgModule);
+    ngModule.entryComponents &&
+        deepForEach(ngModule.entryComponents, verifyComponentIsPartOfNgModule);
   }
 
   // Throw Error if any errors were detected.
@@ -256,7 +257,7 @@ function verifySemanticsOfNgModuleDef(
       // We know we are component
       const component = getAnnotation<Component>(type, 'Component');
       if (component && component.entryComponents) {
-        component.entryComponents.forEach(verifyComponentIsPartOfNgModule);
+        deepForEach(component.entryComponents, verifyComponentIsPartOfNgModule);
       }
     }
   }
