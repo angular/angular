@@ -1202,6 +1202,37 @@ describe('di', () => {
             // Each ViewContainerRef instance should be unique
             expect(otherDirective.isSameInstance).toBe(false);
           });
+
+      it('should sync ViewContainerRef state between all injected instances', () => {
+        @Component({
+          selector: 'root',
+          template: `<ng-template #tmpl>Test</ng-template>`,
+        })
+        class Root {
+          @ViewChild(TemplateRef, {static: true})
+          tmpl !: TemplateRef<any>;
+
+          constructor(public vcr: ViewContainerRef, public vcr2: ViewContainerRef) {}
+
+          ngOnInit(): void { this.vcr.createEmbeddedView(this.tmpl); }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Root],
+        });
+
+        const fixture = TestBed.createComponent(Root);
+        fixture.detectChanges();
+        const cmp = fixture.componentInstance;
+
+        expect(cmp.vcr.length).toBe(1);
+        expect(cmp.vcr2.length).toBe(1);
+        expect(cmp.vcr2.get(0)).toEqual(cmp.vcr.get(0));
+
+        cmp.vcr2.remove(0);
+        expect(cmp.vcr.length).toBe(0);
+        expect(cmp.vcr.get(0)).toBeNull();
+      });
     });
 
     describe('ChangeDetectorRef', () => {
