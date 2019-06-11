@@ -111,33 +111,30 @@ export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
     return base;
   };
 
-  proxy.getQuickInfoAtPosition = function(fileName: string, position: number): ts.QuickInfo |
-      undefined {
-        let base = oldLS.getQuickInfoAtPosition(fileName, position);
-        // TODO(vicb): the tags property has been removed in TS 2.2
-        tryOperation('get quick info', () => {
-          const ours = ls.getHoverAt(fileName, position);
-          if (ours) {
-            const displayParts: ts.SymbolDisplayPart[] = [];
-            for (const part of ours.text) {
-              displayParts.push({kind: part.language || 'angular', text: part.text});
-            }
-            const tags = base && (<any>base).tags;
-            base = <any>{
-              displayParts,
-              documentation: [],
-              kind: 'angular',
-              kindModifiers: 'what does this do?',
-              textSpan: {start: ours.span.start, length: ours.span.end - ours.span.start},
-            };
-            if (tags) {
-              (<any>base).tags = tags;
-            }
-          }
-        });
-
-        return base;
-      };
+  proxy.getQuickInfoAtPosition = function(fileName: string, position: number): ts.QuickInfo | undefined {
+    const base = oldLS.getQuickInfoAtPosition(fileName, position);
+    const ours = ls.getHoverAt(fileName, position);
+    if (!ours) {
+      return base;
+    }
+    const result: ts.QuickInfo = {
+      kind: ts.ScriptElementKind.unknown,
+      kindModifiers: ts.ScriptElementKindModifier.none,
+      textSpan: {
+        start: ours.span.start,
+        length: ours.span.end - ours.span.start,
+      },
+      displayParts: ours.text.map(part => ({
+        text: part.text,
+        kind: part.language || 'angular',
+      })),
+      documentation: [],
+    };
+    if (base && base.tags) {
+      result.tags = base.tags;
+    }
+    return result;
+  };
 
   proxy.getSemanticDiagnostics = function(fileName: string) {
     let result = oldLS.getSemanticDiagnostics(fileName);
