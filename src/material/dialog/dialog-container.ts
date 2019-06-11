@@ -141,6 +141,11 @@ export class MatDialogContainer extends BasePortalOutlet {
     // wait for the microtask queue to be empty.
     if (this._config.autoFocus) {
       this._focusTrap.focusInitialElementWhenReady();
+    } else {
+      // Otherwise ensure that focus is on the dialog container. It's possible that a different
+      // component tried to move focus while the open animation was running. See:
+      // https://github.com/angular/components/issues/16215
+      this._elementRef.nativeElement.focus();
     }
   }
 
