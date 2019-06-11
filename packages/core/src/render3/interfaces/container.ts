@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ViewRef} from '../../linker/view_ref';
+
 import {TNode} from './node';
 import {LQueries} from './query';
 import {RComment, RElement} from './renderer';
@@ -28,6 +30,7 @@ export const ACTIVE_INDEX = 2;
 // PARENT, NEXT, QUERIES and T_HOST are indices 3, 4, 5 and 6.
 // As we already have these constants in LView, we don't need to re-create them.
 export const NATIVE = 7;
+export const VIEW_REFS = 8;
 
 /**
  * Size of LContainer's header. Represents the index after which all views in the
@@ -35,7 +38,7 @@ export const NATIVE = 7;
  * which views are already in the DOM (and don't need to be re-added) and so we can
  * remove views from the DOM when they are no longer required.
  */
-export const CONTAINER_HEADER_OFFSET = 8;
+export const CONTAINER_HEADER_OFFSET = 9;
 
 /**
  * The state associated with a container.
@@ -99,6 +102,13 @@ export interface LContainer extends Array<any> {
   /** The comment element that serves as an anchor for this LContainer. */
   readonly[NATIVE]:
       RComment;  // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
+
+  /**
+   * Array of `ViewRef`s used by any `ViewContainerRef`s that point to this container.
+   *
+   * This is lazily initialized by `ViewContainerRef` when the first view is inserted.
+   */
+  [VIEW_REFS]: ViewRef[]|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
