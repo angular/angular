@@ -279,6 +279,9 @@
     "name": "UnsubscriptionErrorImpl"
   },
   {
+    "name": "VIEW_REFS"
+  },
+  {
     "name": "ViewContainerRef"
   },
   {

@@ -1459,7 +1459,8 @@ export function createLContainer(
       null,                            // next
       null,                            // queries
       tNode,                           // t_host
-      native,                          // native
+      native,                          // native,
+      null,                            // view refs
       );
   ngDevMode && attachLContainerDebug(lContainer);
   return lContainer;
