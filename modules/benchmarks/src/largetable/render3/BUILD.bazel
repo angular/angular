@@ -20,7 +20,7 @@ ng_module(
 
 ng_rollup_bundle(
     name = "bundle",
-    entry_point = "modules/benchmarks/src/largetable/render3/index.js",
+    entry_point = ":index.ts",
     tags = ["ivy-only"],
     deps = [
         ":largetable_lib",

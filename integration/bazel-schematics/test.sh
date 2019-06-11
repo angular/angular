@@ -27,7 +27,6 @@ function testBazel() {
   ng new demo --collection=@angular/bazel --routing --skip-git --skip-install --style=scss
   cd demo
   installLocalPackages
-  yarn webdriver-manager update --gecko=false --standalone=false ${CI_CHROMEDRIVER_VERSION_ARG:---versions.chrome 2.45}
   ng generate component widget --style=css
   ng build
   ng test
@@ -44,6 +43,7 @@ function testNonBazel() {
   mv ./angular.json.bak ./angular.json
   mv ./tsconfig.json.bak ./tsconfig.json
   rm -rf dist src/main.dev.ts src/main.prod.ts
+  yarn webdriver-manager update --gecko=false --standalone=false ${CI_CHROMEDRIVER_VERSION_ARG:---versions.chrome 2.45}
   ng build --progress=false
   ng test --progress=false --watch=false
   ng e2e --configuration=production --webdriver-update=false
