@@ -8,6 +8,7 @@ export declare class MatAccordion extends CdkAccordion implements MatAccordionBa
     _headers: QueryList<MatExpansionPanelHeader>;
     displayMode: MatAccordionDisplayMode;
     hideToggle: boolean;
+    togglePosition: MatAccordionTogglePosition;
     _handleHeaderFocus(header: MatExpansionPanelHeader): void;
     _handleHeaderKeydown(event: KeyboardEvent): void;
     ngAfterContentInit(): void;
@@ -18,9 +19,12 @@ export interface MatAccordionBase extends CdkAccordion {
     _handleHeaderKeydown: (event: KeyboardEvent) => void;
     displayMode: MatAccordionDisplayMode;
     hideToggle: boolean;
+    togglePosition: MatAccordionTogglePosition;
 }
 
 export declare type MatAccordionDisplayMode = 'default' | 'flat';
+
+export declare type MatAccordionTogglePosition = 'before' | 'after';
 
 export declare const matExpansionAnimations: {
     readonly indicatorRotate: AnimationTriggerMetadata;
@@ -43,6 +47,7 @@ export declare class MatExpansionPanel extends CdkAccordionItem implements After
     afterCollapse: EventEmitter<void>;
     afterExpand: EventEmitter<void>;
     hideToggle: boolean;
+    togglePosition: MatAccordionTogglePosition;
     constructor(accordion: MatAccordionBase, _changeDetectorRef: ChangeDetectorRef, _uniqueSelectionDispatcher: UniqueSelectionDispatcher, _viewContainerRef: ViewContainerRef, _document: any, _animationMode: string, defaultOptions?: MatExpansionPanelDefaultOptions);
     _containsFocus(): boolean;
     _getExpandedState(): MatExpansionPanelState;
@@ -77,6 +82,7 @@ export declare class MatExpansionPanelHeader implements OnDestroy, FocusableOpti
     constructor(panel: MatExpansionPanel, _element: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, defaultOptions?: MatExpansionPanelDefaultOptions);
     _getExpandedState(): string;
     _getPanelId(): string;
+    _getTogglePosition(): MatAccordionTogglePosition;
     _isExpanded(): boolean;
     _keydown(event: KeyboardEvent): void;
     _showToggle(): boolean;

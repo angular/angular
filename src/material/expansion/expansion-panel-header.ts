@@ -29,6 +29,7 @@ import {
   MatExpansionPanelDefaultOptions,
   MAT_EXPANSION_PANEL_DEFAULT_OPTIONS,
 } from './expansion-panel';
+import {MatAccordionTogglePosition} from './accordion-base';
 
 
 /**
@@ -56,6 +57,8 @@ import {
     '[attr.aria-expanded]': '_isExpanded()',
     '[attr.aria-disabled]': 'panel.disabled',
     '[class.mat-expanded]': '_isExpanded()',
+    '[class.mat-expansion-toggle-indicator-after]': `_getTogglePosition() === 'after'`,
+    '[class.mat-expansion-toggle-indicator-before]': `_getTogglePosition() === 'before'`,
     '(click)': '_toggle()',
     '(keydown)': '_keydown($event)',
     '[@expansionHeight]': `{
@@ -79,7 +82,7 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
           defaultOptions?: MatExpansionPanelDefaultOptions) {
     const accordionHideToggleChange = panel.accordion ?
         panel.accordion._stateChanges.pipe(
-            filter(changes => !!changes['hideToggle'])) :
+            filter(changes => !!(changes['hideToggle'] || changes['togglePosition']))) :
         EMPTY;
 
     // Since the toggle state depends on an @Input on the panel, we
@@ -88,7 +91,12 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
         merge(
             panel.opened, panel.closed, accordionHideToggleChange,
             panel._inputChanges.pipe(filter(
-                changes => !!(changes['hideToggle'] || changes['disabled']))))
+                changes => {
+                  return !!(
+                    changes['hideToggle'] ||
+                    changes['disabled'] ||
+                    changes['togglePosition']);
+                  })))
     .subscribe(() => this._changeDetectorRef.markForCheck());
 
     // Avoids focus being lost if the panel contained the focused element and was closed.
@@ -140,6 +148,11 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
   /** Gets the panel id. */
   _getPanelId(): string {
     return this.panel.id;
+  }
+
+  /** Gets the toggle position for the header. */
+  _getTogglePosition(): MatAccordionTogglePosition {
+    return this.panel.togglePosition;
   }
 
   /** Gets whether the expand indicator should be shown. */

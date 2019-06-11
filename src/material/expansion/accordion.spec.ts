@@ -24,6 +24,7 @@ describe('MatAccordion', () => {
       ],
       declarations: [
         AccordionWithHideToggle,
+        AccordionWithTogglePosition,
         NestedPanel,
         SetOfItems,
       ],
@@ -135,6 +136,22 @@ describe('MatAccordion', () => {
 
     expect(panel.nativeElement.querySelector('.mat-expansion-indicator'))
       .toBeFalsy('Expected the expansion indicator to be removed.');
+  });
+
+  it('should update the expansion panel if togglePosition changed', () => {
+    const fixture = TestBed.createComponent(AccordionWithTogglePosition);
+    const panel = fixture.debugElement.query(By.directive(MatExpansionPanel));
+
+    fixture.detectChanges();
+
+    expect(panel.nativeElement.querySelector('.mat-expansion-toggle-indicator-after'))
+      .toBeTruthy('Expected the expansion indicator to be positioned after.');
+
+    fixture.componentInstance.togglePosition = 'before';
+    fixture.detectChanges();
+
+    expect(panel.nativeElement.querySelector('.mat-expansion-toggle-indicator-before'))
+      .toBeTruthy('Expected the expansion indicator to be positioned before.');
   });
 
   it('should move focus to the next header when pressing the down arrow', () => {
@@ -306,4 +323,17 @@ class NestedPanel {
 })
 class AccordionWithHideToggle {
   hideToggle = false;
+}
+
+
+@Component({template: `
+  <mat-accordion [togglePosition]="togglePosition">
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>Header</mat-expansion-panel-header>
+      <p>Content</p>
+    </mat-expansion-panel>
+  </mat-accordion>`
+})
+class AccordionWithTogglePosition {
+  togglePosition = 'after';
 }

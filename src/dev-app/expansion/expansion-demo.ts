@@ -24,6 +24,7 @@ export class ExpansionDemo {
   hideToggle = false;
   disabled = false;
   showPanel3 = true;
+  togglePosition = 'after';
   expandedHeight: string;
   collapsedHeight: string;
   events: string[] = [];

@@ -39,7 +39,7 @@ import {Subject} from 'rxjs';
 import {filter, startWith, take, distinctUntilChanged} from 'rxjs/operators';
 import {matExpansionAnimations} from './expansion-animations';
 import {MatExpansionPanelContent} from './expansion-panel-content';
-import {MAT_ACCORDION, MatAccordionBase} from './accordion-base';
+import {MAT_ACCORDION, MatAccordionBase, MatAccordionTogglePosition} from './accordion-base';
 
 /** MatExpansionPanel's states. */
 export type MatExpansionPanelState = 'expanded' | 'collapsed';
@@ -100,8 +100,9 @@ export const MAT_EXPANSION_PANEL_DEFAULT_OPTIONS =
 })
 export class MatExpansionPanel extends CdkAccordionItem implements AfterContentInit, OnChanges,
   OnDestroy {
-
   private _document: Document;
+  private _hideToggle = false;
+  private _togglePosition: MatAccordionTogglePosition;
 
   /** Whether the toggle indicator should be hidden. */
   @Input()
@@ -111,7 +112,15 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   set hideToggle(value: boolean) {
     this._hideToggle = coerceBooleanProperty(value);
   }
-  private _hideToggle = false;
+
+  /** Whether the toggle indicator should be hidden. */
+  @Input()
+  get togglePosition(): MatAccordionTogglePosition {
+    return this._togglePosition || (this.accordion && this.accordion.togglePosition);
+  }
+  set togglePosition(value: MatAccordionTogglePosition) {
+    this._togglePosition = value;
+  }
 
   /** An event emitted after the body's expansion animation happens. */
   @Output() afterExpand = new EventEmitter<void>();

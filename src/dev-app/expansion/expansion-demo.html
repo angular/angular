@@ -50,6 +50,12 @@
     <mat-radio-button value="default">Default</mat-radio-button>
     <mat-radio-button value="flat">Flat</mat-radio-button>
   </mat-radio-group>
+
+  <p>Toggle Position</p>
+  <mat-radio-group [(ngModel)]="togglePosition">
+    <mat-radio-button value="before">Before</mat-radio-button>
+    <mat-radio-button value="after">After</mat-radio-button>
+  </mat-radio-group>
   <p>Accordion Actions <sup>('Multi Expansion' mode only)</sup></p>
   <div>
     <button mat-button (click)="accordion.openAll()" [disabled]="!multi">Expand All</button>
@@ -63,7 +69,7 @@
 </div>
 <br>
 <mat-accordion [displayMode]="displayMode" [multi]="multi" [hideToggle]="hideToggle"
-               class="demo-expansion-width">
+               [togglePosition]="togglePosition" class="demo-expansion-width">
   <mat-expansion-panel #panel1>
     <mat-expansion-panel-header>Section 1</mat-expansion-panel-header>
     <p>This is the content text that makes sense here.</p>
