@@ -86,10 +86,10 @@ export interface InjectableType<T> extends Type<T> { ngInjectableDef: ɵɵInject
  * Supports @Injectable() in JIT mode for Render2.
  */
 function render2CompileInjectable(
-    injectableType: InjectableType<any>,
-    options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
+    injectableType: Type<any>,
+    options?: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
   if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
-    injectableType.ngInjectableDef = ɵɵdefineInjectable({
+    (injectableType as InjectableType<any>).ngInjectableDef = ɵɵdefineInjectable({
       token: injectableType,
       providedIn: options.providedIn,
       factory: convertInjectableProviderToFactory(injectableType, options),

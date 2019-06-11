@@ -411,7 +411,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
   queryAll(predicate: Predicate<DebugElement>): DebugElement[] {
     const matches: DebugElement[] = [];
-    _queryAllR3(this, predicate, matches, true);
+    _queryAllR3(this, predicate as Predicate<DebugNode>, matches, true);
     return matches;
   }
 

@@ -79,7 +79,7 @@ function createDynamicClass(
 
   const ctorParamNames = _classStmt.constructorMethod.params.map(param => param.name);
   // Note: use `function` instead of arrow function to capture `this`
-  const ctor = function(...args: any[]) {
+  const ctor = function(this: any, ...args: any[]) {
     const instanceCtx = new _ExecutionContext(_ctx, this, _classStmt.name, _ctx.vars);
     _classStmt.fields.forEach((field) => { this[field.name] = undefined; });
     _executeFunctionStatements(

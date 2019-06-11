@@ -176,7 +176,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this._valueConverter = new ValueConverter(
         constantPool, () => this.allocateDataSlot(),
         (numSlots: number) => this.allocatePureFunctionSlots(numSlots),
-        (name, localName, slot, value: o.ReadVarExpr) => {
+        (name, localName, slot, value: o.Expression) => {
           const pipeType = pipeTypeByName.get(name);
           if (pipeType) {
             this.pipes.add(pipeType);
@@ -1461,7 +1461,7 @@ const SHARED_CONTEXT_KEY = '$$shared_ctx$$';
  * declaration should always come before the local ref declaration.
  */
 type BindingData = {
-  retrievalLevel: number; lhs: o.ReadVarExpr; declareLocalCallback?: DeclareLocalVarCallback;
+  retrievalLevel: number; lhs: o.Expression; declareLocalCallback?: DeclareLocalVarCallback;
   declare: boolean;
   priority: number;
   localRef: boolean;
@@ -1537,7 +1537,7 @@ export class BindingScope implements LocalResolver {
    * @param declareLocalCallback The callback to invoke when declaring this local var
    * @param localRef Whether or not this is a local ref
    */
-  set(retrievalLevel: number, name: string, lhs: o.ReadVarExpr,
+  set(retrievalLevel: number, name: string, lhs: o.Expression,
       priority: number = DeclarationPriority.DEFAULT,
       declareLocalCallback?: DeclareLocalVarCallback, localRef?: true): BindingScope {
     if (this.map.has(name)) {
@@ -1588,12 +1588,14 @@ export class BindingScope implements LocalResolver {
     if (!this.map.has(bindingKey)) {
       this.generateSharedContextVar(retrievalLevel);
     }
-    return this.map.get(bindingKey) !.lhs;
+    // Shared context variables are always generated as "ReadVarExpr".
+    return this.map.get(bindingKey) !.lhs as o.ReadVarExpr;
   }
 
   getSharedContextName(retrievalLevel: number): o.ReadVarExpr|null {
     const sharedCtxObj = this.map.get(SHARED_CONTEXT_KEY + retrievalLevel);
-    return sharedCtxObj && sharedCtxObj.declare ? sharedCtxObj.lhs : null;
+    // Shared context variables are always generated as "ReadVarExpr".
+    return sharedCtxObj && sharedCtxObj.declare ? sharedCtxObj.lhs as o.ReadVarExpr : null;
   }
 
   maybeGenerateSharedContextVar(value: BindingData) {
@@ -1609,7 +1611,7 @@ export class BindingScope implements LocalResolver {
   }
 
   generateSharedContextVar(retrievalLevel: number) {
-    const lhs = o.variable(CONTEXT_NAME + this.freshReferenceName());
+    const lhs: o.ReadVarExpr = o.variable(CONTEXT_NAME + this.freshReferenceName());
     this.map.set(SHARED_CONTEXT_KEY + retrievalLevel, {
       retrievalLevel: retrievalLevel,
       lhs: lhs,

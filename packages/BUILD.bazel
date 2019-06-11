@@ -23,6 +23,12 @@ ts_config(
     deps = [":tsconfig-build.json"],
 )
 
+ts_config(
+    name = "tsconfig-build-strict",
+    src = "tsconfig-build-strict.json",
+    deps = [":tsconfig-build.json"],
+)
+
 exports_files([
     "license-banner.txt",
     "README.md",

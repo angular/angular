@@ -49,10 +49,11 @@ export function makeDecorator<T>(
     {new (...args: any[]): any; (...args: any[]): any; (...args: any[]): (cls: any) => any;} {
   const metaCtor = makeMetadataCtor(props);
 
-  function DecoratorFactory(...args: any[]): (cls: Type<T>) => any {
+  function DecoratorFactory(this: void|typeof DecoratorFactory, ...args: any[]): (cls: Type<T>) =>
+      any {
     if (this instanceof DecoratorFactory) {
       metaCtor.call(this, ...args);
-      return this;
+      return this as typeof DecoratorFactory;
     }
 
     const annotationInstance = new (DecoratorFactory as any)(...args);
@@ -82,7 +83,7 @@ export function makeDecorator<T>(
 }
 
 function makeMetadataCtor(props?: (...args: any[]) => any): any {
-  return function ctor(...args: any[]) {
+  return function ctor(this: any, ...args: any[]) {
     if (props) {
       const values = props(...args);
       for (const propName in values) {
@@ -95,7 +96,7 @@ function makeMetadataCtor(props?: (...args: any[]) => any): any {
 export function makeParamDecorator(
     name: string, props?: (...args: any[]) => any, parentClass?: any): any {
   const metaCtor = makeMetadataCtor(props);
-  function ParamDecoratorFactory(...args: any[]): any {
+  function ParamDecoratorFactory(this: void|typeof ParamDecoratorFactory, ...args: any[]): any {
     if (this instanceof ParamDecoratorFactory) {
       metaCtor.apply(this, args);
       return this;
@@ -135,7 +136,7 @@ export function makePropDecorator(
     additionalProcessing?: (target: any, name: string, ...args: any[]) => void): any {
   const metaCtor = makeMetadataCtor(props);
 
-  function PropDecoratorFactory(...args: any[]): any {
+  function PropDecoratorFactory(this: void|typeof PropDecoratorFactory, ...args: any[]): any {
     if (this instanceof PropDecoratorFactory) {
       metaCtor.apply(this, args);
       return this;

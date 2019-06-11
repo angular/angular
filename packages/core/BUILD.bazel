@@ -10,6 +10,7 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
+    build_strict_mode = True,
     deps = [
         "//packages:types",
         "//packages/core/src/compiler",

@@ -557,7 +557,7 @@ export function getNodeInjectable(
     const saveLView = getLView();
     setTNodeAndViewData(tNode, lData);
     try {
-      value = lData[index] = factory.factory(null, tData, lData, tNode);
+      value = lData[index] = factory.factory(undefined, tData, lData, tNode);
     } finally {
       if (factory.injectImpl) setInjectImplementation(previousInjectImplementation);
       setIncludeViewProviders(previousIncludeViewProviders);

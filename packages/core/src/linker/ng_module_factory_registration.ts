@@ -50,7 +50,7 @@ export function registerNgModuleType(ngModuleType: NgModuleType) {
     imports = imports();
   }
   if (imports) {
-    imports.forEach((i: NgModuleType<any>) => registerNgModuleType(i));
+    imports.forEach((i: Type<any>) => registerNgModuleType(i as NgModuleType));
   }
 }
 

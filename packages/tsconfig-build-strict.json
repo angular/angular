@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig-build.json",
+  "compilerOptions": {
+    "strict": true
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true,
+    "devmodeTargetOverride": "es5"
+  }
+}

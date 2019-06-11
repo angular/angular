@@ -132,7 +132,7 @@ export class StaticReflector implements CompileReflector {
 
   public tryAnnotations(type: StaticSymbol): any[] {
     const originalRecorder = this.errorRecorder;
-    this.errorRecorder = (error: any, fileName: string) => {};
+    this.errorRecorder = (error: any, fileName?: string) => {};
     try {
       return this.annotations(type);
     } finally {
@@ -429,7 +429,7 @@ export class StaticReflector implements CompileReflector {
    */
   private trySimplify(context: StaticSymbol, value: any): any {
     const originalRecorder = this.errorRecorder;
-    this.errorRecorder = (error: any, fileName: string) => {};
+    this.errorRecorder = (error: any, fileName?: string) => {};
     const result = this.simplify(context, value);
     this.errorRecorder = originalRecorder;
     return result;

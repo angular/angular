@@ -8,6 +8,7 @@ load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_p
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
+_DEFAULT_TSCONFIG_BUILD_STRICT = "//packages:tsconfig-build-strict"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
 _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
@@ -97,7 +98,7 @@ def ts_library(tsconfig = None, testonly = False, deps = [], module_name = None,
         **kwargs
     )
 
-def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, bundle_dts = True, **kwargs):
+def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, bundle_dts = True, build_strict_mode = False, **kwargs):
     """Default values for ng_module"""
     deps = deps + ["@npm//tslib"]
     if testonly:
@@ -106,6 +107,8 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         deps.append("@npm//@types/node")
     if not tsconfig and testonly:
         tsconfig = _DEFAULT_TSCONFIG_TEST
+    if not tsconfig and build_strict_mode:
+        tsconfig = _DEFAULT_TSCONFIG_BUILD_STRICT
 
     if not module_name:
         module_name = _default_module_name(testonly)
