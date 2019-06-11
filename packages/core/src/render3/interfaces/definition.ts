@@ -397,7 +397,7 @@ export type DirectiveDefList = (DirectiveDef<any>| ComponentDef<any>)[];
 export type DirectiveTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
 
 export type DirectiveTypeList =
-    (DirectiveDef<any>| ComponentDef<any>|
+    (DirectiveType<any>| ComponentType<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 export type HostBindingsFunction<T> =
@@ -412,10 +412,10 @@ export type PipeDefListOrFactory = (() => PipeDefList) | PipeDefList;
 
 export type PipeDefList = PipeDef<any>[];
 
-export type PipeTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
+export type PipeTypesOrFactory = (() => PipeTypeList) | PipeTypeList;
 
 export type PipeTypeList =
-    (PipeDef<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+    (PipeType<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
