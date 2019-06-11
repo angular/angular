@@ -220,7 +220,6 @@ describe('compiler compliance: template', () => {
           $r3$.ɵɵelement(0, "div", $_c3$);
         } if (rf & 2) {
           const $ctx_0$ = i0.ɵɵnextContext();
-          $r3$.ɵɵselect(0);
           $r3$.ɵɵproperty("id", $ctx_0$);
         }
       }
