@@ -1,0 +1,13 @@
+@import '../mdc-helpers/mdc-helpers';
+
+@mixin mat-tabs-theme-mdc($theme) {
+  @include mat-using-mdc-theme($theme) {
+    // TODO: MDC theme styles here.
+  }
+}
+
+@mixin mat-tabs-typography-mdc($config) {
+  @include mat-using-mdc-typography($config) {
+    // TODO: MDC typography styles here.
+  }
+}

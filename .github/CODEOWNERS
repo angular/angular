@@ -93,6 +93,7 @@
 # Note to implementer: please repossess
 /src/material-experimental/mdc-radio/**            @mmalerba
 /src/material-experimental/mdc-slide-toggle/**     @crisbeto
+/src/material-experimental/mdc-tabs/**             @crisbeto
 /src/material-experimental/popover-edit/**         @kseamon @andrewseguin
 
 # CDK experimental package
@@ -146,6 +147,7 @@
 # Note to implementer: please repossess
 /src/dev-app/mdc-radio/**                          @mmalerba
 /src/dev-app/mdc-slide-toggle/**                   @crisbeto
+/src/dev-app/mdc-tabs/**                           @crisbeto
 /src/dev-app/menu/**                               @crisbeto
 /src/dev-app/overlay/**                            @jelbourn @crisbeto
 /src/dev-app/paginator/**                          @andrewseguin
@@ -196,6 +198,7 @@
 # Note to implementer: please repossess
 /src/e2e-app/mdc-radio/**                          @mmalerba
 /src/e2e-app/mdc-slide-toggle/**                   @crisbeto
+/src/e2e-app/mdc-tabs/**                           @crisbeto
 /src/e2e-app/menu/**                               @crisbeto
 /src/e2e-app/progress-bar/**                       @jelbourn @crisbeto @josephperrott
 /src/e2e-app/progress-spinner/**                   @jelbourn @crisbeto @josephperrott

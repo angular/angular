@@ -85,6 +85,7 @@ MATERIAL_EXPERIMENTAL_PACKAGES = [
     "mdc-card",
     "mdc-checkbox",
     "mdc-chips",
+    "mdc-tabs",
     "mdc-helpers",
     "mdc-menu",
     "mdc-radio",

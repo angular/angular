@@ -6,6 +6,7 @@ import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
 import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
+import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
 
 @Component({
   selector: 'kitchen-sink-mdc',
@@ -23,6 +24,7 @@ export class KitchenSinkMdc {
     MatMenuModule,
     MatRadioModule,
     MatSlideToggleModule,
+    MatTabsModule,
   ],
   declarations: [KitchenSinkMdc],
   exports: [KitchenSinkMdc],

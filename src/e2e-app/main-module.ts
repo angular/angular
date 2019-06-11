@@ -26,6 +26,7 @@ import {MdcChipsE2eModule} from './mdc-chips/mdc-chips-e2e-module';
 import {MdcMenuE2eModule} from './mdc-menu/mdc-menu-e2e-module';
 import {MdcRadioE2eModule} from './mdc-radio/mdc-radio-e2e-module';
 import {MdcSlideToggleE2eModule} from './mdc-slide-toggle/mdc-slide-toggle-e2e-module';
+import {MdcTabsE2eModule} from './mdc-tabs/mdc-tabs-e2e-module';
 import {MenuE2eModule} from './menu/menu-e2e-module';
 import {ProgressBarE2eModule} from './progress-bar/progress-bar-e2e-module';
 import {ProgressSpinnerE2eModule} from './progress-spinner/progress-spinner-e2e-module';
@@ -64,6 +65,7 @@ import {VirtualScrollE2eModule} from './virtual-scroll/virtual-scroll-e2e-module
     MdcMenuE2eModule,
     MdcRadioE2eModule,
     MdcSlideToggleE2eModule,
+    MdcTabsE2eModule,
     MenuE2eModule,
     ProgressBarE2eModule,
     ProgressSpinnerE2eModule,

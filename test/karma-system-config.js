@@ -147,6 +147,8 @@ System.config({
         'dist/packages/material-experimental/mdc-radio/index.js',
     '@angular/material-experimental/mdc-slide-toggle':
         'dist/packages/material-experimental/mdc-slide-toggle/index.js',
+    '@angular/material-experimental/mdc-tabs':
+        'dist/packages/material-experimental/mdc-tabs/index.js',
     '@angular/material-experimental/popover-edit':
         'dist/packages/material-experimental/popover-edit/index.js',
   },
