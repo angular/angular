@@ -1,4 +1,6 @@
 export declare class MatCard {
+    _animationMode?: string | undefined;
+    constructor(_animationMode?: string | undefined);
 }
 
 export declare class MatCardActions {

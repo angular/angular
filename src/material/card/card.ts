@@ -12,7 +12,10 @@ import {
   ChangeDetectionStrategy,
   Directive,
   Input,
+  Optional,
+  Inject,
 } from '@angular/core';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 /**
@@ -156,9 +159,15 @@ export class MatCardAvatar {}
   styleUrls: ['card.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'class': 'mat-card'}
+  host: {
+    'class': 'mat-card',
+    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+  }
 })
-export class MatCard {}
+export class MatCard {
+  // @breaking-change 9.0.0 `_animationMode` parameter to be made required.
+  constructor(@Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {}
+}
 
 
 /**
