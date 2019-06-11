@@ -5,8 +5,8 @@
   "request_seq": 2,
   "success": true,
   "body": {
-    "kind": "angular",
-    "kindModifiers": "what does this do?",
+    "kind": "",
+    "kindModifiers": "",
     "start": {
       "line": 5,
       "offset": 26
