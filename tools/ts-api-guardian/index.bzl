@@ -63,7 +63,7 @@ def ts_api_guardian_test(
     nodejs_test(
         name = name,
         data = data,
-        entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
+        entry_point = "//tools/ts-api-guardian:bin/ts-api-guardian",
         templated_args = args + ["--verify", golden, actual],
         **kwargs
     )
@@ -72,7 +72,7 @@ def ts_api_guardian_test(
         name = name + ".accept",
         testonly = True,
         data = data,
-        entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
+        entry_point = "//tools/ts-api-guardian:bin/ts-api-guardian",
         templated_args = args + ["--out", golden, actual],
         **kwargs
     )

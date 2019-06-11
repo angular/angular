@@ -24,7 +24,7 @@ ng_package(
         "package.json",
         "//packages/upgrade/static:package.json",
     ],
-    entry_point = "packages/upgrade/index.js",
+    entry_point = ":index.ts",
     tags = [
         "release-with-framework",
     ],

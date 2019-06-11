@@ -89,3 +89,6 @@ filegroup(
     srcs = glob(["lib/*.js"]) + ["bin/ts-api-guardian"],
     visibility = ["//visibility:public"],
 )
+
+# Exported to be referenced as entry_point of the nodejs_binary
+exports_files(["bin/ts-api-guardian"])

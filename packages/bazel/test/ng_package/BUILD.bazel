@@ -80,6 +80,6 @@ nodejs_binary(
         "//packages/bazel/test/ng_package/example:npm_package",
         "@npm//diff",
     ],
-    entry_point = "angular/packages/bazel/test/ng_package/example_package.spec.js",
+    entry_point = ":example_package.spec.ts",
     templated_args = ["--accept"],
 )
