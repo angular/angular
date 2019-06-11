@@ -1,53 +1,53 @@
 # Angular Documentation Style Guide
 <!-- formerly Authors Style Guide -->
 
-This Style Guide is for anyone who contributes to the Angular documentation (this site). 
-These guidelines should be followed by all authors. 
+This Style Guide is for anyone who contributes to the Angular documentation (this site).
+These guidelines should be followed by all authors.
 Deviations must be approved by a documentation editor.
 
-The guidelines described here serve two purposes: 
+The guidelines described here serve two purposes:
 
-* To ensure a high-quality, consistent experience for Angular documentation users. 
+* To ensure a high-quality, consistent experience for Angular documentation users.
 
-* To simplify the writing process for contributing authors. 
-This guide helps you make decisions about tone, voice, and style. 
-It also helps you find the right markup quickly. 
+* To simplify the writing process for contributing authors.
+This guide helps you make decisions about tone, voice, and style.
+It also helps you find the right markup quickly.
 
 
 <div class="alert is-helpful">
 
-This guide is a *living document*; it changes over time. 
-We strive for consistency to the extent feasible, but you may find parts of our documentation that don't match this style guide. 
+This guide is a *living document*; it changes over time.
+We strive for consistency to the extent feasible, but you may find parts of our documentation that don't match this style guide.
 When in doubt, **follow this guide rather than imitating existing documents.**
 
 </div>
 
 ## Scope of these guidelines
 
-We ask all contributing authors to adhere to three aspects of style: 
+We ask all contributing authors to adhere to three aspects of style:
 
 
-* **Writing style:** Word usage, grammar, capitalization, and punctuation. 
-Adherence to Angular's writing guidelines ensures a consistent "voice", helps ensure accuracy of the information, and facilitates use world-wide, by audiences with different backgrounds. 
+* **Writing style:** Word usage, grammar, capitalization, and punctuation.
+Adherence to Angular's writing guidelines ensures a consistent "voice", helps ensure accuracy of the information, and facilitates use world-wide, by audiences with different backgrounds.
 
 
-* **Markup style:** How to include images, tables, alert boxes, and code snippets. 
-Angular docs are written in Markdown, with custom extensions for this site. Correct markup ensures a consistent look-and-feel, and is essential for the doc to build and function correctly. 
+* **Markup style:** How to include images, tables, alert boxes, and code snippets.
+Angular docs are written in Markdown, with custom extensions for this site. Correct markup ensures a consistent look-and-feel, and is essential for the doc to build and function correctly.
 
 
-* **Angular coding style:** Coding style for example apps and code snippets. 
-Code examples are encouraged for demonstrating how to apply the concepts and features discussed. 
-Angular has a custom framework that enables authors to include code snippets directly from example apps  that are automatically tested as part of doc builds. 
-To contribute example code, you must understand Angular itself and the custom framework for Angular doc examples. 
+* **Angular coding style:** Coding style for example apps and code snippets.
+Code examples are encouraged for demonstrating how to apply the concepts and features discussed.
+Angular has a custom framework that enables authors to include code snippets directly from example apps  that are automatically tested as part of doc builds.
+To contribute example code, you must understand Angular itself and the custom framework for Angular doc examples.
 
-For each aspect of style, the following table explains where to find the primary guidelines and what this Angular Documentation Style Guide offers. 
+For each aspect of style, the following table explains where to find the primary guidelines and what this Angular Documentation Style Guide offers.
 
 
 Style                    | Guidelines
 ------------------------ | -------------------------------
-**Writing style**        | Primary: [Google Developer Documentation Style Guide](https://developers.google.com/style/)<br />This guide: Specifies any special considerations for Angular docs.  
-**Markup style**         | Primary: This guide<br />This guide: Specifies guidelines for markup of guides and tutorials, which are written primarily in Markdown. 
-**Angular coding style** | Primary: [Angular Style Guide](guide/styleguide "Angular Application Code Style Guide").<br />This guide: How to create, store, and include code examples in guides and tutorials. 
+**Writing style**        | Primary: [Google Developer Documentation Style Guide](https://developers.google.com/style/)<br />This guide: Specifies any special considerations for Angular docs.
+**Markup style**         | Primary: This guide<br />This guide: Specifies guidelines for markup of guides and tutorials, which are written primarily in Markdown.
+**Angular coding style** | Primary: [Angular Style Guide](guide/styleguide "Angular Application Code Style Guide").<br />This guide: How to create, store, and include code examples in guides and tutorials.
 
 <div class="alert is-helpful">
 
@@ -295,8 +295,34 @@ Whatever the source, the doc viewer renders them as "code snippets", either indi
 ### Code example
 
 You can display a simple, inline code snippet with the markdown backtick syntax.
-We generally prefer to display a code snippet with the Angular documentation _code-example_ component
-represented by the `<code-example>` tag.
+Use a single backtick on either side of a term when referring to code or the
+name of a file in a sentence.
+The following are some examples:
+
+* In the `app.component.ts`, add a `logger()` method.
+* The `name` property is `Sally`.
+* Add the component class name to the `declarations` array.
+
+The markdown is as follows:
+
+```markdown
+
+* In the `app.component.ts`, add a `logger()` method.
+* The <code class="no-auto-link">item</code> property is `true`.
+* Add the component class name to the `declarations` array.
+
+```
+In certain cases, when you apply backticks around a term, it may auto-link to
+the API documentation. If you do not intend the term to be a link, use the following
+syntax:
+
+```html
+The <code class="no-auto-link">item</code> property is `true`.
+```
+
+For block code snippets, we generally prefer to display code with
+the Angular documentation _code-example_ component represented by the `<code-example>` tag.
+See [Code snippets and code examples](guide/docs-style-guide#code-snippets-and-code-samples) for more details.
 
 <h3 class="no-toc">Inline code-snippets</h3>
 
