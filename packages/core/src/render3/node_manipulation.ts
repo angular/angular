@@ -7,7 +7,6 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-
 import {assertLContainer, assertLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -830,6 +829,15 @@ function appendProjectedNode(
     // Assign the final projection location in those cases.
     for (let i = CONTAINER_HEADER_OFFSET; i < nodeOrContainer.length; i++) {
       addRemoveViewFromContainer(nodeOrContainer[i], true, nodeOrContainer[NATIVE]);
+    }
+  } else if (projectedTNode.type === TNodeType.IcuContainer) {
+    // The node we are adding is an ICU container which is why we also need to project all the
+    // children nodes that might have been created previously and are linked to this anchor
+    let ngContainerChildTNode: TNode|null = projectedTNode.child as TNode;
+    while (ngContainerChildTNode) {
+      appendProjectedNode(
+          ngContainerChildTNode, ngContainerChildTNode, projectionView, projectionView);
+      ngContainerChildTNode = ngContainerChildTNode.next;
     }
   } else {
     if (projectedTNode.type === TNodeType.ElementContainer) {
