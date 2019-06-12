@@ -117,7 +117,7 @@
   "// 3": "when updating @bazel/bazel version you also need to update the RBE settings in .bazelrc (see https://github.com/angular/angular/pull/27935)",
   "devDependencies": {
     "@angular/cli": "^8.0.0-beta.15",
-    "@bazel/bazel": "0.26.1",
+    "@bazel/bazel": "0.27.0-rc5",
     "@bazel/buildifier": "^0.19.2",
     "@bazel/ibazel": "~0.9.0",
     "@types/minimist": "^1.2.0",

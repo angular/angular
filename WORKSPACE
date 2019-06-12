@@ -27,6 +27,7 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "check_rules
 
 # Bazel version must be at least the following version because:
 #   - 0.26.0 managed_directories feature added which is required for nodejs rules 0.30.0
+#   - 0.27.0 has a fix for managed_directories after rm -rf node_modules
 check_bazel_version(
     message = """
 You no longer need to install Bazel on your machine.
@@ -35,7 +36,7 @@ Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
 """,
-    minimum_bazel_version = "0.26.0",
+    minimum_bazel_version = "0.27.0",
 )
 
 # The NodeJS rules version must be at least the following version because:
@@ -65,19 +66,12 @@ node_repositories(
 
 yarn_install(
     name = "npm",
-    data = [
-        "//:tools/npm/@angular_bazel/index.js",
-        "//:tools/npm/@angular_bazel/package.json",
-        "//:tools/postinstall-patches.js",
-        "//:tools/yarn/check-yarn.js",
-    ],
     package_json = "//:package.json",
     # Don't install devDependencies, they are large and not used under Bazel
+    # TODO(gregmagolan): the user already installed all the deps so it shouldn't take
+    # extra time for the yarn install to run again under Bazel.
+    # Can probably remove this option after https://github.com/bazelbuild/rules_nodejs/issues/859
     prod_only = True,
-    # Temporarily disable node_modules symlinking until the fix for
-    # https://github.com/bazelbuild/bazel/issues/8487 makes it into a
-    # future Bazel release
-    symlink_node_modules = False,
     yarn_lock = "//:yarn.lock",
 )
 
