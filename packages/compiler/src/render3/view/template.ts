@@ -59,7 +59,7 @@ export function renderFlagCheckIfStmt(
 }
 
 export function prepareEventListenerParameters(
-    eventAst: t.BoundEvent, bindingContext: o.Expression, handlerName: string | null = null,
+    eventAst: t.BoundEvent, handlerName: string | null = null,
     scope: BindingScope | null = null): o.Expression[] {
   const {type, name, target, phase, handler} = eventAst;
   if (target && !GLOBAL_TARGET_RESOLVERS.has(target)) {
@@ -67,8 +67,11 @@ export function prepareEventListenerParameters(
         Supported list of global targets: ${Array.from(GLOBAL_TARGET_RESOLVERS.keys())}.`);
   }
 
+  const implicitReceiverExpr = (scope === null || scope.bindingLevel === 0) ?
+      o.variable(CONTEXT_NAME) :
+      scope.getOrCreateSharedContextVar(0);
   const bindingExpr = convertActionBinding(
-      scope, bindingContext, handler, 'b', () => error('Unexpected interpolation'),
+      scope, implicitReceiverExpr, handler, 'b', () => error('Unexpected interpolation'),
       eventAst.handlerSpan);
 
   const statements = [];
@@ -151,6 +154,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // Number of non-default selectors found in all parent templates of this template. We need to
   // track it to properly adjust projection slot index in the `projection` instruction.
   private _ngContentSelectorsOffset = 0;
+
+  // Expression that should be used as implicit receiver when converting template
+  // expressions to output AST.
+  private _implicitReceiverExpr: o.ReadVarExpr|null = null;
 
   constructor(
       private constantPool: ConstantPool, parentBindingScope: BindingScope, private level = 0,
@@ -306,6 +313,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // LocalResolver
   getLocal(name: string): o.Expression|null { return this._bindingScope.get(name); }
 
+  // LocalResolver
+  notifyImplicitReceiverUse(): void { this._bindingScope.notifyImplicitReceiverUse(); }
+
   i18nTranslate(
       message: i18n.Message, params: {[name: string]: o.Expression} = {}, ref?: o.ReadVarExpr,
       transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.ReadVarExpr {
@@ -448,8 +458,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (bindings.size) {
       bindings.forEach(binding => {
         this.updateInstruction(
-            index, span, R3.i18nExp,
-            () => [this.convertPropertyBinding(o.variable(CONTEXT_NAME), binding)]);
+            index, span, R3.i18nExp, () => [this.convertPropertyBinding(binding)]);
       });
       this.updateInstruction(index, span, R3.i18nApply, [o.literal(index)]);
     }
@@ -592,8 +601,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.addNamespaceInstruction(currentNamespace, element);
     }
 
-    const implicit = o.variable(CONTEXT_NAME);
-
     if (this.i18n) {
       this.i18n.appendElement(element.i18n !, elementIndex);
     }
@@ -641,7 +648,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(message, params));
               converted.expressions.forEach(expression => {
                 hasBindings = true;
-                const binding = this.convertExpressionBinding(implicit, expression);
+                const binding = this.convertExpressionBinding(expression);
                 this.updateInstruction(elementIndex, element.sourceSpan, R3.i18nExp, [binding]);
               });
             }
@@ -664,7 +671,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // (things like `elementStyleProp`, `elementClassProp`, etc..) are applied later on in this
       // file
       this.processStylingInstruction(
-          implicit,
           stylingBuilder.buildElementStylingInstruction(element.sourceSpan, this.constantPool),
           true);
 
@@ -688,7 +694,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // and assign in the code below.
     stylingBuilder.buildUpdateLevelInstructions(this._valueConverter).forEach(instruction => {
       this._bindingSlots += instruction.allocateBindingSlots;
-      this.processStylingInstruction(implicit, instruction, false);
+      this.processStylingInstruction(instruction, false);
     });
 
     // the reason why `undefined` is used is because the renderer understands this as a
@@ -717,7 +723,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         this.updateInstruction(elementIndex, input.sourceSpan, R3.property, () => {
           return [
             o.literal(bindingName),
-            (hasValue ? this.convertPropertyBinding(implicit, value, /* skipBindFn */ true) :
+            (hasValue ? this.convertPropertyBinding(value, /* skipBindFn */ true) :
                         emptyValueBindInstruction),
           ];
         });
@@ -751,16 +757,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               this.updateInstruction(
                   elementIndex, input.sourceSpan, getPropertyInterpolationExpression(value),
                   () =>
-                      [o.literal(attrName),
-                       ...this.getUpdateInstructionArguments(o.variable(CONTEXT_NAME), value),
+                      [o.literal(attrName), ...this.getUpdateInstructionArguments(value),
                        ...params]);
 
             } else {
               // Bound, un-interpolated properties
               this.updateInstruction(elementIndex, input.sourceSpan, R3.property, () => {
-                return [
-                  o.literal(attrName), this.convertPropertyBinding(implicit, value, true), ...params
-                ];
+                return [o.literal(attrName), this.convertPropertyBinding(value, true), ...params];
               });
             }
           } else {
@@ -774,8 +777,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
             this.updateInstruction(elementIndex, input.sourceSpan, instruction, () => {
               return [
-                o.literal(elementIndex), o.literal(attrName),
-                this.convertPropertyBinding(implicit, value), ...params
+                o.literal(elementIndex), o.literal(attrName), this.convertPropertyBinding(value),
+                ...params
               ];
             });
           }
@@ -870,13 +873,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     // handle property bindings e.g. ɵɵproperty('ngForOf', ctx.items), et al;
-    const context = o.variable(CONTEXT_NAME);
-    this.templatePropertyBindings(template, templateIndex, context, template.templateAttrs);
+    this.templatePropertyBindings(template, templateIndex, template.templateAttrs);
 
     // Only add normal input/output binding instructions on explicit ng-template elements.
     if (template.tagName === NG_TEMPLATE_TAG_NAME) {
       // Add the input bindings
-      this.templatePropertyBindings(template, templateIndex, context, template.inputs);
+      this.templatePropertyBindings(template, templateIndex, template.inputs);
       // Generate listeners for directive output
       template.outputs.forEach((outputAst: t.BoundEvent) => {
         this.creationInstruction(
@@ -912,7 +914,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.allocateBindingSlots(value);
     this.updateInstruction(
         nodeIndex, text.sourceSpan, R3.textBinding,
-        () => [o.literal(nodeIndex), this.convertPropertyBinding(o.variable(CONTEXT_NAME), value)]);
+        () => [o.literal(nodeIndex), this.convertPropertyBinding(value)]);
   }
 
   visitText(text: t.Text) {
@@ -977,15 +979,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private bindingContext() { return `${this._bindingContext++}`; }
 
   private templatePropertyBindings(
-      template: t.Template, templateIndex: number, context: o.ReadVarExpr,
-      attrs: (t.BoundAttribute|t.TextAttribute)[]) {
+      template: t.Template, templateIndex: number, attrs: (t.BoundAttribute|t.TextAttribute)[]) {
     attrs.forEach(input => {
       if (input instanceof t.BoundAttribute) {
         const value = input.value.visit(this._valueConverter);
         this.allocateBindingSlots(value);
         this.updateInstruction(
             templateIndex, template.sourceSpan, R3.property,
-            () => [o.literal(input.name), this.convertPropertyBinding(context, value, true)]);
+            () => [o.literal(input.name), this.convertPropertyBinding(value, true)]);
       }
     });
   }
@@ -1003,11 +1004,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
   }
 
-  private processStylingInstruction(
-      implicit: any, instruction: Instruction|null, createMode: boolean) {
+  private processStylingInstruction(instruction: Instruction|null, createMode: boolean) {
     if (instruction) {
       const paramsFn = () =>
-          instruction.buildParams(value => this.convertPropertyBinding(implicit, value, true));
+          instruction.buildParams(value => this.convertPropertyBinding(value, true));
       if (createMode) {
         this.creationInstruction(instruction.sourceSpan, instruction.reference, paramsFn);
       } else {
@@ -1042,23 +1042,38 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this._bindingSlots += value instanceof Interpolation ? value.expressions.length : 1;
   }
 
-  private convertExpressionBinding(implicit: o.Expression, value: AST): o.Expression {
-    const convertedPropertyBinding =
-        convertPropertyBinding(this, implicit, value, this.bindingContext(), BindingForm.TrySimple);
+  /**
+   * Gets an expression that refers to the implicit receiver. The implicit
+   * receiver is always the root level context.
+   */
+  private getImplicitReceiverExpr(): o.ReadVarExpr {
+    if (this._implicitReceiverExpr) {
+      return this._implicitReceiverExpr;
+    }
+
+    return this._implicitReceiverExpr = this.level === 0 ?
+        o.variable(CONTEXT_NAME) :
+        this._bindingScope.getOrCreateSharedContextVar(0);
+  }
+
+  private convertExpressionBinding(value: AST): o.Expression {
+    const convertedPropertyBinding = convertPropertyBinding(
+        this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.TrySimple);
     const valExpr = convertedPropertyBinding.currValExpr;
+
     return o.importExpr(R3.bind).callFn([valExpr]);
   }
 
-  private convertPropertyBinding(implicit: o.Expression, value: AST, skipBindFn?: boolean):
-      o.Expression {
+  private convertPropertyBinding(value: AST, skipBindFn?: boolean): o.Expression {
     const interpolationFn =
         value instanceof Interpolation ? interpolate : () => error('Unexpected interpolation');
 
     const convertedPropertyBinding = convertPropertyBinding(
-        this, implicit, value, this.bindingContext(), BindingForm.TrySimple, interpolationFn);
+        this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.TrySimple,
+        interpolationFn);
+    const valExpr = convertedPropertyBinding.currValExpr;
     this._tempVariables.push(...convertedPropertyBinding.stmts);
 
-    const valExpr = convertedPropertyBinding.currValExpr;
     return value instanceof Interpolation || skipBindFn ? valExpr :
                                                           o.importExpr(R3.bind).callFn([valExpr]);
   }
@@ -1067,13 +1082,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    * Gets a list of argument expressions to pass to an update instruction expression. Also updates
    * the temp variables state with temp variables that were identified as needing to be created
    * while visiting the arguments.
-   * @param contextExpression The expression for the context variable used to create arguments
    * @param value The original expression we will be resolving an arguments list from.
    */
-  private getUpdateInstructionArguments(contextExpression: o.Expression, value: AST):
-      o.Expression[] {
+  private getUpdateInstructionArguments(value: AST): o.Expression[] {
     const {args, stmts} =
-        convertUpdateArguments(this, contextExpression, value, this.bindingContext());
+        convertUpdateArguments(this, this.getImplicitReceiverExpr(), value, this.bindingContext());
+
     this._tempVariables.push(...stmts);
     return args;
   }
@@ -1210,8 +1224,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           sanitizeIdentifier(eventName);
       const handlerName = `${this.templateName}_${tagName}_${bindingFnName}_${index}_listener`;
       const scope = this._bindingScope.nestedScope(this._bindingScope.bindingLevel);
-      const context = o.variable(CONTEXT_NAME);
-      return prepareEventListenerParameters(outputAst, context, handlerName, scope);
+      return prepareEventListenerParameters(outputAst, handlerName, scope);
     };
   }
 }
@@ -1489,12 +1502,36 @@ export class BindingScope implements LocalResolver {
     return this;
   }
 
+  // Implemented as part of LocalResolver.
   getLocal(name: string): (o.Expression|null) { return this.get(name); }
+
+  // Implemented as part of LocalResolver.
+  notifyImplicitReceiverUse(): void {
+    if (this.bindingLevel !== 0) {
+      // Since the implicit receiver is accessed in an embedded view, we need to
+      // ensure that we declare a shared context variable for the current template
+      // in the update variables.
+      this.map.get(SHARED_CONTEXT_KEY + 0) !.declare = true;
+    }
+  }
 
   nestedScope(level: number): BindingScope {
     const newScope = new BindingScope(level, this);
     if (level > 0) newScope.generateSharedContextVar(0);
     return newScope;
+  }
+
+  /**
+   * Gets or creates a shared context variable and returns its expression. Note that
+   * this does not mean that the shared variable will be declared. Variables in the
+   * binding scope will be only declared if they are used.
+   */
+  getOrCreateSharedContextVar(retrievalLevel: number): o.ReadVarExpr {
+    const bindingKey = SHARED_CONTEXT_KEY + retrievalLevel;
+    if (!this.map.has(bindingKey)) {
+      this.generateSharedContextVar(retrievalLevel);
+    }
+    return this.map.get(bindingKey) !.lhs;
   }
 
   getSharedContextName(retrievalLevel: number): o.ReadVarExpr|null {
