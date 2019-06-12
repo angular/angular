@@ -625,7 +625,7 @@ function createHostBindingsFunction(
   const eventBindings =
       bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
   if (eventBindings && eventBindings.length) {
-    const listeners = createHostListeners(bindingContext, eventBindings, meta);
+    const listeners = createHostListeners(eventBindings, meta);
     createStatements.push(...listeners);
   }
 
@@ -787,8 +787,7 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
 }
 
 function createHostListeners(
-    bindingContext: o.Expression, eventBindings: ParsedEvent[],
-    meta: R3DirectiveMetadata): o.Statement[] {
+    eventBindings: ParsedEvent[], meta: R3DirectiveMetadata): o.Statement[] {
   return eventBindings.map(binding => {
     let bindingName = binding.name && sanitizeIdentifier(binding.name);
     const bindingFnName = binding.type === ParsedEventType.Animation ?
@@ -796,8 +795,7 @@ function createHostListeners(
         bindingName;
     const handlerName =
         meta.name && bindingName ? `${meta.name}_${bindingFnName}_HostBindingHandler` : null;
-    const params = prepareEventListenerParameters(
-        BoundEvent.fromParsedEvent(binding), bindingContext, handlerName);
+    const params = prepareEventListenerParameters(BoundEvent.fromParsedEvent(binding), handlerName);
     const instruction =
         binding.type == ParsedEventType.Animation ? R3.componentHostSyntheticListener : R3.listener;
     return o.importExpr(instruction).callFn(params).toStmt();
