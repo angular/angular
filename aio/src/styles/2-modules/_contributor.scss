@@ -188,7 +188,7 @@ aio-contributor {
     line-height: 18px;
     margin: 8px 16px;
     text-overflow: ellipsis;
-    overflow: scroll;
+    overflow-y: auto;
     font-weight: 400;
   }
 }
