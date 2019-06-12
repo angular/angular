@@ -32,7 +32,6 @@ export const CHANGELOG_FILE_NAME = 'CHANGELOG.md';
  *  11) Create a commit that includes all changes in the staging branch.
  */
 class StageReleaseTask extends BaseReleaseTask {
-
   /** Path to the project package JSON. */
   packageJsonPath: string;
 
@@ -48,19 +47,18 @@ class StageReleaseTask extends BaseReleaseTask {
   /** Octokit API instance that can be used to make Github API calls. */
   githubApi: OctokitApi;
 
-  constructor(public projectDir: string,
-              public repositoryOwner: string,
-              public repositoryName: string) {
-    super(new GitClient(projectDir,
-      `https://github.com/${repositoryOwner}/${repositoryName}.git`));
+  constructor(
+      public projectDir: string, public repositoryOwner: string, public repositoryName: string) {
+    super(new GitClient(projectDir, `https://github.com/${repositoryOwner}/${repositoryName}.git`));
 
     this.packageJsonPath = join(projectDir, 'package.json');
     this.packageJson = JSON.parse(readFileSync(this.packageJsonPath, 'utf-8'));
-    this.currentVersion = parseVersionName(this.packageJson.version);
+    this.currentVersion = parseVersionName(this.packageJson.version)!;
 
     if (!this.currentVersion) {
-      console.error(red(`Cannot parse current version in ${italic('package.json')}. Please ` +
-        `make sure "${this.packageJson.version}" is a valid Semver version.`));
+      console.error(
+          red(`Cannot parse current version in ${italic('package.json')}. Please ` +
+              `make sure "${this.packageJson.version}" is a valid Semver version.`));
       process.exit(1);
     }
 
@@ -101,18 +99,21 @@ class StageReleaseTask extends BaseReleaseTask {
     if (needsVersionBump) {
       this._updatePackageJsonVersion(newVersionName);
 
-      console.log(green(`  ✓   Updated the version to "${bold(newVersionName)}" inside of the ` +
-        `${italic('package.json')}`));
+      console.log(green(
+          `  ✓   Updated the version to "${bold(newVersionName)}" inside of the ` +
+          `${italic('package.json')}`));
       console.log();
     }
 
     await promptAndGenerateChangelog(join(this.projectDir, CHANGELOG_FILE_NAME));
 
     console.log();
-    console.log(green(`  ✓   Updated the changelog in ` +
-      `"${bold(CHANGELOG_FILE_NAME)}"`));
-    console.log(yellow(`  ⚠   Please review CHANGELOG.md and ensure that the log contains only ` +
-      `changes that apply to the public library release. When done, proceed to the prompt below.`));
+    console.log(green(
+        `  ✓   Updated the changelog in ` +
+        `"${bold(CHANGELOG_FILE_NAME)}"`));
+    console.log(yellow(
+        `  ⚠   Please review CHANGELOG.md and ensure that the log contains only changes ` +
+        `that apply to the public library release. When done, proceed to the prompt below.`));
     console.log();
 
     if (!await this.promptConfirm('Do you want to proceed and commit the changes?')) {
@@ -148,23 +149,37 @@ class StageReleaseTask extends BaseReleaseTask {
   /** Verifies that the latest commit of the current branch is passing all Github statuses. */
   private async _verifyPassingGithubStatus(expectedPublishBranch: string) {
     const commitRef = this.git.getLocalCommitSha('HEAD');
-    const githubCommitsUrl = getGithubBranchCommitsUrl(this.repositoryOwner, this.repositoryName,
-      expectedPublishBranch);
+    const githubCommitsUrl =
+        getGithubBranchCommitsUrl(this.repositoryOwner, this.repositoryName, expectedPublishBranch);
     const {state} = (await this.githubApi.repos.getCombinedStatusForRef({
-      owner: this.repositoryOwner,
-      repo: this.repositoryName,
-      ref: commitRef,
-    })).data;
+                      owner: this.repositoryOwner,
+                      repo: this.repositoryName,
+                      ref: commitRef,
+                    })).data;
 
     if (state === 'failure') {
-      console.error(red(`  ✘   Cannot stage release. Commit "${commitRef}" does not pass all ` +
-        `github status checks. Please make sure this commit passes all checks before re-running.`));
+      console.error(
+          red(`  ✘   Cannot stage release. Commit "${commitRef}" does not pass all github ` +
+              `status checks. Please make sure this commit passes all checks before re-running.`));
       console.error(red(`      Please have a look at: ${githubCommitsUrl}`));
+      if (await this.promptConfirm('Do you want to ignore the Github status and proceed?')) {
+        console.info(green(
+            `  ⚠   Upstream commit is failing CI checks, but status has been ` +
+            `forcibly ignored.`));
+        return;
+      }
       process.exit(1);
     } else if (state === 'pending') {
-      console.error(red(`  ✘   Commit "${commitRef}" still has pending github statuses that ` +
-        `need to succeed before staging a release.`));
+      console.error(
+          red(`  ✘   Commit "${commitRef}" still has pending github statuses that ` +
+              `need to succeed before staging a release.`));
       console.error(red(`      Please have a look at: ${githubCommitsUrl}`));
+      if (await this.promptConfirm('Do you want to ignore the Github status and proceed?')) {
+        console.info(green(
+            `  ⚠   Upstream commit is pending CI, but status has been ` +
+            `forcibly ignored.`));
+        return;
+      }
       process.exit(0);
     }
 
@@ -176,4 +191,3 @@ class StageReleaseTask extends BaseReleaseTask {
 if (require.main === module) {
   new StageReleaseTask(join(__dirname, '../../'), 'angular', 'components').run();
 }
-
