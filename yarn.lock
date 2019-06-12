@@ -1999,12 +1999,13 @@ check-error@^1.0.2:
   resolved "https://registry.yarnpkg.com/check-error/-/check-error-1.0.2.tgz#574d312edd88bb5dd8912e9286dd6c0aed4aac82"
   integrity sha1-V00xLt2Iu13YkS6Sht1sCu1KrII=
 
-check-side-effects@0.0.20:
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/check-side-effects/-/check-side-effects-0.0.20.tgz#b35cbb1f2eb210c1a051c7d78aa9fbd939ee31ea"
-  integrity sha512-tx7dvqAK0z8PM/gTTnfi6oW1Scn9f8EbMSZ1mu//4oIpNWF6ZNW2SFX7Cnsgq9xZjYeoD+YaUVx9CC0fEFizkQ==
+check-side-effects@0.0.21:
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/check-side-effects/-/check-side-effects-0.0.21.tgz#6127c933d329e0806df940701f9cd62f51bffb19"
+  integrity sha512-tv64B+krepm3P4v5L76LngaiD0YSDpNepRoMLGQ9yOGVQKe1XrYLk7EpynEG8z5YNKxhC7uzt1kCSspM3Kei0Q==
   dependencies:
     "@angular-devkit/build-optimizer" "0.14.0-beta.5"
+    diff "^4.0.1"
     minimist "~1.2.0"
     rollup "~1.11.3"
     rollup-plugin-node-resolve "~4.2.3"
@@ -3260,6 +3261,11 @@ diff@^3.2.0, diff@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
+
+diff@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.1.tgz#0c667cb467ebbb5cea7f14f135cc2dba7780a8ff"
+  integrity sha512-s2+XdvhPCOF01LRQBC8hf4vhbVmI2CGS5aZnxLJlT5FtdhPCDFq80q++zK2KlrVorVDdL5BOGZ/VfLrVtYNF+Q==
 
 doctrine@^0.7.2:
   version "0.7.2"
