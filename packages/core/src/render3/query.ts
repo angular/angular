@@ -230,11 +230,10 @@ function queryByReadToken(read: any, tNode: TNode, currentView: LView): any {
   if (typeof factoryFn === 'function') {
     return factoryFn();
   } else {
-    const matchingIdx =
-        locateDirectiveOrProvider(tNode, currentView, read as Type<any>, false, false);
+    const tView = currentView[TVIEW];
+    const matchingIdx = locateDirectiveOrProvider(tNode, tView, read as Type<any>, false, false);
     if (matchingIdx !== null) {
-      return getNodeInjectable(
-          currentView[TVIEW].data, currentView, matchingIdx, tNode as TElementNode);
+      return getNodeInjectable(tView.data, currentView, matchingIdx, tNode as TElementNode);
     }
   }
   return null;
@@ -285,7 +284,8 @@ function queryRead(tNode: TNode, currentView: LView, read: any, matchingIdx: num
 function add(
     query: LQuery<any>| null, tNode: TElementNode | TContainerNode | TElementContainerNode,
     insertBeforeContainer: boolean) {
-  const currentView = getLView();
+  const lView = getLView();
+  const tView = lView[TVIEW];
 
   while (query) {
     const predicate = query.predicate;
@@ -293,11 +293,11 @@ function add(
     if (type) {
       let result = null;
       if (type === ViewEngine_TemplateRef) {
-        result = queryByTemplateRef(type, tNode, currentView, predicate.read);
+        result = queryByTemplateRef(type, tNode, lView, predicate.read);
       } else {
-        const matchingIdx = locateDirectiveOrProvider(tNode, currentView, type, false, false);
+        const matchingIdx = locateDirectiveOrProvider(tNode, tView, type, false, false);
         if (matchingIdx !== null) {
-          result = queryRead(tNode, currentView, predicate.read, matchingIdx);
+          result = queryRead(tNode, lView, predicate.read, matchingIdx);
         }
       }
       if (result !== null) {
@@ -308,7 +308,7 @@ function add(
       for (let i = 0; i < selector.length; i++) {
         const matchingIdx = getIdxOfMatchingSelector(tNode, selector[i]);
         if (matchingIdx !== null) {
-          const result = queryRead(tNode, currentView, predicate.read, matchingIdx);
+          const result = queryRead(tNode, lView, predicate.read, matchingIdx);
           if (result !== null) {
             addMatch(query, result, insertBeforeContainer);
           }
