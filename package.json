@@ -123,7 +123,7 @@
     "karma-sauce-launcher": "^2.0.2",
     "karma-sourcemap-loader": "^0.3.7",
     "magic-string": "^0.22.4",
-    "marked": "^0.5.1",
+    "marked": "^0.6.2",
     "merge2": "^1.2.3",
     "minimatch": "^3.0.4",
     "minimist": "^1.2.0",
