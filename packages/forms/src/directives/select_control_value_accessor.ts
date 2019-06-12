@@ -205,7 +205,7 @@ export class NgSelectOption implements OnDestroy {
    * @description
    * ID of the option element
    */
-  // TODO(issue/24571): remove '!'.
+  
   id !: string;
 
   constructor(

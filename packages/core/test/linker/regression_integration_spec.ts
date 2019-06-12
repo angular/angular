@@ -84,7 +84,7 @@ function declareTests(config?: {useJit: boolean}) {
            @Directive({selector: '[myDir]'})
            class MyDir {
              setterCalls: {[key: string]: any} = {};
-             // TODO(issue/24571): remove '!'.
+             
              changes !: SimpleChanges;
 
              @Input()
@@ -128,7 +128,7 @@ function declareTests(config?: {useJit: boolean}) {
       it('should evaluate a conditional in a statement binding', () => {
         @Component({selector: 'some-comp', template: '<p (click)="nullValue?.click()"></p>'})
         class SomeComponent {
-          // TODO(issue/24571): remove '!'.
+          
           nullValue !: SomeReferencedClass;
         }
 
@@ -277,7 +277,7 @@ function declareTests(config?: {useJit: boolean}) {
 
       @Directive({selector: '[someDir]'})
       class MyDir {
-        // TODO(issue/24571): remove '!'.
+        
         @Input('someDir') template !: TemplateRef<any>;
       }
 
@@ -298,7 +298,7 @@ function declareTests(config?: {useJit: boolean}) {
     it('should not recreate ViewContainerRefs in queries', () => {
       @Component({template: '<div #vc></div><div *ngIf="show" #vc></div>'})
       class MyComp {
-        // TODO(issue/24571): remove '!'.
+        
         @ViewChildren('vc', {read: ViewContainerRef})
         viewContainers !: QueryList<ViewContainerRef>;
 
@@ -361,7 +361,7 @@ function declareTests(config?: {useJit: boolean}) {
             () => {
               @Directive({selector: 'test'})
               class Test {
-                // TODO(issue/24571): remove '!'.
+                
                 @Input() @ContentChild(TemplateRef, {static: true}) tpl !: TemplateRef<any>;
               }
 

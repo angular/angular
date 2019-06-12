@@ -31,7 +31,7 @@ withEachNg1Version(() => {
          // component
          @Directive({selector: 'ng1'})
          class Ng1Component extends UpgradeComponent {
-           // TODO(issue/24571): remove '!'.
+           
            @Input() title !: string;
 
            constructor(elementRef: ElementRef, injector: Injector) {
@@ -45,7 +45,7 @@ withEachNg1Version(() => {
            template: 'ng2[<ng1 [title]="nameProp">transclude</ng1>](<ng-content></ng-content>)'
          })
          class Ng2Component {
-           // TODO(issue/24571): remove '!'.
+           
            @Input('name') nameProp !: string;
          }
 

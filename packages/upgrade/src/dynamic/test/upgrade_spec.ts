@@ -539,9 +539,9 @@ withEachNg1Version(() => {
            class Ng2Component implements OnChanges {
              ngOnChangesCount = 0;
              firstChangesCount = 0;
-             // TODO(issue/24571): remove '!'.
+             
              initialValue !: string;
-             // TODO(issue/24571): remove '!'.
+             
              @Input() foo !: string;
 
              ngOnChanges(changes: SimpleChanges) {
@@ -787,7 +787,7 @@ withEachNg1Version(() => {
       it('should correctly project structural directives', async(() => {
            @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
            class Ng2Component {
-             // TODO(issue/24571): remove '!'.
+             
              @Input() itemId !: string;
            }
 

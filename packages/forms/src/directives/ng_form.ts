@@ -131,7 +131,7 @@ export class NgForm extends ControlContainer implements Form,
    * Possible values: `'change'` | `'blur'` | `'submit'`.
    *
    */
-  // TODO(issue/24571): remove '!'.
+  
   @Input('ngFormOptions') options !: {updateOn?: FormHooks};
 
   constructor(

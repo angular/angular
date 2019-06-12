@@ -98,18 +98,18 @@ export function createEmptyStateSnapshot(
  */
 export class ActivatedRoute {
   /** The current snapshot of this route */
-  // TODO(issue/24571): remove '!'.
+  
   snapshot !: ActivatedRouteSnapshot;
   /** @internal */
   _futureSnapshot: ActivatedRouteSnapshot;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _routerState !: RouterState;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _paramMap !: Observable<ParamMap>;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _queryParamMap !: Observable<ParamMap>;
 
   /** @internal */
@@ -253,16 +253,16 @@ export class ActivatedRouteSnapshot {
   /** @internal */
   _resolve: ResolveData;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _resolvedData !: Data;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _routerState !: RouterStateSnapshot;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _paramMap !: ParamMap;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _queryParamMap !: ParamMap;
 
   /** @internal */

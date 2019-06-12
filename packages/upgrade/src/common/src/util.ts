@@ -96,9 +96,9 @@ export function validateInjectionKey(
 
 export class Deferred<R> {
   promise: Promise<R>;
-  // TODO(issue/24571): remove '!'.
+  
   resolve !: (value?: R | PromiseLike<R>) => void;
-  // TODO(issue/24571): remove '!'.
+  
   reject !: (error?: any) => void;
 
   constructor() {

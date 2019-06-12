@@ -138,7 +138,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * @description
    * Tracks the `FormControl` instance bound to the directive.
    */
-  // TODO(issue/24571): remove '!'.
+  
   readonly control !: FormControl;
 
   /**
@@ -146,7 +146,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Tracks the name of the `FormControl` bound to the directive. The name corresponds
    * to a key in the parent `FormGroup` or `FormArray`.
    */
-  // TODO(issue/24571): remove '!'.
+  
   @Input('formControlName') name !: string;
 
   /**

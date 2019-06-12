@@ -99,9 +99,9 @@ export class MockResourceLoader extends ResourceLoader {
 }
 
 class _PendingRequest {
-  // TODO(issue/24571): remove '!'.
+  
   resolve !: (result: string) => void;
-  // TODO(issue/24571): remove '!'.
+  
   reject !: (error: any) => void;
   promise: Promise<string>;
 

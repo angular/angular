@@ -20,7 +20,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
     class AService {}
 
     class QueryService {
-      // TODO(issue/24571): remove '!'.
+      
       a !: QueryList<AService>;
     }
 
@@ -248,7 +248,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
     describe('QueryBindingType', () => {
       it('should query all matches', () => {
         class QueryService {
-          // TODO(issue/24571): remove '!'.
+          
           a !: QueryList<AService>;
         }
 
@@ -274,7 +274,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       it('should query the first match', () => {
         class QueryService {
-          // TODO(issue/24571): remove '!'.
+          
           a !: AService;
         }
 
@@ -298,7 +298,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
     describe('query builtins', () => {
       it('should query ElementRef', () => {
         class QueryService {
-          // TODO(issue/24571): remove '!'.
+          
           a !: ElementRef;
         }
 
@@ -318,7 +318,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       it('should query TemplateRef', () => {
         class QueryService {
-          // TODO(issue/24571): remove '!'.
+          
           a !: TemplateRef<any>;
         }
 
@@ -340,7 +340,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       it('should query ViewContainerRef', () => {
         class QueryService {
-          // TODO(issue/24571): remove '!'.
+          
           a !: ViewContainerRef;
         }
 

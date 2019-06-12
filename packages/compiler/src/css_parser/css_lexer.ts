@@ -116,7 +116,7 @@ function _trackWhitespace(mode: CssLexerMode) {
 }
 
 export class CssScanner {
-  // TODO(issue/24571): remove '!'.
+  
   peek !: number;
   peekPeek: number;
   length: number = 0;

@@ -85,7 +85,7 @@ class AngularCompilerProgram implements Program {
   private rootNames: string[];
   private metadataCache: MetadataCache;
   // Metadata cache used exclusively for the flat module index
-  // TODO(issue/24571): remove '!'.
+  
   private flatModuleMetadataCache !: MetadataCache;
   private loweringMetadataTransform: LowerMetadataTransform;
   private oldProgramLibrarySummaries: Map<string, LibrarySummary>|undefined;
@@ -98,18 +98,18 @@ class AngularCompilerProgram implements Program {
   private emittedSourceFiles: ts.SourceFile[]|undefined;
 
   // Lazily initialized fields
-  // TODO(issue/24571): remove '!'.
+  
   private _compiler !: AotCompiler;
-  // TODO(issue/24571): remove '!'.
+  
   private _hostAdapter !: TsCompilerAotCompilerTypeCheckHostAdapter;
-  // TODO(issue/24571): remove '!'.
+  
   private _tsProgram !: ts.Program;
   private _analyzedModules: NgAnalyzedModules|undefined;
   private _analyzedInjectables: NgAnalyzedFileWithInjectables[]|undefined;
   private _structuralDiagnostics: Diagnostic[]|undefined;
   private _programWithStubs: ts.Program|undefined;
   private _optionsDiagnostics: Diagnostic[] = [];
-  // TODO(issue/24571): remove '!'.
+  
   private _reifiedDecorators !: Set<StaticSymbol>;
 
   constructor(

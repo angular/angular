@@ -113,9 +113,9 @@ describe('render3 integration test', () => {
     }
 
     class ChildComponent {
-      // TODO(issue/24571): remove '!'.
+      
       beforeTree !: Tree;
-      // TODO(issue/24571): remove '!'.
+      
       afterTree !: Tree;
       static ngComponentDef = ɵɵdefineComponent({
         selectors: [['child']],

@@ -61,7 +61,7 @@ withEachNg1Version(() => {
     it('should correctly project structural directives', async(() => {
          @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
          class Ng2Component {
-           // TODO(issue/24571): remove '!'.
+           
            @Input() itemId !: string;
          }
 

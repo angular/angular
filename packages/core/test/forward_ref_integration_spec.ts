@@ -52,7 +52,7 @@ class App {
   template: `{{frame.name}}(<span *ngFor="let lock of locks">{{lock.name}}</span>)`,
 })
 class Door {
-  // TODO(issue/24571): remove '!'.
+  
   @ContentChildren(forwardRef(() => Lock)) locks !: QueryList<Lock>;
   frame: Frame;
 

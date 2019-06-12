@@ -60,11 +60,11 @@ export class TranslationBundle {
 }
 
 class I18nToHtmlVisitor implements i18n.Visitor {
-  // TODO(issue/24571): remove '!'.
+  
   private _srcMsg !: i18n.Message;
   private _contextStack: {msg: i18n.Message, mapper: (name: string) => string}[] = [];
   private _errors: I18nError[] = [];
-  // TODO(issue/24571): remove '!'.
+  
   private _mapper !: (name: string) => string;
 
   constructor(

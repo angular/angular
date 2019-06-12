@@ -78,10 +78,10 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
 })
 export class RouterLinkActive implements OnChanges,
     OnDestroy, AfterContentInit {
-  // TODO(issue/24571): remove '!'.
+  
   @ContentChildren(RouterLink, {descendants: true})
   links !: QueryList<RouterLink>;
-  // TODO(issue/24571): remove '!'.
+  
   @ContentChildren(RouterLinkWithHref, {descendants: true})
   linksWithHrefs !: QueryList<RouterLinkWithHref>;
 

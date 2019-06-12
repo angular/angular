@@ -113,21 +113,21 @@ import {UrlTree} from '../url_tree';
  */
 @Directive({selector: ':not(a):not(area)[routerLink]'})
 export class RouterLink {
-  // TODO(issue/24571): remove '!'.
+  
   @Input() queryParams !: {[k: string]: any};
-  // TODO(issue/24571): remove '!'.
+  
   @Input() fragment !: string;
-  // TODO(issue/24571): remove '!'.
+  
   @Input() queryParamsHandling !: QueryParamsHandling;
-  // TODO(issue/24571): remove '!'.
+  
   @Input() preserveFragment !: boolean;
-  // TODO(issue/24571): remove '!'.
+  
   @Input() skipLocationChange !: boolean;
-  // TODO(issue/24571): remove '!'.
+  
   @Input() replaceUrl !: boolean;
   @Input() state?: {[k: string]: any};
   private commands: any[] = [];
-  // TODO(issue/24571): remove '!'.
+  
   private preserve !: boolean;
 
   constructor(
@@ -193,28 +193,28 @@ export class RouterLink {
  */
 @Directive({selector: 'a[routerLink],area[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
-  // TODO(issue/24571): remove '!'.
+  
   @HostBinding('attr.target') @Input() target !: string;
-  // TODO(issue/24571): remove '!'.
+  
   @Input() queryParams !: {[k: string]: any};
-  // TODO(issue/24571): remove '!'.
+  
   @Input() fragment !: string;
-  // TODO(issue/24571): remove '!'.
+  
   @Input() queryParamsHandling !: QueryParamsHandling;
-  // TODO(issue/24571): remove '!'.
+  
   @Input() preserveFragment !: boolean;
-  // TODO(issue/24571): remove '!'.
+  
   @Input() skipLocationChange !: boolean;
-  // TODO(issue/24571): remove '!'.
+  
   @Input() replaceUrl !: boolean;
   @Input() state?: {[k: string]: any};
   private commands: any[] = [];
   private subscription: Subscription;
-  // TODO(issue/24571): remove '!'.
+  
   private preserve !: boolean;
 
   // the url displayed on the anchor element.
-  // TODO(issue/24571): remove '!'.
+  
   @HostBinding() href !: string;
 
   constructor(

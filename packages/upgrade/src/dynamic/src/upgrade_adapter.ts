@@ -114,12 +114,12 @@ export class UpgradeAdapter {
    */
   private ng1ComponentsToBeUpgraded: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
   private upgradedProviders: StaticProvider[] = [];
-  // TODO(issue/24571): remove '!'.
+  
   private ngZone !: NgZone;
-  // TODO(issue/24571): remove '!'.
+  
   private ng1Module !: IModule;
   private moduleRef: NgModuleRef<any>|null = null;
-  // TODO(issue/24571): remove '!'.
+  
   private ng2BootstrapDeferred !: Deferred<IInjectorService>;
 
   constructor(private ng2AppModule: Type<any>, private compilerOptions?: CompilerOptions) {
@@ -628,7 +628,7 @@ export class UpgradeAdapter {
  * to preserve the synchronous nature of AngularJS's $compile.
  */
 class ParentInjectorPromise {
-  // TODO(issue/24571): remove '!'.
+  
   private injector !: Injector;
   private callbacks: ((injector: Injector) => any)[] = [];
 

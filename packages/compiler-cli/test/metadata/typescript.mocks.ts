@@ -113,7 +113,7 @@ export class MockIdentifier extends MockNode implements ts.Identifier {
   modifiers?: ts.NodeArray<ts.Modifier>;
   parent !: ts.Node;
   public text: string;
-  // TODO(issue/24571): remove '!'.
+  
   public escapedText !: ts.__String;
   // tslint:disable
   public _declarationBrand: any;
@@ -162,7 +162,7 @@ export class MockSymbol implements ts.Symbol {
   members?: ts.UnderscoreEscapedMap<ts.Symbol>;
   exports?: ts.UnderscoreEscapedMap<ts.Symbol>;
   globalExports?: ts.UnderscoreEscapedMap<ts.Symbol>;
-  // TODO(issue/24571): remove '!'.
+  
   public escapedName !: ts.__String;
   constructor(
       public name: string, private node: ts.Declaration = MockVariableDeclaration.of(name),

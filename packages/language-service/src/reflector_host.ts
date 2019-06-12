@@ -33,7 +33,7 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost, Me
     return undefined !;
   }
 
-  // TODO(issue/24571): remove '!'.
+  
   directoryExists !: (directoryName: string) => boolean;
 
   getSourceFileMetadata(fileName: string) {

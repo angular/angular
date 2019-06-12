@@ -297,7 +297,7 @@ export class Router {
   private lastSuccessfulNavigation: Navigation|null = null;
   private currentNavigation: Navigation|null = null;
 
-  // TODO(issue/24571): remove '!'.
+  
   private locationSubscription !: Subscription;
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;

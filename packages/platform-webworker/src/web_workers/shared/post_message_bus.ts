@@ -18,7 +18,7 @@ export interface PostMessageTarget {
 }
 
 export class PostMessageBusSink implements MessageBusSink {
-  // TODO(issue/24571): remove '!'.
+  
   private _zone !: NgZone;
   private _channels: {[key: string]: _Channel} = {};
   private _messageBuffer: Array<Object> = [];
@@ -68,7 +68,7 @@ export class PostMessageBusSink implements MessageBusSink {
 }
 
 export class PostMessageBusSource implements MessageBusSource {
-  // TODO(issue/24571): remove '!'.
+  
   private _zone !: NgZone;
   private _channels: {[key: string]: _Channel} = {};
 

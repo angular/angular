@@ -27,12 +27,12 @@ export abstract class NgClassImpl {
 
 @Injectable()
 export class NgClassR2Impl implements NgClassImpl {
-  // TODO(issue/24571): remove '!'.
+  
   private _iterableDiffer !: IterableDiffer<string>| null;
-  // TODO(issue/24571): remove '!'.
+  
   private _keyValueDiffer !: KeyValueDiffer<string, any>| null;
   private _initialClasses: string[] = [];
-  // TODO(issue/24571): remove '!'.
+  
   private _rawClass !: string[] | Set<string>| {[klass: string]: any};
 
   constructor(

@@ -1695,7 +1695,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
   `
 })
 class StandaloneNgModel {
-  // TODO(issue/24571): remove '!'.
+  
   name !: string;
 }
 
@@ -1708,9 +1708,9 @@ class StandaloneNgModel {
   `
 })
 class NgModelForm {
-  // TODO(issue/24571): remove '!'.
+  
   name !: string | null;
-  // TODO(issue/24571): remove '!'.
+  
   event !: Event;
   options = {};
 
@@ -1734,13 +1734,13 @@ class NgModelNativeValidateForm {
   `
 })
 class NgModelGroupForm {
-  // TODO(issue/24571): remove '!'.
+  
   first !: string;
-  // TODO(issue/24571): remove '!'.
+  
   last !: string;
-  // TODO(issue/24571): remove '!'.
+  
   email !: string;
-  // TODO(issue/24571): remove '!'.
+  
   isDisabled !: boolean;
   options = {updateOn: 'change'};
 }
@@ -1757,7 +1757,7 @@ class NgModelGroupForm {
   `
 })
 class NgModelValidBinding {
-  // TODO(issue/24571): remove '!'.
+  
   first !: string;
 }
 
@@ -1774,11 +1774,11 @@ class NgModelValidBinding {
   `
 })
 class NgModelNgIfForm {
-  // TODO(issue/24571): remove '!'.
+  
   first !: string;
   groupShowing = true;
   emailShowing = true;
-  // TODO(issue/24571): remove '!'.
+  
   email !: string;
 }
 
@@ -1814,9 +1814,9 @@ class InvalidNgModelNoName {
   `
 })
 class NgModelOptionsStandalone {
-  // TODO(issue/24571): remove '!'.
+  
   one !: string;
-  // TODO(issue/24571): remove '!'.
+  
   two !: string;
   options: {name?: string, standalone?: boolean, updateOn?: string} = {standalone: true};
   formOptions = {};
@@ -1834,13 +1834,13 @@ class NgModelOptionsStandalone {
   `
 })
 class NgModelValidationBindings {
-  // TODO(issue/24571): remove '!'.
+  
   required !: boolean;
-  // TODO(issue/24571): remove '!'.
+  
   minLen !: number;
-  // TODO(issue/24571): remove '!'.
+  
   maxLen !: number;
-  // TODO(issue/24571): remove '!'.
+  
   pattern !: string;
 }
 
@@ -1853,11 +1853,11 @@ class NgModelValidationBindings {
   `
 })
 class NgModelMultipleValidators {
-  // TODO(issue/24571): remove '!'.
+  
   required !: boolean;
-  // TODO(issue/24571): remove '!'.
+  
   minLen !: number;
-  // TODO(issue/24571): remove '!'.
+  
   pattern !: string | RegExp;
 }
 
@@ -1906,7 +1906,7 @@ class NgModelAsyncValidation {
   `
 })
 class NgModelChangesForm {
-  // TODO(issue/24571): remove '!'.
+  
   name !: string;
   events: string[] = [];
   options: any;

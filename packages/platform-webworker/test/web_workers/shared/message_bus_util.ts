@@ -23,7 +23,7 @@ export function createConnectedMessageBus(): MessageBus {
 }
 
 class MockPostMessage {
-  // TODO(issue/24571): remove '!'.
+  
   private _listener !: EventListener;
 
   addEventListener(type: string, listener: EventListener, useCapture?: boolean): void {

@@ -55,7 +55,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
     describe('ClassProvider', () => {
       it('works', () => {
         // #docregion ClassProvider
-        abstract class Shape {  // TODO(issue/24571): remove '!'.
+        abstract class Shape {  
           name !: string;
         }
 
@@ -94,7 +94,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
     describe('StaticClassProvider', () => {
       it('works', () => {
         // #docregion StaticClassProvider
-        abstract class Shape {  // TODO(issue/24571): remove '!'.
+        abstract class Shape {  
           name !: string;
         }
 

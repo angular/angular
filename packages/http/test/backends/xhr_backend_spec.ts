@@ -32,19 +32,19 @@ class MockBrowserXHR extends BrowserXhr {
   open: any;
   response: any;
   responseType: string;
-  // TODO(issue/24571): remove '!'.
+  
   responseText !: string;
   setRequestHeader: any;
   callbacks = new Map<string, Function>();
-  // TODO(issue/24571): remove '!'.
+  
   status !: number;
-  // TODO(issue/24571): remove '!'.
+  
   responseHeaders !: string;
-  // TODO(issue/24571): remove '!'.
+  
   responseURL !: string;
-  // TODO(issue/24571): remove '!'.
+  
   statusText !: string;
-  // TODO(issue/24571): remove '!'.
+  
   withCredentials !: boolean;
 
   constructor() {

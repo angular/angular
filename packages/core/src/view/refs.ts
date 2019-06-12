@@ -313,7 +313,7 @@ class TemplateRef_ extends TemplateRef<any> implements TemplateData {
   /**
    * @internal
    */
-  // TODO(issue/24571): remove '!'.
+  
   _projectedViews !: ViewData[];
 
   constructor(private _parentView: ViewData, private _def: NodeDef) { super(); }
@@ -482,10 +482,10 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   private _destroyListeners: (() => void)[] = [];
   private _destroyed: boolean = false;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _providers !: any[];
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _modules !: any[];
 
   readonly injector: Injector = this;

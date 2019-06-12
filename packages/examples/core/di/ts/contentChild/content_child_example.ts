@@ -11,7 +11,7 @@ import {Component, ContentChild, Directive, Input} from '@angular/core';
 
 @Directive({selector: 'pane'})
 export class Pane {
-  // TODO(issue/24571): remove '!'.
+  
   @Input() id !: string;
 }
 
@@ -22,7 +22,7 @@ export class Pane {
   `
 })
 export class Tab {
-  // TODO(issue/24571): remove '!'.
+  
   @ContentChild(Pane, {static: false}) pane !: Pane;
 }
 

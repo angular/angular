@@ -12,9 +12,9 @@ const ParserUtil = require('./parser_util');
 
 class Profiler {
   private _profiler: any;
-  // TODO(issue/24571): remove '!'.
+  
   private _markerEvents !: any[];
-  // TODO(issue/24571): remove '!'.
+  
   private _profilerStartTime !: number;
 
   constructor() { this._profiler = Cc['@mozilla.org/tools/profiler;1'].getService(Ci.nsIProfiler); }

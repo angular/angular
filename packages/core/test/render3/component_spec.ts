@@ -239,7 +239,7 @@ describe('component with a container', () => {
   }
 
   class WrapperComponent {
-    // TODO(issue/24571): remove '!'.
+    
     items !: string[];
     static ngComponentDef = ɵɵdefineComponent({
       type: WrapperComponent,
@@ -532,7 +532,7 @@ describe('recursive components', () => {
 
   it('should map inputs minified & unminified names', async() => {
     class TestInputsComponent {
-      // TODO(issue/24571): remove '!'.
+      
       minifiedName !: string;
       static ngComponentDef = ɵɵdefineComponent({
         type: TestInputsComponent,

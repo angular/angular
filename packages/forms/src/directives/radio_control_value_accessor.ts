@@ -96,13 +96,13 @@ export class RadioControlRegistry {
 export class RadioControlValueAccessor implements ControlValueAccessor,
     OnDestroy, OnInit {
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _state !: boolean;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _control !: NgControl;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
+  
   _fn !: Function;
 
   /**
@@ -121,7 +121,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
    * @description
    * Tracks the name of the radio input element.
    */
-  // TODO(issue/24571): remove '!'.
+  
   @Input() name !: string;
 
   /**
@@ -129,7 +129,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
    * Tracks the name of the `FormControl` bound to the directive. The name corresponds
    * to a key in the parent `FormGroup` or `FormArray`.
    */
-  // TODO(issue/24571): remove '!'.
+  
   @Input() formControlName !: string;
 
   /**

@@ -38,7 +38,7 @@ describe('ViewContainerRef', () => {
       inputs: {tplRef: 'tplRef', name: 'name'}
     });
 
-    // TODO(issue/24571): remove '!'.
+    
     tplRef !: TemplateRef<{}>;
 
     name: string = '';
@@ -97,7 +97,7 @@ describe('ViewContainerRef', () => {
             * |after
             */
            class TestComponent {
-             // TODO(issue/24571): remove '!'.
+             
              testDir !: TestDirective;
              static ngComponentDef = ɵɵdefineComponent({
                type: TestComponent,
@@ -170,7 +170,7 @@ describe('ViewContainerRef', () => {
             */
            class TestComponent {
              condition = false;
-             // TODO(issue/24571): remove '!'.
+             
              testDir !: TestDirective;
              static ngComponentDef = ɵɵdefineComponent({
                type: TestComponent,

@@ -11,7 +11,7 @@ import {Component, ContentChildren, Directive, Input, QueryList} from '@angular/
 
 @Directive({selector: 'pane'})
 export class Pane {
-  // TODO(issue/24571): remove '!'.
+  
   @Input() id !: string;
 }
 

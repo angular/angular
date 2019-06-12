@@ -65,7 +65,7 @@ missingCache.set('/node_modules/@angular/forms/src/directives/form_interface.met
 
 export class MockTypescriptHost implements ts.LanguageServiceHost {
   private angularPath: string|undefined;
-  // TODO(issue/24571): remove '!'.
+  
   private nodeModulesPath !: string;
   private scriptVersion = new Map<string, number>();
   private overrides = new Map<string, string>();

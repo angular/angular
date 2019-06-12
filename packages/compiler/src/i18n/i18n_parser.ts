@@ -34,15 +34,15 @@ export function createI18nMessageFactory(interpolationConfig: InterpolationConfi
 }
 
 class _I18nVisitor implements html.Visitor {
-  // TODO(issue/24571): remove '!'.
+  
   private _isIcu !: boolean;
-  // TODO(issue/24571): remove '!'.
+  
   private _icuDepth !: number;
-  // TODO(issue/24571): remove '!'.
+  
   private _placeholderRegistry !: PlaceholderRegistry;
-  // TODO(issue/24571): remove '!'.
+  
   private _placeholderToContent !: {[phName: string]: string};
-  // TODO(issue/24571): remove '!'.
+  
   private _placeholderToMessage !: {[phName: string]: i18n.Message};
   private _visitNodeFn: VisitNodeFn|undefined;
 

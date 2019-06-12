@@ -281,7 +281,7 @@ class NativeExampleModule {
 
 @Component({selector: 'my-child', template: 'Works!'})
 class MyChildComponent {
-  // TODO(issue/24571): remove '!'.
+  
   @Input() public attr !: boolean;
 }
 

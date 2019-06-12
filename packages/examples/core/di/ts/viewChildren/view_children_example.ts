@@ -11,7 +11,7 @@ import {AfterViewInit, Component, Directive, Input, QueryList, ViewChildren} fro
 
 @Directive({selector: 'pane'})
 export class Pane {
-  // TODO(issue/24571): remove '!'.
+  
   @Input() id !: string;
 }
 
@@ -28,7 +28,7 @@ export class Pane {
   `,
 })
 export class ViewChildrenComp implements AfterViewInit {
-  // TODO(issue/24571): remove '!'.
+  
   @ViewChildren(Pane) panes !: QueryList<Pane>;
   serializedPanes: string = '';
 

@@ -16,7 +16,7 @@ describe('object literals', () => {
   let objectComp: ObjectComp;
 
   class ObjectComp {
-    // TODO(issue/24571): remove '!'.
+    
     config !: {[key: string]: any};
 
     static ngComponentDef = ɵɵdefineComponent({
