@@ -208,9 +208,9 @@
           <code>{$ renderMemberSyntax(property) $}</code>
         </td>
         <td>
-          {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-only.</span>{% endif %}
-          {%- if property.isSetAccessor and not property.isGetAccessor %}<span class='write-only-property'>Write-only.</span>{% endif %}
-          {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
+          {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-Only</span>{% endif %}
+          {%- if property.isSetAccessor and not property.isGetAccessor %}<span class='write-only-property'>Write-Only</span>{% endif %}
+          {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in Constructor</span>{% endif %}
           {% if property.shortDescription %}{$ property.shortDescription | marked $}{% endif %}
           {$ (property.description or property.constructorParamDoc.description) | marked $}
           {%- if property.see.length %}
