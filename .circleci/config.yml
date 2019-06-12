@@ -54,31 +54,41 @@ var_8: &gcp_decrypt_token "angular"
 # in sync. Unlike in Travis, we don't need to manually purge the node modules if stale because
 # CircleCI automatically discards the cache if the checksum of the lock file has changed.
 var_9: &yarn_install
-  run: yarn install --frozen-lockfile --non-interactive
+  run:
+    name: "Installing project dependencies"
+    command: yarn install --frozen-lockfile --non-interactive
+
+# Anchor that can be used to download and install Yarn globally in the bash environment.
+var_10: &yarn_download
+  run:
+    name: "Downloading and installing Yarn"
+    command: |
+      touch $BASH_ENV
+      curl -o- -L https://yarnpkg.com/install.sh | PROFILE=$BASH_ENV bash -s -- --version "1.16.0"
 
 # Copies the Bazel config which is specifically for CircleCI to a location where Bazel picks it
 # up and merges it with the project-wide bazel configuration (tools/bazel.rc)
-var_10: &copy_bazel_config
+var_11: &copy_bazel_config
   # Set up the CircleCI specific bazel configuration.
   run: sudo cp ./.circleci/bazel.rc /etc/bazel.bazelrc
 
 # Sets up a different Docker image that includes a moe recent Firefox version which
 # is needed for headless testing.
-var_11: &docker-firefox-image
+var_12: &docker-firefox-image
   # TODO(devversion): Temporarily use a image that includes Firefox 62 because the
   # ngcontainer image does include an old Firefox version that does not support headless.
   - image: circleci/node:11.4.0-browsers
 
 # Attaches the release output which has been stored in the workspace to the current job.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
-var_12: &attach_release_output
+var_13: &attach_release_output
   attach_workspace:
     at: dist/
 
 # Branch filter that we can specify for jobs that should only run on publish branches. This filter
 # is used to ensure that not all upstream branches will be published as Github builds
 # (e.g. revert branches, feature branches)
-var_13: &publish_branches_filter
+var_14: &publish_branches_filter
   branches:
     only:
       - master
@@ -92,7 +102,7 @@ var_13: &publish_branches_filter
 # In order to reduce duplication we use a YAML anchor that just always excludes the "_presubmit"
 # branch. We don't want to run Circle for the temporary "_presubmit" branch which is reserved
 # for the caretaker.
-var_14: &ignore_presubmit_branch_filter
+var_15: &ignore_presubmit_branch_filter
   branches:
     ignore:
       - "_presubmit"
@@ -100,7 +110,7 @@ var_14: &ignore_presubmit_branch_filter
 
 # Runs a script that sets up the Bazel remote execution. This will be used by jobs that run
 # Bazel primarily and should benefit from remote caching and execution.
-var_15: &setup_bazel_remote_execution
+var_16: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
     command: ./scripts/circleci/bazel/setup-remote-execution.sh
@@ -180,6 +190,7 @@ jobs:
     steps:
     - *checkout_code
     - *restore_cache
+    - *yarn_download
     - *yarn_install
 
     - run: ./scripts/circleci/run-local-browser-tests.sh
@@ -197,6 +208,7 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
+      - *yarn_download
       - *yarn_install
 
       - run: ./scripts/circleci/run-browserstack-tests.sh
@@ -217,6 +229,7 @@ jobs:
     steps:
     - *checkout_code
     - *restore_cache
+    - *yarn_download
     - *yarn_install
 
     - run: ./scripts/circleci/run-saucelabs-tests.sh
@@ -230,6 +243,7 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
+      - *yarn_download
       - *yarn_install
       - *attach_release_output
 
@@ -244,6 +258,7 @@ jobs:
     steps:
     - *checkout_code
     - *restore_cache
+    - *yarn_download
     - *yarn_install
 
     - run: yarn gulp ci:prerender
@@ -256,6 +271,7 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
+      - *yarn_download
       - *yarn_install
 
       - run: ./scripts/circleci/lint-bazel-files.sh
@@ -271,6 +287,7 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
+      - *yarn_download
       - *yarn_install
 
       - run: yarn gulp ci:build-release-packages
@@ -342,6 +359,7 @@ jobs:
     steps:
     - *checkout_code
     - *restore_cache
+    - *yarn_download
     - *yarn_install
 
     - run: node ./scripts/circleci/setup-angular-snapshots.js
@@ -362,6 +380,7 @@ jobs:
       - *restore_cache
       - *copy_bazel_config
       - *setup_bazel_remote_execution
+      - *yarn_download
       - *yarn_install
 
       # Setup Angular ivy snapshots built with ngtsc but locked to a specific tag. We
@@ -392,6 +411,7 @@ jobs:
       - *restore_cache
       - *copy_bazel_config
       - *setup_bazel_remote_execution
+      - *yarn_download
       - *yarn_install
 
       # Setup Angular ivy snapshots built with ngtsc.

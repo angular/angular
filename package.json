@@ -9,7 +9,8 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">= 5.4.1"
+    "node": ">= 5.4.1",
+    "yarn": ">= 1.13.0"
   },
   "scripts": {
     "postinstall": "ngc -p angular-tsconfig.json",
