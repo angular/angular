@@ -18,12 +18,14 @@ The following properties, at the top level of the file, configure the workspace.
 The initial app that you create with `ng new app_name` is listed under "projects":
 
 <code-example format="." language="json" linenums="false">
+
 "projects": {
   "app_name": {
     ...
   }
   ...
 }
+
 </code-example>
 
 Each additional app that you create with `ng generate application` has a corresponding end-to-end test project, with its own configuration section.
@@ -44,6 +46,7 @@ When you create a library project with `ng generate library`, the library projec
 The following top-level configuration properties are available for each project, under `projects:<project_name>`.
 
 <code-example format="." language="json" linenums="false">
+
     "my-app": {
       "root": "",
       "sourceRoot": "src",
@@ -52,6 +55,7 @@ The following top-level configuration properties are available for each project,
       "schematics": {},
       "architect": {}
     }
+
 </code-example>
 
 | PROPERTY | DESCRIPTION |
@@ -64,6 +68,7 @@ The following top-level configuration properties are available for each project,
 | `architect`     | Configuration defaults for Architect builder targets for this project. |
 
 {@a schematics}
+
 ## Generation schematics
 
 Angular generation [schematics](guide/glossary#schematic) are instructions for modifying a project by adding files or modifying existing files.
@@ -81,8 +86,31 @@ You can update your workspace schema file to set a different default for a sub-c
 
 ## Project tool configuration options
 
-Architect is the tool that the CLI uses to perform complex tasks, such as compilation and test running, according to provided configurations.
-The `architect` section of `angular.json` contains a set of Architect *targets*.
+Architect is the tool that the CLI uses to perform complex tasks, such as compilation and test running.
+Architect is a shell that runs a specified [builder](guide/glossary#builder) to perform a given task, according to a [target](guide/glossary#target) configuration.
+You can define and configure new builders and targets to extend the CLI.
+See [Angular CLI Builders](guide/cli-builder).
+
+{@a default-build-targets}
+
+### Default Architect builders and targets
+
+Angular defines default builders for use with specific CLI commands, or with the general `ng run` command.
+The JSON schemas that the define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/8.0.x/packages/angular/cli/lib/config/schema.json) package.
+The schemas configure options for the following builders.
+
+* app-shell
+* browser
+* dev-server
+* extract-i18n
+* karma
+* protractor
+* server
+* tslint
+
+### Configuring builder targets
+
+The `architect` section of `angular.json` contains a set of Architect targets.
 Many of the targets correspond to the CLI commands that run them.
 Some additional predefined targets can be run using the `ng run` command, and you can define your own targets.
 
@@ -91,6 +119,7 @@ In addition, each target has an `options` section that configures default option
 See the example in [Build target](#build-target) below.
 
 <code-example format="." language="json" linenums="false">
+
       "architect": {
         "build": { },
         "serve": { },
@@ -101,6 +130,7 @@ See the example in [Build target](#build-target) below.
         "server": { },
         "app-shell": { }
       }
+
 </code-example>
 
 * The `architect/build` section configures defaults for options of the `ng build` command.
@@ -131,27 +161,10 @@ The `architect/build` section configures defaults for options of the `ng build` 
 
 | PROPERTY | DESCRIPTION |
 | :-------------- | :---------------------------- |
-| `builder`       | The npm package for the build tool used to create this target. The default is `@angular-devkit/build-angular:browser`, which uses the [webpack](https://webpack.js.org/) package bundler. |
+| `builder`       | The npm package for the build tool used to create this target. The default builder for an application (`ng build myApp`) is `@angular-devkit/build-angular:browser`, which uses the [webpack](https://webpack.js.org/) package bundler. Note that a different builder is used for building a library (`ng build myLib`). |
 | `options`       | This section contains default build target options, used when no named alternative configuration is specified. See [Default build targets](#default-build-targets) below. |
 | `configurations`| This section defines and names alternative configurations for different intended destinations. It contains a section for each named configuration, which sets the default options for that intended environment. See [Alternate build configurations](#build-configs) below. |
 
-{@a default-build-targets}
-
-### Default build targets
-
-Angular defines default builders for use with the Architect tool and `ng run` command.
-The default builders provide implementations that use a particular tool to perform a complex operation.
-
-The JSON schemas that the define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/7.0.x/packages/angular/cli/lib/config/schema.json) package. The schemas configure options for the following Architect build targets:
-
-* app-shell
-* browser
-* dev-server
-* extract-i18n
-* karma
-* protractor
-* server
-* tslint
 
 {@a build-configs}
 
@@ -167,27 +180,39 @@ You can define and name additional alternate configurations (such as `stage`, fo
 
 The configurable options for a default or targeted build generally correspond to the options available for the [`ng build`](cli/build), [`ng serve`](cli/serve), and [`ng test`](cli/test) commands. For details of those options and their possible values, see the [CLI Reference](cli).
 
-Some additional options (listed below) can only be set through the configuration file, either by direct editing or with the [`ng config`](cli/config) command.
+Some additional options can only be set through the configuration file, either by direct editing or with the [`ng config`](cli/config) command.
 
 | OPTIONS PROPERTIES | DESCRIPTION |
 | :------------------------- | :---------------------------- |
-| `fileReplacements`         | An object containing files and their compile-time replacements. |
-| `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. |
-| `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder.  See more below. |
-| `styles`                   | An object containing style files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors: [sass/scss](http://sass-lang.com/), [less](http://lesscss.org/), and [stylus](http://stylus-lang.com/). |
-| `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. |
+| `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder.  See more in [Assets configuration](#asset-config) below. |
+| `styles`                   | An array of style files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors: [sass/scss](http://sass-lang.com/), [less](http://lesscss.org/), and [stylus](http://stylus-lang.com/). See more in [Styles and scripts configuration](#style-script-config) below. |
+| `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. See more in [Styles and scripts configuration](#style-script-config) below. |
+| `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in [Styles and scripts configuration](#style-script-config) below. |
 | `budgets`                  | Default size-budget type and threshholds for all or parts of your app. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](guide/build#configure-size-budgets). (Not available in `test` section.) |
+| `fileReplacements`         | An object containing files and their compile-time replacements. See more in [Configure target-specific file replacements](guide/build#configure-target-specific-file-replacements).|
 
-## Project asset configuration
+{@a complex-config}
+
+## Complex configuration values
+
+The options `assets`, `styles`, and `scripts` can have either simple path string values, or object values with specific fields.
+The `sourceMap` and `optimization` options can be set to a simple Boolean value with a command flag, but can also be given a complex value using the configuration file.
+The following sections provide more details of how these complex values are used in each case.
+
+{@a asset-config}
+
+### Assets configuration
 
 Each `build` target configuration can include an `assets` array that lists files or folders you want to copy as-is when building your project.
 By default, the `src/assets/` folder and `src/favicon.ico` are copied over.
 
 <code-example format="." language="json" linenums="false">
+
 "assets": [
   "src/assets",
   "src/favicon.ico"
 ]
+
 </code-example>
 
 To exclude an asset, you can remove it from the assets configuration.
@@ -203,19 +228,23 @@ A asset specification object can have the following fields.
 For example, the default asset paths can be represented in more detail using the following objects.
 
 <code-example format="." language="json" linenums="false">
+
 "assets": [
   { "glob": "**/*", "input": "src/assets/", "output": "/assets/" },
-  { "glob": "favicon.ico", "input": "src/", "output": "/" },
+  { "glob": "favicon.ico", "input": "src/", "output": "/" }
 ]
+
 </code-example>
 
 You can use this extended configuration to copy assets from outside your project.
 For example, the following configuration copies assets from a node package:
 
 <code-example format="." language="json" linenums="false">
+
 "assets": [
  { "glob": "**/*", "input": "./node_modules/some-package/images", "output": "/some-package/" },
 ]
+
 </code-example>
 
 The contents of `node_modules/some-package/images/` will be available in `dist/some-package/`.
@@ -223,7 +252,106 @@ The contents of `node_modules/some-package/images/` will be available in `dist/s
 The following example uses the `ignore` field to exclude certain files in the assets folder from being copied into the build:
 
 <code-example format="." language="json" linenums="false">
+
 "assets": [
  { "glob": "**/*", "input": "src/assets/", "ignore": ["**/*.svg"], "output": "/assets/" },
 ]
+
 </code-example>
+
+{@a style-script-config}
+
+### Styles and scripts configuration
+
+An array entry for the `styles` and `scripts` options can be a simple path string, or an object that points to an extra entry-point file.
+The associated builder will load that file and its dependencies as a separate bundle during the build.
+With a configuration object, you have the option of naming the bundle for the entry point, using a `bundleName` field.
+
+The bundle is injected by default, but you can set `inject` to false to exclude the bundle from injection.
+For example, the following object values create and name a bundle that contains styles and scripts, and excludes it from injection:
+
+<code-example format="." language="json" linenums="false">
+
+   "styles": [
+     {"input": "src/external-module/styles.scss", "inject": false, "bundleName: "external-module"}
+     ]
+   "scripts": [{
+     "input": "src/external-module/main.ts", "inject": false, "bundleName: "external-module"}
+     ]
+
+</code-example>
+
+You can mix simple and complex file references for styles and scripts.
+
+<code-example format="." language="json" linenums="false">
+
+"styles": [
+  "src/styles.css",
+  "src/more-styles.css",
+  { "input": "src/lazy-style.scss", "lazy": true },
+  { "input": "src/pre-rename-style.scss", "bundleName": "renamed-style" },
+],
+
+</code-example>
+
+{@a style-preprocessor}
+
+#### Style preprocessor options
+
+In Sass and Stylus you can make use of the `includePaths` functionality for both component and global styles, which allows you to add extra base paths that will be checked for imports.
+
+To add paths, use the `stylePreprocessorOptions` option:
+
+"stylePreprocessorOptions": {
+  "includePaths": [
+    "src/style-paths"
+  ]
+},
+
+Files in that folder, such as `src/style-paths/_variables.scss`, can be imported from anywhere in your project without the need for a relative path:
+
+```ts
+// src/app/app.component.scss
+// A relative path works
+@import '../style-paths/variables';
+// But now this works as well
+@import 'variables';
+```
+
+Note that you will also need to add any styles or scripts to the `test` builder if you need them for unit tests.
+See also [Using runtime-global libraries inside your app](guide/using-libraries#using-runtime-global-libraries-inside-your-app).
+
+
+{@a optimize-and-srcmap}
+
+### Optimization and source map configuration
+
+The `optimization` and `sourceMap` command options are simple Boolean flags.
+You can supply an object as a configuration value for either of these to provide more detailed instruction.
+
+* The flag `--optimization="true"` applies to both scripts and styles. You can supply a value such as the following to apply optimization to one or the other:
+
+<code-example format="." language="json" linenums="false">
+
+   "optimization": {"scripts": true, "styles": false}
+
+</code-example>
+
+* The flag `--sourceMap="true"` outputs source maps for both scripts and styles.
+You can configure the option to apply to one or the other.
+You can also choose to output hidden source maps, or resolve vendor package source maps.
+For example:
+
+<code-example format="." language="json" linenums="false">
+
+   "sourceMaps": {"scripts": true, "styles": false, "hidden": true, "vendor": true}
+
+</code-example>
+
+<div class="alert is-helpful>
+
+   When using hidden source maps, source maps will not be referenced in the bundle.
+   These are useful if you only want source maps to map error stack traces in error reporting tools,
+   but don't want to expose your source maps in the browser developer tools.
+
+</div>
