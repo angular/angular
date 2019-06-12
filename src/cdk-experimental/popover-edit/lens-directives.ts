@@ -110,15 +110,15 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
   @HostListener('document:click', ['$event'])
   handlePossibleClickOut(evt: Event): void {
     if (closest(evt.target, EDIT_PANE_SELECTOR)) { return; }
-
     switch (this.clickOutBehavior) {
       case 'submit':
         // Manually cause the form to submit before closing.
         this._triggerFormSubmit();
-        // Fall through
+        this.editRef.close();
+        break;
       case 'close':
         this.editRef.close();
-        // Fall through
+        break;
       default:
         break;
     }
