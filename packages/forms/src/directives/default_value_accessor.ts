@@ -67,6 +67,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
   host: {
     '(input)': '$any(this)._handleInput($event.target.value)',
     '(blur)': 'onTouched()',
+    '(focusout)': 'onTouched()',
     '(compositionstart)': '$any(this)._compositionStart()',
     '(compositionend)': '$any(this)._compositionEnd($event.target.value)'
   },
