@@ -124,7 +124,7 @@
     "@types/minimist": "^1.2.0",
     "@types/systemjs": "0.19.32",
     "browserstacktunnel-wrapper": "2.0.1",
-    "check-side-effects": "0.0.20",
+    "check-side-effects": "0.0.21",
     "clang-format": "1.0.41",
     "cldr": "4.10.0",
     "cldr-data-downloader": "0.3.2",
