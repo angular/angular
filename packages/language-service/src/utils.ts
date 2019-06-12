@@ -11,6 +11,7 @@ import {DiagnosticTemplateInfo} from '@angular/compiler-cli/src/language_service
 import * as ts from 'typescript';
 
 import {SelectorInfo, TemplateInfo} from './common';
+import {Diagnostic, DiagnosticMessageChain} from './types';
 import {Span} from './types';
 
 export interface SpanHolder {
@@ -176,4 +177,28 @@ export function findTemplateAstAt(
   templateVisitAll(visitor, ast);
 
   return new AstPath<TemplateAst>(path, position);
+}
+
+function diagnosticChainToDiagnosticChain(chain: DiagnosticMessageChain):
+    ts.DiagnosticMessageChain {
+  return {
+    messageText: chain.message,
+    category: ts.DiagnosticCategory.Error,
+    code: 0,
+    next: chain.next ? diagnosticChainToDiagnosticChain(chain.next) : undefined
+  };
+}
+
+export function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
+  const result = {
+    file,
+    start: d.span.start,
+    length: d.span.end - d.span.start,
+    messageText: typeof d.message === 'string' ? d.message :
+                                                 diagnosticChainToDiagnosticChain(d.message),
+    category: ts.DiagnosticCategory.Error,
+    code: 0,
+    source: 'ng'
+  };
+  return result;
 }

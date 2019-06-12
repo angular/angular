@@ -10,8 +10,9 @@ import * as ts from 'typescript'; // used as value, passed in by tsserver at run
 import * as tss from 'typescript/lib/tsserverlibrary'; // used as type only
 
 import {createLanguageService} from './language_service';
-import {Completion, Diagnostic, DiagnosticMessageChain, Location} from './types';
+import {Completion, Location} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
+import {diagnosticToDiagnostic} from './utils';
 
 const projectHostMap = new WeakMap<tss.server.Project, TypeScriptServiceHost>();
 
@@ -23,90 +24,36 @@ export function getExternalFiles(project: tss.server.Project): string[]|undefine
   }
 }
 
-function completionToEntry(c: Completion): ts.CompletionEntry {
-  return {
-    // TODO: remove any and fix type error.
-    kind: c.kind as any,
-    name: c.name,
-    sortText: c.sort,
-    kindModifiers: ''
-  };
-}
-
-function diagnosticChainToDiagnosticChain(chain: DiagnosticMessageChain):
-    ts.DiagnosticMessageChain {
-  return {
-    messageText: chain.message,
-    category: ts.DiagnosticCategory.Error,
-    code: 0,
-    next: chain.next ? diagnosticChainToDiagnosticChain(chain.next) : undefined
-  };
-}
-
-function diagnosticMessageToDiagnosticMessageText(message: string | DiagnosticMessageChain): string|
-    ts.DiagnosticMessageChain {
-  if (typeof message === 'string') {
-    return message;
-  }
-  return diagnosticChainToDiagnosticChain(message);
-}
-
-function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
-  const result = {
-    file,
-    start: d.span.start,
-    length: d.span.end - d.span.start,
-    messageText: diagnosticMessageToDiagnosticMessageText(d.message),
-    category: ts.DiagnosticCategory.Error,
-    code: 0,
-    source: 'ng'
-  };
-  return result;
-}
-
 export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
   const oldLS: ts.LanguageService = info.languageService;
   const logger = info.project.projectService.logger;
-
-  function tryOperation<T>(attempting: string, callback: () => T): T|null {
-    try {
-      return callback();
-    } catch (e) {
-      logger.info(`Failed to ${attempting}: ${e.toString()}`);
-      logger.info(`Stack trace: ${e.stack}`);
-      return null;
-    }
-  }
-
   const serviceHost = new TypeScriptServiceHost(info.languageServiceHost, oldLS);
   const ls = createLanguageService(serviceHost);
   serviceHost.setSite(ls);
   projectHostMap.set(info.project, serviceHost);
 
   function getCompletionsAtPosition(
-      fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions | undefined) {
+      fileName: string, position: number,
+      options?: ts.GetCompletionsAtPositionOptions): ts.WithMetadata<ts.CompletionInfo>|undefined {
     let base = oldLS.getCompletionsAtPosition(fileName, position, options) || {
       isGlobalCompletion: false,
       isMemberCompletion: false,
       isNewIdentifierLocation: false,
       entries: []
     };
-    tryOperation('get completions', () => {
-      const results = ls.getCompletionsAt(fileName, position);
-      if (results && results.length) {
-        if (base === undefined) {
-          base = {
-            isGlobalCompletion: false,
-            isMemberCompletion: false,
-            isNewIdentifierLocation: false,
-            entries: []
-          };
-        }
-        for (const entry of results) {
-          base.entries.push(completionToEntry(entry));
-        }
-      }
-    });
+
+    const results = ls.getCompletionsAt(fileName, position);
+    if (results) {
+      base.entries.push(...results.map((entry: Completion) => {
+        return {
+          name: entry.name,
+          kind: ts.ScriptElementKind.unknown,
+          kindModifiers: ts.ScriptElementKindModifier.none,
+          sortText: entry.sort,
+        };
+      }));
+    }
+
     return base;
   };
 
@@ -138,18 +85,15 @@ export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
   };
 
   function getSemanticDiagnostics(fileName: string) {
-    let result = oldLS.getSemanticDiagnostics(fileName);
-    const base = result || [];
-    tryOperation('get diagnostics', () => {
-      logger.info(`Computing Angular semantic diagnostics...`);
-      const ours = ls.getDiagnostics(fileName);
-      if (ours && ours.length) {
-        const file = oldLS.getProgram() !.getSourceFile(fileName);
-        if (file) {
-          base.push.apply(base, ours.map(d => diagnosticToDiagnostic(d, file)));
-        }
+    logger.info(`Computing Angular semantic diagnostics...`);
+    const base = oldLS.getSemanticDiagnostics(fileName) || [];
+    const ours = ls.getDiagnostics(fileName);
+    if (ours && ours.length) {
+      const file = oldLS.getProgram() !.getSourceFile(fileName);
+      if (file) {
+        base.push(...ours.map(d => diagnosticToDiagnostic(d, file)));
       }
-    });
+    }
 
     return base;
   };
