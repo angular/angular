@@ -66,7 +66,6 @@ function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnost
 
 export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
   const oldLS: ts.LanguageService = info.languageService;
-  const proxy: ts.LanguageService = Object.assign({}, oldLS);
   const logger = info.project.projectService.logger;
 
   function tryOperation<T>(attempting: string, callback: () => T): T|null {
@@ -84,8 +83,8 @@ export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
   serviceHost.setSite(ls);
   projectHostMap.set(info.project, serviceHost);
 
-  proxy.getCompletionsAtPosition = function(
-      fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions|undefined) {
+  function getCompletionsAtPosition(
+      fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions | undefined) {
     let base = oldLS.getCompletionsAtPosition(fileName, position, options) || {
       isGlobalCompletion: false,
       isMemberCompletion: false,
@@ -111,7 +110,7 @@ export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
     return base;
   };
 
-  proxy.getQuickInfoAtPosition = function(fileName: string, position: number): ts.QuickInfo | undefined {
+  function getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
     const base = oldLS.getQuickInfoAtPosition(fileName, position);
     const ours = ls.getHoverAt(fileName, position);
     if (!ours) {
@@ -124,10 +123,12 @@ export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
         start: ours.span.start,
         length: ours.span.end - ours.span.start,
       },
-      displayParts: ours.text.map(part => ({
-        text: part.text,
-        kind: part.language || 'angular',
-      })),
+      displayParts: ours.text.map(part => {
+        return {
+          text: part.text,
+          kind: part.language || 'angular',
+        };
+      }),
       documentation: [],
     };
     if (base && base.tags) {
@@ -136,7 +137,7 @@ export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
     return result;
   };
 
-  proxy.getSemanticDiagnostics = function(fileName: string) {
+  function getSemanticDiagnostics(fileName: string) {
     let result = oldLS.getSemanticDiagnostics(fileName);
     const base = result || [];
     tryOperation('get diagnostics', () => {
@@ -153,61 +154,64 @@ export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
     return base;
   };
 
-  proxy.getDefinitionAtPosition = function(fileName: string, position: number):
-                                      ReadonlyArray<ts.DefinitionInfo>|
-      undefined {
-        const base = oldLS.getDefinitionAtPosition(fileName, position);
-        if (base && base.length) {
-          return base;
-        }
-        const ours = ls.getDefinitionAt(fileName, position);
-        if (ours && ours.length) {
-          return ours.map((loc: Location) => {
-            return {
-              fileName: loc.fileName,
-              textSpan: {
-                start: loc.span.start,
-                length: loc.span.end - loc.span.start,
-              },
-              name: '',
-              kind: ts.ScriptElementKind.unknown,
-              containerName: loc.fileName,
-              containerKind: ts.ScriptElementKind.unknown,
-            };
-          });
-        }
-      };
+  function getDefinitionAtPosition(
+      fileName: string, position: number): ReadonlyArray<ts.DefinitionInfo>|undefined {
+    const base = oldLS.getDefinitionAtPosition(fileName, position);
+    if (base && base.length) {
+      return base;
+    }
+    const ours = ls.getDefinitionAt(fileName, position);
+    if (ours && ours.length) {
+      return ours.map((loc: Location) => {
+        return {
+          fileName: loc.fileName,
+          textSpan: {
+            start: loc.span.start,
+            length: loc.span.end - loc.span.start,
+          },
+          name: '',
+          kind: ts.ScriptElementKind.unknown,
+          containerName: loc.fileName,
+          containerKind: ts.ScriptElementKind.unknown,
+        };
+      });
+    }
+  };
 
-  proxy.getDefinitionAndBoundSpan = function(fileName: string, position: number):
-                                        ts.DefinitionInfoAndBoundSpan |
-      undefined {
-        const base = oldLS.getDefinitionAndBoundSpan(fileName, position);
-        if (base && base.definitions && base.definitions.length) {
-          return base;
-        }
-        const ours = ls.getDefinitionAt(fileName, position);
-        if (ours && ours.length) {
+  function getDefinitionAndBoundSpan(
+      fileName: string, position: number): ts.DefinitionInfoAndBoundSpan|undefined {
+    const base = oldLS.getDefinitionAndBoundSpan(fileName, position);
+    if (base && base.definitions && base.definitions.length) {
+      return base;
+    }
+    const ours = ls.getDefinitionAt(fileName, position);
+    if (ours && ours.length) {
+      return {
+        definitions: ours.map((loc: Location) => {
           return {
-            definitions: ours.map((loc: Location) => {
-              return {
-                fileName: loc.fileName,
-                textSpan: {
-                  start: loc.span.start,
-                  length: loc.span.end - loc.span.start,
-                },
-                name: '',
-                kind: ts.ScriptElementKind.unknown,
-                containerName: loc.fileName,
-                containerKind: ts.ScriptElementKind.unknown,
-              };
-            }),
+            fileName: loc.fileName,
             textSpan: {
-              start: ours[0].span.start,
-              length: ours[0].span.end - ours[0].span.start,
+              start: loc.span.start,
+              length: loc.span.end - loc.span.start,
             },
+            name: '',
+            kind: ts.ScriptElementKind.unknown,
+            containerName: loc.fileName,
+            containerKind: ts.ScriptElementKind.unknown,
           };
-        }
+        }),
+        textSpan: {
+          start: ours[0].span.start,
+          length: ours[0].span.end - ours[0].span.start,
+        },
       };
+    }
+  };
 
+  const proxy: ts.LanguageService = Object.assign(
+      {}, oldLS, {
+                     getCompletionsAtPosition, getQuickInfoAtPosition, getSemanticDiagnostics,
+                     getDefinitionAtPosition, getDefinitionAndBoundSpan,
+                 });
   return proxy;
 }
