@@ -512,6 +512,21 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expect(input.nativeElement.value).toEqual('newValue');
       });
 
+      describe('enable controls', () => {
+        it('should not clear validation errors if enabled control is enabled again ', () => {
+          const fixture = initTest(FormControlComp);
+          const control = new FormControl({value: 'some value'});
+          fixture.componentInstance.control = control;
+          control.setErrors({error: true});
+          fixture.detectChanges();
+
+          expect(control.errors).toBe({error: true});
+
+          control.enable();
+          fixture.detectChanges();
+          expect(control.errors).toBe({error: true});
+        });
+      });
       describe('disabled controls', () => {
         it('should add disabled attribute to an individual control when instantiated as disabled',
            () => {
