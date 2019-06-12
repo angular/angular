@@ -16,8 +16,13 @@ steps:
     title: Run Bazel tests
     image: ${{BuildImage}}
     commands:
+    - systeminfo
+    - rmdir /S /Q bazel-out
+    - rmdir /S /Q dist
+    - git clean -fdx
     # Install dependencies
     - yarn install --frozen-lockfile --non-interactive --network-timeout 100000 --no-progress
+    - yarn bazel clean --expunge
     # Add Bazel CI config
     - copy .codefresh\bazel.rc %ProgramData%\bazel.bazelrc
     # Run tests
