@@ -77,7 +77,7 @@ setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 # their separate build setups.
 setPublicVar MATERIAL_REPO_TMP_DIR "/tmp/material2"
 setPublicVar MATERIAL_REPO_URL "https://github.com/angular/material2.git"
-setPublicVar MATERIAL_REPO_BRANCH "ivy-2019"
+setPublicVar MATERIAL_REPO_TAG "8.1.0"
 
 # Source `$BASH_ENV` to make the variables available immediately.
 source $BASH_ENV;

@@ -58,17 +58,7 @@ var_5: &setup_bazel_remote_execution
       # cause decryption failures based on the openssl version. https://stackoverflow.com/a/39641378/4317734
       openssl aes-256-cbc -d -in .circleci/gcp_token -md md5 -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials
       echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV
-      touch .bazelrc.user
-      sudo bash -c "echo -e 'build --config=remote\n' >> .bazelrc.user"
-      sudo bash -c "echo -e 'build:remote --remote_accept_cached=true\n' >> .bazelrc.user"
-      echo "Reading from remote cache for bazel remote jobs."
-      if [[ "$CI_PULL_REQUEST" == "false" ]]; then
-        sudo bash -c "echo -e 'build:remote --remote_upload_local_results=true\n' >> .bazelrc.user"
-        echo "Uploading local build results to remote cache."
-      else
-        sudo bash -c "echo -e 'build:remote --remote_upload_local_results=false\n' >> .bazelrc.user"
-        echo "Not uploading local build results to remote cache."
-      fi
+      ./.circleci/setup-rbe.sh .bazelrc.user
 
 # Settings common to each job
 var_6: &job_defaults
@@ -625,19 +615,12 @@ jobs:
     resource_class: xlarge
     docker:
       - image: *browsers_docker_image
-    # The Material unit tests support splitting the browsers across multiple CircleCI
-    # instances. Since by default this job launches two browsers, we run each browser
-    # in its own container instance.
-    # https://github.com/angular/material2/blob/7baeaa797b19da2d2998f0d26f6fede3c8a13714/test/karma.conf.js#L107-L110
-    parallelism: 2
-    environment:
-      # The Material unit tests also support launching the same browser multiple times by
-      # sharding individual specs across the defined multiple instances.
-      # See: https://github.com/angular/material2/blob/7baeaa797b19da2d2998f0d26f6fede3c8a13714/test/karma.conf.js#L113-L116
-      KARMA_PARALLEL_BROWSERS: 3
     steps:
       - *attach_workspace
       - *init_environment
+      # Although RBE is configured below for the Material repo, also setup RBE in the Angular repo
+      # to provision Angular's GCP token into the environment variables.
+      - *setup_bazel_remote_execution
       - run:
           name: "Cloning Material repository"
           command: ./scripts/ci/clone_angular_material_repo.sh
@@ -659,6 +642,10 @@ jobs:
           key: v2-angular-material-{{ checksum "/tmp/material2/yarn.lock" }}
           paths:
             - "/tmp/material2/node_modules"
+      - run:
+          name: "Setup Bazel RBE remote execution in Material repo"
+          command: |
+            ./.circleci/setup-rbe.sh "${MATERIAL_REPO_TMP_DIR}/.bazelrc.user"
       - run:
           name: "Running Material unit tests"
           command: ./scripts/ci/run_angular_material_unit_tests.sh
