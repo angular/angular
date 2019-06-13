@@ -1300,11 +1300,16 @@ import {of } from 'rxjs';
 
     });
 
+<<<<<<< HEAD
     describe('pending', () => {
+=======
+    describe('initialValue', () => {
+>>>>>>> feat(forms): introduce initialValue to AbstractControl
       let c: FormControl;
       let g: FormGroup;
 
       beforeEach(() => {
+<<<<<<< HEAD
         c = new FormControl('value');
         g = new FormGroup({'one': c});
       });
@@ -1348,6 +1353,28 @@ import {of } from 'rxjs';
           g.markAsPending();
           expect(logger).toEqual(['PENDING']);
         });
+=======
+        c = new FormControl('initial value');
+        g = new FormGroup({'one': c});
+      });
+
+      it('should be the value passed into constructor',
+         () => { expect(g.initialValue).toEqual({'one': 'initial value'}); });
+
+      it('should not change when value changes via setValue', () => {
+        g.setValue({'one': 'different value'});
+        expect(g.initialValue).toEqual({'one': 'initial value'});
+      });
+
+      it('should not change when value changes via patchValue', () => {
+        g.patchValue({'one': 'different value'});
+        expect(g.initialValue).toEqual({'one': 'initial value'});
+      });
+
+      it('should change when control is reset', () => {
+        g.reset({'one': 'new value'});
+        expect(g.initialValue).toEqual({'one': 'new value'});
+>>>>>>> feat(forms): introduce initialValue to AbstractControl
       });
     });
 

@@ -167,6 +167,7 @@ export abstract class AbstractControl {
    *
    */
   public readonly value: any;
+  public readonly initialValue: any;
 
   /**
    * Initialize the AbstractControl instance.
@@ -866,6 +867,7 @@ export abstract class AbstractControl {
     }
   }
 
+<<<<<<< HEAD
   /**
    * Check to see if parent has been marked artificially dirty.
    *
@@ -875,6 +877,10 @@ export abstract class AbstractControl {
     const parentDirty = this._parent && this._parent.dirty;
     return !onlySelf && parentDirty && !this._parent._anyControlsDirty();
   }
+=======
+  /** @internal */
+  _setInitialValue(value: any) { (this as{initialValue: any}).initialValue = value; }
+>>>>>>> feat(forms): introduce initialValue to AbstractControl
 }
 
 /**
@@ -1007,6 +1013,7 @@ export class FormControl extends AbstractControl {
     this._applyFormState(formState);
     this._setUpdateStrategy(validatorOrOpts);
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
+    this._setInitialValue(this.value);
     this._initObservables();
   }
 
@@ -1088,7 +1095,11 @@ export class FormControl extends AbstractControl {
     this.markAsPristine(options);
     this.markAsUntouched(options);
     this.setValue(this.value, options);
+<<<<<<< HEAD
     this._pendingChange = false;
+=======
+    this._setInitialValue(this.value);
+>>>>>>> feat(forms): introduce initialValue to AbstractControl
   }
 
   /**
@@ -1257,6 +1268,7 @@ export class FormGroup extends AbstractControl {
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
+    this._setInitialValue(this.value);
   }
 
   /**
@@ -1479,6 +1491,11 @@ export class FormGroup extends AbstractControl {
     this._forEachChild((control: AbstractControl, name: string) => {
       control.reset(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
+<<<<<<< HEAD
+=======
+    this.updateValueAndValidity(options);
+    this._setInitialValue(this.value);
+>>>>>>> feat(forms): introduce initialValue to AbstractControl
     this._updatePristine(options);
     this._updateTouched(options);
     this.updateValueAndValidity(options);
@@ -1674,6 +1691,7 @@ export class FormArray extends AbstractControl {
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
+    this._setInitialValue(this.value);
   }
 
   /**
@@ -1880,6 +1898,11 @@ export class FormArray extends AbstractControl {
     this._forEachChild((control: AbstractControl, index: number) => {
       control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
     });
+<<<<<<< HEAD
+=======
+    this.updateValueAndValidity(options);
+    this._setInitialValue(this.value);
+>>>>>>> feat(forms): introduce initialValue to AbstractControl
     this._updatePristine(options);
     this._updateTouched(options);
     this.updateValueAndValidity(options);

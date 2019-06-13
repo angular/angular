@@ -4,6 +4,7 @@ export declare abstract class AbstractControl {
     readonly disabled: boolean;
     readonly enabled: boolean;
     readonly errors: ValidationErrors | null;
+    readonly initialValue: any;
     readonly invalid: boolean;
     readonly parent: FormGroup | FormArray;
     readonly pending: boolean;
