@@ -33,3 +33,6 @@ build --define=compile=legacy
 # Turn on managed directories feature in Bazel
 # This allows us to avoid installing a second copy of node_modules
 common --experimental_allow_incremental_repository_updates
+
+# Compatibility flag for Bazel 0.27.0
+common --incompatible_depset_is_not_iterable=false
