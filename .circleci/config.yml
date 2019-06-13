@@ -250,16 +250,14 @@ jobs:
       - run: yarn --cwd aio build --progress=false
         # Lint the code
       - run: yarn --cwd aio lint
-        # Run PWA-score tests
-        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
-        # Check the bundle sizes.
-        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-      - run: yarn --cwd aio payload-size
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
       - run: yarn --cwd aio e2e --configuration=ci
+        # Run PWA-score tests
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+        # Check the bundle sizes.
+      - run: yarn --cwd aio payload-size
         # Run unit tests for Firebase redirects
       - run: yarn --cwd aio redirects-test
 
@@ -285,13 +283,12 @@ jobs:
       - *init_environment
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local --progress=false
-        # Run PWA-score tests
-        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
       - run: yarn --cwd aio e2e --configuration=ci
+        # Run PWA-score tests
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
 
   test_aio_local_ivy:
     <<: *job_defaults
@@ -303,13 +300,12 @@ jobs:
       - *init_environment
         # Build aio with Ivy (using local Angular packages)
       - run: yarn --cwd aio build-with-ivy --progress=false
-        # Run PWA-score tests
-        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
       - run: yarn --cwd aio e2e --configuration=ci
+        # Run PWA-score tests
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
 
   test_aio_tools:
     <<: *job_defaults
