@@ -97,6 +97,7 @@ describe('ng-add schematic', () => {
     const json = JSON.parse(content);
     const devDeps = Object.keys(json.devDependencies);
     expect(devDeps).toContain('@bazel/bazel');
+    expect(devDeps).toContain('@bazel/hide-bazel-files');
     expect(devDeps).toContain('@bazel/ibazel');
     expect(devDeps).toContain('@bazel/karma');
   });
