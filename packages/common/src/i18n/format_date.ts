@@ -378,7 +378,7 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
   };
 }
 
-type DateFormatter = (date: Date, locale: string, offset?: number) => string;
+type DateFormatter = (date: Date, locale: string, offset: number) => string;
 
 const DATE_FORMATS: {[format: string]: DateFormatter} = {};
 
