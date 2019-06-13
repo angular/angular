@@ -231,7 +231,7 @@ export class HttpXhrBackend implements HttpBackend {
       // The onError callback is called when something goes wrong at the network level.
       // Connection timeout, DNS error, offline, etc. These are actual errors, and are
       // transmitted on the error channel.
-      const onError = (error: ErrorEvent) => {
+      const onError = (error: ProgressEvent) => {
         const {url} = partialFromXhr();
         const res = new HttpErrorResponse({
           error,
