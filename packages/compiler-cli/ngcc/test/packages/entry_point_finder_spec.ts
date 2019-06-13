@@ -52,6 +52,21 @@ describe('findEntryPoints()', () => {
     ]);
   });
 
+  it('should find entry-points via `pathMappings', () => {
+    const {entryPoints} = finder.findEntryPoints(
+        _('/pathMappings/node_modules'), undefined,
+        {baseUrl: _('/pathMappings'), paths: {'my-lib': ['dist/my-lib']}});
+    const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
+    expect(entryPointPaths).toEqual([
+      [_('/pathMappings/dist/my-lib'), _('/pathMappings/dist/my-lib')],
+      [_('/pathMappings/dist/my-lib'), _('/pathMappings/dist/my-lib/sub-lib')],
+      [
+        _('/pathMappings/node_modules/@angular/common'),
+        _('/pathMappings/node_modules/@angular/common')
+      ],
+    ]);
+  });
+
   it('should return an empty array if there are no packages', () => {
     const {entryPoints} = finder.findEntryPoints(_('/no_packages'));
     expect(entryPoints).toEqual([]);
@@ -104,6 +119,26 @@ describe('findEntryPoints()', () => {
             'testing.metadata.json': 'metadata info',
           },
         },
+      },
+      '/pathMappings': {
+        'dist': {
+          'my-lib': {
+            'package.json': createPackageJson('my-lib'),
+            'my-lib.metadata.json': 'metadata info',
+            'sub-lib': {
+              'package.json': createPackageJson('sub-lib'),
+              'sub-lib.metadata.json': 'metadata info',
+            },
+          },
+        },
+        'node_modules': {
+          '@angular': {
+            'common': {
+              'package.json': createPackageJson('common'),
+              'common.metadata.json': 'metadata info',
+            },
+          },
+        }
       },
       '/namespaced': {
         '@angular': {
