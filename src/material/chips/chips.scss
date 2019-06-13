@@ -1,6 +1,7 @@
 @import '../core/style/variables';
 @import '../core/style/elevation';
 @import '../core/style/layout-common';
+@import '../core/style/noop-animation';
 @import '../../cdk/a11y/a11y';
 
 $mat-chip-min-height: 32px;
@@ -36,6 +37,7 @@ $mat-chip-remove-size: 18px;
 
 .mat-standard-chip {
   @include mat-elevation-transition;
+  @include _noop-animation;
   display: inline-flex;
   padding: $mat-chip-vertical-padding $mat-chip-horizontal-padding;
   border-radius: 16px;

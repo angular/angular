@@ -41,6 +41,7 @@ import {
 } from '@angular/material/core';
 import {Subject} from 'rxjs';
 import {take} from 'rxjs/operators';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 /** Represents an event fired on an individual `mat-chip`. */
@@ -105,6 +106,7 @@ export class MatChipTrailingIcon {}
     '[class.mat-chip-with-avatar]': 'avatar',
     '[class.mat-chip-with-trailing-icon]': 'trailingIcon || removeIcon',
     '[class.mat-chip-disabled]': 'disabled',
+    '[class._mat-animation-noopable]': '_animationsDisabled',
     '[attr.disabled]': 'disabled || null',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-selected]': 'ariaSelected',
@@ -138,6 +140,9 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
 
   /** Whether the chip has focus. */
   _hasFocus: boolean = false;
+
+  /** Whether animations for the chip are enabled. */
+  _animationsDisabled: boolean;
 
   /** Whether the chip list is selectable */
   chipListSelectable: boolean = true;
@@ -224,11 +229,13 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
         this.selected.toString() : null;
   }
 
-  constructor(public _elementRef: ElementRef,
+  constructor(public _elementRef: ElementRef<HTMLElement>,
               private _ngZone: NgZone,
               platform: Platform,
               @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
-              globalRippleOptions: RippleGlobalOptions | null) {
+              globalRippleOptions: RippleGlobalOptions | null,
+              // @breaking-change 8.0.0 `animationMode` parameter to become required.
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(_elementRef);
 
     this._addHostClassName();
@@ -236,6 +243,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     this._chipRipple = new RippleRenderer(this, _ngZone, _elementRef, platform);
     this._chipRipple.setupTriggerEvents(_elementRef.nativeElement);
     this.rippleConfig = globalRippleOptions || {};
+    this._animationsDisabled = animationMode === 'NoopAnimations';
   }
 
   _addHostClassName() {
