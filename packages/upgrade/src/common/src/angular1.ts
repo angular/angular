@@ -116,9 +116,7 @@ export interface ITranscludeFunction {
   // If one argument is provided, then it's assumed to be the cloneAttachFn.
   (cloneAttachFn?: ICloneAttachFunction): IAugmentedJQuery;
 }
-export interface ICloneAttachFunction {
-  (clonedElement: IAugmentedJQuery, scope: IScope): any;
-}
+export interface ICloneAttachFunction { (clonedElement: IAugmentedJQuery, scope: IScope): any; }
 export type IAugmentedJQuery = Node[] & {
   on?: (name: string, fn: () => void) => void;
   data?: (name: string, value?: any) => any;
