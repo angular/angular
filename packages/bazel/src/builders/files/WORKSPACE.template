@@ -49,7 +49,7 @@ Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
 """,
-    minimum_bazel_version = "0.26.0",
+    minimum_bazel_version = "0.27.0",
 )
 
 # Setup the Node repositories. We need a NodeJS version that is more recent than v10.15.0
