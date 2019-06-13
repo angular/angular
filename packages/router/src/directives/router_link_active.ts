@@ -9,7 +9,7 @@
 import {AfterContentInit, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, Optional, QueryList, Renderer2, SimpleChanges} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import {NavigationEnd, RouterEvent} from '../events';
+import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
 
 import {RouterLink, RouterLinkWithHref} from './router_link';
@@ -95,7 +95,7 @@ export class RouterLinkActive implements OnChanges,
       private router: Router, private element: ElementRef, private renderer: Renderer2,
       @Optional() private link?: RouterLink,
       @Optional() private linkWithHref?: RouterLinkWithHref) {
-    this.subscription = router.events.subscribe((s: RouterEvent) => {
+    this.subscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.update();
       }
