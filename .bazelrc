@@ -154,6 +154,11 @@ build:remote --bes_results_url="https://source.cloud.google.com/results/invocati
 # This allows us to avoid installing a second copy of node_modules
 common --experimental_allow_incremental_repository_updates
 
+# This option is changed to true in Bazel 0.27 but exposes a known worker mode bug:
+# https://github.com/bazelbuild/rules_typescript/issues/449
+# While we are fixing that issue, we need to keep this breaking change disabled
+build --incompatible_list_based_execution_strategy_selection=false
+
 ####################################################
 # User bazel configuration
 # NOTE: This needs to be the *last* entry in the config.
