@@ -254,7 +254,16 @@ export class IvyCompilation {
   /**
    * Feeds components discovered in the compilation to a context for indexing.
    */
-  index(context: IndexingContext) { throw new Error('Method not implemented.'); }
+  index(context: IndexingContext) {
+    this.ivyClasses.forEach((ivyClass, declaration) => {
+      for (const match of ivyClass.matchedHandlers) {
+        const handler = match.handler;
+        if (handler.index) {
+          handler.index(context, declaration, match.detected.metadata);
+        }
+      }
+    });
+  }
 
   resolve(): void {
     const resolveSpan = this.perf.start('resolve');

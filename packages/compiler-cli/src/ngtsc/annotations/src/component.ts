@@ -13,6 +13,7 @@ import * as ts from 'typescript';
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {IndexingContext} from '../../indexer';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
@@ -296,6 +297,34 @@ export class ComponentDecoratorHandler implements
       (output.analysis.meta as R3ComponentMetadata).changeDetection = changeDetection;
     }
     return output;
+  }
+
+  index(context: IndexingContext, node: ClassDeclaration, decorator: Decorator) {
+    const analysis = this.analyze(node, decorator).analysis;
+    if (analysis !== undefined) {
+      const template = analysis.parsedTemplate;
+      const scope = this.scopeRegistry.getScopeForComponent(node);
+      const selector = analysis.meta.selector;
+      let boundTemplate = null;
+      if (scope !== null) {
+        const matcher = new SelectorMatcher<DirectiveMeta&{expression: Expression}>();
+        for (const directive of scope.compilation.directives) {
+          const {ref, selector} = directive;
+          const expression = this.refEmitter.emit(ref, node.getSourceFile());
+          matcher.addSelectables(CssSelector.parse(selector), {...directive, expression});
+        }
+        const binder = new R3TargetBinder(matcher);
+        boundTemplate = binder.bind({template});
+      }
+
+      context.addComponent({
+        declaration: node,
+        selector,
+        template,
+        scope: boundTemplate,
+        interpolationConfig: analysis.meta.interpolation,
+      });
+    }
   }
 
   typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: ComponentHandlerData): void {
