@@ -216,15 +216,18 @@ export class NgForOf<T> implements DoCheck {
   private _applyChanges(changes: IterableChanges<T>) {
     const insertTuples: RecordViewTuple<T>[] = [];
     changes.forEachOperation(
-        (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
+        (item: IterableChangeRecord<any>, adjustedPreviousIndex: number | null,
+         currentIndex: number | null) => {
           if (item.previousIndex == null) {
             const view = this._viewContainer.createEmbeddedView(
-                this._template, new NgForOfContext<T>(null !, this._ngForOf, -1, -1), currentIndex);
+                this._template, new NgForOfContext<T>(null !, this._ngForOf, -1, -1),
+                currentIndex === null ? undefined : currentIndex);
             const tuple = new RecordViewTuple<T>(item, view);
             insertTuples.push(tuple);
           } else if (currentIndex == null) {
-            this._viewContainer.remove(adjustedPreviousIndex);
-          } else {
+            this._viewContainer.remove(
+                adjustedPreviousIndex === null ? undefined : adjustedPreviousIndex);
+          } else if (adjustedPreviousIndex !== null) {
             const view = this._viewContainer.get(adjustedPreviousIndex) !;
             this._viewContainer.move(view, currentIndex);
             const tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForOfContext<T>>>view);
