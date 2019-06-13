@@ -88,11 +88,14 @@ export function waitForMap<A, B>(
     }
   });
 
-  // Closure compiler has problem with using spread operator here. So just using Array.concat.
-  return of .apply(null, waitHead.concat(waitTail)).pipe(concatAll(), lastValue(), map(() => res));
+  // Closure compiler has problem with using spread operator here. So we use "Array.concat".
+  // Note that we also need to cast the new promise because TypeScript cannot infer the type
+  // when calling the "of" function through "Function.apply"
+  return (of .apply(null, waitHead.concat(waitTail)) as Observable<Observable<B>>)
+      .pipe(concatAll(), lastValue(), map(() => res));
 }
 
-export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>) {
+export function wrapIntoObservable<T>(value: T | Promise<T>| Observable<T>): Observable<T> {
   if (isObservable(value)) {
     return value;
   }

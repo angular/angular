@@ -16,7 +16,7 @@ import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
-import {RouterEvent} from './events';
+import {Event} from './events';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
@@ -444,7 +444,7 @@ export function setupRouter(
 
   if (opts.enableTracing) {
     const dom = getDOM();
-    router.events.subscribe((e: RouterEvent) => {
+    router.events.subscribe((e: Event) => {
       dom.logGroup(`Router Event: ${(<any>e.constructor).name}`);
       dom.log(e.toString());
       dom.log(e);
