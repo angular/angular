@@ -52,7 +52,7 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
   }
   if (path instanceof Array && (path.length === 0)) return null;
 
-  return (<Array<string|number>>path).reduce((v: AbstractControl, name) => {
+  return (<Array<string|number>>path).reduce((v: AbstractControl | null, name) => {
     if (v instanceof FormGroup) {
       return v.controls.hasOwnProperty(name as string) ? v.controls[name] : null;
     }

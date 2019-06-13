@@ -140,12 +140,12 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
   throw new Error(`${message} ${messageEnd}`);
 }
 
-export function composeValidators(validators: Array<Validator|Function>): ValidatorFn|null {
+export function composeValidators(validators: Array<Validator|ValidatorFn>): ValidatorFn|null {
   return validators != null ? Validators.compose(validators.map(normalizeValidator)) : null;
 }
 
-export function composeAsyncValidators(validators: Array<Validator|Function>): AsyncValidatorFn|
-    null {
+export function composeAsyncValidators(validators: Array<AsyncValidator|AsyncValidatorFn>):
+    AsyncValidatorFn|null {
   return validators != null ? Validators.composeAsync(validators.map(normalizeAsyncValidator)) :
                               null;
 }
