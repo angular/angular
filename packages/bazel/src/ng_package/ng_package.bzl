@@ -94,6 +94,10 @@ WELL_KNOWN_GLOBALS = {p: _global_name(p) for p in [
     "rxjs/operators",
 ]}
 
+# skydoc fails with type(depset()) so using "depset" here instead
+# TODO(gregmagolan): clean this up
+_DEPSET_TYPE = "depset"
+
 def _rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, format = "es", package_name = "", include_tslib = False):
     map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
 
@@ -133,7 +137,7 @@ def _rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, for
 
     args.add("--silent")
 
-    other_inputs = [ctx.executable._rollup, rollup_config]
+    other_inputs = [rollup_config]
     if ctx.file.license_banner:
         other_inputs.append(ctx.file.license_banner)
     if ctx.version_file:
@@ -144,6 +148,7 @@ def _rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, for
         inputs = inputs.to_list() + other_inputs,
         outputs = [js_output, map_output],
         executable = ctx.executable._rollup,
+        tools = [ctx.executable._rollup],
         arguments = [args],
     )
     return struct(
@@ -165,7 +170,8 @@ def _flatten_paths(directory):
 # Optionally can filter out files that do not belong to a specified package path.
 def _filter_out_generated_files(files, extension, package_path = None):
     result = []
-    for file in files:
+    files_list = files.to_list() if type(files) == _DEPSET_TYPE else files
+    for file in files_list:
         # If the "package_path" parameter has been specified, filter out files
         # that do not start with the the specified package path.
         if package_path and not file.short_path.startswith(package_path):
@@ -183,9 +189,10 @@ def _esm2015_root_dir(ctx):
     return ctx.label.name + ".es6"
 
 def _filter_js_inputs(all_inputs):
+    all_inputs_list = all_inputs.to_list() if type(all_inputs) == _DEPSET_TYPE else all_inputs
     return [
         f
-        for f in all_inputs
+        for f in all_inputs_list
         if f.path.endswith(".js") or f.path.endswith(".json")
     ]
 
