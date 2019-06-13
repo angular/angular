@@ -21,6 +21,7 @@ import {
   EventEmitter,
   Input,
   NgZone,
+  Inject,
   OnDestroy,
   Optional,
   Output,
@@ -36,6 +37,7 @@ import {MatInkBar} from './ink-bar';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 /** Config used to bind passive event listeners */
@@ -165,7 +167,9 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
               private _viewportRuler: ViewportRuler,
               @Optional() private _dir: Directionality,
               private _ngZone: NgZone,
-              private _platform: Platform) {
+              private _platform: Platform,
+              // @breaking-change 9.0.0 `_animationMode` parameter to be made required.
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super();
 
     // Bind the `mouseleave` event on the outside since it doesn't change anything in the view.

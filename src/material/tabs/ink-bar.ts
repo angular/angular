@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, InjectionToken, NgZone} from '@angular/core';
+import {Directive, ElementRef, Inject, InjectionToken, NgZone, Optional} from '@angular/core';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 /**
@@ -46,13 +47,15 @@ export function _MAT_INK_BAR_POSITIONER_FACTORY(): _MatInkBarPositioner {
   selector: 'mat-ink-bar',
   host: {
     'class': 'mat-ink-bar',
+    '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
   },
 })
 export class MatInkBar {
   constructor(
     private _elementRef: ElementRef<HTMLElement>,
     private _ngZone: NgZone,
-    @Inject(_MAT_INK_BAR_POSITIONER) private _inkBarPositioner: _MatInkBarPositioner) { }
+    @Inject(_MAT_INK_BAR_POSITIONER) private _inkBarPositioner: _MatInkBarPositioner,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) { }
 
   /**
    * Calculates the styles from the provided element in order to align the ink-bar to that element.

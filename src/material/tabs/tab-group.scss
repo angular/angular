@@ -1,5 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/layout-common';
+@import '../core/style/noop-animation';
 @import './tabs-common';
 
 .mat-tab-group {
@@ -37,6 +38,7 @@
 
 // The bottom section of the view; contains the tab bodies
 .mat-tab-body-wrapper {
+  @include _noop-animation();
   position: relative;
   overflow: hidden;
   display: flex;

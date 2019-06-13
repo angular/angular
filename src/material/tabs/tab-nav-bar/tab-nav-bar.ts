@@ -47,6 +47,7 @@ import {merge, of as observableOf, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {MatInkBar} from '../ink-bar';
 import {FocusMonitor} from '@angular/cdk/a11y';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 // Boilerplate for applying mixins to MatTabNav.
@@ -222,7 +223,8 @@ export class MatTabLink extends _MatTabLinkMixinBase
       private _tabNavBar: MatTabNav, public _elementRef: ElementRef, ngZone: NgZone,
       platform: Platform,
       @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalRippleOptions: RippleGlobalOptions|null,
-      @Attribute('tabindex') tabIndex: string, private _focusMonitor: FocusMonitor) {
+      @Attribute('tabindex') tabIndex: string, private _focusMonitor: FocusMonitor,
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super();
 
     this._tabLinkRipple = new RippleRenderer(this, ngZone, _elementRef, platform);
@@ -231,6 +233,10 @@ export class MatTabLink extends _MatTabLinkMixinBase
 
     this.tabIndex = parseInt(tabIndex) || 0;
     _focusMonitor.monitor(_elementRef);
+
+    if (animationMode === 'NoopAnimations') {
+      this.rippleConfig.animation = {enterDuration: 0, exitDuration: 0};
+    }
   }
 
   ngOnDestroy() {

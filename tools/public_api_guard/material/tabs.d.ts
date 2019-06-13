@@ -10,7 +10,8 @@ export interface _MatInkBarPositioner {
 export declare const MAT_TABS_CONFIG: InjectionToken<{}>;
 
 export declare class MatInkBar {
-    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, _inkBarPositioner: _MatInkBarPositioner);
+    _animationMode?: string | undefined;
+    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, _inkBarPositioner: _MatInkBarPositioner, _animationMode?: string | undefined);
     alignToElement(element: HTMLElement): void;
     hide(): void;
     show(): void;
@@ -75,6 +76,7 @@ export declare class MatTabContent {
 }
 
 export declare class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentInit, AfterContentChecked, OnDestroy, CanColor, CanDisableRipple {
+    _animationMode?: string | undefined;
     _tabBodyWrapper: ElementRef;
     _tabHeader: MatTabHeader;
     _tabs: QueryList<MatTab>;
@@ -87,7 +89,7 @@ export declare class MatTabGroup extends _MatTabGroupMixinBase implements AfterC
     selectedIndex: number | null;
     readonly selectedIndexChange: EventEmitter<number>;
     readonly selectedTabChange: EventEmitter<MatTabChangeEvent>;
-    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatTabsConfig);
+    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatTabsConfig, _animationMode?: string | undefined);
     _focusChanged(index: number): void;
     _getTabContentId(i: number): string;
     _getTabIndex(tab: MatTab, idx: number): number | null;
@@ -102,6 +104,7 @@ export declare class MatTabGroup extends _MatTabGroupMixinBase implements AfterC
 }
 
 export declare class MatTabHeader extends _MatTabHeaderMixinBase implements AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy, CanDisableRipple {
+    _animationMode?: string | undefined;
     _disableScrollAfter: boolean;
     _disableScrollBefore: boolean;
     _inkBar: MatInkBar;
@@ -116,7 +119,7 @@ export declare class MatTabHeader extends _MatTabHeaderMixinBase implements Afte
     scrollDistance: number;
     readonly selectFocusedIndex: EventEmitter<number>;
     selectedIndex: number;
-    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _viewportRuler: ViewportRuler, _dir: Directionality, _ngZone: NgZone, _platform: Platform);
+    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _viewportRuler: ViewportRuler, _dir: Directionality, _ngZone: NgZone, _platform: Platform, _animationMode?: string | undefined);
     _alignInkBarToSelectedTab(): void;
     _checkPaginationEnabled(): void;
     _checkScrollingControls(): void;
@@ -162,7 +165,7 @@ export declare class MatTabLink extends _MatTabLinkMixinBase implements OnDestro
     active: boolean;
     rippleConfig: RippleConfig & RippleGlobalOptions;
     readonly rippleDisabled: boolean;
-    constructor(_tabNavBar: MatTabNav, _elementRef: ElementRef, ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor);
+    constructor(_tabNavBar: MatTabNav, _elementRef: ElementRef, ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor, animationMode?: string);
     ngOnDestroy(): void;
 }
 

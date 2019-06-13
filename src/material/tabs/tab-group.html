@@ -31,7 +31,10 @@
   </div>
 </mat-tab-header>
 
-<div class="mat-tab-body-wrapper" #tabBodyWrapper>
+<div
+  class="mat-tab-body-wrapper"
+  [class._mat-animation-noopable]="_animationMode === 'NoopAnimations'"
+  #tabBodyWrapper>
   <mat-tab-body role="tabpanel"
                *ngFor="let tab of _tabs; let i = index"
                [id]="_getTabContentId(i)"

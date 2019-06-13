@@ -22,9 +22,9 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
-  InjectionToken,
-  Inject,
   Optional,
+  Inject,
+  InjectionToken,
 } from '@angular/core';
 import {
   CanColor,
@@ -38,6 +38,7 @@ import {
 import {merge, Subscription} from 'rxjs';
 import {MatTab} from './tab';
 import {MatTabHeader} from './tab-header';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -171,7 +172,8 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
 
   constructor(elementRef: ElementRef,
               private _changeDetectorRef: ChangeDetectorRef,
-              @Inject(MAT_TABS_CONFIG) @Optional() defaultConfig?: MatTabsConfig) {
+              @Inject(MAT_TABS_CONFIG) @Optional() defaultConfig?: MatTabsConfig,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);
     this._groupId = nextId++;
     this.animationDuration = defaultConfig && defaultConfig.animationDuration ?
