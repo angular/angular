@@ -1035,6 +1035,20 @@ describe('ViewContainerRef', () => {
           .toEqual(
               '<p vcref=""></p><embedded-cmp-with-ngcontent>12<hr>34</embedded-cmp-with-ngcontent>');
     });
+
+    it('should not throw when calling destroy() multiple times for a ComponentRef', () => {
+      @Component({template: ''})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.componentRef.destroy();
+      expect(() => fixture.componentRef.destroy()).not.toThrow();
+    });
+
   });
 
   describe('insertion points and declaration points', () => {
@@ -1061,7 +1075,7 @@ describe('ViewContainerRef', () => {
           <ng-template #foo>
             <div>{{name}}</div>
           </ng-template>
-          
+
           <child [tpl]="foo"></child>
         `
       })
@@ -1105,10 +1119,10 @@ describe('ViewContainerRef', () => {
             <ng-template #cellTemplate let-cell>
               <div>{{cell}} - {{row.value}} - {{name}}</div>
             </ng-template>
-            
+
             <loop-comp [tpl]="cellTemplate" [rows]="row.data"></loop-comp>
           </ng-template>
-          
+
           <loop-comp [tpl]="rowTemplate" [rows]="rows"></loop-comp>
         `,
       })
@@ -1401,7 +1415,7 @@ describe('ViewContainerRef', () => {
           <ng-template #foo>
             <span>{{name}}</span>
           </ng-template>
-          
+
           <child>
             <header vcref [tplRef]="foo" [name]="name">blah</header>
           </child>`
@@ -1780,7 +1794,7 @@ class ConstructorDir {
 
 @Component({
   selector: 'constructor-app',
-  template: `    
+  template: `
     <div *constructorDir>
       <span *constructorDir #foo></span>
     </div>
