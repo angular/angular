@@ -6,5 +6,5 @@ set -u -e -o pipefail
 rm -rf ${MATERIAL_REPO_TMP_DIR}
 
 # Clone the Material repository into the given temporary directory.
-git clone --depth 1 --branch ${MATERIAL_REPO_BRANCH} ${MATERIAL_REPO_URL} \
+git clone --depth 1 --branch ${MATERIAL_REPO_TAG} ${MATERIAL_REPO_URL} \
   ${MATERIAL_REPO_TMP_DIR}
