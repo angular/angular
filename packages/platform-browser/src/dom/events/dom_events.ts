@@ -61,7 +61,7 @@ interface TaskData {
 
 // a global listener to handle all dom event,
 // so we do not need to create a closure every time
-const globalListener = function(event: Event) {
+const globalListener = function(this: any, event: Event) {
   const symbolName = symbolNames[event.type];
   if (!symbolName) {
     return;
@@ -123,15 +123,17 @@ export class DomEventsPlugin extends EventManagerPlugin {
     }
     const delegate = (Event.prototype as any)[stopMethodSymbol] =
         Event.prototype.stopImmediatePropagation;
-    Event.prototype.stopImmediatePropagation = function() {
+    Event.prototype.stopImmediatePropagation = function(this: any) {
       if (this) {
         this[stopSymbol] = true;
       }
 
-      // should call native delegate in case
-      // in some environment part of the application
-      // will not use the patched Event
-      delegate && delegate.apply(this, arguments);
+      // We should call native delegate in case in some environment part of
+      // the application will not use the patched Event. Also we cast the
+      // "arguments" to any since "stopImmediatePropagation" technically does not
+      // accept any arguments, but we don't know what developers pass through the
+      // function and we want to not break these calls.
+      delegate && delegate.apply(this, arguments as any);
     };
   }
 
