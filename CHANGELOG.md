@@ -1,3 +1,17 @@
+<a name="8.1.0-next.2"></a>
+# [8.1.0-next.2](https://github.com/angular/angular/compare/8.1.0-next.1...8.1.0-next.2) (2019-06-13)
+
+
+### Bug Fixes
+
+* **bazel:** do not modify tsconfig.json ([#30877](https://github.com/angular/angular/issues/30877)) ([b086676](https://github.com/angular/angular/commit/b086676))
+* **bazel:** exclude components schematics from build ([#30825](https://github.com/angular/angular/issues/30825)) ([05a43ca](https://github.com/angular/angular/commit/05a43ca))
+* **bazel:** Load global stylesheet in dev and prod ([#30879](https://github.com/angular/angular/issues/30879)) ([17bfedd](https://github.com/angular/angular/commit/17bfedd))
+* **common:** expose the `HttpUploadProgressEvent` interface as public API ([#30852](https://github.com/angular/angular/issues/30852)) ([5c18f23](https://github.com/angular/angular/commit/5c18f23)), closes [#30814](https://github.com/angular/angular/issues/30814)
+* **service-worker:** avoid uncaught rejection warning when registration fails ([#30876](https://github.com/angular/angular/issues/30876)) ([81c2a94](https://github.com/angular/angular/commit/81c2a94))
+
+
+
 <a name="8.0.1"></a>
 ## [8.0.1](https://github.com/angular/angular/compare/8.0.0...8.0.1) (2019-06-13)
 
