@@ -777,7 +777,7 @@ withEachNg1Version(() => {
                C: {{ $ctrl.modelC }}
              `,
              bindings: {fullName: '@', modelA: '<dataA', modelB: '=dataB', modelC: '=', event: '&'},
-             controller: function($scope: angular.IScope) {
+             controller: function(this: any, $scope: angular.IScope) {
                $scope.$watch('$ctrl.modelB', (v: string) => {
                  if (v === 'Savkin') {
                    this.modelB = 'SAVKIN';
@@ -971,7 +971,7 @@ withEachNg1Version(() => {
            const ng1Directive: angular.IDirective = {
              template: '{{ someText }} - Data: {{ inputA }} - Length: {{ inputA.length }}',
              scope: {inputA: '=', outputA: '&'},
-             controller: function($scope: angular.IScope) {
+             controller: function(this: any, $scope: angular.IScope) {
                $scope['someText'] = 'ng1';
                this.$scope = $scope;
              }

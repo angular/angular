@@ -4,7 +4,6 @@
 {
   "extends": "./tsconfig-build.json",
   "compilerOptions": {
-    "strict": false,
     "types": ["node", "jasmine"],
     "plugins": [{
         "name": "@bazel/tsetse",

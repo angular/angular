@@ -8,7 +8,7 @@
 
 import {ResourceLoader, UrlResolver} from '@angular/compiler';
 import {MockResourceLoader} from '@angular/compiler/testing';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RenderComponentType, Renderer, RendererFactory2, RendererType2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -1718,8 +1718,8 @@ function patchLoggingRenderer2(rendererFactory: RendererFactory2, log: RenderLog
   }
   (<any>rendererFactory).__patchedForLogging = true;
   const origCreateRenderer = rendererFactory.createRenderer;
-  rendererFactory.createRenderer = function() {
-    const renderer = origCreateRenderer.apply(this, arguments);
+  rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+    const renderer = origCreateRenderer.call(this, element, type);
     if ((<any>renderer).__patchedForLogging) {
       return renderer;
     }
