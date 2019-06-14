@@ -221,9 +221,9 @@ export interface ContentChildDecorator {
    * create your view in `ngOnInit`.
    * In most other cases, the best practice is to use `{static: false}`.
    *
-   * However, to facilitate the migration to version 8, you may also want to set the `static` flag to
-   *  `true` if your component code already depends on the query results being available some time
-   * **before** `ngAfterContentInit`.
+   * However, to facilitate the migration to version 8, you may also want to set the `static` flag
+   * to `true` if your component code already depends
+   * on the query results being available some time **before** `ngAfterContentInit`.
    * For example, if your component relies on the query results being populated in
    * the `ngOnInit` hook or in `@Input` setters,
    * you will need to either set the flag to `true`
