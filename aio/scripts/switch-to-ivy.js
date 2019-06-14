@@ -21,7 +21,7 @@ const NG_COMPILER_OPTS = {
 _main(process.argv.slice(2));
 
 // Functions - Definitions
-function _main() {
+function _main(args) {
   // Detect path to `tsconfig.app.json`.
   const ngConfig = parse(readFileSync(NG_JSON, 'utf8'));
   const tsConfigPath = join(ROOT_DIR, ngConfig.projects.site.architect.build.options.tsConfig);
@@ -36,9 +36,11 @@ function _main() {
   writeFileSync(tsConfigPath, newTsConfigStr);
 
   // Run ngcc.
-  const ngccArgs = '--loglevel debug --properties es2015 module';
-  console.log(`\nRunning ngcc (with args: ${ngccArgs})...`);
-  exec(`yarn ivy-ngcc ${ngccArgs}`);
+  if (!args.includes('--skip-ngcc')) {
+    const ngccArgs = '--loglevel debug --properties es2015 module';
+    console.log(`\nRunning ngcc (with args: ${ngccArgs})...`);
+    exec(`yarn ivy-ngcc ${ngccArgs}`);
+  }
 
   // Done.
   console.log('\nReady to build with Ivy!');

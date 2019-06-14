@@ -19,6 +19,8 @@
     "build-local": "yarn ~~build",
     "prebuild-with-ivy": "yarn setup-local && node scripts/switch-to-ivy",
     "build-with-ivy": "yarn ~~build",
+    "prebuild-with-ivy-2": "yarn prebuild-with-ivy --skip-ngcc",
+    "build-with-ivy-2": "yarn ~~build",
     "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js 032be4e17",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint && yarn tools-lint",
     "test": "yarn check-env && ng test",

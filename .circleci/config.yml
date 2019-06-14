@@ -311,6 +311,24 @@ jobs:
         # Run e2e tests
       - run: yarn --cwd aio e2e --configuration=ci
 
+  test_aio_local_ivy_2:
+    <<: *job_defaults
+    docker:
+      # Needed because the AIO tests and the PWA score test depend on Chrome being available.
+      - image: *browsers_docker_image
+    steps:
+      - *attach_workspace
+      - *init_environment
+        # Build aio with Ivy (using local Angular packages)
+      - run: yarn --cwd aio build-with-ivy-2 --progress=false
+        # Run PWA-score tests
+        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+        # Run unit tests
+      - run: yarn --cwd aio test --progress=false --watch=false
+        # Run e2e tests
+      - run: yarn --cwd aio e2e --configuration=ci
+
   test_aio_tools:
     <<: *job_defaults
     steps:
@@ -666,6 +684,9 @@ workflows:
       - test_aio_local_ivy:
           requires:
             - build-npm-packages
+      - test_aio_local_ivy_2:
+          requires:
+            - build-npm-packages
       - test_aio_tools:
           requires:
             - build-npm-packages
@@ -701,6 +722,7 @@ workflows:
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
             - test_aio_local_ivy
+            - test_aio_local_ivy_2
             - test_docs_examples
             - test_docs_examples_ivy
             # Get the artifacts to publish from the build-packages-dist job
