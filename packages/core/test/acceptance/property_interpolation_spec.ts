@@ -42,8 +42,9 @@ describe('property interpolation', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    const titles = Array.from(fixture.nativeElement.querySelectorAll('div[title]'))
-                       .map((div: HTMLDivElement) => div.title);
+    const titles =
+        Array.from(<NodeListOf<HTMLDivElement>>fixture.nativeElement.querySelectorAll('div[title]'))
+            .map((div: HTMLDivElement) => div.title);
 
     expect(titles).toEqual([
       'a1b2c3d4e5f6g7h8i9j',
@@ -194,7 +195,9 @@ describe('property interpolation', () => {
     const fixture = TestBed.createComponent(AppComp);
     fixture.detectChanges();
 
-    const titles = Array.from(fixture.nativeElement.querySelectorAll('img[title]'))
+    const titles = Array
+                       .from(<NodeListOf<HTMLImageElement>>fixture.nativeElement.querySelectorAll(
+                           'img[title]'))
                        .map((img: HTMLImageElement) => img.title);
 
     expect(titles).toEqual([
@@ -210,8 +213,9 @@ describe('property interpolation', () => {
       '1',
     ]);
 
-    const others = Array.from(fixture.nativeElement.querySelectorAll('img[alt]'))
-                       .map((img: HTMLImageElement) => img.alt);
+    const others =
+        Array.from(<NodeListOf<HTMLImageElement>>fixture.nativeElement.querySelectorAll('img[alt]'))
+            .map((img: HTMLImageElement) => img.alt);
 
     expect(others).toEqual([
       'a1b2c3d4e5f6g7h8i9j',

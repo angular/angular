@@ -118,7 +118,7 @@ describe('bootstrap', () => {
        }
 
        platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
-         const router = res.injector.get(Router);
+         const router: Router = res.injector.get(Router);
          expect(router.routerState.snapshot.root.firstChild).toBeNull();
          // ResolveEnd has not been emitted yet because bootstrap returned too early
          expect(log).toEqual([

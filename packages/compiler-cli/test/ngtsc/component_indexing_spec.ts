@@ -7,7 +7,7 @@
  */
 import {AbsoluteFsPath, resolve} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {AbsoluteSourceSpan, IdentifierKind, TopLevelIdentifier} from '@angular/compiler-cli/src/ngtsc/indexer';
+import {AbsoluteSourceSpan, IdentifierKind, IndexedComponent, TopLevelIdentifier} from '@angular/compiler-cli/src/ngtsc/indexer';
 import {ParseSourceFile} from '@angular/compiler/src/compiler';
 
 import {NgtscTestEnvironment} from './env';
@@ -43,7 +43,7 @@ runInEachFileSystem(() => {
         const [[decl, indexedComp]] = Array.from(indexed.entries());
 
         expect(decl.getText()).toContain('export class TestCmp {}');
-        expect(indexedComp).toEqual(jasmine.objectContaining({
+        expect(indexedComp).toEqual(jasmine.objectContaining<IndexedComponent>({
           name: 'TestCmp',
           selector: 'test-cmp',
           file: new ParseSourceFile(componentContent, testSourceFile),

@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT} from '@angular/common';
-import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed, TestComponentRenderer} from '@angular/core/testing';
@@ -541,8 +541,8 @@ describe('ViewContainerRef', () => {
       const _origRendererFactory = TestBed.get(RendererFactory2) as RendererFactory2;
       const _origCreateRenderer = _origRendererFactory.createRenderer;
 
-      _origRendererFactory.createRenderer = function() {
-        const renderer = _origCreateRenderer.apply(_origRendererFactory, arguments);
+      _origRendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+        const renderer = _origCreateRenderer.call(_origRendererFactory, element, type);
         renderer.destroyNode = () => {};
         return renderer;
       };

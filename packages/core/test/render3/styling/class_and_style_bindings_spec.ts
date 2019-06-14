@@ -2604,7 +2604,7 @@ describe('style and class based bindings', () => {
          const players: MockPlayer[] = [];
          const buildFn =
              (element: HTMLElement, type: BindingType, value: any, firstRender: boolean,
-              oldPlayer: MockPlayer | null) => {
+              oldPlayer: Player | null) => {
                const player = new MockPlayer(value);
                players.push(player);
                return player;
@@ -2932,8 +2932,8 @@ describe('style and class based bindings', () => {
       let currentPlayer: MockPlayer|null = null;
       const buildFn =
           (element: HTMLElement, type: BindingType, value: any, firstRender: boolean,
-           existingPlayer: MockPlayer) => {
-            previousPlayer = existingPlayer;
+           existingPlayer: Player | null) => {
+            previousPlayer = existingPlayer as MockPlayer | null;
             return currentPlayer = new MockPlayer(value);
           };
 
@@ -2962,8 +2962,8 @@ describe('style and class based bindings', () => {
       let previousPlayer: MockPlayer|null = null;
       const buildFn =
           (element: HTMLElement, type: BindingType, value: any, firstRender: boolean,
-           existingPlayer: MockPlayer | null) => {
-            previousPlayer = existingPlayer;
+           existingPlayer: Player | null) => {
+            previousPlayer = existingPlayer as MockPlayer | null;
             return currentPlayer = new MockPlayer(value);
           };
 

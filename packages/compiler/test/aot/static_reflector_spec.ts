@@ -20,7 +20,8 @@ describe('StaticReflector', () => {
   function init(
       testData: {[key: string]: any} = DEFAULT_TEST_DATA,
       decorators: {name: string, filePath: string, ctor: any}[] = [],
-      errorRecorder?: (error: any, fileName: string) => void, collectorOptions?: CollectorOptions) {
+      errorRecorder?: (error: any, fileName?: string) => void,
+      collectorOptions?: CollectorOptions) {
     const symbolCache = new StaticSymbolCache();
     host = new MockStaticSymbolResolverHost(testData, collectorOptions);
     const summaryResolver = new MockSummaryResolver([]);
@@ -618,7 +619,7 @@ describe('StaticReflector', () => {
       `;
 
     let error: any = undefined;
-    init(data, [], (err: any, filePath: string) => {
+    init(data, [], (err: any, filePath?: string) => {
       expect(error).toBeUndefined();
       error = err;
     });
