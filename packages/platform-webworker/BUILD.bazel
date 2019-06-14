@@ -10,6 +10,9 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
+    # Disable building with strict compatibility as the platform-webworker package is
+    # deprecated and therefore it is not needed to make it compatible with --strict.
+    tsconfig = "//packages:tsconfig-build-no-strict",
     deps = [
         "//packages:types",
         "//packages/common",
