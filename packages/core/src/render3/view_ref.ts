@@ -16,7 +16,7 @@ import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {FLAGS, HOST, LView, LViewFlags, T_HOST} from './interfaces/view';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode} from './util/view_utils';
+import {getNativeByTNode, getNativeByTNodeOrNull} from './util/view_utils';
 
 
 
@@ -294,7 +294,7 @@ function collectNativeNodes(lView: LView, parentTNode: TNode, result: any[]): an
   let tNodeChild = parentTNode.child;
 
   while (tNodeChild) {
-    const nativeNode = getNativeByTNode(tNodeChild, lView);
+    const nativeNode = getNativeByTNodeOrNull(tNodeChild, lView);
     nativeNode && result.push(nativeNode);
     if (tNodeChild.type === TNodeType.ElementContainer) {
       collectNativeNodes(lView, tNodeChild, result);

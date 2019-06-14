@@ -76,7 +76,8 @@ export function assertDomNode(node: any) {
   // If we're in a worker, `Node` will not be defined.
   assertEqual(
       (typeof Node !== 'undefined' && node instanceof Node) ||
-          (typeof node === 'object' && node.constructor.name === 'WebWorkerRenderNode'),
+          (typeof node === 'object' && node != null &&
+           node.constructor.name === 'WebWorkerRenderNode'),
       true, `The provided value must be an instance of a DOM Node but got ${stringify(node)}`);
 }
 

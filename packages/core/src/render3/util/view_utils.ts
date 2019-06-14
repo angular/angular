@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertLessThan} from '../../util/assert';
+import {assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
 import {ComponentDef, DirectiveDef} from '../interfaces/definition';
 import {TNode, TNodeFlags} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer';
 import {StylingContext} from '../interfaces/styling';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, TData, TVIEW} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, TData, TVIEW, TView} from '../interfaces/view';
 
 
 
@@ -127,9 +128,38 @@ export function getNativeByIndex(index: number, lView: LView): RNode {
   return unwrapRNode(lView[index + HEADER_OFFSET]);
 }
 
-export function getNativeByTNode(tNode: TNode, hostView: LView): RNode {
-  return unwrapRNode(hostView[tNode.index]);
+/**
+ * Retrieve an `RNode` for a given `TNode` and `LView`.
+ *
+ * This function guarantees in dev mode to retrieve a non-null `RNode`.
+ *
+ * @param tNode
+ * @param lView
+ */
+export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
+  ngDevMode && assertTNodeForLView(tNode, lView);
+  ngDevMode && assertDataInRange(lView, tNode.index);
+  const node: RNode = unwrapRNode(lView[tNode.index]);
+  ngDevMode && assertDomNode(node);
+  return node;
 }
+
+/**
+ * Retrieve an `RNode` or `null` for a given `TNode` and `LView`.
+ *
+ * Some `TNode`s don't have associated `RNode`s. For example `Projection`
+ *
+ * @param tNode
+ * @param lView
+ */
+export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
+  ngDevMode && assertTNodeForLView(tNode, lView);
+  const index = tNode.index;
+  const node: RNode|null = index == -1 ? null : unwrapRNode(lView[index]);
+  ngDevMode && node !== null && assertDomNode(node);
+  return node;
+}
+
 
 /**
  * A helper function that returns `true` if a given `TNode` has any matching directives.

@@ -14,14 +14,14 @@ import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorLis
 import {initializeStaticContext} from '../../src/render3/styling/class_and_style_bindings';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
-  return createTNode(null, TNodeType.Element, 0, tagName, attrs);
+  return createTNode(null !, null, TNodeType.Element, 0, tagName, attrs);
 }
 
 describe('css selector matching', () => {
   function isMatching(
       tagName: string, attrsOrTNode: TAttributes | TNode | null, selector: CssSelector): boolean {
     const tNode = (!attrsOrTNode || Array.isArray(attrsOrTNode)) ?
-        createTNode(null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
+        createTNode(null !, null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
         (attrsOrTNode as TNode);
     return isNodeMatchingSelector(tNode, selector, false);
   }
@@ -330,7 +330,7 @@ describe('css selector matching', () => {
          () => {
            // selector: 'div.abc'
            const selector = ['div', SelectorFlags.CLASS, 'abc'];
-           const tNode = createTNode(null, TNodeType.Element, 0, 'div', []);
+           const tNode = createTNode(null !, null, TNodeType.Element, 0, 'div', []);
 
            // <div> (without attrs or styling context)
            expect(isMatching('div', tNode, selector)).toBeFalsy();

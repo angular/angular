@@ -17,7 +17,7 @@ import {getStylingContextFromLView} from '../render3/styling/util';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, isPropMetadataString, renderStringify} from '../render3/util/misc_utils';
 import {findComponentView} from '../render3/util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer} from '../render3/util/view_utils';
+import {getComponentViewByIndex, getNativeByTNodeOrNull, isComponent, isLContainer} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
 
@@ -468,7 +468,7 @@ function _queryAllR3(
 function _queryNodeChildrenR3(
     tNode: TNode, lView: LView, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
     matches: DebugElement[] | DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
-  const nativeNode = getNativeByTNode(tNode, lView);
+  const nativeNode = getNativeByTNodeOrNull(tNode, lView);
   // For each type of TNode, specific logic is executed.
   if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
     // Case 1: the TNode is an element
