@@ -112,7 +112,7 @@ export class ExpandingRowHost implements AfterViewInit,
    * function around. This enables us to detach the click listener when
    * component is destroyed.
    */
-  private handleRootMouseUpBound: EventListenerObject = this.handleRootMouseUp.bind(this);
+  private handleRootMouseUpBound = this.handleRootMouseUp.bind(this);
 
   /**
    * 16px is the margin animation we have on cfc-expanding-row component.
