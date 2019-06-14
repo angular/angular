@@ -166,7 +166,7 @@ export function ɵɵpipeBind4(
  *
  * @codeGenApi
  */
-export function ɵɵpipeBindV(index: number, slotOffset: number, values: any[]): any {
+export function ɵɵpipeBindV(index: number, slotOffset: number, values: [any, ...any[]]): any {
   const pipeInstance = ɵɵload<PipeTransform>(index);
   return unwrapValue(
       isPure(index) ? ɵɵpureFunctionV(slotOffset, pipeInstance.transform, values, pipeInstance) :

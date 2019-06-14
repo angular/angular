@@ -163,10 +163,10 @@ export function getCurrentOrLViewSanitizer(lView: LView): StyleSanitizeFn|null {
  * sanitization.
  */
 const sanitizeUsingSanitizerObject: StyleSanitizeFn =
-    (prop: string, value: string, mode: StyleSanitizeMode) => {
+    (prop: string, value: string | null, mode?: StyleSanitizeMode) => {
       const sanitizer = getCurrentStyleSanitizer() as Sanitizer;
       if (sanitizer) {
-        if (mode & StyleSanitizeMode.SanitizeOnly) {
+        if (mode !== undefined && mode & StyleSanitizeMode.SanitizeOnly) {
           return sanitizer.sanitize(SecurityContext.STYLE, value);
         } else {
           return true;
