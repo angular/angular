@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {CompilerHostAdapter, MetadataBundler, MetadataBundlerHost} from '../../src/metadata/bundler';
 import {MetadataCollector} from '../../src/metadata/collector';
-import {ClassMetadata, MetadataGlobalReferenceExpression, ModuleMetadata} from '../../src/metadata/schema';
+import {ClassMetadata, MetadataEntry, MetadataGlobalReferenceExpression, ModuleMetadata} from '../../src/metadata/schema';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
 
 describe('compiler host adapter', () => {
@@ -242,7 +242,7 @@ describe('metadata bundler', () => {
     const deepIndexMetadata = host.getMetadataFor('/lib/deep/index') !;
 
     // The unbundled metadata should reference symbols using the relative module path.
-    expect(deepIndexMetadata.metadata['MyClass']).toEqual(jasmine.objectContaining({
+    expect(deepIndexMetadata.metadata['MyClass']).toEqual(jasmine.objectContaining<MetadataEntry>({
       statics: {
         ngInjectableDef: {
           __symbolic: 'call',
@@ -258,7 +258,7 @@ describe('metadata bundler', () => {
     // For the bundled metadata, the "sharedFn" symbol should not be referenced using the
     // relative module path (like for unbundled), because the metadata bundle can be stored
     // anywhere and it's not guaranteed that the relatively referenced files are present.
-    expect(bundledMetadata.metadata['MyClass']).toEqual(jasmine.objectContaining({
+    expect(bundledMetadata.metadata['MyClass']).toEqual(jasmine.objectContaining<MetadataEntry>({
       statics: {
         ngInjectableDef: {
           __symbolic: 'call',

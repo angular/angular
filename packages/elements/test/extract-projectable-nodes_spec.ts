@@ -10,7 +10,7 @@ import {extractProjectableNodes} from '../src/extract-projectable-nodes';
 
 describe('extractProjectableNodes()', () => {
   let elem: HTMLElement;
-  let childNodes: NodeList;
+  let childNodes: ChildNode[];
 
   const expectProjectableNodes = (matches: {[selector: string]: number[]}) => {
     const selectors = Object.keys(matches);

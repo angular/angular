@@ -31,15 +31,14 @@ const EXTRACT_GENERATED_TRANSLATIONS_REGEXP =
 const diff = (a: Set<string>, b: Set<string>): Set<string> =>
     new Set([...Array.from(a)].filter(x => !b.has(x)));
 
-const extract =
-    (from: string, regex: any, transformFn: (match: any[], state?: Set<any>) => any) => {
-      const result = new Set<any>();
-      let item;
-      while ((item = regex.exec(from)) !== null) {
-        result.add(transformFn(item, result));
-      }
-      return result;
-    };
+const extract = (from: string, regex: any, transformFn: (match: any[], state: Set<any>) => any) => {
+  const result = new Set<any>();
+  let item;
+  while ((item = regex.exec(from)) !== null) {
+    result.add(transformFn(item, result));
+  }
+  return result;
+};
 
 // verify that we extracted all the necessary translations
 // and their ids match the ones extracted via 'ng xi18n'
