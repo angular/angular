@@ -534,6 +534,13 @@
 /aio/content/examples/template-syntax/**                        @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/guide/template-syntax/**                    @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/binding-syntax/**                         @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/property-binding/**                       @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/attribute-binding/**                      @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/two-way-binding/**                        @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/built-in-directives/**                    @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/template-reference-variables/**           @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/inputs-outputs/**                         @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/template-expression-operators/**          @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 /aio/content/guide/pipes.md                                     @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
