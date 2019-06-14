@@ -273,7 +273,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     pipeDefs: null !,       // assigned in noSideEffects
     selectors: componentDefinition.selectors,
     viewQuery: componentDefinition.viewQuery || null,
-    features: componentDefinition.features || null,
+    features: componentDefinition.features as DirectiveDefFeature[] || null,
     data: componentDefinition.data || {},
     // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in the
     // next line. Also `None` should be 0 not 2.
@@ -324,8 +324,7 @@ export function ɵɵsetComponentScope(
   def.pipeDefs = () => pipes.map(extractPipeDef);
 }
 
-export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>):
-    DirectiveDef<any>|ComponentDef<any> {
+export function extractDirectiveDef(type: Type<any>): DirectiveDef<any>|ComponentDef<any> {
   const def = getComponentDef(type) || getDirectiveDef(type);
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
@@ -333,7 +332,7 @@ export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>
   return def !;
 }
 
-export function extractPipeDef(type: PipeType<any>): PipeDef<any> {
+export function extractPipeDef(type: Type<any>): PipeDef<any> {
   const def = getPipeDef(type);
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is not a 'PipeType'.`);

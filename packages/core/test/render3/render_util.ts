@@ -302,7 +302,7 @@ function toDefs(
     types: PipeTypesOrFactory | undefined | null,
     mapFn: (type: Type<any>) => PipeDef<any>): PipeDefList|null;
 function toDefs(
-    types: PipeTypesOrFactory | DirectiveTypesOrFactory | undefined | null,
+    types: Type<any>[] | (() => Type<any>[]) | undefined | null,
     mapFn: (type: Type<any>) => PipeDef<any>| DirectiveDef<any>): any {
   if (!types) return null;
   if (typeof types == 'function') {
