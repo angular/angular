@@ -267,7 +267,7 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
 
 
     onInvoke: (delegate: ZoneDelegate, current: Zone, target: Zone, callback: Function,
-               applyThis: any, applyArgs: any[], source: string): any => {
+               applyThis: any, applyArgs?: any[], source?: string): any => {
       try {
         onEnter(zone);
         return delegate.invoke(target, callback, applyThis, applyArgs, source);

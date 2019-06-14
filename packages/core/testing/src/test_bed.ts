@@ -654,7 +654,7 @@ export function inject(tokens: any[], fn: Function): () => any {
   const testBed = getTestBed();
   if (tokens.indexOf(AsyncTestCompleter) >= 0) {
     // Not using an arrow function to preserve context passed from call site
-    return function() {
+    return function(this: unknown) {
       // Return an async test method that returns a Promise if AsyncTestCompleter is one of
       // the injected tokens.
       return testBed.compileComponents().then(() => {
@@ -665,7 +665,7 @@ export function inject(tokens: any[], fn: Function): () => any {
     };
   } else {
     // Not using an arrow function to preserve context passed from call site
-    return function() { return testBed.execute(tokens, fn, this); };
+    return function(this: unknown) { return testBed.execute(tokens, fn, this); };
   }
 }
 
@@ -685,7 +685,7 @@ export class InjectSetupWrapper {
   inject(tokens: any[], fn: Function): () => any {
     const self = this;
     // Not using an arrow function to preserve context passed from call site
-    return function() {
+    return function(this: unknown) {
       self._addModule();
       return inject(tokens, fn).call(this);
     };
@@ -701,7 +701,7 @@ export function withModule(moduleDef: TestModuleMetadata, fn?: Function | null):
     InjectSetupWrapper {
   if (fn) {
     // Not using an arrow function to preserve context passed from call site
-    return function() {
+    return function(this: unknown) {
       const testBed = getTestBed();
       if (moduleDef) {
         testBed.configureTestingModule(moduleDef);

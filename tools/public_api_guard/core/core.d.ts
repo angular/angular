@@ -950,7 +950,7 @@ export declare function ɵɵpipeBind3(index: number, slotOffset: number, v1: any
 
 export declare function ɵɵpipeBind4(index: number, slotOffset: number, v1: any, v2: any, v3: any, v4: any): any;
 
-export declare function ɵɵpipeBindV(index: number, slotOffset: number, values: any[]): any;
+export declare function ɵɵpipeBindV(index: number, slotOffset: number, values: [any, ...any[]]): any;
 
 export declare type ɵɵPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
 
