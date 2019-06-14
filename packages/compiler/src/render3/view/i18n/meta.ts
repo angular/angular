@@ -15,7 +15,7 @@ import {ParseTreeResult} from '../../../ml_parser/parser';
 
 import {I18N_ATTR, I18N_ATTR_PREFIX, I18nMeta, hasI18nAttrs, icuFromI18nMessage, metaFromI18nMessage, parseI18nMeta} from './util';
 
-function setI18nRefs(html: html.Node & {i18n: i18n.AST}, i18n: i18n.Node) {
+function setI18nRefs(html: html.Node & {i18n?: i18n.AST}, i18n: i18n.Node) {
   html.i18n = i18n;
 }
 

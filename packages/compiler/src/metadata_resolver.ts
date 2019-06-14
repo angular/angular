@@ -83,7 +83,7 @@ export class CompileMetadataResolver {
 
   private _createProxyClass(baseType: any, name: string): cpl.ProxyClass {
     let delegate: any = null;
-    const proxyClass: cpl.ProxyClass = <any>function() {
+    const proxyClass: cpl.ProxyClass = <any>function(this: unknown) {
       if (!delegate) {
         throw new Error(
             `Illegal state: Class ${name} for type ${stringify(baseType)} is not compiled yet!`);

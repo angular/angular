@@ -210,7 +210,7 @@ const USE_FACTORY = Object.keys({useFactory: null})[0];
 const USE_VALUE = Object.keys({useValue: null})[0];
 const USE_EXISTING = Object.keys({useExisting: null})[0];
 
-const wrapReference = function(value: Type): R3Reference {
+const wrapReference = function(value: any): R3Reference {
   const wrapped = new WrappedNodeExpr(value);
   return {value: wrapped, type: wrapped};
 };

@@ -112,7 +112,7 @@ export class RecursiveVisitor implements Visitor {
       if (children) results.push(visitAll(t, children, context));
     }
     cb(visit);
-    return [].concat.apply([], results);
+    return Array.prototype.concat.apply([], results);
   }
 }
 

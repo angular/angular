@@ -165,7 +165,8 @@ export function assembleBoundTextPlaceholders(
       meta instanceof i18n.Message ? meta.nodes.find(node => node instanceof i18n.Container) : meta;
   if (node) {
     (node as i18n.Container)
-        .children.filter((child: i18n.Node) => child instanceof i18n.Placeholder)
+        .children
+        .filter((child: i18n.Node): child is i18n.Placeholder => child instanceof i18n.Placeholder)
         .forEach((child: i18n.Placeholder, idx: number) => {
           const content = wrapI18nPlaceholder(startIdx + idx, contextId);
           updatePlaceholderMap(placeholders, child.name, content);
