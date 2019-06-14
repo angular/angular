@@ -273,7 +273,7 @@ class KeyVisitor implements o.ExpressionVisitor {
   visitCommaExpr = invalid;
 }
 
-function invalid<T>(arg: o.Expression | o.Statement): never {
+function invalid<T>(this: o.ExpressionVisitor, arg: o.Expression | o.Statement): never {
   throw new Error(
       `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`);
 }
