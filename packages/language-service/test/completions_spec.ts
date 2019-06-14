@@ -274,8 +274,9 @@ function buildUp(originalText: string, cb: (text: string, position: number) => v
     inString[index] = true;
     unused.splice(unusedIndex, 1);
     let text = getText();
-    let position =
-        inString.filter((_, i) => i <= index).map(v => v ? 1 : 0).reduce((p, v) => p + v, 0);
+    let position = inString.filter((_, i) => i <= index)
+                       .map(v => v ? 1 : 0)
+                       .reduce((p: number, v) => p + v, 0);
     cb(text, position);
   }
 }
