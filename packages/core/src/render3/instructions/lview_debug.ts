@@ -6,18 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentTemplate} from '..';
+import {AttributeMarker, ComponentTemplate} from '..';
 import {SchemaMetadata} from '../../core';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
-import {TElementNode, TNode, TViewNode} from '../interfaces/node';
+import {PropertyAliases, TContainerNode, TElementNode, TNode as ITNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
+import {SelectorFlags} from '../interfaces/projection';
 import {LQueries} from '../interfaces/query';
-import {RComment, RElement} from '../interfaces/renderer';
+import {RComment, RElement, RNode} from '../interfaces/renderer';
 import {StylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, T_HOST} from '../interfaces/view';
+import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
+import {TStylingContext} from '../styling_next/interfaces';
 import {runtimeIsNewStylingInUse} from '../styling_next/state';
 import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling_next/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
@@ -101,6 +103,67 @@ export const TViewConstructor = class TView implements ITView {
       public firstChild: TNode|null,                         //
       public schemas: SchemaMetadata[]|null,                 //
       ) {}
+};
+
+export const TNodeConstructor = class TNode implements ITNode {
+  constructor(
+      public tView_: TView,                                                    //
+      public type: TNodeType,                                                  //
+      public index: number,                                                    //
+      public injectorIndex: number,                                            //
+      public directiveStart: number,                                           //
+      public directiveEnd: number,                                             //
+      public propertyMetadataStartIndex: number,                               //
+      public propertyMetadataEndIndex: number,                                 //
+      public flags: TNodeFlags,                                                //
+      public providerIndexes: TNodeProviderIndexes,                            //
+      public tagName: string|null,                                             //
+      public attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null,  //
+      public localNames: (string|number)[]|null,                               //
+      public initialInputs: (string[]|null)[]|null|undefined,                  //
+      public inputs: PropertyAliases|null|undefined,                           //
+      public outputs: PropertyAliases|null|undefined,                          //
+      public tViews: ITView|ITView[]|null,                                     //
+      public next: ITNode|null,                                                //
+      public projectionNext: ITNode|null,                                      //
+      public child: ITNode|null,                                               //
+      public parent: TElementNode|TContainerNode|null,                         //
+      public stylingTemplate: StylingContext|null,                             //
+      public projection: number|(ITNode|RNode[])[]|null,                       //
+      public onElementCreationFns: Function[]|null,                            //
+      public newStyles: TStylingContext|null,                                  //
+      public newClasses: TStylingContext|null,                                 //
+      ) {}
+
+  get type_(): string {
+    switch (this.type) {
+      case TNodeType.Container:
+        return 'TNodeType.Container';
+      case TNodeType.Element:
+        return 'TNodeType.Element';
+      case TNodeType.ElementContainer:
+        return 'TNodeType.ElementContainer';
+      case TNodeType.IcuContainer:
+        return 'TNodeType.IcuContainer';
+      case TNodeType.Projection:
+        return 'TNodeType.Projection';
+      case TNodeType.View:
+        return 'TNodeType.View';
+      default:
+        return 'TNodeType.???';
+    }
+  }
+
+  get flags_(): string {
+    const flags: string[] = [];
+    if (this.flags & TNodeFlags.hasClassInput) flags.push('TNodeFlags.hasClassInput');
+    if (this.flags & TNodeFlags.hasContentQuery) flags.push('TNodeFlags.hasContentQuery');
+    if (this.flags & TNodeFlags.hasStyleInput) flags.push('TNodeFlags.hasStyleInput');
+    if (this.flags & TNodeFlags.isComponent) flags.push('TNodeFlags.isComponent');
+    if (this.flags & TNodeFlags.isDetached) flags.push('TNodeFlags.isDetached');
+    if (this.flags & TNodeFlags.isProjected) flags.push('TNodeFlags.isProjected');
+    return flags.join('|');
+  }
 };
 
 const TViewData = ngDevMode && createNamedArrayType('TViewData');
