@@ -9,6 +9,8 @@ ts_library(
     ]),
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/metadata",
         "@npm//typescript",
     ],
 )
