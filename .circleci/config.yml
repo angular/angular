@@ -289,6 +289,8 @@ jobs:
       - run: yarn --cwd aio e2e --configuration=ci
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+        # Check the bundle sizes.
+      - run: yarn --cwd aio payload-size aio-local
 
   test_aio_local_ivy:
     <<: *job_defaults
@@ -306,6 +308,8 @@ jobs:
       - run: yarn --cwd aio e2e --configuration=ci
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+        # Check the bundle sizes.
+      - run: yarn --cwd aio payload-size aio-local-ivy
 
   test_aio_tools:
     <<: *job_defaults
