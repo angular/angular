@@ -414,6 +414,9 @@
     "name": "getNativeByTNode"
   },
   {
+    "name": "getNativeByTNodeOrNull"
+  },
+  {
     "name": "getNodeInjectable"
   },
   {

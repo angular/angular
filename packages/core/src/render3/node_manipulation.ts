@@ -22,8 +22,7 @@ import {CHILD_HEAD, CLEANUP, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PAR
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, isLContainer, isLView, isRootView, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
-
+import {getNativeByTNode, getNativeByTNodeOrNull, isLContainer, isLView, isRootView, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -603,13 +602,15 @@ function getHighestElementOrICUContainer(tNode: TNode): TNode {
   return tNode;
 }
 
-export function getBeforeNodeForView(viewIndexInContainer: number, lContainer: LContainer): RNode {
+export function getBeforeNodeForView(viewIndexInContainer: number, lContainer: LContainer): RNode|
+    null {
   const nextViewIndex = CONTAINER_HEADER_OFFSET + viewIndexInContainer + 1;
   if (nextViewIndex < lContainer.length) {
     const lView = lContainer[nextViewIndex] as LView;
     ngDevMode && assertDefined(lView[T_HOST], 'Missing Host TNode');
     const tViewNodeChild = (lView[T_HOST] as TViewNode).child;
-    return tViewNodeChild !== null ? getNativeByTNode(tViewNodeChild, lView) : lContainer[NATIVE];
+    return tViewNodeChild !== null ? getNativeByTNodeOrNull(tViewNodeChild, lView) :
+                                     lContainer[NATIVE];
   } else {
     return lContainer[NATIVE];
   }
