@@ -320,7 +320,7 @@ export const NgModule: NgModuleDecorator = makeDecorator(
      * * The `imports` and `exports` options bring in members from other modules, and make
      * this module's members available to others.
      */
-    (type: NgModuleType, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta));
+    (type: Type<any>, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta));
 
 /**
  * @description
@@ -344,13 +344,13 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  */
 export interface DoBootstrap { ngDoBootstrap(appRef: ApplicationRef): void; }
 
-function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule): void {
+function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void {
   let imports = (metadata && metadata.imports) || [];
   if (metadata && metadata.exports) {
     imports = [...imports, metadata.exports];
   }
 
-  moduleType.ngInjectorDef = ɵɵdefineInjector({
+  (moduleType as InjectorType<any>).ngInjectorDef = ɵɵdefineInjector({
     factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
     providers: metadata && metadata.providers,
     imports: imports,

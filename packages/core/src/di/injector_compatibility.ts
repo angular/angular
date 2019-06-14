@@ -68,8 +68,8 @@ export function setCurrentInjector(injector: Injector | null | undefined): Injec
  *  1. `Injector` should not depend on ivy logic.
  *  2. To maintain tree shake-ability we don't want to bring in unnecessary code.
  */
-let _injectImplementation: (<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags) => T | null)|
-    undefined;
+let _injectImplementation:
+    (<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags) => T | null)|undefined;
 
 /**
  * Sets the current inject implementation.

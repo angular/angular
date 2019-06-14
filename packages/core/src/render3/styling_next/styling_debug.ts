@@ -201,7 +201,7 @@ export class NodeStylingDebug implements DebugStyling {
     return entries;
   }
 
-  private _mapValues(fn: (prop: string, value: any, bindingIndex: number|null) => any) {
+  private _mapValues(fn: (prop: string, value: string|null, bindingIndex: number|null) => any) {
     // there is no need to store/track an element instance. The
     // element is only used when the styling algorithm attempts to
     // style the value (and we mock out the stylingApplyFn anyway).
@@ -212,9 +212,8 @@ export class NodeStylingDebug implements DebugStyling {
     }
 
     const mapFn: ApplyStylingFn =
-        (renderer: any, element: RElement, prop: string, value: any, bindingIndex: number) => {
-          fn(prop, value, bindingIndex || null);
-        };
+        (renderer: any, element: RElement, prop: string, value: string | null,
+         bindingIndex?: number | null) => { fn(prop, value, bindingIndex || null); };
 
     const sanitizer = this._isClassBased ? null : (this._sanitizer ||
                                                    getCurrentOrLViewSanitizer(this._data as LView));

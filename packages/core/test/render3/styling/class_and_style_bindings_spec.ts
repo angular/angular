@@ -3104,7 +3104,6 @@ describe('style and class based bindings', () => {
            static ngComponentDef = ɵɵdefineComponent({
              type: Comp,
              selectors: [['comp']],
-             directives: [Comp],
              factory: () => new Comp(),
              consts: 1,
              vars: 0,
@@ -3178,7 +3177,6 @@ describe('style and class based bindings', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: Comp,
           selectors: [['comp']],
-          directives: [Comp],
           factory: () => new Comp(),
           consts: 1,
           vars: 0,
@@ -3275,7 +3273,7 @@ describe('style and class based bindings', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: Comp,
           selectors: [['comp']],
-          directives: [Comp, MyDir],
+          directives: [MyDir],
           factory: () => new Comp(),
           consts: 1,
           vars: 0,

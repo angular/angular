@@ -204,7 +204,8 @@ function indexOf(item: any, arr: any[], begin: number, end: number) {
  * Use this with `multi` `providers`.
  */
 function multiProvidersFactoryResolver(
-    this: NodeInjectorFactory, _: null, tData: TData, lData: LView, tNode: TElementNode): any[] {
+    this: NodeInjectorFactory, _: undefined, tData: TData, lData: LView,
+    tNode: TElementNode): any[] {
   return multiResolve(this.multi !, []);
 }
 
@@ -214,7 +215,8 @@ function multiProvidersFactoryResolver(
  * This factory knows how to concatenate itself with the existing `multi` `providers`.
  */
 function multiViewProvidersFactoryResolver(
-    this: NodeInjectorFactory, _: null, tData: TData, lData: LView, tNode: TElementNode): any[] {
+    this: NodeInjectorFactory, _: undefined, tData: TData, lData: LView,
+    tNode: TElementNode): any[] {
   const factories = this.multi !;
   let result: any[];
   if (this.providerFactory) {
@@ -252,7 +254,8 @@ function multiResolve(factories: Array<() => any>, result: any[]): any[] {
  */
 function multiFactory(
     factoryFn: (
-        this: NodeInjectorFactory, _: null, tData: TData, lData: LView, tNode: TElementNode) => any,
+        this: NodeInjectorFactory, _: undefined, tData: TData, lData: LView, tNode: TElementNode) =>
+        any,
     index: number, isViewProvider: boolean, isComponent: boolean,
     f: () => any): NodeInjectorFactory {
   const factory = new NodeInjectorFactory(factoryFn, isViewProvider, ɵɵdirectiveInject);

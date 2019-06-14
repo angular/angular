@@ -441,8 +441,14 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
  * @param elementsOnly whether only elements should be searched
  */
 function _queryAllR3(
+    parentElement: DebugElement, predicate: Predicate<DebugElement>, matches: DebugElement[],
+    elementsOnly: true): void;
+function _queryAllR3(
     parentElement: DebugElement, predicate: Predicate<DebugNode>, matches: DebugNode[],
-    elementsOnly: boolean) {
+    elementsOnly: false): void;
+function _queryAllR3(
+    parentElement: DebugElement, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
+    matches: DebugElement[] | DebugNode[], elementsOnly: boolean) {
   const context = loadLContext(parentElement.nativeNode) !;
   const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
   _queryNodeChildrenR3(
@@ -457,11 +463,11 @@ function _queryAllR3(
  * @param predicate the predicate to match
  * @param matches the list of positive matches
  * @param elementsOnly whether only elements should be searched
- * @param rootNativeNode the root native node on which prediccate shouold not be matched
+ * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _queryNodeChildrenR3(
-    tNode: TNode, lView: LView, predicate: Predicate<DebugNode>, matches: DebugNode[],
-    elementsOnly: boolean, rootNativeNode: any) {
+    tNode: TNode, lView: LView, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
+    matches: DebugElement[] | DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   const nativeNode = getNativeByTNode(tNode, lView);
   // For each type of TNode, specific logic is executed.
   if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
@@ -535,11 +541,11 @@ function _queryNodeChildrenR3(
  * @param predicate the predicate to match
  * @param matches the list of positive matches
  * @param elementsOnly whether only elements should be searched
- * @param rootNativeNode the root native node on which prediccate shouold not be matched
+ * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _queryNodeChildrenInContainerR3(
-    lContainer: LContainer, predicate: Predicate<DebugNode>, matches: DebugNode[],
-    elementsOnly: boolean, rootNativeNode: any) {
+    lContainer: LContainer, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
+    matches: DebugElement[] | DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const childView = lContainer[i];
     _queryNodeChildrenR3(
@@ -554,16 +560,23 @@ function _queryNodeChildrenInContainerR3(
  * @param predicate the predicate to match
  * @param matches the list of positive matches
  * @param elementsOnly whether only elements should be searched
- * @param rootNativeNode the root native node on which prediccate shouold not be matched
+ * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _addQueryMatchR3(
-    nativeNode: any, predicate: Predicate<DebugNode>, matches: DebugNode[], elementsOnly: boolean,
-    rootNativeNode: any) {
+    nativeNode: any, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
+    matches: DebugElement[] | DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   if (rootNativeNode !== nativeNode) {
     const debugNode = getDebugNode(nativeNode);
-    if (debugNode && (elementsOnly ? debugNode instanceof DebugElement__POST_R3__ : true) &&
-        predicate(debugNode)) {
+    if (!debugNode) {
+      return;
+    }
+    // Type of the "predicate and "matches" array are set based on the value of
+    // the "elementsOnly" parameter. TypeScript is not able to properly infer these
+    // types with generics, so we manually cast the parameters accordingly.
+    if (elementsOnly && debugNode instanceof DebugElement__POST_R3__ && predicate(debugNode)) {
       matches.push(debugNode);
+    } else if (!elementsOnly && (predicate as Predicate<DebugNode>)(debugNode)) {
+      (matches as DebugNode[]).push(debugNode);
     }
   }
 }
