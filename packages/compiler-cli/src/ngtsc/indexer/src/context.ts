@@ -12,7 +12,7 @@ import {DirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 /**
- * An intermediate representation of a component with information about its metadata.
+ * An intermediate representation of a component.
  */
 export interface ComponentInfo {
   /** Component TypeScript class declaration */
@@ -45,20 +45,6 @@ export class IndexingContext {
    * Adds a component to the context.
    */
   addComponent(info: ComponentInfo) { this.components.add(info); }
-
-  /**
-   * Gets the class declaration of components used in a template.
-   */
-  getUsedComponents(template: TmplAstNode[]): Set<ClassDeclaration> {
-    const components = Array.from(this.components);
-    const component = components.find(comp => comp.template === template);
-    if (!component || !component.scope) {
-      return new Set();
-    }
-    return new Set(component.scope.getUsedDirectives()
-                       .filter(dir => dir.isComponent)
-                       .map(comp => comp.ref.node));
-  }
 
   /**
    * Gets the class declaration of components used in a template.

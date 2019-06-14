@@ -12,7 +12,6 @@ import {Reference} from '../../imports';
 import {DirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-
 /** Dummy file URL */
 export const TESTFILE = 'TESTFILE';
 
@@ -32,33 +31,4 @@ export function getComponentDeclaration(component: string): ClassDeclaration {
  */
 export function getParsedTemplate(template: string): TmplAstNode[] {
   return parseTemplate(template, TESTFILE).nodes;
-}
-
-/**
- * Binds information about a component on a template (a target). The BoundTarget
- * describes the scope of the template and can be queried for directives the
- * template uses.
- */
-export function bindTemplate(
-    template: string, components: Array<{selector: string, declaration: ClassDeclaration}>):
-    BoundTarget<DirectiveMeta> {
-  const matcher = new SelectorMatcher<DirectiveMeta>();
-  components.forEach(({selector, declaration}) => {
-    matcher.addSelectables(CssSelector.parse(selector), {
-      ref: new Reference(declaration),
-      selector,
-      queries: [],
-      ngTemplateGuards: [],
-      hasNgTemplateContextGuard: false,
-      baseClass: null,
-      name: declaration.name.getText(),
-      isComponent: true,
-      inputs: {},
-      outputs: {},
-      exportAs: null,
-    });
-  });
-  const binder = new R3TargetBinder(matcher);
-
-  return binder.bind({template: getParsedTemplate(template)});
 }
