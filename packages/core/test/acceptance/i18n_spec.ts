@@ -16,6 +16,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
 
+// Test comment, please ignore.
 onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({declarations: [AppComp, DirectiveWithTplRef]});
