@@ -206,18 +206,28 @@ export interface ContentChildDecorator {
    * **How do I choose which `static` flag value to use: `true` or `false`?**
    *
    * We have always recommended retrieving query results in `ngAfterContentInit` for content queries.
-   * This is because by the time this lifecycle hook runs, change detection has completed for the relevant nodes and we can guarantee that we have collected all the possible query results.
+   * This is because by the time this lifecycle hook runs, change detection has completed for the
+   * relevant nodes and we can guarantee that we have collected all the possible query results.
    *
-   * Most applications will want to use `{static: false}` for this reason. This setting will ensure query matches that are dependent on binding resolution (e.g. results inside `*ngIf`s or `*ngFor`s) will be found by the query.
-   * If you need access to a `TemplateRef` in a query to create a view dynamically, you won't be able to do so in `ngAfterContentInit`.
-   * Change detection has already run on that view, so creating a new view with the template will cause an `ExpressionHasChangedAfterChecked` error to be thrown.
+   * Most applications will want to use `{static: false}` for this reason. This setting will ensure
+   * query matches that are dependent on binding resolution (e.g. results inside `*ngIf`s or
+   *  `*ngFor`s) will be found by the query.
+   * If you need access to a `TemplateRef` in a query to create a view dynamically, you won't be able to
+   *  do so in `ngAfterContentInit`.
+   * Change detection has already run on that view, so creating a new view with the template will cause
+   *  an `ExpressionHasChangedAfterChecked` error to be thrown.
    * In this case, you will want to set the `static` flag to `true` and create your view in `ngOnInit`.
    * In most other cases, the best practice is to use `{static: false}`.
    *
-   * However, to facilitate the migration to version 8, you may also want to set the `static` flag to `true` if your component code already depends on the query results being available some time **before** `ngAfterContentInit`.
-   * For example, if your component relies on the query results being populated in the `ngOnInit` hook or in `@Input` setters, you will need to either set the flag to `true` or re-work your component to adjust to later timing.
+   * However, to facilitate the migration to version 8, you may also want to set the `static` flag to
+   *  `true` if your component code already depends on the query results being available some time
+   * **before** `ngAfterContentInit`.
+   * For example, if your component relies on the query results being populated in the `ngOnInit` hook
+   *  or in `@Input` setters, you will need to either set the flag to `true` or re-work your component
+   *  to adjust to later timing.
    *
-   * **Note:** Selecting the static option means that query results nested in `*ngIf` or `*ngFor` will not be found by the query.
+   * **Note:** Selecting the static option means that query results nested in `*ngIf` or `*ngFor` will
+   * not be found by the query.
    * These results are only retrievable after change detection runs.
    *
    * @usageNotes
@@ -337,21 +347,31 @@ export interface ViewChildDecorator {
    * **How do I choose which `static` flag value to use: `true` or `false`?**
    *
    * We have always recommended retrieving query results in `ngAfterViewInit` for view queries.
-   * This is because by the time this lifecycle hook runs, change detection has completed for the relevant nodes and we can guarantee that we have collected all the possible query results.
+   * This is because by the time this lifecycle hook runs, change detection has completed for the
+   * relevant nodes and we can guarantee that we have collected all the possible query results.
    *
-   * Most applications will want to use `{static: false}` for this reason. This setting will ensure query matches that are dependent on binding resolution (e.g. results inside `*ngIf`s or `*ngFor`s) will be found by the query.
-   * If you need access to a `TemplateRef` in a query to create a view dynamically, you won't be able to do so in `ngAfterViewInit`.
-   * Change detection has already run on that view, so creating a new view with the template will cause an `ExpressionHasChangedAfterChecked` error to be thrown.
+   * Most applications will want to use `{static: false}` for this reason. This setting will ensure
+   * query matches that are dependent on binding resolution (e.g. results inside `*ngIf`s
+   * or `*ngFor`s) will be found by the query.
+   * If you need access to a `TemplateRef` in a query to create a view dynamically, you won't be able to
+   * do so in `ngAfterViewInit`.
+   * Change detection has already run on that view, so creating a new view with the template will cause
+   * an `ExpressionHasChangedAfterChecked` error to be thrown.
    * In this case, you will want to set the `static` flag to `true` and create your view in `ngOnInit`.
    * In most other cases, the best practice is to use `{static: false}`.
    *
-   * However, to facilitate the migration to version 8, you may also want to set the `static` flag to `true` if your component code already depends on the query results being available some time **before** `ngAfterViewInit`.
-   * For example, if your component relies on the query results being populated in the `ngOnInit` hook or in `@Input` setters, you will need to either set the flag to `true` or re-work your component to adjust to later timing.
+   * However, to facilitate the migration to version 8, you may also want to set the `static` flag to
+   *  `true` if your component code already depends on the query results being available some time
+   * **before** `ngAfterViewInit`.
+   * For example, if your component relies on the query results being populated in the `ngOnInit` hook
+   * or in `@Input` setters, you will need to either set the flag to `true` or re-work your
+   * component to adjust to later timing.
    *
-   * **Note:** Selecting the static option means that query results nested in `*ngIf` or `*ngFor` will not be found by the query.
+   * **Note:** Selecting the static option means that query results nested in `*ngIf` or
+   * `*ngFor` will not be found by the query.
    * These results are only retrievable after change detection runs.
    *
-   * Supported selectors include:
+   * **Supported selectors include:**
    *   * any class with the `@Component` or `@Directive` decorator
    *   * a template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
    * with `@ViewChild('cmp')`)
