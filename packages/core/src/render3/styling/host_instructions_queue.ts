@@ -61,7 +61,7 @@ function findNextInsertionIndex(buffer: HostInstructionsQueue, priority: number)
  * Iterates through the host instructions queue (if present within the provided
  * context) and executes each queued instruction entry.
  */
-export function flushQueue(context: StylingContext): void {
+export function flushQueue(this: unknown, context: StylingContext): void {
   const buffer = context[StylingIndex.HostInstructionsQueue];
   if (buffer) {
     for (let i = HostInstructionsQueueIndex.ValuesStartPosition; i < buffer.length;
