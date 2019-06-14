@@ -201,7 +201,7 @@ Must be one of the following:
 * **test**: Adding missing tests or correcting existing tests
 
 ### Scope
-The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages.
+The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages).
 
 The following is the list of supported scopes:
 
