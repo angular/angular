@@ -376,9 +376,8 @@ const DEFAULT_COMPONENT_ID = '1';
       it('should allow a transition to use a function to determine what method to run and expose any parameter values',
          () => {
            const transitionFn =
-               (fromState: string, toState: string, element: any, params: {[key: string]: any}) => {
-                 return params['doMatch'] == true;
-               };
+               (fromState: string, toState: string, element?: any,
+                params?: {[key: string]: any}) => { return params !['doMatch'] == true; };
 
            @Component({
              selector: 'if-cmp',

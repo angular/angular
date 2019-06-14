@@ -8,7 +8,7 @@
 
 import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
-import {NgZone, RendererFactory2} from '@angular/core';
+import {NgZone, RendererFactory2, RendererType2} from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {EventManager, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
@@ -37,8 +37,8 @@ export function getRendererFactory2(document: any): RendererFactory2 {
   const rendererFactory =
       new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document), 'dummyappid');
   const origCreateRenderer = rendererFactory.createRenderer;
-  rendererFactory.createRenderer = function() {
-    const renderer = origCreateRenderer.apply(this, arguments);
+  rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+    const renderer = origCreateRenderer.call(this, element, type);
     renderer.destroyNode = () => {};
     return renderer;
   };
@@ -86,8 +86,8 @@ export function patchLoggingRenderer2(rendererFactory: RendererFactory2, log: Re
   }
   (<any>rendererFactory).__patchedForLogging = true;
   const origCreateRenderer = rendererFactory.createRenderer;
-  rendererFactory.createRenderer = function() {
-    const renderer = origCreateRenderer.apply(this, arguments);
+  rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+    const renderer = origCreateRenderer.call(this, element, type);
     if ((<any>renderer).__patchedForLogging) {
       return renderer;
     }

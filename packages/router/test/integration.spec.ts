@@ -3628,7 +3628,8 @@ describe('Integration', () => {
          const recordedEvents: any[] = [];
 
          const navStart$ = router.events.pipe(
-             tap(e => recordedEvents.push(e)), filter(e => e instanceof NavigationStart), first());
+             tap(e => recordedEvents.push(e)),
+             filter((e): e is NavigationStart => e instanceof NavigationStart), first());
 
          navStart$.subscribe((e: NavigationStart | NavigationError) => {
            router.navigate(

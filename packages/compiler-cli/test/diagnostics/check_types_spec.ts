@@ -10,6 +10,7 @@ import * as ng from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as ts from 'typescript';
 import {TestSupport, expectNoDiagnostics, setup} from '../test_support';
 
 type MockFiles = {
@@ -52,7 +53,7 @@ describe('ng type checker', () => {
     if (!diagnostics || !diagnostics.length) {
       throw new Error('Expected a diagnostic error message');
     } else {
-      const matches: (d: ng.Diagnostic) => boolean = typeof message === 'string' ?
+      const matches: (d: ng.Diagnostic | ts.Diagnostic) => boolean = typeof message === 'string' ?
           d => ng.isNgDiagnostic(d)&& d.messageText == message :
           d => ng.isNgDiagnostic(d) && message.test(d.messageText);
       const matchingDiagnostics = diagnostics.filter(matches) as ng.Diagnostic[];

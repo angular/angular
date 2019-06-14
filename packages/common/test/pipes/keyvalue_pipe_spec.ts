@@ -149,7 +149,10 @@ describe('defaultComparator', () => {
     expect(values.sort(defaultComparator)).toEqual([{key: false, value: 1}, {key: true, value: 3}]);
   });
   it('should sort numbers as strings in numerical ascending', () => {
-    const values = [{key: '2', value: 1}, {key: 1, value: 3}];
+    // We need to cast the values array to "any[]" because the object keys
+    // have no type overlap and the "Array.sort" expects all keys to have the
+    // same type when passed to the sort comparator.
+    const values = [{key: '2', value: 1}, {key: 1, value: 3}] as any[];
     expect(values.sort(defaultComparator)).toEqual([{key: 1, value: 3}, {key: '2', value: 1}]);
   });
 });

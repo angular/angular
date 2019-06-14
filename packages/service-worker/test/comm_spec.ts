@@ -288,7 +288,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
               mock.sendMessage({type, data: {message}});
 
           const receivedMessages: string[] = [];
-          push.messages.subscribe((msg: {message: string}) => receivedMessages.push(msg.message));
+          push.messages.subscribe((msg: any) => receivedMessages.push(msg.message));
 
           sendMessage('PUSH', 'this was a push message');
           sendMessage('NOTPUSH', 'this was not a push message');

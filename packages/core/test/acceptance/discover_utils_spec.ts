@@ -244,7 +244,7 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
     });
 
     it('should work on templates', () => {
-      const templateComment = Array.from(fixture.nativeElement.childNodes)
+      const templateComment = Array.from((fixture.nativeElement as HTMLElement).childNodes)
                                   .find((node: ChildNode) => node.nodeType === Node.COMMENT_NODE) !;
       const lContext = loadLContext(templateComment);
       expect(lContext).toBeDefined();
@@ -252,7 +252,7 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
     });
 
     it('should work on ng-container', () => {
-      const ngContainerComment = Array.from(fixture.nativeElement.childNodes)
+      const ngContainerComment = Array.from((fixture.nativeElement as HTMLElement).childNodes)
                                      .find(
                                          (node: ChildNode) => node.nodeType === Node.COMMENT_NODE &&
                                              node.textContent === `ng-container`) !;

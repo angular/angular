@@ -83,19 +83,21 @@ describe('ng program', () => {
 
     const originalGetSourceFile = host.getSourceFile;
     const cache = new Map<string, ts.SourceFile>();
-    host.getSourceFile = function(fileName: string): ts.SourceFile {
-      const sf = originalGetSourceFile.call(host, fileName) as ts.SourceFile;
-      if (sf) {
-        if (cache.has(sf.fileName)) {
-          const oldSf = cache.get(sf.fileName) !;
-          if (oldSf.getFullText() === sf.getFullText()) {
-            return oldSf;
+    host.getSourceFile = function(
+                             fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile |
+        undefined {
+          const sf = originalGetSourceFile.call(host, fileName, languageVersion);
+          if (sf) {
+            if (cache.has(sf.fileName)) {
+              const oldSf = cache.get(sf.fileName) !;
+              if (oldSf.getFullText() === sf.getFullText()) {
+                return oldSf;
+              }
+            }
+            cache.set(sf.fileName, sf);
           }
-        }
-        cache.set(sf.fileName, sf);
-      }
-      return sf;
-    };
+          return sf;
+        };
     return host;
   }
 
@@ -196,12 +198,14 @@ describe('ng program', () => {
       const host = ng.createCompilerHost({options});
       const originalGetSourceFile = host.getSourceFile;
       const fileCache = new Map<string, ts.SourceFile>();
-      host.getSourceFile = (fileName: string) => {
+      host.getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => {
         if (fileCache.has(fileName)) {
           return fileCache.get(fileName);
         }
-        const sf = originalGetSourceFile.call(host, fileName);
-        fileCache.set(fileName, sf);
+        const sf = originalGetSourceFile.call(host, fileName, languageVersion);
+        if (sf !== undefined) {
+          fileCache.set(fileName, sf);
+        }
         return sf;
       };
 
@@ -469,8 +473,8 @@ describe('ng program', () => {
 
     host.writeFile =
         (fileName: string, data: string, writeByteOrderMark: boolean,
-         onError: (message: string) => void|undefined,
-         sourceFiles: ReadonlyArray<ts.SourceFile>) => {
+         onError: ((message: string) => void) | undefined,
+         sourceFiles?: ReadonlyArray<ts.SourceFile>) => {
           written.set(fileName, {original: sourceFiles, data});
         };
     const program = ng.createProgram(
@@ -1095,15 +1099,15 @@ describe('ng program', () => {
          });
          const host = ng.createCompilerHost({options});
          const originalGetSourceFile = host.getSourceFile;
-         host.getSourceFile =
-             (fileName: string, languageVersion: ts.ScriptTarget,
-              onError?: ((message: string) => void) | undefined): ts.SourceFile => {
-               // We should never try to load .ngfactory.ts files
-               if (fileName.match(/\.ngfactory\.ts$/)) {
-                 throw new Error(`Non existent ngfactory file: ` + fileName);
-               }
-               return originalGetSourceFile.call(host, fileName, languageVersion, onError);
-             };
+         host.getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget,
+                               onError?: ((message: string) => void) | undefined): ts.SourceFile |
+             undefined => {
+           // We should never try to load .ngfactory.ts files
+           if (fileName.match(/\.ngfactory\.ts$/)) {
+             throw new Error(`Non existent ngfactory file: ` + fileName);
+           }
+           return originalGetSourceFile.call(host, fileName, languageVersion, onError);
+         };
          const program = ng.createProgram({rootNames: allRootNames, options, host});
          const structuralErrors = program.getNgStructuralDiagnostics();
          expect(structuralErrors.length).toBe(1);

@@ -182,8 +182,8 @@ function getRendererFactory2(document: any): RendererFactory2 {
   const rendererFactory = new ServerRendererFactory2(
       eventManager, fakeNgZone, document, new ɵDomSharedStylesHost(document));
   const origCreateRenderer = rendererFactory.createRenderer;
-  rendererFactory.createRenderer = function() {
-    const renderer = origCreateRenderer.apply(this, arguments);
+  rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+    const renderer = origCreateRenderer.call(this, element, type);
     renderer.destroyNode = () => {};
     return renderer;
   };
