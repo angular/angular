@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DebugElement, Predicate, Type} from '@angular/core';
+import {DebugElement, DebugNode, Predicate, Type} from '@angular/core';
 import {getDOM} from '../../dom/dom_adapter';
 
 
@@ -18,14 +18,14 @@ import {getDOM} from '../../dom/dom_adapter';
  */
 export class By {
   /**
-   * Match all elements.
+   * Match all nodes.
    *
    * @usageNotes
    * ### Example
    *
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_all'}
    */
-  static all(): Predicate<DebugElement> { return (debugElement) => true; }
+  static all(): Predicate<DebugNode> { return () => true; }
 
   /**
    * Match elements by the given CSS selector.
@@ -44,14 +44,14 @@ export class By {
   }
 
   /**
-   * Match elements that have the given directive present.
+   * Match nodes that have the given directive present.
    *
    * @usageNotes
    * ### Example
    *
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_directive'}
    */
-  static directive(type: Type<any>): Predicate<DebugElement> {
-    return (debugElement) => debugElement.providerTokens !.indexOf(type) !== -1;
+  static directive(type: Type<any>): Predicate<DebugNode> {
+    return (debugNode) => debugNode.providerTokens !.indexOf(type) !== -1;
   }
 }
