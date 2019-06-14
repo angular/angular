@@ -11,7 +11,7 @@ import {Type} from '../../interface/type';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/security';
-import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertLessThan, assertNotEqual, assertNotSame} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertNotEqual, assertNotSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertLView, assertPreviousIsParent} from '../assert';
@@ -38,8 +38,7 @@ import {attrsStylingIndexOf} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
 import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootView, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
-
-import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeInitialData, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLView, cloneToTViewData} from './lview_debug';
+import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNodeInitialData, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLView, cloneToTViewData} from './lview_debug';
 import {selectInternal} from './select';
 
 
@@ -278,7 +277,7 @@ function createTNodeAtIndex(
   const parentInSameView = parent && parent !== tHostNode;
   const tParentNode = parentInSameView ? parent as TElementNode | TContainerNode : null;
   const tNode = tView.data[adjustedIndex] =
-      createTNode(tParentNode, type, adjustedIndex, name, attrs);
+      createTNode(tView, tParentNode, type, adjustedIndex, name, attrs);
   // The first node is not always the one at index 0, in case of i18n, index 0 can be the
   // instruction `i18nStart` and the first node has the index 1 or more
   if (index === 0 || !tView.firstChild) {
@@ -306,6 +305,7 @@ export function assignTViewNodeToLView(
     ngDevMode && tParentNode &&
         assertNodeOfPossibleTypes(tParentNode, TNodeType.Element, TNodeType.Container);
     tView.node = tNode = createTNode(
+        tView,
         tParentNode as TElementNode | TContainerNode | null,  //
         TNodeType.View, index, null, null) as TViewNode;
   }
@@ -741,6 +741,7 @@ export type TsickleIssue1009 = any;
 /**
  * Constructs a TNode object from the arguments.
  *
+ * @param tView `TView` to which this `TNode` belongs (used only in `ngDevMode`)
  * @param type The type of the node
  * @param adjustedIndex The index of the TNode in TView.data, adjusted for HEADER_OFFSET
  * @param tagName The tag name of the node
@@ -749,38 +750,70 @@ export type TsickleIssue1009 = any;
  * @returns the TNode object
  */
 export function createTNode(
-    tParent: TElementNode | TContainerNode | null, type: TNodeType, adjustedIndex: number,
-    tagName: string | null, attrs: TAttributes | null): TNode {
+    tView: TView, tParent: TElementNode | TContainerNode | null, type: TNodeType,
+    adjustedIndex: number, tagName: string | null, attrs: TAttributes | null): TNode {
   ngDevMode && ngDevMode.tNode++;
-  return {
-    type: type,
-    index: adjustedIndex,
-    injectorIndex: tParent ? tParent.injectorIndex : -1,
-    directiveStart: -1,
-    directiveEnd: -1,
-    propertyMetadataStartIndex: -1,
-    propertyMetadataEndIndex: -1,
-    flags: 0,
-    providerIndexes: 0,
-    tagName: tagName,
-    attrs: attrs,
-    localNames: null,
-    initialInputs: undefined,
-    inputs: undefined,
-    outputs: undefined,
-    tViews: null,
-    next: null,
-    projectionNext: null,
-    child: null,
-    parent: tParent,
-    stylingTemplate: null,
-    projection: null,
-    onElementCreationFns: null,
-    // TODO (matsko): rename this to `styles` once the old styling impl is gone
-    newStyles: null,
-    // TODO (matsko): rename this to `classes` once the old styling impl is gone
-    newClasses: null,
-  };
+  let injectorIndex = tParent ? tParent.injectorIndex : -1;
+  return ngDevMode ?
+      new TNodeConstructor(
+          tView,          // tView_: TView
+          type,           // type: TNodeType
+          adjustedIndex,  // index: number
+          injectorIndex,  // injectorIndex: number
+          -1,             // directiveStart: number
+          -1,             // directiveEnd: number
+          -1,             // propertyMetadataStartIndex: number
+          -1,             // propertyMetadataEndIndex: number
+          0,              // flags: TNodeFlags
+          0,              // providerIndexes: TNodeProviderIndexes
+          tagName,        // tagName: string|null
+          attrs,          // attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null
+          null,           // localNames: (string|number)[]|null
+          undefined,      // initialInputs: (string[]|null)[]|null|undefined
+          undefined,      // inputs: PropertyAliases|null|undefined
+          undefined,      // outputs: PropertyAliases|null|undefined
+          null,           // tViews: ITView|ITView[]|null
+          null,           // next: ITNode|null
+          null,           // projectionNext: ITNode|null
+          null,           // child: ITNode|null
+          tParent,        // parent: TElementNode|TContainerNode|null
+          null,           // stylingTemplate: StylingContext|null
+          null,           // projection: number|(ITNode|RNode[])[]|null
+          null,           // onElementCreationFns: Function[]|null
+          // TODO (matsko): rename this to `styles` once the old styling impl is gone
+          null,  // newStyles: TStylingContext|null
+          // TODO (matsko): rename this to `classes` once the old styling impl is gone
+          null,  // newClasses: TStylingContext|null
+          ) :
+      {
+        type: type,
+        index: adjustedIndex,
+        injectorIndex: injectorIndex,
+        directiveStart: -1,
+        directiveEnd: -1,
+        propertyMetadataStartIndex: -1,
+        propertyMetadataEndIndex: -1,
+        flags: 0,
+        providerIndexes: 0,
+        tagName: tagName,
+        attrs: attrs,
+        localNames: null,
+        initialInputs: undefined,
+        inputs: undefined,
+        outputs: undefined,
+        tViews: null,
+        next: null,
+        projectionNext: null,
+        child: null,
+        parent: tParent,
+        stylingTemplate: null,
+        projection: null,
+        onElementCreationFns: null,
+        // TODO (matsko): rename this to `styles` once the old styling impl is gone
+        newStyles: null,
+        // TODO (matsko): rename this to `classes` once the old styling impl is gone
+        newClasses: null,
+      };
 }
 
 

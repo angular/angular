@@ -10,9 +10,14 @@ import {assertDefined, assertEqual, throwError} from '../util/assert';
 
 import {getComponentDef, getNgModuleDef} from './definition';
 import {TNode} from './interfaces/node';
-import {LView} from './interfaces/view';
+import {LView, TVIEW, TView} from './interfaces/view';
 import {isLContainer, isLView} from './util/view_utils';
 
+export function assertTNodeForLView(tNode: TNode, lView: LView) {
+  tNode.hasOwnProperty('tView_') && assertEqual(
+                                        (tNode as any as{tView_: TView}).tView_, lView[TVIEW],
+                                        'This TNode does not belong to this LView.');
+}
 
 export function assertComponentType(
     actual: any,
