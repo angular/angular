@@ -12,6 +12,7 @@ import {Reference} from '../../imports';
 import {DirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
+
 /** Dummy file URL */
 export const TESTFILE = 'TESTFILE';
 

@@ -16,8 +16,7 @@ describe('ComponentAnalysisContext', () => {
 
   it('should store and return information about components', () => {
     const context = new IndexingContext();
-    const declaration = util.getComponentDeclaration('class C {};');
-    const selector = 'c-selector';
+    const declaration = util.getComponentDeclaration('class C {}');
     const template = util.getParsedTemplate('<div></div>');
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta>());
     const scope = binder.bind({template});
