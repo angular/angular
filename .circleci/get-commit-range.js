@@ -6,9 +6,9 @@
  * node get-commit-range <build-number> [<compare-url> [<circle-token>]]
  * ```
  *
- * Returns the value of the `CIRCLE_COMPARE_URL` environment variable (if defined) or, if this is
- * not a PR build (i.e. `CIRCLE_PR_NUMBER` is not defined), retrieves the equivalent of
- * `CIRCLE_COMPARE_URL` for jobs that are part of a rerun workflow.
+ * Returns the commit range, either extracting it from `compare-url` (if defined), which is of the
+ * format of the `CIRCLE_COMPARE_URL` environment variable, or by retrieving the equivalent of
+ * `CIRCLE_COMPARE_URL` for jobs that are part of a rerun workflow and extracting it from there.
  *
  * **Context:**
  * CircleCI sets the `CIRCLE_COMPARE_URL` environment variable (from which we can extract the commit
