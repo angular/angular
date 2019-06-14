@@ -25,9 +25,9 @@ withEachNg1Version(() => {
       module('app');
       // Configure an AngularJS module that has the AngularJS and Angular injector wired up
       module(createAngularJSTestingModule([AppModule]));
-      inject(function(shoppingCart: any) {
-        expect(shoppingCart.inventory).toEqual(jasmine.any(Inventory));
-      });
+      let inventory: any = undefined;
+      inject(function(shoppingCart: any) { inventory = shoppingCart.inventory; });
+      expect(inventory).toEqual(jasmine.any(Inventory));
     });
   });
 });

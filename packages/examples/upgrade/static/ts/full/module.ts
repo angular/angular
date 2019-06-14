@@ -19,7 +19,6 @@ export interface Hero {
 }
 
 // #docregion ng1-text-formatter-service
-@Injectable()
 export class TextFormatter {
   titleCase(value: string) { return value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase()); }
 }
