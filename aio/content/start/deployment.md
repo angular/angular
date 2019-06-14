@@ -50,6 +50,12 @@ ng build --prod
 
 This will produce the files that you need to deploy.
 
+<div class="alert is-helpful">
+
+If the above `ng build` command throws an error about missing packages, append the missing dependencies in your local project's `package.json` file to match the one in the downloaded StackBlitz project.
+
+</div>
+
 #### Hosting the built project
 
 The files in the `dist/my-project-name` folder are static and can be hosted on any web server capable of serving files (`Node.js`, Java, .NET) or any backend (Firebase, Google Cloud, App Engine, others).
