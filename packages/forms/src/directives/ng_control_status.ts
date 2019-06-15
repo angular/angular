@@ -6,16 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Self} from '@angular/core';
+import {Directive, Optional, Self} from '@angular/core';
 
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
+import {NgForm} from './ng_form';
+import {FormGroupDirective} from './reactive_directives/form_group_directive';
 
 export class AbstractControlStatus {
   private _cd: AbstractControlDirective;
+  private _controlContainer: ControlContainer|undefined;
 
-  constructor(cd: AbstractControlDirective) { this._cd = cd; }
+  constructor(cd: AbstractControlDirective, controlContainer?: ControlContainer) {
+    this._cd = cd;
+    this._controlContainer = controlContainer;
+  }
 
   get ngClassUntouched(): boolean { return this._cd.control ? this._cd.control.untouched : false; }
   get ngClassTouched(): boolean { return this._cd.control ? this._cd.control.touched : false; }
@@ -24,6 +30,11 @@ export class AbstractControlStatus {
   get ngClassValid(): boolean { return this._cd.control ? this._cd.control.valid : false; }
   get ngClassInvalid(): boolean { return this._cd.control ? this._cd.control.invalid : false; }
   get ngClassPending(): boolean { return this._cd.control ? this._cd.control.pending : false; }
+  get ngClassSubmitted(): boolean {
+    return this._controlContainer && this._controlContainer.formDirective ?
+        (this._controlContainer.formDirective as NgForm | FormGroupDirective).submitted :
+        false;
+  }
 }
 
 export const ngControlStatusHost = {
@@ -34,6 +45,7 @@ export const ngControlStatusHost = {
   '[class.ng-valid]': 'ngClassValid',
   '[class.ng-invalid]': 'ngClassInvalid',
   '[class.ng-pending]': 'ngClassPending',
+  '[class.ng-submitted]': 'ngClassSubmitted',
 };
 
 /**
@@ -61,14 +73,16 @@ export const ngControlStatusHost = {
  */
 @Directive({selector: '[formControlName],[ngModel],[formControl]', host: ngControlStatusHost})
 export class NgControlStatus extends AbstractControlStatus {
-  constructor(@Self() cd: NgControl) { super(cd); }
+  constructor(@Self() cd: NgControl, @Optional() controlContainer?: ControlContainer) {
+    super(cd, controlContainer);
+  }
 }
 
 /**
  * @description
  * Directive automatically applied to Angular form groups that sets CSS classes
  * based on control status (valid/invalid/dirty/etc).
- * 
+ *
  * @see `NgControlStatus`
  *
  * @ngModule ReactiveFormsModule
@@ -81,5 +95,5 @@ export class NgControlStatus extends AbstractControlStatus {
   host: ngControlStatusHost
 })
 export class NgControlStatusGroup extends AbstractControlStatus {
-  constructor(@Self() cd: ControlContainer) { super(cd); }
+  constructor(@Self() cd: ControlContainer) { super(cd, cd); }
 }

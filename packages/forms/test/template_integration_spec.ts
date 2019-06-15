@@ -167,6 +167,14 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              dispatchEvent(input, 'input');
              fixture.detectChanges();
              expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+
+             const form = fixture.debugElement.query(By.css('form')).nativeElement;
+             dispatchEvent(form, 'submit');
+             fixture.detectChanges();
+
+             expect(sortedClassList(input)).toEqual([
+               'ng-dirty', 'ng-submitted', 'ng-touched', 'ng-valid'
+             ]);
            });
          }));
 
@@ -225,6 +233,16 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
              expect(sortedClassList(modelGroup)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
              expect(sortedClassList(form)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+
+             dispatchEvent(form, 'submit');
+             fixture.detectChanges();
+
+             expect(sortedClassList(modelGroup)).toEqual([
+               'ng-dirty', 'ng-submitted', 'ng-touched', 'ng-valid'
+             ]);
+             expect(sortedClassList(form)).toEqual([
+               'ng-dirty', 'ng-submitted', 'ng-touched', 'ng-valid'
+             ]);
            });
          }));
 

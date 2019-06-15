@@ -807,6 +807,14 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.detectChanges();
 
         expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+
+        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        dispatchEvent(formEl, 'submit');
+        fixture.detectChanges();
+
+        expect(sortedClassList(input)).toEqual([
+          'ng-dirty', 'ng-submitted', 'ng-touched', 'ng-valid'
+        ]);
       });
 
       it('should work with formGroup', () => {
@@ -830,6 +838,13 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.detectChanges();
 
         expect(sortedClassList(formEl)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+
+        dispatchEvent(formEl, 'submit');
+        fixture.detectChanges();
+
+        expect(sortedClassList(formEl)).toEqual([
+          'ng-dirty', 'ng-submitted', 'ng-touched', 'ng-valid'
+        ]);
       });
 
     });

@@ -358,7 +358,7 @@ export declare abstract class NgControl extends AbstractControlDirective {
 }
 
 export declare class NgControlStatus extends AbstractControlStatus {
-    constructor(cd: NgControl);
+    constructor(cd: NgControl, controlContainer?: ControlContainer);
 }
 
 export declare class NgControlStatusGroup extends AbstractControlStatus {
