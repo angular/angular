@@ -191,6 +191,7 @@ Like in AngularJS, Angular automatically mirrors many control properties onto th
 * `.ng-dirty`
 * `.ng-untouched`
 * `.ng-touched`
+* `.ng-submitted`
 
 The hero form uses the `.ng-valid` and `.ng-invalid` classes to
 set the color of each form control's border.

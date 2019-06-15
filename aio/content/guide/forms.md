@@ -476,6 +476,22 @@ You can leverage those class names to change the appearance of the control.
 
   </tr>
 
+  <tr>
+
+    <td>
+      The parent form (if any) has been submitted.
+    </td>
+
+    <td>
+      <code>ng-submitted</code>
+    </td>
+
+    <td>
+      None
+    </td>
+
+  </tr>
+
 </table>
 
 Temporarily add a [template reference variable](guide/template-syntax#ref-vars) named `spy`
