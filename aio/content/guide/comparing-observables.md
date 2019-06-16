@@ -46,7 +46,7 @@ promise.then((value) => {
 * Observables differentiate between transformation function such as a map and subscription. Only subscription activates the subscriber function to start computing the values.
 
 
-<code-example hideCopy>observable.map((v) => 2*v);</code-example>
+<code-example hideCopy>observable.pipe(map((v) => 2*v));</code-example>
 
 
 * Promises do not differentiate between the last `.then` clauses (equivalent to subscription) and intermediate `.then` clauses (equivalent to map).
@@ -112,7 +112,7 @@ The following code snippets illustrate how the same kind of operation is defined
     </tr>
     <tr>
       <td>Transform</td>
-      <td><pre>obs.map((value) => value * 2 );</pre></td>
+      <td><pre>obs.pipe(map((value) => value * 2));</pre></td>
       <td><pre>promise.then((value) => value * 2);</pre></td>
     </tr>
     <tr>
@@ -227,7 +227,7 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>concat()</pre></td>
     <td>
-      <pre>obs.concat(obsB)</pre>
+      <pre>concat(obs, obsB)</pre>
       <pre>➞1➞2➞3➞5➞7➞'a'➞'b'➞'c'</pre>
     </td>
     <td>
@@ -238,7 +238,7 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>filter()</pre></td>
     <td>
-      <pre>obs.filter((v) => v>3)</pre>
+      <pre>obs.pipe(filter((v) => v>3))</pre>
       <pre>➞5➞7</pre>
     </td>
     <td>
@@ -249,7 +249,7 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>find()</pre></td>
     <td>
-      <pre>obs.find((v) => v>3)</pre>
+      <pre>obs.pipe(find((v) => v>3))</pre>
       <pre>➞5</pre>
     </td>
     <td>
@@ -260,7 +260,7 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>findIndex()</pre></td>
     <td>
-      <pre>obs.findIndex((v) => v>3)</pre>
+      <pre>obs.pipe(findIndex((v) => v>3))</pre>
       <pre>➞3</pre>
     </td>
     <td>
@@ -271,9 +271,9 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>forEach()</pre></td>
     <td>
-      <pre>obs.forEach((v) => {
+      <pre>obs.pipe(tap((v) => {
   console.log(v);
-})
+}))
 1
 2
 3
@@ -294,7 +294,7 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>map()</pre></td>
     <td>
-      <pre>obs.map((v) => -v)</pre>
+      <pre>obs.pipe(map((v) => -v))</pre>
       <pre>➞-1➞-2➞-3➞-5➞-7</pre>
     </td>
     <td>
@@ -305,8 +305,8 @@ An observable produces values over time. An array is created as a static set of 
   <tr>
     <td><pre>reduce()</pre></td>
     <td>
-      <pre>obs.scan((s,v)=> s+v, 0)</pre>
-      <pre>➞1➞3➞6➞11➞18</pre>
+      <pre>obs.pipe(reduce((s,v)=> s+v, 0))</pre>
+      <pre>➞18</pre>
     </td>
     <td>
       <pre>arr.reduce((s,v) => s+v, 0)</pre>
