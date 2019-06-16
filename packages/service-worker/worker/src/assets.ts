@@ -47,13 +47,11 @@ export abstract class AssetGroup {
    */
   protected metadata: Promise<Table>;
 
-
-  private origin: string;
-
   constructor(
       protected scope: ServiceWorkerGlobalScope, protected adapter: Adapter,
       protected idle: IdleScheduler, protected config: AssetGroupConfig,
       protected hashes: Map<string, string>, protected db: Database, protected prefix: string) {
+    this.config = Object.assign(config, {urls: config.urls.map(u => adapter.getConfigUrl(u))});
     this.name = config.name;
     // Patterns in the config are regular expressions disguised as strings. Breathe life into them.
     this.patterns = this.config.patterns.map(pattern => new RegExp(pattern));
@@ -66,10 +64,6 @@ export abstract class AssetGroup {
     // This is the metadata table, which holds specific information for each cached URL, such as
     // the timestamp of when it was added to the cache.
     this.metadata = this.db.open(`${this.prefix}:${this.config.name}:meta`);
-
-    // Determine the origin from the registration scope. This is used to differentiate between
-    // relative and absolute URLs.
-    this.origin = this.adapter.parseUrl(this.scope.registration.scope).origin;
   }
 
   async cacheStatus(url: string): Promise<UpdateCacheStatus> {
@@ -107,7 +101,7 @@ export abstract class AssetGroup {
    * Process a request for a given resource and return it, or return null if it's not available.
    */
   async handleFetch(req: Request, ctx: Context): Promise<Response|null> {
-    const url = this.getConfigUrl(req.url);
+    const url = this.adapter.getConfigUrl(req.url);
     // Either the request matches one of the known resource URLs, one of the patterns for
     // dynamically matched URLs, or neither. Determine which is the case for this request in
     // order to decide how to handle it.
@@ -151,18 +145,6 @@ export abstract class AssetGroup {
       return res.clone();
     } else {
       return null;
-    }
-  }
-
-  private getConfigUrl(url: string): string {
-    // If the URL is relative to the SW's own origin, then only consider the path relative to
-    // the domain root. Determine this by checking the URL's origin against the SW's.
-    const parsed = this.adapter.parseUrl(url, this.scope.registration.scope);
-    if (parsed.origin === this.origin) {
-      // The URL is relative to the SW's origin domain.
-      return parsed.path;
-    } else {
-      return url;
     }
   }
 
@@ -279,7 +261,7 @@ export abstract class AssetGroup {
     return (await cache.keys())
         .map(request => request.url)
         // Exclude the URLs which have hashes.
-        .filter(url => !this.hashes.has(url));
+        .filter(url => !this.hashes.has(this.adapter.getConfigUrl(url)));
   }
 
   /**
@@ -324,7 +306,7 @@ export abstract class AssetGroup {
 
         // If the request is not hashed, update its metadata, especially the timestamp. This is
         // needed for future determination of whether this cached response is stale or not.
-        if (!this.hashes.has(req.url)) {
+        if (!this.hashes.has(this.adapter.getConfigUrl(req.url))) {
           // Metadata is tracked for requests that are unhashed.
           const meta: UrlMetadata = {ts: this.adapter.time, used};
           const metaTable = await this.metadata;
@@ -370,7 +352,7 @@ export abstract class AssetGroup {
    * Load a particular asset from the network, accounting for hash validation.
    */
   protected async cacheBustedFetchFromNetwork(req: Request): Promise<Response> {
-    const url = this.getConfigUrl(req.url);
+    const url = this.adapter.getConfigUrl(req.url);
 
     // If a hash is available for this resource, then compare the fetched version with the
     // canonical hash. Otherwise, the network version will have to be trusted.
@@ -451,7 +433,7 @@ export abstract class AssetGroup {
    */
   protected async maybeUpdate(updateFrom: UpdateSource, req: Request, cache: Cache):
       Promise<boolean> {
-    const url = this.getConfigUrl(req.url);
+    const url = this.adapter.getConfigUrl(req.url);
     const meta = await this.metadata;
     // Check if this resource is hashed and already exists in the cache of a prior version.
     if (this.hashes.has(url)) {
@@ -541,7 +523,7 @@ export class PrefetchAssetGroup extends AssetGroup {
           // First, narrow down the set of resources to those which are handled by this group.
           // Either it's a known URL, or it matches a given pattern.
           .filter(
-              url => this.config.urls.some(cacheUrl => cacheUrl === url) ||
+              url => this.config.urls.indexOf(url) !== -1 ||
                   this.patterns.some(pattern => pattern.test(url)))
           // Finally, process each resource in turn.
           .reduce(async(previous, url) => {

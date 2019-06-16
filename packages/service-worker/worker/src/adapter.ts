@@ -14,12 +14,19 @@
  */
 export class Adapter {
   readonly cacheNamePrefix: string;
+  readonly scopeUrl: string;
+  readonly origin: string;
 
   constructor(scope: ServiceWorkerGlobalScope) {
     // Suffixing `ngsw` with the baseHref to avoid clash of cache names
     // for SWs with different scopes on the same domain.
     const baseHref = this.parseUrl(scope.registration.scope).path;
     this.cacheNamePrefix = 'ngsw:' + baseHref;
+
+    this.scopeUrl = scope.registration.scope;
+    // Determine the origin from the registration scope. This is used to differentiate between
+    // relative and absolute URLs.
+    this.origin = this.parseUrl(this.scopeUrl, this.scopeUrl).origin;
   }
 
   /**
@@ -64,6 +71,18 @@ export class Adapter {
    */
   timeout(ms: number): Promise<void> {
     return new Promise<void>(resolve => { setTimeout(() => resolve(), ms); });
+  }
+
+  getConfigUrl(url: string): string {
+    // If the URL is relative to the SW's own origin, then only consider the path relative to
+    // the domain root. Determine this by checking the URL's origin against the SW's.
+    const parsed = this.parseUrl(url, this.scopeUrl);
+    if (parsed.origin === this.origin) {
+      // The URL is relative to the SW's origin domain.
+      return parsed.path;
+    } else {
+      return url;
+    }
   }
 }
 

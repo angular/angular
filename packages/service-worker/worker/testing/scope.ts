@@ -76,6 +76,7 @@ export class MockClients implements Clients {
 export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context {
   readonly cacheNamePrefix: string;
   readonly clients = new MockClients();
+  readonly scopeUrl: string;
   private eventHandlers = new Map<string, Function>();
   private skippedWaiting = true;
 
@@ -115,10 +116,12 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   }[] = [];
 
   constructor(
-      private server: MockServerState, readonly caches: MockCacheStorage, private origin: string) {
+      private server: MockServerState, readonly caches: MockCacheStorage,
+      public readonly origin: string) {
     const baseHref = this.parseUrl(origin).path;
     this.cacheNamePrefix = 'ngsw:' + baseHref;
     this.time = Date.now();
+    this.scopeUrl = origin;
   }
 
   async resolveSelfMessages(): Promise<void> {
@@ -194,6 +197,18 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
       path: parsedUrl.pathname,
       search: parsedUrl.search || '',
     };
+  }
+
+  getConfigUrl(url: string): string {
+    // If the URL is relative to the SW's own origin, then only consider the path relative to
+    // the domain root. Determine this by checking the URL's origin against the SW's.
+    const parsed = this.parseUrl(url, this.scopeUrl);
+    if (parsed.origin === this.origin) {
+      // The URL is relative to the SW's origin domain.
+      return parsed.path;
+    } else {
+      return url;
+    }
   }
 
   async skipWaiting(): Promise<void> { this.skippedWaiting = true; }
