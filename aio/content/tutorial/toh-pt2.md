@@ -237,6 +237,10 @@ Your app should look like this <live-example></live-example>.
 Here are the code files discussed on this page, including the `HeroesComponent` styles.
 
 <code-tabs>
+
+  <code-pane header="src/app/mock-heroes.ts" path="toh-pt2/src/app/mock-heroes.ts">
+  </code-pane>
+  
   <code-pane header="src/app/heroes/heroes.component.ts" path="toh-pt2/src/app/heroes/heroes.component.ts">
   </code-pane>
 
