@@ -175,6 +175,13 @@ jobs:
       # Setup remote execution and run RBE-compatible tests.
       - *setup_bazel_remote_execution
       - run: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
+      - run: mkdir ~/testlogs
+      - run: cp -Lr dist/testlogs/* ~/testlogs
+      - store_test_results:
+          # Bazel always writes test.xml files under this directory
+          path: ~/testlogs
+      - store_artifacts:
+          path: ~/testlogs
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
