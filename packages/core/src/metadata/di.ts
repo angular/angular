@@ -60,7 +60,6 @@ export interface AttributeDecorator {
    * The directive can inject constant string literals of host element attributes.
    *
    * @usageNotes
-   * ### Example
    *
    * Suppose we have an `<input>` element and want to know its `type`.
    *
@@ -70,7 +69,8 @@ export interface AttributeDecorator {
    *
    * A decorator can inject string literal `text` as in the following example.
    *
-   * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
+   * <code-example path="core/ts/metadata/metadata.ts"
+   * region='attributeMetadata' linenums="false"></code-example>
    *
    * @publicApi
    */
@@ -133,25 +133,27 @@ export interface ContentChildrenDecorator {
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
    *
-   * **Metadata Properties**:
-   *
-   * * **selector** - the directive type or the name used for querying.
-   * * **descendants** - include only direct children or all descendants.
-   * * **read** - read a different token from the queried elements.
+   * | Metadata Property | Description |
+   * | :--------------- | :-------------------- |
+   * | selector | The directive type or the name used for querying. |
+   * | descendants | When true, include only direct children or all descendants. |
+   * | read | Read a different token from the queried elements. |
    *
    * @usageNotes
    * ### Basic Example
    *
    * Here is a simple demonstration of how the `ContentChildren` decorator can be used.
    *
-   * {@example core/di/ts/contentChildren/content_children_howto.ts region='HowTo'}
+   * <code-example path="core/di/ts/contentChildren/content_children_howto.ts"
+   * region='HowTo' linenums="false"></code-example>
    *
    * ### Tab-pane Example
    *
    * Here is a slightly more realistic example that shows how `ContentChildren` decorators
    * can be used to implement a tab pane component.
    *
-   * {@example core/di/ts/contentChildren/content_children_example.ts region='Component'}
+   * <code-example path="core/di/ts/contentChildren/content_children_example.ts"
+   * region='Component' linenums="false"></code-example>
    *
    * @Annotation
    */
@@ -196,25 +198,51 @@ export interface ContentChildDecorator {
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
    *
-   * **Metadata Properties**:
+   * | Metadata Property | Description |
+   * | :--------------- | :-------------------- |
+   * | selector | The directive type or the name used for querying. |
+   * | read | Read a different token from the queried elements. |
+   * | static | Required. When true, resolve query results before change detection runs. |
    *
-   * * **selector** - the directive type or the name used for querying.
-   * * **read** - read a different token from the queried element.
-   * * **static** - whether or not to resolve query results before change detection runs (i.e.
-   * return static results only). If this option is not provided, the compiler will fall back
-   * to its default behavior, which is to use query results to determine the timing of query
-   * resolution. If any query results are inside a nested view (e.g. *ngIf), the query will be
-   * resolved after change detection runs. Otherwise, it will be resolved before change detection
-   * runs.
+   * The `static` flag should typically be set to `false`, so that all possible
+   * query results are collected after change detection has completed for the
+   * relevant nodes.
+   * This ensures that matches which depend on binding resolution
+   * (such as results inside `*ngIf` or `*ngFor`) are found.
+   *
+   * If you need access to a `TemplateRef` in a query to create a view dynamically,
+   * you cannot do so in `ngAfterContentInit`.
+   * Change detection has already run on that view, so creating a new view with
+   * the template throws an `ExpressionHasChangedAfterChecked` error.
+   * In this case, you can set the `static` flag to `true` and create your view
+   * in `ngOnInit`.
+   * Note that in this case, query results nested in `*ngIf` or `*ngFor`
+   * are not found by the query.
+   *
    *
    * @usageNotes
-   * ### Example
-   *
-   * {@example core/di/ts/contentChild/content_child_howto.ts region='HowTo'}
    *
    * ### Example
    *
-   * {@example core/di/ts/contentChild/content_child_example.ts region='Component'}
+   * <code-example path="core/di/ts/contentChild/content_child_howto.ts"
+   * region='HowTo' linenums="false"></code-example>
+   *
+   * ### Example
+   *
+   * <code-example path="core/di/ts/contentChild/content_child_example.ts"
+   * region='Component' linenums="false"></code-example>
+   *
+   * ### Migration to Angular version 8
+   *
+   * When migrating to version 8, set the `static` flag to `true`
+   * if your component code already depends  on the query results
+   * being available some time *before* `ngAfterContentInit`.
+   * For example, if your component relies on the query results being populated in
+   * the `ngOnInit` hook or in `@Input` setters,
+   * you will need to either set the flag to `true`
+   * or re-work your component to adjust to later timing.
+   *
+   * For more information, see [Static Query Migration](guide/static-query-migration).
    *
    * @Annotation
    */
@@ -259,20 +287,22 @@ export interface ViewChildrenDecorator {
    *
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
-   * **Metadata Properties**:
-   *
-   * * **selector** - the directive type or the name used for querying.
-   * * **read** - read a different token from the queried elements.
+   * | Metadata Property | Description |
+   * | :--------------- | :-------------------- |
+   * | selector | The directive type or the name used for querying. |
+   * | read | Read a different token from the queried elements. |
    *
    * @usageNotes
    *
    * ### Example
    *
-   * {@example core/di/ts/viewChildren/view_children_howto.ts region='HowTo'}
+   * <code-example path="core/di/ts/viewChildren/view_children_howto.ts"
+   * region='HowTo' linenums="false"></code-example>
    *
    * ### Example
    *
-   * {@example core/di/ts/viewChildren/view_children_example.ts region='Component'}
+   * <code-example path="core/di/ts/viewChildren/view_children_example.ts"
+   * region='Component' linenums="false"></code-example>
    *
    * @Annotation
    */
@@ -314,39 +344,64 @@ export interface ViewChildDecorator {
    *
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
-   * **Metadata Properties**:
+   * | Metadata Property | Description |
+   * | :--------------- | :-------------------- |
+   * | selector | The directive type or the name used for querying. |
+   * | read | Read a different token from the queried elements. |
+   * | static | When true, resolve query results before change detection runs. |
    *
-   * * **selector** - the directive type or the name used for querying.
-   * * **read** - read a different token from the queried elements.
-   * * **static** - whether or not to resolve query results before change detection runs (i.e.
-   * return static results only). If this option is not provided, the compiler will fall back
-   * to its default behavior, which is to use query results to determine the timing of query
-   * resolution. If any query results are inside a nested view (e.g. *ngIf), the query will be
-   * resolved after change detection runs. Otherwise, it will be resolved before change detection
-   * runs.
+   * The `static` flag should typically be set to `false`, so that all possible
+   * query results are collected after change detection has completed for the
+   * relevant nodes.
+   * This ensures that matches which depend on binding resolution
+   * (such as results inside `*ngIf` or `*ngFor`) are found.
    *
-   * Supported selectors include:
-   *   * any class with the `@Component` or `@Directive` decorator
-   *   * a template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
-   * with `@ViewChild('cmp')`)
-   *   * any provider defined in the child component tree of the current component (e.g.
-   * `@ViewChild(SomeService) someService: SomeService`)
-   *   * any provider defined through a string token (e.g. `@ViewChild('someToken') someTokenVal:
-   * any`)
-   *   * a `TemplateRef` (e.g. query `<ng-template></ng-template>` with `@ViewChild(TemplateRef)
-   * template;`)
+   * If you need access to a `TemplateRef` in a query to create a view dynamically,
+   * you cannot do so in `ngAfterContentInit`.
+   * Change detection has already run on that view, so creating a new view with
+   * the template throws an `ExpressionHasChangedAfterChecked` error.
+   * In this case, you can set the `static` flag to `true` and create your view
+   * in `ngOnInit`.
+   * Note that in this case, query results nested in `*ngIf` or `*ngFor`
+   * are not found by the query.
+   *
+   * The following selectors are supported.
+   *   * Any class with the `@Component` or `@Directive` decorator.
+   *   * A template reference variable as a string (such as query `<my-component #cmp>
+   * </my-component>` with `@ViewChild('cmp')`).
+   *   * Any provider defined in the child component tree of the current component (such as
+   * `@ViewChild(SomeService) someService: SomeService`).
+   *   * Any provider defined through a string token (such as `@ViewChild('someToken')
+   *  someTokenVal: any`).
+   *   * A `TemplateRef` (such as query `<ng-template></ng-template>` with
+   *  `@ViewChild(TemplateRef) template;`).
    *
    * @usageNotes
    *
-   * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
+   * <code-example path="core/di/ts/viewChild/view_child_example.ts"
+   * region='Component' linenums="false"></code-example>
    *
    * ### Example
    *
-   * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'}
+   * <code-example path="core/di/ts/viewChild/view_child_howto.ts"
+   * region='HowTo' linenums="false"></code-example>
    *
    * ### Example
    *
-   * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
+   * <code-example path="core/di/ts/viewChild/view_child_example.ts"
+   * region='Component' linenums="false"></code-example>
+   *
+   * ### Migration to Angular version 8
+   *
+   * When migrating to version 8, set the `static` flag to `true`
+   * if your component code already depends  on the query results
+   * being available some time *before* `ngAfterContentInit`.
+   * For example, if your component relies on the query results being populated in
+   * the `ngOnInit` hook or in `@Input` setters,
+   * you will need to either set the flag to `true`
+   * or re-work your component to adjust to later timing.
+   *
+   * For more information, see [Static Query Migration](guide/static-query-migration).
    *
    * @Annotation
    */
