@@ -8,7 +8,7 @@
   "license": "MIT",
   "engines": {
     "node": ">=10.9.0 <11.0.0",
-    "yarn": ">=1.12.1 <=1.14.0"
+    "yarn": ">=1.12.1 <=1.16.0"
   },
   "repository": {
     "type": "git",
@@ -86,7 +86,7 @@
     "magic-string": "^0.25.0",
     "materialize-css": "1.0.0",
     "minimist": "1.2.0",
-    "mock-fs": "^4.5.0",
+    "mock-fs": "^4.10.1",
     "node-uuid": "1.4.8",
     "protractor": "^5.4.2",
     "reflect-metadata": "^0.1.3",
