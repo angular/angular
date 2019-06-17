@@ -4316,9 +4316,9 @@ webdriver-js-extender@2.1.0:
     selenium-webdriver "^3.0.1"
 
 webdriver-manager@^12.0.6:
-  version "12.1.1"
-  resolved "https://registry.yarnpkg.com/webdriver-manager/-/webdriver-manager-12.1.1.tgz#66c3271f69cefdaa9fdfca617ae95afae41c3c62"
-  integrity sha512-L9TEQmZs6JbMMRQI1w60mfps265/NCr0toYJl7p/R2OAk6oXAfwI6jqYP7EWae+d7Ad2S2Aj4+rzxoSjqk3ZuA==
+  version "12.1.5"
+  resolved "https://registry.yarnpkg.com/webdriver-manager/-/webdriver-manager-12.1.5.tgz#28817b14d4b16b94ede10d5a7ee187aeb7679edf"
+  integrity sha512-f1apDjMpZ8SHlXtXGzqBxOjV+WQcDRz5PN7pWScgjXS7vhUIFcM3V89Shetf4A04n8DDR2MxiVQq6JproFcRZw==
   dependencies:
     adm-zip "^0.4.9"
     chalk "^1.1.1"
