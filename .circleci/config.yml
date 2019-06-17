@@ -503,7 +503,10 @@ jobs:
       - run: git config --global --unset "url.ssh://git@github.com.insteadof"
       - run:
           name: Decrypt github credentials
-          command: 'openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git_credentials'
+          # We need ensure that the same default digest is used for encoding and decoding with
+          # openssl. Openssl versions might have different default digests which can cause
+          # decryption failures based on the installed openssl version. https://stackoverflow.com/a/39641378/4317734
+          command: 'openssl aes-256-cbc -d -in .circleci/github_token -md md5 -k "${KEY}" -out ~/.git_credentials'
       - run: ./scripts/ci/publish-build-artifacts.sh
 
   aio_monitoring_stable:
