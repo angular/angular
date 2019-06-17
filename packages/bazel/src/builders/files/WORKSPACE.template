@@ -39,7 +39,8 @@ http_archive(
 ####################################
 # Load and install our dependencies downloaded above.
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "yarn_install")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories",
+    "yarn_install")
 check_bazel_version(
     message = """
 You no longer need to install Bazel on your machine.
@@ -50,6 +51,19 @@ Try running `yarn bazel` instead.
 """,
     minimum_bazel_version = "0.26.0",
 )
+
+# Setup the Node repositories. We need a NodeJS version that is more recent than v10.15.0
+# because "selenium-webdriver" which is required for "ng e2e" cannot be installed.
+# TODO: remove the custom repositories once "rules_nodejs" supports v10.16.0 by default.
+node_repositories(
+    node_repositories = {
+        "10.16.0-darwin_amd64": ("node-v10.16.0-darwin-x64.tar.gz", "node-v10.16.0-darwin-x64", "6c009df1b724026d84ae9a838c5b382662e30f6c5563a0995532f2bece39fa9c"),
+        "10.16.0-linux_amd64": ("node-v10.16.0-linux-x64.tar.xz", "node-v10.16.0-linux-x64", "1827f5b99084740234de0c506f4dd2202a696ed60f76059696747c34339b9d48"),
+        "10.16.0-windows_amd64": ("node-v10.16.0-win-x64.zip", "node-v10.16.0-win-x64", "aa22cb357f0fb54ccbc06b19b60e37eefea5d7dd9940912675d3ed988bf9a059"),
+    },
+    node_version = "10.16.0",
+)
+
 yarn_install(
     name = "npm",
     data = ["//:angular-metadata.tsconfig.json"],
