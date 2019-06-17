@@ -399,7 +399,7 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   private _checked = false;
 
   /**
-   * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
+   * Attached to the aria-label attribute of the host element. In most cases, aria-labelledby will
    * take precedence so this may be omitted.
    */
   @Input('aria-label') ariaLabel: string;

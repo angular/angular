@@ -130,7 +130,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple {
 
   /**
-   * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
+   * Attached to the aria-label attribute of the host element. In most cases, aria-labelledby will
    * take precedence so this may be omitted.
    */
   @Input('aria-label') ariaLabel: string = '';

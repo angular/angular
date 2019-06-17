@@ -85,7 +85,7 @@ export class MatCheckboxChange {
 })
 export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccessor {
   /**
-   * The `aria-label` attribute to use for the input element. In most cases, `arial-labelledby` will
+   * The `aria-label` attribute to use for the input element. In most cases, `aria-labelledby` will
    * take precedence so this may be omitted.
    */
   @Input('aria-label') ariaLabel: string = '';
