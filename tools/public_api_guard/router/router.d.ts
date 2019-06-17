@@ -497,7 +497,7 @@ export declare abstract class UrlHandlingStrategy {
 
 export declare type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) => UrlMatchResult;
 
-export declare type UrlMatchResult = {
+export declare type UrlMatchResult = null | {
     consumed: UrlSegment[];
     posParams?: {
         [name: string]: UrlSegment;

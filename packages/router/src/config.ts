@@ -35,8 +35,9 @@ export type Routes = Route[];
  * @see `UrlMatcher()`
  * @publicApi
  */
-export type UrlMatchResult = {
-  consumed: UrlSegment[]; posParams?: {[name: string]: UrlSegment};
+export type UrlMatchResult = null | {
+  consumed: UrlSegment[];
+  posParams?: {[name: string]: UrlSegment};
 };
 
 /**
@@ -93,16 +94,16 @@ export type ResolveData = {
 /**
  *
  * A function that is called to resolve a collection of lazy-loaded routes.
- * 
+ *
  * Often this function will be implemented using an ES dynamic `import()` expression. For example:
- * 
+ *
  * ```
  * [{
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
  * }];
  * ```
- * 
+ *
  * This function _must_ match the form above: an arrow function of the form
  * `() => import('...').then(mod => mod.MODULE)`.
  *
