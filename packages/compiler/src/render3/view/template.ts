@@ -458,7 +458,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (bindings.size) {
       bindings.forEach(binding => {
         this.updateInstruction(
-            index, span, R3.i18nExp, () => [this.convertPropertyBinding(binding)]);
+            index, span, R3.i18nExp,
+            () => [this.convertPropertyBinding(binding, /* skipBindFn */ true)]);
       });
       this.updateInstruction(index, span, R3.i18nApply, [o.literal(index)]);
     }
@@ -656,7 +657,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
                 hasBindings = true;
                 this.updateInstruction(
                     elementIndex, element.sourceSpan, R3.i18nExp,
-                    () => [this.convertExpressionBinding(expression)]);
+                    () => [this.convertExpressionBinding(expression, /* skipBindFn */ true)]);
               });
             }
           }
@@ -826,7 +827,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       instruction: o.ExternalReference, elementIndex: number, attrName: string,
       input: t.BoundAttribute, value: any, params: any[]) {
     this.updateInstruction(elementIndex, input.sourceSpan, instruction, () => {
-      return [o.literal(attrName), this.convertPropertyBinding(value, true), ...params];
+      return [
+        o.literal(attrName), this.convertPropertyBinding(value, /* skipBindFn */ true), ...params
+      ];
     });
   }
 
@@ -1030,7 +1033,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           this.allocateBindingSlots(value);
           this.updateInstruction(
               templateIndex, template.sourceSpan, R3.property,
-              () => [o.literal(input.name), this.convertPropertyBinding(value, true)]);
+              () =>
+                  [o.literal(input.name),
+                   this.convertPropertyBinding(value, /* skipBindFn */ true)]);
         }
       }
     });
@@ -1052,8 +1057,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private processStylingInstruction(
       elementIndex: number, instruction: Instruction|null, createMode: boolean) {
     if (instruction) {
-      const paramsFn = () =>
-          instruction.buildParams(value => this.convertPropertyBinding(value, true));
+      const paramsFn = () => instruction.buildParams(
+          value => this.convertPropertyBinding(value, /* skipBindFn */ true));
       if (createMode) {
         this.creationInstruction(instruction.sourceSpan, instruction.reference, paramsFn);
       } else {
@@ -1105,12 +1110,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         this._bindingScope.getOrCreateSharedContextVar(0);
   }
 
-  private convertExpressionBinding(value: AST): o.Expression {
+  private convertExpressionBinding(value: AST, skipBindFn?: boolean): o.Expression {
     const convertedPropertyBinding = convertPropertyBinding(
         this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.TrySimple);
     const valExpr = convertedPropertyBinding.currValExpr;
 
-    return o.importExpr(R3.bind).callFn([valExpr]);
+    return skipBindFn ? valExpr : o.importExpr(R3.bind).callFn([valExpr]);
   }
 
   private convertPropertyBinding(value: AST, skipBindFn?: boolean): o.Expression {
