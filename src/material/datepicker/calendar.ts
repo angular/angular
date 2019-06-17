@@ -27,12 +27,17 @@ import {
 } from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 import {Subject, Subscription} from 'rxjs';
+import {MatCalendarCellCssClasses} from './calendar-body';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MatDatepickerIntl} from './datepicker-intl';
 import {MatMonthView} from './month-view';
-import {MatMultiYearView, yearsPerPage} from './multi-year-view';
+import {
+  getActiveOffset,
+  isSameMultiYearView,
+  MatMultiYearView,
+  yearsPerPage
+} from './multi-year-view';
 import {MatYearView} from './year-view';
-import {MatCalendarCellCssClasses} from './calendar-body';
 
 /**
  * Possible views for the calendar.
@@ -69,12 +74,15 @@ export class MatCalendarHeader<D> {
     if (this.calendar.currentView == 'year') {
       return this._dateAdapter.getYearName(this.calendar.activeDate);
     }
+
+    // The offset from the active year to the "slot" for the starting year is the
+    // *actual* first rendered year in the multi-year view, and the last year is
+    // just yearsPerPage - 1 away.
     const activeYear = this._dateAdapter.getYear(this.calendar.activeDate);
-    const firstYearInView = this._dateAdapter.getYearName(
-        this._dateAdapter.createDate(activeYear - activeYear % 24, 0, 1));
-    const lastYearInView = this._dateAdapter.getYearName(
-        this._dateAdapter.createDate(activeYear + yearsPerPage - 1 - activeYear % 24, 0, 1));
-    return `${firstYearInView} \u2013 ${lastYearInView}`;
+    const minYearOfPage = activeYear - getActiveOffset(
+      this._dateAdapter, this.calendar.activeDate, this.calendar.minDate, this.calendar.maxDate);
+    const maxYearOfPage = minYearOfPage + yearsPerPage - 1;
+    return `${minYearOfPage} \u2013 ${maxYearOfPage}`;
   }
 
   get periodButtonLabel(): string {
@@ -149,8 +157,8 @@ export class MatCalendarHeader<D> {
       return this._dateAdapter.getYear(date1) == this._dateAdapter.getYear(date2);
     }
     // Otherwise we are in 'multi-year' view.
-    return Math.floor(this._dateAdapter.getYear(date1) / yearsPerPage) ==
-        Math.floor(this._dateAdapter.getYear(date2) / yearsPerPage);
+    return isSameMultiYearView(
+      this._dateAdapter, date1, date2, this.calendar.minDate, this.calendar.maxDate);
   }
 }
 
