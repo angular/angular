@@ -1,0 +1,29 @@
+// This tsconfig is used in the TypeScript
+// configuration guide (../guide/typescript-configuration.md) 
+// to display the latest default configuration
+// Note: Update with every major release to the latest default
+// #docregion
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+// #docregion lib    
+    "lib": [
+      "es2018",
+      "dom"
+    ]
+// #enddocregion lib
+  }
+}
