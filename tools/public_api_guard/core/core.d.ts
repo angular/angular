@@ -849,7 +849,7 @@ export declare function ɵɵi18nAttributes(index: number, values: string[]): voi
 
 export declare function ɵɵi18nEnd(): void;
 
-export declare function ɵɵi18nExp<T>(expression: T | NO_CHANGE): void;
+export declare function ɵɵi18nExp<T>(value: T): void;
 
 /** @deprecated */
 export declare function ɵɵi18nLocalize(input: string, placeholders?: {
