@@ -71,7 +71,7 @@ ng_package(
     name = "npm_package",
     srcs = ["package.json"],
     data = [":docs-content"],
-    entry_point = "src/material-examples/public_api.js",
+    entry_point = ":public-api.ts",
     globals = ROLLUP_GLOBALS,
     tags = ["docs-package"],
     deps = [":examples"],

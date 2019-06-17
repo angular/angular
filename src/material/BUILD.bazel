@@ -51,7 +51,7 @@ ng_package(
         "//src/material/prebuilt-themes:pink-bluegrey",
         "//src/material/prebuilt-themes:purple-green",
     ],
-    entry_point = "src/material/public_api.js",
+    entry_point = ":public-api.ts",
     entry_point_name = "material",
     globals = ROLLUP_GLOBALS,
     packages = ["//src/material/schematics:npm_package"],

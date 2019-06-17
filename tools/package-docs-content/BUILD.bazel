@@ -8,7 +8,7 @@ nodejs_binary(
     data = [
         ":sources",
     ],
-    entry_point = "angular_material/tools/package-docs-content/package-docs-content.js",
+    entry_point = ":package-docs-content.ts",
 )
 
 ts_library(

@@ -10,7 +10,7 @@ nodejs_binary(
         "@npm//dgeni",
         "@npm//dgeni-packages",
     ],
-    entry_point = "angular_material/tools/dgeni/bazel-bin.js",
+    entry_point = ":bazel-bin.ts",
 )
 
 ts_library(

@@ -20,5 +20,5 @@ nodejs_binary(
         ":example-module-lib",
         "@npm//typescript",
     ],
-    entry_point = "angular_material/tools/example-module/bazel-bin.js",
+    entry_point = ":bazel-bin.ts",
 )

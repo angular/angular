@@ -20,7 +20,7 @@ nodejs_binary(
         ":sass_bundle_lib",
         "@npm//scss-bundle",
     ],
-    entry_point = "angular_material/tools/sass-bundle.js",
+    entry_point = ":sass-bundle.ts",
 )
 
 # Workaround for https://github.com/bazelbuild/bazel-toolchains/issues/356. We need the

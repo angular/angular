@@ -18,5 +18,5 @@ nodejs_binary(
         ":sources",
         "@npm//highlight.js",
     ],
-    entry_point = "angular_material/tools/highlight-files/highlight-files.js",
+    entry_point = ":highlight-files.ts",
 )

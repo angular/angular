@@ -20,7 +20,7 @@ ng_module(
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    entry_point = "src/material-experimental/public_api.js",
+    entry_point = ":public-api.ts",
     globals = ROLLUP_GLOBALS,
     # TODO(devversion): re-enable once we have set up the proper compiler for the ng_package
     tags = ["manual"],
