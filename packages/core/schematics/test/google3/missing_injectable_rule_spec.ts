@@ -12,8 +12,8 @@ import * as shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 
 describe('Google3 missing injectable tslint rule', () => {
-  const rulesDirectory = dirname(
-      require.resolve('../../migrations/missing-injectable/google3/noMissingInjectableRule'));
+  const rulesDirectory =
+      dirname(require.resolve('../../migrations/google3/noMissingInjectableRule'));
 
   let tmpDir: string;
 

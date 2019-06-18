@@ -6,6 +6,10 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = ["//packages/core/schematics/test:__pkg__"],
     deps = [
+        "//packages/core/schematics/migrations/injectable-pipe",
+        "//packages/core/schematics/migrations/missing-injectable",
+        "//packages/core/schematics/migrations/missing-injectable/google3",
+        "//packages/core/schematics/migrations/static-queries",
         "//packages/core/schematics/migrations/template-var-assignment",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",

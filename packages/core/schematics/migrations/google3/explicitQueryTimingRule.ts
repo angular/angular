@@ -9,11 +9,11 @@
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 
-import {NgComponentTemplateVisitor} from '../../../utils/ng_component_template';
-import {NgQueryResolveVisitor} from '../angular/ng_query_visitor';
-import {QueryTiming} from '../angular/query-definition';
-import {QueryUsageStrategy} from '../strategies/usage_strategy/usage_strategy';
-import {getTransformedQueryCallExpr} from '../transform';
+import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
+import {NgQueryResolveVisitor} from '../static-queries/angular/ng_query_visitor';
+import {QueryTiming} from '../static-queries/angular/query-definition';
+import {QueryUsageStrategy} from '../static-queries/strategies/usage_strategy/usage_strategy';
+import {getTransformedQueryCallExpr} from '../static-queries/transform';
 
 const FAILURE_MESSAGE = 'Query does not explicitly specify its timing. Read more here: ' +
     'https://github.com/angular/angular/pull/28810';
