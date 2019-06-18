@@ -1,6 +1,6 @@
 footer {
   position: relative;
-  line-height: 24px;
+  @include line-height(24);
   flex: 1;
   padding: 48px;
   z-index: 0;
@@ -37,7 +37,7 @@ footer {
     cursor: pointer;
   }
   h3 {
-    font-size: 16px;
+    @include font-size(16);
     text-transform: uppercase;
     font-weight: 400;
     margin: 0 0 16px;
@@ -82,23 +82,15 @@ footer {
     }
   }
 
-
-
-
-  @media (max-width: 700px) {
-    h3 {
-      font-size: 110%;
-    }
-  }
   @media (max-width: 600px) {
     h3 {
-      font-size: 100%;
+      @include font-size(14);
     }
   }
 }
 
 footer::after {
-    content: "";
+    content: '';
     position: absolute;
     z-index: -1;
     top: 0;
