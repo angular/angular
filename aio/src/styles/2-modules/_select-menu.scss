@@ -10,10 +10,10 @@
   box-sizing: border-box;
   border: 1px solid $white;
   color: $blue-grey-600;
-  font-size: 12px;
+  @include font-size(12);
   font-weight: 400;
   height: 32px;
-  line-height: 32px;
+  @include line-height(32);
   outline: none;
   padding: 0 16px;
   text-align: left;
@@ -51,8 +51,8 @@
 
   li {
     cursor: pointer;
-    font-size: 14px;
-    line-height: 32px;
+    @include font-size(14);
+    @include line-height(32);
     margin: 0;
     padding: 0 16px 0 40px;
     position: relative;
