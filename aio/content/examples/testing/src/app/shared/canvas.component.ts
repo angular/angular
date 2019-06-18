@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'sample-canvas',
@@ -6,7 +6,7 @@ import { Component, AfterViewInit, ViewChild } from '@angular/core';
 })
 export class CanvasComponent implements AfterViewInit {
   blobSize: number;
-  @ViewChild('sampleCanvas', {static: false}) sampleCanvas;
+  @ViewChild('sampleCanvas', {static: false}) sampleCanvas: ElementRef;
 
   constructor() { }
 

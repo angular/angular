@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, Observer } from 'rxjs';
 import { concat, map, retryWhen, switchMap, take, tap } from 'rxjs/operators';
 
 import { Quote } from './quote';
@@ -14,7 +14,7 @@ export class TwainService {
   private nextId = 1;
 
   getQuote(): Observable<string> {
-    return Observable.create(observer => observer.next(this.nextId++)).pipe(
+    return Observable.create((observer: Observer<number>) => observer.next(this.nextId++)).pipe(
 
       // tap((id: number) => console.log(id)),
       // tap((id: number) => { throw new Error('Simulated server error'); }),
