@@ -46,7 +46,7 @@ export interface IndexedComponent {
   content: string;
   template: {
     identifiers: Set<TemplateIdentifier>,
-    usedComponents: Set<ts.ClassDeclaration>,
+    usedComponents: Set<ts.Declaration>,
   };
 }
 

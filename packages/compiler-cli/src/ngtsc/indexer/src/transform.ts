@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 import {IndexedComponent} from './api';
 import {IndexingContext} from './context';
+import {getTemplateIdentifiers} from './template';
 
 /**
  * Generates `IndexedComponent` entries from a `IndexingContext`, which has information
@@ -17,5 +18,26 @@ import {IndexingContext} from './context';
  * The context must be populated before `generateAnalysis` is called.
  */
 export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, IndexedComponent> {
-  throw new Error('Method not implemented.');
+  const analysis = new Map<ts.Declaration, IndexedComponent>();
+
+  context.components.forEach(({declaration, selector, interpolationConfig, template}) => {
+    const name = declaration.name.getText();
+    const usedComponents = context.getUsedComponents(template);
+
+    analysis.set(declaration, {
+      name,
+      selector,
+      sourceFile: declaration.getSourceFile().fileName,
+      content: declaration.getSourceFile().getFullText(),
+      template: {
+        identifiers: getTemplateIdentifiers(template, {
+          preserveWhitespaces: true,
+          interpolationConfig,
+        }),
+        usedComponents,
+      },
+    });
+  });
+
+  return analysis;
 }
