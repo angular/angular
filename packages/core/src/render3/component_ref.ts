@@ -18,7 +18,6 @@ import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/security';
-import {assertDefined} from '../util/assert';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider';
 
@@ -258,13 +257,16 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
   get injector(): Injector { return new NodeInjector(this._tNode, this._rootLView); }
 
   destroy(): void {
-    ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
-    this.destroyCbs !.forEach(fn => fn());
-    this.destroyCbs = null;
-    !this.hostView.destroyed && this.hostView.destroy();
+    if (this.destroyCbs) {
+      this.destroyCbs.forEach(fn => fn());
+      this.destroyCbs = null;
+      !this.hostView.destroyed && this.hostView.destroy();
+    }
   }
+
   onDestroy(callback: () => void): void {
-    ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
-    this.destroyCbs !.push(callback);
+    if (this.destroyCbs) {
+      this.destroyCbs.push(callback);
+    }
   }
 }

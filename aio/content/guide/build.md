@@ -6,7 +6,7 @@ This page discusses build-specific configuration options for Angular projects.
 
 ## Configuring application environments
 
-You can define different named build configurations for your project, such as *stage* and *production*, with different defaults. 
+You can define different named build configurations for your project, such as *stage* and *production*, with different defaults.
 
 Each named build configuration can have defaults for any of the options that apply to the various build targets, such as `build`, `serve`, and `test`. The [Angular CLI](cli) `build`, `serve`, and `test` commands can then replace files with appropriate versions for your intended target environment.
 
@@ -18,8 +18,8 @@ The following figure shows how a project has multiple build targets, which can b
 
 ### Configure environment-specific defaults
 
-A project's `src/environments/` folder contains the base configuration file, `environment.ts`, which provides a default environment. 
-You can add override defaults for additional environments, such as production and staging, in target-specific configuration files. 
+A project's `src/environments/` folder contains the base configuration file, `environment.ts`, which provides a default environment.
+You can add override defaults for additional environments, such as production and staging, in target-specific configuration files.
 
 For example:
 
@@ -38,8 +38,8 @@ export const environment = {
 };
 ```
 
-The `build` command uses this as the build target when no environment is specified. 
-You can add further variables, either as additional properties on the environment object, or as separate objects. 
+The `build` command uses this as the build target when no environment is specified.
+You can add further variables, either as additional properties on the environment object, or as separate objects.
 For example, the following adds a default for a variable to the default environment:
 
 ```
@@ -49,7 +49,7 @@ export const environment = {
 };
 ```
 
-You can add target-specific configuration files, such as `environment.prod.ts`. 
+You can add target-specific configuration files, such as `environment.prod.ts`.
 The following sets content sets default values for the production build target:
 
 ```
@@ -104,11 +104,11 @@ export class AppComponent {
 
 ## Configure target-specific file replacements
 
-The main CLI configuration file, `angular.json`, contains a `fileReplacements` section in the configuration for each build target, which allows you to replace any file with a target-specific version of that file. 
+The main CLI configuration file, `angular.json`, contains a `fileReplacements` section in the configuration for each build target, which allows you to replace any file with a target-specific version of that file.
 This is useful for including target-specific code or variables in a build that targets a specific environment, such as production or staging.
 
-By default no files are replaced. 
-You can add file replacements for specific build targets. 
+By default no files are replaced.
+You can add file replacements for specific build targets.
 For example:
 
 ```
@@ -141,7 +141,7 @@ You can add additional configurations as required. To add a staging environment,
 }
 ```
 
-You can add more configuration options to this target environment as well. 
+You can add more configuration options to this target environment as well.
 Any option that your build supports can be overridden in a build target configuration.
 
 To build using the staging configuration, run the following command:
@@ -173,10 +173,10 @@ You can also configure the `serve` command to use the targeted build configurati
 
 ## Configure size budgets
 
-As applications grow in functionality, they also grow in size. 
+As applications grow in functionality, they also grow in size.
 The CLI allows you to set size thresholds in your configuration to ensure that parts of your application stay within size boundaries that you define.
 
-Define your size boundaries in the CLI configuration file, `angular.json`, in a `budgets` section for each [configured environment](#app-environments). 
+Define your size boundaries in the CLI configuration file, `angular.json`, in a `budgets` section for each [configured environment](#app-environments).
 
 ```
 {
@@ -190,8 +190,8 @@ Define your size boundaries in the CLI configuration file, `angular.json`, in a 
 }
 ```
 
-You can specify size budgets for the entire app, and for particular parts. 
-Each budget entry configures a budget of a given type. 
+You can specify size budgets for the entire app, and for particular parts.
+Each budget entry configures a budget of a given type.
 Specify size values in the following formats:
 
 * 123 or 123b: Size in bytes
@@ -222,15 +222,15 @@ Each budget entry is a JSON object with the following properties:
         * all - The size of the entire app.
         * anyScript - The size of any one script.
         * any - The size of any file.
-        
+
     </td>
   </tr>
    <tr>
     <td>name</td>
     <td>
-    
+
     The name of the bundle (for `type=bundle`).
-    
+
     </td>
   </tr>
   <tr>
@@ -269,12 +269,12 @@ Each budget entry is a JSON object with the following properties:
 
 ## Configuring browser compatibility
 
-The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure compatibility with different browser and browser versions. 
+The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure compatibility with different browser and browser versions.
 You may find it necessary to target specific browsers or exclude certain browser versions from your build.
 
-Internally, Autoprefixer relies on a library called [Browserslist](https://github.com/browserslist/browserslist) to figure out which browsers to support with prefixing. 
-Browserlist looks for configuration options in a `browserslist` property of the package configuration file, or in a configuration file named `.browserslistrc`. 
-Autoprefixer looks for the `browserslist` configuration when it prefixes your CSS. 
+Internally, Autoprefixer relies on a library called [Browserslist](https://github.com/browserslist/browserslist) to figure out which browsers to support with prefixing.
+Browserlist looks for configuration options in a `browserslist` property of the package configuration file, or in a configuration file named `.browserslistrc`.
+Autoprefixer looks for the `browserslist` configuration when it prefixes your CSS.
 
 * You can tell Autoprefixer what browsers to target by adding a browserslist property to the package configuration file, `package.json`:
 ```
@@ -340,16 +340,16 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
     ...
     ```
 
-1. To run the dev server with this proxy configuration, call `ng serve`. 
+1. To run the dev server with this proxy configuration, call `ng serve`.
 
-You can edit the proxy configuration file to add configuration options; some examples are given below. 
+You can edit the proxy configuration file to add configuration options; some examples are given below.
 For a description of all options, see [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserver-proxy).
 
 Note that if you edit the proxy configuration file, you must relaunch the `ng serve` process to make your changes effective.
 
 ### Rewrite the URL path
 
-The `pathRewrite` proxy configuration option lets you rewrite the URL path at run time. 
+The `pathRewrite` proxy configuration option lets you rewrite the URL path at run time.
 For example, you can specify the following `pathRewrite` value to the proxy configuration to remove "api" from the end of a path.
 
 ```
@@ -460,7 +460,7 @@ module.exports = PROXY_CONFIG;
 
 ### Using corporate proxy
 
-If you work behind a corporate proxy, the cannot directly proxy calls to any URL outside your local network. 
+If you work behind a corporate proxy, the backend cannot directly proxy calls to any URL outside your local network.
 In this case, you can configure the backend proxy to redirect calls through your corporate proxy using an agent:
 
 <code-example language="none" class="code-shell">
@@ -493,4 +493,3 @@ function setupForCorporateProxy(proxyConfig) {
 
 module.exports = setupForCorporateProxy(proxyConfig);
 ```
-

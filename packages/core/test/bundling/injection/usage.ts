@@ -10,6 +10,7 @@ import {Injector, ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵ
 
 export class RootService {
   static ngInjectableDef = ɵɵdefineInjectable({
+    token: RootService,
     providedIn: 'root',
     factory: () => new RootService(),
   });
@@ -17,6 +18,7 @@ export class RootService {
 
 export class ScopedService {
   static ngInjectableDef = ɵɵdefineInjectable({
+    token: ScopedService,
     providedIn: null,
     factory: () => new ScopedService(),
   });

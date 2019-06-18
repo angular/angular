@@ -123,7 +123,11 @@ export function getEntryPointFormat(
     case 'esm5':
       return 'esm5';
     case 'main':
-      const pathToMain = AbsoluteFsPath.join(entryPoint.path, entryPoint.packageJson['main'] !);
+      const mainFile = entryPoint.packageJson['main'];
+      if (mainFile === undefined) {
+        return undefined;
+      }
+      const pathToMain = AbsoluteFsPath.join(entryPoint.path, mainFile);
       return isUmdModule(fs, pathToMain) ? 'umd' : 'commonjs';
     case 'module':
       return 'esm5';

@@ -7,7 +7,6 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-
 import {assertLContainer, assertLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -802,6 +801,23 @@ export function appendProjectedNodes(
 }
 
 /**
+ * Loops over all children of a TNode container and appends them to the DOM
+ *
+ * @param ngContainerChildTNode The first child of the TNode container
+ * @param tProjectionNode The projection (ng-content) TNode
+ * @param currentView Current LView
+ * @param projectionView Projection view (view above current)
+ */
+function appendProjectedChildren(
+    ngContainerChildTNode: TNode | null, tProjectionNode: TNode, currentView: LView,
+    projectionView: LView) {
+  while (ngContainerChildTNode) {
+    appendProjectedNode(ngContainerChildTNode, tProjectionNode, currentView, projectionView);
+    ngContainerChildTNode = ngContainerChildTNode.next;
+  }
+}
+
+/**
  * Appends a projected node to the DOM, or in the case of a projected container,
  * appends the nodes from all of the container's active views to the DOM.
  *
@@ -831,13 +847,15 @@ function appendProjectedNode(
     for (let i = CONTAINER_HEADER_OFFSET; i < nodeOrContainer.length; i++) {
       addRemoveViewFromContainer(nodeOrContainer[i], true, nodeOrContainer[NATIVE]);
     }
+  } else if (projectedTNode.type === TNodeType.IcuContainer) {
+    // The node we are adding is an ICU container which is why we also need to project all the
+    // children nodes that might have been created previously and are linked to this anchor
+    let ngContainerChildTNode: TNode|null = projectedTNode.child as TNode;
+    appendProjectedChildren(
+        ngContainerChildTNode, ngContainerChildTNode, projectionView, projectionView);
   } else {
     if (projectedTNode.type === TNodeType.ElementContainer) {
-      let ngContainerChildTNode: TNode|null = projectedTNode.child as TNode;
-      while (ngContainerChildTNode) {
-        appendProjectedNode(ngContainerChildTNode, tProjectionNode, currentView, projectionView);
-        ngContainerChildTNode = ngContainerChildTNode.next;
-      }
+      appendProjectedChildren(projectedTNode.child, tProjectionNode, currentView, projectionView);
     }
 
     if (isLContainer(nodeOrContainer)) {

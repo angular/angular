@@ -1,3 +1,31 @@
+<a name="8.1.0-next.2"></a>
+# [8.1.0-next.2](https://github.com/angular/angular/compare/8.1.0-next.1...8.1.0-next.2) (2019-06-13)
+
+
+### Bug Fixes
+
+* **bazel:** do not modify tsconfig.json ([#30877](https://github.com/angular/angular/issues/30877)) ([b086676](https://github.com/angular/angular/commit/b086676))
+* **bazel:** exclude components schematics from build ([#30825](https://github.com/angular/angular/issues/30825)) ([05a43ca](https://github.com/angular/angular/commit/05a43ca))
+* **bazel:** Load global stylesheet in dev and prod ([#30879](https://github.com/angular/angular/issues/30879)) ([17bfedd](https://github.com/angular/angular/commit/17bfedd))
+* **common:** expose the `HttpUploadProgressEvent` interface as public API ([#30852](https://github.com/angular/angular/issues/30852)) ([5c18f23](https://github.com/angular/angular/commit/5c18f23)), closes [#30814](https://github.com/angular/angular/issues/30814)
+* **service-worker:** avoid uncaught rejection warning when registration fails ([#30876](https://github.com/angular/angular/issues/30876)) ([81c2a94](https://github.com/angular/angular/commit/81c2a94))
+
+
+
+<a name="8.0.1"></a>
+## [8.0.1](https://github.com/angular/angular/compare/8.0.0...8.0.1) (2019-06-13)
+
+
+### Bug Fixes
+
+* **bazel:** do not modify tsconfig.json ([#30984](https://github.com/angular/angular/issues/30984)) ([49307f0](https://github.com/angular/angular/commit/49307f0))
+* **bazel:** Load global stylesheet in dev and prod ([#30879](https://github.com/angular/angular/issues/30879)) ([5a7bcd1](https://github.com/angular/angular/commit/5a7bcd1))
+* **common:** expose the `HttpUploadProgressEvent` interface as public API ([#30852](https://github.com/angular/angular/issues/30852)) ([4e8614b](https://github.com/angular/angular/commit/4e8614b)), closes [#30814](https://github.com/angular/angular/issues/30814)
+* **core:** TypeScript related migrations should cater for BOM ([#30719](https://github.com/angular/angular/issues/30719)) ([26e3615](https://github.com/angular/angular/commit/26e3615)), closes [/github.com/angular/angular-cli/blob/master/packages/angular_devkit/schematics/src/tree/recorder.ts#L72](https://github.com//github.com/angular/angular-cli/blob/master/packages/angular_devkit/schematics/src/tree/recorder.ts/issues/L72) [#30713](https://github.com/angular/angular/issues/30713)
+* **service-worker:** avoid uncaught rejection warning when registration fails ([#30876](https://github.com/angular/angular/issues/30876)) ([08c38a1](https://github.com/angular/angular/commit/08c38a1))
+
+
+
 <a name="8.1.0-next.1"></a>
 # [8.1.0-next.1](https://github.com/angular/angular/compare/8.1.0-beta.0...8.1.0-next.1) (2019-06-05)
 

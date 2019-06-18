@@ -307,7 +307,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     // be retrieved through the node injector, so this isn't a problem.
     if (!type.hasOwnProperty(NG_INJECTABLE_DEF)) {
       (type as any)[NG_INJECTABLE_DEF] =
-          ɵɵdefineInjectable<T>({factory: componentDefinition.factory as() => T});
+          ɵɵdefineInjectable<T>({token: type, factory: componentDefinition.factory as() => T});
     }
   }) as never;
 

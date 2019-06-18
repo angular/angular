@@ -1,0 +1,10 @@
+{
+  "description": "Built-in Directives",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["Built-in Directives"]
+}

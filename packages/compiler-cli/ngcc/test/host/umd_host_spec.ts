@@ -57,6 +57,39 @@ const SOME_DIRECTIVE_FILE = {
 })));`,
 };
 
+const TOPLEVEL_DECORATORS_FILE = {
+  name: '/toplevel_decorators.umd.js',
+  contents: `
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+  typeof define === 'function' && define.amd ? define('some_directive', ['exports', '@angular/core'], factory) :
+  (factory(global.some_directive,global.ng.core));
+}(this, (function (exports,core) { 'use strict';
+
+  var INJECTED_TOKEN = new InjectionToken('injected');
+  var ViewContainerRef = {};
+  var TemplateRef = {};
+
+  var SomeDirective = (function() {
+    function SomeDirective(_viewContainer, _template, injected) {}
+    return SomeDirective;
+  }());
+  SomeDirective.decorators = [
+    { type: core.Directive, args: [{ selector: '[someDirective]' },] }
+  ];
+  SomeDirective.ctorParameters = function() { return [
+    { type: ViewContainerRef, },
+    { type: TemplateRef, },
+    { type: undefined, decorators: [{ type: core.Inject, args: [INJECTED_TOKEN,] },] },
+  ]; };
+  SomeDirective.propDecorators = {
+    "input1": [{ type: core.Input },],
+    "input2": [{ type: core.Input },],
+  };
+  exports.SomeDirective = SomeDirective;
+})));`,
+};
+
 const SIMPLE_ES2015_CLASS_FILE = {
   name: '/simple_es2015_class.d.ts',
   contents: `
@@ -864,6 +897,24 @@ describe('UmdReflectionHost', () => {
       ]);
     });
 
+    it('should find the decorators on a class at the top level', () => {
+      const {program, host: compilerHost} = makeTestBundleProgram([TOPLEVEL_DECORATORS_FILE]);
+      const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+      const classNode = getDeclaration(
+          program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+      const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+      expect(decorators).toBeDefined();
+      expect(decorators.length).toEqual(1);
+
+      const decorator = decorators[0];
+      expect(decorator.name).toEqual('Directive');
+      expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+      expect(decorator.args !.map(arg => arg.getText())).toEqual([
+        '{ selector: \'[someDirective]\' }',
+      ]);
+    });
+
     it('should return null if the symbol is not a class', () => {
       const {program, host: compilerHost} = makeTestBundleProgram([FOO_FUNCTION_FILE]);
       const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
@@ -989,6 +1040,24 @@ describe('UmdReflectionHost', () => {
       const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+      const members = host.getMembersOfClass(classNode);
+
+      const input1 = members.find(member => member.name === 'input1') !;
+      expect(input1.kind).toEqual(ClassMemberKind.Property);
+      expect(input1.isStatic).toEqual(false);
+      expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
+
+      const input2 = members.find(member => member.name === 'input2') !;
+      expect(input2.kind).toEqual(ClassMemberKind.Property);
+      expect(input2.isStatic).toEqual(false);
+      expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
+    });
+
+    it('should find decorated members on a class at the top level', () => {
+      const {program, host: compilerHost} = makeTestBundleProgram([TOPLEVEL_DECORATORS_FILE]);
+      const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+      const classNode = getDeclaration(
+          program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
 
       const input1 = members.find(member => member.name === 'input1') !;
@@ -1203,6 +1272,24 @@ describe('UmdReflectionHost', () => {
       ]);
     });
 
+    it('should find the decorated constructor parameters at the top level', () => {
+      const {program, host: compilerHost} = makeTestBundleProgram([TOPLEVEL_DECORATORS_FILE]);
+      const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+      const classNode = getDeclaration(
+          program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+      const parameters = host.getConstructorParameters(classNode);
+
+      expect(parameters).toBeDefined();
+      expect(parameters !.map(parameter => parameter.name)).toEqual([
+        '_viewContainer', '_template', 'injected'
+      ]);
+      expectTypeValueReferencesForParameters(parameters !, [
+        'ViewContainerRef',
+        'TemplateRef',
+        null,
+      ]);
+    });
+
     it('should throw if the symbol is not a class', () => {
       const {program, host: compilerHost} = makeTestBundleProgram([FOO_FUNCTION_FILE]);
       const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
@@ -1380,7 +1467,7 @@ describe('UmdReflectionHost', () => {
 
       const fooNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration) !;
-      const fooDef = host.getDefinitionOfFunction(fooNode);
+      const fooDef = host.getDefinitionOfFunction(fooNode) !;
       expect(fooDef.node).toBe(fooNode);
       expect(fooDef.body !.length).toEqual(1);
       expect(fooDef.body ![0].getText()).toEqual(`return x;`);
@@ -1390,7 +1477,7 @@ describe('UmdReflectionHost', () => {
 
       const barNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'bar', isNamedFunctionDeclaration) !;
-      const barDef = host.getDefinitionOfFunction(barNode);
+      const barDef = host.getDefinitionOfFunction(barNode) !;
       expect(barDef.node).toBe(barNode);
       expect(barDef.body !.length).toEqual(1);
       expect(ts.isReturnStatement(barDef.body ![0])).toBeTruthy();
@@ -1403,7 +1490,7 @@ describe('UmdReflectionHost', () => {
 
       const bazNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'baz', isNamedFunctionDeclaration) !;
-      const bazDef = host.getDefinitionOfFunction(bazNode);
+      const bazDef = host.getDefinitionOfFunction(bazNode) !;
       expect(bazDef.node).toBe(bazNode);
       expect(bazDef.body !.length).toEqual(3);
       expect(bazDef.parameters.length).toEqual(1);
@@ -1412,7 +1499,7 @@ describe('UmdReflectionHost', () => {
 
       const quxNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'qux', isNamedFunctionDeclaration) !;
-      const quxDef = host.getDefinitionOfFunction(quxNode);
+      const quxDef = host.getDefinitionOfFunction(quxNode) !;
       expect(quxDef.node).toBe(quxNode);
       expect(quxDef.body !.length).toEqual(2);
       expect(quxDef.parameters.length).toEqual(1);
@@ -1681,27 +1768,41 @@ describe('UmdReflectionHost', () => {
     });
   });
 
-  describe('findDecoratedClasses()', () => {
-    it('should return an array of all decorated classes in the given source file', () => {
+  describe('findClassSymbols()', () => {
+    it('should return an array of all classes in the given source file', () => {
       const {program, host: compilerHost} = makeTestBundleProgram(DECORATED_FILES);
       const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
-      const primary = program.getSourceFile(DECORATED_FILES[0].name) !;
+      const primaryFile = program.getSourceFile(DECORATED_FILES[0].name) !;
+      const secondaryFile = program.getSourceFile(DECORATED_FILES[1].name) !;
 
-      const primaryDecoratedClasses = host.findDecoratedClasses(primary);
-      expect(primaryDecoratedClasses.length).toEqual(2);
-      const classA = primaryDecoratedClasses.find(c => c.name === 'A') !;
-      expect(classA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
-      // Note that `B` is not exported from `primary.js`
-      const classB = primaryDecoratedClasses.find(c => c.name === 'B') !;
-      expect(classB.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+      const classSymbolsPrimary = host.findClassSymbols(primaryFile);
+      expect(classSymbolsPrimary.length).toEqual(2);
+      expect(classSymbolsPrimary.map(c => c.name)).toEqual(['A', 'B']);
 
-      const secondary = program.getSourceFile(DECORATED_FILES[1].name) !;
-      const secondaryDecoratedClasses = host.findDecoratedClasses(secondary);
-      expect(secondaryDecoratedClasses.length).toEqual(1);
-      // Note that `D` is exported from `secondary.js` but not exported from `primary.js`
-      const classD = secondaryDecoratedClasses.find(c => c.name === 'D') !;
-      expect(classD.name).toEqual('D');
-      expect(classD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+      const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
+      expect(classSymbolsSecondary.length).toEqual(1);
+      expect(classSymbolsSecondary.map(c => c.name)).toEqual(['D']);
+    });
+  });
+
+  describe('getDecoratorsOfSymbol()', () => {
+    it('should return decorators of class symbol', () => {
+      const {program, host: compilerHost} = makeTestBundleProgram(DECORATED_FILES);
+      const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+      const primaryFile = program.getSourceFile(DECORATED_FILES[0].name) !;
+      const secondaryFile = program.getSourceFile(DECORATED_FILES[1].name) !;
+
+      const classSymbolsPrimary = host.findClassSymbols(primaryFile);
+      const classDecoratorsPrimary = classSymbolsPrimary.map(s => host.getDecoratorsOfSymbol(s));
+      expect(classDecoratorsPrimary.length).toEqual(2);
+      expect(classDecoratorsPrimary[0] !.map(d => d.name)).toEqual(['Directive']);
+      expect(classDecoratorsPrimary[1] !.map(d => d.name)).toEqual(['Directive']);
+
+      const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
+      const classDecoratorsSecondary =
+          classSymbolsSecondary.map(s => host.getDecoratorsOfSymbol(s));
+      expect(classDecoratorsSecondary.length).toEqual(1);
+      expect(classDecoratorsSecondary[0] !.map(d => d.name)).toEqual(['Directive']);
     });
   });
 

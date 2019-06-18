@@ -58,7 +58,11 @@ h6 {
   clear: both;
 }
 
-h2, h3, h4, h5, h6 {
+h2,
+h3,
+h4,
+h5,
+h6 {
   a {
     font-size: inherit;
   }
@@ -72,14 +76,20 @@ h2, h3, h4, h5, h6 {
   margin-top: 0;
 }
 
-p, ol, ul, ol, li, input, a  {
+p,
+ol,
+ul,
+ol,
+li,
+input,
+a {
   font-size: 14px;
   line-height: 24px;
-  letter-spacing: 0.30px;
+  letter-spacing: 0.3px;
   font-weight: 400;
   color: $darkgray;
   & > em {
-    letter-spacing: 0.30px;
+    letter-spacing: 0.3px;
   }
 }
 
@@ -92,13 +102,26 @@ p + ul {
 }
 
 ol {
-  li, p {
+  li,
+  p {
     margin: 4px 0;
   }
 }
 
-li p {
-  margin: 0;
+ol ol {
+  list-style-type: lower-alpha;
+
+  ol {
+    list-style-type: lower-roman;
+  }
+}
+
+li {
+  padding-bottom: 8px;
+
+  p {
+    margin: 0;
+  }
 }
 
 a {
@@ -134,9 +157,10 @@ table tbody th {
 td {
   font-weight: 400;
   padding: 8px 30px;
-  letter-spacing: 0.30px;
+  letter-spacing: 0.3px;
 
-  > p, ul {
+  > p,
+  ul {
     &:first-child {
       margin-top: 0;
     }
@@ -156,6 +180,7 @@ th {
 code {
   font-family: $code-font;
   font-size: 90%;
+  color: $darkgray;
 }
 
 .sidenav-content a {

@@ -122,6 +122,10 @@ export class Renderer {
   private computeDecoratorsToRemove(classes: CompiledClass[]): RedundantDecoratorMap {
     const decoratorsToRemove = new RedundantDecoratorMap();
     classes.forEach(clazz => {
+      if (clazz.decorators === null) {
+        return;
+      }
+
       clazz.decorators.forEach(dec => {
         const decoratorArray = dec.node.parent !;
         if (!decoratorsToRemove.has(decoratorArray)) {

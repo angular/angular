@@ -23,7 +23,7 @@ setPublicVar CI_BRANCH "$CIRCLE_BRANCH";
 # `.circleci/config.yml`. See http://chromedriver.chromium.org/downloads for a list of versions.
 # This variable is intended to be passed as an arg to the `webdriver-manager update` command (e.g.
 # `"postinstall": "webdriver-manager update $CI_CHROMEDRIVER_VERSION_ARG"`).
-setPublicVar CI_CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.45";
+setPublicVar CI_CHROMEDRIVER_VERSION_ARG "--versions.chrome 75.0.3770.90";
 setPublicVar CI_COMMIT "$CIRCLE_SHA1";
 # `CI_COMMIT_RANGE` will only be available when `CIRCLE_COMPARE_URL` is also available (or can be
 # retrieved via `get-compare-url.js`), i.e. on push builds (a.k.a. non-PR, non-scheduled builds and

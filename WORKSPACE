@@ -1,4 +1,7 @@
-workspace(name = "angular")
+workspace(
+    name = "angular",
+    managed_directories = {"@npm": ["node_modules"]},
+)
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -15,16 +18,15 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "395b7568f20822c13fc5abc65b1eced637446389181fda3a108fdd6ff2cac1e9",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.29.2/rules_nodejs-0.29.2.tar.gz"],
+    sha256 = "e04a82a72146bfbca2d0575947daa60fda1878c8d3a3afe868a8ec39a6b968bb",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.31.1/rules_nodejs-0.31.1.tar.gz"],
 )
 
 # Check the bazel version and download npm dependencies
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "check_rules_nodejs_version", "node_repositories", "yarn_install")
 
-# Bazel version must be at least v0.21.0 because:
-#   - 0.21.0 Using --incompatible_strict_action_env flag fixes cache when running `yarn bazel`
-#            (see https://github.com/angular/angular/issues/27514#issuecomment-451438271)
+# Bazel version must be at least the following version because:
+#   - 0.26.0 managed_directories feature added which is required for nodejs rules 0.30.0
 check_bazel_version(
     message = """
 You no longer need to install Bazel on your machine.
@@ -33,22 +35,28 @@ Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
 """,
-    minimum_bazel_version = "0.21.0",
+    minimum_bazel_version = "0.26.0",
 )
 
-# The NodeJS rules version must be at least v0.15.3 because:
+# The NodeJS rules version must be at least the following version because:
 #   - 0.15.2 Re-introduced the prod_only attribute on yarn_install
 #   - 0.15.3 Includes a fix for the `jasmine_node_test` rule ignoring target tags
 #   - 0.16.8 Supports npm installed bazel workspaces
 #   - 0.26.0 Fix for data files in yarn_install and npm_install
 #   - 0.27.12 Adds NodeModuleSources provider for transtive npm deps support
-check_rules_nodejs_version("0.27.12")
+#   - 0.30.0 yarn_install now uses symlinked node_modules with new managed directories Bazel 0.26.0 feature
+#   - 0.31.1 entry_point attribute of nodejs_binary & rollup_bundle is now a label
+check_rules_nodejs_version(minimum_version_string = "0.31.1")
 
 # Setup the Node.js toolchain
 node_repositories(
-    node_version = "10.9.0",
+    node_repositories = {
+        "10.16.0-darwin_amd64": ("node-v10.16.0-darwin-x64.tar.gz", "node-v10.16.0-darwin-x64", "6c009df1b724026d84ae9a838c5b382662e30f6c5563a0995532f2bece39fa9c"),
+        "10.16.0-linux_amd64": ("node-v10.16.0-linux-x64.tar.xz", "node-v10.16.0-linux-x64", "1827f5b99084740234de0c506f4dd2202a696ed60f76059696747c34339b9d48"),
+        "10.16.0-windows_amd64": ("node-v10.16.0-win-x64.zip", "node-v10.16.0-win-x64", "aa22cb357f0fb54ccbc06b19b60e37eefea5d7dd9940912675d3ed988bf9a059"),
+    },
+    node_version = "10.16.0",
     package_json = ["//:package.json"],
-    preserve_symlinks = True,
     # yarn 1.13.0 under Bazel has a regression on Windows that causes build errors on rebuilds:
     # ```
     # ERROR: Source forest creation failed: C:/.../fyuc5c3n/execroot/angular/external (Directory not empty)
@@ -71,6 +79,10 @@ yarn_install(
     package_json = "//:package.json",
     # Don't install devDependencies, they are large and not used under Bazel
     prod_only = True,
+    # Temporarily disable node_modules symlinking until the fix for
+    # https://github.com/bazelbuild/bazel/issues/8487 makes it into a
+    # future Bazel release
+    symlink_node_modules = False,
     yarn_lock = "//:yarn.lock",
 )
 

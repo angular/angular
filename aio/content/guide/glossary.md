@@ -622,6 +622,19 @@ A class which is preceded by the `@Pipe{}` decorator and which defines a functio
 
 To learn more, see [Pipes](guide/pipes).
 
+{@a platform}
+
+## platform
+
+In Angular terminology, a platform is the context in which an Angular application runs.
+The most common platform for Angular applications is a web browser, but it can also be an operating system for a mobile device, or a web server.
+
+Support for the various Angular run-time platforms is provided by the `@angular/platform-*` packages. These packages allow applications that make use of `@angular/core` and `@angular/common` to execute in different environments by providing implementation for gathering user input and rendering UIs for the given platform. Isolating platform-specific functionality allows the developer to make platform-independent use of the rest of the framework.
+
+* When running in a web browser, [`BrowserModule`](api/platform-browser/BrowserModule) is imported from the `platform-browser` package, and supports services that simplify security and event processing, and allows applications to access browser-specific features, such as interpreting keyboard input and controlling the title of the document being displayed. All applications running in the browser use the same platform service.
+
+* When [server-side rendering](#server-side-rendering) (SSR) is used, the [`platform-server`](api/platform-server) package provides web server implementations of the `DOM`, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
+
 {@a polyfill}
 
 ## polyfill

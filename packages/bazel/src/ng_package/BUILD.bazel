@@ -23,7 +23,7 @@ nodejs_binary(
         "lib",
         "@npm//shelljs",
     ],
-    entry_point = "angular/packages/bazel/src/ng_package/packager.js",
+    entry_point = ":packager.ts",
     install_source_map_support = False,
 )
 

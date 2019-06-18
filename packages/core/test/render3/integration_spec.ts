@@ -28,8 +28,7 @@ describe('render3 integration test', () => {
       it('should support creation-time values in text nodes', () => {
         function Template(rf: RenderFlags, value: string) {
           if (rf & RenderFlags.Create) {
-            ɵɵtext(0);
-            ɵɵtextBinding(0, value);
+            ɵɵtext(0, value);
           }
         }
         expect(renderToHtml(Template, 'once', 1, 1)).toEqual('once');
@@ -70,7 +69,8 @@ describe('render3 integration test', () => {
               ɵɵtext(0);
             }
             if (rf1 & RenderFlags.Update) {
-              ɵɵtextBinding(0, ɵɵbind(ctx.label));
+              ɵɵselect(0);
+              ɵɵtextBinding(ctx.label);
             }
             ɵɵembeddedViewEnd();
           }

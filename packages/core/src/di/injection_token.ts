@@ -68,6 +68,7 @@ export class InjectionToken<T> {
       (this as any).__NG_ELEMENT_ID__ = options;
     } else if (options !== undefined) {
       this.ngInjectableDef = ɵɵdefineInjectable({
+        token: this,
         providedIn: options.providedIn || 'root',
         factory: options.factory,
       });

@@ -15,8 +15,8 @@
 #             `CI_CHROMEDRIVER_VERSION_ARG` env var (in `.circleci/env.sh`) points to a ChromeDriver
 #             version that is compatible with the Chrome version in the image.
 # **NOTE 2**: If you change the version of the docker images, also change the `cache_key` suffix.
-var_1: &default_docker_image circleci/node:10.12
-var_2: &browsers_docker_image circleci/node:10.12-browsers
+var_1: &default_docker_image circleci/node:10.16
+var_2: &browsers_docker_image circleci/node:10.16-browsers
 # We don't want to include the current branch name in the cache key because that would prevent
 # PRs from being able to restore the cache since the branch names are always different for PRs.
 # The cache key should only consist of dynamic values that change whenever something in the
@@ -26,7 +26,7 @@ var_2: &browsers_docker_image circleci/node:10.12-browsers
 # **NOTE 1 **: If you change the cache key prefix, also sync the restore_cache fallback to match.
 # **NOTE 2 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
-var_3: &cache_key v3-angular-node-10.12-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_3: &cache_key v3-angular-node-10.16-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
 
 # Initializes the CI environment by setting up common environment variables.
 var_4: &init_environment
@@ -53,7 +53,10 @@ var_5: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
     command: |
-      openssl aes-256-cbc -d -in .circleci/gcp_token -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials
+      # We need ensure that the same default digest is used for encoding and decoding
+      # with openssl. Openssl versions might have different default digests which can
+      # cause decryption failures based on the openssl version. https://stackoverflow.com/a/39641378/4317734
+      openssl aes-256-cbc -d -in .circleci/gcp_token -md md5 -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials
       echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV
       sudo bash -c "echo 'build --config=remote' >> /etc/bazel.bazelrc"
 
@@ -99,7 +102,7 @@ var_10: &restore_cache
     keys:
       - *cache_key
       # This fallback should be the cache_key without variables.
-      - v3-angular-node-10.12-
+      - v3-angular-node-10.16-
 
 # Branch filter that can be specified for jobs that should only run on publish branches
 # (e.g. master or the patch branch)
@@ -172,6 +175,13 @@ jobs:
       # Setup remote execution and run RBE-compatible tests.
       - *setup_bazel_remote_execution
       - run: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
+      - run: mkdir ~/testlogs
+      - run: cp -Lr dist/testlogs/* ~/testlogs
+      - store_test_results:
+          # Bazel always writes test.xml files under this directory
+          path: ~/testlogs
+      - store_artifacts:
+          path: ~/testlogs
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
@@ -250,16 +260,14 @@ jobs:
       - run: yarn --cwd aio build --progress=false
         # Lint the code
       - run: yarn --cwd aio lint
-        # Run PWA-score tests
-        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
-        # Check the bundle sizes.
-        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-      - run: yarn --cwd aio payload-size
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
       - run: yarn --cwd aio e2e --configuration=ci
+        # Run PWA-score tests
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+        # Check the bundle sizes.
+      - run: yarn --cwd aio payload-size
         # Run unit tests for Firebase redirects
       - run: yarn --cwd aio redirects-test
 
@@ -285,13 +293,14 @@ jobs:
       - *init_environment
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local --progress=false
-        # Run PWA-score tests
-        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
       - run: yarn --cwd aio e2e --configuration=ci
+        # Run PWA-score tests
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+        # Check the bundle sizes.
+      - run: yarn --cwd aio payload-size aio-local
 
   test_aio_local_ivy:
     <<: *job_defaults
@@ -303,13 +312,14 @@ jobs:
       - *init_environment
         # Build aio with Ivy (using local Angular packages)
       - run: yarn --cwd aio build-with-ivy --progress=false
-        # Run PWA-score tests
-        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
       - run: yarn --cwd aio e2e --configuration=ci
+        # Run PWA-score tests
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+        # Check the bundle sizes.
+      - run: yarn --cwd aio payload-size aio-local-ivy
 
   test_aio_tools:
     <<: *job_defaults
@@ -500,7 +510,10 @@ jobs:
       - run: git config --global --unset "url.ssh://git@github.com.insteadof"
       - run:
           name: Decrypt github credentials
-          command: 'openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git_credentials'
+          # We need ensure that the same default digest is used for encoding and decoding with
+          # openssl. Openssl versions might have different default digests which can cause
+          # decryption failures based on the installed openssl version. https://stackoverflow.com/a/39641378/4317734
+          command: 'openssl aes-256-cbc -d -in .circleci/github_token -md md5 -k "${KEY}" -out ~/.git_credentials'
       - run: ./scripts/ci/publish-build-artifacts.sh
 
   aio_monitoring_stable:

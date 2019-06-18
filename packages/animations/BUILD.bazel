@@ -22,7 +22,7 @@ ng_package(
         "//packages/animations/browser:package.json",
         "//packages/animations/browser/testing:package.json",
     ],
-    entry_point = "packages/animations/index.js",
+    entry_point = ":index.ts",
     tags = [
         "release-with-framework",
     ],

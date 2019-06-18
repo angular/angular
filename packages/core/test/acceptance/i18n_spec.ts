@@ -11,6 +11,7 @@ import localeRo from '@angular/common/locales/ro';
 import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
@@ -372,6 +373,38 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         expect(child).toHaveText('Mon logo');
       }
     });
+
+    it('should correctly find context for an element inside i18n section in <ng-template>', () => {
+      @Directive({selector: '[myDir]'})
+      class Dir {
+        condition = true;
+      }
+
+      @Component({
+        selector: 'my-cmp',
+        template: `
+              <div *ngIf="isLogged; else notLoggedIn">
+                <span>Logged in</span>
+              </div>
+              <ng-template #notLoggedIn i18n>
+                <a myDir>Not logged in</a>
+              </ng-template>
+            `,
+      })
+      class Cmp {
+        isLogged = false;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Cmp, Dir],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      const a = fixture.debugElement.query(By.css('a'));
+      const dir = a.injector.get(Dir);
+      expect(dir.condition).toEqual(true);
+    });
   });
 
   describe('should support ICU expressions', () => {
@@ -628,6 +661,117 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const element = fixture.nativeElement;
       expect(element).toHaveText('other');
     });
+
+    it('inside a container when creating a view via vcr.createEmbeddedView', () => {
+      @Directive({
+        selector: '[someDir]',
+      })
+      class Dir {
+        constructor(
+            private readonly viewContainerRef: ViewContainerRef,
+            private readonly templateRef: TemplateRef<any>) {}
+
+        ngOnInit() { this.viewContainerRef.createEmbeddedView(this.templateRef); }
+      }
+
+      @Component({
+        selector: 'my-cmp',
+        template: `
+              <div *someDir>
+                <ng-content></ng-content>
+              </div>
+            `,
+      })
+      class Cmp {
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: `
+            <my-cmp i18n="test">{
+              count,
+              plural,
+              =1 {ONE}
+              other {OTHER}
+            }</my-cmp>
+          `,
+      })
+      class App {
+        count = 1;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, Cmp, Dir],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.debugElement.nativeElement.innerHTML)
+          .toBe('<my-cmp><div>ONE<!--ICU 13--></div><!--container--></my-cmp>');
+
+      fixture.componentRef.instance.count = 2;
+      fixture.detectChanges();
+      expect(fixture.debugElement.nativeElement.innerHTML)
+          .toBe('<my-cmp><div>OTHER<!--ICU 13--></div><!--container--></my-cmp>');
+    });
+
+    it('with nested ICU expression and inside a container when creating a view via vcr.createEmbeddedView',
+       () => {
+         @Directive({
+           selector: '[someDir]',
+         })
+         class Dir {
+           constructor(
+               private readonly viewContainerRef: ViewContainerRef,
+               private readonly templateRef: TemplateRef<any>) {}
+
+           ngOnInit() { this.viewContainerRef.createEmbeddedView(this.templateRef); }
+         }
+
+         @Component({
+           selector: 'my-cmp',
+           template: `
+              <div *someDir>
+                <ng-content></ng-content>
+              </div>
+            `,
+         })
+         class Cmp {
+         }
+
+         @Component({
+           selector: 'my-app',
+           template: `
+            <my-cmp i18n="test">{
+              count,
+              plural,
+              =1 {ONE}
+              other {{{count}} {name, select,
+                cat {cats}
+                dog {dogs}
+                other {animals}
+              }!}
+            }</my-cmp>
+          `,
+         })
+         class App {
+           count = 1;
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, Cmp, Dir],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.componentRef.instance.count = 2;
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement.innerHTML)
+             .toBe(
+                 '<my-cmp><div>2 animals<!--nested ICU 0-->!<!--ICU 15--></div><!--container--></my-cmp>');
+
+         fixture.componentRef.instance.count = 1;
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement.innerHTML)
+             .toBe('<my-cmp><div>ONE<!--ICU 15--></div><!--container--></my-cmp>');
+       });
   });
 
   describe('should support attributes', () => {

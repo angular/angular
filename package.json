@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "8.1.0-next.1",
+  "version": "8.1.0-next.2",
   "private": true,
   "description": "Angular - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
@@ -8,14 +8,14 @@
   "license": "MIT",
   "engines": {
     "node": ">=10.9.0 <11.0.0",
-    "yarn": ">=1.12.1 <=1.14.0"
+    "yarn": ">=1.12.1 <=1.16.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "bazel:format": "find . -type f \\( -name \"*.bzl\" -or -name WORKSPACE -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs buildifier -v --warnings=args-order,attr-cfg,attr-license,attr-non-empty,attr-output-default,attr-single-file,constant-glob,ctx-args,depset-iteration,depset-union,dict-concatenation,duplicated-name,filetype,git-repository,http-archive,integer-division,load,load-on-top,native-build,native-package,output-group,package-name,package-on-top,positional-args,redefined-variable,repository-name,same-origin-load,string-iteration,unused-variable",
+    "bazel:format": "find . -type f \\( -name \"*.bzl\" -or -name WORKSPACE -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs buildifier -v --warnings=attr-cfg,attr-license,attr-non-empty,attr-output-default,attr-single-file,constant-glob,ctx-args,depset-iteration,depset-union,dict-concatenation,duplicated-name,filetype,git-repository,http-archive,integer-division,load,load-on-top,native-build,native-package,output-group,package-name,package-on-top,positional-args,redefined-variable,repository-name,same-origin-load,string-iteration,unused-variable",
     "bazel:lint": "yarn bazel:format --lint=warn",
     "bazel:lint-fix": "yarn bazel:format --lint=fix",
     "preinstall": "node tools/yarn/check-yarn.js",
@@ -35,9 +35,9 @@
     "@angular-devkit/core": "^8.0.0-beta.15",
     "@angular-devkit/schematics": "^8.0.0-beta.15",
     "@angular/bazel": "file:./tools/npm/@angular_bazel",
-    "@bazel/jasmine": "0.29.0",
-    "@bazel/karma": "0.29.0",
-    "@bazel/typescript": "0.29.0",
+    "@bazel/jasmine": "0.31.1",
+    "@bazel/karma": "0.31.1",
+    "@bazel/typescript": "0.31.1",
     "@microsoft/api-extractor": "^7.0.21",
     "@schematics/angular": "^8.0.0-beta.15",
     "@types/angular": "^1.6.47",
@@ -86,7 +86,7 @@
     "magic-string": "^0.25.0",
     "materialize-css": "1.0.0",
     "minimist": "1.2.0",
-    "mock-fs": "^4.5.0",
+    "mock-fs": "^4.10.1",
     "node-uuid": "1.4.8",
     "protractor": "^5.4.2",
     "reflect-metadata": "^0.1.3",
@@ -117,13 +117,13 @@
   "// 3": "when updating @bazel/bazel version you also need to update the RBE settings in .bazelrc (see https://github.com/angular/angular/pull/27935)",
   "devDependencies": {
     "@angular/cli": "^8.0.0-beta.15",
-    "@bazel/bazel": "0.26.0-rc5",
-    "@bazel/buildifier": "^0.19.2",
+    "@bazel/bazel": "0.26.1",
+    "@bazel/buildifier": "^0.25.1",
     "@bazel/ibazel": "~0.9.0",
     "@types/minimist": "^1.2.0",
     "@types/systemjs": "0.19.32",
     "browserstacktunnel-wrapper": "2.0.1",
-    "check-side-effects": "0.0.20",
+    "check-side-effects": "0.0.21",
     "clang-format": "1.0.41",
     "cldr": "4.10.0",
     "cldr-data-downloader": "0.3.2",

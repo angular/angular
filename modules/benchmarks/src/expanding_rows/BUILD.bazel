@@ -1,7 +1,6 @@
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-load("//tools:defaults.bzl", "ts_library")
-load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_library")
 load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
@@ -32,7 +31,7 @@ ts_library(
 
 ng_rollup_bundle(
     name = "bundle",
-    entry_point = "modules/benchmarks/src/expanding_rows/index.js",
+    entry_point = ":index.ts",
     deps = [
         ":application_lib",
         "@npm//rxjs",

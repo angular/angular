@@ -25,7 +25,7 @@ ng_module(
 
 ng_package(
     name = "npm_package",
-    entry_point = "src/hello-world/index.js",
+    entry_point = ":index.ts",
     deps = [":hello-world"],
 )
 

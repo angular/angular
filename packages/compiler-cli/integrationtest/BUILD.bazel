@@ -10,7 +10,7 @@ nodejs_binary(
         "@npm//chokidar",
         "@npm//reflect-metadata",
     ],
-    entry_point = "angular/packages/compiler-cli/src/main.js",
+    entry_point = "//packages/compiler-cli:src/main.ts",
 )
 
 nodejs_binary(
@@ -20,7 +20,7 @@ nodejs_binary(
         "@npm//chokidar",
         "@npm//reflect-metadata",
     ],
-    entry_point = "angular/packages/compiler-cli/src/extract_i18n.js",
+    entry_point = "//packages/compiler-cli:src/extract_i18n.ts",
 )
 
 nodejs_test(
@@ -54,6 +54,6 @@ nodejs_test(
         "//packages/platform-server:npm_package",
         "//packages/router:npm_package",
     ] + glob(["**/*"]),
-    entry_point = "angular/packages/compiler-cli/integrationtest/test.js",
+    entry_point = "//packages/compiler-cli/integrationtest:test.ts",
     tags = ["no-ivy-aot"],
 )

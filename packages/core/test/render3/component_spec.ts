@@ -32,7 +32,8 @@ describe('component', () => {
           ɵɵtext(0);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵtextBinding(0, ɵɵbind(ctx.count));
+          ɵɵselect(0);
+          ɵɵtextBinding(ctx.count);
         }
       },
       factory: () => new CounterComponent,
@@ -63,8 +64,11 @@ describe('component', () => {
 
     class MyService {
       constructor(public value: string) {}
-      static ngInjectableDef =
-          ɵɵdefineInjectable({providedIn: 'root', factory: () => new MyService('no-injector')});
+      static ngInjectableDef = ɵɵdefineInjectable({
+        token: MyService,
+        providedIn: 'root',
+        factory: () => new MyService('no-injector'),
+      });
     }
     class MyComponent {
       constructor(public myService: MyService) {}
@@ -80,7 +84,8 @@ describe('component', () => {
             ɵɵtext(0);
           }
           if (fs & RenderFlags.Update) {
-            ɵɵtextBinding(0, ɵɵbind(ctx.myService.value));
+            ɵɵselect(0);
+            ɵɵtextBinding(ctx.myService.value);
           }
         }
       });
@@ -123,7 +128,8 @@ describe('component', () => {
             ɵɵtext(0);
           }
           if (rf & RenderFlags.Update) {
-            ɵɵtextBinding(0, ɵɵbind(ctx.name));
+            ɵɵselect(0);
+            ɵɵtextBinding(ctx.name);
           }
         },
         inputs: {name: 'name'}
@@ -228,7 +234,8 @@ describe('component with a container', () => {
               ɵɵtext(0);
             }
             if (rf0 & RenderFlags.Update) {
-              ɵɵtextBinding(0, ɵɵbind(item));
+              ɵɵselect(0);
+              ɵɵtextBinding(item);
             }
           }
           ɵɵembeddedViewEnd();
@@ -333,7 +340,8 @@ describe('recursive components', () => {
           ɵɵcontainer(2);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵtextBinding(0, ɵɵbind(ctx.data.value));
+          ɵɵselect(0);
+          ɵɵtextBinding(ctx.data.value);
           ɵɵcontainerRefreshStart(1);
           {
             if (ctx.data.left != null) {
@@ -404,7 +412,8 @@ describe('recursive components', () => {
               [AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵtextBinding(0, ɵɵbind(ctx.data.value));
+          ɵɵselect(0);
+          ɵɵtextBinding(ctx.data.value);
           ɵɵselect(1);
           ɵɵproperty('ngIf', ɵɵbind(ctx.data.left));
           ɵɵselect(2);

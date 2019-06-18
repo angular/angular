@@ -305,18 +305,21 @@ you're ready to learn about the varieties of data binding syntax beyond interpol
 
 {@a binding-syntax}
 
-## Binding syntax: An overview
+## Binding syntax: an overview
 
-Data binding is a mechanism for coordinating what users see, with application data values.
+Data-binding is a mechanism for coordinating what users see, specifically
+with application data values.
 While you could push values to and pull values from HTML,
-the application is easier to write, read, and maintain if you turn these chores over to a binding framework.
-You simply declare bindings between binding sources and target HTML elements and let the framework do the work.
+the application is easier to write, read, and maintain if you turn these tasks over to a binding framework.
+You simply declare bindings between binding sources, target HTML elements, and let the framework do the rest.
 
-Angular provides many kinds of data binding.
-This guide covers most of them, after a high-level view of Angular data binding and its syntax.
+For a demonstration of the syntax and code snippets in this section, see the <live-example name="binding-syntax">binding syntax example</live-example>.
 
-Binding types can be grouped into three categories distinguished by the direction of data flow:
-from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _view-to-source-to-view_:
+Angular provides many kinds of data-binding. Binding types can be grouped into three categories distinguished by the direction of data flow:
+
+* From the _source-to-view_
+* From _view-to-source_
+* Two-way sequence: _view-to-source-to-view_
 
 <style>
   td, th {vertical-align: top}
@@ -331,19 +334,23 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
   </col>
   <tr>
     <th>
-      Data direction
+      Type
     </th>
     <th>
       Syntax
     </th>
     <th>
-      Type
+      Category
     </th>
 
   </tr>
   <tr>
-    <td>
-      One-way<br>from data source<br>to view target
+     <td>
+      Interpolation<br>
+      Property<br>
+      Attribute<br>
+      Class<br>
+      Style
     </td>
     <td>
 
@@ -354,16 +361,13 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
       </code-example>
 
     </td>
+
     <td>
-      Interpolation<br>
-      Property<br>
-      Attribute<br>
-      Class<br>
-      Style
+      One-way<br>from data source<br>to view target
     </td>
     <tr>
       <td>
-        One-way<br>from view target<br>to data source
+        Event
       </td>
       <td>
         <code-example>
@@ -371,8 +375,9 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
           on-target="statement"
         </code-example>
       </td>
+
       <td>
-        Event
+        One-way<br>from view target<br>to data source
       </td>
     </tr>
     <tr>
@@ -392,118 +397,138 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
   </tr>
 </table>
 
-Binding types other than interpolation have a **target name** to the left of the equal sign,
-either surrounded by punctuation (`[]`, `()`) or preceded by a prefix (`bind-`, `on-`, `bindon-`).
+Binding types other than interpolation have a **target name** to the left of the equal sign, either surrounded by punctuation, `[]` or `()`,
+or preceded by a prefix: `bind-`, `on-`, `bindon-`.
 
-The target name is the name of a _property_. It may look like the name of an _attribute_ but it never is.
-To appreciate the difference, you must develop a new way to think about template HTML.
+The *target* of a binding is the property or event inside the binding punctuation: `[]`, `()` or `[()]`.
 
-### A new mental model
+Every public member of a **source** directive is automatically available for binding.
+You don't have to do anything special to access a directive member in a template expression or statement.
 
-With all the power of data binding and the ability to extend the HTML vocabulary
-with custom markup, it is tempting to think of template HTML as *HTML Plus*.
 
-It really *is* HTML Plus.
-But it's also significantly different than the HTML you're used to.
-It requires a new mental model.
+## Data-binding and HTML
 
 In the normal course of HTML development, you create a visual structure with HTML elements, and
 you modify those elements by setting element attributes with string constants.
 
-<code-example path="template-syntax/src/app/app.component.html" region="img+button" header="src/app/app.component.html" linenums="false">
+```html
+<div class="special">Plain old HTML</div>
+<img src="images/item.png">
+<button disabled>Save</button>
+```
+
+With data-binding, you can control things like the state of a button:
+
+<code-example path="binding-syntax/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-You still create a structure and initialize attribute values this way in Angular templates.
+Notice that the binding is to the `disabled` property of the button's DOM element,
+**not** the attribute. This applies to data-binding in general. Data-binding works with *properties* of DOM elements, components, and directives, not HTML *attributes*.
 
-Then you learn to create new elements with components that encapsulate HTML
-and drop them into templates as if they were native HTML elements.
 
-<code-example path="template-syntax/src/app/app.component.html" region="hero-detail-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+## HTML attribute vs. DOM property
 
-That's HTML Plus.
+The distinction between an HTML attribute and a DOM property is key to understanding
+how Angular binding works. **Attributes are defined by HTML. Properties are accessed from DOM, or the Document Object Model, nodes.**
 
-Then you learn about data binding. The first binding you meet might look like this:
+* A few HTML attributes have 1:1 mapping to properties; for example, `id`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="disabled-button-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+* Some HTML attributes don't have corresponding properties; for example, `aria-*`.
 
-You'll get to that peculiar bracket notation in a moment. Looking beyond it,
-your intuition suggests that you're binding to the button's `disabled` attribute and setting
-it to the current value of the component's `isUnchanged` property.
+* Some DOM properties don't have corresponding attributes; for example, `textContent`.
 
-Your intuition is incorrect! Your everyday HTML mental model is misleading.
-In fact, once you start data binding, you are no longer working with HTML *attributes*. You aren't setting attributes.
-You are setting the *properties* of DOM elements, components, and directives.
+This general rule can help you build a mental model of attributes and DOM properties:
+**attributes initialize DOM properties and then they are done.
+Property values can change; attribute values can't.**
 
 <div class="alert is-helpful">
 
-### HTML attribute vs. DOM property
+There is, of course, an exception to this rule because attributes can be changed by `setAttribute()`, which will re-initialize corresponding DOM properties again.
 
-The distinction between an HTML attribute and a DOM property is crucial to understanding how Angular binding works.
+</div>
 
-**Attributes are defined by HTML. Properties are defined by the DOM (Document Object Model).**
-
-* A few HTML attributes have 1:1 mapping to properties. `id` is one example.
-
-* Some HTML attributes don't have corresponding properties. `colspan` is one example.
-
-* Some DOM properties don't have corresponding attributes. `textContent` is one example.
-
-* Many HTML attributes appear to map to properties ... but not in the way you might think!
-
-That last category is confusing until you grasp this general rule:
-
-**Attributes *initialize* DOM properties and then they are done.
-Property values can change; attribute values can't.**
-
-For example, when the browser renders `<input type="text" value="Bob">`, it creates a
-corresponding DOM node with a `value` property *initialized* to "Bob".
-
-When the user enters "Sally" into the input box, the DOM element `value` *property* becomes "Sally".
-But the HTML `value` *attribute* remains unchanged as you discover if you ask the input element
-about that attribute: `input.getAttribute('value')` returns "Bob".
-
-The HTML attribute `value` specifies the *initial* value; the DOM `value` property is the *current* value.
-
-The `disabled` attribute is another peculiar example. A button's `disabled` *property* is
-`false` by default so the button is enabled.
-When you add the `disabled` *attribute*, its presence alone initializes the  button's `disabled` *property* to `true`
-so the button is disabled.
-
-Adding and removing the `disabled` *attribute* disables and enables the button. The value of the *attribute* is irrelevant,
-which is why you cannot enable a button by writing `<button disabled="false">Still Disabled</button>`.
-
-Setting the button's `disabled` *property*  (say, with an Angular binding) disables or enables the button.
-The value of the *property* matters.
+Comparing the [`<td>` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td)
+ attributes to the [`<td>` properties](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement)
+ provides a helpful
+example for differentiation. In particular, you can navigate from the attributes
+page to the properties via "DOM interface" link, and navigate the inheritance
+hierarchy up to `HTMLTableCellElement`.
 
 **The HTML attribute and the DOM property are not the same thing, even when they have the same name.**
 
+For more information, see the [MDN Interfaces documentation](https://developer.mozilla.org/en-US/docs/Web/API#Interfaces) which has API docs for all the standard DOM elements and their properties.
+
+
+
+
+### Example 1: an `<input>`
+
+When the browser renders `<input type="text" value="Sarah">`, it creates a
+corresponding DOM node with a `value` property initialized to "Sarah".
+
+```html
+<input type="text" value="Sarah">
+```
+
+When the user enters "Sally" into the `<input>`, the DOM element `value` *property* becomes "Sally".
+However, if you look at the HTML attribute `value` using `input.getAttribute('value')`, you can see that the *attribute* remains unchanged&mdash;it returns "Sarah".
+
+The HTML attribute `value` specifies the *initial* value; the DOM `value` property is the *current* value.
+
+To see attributes versus DOM properties in a functioning app, see the <live-example name="binding-syntax"></live-example> especially for binding syntax.
+
+### Example 2: a disabled button
+
+The `disabled` attribute is another example. A button's `disabled`
+*property* is `false` by default so the button is enabled.
+
+When you add the `disabled` *attribute*, its presence alone
+initializes the button's `disabled` *property* to `true`
+so the button is disabled.
+
+```html
+<button disabled>Test Button</button>
+```
+
+Adding and removing the `disabled` *attribute* disables and
+enables the button.
+However, the value of the *attribute* is irrelevant,
+which is why you cannot enable a button by writing `<button disabled="false">Still Disabled</button>`.
+
+To control the state of the button, set the `disabled` *property*,
+
+<div class="alert is-helpful">
+
+**Note:** Though you could technically set the `[attr.disabled]` attribute binding, the values are different in that the property binding requires to a boolean value, while its corresponding attribute binding relies on whether the value is `null` or not. Consider the following:
+
+```html
+<input [disabled]="condition ? true : false">
+<input [attr.disabled]="condition ? 'disabled' : null">
+```
+
+Generally, use property binding over attribute binding as it is more intuitive (being a boolean value), has a shorter syntax, and is more performant.
+
 </div>
 
-This fact bears repeating:
+**The HTML attribute and the DOM property are different things, even when they have the same name.**
+
 **Template binding works with *properties* and *events*, not *attributes*.**
 
-<div class="callout is-helpful">
+To see the `disabled` button example in a functioning app, see the <live-example name="binding-syntax"></live-example> especially for binding syntax. This example shows you how to toggle the disabled property from the component.
 
-<header>
-  A world without attributes
-</header>
 
-In the world of Angular, the only role of attributes is to initialize element and directive state.
-When you write a data binding, you're dealing exclusively with properties and events of the target object.
-HTML attributes effectively disappear.
+### Angular and attributes
 
-</div>
+In Angular, the only role of attributes is to initialize element and directive state.
+When you write a data-binding, you're dealing exclusively with properties and events of the target object.
 
-With this model firmly in mind, read on to learn about binding targets.
 
-### Binding targets
+## Binding targets
 
-The **target of a data binding** is something in the DOM.
-Depending on the binding type, the target can be an
-(element | component | directive) property, an
-(element | component | directive) event, or (rarely) an attribute name.
+The **target of a data-binding** is something in the DOM.
+Depending on the binding type, the target can be a
+property (element, component, or directive), an
+event (element, component, or directive), or sometimes an attribute name.
 The following table summarizes:
 
 <style>
@@ -538,8 +563,10 @@ The following table summarizes:
       Directive&nbsp;property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code>src</code>, <code>hero</code>, and <code>ngClass</code> in the following:
+      <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1" linenums="false">
       </code-example>
+      <!-- For more information, see [Property Binding](guide/property-binding). -->
     </td>
   </tr>
   <tr>
@@ -552,8 +579,11 @@ The following table summarizes:
       Directive&nbsp;event
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code>click</code>, <code>deleteRequest</code>, and <code>myClick</code> in the following:
+      <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1" linenums="false">
       </code-example>
+      <!-- KW--Why don't these links work in the table? -->
+      <!-- <div>For more information, see [Event Binding](guide/event-binding).</div> -->
     </td>
   </tr>
   <tr>
@@ -564,7 +594,7 @@ The following table summarizes:
       Event and property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -577,7 +607,7 @@ The following table summarizes:
       (the&nbsp;exception)
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -589,7 +619,7 @@ The following table summarizes:
       <code>class</code> property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -601,308 +631,367 @@ The following table summarizes:
       <code>style</code> property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" linenums="false">
       </code-example>
     </td>
   </tr>
 </table>
 
-With this broad view in mind, you're ready to look at binding types in detail.
+<!-- end of binding syntax -->
 
 <hr/>
 
 {@a property-binding}
 
-## Property binding ( <span class="syntax">[property]</span> )
+## Property binding `[property]`
 
-Write a template **property binding** to set a property of a view element.
-The binding sets the property to the value of a [template expression](guide/template-syntax#template-expressions).
+Use property binding to _set_ properties of target elements or
+directive `@Input()` decorators. For an example
+demonstrating all of the points in this section, see the
+<live-example name="property-binding">property binding example</live-example>.
 
-The most common property binding sets an element property to a component property value. An example is
-binding the `src` property of an image element to a component's `heroImageUrl` property:
+### One-way in
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" header="src/app/app.component.html" linenums="false">
+Property binding flows a value in one direction,
+from a component's property into a target element property.
+
+You can't use property
+binding to read or pull values out of target elements. Similarly, you cannot use
+property binding to call a method on the target element.
+If the element raises events, you can listen to them with an [event binding](guide/template-syntax#event-binding).
+
+If you must read a target element property or call one of its methods,
+see the API reference for [ViewChild](api/core/ViewChild) and
+[ContentChild](api/core/ContentChild).
+
+### Examples
+
+The most common property binding sets an element property to a component
+property value. An example is
+binding the `src` property of an image element to a component's `itemImageUrl` property:
+
+<code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
+
+Here's an example of binding to the `colSpan` property. Notice that it's not `colspan`,
+which is the attribute, spelled with a lowercase `s`.
+
+<code-example path="property-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+For more details, see the [MDN HTMLTableCellElment](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) documentation.
+
+<!-- Add link when Attribute Binding updates are merged:
+For more about `colSpan` and `colspan`, see (Attribute Binding)[guide/template-syntax]. -->
 
 Another example is disabling a button when the component says that it `isUnchanged`:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-2" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 Another is setting a property of a directive:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Yet another is setting the model property of a custom component (a great way
-for parent and child components to communicate):
+Yet another is setting the model property of a custom component&mdash;a great way
+for parent and child components to communicate:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
-
-### One-way *in*
-
-People often describe property binding as *one-way data binding* because it flows a value in one direction,
-from a component's data property into a target element property.
-
-You cannot use property binding to pull values *out* of the target element.
-You can't bind to a property of the target element to _read_ it. You can only _set_ it.
-
-<div class="alert is-helpful">
-
-Similarly, you cannot use property binding to *call* a method on the target element.
-
-If the element raises events, you can listen to them with an [event binding](guide/template-syntax#event-binding).
-
-If you must read a target element property or call one of its methods,
-you'll need a different technique.
-See the API reference for
-[ViewChild](api/core/ViewChild) and
-[ContentChild](api/core/ContentChild).
-
-</div>
 
 ### Binding target
 
-An element property between enclosing square brackets identifies the target property.
+An element property between enclosing square brackets identifies
+the target property.
 The target property in the following code is the image element's `src` property.
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Some people prefer the `bind-` prefix alternative, known as the *canonical form*:
+There's also the `bind-` prefix alternative:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-5" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="bind-prefix" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-The target name is always the name of a property, even when it appears to be the name of something else.
-You see `src` and may think it's the name of an attribute. No. It's the name of an image element property.
+
+In most cases, the target name is the name of a property, even
+when it appears to be the name of an attribute.
+So in this case, `src` is the name of the `<img>` element property.
 
 Element properties may be the more common targets,
 but Angular looks first to see if the name is a property of a known directive,
 as it is in the following example:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="alert is-helpful">
-
-Technically, Angular is matching the name to a directive [input](guide/template-syntax#inputs-outputs),
-one of the property names listed in the directive's `inputs` array or a property decorated with `@Input()`.
+Technically, Angular is matching the name to a directive `@Input()`,
+one of the property names listed in the directive's `inputs` array
+or a property decorated with `@Input()`.
 Such inputs map to the directive's own properties.
-
-</div>
 
 If the name fails to match a property of a known directive or element, Angular reports an “unknown directive” error.
 
+<div class="alert is-helpful">
+
+Though the target name is usually the name of a property,
+there is an automatic attribute-to-property mapping in Angular for
+several common attributes. These include `class`/`className`, `innerHtml`/`innerHTML`, and
+`tabindex`/`tabIndex`.
+
+</div>
+
+
 ### Avoid side effects
 
-As mentioned previously, evaluation of a template expression should have no visible side effects.
-The expression language itself does its part to keep you safe.
-You can't assign a value to anything in a property binding expression nor use the increment and decrement operators.
+Evaluation of a template expression should have no visible side effects.
+The expression language itself, or the way you write template expressions,
+helps to a certain extent;
+you can't assign a value to anything in a property binding expression
+nor use the increment and decrement operators.
 
-Of course, the expression might invoke a property or method that has side effects.
-Angular has no way of knowing that or stopping you.
-
-The expression could call something like `getFoo()`. Only you know what `getFoo()` does.
-If `getFoo()` changes something and you happen to be binding to that something, you risk an unpleasant experience.
-Angular may or may not display the changed value. Angular may detect the change and throw a warning error.
-In general, stick to data properties and to methods that return values and do no more.
+For example, you could have an expression that invoked a property or method that had
+side effects. The expression could call something like `getFoo()` where only you
+know what `getFoo()` does. If `getFoo()` changes something
+and you happen to be binding to that something,
+Angular may or may not display the changed value. Angular may detect the
+change and throw a warning error.
+As a best practice, stick to properties and to methods that return
+values and avoid side effects.
 
 ### Return the proper type
 
-The template expression should evaluate to the type of value expected by the target property.
-Return a string if the target property expects a string.
-Return a number if the target property expects a number.
-Return an object if the target property expects an object.
+The template expression should evaluate to the type of value
+that the target property expects.
+Return a string if the target property expects a string, a number if it
+expects a number, an object if it expects an object, and so on.
 
-The `hero` property of the `HeroDetail` component expects a `Hero` object, which is exactly what you're sending in the property binding:
+In the following example, the `childItem` property of the `ItemDetailComponent` expects a string, which is exactly what you're sending in the property binding:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
+
+You can confirm this by looking in the `ItemDetailComponent` where the `@Input` type is set to a string:
+<code-example path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type" header="src/app/item-detail/item-detail.component.ts (setting the @Input() type" linenums="false">
+</code-example>
+
+As you can see here, the `parentItem` in `AppComponent` is a string, which the `ItemDetailComponent` expects:
+<code-example path="property-binding/src/app/app.component.ts" region="parent-data-type" header="src/app/app.component.ts" linenums="false">
+</code-example>
+
+#### Passing in an object
+
+The previous simple example showed passing in a string. To pass in an object,
+the syntax and thinking are the same.
+
+In this scenario, `ListItemComponent` is nested within `AppComponent` and the `item` property expects an object.
+
+<code-example path="property-binding/src/app/app.component.html" region="pass-object" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+The `item` property is declared in the `ListItemComponent` with a type of `Item` and decorated with `@Input()`:
+
+<code-example path="property-binding/src/app/list-item/list-item.component.ts" region="item-input" header="src/app/list-item.component.ts" linenums="false">
+</code-example>
+
+In this sample app, an `Item` is an object that has two properties; an `id` and a `name`.
+
+<code-example path="property-binding/src/app/item.ts" region="item-class" header="src/app/item.ts" linenums="false">
+</code-example>
+
+While a list of items exists in another file, `mock-items.ts`, you can
+specify a different item in `app.component.ts` so that the new item will render:
+
+<code-example path="property-binding/src/app/app.component.ts" region="pass-object" header="src/app.component.ts" linenums="false">
+</code-example>
+
+You just have to make sure, in this case, that you're supplying an object because that's the type of `item` and is what the nested component, `ListItemComponent`, expects.
+
+In this example, `AppComponent` specifies a different `item` object
+(`currentItem`) and passes it to the nested `ListItemComponent`. `ListItemComponent` was able to use `currentItem` because it matches what an `Item` object is according to `item.ts`. The `item.ts` file is where
+`ListItemComponent` gets its definition of an `item`.
 
 ### Remember the brackets
 
-The brackets tell Angular to evaluate the template expression.
+The brackets, `[]`, tell Angular to evaluate the template expression.
 If you omit the brackets, Angular treats the string as a constant
-and *initializes the target property* with that string.
-It does *not* evaluate the string!
+and *initializes the target property* with that string:
 
-Don't make the following mistake:
-
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-6" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="no-evaluation" header="src/app.component.html" linenums="false">
 </code-example>
 
-{@a one-time-initialization}
+
+Omitting the brackets will render the string
+`parentItem`, not the value of `parentItem`.
 
 ### One-time string initialization
 
 You *should* omit the brackets when all of the following are true:
 
 * The target property accepts a string value.
-* The string is a fixed value that you can bake into the template.
+* The string is a fixed value that you can put directly into the template.
 * This initial value never changes.
 
 You routinely initialize attributes this way in standard HTML, and it works
 just as well for directive and component property initialization.
-The following example initializes the `prefix` property of the `HeroDetailComponent` to a fixed string,
+The following example initializes the `prefix` property of the `StringInitComponent` to a fixed string,
 not a template expression. Angular sets it and forgets about it.
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-7" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="string-init" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-The `[hero]` binding, on the other hand, remains a live binding to the component's `currentHero` property.
+The `[item]` binding, on the other hand, remains a live binding to the component's `currentItem` property.
 
-{@a property-binding-or-interpolation}
-
-### Property binding or interpolation?
+### Property binding vs. interpolation
 
 You often have a choice between interpolation and property binding.
 The following binding pairs do the same thing:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="property-binding-interpolation" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-_Interpolation_ is a convenient alternative to _property binding_ in many cases.
+Interpolation is a convenient alternative to property binding in
+many cases. When rendering data values as strings, there is no
+technical reason to prefer one form to the other, though readability
+tends to favor interpolation. However, *when setting an element
+property to a non-string data value, you must use property binding*.
 
-When rendering data values as strings, there is no technical reason to prefer one form to the other.
-You lean toward readability, which tends to favor interpolation.
-You suggest establishing coding style rules and choosing the form that
-both conforms to the rules and feels most natural for the task at hand.
+### Content security
 
-When setting an element property to a non-string data value, you must use _property binding_.
+Imagine the following malicious content.
 
-#### Content security
-
-Imagine the following *malicious content*.
-
-<code-example path="template-syntax/src/app/app.component.ts" region="evil-title" header="src/app/app.component.ts" linenums="false">
+<code-example path="property-binding/src/app/app.component.ts" region="malicious-content" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
-Fortunately, Angular data binding is on alert for dangerous HTML.
-It [*sanitizes*](guide/security#sanitization-and-security-contexts) the values before displaying them.
-It **will not** allow HTML with script tags to leak into the browser, neither with interpolation
+In the component template, the content might be used with interpolation:
+
+<code-example path="property-binding/src/app/app.component.html" region="malicious-interpolated" header="src/app/app.component.ts" linenums="false">
+</code-example>
+
+Fortunately, Angular data binding is on alert for dangerous HTML. In the above case,
+the HTML displays as is, and the Javascript does not execute. Angular **does not**
+allow HTML with script tags to leak into the browser, neither with interpolation
 nor property binding.
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation-sanitization" header="src/app/app.component.html" linenums="false">
+In the following example, however, Angular [sanitizes](guide/security#sanitization-and-security-contexts)
+the values before displaying them.
+
+<code-example path="property-binding/src/app/app.component.html" region="malicious-content" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Interpolation handles the script tags differently than property binding but both approaches render the
-content harmlessly.
+Interpolation handles the `<script>` tags differently than
+property binding but both approaches render the
+content harmlessly. The following is the browser output
+of the `evilTitle` examples.
 
-
-<figure>
-  <img src='generated/images/guide/template-syntax/evil-title.png' alt="evil title made safe">
-</figure>
-
+```
+"Template <script>alert("evil never sleeps")</script> Syntax" is the interpolated evil title.
+"Template alert("evil never sleeps")Syntax" is the property bound evil title.
+```
 
 <hr/>
 {@a other-bindings}
 
 ## Attribute, class, and style bindings
 
-The template syntax provides specialized one-way bindings for scenarios less well suited to property binding.
+The template syntax provides specialized one-way bindings for scenarios less well-suited to property binding.
+
+To see attribute, class, and style bindings in a functioning app, see the <live-example name="attribute-binding"></live-example> especially for this section.
+
 
 ### Attribute binding
 
-You can set the value of an attribute directly with an **attribute binding**.
+Set the value of an attribute directly with an **attribute binding**. This is the only exception to the rule that a binding sets a target property and the only binding that creates and sets an attribute.
+
+Usually, setting an element property with a [property binding](guide/template-syntax#property-binding)
+is preferable to setting the attribute with a string. However, sometimes
+there is no element property to bind, so attribute binding is the solution.
+
+Consider the [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) and
+[SVG](https://developer.mozilla.org/en-US/docs/Web/SVG). They are purely attributes, don't correspond to element properties, and don't set element properties. In these cases, there are no property targets to bind to.
+
+Attribute binding syntax resembles property binding, but
+instead of an element property between brackets, start with the prefix `attr`,
+followed by a dot (`.`), and the name of the attribute.
+You then set the attribute value, using an expression that resolves to a string,
+or remove the attribute when the expression resolves to `null`.
+
+One of the primary use cases for attribute binding
+is to set ARIA attributes, as in this example:
+
+<code-example path="attribute-binding/src/app/app.component.html" region="attrib-binding-aria" header="src/app/app.component.html" linenums="false">
+</code-example>
 
 <div class="alert is-helpful">
 
-This is the only exception to the rule that a binding sets a target property.
-This is the only binding that creates and sets an attribute.
+#### `colspan` and `colSpan`
 
-</div>
+Notice the difference between the `colspan` attribute and the `colSpan` property.
 
-This guide stresses repeatedly that setting an element property with a property binding
-is always preferred to setting the attribute with a string. Why does Angular offer attribute binding?
-
-**You must use attribute binding when there is no element property to bind.**
-
-Consider the [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA),
-[SVG](https://developer.mozilla.org/en-US/docs/Web/SVG), and
-table span attributes. They are pure attributes.
-They do not correspond to element properties, and they do not set element properties.
-There are no property targets to bind to.
-
-This fact becomes painfully obvious when you write something like this.
+If you wrote something like this:
 
 <code-example language="html">
   &lt;tr&gt;&lt;td colspan="{{1 + 1}}"&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;
 </code-example>
 
-And you get this error:
+You'd get this error:
 
 <code-example format="nocode">
   Template parse errors:
   Can't bind to 'colspan' since it isn't a known native property
 </code-example>
 
-As the message says, the `<td>` element does not have a `colspan` property.
-It has the "colspan" *attribute*, but
-interpolation and property binding can set only *properties*, not attributes.
+As the message says, the `<td>` element does not have a `colspan` property. This is true
+because `colspan` is an attribute&mdash;`colSpan`, with a capital `S`, is the
+corresponding property. Interpolation and property binding can set only *properties*, not attributes.
 
-You need attribute bindings to create and bind to such attributes.
+Instead, you'd use property binding and write it like this:
 
-Attribute binding syntax resembles property binding.
-Instead of an element property between brackets, start with the prefix **`attr`**,
-followed by a dot (`.`) and the name of the attribute.
-You then set the attribute value, using an expression that resolves to a string.
-
-Bind `[attr.colspan]` to a calculated value:
-
-<code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-colspan" header="src/app/app.component.html" linenums="false">
+<code-example path="attribute-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Here's how the table renders:
-
-<table border="1px">
-  <tr><td colspan="2">One-Two</td></tr>
-  <tr><td>Five</td><td>Six</td></tr>
- </table>
-
-One of the primary use cases for attribute binding
-is to set ARIA attributes, as in this example:
-
-<code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-aria" header="src/app/app.component.html" linenums="false">
-</code-example>
+</div>
 
 
 <hr/>
 
 ### Class binding
 
-You can add and remove CSS class names from an element's `class` attribute with
+Add and remove CSS class names from an element's `class` attribute with
 a **class binding**.
 
-Class binding syntax resembles property binding.
-Instead of an element property between brackets, start with the prefix `class`,
+Here's how to set the attribute without binding in plain HTML:
+
+```html
+<!-- standard class attribute setting -->
+<div class="item clearance special">Item clearance special</div>
+```
+
+Class binding syntax resembles property binding, but instead of an element property between brackets, start with the prefix `class`,
 optionally followed by a dot (`.`) and the name of a CSS class: `[class.class-name]`.
-
-The following examples show how to add and remove the application's "special" class
-with class bindings.  Here's how to set the attribute without binding:
-
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-1" header="src/app/app.component.html" linenums="false">
-</code-example>
 
 You can replace that with a binding to a string of the desired class names; this is an all-or-nothing, replacement binding.
 
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-2" header="src/app/app.component.html" linenums="false">
+
+ <code-example path="attribute-binding/src/app/app.component.html" region="class-override" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+You can also add append a class to an element without overwriting the classes already on the element:
+
+ <code-example path="attribute-binding/src/app/app.component.html" region="add-class" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 Finally, you can bind to a specific class name.
 Angular adds the class when the template expression evaluates to truthy.
 It removes the class when the expression is falsy.
 
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-3" header="src/app/app.component.html" linenums="false">
+<code-example path="attribute-binding/src/app/app.component.html" region="is-special" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="alert is-helpful">
-
-While this is a fine way to toggle a single class name,
-the [NgClass directive](guide/template-syntax#ngClass) is usually preferred when managing multiple class names at the same time.
-
-</div>
+While this technique is suitable for toggling a single class name,
+consider the [`NgClass`](guide/template-syntax#ngClass) directive when
+managing multiple class names at the same time.
 
 
 <hr/>
@@ -915,21 +1004,17 @@ Style binding syntax resembles property binding.
 Instead of an element property between brackets, start with the prefix `style`,
 followed by a dot (`.`) and the name of a CSS style property: `[style.style-property]`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="style-binding-1" header="src/app/app.component.html" linenums="false">
+<code-example path="attribute-binding/src/app/app.component.html" region="style-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 Some style binding styles have a unit extension.
 The following example conditionally sets the font size in  “em” and “%” units .
 
-<code-example path="template-syntax/src/app/app.component.html" region="style-binding-2" header="src/app/app.component.html" linenums="false">
+<code-example path="attribute-binding/src/app/app.component.html" region="style-binding-condition" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="alert is-helpful">
-
-While this is a fine way to set a single style,
-the [NgStyle directive](guide/template-syntax#ngStyle) is generally preferred when setting several inline styles at the same time.
-
-</div>
+**This technique is suitable for setting a single style, but consider
+the [`NgStyle`](guide/template-syntax#ngStyle) directive when setting several inline styles at the same time.**
 
 <div class="alert is-helpful">
 
@@ -1063,16 +1148,23 @@ These changes propagate through the system and ultimately display in this and ot
 
 {@a two-way}
 
-## Two-way binding ( <span class="syntax">[(...)]</span> )
+## Two-way binding `[(...)]`
 
-You often want to both display a data property and update that property when the user makes changes.
+Two-way binding gives your app a way to share data between a component class and
+its template.
 
-On the element side that takes a combination of setting a specific element property
-and listening for an element change event.
+For a demonstration of the syntax and code snippets in this section, see the <live-example name="two-way-binding">two-way binding example</live-example>.
 
-Angular offers a special _two-way data binding_ syntax for this purpose, **`[(x)]`**.
-The `[(x)]` syntax combines the brackets
-of _property binding_, `[x]`, with the parentheses of _event binding_, `(x)`.
+### Basics of two-way binding
+
+Two-way binding does two things:
+
+1. Sets a specific element property.
+1. Listens for an element change event.
+
+Angular offers a special _two-way data binding_ syntax for this purpose, `[()]`.
+The `[()]` syntax combines the brackets
+of property binding, `[]`, with the parentheses of event binding, `()`.
 
 <div class="callout is-important">
 
@@ -1084,44 +1176,52 @@ Visualize a *banana in a box* to remember that the parentheses go _inside_ the b
 
 </div>
 
-The `[(x)]` syntax is easy to demonstrate when the element has a settable property called `x`
-and a corresponding event named `xChange`.
-Here's a `SizerComponent` that fits the pattern.
+The `[()]` syntax is easy to demonstrate when the element has a settable
+property called `x` and a corresponding event named `xChange`.
+Here's a `SizerComponent` that fits this pattern.
 It has a `size` value property and a companion `sizeChange` event:
 
-<code-example path="template-syntax/src/app/sizer.component.ts" header="src/app/sizer.component.ts">
+<code-example path="two-way-binding/src/app/sizer/sizer.component.ts" header="src/app/sizer.component.ts" linenums="false">
 </code-example>
 
 The initial `size` is an input value from a property binding.
-Clicking the buttons increases or decreases the `size`, within min/max values constraints,
-and then raises (_emits_) the `sizeChange` event with the adjusted size.
+Clicking the buttons increases or decreases the `size`, within
+min/max value constraints,
+and then raises, or emits, the `sizeChange` event with the adjusted size.
 
 Here's an example in which the `AppComponent.fontSizePx` is two-way bound to the `SizerComponent`:
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-1)" region="two-way-1">
+<code-example path="two-way-binding/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-1)" region="two-way-1">
 </code-example>
 
 The `AppComponent.fontSizePx` establishes the initial `SizerComponent.size` value.
+
+<code-example path="two-way-binding/src/app/app.component.ts" header="src/app/app.component.ts" region="font-size">
+</code-example>
+
 Clicking the buttons updates the `AppComponent.fontSizePx` via the two-way binding.
 The revised `AppComponent.fontSizePx` value flows through to the _style_ binding,
 making the displayed text bigger or smaller.
 
 The two-way binding syntax is really just syntactic sugar for a _property_ binding and an _event_ binding.
-Angular _desugars_ the `SizerComponent` binding into this:
+Angular desugars the `SizerComponent` binding into this:
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-2)" region="two-way-2">
+<code-example path="two-way-binding/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-2)" region="two-way-2">
 </code-example>
 
 The `$event` variable contains the payload of the `SizerComponent.sizeChange` event.
 Angular assigns the `$event` value to the `AppComponent.fontSizePx` when the user clicks the buttons.
 
-Clearly the two-way binding syntax is a great convenience compared to separate property and event bindings.
+## Two-way binding in forms
 
-It would be convenient to use two-way binding with HTML form elements like `<input>` and `<select>`.
-However, no native HTML element follows the `x` value and `xChange` event pattern.
+The two-way binding syntax is a great convenience compared to
+separate property and event bindings. It would be convenient to
+use two-way binding with HTML form elements like `<input>` and
+`<select>`. However, no native HTML element follows the `x`
+value and `xChange` event pattern.
 
-Fortunately, the Angular [_NgModel_](guide/template-syntax#ngModel) directive is a bridge that enables two-way binding to form elements.
-
+For more on how to use two-way binding in forms, see
+Angular [NgModel](guide/template-syntax#ngModel).
 
 <hr/>
 
@@ -1129,80 +1229,64 @@ Fortunately, the Angular [_NgModel_](guide/template-syntax#ngModel) directive is
 
 ## Built-in directives
 
-Earlier versions of Angular included over seventy built-in directives.
-The community contributed many more, and countless private directives
-have been created for internal applications.
+Angular offers two kinds of built-in directives: attribute
+directives and structural directives. This segment reviews some of the most common built-in directives,
+classified as either [_attribute_ directives](guide/template-syntax#attribute-directives) or [_structural_ directives](guide/template-syntax#structural-directives) and has its own <live-example name="built-in-directives">built-in directives example</live-example>.
 
-You don't need many of those directives in Angular.
-You can often achieve the same results with the more capable and expressive Angular binding system.
-Why create a directive to handle a click when you can write a simple binding such as this?
-
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" header="src/app/app.component.html" linenums="false">
-</code-example>
-
-You still benefit from directives that simplify complex tasks.
-Angular still ships with built-in directives; just not as many.
-You'll write your own directives, just not as many.
-
-This segment reviews some of the most frequently used built-in directives,
-classified as either [_attribute_ directives](guide/template-syntax#attribute-directives) or [_structural_ directives](guide/template-syntax#structural-directives).
+For more detail, including how to build your own custom directives, see [Attribute Directives](guide/attribute-directives) and [Structural Directives](guide/structural-directives).
 
 <hr/>
 
 {@a attribute-directives}
 
-## Built-in _attribute_ directives
+### Built-in attribute directives
 
 Attribute directives listen to and modify the behavior of
 other HTML elements, attributes, properties, and components.
-They are usually applied to elements as if they were HTML attributes, hence the name.
+You usually apply them to elements as if they were HTML attributes, hence the name.
 
-Many details are covered in the [_Attribute Directives_](guide/attribute-directives) guide.
 Many NgModules such as the [`RouterModule`](guide/router "Routing and Navigation")
 and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
-This section is an introduction to the most commonly used attribute directives:
+The most common attribute directives are as follows:
 
-* [`NgClass`](guide/template-syntax#ngClass) - add and remove a set of CSS classes
-* [`NgStyle`](guide/template-syntax#ngStyle) - add and remove a set of HTML styles
-* [`NgModel`](guide/template-syntax#ngModel) - two-way data binding to an HTML form element
-
+* [`NgClass`](guide/template-syntax#ngClass)&mdash;adds and removes a set of CSS classes.
+* [`NgStyle`](guide/template-syntax#ngStyle)&mdash;adds and removes a set of HTML styles.
+* [`NgModel`](guide/template-syntax#ngModel)&mdash;adds two-way data binding to an HTML form element.
 
 <hr/>
 
 {@a ngClass}
 
-### NgClass
+### `NgClass`
 
-You typically control how elements appear
-by adding and removing CSS classes dynamically.
-You can bind to the `ngClass` to add or remove several classes simultaneously.
+Add or remove several CSS classes simultaneously with `ngClass`.
 
-A [class binding](guide/template-syntax#class-binding) is a good way to add or remove a *single* class.
-
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-3a" header="src/app/app.component.html" linenums="false">
-</code-example>
-
-To add or remove *many* CSS classes at the same time, the `NgClass` directive may be the better choice.
-
-Try binding `ngClass` to a key:value control object.
-Each key of the object is a CSS class name; its value is `true` if the class should be added,
-`false` if it should be removed.
-
-Consider a `setCurrentClasses` component method that sets a component property,
-`currentClasses` with an object that adds or removes three classes based on the
-`true`/`false` state of three other component properties:
-
-<code-example path="template-syntax/src/app/app.component.ts" region="setClasses" header="src/app/app.component.ts" linenums="false">
-</code-example>
-
-Adding an `ngClass` property binding to `currentClasses` sets the element's classes accordingly:
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgClass-1" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="special-div" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
 
-It's up to you to call `setCurrentClasses()`, both initially and when the dependent properties change.
+To add or remove a *single* class, use [class binding](guide/template-syntax#class-binding) rather than `NgClass`.
+
+</div>
+
+Consider a `setCurrentClasses()` component method that sets a component property,
+`currentClasses`, with an object that adds or removes three classes based on the
+`true`/`false` state of three other component properties. Each key of the object is a CSS class name; its value is `true` if the class should be added,
+`false` if it should be removed.
+
+<code-example path="built-in-directives/src/app/app.component.ts" region="setClasses" header="src/app/app.component.ts" linenums="false">
+</code-example>
+
+Adding an `ngClass` property binding to `currentClasses` sets the element's classes accordingly:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgClass-1" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+<div class="alert is-helpful">
+
+Remember that in this situation you'd call `setCurrentClasses()`,
+both initially and when the dependent properties change.
 
 </div>
 
@@ -1210,35 +1294,34 @@ It's up to you to call `setCurrentClasses()`, both initially and when the depend
 
 {@a ngStyle}
 
-### NgStyle
+### `NgStyle`
 
-You can set inline styles dynamically, based on the state of the component.
-With `NgStyle` you can set many inline styles simultaneously.
+Use `NgStyle` to set many inline styles simultaneously and dynamically, based on the state of the component.
 
-A [style binding](guide/template-syntax#style-binding) is an easy way to set a *single* style value.
+#### Without `NgStyle`
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgStyle-1" header="src/app/app.component.html" linenums="false">
+For context, consider setting a *single* style value with [style binding](guide/template-syntax#style-binding), without `NgStyle`.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="without-ng-style" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-To set *many* inline styles at the same time, the `NgStyle` directive may be the better choice.
+However, to set *many* inline styles at the same time, use the `NgStyle` directive.
 
-Try binding `ngStyle` to a key:value control object.
-Each key of the object is a style name; its value is whatever is appropriate for that style.
+The following is a `setCurrentStyles()` method that sets a component
+property, `currentStyles`, with an object that defines three styles,
+based on the state of three other component properties:
 
-Consider a `setCurrentStyles` component method that sets a component property, `currentStyles`
-with an object that defines three styles, based on the state of three other component properties:
-
-<code-example path="template-syntax/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
 Adding an `ngStyle` property binding to `currentStyles` sets the element's styles accordingly:
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
 
-It's up to you to call `setCurrentStyles()`, both initially and when the dependent properties change.
+Remember to call `setCurrentStyles()`, both initially and when the dependent properties change.
 
 </div>
 
@@ -1247,92 +1330,78 @@ It's up to you to call `setCurrentStyles()`, both initially and when the depende
 
 {@a ngModel}
 
-### NgModel - Two-way binding to form elements with <span class="syntax">[(ngModel)]</span>
+### `[(ngModel)]`: Two-way binding
 
-When developing data entry forms, you often both display a data property and
-update that property when the user makes changes.
+The `NgModel` directive allows you to display a data property and
+update that property when the user makes changes. Here's an example:
 
-Two-way data binding with the `NgModel` directive makes that easy. Here's an example:
-
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (NgModel-1)" region="NgModel-1">
+<code-example path="built-in-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (NgModel example)" region="NgModel-1">
 </code-example>
 
-#### _FormsModule_ is required to use _ngModel_
+
+#### Import `FormsModule` to use `ngModel`
 
 Before using the `ngModel` directive in a two-way data binding,
 you must import the `FormsModule` and add it to the NgModule's `imports` list.
-Learn more about the `FormsModule` and `ngModel` in the
-[Forms](guide/forms#ngModel) guide.
+Learn more about the `FormsModule` and `ngModel` in [Forms](guide/forms#ngModel).
 
-Here's how to import the `FormsModule` to make `[(ngModel)]` available.
+Remember to import the `FormsModule` to make `[(ngModel)]` available as follows:
 
-<code-example path="template-syntax/src/app/app.module.1.ts" linenums="false" header="src/app/app.module.ts (FormsModule import)">
+<code-example path="built-in-directives/src/app/app.module.ts" linenums="false" header="src/app/app.module.ts (FormsModule import)" region="import-forms-module">
 </code-example>
 
-#### Inside <span class="syntax">[(ngModel)]</span>
 
-Looking back at the `name` binding, note that
-you could have achieved the same result with separate bindings to
-the `<input>` element's  `value` property and `input` event.
+You could achieve the same result with separate bindings to
+the `<input>` element's  `value` property and `input` event:
 
-<code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-That's cumbersome. Who can remember which element property to set and which element event emits user changes?
-How do you extract the currently displayed text from the input box so you can update the data property?
-Who wants to look that up each time?
+To streamline the syntax, the `ngModel` directive hides the details behind its own `ngModel` input and `ngModelChange` output properties:
 
-That `ngModel` directive hides these onerous details behind its own  `ngModel` input and `ngModelChange` output properties.
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgModel-3" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgModelChange" header="src/app/app.component.html" linenums="false">
 </code-example>
-
-<div class="alert is-helpful">
 
 The `ngModel` data property sets the element's value property and the `ngModelChange` event property
 listens for changes to the element's value.
 
+#### `NgModel` and value accessors
+
 The details are specific to each kind of element and therefore the `NgModel` directive only works for an element
 supported by a [ControlValueAccessor](api/forms/ControlValueAccessor)
 that adapts an element to this protocol.
-The `<input>` box is one of those elements.
 Angular provides *value accessors* for all of the basic HTML form elements and the
-[_Forms_](guide/forms) guide shows how to bind to them.
+[Forms](guide/forms) guide shows how to bind to them.
 
-You can't apply `[(ngModel)]` to a non-form native element or a third-party custom component
-until you write a suitable *value accessor*,
-a technique that is beyond the scope of this guide.
+You can't apply `[(ngModel)]` to a non-form native element or a
+third-party custom component until you write a suitable value accessor. For more information, see
+the API documentation on [DefaultValueAccessor](https://angular.io/api/forms/DefaultValueAccessor).
 
-You don't need a _value accessor_ for an Angular component that you write because you
-can name the value and event properties
-to suit Angular's basic [two-way binding syntax](guide/template-syntax#two-way) and skip `NgModel` altogether.
-The [`sizer` shown above](guide/template-syntax#two-way) is an example of this technique.
+You don't need a value accessor for an Angular component that
+you write because you can name the value and event properties
+to suit Angular's basic [two-way binding syntax](guide/template-syntax#two-way)
+and skip `NgModel` altogether.
+The `sizer` in the
+[Two-way Binding](guide/template-syntax#two-way) section is an example of this technique.
 
-</div>
+Separate `ngModel` bindings are an improvement over binding to the
+element's native properties, but you can streamline the binding with a
+single declaration using the `[(ngModel)]` syntax:
 
-Separate `ngModel` bindings is an improvement over binding to the element's native properties. You can do better.
-
-You shouldn't have to mention the data property twice. Angular should be able to capture
-the component's data property and set it
-with a single declaration, which it can with the `[(ngModel)]` syntax:
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgModel-1" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgModel-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Is `[(ngModel)]` all you need? Is there ever a reason to fall back to its expanded form?
+This `[(ngModel)]` syntax can only _set_ a data-bound property.
+If you need to do something more, you can write the expanded form;
+for example, the following changes the `<input>` value to uppercase:
 
-The `[(ngModel)]` syntax can only _set_ a data-bound property.
-If you need to do something more or something different, you can write the expanded form.
-
-The following contrived example forces the input value to uppercase:
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgModel-4" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="uppercase" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 Here are all variations in action, including the uppercase version:
 
 <figure>
-  <img src='generated/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations">
+  <img src='generated/images/guide/built-in-directives/ng-model-anim.gif' alt="NgModel variations">
 </figure>
 
 <hr/>
@@ -1342,25 +1411,29 @@ Here are all variations in action, including the uppercase version:
 ## Built-in _structural_ directives
 
 Structural directives are responsible for HTML layout.
-They shape or reshape the DOM's _structure_, typically by adding, removing, and manipulating
+They shape or reshape the DOM's structure, typically by adding, removing, and manipulating
 the host elements to which they are attached.
 
+This section is an introduction to the common built-in structural directives:
+
+* [`NgIf`](guide/template-syntax#ngIf)&mdash;conditionally creates or destroys subviews from the template.
+* [`NgFor`](guide/template-syntax#ngFor)&mdash;repeat a node for each item in a list.
+* [`NgSwitch`](guide/template-syntax#ngSwitch)&mdash;a set of directives that switch among alternative views.
+
+<div class="alert is-helpful">
+
 The deep details of structural directives are covered in the
-[_Structural Directives_](guide/structural-directives) guide
-where you'll learn:
+[Structural Directives](guide/structural-directives) guide,
+which explains the following:
 
-* why you
-[_prefix the directive name with an asterisk_ (\*)](guide/structural-directives#asterisk "The * in *ngIf").
-* to use [`<ng-container>`](guide/structural-directives#ngcontainer "<ng-container>")
+* Why you
+[prefix the directive name with an asterisk (\*)](guide/structural-directives#the-asterisk--prefix).
+* Using [`<ng-container>`](guide/structural-directives#ngcontainer "<ng-container>")
 to group elements when there is no suitable host element for the directive.
-* how to write your own structural directive.
-* that you can only apply [one structural directive](guide/structural-directives#one-per-element "one per host element") to an element.
+* How to write your own structural directive.
+* That you can only apply [one structural directive](guide/structural-directives#one-per-element "one per host element") to an element.
 
-_This_ section is an introduction to the common structural directives:
-
-* [`NgIf`](guide/template-syntax#ngIf) - conditionally add or remove an element from the DOM
-* [`NgSwitch`](guide/template-syntax#ngSwitch) - a set of directives that switch among alternative views
-* [NgForOf](guide/template-syntax#ngFor) - repeat a template for each item in a list
+</div>
 
 <hr/>
 
@@ -1369,85 +1442,93 @@ _This_ section is an introduction to the common structural directives:
 ### NgIf
 
 You can add or remove an element from the DOM by applying an `NgIf` directive to
-that element (called the _host element_).
+a host element.
 Bind the directive to a condition expression like `isActive` in this example.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgIf-1" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="alert is-critical">
+<div class="alert is-helpful">
 
-Don't forget the asterisk (`*`) in front of `ngIf`.
+Don't forget the asterisk (`*`) in front of `ngIf`. For more information
+on the asterisk, see the [asterisk (*) prefix](guide/structural-directives#the-asterisk--prefix) section of
+[Structural Directives](guide/structural-directives).
 
 </div>
 
-When the `isActive` expression returns a truthy value, `NgIf` adds the `HeroDetailComponent` to the DOM.
-When the expression is falsy, `NgIf` removes the `HeroDetailComponent`
+When the `isActive` expression returns a truthy value, `NgIf` adds the
+`ItemDetailComponent` to the DOM.
+When the expression is falsy, `NgIf` removes the `ItemDetailComponent`
 from the DOM, destroying that component and all of its sub-components.
 
-#### Show/hide is not the same thing
 
-You can control the visibility of an element with a
-[class](guide/template-syntax#class-binding) or [style](guide/template-syntax#style-binding) binding:
+#### Show/hide vs. `NgIf`
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgIf-3" header="src/app/app.component.html" linenums="false">
+Hiding an element is different from removing it with `NgIf`.
+For comparison, the following example shows how to control
+the visibility of an element with a
+[class](guide/template-syntax#class-binding) or [style](guide/template-syntax#style-binding) binding.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Hiding an element is quite different from removing an element with `NgIf`.
-
-When you hide an element, that element and all of its descendents remain in the DOM.
+When you hide an element, that element and all of its descendants remain in the DOM.
 All components for those elements stay in memory and
 Angular may continue to check for changes.
-You could be holding onto considerable computing resources and degrading performance,
-for something the user can't see.
+You could be holding onto considerable computing resources and degrading performance
+unnecessarily.
 
-When `NgIf` is `false`, Angular removes the element and its descendents from the DOM.
-It destroys their components, potentially freeing up substantial resources,
-resulting in a more responsive user experience.
+`NgIf` works differently. When `NgIf` is `false`, Angular removes the element and its descendants from the DOM.
+It destroys their components, freeing up resources, which
+results in a better user experience.
 
-The show/hide technique is fine for a few elements with few children.
-You should be wary when hiding large component trees; `NgIf` may be the safer choice.
+If you are hiding large component trees, consider `NgIf` as a more
+efficient alternative to showing/hiding.
+
+<div class="alert is-helpful">
+
+**Note:** For more information on `NgIf` and `ngIfElse`, see the [API documentation about NgIf](api/common/NgIf).
+
+</div>
 
 #### Guard against null
 
-The `ngIf` directive is often used to guard against null.
-Show/hide is useless as a guard.
-Angular will throw an error if a nested expression tries to access a property of `null`.
+Another advantage of `ngIf` is that you can use it to guard against null. Show/hide
+is best suited for very simple use cases, so when you need a guard, opt instead for `ngIf`. Angular will throw an error if a nested expression tries to access a property of `null`.
 
-Here we see `NgIf` guarding two `<div>`s.
-The `currentHero` name will appear only when there is a `currentHero`.
-The `nullHero` will never be displayed.
+The following shows `NgIf` guarding two `<div>`s.
+The `currentCustomer` name appears only when there is a `currentCustomer`.
+The `nullCustomer` will not be displayed as long as it is `null`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgIf-2" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2b" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
 
 See also the
-[_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)")
-described below.
+[safe navigation operator](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)") below.
 
 </div>
-
-
 <hr/>
 
 {@a ngFor}
+### `NgFor`
 
-### NgForOf
+`NgFor` is a repeater directive&mdash;a way to present a list of items.
+You define a block of HTML that defines how a single item should be displayed
+and then you tell Angular to use that block as a template for rendering each item in the list.
 
-`NgForOf` is a _repeater_ directive &mdash; a way to present a list of items.
-You define a block of HTML that defines how a single item should be displayed.
-You tell Angular to use that block as a template for rendering each item in the list.
+Here is an example of `NgFor` applied to a simple `<div>`:
 
-Here is an example of `NgForOf` applied to a simple `<div>`:
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-You can also apply an `NgForOf` to a component element, as in this example:
+You can also apply an `NgFor` to a component element, as in this example:
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-2" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-critical">
@@ -1460,50 +1541,53 @@ The text assigned to `*ngFor` is the instruction that guides the repeater proces
 
 {@a microsyntax}
 
-#### *ngFor microsyntax
+#### `*ngFor` microsyntax
 
-The string assigned to `*ngFor` is not a [template expression](guide/template-syntax#template-expressions).
-It's a *microsyntax* &mdash; a little language of its own that Angular interprets.
-The string `"let hero of heroes"` means:
+The string assigned to `*ngFor` is not a [template expression](guide/template-syntax#template-expressions). Rather,
+it's a *microsyntax*&mdash;a little language of its own that Angular interprets.
+The string `"let item of items"` means:
 
-> *Take each hero in the `heroes` array, store it in the local `hero` looping variable, and
+> *Take each item in the `items` array, store it in the local `item` looping variable, and
 make it available to the templated HTML for each iteration.*
 
-Angular translates this instruction into a `<ng-template>` around the host element,
-then uses this template repeatedly to create a new set of elements and bindings for each `hero`
+Angular translates this instruction into an `<ng-template>` around the host element,
+then uses this template repeatedly to create a new set of elements and bindings for each `item`
 in the list.
 
-Learn about the _microsyntax_ in the [_Structural Directives_](guide/structural-directives#microsyntax) guide.
+For more information about microsyntax, see the [Structural Directives](guide/structural-directives#microsyntax) guide.
+
 
 {@a template-input-variable}
 
 {@a template-input-variables}
 
-### Template input variables
 
-The `let` keyword before `hero` creates a _template input variable_ called `hero`.
-The `NgForOf` directive iterates over the `heroes` array returned by the parent component's `heroes` property
-and sets `hero` to the current item from the array during each iteration.
+#### Template input variables
 
-You reference the `hero` input variable within the `NgForOf` host element
-(and within its descendants) to access the hero's properties.
-Here it is referenced first in an interpolation
-and then passed in a binding to the `hero` property of the `<hero-detail>` component.
+The `let` keyword before `item` creates a template input variable called `item`.
+The `ngFor` directive iterates over the `items` array returned by the parent component's `items` property
+and sets `item` to the current item from the array during each iteration.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-1-2" header="src/app/app.component.html" linenums="false">
+Reference `item` within the `ngFor` host element
+as well as within its descendants to access the item's properties.
+The following example references `item` first in an interpolation
+and then passes in a binding to the `item` property of the `<app-item-detail>` component.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Learn more about _template input variables_ in the
-[_Structural Directives_](guide/structural-directives#template-input-variable) guide.
+For more information about template input variables, see
+[Structural Directives](guide/structural-directives#template-input-variable).
 
-#### *ngFor with _index_
+#### `*ngFor` with `index`
 
-The `index` property of the `NgForOf` directive context returns the zero-based index of the item in each iteration.
+The `index` property of the `NgFor` directive context
+returns the zero-based index of the item in each iteration.
 You can capture the `index` in a template input variable and use it in the template.
 
-The next example captures the `index` in a variable named `i` and displays it with the hero name like this.
+The next example captures the `index` in a variable named `i` and displays it with the item name.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-3" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -1514,157 +1598,152 @@ and `odd` in the [NgForOf API reference](api/common/NgForOf).
 </div>
 
 {@a trackBy}
+#### *ngFor with `trackBy`
 
-#### *ngFor with _trackBy_
+If you use `NgFor` with large lists, a small change to one item, such as removing or adding an item, can trigger a cascade of DOM manipulations. For example, re-querying the server could reset a list with all new item objects, even when those items were previously displayed. In this case, Angular sees only a fresh list of new object references and has no choice but to replace the old DOM elements with all new DOM elements.
 
-The `NgForOf` directive may perform poorly, especially with large lists.
-A small change to one item, an item removed, or an item added can trigger a cascade of DOM manipulations.
+You can make this more efficient with `trackBy`.
+Add a method to the component that returns the value `NgFor` should track.
+In this case, that value is the hero's `id`. If the `id` has already been rendered,
+Angular keeps track of it and doesn't re-query the server for the same `id`.
 
-For example, re-querying the server could reset the list with all new hero objects.
-
-Most, if not all, are previously displayed heroes.
-*You* know this because the `id` of each hero hasn't changed.
-But Angular sees only a fresh list of new object references.
-It has no choice but to tear down the old DOM elements and insert all new DOM elements.
-
-Angular can avoid this churn with `trackBy`.
-Add a method to the component that returns the value `NgForOf` _should_ track.
-In this case, that value is the hero's `id`.
-
-<code-example path="template-syntax/src/app/app.component.ts" region="trackByHeroes" header="src/app/app.component.ts" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.ts" region="trackByItems" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
-In the microsyntax expression, set `trackBy` to this method.
+In the microsyntax expression, set `trackBy` to the `trackByItems()` method.
 
-<code-example path="template-syntax/src/app/app.component.html" region="trackBy" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="trackBy" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Here is an illustration of the _trackBy_ effect.
-"Reset heroes" creates new heroes with the same `hero.id`s.
-"Change ids" creates new heroes with new `hero.id`s.
+Here is an illustration of the `trackBy` effect.
+"Reset items" creates new items with the same `item.id`s.
+"Change ids" creates new items with new `item.id`s.
 
 * With no `trackBy`, both buttons trigger complete DOM element replacement.
 * With `trackBy`, only changing the `id` triggers element replacement.
 
 <figure>
-  <img src="generated/images/guide/template-syntax/ng-for-track-by-anim.gif" alt="trackBy">
+  <img src="generated/images/guide/built-in-directives/ngfor-trackby.gif" alt="Animation of trackBy">
 </figure>
-
 
 <hr/>
 
 {@a ngSwitch}
+## The `NgSwitch` directives
 
-### The _NgSwitch_ directives
+NgSwitch is like the JavaScript `switch` statement.
+It displays one element from among several possible elements, based on a switch condition.
+Angular puts only the selected element into the DOM.
+<!-- API Flagged -->
+`NgSwitch` is actually a set of three, cooperating directives:
+`NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault` as in the following example.
 
-*NgSwitch* is like the JavaScript `switch` statement.
-It can display _one_ element from among several possible elements, based on a _switch condition_.
-Angular puts only the *selected* element into the DOM.
-
-*NgSwitch* is actually a set of three, cooperating directives:
-`NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault` as seen in this example.
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgSwitch" header="src/app/app.component.html" linenums="false">
+ <code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <figure>
-  <img src="generated/images/guide/template-syntax/switch-anim.gif" alt="trackBy">
+  <img src="generated/images/guide/built-in-directives/ngswitch.gif" alt="Animation of NgSwitch">
 </figure>
 
-`NgSwitch` is the controller directive. Bind it to an expression that returns the *switch value*.
-The `emotion` value in this example is a string, but the switch value can be of any type.
+`NgSwitch` is the controller directive. Bind it to an expression that returns
+the *switch value*, such as `feature`. Though the `feature` value in this
+example is a string, the switch value can be of any type.
 
 **Bind to `[ngSwitch]`**. You'll get an error if you try to set `*ngSwitch` because
 `NgSwitch` is an *attribute* directive, not a *structural* directive.
-It changes the behavior of its companion directives.
-It doesn't touch the DOM directly.
+Rather than touching the DOM directly, it changes the behavior of its companion directives.
 
 **Bind to `*ngSwitchCase` and `*ngSwitchDefault`**.
 The `NgSwitchCase` and `NgSwitchDefault` directives are _structural_ directives
 because they add or remove elements from the DOM.
 
-* `NgSwitchCase` adds its element to the DOM when its bound value equals the switch value.
+* `NgSwitchCase` adds its element to the DOM when its bound value equals the switch value and removes
+its bound value when it doesn't equal the switch value.
+
 * `NgSwitchDefault` adds its element to the DOM when there is no selected `NgSwitchCase`.
 
 The switch directives are particularly useful for adding and removing *component elements*.
-This example switches among four "emotional hero" components defined in the `hero-switch.components.ts` file.
-Each component has a `hero` [input property](guide/template-syntax#inputs-outputs "Input property")
-which is bound to the `currentHero` of the parent component.
+This example switches among four `item` components defined in the `item-switch.components.ts` file.
+Each component has an `item` [input property](guide/template-syntax#inputs-outputs "Input property")
+which is bound to the `currentItem` of the parent component.
 
 Switch directives work as well with native elements and web components too.
-For example, you could replace the `<confused-hero>` switch case with the following.
+For example, you could replace the `<app-best-item>` switch case with the following.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgSwitch-div" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch-div" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <hr/>
 
 {@a template-reference-variable}
 
+{@a template-reference-variables--var-}
+
 {@a ref-vars}
 
 {@a ref-var}
 
-## Template reference variables ( <span class="syntax">#var</span> )
+## Template reference variables (`#var`)
 
 A **template reference variable** is often a reference to a DOM element within a template.
-It can also be a reference to an Angular component or directive or a
-<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>.
+It can also refer to a directive (which contains a component), an element, [TemplateRef](api/core/TemplateRef), or a <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>.
+
+For a demonstration of the syntax and code snippets in this section, see the <live-example name="template-reference-variables">template reference variables example</live-example>.
+
 
 Use the hash symbol (#) to declare a reference variable.
-The `#phone` declares a `phone` variable on an `<input>` element.
+The following reference variable, `#phone`, declares a `phone` variable on an `<input>` element.
 
-<code-example path="template-syntax/src/app/app.component.html" region="ref-var" header="src/app/app.component.html" linenums="false">
+<code-example path="template-reference-variables/src/app/app.component.html" region="ref-var" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-You can refer to a template reference variable _anywhere_ in the template.
-The `phone` variable declared on this `<input>` is
-consumed in a `<button>` on the other side of the template
+You can refer to a template reference variable anywhere in the component's template.
+Here, a `<button>` further down the template refers to the `phone` variable.
 
-<code-example path="template-syntax/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html" linenums="false">
+<code-example path="template-reference-variables/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <h3 class="no-toc">How a reference variable gets its value</h3>
 
-In most cases, Angular sets the reference variable's value to the element on which it was declared.
-In the previous example, `phone` refers to the _phone number_ `<input>` box.
-The phone button click handler passes the _input_ value to the component's `callPhone` method.
-But a directive can change that behavior and set the value to something else, such as itself.
-The `NgForm` directive does that.
+In most cases, Angular sets the reference variable's value to the element on which it is declared.
+In the previous example, `phone` refers to the phone number `<input>`.
+The button's click handler passes the `<input>` value to the component's `callPhone()` method.
 
-The following is a *simplified* version of the form example in the [Forms](guide/forms) guide.
+The `NgForm` directive can change that behavior and set the value to something else. In the following example, the template reference variable, `itemForm`, appears three times separated
+by HTML.
 
-<code-example path="template-syntax/src/app/hero-form.component.html" header="src/app/hero-form.component.html" linenums="false">
+<code-example path="template-reference-variables/src/app/app.component.html" region="ngForm" header="src/app/hero-form.component.html" linenums="false">
 </code-example>
 
-A template reference variable, `heroForm`, appears three times in this example, separated
-by a large amount of HTML.
-What is the value of `heroForm`?
+The reference value of itemForm, without the ngForm attribute value, would be
+the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement).
+There is, however, a difference between a Component and a Directive in that a `Component
+`will be referenced without specifying the attribute value, and a `Directive` will not
+change the implicit reference (that is, the element).
 
-If Angular hadn't taken it over when you imported the `FormsModule`,
-it would be the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement).
-The `heroForm` is actually a reference to an Angular [NgForm](api/forms/NgForm "API: NgForm")
+
+
+However, with `NgForm`, `itemForm` is a reference to the [NgForm](api/forms/NgForm "API: NgForm")
 directive with the ability to track the value and validity of every control in the form.
 
-The native `<form>` element doesn't have a `form` property.
-But the `NgForm` directive does, which explains how you can disable the submit button
-if the `heroForm.form.valid` is invalid and pass the entire form control tree
-to the parent component's `onSubmit` method.
+The native `<form>` element doesn't have a `form` property, but the `NgForm` directive does, which allows disabling the submit button
+if the `itemForm.form.valid` is invalid and passing the entire form control tree
+to the parent component's `onSubmit()` method.
 
-<h3 class="no-toc">Template reference variable warning notes</h3>
+<h3 class="no-toc">Template reference variable considerations</h3>
 
-A template _reference_ variable (`#phone`) is _not_ the same as a template _input_ variable (`let phone`)
-such as you might see in an [`*ngFor`](guide/template-syntax#template-input-variable).
-Learn the difference in the [_Structural Directives_](guide/structural-directives#template-input-variable) guide.
+A template _reference_ variable (`#phone`) is not the same as a template _input_ variable (`let phone`) such as in an [`*ngFor`](guide/template-syntax#template-input-variable).
+See [_Structural Directives_](guide/structural-directives#template-input-variable) for more information.
 
-The scope of a reference variable is the _entire template_.
-Do not define the same variable name more than once in the same template.
-The runtime value will be unpredictable.
+The scope of a reference variable is the entire template. So, don't define the same variable name more than once in the same template as the runtime value will be unpredictable.
+
+#### Alternative syntax
 
 You can use the `ref-` prefix alternative to `#`.
 This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="ref-fax" header="src/app/app.component.html" linenums="false">
+
+<code-example path="template-reference-variables/src/app/app.component.html" region="ref-fax" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 
@@ -1672,169 +1751,359 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 
 {@a inputs-outputs}
 
-## Input and Output properties
+## `@Input()` and `@Output()` properties
 
-An _Input_ property is a _settable_ property annotated with an `@Input` decorator.
-Values flow _into_ the property when it is data bound with a [property binding](#property-binding)
+`@Input()` and `@Output()` allow Angular to share data between the parent context and child directives. An `@Input()` property is writable while an `@Output()` property is observable.
 
-An _Output_ property is an _observable_ property annotated with an `@Output` decorator.
-The property almost always returns an Angular [`EventEmitter`](api/core/EventEmitter).
-Values flow _out_ of the component as events bound with an [event binding](#event-binding).
+Consider this example of a child/parent relationship:
 
-You can only bind to _another_ component or directive through its _Input_ and _Output_ properties.
+```html
+<parent-component>
+  <child-component></child-component>
+</parent-component>
 
-<div class="alert is-important">
+```
 
-Remember that all **components** are **directives**.
+Here, the `<child-component>` selector, or child directive, is embedded
+within a `<parent-component>`, which serves as the child's context.
 
-The following discussion refers to _components_ for brevity and
-because this topic is mostly a concern for component authors.
+`@Input()` and `@Output()` act as
+the API, or application programming interface, of the child
+component in that they allow the child to
+communicate with the parent. Think of `@Input()` and `@Output()` like ports
+or doorways&mdash;`@Input()` is the doorway into the component allowing data
+to flow in while `@Output()` is the doorway out of the component, allowing the
+child component to send data out.
+
+This section about `@Input()` and `@Output()` has its own <live-example name="inputs-outputs"></live-example>. The following subsections highlight
+key points in the sample app.
+
+<div class="alert is-helpful">
+
+#### `@Input()` and `@Output()` are independent
+
+Though `@Input()` and `@Output()` often appear together in apps, you can use
+them separately. If the nested
+component is such that it only needs to send data to its parent, you wouldn't
+need an `@Input()`, only an `@Output()`. The reverse is also true in that if the
+child only needs to receive data from the parent, you'd only neeed `@Input()`.
+
 </div>
 
-<h3 class="no-toc">Discussion</h3>
+{@a input}
 
-You are usually binding a template to its _own component class_.
-In such binding expressions, the component's property or method is to the _right_ of the (`=`).
+## How to use `@Input()`
 
-<code-example path="template-syntax/src/app/app.component.html" region="io-1" header="src/app/app.component.html" linenums="false">
+Use the `@Input()` decorator in a child component or directive to let Angular know
+that a property in that component can receive its value from its parent component.
+It helps to remember that the data flow is from the perspective of the
+child component. So an `@Input()` allows data to be input _into_ the
+child component from the parent component.
+
+
+<figure>
+  <img src="generated/images/guide/inputs-outputs/input.svg" alt="Input data flow diagram">
+</figure>
+
+To illustrate the use of `@Input()`, edit these parts of your app:
+
+* The child component class and template
+* The parent component class and template
+
+
+### In the child
+
+To use the `@Input()` decorator in a child component class, first import
+`Input` and then decorate the property with `@Input()`:
+
+<code-example path="inputs-outputs/src/app/item-detail/item-detail.component.ts" region="use-input" header="src/app/item-detail/item-detail.component.ts" linenums="false">
 </code-example>
 
-The `iconUrl` and `onSave` are members of the `AppComponent` class.
-They are _not_ decorated with `@Input()` or `@Output`.
-Angular does not object.
 
-**You can always bind to a public property of a component in its own template.**
-It doesn't have to be an _Input_ or _Output_ property
+In this case, `@Input()` decorates the property <code class="no-auto-link">item</code>, which has
+a type of `string`, however, `@Input()` properties can have any type, such as
+`number`, `string`, `boolean`, or `object`. The value for `item` will come from the parent component, which the next section covers.
 
-A component's class and template are closely coupled.
-They are both parts of the same thing.
-Together they _are_ the component.
-Exchanges between a component class and its template are internal implementation details.
+Next, in the child component template, add the following:
 
-### Binding to a different component
-
-You can also bind to a property of a _different_ component.
-In such bindings, the _other_ component's property is to the _left_ of the (`=`).
-
-In the following example, the `AppComponent` template binds `AppComponent` class members to properties of the `HeroDetailComponent` whose selector is `'app-hero-detail'`.
-
-<code-example path="template-syntax/src/app/app.component.html" region="io-2" header="src/app/app.component.html" linenums="false">
+<code-example path="inputs-outputs/src/app/item-detail/item-detail.component.html" region="property-in-template" header="src/app/item-detail/item-detail.component.html" linenums="false">
 </code-example>
 
-The Angular compiler _may_ reject these bindings with errors like this one:
+
+
+### In the parent
+
+The next step is to bind the property in the parent component's template.
+In this example, the parent component template is `app.component.html`.
+
+First, use the child's selector, here `<app-item-detail>`, as a directive within the
+parent component template. Then, use [property binding](guide/template-syntax#property-binding)
+to bind the property in the child to the property of the parent.
+
+<code-example path="inputs-outputs/src/app/app.component.html" region="input-parent" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+Next, in the parent component class, `app.component.ts`, designate a value for `currentItem`:
+
+<code-example path="inputs-outputs/src/app/app.component.ts" region="parent-property" header="src/app/app.component.ts" linenums="false">
+</code-example>
+
+With `@Input()`, Angular passes the value for `currentItem` to the child so that `item` renders as `Television`.
+
+The following diagram shows this structure:
+
+<figure>
+  <img src="generated/images/guide/inputs-outputs/input-diagram-target-source.svg" alt="Property binding diagram">
+</figure>
+
+The target in the square brackets, `[]`, is the property you decorate
+with `@Input()` in the child component. The binding source, the part
+to the right of the equal sign, is the data that the parent
+component passes to the nested component.
+
+The key takeaway is that when binding to a child component's property in a parent component&mdash;that is, what's
+in square brackets&mdash;you must
+decorate the property with `@Input()` in the child component.
+
+<div class="alert is-helpful">
+
+#### `OnChanges` and `@Input()`
+
+To watch for changes on an `@Input()` property, use
+`OnChanges`, one of Angular's [lifecycle hooks](guide/lifecycle-hooks#onchanges).
+`OnChanges` is specifically designed to work with properties that have the
+`@Input()` decorator. See the [`OnChanges`](guide/lifecycle-hooks#onchanges) section of the [Lifecycle Hooks](guide/lifecycle-hooks) guide for more details and examples.
+
+</div>
+
+{@a output}
+
+## How to use `@Output()`
+
+Use the `@Output()` decorator in the child component or directive to allow data to flow from
+the child _out_ to the parent.
+
+An `@Output()` property should normally be initialized to an Angular [`EventEmitter`](api/core/EventEmitter) with values flowing out of the component as [events](#event-binding).
+
+
+<figure>
+  <img src="generated/images/guide/inputs-outputs/output.svg" alt="Output diagram">
+</figure>
+
+Just like with `@Input()`, you can use `@Output()`
+on a property of the child component but its type should be
+`EventEmitter`.
+
+`@Output()` marks a property in a child component as a doorway
+through which data can travel from the child to the parent.
+The child component then has to raise an event so the
+parent knows something has changed. To raise an event,
+`@Output()` works hand in hand with `EventEmitter`,
+which is a class in `@angular/core` that you
+use to emit custom events.
+
+When you use `@Output()`, edit these parts of your app:
+
+* The child component class and template
+* The parent component class and template
+
+
+The following example shows how to set up an `@Output()` in a child
+component that pushes data you enter in an HTML `<input>` to an array in the
+parent component.
+
+<div class="alert is-helpful">
+
+The HTML element `<input>` and the Angular decorator `@Input()`
+are different. This documentation is about component communication in Angular as it pertains to `@Input()` and `@Output()`. For more information on the HTML element `<input>`, see the [W3C Recommendation](https://www.w3.org/TR/html5/sec-forms.html#the-input-element).
+
+</div>
+
+### In the child
+
+This example features an `<input>` where a user can enter a value and click a `<button>` that raises an event. The `EventEmitter` then relays the data to the parent component.
+
+First, be sure to import `Output` and `EventEmitter`
+in the child component class:
+
+```js
+import { Output, EventEmitter } from '@angular/core';
+
+```
+
+Next, still in the child, decorate a property with `@Output()` in the component class.
+The following example `@Output()` is called `newItemEvent` and its type is
+`EventEmitter`, which means it's an event.
+
+
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output" header="src/app/item-output/item-output.component.ts" linenums="false">
+</code-example>
+
+The different parts of the above declaration are as follows:
+
+* `@Output()`&mdash;a decorator function marking the property as a way for data to go from the child to the parent
+* `newItemEvent`&mdash;the name of the `@Output()`
+* `EventEmitter<string>`&mdash;the `@Output()`'s type
+* `new EventEmitter<string>()`&mdash;tells Angular to create a new event emitter and that the data it emits is of type string. The type could be any type, such as `number`, `boolean`, and so on. For more information on `EventEmitter`, see the [EventEmitter API documentation](api/core/EventEmitter).
+
+Next, create an `addNewItem()` method in the same component class:
+
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output-class" header="src/app/item-output/item-output.component.ts" linenums="false">
+</code-example>
+
+The `addNewItem()` function uses the `@Output()`, `newItemEvent`,
+to raise an event in which it emits the value the user
+types into the `<input>`. In other words, when
+the user clicks the add button in the UI, the child lets the parent know
+about the event and gives that data to the parent.
+
+#### In the child's template
+
+The child's template has two controls. The first is an HTML `<input>` with a
+[template reference variable](guide/template-syntax#ref-var) , `#newItem`,
+where the user types in an item name. Whatever the user types
+into the `<input>` gets stored in the `#newItem` variable.
+
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.html" region="child-output" header="src/app/item-output/item-output.component.html" linenums="false">
+</code-example>
+
+The second element is a `<button>`
+with an [event binding](guide/template-syntax#event-binding). You know it's
+an event binding because the part to the left of the equal
+sign is in parentheses, `(click)`.
+
+The `(click)` event is bound to the `addNewItem()` method in the child component class which
+takes as its argument whatever the value of `#newItem` is.
+
+Now the child component has an `@Output()`
+for sending data to the parent and a method for raising an event.
+The next step is in the parent.
+
+### In the parent
+
+In this example, the parent component is `AppComponent`, but you could use
+any component in which you could nest the child.
+
+The `AppComponent` in this example features a list of `items`
+in an array and a method for adding more items to the array.
+
+<code-example path="inputs-outputs/src/app/app.component.ts" region="add-new-item" header="src/app/app.component.ts" linenums="false">
+</code-example>
+
+The `addItem()` method takes an argument in the form of a string
+and then pushes, or adds, that string to the `items` array.
+
+#### In the parent's template
+
+Next, in the parent's template, bind the parent's
+method to the child's event. Put the child selector, here `<app-item-output>`,
+within the parent component's
+template, `app.component.html`.
+
+<code-example path="inputs-outputs/src/app/app.component.html" region="output-parent" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+The event binding, `(newItemEvent)='addItem($event)'`, tells
+Angular to connect the event in the child, `newItemEvent`, to
+the method in the parent, `addItem()`, and that the event that the child
+is notifying the parent about is to be the argument of `addItem()`.
+In other words, this is where the actual hand off of data takes place.
+The `$event` contains the data that the user types into the `<input>`
+in the child template UI.
+
+Now, in order to see the `@Output()` working, add the following to the parent's template:
+
+```
+  <ul>
+    <li *ngFor="let item of items">{{item}}</li>
+  </ul>
+  ```
+
+The `*ngFor` iterates over the items in the `items` array. When you enter a value in the child's `<input>` and click the button, the child emits the event and the parent's `addItem()` method pushes the value to the `items` array and it renders in the list.
+
+
+## `@Input()` and `@Output()` together
+
+You can use `@Input()` and `@Output()` on the same child component as in the following:
+
+<code-example path="inputs-outputs/src/app/app.component.html" region="together" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+The target, `item`, which is an `@Input()` property in the child component class, receives its value from the parent's property, `currentItem`. When you click delete, the child component raises an event, `deleteRequest`, which is the argument for the parent's `crossOffItem()` method.
+
+The following diagram is of an `@Input()` and an `@Output()` on the same
+child component and shows the different parts of each:
+
+<figure>
+  <img src="generated/images/guide/inputs-outputs/input-output-diagram.svg" alt="Input/Output diagram">
+</figure>
+
+As the diagram shows, use inputs and outputs together in the same manner as using them separately. Here, the child selector is `<app-input-output>` with `item` and `deleteRequest` being `@Input()` and `@Output()`
+properties in the child component class. The property `currentItem` and the method `crossOffItem()` are both in the parent component class.
+
+To combine property and event bindings using the banana-in-a-box
+syntax, `[()]`, see [Two-way Binding](guide/template-syntax#two-way).
+
+For more detail on how these work, see the previous sections on [Input](guide/template-syntax#input) and [Output](guide/template-syntax#output). To see it in action, see the <live-example name="inputs-outputs">Inputs and Outputs Example</live-example>.
+
+## `@Input()` and `@Output()` declarations
+
+Instead of using the `@Input()` and `@Output()` decorators
+to declare inputs and outputs, you can identify
+members in the `inputs` and `outputs` arrays
+of the directive metadata, as in this example:
+
+<code-example path="inputs-outputs/src/app/in-the-metadata/in-the-metadata.component.ts" region="metadata" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+While declaring `inputs` and `outputs` in the `@Directive` and `@Component`
+metadata is possible, it is a better practice to use the `@Input()` and `@Output()`
+class decorators instead, as follows:
+
+<code-example path="inputs-outputs/src/app/input-output/input-output.component.ts" region="input-output" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+See the [Decorate input and output properties](guide/styleguide#decorate-input-and-output-properties) section of the
+[Style Guide](guide/styleguide) for details.
+
+
+
+<div class="alert is-helpful">
+
+If you get a template parse error when trying to use inputs or outputs, but you know that the
+properties do indeed exist, double check
+that your properties are annotated with `@Input()` / `@Output()` or that you've declared
+them in an `inputs`/`outputs` array:
 
 <code-example language="sh" class="code-shell">
 Uncaught Error: Template parse errors:
-Can't bind to 'hero' since it isn't a known property of 'app-hero-detail'
-</code-example>
-
-You know that `HeroDetailComponent` has `hero` and `deleteRequest` properties.
-But the Angular compiler refuses to recognize them.
-
-**The Angular compiler won't bind to properties of a different component
-unless they are Input or Output properties**.
-
-There's a good reason for this rule.
-
-It's OK for a component to bind to its _own_ properties.
-The component author is in complete control of those bindings.
-
-But other components shouldn't have that kind of unrestricted access.
-You'd have a hard time supporting your component if anyone could bind to any of its properties.
-Outside components should only be able to bind to the component's public binding API.
-
-Angular asks you to be _explicit_ about that API.
-It's up to _you_ to decide which properties are available for binding by
-external components.
-
-#### TypeScript _public_ doesn't matter
-
-You can't use the TypeScript _public_ and _private_ access modifiers to
-shape the component's public binding API.
-
-<div class="alert is-important">
-
-All data bound properties must be TypeScript _public_ properties.
-Angular never binds to a TypeScript _private_ property.
-
-</div>
-
-Angular requires some other way to identify properties that _outside_ components are allowed to bind to.
-That _other way_ is the `@Input()` and `@Output()` decorators.
-
-### Declaring Input and Output properties
-
-In the sample for this guide, the bindings to `HeroDetailComponent` do not fail
-because the data bound properties are annotated with `@Input()` and `@Output()` decorators.
-
-<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-1" header="src/app/hero-detail.component.ts" linenums="false">
-</code-example>
-
-<div class="alert is-helpful">
-
-Alternatively, you can identify members in the `inputs` and `outputs` arrays
-of the directive metadata, as in this example:
-
-<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-2" header="src/app/hero-detail.component.ts" linenums="false">
+Can't bind to 'item' since it isn't a known property of 'app-item-detail'
 </code-example>
 
 </div>
 
-### Input or output?
+{@a aliasing-io}
 
-*Input* properties usually receive data values.
-*Output* properties expose event producers, such as `EventEmitter` objects.
+## Aliasing inputs and outputs
 
-The terms _input_ and _output_ reflect the perspective of the target directive.
+Sometimes the public name of an input/output property should be different from the internal name. While it is a best practice to avoid this situation, Angular does
+offer a solution.
 
-<figure>
-  <img src="generated/images/guide/template-syntax/input-output.png" alt="Inputs and outputs">
-</figure>
+### Aliasing in the metadata
 
-`HeroDetailComponent.hero` is an **input** property from the perspective of `HeroDetailComponent`
-because data flows *into* that property from a template binding expression.
+Alias inputs and outputs in the metadata using a colon-delimited (`:`) string with
+the directive property name on the left and the public alias on the right:
 
-`HeroDetailComponent.deleteRequest` is an **output** property from the perspective of `HeroDetailComponent`
-because events stream *out* of that property and toward the handler in a template binding statement.
-
-<h3 id='aliasing-io'>
-  Aliasing input/output properties
-</h3>
-
-Sometimes the public name of an input/output property should be different from the internal name.
-
-This is frequently the case with [attribute directives](guide/attribute-directives).
-Directive consumers expect to bind to the name of the directive.
-For example, when you apply a directive with a `myClick` selector to a `<div>` tag,
-you expect to bind to an event property that is also called `myClick`.
-
-<code-example path="template-syntax/src/app/app.component.html" region="myClick" header="src/app/app.component.html" linenums="false">
+<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-However, the directive name is often a poor choice for the name of a property within the directive class.
-The directive name rarely describes what the property does.
-The `myClick` directive name is not a good name for a property that emits click messages.
 
-Fortunately, you can have a public name for the property that meets conventional expectations,
-while using a different name internally.
-In the example immediately above, you are actually binding *through the* `myClick` *alias* to
-the directive's own `clicks` property.
+### Aliasing with the `@Input()`/`@Output()` decorator
 
-You can specify the alias for the property name by passing it into the input/output decorator like this:
+You can specify the alias for the property name by passing the alias name to the `@Input()`/`@Output()` decorator. The internal name remains as usual.
 
-<code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick" header="src/app/click.directive.ts" linenums="false">
+<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias-input-output" header="src/app/app.component.html" linenums="false">
 </code-example>
-
-<div class="alert is-helpful">
-
-You can also alias property names in the `inputs` and `outputs` arrays.
-You write a colon-delimited (`:`) string with
-the directive property name on the *left* and the public alias on the *right*:
-
-<code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick2" header="src/app/click.directive.ts" linenums="false">
-</code-example>
-
-</div>
 
 
 <hr/>
@@ -1843,119 +2112,93 @@ the directive property name on the *left* and the public alias on the *right*:
 
 ## Template expression operators
 
-The template expression language employs a subset of JavaScript syntax supplemented with a few special operators
-for specific scenarios. The next sections cover two of these operators: _pipe_ and _safe navigation operator_.
+The Angular template expression language employs a subset of JavaScript syntax supplemented with a few special operators
+for specific scenarios. The next sections cover three of these operators:
+
+* [pipe](guide/template-syntax#pipe)
+* [safe navigation operator](guide/template-syntax#safe-navigation-operator)
+* [non-null assertion operator](guide/template-syntax#non-null-assertion-operator)
 
 {@a pipe}
 
-### The pipe operator ( <span class="syntax">|</span> )
+### The pipe operator (`|`)
 
 The result of an expression might require some transformation before you're ready to use it in a binding.
-For example, you might display a number as a currency, force text to uppercase, or filter a list and sort it.
+For example, you might display a number as a currency, change text to uppercase, or filter a list and sort it.
 
-Angular [pipes](guide/pipes) are a good choice for small transformations such as these.
 Pipes are simple functions that accept an input value and return a transformed value.
-They're easy to apply within template expressions, using the **pipe operator (`|`)**:
+They're easy to apply within template expressions, using the pipe operator (`|`):
 
-<code-example path="template-syntax/src/app/app.component.html" region="pipes-1" header="src/app/app.component.html" linenums="false">
+<code-example path="template-expression-operators/src/app/app.component.html" region="uppercase-pipe" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 The pipe operator passes the result of an expression on the left to a pipe function on the right.
 
 You can chain expressions through multiple pipes:
 
-<code-example path="template-syntax/src/app/app.component.html" region="pipes-2" header="src/app/app.component.html" linenums="false">
+<code-example path="template-expression-operators/src/app/app.component.html" region="pipe-chain" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 And you can also [apply parameters](guide/pipes#parameterizing-a-pipe) to a pipe:
 
-<code-example path="template-syntax/src/app/app.component.html" region="pipes-3" header="src/app/app.component.html" linenums="false">
+<code-example path="template-expression-operators/src/app/app.component.html" region="date-pipe" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 The `json` pipe is particularly helpful for debugging bindings:
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (pipes-json)" region="pipes-json">
+<code-example path="template-expression-operators/src/app/app.component.html" region="json-pipe" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-The generated output would look something like this
+The generated output would look something like this:
 
 <code-example language="json">
-  { "id": 0, "name": "Hercules", "emotion": "happy",
-    "birthdate": "1970-02-25T08:00:00.000Z",
-    "url": "http://www.imdb.com/title/tt0065832/",
-    "rate": 325 }
+  { "name": "Telephone",
+    "manufactureDate": "1980-02-25T05:00:00.000Z",
+    "price": 98 }
 </code-example>
+
+<div class="alert is-helpful">
+
+**Note**: The pipe operator has a higher precedence than the ternary operator (`?:`),
+which means `a ? b : c | x` is parsed as `a ? b : (c | x)`.
+Nevertheless, for a number of reasons,
+the pipe operator cannot be used without parentheses in the first and second operands of `?:`.
+A good practice is to use parentheses in the third operand too.
+
+</div>
 
 
 <hr/>
 
 {@a safe-navigation-operator}
 
-### The safe navigation operator ( <span class="syntax">?.</span> ) and null property paths
+### The safe navigation operator ( `?` ) and null property paths
 
-The Angular **safe navigation operator (`?.`)** is a fluent and convenient way to
-guard against null and undefined values in property paths.
-Here it is, protecting against a view render failure if the `currentHero` is null.
+The Angular safe navigation operator, `?`, guards against `null` and `undefined`
+values in property paths. Here, it protects against a view render failure if `item` is `null`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="safe-2" header="src/app/app.component.html" linenums="false">
+<code-example path="template-expression-operators/src/app/app.component.html" region="safe" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-What happens when the following data bound `title` property is null?
+If `item` is `null`, the view still renders but the displayed value is blank; you see only "The item name is:" with nothing after it.
 
-<code-example path="template-syntax/src/app/app.component.html" region="safe-1" header="src/app/app.component.html" linenums="false">
-</code-example>
-
-The view still renders but the displayed value is blank; you see only "The title is" with nothing after it.
-That is reasonable behavior. At least the app doesn't crash.
-
-Suppose the template expression involves a property path, as in this next example
-that displays the `name` of a null hero.
+Consider the next example, with a `nullItem`.
 
 <code-example language="html">
-  The null hero's name is {{nullHero.name}}
+  The null item name is {{nullItem.name}}
 </code-example>
 
-JavaScript throws a null reference error, and so does Angular:
+Since there is no safe navigation operator and `nullItem` is `null`, JavaScript and Angular would throw a `null` reference error and break the rendering process of Angular:
 
 <code-example format="nocode">
-  TypeError: Cannot read property 'name' of null in [null].
+  TypeError: Cannot read property 'name' of null.
 </code-example>
 
-Worse, the *entire view disappears*.
+Sometimes however, `null` values in the property
+path may be OK under certain circumstances,
+especially when the value starts out null but the data arrives eventually.
 
-This would be reasonable behavior if the `hero` property could never be null.
-If it must never be null and yet it is null,
-that's a programming error that should be caught and fixed.
-Throwing an exception is the right thing to do.
-
-On the other hand, null values in the property path may be OK from time to time,
-especially when the data are null now and will arrive eventually.
-
-While waiting for data, the view should render without complaint, and
-the null property path should display as blank just as the `title` property does.
-
-Unfortunately, the app crashes when the `currentHero` is null.
-
-You could code around that problem with [*ngIf](guide/template-syntax#ngIf).
-
-<code-example path="template-syntax/src/app/app.component.html" region="safe-4" header="src/app/app.component.html" linenums="false">
-</code-example>
-
-You could try to chain parts of the property path with `&&`, knowing that the expression bails out
-when it encounters the first null.
-
-<code-example path="template-syntax/src/app/app.component.html" region="safe-5" header="src/app/app.component.html" linenums="false">
-</code-example>
-
-These approaches have merit but can be cumbersome, especially if the property path is long.
-Imagine guarding against a null somewhere in a long property path such as `a.b.c.d`.
-
-The Angular safe navigation operator (`?.`) is a more fluent and convenient way to guard against nulls in property paths.
-The expression bails out when it hits the first null value.
-The display is blank, but the app keeps rolling without errors.
-
-<code-example path="template-syntax/src/app/app.component.html" region="safe-6" header="src/app/app.component.html" linenums="false">
-</code-example>
+With the safe navigation operator, `?`, Angular stops evaluating the expression when it hits the first `null` value and renders the view without errors.
 
 It works perfectly with long property paths such as `a?.b?.c?.d`.
 
@@ -1964,34 +2207,31 @@ It works perfectly with long property paths such as `a?.b?.c?.d`.
 
 {@a non-null-assertion-operator}
 
-### The non-null assertion operator ( <span class="syntax">!</span> )
+### The non-null assertion operator ( `!` )
 
-As of Typescript 2.0, you can enforce [strict null checking](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript") with the `--strictNullChecks` flag. TypeScript then ensures that no variable is _unintentionally_ null or undefined.
+As of Typescript 2.0, you can enforce [strict null checking](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript") with the `--strictNullChecks` flag. TypeScript then ensures that no variable is unintentionally null or undefined.
 
-In this mode, typed variables disallow null and undefined by default. The type checker throws an error if you leave a variable unassigned or try to assign null or undefined to a variable whose type disallows null and undefined.
+In this mode, typed variables disallow `null` and `undefined` by default. The type checker throws an error if you leave a variable unassigned or try to assign `null` or `undefined` to a variable whose type disallows `null` and `undefined`.
 
-The type checker also throws an error if it can't determine whether a variable will be null or undefined at runtime.
-You may know that can't happen but the type checker doesn't know.
-You tell the type checker that it can't happen by applying the post-fix
-[_non-null assertion operator (!)_](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator").
+The type checker also throws an error if it can't determine whether a variable will be `null` or undefined at runtime. You tell the type checker not to throw an error by applying the postfix
+[non-null assertion operator, !](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator").
 
-The _Angular_ **non-null assertion operator (`!`)** serves the same purpose in an Angular template.
+The Angular non-null assertion operator, `!`, serves the same purpose in
+an Angular template. For example, after you use [*ngIf](guide/template-syntax#ngIf)
+to check that `item` is defined, you can assert that
+`item` properties are also defined.
 
-For example, after you use [*ngIf](guide/template-syntax#ngIf) to check that `hero` is defined, you can assert that
-`hero` properties are also defined.
-
-<code-example path="template-syntax/src/app/app.component.html" region="non-null-assertion-1" header="src/app/app.component.html" linenums="false">
+<code-example path="template-expression-operators/src/app/app.component.html" region="non-null" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 When the Angular compiler turns your template into TypeScript code,
-it prevents TypeScript from reporting that `hero.name` might be null or undefined.
+it prevents TypeScript from reporting that `item` might be `null` or `undefined`.
 
-Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)"),
-the **non-null assertion operator** does not guard against null or undefined.
-Rather it tells the TypeScript type checker to suspend strict null checks for a specific property expression.
+Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?)"),
+the non-null assertion operator does not guard against `null` or `undefined`.
+Rather, it tells the TypeScript type checker to suspend strict `null` checks for a specific property expression.
 
-You'll need this template operator when you turn on strict null checks. It's optional otherwise.
-
+The non-null assertion operator, `!`, is optional with the exception that you must use it when you turn on strict null checks.
 
 <a href="#top-of-page">back to top</a>
 
