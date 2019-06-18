@@ -15,7 +15,7 @@ import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex} from '../util/view_utils';
 
-import {ɵɵbind} from './property';
+import {bind} from './property';
 import {getOrCreateTNode, textBindingInternal} from './shared';
 
 
@@ -55,7 +55,7 @@ export function ɵɵtext(index: number, value?: any): void {
 export function ɵɵtextBinding<T>(value: T | NO_CHANGE): void {
   const lView = getLView();
   const index = getSelectedIndex();
-  const bound = ɵɵbind(value);
+  const bound = bind(lView, value);
   if (bound !== NO_CHANGE) {
     textBindingInternal(lView, index, renderStringify(bound));
   }

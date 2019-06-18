@@ -7,9 +7,8 @@
  */
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵselect, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵselect, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-
 import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
 
 describe('JS control flow', () => {
