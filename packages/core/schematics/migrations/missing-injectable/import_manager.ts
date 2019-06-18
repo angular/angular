@@ -69,7 +69,7 @@ export class ImportManager {
       }
 
       if (importStartIndex === 0) {
-        importStartIndex = statement.getEnd();
+        importStartIndex = this._getEndPositionOfNode(statement);
       }
 
       const moduleSpecifier = statement.moduleSpecifier.text;
@@ -157,7 +157,13 @@ export class ImportManager {
     }
 
     const newImportText = this.printer.printNode(ts.EmitHint.Unspecified, newImport, sourceFile);
-    this.getUpdateRecorder(sourceFile).addNewImport(importStartIndex, `\n${newImportText}`);
+    // If the import is generated at the start of the source file, we want to add
+    // a new-line after the import. Otherwise if the import is generated after an
+    // existing import, we need to prepend a new-line so that the import is not on
+    // the same line as the existing import anchor.
+    this.getUpdateRecorder(sourceFile)
+        .addNewImport(
+            importStartIndex, importStartIndex === 0 ? `${newImportText}\n` : `\n${newImportText}`);
 
     // Keep track of all generated imports so that we don't generate duplicate
     // similar imports as these can't be statically analyzed in the source-file yet.
@@ -231,5 +237,18 @@ export class ImportManager {
   private _recordUsedIdentifier(sourceFile: ts.SourceFile, identifierName: string) {
     this.usedIdentifierNames.set(
         sourceFile, (this.usedIdentifierNames.get(sourceFile) || []).concat(identifierName));
+  }
+
+  /**
+   * Determines the full end of a given node. By default the end position of a node is
+   * before all trailing comments. This could mean that generated imports shift comments.
+   */
+  private _getEndPositionOfNode(node: ts.Node) {
+    const nodeEndPos = node.getEnd();
+    const commentRanges = ts.getTrailingCommentRanges(node.getSourceFile().text, nodeEndPos);
+    if (!commentRanges || !commentRanges.length) {
+      return nodeEndPos;
+    }
+    return commentRanges[commentRanges.length - 1] !.end;
   }
 }

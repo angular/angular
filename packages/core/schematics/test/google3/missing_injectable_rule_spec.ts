@@ -181,4 +181,22 @@ describe('Google3 missing injectable tslint rule', () => {
     expect(failures[0].getStartPosition().getLineAndCharacter()).toEqual({line: 3, character: 28});
   });
 
+  it('should create new import for @Injectable when migrating provider', () => {
+    writeFile('/index.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyService} from './service';
+                    
+      @NgModule({providers: [MyService]})
+      export class MyModule {}
+    `);
+
+    writeFile('/service.ts', `
+      export class MyService {}
+    `);
+
+    runTSLint();
+
+    expect(getFile('/service.ts')).toMatch(/@Injectable\(\)\s+export class MyService/);
+    expect(getFile('/service.ts')).toMatch(/import { Injectable } from "@angular\/core";/);
+  });
 });

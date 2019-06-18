@@ -503,4 +503,49 @@ describe('Missing injectable migration', () => {
 
     expect(warnOutput.length).toBe(0);
   });
+
+  it('should create new import for injectable after full end of last import statement', async() => {
+    writeFile('/index.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyService} from './service';
+             
+      @NgModule({providers: [MyService]})
+      export class MyModule {}
+    `);
+
+    writeFile('/service.ts', `
+      import * as a from 'a';
+      import * as a from 'b'; // some comment
+    
+      export class MyService {}
+    `);
+
+    await runMigration();
+
+    expect(warnOutput.length).toBe(0);
+    expect(tree.readContent('/service.ts')).toMatch(/@Injectable\(\)\s+export class MyService/);
+    expect(tree.readContent('/service.ts'))
+        .toMatch(/'b'; \/\/ some comment\s+import { Injectable } from "@angular\/core";/);
+  });
+
+  it('should create new import at source file start with trailing new-line', async() => {
+    writeFile('/index.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyService} from './service';
+             
+      @NgModule({providers: [MyService]})
+      export class MyModule {}
+    `);
+
+    writeFile('/service.ts', `/* @license */
+      export class MyService {}
+    `);
+
+    await runMigration();
+
+    expect(warnOutput.length).toBe(0);
+    expect(tree.readContent('/service.ts'))
+        .toMatch(
+            /^import { Injectable } from "@angular\/core";\s+\/\* @license \*\/\s+@Injectable\(\)\s+export class MyService/);
+  });
 });
