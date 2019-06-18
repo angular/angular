@@ -2,7 +2,7 @@ label.raised, .api-header label {
     border-radius: 4px;
     padding: 4px 16px;
     display: inline;
-    font-size: 14px;
+    @include font-size(14);
     color: $white;
     margin-right: 8px;
     font-weight: 500;
@@ -29,8 +29,8 @@ label.raised, .api-header label {
     }
 
     &.property-type-label {
-        font-size: 12px;
-        background-color: $darkgray;
+      @include font-size(12);
+      background-color: $darkgray;
         color: $white;
         text-transform: none;
     }
@@ -40,7 +40,7 @@ label.raised, .api-header label {
 
     // The API badges should be a little smaller
     padding: 2px 10px;
-    font-size: 12px;
+    @include font-size(12);
 
     @media screen and (max-width: 600px) {
         margin: 4px 0;

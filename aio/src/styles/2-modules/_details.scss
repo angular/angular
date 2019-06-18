@@ -14,7 +14,7 @@
 
 summary {
   cursor: pointer;
-  font-size: 16px;
+  @include font-size(16);
   position: relative;
   padding: 16px 24px;
   color: $black;

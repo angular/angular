@@ -51,7 +51,7 @@ code-example header {
   background-color: $accentblue;
   border-radius: 5px 5px 0 0;
   color: $offwhite;
-  font-size: 16px;
+  @include font-size(16);
   padding: 8px 16px;
 }
 
@@ -88,7 +88,7 @@ aio-code pre {
     align-items: center;
 
     code span {
-      line-height: 24px;
+      @include line-height(24);
     }
 }
 
@@ -159,7 +159,7 @@ ol.linenums {
     margin: 0;
     font-family: $code-font;
     font-size: 90%;
-    line-height: 24px;
+    @include line-height(24);
   }
 }
 

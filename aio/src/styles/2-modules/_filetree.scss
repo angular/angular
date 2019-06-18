@@ -8,8 +8,8 @@
   .file {
     display: block;
     font-family: $main-font;
-    letter-spacing: 0.3px;
-    line-height: 32px;
+    @include letter-spacing(0.3);
+    @include line-height(32);
     color: $darkgray;
   }
 

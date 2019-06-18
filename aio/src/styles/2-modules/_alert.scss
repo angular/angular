@@ -1,7 +1,7 @@
 .alert {
     padding: 16px;
     margin: 24px 0px;
-    font-size: 14px;
+    @include font-size(14);
     color: $darkgray;
     width: 100%;
     box-sizing: border-box;
