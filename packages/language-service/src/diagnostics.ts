@@ -7,47 +7,11 @@
  */
 
 import {NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
-import {DiagnosticTemplateInfo, getTemplateExpressionDiagnostics} from '@angular/compiler-cli/src/language_services';
-
 import {AstResult} from './common';
 import {Declarations, Diagnostic, DiagnosticKind, DiagnosticMessageChain, Diagnostics, Span, TemplateSource} from './types';
-import {offsetSpan, spanOf} from './utils';
 
 export interface AstProvider {
   getTemplateAst(template: TemplateSource, fileName: string): AstResult;
-}
-
-export function getTemplateDiagnostics(
-    fileName: string, astProvider: AstProvider, templates: TemplateSource[]): Diagnostics {
-  const results: Diagnostics = [];
-  for (const template of templates) {
-    const ast = astProvider.getTemplateAst(template, fileName);
-    if (ast) {
-      if (ast.parseErrors && ast.parseErrors.length) {
-        results.push(...ast.parseErrors.map<Diagnostic>(
-            e => ({
-              kind: DiagnosticKind.Error,
-              span: offsetSpan(spanOf(e.span), template.span.start),
-              message: e.msg
-            })));
-      } else if (ast.templateAst && ast.htmlAst) {
-        const info: DiagnosticTemplateInfo = {
-          templateAst: ast.templateAst,
-          htmlAst: ast.htmlAst,
-          offset: template.span.start,
-          query: template.query,
-          members: template.members
-        };
-        const expressionDiagnostics = getTemplateExpressionDiagnostics(info);
-        results.push(...expressionDiagnostics);
-      }
-      if (ast.errors) {
-        results.push(...ast.errors.map<Diagnostic>(
-            e => ({kind: e.kind, span: e.span || template.span, message: e.message})));
-      }
-    }
-  }
-  return results;
 }
 
 export function getDeclarationDiagnostics(

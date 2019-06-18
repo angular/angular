@@ -27,7 +27,6 @@ describe('references', () => {
     service = ts.createLanguageService(mockHost, documentRegistry);
     ngHost = new TypeScriptServiceHost(mockHost, service);
     ngService = createLanguageService(ngHost);
-    ngHost.setSite(ngService);
   });
 
   it('should be able to get template references',

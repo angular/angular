@@ -22,7 +22,6 @@ describe('definitions', () => {
   let service = ts.createLanguageService(mockHost, documentRegistry);
   let ngHost = new TypeScriptServiceHost(mockHost, service);
   let ngService = createLanguageService(ngHost);
-  ngHost.setSite(ngService);
 
   it('should be able to find field in an interpolation', () => {
     localReference(

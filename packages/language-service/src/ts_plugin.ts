@@ -81,7 +81,6 @@ export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
 
   const serviceHost = new TypeScriptServiceHost(info.languageServiceHost, oldLS);
   const ls = createLanguageService(serviceHost);
-  serviceHost.setSite(ls);
   projectHostMap.set(info.project, serviceHost);
 
   proxy.getCompletionsAtPosition = function(

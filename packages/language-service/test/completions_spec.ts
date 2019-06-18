@@ -22,7 +22,6 @@ describe('completions', () => {
   let service = ts.createLanguageService(mockHost, documentRegistry);
   let ngHost = new TypeScriptServiceHost(mockHost, service);
   let ngService = createLanguageService(ngHost);
-  ngHost.setSite(ngService);
 
   it('should be able to get entity completions',
      () => { contains('/app/test.ng', 'entity-amp', '&amp;', '&gt;', '&lt;', '&iota;'); });
