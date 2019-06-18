@@ -12,8 +12,8 @@ import * as shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 
 describe('Google3 noTemplateVariableAssignment TSLint rule', () => {
-  const rulesDirectory = dirname(require.resolve(
-      '../../migrations/template-var-assignment/google3/noTemplateVariableAssignmentRule'));
+  const rulesDirectory =
+      dirname(require.resolve('../../migrations/google3/noTemplateVariableAssignmentRule'));
 
   let tmpDir: string;
 
