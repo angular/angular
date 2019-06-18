@@ -8,9 +8,11 @@
 
 import {RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {NgModuleCollector} from '../module_collector';
-import {MissingInjectableTransform} from '../transform';
-import {TslintUpdateRecorder} from './tslint_update_recorder';
+
+import {TslintUpdateRecorder} from '../missing-injectable/google3/tslint_update_recorder';
+import {NgModuleCollector} from '../missing-injectable/module_collector';
+import {MissingInjectableTransform} from '../missing-injectable/transform';
+
 
 /**
  * TSLint rule that flags classes which are declared as providers in NgModules but

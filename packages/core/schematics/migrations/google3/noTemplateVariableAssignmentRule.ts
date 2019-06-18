@@ -9,9 +9,9 @@
 import {RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 
-import {NgComponentTemplateVisitor} from '../../../utils/ng_component_template';
-import {createHtmlSourceFile} from '../../../utils/tslint/tslint_html_source_file';
-import {analyzeResolvedTemplate} from '../analyze_template';
+import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
+import {createHtmlSourceFile} from '../../utils/tslint/tslint_html_source_file';
+import {analyzeResolvedTemplate} from '../template-var-assignment/analyze_template';
 
 const FAILURE_MESSAGE = 'Found assignment to template variable. This does not work with Ivy and ' +
     'needs to be updated.';

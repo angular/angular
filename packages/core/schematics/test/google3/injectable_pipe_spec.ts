@@ -12,8 +12,7 @@ import * as shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 
 describe('Google3 injectable pipe TSLint rule', () => {
-  const rulesDirectory =
-      dirname(require.resolve('../../migrations/injectable-pipe/google3/injectablePipeRule'));
+  const rulesDirectory = dirname(require.resolve('../../migrations/google3/injectablePipeRule'));
 
   let tmpDir: string;
 
