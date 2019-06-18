@@ -8,6 +8,7 @@
 
 import {CompileDirectiveMetadata, CompileMetadataResolver, CompilePipeSummary, NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
 import {BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from '@angular/compiler-cli/src/language_services';
+import {AstResult, TemplateInfo} from './common';
 
 export {
   BuiltinType,
@@ -203,6 +204,16 @@ export interface LanguageServiceHost {
    * Return a list all the template files referenced by the project.
    */
   getTemplateReferences(): string[];
+
+  /**
+   * Return the AST for both HTML and template for the contextFile.
+   */
+  getTemplateAst(template: TemplateSource, contextFile: string): AstResult;
+
+  /**
+   * Return the template AST for the node that corresponds to the position.
+   */
+  getTemplateAstAtPosition(fileName: string, position: number): TemplateInfo|undefined;
 }
 
 /**
