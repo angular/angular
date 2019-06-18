@@ -547,10 +547,11 @@ function isObject(value: any): boolean {
 }
 
 function constructTimingAst(value: string|number|AnimateTimings, errors: Error[]) {
-  let timings: AnimateTimings|null = null;
   if (value.hasOwnProperty('duration')) {
-    timings = value as AnimateTimings;
-  } else if (typeof value == 'number') {
+    return value as AnimateTimings;
+  }
+
+  if (typeof value == 'number') {
     const duration = resolveTiming(value, errors).duration;
     return makeTimingAst(duration, 0, '');
   }
@@ -564,7 +565,7 @@ function constructTimingAst(value: string|number|AnimateTimings, errors: Error[]
     return ast as DynamicTimingAst;
   }
 
-  timings = timings || resolveTiming(strValue, errors);
+  const timings = resolveTiming(strValue, errors);
   return makeTimingAst(timings.duration, timings.delay, timings.easing);
 }
 
