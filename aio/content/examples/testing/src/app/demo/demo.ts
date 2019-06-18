@@ -19,7 +19,7 @@ export class Hero {
 // #docregion ValueService
 @Injectable()
 export class ValueService {
-  protected value = 'real value';
+  value = 'real value';
 
   getValue() { return this.value; }
   setValue(value: string) { this.value = value; }
