@@ -7,16 +7,14 @@
  */
 
 import '../util/ng_i18n_closure_mode';
-
 import {getPluralCase} from '../i18n/localization';
 import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
-
 import {attachPatchData} from './context_discovery';
-import {setDelayProjection, ɵɵbind, ɵɵload} from './instructions/all';
+import {bind, setDelayProjection, ɵɵload} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
 import {allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, textBindingInternal} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
@@ -1018,7 +1016,8 @@ let shiftsCounter = 0;
  * @codeGenApi
  */
 export function ɵɵi18nExp<T>(value: T): void {
-  const expression = ɵɵbind(value);
+  const lView = getLView();
+  const expression = bind(lView, value);
   if (expression !== NO_CHANGE) {
     changeMask = changeMask | (1 << shiftsCounter);
   }
