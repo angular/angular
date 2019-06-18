@@ -1315,13 +1315,14 @@ const LOCALIZE_PH_REGEXP = /\{\$(.*?)\}/g;
  * @codeGenApi
  * @deprecated this method is temporary & should not be used as it will be removed soon
  */
-export function ɵɵi18nLocalize(input: string, placeholders: {[key: string]: string} = {}) {
+export function ɵɵi18nLocalize(input: string, placeholders?: {[key: string]: string}) {
   if (typeof TRANSLATIONS[input] !== 'undefined') {  // to account for empty string
     input = TRANSLATIONS[input];
   }
-  return Object.keys(placeholders).length ?
-      input.replace(LOCALIZE_PH_REGEXP, (match, key) => placeholders[key] || '') :
-      input;
+  if (placeholders !== undefined && Object.keys(placeholders).length) {
+    return input.replace(LOCALIZE_PH_REGEXP, (_, key) => placeholders[key] || '');
+  }
+  return input;
 }
 
 /**
