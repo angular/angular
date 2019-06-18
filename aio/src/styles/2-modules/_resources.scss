@@ -16,8 +16,8 @@
   display: block;
   overflow: hidden;
   visibility: hidden;
-  font-size: 0;
-  line-height: 0;
+  @include font-size(0);
+  @include line-height(0);
   width: 0;
   height: 0;
 }
@@ -60,8 +60,8 @@
     display: block;
     overflow: hidden;
     visibility: hidden;
-    font-size: 0;
-    line-height: 0;
+    @include font-size(0);
+    @include line-height(0);
     width: 0;
     height: 0;
   }
@@ -79,8 +79,8 @@
     display: block;
     overflow: hidden;
     visibility: hidden;
-    font-size: 0;
-    line-height: 0;
+    @include font-size(0);
+    @include line-height(0);
     width: 0;
     height: 0;
   }
@@ -101,7 +101,7 @@ aio-resource-list {
   .c-resource {
     h4 {
       margin: 0;
-      line-height: 24px;
+      @include line-height(24);
     }
 
     p {
@@ -131,6 +131,7 @@ aio-resource-list {
         margin: 2px 0;
         padding: 3px 14px;
         font-size: 18px !important;
+        font-size: 1.8rem !important;
 
         &:hover {
           background: #edf0f2;
