@@ -1,31 +1,106 @@
-import {browser, by, element} from 'protractor';
-
-import {getElementFinder, load} from '../protractor';
+import {browser} from 'protractor';
+import {HarnessLoader} from '../component-harness';
+import {ProtractorHarnessEnvironment} from '../protractor';
 import {MainComponentHarness} from './harnesses/main-component-harness';
+import {SubComponentHarness} from './harnesses/sub-component-harness';
 
-describe('Protractor Helper Test', () => {
-  let harness: MainComponentHarness;
-
+describe('ProtractorHarnessEnvironment', () => {
   beforeEach(async () => {
     await browser.get('/component-harness');
-    harness = await load(MainComponentHarness, 'test-main');
   });
 
-  describe('Locator', () => {
-    it('should be able to locate a element based on CSS selector', async () => {
+  describe('HarnessLoader', () => {
+    let loader: HarnessLoader;
+
+    beforeEach(async () => {
+      loader = ProtractorHarnessEnvironment.loader();
+    });
+
+    it('should create HarnessLoader', async () => {
+      expect(loader).not.toBeNull();
+    });
+
+    it('should find required HarnessLoader for child element', async () => {
+      const subcomponentsLoader = await loader.getChildLoader('.subcomponents');
+      expect(subcomponentsLoader).not.toBeNull();
+    });
+
+    it('should error after failing to find required HarnessLoader for child element', async () => {
+      try {
+        await loader.getChildLoader('error');
+        fail('Expected to throw');
+      } catch (e) {
+        expect(e.message)
+          .toBe('Expected to find element matching selector: "error", but none was found');
+      }
+    });
+
+    it('should find all HarnessLoaders for child elements', async () => {
+      const loaders = await loader.getAllChildLoaders('.subcomponents,.counters');
+      expect(loaders.length).toBe(2);
+    });
+
+    it('should get first matching component for required harness', async () => {
+      const harness = await loader.getHarness(SubComponentHarness);
+      expect(harness).not.toBeNull();
+      expect(await (await harness.title()).text()).toBe('List of test tools');
+    });
+
+    it('should throw if no matching component found for required harness', async () => {
+      const countersLoader = await loader.getChildLoader('.counters');
+      try {
+        await countersLoader.getHarness(SubComponentHarness);
+        fail('Expected to throw');
+      } catch (e) {
+        expect(e.message)
+          .toBe('Expected to find element matching selector: "test-sub", but none was found');
+      }
+    });
+
+    it('should get all matching components for all harnesses', async () => {
+      const harnesses = await loader.getAllHarnesses(SubComponentHarness);
+      expect(harnesses.length).toBe(2);
+    });
+  });
+
+  describe('ComponentHarness', () => {
+    let harness: MainComponentHarness;
+
+    beforeEach(async () => {
+      harness = await ProtractorHarnessEnvironment.loader().getHarness(MainComponentHarness);
+    });
+
+    it('should locate a required element based on CSS selector', async () => {
       const title = await harness.title();
       expect(await title.text()).toBe('Main Component');
     });
 
-    it('should be able to locate all elements based on CSS selector',
-      async () => {
-        const labels = await harness.allLabels();
-        expect(labels.length).toBe(2);
-        expect(await labels[0].text()).toBe('Count:');
-        expect(await labels[1].text()).toBe('AsyncCounter:');
-      });
+    it('should throw when failing to locate a required element based on CSS selector', async () => {
+      try {
+        await harness.errorItem();
+        fail('Expected to throw');
+      } catch (e) {
+        expect(e.message).toBe(
+          'Expected to find element matching selector: "wrong locator", but none was found');
+      }
+    });
 
-    it('should be able to locate the sub harnesses', async () => {
+    it('should locate an optional element based on CSS selector', async () => {
+      const present = await harness.optionalDiv();
+      const missing = await harness.nullItem();
+      expect(present).not.toBeNull();
+      expect(await present!.text()).toBe('Hello Yi from Angular 2!');
+      expect(missing).toBeNull();
+    });
+
+    it('should locate all elements based on CSS selector', async () => {
+      const labels = await harness.allLabels();
+      expect(labels.length).toBe(2);
+      expect(await labels[0].text()).toBe('Count:');
+      expect(await labels[1].text()).toBe('AsyncCounter:');
+    });
+
+    it('should locate required sub harnesses', async () => {
       const items = await harness.getTestTools();
       expect(items.length).toBe(3);
       expect(await items[0].text()).toBe('Protractor');
@@ -33,7 +108,25 @@ describe('Protractor Helper Test', () => {
       expect(await items[2].text()).toBe('Other');
     });
 
-    it('should be able to locate all sub harnesses', async () => {
+    it('should throw when failing to locate required sub harnesses', async () => {
+      try {
+        await harness.errorSubComponent();
+        fail('Expected to throw');
+      } catch (e) {
+        expect(e.message).toBe(
+          'Expected to find element matching selector: "wrong-selector", but none was found');
+      }
+    });
+
+    it('should locate optional sub harnesses', async () => {
+      const present = await harness.optionalSubComponent();
+      const missing = await harness.nullComponentHarness();
+      expect(present).not.toBeNull();
+      expect(await (await present!.title()).text()).toBe('List of test tools');
+      expect(missing).toBeNull();
+    });
+
+    it('should locate all sub harnesses', async () => {
       const alllists = await harness.allLists();
       const items1 = await alllists[0].getItems();
       const items2 = await alllists[1].getItems();
@@ -47,9 +140,27 @@ describe('Protractor Helper Test', () => {
       expect(await items2[1].text()).toBe('Integration Test');
       expect(await items2[2].text()).toBe('Performance Test');
     });
+
+    it('should wait for async operation to complete', async () => {
+      const asyncCounter = await harness.asyncCounter();
+      expect(await asyncCounter.text()).toBe('5');
+      await harness.increaseCounter(3);
+      expect(await asyncCounter.text()).toBe('8');
+    });
+
+    it('can get elements outside of host', async () => {
+      const globalEl = await harness.globalEl();
+      expect(await globalEl.text()).toBe('I am a sibling!');
+    });
   });
 
-  describe('Test element', () => {
+  describe('TestElement', () => {
+    let harness: MainComponentHarness;
+
+    beforeEach(async () => {
+      harness = await ProtractorHarnessEnvironment.loader().getHarness(MainComponentHarness);
+    });
+
     it('should be able to clear', async () => {
       const input = await harness.input();
       await input.sendKeys('Yi');
@@ -79,8 +190,7 @@ describe('Protractor Helper Test', () => {
       const input = await harness.input();
       await input.sendKeys('Yi');
       expect(await input.getAttribute('id'))
-        .toBe(await browser.driver.switchTo().activeElement().getAttribute(
-          'id'));
+        .toBe(await browser.driver.switchTo().activeElement().getAttribute('id'));
     });
 
     it('should be able to hover', async () => {
@@ -106,78 +216,16 @@ describe('Protractor Helper Test', () => {
       const title = await harness.title();
       expect(await title.getCssValue('height')).toBe('50px');
     });
-  });
 
-  describe('Async operation', () => {
-    it('should wait for async opeartion to complete', async () => {
-      const asyncCounter = await harness.asyncCounter();
-      expect(await asyncCounter.text()).toBe('5');
-      await harness.increaseCounter(3);
-      expect(await asyncCounter.text()).toBe('8');
-    });
-  });
-
-  describe('Allow null', () => {
-    it('should allow element to be null when setting allowNull', async () => {
-      expect(await harness.nullItem()).toBe(null);
-    });
-
-    it('should allow main harness to be null when setting allowNull',
-      async () => {
-        const nullMainHarness = await load(
-          MainComponentHarness, 'harness not present', {allowNull: true});
-        expect(nullMainHarness).toBe(null);
-      });
-
-    it('should allow sub-harness to be null when setting allowNull',
-      async () => {
-        expect(await harness.nullComponentHarness()).toBe(null);
-      });
-  });
-
-  describe('with the global option', () => {
-    it('should find an element outside the root of the harness', async () => {
-      const globalEl = await harness.globalEl();
-      expect(await globalEl.text()).toBe('I am a sibling!');
-    });
-
-    it('should return null for a selector that does not exist', async () => {
-      expect(await harness.nullGlobalEl()).toBeNull();
-    });
-
-    it('should throw an error for a selctor that does not exist ' +
-      'with allowNull = false',
-      async () => {
-        try {
-          await harness.errorGlobalEl();
-          fail('Should throw error');
-        } catch (err) {
-          expect(err.message)
-            .toBe(
-              'Cannot find element based on the CSS selector: wrong locator');
-        }
-      });
-  });
-
-  describe('Throw error', () => {
-    it('should show the correct error', async () => {
-      try {
-        await harness.errorItem();
-        fail('Should throw error');
-      } catch (err) {
-        expect(err.message)
-          .toBe(
-            'Cannot find element based on the CSS selector: wrong locator');
-      }
-    });
-  });
-
-  describe('getElementFinder', () => {
-    it('should return the element finder', async () => {
-      const mainElement = await element(by.css('test-main'));
-      const elementFromHarness = getElementFinder(harness.host());
-      expect(await elementFromHarness.getId())
-        .toBe(await mainElement.getId());
+    it('should focus and blur element', async () => {
+      let button = await harness.button();
+      expect(await (await browser.switchTo().activeElement()).getText())
+          .not.toBe(await button.text());
+      await button.focus();
+      expect(await (await browser.switchTo().activeElement()).getText()).toBe(await button.text());
+      await button.blur();
+      expect(await (await browser.switchTo().activeElement()).getText())
+          .not.toBe(await button.text());
     });
   });
 });

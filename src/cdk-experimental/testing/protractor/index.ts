@@ -6,8 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './component-harness';
-export * from './harness-environment';
-export * from './protractor';
-export * from './test-element';
-export * from './testbed';
+export * from './protractor-element';
+export * from './protractor-harness-environment';
