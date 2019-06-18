@@ -23,13 +23,13 @@ aio-toc.embedded {
 }
 
 .toc-inner {
-  font-size: 13px;
+  @include font-size(13);
   overflow-y: visible;
   padding: 4px 0 0 10px;
 
   .toc-heading,
   .toc-list .h1 {
-    font-size: 115%;
+    @include font-size(16);
   }
 
   .toc-heading {
@@ -117,8 +117,8 @@ aio-toc.embedded {
 
     li {
       box-sizing: border-box;
-      font-size: 12px;
-      line-height: 16px;
+      @include font-size(12);
+      @include line-height(16);
       padding: 3px 0 3px 12px;
       position: relative;
       transition: all 0.3s ease-in-out;
@@ -140,7 +140,7 @@ aio-toc.embedded {
       a {
         color: lighten($darkgray, 10);
         overflow: visible;
-        font-size: 12px;
+        @include font-size(12);
         display: table-cell;
       }
 

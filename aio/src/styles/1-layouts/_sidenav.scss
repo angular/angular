@@ -6,7 +6,7 @@
 aio-nav-menu {
   display: block;
   margin: 0 auto;
-  font-size: 13px;
+  @include font-size(13);
   ul, a {
     padding: 0;
     margin: 0;
@@ -137,7 +137,7 @@ button.vertical-menu-item {
 
 .level-1 {
   font-family: $main-font;
-  font-size: 14px;
+  @include font-size(14);
   font-weight: 400;
   margin-left: 14px;
   transition: background-color 0.2s;
@@ -147,7 +147,7 @@ button.vertical-menu-item {
 .level-2 {
   color: $mediumgray;
   font-family: $main-font;
-  font-size: 14px;
+  @include font-size(14);
   font-weight: 400;
   margin-left: 12px;
   text-transform: none;
@@ -156,7 +156,7 @@ button.vertical-menu-item {
 .level-3 {
   color: $mediumgray;
   font-family: $main-font;
-  font-size: 14px;
+  @include font-size(14);
   margin-left: 10px;
 }
 
@@ -195,7 +195,7 @@ mat-sidenav .doc-version {
 
     option {
       font-family: $main-font;
-      font-size: 14px;
+      @include font-size(14);
     }
   }
 }
