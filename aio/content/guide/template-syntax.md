@@ -1626,6 +1626,14 @@ Here is an illustration of the `trackBy` effect.
   <img src="generated/images/guide/built-in-directives/ngfor-trackby.gif" alt="Animation of trackBy">
 </figure>
 
+
+<div class="alert is-helpful">
+
+Built-in directives use only public APIs; that is,
+they do not have special access to any private APIs that other directives can't access.
+
+</div>
+
 <hr/>
 
 {@a ngSwitch}
@@ -1753,7 +1761,9 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 
 ## `@Input()` and `@Output()` properties
 
-`@Input()` and `@Output()` allow Angular to share data between the parent context and child directives. An `@Input()` property is writable while an `@Output()` property is observable.
+`@Input()` and `@Output()` allow Angular to share data between the parent context
+and child directives or components. An `@Input()` property is writable
+while an `@Output()` property is observable.
 
 Consider this example of a child/parent relationship:
 
