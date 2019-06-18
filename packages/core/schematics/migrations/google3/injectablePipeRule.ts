@@ -9,8 +9,9 @@
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 
-import {InjectablePipeVisitor} from '../angular/injectable_pipe_visitor';
-import {INJECTABLE_DECORATOR_NAME, addImport, getNamedImports} from '../util';
+import {InjectablePipeVisitor} from '../injectable-pipe/angular/injectable_pipe_visitor';
+import {INJECTABLE_DECORATOR_NAME, addImport, getNamedImports} from '../injectable-pipe/util';
+
 
 /**
  * TSLint rule that flags `@Pipe` classes that haven't been marked as `@Injectable`.
