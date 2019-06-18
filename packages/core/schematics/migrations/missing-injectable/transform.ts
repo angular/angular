@@ -70,20 +70,33 @@ export class MissingInjectableTransform {
     }
     this.visitedProviderClasses.add(node);
 
-    if (node.decorators &&
-        getAngularDecorators(this.typeChecker, node.decorators)
-            .some(d => NO_MIGRATE_DECORATORS.indexOf(d.name) !== -1)) {
+    const sourceFile = node.getSourceFile();
+    const ngDecorators =
+        node.decorators ? getAngularDecorators(this.typeChecker, node.decorators) : null;
+
+    if (ngDecorators !== null &&
+        ngDecorators.some(d => NO_MIGRATE_DECORATORS.indexOf(d.name) !== -1)) {
       return;
     }
 
-    const sourceFile = node.getSourceFile();
-
+    const updateRecorder = this.getUpdateRecorder(sourceFile);
     const importExpr =
         this.importManager.addImportToSourceFile(sourceFile, 'Injectable', '@angular/core');
     const newDecoratorExpr = ts.createDecorator(ts.createCall(importExpr, undefined, undefined));
-    this.getUpdateRecorder(sourceFile)
-        .addClassDecorator(
-            node, this.printer.printNode(ts.EmitHint.Unspecified, newDecoratorExpr, sourceFile));
+    const newDecoratorText =
+        this.printer.printNode(ts.EmitHint.Unspecified, newDecoratorExpr, sourceFile);
+
+
+    // In case the class is already decorated with "@Inject(..)", we replace the "@Inject"
+    // decorator with "@Injectable()" since using "@Inject(..)" on a class is a noop and
+    // most likely was meant to be "@Injectable()".
+    const existingInjectDecorator =
+        ngDecorators !== null ? ngDecorators.find(d => d.name === 'Inject') : null;
+    if (existingInjectDecorator) {
+      updateRecorder.replaceDecorator(existingInjectDecorator.node, newDecoratorText);
+    } else {
+      updateRecorder.addClassDecorator(node, newDecoratorText);
+    }
   }
 
   /**

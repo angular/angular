@@ -106,6 +106,10 @@ function runMissingInjectableMigration(
       addClassDecorator(node: ts.ClassDeclaration, text: string) {
         treeRecorder.insertLeft(node.getStart(), `${text}\n`);
       },
+      replaceDecorator(decorator: ts.Decorator, newText: string) {
+        treeRecorder.remove(decorator.getStart(), decorator.getWidth());
+        treeRecorder.insertRight(decorator.getStart(), newText);
+      },
       addNewImport(start: number, importText: string) {
         treeRecorder.insertRight(start, importText);
       },

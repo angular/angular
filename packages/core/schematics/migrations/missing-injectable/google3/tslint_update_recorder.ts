@@ -38,5 +38,15 @@ export class TslintUpdateRecorder implements UpdateRecorder {
         `Import needs to be updated to import symbols: "${newNamedBindings}"`, this.ruleName, fix));
   }
 
+  replaceDecorator(decorator: ts.Node, newText: string): void {
+    const fix = [
+      Replacement.deleteText(decorator.getStart(), decorator.getWidth()),
+      Replacement.appendText(decorator.getStart(), newText),
+    ];
+    this.failures.push(new RuleFailure(
+        this.sourceFile, decorator.getStart(), decorator.getEnd(),
+        `Decorator needs to be replaced with: ${newText}`, this.ruleName, fix));
+  }
+
   commitUpdate() {}
 }

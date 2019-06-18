@@ -199,4 +199,26 @@ describe('Google3 missing injectable tslint rule', () => {
     expect(getFile('/service.ts')).toMatch(/@Injectable\(\)\s+export class MyService/);
     expect(getFile('/service.ts')).toMatch(/import { Injectable } from "@angular\/core";/);
   });
+
+  it('should remove @Inject decorator for providers which are migrated', () => {
+    writeFile('/index.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyService} from './service';
+             
+      @NgModule({providers: [MyService]})
+      export class MyModule {}
+    `);
+
+    writeFile('/service.ts', `
+      import {Inject} from '@angular/core';
+    
+      @Inject()
+      export class MyService {}
+    `);
+
+    runTSLint();
+
+    expect(getFile('/service.ts')).toMatch(/core';\s+@Injectable\(\)\s+export class MyService/);
+    expect(getFile('/service.ts')).toMatch(/import { Inject, Injectable } from '@angular\/core';/);
+  });
 });

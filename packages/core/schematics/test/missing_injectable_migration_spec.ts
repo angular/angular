@@ -548,4 +548,30 @@ describe('Missing injectable migration', () => {
         .toMatch(
             /^import { Injectable } from "@angular\/core";\s+\/\* @license \*\/\s+@Injectable\(\)\s+export class MyService/);
   });
+
+  it('should remove @Inject decorator for providers which are migrated', async() => {
+    writeFile('/index.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyService} from './service';
+             
+      @NgModule({providers: [MyService]})
+      export class MyModule {}
+    `);
+
+    writeFile('/service.ts', `
+      import {Inject} from '@angular/core';
+    
+      @Inject()
+      export class MyService {}
+    `);
+
+    await runMigration();
+
+    expect(warnOutput.length).toBe(0);
+    expect(tree.readContent('/service.ts'))
+        .toMatch(/core';\s+@Injectable\(\)\s+export class MyService/);
+    expect(tree.readContent('/service.ts'))
+        .toMatch(/import { Inject, Injectable } from '@angular\/core';/);
+  });
+
 });

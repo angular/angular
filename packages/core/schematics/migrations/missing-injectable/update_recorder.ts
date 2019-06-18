@@ -17,5 +17,6 @@ export interface UpdateRecorder {
   addNewImport(start: number, importText: string): void;
   updateExistingImport(namedBindings: ts.NamedImports, newNamedBindings: string): void;
   addClassDecorator(node: ts.ClassDeclaration, text: string): void;
+  replaceDecorator(node: ts.Decorator, newText: string): void;
   commitUpdate(): void;
 }
