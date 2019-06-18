@@ -36,8 +36,8 @@ BOILERPLATE_PATHS['service-worker'] = [...cliRelativePath, 'angular.json', 'pack
 BOILERPLATE_PATHS.testing = [
   ...cliRelativePath,
   'angular.json',
-  'src/tsconfig.app.json',
-  'src/tsconfig.spec.json'
+  'tsconfig.app.json',
+  'tsconfig.spec.json'
 ];
 
 BOILERPLATE_PATHS.universal = [...cliRelativePath, 'angular.json', 'package.json'];
