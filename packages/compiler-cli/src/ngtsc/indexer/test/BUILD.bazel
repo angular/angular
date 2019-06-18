@@ -6,11 +6,15 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob([
-        "**/*.ts",
+        "**/transform_spec.ts",
+        "**/util.ts",
     ]),
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/indexer",
+        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/reflection",
         "@npm//typescript",
     ],
 )

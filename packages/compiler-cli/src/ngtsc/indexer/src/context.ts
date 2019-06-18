@@ -11,6 +11,7 @@ import {InterpolationConfig} from '@angular/compiler/src/compiler';
 import {DirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
+
 /**
  * An intermediate representation of a component.
  */
