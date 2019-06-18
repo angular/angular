@@ -46,7 +46,7 @@ Try running `yarn bazel` instead.
 #   - 0.27.12 Adds NodeModuleSources provider for transtive npm deps support
 #   - 0.30.0 yarn_install now uses symlinked node_modules with new managed directories Bazel 0.26.0 feature
 #   - 0.31.1 entry_point attribute of nodejs_binary & rollup_bundle is now a label
-check_rules_nodejs_version("0.31.1")
+check_rules_nodejs_version(minimum_version_string = "0.31.1")
 
 # Setup the Node.js toolchain
 node_repositories(
