@@ -69,7 +69,6 @@ export {
   ɵɵtextInterpolateV,
   ɵɵembeddedViewStart,
   ɵɵprojection,
-  ɵɵbind,
   ɵɵinterpolation1,
   ɵɵinterpolation2,
   ɵɵinterpolation3,

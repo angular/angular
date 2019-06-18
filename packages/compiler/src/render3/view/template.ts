@@ -458,8 +458,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (bindings.size) {
       bindings.forEach(binding => {
         this.updateInstruction(
-            index, span, R3.i18nExp,
-            () => [this.convertPropertyBinding(binding, /* skipBindFn */ true)]);
+            index, span, R3.i18nExp, () => [this.convertPropertyBinding(binding)]);
       });
       this.updateInstruction(index, span, R3.i18nApply, [o.literal(index)]);
     }
@@ -657,7 +656,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
                 hasBindings = true;
                 this.updateInstruction(
                     elementIndex, element.sourceSpan, R3.i18nExp,
-                    () => [this.convertExpressionBinding(expression, /* skipBindFn */ true)]);
+                    () => [this.convertExpressionBinding(expression)]);
               });
             }
           }
@@ -734,8 +733,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         propertyBindings.push({
           name: prepareSyntheticPropertyName(input.name),
           input,
-          value: () => hasValue ? this.convertPropertyBinding(value, /* skipBindFn */ true) :
-                                  emptyValueBindInstruction
+          value: () => hasValue ? this.convertPropertyBinding(value) : emptyValueBindInstruction
         });
       } else {
         // we must skip attributes with associated i18n context, since these attributes are handled
@@ -771,11 +769,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             } else {
               // [prop]="value"
               // Collect all the properties so that we can chain into a single function at the end.
-              propertyBindings.push({
-                name: attrName,
-                input,
-                value: () => this.convertPropertyBinding(value, true), params
-              });
+              propertyBindings.push(
+                  {name: attrName, input, value: () => this.convertPropertyBinding(value), params});
             }
           } else if (inputType === BindingType.Attribute) {
             if (value instanceof Interpolation && getInterpolationArgsLength(value) > 1) {
@@ -834,9 +829,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       instruction: o.ExternalReference, elementIndex: number, attrName: string,
       input: t.BoundAttribute, value: any, params: any[]) {
     this.updateInstruction(elementIndex, input.sourceSpan, instruction, () => {
-      return [
-        o.literal(attrName), this.convertPropertyBinding(value, /* skipBindFn */ true), ...params
-      ];
+      return [o.literal(attrName), this.convertPropertyBinding(value), ...params];
     });
   }
 
@@ -1039,11 +1032,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
         if (value !== undefined) {
           this.allocateBindingSlots(value);
-          propertyBindings.push({
-            name: input.name,
-            input,
-            value: () => this.convertPropertyBinding(value, /* skipBindFn */ true)
-          });
+          propertyBindings.push(
+              {name: input.name, input, value: () => this.convertPropertyBinding(value)});
         }
       }
     });
@@ -1069,8 +1059,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private processStylingInstruction(
       elementIndex: number, instruction: Instruction|null, createMode: boolean) {
     if (instruction) {
-      const paramsFn = () => instruction.buildParams(
-          value => this.convertPropertyBinding(value, /* skipBindFn */ true));
+      const paramsFn = () => instruction.buildParams(value => this.convertPropertyBinding(value));
       if (createMode) {
         this.creationInstruction(instruction.sourceSpan, instruction.reference, paramsFn);
       } else {
@@ -1146,15 +1135,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         this._bindingScope.getOrCreateSharedContextVar(0);
   }
 
-  private convertExpressionBinding(value: AST, skipBindFn?: boolean): o.Expression {
+  private convertExpressionBinding(value: AST): o.Expression {
     const convertedPropertyBinding = convertPropertyBinding(
         this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.TrySimple);
-    const valExpr = convertedPropertyBinding.currValExpr;
-
-    return skipBindFn ? valExpr : o.importExpr(R3.bind).callFn([valExpr]);
+    return convertedPropertyBinding.currValExpr;
   }
 
-  private convertPropertyBinding(value: AST, skipBindFn?: boolean): o.Expression {
+  private convertPropertyBinding(value: AST): o.Expression {
     const interpolationFn =
         value instanceof Interpolation ? interpolate : () => error('Unexpected interpolation');
 
@@ -1164,8 +1151,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const valExpr = convertedPropertyBinding.currValExpr;
     this._tempVariables.push(...convertedPropertyBinding.stmts);
 
-    return value instanceof Interpolation || skipBindFn ? valExpr :
-                                                          o.importExpr(R3.bind).callFn([valExpr]);
+    return valExpr;
   }
 
   /**

@@ -696,8 +696,6 @@ export interface ɵɵBaseDef<T> {
     viewQuery: ViewQueriesFunction<T> | null;
 }
 
-export declare function ɵɵbind<T>(value: T): T | NO_CHANGE;
-
 export declare function ɵɵclassMap(classes: {
     [styleName: string]: any;
 } | NO_CHANGE | string | null): void;

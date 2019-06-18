@@ -90,8 +90,6 @@ export class Identifiers {
 
   static textBinding: o.ExternalReference = {name: 'ɵɵtextBinding', moduleName: CORE};
 
-  static bind: o.ExternalReference = {name: 'ɵɵbind', moduleName: CORE};
-
   static enableBindings: o.ExternalReference = {name: 'ɵɵenableBindings', moduleName: CORE};
 
   static disableBindings: o.ExternalReference = {name: 'ɵɵdisableBindings', moduleName: CORE};

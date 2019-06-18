@@ -35,7 +35,6 @@ export {
   ɵɵattributeInterpolate8,
   ɵɵattributeInterpolateV,
 
-  ɵɵbind,
   ɵɵclassMap,
   ɵɵclassProp,
   ɵɵcomponentHostSyntheticListener,

@@ -507,6 +507,9 @@
     "name": "baseResolveDirective"
   },
   {
+    "name": "bind"
+  },
+  {
     "name": "bindingUpdated"
   },
   {
@@ -1573,9 +1576,6 @@
   },
   {
     "name": "wrapListener"
-  },
-  {
-    "name": "ɵɵbind"
   },
   {
     "name": "ɵɵclassProp"

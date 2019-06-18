@@ -9,7 +9,7 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
-import {ɵɵbind} from './property';
+import {bind} from './property';
 import {elementAttributeInternal} from './shared';
 
 
@@ -32,7 +32,7 @@ export function ɵɵattribute(
   const index = getSelectedIndex();
   const lView = getLView();
   // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const bound = ɵɵbind(value);
+  const bound = bind(lView, value);
   if (bound !== NO_CHANGE) {
     return elementAttributeInternal(index, name, bound, lView, sanitizer, namespace);
   }
