@@ -79,7 +79,7 @@ Make a note of the user name and project name in GitHub.
 1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
    <code-example language="none" class="code-shell">
      ng build --prod --output-path docs --base-href /<project_name>/
-    </code-example>
+   </code-example>
 
 1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
 
@@ -167,7 +167,7 @@ modified to serve `index.html`:
 * [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
 [here](http://stackoverflow.com/a/26152011/2116927):
 
-  <code-example format='.'>
+  <code-example format='.' linenums="false">
     &lt;system.webServer&gt;
       &lt;rewrite&gt;
         &lt;rules&gt;
@@ -182,7 +182,6 @@ modified to serve `index.html`:
         &lt;/rules&gt;
       &lt;/rewrite&gt;
     &lt;/system.webServer&gt;
-
   </code-example>
 
 
@@ -205,7 +204,6 @@ and to
       "source": "**",
       "destination": "/index.html"
     } ]
-
   </code-example>
 
 {@a cors}
@@ -247,9 +245,9 @@ See [`ng build`](cli/build) for more about CLI build options and what they do.
 
 In addition to build optimizations, Angular also has a runtime production mode. Angular apps run in development mode by default, as you can see by the following message on the browser console:
 
-<code-example format="nocode">
+```
   Angular is running in the development mode. Call enableProdMode() to enable the production mode.
-</code-example>
+```
 
 Switching to _production mode_ makes it run faster by disabling development specific checks such as the dual change detection cycles.
 
@@ -267,9 +265,9 @@ Configure the Angular Router to defer loading of all other modules (and their as
 or by [_lazy loading_](guide/router#asynchronous-routing "Lazy loading")
 them on demand.
 
-<div class="alert is-helpful>
+<div class="callout is-helpful>
 
-#### Don't eagerly import something from a lazy-loaded module
+<header>Don't eagerly import something from a lazy-loaded module</header>
 
 If you mean to lazy-load a module, be careful not import it
 in a file that's eagerly loaded when the app starts (such as the root `AppModule`).
@@ -370,34 +368,57 @@ the subfolder is `my/app/` and you should add `<base href="/my/app/">` to the se
 When the `base` tag is mis-configured, the app fails to load and the browser console displays `404 - Not Found` errors
 for the missing files. Look at where it _tried_ to find those files and adjust the base tag appropriately.
 
+{@ differential-loading}
+
 ## Differential Loading
 
-When building web applications, making sure your application is compatible with the majority of browsers is a goal. Even as JavaScript continues to evolve, with new features being introduced, not all browsers are updated with support for these new features at the same pace. This is where compilation and [polyfills](guide/browser-support#polyfills) come in. The code you write in development using TypeScript is compiled and bundled into a format that is compatible with most browsers, commonly known as ES5. Polyfills are used bridge the gap, providing functionality that simply doesn't exist in some legacy browsers. 
+When building web applications, making sure your application is compatible with the majority of browsers is a goal.
+Even as JavaScript continues to evolve, with new features being introduced, not all browsers are updated with support for these new features at the same pace.
 
-There is a cost to ensure this browser compatibility, and it comes in the form of larger bundle size. All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that doesn't. To maximize compatibility, you ship a single bundle that includes all your compiled code, plus any polyfills that may be needed. Users with modern browsers shouldn't pay the price of increased bundle size when used in a modern browser that supports many of the latest features in JavaScript. This is where differential loading comes into play.
+The code you write in development using TypeScript is compiled and bundled into ES2015, the JavaScript syntax that is compatible with most browsers.
+All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that doesn't.
+When targeting older browsers, [polyfills](guide/browser-support#polyfills) can bridge the gap by providing functionality that  doesn't exist in the older versions of JavaScript supported by those browsers.
 
-Differential loading is a strategy where the CLI builds two separate bundles as part of your deployed application. The modern bundle contains modern syntax, takes advantage of built-in support in modern browsers, ships less polyfills, and results in a smaller bundle size. The second bundle, includes the additional compiled code, all necessary polyfills, and results in a larger bundle size. This strategy allows you to continue to build your web application to support multiple browsers, but only load the necessary code that the browser needs.
+To maximize compatibility, you could ship a single bundle that includes all your compiled code, plus any polyfills that may be needed.
+Users with modern browsers, however, shouldn't have to pay the price of increased bundle size that comes with polyfills they don't need.
+Differential loading, which is supported by default in Angular CLI version 8 and higher, solves this problem.
+
+Differential loading is a strategy where the CLI builds two separate bundles as part of your deployed application.
+
+* The first bundle contains modern ES1015 syntax, takes advantage of built-in support in modern browsers, ships less polyfills, and results in a smaller bundle size.
+
+* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This results in a larger bundle size, but supports older browsers.
+
+This strategy allows you to continue to build your web application to support multiple browsers, but only load the necessary code that the browser needs.
 
 ### Differential builds
 
-The Angular CLI handles differential loading for you as part of the _build_ process for deployment. The Angular CLI will produce the necessary bundles used for differential loading, based on your browser support requirements and compilation target. 
+The Angular CLI handles differential loading for you as part of the _build_ process for deployment.
+The `ng build` command produces the necessary bundles used for differential loading, based on your browser support requirements and compilation target.
 
 The Angular CLI uses two configurations for differential loading:
 
-- Browserslist - The `browserslist` configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
-- tsconfig.json - The `target` in the TypeScript `compilerOptions` determines the ECMAScript target version that the code is compiled to. Modern browsers support ES2015 natively, while ES5 is more commonly used to support legacy browsers.
+* Browsers list
+   The `browserslist` configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
+
+* TypeScript configuration
+   In the TypeScript configuration file, `tsconfig.json`, the `target` in the `compilerOptions` section determines the ECMAScript target version that the code is compiled to.
+   Modern browsers support ES2015 natively, while ES5 is more commonly used to support legacy browsers.
 
 <div class="alert is-helpful">
 
-**Note:** Differential loading is currently only supported when using `es2015` as a compilation `target`. When used with targets higher than `es2015`, a warning is emitted during build time.
+   Differential loading is currently only supported when using `es2015` as a compilation `target`. When used with targets higher than `es2015`, a warning is emitted during build time.
 
 </div>
 
-The CLI queries the Browserslist configuration, and checks the `target` to determine if support for legacy browsers is required. The combination of these two configurations determines whether multiple bundles are produced when you create a _build_. When you create a development build using [`ng build`](cli/build) and differential loading is enabled, the output produced is simpler and easier to debug, allowing you to rely less on sourcemaps of compiled code. When you create a production build using [`ng build --prod`](cli/build), the CLI uses the defined configurations above to determine the bundles to build for deployment of your application. 
+The CLI queries the Browserslist configuration, and checks the `target` to determine if support for legacy browsers is required.
+The combination of these two configurations determines whether multiple bundles are produced when you create a _build_.
+When you create a development build using [`ng build`](cli/build) and differential loading is enabled, the output produced is simpler and easier to debug, allowing you to rely less on sourcemaps of compiled code.
+When you create a production build using [`ng build --prod`](cli/build), the CLI uses the defined configurations above to determine the bundles to build for deployment of your application.
 
 The `index.html` file is also modified during the build process to include script tags that enable differential loading. See the sample output below from the `index.html` file produced during a build using `ng build`.
 
-```html
+<code-example language="html" format="." linenums="false">
 <!-- ... -->
 <body>
   <app-root></app-root>
@@ -413,13 +434,13 @@ The `index.html` file is also modified during the build process to include scrip
   <script src="main-es5.js" nomodule></script>
 </body>
 <!-- ... -->
-```
+</code-example>
 
-Each script tag has a `type="module"` or `nomodule` attribute. Browsers with native support for ES modules only load the scripts with the `module` type attribute and ignore scripts with the `nomodule` attribute. Legacy browsers only load the scripts with the `nomodule` attribute, and ignore the script tags with the `module` type that load ES modules. 
+Each script tag has a `type="module"` or `nomodule` attribute. Browsers with native support for ES modules only load the scripts with the `module` type attribute and ignore scripts with the `nomodule` attribute. Legacy browsers only load the scripts with the `nomodule` attribute, and ignore the script tags with the `module` type that load ES modules.
 
 <div class="alert is-helpful">
 
-**Note:** Some legacy browsers still download both bundles, but only execute the appropriate scripts based on the attributes mentioned above. You can read more on the issue [here](https://github.com/philipwalton/webpack-esnext-boilerplate/issues/1).
+   Some legacy browsers still download both bundles, but only execute the appropriate scripts based on the attributes mentioned above. You can read more on the issue [here](https://github.com/philipwalton/webpack-esnext-boilerplate/issues/1).
 
 </div>
 
@@ -427,11 +448,10 @@ See the [configuration table](#configuration-table) below for the configurations
 
 ### Configuring differential loading
 
-Differential loading for creating builds is already supported with version 8 and later of the Angular CLI. For each application project in your workspace, you can configure how builds are produced based on the mentioned `browserslist` and `tsconfig.json` files in your application project.
+Differential loading is supported by default with version 8 and later of the Angular CLI.
+For each application project in your workspace, you can configure how builds are produced based on the `browserslist` and `tsconfig.json` files in your application project.
 
-Look at the default configuration for a newly created Angular application:
-
-The `browserslist` looks like this:
+For a newly created Angular application, the default `browserslist` looks like this:
 
 ```
 > 0.5%
@@ -443,8 +463,7 @@ not IE 9-11 # For IE 9-11 support, remove 'not'.
 
 The `tsconfig.json` looks like this:
 
-
-```
+<code-example language="json" format="." linenums="false">
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -467,13 +486,13 @@ The `tsconfig.json` looks like this:
     ]
   }
 }
-```
+</code-example>
 
-By default, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015. As a result, this produces two builds, and differential loading is enabled. If you ignore browsers without ES2015 support, a single build is produced. To see the build result for differential loading based on different configurations, refer to the table below. 
+By default, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015. As a result, this produces two builds, and differential loading is enabled. If you ignore browsers without ES2015 support, a single build is produced. To see the build result for differential loading based on different configurations, refer to the table below.
 
 <div class="alert is-important">
 
-**Note:** To see which browsers are supported with the above configuration, see which settings meet to your browser support requirements, see the [Browserslist compatibility page](https://browserl.ist/?q=%3E+0.5%25%2C+last+2+versions%2C+Firefox+ESR%2C+Chrome+41%2C+not+dead%2C+not+IE+9-11).
+   To see which browsers are supported with the above configuration, see which settings meet to your browser support requirements, see the [Browserslist compatibility page](https://browserl.ist/?q=%3E+0.5%25%2C+last+2+versions%2C+Firefox+ESR%2C+Chrome+41%2C+not+dead%2C+not+IE+9-11).
 
 </div>
 
@@ -490,9 +509,135 @@ When the ES5 Browserslist result is `disabled`, then ES5 browser support is not 
 
 ### Opting out of differential loading
 
-Differential loading can be explicitly disabled if it causes unexpected issues or you need to target ES5 specifically for legacy browser support. 
+Differential loading can be explicitly disabled if it causes unexpected issues or you need to target ES5 specifically for legacy browser support.
 
 To explicitly disable differential loading:
 
 - Enable the `dead` or `IE` browsers in the `browserslist` config file by removing the `not` keyword in front of them.
 - Set the `target` in the `compilerOptions` to `es5`.
+
+{@ test-and-serve}
+
+## Local development in older browsers
+
+In Angular CLI version 8 and higher, differential loading is enabled by default for the `ng build` command.
+The `ng serve`, `ng test`, and `ng e2e` commands, however, generate a single ES2015 build which cannot run in older browsers that don't support the modules, such as IE 11.
+
+If you want to run ES5 code during development, you could disable differential loading completely.
+To maintain the benefits of differential loading, however, a better option is to define multiple configurations for `ng serve`, `ng e2e`, and `ng test`.
+
+{@ differential-serve}
+
+### Configuring serve for ES5
+
+To do this for `ng serve`, create a new file, `tsconfig-es5.app.json` next to `tsconfig.app.json` with the following content.
+
+<code-example language="json" format="." linenums="false">
+{
+ "extends": "./tsconfig.app.json",
+ "compilerOptions": {
+     "target": "es5"
+  }
+}
+</code-example>
+
+In `angular.json` add two new configuration sections under the `build` and `serve` targets to point to the new TypeScript configuration.
+
+<code-example language="json" format="." linenums="false">
+"build": {
+  "builder": "@angular-devkit/build-angular:browser",
+  "options": {
+      ...
+  },
+  "configurations": {
+    "production": {
+        ...
+    },
+    "es5": {
+      "tsConfig": "./tsconfig-es5.app.json"
+    }
+  }
+},
+"serve": {
+  "builder": "@angular-devkit/build-angular:dev-server",
+  "options": {
+      ...
+  },
+  "configurations": {
+    "production": {
+     ...
+    },
+    "es5": {
+      "browserTarget": "app:build:es5"
+    }
+  }
+},
+</code-example>
+
+You can then run the serve with this configuration.
+
+<code-example language="none" class="code-shell">
+ng serve --configuration es5
+</code-example>
+
+{@ differential-test}
+
+### Configuring the test command
+
+Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with the following content.
+
+<code-example language="json" format="." linenums="false">
+{
+ "extends": "./tsconfig.spec.json",
+ "compilerOptions": {
+     "target": "es5"
+  }
+}
+</code-example>
+
+<code-example language="json" format="." linenums="false">
+"test": {
+  "builder": "@angular-devkit/build-angular:karma",
+  "options": {
+      ...
+  },
+  "configurations": {
+    "es5": {
+      "tsConfig": "./tsconfig-es5.spec.json"
+    }
+  }
+},
+</code-example
+
+You can then run the tests with this configuration
+
+<code-example language="none" class="code-shell">
+ng test --configuration es5
+</code-example>
+
+### Configuring the e2e command
+
+Create an ES5 serve configuration as explained above (link to the above serve section), and configuration an ES5 configuration for the E2E target.
+
+<code-example language="json" format="." linenums="false">
+"test": {
+  "builder": "@angular-devkit/build-angular:protractor",
+  "options": {
+      ...
+  },
+  "configurations": {
+	"production": {
+		...
+	},
+    "es5": {
+      "devServerTarget": "app:serve:es5"
+    }
+  }
+},
+</code-example>
+
+You can then run the e2e's with this configuration
+
+<code-example language="none" class="code-shell">
+ng e2e --configuration es5
+</code-example>

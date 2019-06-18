@@ -48,7 +48,7 @@ Angular supports most recent browsers. This includes the following specific vers
       2 most recent major versions
     </td>
   </tr>
-  <tr> 
+  <tr>
     <td>
       IE
     </td>
@@ -57,7 +57,7 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
   </tr>
  <tr>
-   <tr> 
+   <tr>
     <td>
       IE Mobile
     </td>
@@ -82,7 +82,7 @@ Angular supports most recent browsers. This includes the following specific vers
     <td>
       2 most recent major versions
     </td>
-  </tr> 
+  </tr>
   <tr>
     <td>
       Android
@@ -91,7 +91,7 @@ Angular supports most recent browsers. This includes the following specific vers
     <td>
       Nougat (7.0)<br>Marshmallow (6.0)<br>Lollipop (5.0, 5.1)<br>KitKat (4.4)
     </td>
-  </tr> 
+  </tr>
 
 </table>
 
@@ -103,12 +103,10 @@ using <a href="https://saucelabs.com/">SauceLabs</a> and
 
 </div>
 
-
 ## Polyfills
 
 Angular is built on the latest standards of the web platform.
 Targeting such a wide range of browsers is challenging because they do not support all features of modern browsers.
-
 You compensate by loading polyfill scripts ("polyfills") for the browsers that you must support.
 The [table below](#polyfill-libs) identifies most of the polyfills you might need.
 
@@ -119,6 +117,15 @@ You may need additional polyfills to support features not covered by this list.
 Note that polyfills cannot magically transform an old, slow browser into a modern, fast one.
 
 </div>
+
+In Angular CLI version 8 and higher, applications are built using *differential loading*, a strategy where the CLI builds two separate bundles as part of your deployed application.
+
+* The first bundle contains modern ES1015 syntax, takes advantage of built-in support in modern browsers, ships less polyfills, and results in a smaller bundle size.
+
+* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This results in a larger bundle size, but supports older browsers.
+
+This strategy allows you to continue to build your web application to support multiple browsers, but only load the necessary code that the browser needs.
+For more information about how this works, see [Differential Loading](guide/deployment#differential-loading) in the [Deployment guide](guide/deployment).
 
 ## Enabling polyfills
 
@@ -302,14 +309,14 @@ Here are the features which may require additional polyfills:
     <td>
 
     If you use the following deprecated i18n pipes:
-    
 
-     [date](api/common/DeprecatedDatePipe), 
-     
+
+     [date](api/common/DeprecatedDatePipe),
+
      [currency](api/common/DeprecatedCurrencyPipe),
-     
-     [decimal](api/common/DeprecatedDecimalPipe), 
-     
+
+     [decimal](api/common/DeprecatedDecimalPipe),
+
      [percent](api/common/DeprecatedPercentPipe)
 
     </td>
@@ -330,8 +337,8 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-       [NgClass](api/common/NgClass) 
-       
+       [NgClass](api/common/NgClass)
+
        on SVG elements
     </td>
 
@@ -351,8 +358,8 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-      [Http](guide/http) 
-      
+      [Http](guide/http)
+
       when sending and receiving binary data
     </td>
 
@@ -376,8 +383,8 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-      [Router](guide/router) 
-      
+      [Router](guide/router)
+
       when using [hash-based routing](guide/router#appendix-locationstrategy-and-browser-url-styles)
     </td>
 
