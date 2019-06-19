@@ -66,7 +66,7 @@ describe('ComponentAnalysisContext', () => {
       interpolationConfig: DEFAULT_INTERPOLATION,
     });
 
-    const usedComps = context.getUsedComponents(declaration);
+    const usedComps = context.getUsedComponentsOf(declaration);
     expect(usedComps).toEqual(new Set([
       usedDecl,
     ]));

@@ -57,7 +57,7 @@ export class IndexingContext {
   /**
    * Gets the class declaration of components used in a template.
    */
-  getUsedComponents(compDecl: ClassDeclaration): Set<ClassDeclaration> {
+  getUsedComponentsOf(compDecl: ClassDeclaration): Set<ClassDeclaration> {
     const components = Array.from(this.components);
     const component = components.find(comp => comp.declaration === compDecl);
     if (!component || !component.scope) {
