@@ -136,7 +136,7 @@ export interface ContentChildrenDecorator {
    * | Metadata Property | Description |
    * | :--------------- | :-------------------- |
    * | selector | The directive type or the name used for querying. |
-   * | descendants | When true, include only direct children or all descendants. |
+   * | descendants | When true, include all descendants. Otherwise include only direct children. |
    * | read | Read a different token from the queried elements. |
    *
    * @usageNotes
