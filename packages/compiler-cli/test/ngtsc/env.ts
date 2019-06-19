@@ -201,11 +201,11 @@ export class NgtscTestEnvironment {
     return program.listLazyRoutes(entryPoint);
   }
 
-  driveIndexer(): IndexedComponent[] {
+  driveIndexer(): Map<ts.Declaration, IndexedComponent> {
     const {rootNames, options} = readNgcCommandLineAndConfiguration(['-p', this.basePath]);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
-    return (program as NgtscProgram).getIndexedComponents();
+    return program instanceof NgtscProgram ? program.getIndexedComponents() : new Map();
   }
 }
 

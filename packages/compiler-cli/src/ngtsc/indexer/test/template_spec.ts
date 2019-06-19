@@ -26,6 +26,14 @@ describe('getTemplateIdentifiers', () => {
     expect(refs.size).toBe(0);
   });
 
+  // TODO(ayazhafiz): Remove once `restoreTemplate` is removed.
+  it('should ignore inline templates', () => {
+    const refs = getTemplateIdentifiers(
+        parseTemplate('<div>{{foo}}</div>', 'TEST.ts').nodes, DEFAULT_RESTORE_OPTIONS);
+
+    expect(refs.size).toBe(0);
+  });
+
   it('should ignore comments', () => {
     const refs = getTemplateIdentifiers(
         parse(`

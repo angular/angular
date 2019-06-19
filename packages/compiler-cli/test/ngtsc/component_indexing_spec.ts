@@ -29,17 +29,22 @@ describe('ngtsc component indexing', () => {
     `;
       env.write('test.ts', componentContent);
       const indexed = env.driveIndexer();
-      expect(indexed.length).toBe(1);
+      expect(indexed.size).toBe(1);
 
-      const [component] = indexed;
-      expect(component.name).toBe('TestCmp');
-      expect(component.selector).toBe('test-cmp');
-      expect(component.content).toBe(componentContent);
-      expect(component.sourceFile).toContain('/test.ts');
-      expect(component.declaration.getText()).toContain('export class TestCmp {}');
+      const [[decl, indexedComp]] = indexed.entries();
+
+      expect(decl.getText()).toContain('export class TestCmp {}');
+      expect(indexedComp.name).toBe('TestCmp');
+      expect(indexedComp.selector).toBe('test-cmp');
+      expect(indexedComp.sourceFile).toContain('/test.ts');
+      expect(indexedComp.content).toBe(componentContent);
+      expect(indexedComp.template.identifiers.size).toBe(0);
+      expect(indexedComp.template.usedComponents.size).toBe(0);
     });
 
-    it('should index inline templates', () => {
+    // Ignore inline templates for until the indexer module no longer has to restore templates.
+    // TODO(ayazhafiz): Fix once `restoreTemplate` in indexer module is removed.
+    it('should ignore index inline templates', () => {
       const componentContent = `
         import {Component} from '@angular/core';
 
@@ -50,13 +55,12 @@ describe('ngtsc component indexing', () => {
         export class TestCmp { foo = 0; }
       `;
       env.write('test.ts', componentContent);
-      const [{template}] = env.driveIndexer();
-      const [identifier] = template.identifiers;
+      const indexed = env.driveIndexer();
+      const [[_, indexedComp]] = indexed.entries();
+      const template = indexedComp.template;
 
-      expect(identifier.name).toBe('foo');
-      expect(identifier.span).toEqual({start: 132, end: 135});
-      expect(identifier.file.content).toBe(componentContent);
-      expect(identifier.file.url).toBe('test.ts');
+      expect(template.identifiers.size).toBe(0);
+      expect(template.usedComponents.size).toBe(0);
     });
 
     it('should index external templates', () => {
@@ -65,18 +69,70 @@ describe('ngtsc component indexing', () => {
 
         @Component({
           selector: 'test-cmp',
-          templateUrl: './test-cmp.html',
+          templateUrl: './test.html',
         })
         export class TestCmp { foo = 0; }
       `);
-      env.write('test-cmp.html', '<div>{{foo}}</div>');
-      const [{template}] = env.driveIndexer();
-      const [identifier] = template.identifiers;
+      env.write('test.html', '<div>{{foo}}</div>');
+      const indexed = env.driveIndexer();
+      const [[_, indexedComp]] = indexed.entries();
+      const template = indexedComp.template;
+
+      expect(template.identifiers.size).toBe(1);
+      expect(template.usedComponents.size).toBe(0);
+
+      const [identifier] = template.identifiers.values();
 
       expect(identifier.name).toBe('foo');
-      expect(identifier.span).toEqual({start: 7, end: 10});
+      expect(identifier.span.start).toBe(7);
+      expect(identifier.span.end).toBe(10);
       expect(identifier.file.content).toBe('<div>{{foo}}</div>');
-      expect(identifier.file.url).toContain('/test-cmp.html');
+      expect(identifier.file.url).toContain('/test.html');
+    });
+
+    it('should generated information about used components', () => {
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          templateUrl: './test.html',
+        })
+        export class TestCmp {}
+      `);
+      env.write('test.html', '<div></div>');
+      env.write('test_import.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {TestCmp} from './test';
+
+        @Component({
+          templateUrl: './test_import.html',
+        })
+        export class TestImportCmp {}
+
+        @NgModule({
+          declarations: [
+            TestCmp,
+            TestImportCmp,
+          ],
+          bootstrap: [TestImportCmp]
+        })
+        export class TestModule {}
+      `);
+      env.write('test_import.html', '<test-cmp></test-cmp>');
+      const indexed = env.driveIndexer();
+      expect(indexed.size).toBe(2);
+
+      const indexedComps = Array.from(indexed.values());
+      const testComp = indexedComps.find(comp => comp.name === 'TestCmp');
+      const testImportComp = indexedComps.find(cmp => cmp.name === 'TestImportCmp');
+      expect(testComp).toBeDefined();
+      expect(testImportComp).toBeDefined();
+      expect(testComp !.template.usedComponents.size).toBe(0);
+      expect(testImportComp !.template.usedComponents.size).toBe(1);
+
+      const [usedComp] = testImportComp !.template.usedComponents;
+      expect(indexed.get(usedComp)).toEqual(testComp);
     });
   });
 });

@@ -160,12 +160,19 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
  * the template source code.
  */
 function restoreTemplate(template: TmplAstNode[], options: RestoreTemplateOptions): TmplAstNode[] {
-  // try to recapture the template content and URL
-  // if there was nothing in the template to begin with, this is just a no-op
+  // Try to recapture the template content and URL.
+  // If there was nothing in the template to begin with, this is just a no-op.
   if (template.length === 0) {
     return [];
   }
   const {content: templateStr, url: templateUrl} = template[0].sourceSpan.start.file;
+
+  // Ignore inline templates for now, as their file content includes the entire component and
+  // requires extra parsing.
+  // TODO(ayazhafiz): Fix this when `restoreTemplate` is removed.
+  if (templateUrl.endsWith('.ts')) {
+    return [];
+  }
 
   options.preserveWhitespaces = true;
   const {interpolationConfig, preserveWhitespaces} = options;
