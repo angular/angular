@@ -180,6 +180,232 @@ describe('compiler compliance: bindings', () => {
          expectEmit(result.source, template, 'Incorrect template');
        });
 
+    it('should chain multiple property bindings into a single instruction', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<button [title]="myTitle" [id]="buttonId" [tabindex]="1"></button>'
+            })
+            export class MyComponent {
+              myTitle = 'hello';
+              buttonId = 'special-button';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵproperty("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain property bindings in the presence of other instructions', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<button [title]="1" [attr.id]="2" [tabindex]="3" aria-label="{{1 + 3}}"></button>'
+            })
+            export class MyComponent {}`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵattribute("id", 2);
+              $r3$.ɵɵpropertyInterpolate("aria-label", 1 + 3);
+              $r3$.ɵɵproperty("title", 1)("tabindex", 3);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should not add interpolated properties to the property instruction chain', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<button [title]="1" [id]="2" tabindex="{{0 + 3}}" aria-label="hello-{{1 + 3}}-{{2 + 3}}"></button>'
+            })
+            export class MyComponent {}`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵpropertyInterpolate("tabindex", 0 + 3);
+              $r3$.ɵɵpropertyInterpolate2("aria-label", "hello-", 1 + 3, "-", 2 + 3, "");
+              $r3$.ɵɵproperty("title", 1)("id", 2);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain synthetic property bindings together with regular property bindings', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <button
+                  [title]="myTitle"
+                  [@expand]="expansionState"
+                  [tabindex]="1"
+                  [@fade]="'out'"></button>
+                \`
+            })
+            export class MyComponent {
+              expansionState = 'expanded';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵproperty("title", ctx.myTitle)("@expand", ctx.expansionState)("tabindex", 1)("@fade", "out");
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple property bindings on an ng-template', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<ng-template [title]="myTitle" [id]="buttonId" [tabindex]="1"></ng-template>'
+            })
+            export class MyComponent {
+              myTitle = 'hello';
+              buttonId = 'custom-id';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵproperty("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple property bindings when there are multiple elements', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <button [title]="myTitle" [id]="buttonId" [tabindex]="1"></button>
+                <span [id]="1" [title]="'hello'" [someProp]="1 + 2"></span>
+                <custom-element [prop]="'one'" [otherProp]="2"></custom-element>
+              \`
+            })
+            export class MyComponent {
+              myTitle = 'hello';
+              buttonId = 'special-button';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵproperty("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
+              $r3$.ɵɵselect(1);
+              $r3$.ɵɵproperty("id", 1)("title", "hello")("someProp", 1 + 2);
+              $r3$.ɵɵselect(2);
+              $r3$.ɵɵproperty("prop", "one")("otherProp", 2);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple property bindings when there are child elements', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <button [title]="myTitle" [id]="buttonId" [tabindex]="1">
+                  <span [id]="1" [title]="'hello'" [someProp]="1 + 2"></span>
+                </button>\`
+            })
+            export class MyComponent {
+              myTitle = 'hello';
+              buttonId = 'special-button';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵproperty("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
+              $r3$.ɵɵselect(1);
+              $r3$.ɵɵproperty("id", 1)("title", "hello")("someProp", 1 + 2);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
   });
 
   describe('host bindings', () => {
