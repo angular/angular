@@ -19,8 +19,8 @@ http_archive(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-# The minimum bazel version to use with this repo is 0.18.0
-check_bazel_version("0.18.0")
+# The minimum bazel version to use with this repo is 0.26.1
+check_bazel_version("0.26.1")
 
 node_repositories(
     # For deterministic builds, specify explicit NodeJS and Yarn versions.
@@ -39,6 +39,10 @@ yarn_install(
         "//:tools/npm/check-npm.js",
     ],
     package_json = "//:package.json",
+    # Temporarily disable node_modules symlinking until the fix for
+    # https://github.com/bazelbuild/bazel/issues/8487 makes it into a
+    # future Bazel release
+    symlink_node_modules = False,
     yarn_lock = "//:yarn.lock",
 )
 
@@ -80,9 +84,9 @@ sass_repositories()
 # Bring in bazel_toolchains for RBE setup configuration.
 http_archive(
     name = "bazel_toolchains",
-    sha256 = "67335b3563d9b67dc2550b8f27cc689b64fadac491e69ce78763d9ba894cc5cc",
-    strip_prefix = "bazel-toolchains-cddc376d428ada2927ad359211c3e356bd9c9fbb",
-    url = "https://github.com/bazelbuild/bazel-toolchains/archive/cddc376d428ada2927ad359211c3e356bd9c9fbb.tar.gz",
+    sha256 = "4598bf5a8b4f5ced82c782899438a7ba695165d47b3bf783ce774e89a8c6e617",
+    strip_prefix = "bazel-toolchains-0.27.0",
+    url = "https://github.com/bazelbuild/bazel-toolchains/archive/0.27.0.tar.gz",
 )
 
 load("@bazel_toolchains//repositories:repositories.bzl", bazel_toolchains_repositories = "repositories")
@@ -97,10 +101,10 @@ rbe_autoconfig(
     # platform configurations for the "ubuntu16_04" image. Otherwise the autoconfig rule would
     # need to pull the image and run it in order determine the toolchain configuration.
     # See: https://github.com/bazelbuild/bazel-toolchains/blob/master/rules/rbe_repo.bzl#L229
-    base_container_digest = "sha256:da0f21c71abce3bbb92c3a0c44c3737f007a82b60f8bd2930abc55fe64fc2729",
-    digest = "sha256:e874885f5e3d9ac0c0d3176e5369cb5969467dbf9ad8d42b862829cec8d84b9b",
-    registry = "gcr.io",
+    base_container_digest = "sha256:94d7d8552902d228c32c8c148cc13f0effc2b4837757a6e95b73fdc5c5e4b07b",
+    digest = "sha256:76e2e4a894f9ffbea0a0cb2fbde741b5d223d40f265dbb9bca78655430173990",
+    registry = "marketplace.gcr.io",
     # We can't use the default "ubuntu16_04" RBE image provided by the autoconfig because we need
     # a specific Linux kernel that comes with "libx11" in order to run headless browser tests.
-    repository = "asci-toolchain/nosla-ubuntu16_04-webtest",
+    repository = "google/rbe-ubuntu16-04-webtest",
 )

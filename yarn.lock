@@ -340,7 +340,7 @@
   resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.26.1.tgz#9351f07313173b1f98006da8131c94db7aa7c506"
   integrity sha512-0FkOo8+bxw13X2m6ALhXX2241gG9ZXgcLu0E/IbCWy/TmOB5bR0Z73CslszWbXIldVYnANuhFmnkxIa745Du5Q==
 
-"@bazel/bazel@^0.26.1":
+"@bazel/bazel@0.26.1":
   version "0.26.1"
   resolved "https://registry.yarnpkg.com/@bazel/bazel/-/bazel-0.26.1.tgz#de5febbd1f4b457aa870fb69492f474850283e5d"
   integrity sha512-x0IR0KEML4JGG6QpAOpHQHWpMqM1YQjOi8zY1jjLwiRHhC3Y8Tc/Mcspnd6zUnjfs7MerPfppkyx2jaEnZwUuQ==
@@ -378,7 +378,7 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.9.0.tgz#fd60023acd36313d304cc2f8c2e181b88b5445cd"
   integrity sha512-E31cefDcdJsx/oii6p/gqKZXSVw0kEg1O73DD2McFcSvnf/p1GYWcQtVgdRQmlviBEytJkJgdX8rtThitRvcow==
 
-"@bazel/jasmine@^0.31.1":
+"@bazel/jasmine@0.31.1":
   version "0.31.1"
   resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.31.1.tgz#da3de10760fe1e29e9fc748fabc4fcf604f4356a"
   integrity sha512-heKo8qzm6DTm8eOlfL69RJJi1GLI9vJDSmBGYgol18K7oXz6JrspGWUL9/TlCYbRUUCt22kqX7f3R+QlD0KrCg==
@@ -387,7 +387,7 @@
     jasmine-core "~3.3.0"
     v8-coverage "1.0.9"
 
-"@bazel/karma@^0.31.1":
+"@bazel/karma@0.31.1":
   version "0.31.1"
   resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.31.1.tgz#fecbb269c7693baa29ad78179cca752fe7c09068"
   integrity sha512-PUOTQOD57IjM18iM+MOe9fRUFNJ8RQMq1i1qDaPLStMS/LtJAvDcvWhypK/2wNDdmAGz7U5uLlvl827XbwIuuA==
@@ -404,7 +404,7 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/typescript@^0.31.1":
+"@bazel/typescript@0.31.1":
   version "0.31.1"
   resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.31.1.tgz#2ccf9997d97903c51e73f82e29433fe444b8d672"
   integrity sha512-jUTJjwdc4JSDMt4kIj74gGtctu8xe0YZPJuPxOIS4TdrWcn+dG9Fy7Z8bJLXhePheig1JLY7NBP6BGwrtggzPQ==
@@ -11282,10 +11282,10 @@ tryit@^1.0.1:
   resolved "https://registry.yarnpkg.com/tryit/-/tryit-1.0.3.tgz#393be730a9446fd1ead6da59a014308f36c289cb"
   integrity sha1-OTvnMKlEb9Hq1tpZoBQwjzbCics=
 
-ts-api-guardian@^0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/ts-api-guardian/-/ts-api-guardian-0.4.4.tgz#12dfcfa5c5d6c5a8cb2f1b7cc322b9510a81814c"
-  integrity sha512-nWJQRNSeV+er9/deUo/tdYD7Rm7tKOwbcexI8UbqrzC3uAGm2UWncZ9USK0i6kTvT5hCvhW5VNw76JQ8L7Aq8A==
+ts-api-guardian@^0.4.6:
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/ts-api-guardian/-/ts-api-guardian-0.4.6.tgz#ebd9a700b40de6ca4dbc5c468e322fe86476b6db"
+  integrity sha512-V+AVEe4HCi3j0mKrvSBNZN6zoY0eIw2r9vcWrqu4vhGlpASgPTSwuPHtxctx4qMBH5ieyqO6rf1LrQfsr8s5tw==
   dependencies:
     chalk "^2.3.1"
     diff "^3.5.0"
