@@ -30,6 +30,7 @@ You will need two terminals to get the live-reload experience.
 * On the first terminal, run the [`ng build` command](cli/build) in *watch* mode to compile the application to the `dist` folder.
 
   <code-example language="none" class="code-shell">
+
    ng build --watch
 
   </code-example>
@@ -39,6 +40,7 @@ You will need two terminals to get the live-reload experience.
 * On the second terminal, install a web server (such as [lite-server](https://github.com/johnpapa/lite-server)), and run it against the output folder. For example:
 
   <code-example language="none" class="code-shell">
+
    lite-server --baseDir="dist"
 
   </code-example>
@@ -58,6 +60,7 @@ For the simplest deployment, create a production build and copy the output direc
 1. Start with the production build:
 
   <code-example language="none" class="code-shell">
+
     ng build --prod
 
   </code-example>
@@ -81,7 +84,8 @@ Make a note of the user name and project name in GitHub.
 
 1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
    <code-example language="none" class="code-shell">
-     ng build --prod --output-path docs --base-href /<project_name>/
+
+     ng build --prod --output-path docs --base-href /&lt;project_name&gt;/
 
    </code-example>
 
@@ -148,6 +152,7 @@ The list is by no means exhaustive, but should provide you with a good starting 
   (https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/):
 
   <code-example format=".">
+
     RewriteEngine On
     &#35 If an existing asset or directory is requested go to it as it is
     RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
@@ -165,6 +170,7 @@ The list is by no means exhaustive, but should provide you with a good starting 
 modified to serve `index.html`:
 
   <code-example format=".">
+
     try_files $uri $uri/ /index.html;
 
   </code-example>
@@ -174,6 +180,7 @@ modified to serve `index.html`:
 [here](http://stackoverflow.com/a/26152011/2116927):
 
   <code-example format='.' linenums="false">
+
     &lt;system.webServer&gt;
       &lt;rewrite&gt;
         &lt;rules&gt;
@@ -207,6 +214,7 @@ and to
 [rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites).
 
   <code-example format=".">
+
     "rewrites": [ {
       "source": "**",
       "destination": "/index.html"
@@ -254,6 +262,7 @@ See [`ng build`](cli/build) for more about CLI build options and what they do.
 In addition to build optimizations, Angular also has a runtime production mode. Angular apps run in development mode by default, as you can see by the following message on the browser console:
 
 <code-example format="nocode">
+
   Angular is running in the development mode. Call enableProdMode() to enable the production mode.
 
 </code-example>
@@ -320,6 +329,7 @@ tool is a great way to inspect the generated JavaScript bundles after a producti
 Install `source-map-explorer`:
 
 <code-example language="none" class="code-shell">
+
   npm install source-map-explorer --save-dev
 
 </code-example>
@@ -327,6 +337,7 @@ Install `source-map-explorer`:
 Build your app for production _including the source maps_
 
 <code-example language="none" class="code-shell">
+
   ng build --prod --source-map
 
 </code-example>
@@ -334,6 +345,7 @@ Build your app for production _including the source maps_
 List the generated bundles in the `dist/` folder.
 
 <code-example language="none" class="code-shell">
+
   ls dist/*.bundle.js
 
 </code-example>
@@ -342,6 +354,7 @@ Run the explorer to generate a graphical representation of one of the bundles.
 The following example displays the graph for the _main_ bundle.
 
 <code-example language="none" class="code-shell">
+
   node_modules/.bin/source-map-explorer dist/main.*.bundle.js
 
 </code-example>
@@ -432,6 +445,7 @@ When you create a production build using [`ng build --prod`](cli/build), the CLI
 The `index.html` file is also modified during the build process to include script tags that enable differential loading. See the sample output below from the `index.html` file produced during a build using `ng build`.
 
 <code-example language="html" format="." linenums="false">
+
 <!-- ... -->
 <body>
   <app-root></app-root>
@@ -478,6 +492,7 @@ not IE 9-11 # For IE 9-11 support, remove 'not'.
 The `tsconfig.json` looks like this:
 
 <code-example language="json" format="." linenums="false">
+
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -548,6 +563,7 @@ To maintain the benefits of differential loading, however, a better option is to
 To do this for `ng serve`, create a new file, `tsconfig-es5.app.json` next to `tsconfig.app.json` with the following content.
 
 <code-example language="json" format="." linenums="false">
+
 {
  "extends": "./tsconfig.app.json",
  "compilerOptions": {
@@ -560,6 +576,7 @@ To do this for `ng serve`, create a new file, `tsconfig-es5.app.json` next to `t
 In `angular.json` add two new configuration sections under the `build` and `serve` targets to point to the new TypeScript configuration.
 
 <code-example language="json" format="." linenums="false">
+
 "build": {
   "builder": "@angular-devkit/build-angular:browser",
   "options": {
@@ -594,6 +611,7 @@ In `angular.json` add two new configuration sections under the `build` and `serv
 You can then run the serve with this configuration.
 
 <code-example language="none" class="code-shell">
+
 ng serve --configuration es5
 
 </code-example>
@@ -605,6 +623,7 @@ ng serve --configuration es5
 Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with the following content.
 
 <code-example language="json" format="." linenums="false">
+
 {
  "extends": "./tsconfig.spec.json",
  "compilerOptions": {
@@ -615,6 +634,7 @@ Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with th
 </code-example>
 
 <code-example language="json" format="." linenums="false">
+
 "test": {
   "builder": "@angular-devkit/build-angular:karma",
   "options": {
@@ -632,6 +652,7 @@ Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with th
 You can then run the tests with this configuration
 
 <code-example language="none" class="code-shell">
+
 ng test --configuration es5
 
 </code-example>
@@ -641,6 +662,7 @@ ng test --configuration es5
 Create an ES5 serve configuration as explained above (link to the above serve section), and configuration an ES5 configuration for the E2E target.
 
 <code-example language="json" format="." linenums="false">
+
 "test": {
   "builder": "@angular-devkit/build-angular:protractor",
   "options": {
@@ -661,6 +683,7 @@ Create an ES5 serve configuration as explained above (link to the above serve se
 You can then run the e2e's with this configuration
 
 <code-example language="none" class="code-shell">
+
 ng e2e --configuration es5
 
 </code-example>
