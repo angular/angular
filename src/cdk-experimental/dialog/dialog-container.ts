@@ -82,7 +82,7 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
    /** The class that traps and manages focus within the dialog. */
   private _focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement, false);
 
-  // @HostBinding is used in the class as it is expected to be extended.  Since @Component decorator
+  // @HostBinding is used in the class as it is expected to be extended. Since @Component decorator
   // metadata is not inherited by child classes, instead the host binding data is defined in a way
   // that can be inherited.
   // tslint:disable:no-host-decorator-in-concrete
@@ -92,6 +92,8 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   get _ariaDescribedBy() { return this._config.ariaDescribedBy; }
 
   @HostBinding('attr.role') get _role() { return this._config.role; }
+
+  @HostBinding('attr.aria-modal') _ariaModal = true;
 
   @HostBinding('attr.tabindex') get _tabindex() { return -1; }
   // tslint:disable:no-host-decorator-in-concrete

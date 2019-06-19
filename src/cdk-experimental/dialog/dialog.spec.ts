@@ -79,6 +79,7 @@ describe('Dialog', () => {
     viewContainerFixture.detectChanges();
     let dialogContainerElement = overlayContainerElement.querySelector('cdk-dialog-container')!;
     expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
+    expect(dialogContainerElement.getAttribute('aria-modal')).toBe('true');
   });
 
   it('should open a dialog with a template', () => {
@@ -100,6 +101,7 @@ describe('Dialog', () => {
 
     let dialogContainerElement = overlayContainerElement.querySelector('cdk-dialog-container')!;
     expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
+    expect(dialogContainerElement.getAttribute('aria-modal')).toBe('true');
 
     dialogRef.close();
   });
