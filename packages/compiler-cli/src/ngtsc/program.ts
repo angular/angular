@@ -67,7 +67,7 @@ export class NgtscProgram implements api.Program {
   private incrementalState: IncrementalState;
   private typeCheckFilePath: AbsoluteFsPath;
 
-  private modifiedResourceFiles: Set<string>|undefined;
+  private modifiedResourceFiles: Set<string>|null;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
@@ -78,7 +78,7 @@ export class NgtscProgram implements api.Program {
     }
 
     this.modifiedResourceFiles =
-        this.host.getModifiedResourceFiles && this.host.getModifiedResourceFiles();
+        this.host.getModifiedResourceFiles && this.host.getModifiedResourceFiles() || null;
     this.rootDirs = getRootDirs(host, options);
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceManager = new HostResourceLoader(host, options);

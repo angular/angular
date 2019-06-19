@@ -22,11 +22,11 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
   private constructor(
       private unchangedFiles: Set<ts.SourceFile>,
       private metadata: Map<ts.SourceFile, FileMetadata>,
-      private modifiedResourceFiles?: Set<string>) {}
+      private modifiedResourceFiles: Set<string>|null) {}
 
   static reconcile(
       previousState: IncrementalState, oldProgram: ts.Program, newProgram: ts.Program,
-      modifiedResourceFiles?: Set<string>): IncrementalState {
+      modifiedResourceFiles: Set<string>|null): IncrementalState {
     const unchangedFiles = new Set<ts.SourceFile>();
     const metadata = new Map<ts.SourceFile, FileMetadata>();
     const oldFiles = new Set<ts.SourceFile>(oldProgram.getSourceFiles());
@@ -55,7 +55,8 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
   }
 
   static fresh(): IncrementalState {
-    return new IncrementalState(new Set<ts.SourceFile>(), new Map<ts.SourceFile, FileMetadata>());
+    return new IncrementalState(
+        new Set<ts.SourceFile>(), new Map<ts.SourceFile, FileMetadata>(), null);
   }
 
   safeToSkip(sf: ts.SourceFile): boolean|Promise<boolean> {
@@ -111,16 +112,12 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
   }
 
   private hasChangedResourceDependencies(sf: ts.SourceFile): boolean {
-    if (this.modifiedResourceFiles !== undefined && this.metadata.has(sf)) {
-      const metadata = this.metadata.get(sf) !;
-      const resourceDeps = metadata.resourcePaths;
-      for (const resourcePath of Array.from(resourceDeps.keys())) {
-        if (this.modifiedResourceFiles.has(resourcePath)) {
-          return true;
-        }
-      }
+    if (this.modifiedResourceFiles === undefined || !this.metadata.has(sf)) {
+      return false;
     }
-    return false;
+    const resourceDeps = this.metadata.get(sf) !.resourcePaths;
+    return Array.from(resourceDeps.keys())
+        .some(resourcePath => this.modifiedResourceFiles !.has(resourcePath));
   }
 }
 
