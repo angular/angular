@@ -486,7 +486,9 @@ workflows:
       # is no easy way to detect whether a job runs inside of a cronjob or specific
       # workflow. See: https://circleci.com/ideas/?idea=CCI-I-295
       - snapshot_tests_local_browsers
-      - ivy_snapshot_test_cronjob
+      # TODO(devversion): Renable once we are able to update to the version of angular 
+      # and bazel build rules which corrects our errors.
+      # - ivy_snapshot_test_cronjob
     triggers:
       - schedule:
           cron: "0 * * * *"
