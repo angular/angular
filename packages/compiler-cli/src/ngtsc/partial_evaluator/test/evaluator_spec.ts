@@ -97,6 +97,47 @@ describe('ngtsc metadata', () => {
     expect(evaluate(`const a = 'hello', b = 0;`, 'a || b')).toEqual('hello');
   });
 
+  it('evaluates arithmetic operators', () => {
+    expect(evaluate('const a = 6, b = 3;', 'a + b')).toEqual(9);
+    expect(evaluate('const a = 6, b = 3;', 'a - b')).toEqual(3);
+    expect(evaluate('const a = 6, b = 3;', 'a * b')).toEqual(18);
+    expect(evaluate('const a = 6, b = 3;', 'a / b')).toEqual(2);
+    expect(evaluate('const a = 6, b = 3;', 'a % b')).toEqual(0);
+    expect(evaluate('const a = 6, b = 3;', 'a & b')).toEqual(2);
+    expect(evaluate('const a = 6, b = 3;', 'a | b')).toEqual(7);
+    expect(evaluate('const a = 6, b = 3;', 'a ^ b')).toEqual(5);
+    expect(evaluate('const a = 6, b = 3;', 'a ** b')).toEqual(216);
+    expect(evaluate('const a = 6, b = 3;', 'a << b')).toEqual(48);
+    expect(evaluate('const a = -6, b = 2;', 'a >> b')).toEqual(-2);
+    expect(evaluate('const a = -6, b = 2;', 'a >>> b')).toEqual(1073741822);
+  });
+
+  it('evaluates comparison operators', () => {
+    expect(evaluate('const a = 2, b = 3;', 'a < b')).toEqual(true);
+    expect(evaluate('const a = 3, b = 3;', 'a < b')).toEqual(false);
+
+    expect(evaluate('const a = 3, b = 3;', 'a <= b')).toEqual(true);
+    expect(evaluate('const a = 4, b = 3;', 'a <= b')).toEqual(false);
+
+    expect(evaluate('const a = 4, b = 3;', 'a > b')).toEqual(true);
+    expect(evaluate('const a = 3, b = 3;', 'a > b')).toEqual(false);
+
+    expect(evaluate('const a = 3, b = 3;', 'a >= b')).toEqual(true);
+    expect(evaluate('const a = 2, b = 3;', 'a >= b')).toEqual(false);
+
+    expect(evaluate('const a: any = 3, b = "3";', 'a == b')).toEqual(true);
+    expect(evaluate('const a: any = 2, b = "3";', 'a == b')).toEqual(false);
+
+    expect(evaluate('const a: any = 2, b = "3";', 'a != b')).toEqual(true);
+    expect(evaluate('const a: any = 3, b = "3";', 'a != b')).toEqual(false);
+
+    expect(evaluate('const a: any = 3, b = 3;', 'a === b')).toEqual(true);
+    expect(evaluate('const a: any = 3, b = "3";', 'a === b')).toEqual(false);
+
+    expect(evaluate('const a: any = 3, b = "3";', 'a !== b')).toEqual(true);
+    expect(evaluate('const a: any = 3, b = 3;', 'a !== b')).toEqual(false);
+  });
+
   it('parentheticals work',
      () => { expect(evaluate(`const a = 3, b = 4;`, 'a * (a + b)')).toEqual(21); });
 
