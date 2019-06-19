@@ -361,7 +361,6 @@ describe('compiler compliance', () => {
       // `$r3$.ɵɵproperty("ternary", (ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$));`
       ///////////////
 
-      const $e0_attrs$ = [];
       const factory =
           'factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
@@ -371,10 +370,7 @@ describe('compiler compliance', () => {
             $r3$.ɵɵpipe(1,"pipe");
           }
           if (rf & 2) {
-            $r3$.ɵɵproperty("ternary", ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$);
-            $r3$.ɵɵproperty("pipe", $r3$.ɵɵpipeBind3(1, 4, ctx.value, 1, 2));
-            $r3$.ɵɵproperty("and", ctx.cond && $r3$.ɵɵpureFunction1(10, $c0$, ctx.b));
-            $r3$.ɵɵproperty("or", ctx.cond || $r3$.ɵɵpureFunction1(12, $c0$, ctx.c));
+            $r3$.ɵɵproperty("ternary", ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$)("pipe", $r3$.ɵɵpipeBind3(1, 4, ctx.value, 1, 2))("and", ctx.cond && $r3$.ɵɵpureFunction1(10, $c0$, ctx.b))("or", ctx.cond || $r3$.ɵɵpureFunction1(12, $c0$, ctx.c));
           }
         }
       `;
