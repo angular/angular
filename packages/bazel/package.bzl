@@ -38,12 +38,11 @@ def rules_angular_dev_dependencies():
     #############################################
     # Dependencies for generating documentation #
     #############################################
-    # TODO(gregmagolan): update to upstream commit once https://github.com/bazelbuild/rules_sass/pull/87 lands
     http_archive(
         name = "io_bazel_rules_sass",
-        sha256 = "1c20d2ddc3d42712543e3b77bceac1bfea072849602569a6fc8b107e6d520ac6",
-        strip_prefix = "rules_sass-d033c0f9f7a2c75b73068f6647a5b0cc5070fd90",
-        url = "https://github.com/gregmagolan/rules_sass/archive/d033c0f9f7a2c75b73068f6647a5b0cc5070fd90.zip",
+        sha256 = "4f05239080175a3f4efa8982d2b7775892d656bb47e8cf56914d5f9441fb5ea6",
+        url = "https://github.com/bazelbuild/rules_sass/archive/86ca977cf2a8ed481859f83a286e164d07335116.zip",
+        strip_prefix = "rules_sass-86ca977cf2a8ed481859f83a286e164d07335116",
     )
 
     http_archive(
