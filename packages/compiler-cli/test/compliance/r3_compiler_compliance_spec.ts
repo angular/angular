@@ -1985,44 +1985,6 @@ describe('compiler compliance', () => {
 
         expectEmit(source, ContentQueryComponentDefinition, 'Invalid ContentQuery declaration');
       });
-
-      it('should throw error if content queries share a property with inputs', () => {
-        const files = {
-          app: {
-            ...directive,
-            'content_query.ts': `
-            import {Component, ContentChild, Input, NgModule} from '@angular/core';
-
-            @Component({
-              selector: 'content-query-component',
-              template: \`
-                <div><ng-content></ng-content></div>
-              \`
-            })
-            export class ContentQueryComponent {
-              @Input() @ContentChild('foo', {static: false}) foo: any;
-            }
-
-            @Component({
-              selector: 'my-app',
-              template: \`
-                <content-query-component>
-                  <div #foo></div>
-                </content-query-component>
-              \`
-            })
-            export class MyApp { }
-
-            @NgModule({declarations: [ContentQueryComponent, MyApp]})
-            export class MyModule { }
-            `
-          }
-        };
-
-        expect(() => compile(files, angularFiles))
-            .toThrowError(/Cannot combine @Input decorators with query decorators/);
-      });
-
     });
 
     describe('pipes', () => {

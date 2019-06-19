@@ -14,7 +14,7 @@ export enum ErrorCode {
   DECORATOR_UNEXPECTED = 1005,
 
   /**
-   * This error code indicates that there are incompatible decorators on a type.
+   * This error code indicates that there are incompatible decorators on a type or a class field.
    */
   DECORATOR_COLLISION = 1006,
 
