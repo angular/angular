@@ -33,8 +33,9 @@ import {addToViewTree, createDirectivesAndLocals, createLContainer, createTView,
  * @codeGenApi
  */
 export function ɵɵcontainer(index: number): void {
-  const tNode = containerInternal(index, null, null);
   const lView = getLView();
+  const tNode = containerInternal(lView, index, null, null);
+
   if (lView[TVIEW].firstTemplatePass) {
     tNode.tViews = [];
   }
@@ -69,7 +70,7 @@ export function ɵɵtemplate(
   const tView = lView[TVIEW];
 
   // TODO: consider a separate node type for templates
-  const tContainerNode = containerInternal(index, tagName || null, attrs || null);
+  const tContainerNode = containerInternal(lView, index, tagName || null, attrs || null);
   if (tView.firstTemplatePass) {
     tContainerNode.tViews = createTView(
         -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null, null);
@@ -159,21 +160,20 @@ function addTContainerToQueries(lView: LView, tContainerNode: TContainerNode): v
 }
 
 function containerInternal(
-    index: number, tagName: string | null, attrs: TAttributes | null): TContainerNode {
-  const lView = getLView();
+    lView: LView, nodeIndex: number, tagName: string | null,
+    attrs: TAttributes | null): TContainerNode {
   ngDevMode && assertEqual(
                    lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
                    'container nodes should be created before any bindings');
 
-  const adjustedIndex = index + HEADER_OFFSET;
-  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  const adjustedIndex = nodeIndex + HEADER_OFFSET;
+  ngDevMode && assertDataInRange(lView, nodeIndex + HEADER_OFFSET);
   ngDevMode && ngDevMode.rendererCreateComment++;
-  const comment = lView[index + HEADER_OFFSET] =
+  const comment = lView[adjustedIndex] =
       lView[RENDERER].createComment(ngDevMode ? 'container' : '');
   const tNode =
-      getOrCreateTNode(lView[TVIEW], lView[T_HOST], index, TNodeType.Container, tagName, attrs);
-  const lContainer = lView[adjustedIndex] =
-      createLContainer(lView[adjustedIndex], lView, comment, tNode);
+      getOrCreateTNode(lView[TVIEW], lView[T_HOST], nodeIndex, TNodeType.Container, tagName, attrs);
+  const lContainer = lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode);
 
   appendChild(comment, tNode, lView);
 
