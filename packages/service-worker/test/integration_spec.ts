@@ -21,54 +21,58 @@ import {take} from 'rxjs/operators';
 
 import {async_beforeEach, async_fit, async_it} from './async';
 
-const dist = new MockFileSystemBuilder().addFile('/only.txt', 'this is only').build();
-
-const distUpdate = new MockFileSystemBuilder().addFile('/only.txt', 'this is only v2').build();
-
-function obsToSinglePromise<T>(obs: Observable<T>): Promise<T> {
-  return obs.pipe(take(1)).toPromise();
-}
-
-const manifest: Manifest = {
-  configVersion: 1,
-  appData: {version: '1'},
-  index: '/only.txt',
-  assetGroups: [{
-    name: 'assets',
-    installMode: 'prefetch',
-    updateMode: 'prefetch',
-    urls: ['/only.txt'],
-    patterns: [],
-  }],
-  navigationUrls: [],
-  hashTable: tmpHashTableForFs(dist),
-};
-
-const manifestUpdate: Manifest = {
-  configVersion: 1,
-  appData: {version: '2'},
-  index: '/only.txt',
-  assetGroups: [{
-    name: 'assets',
-    installMode: 'prefetch',
-    updateMode: 'prefetch',
-    urls: ['/only.txt'],
-    patterns: [],
-  }],
-  navigationUrls: [],
-  hashTable: tmpHashTableForFs(distUpdate),
-};
-
-const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(manifest).build();
-
-const serverUpdate =
-    new MockServerStateBuilder().withStaticFiles(distUpdate).withManifest(manifestUpdate).build();
-
 (function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
   }
+
+  const dist = new MockFileSystemBuilder().addFile('/only.txt', 'this is only').build();
+
+  const distUpdate = new MockFileSystemBuilder().addFile('/only.txt', 'this is only v2').build();
+
+  function obsToSinglePromise<T>(obs: Observable<T>): Promise<T> {
+    return obs.pipe(take(1)).toPromise();
+  }
+
+  const manifest: Manifest = {
+    configVersion: 1,
+    timestamp: 1234567890123,
+    appData: {version: '1'},
+    index: '/only.txt',
+    assetGroups: [{
+      name: 'assets',
+      installMode: 'prefetch',
+      updateMode: 'prefetch',
+      urls: ['/only.txt'],
+      patterns: [],
+    }],
+    navigationUrls: [],
+    hashTable: tmpHashTableForFs(dist),
+  };
+
+  const manifestUpdate: Manifest = {
+    configVersion: 1,
+    timestamp: 1234567890123,
+    appData: {version: '2'},
+    index: '/only.txt',
+    assetGroups: [{
+      name: 'assets',
+      installMode: 'prefetch',
+      updateMode: 'prefetch',
+      urls: ['/only.txt'],
+      patterns: [],
+    }],
+    navigationUrls: [],
+    hashTable: tmpHashTableForFs(distUpdate),
+  };
+
+  const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(manifest).build();
+
+  const serverUpdate =
+      new MockServerStateBuilder().withStaticFiles(distUpdate).withManifest(manifestUpdate).build();
+
+
   describe('ngsw + companion lib', () => {
     let mock: MockServiceWorkerContainer;
     let comm: NgswCommChannel;

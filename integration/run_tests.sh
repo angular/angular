@@ -15,10 +15,6 @@ readonly basedir=$(pwd)/..
 # and the maximum amount of shards available for the integration tests on the CI.
 # For example: "./run_tests.sh {SHARD_INDEX} {MAX_SHARDS}".
 if $CI; then
-  # We don't install this by default because it contains some broken Bazel setup
-  # and also it's a very big dependency that we never use except when publishing
-  # payload sizes on CI.
-  yarn add --silent -D firebase-tools@5.1.1
   source ${basedir}/scripts/ci/payload-size.sh
 
   SHARD_INDEX=${1:?"No shard index has been specified."}
@@ -61,9 +57,10 @@ for testDir in ${TEST_DIRS}; do
     yarn install --cache-folder ../$cache
     yarn test || exit 1
 
-    # Track payload size for cli-hello-world, cli-hello-world-ivy and hello_world__closure
-    if $CI && ([[ $testDir == cli-hello-world ]] || [[ $testDir == cli-hello-world-ivy ]] || [[ $testDir == hello_world__closure ]]); then
-      if ([[ $testDir == cli-hello-world ]] || [[ $testDir == cli-hello-world-ivy ]]); then
+    # Track payload size for cli-hello-world, cli-hello-world-ivy-minimal, cli-hello-world-ivy-compat and
+    # hello_world__closure
+    if $CI && ([[ $testDir == cli-hello-world ]] || [[ $testDir == cli-hello-world-ivy-minimal ]] || [[ $testDir == cli-hello-world-ivy-compat ]] || [[ $testDir == hello_world__closure ]]); then
+      if ([[ $testDir == cli-hello-world ]] || [[ $testDir == cli-hello-world-ivy-minimal ]] || [[ $testDir == cli-hello-world-ivy-compat ]]); then
         yarn build
       fi
 

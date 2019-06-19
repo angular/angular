@@ -100,6 +100,9 @@ You can avoid that by waiting for the app to stabilize first, before starting to
 
 그래서 업데이트를 폴링하는 로직은 반드시 애플리케이션이 안정화된 이후에 시작되어야 합니다.
 
+Note that this is true for any kind of polling done by your application.
+Check the {@link ApplicationRef#isStable isStable} documentation for more information. 
+
 </div>
 
 <!--

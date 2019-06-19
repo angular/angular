@@ -116,7 +116,7 @@ export class InjectableCompiler {
       mapEntry('token', ctx.importExpr(injectable.type.reference)),
       mapEntry('providedIn', providedIn),
     ];
-    return o.importExpr(Identifiers.defineInjectable).callFn([o.literalMap(def)]);
+    return o.importExpr(Identifiers.ɵɵdefineInjectable).callFn([o.literalMap(def)]);
   }
 
   compile(injectable: CompileInjectableMetadata, ctx: OutputContext): void {

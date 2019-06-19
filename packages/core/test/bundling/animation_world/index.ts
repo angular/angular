@@ -9,7 +9,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, ElementRef, HostBinding, NgModule, ɵPlayState as PlayState, ɵPlayer as Player, ɵPlayerHandler as PlayerHandler, ɵaddPlayer as addPlayer, ɵbindPlayerFactory as bindPlayerFactory, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, Directive, ElementRef, HostBinding, HostListener, NgModule, ɵPlayState as PlayState, ɵPlayer as Player, ɵPlayerHandler as PlayerHandler, ɵaddPlayer as addPlayer, ɵbindPlayerFactory as bindPlayerFactory, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
 
 @Directive({
   selector: '[make-color-grey]',
@@ -33,6 +33,36 @@ class MakeColorGreyDirective {
   toggle() { this._backgroundColor ? this.off() : this.on(); }
 }
 
+@Component({selector: 'box-with-overridden-styles', template: '...'})
+class BoxWithOverriddenStylesComponent {
+  public active = false;
+
+  @HostBinding('style')
+  styles = {};
+
+  constructor() { this.onInActive(); }
+
+  @HostListener('click', ['$event'])
+  toggle() {
+    if (this.active) {
+      this.onInActive();
+    } else {
+      this.onActive();
+    }
+    markDirty(this);
+  }
+
+  onActive() {
+    this.active = true;
+    this.styles = {height: '500px', 'font-size': '200px', background: 'red'};
+  }
+
+  onInActive() {
+    this.active = false;
+    this.styles = {width: '200px', height: '500px', border: '10px solid black', background: 'grey'};
+  }
+}
+
 @Component({
   selector: 'animation-world',
   template: `
@@ -48,7 +78,7 @@ class MakeColorGreyDirective {
         class="record"
         [style.transform]="item.active ? 'scale(1.5)' : 'none'"
         [class]="makeClass(item)"
-        style="border-radius: 10px" 
+        style="border-radius: 10px"
         [style]="styles"
         [style.color]="item.value == 4 ? 'red' : null"
         [style.background-color]="item.value == 4 ? 'white' : null"
@@ -56,9 +86,18 @@ class MakeColorGreyDirective {
         {{ item.value }}
       </div>
     </div>
+
+    <hr>
+
+    <box-with-overridden-styles
+      style="display:block"
+      [style]="{'border-radius':'50px', 'border': '50px solid teal'}" [ngStyle]="{transform:'rotate(50deg)'}">
+    </box-with-overridden-styles>
   `,
 })
 class AnimationWorldComponent {
+  @HostBinding('class') classVal = 'border';
+
   items: any[] = [
     {value: 1, active: false}, {value: 2, active: false}, {value: 3, active: false},
     {value: 4, active: false}, {value: 5, active: false}, {value: 6, active: false},
@@ -93,8 +132,10 @@ class AnimationWorldComponent {
   }
 }
 
-@NgModule(
-    {declarations: [AnimationWorldComponent, MakeColorGreyDirective], imports: [CommonModule]})
+@NgModule({
+  declarations: [AnimationWorldComponent, MakeColorGreyDirective, BoxWithOverriddenStylesComponent],
+  imports: [CommonModule]
+})
 class AnimationWorldModule {
 }
 

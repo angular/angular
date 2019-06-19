@@ -4,7 +4,7 @@
 # 서비스 워커 추가하기
 
 <!--
-This document explains how to enable Angular service worker support in projects that you created with the [Angular CLI](cli). It then uses a simple example to show you a service worker in action, demonstrating loading and basic caching. 
+This document explains how to enable Angular service worker support in projects that you created with the [Angular CLI](cli). It then uses a simple example to show you a service worker in action, demonstrating loading and basic caching.
 -->
 이 문서는 [Angular CLI](cli)로 생성한 프로젝트에 Angular 서비스 워커를 어떻게 도입할 수 있는지 설명합니다.
 간단한 예제를 다루면서 서비스 워커를 실제로 동작시켜보고, 로딩과 기본 캐싱 정책에 대해서도 알아봅시다.
@@ -25,30 +25,30 @@ A basic understanding of the information in [Introduction to Angular service wor
 ## 프로젝트에 서비스 워커 추가하기
 
 <!--
-To set up the Angular service worker in your project, use the CLI command `ng add @angular/pwa`. It takes care of configuring your app to use service workers by adding the `service-worker` package along 
+To set up the Angular service worker in your project, use the CLI command `ng add @angular/pwa`. It takes care of configuring your app to use service workers by adding the `service-worker` package along
 with setting up the necessary support files.
 -->
 프로젝트에 Angular 서비스 워커를 추기하려면 Angular CLI 명령 `ng add @angular/pwa`를 실행하면 됩니다.
 그러면 Angular CLI가 프로젝트에 `service-worker` 패키지를 추가하고 서비스 워커가 동작하기 위해 필요한 환경을 자동으로 구성합니다.
 
 ```sh
-ng add @angular/pwa --project *project-name* 
+ng add @angular/pwa --project *project-name*
 ```
 
 <!--
 The above command completes the following actions:
 
-1. Adds the `@angular/service-worker` package to your project. 
+1. Adds the `@angular/service-worker` package to your project.
 2. Enables service worker build support in the CLI.
 3. Imports and registers the service worker in the app module.
 4. Updates the `index.html` file:
     * Includes a link to add the `manifest.json` file.
     * Adds meta tags for `theme-color`.
 5. Installs icon files to support the installed Progressive Web App (PWA).
-6. Creates the service worker configuration file called [`ngsw-config.json`](/guide/service-worker-config), which specifies the caching behaviors and other settings. 
+6. Creates the service worker configuration file called [`ngsw-config.json`](/guide/service-worker-config), which specifies the caching behaviors and other settings.
 
 
- Now, build the project: 
+ Now, build the project:
 -->
 이 명령은 다음과 같은 순서로 실행됩니다:
 
@@ -78,8 +78,8 @@ The CLI project is now set up to use the Angular service worker.
 ## 서비스 워커 사용하기
 
 <!--
-This section demonstrates a service worker in action, 
-using an example application. 
+This section demonstrates a service worker in action,
+using an example application.
 -->
 이번 섹션에서는 예제 애플리케이션에 서비스 워커를 사용해봅시다.
 
@@ -121,7 +121,7 @@ With the server running, you can point your browser at http://localhost:8080/. Y
 ### 네트워크 오류 시뮬레이션하기
 
 <!--
-To simulate a network issue, disable network interaction for your application. In Chrome: 
+To simulate a network issue, disable network interaction for your application. In Chrome:
 
 1. Select **Tools** > **Developer Tools** (from the Chrome menu located at the top right corner).
 2. Go to the **Network tab**.
@@ -145,9 +145,9 @@ To simulate a network issue, disable network interaction for your application. I
 <!--
 Now the app has no access to network interaction.
 
-For applications that do not use the Angular service worker, refreshing now would display Chrome's Internet disconnected page that says "There is no Internet connection". 
+For applications that do not use the Angular service worker, refreshing now would display Chrome's Internet disconnected page that says "There is no Internet connection".
 
-With the addition of an Angular service worker, the application behavior changes. On a refresh, the page loads normally. 
+With the addition of an Angular service worker, the application behavior changes. On a refresh, the page loads normally.
 
 If you look at the Network tab, you can verify that the service worker is active.
 -->
@@ -212,12 +212,12 @@ Pay attention to two key points:
 ### 애플리케이션 코드 수정하기
 
 <!--
-Now that you've seen how service workers cache your application, the 
-next step is understanding how updates work. 
+Now that you've seen how service workers cache your application, the
+next step is understanding how updates work.
 
 1. If you're testing in an incognito window, open a second blank tab. This will keep the incognito and the cache state alive during your test.
 
-2. Close the application tab, but not the window. This should also close the Developer Tools. 
+2. Close the application tab, but not the window. This should also close the Developer Tools.
 
 3. Shut down `http-server`.
 

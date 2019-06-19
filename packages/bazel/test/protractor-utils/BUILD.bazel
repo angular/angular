@@ -14,7 +14,7 @@ nodejs_binary(
     testonly = True,
     data = [
         "fake-devserver.js",
-        "@ngdeps//minimist",
+        "@npm//minimist",
     ],
     entry_point = "angular/packages/bazel/test/protractor-utils/fake-devserver.js",
 )

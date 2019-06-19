@@ -113,12 +113,11 @@ export class DirectiveNormalizer {
       templateAbsUrl: string): PreparsedTemplate {
     const isInline = !!prenormData.template;
     const interpolationConfig = InterpolationConfig.fromArray(prenormData.interpolation !);
+    const templateUrl = templateSourceUrl(
+        {reference: prenormData.ngModuleType}, {type: {reference: prenormData.componentType}},
+        {isInline, templateUrl: templateAbsUrl});
     const rootNodesAndErrors = this._htmlParser.parse(
-        template,
-        templateSourceUrl(
-            {reference: prenormData.ngModuleType}, {type: {reference: prenormData.componentType}},
-            {isInline, templateUrl: templateAbsUrl}),
-        true, interpolationConfig);
+        template, templateUrl, {tokenizeExpansionForms: true, interpolationConfig});
     if (rootNodesAndErrors.errors.length > 0) {
       const errorString = rootNodesAndErrors.errors.join('\n');
       throw syntaxError(`Template parse errors:\n${errorString}`);

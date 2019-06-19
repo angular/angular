@@ -12,7 +12,10 @@ import {StaticProvider} from '../di/interface/provider';
 import {MissingTranslationStrategy} from '../i18n/tokens';
 import {Type} from '../interface/type';
 import {ViewEncapsulation} from '../metadata';
+import {ComponentFactory as ComponentFactoryR3} from '../render3/component_ref';
+import {getComponentDef, getNgModuleDef} from '../render3/definition';
 import {NgModuleFactory as NgModuleFactoryR3} from '../render3/ng_module_ref';
+import {maybeUnwrapFn} from '../render3/util/misc_utils';
 
 import {ComponentFactory} from './component_factory';
 import {NgModuleFactory} from './ng_module_factory';
@@ -56,7 +59,16 @@ const Compiler_compileModuleAndAllComponentsSync__PRE_R3__: <T>(moduleType: Type
 export const Compiler_compileModuleAndAllComponentsSync__POST_R3__: <T>(moduleType: Type<T>) =>
     ModuleWithComponentFactories<T> = function<T>(moduleType: Type<T>):
         ModuleWithComponentFactories<T> {
-  return new ModuleWithComponentFactories(Compiler_compileModuleSync__POST_R3__(moduleType), []);
+  const ngModuleFactory = Compiler_compileModuleSync__POST_R3__(moduleType);
+  const moduleDef = getNgModuleDef(moduleType) !;
+  const componentFactories =
+      maybeUnwrapFn(moduleDef.declarations)
+          .reduce((factories: ComponentFactory<any>[], declaration: Type<any>) => {
+            const componentDef = getComponentDef(declaration);
+            componentDef && factories.push(new ComponentFactoryR3(componentDef));
+            return factories;
+          }, [] as ComponentFactory<any>[]);
+  return new ModuleWithComponentFactories(ngModuleFactory, componentFactories);
 };
 const Compiler_compileModuleAndAllComponentsSync =
     Compiler_compileModuleAndAllComponentsSync__PRE_R3__;

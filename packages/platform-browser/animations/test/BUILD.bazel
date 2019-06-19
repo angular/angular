@@ -18,7 +18,7 @@ ts_library(
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "@rxjs",
+        "@npm//rxjs",
     ],
 )
 

@@ -1,15 +1,15 @@
-export class ContributorGroup {
+export interface ContributorGroup {
   name: string;
   order: number;
   contributors: Contributor[];
 }
 
-export class Contributor {
-  group: string;
+export interface Contributor {
+  groups: string[];
   name: string;
   picture?: string;
   website?: string;
   twitter?: string;
   bio?: string;
-  isFlipped ? = false;
+  isFlipped?: boolean;
 }

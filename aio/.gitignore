@@ -26,11 +26,13 @@
 !.vscode/extensions.json
 
 # misc
+/.firebase/
 /.sass-cache
 /connect.lock
 /coverage
 /libpeerconnection.log
 debug.log
+firebase-debug.log
 npm-debug.log
 testem.log
 /typings

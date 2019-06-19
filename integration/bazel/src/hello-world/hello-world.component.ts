@@ -1,5 +1,5 @@
 
-import {Component, NgModule} from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'hello-world-app',
@@ -7,8 +7,7 @@ import {Component, NgModule} from '@angular/core';
     <div>Hello {{ name }}!</div>
     <input type="text" [value]="name" (input)="name = $event.target.value"/>
   `,
-  // TODO: might be better to point to .scss so this looks valid at design-time
-  styleUrls: ['./hello-world.component.css'],
+  styleUrls: ['./hello-world.component.scss'],
 })
 export class HelloWorldComponent {
   name: string = 'world';

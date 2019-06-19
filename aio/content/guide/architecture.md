@@ -162,7 +162,7 @@ Angular provides predefined pipes for common transformations, and you can also d
 ## 서비스, 의존성 주입
 
 <!--
-For data or logic that isn't associated with a specific view, and that you want to share across components, you create a *service* class. A service class definition is immediately preceded by the `@Injectable()` decorator. The decorator provides the metadata that allows your service to be *injected* into client components as a dependency.
+For data or logic that isn't associated with a specific view, and that you want to share across components, you create a *service* class. A service class definition is immediately preceded by the `@Injectable()` decorator. The decorator provides the metadata that allows other providers to be **injected** as dependencies into your class.
 -->
 어떤 데이터나 함수가 하나의 뷰에만 적용되는 것이 아니라면 *서비스* 클래스를 만들어서 활용할 수 있습니다. 서비스 클래스는 `@Inejctable` 데코레이터를 사용해서 정의하며, 이 데코레이터를 사용하면 컴포넌트나 다른 서비스에 의존성으로 *주입*하기 위해 다른 구성요소보다 먼저 처리됩니다.
 

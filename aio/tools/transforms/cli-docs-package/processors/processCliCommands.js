@@ -1,10 +1,14 @@
-module.exports = function processCliCommands() {
+module.exports = function processCliCommands(createDocMessage) {
   return {
     $runAfter: ['extra-docs-added'],
     $runBefore: ['rendering-docs'],
     $process(docs) {
       const navigationDoc = docs.find(doc => doc.docType === 'navigation-json');
-      const navigationNode = navigationDoc && navigationDoc.data['SideNav'].find(node => node.title === 'CLI Commands');
+      const navigationNode = navigationDoc && navigationDoc.data['SideNav'].find(node => node.children && node.children.length && node.children[0].url === 'cli');
+
+      if (!navigationNode) {
+        throw new Error(createDocMessage('Missing `cli` url - CLI Commands must include a first child node with url set at `cli`', navigationDoc));
+      }
 
       docs.forEach(doc => {
         if (doc.docType === 'cli-command') {
@@ -14,9 +18,7 @@ module.exports = function processCliCommands() {
           processOptions(doc, doc.options);
 
           // Add to navigation doc
-          if (navigationNode) {
-            navigationNode.children.push({ url: doc.path, title: `ng ${doc.name}` });
-          }
+          navigationNode.children.push({ url: doc.path, title: `ng ${doc.name}` });
         }
       });
     }
@@ -28,11 +30,6 @@ function processOptions(container, options) {
   container.namedOptions = [];
 
   options.forEach(option => {
-
-    if (option.type === 'boolean' && option.default === undefined) {
-      option.default = false;
-    }
-
     // Ignore any hidden options
     if (option.hidden) { return; }
 

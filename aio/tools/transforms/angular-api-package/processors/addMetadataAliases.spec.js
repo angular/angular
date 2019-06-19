@@ -54,4 +54,15 @@ describe('addSelectorsAsAliases processor', () => {
     expect(docs[11].aliases).toEqual([docs[11].name]);
     expect(docs[12].aliases).toEqual([docs[12].name]);
   });
+
+  it('should ignore directives and components that have no selector', () => {
+    const processor = processorFactory();
+    const docs = [
+      { docType: 'directive', name: 'MyDirective', aliases: ['MyDirective'], directiveOptions: { } },
+      { docType: 'component', name: 'MyComponent', aliases: ['MyComponent'], componentOptions: { } },
+    ];
+    processor.$process(docs);
+    expect(docs[0].aliases).toEqual([docs[0].name]);
+    expect(docs[1].aliases).toEqual([docs[1].name]);
+  });
 });

@@ -3,7 +3,8 @@ import { inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/cor
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { MatProgressBar, MatSidenav } from '@angular/material';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatSidenav } from '@angular/material/sidenav';
 import { By } from '@angular/platform-browser';
 
 import { of, timer } from 'rxjs';
@@ -52,7 +53,7 @@ describe('AppComponent', () => {
     await newDocPromise;       // Wait for the new document to be fetched.
     fixture.detectChanges();   // Propagate document change to the view (i.e to `DocViewer`).
     await docRenderedPromise;  // Wait for the `docRendered` event.
-  };
+  }
 
   function initializeTest(waitForDoc = true) {
     fixture = TestBed.createComponent(AppComponent);
@@ -73,7 +74,7 @@ describe('AppComponent', () => {
     tocService = de.injector.get<TocService>(TocService);
 
     return waitForDoc && awaitDocRendered();
-  };
+  }
 
 
   describe('with proper DocViewer', () => {
@@ -461,11 +462,15 @@ describe('AppComponent', () => {
       let scrollService: ScrollService;
       let scrollSpy: jasmine.Spy;
       let scrollToTopSpy: jasmine.Spy;
+      let scrollAfterRenderSpy: jasmine.Spy;
+      let removeStoredScrollPositionSpy: jasmine.Spy;
 
       beforeEach(() => {
         scrollService = fixture.debugElement.injector.get<ScrollService>(ScrollService);
         scrollSpy = spyOn(scrollService, 'scroll');
         scrollToTopSpy = spyOn(scrollService, 'scrollToTop');
+        scrollAfterRenderSpy = spyOn(scrollService, 'scrollAfterRender');
+        removeStoredScrollPositionSpy = spyOn(scrollService, 'removeStoredScrollPosition');
       });
 
       it('should not scroll immediately when the docId (path) changes', () => {
@@ -510,33 +515,24 @@ describe('AppComponent', () => {
         expect(scrollSpy).toHaveBeenCalledTimes(1);
       });
 
-      it('should scroll to top when call `onDocRemoved` directly', () => {
-        scrollToTopSpy.calls.reset();
-
+      it('should call `removeStoredScrollPosition` when call `onDocRemoved` directly', () => {
         component.onDocRemoved();
-        expect(scrollToTopSpy).toHaveBeenCalled();
+        expect(removeStoredScrollPositionSpy).toHaveBeenCalled();
       });
 
-      it('should scroll after a delay when call `onDocInserted` directly', fakeAsync(() => {
+      it('should call `scrollAfterRender` when call `onDocInserted` directly', (() => {
         component.onDocInserted();
-        expect(scrollSpy).not.toHaveBeenCalled();
-
-        tick(scrollDelay);
-        expect(scrollSpy).toHaveBeenCalled();
+        expect(scrollAfterRenderSpy).toHaveBeenCalledWith(scrollDelay);
       }));
 
-      it('should scroll (via `onDocInserted`) when finish navigating to a new doc', fakeAsync(() => {
-        expect(scrollToTopSpy).not.toHaveBeenCalled();
-
+      it('should call `scrollAfterRender` (via `onDocInserted`) when navigate to a new Doc', fakeAsync(() => {
         locationService.go('guide/pipes');
-        tick(1);                 // triggers the HTTP response for the document
+        tick(1); // triggers the HTTP response for the document
         fixture.detectChanges(); // triggers the event that calls `onDocInserted`
 
-        expect(scrollToTopSpy).toHaveBeenCalled();
-        expect(scrollSpy).not.toHaveBeenCalled();
+        expect(scrollAfterRenderSpy).toHaveBeenCalledWith(scrollDelay);
 
-        tick(scrollDelay);
-        expect(scrollSpy).toHaveBeenCalled();
+        tick(500); // there are other outstanding timers in the AppComponent that are not relevant
       }));
     });
 
@@ -656,11 +652,11 @@ describe('AppComponent', () => {
 
         component.tocMaxHeight = '100';
         fixture.detectChanges();
-        expect(tocContainer!.style['max-height']).toBe('100px');
+        expect(tocContainer!.style.maxHeight).toBe('100px');
 
         component.tocMaxHeight = '200';
         fixture.detectChanges();
-        expect(tocContainer!.style['max-height']).toBe('200px');
+        expect(tocContainer!.style.maxHeight).toBe('200px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {
@@ -793,7 +789,7 @@ describe('AppComponent', () => {
             { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }
           ];
 
-          searchService.searchResults.next({ query: 'something', results: results });
+          searchService.searchResults.next({ query: 'something', results });
           component.showSearchResults = true;
           fixture.detectChanges();
 
@@ -1071,7 +1067,7 @@ describe('AppComponent', () => {
 
       it('should set the id of the doc viewer container based on the current doc', () => {
         initializeTest(false);
-        const container = fixture.debugElement.query(By.css('section.sidenav-content'));
+        const container = fixture.debugElement.query(By.css('main.sidenav-content'));
 
         navigateTo('guide/pipes');
         expect(component.pageId).toEqual('guide-pipes');
@@ -1088,7 +1084,7 @@ describe('AppComponent', () => {
 
       it('should not be affected by changes to the query', () => {
         initializeTest(false);
-        const container = fixture.debugElement.query(By.css('section.sidenav-content'));
+        const container = fixture.debugElement.query(By.css('main.sidenav-content'));
 
         navigateTo('guide/pipes');
         navigateTo('guide/other?search=http');

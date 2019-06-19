@@ -30,18 +30,18 @@ export function startCli() {
   // Angular project tag rules unless specified explicitly through a given option.
   if (argv['useAngularTagRules']) {
     options.exportTags = {
-      required: ['publicApi'],
+      requireAtLeastOne: ['publicApi', 'codeGenApi'],
       banned: ['experimental'],
       toCopy: ['deprecated']
     };
     options.memberTags = {
-      required: [],
-      banned: ['experimental', 'publicApi'],
+      requireAtLeastOne: [],
+      banned: ['experimental', 'publicApi', 'codeGenApi'],
       toCopy: ['deprecated']
     };
     options.paramTags = {
-      required: [],
-      banned: ['experimental', 'publicApi'],
+      requireAtLeastOne: [],
+      banned: ['experimental', 'publicApi', 'codeGenApi'],
       toCopy: ['deprecated']
     };
   }
@@ -173,10 +173,10 @@ Options:
 
         --rootDir <dir>                 Specify the root directory of input files
 
-        --useAngularTagRules <boolean>  Whether the Angular specific tag rules should be used.                                        
+        --useAngularTagRules <boolean>  Whether the Angular specific tag rules should be used.
         --stripExportPattern <regexp>   Do not output exports matching the pattern
         --allowModuleIdentifiers <identifier>
-                                        Whitelist identifier for "* as foo" imports`);
+                                        Allow identifier for "* as foo" imports`);
   process.exit(error ? 1 : 0);
 }
 

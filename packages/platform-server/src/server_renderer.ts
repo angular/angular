@@ -6,17 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {DomElementSchemaRegistry} from '@angular/compiler';
-import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, RootRenderer, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
-import {DOCUMENT, EventManager, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
+import {Inject, Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {EventManager, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
 
 const EMPTY_ARRAY: any[] = [];
+
+const DEFAULT_SCHEMA = new DomElementSchemaRegistry();
 
 @Injectable()
 export class ServerRendererFactory2 implements RendererFactory2 {
   private rendererByCompId = new Map<string, Renderer2>();
   private defaultRenderer: Renderer2;
-  private schema = new DomElementSchemaRegistry();
+  private schema = DEFAULT_SCHEMA;
 
   constructor(
       private eventManager: EventManager, private ngZone: NgZone,
@@ -41,8 +44,6 @@ export class ServerRendererFactory2 implements RendererFactory2 {
         (<EmulatedEncapsulationServerRenderer2>renderer).applyToHost(element);
         return renderer;
       }
-      case ViewEncapsulation.Native:
-        throw new Error('Native encapsulation is not supported on the server!');
       default: {
         if (!this.rendererByCompId.has(type.id)) {
           const styles = flattenStyles(type.id, type.styles, []);

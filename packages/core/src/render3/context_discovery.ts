@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '../util/ng_dev_mode';
+
 import {assertDomNode} from '../util/assert';
+
 import {EMPTY_ARRAY} from './empty';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
-import {RElement} from './interfaces/renderer';
+import {RElement, RNode} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
-import {unwrapOnChangesDirectiveWrapper} from './onchanges_util';
-import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './util';
+import {getComponentViewByIndex, getNativeByTNode, readPatchedData, unwrapRNode} from './util/view_utils';
 
 
 
@@ -70,7 +71,7 @@ export function getLContext(target: any): LContext|null {
       // are expensive. Instead, only the target data (the element, component, container, ICU
       // expression or directive details) are filled into the context. If called multiple times
       // with different target values then the missing target data will be filled in.
-      const native = readElementValue(lView[nodeIndex]);
+      const native = unwrapRNode(lView[nodeIndex]);
       const existingCtx = readPatchedData(native);
       const context: LContext = (existingCtx && !Array.isArray(existingCtx)) ?
           existingCtx :
@@ -118,7 +119,7 @@ export function getLContext(target: any): LContext|null {
 
         const index = findViaNativeElement(lView, rElement);
         if (index >= 0) {
-          const native = readElementValue(lView[index]);
+          const native = unwrapRNode(lView[index]);
           const context = createLContext(lView, index, native);
           attachPatchData(native, context);
           mpValue = context;
@@ -133,7 +134,7 @@ export function getLContext(target: any): LContext|null {
 /**
  * Creates an empty instance of a `LContext` context
  */
-function createLContext(lView: LView, nodeIndex: number, native: RElement): LContext {
+function createLContext(lView: LView, nodeIndex: number, native: RNode): LContext {
   return {
     lView,
     nodeIndex,
@@ -258,7 +259,7 @@ function findViaDirective(lView: LView, directiveInstance: {}): number {
     const directiveIndexStart = tNode.directiveStart;
     const directiveIndexEnd = tNode.directiveEnd;
     for (let i = directiveIndexStart; i < directiveIndexEnd; i++) {
-      if (unwrapOnChangesDirectiveWrapper(lView[i]) === directiveInstance) {
+      if (lView[i] === directiveInstance) {
         return tNode.index;
       }
     }
@@ -299,11 +300,10 @@ export function discoverLocalRefs(lView: LView, nodeIndex: number): {[key: strin
   const tNode = lView[TVIEW].data[nodeIndex] as TNode;
   if (tNode && tNode.localNames) {
     const result: {[key: string]: any} = {};
+    let localIndex = tNode.index + 1;
     for (let i = 0; i < tNode.localNames.length; i += 2) {
-      const localRefName = tNode.localNames[i];
-      const directiveIndex = tNode.localNames[i + 1] as number;
-      result[localRefName] =
-          directiveIndex === -1 ? getNativeByTNode(tNode, lView) ! : lView[directiveIndex];
+      result[tNode.localNames[i]] = lView[localIndex];
+      localIndex++;
     }
     return result;
   }

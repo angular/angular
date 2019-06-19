@@ -1,0 +1,29 @@
+load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
+        "//packages/upgrade/src/common",
+        "//packages/upgrade/src/common/test/helpers",
+        "//packages/upgrade/static",
+    ],
+)
+
+ts_web_test_suite(
+    name = "test",
+    static_files = [
+        "//:angularjs_scripts",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

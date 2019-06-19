@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, DirectiveAst, Element, ElementAst, EmbeddedTemplateAst, ImplicitReceiver, NAMED_ENTITIES, NgContentAst, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, ReferenceAst, SelectorMatcher, TagContentType, TemplateAst, TemplateAstVisitor, Text, TextAst, VariableAst, findNode, getHtmlTagDefinition, splitNsName, templateVisitAll} from '@angular/compiler';
-import {DiagnosticTemplateInfo, getExpressionScope} from '@angular/compiler-cli/src/language_services';
+import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, Element, ElementAst, ImplicitReceiver, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, SelectorMatcher, TagContentType, Text, findNode, getHtmlTagDefinition, splitNsName} from '@angular/compiler';
+import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
-import {AstResult, AttrInfo, SelectorInfo, TemplateInfo} from './common';
+import {AttrInfo, TemplateInfo} from './common';
 import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
-import {BuiltinType, Completion, Completions, Span, Symbol, SymbolDeclaration, SymbolTable, TemplateSource} from './types';
+import {Completion, Completions, Span, Symbol, SymbolTable, TemplateSource} from './types';
 import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, flatten, getSelectors, hasTemplateReference, inSpan, removeSuffix, spanOf, uniqueByName} from './utils';
 
 const TEMPLATE_ATTR_PREFIX = '*';
@@ -173,8 +173,9 @@ function getAttributeInfosForElement(
     matcher.match(elementSelector, selector => {
       let directive = selectorMap.get(selector);
       if (directive) {
-        attrs.push(...Object.keys(directive.inputs).map(name => ({name, input: true})));
-        attrs.push(...Object.keys(directive.outputs).map(name => ({name, output: true})));
+        const {inputs, outputs} = directive;
+        attrs.push(...Object.keys(inputs).map(name => ({name: inputs[name], input: true})));
+        attrs.push(...Object.keys(outputs).map(name => ({name: outputs[name], output: true})));
       }
     });
 
@@ -316,7 +317,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
       // find the template binding that contains the position
       if (!this.attr.valueSpan) return;
-      const valueRelativePosition = this.position - this.attr.valueSpan.start.offset - 1;
+      const valueRelativePosition = this.position - this.attr.valueSpan.start.offset;
       const bindings = templateBindingResult.templateBindings;
       const binding =
           bindings.find(
@@ -401,7 +402,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
   private get attributeValuePosition() {
     if (this.attr && this.attr.valueSpan) {
-      return this.position - this.attr.valueSpan.start.offset - 1;
+      return this.position - this.attr.valueSpan.start.offset;
     }
     return 0;
   }

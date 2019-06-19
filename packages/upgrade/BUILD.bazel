@@ -1,22 +1,20 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "upgrade",
     srcs = glob(
         [
             "*.ts",
-            "src/common/**/*.ts",
-            "src/dynamic/**/*.ts",
+            "src/dynamic/src/*.ts",
         ],
     ),
-    module_name = "@angular/upgrade",
     deps = [
         "//packages/core",
-        "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
-        "@ngdeps//zone.js",
+        "//packages/upgrade/src/common",
+        "@npm//zone.js",
     ],
 )
 

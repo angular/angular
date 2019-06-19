@@ -89,7 +89,7 @@ aio-notification {
   }
 
   &.page-home, &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute  {
-    section {
+    main {
       padding-top: $notificationHeight;
     }
   }

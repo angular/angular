@@ -3,17 +3,26 @@
     "master": {
       "uncompressed": {
         "runtime": 1497,
-        "main": 187437,
-        "polyfills": 59608
+        "main": 166799,
+        "polyfills": 43626
       }
     }
   },
-  "cli-hello-world-ivy": {
+  "cli-hello-world-ivy-minimal": {
     "master": {
       "uncompressed": {
         "runtime": 1440,
-        "main": 584077,
-        "polyfills": 38390
+        "main": 14487,
+        "polyfills": 43567
+      }
+    }
+  },
+  "cli-hello-world-ivy-compat": {
+    "master": {
+      "uncompressed": {
+        "runtime": 1440,
+        "main": 149248,
+        "polyfills": 43567
       }
     }
   },
@@ -21,7 +30,7 @@
     "master": {
       "uncompressed": {
         "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
-        "bundle": 177585
+        "bundle": 179825
       }
     }
   }

@@ -9,7 +9,7 @@
 import {processNavigationUrls} from '../../config/src/generator';
 import {CacheDatabase} from '../src/db-cache';
 import {Driver, DriverReadyState} from '../src/driver';
-import {Manifest} from '../src/manifest';
+import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 import {MockCache, clearAllCaches} from '../testing/cache';
 import {MockRequest} from '../testing/fetch';
@@ -18,184 +18,222 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
 import {async_beforeEach, async_fit, async_it} from './async';
 
-const dist =
-    new MockFileSystemBuilder()
-        .addFile('/foo.txt', 'this is foo')
-        .addFile('/bar.txt', 'this is bar')
-        .addFile('/baz.txt', 'this is baz')
-        .addFile('/qux.txt', 'this is qux')
-        .addFile('/quux.txt', 'this is quux')
-        .addFile('/quuux.txt', 'this is quuux')
-        .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
-        .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
-        .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
-        .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
-        .build();
-
-const distUpdate =
-    new MockFileSystemBuilder()
-        .addFile('/foo.txt', 'this is foo v2')
-        .addFile('/bar.txt', 'this is bar')
-        .addFile('/baz.txt', 'this is baz v2')
-        .addFile('/qux.txt', 'this is qux v2')
-        .addFile('/quux.txt', 'this is quux v2')
-        .addFile('/quuux.txt', 'this is quuux v2')
-        .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
-        .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
-        .addUnhashedFile('/unhashed/a.txt', 'this is unhashed v2', {'Cache-Control': 'max-age=10'})
-        .addUnhashedFile('/ignored/file1', 'this is not handled by the SW')
-        .addUnhashedFile('/ignored/dir/file2', 'this is not handled by the SW either')
-        .build();
-
-const brokenFs = new MockFileSystemBuilder().addFile('/foo.txt', 'this is foo').build();
-
-const brokenManifest: Manifest = {
-  configVersion: 1,
-  index: '/foo.txt',
-  assetGroups: [{
-    name: 'assets',
-    installMode: 'prefetch',
-    updateMode: 'prefetch',
-    urls: [
-      '/foo.txt',
-    ],
-    patterns: [],
-  }],
-  dataGroups: [],
-  navigationUrls: processNavigationUrls(''),
-  hashTable: tmpHashTableForFs(brokenFs, {'/foo.txt': true}),
-};
-
-const manifest: Manifest = {
-  configVersion: 1,
-  appData: {
-    version: 'original',
-  },
-  index: '/foo.txt',
-  assetGroups: [
-    {
-      name: 'assets',
-      installMode: 'prefetch',
-      updateMode: 'prefetch',
-      urls: [
-        '/foo.txt',
-        '/bar.txt',
-        '/redirected.txt',
-      ],
-      patterns: [
-        '/unhashed/.*',
-      ],
-    },
-    {
-      name: 'other',
-      installMode: 'lazy',
-      updateMode: 'lazy',
-      urls: [
-        '/baz.txt',
-        '/qux.txt',
-      ],
-      patterns: [],
-    },
-    {
-      name: 'lazy_prefetch',
-      installMode: 'lazy',
-      updateMode: 'prefetch',
-      urls: [
-        '/quux.txt',
-        '/quuux.txt',
-        '/lazy/unchanged1.txt',
-        '/lazy/unchanged2.txt',
-      ],
-      patterns: [],
-    }
-  ],
-  navigationUrls: processNavigationUrls(''),
-  hashTable: tmpHashTableForFs(dist),
-};
-
-const manifestUpdate: Manifest = {
-  configVersion: 1,
-  appData: {
-    version: 'update',
-  },
-  index: '/foo.txt',
-  assetGroups: [
-    {
-      name: 'assets',
-      installMode: 'prefetch',
-      updateMode: 'prefetch',
-      urls: [
-        '/foo.txt',
-        '/bar.txt',
-        '/redirected.txt',
-      ],
-      patterns: [
-        '/unhashed/.*',
-      ],
-    },
-    {
-      name: 'other',
-      installMode: 'lazy',
-      updateMode: 'lazy',
-      urls: [
-        '/baz.txt',
-        '/qux.txt',
-      ],
-      patterns: [],
-    },
-    {
-      name: 'lazy_prefetch',
-      installMode: 'lazy',
-      updateMode: 'prefetch',
-      urls: [
-        '/quux.txt',
-        '/quuux.txt',
-        '/lazy/unchanged1.txt',
-        '/lazy/unchanged2.txt',
-      ],
-      patterns: [],
-    }
-  ],
-  navigationUrls: processNavigationUrls(
-      '',
-      [
-        '/**/file1',
-        '/**/file2',
-        '!/ignored/file1',
-        '!/ignored/dir/**',
-      ]),
-  hashTable: tmpHashTableForFs(distUpdate),
-};
-
-const server = new MockServerStateBuilder()
-                   .withStaticFiles(dist)
-                   .withManifest(manifest)
-                   .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
-                   .withError('/error.txt')
-                   .build();
-
-const serverUpdate =
-    new MockServerStateBuilder()
-        .withStaticFiles(distUpdate)
-        .withManifest(manifestUpdate)
-        .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
-        .build();
-
-const brokenServer =
-    new MockServerStateBuilder().withStaticFiles(brokenFs).withManifest(brokenManifest).build();
-
-const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
-
-const scope = new SwTestHarnessBuilder().withServerState(server).build();
-
-const manifestHash = sha1(JSON.stringify(manifest));
-const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
-
 (function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
   }
+
+  const dist =
+      new MockFileSystemBuilder()
+          .addFile('/foo.txt', 'this is foo')
+          .addFile('/bar.txt', 'this is bar')
+          .addFile('/baz.txt', 'this is baz')
+          .addFile('/qux.txt', 'this is qux')
+          .addFile('/quux.txt', 'this is quux')
+          .addFile('/quuux.txt', 'this is quuux')
+          .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
+          .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
+          .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
+          .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
+          .build();
+
+  const distUpdate =
+      new MockFileSystemBuilder()
+          .addFile('/foo.txt', 'this is foo v2')
+          .addFile('/bar.txt', 'this is bar')
+          .addFile('/baz.txt', 'this is baz v2')
+          .addFile('/qux.txt', 'this is qux v2')
+          .addFile('/quux.txt', 'this is quux v2')
+          .addFile('/quuux.txt', 'this is quuux v2')
+          .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
+          .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
+          .addUnhashedFile(
+              '/unhashed/a.txt', 'this is unhashed v2', {'Cache-Control': 'max-age=10'})
+          .addUnhashedFile('/ignored/file1', 'this is not handled by the SW')
+          .addUnhashedFile('/ignored/dir/file2', 'this is not handled by the SW either')
+          .build();
+
+  const brokenFs = new MockFileSystemBuilder().addFile('/foo.txt', 'this is foo').build();
+
+  const brokenManifest: Manifest = {
+    configVersion: 1,
+    timestamp: 1234567890123,
+    index: '/foo.txt',
+    assetGroups: [{
+      name: 'assets',
+      installMode: 'prefetch',
+      updateMode: 'prefetch',
+      urls: [
+        '/foo.txt',
+      ],
+      patterns: [],
+    }],
+    dataGroups: [],
+    navigationUrls: processNavigationUrls(''),
+    hashTable: tmpHashTableForFs(brokenFs, {'/foo.txt': true}),
+  };
+
+  // Manifest without navigation urls to test backward compatibility with
+  // versions < 6.0.0.
+  interface ManifestV5 {
+    configVersion: number;
+    appData?: {[key: string]: string};
+    index: string;
+    assetGroups?: AssetGroupConfig[];
+    dataGroups?: DataGroupConfig[];
+    hashTable: {[url: string]: string};
+  }
+
+  // To simulate versions < 6.0.0
+  const manifestOld: ManifestV5 = {
+    configVersion: 1,
+    index: '/foo.txt',
+    hashTable: tmpHashTableForFs(dist),
+  };
+
+  const manifest: Manifest = {
+    configVersion: 1,
+    timestamp: 1234567890123,
+    appData: {
+      version: 'original',
+    },
+    index: '/foo.txt',
+    assetGroups: [
+      {
+        name: 'assets',
+        installMode: 'prefetch',
+        updateMode: 'prefetch',
+        urls: [
+          '/foo.txt',
+          '/bar.txt',
+          '/redirected.txt',
+        ],
+        patterns: [
+          '/unhashed/.*',
+        ],
+      },
+      {
+        name: 'other',
+        installMode: 'lazy',
+        updateMode: 'lazy',
+        urls: [
+          '/baz.txt',
+          '/qux.txt',
+        ],
+        patterns: [],
+      },
+      {
+        name: 'lazy_prefetch',
+        installMode: 'lazy',
+        updateMode: 'prefetch',
+        urls: [
+          '/quux.txt',
+          '/quuux.txt',
+          '/lazy/unchanged1.txt',
+          '/lazy/unchanged2.txt',
+        ],
+        patterns: [],
+      }
+    ],
+    dataGroups: [
+      {
+        name: 'api',
+        version: 42,
+        maxAge: 3600000,
+        maxSize: 100,
+        strategy: 'performance',
+        patterns: [
+          '/api/.*',
+        ],
+      },
+    ],
+    navigationUrls: processNavigationUrls(''),
+    hashTable: tmpHashTableForFs(dist),
+  };
+
+  const manifestUpdate: Manifest = {
+    configVersion: 1,
+    timestamp: 1234567890123,
+    appData: {
+      version: 'update',
+    },
+    index: '/foo.txt',
+    assetGroups: [
+      {
+        name: 'assets',
+        installMode: 'prefetch',
+        updateMode: 'prefetch',
+        urls: [
+          '/foo.txt',
+          '/bar.txt',
+          '/redirected.txt',
+        ],
+        patterns: [
+          '/unhashed/.*',
+        ],
+      },
+      {
+        name: 'other',
+        installMode: 'lazy',
+        updateMode: 'lazy',
+        urls: [
+          '/baz.txt',
+          '/qux.txt',
+        ],
+        patterns: [],
+      },
+      {
+        name: 'lazy_prefetch',
+        installMode: 'lazy',
+        updateMode: 'prefetch',
+        urls: [
+          '/quux.txt',
+          '/quuux.txt',
+          '/lazy/unchanged1.txt',
+          '/lazy/unchanged2.txt',
+        ],
+        patterns: [],
+      }
+    ],
+    navigationUrls: processNavigationUrls(
+        '',
+        [
+          '/**/file1',
+          '/**/file2',
+          '!/ignored/file1',
+          '!/ignored/dir/**',
+        ]),
+    hashTable: tmpHashTableForFs(distUpdate),
+  };
+
+  const serverBuilderBase =
+      new MockServerStateBuilder()
+          .withStaticFiles(dist)
+          .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
+          .withError('/error.txt');
+
+  const server = serverBuilderBase.withManifest(manifest).build();
+
+  const serverRollback =
+      serverBuilderBase.withManifest({...manifest, timestamp: manifest.timestamp + 1}).build();
+
+  const serverUpdate =
+      new MockServerStateBuilder()
+          .withStaticFiles(distUpdate)
+          .withManifest(manifestUpdate)
+          .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
+          .build();
+
+  const brokenServer =
+      new MockServerStateBuilder().withStaticFiles(brokenFs).withManifest(brokenManifest).build();
+
+  const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
+
+  const manifestHash = sha1(JSON.stringify(manifest));
+  const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
+
+
   describe('Driver', () => {
     let scope: SwTestHarness;
     let driver: Driver;
@@ -354,6 +392,19 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
 
       expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
       serverUpdate.assertNoOtherRequests();
+    });
+
+    async_it('detects new version even if only `manifest.timestamp` is different', async() => {
+      expect(await makeRequest(scope, '/foo.txt', 'newClient')).toEqual('this is foo');
+      await driver.initialized;
+
+      scope.updateServerState(serverUpdate);
+      expect(await driver.checkForUpdate()).toEqual(true);
+      expect(await makeRequest(scope, '/foo.txt', 'newerClient')).toEqual('this is foo v2');
+
+      scope.updateServerState(serverRollback);
+      expect(await driver.checkForUpdate()).toEqual(true);
+      expect(await makeRequest(scope, '/foo.txt', 'newestClient')).toEqual('this is foo');
     });
 
     async_it('updates a specific client to new content on request', async() => {
@@ -548,7 +599,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       serverUpdate.assertNoOtherRequests();
 
       let keys = await scope.caches.keys();
-      let hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:${manifestHash}:`));
+      let hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:/:${manifestHash}:`));
       expect(hasOriginalCaches).toEqual(true);
 
       scope.clients.remove('default');
@@ -561,7 +612,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo v2');
 
       keys = await scope.caches.keys();
-      hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:${manifestHash}:`));
+      hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:/:${manifestHash}:`));
       expect(hasOriginalCaches).toEqual(false);
     });
 
@@ -660,6 +711,74 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       serverUpdate.assertNoOtherRequests();
     });
 
+    async_it('should bypass serviceworker on ngsw-bypass parameter', async() => {
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'true'}});
+      server.assertNoRequestFor('/foo.txt');
+
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'anything'}});
+      server.assertNoRequestFor('/foo.txt');
+
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': null}});
+      server.assertNoRequestFor('/foo.txt');
+
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'NGSW-bypass': 'upperCASE'}});
+      server.assertNoRequestFor('/foo.txt');
+
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypasss': 'anything'}});
+      server.assertSawRequestFor('/foo.txt');
+
+      server.clearRequests();
+
+      await makeRequest(scope, '/bar.txt?ngsw-bypass=true');
+      server.assertNoRequestFor('/bar.txt');
+
+      await makeRequest(scope, '/bar.txt?ngsw-bypasss=true');
+      server.assertSawRequestFor('/bar.txt');
+
+      server.clearRequests();
+
+      await makeRequest(scope, '/bar.txt?ngsw-bypaSS=something');
+      server.assertNoRequestFor('/bar.txt');
+
+      await makeRequest(scope, '/bar.txt?testparam=test&ngsw-byPASS=anything');
+      server.assertNoRequestFor('/bar.txt');
+
+      await makeRequest(scope, '/bar.txt?testparam=test&angsw-byPASS=anything');
+      server.assertSawRequestFor('/bar.txt');
+
+      server.clearRequests();
+
+      await makeRequest(scope, '/bar&ngsw-bypass=true.txt?testparam=test&angsw-byPASS=anything');
+      server.assertSawRequestFor('/bar&ngsw-bypass=true.txt');
+
+      server.clearRequests();
+
+      await makeRequest(scope, '/bar&ngsw-bypass=true.txt');
+      server.assertSawRequestFor('/bar&ngsw-bypass=true.txt');
+
+      server.clearRequests();
+
+      await makeRequest(
+          scope, '/bar&ngsw-bypass=true.txt?testparam=test&ngSW-BYPASS=SOMETHING&testparam2=test');
+      server.assertNoRequestFor('/bar&ngsw-bypass=true.txt');
+
+      await makeRequest(scope, '/bar?testparam=test&ngsw-bypass');
+      server.assertNoRequestFor('/bar');
+
+      await makeRequest(scope, '/bar?testparam=test&ngsw-bypass&testparam2');
+      server.assertNoRequestFor('/bar');
+
+      await makeRequest(scope, '/bar?ngsw-bypass&testparam2');
+      server.assertNoRequestFor('/bar');
+
+      await makeRequest(scope, '/bar?ngsw-bypass=&foo=ngsw-bypass');
+      server.assertNoRequestFor('/bar');
+
+      await makeRequest(scope, '/bar?ngsw-byapass&testparam2');
+      server.assertSawRequestFor('/bar');
+
+    });
+
     async_it('unregisters when manifest 404s', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
@@ -679,6 +798,115 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       expect(driver.state).toEqual(DriverReadyState.NORMAL);
       expect(scope.unregistered).toBeFalsy();
       expect(await scope.caches.keys()).not.toEqual([]);
+    });
+
+    describe('cache naming', () => {
+      // Helpers
+      const cacheKeysFor = (baseHref: string) =>
+          [`ngsw:${baseHref}:db:control`, `ngsw:${baseHref}:${manifestHash}:assets:assets:cache`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:assets:meta`,
+           `ngsw:${baseHref}:${manifestHash}:assets:other:cache`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:other:meta`,
+           `ngsw:${baseHref}:${manifestHash}:assets:lazy_prefetch:cache`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:lazy_prefetch:meta`,
+           `ngsw:${baseHref}:42:data:dynamic:api:cache`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:lru`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:age`,
+      ];
+
+      const getClientAssignments = async(sw: SwTestHarness, baseHref: string) => {
+        const cache = await sw.caches.open(`ngsw:${baseHref}:db:control`) as unknown as MockCache;
+        const dehydrated = cache.dehydrate();
+        return JSON.parse(dehydrated['/assignments'].body !);
+      };
+
+      const initializeSwFor =
+          async(baseHref: string, initialCacheState = '{}', serverState = server) => {
+        const newScope = new SwTestHarnessBuilder(`http://localhost${baseHref}`)
+                             .withCacheState(initialCacheState)
+                             .withServerState(serverState)
+                             .build();
+        const newDriver = new Driver(newScope, newScope, new CacheDatabase(newScope, newScope));
+
+        await makeRequest(newScope, '/foo.txt', baseHref.replace(/\//g, '_'));
+        await newDriver.initialized;
+
+        return newScope;
+      };
+
+      async_it('includes the SW scope in all cache names', async() => {
+        // Default SW with scope `/`.
+        await makeRequest(scope, '/foo.txt');
+        await driver.initialized;
+        const cacheNames = await scope.caches.keys();
+
+        expect(cacheNames).toEqual(cacheKeysFor('/'));
+        expect(cacheNames.every(name => name.includes('/'))).toBe(true);
+
+        // SW with scope `/foo/`.
+        const fooScope = await initializeSwFor('/foo/');
+        const fooCacheNames = await fooScope.caches.keys();
+
+        expect(fooCacheNames).toEqual(cacheKeysFor('/foo/'));
+        expect(fooCacheNames.every(name => name.includes('/foo/'))).toBe(true);
+      });
+
+      async_it('does not affect caches from other scopes', async() => {
+        // Create SW with scope `/foo/`.
+        const fooScope = await initializeSwFor('/foo/');
+        const fooAssignments = await getClientAssignments(fooScope, '/foo/');
+
+        expect(fooAssignments).toEqual({_foo_: manifestHash});
+
+        // Add new SW with different scope.
+        const barScope = await initializeSwFor('/bar/', await fooScope.caches.dehydrate());
+        const barCacheNames = await barScope.caches.keys();
+        const barAssignments = await getClientAssignments(barScope, '/bar/');
+
+        expect(barAssignments).toEqual({_bar_: manifestHash});
+        expect(barCacheNames).toEqual([
+          ...cacheKeysFor('/foo/'),
+          ...cacheKeysFor('/bar/'),
+        ]);
+
+        // The caches for `/foo/` should be intact.
+        const fooAssignments2 = await getClientAssignments(barScope, '/foo/');
+        expect(fooAssignments2).toEqual({_foo_: manifestHash});
+      });
+
+      async_it('updates existing caches for same scope', async() => {
+        // Create SW with scope `/foo/`.
+        const fooScope = await initializeSwFor('/foo/');
+        await makeRequest(fooScope, '/foo.txt', '_bar_');
+        const fooAssignments = await getClientAssignments(fooScope, '/foo/');
+
+        expect(fooAssignments).toEqual({
+          _foo_: manifestHash,
+          _bar_: manifestHash,
+        });
+
+        expect(await makeRequest(fooScope, '/baz.txt', '_foo_')).toBe('this is baz');
+        expect(await makeRequest(fooScope, '/baz.txt', '_bar_')).toBe('this is baz');
+
+        // Add new SW with same scope.
+        const fooScope2 =
+            await initializeSwFor('/foo/', await fooScope.caches.dehydrate(), serverUpdate);
+        await fooScope2.handleMessage({action: 'CHECK_FOR_UPDATES'}, '_foo_');
+        await fooScope2.handleMessage({action: 'ACTIVATE_UPDATE'}, '_foo_');
+        const fooAssignments2 = await getClientAssignments(fooScope2, '/foo/');
+
+        expect(fooAssignments2).toEqual({
+          _foo_: manifestUpdateHash,
+          _bar_: manifestHash,
+        });
+
+        // Everything should still work as expected.
+        expect(await makeRequest(fooScope2, '/foo.txt', '_foo_')).toBe('this is foo v2');
+        expect(await makeRequest(fooScope2, '/foo.txt', '_bar_')).toBe('this is foo');
+
+        expect(await makeRequest(fooScope2, '/baz.txt', '_foo_')).toBe('this is baz v2');
+        expect(await makeRequest(fooScope2, '/baz.txt', '_bar_')).toBe('this is baz');
+      });
     });
 
     describe('unhashed requests', () => {
@@ -899,13 +1127,21 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
 
     describe('cleanupOldSwCaches()', () => {
       async_it('should delete the correct caches', async() => {
-        const oldSwCacheNames = ['ngsw:active', 'ngsw:staged', 'ngsw:manifest:a1b2c3:super:duper'];
+        const oldSwCacheNames = [
+          // Example cache names from the beta versions of `@angular/service-worker`.
+          'ngsw:active',
+          'ngsw:staged',
+          'ngsw:manifest:a1b2c3:super:duper',
+          // Example cache names from the beta versions of `@angular/service-worker`.
+          'ngsw:a1b2c3:assets:foo',
+          'ngsw:db:a1b2c3:assets:bar',
+        ];
         const otherCacheNames = [
           'ngsuu:active',
           'not:ngsw:active',
-          'ngsw:staged:not',
           'NgSw:StAgEd',
-          'ngsw:manifest',
+          'ngsw:/:active',
+          'ngsw:/foo/:staged',
         ];
         const allCacheNames = oldSwCacheNames.concat(otherCacheNames);
 
@@ -988,6 +1224,60 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         expect(await requestFoo('default', 'no-cors')).toBe('this is foo');
         expect(await requestFoo('only-if-cached', 'same-origin')).toBe('this is foo');
         expect(await requestFoo('only-if-cached', 'no-cors')).toBeNull();
+      });
+
+      async_it('ignores passive mixed content requests ', async() => {
+        const scopeFetchSpy = spyOn(scope, 'fetch').and.callThrough();
+        const getRequestUrls = () => scopeFetchSpy.calls.allArgs().map(args => args[0].url);
+
+        const httpScopeUrl = 'http://mock.origin.dev';
+        const httpsScopeUrl = 'https://mock.origin.dev';
+        const httpRequestUrl = 'http://other.origin.sh/unknown.png';
+        const httpsRequestUrl = 'https://other.origin.sh/unknown.pnp';
+
+        // Registration scope: `http:`
+        (scope.registration.scope as string) = httpScopeUrl;
+
+        await makeRequest(scope, httpRequestUrl);
+        await makeRequest(scope, httpsRequestUrl);
+        const requestUrls1 = getRequestUrls();
+
+        expect(requestUrls1).toContain(httpRequestUrl);
+        expect(requestUrls1).toContain(httpsRequestUrl);
+
+        scopeFetchSpy.calls.reset();
+
+        // Registration scope: `https:`
+        (scope.registration.scope as string) = httpsScopeUrl;
+
+        await makeRequest(scope, httpRequestUrl);
+        await makeRequest(scope, httpsRequestUrl);
+        const requestUrls2 = getRequestUrls();
+
+        expect(requestUrls2).not.toContain(httpRequestUrl);
+        expect(requestUrls2).toContain(httpsRequestUrl);
+      });
+
+      describe('Backwards compatibility with v5', () => {
+        beforeEach(() => {
+          const serverV5 = new MockServerStateBuilder()
+                               .withStaticFiles(dist)
+                               .withManifest(<Manifest>manifestOld)
+                               .build();
+
+          scope = new SwTestHarnessBuilder().withServerState(serverV5).build();
+          driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+        });
+
+        // Test this bug: https://github.com/angular/angular/issues/27209
+        async_it(
+            'Fill previous versions of manifests with default navigation urls for backwards compatibility',
+            async() => {
+              expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+              await driver.initialized;
+              scope.updateServerState(serverUpdate);
+              expect(await driver.checkForUpdate()).toEqual(true);
+            });
       });
     });
   });

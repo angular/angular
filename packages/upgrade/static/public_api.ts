@@ -6,19 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * @module
- * @description
- * Entry point for all public APIs of this package. allowing
- * Angular 1 and Angular 2+ to run side by side in the same application.
- */
-export {getAngularJSGlobal, getAngularLib, setAngularJSGlobal, setAngularLib} from './src/common/angular1';
-export {downgradeComponent} from './src/common/downgrade_component';
-export {downgradeInjectable} from './src/common/downgrade_injectable';
-export {VERSION} from './src/common/version';
-export {downgradeModule} from './src/static/downgrade_module';
-export {UpgradeComponent} from './src/static/upgrade_component';
-export {UpgradeModule} from './src/static/upgrade_module';
+export {getAngularJSGlobal, getAngularLib, setAngularJSGlobal, setAngularLib} from '../src/common/src/angular1';
+export {downgradeComponent} from '../src/common/src/downgrade_component';
+export {downgradeInjectable} from '../src/common/src/downgrade_injectable';
+export {VERSION} from '../src/common/src/version';
+export {downgradeModule} from './src/downgrade_module';
+export {UpgradeComponent} from './src/upgrade_component';
+export {UpgradeModule} from './src/upgrade_module';
 
 
-// This file only re-exports content of the `src` folder. Keep it that way.
+// This file only re-exports items to appear in the public api. Keep it that way.

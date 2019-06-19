@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LiteralExpr, R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
+import {R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {DefaultImportRecorder, Reference} from '../../imports';
+import {MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
+import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
-import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore, unwrapExpression} from './util';
+import {findAngularDecorator, getValidConstructorDependencies, unwrapExpression} from './util';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
@@ -26,21 +27,27 @@ export interface PipeHandlerData {
 export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
+      private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
+      private isCore: boolean) {}
 
-  detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
+  readonly precedence = HandlerPrecedence.PRIMARY;
+
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
       return undefined;
     }
-    return decorators.find(
-        decorator => decorator.name === 'Pipe' && (this.isCore || isAngularCore(decorator)));
+    const decorator = findAngularDecorator(decorators, 'Pipe', this.isCore);
+    if (decorator !== undefined) {
+      return {
+        trigger: decorator.node,
+        metadata: decorator,
+      };
+    } else {
+      return undefined;
+    }
   }
 
-  analyze(clazz: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<PipeHandlerData> {
-    if (clazz.name === undefined) {
-      throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ON_ANONYMOUS_CLASS, clazz, `@Pipes must have names`);
-    }
+  analyze(clazz: ClassDeclaration, decorator: Decorator): AnalysisOutput<PipeHandlerData> {
     const name = clazz.name.text;
     const type = new WrappedNodeExpr(clazz.name);
     if (decorator.args === null) {
@@ -68,7 +75,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, pipeNameExpr, `@Pipe.name must be a string`);
     }
-    this.scopeRegistry.registerPipe(clazz, pipeName);
+    const ref = new Reference(clazz);
+    this.metaRegistry.registerPipeMetadata({ref, name: pipeName});
 
     let pure = true;
     if (pipe.has('pure')) {
@@ -86,15 +94,18 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
         meta: {
           name,
           type,
-          pipeName,
-          deps: getConstructorDependencies(clazz, this.reflector, this.isCore), pure,
+          typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0, pipeName,
+          deps: getValidConstructorDependencies(
+              clazz, this.reflector, this.defaultImportRecorder, this.isCore),
+          pure,
         },
-        metadataStmt: generateSetClassMetadataCall(clazz, this.reflector, this.isCore),
+        metadataStmt: generateSetClassMetadataCall(
+            clazz, this.reflector, this.defaultImportRecorder, this.isCore),
       },
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: PipeHandlerData): CompileResult {
+  compile(node: ClassDeclaration, analysis: PipeHandlerData): CompileResult {
     const res = compilePipeFromMetadata(analysis.meta);
     const statements = res.statements;
     if (analysis.metadataStmt !== null) {

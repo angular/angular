@@ -196,7 +196,55 @@ describe('NgCompilerHost', () => {
       const host = createHost({ngHost});
       expect(host.resourceNameToFileName('a', 'b')).toBe('someResult');
     });
+    it('should resolve Sass imports to generated .css files', () => {
+      const host = createHost({files: {'tmp': {'src': {'a': {'style.css': 'h1: bold'}}}}});
+      expect(host.resourceNameToFileName('./a/style.scss', '/tmp/src/index.ts'))
+          .toBe('/tmp/src/a/style.css');
+    });
+    it('should resolve Less imports to generated .css files', () => {
+      const host = createHost({files: {'tmp': {'src': {'a': {'style.css': 'h1: bold'}}}}});
+      expect(host.resourceNameToFileName('./a/style.less', '/tmp/src/index.ts'))
+          .toBe('/tmp/src/a/style.css');
+    });
+    it('should resolve Stylus imports to generated .css files', () => {
+      const host = createHost({files: {'tmp': {'src': {'a': {'style.css': 'h1: bold'}}}}});
+      expect(host.resourceNameToFileName('./a/style.styl', '/tmp/src/index.ts'))
+          .toBe('/tmp/src/a/style.css');
+    });
+  });
 
+  describe('addGeneratedFile', () => {
+    function generate(path: string, files: {}) {
+      codeGenerator.findGeneratedFileNames.and.returnValue([`${path}.ngfactory.ts`]);
+      codeGenerator.generateFile.and.returnValue(
+          new compiler.GeneratedFile(`${path}.ts`, `${path}.ngfactory.ts`, []));
+      const host = createHost({
+        files,
+        options: {
+          basePath: '/tmp',
+          moduleResolution: ts.ModuleResolutionKind.NodeJs,
+          // Request UMD, which should get default module names
+          module: ts.ModuleKind.UMD
+        },
+      });
+      return host.getSourceFile(`${path}.ngfactory.ts`, ts.ScriptTarget.Latest);
+    }
+
+    it('should include a moduleName when the file is in node_modules', () => {
+      const genSf = generate(
+          '/tmp/node_modules/@angular/core/core',
+          {'tmp': {'node_modules': {'@angular': {'core': {'core.ts': `// some content`}}}}});
+      expect(genSf.moduleName).toBe('@angular/core/core.ngfactory');
+    });
+
+    it('should not get tripped on nested node_modules', () => {
+      const genSf = generate('/tmp/node_modules/lib1/node_modules/lib2/thing', {
+        'tmp': {
+          'node_modules': {'lib1': {'node_modules': {'lib2': {'thing.ts': `// some content`}}}}
+        }
+      });
+      expect(genSf.moduleName).toBe('lib2/thing.ngfactory');
+    });
   });
 
   describe('getSourceFile', () => {

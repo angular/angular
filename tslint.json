@@ -2,7 +2,8 @@
   "rulesDirectory": [
     "dist/tools/tslint",
     "node_modules/vrsource-tslint-rules/rules",
-    "node_modules/tslint-eslint-rules/dist/rules"
+    "node_modules/tslint-eslint-rules/dist/rules",
+    "node_modules/tslint-no-toplevel-property-access/rules"
   ],
   "rules": {
     "file-header": [
@@ -18,7 +19,18 @@
     "no-jasmine-focus": true,
     "no-var-keyword": true,
     "require-internal-with-underscore": true,
-    "rollup-config": true,
+    "no-toplevel-property-access": [
+      true,
+      "packages/animations/src/",
+      "packages/animations/browser/",
+      "packages/common/src/",
+      "packages/core/src/",
+      "packages/elements/src/",
+      "packages/forms/src/",
+      "packages/http/src/",
+      "packages/platform-browser/src/",
+      "packages/router/src/"
+    ],
     "semicolon": [
       true
     ],

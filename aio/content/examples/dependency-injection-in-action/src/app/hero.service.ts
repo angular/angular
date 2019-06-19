@@ -11,7 +11,7 @@ export class HeroService {
   private heroes: Array<Hero> = [
     new Hero(1, 'RubberMan', 'Hero of many talents', '123-456-7899'),
     new Hero(2, 'Magma', 'Hero of all trades', '555-555-5555'),
-    new Hero(3, 'Mr. Nice', 'The name says it all', '111-222-3333')
+    new Hero(3, 'Dr Nice', 'The name says it all', '111-222-3333')
  ];
 
   getHeroById(id: number): Hero {

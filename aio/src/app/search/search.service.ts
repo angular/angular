@@ -16,10 +16,9 @@ export class SearchService {
    * initial rendering of the web page. Triggering a search will override this delay and cause the index to be
    * loaded immediately.
    *
-   * @param workerUrl the url of the WebWorker script that runs the searches
    * @param initDelay the number of milliseconds to wait before we load the WebWorker and generate the search index
    */
-  initWorker(workerUrl: string, initDelay: number) {
+  initWorker(initDelay: number) {
     // Wait for the initDelay or the first search
     const ready = this.ready = race<any>(
         timer(initDelay),
@@ -28,7 +27,8 @@ export class SearchService {
       .pipe(
         concatMap(() => {
           // Create the worker and load the index
-          this.worker = WebWorkerClient.create(workerUrl, this.zone);
+          const worker = new Worker('./search.worker', { type: 'module' });
+          this.worker = WebWorkerClient.create(worker, this.zone);
           return this.worker.sendMessage<boolean>('load-index');
         }),
         publishReplay(1),

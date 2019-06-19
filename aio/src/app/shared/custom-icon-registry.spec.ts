@@ -1,4 +1,4 @@
-import { MatIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material/icon';
 import { CustomIconRegistry, SvgIconInfo } from './custom-icon-registry';
 
 describe('CustomIconRegistry', () => {

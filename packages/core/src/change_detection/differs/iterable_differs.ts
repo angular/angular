@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineInjectable} from '../../di/interface/defs';
+import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {StaticProvider} from '../../di/interface/provider';
 import {Optional, SkipSelf} from '../../di/metadata';
 import {DefaultIterableDifferFactory} from '../differs/default_iterable_differ';
@@ -117,8 +117,10 @@ export interface IterableChangeRecord<V> {
 export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {}
 
 /**
- * An optional function passed into {@link NgForOf} that defines how to track
- * items in an iterable (e.g. fby index or id)
+ * An optional function passed into the `NgForOf` directive that defines how to track
+ * changes for items in an iterable.
+ * The function takes the iteration index and item ID.
+ * When supplied, Angular tracks changes by the return value of the function.
  *
  * @publicApi
  */
@@ -141,7 +143,7 @@ export interface IterableDifferFactory {
  */
 export class IterableDiffers {
   /** @nocollapse */
-  static ngInjectableDef = defineInjectable({
+  static ngInjectableDef = ɵɵdefineInjectable({
     providedIn: 'root',
     factory: () => new IterableDiffers([new DefaultIterableDifferFactory()])
   });

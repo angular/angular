@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
+import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
 import {CompilerOptions, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
@@ -15,9 +15,7 @@ import * as ts from 'typescript';
 
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
-import {BuiltinType, Declaration, DeclarationError, DeclarationKind, Declarations, Definition, DiagnosticMessageChain, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
-import {isTypescriptVersion} from './utils';
-
+import {Declaration, DeclarationError, Declarations, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, Symbol, SymbolQuery, TemplateSource, TemplateSources} from './types';
 
 
 /**
@@ -38,11 +36,7 @@ export function createLanguageServiceFromTypescript(
  * syntactically incorrect templates.
  */
 export class DummyHtmlParser extends HtmlParser {
-  parse(
-      source: string, url: string, parseExpansionForms: boolean = false,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
-    return new ParseTreeResult([], []);
-  }
+  parse(): ParseTreeResult { return new ParseTreeResult([], []); }
 }
 
 /**

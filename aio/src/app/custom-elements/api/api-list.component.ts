@@ -61,7 +61,7 @@ export class ApiListComponent implements OnInit {
     { value: 'security-risk', title: 'Security Risk' }
   ];
 
-  @ViewChild('filter') queryEl: ElementRef;
+  @ViewChild('filter', { static: true }) queryEl: ElementRef;
 
   constructor(
     private apiService: ApiService,
@@ -125,7 +125,7 @@ export class ApiListComponent implements OnInit {
         return status === 'all' ||
           status === item.stability ||
           (status === 'security-risk' && item.securityRisk);
-      };
+      }
 
       function matchesType() {
         return type === 'all' || type === item.docType;

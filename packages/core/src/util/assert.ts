@@ -34,6 +34,12 @@ export function assertSame<T>(actual: T, expected: T, msg: string) {
   }
 }
 
+export function assertNotSame<T>(actual: T, expected: T, msg: string) {
+  if (actual === expected) {
+    throwError(msg);
+  }
+}
+
 export function assertLessThan<T>(actual: T, expected: T, msg: string) {
   if (actual >= expected) {
     throwError(msg);
@@ -65,7 +71,11 @@ export function throwError(msg: string): never {
 }
 
 export function assertDomNode(node: any) {
-  assertEqual(node instanceof Node, true, 'The provided value must be an instance of a DOM Node');
+  // If we're in a worker, `Node` will not be defined.
+  assertEqual(
+      (typeof Node !== 'undefined' && node instanceof Node) ||
+          (typeof node === 'object' && node.constructor.name === 'WebWorkerRenderNode'),
+      true, 'The provided value must be an instance of a DOM Node');
 }
 
 

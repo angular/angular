@@ -7,7 +7,7 @@
  */
 
 import {ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('formControlName example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -17,7 +17,7 @@ describe('formControlName example', () => {
     let lastInput: ElementFinder;
 
     beforeEach(() => {
-      browser.get('/forms/ts/simpleFormGroup/index.html');
+      browser.get('/simpleFormGroup');
       firstInput = element(by.css('[formControlName="first"]'));
       lastInput = element(by.css('[formControlName="last"]'));
     });

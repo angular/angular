@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AST} from '../../../src/expression_parser/ast';
+import {Lexer} from '../../../src/expression_parser/lexer';
+import {Parser} from '../../../src/expression_parser/parser';
 import * as i18n from '../../../src/i18n/i18n_ast';
 import * as o from '../../../src/output/output_ast';
 import * as t from '../../../src/render3/r3_ast';
@@ -15,6 +18,7 @@ import {I18nMeta, formatI18nPlaceholderName, parseI18nMeta} from '../../../src/r
 
 import {parseR3 as parse} from './util';
 
+const expressionParser = new Parser(new Lexer());
 const i18nOf = (element: t.Node & {i18n?: i18n.AST}) => element.i18n !;
 
 describe('I18nContext', () => {
@@ -44,8 +48,8 @@ describe('I18nContext', () => {
 
     // binding collection checks
     expect(ctx.bindings.size).toBe(0);
-    ctx.appendBinding(o.literal(1));
-    ctx.appendBinding(o.literal(2));
+    ctx.appendBinding(expressionParser.parseInterpolation('{{ valueA }}', '') as AST);
+    ctx.appendBinding(expressionParser.parseInterpolation('{{ valueB }}', '') as AST);
     expect(ctx.bindings.size).toBe(2);
   });
 
@@ -72,7 +76,7 @@ describe('I18nContext', () => {
 
     // set data for root ctx
     ctx.appendBoundText(i18nOf(boundTextA));
-    ctx.appendBinding(o.literal('valueA'));
+    ctx.appendBinding(expressionParser.parseInterpolation('{{ valueA }}', '') as AST);
     ctx.appendElement(i18nOf(elementA), 0);
     ctx.appendTemplate(i18nOf(templateA), 1);
     ctx.appendElement(i18nOf(elementA), 0, true);
@@ -88,11 +92,11 @@ describe('I18nContext', () => {
     // set data for child context
     childCtx.appendElement(i18nOf(elementB), 0);
     childCtx.appendBoundText(i18nOf(boundTextB));
-    childCtx.appendBinding(o.literal('valueB'));
+    childCtx.appendBinding(expressionParser.parseInterpolation('{{ valueB }}', '') as AST);
     childCtx.appendElement(i18nOf(elementC), 1);
     childCtx.appendElement(i18nOf(elementC), 1, true);
     childCtx.appendBoundText(i18nOf(boundTextC));
-    childCtx.appendBinding(o.literal('valueC'));
+    childCtx.appendBinding(expressionParser.parseInterpolation('{{ valueC }}', '') as AST);
     childCtx.appendElement(i18nOf(elementB), 0, true);
 
     expect(childCtx.bindings.size).toBe(2);

@@ -357,28 +357,32 @@ describe('unit test', () => {
     check({'file.d.ts': input}, expected, {stripExportPattern: /^__.*/});
   });
 
-  it('should throw on using non-whitelisted module imports in expression position', () => {
-    const input = `
+  it('should throw on using module imports in expression position that were not explicitly allowed',
+     () => {
+       const input = `
       import * as foo from './foo';
       export declare class A extends foo.A {
       }
     `;
-    checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(2,32): error: Module identifier "foo" is not allowed. ' +
-            'Remove it from source or whitelist it via --allowModuleIdentifiers.');
-  });
+       checkThrows(
+           {'file.d.ts': input},
+           'file.d.ts(2,32): error: Module identifier "foo" is not allowed. ' +
+               'Remove it from source or allow it via --allowModuleIdentifiers.');
+     });
 
-  it('should throw on using non-whitelisted module imports in type position', () => {
-    const input = `
+  it('should throw on using module imports in type position that were not explicitly allowed',
+     () => {
+       const input = `
       import * as foo from './foo';
       export type A = foo.A;
     `;
-    checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(2,17): error: Module identifier "foo" is not allowed. ' +
-            'Remove it from source or whitelist it via --allowModuleIdentifiers.');
-  });
+       checkThrows(
+           {'file.d.ts': input},
+           'file.d.ts(2,17): error: Module identifier "foo" is not allowed. ' +
+               'Remove it from source or allow it via --allowModuleIdentifiers.');
+     });
 
-  it('should not throw on using whitelisted module imports', () => {
+  it('should not throw on using explicitly allowed module imports', () => {
     const input = `
       import * as foo from './foo';
       export declare class A extends foo.A {
@@ -391,7 +395,7 @@ describe('unit test', () => {
     check({'file.d.ts': input}, expected, {allowModuleIdentifiers: ['foo']});
   });
 
-  it('should not throw if non-whitelisted module imports are not written', () => {
+  it('should not throw if module imports, that were not explicitly allowed, are not used', () => {
     const input = `
       import * as foo from './foo';
       export declare class A {
@@ -527,8 +531,8 @@ describe('unit test', () => {
     `;
     checkThrows(
         {'file.d.ts': input},
-        'file.d.ts(2,1): error: Required jsdoc tags - "@stable" - are missing on `A`.',
-        {exportTags: {required: ['stable']}});
+        'file.d.ts(2,1): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `A`.',
+        {exportTags: {requireAtLeastOne: ['stable']}});
   });
 
   it('should throw on missing required jsdoc tags on fields', () => {
@@ -540,8 +544,8 @@ describe('unit test', () => {
     `;
     checkThrows(
         {'file.d.ts': input},
-        'file.d.ts(3,3): error: Required jsdoc tags - "@stable" - are missing on `value`.',
-        {memberTags: {required: ['stable']}});
+        'file.d.ts(3,3): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `value`.',
+        {memberTags: {requireAtLeastOne: ['stable']}});
   });
 
   it('should throw on missing required jsdoc tags on parameters', () => {
@@ -553,8 +557,58 @@ describe('unit test', () => {
     `;
     checkThrows(
         {'file.d.ts': input},
-        'file.d.ts(3,7): error: Required jsdoc tags - "@stable" - are missing on `param`.',
-        {paramTags: {required: ['stable']}});
+        'file.d.ts(3,7): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `param`.',
+        {paramTags: {requireAtLeastOne: ['stable']}});
+  });
+
+  it('should require at least one of the requireAtLeastOne tags', () => {
+    const input = `
+      /** @experimental */
+      export declare class A {
+        foo(param: number): void;
+      }
+    `;
+    checkThrows(
+        {'file.d.ts': input},
+        'file.d.ts(3,7): error: Required jsdoc tags - One of the tags: "@stable", "@foo", "@bar" - must exist on `param`.',
+        {paramTags: {requireAtLeastOne: ['stable', 'foo', 'bar']}});
+  });
+
+  it('should allow with one of the requireAtLeastOne tags found', () => {
+    const input = `
+      /**
+       * @foo
+       * @bar
+       * @stable
+       */
+      export declare class A {
+      }
+      /**
+       * @foo
+       */
+      export declare const b: string;
+      /**
+       * @bar
+       */
+      export declare var c: number;
+      /**
+       * @stable
+       */
+      export declare function d(): void;
+    `;
+    const expected = `
+    export declare class A {
+    }
+
+    export declare const b: string;
+
+    export declare var c: number;
+
+    export declare function d(): void;
+    `;
+    check(
+        {'file.d.ts': input}, expected,
+        {exportTags: {requireAtLeastOne: ['stable', 'foo', 'bar']}});
   });
 });
 

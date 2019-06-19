@@ -80,7 +80,7 @@ Open the `HeroesComponent` template file and make the following changes:
 `HeroesComponent` 템플릿 파일을 열고 다음과 같이 수정합니다:
 
 <!--
-* Add an `<h2>` at the top, 
+* Add an `<h2>` at the top,
 * Below it add an HTML unordered list (`<ul>`)
 * Insert an `<li>` within the `<ul>` that displays properties of a `hero`.
 * Sprinkle some CSS classes for styling (you'll add the CSS styles shortly).
@@ -111,7 +111,7 @@ Now change the `<li>` to this:
 </code-example>
 
 <!--
-The [`*ngFor`](guide/template-syntax#ngFor) is Angular's _repeater_ directive. 
+The [`*ngFor`](guide/template-syntax#ngFor) is Angular's _repeater_ directive.
 It repeats the host element for each element in a list.
 -->
 [`*ngFor`](guide/template-syntax#ngFor)는 _항목을 반복하는_ Angular 디렉티브입니다.
@@ -122,7 +122,7 @@ In this example
 
 * `<li>` is the host element
 * `heroes` is the list from the `HeroesComponent` class.
-* `hero` holds the current hero object for each iteration through the list. 
+* `hero` holds the current hero object for each iteration through the list.
 -->
 
 이 예제에서
@@ -151,7 +151,7 @@ After the browser refreshes, the list of heroes appears.
 ### 히어로 꾸미기
 
 <!--
-The heroes list should be attractive and should respond visually when users 
+The heroes list should be attractive and should respond visually when users
 hover over and select a hero from the list.
 -->
 히어로 목록은 보기 좋게 표시하는 것이 좋으며, 사용자가 어떤 항목에 마우스를 올리거나 선택하면 시각적인 반응을 보여주는 것도 좋습니다.
@@ -219,7 +219,7 @@ The `heroes.component.css` styles apply only to the `HeroesComponent` and don't 
 ## 목록/상세정보
 
 <!--
-When the user clicks a hero in the **master** list, 
+When the user clicks a hero in the **master** list,
 the component should display the selected hero's **details** at the bottom of the page.
 -->
 사용자가 목록에서 히어로를 클릭하면 이 히어로에 대한 상세 정보가 상세정보 화면에 표시되어야 합니다.
@@ -292,7 +292,7 @@ to the component's `selectedHero`.
 ### 상세정보 화면 템플릿 업데이트 하기
 
 <!--
-The template still refers to the component's old `hero` property which no longer exists. 
+The template still refers to the component's old `hero` property which no longer exists.
 Rename `hero` to `selectedHero`.
 -->
 템플릿에서는 컴포넌트에 존재하지 않는 `hero` 프로퍼티를 아직 참조하고 있습니다.
@@ -303,11 +303,6 @@ Rename `hero` to `selectedHero`.
 -->
 <code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (히어로 상세정보 화면)" linenums="false">
 </code-example>
-
-<!--
-### Hide empty details with _*ngIf_
--->
-### _*ngIf_ 로 빈 화면 감추기
 
 <!--
 After the browser refreshes, the application is broken.
@@ -322,15 +317,6 @@ Open the browser developer tools and look in the console for an error message li
 <code-example language="sh" class="code-shell">
   HeroesComponent.html:3 ERROR TypeError: Cannot read property 'name' of undefined
 </code-example>
-
-<!--
-Now click one of the list items.
-The app seems to be working again.
-The heroes appear in a list and details about the clicked hero appear at the bottom of the page.
--->
-목록에 있는 히어로 중 하나를 선택해 보세요.
-앱이 다시 정상적으로 동작하는 것을 확인할 수 있습니다.
-그리고 선택한 히어로의 상세정보가 히어로들의 목록을 표시하는 부분 아래에 표시되는 것도 확인할 수 있습니다.
 
 <!--
 #### What happened?
@@ -348,9 +334,9 @@ Binding expressions in the template that refer to properties of `selectedHero` &
 그래서 템플릿에서 &mdash; `{{selectedHero.name}}` 와 같이 &mdash; `selectedHero`의 프로퍼티를 참조하는 바인딩 표현식은 선택된 히어로가 존재하지 않기 때문에 _동작하지 않습니다._
 
 <!--
-#### The fix
+#### The fix - hide empty details with _*ngIf_
 -->
-#### 수정하기
+#### 수정하기 - 빈 화면은 _*ngIf_ 로 감추기
 
 <!--
 The component should only display the selected hero details if the `selectedHero` exists.
@@ -363,6 +349,7 @@ Add Angular's `*ngIf` directive to the `<div>` and set it to `selectedHero`.
 -->
 히어로의 상세정보를 표현하는 HTML을 `<div>`로 감쌉니다.
 그리고 Angular가 제공하는 `*ngif` 디렉티브를 `<div>`에 추가하고 이 디렉티브의 표현식으로 `selectedHero`를 지정합니다. 
+
 
 <div class="alert is-important">
 <!--
@@ -377,11 +364,15 @@ Don't forget the asterisk (*) in front of `ngIf`. It's a critical part of the sy
 <!--
 After the browser refreshes, the list of names reappears.
 The details area is blank.
-Click a hero and its details appear.
+Click a hero in the list of heroes and its details appear.
+The app seems to be working again.
+The heroes appear in a list and details about the clicked hero appear at the bottom of the page.
 -->
 이제 브라우저가 갱신되고 나면 히어로의 목록이 다시 화면에 표시됩니다.
 이 때 상세화면 영역은 비어있습니다.
-그리고 히어로 목록에서 한 명을 선택하면 상세화면이 표시됩니다.
+목록에 있는 히어로 중 하나를 클릭해 보세요.
+앱이 다시 정상적으로 동작하는 것을 확인할 수 있습니다.
+그리고 선택한 히어로의 상세정보가 히어로들의 목록을 표시하는 부분 아래에 표시되는 것도 확인할 수 있습니다.
 
 <!--
 #### Why it works
@@ -429,7 +420,7 @@ You just have to apply the `.selected` class to the `<li>` when the user clicks 
 사용자가 선택한 항목에 이 클래스를 적용하려면 사용자가 클릭한 `<li>` 엘리먼트에 `.selected` 클래스를 적용하기만 하면 됩니다.
 
 <!--
-The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally. 
+The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally.
 Just add `[class.some-css-class]="some-condition"` to the element you want to style.
 -->
 Angular가 제공하는 [클래스 바인딩](guide/template-syntax#클래스-바인딩) 문법을 사용하면 특정 조건에 따라 CSS 클래스를 추가하거나 제거할 수 있습니다.
@@ -472,7 +463,7 @@ The finished `<li>` looks like this:
 ## 최종코드 리뷰
 
 <!--
-Your app should look like this <live-example></live-example>. 
+Your app should look like this <live-example></live-example>.
 -->
 여기까지 수정한 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 

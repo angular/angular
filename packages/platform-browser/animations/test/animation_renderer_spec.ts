@@ -11,7 +11,6 @@ import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChil
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory, ɵInjectableAnimationEngine as InjectableAnimationEngine} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
-import {fixmeIvy} from '@angular/private/testing';
 
 import {el} from '../../testing/src/browser_util';
 
@@ -169,7 +168,7 @@ import {el} from '../../testing/src/browser_util';
            })
            class Cmp {
              exp: any;
-             @ViewChild('elm') public element: any;
+             @ViewChild('elm', {static: false}) public element: any;
            }
 
            TestBed.configureTestingModule({
@@ -214,11 +213,11 @@ import {el} from '../../testing/src/browser_util';
              exp2: any = true;
              exp3: any = true;
 
-             @ViewChild('elm1') public elm1: any;
+             @ViewChild('elm1', {static: false}) public elm1: any;
 
-             @ViewChild('elm2') public elm2: any;
+             @ViewChild('elm2', {static: false}) public elm2: any;
 
-             @ViewChild('elm3') public elm3: any;
+             @ViewChild('elm3', {static: false}) public elm3: any;
            }
 
            TestBed.configureTestingModule({

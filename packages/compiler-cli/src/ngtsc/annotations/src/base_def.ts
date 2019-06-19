@@ -6,31 +6,36 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3BaseRefMetaData, compileBaseDefFromMetadata} from '@angular/compiler';
-import * as ts from 'typescript';
+import {ConstantPool, R3BaseRefMetaData, compileBaseDefFromMetadata, makeBindingParser} from '@angular/compiler';
 
 import {PartialEvaluator} from '../../partial_evaluator';
-import {ClassMember, Decorator, ReflectionHost} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
-import {isAngularCore} from './util';
+import {ClassDeclaration, ClassMember, Decorator, ReflectionHost} from '../../reflection';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
-function containsNgTopLevelDecorator(decorators: Decorator[] | null): boolean {
+import {extractHostBindings, queriesFromFields} from './directive';
+import {isAngularDecorator} from './util';
+
+function containsNgTopLevelDecorator(decorators: Decorator[] | null, isCore: boolean): boolean {
   if (!decorators) {
     return false;
   }
-  return decorators.find(
-             decorator => (decorator.name === 'Component' || decorator.name === 'Directive' ||
-                           decorator.name === 'NgModule') &&
-                 isAngularCore(decorator)) !== undefined;
+  return decorators.some(
+      decorator => isAngularDecorator(decorator, 'Component', isCore) ||
+          isAngularDecorator(decorator, 'Directive', isCore) ||
+          isAngularDecorator(decorator, 'NgModule', isCore));
 }
 
 export class BaseDefDecoratorHandler implements
     DecoratorHandler<R3BaseRefMetaData, R3BaseRefDecoratorDetection> {
-  constructor(private reflector: ReflectionHost, private evaluator: PartialEvaluator) {}
+  constructor(
+      private reflector: ReflectionHost, private evaluator: PartialEvaluator,
+      private isCore: boolean) {}
 
-  detect(node: ts.ClassDeclaration, decorators: Decorator[]|null): R3BaseRefDecoratorDetection
-      |undefined {
-    if (containsNgTopLevelDecorator(decorators)) {
+  readonly precedence = HandlerPrecedence.WEAK;
+
+  detect(node: ClassDeclaration, decorators: Decorator[]|null):
+      DetectResult<R3BaseRefDecoratorDetection>|undefined {
+    if (containsNgTopLevelDecorator(decorators, this.isCore)) {
       // If the class is already decorated by @Component or @Directive let that
       // DecoratorHandler handle this. BaseDef is unnecessary.
       return undefined;
@@ -40,28 +45,54 @@ export class BaseDefDecoratorHandler implements
 
     this.reflector.getMembersOfClass(node).forEach(property => {
       const {decorators} = property;
-      if (decorators) {
-        for (const decorator of decorators) {
-          const decoratorName = decorator.name;
-          if (decoratorName === 'Input' && isAngularCore(decorator)) {
-            result = result || {};
-            const inputs = result.inputs = result.inputs || [];
-            inputs.push({decorator, property});
-          } else if (decoratorName === 'Output' && isAngularCore(decorator)) {
-            result = result || {};
-            const outputs = result.outputs = result.outputs || [];
-            outputs.push({decorator, property});
-          }
+      if (!decorators) {
+        return;
+      }
+      for (const decorator of decorators) {
+        if (isAngularDecorator(decorator, 'Input', this.isCore)) {
+          result = result || {};
+          const inputs = result.inputs = result.inputs || [];
+          inputs.push({decorator, property});
+        } else if (isAngularDecorator(decorator, 'Output', this.isCore)) {
+          result = result || {};
+          const outputs = result.outputs = result.outputs || [];
+          outputs.push({decorator, property});
+        } else if (
+            isAngularDecorator(decorator, 'ViewChild', this.isCore) ||
+            isAngularDecorator(decorator, 'ViewChildren', this.isCore)) {
+          result = result || {};
+          const viewQueries = result.viewQueries = result.viewQueries || [];
+          viewQueries.push({member: property, decorators});
+        } else if (
+            isAngularDecorator(decorator, 'ContentChild', this.isCore) ||
+            isAngularDecorator(decorator, 'ContentChildren', this.isCore)) {
+          result = result || {};
+          const queries = result.queries = result.queries || [];
+          queries.push({member: property, decorators});
+        } else if (
+            isAngularDecorator(decorator, 'HostBinding', this.isCore) ||
+            isAngularDecorator(decorator, 'HostListener', this.isCore)) {
+          result = result || {};
+          const host = result.host = result.host || [];
+          host.push(property);
         }
       }
     });
 
-    return result;
+    if (result !== undefined) {
+      return {
+        metadata: result,
+        trigger: null,
+      };
+    } else {
+      return undefined;
+    }
   }
 
-  analyze(node: ts.ClassDeclaration, metadata: R3BaseRefDecoratorDetection):
+  analyze(node: ClassDeclaration, metadata: R3BaseRefDecoratorDetection):
       AnalysisOutput<R3BaseRefMetaData> {
-    const analysis: R3BaseRefMetaData = {};
+    const analysis: R3BaseRefMetaData = {name: node.name.text, typeSourceSpan: null !};
+
     if (metadata.inputs) {
       const inputs = analysis.inputs = {} as{[key: string]: string | [string, string]};
       metadata.inputs.forEach(({decorator, property}) => {
@@ -100,11 +131,26 @@ export class BaseDefDecoratorHandler implements
       });
     }
 
+    if (metadata.viewQueries) {
+      analysis.viewQueries =
+          queriesFromFields(metadata.viewQueries, this.reflector, this.evaluator);
+    }
+
+    if (metadata.queries) {
+      analysis.queries = queriesFromFields(metadata.queries, this.reflector, this.evaluator);
+    }
+
+    if (metadata.host) {
+      analysis.host = extractHostBindings(
+          metadata.host, this.evaluator, this.isCore ? undefined : '@angular/core');
+    }
+
     return {analysis};
   }
 
-  compile(node: ts.Declaration, analysis: R3BaseRefMetaData): CompileResult[]|CompileResult {
-    const {expression, type} = compileBaseDefFromMetadata(analysis);
+  compile(node: ClassDeclaration, analysis: R3BaseRefMetaData, pool: ConstantPool):
+      CompileResult[]|CompileResult {
+    const {expression, type} = compileBaseDefFromMetadata(analysis, pool, makeBindingParser());
 
     return {
       name: 'ngBaseDef',
@@ -115,6 +161,9 @@ export class BaseDefDecoratorHandler implements
 }
 
 export interface R3BaseRefDecoratorDetection {
-  inputs?: Array<{property: ClassMember, decorator: Decorator}>;
-  outputs?: Array<{property: ClassMember, decorator: Decorator}>;
+  inputs?: {property: ClassMember, decorator: Decorator}[];
+  outputs?: {property: ClassMember, decorator: Decorator}[];
+  viewQueries?: {member: ClassMember, decorators: Decorator[]}[];
+  queries?: {member: ClassMember, decorators: Decorator[]}[];
+  host?: ClassMember[];
 }

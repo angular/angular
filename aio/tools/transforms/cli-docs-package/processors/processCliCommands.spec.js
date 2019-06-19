@@ -1,41 +1,51 @@
 const testPackage = require('../../helpers/test-package');
-const processorFactory = require('./processCliCommands');
 const Dgeni = require('dgeni');
 
 describe('processCliCommands processor', () => {
 
+  let dgeni, injector, processor, createDocMessage;
+
+  const navigationStub = {
+    docType: 'navigation-json',
+    data: {
+      SideNav: [{
+        children: [{'url': 'cli'}]
+      }]
+    }
+  };
+
+  beforeEach(() => {
+    dgeni = new Dgeni([testPackage('cli-docs-package')]);
+    injector = dgeni.configureInjector();
+    processor = injector.get('processCliCommands');
+    createDocMessage = injector.get('createDocMessage');
+  });
+
   it('should be available on the injector', () => {
-    const dgeni = new Dgeni([testPackage('cli-docs-package')]);
-    const injector = dgeni.configureInjector();
-    const processor = injector.get('processCliCommands');
     expect(processor.$process).toBeDefined();
   });
 
   it('should run after the correct processor', () => {
-    const processor = processorFactory();
     expect(processor.$runAfter).toEqual(['extra-docs-added']);
   });
 
   it('should run before the correct processor', () => {
-    const processor = processorFactory();
     expect(processor.$runBefore).toEqual(['rendering-docs']);
   });
 
   it('should collect the names (name + aliases)', () => {
-    const processor = processorFactory();
     const doc = {
       docType: 'cli-command',
       name: 'name',
       commandAliases: ['alias1', 'alias2'],
       options: [],
     };
-    processor.$process([doc]);
+    processor.$process([doc, navigationStub]);
     expect(doc.names).toEqual(['name', 'alias1', 'alias2']);
   });
 
   describe('options', () => {
     it('should remove the hidden options', () => {
-      const processor = processorFactory();
       const doc = {
         docType: 'cli-command',
         name: 'name',
@@ -47,7 +57,7 @@ describe('processCliCommands processor', () => {
           { name: 'option4', hidden: true },
         ],
       };
-      processor.$process([doc]);
+      processor.$process([doc, navigationStub]);
       expect(doc.namedOptions).toEqual([
         jasmine.objectContaining({ name: 'option1' }),
         jasmine.objectContaining({ name: 'option3' }),
@@ -55,7 +65,6 @@ describe('processCliCommands processor', () => {
     });
 
     it('should collect the non-hidden positional and named options', () => {
-      const processor = processorFactory();
       const doc = {
         docType: 'cli-command',
         name: 'name',
@@ -67,7 +76,7 @@ describe('processCliCommands processor', () => {
           { name: 'positional2', hidden: true, positional: 1},
         ],
       };
-      processor.$process([doc]);
+      processor.$process([doc, navigationStub]);
       expect(doc.positionalOptions).toEqual([
         jasmine.objectContaining({ name: 'positional1', positional: 0}),
       ]);
@@ -77,7 +86,6 @@ describe('processCliCommands processor', () => {
     });
 
     it('should sort the named options into order by name', () => {
-      const processor = processorFactory();
       const doc = {
         docType: 'cli-command',
         name: 'name',
@@ -88,7 +96,7 @@ describe('processCliCommands processor', () => {
           { name: 'b' },
         ],
       };
-      processor.$process([doc]);
+      processor.$process([doc, navigationStub]);
       expect(doc.namedOptions).toEqual([
         jasmine.objectContaining({ name: 'a' }),
         jasmine.objectContaining({ name: 'b' }),
@@ -99,7 +107,6 @@ describe('processCliCommands processor', () => {
 
   describe('subcommands', () => {
     it('should convert subcommands hash into a collection', () => {
-      const processor = processorFactory();
       const doc = {
         docType: 'cli-command',
         name: 'name',
@@ -124,7 +131,7 @@ describe('processCliCommands processor', () => {
           },
         }],
       };
-      processor.$process([doc]);
+      processor.$process([doc, navigationStub]);
       expect(doc.options[0].subcommands).toEqual([
         jasmine.objectContaining({ name: 'subcommand1' }),
         jasmine.objectContaining({ name: 'subcommand2' }),
@@ -132,7 +139,6 @@ describe('processCliCommands processor', () => {
     });
 
     it('should remove the hidden subcommand options', () => {
-      const processor = processorFactory();
       const doc = {
         docType: 'cli-command',
         name: 'name',
@@ -157,7 +163,7 @@ describe('processCliCommands processor', () => {
           },
         }],
       };
-      processor.$process([doc]);
+      processor.$process([doc, navigationStub]);
       expect(doc.options[0].subcommands[0].namedOptions).toEqual([
         jasmine.objectContaining({ name: 'subcommand1-option1' }),
       ]);
@@ -167,7 +173,6 @@ describe('processCliCommands processor', () => {
     });
 
     it('should collect the non-hidden positional arguments and named options', () => {
-      const processor = processorFactory();
       const doc = {
         docType: 'cli-command',
         name: 'name',
@@ -192,7 +197,7 @@ describe('processCliCommands processor', () => {
           },
         }],
       };
-      processor.$process([doc]);
+      processor.$process([doc, navigationStub]);
       expect(doc.options[0].subcommands[0].positionalOptions).toEqual([
         jasmine.objectContaining({ name: 'subcommand1-option2', positional: 0}),
       ]);
@@ -205,7 +210,6 @@ describe('processCliCommands processor', () => {
     });
 
     it('should sort the named subcommand options into order by name', () => {
-      const processor = processorFactory();
       const doc = {
         docType: 'cli-command',
         name: 'name',
@@ -224,7 +228,7 @@ describe('processCliCommands processor', () => {
           }
         }],
       };
-      processor.$process([doc]);
+      processor.$process([doc, navigationStub]);
       expect(doc.options[0].subcommands[0].namedOptions).toEqual([
         jasmine.objectContaining({ name: 'a' }),
         jasmine.objectContaining({ name: 'b' }),
@@ -233,8 +237,7 @@ describe('processCliCommands processor', () => {
     });
   });
 
-  it('should add the command to the CLI node in the navigation doc', () => {
-    const processor = processorFactory();
+  it('should add the command to the CLI node in the navigation doc if there is a first child node with a `cli` url', () => {
     const command = {
       docType: 'cli-command',
       name: 'command1',
@@ -247,18 +250,55 @@ describe('processCliCommands processor', () => {
       data: {
         SideNav: [
           { url: 'some/page', title: 'Some Page' },
-          { url: 'cli', title: 'CLI Commands', children: [
-            { url: 'cli', title: 'Using the CLI' },
-          ]},
-          { url: 'other/page', title: 'Other Page' },
+          {
+            title: 'CLI Commands',
+            tooltip: 'Angular CLI command reference',
+            children: [
+              {
+                'title': 'Overview',
+                'url': 'cli'
+              }
+            ]
+          },
+          { url: 'other/page', title: 'Other Page' }
         ]
       }
     };
     processor.$process([command, navigation]);
     expect(navigation.data.SideNav[1].title).toEqual('CLI Commands');
     expect(navigation.data.SideNav[1].children).toEqual([
-      { url: 'cli', title: 'Using the CLI' },
+      { url: 'cli', title: 'Overview' },
       { url: 'cli/command1', title: 'ng command1' },
     ]);
+  });
+
+  it('should complain if there is no child with `cli` url', () => {
+    const command = {
+      docType: 'cli-command',
+      name: 'command1',
+      commandAliases: ['alias1', 'alias2'],
+      options: [],
+      path: 'cli/command1',
+    };
+    const navigation = {
+      docType: 'navigation-json',
+      data: {
+        SideNav: [
+          { url: 'some/page', title: 'Some Page' },
+          {
+            title: 'CLI Commands',
+            tooltip: 'Angular CLI command reference',
+            children: [
+              {
+                'title': 'Overview',
+                'url': 'client'
+              }
+            ]
+          },
+          { url: 'other/page', title: 'Other Page' }
+        ]
+      }
+    };
+    expect(() => processor.$process([command, navigation])).toThrowError(createDocMessage('Missing `cli` url - CLI Commands must include a first child node with url set at `cli`', navigation));
   });
 });

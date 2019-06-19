@@ -16,24 +16,15 @@ import {TypeCheckContext} from './context';
 export class TypeCheckProgramHost implements ts.CompilerHost {
   /**
    * Map of source file names to `ts.SourceFile` instances.
-   *
-   * This is prepopulated with all the old source files, and updated as files are augmented.
    */
-  private sfCache = new Map<string, ts.SourceFile>();
+  private sfMap: Map<string, ts.SourceFile>;
 
-  /**
-   * Tracks those files in `sfCache` which have been augmented with type checking information
-   * already.
-   */
-  private augmentedSourceFiles = new Set<ts.SourceFile>();
+  constructor(sfMap: Map<string, ts.SourceFile>, private delegate: ts.CompilerHost) {
+    this.sfMap = sfMap;
 
-  constructor(
-      program: ts.Program, private delegate: ts.CompilerHost, private context: TypeCheckContext) {
-    // The `TypeCheckContext` uses object identity for `ts.SourceFile`s to track which files need
-    // type checking code inserted. Additionally, the operation of getting a source file should be
-    // as efficient as possible. To support both of these requirements, all of the program's
-    // source files are loaded into the cache up front.
-    program.getSourceFiles().forEach(file => { this.sfCache.set(file.fileName, file); });
+    if (delegate.getDirectories !== undefined) {
+      this.getDirectories = (path: string) => delegate.getDirectories !(path);
+    }
   }
 
   getSourceFile(
@@ -41,25 +32,15 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
       onError?: ((message: string) => void)|undefined,
       shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
     // Look in the cache for the source file.
-    let sf: ts.SourceFile|undefined = this.sfCache.get(fileName);
+    let sf: ts.SourceFile|undefined = this.sfMap.get(fileName);
     if (sf === undefined) {
       // There should be no cache misses, but just in case, delegate getSourceFile in the event of
       // a cache miss.
       sf = this.delegate.getSourceFile(
           fileName, languageVersion, onError, shouldCreateNewSourceFile);
-      sf && this.sfCache.set(fileName, sf);
+      sf && this.sfMap.set(fileName, sf);
     }
-    if (sf !== undefined) {
-      // Maybe augment the file with type checking code via the `TypeCheckContext`.
-      if (!this.augmentedSourceFiles.has(sf)) {
-        sf = this.context.transform(sf);
-        this.sfCache.set(fileName, sf);
-        this.augmentedSourceFiles.add(sf);
-      }
-      return sf;
-    } else {
-      return undefined;
-    }
+    return sf;
   }
 
   // The rest of the methods simply delegate to the underlying `ts.CompilerHost`.
@@ -71,13 +52,13 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
   writeFile(
       fileName: string, data: string, writeByteOrderMark: boolean,
       onError: ((message: string) => void)|undefined,
-      sourceFiles: ReadonlyArray<ts.SourceFile>): void {
-    return this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+      sourceFiles: ReadonlyArray<ts.SourceFile>|undefined): void {
+    throw new Error(`TypeCheckProgramHost should never write files`);
   }
 
   getCurrentDirectory(): string { return this.delegate.getCurrentDirectory(); }
 
-  getDirectories(path: string): string[] { return this.delegate.getDirectories(path); }
+  getDirectories?: (path: string) => string[];
 
   getCanonicalFileName(fileName: string): string {
     return this.delegate.getCanonicalFileName(fileName);
@@ -87,7 +68,9 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
 
   getNewLine(): string { return this.delegate.getNewLine(); }
 
-  fileExists(fileName: string): boolean { return this.delegate.fileExists(fileName); }
+  fileExists(fileName: string): boolean {
+    return this.sfMap.has(fileName) || this.delegate.fileExists(fileName);
+  }
 
   readFile(fileName: string): string|undefined { return this.delegate.readFile(fileName); }
 }

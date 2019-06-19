@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
+import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
 
 /**
  * @publicApi
@@ -26,15 +26,61 @@ export class NgForOfContext<T> {
 }
 
 /**
- * The `NgForOf` directive instantiates a template once per item from an iterable. The context
- * for each instantiated template inherits from the outer context with the given loop variable
- * set to the current item from the iterable.
+ * A [structural directive](guide/structural-directives) that renders
+ * a template for each item in a collection.
+ * The directive is placed on an element, which becomes the parent
+ * of the cloned templates.
+ *
+ * The `ngForOf` directive is generally used in the
+ * [shorthand form](guide/structural-directives#the-asterisk--prefix) `*ngFor`.
+ * In this form, the template to be rendered for each iteration is the content
+ * of an anchor element containing the directive.
+ *
+ * The following example shows the shorthand syntax with some options,
+ * contained in an `<li>` element.
+ *
+ * ```
+ * <li *ngFor="let item of items; index as i; trackBy: trackByFn">...</li>
+ * ```
+ *
+ * The shorthand form expands into a long form that uses the `ngForOf` selector
+ * on an `<ng-template>` element.
+ * The content of the `<ng-template>` element is the `<li>` element that held the
+ * short-form directive.
+ *
+ * Here is the expanded version of the short-form example.
+ *
+ * ```
+ * <ng-template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
+ *   <li>...</li>
+ * </ng-template>
+ * ```
+ *
+ * Angular automatically expands the shorthand syntax as it compiles the template.
+ * The context for each embedded view is logically merged to the current component
+ * context according to its lexical position.
+ *
+ * When using the shorthand syntax, Angular allows only [one structural directive
+ * on an element](guide/structural-directives#one-structural-directive-per-host-element).
+ * If you want to iterate conditionally, for example,
+ * put the `*ngIf` on a container element that wraps the `*ngFor` element.
+ * For futher discussion, see
+ * [Structural Directives](guide/structural-directives#one-per-element).
  *
  * @usageNotes
  *
- * ### Local Variables
+ * ### Local variables
  *
- * `NgForOf` provides several exported values that can be aliased to local variables:
+ * `NgForOf` provides exported values that can be aliased to local variables.
+ * For example:
+ *
+ *  ```
+ * <li *ngFor="let user of userObservable | async as users; index as i; first as isFirst">
+ *    {{i}}/{{users.length}}. {{user}} <span *ngIf="isFirst">default</span>
+ * </li>
+ * ```
+ *
+ * The following exported values can be aliased to local variables:
  *
  * - `$implicit: T`: The value of the individual items in the iterable (`ngForOf`).
  * - `ngForOf: NgIterable<T>`: The value of the iterable expression. Useful when the expression is
@@ -46,65 +92,64 @@ export class NgForOfContext<T> {
  * - `even: boolean`: True when the item has an even index in the iterable.
  * - `odd: boolean`: True when the item has an odd index in the iterable.
  *
- * ```
- * <li *ngFor="let user of userObservable | async as users; index as i; first as isFirst">
- *    {{i}}/{{users.length}}. {{user}} <span *ngIf="isFirst">default</span>
- * </li>
- * ```
- *
- * ### Change Propagation
+ * ### Change propagation
  *
  * When the contents of the iterator changes, `NgForOf` makes the corresponding changes to the DOM:
  *
  * * When an item is added, a new instance of the template is added to the DOM.
  * * When an item is removed, its template instance is removed from the DOM.
  * * When items are reordered, their respective templates are reordered in the DOM.
- * * Otherwise, the DOM element for that item will remain the same.
  *
  * Angular uses object identity to track insertions and deletions within the iterator and reproduce
  * those changes in the DOM. This has important implications for animations and any stateful
- * controls (such as `<input>` elements which accept user input) that are present. Inserted rows can
+ * controls that are present, such as `<input>` elements that accept user input. Inserted rows can
  * be animated in, deleted rows can be animated out, and unchanged rows retain any unsaved state
  * such as user input.
+ * For more on animations, see [Transitions and Triggers](guide/transition-and-triggers).
  *
- * It is possible for the identities of elements in the iterator to change while the data does not.
- * This can happen, for example, if the iterator produced from an RPC to the server, and that
- * RPC is re-run. Even if the data hasn't changed, the second response will produce objects with
- * different identities, and Angular will tear down the entire DOM and rebuild it (as if all old
- * elements were deleted and all new elements inserted). This is an expensive operation and should
- * be avoided if possible.
+ * The identities of elements in the iterator can change while the data does not.
+ * This can happen, for example, if the iterator is produced from an RPC to the server, and that
+ * RPC is re-run. Even if the data hasn't changed, the second response produces objects with
+ * different identities, and Angular must tear down the entire DOM and rebuild it (as if all old
+ * elements were deleted and all new elements inserted).
  *
- * To customize the default tracking algorithm, `NgForOf` supports `trackBy` option.
- * `trackBy` takes a function which has two arguments: `index` and `item`.
+ * To avoid this expensive operation, you can customize the default tracking algorithm.
+ * by supplying the `trackBy` option to `NgForOf`.
+ * `trackBy` takes a function that has two arguments: `index` and `item`.
  * If `trackBy` is given, Angular tracks changes by the return value of the function.
  *
- * ### Syntax
- *
- * - `<li *ngFor="let item of items; index as i; trackBy: trackByFn">...</li>`
- *
- * With `<ng-template>` element:
- *
- * ```
- * <ng-template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
- *   <li>...</li>
- * </ng-template>
- * ```
- *
- * ### Example
- *
- * See a [live demo](http://plnkr.co/edit/KVuXxDp0qinGDyo307QW?p=preview) for a more detailed
- * example.
- *
+ * @see [Structural Directives](guide/structural-directives)
  * @ngModule CommonModule
  * @publicApi
  */
 @Directive({selector: '[ngFor][ngForOf]'})
 export class NgForOf<T> implements DoCheck {
+  /**
+   * The value of the iterable expression, which can be used as a
+   * [template input variable](guide/structural-directives#template-input-variable).
+   */
   @Input()
   set ngForOf(ngForOf: NgIterable<T>) {
     this._ngForOf = ngForOf;
     this._ngForOfDirty = true;
   }
+  /**
+   * A function that defines how to track changes for items in the iterable.
+   *
+   * When items are added, moved, or removed in the iterable,
+   * the directive must re-render the appropriate DOM nodes.
+   * To minimize churn in the DOM, only nodes that have changed
+   * are re-rendered.
+   *
+   * By default, the change detector assumes that
+   * the object instance identifies the node in the iterable.
+   * When this function is supplied, the directive uses
+   * the result of calling this function to identify the item node,
+   * rather than the identity of the object itself.
+   *
+   * The function receives two inputs,
+   * the iteration index and the node object ID.
+   */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
     if (isDevMode() && fn != null && typeof fn !== 'function') {
@@ -131,6 +176,10 @@ export class NgForOf<T> implements DoCheck {
       private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForOfContext<T>>,
       private _differs: IterableDiffers) {}
 
+  /**
+   * A reference to the template that is stamped out for each item in the iterable.
+   * @see [template reference variable](guide/template-syntax#template-reference-variables--var-)
+   */
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfContext<T>>) {
     // TODO(TS2.1): make TemplateRef<Partial<NgForRowOf<T>>> once we move to TS v2.1
@@ -141,6 +190,9 @@ export class NgForOf<T> implements DoCheck {
     }
   }
 
+  /**
+   * Applies the changes when needed.
+   */
   ngDoCheck(): void {
     if (this._ngForOfDirty) {
       this._ngForOfDirty = false;
@@ -151,7 +203,7 @@ export class NgForOf<T> implements DoCheck {
           this._differ = this._differs.find(value).create(this.ngForTrackBy);
         } catch {
           throw new Error(
-              `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+              `Cannot find a differ supporting object '${value}' of type '${getTypeName(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
         }
       }
     }
@@ -204,9 +256,9 @@ export class NgForOf<T> implements DoCheck {
   }
 
   /**
-   * Assert the correct type of the context for the template that `NgForOf` will render.
+   * Asserts the correct type of the context for the template that `NgForOf` will render.
    *
-   * The presence of this method is a signal to the Ivy template type check compiler that the
+   * The presence of this method is a signal to the Ivy template type-check compiler that the
    * `NgForOf` structural directive renders its template with a specific context type.
    */
   static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T> {
@@ -218,6 +270,6 @@ class RecordViewTuple<T> {
   constructor(public record: any, public view: EmbeddedViewRef<NgForOfContext<T>>) {}
 }
 
-export function getTypeNameForDebugging(type: any): string {
+function getTypeName(type: any): string {
   return type['name'] || typeof type;
 }

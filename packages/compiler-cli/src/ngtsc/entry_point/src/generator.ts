@@ -12,6 +12,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {ShimGenerator} from '../../shims';
+import {relativePathBetween} from '../../util/src/path';
 
 export class FlatIndexGenerator implements ShimGenerator {
   readonly flatIndexPath: string;
@@ -27,10 +28,7 @@ export class FlatIndexGenerator implements ShimGenerator {
   recognize(fileName: string): boolean { return fileName === this.flatIndexPath; }
 
   generate(): ts.SourceFile {
-    const relativeEntryPoint = './' +
-        path.posix.relative(path.posix.dirname(this.flatIndexPath), this.entryPoint)
-            .replace(/\.tsx?$/, '');
-
+    const relativeEntryPoint = relativePathBetween(this.flatIndexPath, this.entryPoint);
     const contents = `/**
  * Generated bundle index. Do not edit.
  */

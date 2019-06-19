@@ -39,10 +39,10 @@ Angular 디렉티브는 3종류가 있습니다:
 
 <!--
 *Components* are the most common of the three directives.
-You saw a component for the first time in the [Getting Started](guide/quickstart).
+You saw a component for the first time in the [Getting Started](start "Getting Started with Angular") tutorial.
 -->
 디렉티브 중에서는 *컴포넌트*를 가장 많이 사용합니다.
-처음 확인하는 가이드 문서인 [시작하기](guide/quickstart)에서도 확인할 수 있습니다.
+처음 확인하는 가이드 문서인 [시작하기](start "Getting Started with Angular")에서도 확인할 수 있습니다.
 
 <!--
 *Structural Directives* change the structure of the view.
@@ -92,6 +92,16 @@ when the user hovers over that element. You can apply it like this:
 {@a 디렉티브-코드-작성하기}
 
 <!--
+Please note that directives _do not_ support namespaces.
+-->
+디렉티브는 네임스페이스를 지원하지 _않는다는 것을_ 명심하세요.
+
+<!--
+<code-example path="attribute-directives/src/app/app.component.avoid.html" linenums="false" header="src/app/app.component.avoid.html (unsupported)" region="unsupported"></code-example>
+-->
+<code-example path="attribute-directives/src/app/app.component.avoid.html" linenums="false" header="src/app/app.component.avoid.html (지원하지 않는 문법)" region="unsupported"></code-example>
+
+<!--
 ### Write the directive code
 -->
 ### 디렉티브 코드 작성하기
@@ -106,9 +116,9 @@ ng generate directive highlight
 </code-example>
 
 <!--
-The CLI creates `src/app/highlight.directive.ts`, a corresponding test file (`.../spec.ts`, and _declares_ the directive class in the root `AppModule`.
+The CLI creates `src/app/highlight.directive.ts`, a corresponding test file `src/app/highlight.directive.spec.ts`, and _declares_ the directive class in the root `AppModule`.
 -->
-이 명령을 실행하면 CLI가 `src/app/highlight.directive.ts` 파일과 테스트 파일인 `.../spec.ts` 파일을 함께 생성하고 최상위 모듈 `AppModule`에 이 디렉티브 클래스를 자동으로 추가합니다.
+이 명령을 실행하면 CLI가 `src/app/highlight.directive.ts` 파일과 테스트 파일인 `src/app/highlight.directive.spec.ts` 파일을 함께 생성하고 최상위 모듈 `AppModule`에 이 디렉티브 클래스를 자동으로 추가합니다.
 
 <div class="alert is-helpful">
 

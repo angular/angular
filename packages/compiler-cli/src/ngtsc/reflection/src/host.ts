@@ -43,6 +43,29 @@ export interface Decorator {
 }
 
 /**
+ * The `ts.Declaration` of a "class".
+ *
+ * Classes are represented differently in different code formats:
+ * - In TS code, they are typically defined using the `class` keyword.
+ * - In ES2015 code, they are usually defined using the `class` keyword, but they can also be
+ *   variable declarations, which are initialized to a class expression (e.g.
+ *   `let Foo = Foo1 = class Foo {}`).
+ * - In ES5 code, they are typically defined as variable declarations being assigned the return
+ *   value of an IIFE. The actual "class" is implemented as a constructor function inside the IIFE,
+ *   but the outer variable declaration represents the "class" to the rest of the program.
+ *
+ * For `ReflectionHost` purposes, a class declaration should always have a `name` identifier,
+ * because we need to be able to reference it in other parts of the program.
+ */
+export type ClassDeclaration<T extends ts.Declaration = ts.Declaration> = T & {name: ts.Identifier};
+
+/**
+ * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
+ * a `ClassDeclaration`.
+ */
+export type ClassSymbol = ts.Symbol & {valueDeclaration: ClassDeclaration};
+
+/**
  * An enumeration of possible kinds of class members.
  */
 export enum ClassMemberKind {
@@ -152,6 +175,31 @@ export interface ClassMember {
 }
 
 /**
+ * A reference to a value that originated from a type position.
+ *
+ * For example, a constructor parameter could be declared as `foo: Foo`. A `TypeValueReference`
+ * extracted from this would refer to the value of the class `Foo` (assuming it was actually a
+ * type).
+ *
+ * There are two kinds of such references. A reference with `local: false` refers to a type that was
+ * imported, and gives the symbol `name` and the `moduleName` of the import. Note that this
+ * `moduleName` may be a relative path, and thus is likely only valid within the context of the file
+ * which contained the original type reference.
+ *
+ * A reference with `local: true` refers to any other kind of type via a `ts.Expression` that's
+ * valid within the local file where the type was referenced.
+ */
+export type TypeValueReference = {
+  local: true; expression: ts.Expression; defaultImportStatement: ts.ImportDeclaration | null;
+} |
+{
+  local: false;
+  name: string;
+  moduleName: string;
+  valueDeclaration: ts.Declaration;
+};
+
+/**
  * A parameter to a constructor.
  */
 export interface CtorParameter {
@@ -172,18 +220,22 @@ export interface CtorParameter {
   nameNode: ts.BindingName;
 
   /**
-   * TypeScript `ts.Expression` representing the type value of the parameter, if the type is a
-   * simple
-   * expression type that can be converted to a value.
+   * Reference to the value of the parameter's type annotation, if it's possible to refer to the
+   * parameter's type as a value.
    *
-   * If the type is not present or cannot be represented as an expression, `type` is `null`.
+   * This can either be a reference to a local value, in which case it has `local` set to `true` and
+   * contains a `ts.Expression`, or it's a reference to an imported value, in which case `local` is
+   * set to `false` and the symbol and module name of the imported value are provided instead.
+   *
+   * If the type is not present or cannot be represented as an expression, `typeValueReference` is
+   * `null`.
    */
-  typeExpression: ts.Expression|null;
+  typeValueReference: TypeValueReference|null;
 
   /**
    * TypeScript `ts.TypeNode` representing the type node found in the type position.
    *
-   * This field can be used for diagnostics reporting if `typeExpression` is `null`.
+   * This field can be used for diagnostics reporting if `typeValueReference` is `null`.
    *
    * Can be null, if the param has no type declared.
    */
@@ -265,11 +317,11 @@ export interface Import {
  * The declaration of a symbol, along with information about how it was imported into the
  * application.
  */
-export interface Declaration {
+export interface Declaration<T extends ts.Declaration = ts.Declaration> {
   /**
    * TypeScript reference to the declaration itself.
    */
-  node: ts.Declaration;
+  node: T;
 
   /**
    * The absolute module path from which the symbol was imported into the application, if the symbol
@@ -310,16 +362,13 @@ export interface ReflectionHost {
    * Examine a declaration which should be of a class, and return metadata about the members of the
    * class.
    *
-   * @param declaration a TypeScript `ts.Declaration` node representing the class over which to
-   * reflect. If the source is in ES6 format, this will be a `ts.ClassDeclaration` node. If the
-   * source is in ES5 format, this might be a `ts.VariableDeclaration` as classes in ES5 are
-   * represented as the result of an IIFE execution.
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    *
    * @returns an array of `ClassMember` metadata representing the members of the class.
    *
    * @throws if `declaration` does not resolve to a class declaration.
    */
-  getMembersOfClass(clazz: ts.Declaration): ClassMember[];
+  getMembersOfClass(clazz: ClassDeclaration): ClassMember[];
 
   /**
    * Reflect over the constructor of a class and return metadata about its parameters.
@@ -327,16 +376,13 @@ export interface ReflectionHost {
    * This method only looks at the constructor of a class directly and not at any inherited
    * constructors.
    *
-   * @param declaration a TypeScript `ts.Declaration` node representing the class over which to
-   * reflect. If the source is in ES6 format, this will be a `ts.ClassDeclaration` node. If the
-   * source is in ES5 format, this might be a `ts.VariableDeclaration` as classes in ES5 are
-   * represented as the result of an IIFE execution.
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    *
    * @returns an array of `Parameter` metadata representing the parameters of the constructor, if
    * a constructor exists. If the constructor exists and has 0 parameters, this array will be empty.
    * If the class has no constructor, this method returns `null`.
    */
-  getConstructorParameters(declaration: ts.Declaration): CtorParameter[]|null;
+  getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null;
 
   /**
    * Reflect over a function and return metadata about its parameters and body.
@@ -423,20 +469,24 @@ export interface ReflectionHost {
   /**
    * Check whether the given node actually represents a class.
    */
-  isClass(node: ts.Node): node is ts.NamedDeclaration;
+  isClass(node: ts.Node): node is ClassDeclaration;
 
   /**
-   * Determines whether the given declaration has a base class.
+   * Determines whether the given declaration, which should be a class, has a base class.
+   *
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    */
-  hasBaseClass(node: ts.Declaration): boolean;
+  hasBaseClass(clazz: ClassDeclaration): boolean;
 
   /**
    * Get the number of generic type parameters of a given class.
    *
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
+   *
    * @returns the number of type parameters of the class, if known, or `null` if the declaration
    * is not a class or has an unknown number of type parameters.
    */
-  getGenericArityOfClass(clazz: ts.Declaration): number|null;
+  getGenericArityOfClass(clazz: ClassDeclaration): number|null;
 
   /**
    * Find the assigned value of a variable declaration.

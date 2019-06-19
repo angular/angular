@@ -13,8 +13,10 @@
                 <target>tervetuloa</target>
             </trans-unit>
             <trans-unit id="63a85808f03b8181e36a952e0fa38202c2304862" datatype="html">
-                <source>other-3rdP-component</source>
-                <target>other-3rdP-component</target>
+                <source>other-3rdP-component
+multi-lines</source>
+                <target>other-3rdP-component
+multi-lines</target>
             </trans-unit>
         </body>
     </file>

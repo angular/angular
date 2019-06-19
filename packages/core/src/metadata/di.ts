@@ -8,18 +8,19 @@
 
 import {InjectionToken} from '../di/injection_token';
 import {Type} from '../interface/type';
-import {makeParamDecorator, makePropDecorator} from '../util/decorators';
+import {makePropDecorator} from '../util/decorators';
 
 /**
- * This token can be used to create a virtual provider that will populate the
- * `entryComponents` fields of components and ng modules based on its `useValue`.
+ * A DI token that you can use to create a virtual [provider](guide/glossary#provider)
+ * that will populate the `entryComponents` field of components and NgModules
+ * based on its `useValue` property value.
  * All components that are referenced in the `useValue` value (either directly
- * or in a nested array or map) will be added to the `entryComponents` property.
+ * or in a nested array or map) are added to the `entryComponents` property.
  *
  * @usageNotes
- * ### Example
+ *
  * The following example shows how the router can populate the `entryComponents`
- * field of an NgModule based on the router configuration which refers
+ * field of an NgModule based on a router configuration that refers
  * to components.
  *
  * ```typescript
@@ -48,7 +49,7 @@ import {makeParamDecorator, makePropDecorator} from '../util/decorators';
 export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForEntryComponents');
 
 /**
- * Type of the Attribute decorator / constructor function.
+ * Type of the `Attribute` decorator / constructor function.
  *
  * @publicApi
  */
@@ -67,28 +68,9 @@ export interface AttributeDecorator {
    * <input type="text">
    * ```
    *
-   * A decorator can inject string literal `text` like so:
+   * A decorator can inject string literal `text` as in the following example.
    *
    * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
-   *
-   * ### Example as TypeScript Decorator
-   *
-   * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
-   *
-   * ### Example as ES5 annotation
-   *
-   * ```
-   * var MyComponent = function(title) {
-   *   ...
-   * };
-   *
-   * MyComponent.annotations = [
-   *   new ng.Component({...})
-   * ]
-   * MyComponent.parameters = [
-   *   [new ng.Attribute('title')]
-   * ]
-   * ```
    *
    * @publicApi
    */
@@ -102,16 +84,12 @@ export interface AttributeDecorator {
  *
  * @publicApi
  */
-export interface Attribute { attributeName?: string; }
-
-/**
- * Attribute decorator and metadata.
- *
- * @Annotation
- * @publicApi
- */
-export const Attribute: AttributeDecorator =
-    makeParamDecorator('Attribute', (attributeName?: string) => ({attributeName}));
+export interface Attribute {
+  /**
+   * The name of the attribute to be injected into the constructor.
+   */
+  attributeName?: string;
+}
 
 /**
  * Type of the Query metadata.
@@ -124,6 +102,7 @@ export interface Query {
   read: any;
   isViewQuery: boolean;
   selector: any;
+  static: boolean;
 }
 
 /**
@@ -221,6 +200,12 @@ export interface ContentChildDecorator {
    *
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried element.
+   * * **static** - whether or not to resolve query results before change detection runs (i.e.
+   * return static results only). If this option is not provided, the compiler will fall back
+   * to its default behavior, which is to use query results to determine the timing of query
+   * resolution. If any query results are inside a nested view (e.g. *ngIf), the query will be
+   * resolved after change detection runs. Otherwise, it will be resolved before change detection
+   * runs.
    *
    * @usageNotes
    * ### Example
@@ -233,14 +218,12 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any}): ContentChild;
+  (selector: Type<any>|Function|string, opts: {read?: any, static: boolean}): any;
+  new (selector: Type<any>|Function|string, opts: {read?: any, static: boolean}): ContentChild;
 }
 
 /**
  * Type of the ContentChild metadata.
- *
- * @see `ContentChild`.
  *
  * @publicApi
  */
@@ -335,6 +318,12 @@ export interface ViewChildDecorator {
    *
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried elements.
+   * * **static** - whether or not to resolve query results before change detection runs (i.e.
+   * return static results only). If this option is not provided, the compiler will fall back
+   * to its default behavior, which is to use query results to determine the timing of query
+   * resolution. If any query results are inside a nested view (e.g. *ngIf), the query will be
+   * resolved after change detection runs. Otherwise, it will be resolved before change detection
+   * runs.
    *
    * Supported selectors include:
    *   * any class with the `@Component` or `@Directive` decorator
@@ -361,8 +350,8 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any}): ViewChild;
+  (selector: Type<any>|Function|string, opts: {read?: any, static: boolean}): any;
+  new (selector: Type<any>|Function|string, opts: {read?: any, static: boolean}): ViewChild;
 }
 
 /**

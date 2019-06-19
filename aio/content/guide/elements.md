@@ -4,14 +4,14 @@
 # Angular Elements 개요
 
 <!--
-_Angular elements_ are Angular components packaged as _custom elements_, a web standard for defining new HTML elements in a framework-agnostic way.
+_Angular elements_ are Angular components packaged as _custom elements_ (also called Web Components), a web standard for defining new HTML elements in a framework-agnostic way.
 -->
 Angular Element는 웹 표준인 Web Component를 Angular 방식으로 지원하는 프로젝트입니다. 그래서 이 문서에서 언급하는 커스텀 엘리먼트는 특정 프레임워크에 종속되지 않는 웹 표준을 가리키며, HTML 문서에 사용할 수 있도록 새롭게 정의한 HTML 엘리먼트를 의미합니다.
 
 <!---
 [Custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) are a Web Platform feature currently supported by Chrome, Firefox, Opera, and Safari, and available in other browsers through polyfills (see [Browser Support](#browser-support)).
 A custom element extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code.
-The browser maintains a `CustomElementRegistry` of defined custom elements (also called Web Components), which maps an instantiable JavaScript class to an HTML tag.
+The browser maintains a `CustomElementRegistry` of defined custom elements, which maps an instantiable JavaScript class to an HTML tag.
 -->
 [커스텀 엘리먼트](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)는 현재 Chrome이나 Opera, Safari에서 정식 지원하고 있으며, [다른 브라우저](#브라우저-지원)는 폴리필이 필요합니다.
 커스텀 엘리먼트는 JavaScript로 동작하는 태그를 정의하는 방식으로 기존 HTML 문법을 확장합니다.

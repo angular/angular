@@ -10,7 +10,7 @@
     "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true,
     "plugins": [
-      { "name": "@angular/language-service" }
+      {"name": "@angular/language-service"}
     ]
   }
 }

@@ -27,6 +27,7 @@
     "importHelpers": true
   },
   "bazelOptions": {
-    "suppressTsconfigOverrideWarnings": true
+    "suppressTsconfigOverrideWarnings": true,
+    "devmodeTargetOverride": "es5"
   }
 }

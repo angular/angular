@@ -43,7 +43,9 @@
     "commit": {
       "description": "Initial repository commit information.",
       "oneOf": [
-        { "type": "boolean" },
+        {
+          "type": "boolean"
+        },
         {
           "type": "object",
           "properties": {
@@ -85,7 +87,12 @@
     },
     "viewEncapsulation": {
       "description": "Specifies the view encapsulation strategy.",
-      "enum": ["Emulated", "Native", "None", "ShadowDom"],
+      "enum": [
+        "Emulated",
+        "Native",
+        "None",
+        "ShadowDom"
+      ],
       "type": "string"
     },
     "version": {
@@ -118,11 +125,22 @@
         "message": "Which stylesheet format would you like to use?",
         "type": "list",
         "items": [
-          { "value": "css", "label": "CSS" },
-          { "value": "scss", "label": "SCSS   [ http://sass-lang.com   ]" },
-          { "value": "sass", "label": "SASS   [ http://sass-lang.com   ]" },
-          { "value": "less", "label": "LESS   [ http://lesscss.org     ]" },
-          { "value": "styl", "label": "Stylus [ http://stylus-lang.com ]" }
+          {
+            "value": "css",
+            "label": "CSS"
+          },
+          {
+            "value": "sass",
+            "label": "Sass   [ http://sass-lang.com   ]"
+          },
+          {
+            "value": "less",
+            "label": "Less   [ http://lesscss.org     ]"
+          },
+          {
+            "value": "styl",
+            "label": "Stylus [ http://stylus-lang.com ]"
+          }
         ]
       }
     },

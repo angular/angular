@@ -14,9 +14,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {JsonpCmp} from './app/jsonp_comp';
 
 @NgModule({bootstrap: [JsonpCmp], declarations: [JsonpCmp], imports: [BrowserModule, JsonpModule]})
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

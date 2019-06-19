@@ -90,7 +90,7 @@ Learn more about dependency resolution through the injector hierarchy:
 `@NgModule()` 데코레이터의 `providers` 메타데이터 옵션에 프로바이더를 등록하거나 `@Injectable()` 데코레이터의 `providedIn` 옵션에 `AppModule`이 아닌 다른 모듈을 지정하면 *NgModule 계층에* 프로바이더를 등록할 수 있습니다.
 
 <!--
-Use the `@NgModule()` `provides` option if a module is [lazy loaded](guide/lazy-loading-ngmodules). The module's own injector is configured with the provider when that module is loaded, and Angular can inject the corresponding services in any class it creates in that module. If you use the `@Injectable()` option `providedIn: MyLazyloadModule`, the provider could be shaken out at compile time, if it is not used anywhere else in the app. 
+Use the `@NgModule()` `providers` option if a module is [lazy loaded](guide/lazy-loading-ngmodules). The module's own injector is configured with the provider when that module is loaded, and Angular can inject the corresponding services in any class it creates in that module. If you use the `@Injectable()` option `providedIn: MyLazyloadModule`, the provider could be shaken out at compile time, if it is not used anywhere else in the app. 
 -->
 [지연 로딩되는 모듈](guide/lazy-loading-ngmodules)에서도 `@NgModule()`의 `providers` 옵션을 사용할 수 있습니다. 그러면 모듈이 로드될 때 인젝터가 새로 생성되는데, 지연로딩되는 모듈에 필요산 서비스가 추가로 있다면 이 인젝터에 등록해서 사용할 수 있습니다. 하지만 `@Injectable()` 데코레이터에서 `providedIn: MyLazyloadModule`과 같이 지정하면 이 프로바이더는 컴파일되면서 트리셰이킹으로 제거되기 때문에 애플리케이션이 정상적으로 동작하지 않을 수 있습니다.
 
@@ -212,15 +212,15 @@ and leave it up to the app whether to provide the service.
 ### @NgModule 계층의 인젝터
 
 <!--
-You can configure a provider at the module level using the `providedIn` metadata option for a non-root NgModule, in order to limit the scope of the provider to that module.
-This is the equivalent of specifying the non-root module in the `@Injectable()` metadata, except that the service provided this way is not tree-shakable.
+You can configure a provider at the module level using the `providers` metadata option for a non-root NgModule, in order to limit the scope of the provider to that module.
+This is the equivalent of specifying the non-root module in the `@Injectable()` metadata, except that the service provided via `providers` is not tree-shakable.
 -->
-`@Injectable()` 데코레이터의 `providedIn` 메타데이터 옵션을 사용하면 애플리케이션 최상위 NgModule이 아닌 모듈에도 서비스 프로바이더를 등록할 수 있는데, 이렇게 설정하면 서비스 프로바이더를 해당 모듈에서만 접근할 수 있도록 제한할 수 있습니다.
+`@Injectable()` 데코레이터의 `providers` 메타데이터 옵션을 사용하면 애플리케이션 최상위 NgModule이 아닌 모듈에도 서비스 프로바이더를 등록할 수 있는데, 이렇게 설정하면 서비스 프로바이더를 해당 모듈에서만 접근할 수 있도록 제한할 수 있습니다.
 물론 `@NgModule()` 데코레이터의 `providers`에 서비스 프로바이더를 등록해도 같은 효과를 낼 수 있지만, 위에서 설명한 것처럼 `@NgModule()`에 등록한 서비스 프로바이더는 트리셰이킹의 대상이 되지 않습니다.
 
 <!--
 You generally don't need to specify `AppModule` with `providedIn`, because the app's `root` injector is the `AppModule` injector. 
-However, if you configure a app-wide provider in the`@NgModule()` metadata for `AppModule`,
+However, if you configure a app-wide provider in the `@NgModule()` metadata for `AppModule`,
 it overrides one configured for `root` in the `@Injectable()` metadata. 
 You can do this to configure a non-default provider of a service that is shared with multiple apps. 
 -->

@@ -828,7 +828,7 @@ The compiler understands all syntax forms that the _collector_ supports, but it 
 
 The compiler can only reference _exported symbols_.
 
-Decorated component class members must be public. You cannot make an `@Input()` property private or internal.
+Decorated component class members must be public. You cannot make an `@Input()` property private or protected.
 
 Data bound properties must also be public.
 -->
@@ -2597,7 +2597,7 @@ Angular 템플릿 컴파일러는 어노테이션에 사용되는 코드를 팩�
 <!--
 When `true`, this option tells the compiler not to check the TypeScript version.
 The compiler will skip checking and will not error out when an unsupported version of TypeScript is used.
-Setting this option to `true` is not recommended because unsupported versions of TypeScript might have undefined behaviour.
+Setting this option to `true` is not recommended because unsupported versions of TypeScript might have undefined behavior.
 
 This option is `false` by default.
 -->

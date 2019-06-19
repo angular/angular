@@ -12,12 +12,12 @@ import {Identifiers} from '@angular/compiler/src/render3/r3_identifiers';
 import {angularCoreEnv} from '../../src/render3/jit/environment';
 
 const INTERFACE_EXCEPTIONS = new Set<string>([
-  'ɵBaseDef',
-  'ɵComponentDefWithMeta',
-  'ɵDirectiveDefWithMeta',
-  'ɵInjectorDef',
-  'ɵNgModuleDefWithMeta',
-  'ɵPipeDefWithMeta',
+  'ɵɵBaseDef',
+  'ɵɵComponentDefWithMeta',
+  'ɵɵDirectiveDefWithMeta',
+  'ɵɵInjectorDef',
+  'ɵɵNgModuleDefWithMeta',
+  'ɵɵPipeDefWithMeta',
 ]);
 
 describe('r3 jit environment', () => {

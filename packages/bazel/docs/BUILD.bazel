@@ -5,7 +5,6 @@ skylark_doc(
     srcs = [
         "//packages/bazel/src:ng_module.bzl",
         "//packages/bazel/src:ng_rollup_bundle.bzl",
-        "//packages/bazel/src:ng_setup_workspace.bzl",
         "//packages/bazel/src/ng_package:ng_package.bzl",
         "//packages/bazel/src/protractor:protractor_web_test.bzl",
     ],

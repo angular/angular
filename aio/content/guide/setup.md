@@ -1,33 +1,32 @@
 <!--
-# Setup for local development
+# Setup for Upgrading from AngularJS
 -->
 # 로컬 개발환경 설정하기
 
-{@a develop-locally}
+<!-- 
+Question: Can we remove this file and instead direct readers to https://github.com/angular/quickstart/blob/master/README.md
+-->
 
-<!--
+<div class="alert is-critical">
+
+**Audience:** Use this guide **only** in the context of  [Upgrading from AngularJS](guide/upgrade "Upgrading from AngularJS to Angular") or [Upgrading for Performance](guide/upgrade-performance "Upgrading for Performance"). 
+Those Upgrade guides refer to this Setup guide for information about using the [deprecated QuickStart GitHub repository](https://github.com/angular/quickstart "Deprecated Angular QuickStart GitHub repository"), which was created prior to the current Angular [CLI](cli "CLI Overview"). 
+
+**For all other scenarios,** see the current instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development").
+
+</div>
+
 The <live-example name=quickstart>QuickStart live-coding</live-example> example is an Angular _playground_.
-It's not where you'd develop a real application.
-You [should develop locally](guide/setup#why-locally "Why develop locally") on your own machine ... and that's also how we think you should learn Angular.
--->
-<live-example name=quickstart>QuickStart live-coding</live-example>은 Angular를 온라인에서 테스트해볼 수 있는 환경이며, Angular _플레이 그라운드_ 애플리케이션을 실행한 것입니다.
-하지만 이 환경은 실제 애플리케이션을 개발하는 환경이 아닙니다.
-[개발은 로컬 환경에서](guide/setup#why-locally "Why develop locally") 해야 하며, Angular는 이 방식으로 개발하는 것을 전제로 개발되었습니다.
+There are also some differences from a local app, to simplify that live-coding experience.
+In particular, the QuickStart live-coding example shows just the AppComponent file; it creates the equivalent of app.module.ts and main.ts internally for the playground only.
 
-<!--
-Setting up a new project on your machine is quick and easy with the **QuickStart seed**,
-maintained [on github](https://github.com/angular/quickstart "Install the github QuickStart repo").
--->
-프로젝트 환경을 새로 만드는 것은 [github](https://github.com/angular/quickstart "Install the github QuickStart repo")으로 관리되고 있는 **QuickStart seed**를 사용하는 것이 간단합니다.
+This guide describes how to develop locally on your own machine.
+Setting up a new project on your machine is quick and easy with the [QuickStart seed on github](https://github.com/angular/quickstart "Install the github QuickStart repo").
 
-<!--
-Make sure you have [Node.js® and npm installed](guide/setup#install-prerequisites "What if you don't have Node.js and npm?").
--->
-물론 프로젝트를 생성하기 전에 [Node.js® 와 npm이 설치되어 있어야](guide/setup#install-prerequisites "What if you don't have Node.js and npm?") 합니다.
+**Prerequisite:** Make sure you have [Node.js® and npm installed](guide/setup-local#prerequisites "Angular prerequisites").
+
 
 {@a clone}
-
-
 <!--
 ## Clone
 -->
@@ -158,14 +157,12 @@ Open a terminal window in the project folder and enter the following commands fo
 
 
 <!--
-The **QuickStart seed** contains the same application as the QuickStart playground.
-But its true purpose is to provide a solid foundation for _local_ development.
-Consequently, there are _many more files_ in the project folder on your machine,
+The **QuickStart seed** provides a basic QuickStart playground application and other files necessary for local development.
+Consequently, there are many files in the project folder on your machine,
 most of which you can [learn about later](guide/file-structure).
 -->
-**QuickStart seed**에는 QuickStart 플레이그라운드와 동일한 애플리케이션이 구현되어 있습니다.
-하지만 이 프로젝트의 원래 목적은 _로컬_ 개발 환경의 기본 틀을 제공하는 것입니다.
-[가이드 문서의 내용](guide/file-structure)을 계속 따라가다 보면 이 프로젝트에 _많은 파일들이_ 추가될 것입니다.
+**QuickStart seed**는 QuickStart 플레이그라운드와 거의 비슷한 애플리케이션이며, 로컬 개발환경에 맞게 몇 개 파일이 더 추가된 것입니다.
+[가이드 문서의 내용](guide/file-structure)을 계속 따라가다 보면 이 프로젝트에 많은 파일들이 추가될 것입니다.
 
 
 {@a app-files}
@@ -416,92 +413,31 @@ You may need [nvm](https://github.com/creationix/nvm) if you already have projec
 Node.js 버전을 바꾸면서 개발해야 한다면 [nvm](https://github.com/creationix/nvm)을 사용하는 것도 권장합니다.
 그리고 이미 개발이 끝난 프로젝트가 요구하는 Node.js 버전이 다를 때, [nvm](https://github.com/creationix/nvm)을 사용하면 Node.js를 다시 설치하지 않아도 버전을 변경할 수 있습니다.
 
-{@a why-locally}
-
 
 <!--
-## Appendix: Why develop locally
--->
-## 부록: 왜 로컬 환경에서 개발하나요?
-
-<!--
-<live-example title="QuickStart Seed in Stackblitz">Live coding</live-example> in the browser is a great way to explore Angular.
--->
-Angular를 테스트해보려면 브라우저에서도 <live-example title="QuickStart Seed in Stackblitz">라이브 코딩</live-example>을 해볼 수 있습니다.
-
-<!--
-Links on almost every documentation page open completed samples in the browser.
-You can play with the sample code, share your changes with friends, and download and run the code on your own machine.
--->
-그리고 이 웹사이트에 제공하는 예제 코드도 브라우저에서 대부분 실행해 볼 수 있습니다.
-이렇게 실행한 예제 코드를 변경해 볼 수도 있고, 변경한 내용을 친구에게 공유할 수도 있으며, 로컬 환경에 다운받아서 실행할 수도 있습니다.
-
-<!--
-The [Getting Started](guide/quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
-It creates the equivalent of `app.module.ts` and `main.ts` internally _for the playground only_.
-so the reader can discover Angular without distraction.
-The other samples are based on the QuickStart seed.
--->
-[시작하기](guide/quickstart "Angular QuickStart Playground")는 `AppComponent`를 단순하게 화면에 표시한 것 뿐입니다.
-그리고 `app.module.ts` 파일과 `main.ts` 파일은 로컬에 Angular를 설치하지 않아도 애플리케이션을 실행할 수 있도록 _플레이 그라운드_ 용으로 만들어진 것입니다.
-가이드 문서의 다른 예제도 QuickStart seed를 활용해서 만들어졌습니다.
-
-<!--
-As much fun as this is ...
--->
-그런데 이 라이브 코딩 환경은 다음과 같은 한계가 있습니다.
-
-<!--
-* you can't ship your app in Stackblitz
-* you aren't always online when writing code
-* transpiling TypeScript in the browser is slow
-* the type support, refactoring, and code completion only work in your local IDE
--->
-* Stackblitz로는 애플리케이션을 배포할 수 없습니다.
-* 코드를 작성할 때 인터넷에 연결된 상태가 아닐 수도 있습니다.
-* 브라우저에서 TypeScript 코드를 변환하는 것은 상대적으로 느립니다.
-* 타입 정보 제공, 리팩토링, 코드 자동완성과 같은 기능은 로컬 IDE에서만 동작합니다.
-
-<!--
-Use the <live-example title="QuickStart Seed in Stackblitz">live coding</live-example> environment as a _playground_,
-a place to try the documentation samples and experiment on your own.
-It's the perfect place to reproduce a bug when you want to
-<a href="https://github.com/angular/angular/issues/new" title="File a documentation issue">file a documentation issue</a> or
-<a href="https://github.com/angular/angular/issues/new" title="File an Angular issue">file an issue with Angular itself</a>.
--->
-그래서 <live-example title="QuickStart Seed in Stackblitz">라이브 코딩</live-example> 환경은 _간단한 테스트용_ 으로만 사용하는 것이 좋습니다.
-그리고 가이드 문서의 잘못된 부분을 리포트하거나 Angular의 버그를 리포트할 때는 <a href="https://github.com/angular/angular/issues/new">이 곳</a>을 활용하는 것이 좋습니다.
-
-<!--
-For real development, we strongly recommend [developing locally](guide/setup#develop-locally).
--->
-실제 개발은 [로컬 환경에서](guide/setup#develop-locally) 하는 것을 적극 추천합니다.
-
-<!--
-## Appendix: develop locally with IE
+## Appendix: Develop locally with IE
 -->
 ## 부록: 로컬 개발 환경에서 IE 활용하기
 
 <!--
-If you develop angular locally with `ng serve`, there will be `websocket` connection being setup automatically between browser and local dev server, so when your code change, browser can automatically refresh.
+If you develop angular locally with `ng serve`, a `websocket` connection is set up automatically between browser and local dev server, so when your code changes, the browser can automatically refresh.
+
+In Windows, by default, one application can only have 6 websocket connections, <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket Settings</a>.
+So when IE is refreshed (manually or automatically by `ng serve`), sometimes the websocket does not close properly. When websocket connections exceed the limitations, a `SecurityError` will be thrown. This error will not affect the angular application, you can just restart IE to clear this error, or modify the windows registry to update the limitations.
 -->
 로컬 개발환경에서 Angular 애플리케이션을 개발하면 `ng serve` 명령을 실행했을 때 브라우저와 로컬 개발 서버가 `websocket`으로 연결됩니다. 그래서 코드를 변경했을 때 브라우저가 코드 변경분을 반영하기 위해 페이지를 자동으로 갱신합니다.
 
-<!--
-In windows, by default one application can only have 6 websocket connections, <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket Settings</a>.
-So if IE was refreshed manunally or automatically by `ng serve`, sometimes, the websocket will not close properly, when websocket connections exceed limitations, `SecurityError` will be thrown, this error will not affect the angular application, you can just restart IE to clear this error, or modify the windows registry to update the limitations.
--->
 그리고 Windows에서는 <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket 설정에 따라</a> 애플리케이션에 6개의 웹소켓을 연결할 수 있습니다.
 그래서 IE에서 수동으로 페이지를 새로고침하거나 `ng serve`에 의해 자동으로 갱신되면 종종 웹소켓이 정상적으로 종료되지 않아서 새로운 웹소켓을 연결하지 못할 때가 있습니다. 이 때 `SecurityError` 가 발생하는데, 이 에러가 Angular 애플리케이션에는 영향을 주지 않지만 에러를 없애려면 IE를 재시작해야 합니다.
 Windows에서 이 제한을 해제하려면 레지스트리를 수정해야 합니다.
 
 <!--
-## Appendix: test using `fakeAsync()/async()`
+## Appendix: Test using `fakeAsync()/async()`
 -->
 ## 부록: `fakeAsync()/async()` 활용하기
 
 <!--
-If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read [testing guide](guide/testing#async-test-with-fakeasync)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read the [Testing guide](guide/testing#async-test-with-fakeasync)), you need to import `zone.js/dist/zone-testing` in your test setup file.
 -->
 유닛 테스트를 실행할 때 `fakeAsync()/async()` 헬퍼 함수를 사용한다면, 테스트 환경 설정을 위해 `zone.js/dist/zone-testing` 패키지들을 로드해야 합니다.
 자세한 내용은 [테스트](guide/testing#비동기로-테스트하기-fakeasync) 문서를 참고하세요.

@@ -27,7 +27,8 @@ describe('functional test for todo', () => {
            const toDoAppComponent = (window as any).toDoAppComponent;
            await whenRendered(toDoAppComponent);
 
-           const styleContent = findStyleTextForSelector('.todo-list\\\[_ngcontent-\\\w+\\\]');
+           const styleContent =
+               findStyleTextForSelector('.todo-list\\\[_ngcontent-[a-z]+-\\\w+\\\]');
            expect(styleContent).toMatch(/font-weight:\s*bold;/);
            expect(styleContent).toMatch(/color:\s*#d9d9d9;/);
          }));

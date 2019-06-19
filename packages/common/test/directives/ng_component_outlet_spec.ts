@@ -11,7 +11,6 @@ import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_out
 import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {modifiedInIvy} from '@angular/private/testing';
 
 describe('insert/remove', () => {
 
@@ -108,19 +107,18 @@ describe('insert/remove', () => {
      }));
 
 
-  modifiedInIvy('Static ViewChild and ContentChild queries are resolved in update mode')
-      .it('should resolve with an injector', async(() => {
-            let fixture = TestBed.createComponent(TestComponent);
+  it('should resolve with an injector', async(() => {
+       let fixture = TestBed.createComponent(TestComponent);
 
-            // We are accessing a ViewChild (ngComponentOutlet) before change detection has run
-            fixture.componentInstance.cmpRef = null;
-            fixture.componentInstance.currentComponent = InjectedComponent;
-            fixture.detectChanges();
-            let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
-            expect(cmpRef).toBeAnInstanceOf(ComponentRef);
-            expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
-            expect(cmpRef.instance.testToken).toBeNull();
-          }));
+       // We are accessing a ViewChild (ngComponentOutlet) before change detection has run
+       fixture.componentInstance.cmpRef = null;
+       fixture.componentInstance.currentComponent = InjectedComponent;
+       fixture.detectChanges();
+       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
+       expect(cmpRef).toBeAnInstanceOf(ComponentRef);
+       expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
+       expect(cmpRef.instance.testToken).toBeNull();
+     }));
 
   it('should render projectable nodes, if supplied', async(() => {
        const template = `<ng-template>projected foo</ng-template>${TEST_CMP_TEMPLATE}`;
@@ -240,7 +238,7 @@ class TestComponent {
   // TODO(issue/24571): remove '!'.
   @ViewChildren(TemplateRef) tplRefs !: QueryList<TemplateRef<any>>;
   // TODO(issue/24571): remove '!'.
-  @ViewChild(NgComponentOutlet) ngComponentOutlet !: NgComponentOutlet;
+  @ViewChild(NgComponentOutlet, {static: true}) ngComponentOutlet !: NgComponentOutlet;
 
   constructor(public vcRef: ViewContainerRef) {}
 }

@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "core",
@@ -10,15 +10,15 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/core",
     deps = [
         "//packages:types",
+        "//packages/core/src/compiler",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",
+        "//packages/core/src/reflection",
         "//packages/core/src/util",
-        "@ngdeps//zone.js",
-        "@rxjs",
-        "@rxjs//operators",
+        "@npm//rxjs",
+        "@npm//zone.js",
     ],
 )
 
@@ -29,6 +29,9 @@ ng_package(
         "//packages/core/testing:package.json",
     ],
     entry_point = "packages/core/index.js",
+    packages = [
+        "//packages/core/schematics:npm_package",
+    ],
     tags = [
         "release-with-framework",
     ],
@@ -36,9 +39,10 @@ ng_package(
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
         "//packages/bazel/test/ng_package:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/ngcc/test:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
         "//packages/compiler-cli/test/diagnostics:__pkg__",
-        "//packages/compiler-cli/test/ngcc:__pkg__",
         "//packages/compiler-cli/test/transformers:__pkg__",
         "//packages/compiler/test:__pkg__",
         "//packages/language-service/test:__pkg__",

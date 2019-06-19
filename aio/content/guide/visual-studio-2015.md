@@ -4,15 +4,14 @@
 
 Some developers prefer Visual Studio as their Integrated Development Environment (IDE).
 
-This cookbook describes the steps required to set up and use the
-Angular [Getting Started](guide/quickstart) files in Visual Studio 2015 within an ASP.NET 4.x project.
+This cookbook describes the steps required to set up and use Angular app files in Visual Studio 2015 within an ASP.NET 4.x project.
 
 <div class="alert is-helpful">
 
 
 
 There is no *live example* for this cookbook because it describes Visual Studio, not 
-the Angular Getting Started application itself.
+the Angular application itself. It uses the starter Angular application created by the CLI command [`ng new`](cli/new) as an example. 
 
 
 </div>
@@ -48,7 +47,7 @@ Note that the resulting code does not map to the docs. Adjust accordingly.
 
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
 if they are not already on your machine.
-See [Getting Started](guide/quickstart) for supported versions and instructions. 
+See [Local Environment Setup](guide/setup-local "Setting up for Local Development") for supported versions and instructions. 
 
 
 
@@ -97,16 +96,15 @@ find them in either location, it will use its own versions of the tools.
 
 
 
-While Visual Studio Update 3 ships with TypeScript support out of the box, it currently doesn’t ship with TypeScript 3.1, 
-which you need to develop Angular applications.
+While Visual Studio Update 3 ships with TypeScript support out of the box, it currently doesn’t ship with more recent versions of TypeScript, which you need to develop Angular applications.
 
-To install TypeScript 3.1:
+To install the latest version of TypeScript:
 
- * Download and install [TypeScript 3.1 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593),
+ * Download and install the latest [TypeScript for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593),
 
- * OR install it with npm: `npm install -g typescript@3.1`.
+ * OR install it with npm: `npm install -g typescript@latest`.
 
-You can find out more about TypeScript 3.1 support in Visual Studio **[here](https://blogs.msdn.microsoft.com/typescript/announcing-typescript-3-1/)**.
+You can find out more about TypeScript support in Visual Studio **[here](https://blogs.msdn.microsoft.com/typescript/announcing-typescript-3-1/)**.
 
 At this point, Visual Studio is ready. It’s a good idea to close Visual Studio and 
 restart it to make sure everything is clean.
@@ -114,11 +112,13 @@ restart it to make sure everything is clean.
 
 
 <h2 id='download'>
-  Step 1: Download the Angular Getting Started app
+  Step 1: Create a starter Angular app
 </h2>
 
+ 
+ Follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development") to create a starter Angular app using the CLI command [`ng new`](cli/new). 
 
-Go to the final code review in [Getting Started](guide/quickstart) and download the solution app project. These files contain a starter Angular app.
+ 
 
 
 
@@ -150,10 +150,10 @@ no authentication, and no hosting. Pick the template and options appropriate for
 
 
 <h2 id='copy'>
-  Step 3: Copy the Angular Getting Started project files into the ASP.NET project folder
+  Step 3: Copy the Angular project files into the ASP.NET project folder
 </h2>
 
-Copy the files you downloaded from [Getting Started](guide/quickstart) into the folder containing the `.csproj` file.
+Copy files from the starter Angular app into the folder containing the `.csproj` file.
 Include the files in the Visual Studio project as follows:
 
 * Click the `Show All Files` button in Solution Explorer to reveal all of the hidden files in the project.

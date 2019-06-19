@@ -32,6 +32,7 @@ export declare abstract class AbstractControl {
     get(path: Array<string | number> | string): AbstractControl | null;
     getError(errorCode: string, path?: Array<string | number> | string): any;
     hasError(errorCode: string, path?: Array<string | number> | string): boolean;
+    markAllAsTouched(): void;
     markAsDirty(opts?: {
         onlySelf?: boolean;
     }): void;
@@ -169,6 +170,7 @@ export declare class FormArray extends AbstractControl {
     readonly length: number;
     constructor(controls: AbstractControl[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     at(index: number): AbstractControl;
+    clear(): void;
     getRawValue(): any[];
     insert(index: number, control: AbstractControl): void;
     patchValue(value: any[], options?: {

@@ -6,5 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {ForeignFunctionResolver, PartialEvaluator} from './src/interface';
-export {BuiltinFn, DynamicValue, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap, isDynamicValue} from './src/result';
+export {DynamicValue} from './src/dynamic';
+export {DependencyTracker, ForeignFunctionResolver, PartialEvaluator} from './src/interface';
+export {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './src/result';

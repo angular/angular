@@ -514,7 +514,7 @@ Angular CLI로 다음 명령을 실행해서 `MessagesComponent`를 생성합니
 </code-example>
 
 <!--
-The CLI creates the component files in the `src/app/messages` folder and declare `MessagesComponent` in `AppModule`.
+The CLI creates the component files in the `src/app/messages` folder and declares the `MessagesComponent` in `AppModule`.
 
 Modify the `AppComponent` template to display the generated `MessagesComponent`
 -->

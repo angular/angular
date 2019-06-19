@@ -60,7 +60,21 @@ The [Setup](guide/setup) guide uses the following `tsconfig.json`:
 -->
 [로컬 개발환경 설정하기](guide/setup) 문서에서 만든 `tsconfig.json` 파일은 다음과 같은 내용입니다:
 
-<code-example path="quickstart/src/tsconfig.1.json" header="tsconfig.json" linenums="false"></code-example>
+<code-example lang="json" header="tsconfig.json" linenums="false">
+  {
+    "compilerOptions": {
+      "target": "es5",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "lib": [ "es2015", "dom" ],
+      "noImplicitAny": true,
+      "suppressImplicitAnyIndexErrors": true
+    }
+  }
+</code-example>
 
 <!--
 This file contains options and flags that are essential for Angular applications.
@@ -159,7 +173,7 @@ Angular도 이런 경우에 해당됩니다.
 `node_modules/@angulalr/core/` 폴더만 봐도 Angular에 대한 타입 정의 파일이 여러개 정의되어 있습니다.
 
 <!--
-**You need do nothing to get *typings* files for library packages that include `d.ts` files.
+**You don't need to do anything to get *typings* files for library packages that include `d.ts` files.
 Angular packages include them already.**
 -->
 **패키지에서 `d.ts` 파일을 제공한다면 *타입 정의 파일*을 따로 추가할 필요가 없습니다.**

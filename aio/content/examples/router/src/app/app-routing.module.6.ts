@@ -21,12 +21,12 @@ const appRoutes: Routes = [
   },
   {
     path: 'admin',
-    loadChildren: './admin/admin.module#AdminModule',
+    loadChildren: () => import('./admin/admin.module').then(mod => mod.AdminModule),
     canLoad: [AuthGuard]
   },
   {
     path: 'crisis-center',
-    loadChildren: './crisis-center/crisis-center.module#CrisisCenterModule'
+    loadChildren: () => import('./crisis-center/crisis-center.module').then(mod => mod.CrisisCenterModule)
   },
   { path: '',   redirectTo: '/heroes', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }

@@ -9,7 +9,7 @@ Alternatively, you can use the [yarn client](https://yarnpkg.com/) for downloadi
 
 <div class="alert is-helpful">
 
-See [Getting Started](guide/quickstart#prerequisites) for information about the required versions and installation of Node.js and npm.
+See [Local Environment Setup](guide/setup-local "Setting up for Local Development") for information about the required versions and installation of `Node.js` and `npm`.
 
 If you already have projects running on your machine that use other versions of Node.js and npm, consider using [nvm](https://github.com/creationix/nvm) to manage the multiple versions of Node.js and npm. 
 
@@ -67,7 +67,6 @@ Package name                               | Description
 **@angular/compiler** | Angular's template compiler. It understands templates and can convert them to code that makes the application run and render. Typically you don’t interact with the compiler directly; rather, you use it indirectly via `platform-browser-dynamic` when JIT compiling in the browser. For more information, see the [Ahead-of-time Compilation guide](guide/aot-compiler).
 [**@angular/core**](api/core) | Critical runtime parts of the framework that are needed by every application. Includes all metadata decorators, `Component`, `Directive`,  dependency injection, and the component lifecycle hooks.
 [**@angular/forms**](api/forms) | Support for both [template-driven](guide/forms) and [reactive forms](guide/reactive-forms). For information about choosing the best forms approach for your app, see [Introduction to forms](guide/forms-overview).
-[**@angular/http**](api/http) | Angular's legacy HTTP client, which was deprecated in version 5.0 in favor of [@angular/common/http](api/common/http).
 [**@angular/<br />platform&#8209;browser**](api/platform-browser) | Everything DOM and browser related, especially the pieces that help render into the DOM. This package also includes the `bootstrapModuleFactory()` method for bootstrapping applications for production builds that pre-compile with [AOT](guide/aot-compiler).
 [**@angular/<br />platform&#8209;browser&#8209;dynamic**](api/platform-browser-dynamic) | Includes [providers](api/core/Provider) and methods to compile and run the app on the client using the [JIT compiler](guide/aot-compiler).
 [**@angular/router**](api/router) | The router module navigates among your app pages when the browser URL changes. For more information, see [Routing and Navigation](guide/router).
@@ -90,7 +89,7 @@ Package name                               | Description
 
 Many browsers lack native support for some features in the latest HTML standards,
 features that Angular requires.
-[_Polyfills_](https://en.wikipedia.org/wiki/Polyfill) can emulate the missing features.
+[_Polyfills_](https://en.wikipedia.org/wiki/Polyfill_(programming)) can emulate the missing features.
 The [Browser Support](guide/browser-support) guide explains which browsers need polyfills and 
 how you can add them.
 

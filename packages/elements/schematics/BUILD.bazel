@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
+load("//tools:defaults.bzl", "npm_package")
 
-load("//tools:defaults.bzl", "npm_package", "ts_library")
+package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "package.json",

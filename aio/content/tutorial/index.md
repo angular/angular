@@ -1,24 +1,27 @@
-<!--
-<h1 class="no-toc">Tutorial: Tour of Heroes</h1>
--->
-<h1 class="no-toc">튜토리얼: 히어로들의 여행</h1>
+<h1 class="no-toc">Tour of Heroes App and Tutorial</h1>
 
-<!--
-The _Tour of Heroes_ tutorial covers the fundamentals of Angular.  
-In this tutorial you will build an app that helps a staffing agency manage its stable of heroes.
--->
-_히어로들의 여행_ 튜토리얼은 Angular의 기본 기능을 다룹니다.
-이 튜토리얼을 진행하면서 히어로들을 관리할 수 있는 앱을 만들어 봅시다.
 
-<!--
-This basic app has many of the features you'd expect to find in a data-driven application.
+<div class="callout is-helpful">
+<header>Getting Started Tutorial</header>
+
+
+If you're new to Angular, see the [**Getting Started tutorial.**](start) 
+The Getting Started tutorial covers the same major topics as this Tour of Heroes&mdash;components, template syntax, routing, services, and accessing data via HTTP&mdash;in a condensed format, following the most current best practices. 
+
+**This Tour of Heroes tutorial** is the conceptual basis for many examples in this documentation set. Reading this introduction page provides sufficient context for working with those examples. You do not need to do this tutorial to understand those other examples. The Tour of Heroes tutorial is maintained here for context and continuity. 
+
+</div> 
+
+This _Tour of Heroes_ tutorial provides an introduction to the fundamentals of Angular. 
+It shows you how to set up your local development environment and develop an app using the [Angular CLI tool](cli "CLI command reference"). 
+
+In this _Tour of Heroes_ tutorial, you will build an app that helps a staffing agency manage its stable of heroes.
+
+This app has many of the features you'd expect to find in a data-driven application.
 It acquires and displays a list of heroes, edits a selected hero's detail, and navigates among different views of heroic data.
--->
-히어로 관리 앱은 데이터 드리븐 애플리케이션에서 활용할 수 있는 다양한 기능을 활용해서 구현합니다.
-이 앱은 히어로들의 목록을 가져와서 표시하고, 히어로의 정보를 편집하며, 히어로의 데이터를 다양한 방식으로 표시합니다.
 
 <!--
-By the end of the tutorial you will be able to do the following:
+By the end of this tutorial you will be able to do the following:
 -->
 튜토리얼을 마지막까지 진행하면 다음 내용에 대해 알게 될 것입니다.
 
@@ -49,10 +52,15 @@ Angular can do whatever you need it to do.
 -->
 이 내용들을 구현하면서 Angular가 제공하는 기능을 다양하게 살펴보기 때문에, 튜토리얼을 끝낼때 쯤이면 Angular로 새로운 프로젝트를 시작하는 것에 어려움을 느끼지 않을 것입니다.
 
+<div class="callout is-helpful">
+<header>Solution</header>
+
 <!--
-After completing all tutorial steps, the final app will look like this <live-example name="toh-pt6"></live-example>.
+After completing all tutorial steps, the final app will look like this: <live-example name="toh-pt6"></live-example>.
 -->
 완성된 튜토리얼은 <live-example name="toh-pt6"></live-example> 에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+
+</div>
 
 
 <!--

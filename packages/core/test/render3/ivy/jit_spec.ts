@@ -7,10 +7,10 @@
  */
 import 'reflect-metadata';
 
-import {ElementRef, QueryList} from '@angular/core';
+import {ElementRef, QueryList, ɵɵsetComponentScope as setComponentScope} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
-import {inject, setCurrentInjector} from '@angular/core/src/di/injector_compatibility';
-import {InjectorDef, defineInjectable} from '@angular/core/src/di/interface/defs';
+import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_compatibility';
+import {ɵɵInjectorDef, ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/core/src/metadata/di';
 import {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
@@ -45,7 +45,7 @@ ivyEnabled && describe('render3 jit', () => {
 
     expect(ServiceAny.ngInjectableDef).toBeDefined();
     expect(ServiceAny.ngInjectableDef.providedIn).toBe('root');
-    expect(inject(Service) instanceof Service).toBe(true);
+    expect(ɵɵinject(Service) instanceof Service).toBe(true);
   });
 
   it('compiles an injectable with a useValue provider', () => {
@@ -53,7 +53,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Service {
     }
 
-    expect(inject(Service)).toBe('test');
+    expect(ɵɵinject(Service)).toBe('test');
   });
 
   it('compiles an injectable with a useExisting provider', () => {
@@ -65,7 +65,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Service {
     }
 
-    expect(inject(Service)).toBe('test');
+    expect(ɵɵinject(Service)).toBe('test');
   });
 
   it('compiles an injectable with a useFactory provider, without deps', () => {
@@ -74,7 +74,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Service {
     }
 
-    expect(inject(Service)).toBe('test');
+    expect(ɵɵinject(Service)).toBe('test');
   });
 
   it('compiles an injectable with a useFactory provider, with deps', () => {
@@ -86,7 +86,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Service {
     }
 
-    expect(inject(Service)).toBe('test');
+    expect(ɵɵinject(Service)).toBe('test');
   });
 
   it('compiles an injectable with a useClass provider, with deps', () => {
@@ -104,7 +104,7 @@ ivyEnabled && describe('render3 jit', () => {
     }
     const ServiceAny = Service as any;
 
-    expect(inject(Service).value).toBe('test');
+    expect(ɵɵinject(Service).value).toBe('test');
   });
 
   it('compiles an injectable with a useClass provider, without deps', () => {
@@ -119,8 +119,8 @@ ivyEnabled && describe('render3 jit', () => {
       get value(): number { return 0; }
     }
 
-    expect(inject(Existing).value).toBe(1);
-    const injected = inject(Service);
+    expect(ɵɵinject(Existing).value).toBe(1);
+    const injected = ɵɵinject(Service);
     expect(injected instanceof Existing).toBe(true);
     expect(injected.value).toBe(2);
   });
@@ -139,7 +139,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Child extends Base {
     }
 
-    expect(inject(Child).dep instanceof Dep).toBe(true);
+    expect(ɵɵinject(Child).dep instanceof Dep).toBe(true);
   });
 
   it('compiles a module to a definition', () => {
@@ -158,13 +158,16 @@ ivyEnabled && describe('render3 jit', () => {
 
     const moduleDef: NgModuleDef<Module> = (Module as any).ngModuleDef;
     expect(moduleDef).toBeDefined();
+    if (!Array.isArray(moduleDef.declarations)) {
+      return fail('Expected an array');
+    }
     expect(moduleDef.declarations.length).toBe(1);
     expect(moduleDef.declarations[0]).toBe(Cmp);
   });
 
   it('compiles a module to an ngInjectorDef with the providers', () => {
     class Token {
-      static ngInjectableDef = defineInjectable({
+      static ngInjectableDef = ɵɵdefineInjectable({
         providedIn: 'root',
         factory: () => 'default',
       });
@@ -177,7 +180,7 @@ ivyEnabled && describe('render3 jit', () => {
       constructor(public token: Token) {}
     }
 
-    const injectorDef: InjectorDef<Module> = (Module as any).ngInjectorDef;
+    const injectorDef: ɵɵInjectorDef<Module> = (Module as any).ngInjectorDef;
     const instance = injectorDef.factory();
 
     // Since the instance was created outside of an injector using the module, the
@@ -280,32 +283,6 @@ ivyEnabled && describe('render3 jit', () => {
     expect(InputDirAny.ngDirectiveDef.declaredInputs).toEqual({publicName: 'privateName'});
   });
 
-  it('should add ngBaseDef to types with @Input properties', () => {
-    class C {
-      @Input('alias1')
-      prop1 = 'test';
-
-      @Input('alias2')
-      prop2 = 'test';
-    }
-
-    expect((C as any).ngBaseDef).toBeDefined();
-    expect((C as any).ngBaseDef.inputs).toEqual({prop1: 'alias1', prop2: 'alias2'});
-  });
-
-  it('should add ngBaseDef to types with @Output properties', () => {
-    class C {
-      @Output('alias1')
-      prop1 = 'test';
-
-      @Output('alias2')
-      prop2 = 'test';
-    }
-
-    expect((C as any).ngBaseDef).toBeDefined();
-    expect((C as any).ngBaseDef.outputs).toEqual({prop1: 'alias1', prop2: 'alias2'});
-  });
-
   it('should compile ContentChildren query with string predicate on a directive', () => {
     @Directive({selector: '[test]'})
     class TestDirective {
@@ -313,17 +290,15 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
   });
 
   it('should compile ContentChild query with string predicate on a directive', () => {
     @Directive({selector: '[test]'})
     class TestDirective {
-      @ContentChild('foo') foo: ElementRef|undefined;
+      @ContentChild('foo', {static: false}) foo: ElementRef|undefined;
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
   });
 
   it('should compile ContentChildren query with type predicate on a directive', () => {
@@ -335,7 +310,6 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
   });
 
   it('should compile ContentChild query with type predicate on a directive', () => {
@@ -343,27 +317,16 @@ ivyEnabled && describe('render3 jit', () => {
 
     @Directive({selector: '[test]'})
     class TestDirective {
-      @ContentChild(SomeDir) dir: SomeDir|undefined;
+      @ContentChild(SomeDir, {static: false}) dir: SomeDir|undefined;
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
-  });
-
-  it('should not pick up view queries from directives', () => {
-    @Directive({selector: '[test]'})
-    class TestDirective {
-      @ViewChildren('foo') foos: QueryList<ElementRef>|undefined;
-    }
-
-    expect((TestDirective as any).ngDirectiveDef.contentQueries).toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.viewQuery).toBeNull();
   });
 
   it('should compile ViewChild query on a component', () => {
     @Component({selector: 'test', template: ''})
     class TestComponent {
-      @ViewChild('foo') foo: ElementRef|undefined;
+      @ViewChild('foo', {static: false}) foo: ElementRef|undefined;
     }
 
     expect((TestComponent as any).ngComponentDef.foo).not.toBeNull();

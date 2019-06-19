@@ -13,7 +13,7 @@ module.exports = function(config) {
   if (!global.userOnPrepareGotCalled) {
     throw new Error('Expecting user configuration onPrepare to have been called');
   }
-  const portFlag = config.server.endsWith('prodserver') ? '-p' : '-port';
+  const portFlag = /prodserver(\.exe)?$/.test(config.server) ? '-p' : '-port';
   return protractorUtils.runServer(config.workspace, config.server, portFlag, [])
       .then(serverSpec => {
         const serverUrl = `http://localhost:${serverSpec.port}`;

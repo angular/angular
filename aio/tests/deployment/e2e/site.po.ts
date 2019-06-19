@@ -38,20 +38,15 @@ export class SitePage {
   }
 
   /**
-   * Navigate to a URL, disable animations, unregister the ServiceWorker, and wait for Angular.
+   * Navigate to a URL, disable animations, wait for Angular and unregister the ServiceWorker.
    * (The SW is unregistered to ensure that subsequent requests are passed through to the server.)
    */
   async goTo(url: string) {
-    const unregisterServiceWorker = (cb: () => void) => navigator.serviceWorker
-        .getRegistrations()
-        .then(regs => Promise.all(regs.map(reg => reg.unregister())))
-        .then(cb);
-
     await browser.get(url || this.baseUrl);
     await browser.executeScript('document.body.classList.add(\'no-animations\')');
-    await browser.executeAsyncScript(unregisterServiceWorker);
     await browser.waitForAngular();
-  };
+    await this.unregisterSw();
+  }
 
   /**
    * Initialize the page object and get it ready for further requests.
@@ -59,5 +54,17 @@ export class SitePage {
   async init() {
     // Make an initial request to unregister the ServiceWorker.
     await this.goTo('');
+  }
+
+  /**
+   * Unregister the ServiceWorker (if registered).
+   */
+  async unregisterSw() {
+    const unregisterSwFn = (cb: () => void) => navigator.serviceWorker
+        .getRegistrations()
+        .then(regs => Promise.all(regs.map(reg => reg.unregister())))
+        .then(cb);
+
+    await browser.executeAsyncScript(unregisterSwFn);
   }
 }

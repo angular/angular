@@ -22,7 +22,7 @@ export interface R3InjectableMetadata {
   name: string;
   type: o.Expression;
   typeArgumentCount: number;
-  ctorDeps: R3DependencyMetadata[]|null;
+  ctorDeps: R3DependencyMetadata[]|'invalid'|null;
   providedIn: o.Expression;
   useClass?: o.Expression;
   useFactory?: o.Expression;
@@ -46,11 +46,14 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     // used to instantiate the class with dependencies injected, or deps are not specified and
     // the factory of the class is used to instantiate it.
     //
-    // A special case exists for useClass: Type where Type is the injectable type itself, in which
-    // case omitting deps just uses the constructor dependencies instead.
+    // A special case exists for useClass: Type where Type is the injectable type itself and no
+    // deps are specified, in which case 'useClass' is effectively ignored.
 
     const useClassOnSelf = meta.useClass.isEquivalent(meta.type);
-    const deps = meta.userDeps || (useClassOnSelf && meta.ctorDeps) || undefined;
+    let deps: R3DependencyMetadata[]|undefined = undefined;
+    if (meta.userDeps !== undefined) {
+      deps = meta.userDeps;
+    }
 
     if (deps !== undefined) {
       // factory: () => new meta.useClass(...deps)
@@ -60,6 +63,8 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
         delegateDeps: deps,
         delegateType: R3FactoryDelegateType.Class,
       });
+    } else if (useClassOnSelf) {
+      result = compileFactoryFunction(factoryMeta);
     } else {
       result = compileFactoryFunction({
         ...factoryMeta,
@@ -95,7 +100,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   const token = meta.type;
   const providedIn = meta.providedIn;
 
-  const expression = o.importExpr(Identifiers.defineInjectable).callFn([mapToMapExpression(
+  const expression = o.importExpr(Identifiers.ɵɵdefineInjectable).callFn([mapToMapExpression(
       {token, factory: result.factory, providedIn})]);
   const type = new o.ExpressionType(o.importExpr(
       Identifiers.InjectableDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]));

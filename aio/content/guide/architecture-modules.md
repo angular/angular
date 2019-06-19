@@ -4,7 +4,7 @@
 # 모듈 소개
 
 <!--
-Angular apps are modular and Angular has its own modularity system called *NgModules*. 
+Angular apps are modular and Angular has its own modularity system called *NgModules*.
 NgModules are containers for a cohesive block of code dedicated to an application domain, a workflow, or a closely related set of capabilities. They can contain components, service providers, and other code files whose scope is defined by the containing NgModule. They can import functionality that is exported from other NgModules, and export selected functionality for use by other NgModules.
 -->
 Angular 애플리케이션은 Angular에서 제공하는 _NgModule_ 이라는 모듈 체계로 구성됩니다. NgModule은 애플리케이션 도메인이나 작업 흐름, 기능이 연관된 Angular 구성요소들을 묶어놓은 단위입니다. NgModule에는 컴포넌트나 서비스 프로바이더 등이 포함될 수 있으며, NgModule의 일부를 외부로 공개할 수도 있고, 다른 NgModule에서 이 부분을 가져와서 사용할 수도 있습니다.
@@ -63,9 +63,8 @@ Here's a simple root NgModule definition.
 
 <div class="alert is-helpful">
 
-
 <!--
-   The `export` property of `AppComponent` is included here for illustration; it isn't actually necessary in this example. A root NgModule has no reason to *export* anything because other modules don't need to *import* the root NgModule.
+   `AppComponent` is included in the `exports` list here for illustration; it isn't actually necessary in this example. A root NgModule has no reason to *export* anything because other modules don't need to *import* the root NgModule.
 -->
    이 코드에서 `exports` 프로퍼티는 이 프로퍼티를 어떻게 사용하는지 설명하기 위해 추가했습니다. 최상위 모듈은 다른 NgModule에서 참조할 일이 없기 때문에 어떤 구성요소라도 *exports* 로 지정할 필요가 없습니다.
 
@@ -174,7 +173,7 @@ For example, import Angular's `Component` decorator from the `@angular/core` lib
 <code-example path="architecture/src/app/app.component.ts" region="import" linenums="false"></code-example>
 
 <!--
-You also import NgModules from Angular *libraries* using JavaScript import statements. 
+You also import NgModules from Angular *libraries* using JavaScript import statements.
 For example, the following code imports the `BrowserModule` NgModule from the `platform-browser` library.
 -->
 그리고 Angular에서 제공하는 NgModule도 비슷한 방법으로 불러와서 사용합니다:

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {APP_ID, Injectable, NgModule} from '@angular/core';
-import {DOCUMENT} from '../dom/dom_tokens';
 
 export function escapeHtml(text: string): string {
   const escapedText: {[k: string]: string} = {

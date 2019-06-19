@@ -1,17 +1,20 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "typecheck",
     srcs = glob(["**/*.ts"]),
-    module_name = "@angular/compiler-cli/src/ngtsc/typecheck",
     deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/path",
+        "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/util",
-        "@ngdeps//typescript",
+        "@npm//@types/node",
+        "@npm//typescript",
     ],
 )

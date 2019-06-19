@@ -18,5 +18,7 @@ import {Component} from '@angular/core';
  * to this `EmptyOutletComponent`.
  */
 @Component({template: `<router-outlet></router-outlet>`})
-export class EmptyOutletComponent {
+export class ɵEmptyOutletComponent {
 }
+
+export {ɵEmptyOutletComponent as EmptyOutletComponent};

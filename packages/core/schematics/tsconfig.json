@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "lib": ["es2015"],
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "@angular/compiler": ["../../compiler"],
+      "@angular/compiler/*": ["../../compiler/*"],
+      "@angular/compiler-cli": ["../../compiler-cli"],
+      "@angular/compiler-cli/*": ["../../compiler-cli/*"]
+    }
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
+}

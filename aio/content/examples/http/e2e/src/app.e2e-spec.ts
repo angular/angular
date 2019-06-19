@@ -28,10 +28,7 @@ let checkLogForMessage = (message: string) => {
   expect(page.logList.getText()).toContain(message);
 };
 
-// TODO(i): temorarily disable these tests because angular-in-memory-web-api is not compatible with rxjs v6 yet
-//          and we don't have the backwards compatibility package yet.
-//          Reenable after rxjs v6 compatibility package is out or angular-in-memory-web-api is compatible with rxjs v6
-xdescribe('Http Tests', function() {
+describe('Http Tests', function() {
   beforeEach(() => {
     browser.get('');
   });
@@ -39,7 +36,7 @@ xdescribe('Http Tests', function() {
   describe('Heroes', () => {
     it('retrieves the list of heroes at startup', () => {
       expect(page.heroesListItems.count()).toBe(4);
-      expect(page.heroesListItems.get(0).getText()).toContain('Mr. Nice');
+      expect(page.heroesListItems.get(0).getText()).toContain('Dr Nice');
       checkLogForMessage('GET "api/heroes"');
     });
 

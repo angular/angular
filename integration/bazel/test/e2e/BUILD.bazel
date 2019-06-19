@@ -1,5 +1,5 @@
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
-load("@angular//:index.bzl", "protractor_web_test_suite")
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
 
 ts_library(
     name = "e2e",

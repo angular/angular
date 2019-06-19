@@ -50,6 +50,16 @@ export type CssSelector = (string | SelectorFlags)[];
  */
 export type CssSelectorList = CssSelector[];
 
+/**
+ * List of slots for a projection. A slot can be either based on a parsed CSS selector
+ * which will be used to determine nodes which are projected into that slot.
+ *
+ * When set to "*", the slot is reserved and can be used for multi-slot projection
+ * using {@link ViewContainerRef#createComponent}. The last slot that specifies the
+ * wildcard selector will retrieve all projectable nodes which do not match any selector.
+ */
+export type ProjectionSlots = (CssSelectorList | '*')[];
+
 /** Flags used to build up CssSelectors */
 export const enum SelectorFlags {
   /** Indicates this is the beginning of a new negative selector */
@@ -64,8 +74,6 @@ export const enum SelectorFlags {
   /** Mode for matching class names */
   CLASS = 0b1000,
 }
-
-export const NG_PROJECT_AS_ATTR_NAME = 'ngProjectAs';
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

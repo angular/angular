@@ -14,24 +14,23 @@ that it injects into components, directives, pipes, and other services.
 그러면 인젝터가 프로바이더에 지정된 방법대로 의존성 객체의 인스턴스를 생성하며, 이 인스턴스는 컴포넌트나 디렉티브, 파이프, 서비스와 같이 의존성 객체가 필요한 곳에 주입됩니다.
 
 <!--
-You must configure an injector with a provider, or it won't know how to create the dependency.  
-The most obvious way for an injector to create an instance of a service class is with the class itself. 
-If you specify the service class itself as the provider token, the default behavior is for the injector to instantiate that class with `new`. 
+You must configure an injector with a provider, or it won't know how to create the dependency.
+The most obvious way for an injector to create an instance of a service class is with the class itself.
+If you specify the service class itself as the provider token, the default behavior is for the injector to instantiate that class with `new`.
+
+In the following typical example, the `Logger` class itself provides a `Logger` instance.
 -->
 그래서 의존성 객체를 주입하려면 인젝터에 프로바이더를 꼭 등록해야 합니다.
 서비스 클래스를 인스턴스로 등록하는 방법 중 가장 간단한 방법은 클래스를 선언하면서 직접 프로바이더를 등록하는 것입니다.
 이렇게 등록하면 서비스 클래스 이름을 바로 프로바이더 토큰으로 사용할 수 있으며, 인젝터는 `new` 키워드를 사용해서 이 서비스 클래스의 인스턴스를 생성합니다.
 
-<!--
-In the following typical example, the `Logger` class itself provides a `Logger` instance. 
--->
 이렇게 `Logger` 클래스를 직접 프로바이더에 등록하려면 다음과 같이 작성하면 됩니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-logger">
 </code-example>
 
 <!--
-You can, however, configure an injector with an alternative provider, 
+You can, however, configure an injector with an alternative provider,
 in order to deliver some other object that provides the needed logging functionality.
 For instance:
 * You can provide a substitute class.
@@ -81,14 +80,15 @@ that serves as the key for both locating a dependency value and configuring the 
 * `provide` 프로퍼티에는 [토큰](guide/dependency-injection#token)을 지정합니다. 이 토큰은 의존성 객체의 타입을 지정하는 곳에도 사용되고 인젝터에서 이 객체를 찾을 때도 사용됩니다.
 
 <!--
-* The second property is a provider definition object, which tells the injector how to create the dependency value. 
+* The second property is a provider definition object, which tells the injector how to create the dependency value.
 The provider-definition key can be `useClass`, as in the example.
 It can also be `useExisting`, `useValue`, or `useFactory`.
-Each of these keys provides a different type of dependency, as discussed below. 
+Each of these keys provides a different type of dependency, as discussed below.
 -->
 * 인젝터가 의존성 객체의 인스턴스를 생성하는 방법은 두번째 프로퍼티로 지정합니다.
 클래스를 직접 인젝터에 등록하는 경우에는 `useClass`를 사용하며, 상황에 따라 `useExisting`, `useValue`, `useFactory`를 사용하는 경우도 있습니다.
 각각에 대해서는 이어지는 내용에서 자세하게 살펴봅시다.
+
 
 {@a class-provider}
 
@@ -144,7 +144,7 @@ The injector needs providers for both this new logging service and its dependent
 <!--
 Suppose an old component depends upon the `OldLogger` class.
 `OldLogger` has the same interface as `NewLogger`, but for some reason
-you can't update the old component to use it. 
+you can't update the old component to use it.
 -->
 이전부터 사용하던 컴포넌트가 있는데, 이 컴포넌트에는 `OldLogger` 클래스가 의존성으로 주입된다고 합시다.
 그런데 `OldLogger`와 같은 인터페이스를 갖는 `NewLogger`를 만들었지만, 어떤 이유로 이 컴포넌트 코드는 수정할 수 없는 상황입니다.
@@ -159,7 +159,7 @@ when a component asks for either the new or the old logger.
 이 때 `OldLogger`를 주입받는 코드는 수정하지 않은 상태로 이 컴포넌트도 `NewLogger`를 사용하도록 하려고 합니다. 이 경우에 `NewLogger`와 `OldLogger`의 프로바이더를 모두 인젝터가 관리하면서 이전 로거와 새로운 로거의 토큰을 모두 등록하면서, `OldLogger`를 주입받도록 요청받았을 때 `NewLogger`를 대신 주입하려고 합니다. 이 상황에서 `OldLogger`는 결국 `NewLogger`의 *또 다른 이름* 이라고 할 수 있습니다.
 
 <!--
-If you try to alias `OldLogger` to `NewLogger` with `useClass`, you end up with two different `NewLogger` instances in your app. 
+If you try to alias `OldLogger` to `NewLogger` with `useClass`, you end up with two different `NewLogger` instances in your app.
 -->
 프로바이더에 `useClass`를 사용하면 `OldLogger`를 `NewLogger`로 대체하는 것이 아니라 `NewLogger` 인스턴스를 두 개로 나누는 방식으로 등록됩니다.
 
@@ -182,8 +182,8 @@ To make sure there is only one instance of `NewLogger`, alias `OldLogger` with t
 ## 값(value) 프로바이더
 
 <!--
-Sometimes it's easier to provide a ready-made object rather than ask the injector to create it from a class. 
-To inject an object you have already created, 
+Sometimes it's easier to provide a ready-made object rather than ask the injector to create it from a class.
+To inject an object you have already created,
 configure the injector with the `useValue` option
 
 The following code defines a variable that creates such an object to play the logger role.
@@ -236,9 +236,9 @@ They can be object literals, as shown in the following example.
 **TypeScript 인터페이스는 토큰으로 사용할 수 없습니다.**
 
 <!--
-The `HERO_DI_CONFIG` constant conforms to the `AppConfig` interface. 
+The `HERO_DI_CONFIG` constant conforms to the `AppConfig` interface.
 Unfortunately, you cannot use a TypeScript interface as a token.
-In TypeScript, an interface is a design-time artifact, and doesn't have a runtime representation (token) that the DI framework can use. 
+In TypeScript, an interface is a design-time artifact, and doesn't have a runtime representation (token) that the DI framework can use.
 -->
 변수 `HERO_DI_CONFIG`는 `AppConfig` 타입의 인터페이스입니다.
 하지만 아쉽게도 TypeScript 인터페이스는 토큰으로 사용할 수 없습니다:
@@ -325,7 +325,7 @@ it supports typing of the configuration object within the class.
 
 <!--
 Sometimes you need to create a dependent value dynamically,
-based on information you won't have until run time. 
+based on information you won't have until run time.
 For example, you might need information that changes repeatedly in the course of the browser session.
 Also, your injectable service might not have independent access to the source of the information.
 -->
@@ -401,7 +401,7 @@ The injector resolves these tokens and injects the corresponding services into t
 
 Notice that you captured the factory provider in an exported variable, `heroServiceProvider`.
 This extra step makes the factory provider reusable.
-You can configure a provider of `HeroService` with this variable wherever you need it. 
+You can configure a provider of `HeroService` with this variable wherever you need it.
 In this sample, you need it only in `HeroesComponent`,
 where `heroServiceProvider` replaces `HeroService` in the metadata `providers` array.
 
@@ -436,10 +436,10 @@ The following shows the new and the old implementations side-by-side.
 ## Angular에 정의된 토큰과 다중 프로바이더
 
 <!--
-Angular provides a number of built-in injection-token constants that you can use to customize the behavior of 
-various systems. 
+Angular provides a number of built-in injection-token constants that you can use to customize the behavior of
+various systems.
 
-For example, you can use the following built-in tokens as hooks into the framework’s bootstrapping and initialization process.  
+For example, you can use the following built-in tokens as hooks into the framework’s bootstrapping and initialization process.
 A provider object can associate any of these injection tokens with one or more callback functions that take app-specific initialization actions.
 -->
 Angular 애플리케이션은 다양한 시스템 환경에서 실행될 수 있으며, 이 때 각 상황에 맞게 커스터마이징할 때 사용하는 의존성 토큰 상수를 제공합니다.
@@ -479,12 +479,12 @@ export const APP_TOKENS = [
 ```
 
 <!--
-Multiple providers can be associated with a single token in other areas as well. 
-For example, you can register a custom form validator using the built-in [NG_VALIDATORS](api/forms/NG_VALIDATORS) token, 
+Multiple providers can be associated with a single token in other areas as well.
+For example, you can register a custom form validator using the built-in [NG_VALIDATORS](api/forms/NG_VALIDATORS) token,
 and provide multiple instances of a given validator provider by using the `multi: true` property in the provider object.
 Angular adds your custom validators to the existing collection.
 
-The Router also makes use of multiple providers associated with a single token. 
+The Router also makes use of multiple providers associated with a single token.
 When you provide multiple sets of routes using [RouterModule.forRoot](api/router/RouterModule#forroot)
 and [RouterModule.forChild](api/router/RouterModule#forchild) in a single module,
 the [ROUTES](api/router/ROUTES) token combines all the different provided sets of routes into a single value.
@@ -499,7 +499,7 @@ the [ROUTES](api/router/ROUTES) token combines all the different provided sets o
 <div class="alert is-helpful">
 
 <!--
-Search for [Constants in API documentation](api?type=const) to find more built-in tokens. 
+Search for [Constants in API documentation](api?type=const) to find more built-in tokens.
 -->
 Angular가 제공하는 토큰에 대해서 더 알아보려면 [상수 API 목록](api?type=const)을 참고하세요.
 
@@ -514,9 +514,9 @@ Angular가 제공하는 토큰에 대해서 더 알아보려면 [상수 API 목�
 ## 트리 셰이킹 대상이 되는 프로바이더
 
 <!--
-Tree shaking refers to a compiler option that removes code from the final bundle if that code not referenced in an application.
+Tree shaking refers to a compiler option that removes code from the final bundle if the app doesn't reference that code.
 When providers are tree-shakable, the Angular compiler removes the associated
-services from the final output when it determines that they are not used in your application.
+services from the final output when it determines that your application doesn't use those services.
 This significantly reduces the size of your bundles.
 -->
 트리 셰이킹은 애플리케이션에 사용되지 않은 코드를 최종 번들링 결과물에 포함시키지 않는 기능을 의미합니다.
@@ -526,18 +526,18 @@ This significantly reduces the size of your bundles.
 <div class="alert is-helpful">
 
 <!--
-Ideally, if an application isn't injecting a service, it shouldn't be included in the final output. 
-However, Angular has to be able to identify at build time whether the service will be required or not. 
-Because it's always possible to inject a service directly using `injector.get(Service)`, 
-Angular can't identify all of the places in your code where this injection could happen, 
-so it has no choice but to include the service in the injector. 
-Thus, services provided at the NgModule or component level are not tree-shakable.
+Ideally, if an application isn't injecting a service, Angular shouldn't include it in the final output.
+However, Angular has to be able to identify at build time whether the app will require the service or not.
+Because it's always possible to inject a service directly using `injector.get(Service)`,
+Angular can't identify all of the places in your code where this injection could happen,
+so it has no choice but to include the service in the injector.
+Thus, services in the NgModule `providers` array or at component level are not tree-shakable.
 -->
 이상적인 경우를 생각해 봤을 때 애플리케이션에 사용되는 서비스가 아무것도 없다면 최종 빌드 결과물에는 어떠한 서비스도 포함되지 않을 것입니다.
 하지만 이 것은 Angular 컴파일러가 빌드 시점에 확인할 수 없는 내용입니다.
 왜냐하면 의존성 객체는 클래스 생성자 뿐 아니라 `injector.get(서비스)`를 통해 직접 인스턴스를 가져올 수 있기 때문입니다.
 이 경우에 Angular는 의존성 객체가 참조되었는지 알아내기 위해서 모든 코드를 확인할 수는 없으며, 결국 트리 셰이킹할 수 있는 타이밍을 놓치게 됩니다.
-그래서 NgModule이나 컴포넌트 계층에 등록된 서비스는 트리 셰이킹의 대상이 될 수 없습니다.
+그래서 NgModule의 `providers` 배열이나 컴포넌트 계층에 등록된 서비스는 트리 셰이킹의 대상이 될 수 없습니다.
 
 </div>
 
@@ -549,9 +549,9 @@ The following example of non-tree-shakable providers in Angular configures a ser
 <code-example path="dependency-injection/src/app/tree-shaking/service-and-module.ts"  header="src/app/tree-shaking/service-and-modules.ts" linenums="false"> </code-example>
 
 <!--
-This module can then be imported into your application module 
-to make the service available for injection in your app, 
-as shown in the following example.
+You can then import this module into your application module
+to make the service available for injection in your app,
+as in the following example.
 -->
 이 모듈은 애플리케이션에 사용되는 서비스 프로바이더를 모아두기 위해 정의한 것이기 때문에, 애플리케이션 최상위 모듈에 다음과 같이 로드되어야 합니다.
 

@@ -58,10 +58,9 @@ With interpolation, you put the property name in the view template, enclosed in 
 문자열 바인딩은 프로퍼티 이름을 이중 중괄호로 감싸서 뷰 템플릿에 `{{myHero}}` 와 같은 형태로 넣는 방법입니다.
 
 <!--
-Follow the [Getting Started](guide/quickstart) instructions for creating a new project
-named <code>displaying-data</code>.
+Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`. 
 -->
-먼저, [시작하기](guide/quickstart) 문서를 참고하면서 <code>displaying-data</code> 라는 이름으로 새로운 프로젝트를 만듭니다.
+워크스페이스를 생성하면서 `displaying-data`라는 이름으로 앱을 생성하기 위해 [`ng new displaying-data`](cli/new) 명령을 실행합니다.
 
 <!--
 Delete the <code>app.component.html</code> file. It is not needed for this example.
@@ -236,7 +235,7 @@ Although this example uses variable assignment to initialize the components, you
 위에서 본 예제 코드에서는 컴포넌트 클래스에 변수를 선언하면서 변수값을 할당했지만, 변수 초기값은 생성자에서 할 수도 있습니다.
 
 
-<code-example path="displaying-data/src/app/app-ctor.component.ts" linenums="false" region="class">
+<code-example path="displaying-data/src/app/app-ctor.component.1.ts" linenums="false" region="class">
 
 </code-example>
 
@@ -532,7 +531,7 @@ big chunks of HTML with many data bindings.
 
 <!--
 Try it out. Because the array has four items, the message should appear.
-Go back into <code>app.component.ts</code> and delete or comment out one of the elements from the hero array.
+Go back into <code>app.component.ts</code> and delete or comment out one of the elements from the heroes array.
 The browser should refresh automatically and the message should disappear.
 -->
 앱을 실행해서 결과를 직접 확인해 보세요. 예제에서 다룬 배열은 길이가 4이기 때문에 메시지가 표시됩니다.

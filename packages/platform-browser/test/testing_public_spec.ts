@@ -10,7 +10,7 @@ import {CompilerConfig, ResourceLoader} from '@angular/compiler';
 import {CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, Inject, Injectable, Injector, Input, NgModule, Optional, Pipe, SkipSelf, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, fakeAsync, getTestBed, inject, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, obsoleteInIvy} from '@angular/private/testing';
+import {ivyEnabled, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 // Services, and components for the tests.
 
@@ -251,14 +251,13 @@ class CompWithUrlTemplate {
           expect(compFixture.componentInstance).toBeAnInstanceOf(CompUsingModuleDirectiveAndPipe);
         });
 
-        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-            .it('should use set up directives and pipes', () => {
-              const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
-              const el = compFixture.debugElement;
+        it('should use set up directives and pipes', () => {
+          const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
+          const el = compFixture.debugElement;
 
-              compFixture.detectChanges();
-              expect(el.children[0].properties['title']).toBe('transformed someValue');
-            });
+          compFixture.detectChanges();
+          expect(el.children[0].properties['title']).toBe('transformed someValue');
+        });
 
         it('should use set up imported modules',
            inject([SomeLibModule], (libModule: SomeLibModule) => {
@@ -289,14 +288,13 @@ class CompWithUrlTemplate {
              expect(service.value).toEqual('real value');
            }));
 
-        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-            .it('should use set up directives and pipes', withModule(moduleConfig, () => {
-                  const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
-                  const el = compFixture.debugElement;
+        it('should use set up directives and pipes', withModule(moduleConfig, () => {
+             const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
+             const el = compFixture.debugElement;
 
-                  compFixture.detectChanges();
-                  expect(el.children[0].properties['title']).toBe('transformed someValue');
-                }));
+             compFixture.detectChanges();
+             expect(el.children[0].properties['title']).toBe('transformed someValue');
+           }));
 
         it('should use set up library modules',
            withModule(moduleConfig).inject([SomeLibModule], (libModule: SomeLibModule) => {
@@ -311,12 +309,11 @@ class CompWithUrlTemplate {
         }));
 
         isBrowser &&
-            fixmeIvy('FW-553: TestBed is unaware of async compilation')
-                .it('should allow to createSync components with templateUrl after explicit async compilation',
-                    () => {
-                      const fixture = TestBed.createComponent(CompWithUrlTemplate);
-                      expect(fixture.nativeElement).toHaveText('from external template');
-                    });
+            it('should allow to createSync components with templateUrl after explicit async compilation',
+               () => {
+                 const fixture = TestBed.createComponent(CompWithUrlTemplate);
+                 expect(fixture.nativeElement).toHaveText('from external template');
+               });
       });
 
       describe('overwriting metadata', () => {
@@ -372,12 +369,11 @@ class CompWithUrlTemplate {
                 .overrideDirective(
                     SomeDirective, {set: {selector: '[someDir]', host: {'[title]': 'someProp'}}});
           });
-          fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-              .it('should work', () => {
-                const compFixture = TestBed.createComponent(SomeComponent);
-                compFixture.detectChanges();
-                expect(compFixture.debugElement.children[0].properties['title']).toEqual('hello');
-              });
+          it('should work', () => {
+            const compFixture = TestBed.createComponent(SomeComponent);
+            compFixture.detectChanges();
+            expect(compFixture.debugElement.children[0].properties['title']).toEqual('hello');
+          });
         });
 
         describe('pipe', () => {
@@ -458,28 +454,25 @@ class CompWithUrlTemplate {
             expect(TestBed.get('a')).toBe('mockA: depValue');
           });
 
-          fixmeIvy('FW-855: TestBed.get(Compiler) should return TestBed-specific Compiler instance')
-              .it('should support SkipSelf', () => {
-                @NgModule({
-                  providers: [
-                    {provide: 'a', useValue: 'aValue'},
-                    {provide: 'dep', useValue: 'depValue'},
-                  ]
-                })
-                class MyModule {
-                }
+          it('should support SkipSelf', () => {
+            @NgModule({
+              providers: [
+                {provide: 'a', useValue: 'aValue'},
+                {provide: 'dep', useValue: 'depValue'},
+              ]
+            })
+            class MyModule {
+            }
 
-                TestBed.overrideProvider(
-                    'a',
-                    {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new SkipSelf(), 'dep']]});
-                TestBed.configureTestingModule(
-                    {providers: [{provide: 'dep', useValue: 'parentDepValue'}]});
+            TestBed.overrideProvider(
+                'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new SkipSelf(), 'dep']]});
+            TestBed.configureTestingModule(
+                {providers: [{provide: 'dep', useValue: 'parentDepValue'}]});
 
-                const compiler = TestBed.get(Compiler) as Compiler;
-                const modFactory = compiler.compileModuleSync(MyModule);
-                expect(modFactory.create(getTestBed()).injector.get('a'))
-                    .toBe('mockA: parentDepValue');
-              });
+            const compiler = TestBed.get(Compiler) as Compiler;
+            const modFactory = compiler.compileModuleSync(MyModule);
+            expect(modFactory.create(getTestBed()).injector.get('a')).toBe('mockA: parentDepValue');
+          });
 
           it('should keep imported NgModules eager', () => {
             let someModule: SomeModule|undefined;
@@ -500,27 +493,6 @@ class CompWithUrlTemplate {
             expect(TestBed.get('a')).toBe('mockValue');
             expect(someModule).toBeAnInstanceOf(SomeModule);
           });
-
-          obsoleteInIvy(`deprecated method, won't be reimplemented for Render3`)
-              .it('should keep imported NgModules lazy with deprecatedOverrideProvider', () => {
-                let someModule: SomeModule|undefined;
-
-                @NgModule()
-                class SomeModule {
-                  constructor() { someModule = this; }
-                }
-
-                TestBed.configureTestingModule({
-                  providers: [
-                    {provide: 'a', useValue: 'aValue'},
-                  ],
-                  imports: [SomeModule]
-                });
-                TestBed.deprecatedOverrideProvider('a', {useValue: 'mockValue'});
-
-                expect(TestBed.get('a')).toBe('mockValue');
-                expect(someModule).toBeUndefined();
-              });
 
           describe('injecting eager providers into an eager overwritten provider', () => {
             @NgModule({
@@ -784,21 +756,30 @@ class CompWithUrlTemplate {
       describe('setting up the compiler', () => {
 
         describe('providers', () => {
-          beforeEach(() => {
-            const resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
-                                          .and.returnValue(Promise.resolve('Hello world!'));
-            TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
-            TestBed.configureCompiler(
-                {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
-          });
 
-          fixmeIvy('FW-553: TestBed is unaware of async compilation')
-              .it('should use set up providers', fakeAsync(() => {
-                    TestBed.compileComponents();
-                    tick();
-                    const compFixture = TestBed.createComponent(CompWithUrlTemplate);
-                    expect(compFixture.nativeElement).toHaveText('Hello world!');
-                  }));
+          it('should use set up providers', fakeAsync(() => {
+               // Keeping this component inside the test is needed to make sure it's not resolved
+               // prior to this test, thus having ngComponentDef and a reference in resource
+               // resolution queue. This is done to check external resoution logic in isolation by
+               // configuring TestBed with the necessary ResourceLoader instance.
+               @Component({
+                 selector: 'comp',
+                 templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
+               })
+               class InternalCompWithUrlTemplate {
+               }
+
+               const resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
+                                             .and.returnValue(Promise.resolve('Hello world!'));
+               TestBed.configureTestingModule({declarations: [InternalCompWithUrlTemplate]});
+               TestBed.configureCompiler(
+                   {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
+
+               TestBed.compileComponents();
+               tick();
+               const compFixture = TestBed.createComponent(InternalCompWithUrlTemplate);
+               expect(compFixture.nativeElement).toHaveText('Hello world!');
+             }));
         });
 
         describe('useJit true', () => {
@@ -904,27 +885,37 @@ class CompWithUrlTemplate {
               {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
         });
 
-        fixmeIvy('FW-553: TestBed is unaware of async compilation')
-            .it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
-                () => {
-                  const itPromise = patchJasmineIt();
+        it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
+           () => {
+             const itPromise = patchJasmineIt();
 
-                  expect(
-                      () => it(
-                          'should fail', withModule(
-                                             {declarations: [CompWithUrlTemplate]},
-                                             () => TestBed.createComponent(CompWithUrlTemplate))))
-                      .toThrowError(
-                          `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
-                          `Please call "TestBed.compileComponents" before your test.`);
+             @Component({
+               selector: 'comp',
+               templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
+             })
+             class InlineCompWithUrlTemplate {
+             }
 
-                  restoreJasmineIt();
-                });
+             expect(
+                 () => it(
+                     'should fail', withModule(
+                                        {declarations: [InlineCompWithUrlTemplate]},
+                                        () => TestBed.createComponent(InlineCompWithUrlTemplate))))
+                 .toThrowError(
+                     ivyEnabled ?
+                         `Component 'InlineCompWithUrlTemplate' is not resolved:
+ - templateUrl: /base/angular/packages/platform-browser/test/static_assets/test.html
+Did you run and wait for 'resolveComponentResources()'?` :
+                         `This test module uses the component ${stringify(InlineCompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
+                             `Please call "TestBed.compileComponents" before your test.`);
+
+             restoreJasmineIt();
+           });
 
       });
 
 
-      fixmeIvy(`FW-721: Bindings to unknown properties are not reported as errors`)
+      modifiedInIvy(`Unknown property error thrown during update mode, not creation mode`)
           .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
             class ComponentUsingInvalidProperty {
@@ -938,6 +929,28 @@ class CompWithUrlTemplate {
                        withModule(
                            {declarations: [ComponentUsingInvalidProperty]},
                            () => TestBed.createComponent(ComponentUsingInvalidProperty))))
+                .toThrowError(/Can't bind to 'someUnknownProp'/);
+
+            restoreJasmineIt();
+          });
+
+      onlyInIvy(`Unknown property error thrown during update mode, not creation mode`)
+          .it('should error on unknown bound properties on custom elements by default', () => {
+            @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+            class ComponentUsingInvalidProperty {
+            }
+
+            const itPromise = patchJasmineIt();
+
+            expect(
+                () => it(
+                    'should fail', withModule(
+                                       {declarations: [ComponentUsingInvalidProperty]},
+                                       () => {
+                                         const fixture =
+                                             TestBed.createComponent(ComponentUsingInvalidProperty);
+                                         fixture.detectChanges();
+                                       })))
                 .toThrowError(/Can't bind to 'someUnknownProp'/);
 
             restoreJasmineIt();
@@ -1015,7 +1028,6 @@ class CompWithUrlTemplate {
       });
 
       it('should override component dependencies', async(() => {
-
            const componentFixture = TestBed.createComponent(ParentComp);
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('Parent(Mock)');

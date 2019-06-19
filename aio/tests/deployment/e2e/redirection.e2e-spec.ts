@@ -7,10 +7,14 @@ describe(browser.baseUrl, () => {
   const stripQuery = (url: string) => url.replace(/\?.*$/, '');
   const stripTrailingSlash = (url: string) => url.replace(/\/$/, '');
 
-  beforeAll(done => page.init().then(done));
+  beforeAll(() => page.init());
 
   beforeEach(() => browser.waitForAngularEnabled(false));
-  afterEach(() => browser.waitForAngularEnabled(true));
+
+  afterEach(async () => {
+    await page.unregisterSw();
+    await browser.waitForAngularEnabled(true);
+  });
 
   describe('(with sitemap URLs)', () => {
     page.sitemapUrls.forEach((path, i) => {
@@ -27,16 +31,14 @@ describe(browser.baseUrl, () => {
 
   describe('(with legacy URLs)', () => {
     page.legacyUrls.forEach(([fromUrl, toUrl], i) => {
-      const isExternalUrl = /^https?:/.test(toUrl);
-
       it(`should redirect '${fromUrl}' to '${toUrl}' (${i + 1}/${page.legacyUrls.length})`, async () => {
         await page.goTo(fromUrl);
 
-        const expectedUrl = stripTrailingSlash(isExternalUrl ? toUrl : page.baseUrl + toUrl);
+        const expectedUrl = stripTrailingSlash(/^https?:/.test(toUrl) ? toUrl : page.baseUrl + toUrl);
         const actualUrl = await getCurrentUrl();
 
         expect(actualUrl).toBe(expectedUrl);
-      }, isExternalUrl ? 60000 : undefined);
+      }, 120000);
     });
   });
 

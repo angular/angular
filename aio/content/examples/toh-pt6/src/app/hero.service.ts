@@ -42,7 +42,7 @@ export class HeroService {
         // #enddocregion getHeroes-2
         tap(_ => this.log('fetched heroes')),
         // #docregion getHeroes-2
-        catchError(this.handleError('getHeroes', []))
+        catchError(this.handleError<Hero[]>('getHeroes', []))
       );
   // #docregion getHeroes-1
   }
@@ -97,7 +97,7 @@ export class HeroService {
   /** POST: 서버에 새로운 히어로를 추가합니다. */
   addHero (hero: Hero): Observable<Hero> {
     return this.http.post<Hero>(this.heroesUrl, hero, httpOptions).pipe(
-      tap((hero: Hero) => this.log(`added hero w/ id=${hero.id}`)),
+      tap((newHero: Hero) => this.log(`added hero w/ id=${newHero.id}`)),
       catchError(this.handleError<Hero>('addHero'))
     );
   }

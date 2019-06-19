@@ -3,20 +3,18 @@
 <head>
   <meta charset="utf-8">
   <title>Angular 가이드</title>
+  <meta name="Description" content="Angular는 모바일과 데스크탑에서 동작하는 웹 애플리케이션을 개발하는 플랫폼입니다.
+    수백만 개발자들이 활동하는 Angular 커뮤니티에 참여해 보세요.">
   <base href="/">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="search" type="application/opensearchdescription+xml" href="assets/opensearch.xml">
   <link rel="icon" type="image/x-icon" href="assets/images/favicons/favicon.ico">
-  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-32x32.png"
-        sizes="32x32">
-  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-194x194.png"
-        sizes="194x194">
-  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-96x96.png"
-        sizes="96x96">
-  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-16x16.png"
-        sizes="16x16">
+  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-194x194.png" sizes="194x194">
+  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-16x16.png" sizes="16x16">
   <link rel="apple-touch-icon" sizes="144x144" href="assets/images/favicons/favicon-144x144.png">
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/images/favicons/favicon-144x144.png">
 
@@ -47,39 +45,41 @@
 
   <!-- Google Analytics -->
   <script>
-  // Note this is a customised version of the GA tracking snippet
-  // See the comments below for more info
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;
-  ~i.name.indexOf('NG_DEFER_BOOTSTRAP')|| // only load library if not running e2e tests
-  m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    // Note this is a customised version of the GA tracking snippet
+    // See the comments below for more info
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g;
+      ~i.name.indexOf('NG_DEFER_BOOTSTRAP') || // only load library if not running e2e tests
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
   </script>
   <!-- End Google Analytics -->
 
   <script>
     // Report fatal errors to Google Analytics
-    window.onerror = function() {
-      ga('send', 'exception', {exDescription: formatError.apply(null, arguments), exFatal: true});
+    window.onerror = function () {
+      ga('send', 'exception', { exDescription: formatError.apply(null, arguments), exFatal: true });
 
       function formatError(msg, url, line, col, e) {
         var stack;
         msg = msg.replace(/^Error: /, '');
         if (e) {
           stack = e.stack
-              // strip the leading "Error: " from the stack trace
-              .replace(/^Error: /, '')
-              // strip the message from the stack trace, if present
-              .replace(msg + '\n', '')
-              // strip leading spaces
-              .replace(/^ +/gm, '')
-              // strip all leading "at " for each frame
-              .replace(/^at /gm, '')
-              // replace long urls with just the last segment: `filename:line:column`
-              .replace(/(?: \(|@)http.+\/([^/)]+)\)?(?:\n|$)/gm, '@$1\n')
-              // replace "eval code" in Edge
-              .replace(/ *\(eval code(:\d+:\d+)\)(?:\n|$)/gm, '@???$1\n')
+            // strip the leading "Error: " from the stack trace
+            .replace(/^Error: /, '')
+            // strip the message from the stack trace, if present
+            .replace(msg + '\n', '')
+            // strip leading spaces
+            .replace(/^ +/gm, '')
+            // strip all leading "at " for each frame
+            .replace(/^at /gm, '')
+            // replace long urls with just the last segment: `filename:line:column`
+            .replace(/(?: \(|@)http.+\/([^/)]+)\)?(?:\n|$)/gm, '@$1\n')
+            // replace "eval code" in Edge
+            .replace(/ *\(eval code(:\d+:\d+)\)(?:\n|$)/gm, '@???$1\n')
         } else {
           line = line || '?';
           col = col || '?';
@@ -90,9 +90,8 @@
     };
   </script>
 
-  <script nomodule src="generated/ie-polyfills.min.js"></script>
-
 </head>
+
 <body>
 
   <aio-shell></aio-shell>
@@ -101,7 +100,7 @@
     <div class="background-sky hero"></div>
     <section id="intro" style="text-shadow: 1px 1px #1976d2;">
       <div class="hero-logo">
-        <img src="assets/images/logos/angular/angular.svg" width="250" height="250">
+        <img src="assets/images/logos/angular/angular.svg" width="250" height="250" alt="Angular">
       </div>
       <div class="homepage-container">
         <div class="hero-headline no-toc">하나의 프레임워크로<br>웹과 모바일을 동시에</div>
@@ -112,4 +111,5 @@
     </h2>
   </noscript>
 </body>
+
 </html>

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {global} from './global';
+
 declare global {
   const ngDevMode: null|NgDevModePerfCounters;
   interface NgDevModePerfCounters {
@@ -28,11 +30,19 @@ declare global {
     rendererDestroyNode: number;
     rendererMoveNode: number;
     rendererRemoveNode: number;
+    rendererAppendChild: number;
+    rendererInsertBefore: number;
     rendererCreateComment: number;
+    styleMap: number;
+    styleMapCacheMiss: number;
+    classMap: number;
+    classMapCacheMiss: number;
+    stylingProp: number;
+    stylingPropCacheMiss: number;
+    stylingApply: number;
+    stylingApplyCacheMiss: number;
   }
 }
-
-declare let global: any;
 
 export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
   const newCounters: NgDevModePerfCounters = {
@@ -55,32 +65,33 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererDestroyNode: 0,
     rendererMoveNode: 0,
     rendererRemoveNode: 0,
+    rendererAppendChild: 0,
+    rendererInsertBefore: 0,
     rendererCreateComment: 0,
+    styleMap: 0,
+    styleMapCacheMiss: 0,
+    classMap: 0,
+    classMapCacheMiss: 0,
+    stylingProp: 0,
+    stylingPropCacheMiss: 0,
+    stylingApply: 0,
+    stylingApplyCacheMiss: 0,
   };
-  // NOTE: Under Ivy we may have both window & global defined in the Node
-  //    environment since ensureDocument() in render3.ts sets global.window.
-  if (typeof window != 'undefined') {
-    // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
-    (window as any)['ngDevMode'] = newCounters;
-  }
-  if (typeof global != 'undefined') {
-    // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
-    (global as any)['ngDevMode'] = newCounters;
-  }
-  if (typeof self != 'undefined') {
-    // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
-    (self as any)['ngDevMode'] = newCounters;
-  }
+
+  // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
+  global['ngDevMode'] = newCounters;
   return newCounters;
 }
 
 /**
  * This checks to see if the `ngDevMode` has been set. If yes,
- * than we honor it, otherwise we default to dev mode with additional checks.
+ * then we honor it, otherwise we default to dev mode with additional checks.
  *
  * The idea is that unless we are doing production build where we explicitly
  * set `ngDevMode == false` we should be helping the developer by providing
  * as much early warning and errors as possible.
+ *
+ * NOTE: changes to the `ngDevMode` name must be synced with `compiler-cli/src/tooling.ts`.
  */
 if (typeof ngDevMode === 'undefined' || ngDevMode) {
   ngDevModeResetPerfCounters();

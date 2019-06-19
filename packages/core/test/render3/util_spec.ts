@@ -7,8 +7,7 @@
  */
 
 import {devModeEqual} from '@angular/core/src/change_detection/change_detection_util';
-
-import {flatten, isDifferent} from '../../src/render3/util';
+import {isDifferent} from '../../src/render3/util/misc_utils';
 
 describe('util', () => {
 
@@ -66,19 +65,4 @@ describe('util', () => {
 
   });
 
-  describe('flatten', () => {
-
-    it('should flatten an empty array', () => { expect(flatten([])).toEqual([]); });
-
-    it('should flatten a flat array', () => { expect(flatten([1, 2, 3])).toEqual([1, 2, 3]); });
-
-    it('should flatten a nested array', () => {
-      expect(flatten([1, [2], 3])).toEqual([1, 2, 3]);
-      expect(flatten([[1], 2, [3]])).toEqual([1, 2, 3]);
-      expect(flatten([1, [2, [3]], 4])).toEqual([1, 2, 3, 4]);
-      expect(flatten([1, [2, [3]], [4]])).toEqual([1, 2, 3, 4]);
-      expect(flatten([1, [2, [3]], [[[4]]]])).toEqual([1, 2, 3, 4]);
-      expect(flatten([1, [], 2])).toEqual([1, 2]);
-    });
-  });
 });

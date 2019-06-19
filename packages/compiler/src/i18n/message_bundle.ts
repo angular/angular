@@ -27,7 +27,8 @@ export class MessageBundle {
 
   updateFromTemplate(html: string, url: string, interpolationConfig: InterpolationConfig):
       ParseError[] {
-    const htmlParserResult = this._htmlParser.parse(html, url, true, interpolationConfig);
+    const htmlParserResult =
+        this._htmlParser.parse(html, url, {tokenizeExpansionForms: true, interpolationConfig});
 
     if (htmlParserResult.errors.length) {
       return htmlParserResult.errors;

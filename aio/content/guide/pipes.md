@@ -298,12 +298,14 @@ Now you need a component to demonstrate the pipe.
 Note the following:
 
 * You use your custom pipe the same way you use built-in pipes.
-* You must include your pipe in the `declarations` array of the `AppModule`.
+* You must include your pipe in the `declarations` array of the `AppModule`
+* If you choose to inject your pipe into a class, you must provide it in the `providers` array of your `NgModule`.
 -->
 다음 내용을 확인해 보세요:
 
 * 커스텀 파이프를 사용하는 방법은 기본 파이프를 사용하는 방법과 같습니다.
 * 커스텀 파이프는 `AppModule`의 `declarations`에 등록해야 사용할 수 있습니다.
+* If you choose to inject your pipe into a class, you must provide it in the `providers` array of your `NgModule`.
 
 <div class="callout is-helpful">
 
@@ -485,11 +487,11 @@ code with checkbox switches and additional displays to help you experience these
 
 <!--
 Replacing the array is an efficient way to signal Angular to update the display.
-When do you replace the array? When the data change.
+When do you replace the array? When the data changes.
 That's an easy rule to follow in *this* example
 where the only way to change the data is by adding a hero.
 
-More often, you don't know when the data have changed,
+More often, you don't know when the data has changed,
 especially in applications that mutate data in many ways,
 perhaps in application locations far away.
 A component in such an application usually can't know about those changes.
@@ -717,7 +719,7 @@ Write one more impure pipe, a pipe that makes an HTTP request.
 Remember that impure pipes are called every few milliseconds.
 If you're not careful, this pipe will punish the server with requests.
 
-In the following code, the pipe only calls the server when the request URL changes and it caches the server response.
+In the following code, the pipe only calls the server when the requested URL changes and it caches the server response.
 The code uses the [Angular http](guide/http) client to retrieve data:
 -->
 순수하지 않은 파이프를 하나 더 살펴봅시다. 이 파이프는 HTTP 요청을 처리하는 파이프입니다.

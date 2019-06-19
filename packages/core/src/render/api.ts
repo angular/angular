@@ -267,8 +267,10 @@ export abstract class Renderer2 {
    * Implement this callback to remove a child node from the host element's DOM.
    * @param parent The parent node.
    * @param oldChild The child node to remove.
+   * @param isHostElement Optionally signal to the renderer whether this element is a host element
+   * or not
    */
-  abstract removeChild(parent: any, oldChild: any): void;
+  abstract removeChild(parent: any, oldChild: any, isHostElement?: boolean): void;
   /**
    * Implement this callback to prepare an element to be bootstrapped
    * as a root element, and return the element instance.
@@ -374,8 +376,10 @@ export abstract class Renderer2 {
       target: 'window'|'document'|'body'|any, eventName: string,
       callback: (event: any) => boolean | void): () => void;
 
-  /** @internal */
-  /** @nocollapse */
+  /**
+   * @internal
+   * @nocollapse
+   */
   static __NG_ELEMENT_ID__: () => Renderer2 = () => SWITCH_RENDERER2_FACTORY();
 }
 

@@ -159,7 +159,9 @@ export abstract class AbstractControl {
    * The current value of the control.
    *
    * * For a `FormControl`, the current value.
-   * * For a `FormGroup`, the values of enabled controls as an object
+   * * For an enabled `FormGroup`, the values of enabled controls as an object
+   * with a key-value pair for each member of the group.
+   * * For a disabled `FormGroup`, the values of all controls as an object
    * with a key-value pair for each member of the group.
    * * For a `FormArray`, the values of enabled controls as an array.
    *
@@ -365,6 +367,16 @@ export abstract class AbstractControl {
   }
 
   /**
+   * Marks the control and all its descendant controls as `touched`.
+   * @see `markAsTouched()`
+   */
+  markAllAsTouched(): void {
+    this.markAsTouched({onlySelf: true});
+
+    this._forEachChild((control: AbstractControl) => control.markAllAsTouched());
+  }
+
+  /**
    * Marks the control as `untouched`.
    *
    * If the control has any children, also marks all children as `untouched`
@@ -485,6 +497,10 @@ export abstract class AbstractControl {
    * When false, no events are emitted.
    */
   disable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    // If parent has been marked artificially dirty we don't want to re-calculate the
+    // parent's dirtiness based on the children.
+    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
+
     (this as{status: string}).status = DISABLED;
     (this as{errors: ValidationErrors | null}).errors = null;
     this._forEachChild(
@@ -496,7 +512,7 @@ export abstract class AbstractControl {
       (this.statusChanges as EventEmitter<string>).emit(this.status);
     }
 
-    this._updateAncestors(opts);
+    this._updateAncestors({...opts, skipPristineCheck});
     this._onDisabledChange.forEach((changeFn) => changeFn(true));
   }
 
@@ -519,19 +535,26 @@ export abstract class AbstractControl {
    * When false, no events are emitted.
    */
   enable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    // If parent has been marked artificially dirty we don't want to re-calculate the
+    // parent's dirtiness based on the children.
+    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
+
     (this as{status: string}).status = VALID;
     this._forEachChild(
         (control: AbstractControl) => { control.enable({...opts, onlySelf: true}); });
     this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
 
-    this._updateAncestors(opts);
+    this._updateAncestors({...opts, skipPristineCheck});
     this._onDisabledChange.forEach((changeFn) => changeFn(false));
   }
 
-  private _updateAncestors(opts: {onlySelf?: boolean, emitEvent?: boolean}) {
+  private _updateAncestors(
+      opts: {onlySelf?: boolean, emitEvent?: boolean, skipPristineCheck?: boolean}) {
     if (this._parent && !opts.onlySelf) {
       this._parent.updateValueAndValidity(opts);
-      this._parent._updatePristine();
+      if (!opts.skipPristineCheck) {
+        this._parent._updatePristine();
+      }
       this._parent._updateTouched();
     }
   }
@@ -842,6 +865,16 @@ export abstract class AbstractControl {
       this._updateOn = (opts as AbstractControlOptions).updateOn !;
     }
   }
+
+  /**
+   * Check to see if parent has been marked artificially dirty.
+   *
+   * @internal
+   */
+  private _parentMarkedDirty(onlySelf?: boolean): boolean {
+    const parentDirty = this._parent && this._parent.dirty;
+    return !onlySelf && parentDirty && !this._parent._anyControlsDirty();
+  }
 }
 
 /**
@@ -981,7 +1014,7 @@ export class FormControl extends AbstractControl {
    * Sets a new value for the form control.
    *
    * @param value The new value for the control.
-   * @param options Configuration options that determine how the control proopagates changes
+   * @param options Configuration options that determine how the control propagates changes
    * and emits events when the value changes.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
@@ -1446,9 +1479,9 @@ export class FormGroup extends AbstractControl {
     this._forEachChild((control: AbstractControl, name: string) => {
       control.reset(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
-    this.updateValueAndValidity(options);
     this._updatePristine(options);
     this._updateTouched(options);
+    this.updateValueAndValidity(options);
   }
 
   /**
@@ -1608,7 +1641,7 @@ export class FormGroup extends AbstractControl {
  *
  * ### Adding or removing controls from a form array
  *
- * To change the controls in the array, use the `push`, `insert`, or `removeAt` methods
+ * To change the controls in the array, use the `push`, `insert`, `removeAt` or `clear` methods
  * in `FormArray` itself. These methods ensure the controls are properly tracked in the
  * form's hierarchy. Do not modify the array of `AbstractControl`s used to instantiate
  * the `FormArray` directly, as that result in strange and unexpected behavior such
@@ -1847,9 +1880,9 @@ export class FormArray extends AbstractControl {
     this._forEachChild((control: AbstractControl, index: number) => {
       control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
     });
-    this.updateValueAndValidity(options);
     this._updatePristine(options);
     this._updateTouched(options);
+    this.updateValueAndValidity(options);
   }
 
   /**
@@ -1862,6 +1895,43 @@ export class FormArray extends AbstractControl {
     return this.controls.map((control: AbstractControl) => {
       return control instanceof FormControl ? control.value : (<any>control).getRawValue();
     });
+  }
+
+  /**
+   * Remove all controls in the `FormArray`.
+   *
+   * @usageNotes
+   * ### Remove all elements from a FormArray
+   *
+   * ```ts
+   * const arr = new FormArray([
+   *    new FormControl(),
+   *    new FormControl()
+   * ]);
+   * console.log(arr.length);  // 2
+   *
+   * arr.clear();
+   * console.log(arr.length);  // 0
+   * ```
+   *
+   * It's a simpler and more efficient alternative to removing all elements one by one:
+   *
+   * ```ts
+   * const arr = new FormArray([
+   *    new FormControl(),
+   *    new FormControl()
+   * ]);
+   *
+   * while (arr.length) {
+   *    arr.removeAt(0);
+   * }
+   * ```
+   */
+  clear(): void {
+    if (this.controls.length < 1) return;
+    this._forEachChild((control: AbstractControl) => control._registerOnCollectionChange(() => {}));
+    this.controls.splice(0);
+    this.updateValueAndValidity();
   }
 
   /** @internal */

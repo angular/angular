@@ -2,24 +2,24 @@
 # yarn lockfile v1
 
 
-"@bazel/bazel-darwin_x64@0.18.0":
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.18.0.tgz#bab437605a702279d42f59caa4741bb327eb7dbc"
-  integrity sha512-um2OzgLL2Gd/W6joOpvrSTcqpnupliPNpwe/uE7sB0huBSJ/4Im0w2IlCTI6C7OfgMcbpUj4YxgUa9T6u6WY6w==
+"@bazel/bazel-darwin_x64@0.24.0":
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.24.0.tgz#828ef298d8d542961df388f17b0244f4f4302a74"
+  integrity sha512-xly44vkcD/fauUb7Lm5Lme4qhEZdkuuyBKSVQUHPbYAGDdbj/W8dupI3bZREkJAgG/WrRU+WXUemMj4U8ZcLcw==
 
-"@bazel/bazel-linux_x64@0.18.0":
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.18.0.tgz#0c02b2404ec95c180e17615cc7079ee07df48a69"
-  integrity sha512-Rq8X8bL6SgQvbOHnfPhSgF6hp+f6Fbt2w6pRmBlFvV1J+CeUyrSrrRXfnnO1bjIuq05Ur3mV8ULA0qK6rtA5lQ==
+"@bazel/bazel-linux_x64@0.24.0":
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.24.0.tgz#9ef2e7266833ad2221fe4af4ceb6763d2897e3ff"
+  integrity sha512-p5ylPLWnJZDGbaIFBrtD/tp3Su5rMdzeeNJKU24XyiWQTHVZ3OD3I2Fb0ILCgfBjY8AlA7EtCtOI4hYnAuIOtg==
 
-"@bazel/bazel-win32_x64@0.18.0":
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.18.0.tgz#aa4575fb00066dcf59a6d464971774dea6a0bafd"
-  integrity sha512-U2TbfK8B7dc3JqXSFwj2oXCQrxEaSzCCUkAHjAOIGOKzx/HLKIKs+NJj9IQkLLr7BsMU+Qqzo8aqo11E+Vs+aA==
+"@bazel/bazel-win32_x64@0.24.0":
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.24.0.tgz#02d83113a6c6ed99795a3e41bff5631aa141638d"
+  integrity sha512-/bcSEx+GoV/q7H4WM0jazfxTcurSiIIePhRv+d05mxRDcaWwhCO8KzmmZRWH1abW6npvq5tLkbSQi7G7nUBhgg==
 
 "@bazel/bazel@file:../../node_modules/@bazel/bazel":
-  version "0.18.0"
+  version "0.24.0"
   optionalDependencies:
-    "@bazel/bazel-darwin_x64" "0.18.0"
-    "@bazel/bazel-linux_x64" "0.18.0"
-    "@bazel/bazel-win32_x64" "0.18.0"
+    "@bazel/bazel-darwin_x64" "0.24.0"
+    "@bazel/bazel-linux_x64" "0.24.0"
+    "@bazel/bazel-win32_x64" "0.24.0"

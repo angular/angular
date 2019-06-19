@@ -4,7 +4,7 @@
 # 운영환경에 서비스 워커 활용하기
 
 <!--
-This page is a reference for deploying and supporting production apps that use the Angular service worker. It explains how the Angular service worker fits into the larger production environment, the service worker's behavior under various conditions, and available recourses and fail-safes.
+This page is a reference for deploying and supporting production apps that use the Angular service worker. It explains how the Angular service worker fits into the larger production environment, the service worker's behavior under various conditions, and available resources and fail-safes.
 -->
 이 문서는 Angular 서비스 워커를 운영환경에서 활용할 때 알아둬야 할 내용에 대해 소개합니다.
 복잡한 운영환경에 서비스 워커를 어떻게 적용할 수 있는지, 서로 다른 환경에서 서비스 워커의 동작이 어떻게 달라져야 하는지, 어떤 리소스를 사용할 수 있으며, 서비스 워커 실행에 실패했을 때 어떻게 되는지 소개합니다.
@@ -246,6 +246,16 @@ Angular 서비스 워커는 사실 웹 브라우저에서 실행되는 간단한
 
 서비스 워커가 업데이트되더라도 이 과정은 애플리케이션에 영향을 주지 않습니다. 그래서 업데이트하기 이전에 캐싱한 리소스는 서비스 워커를 업데이트한 이후에도 여전히 유효합니다. 하지만 서비스 워커의 버그를 수정하거나 기능이 추가된 경우라면 이전에 있던 캐시를 폐기하고 새로 받아와야 하는 경우도 있습니다. 이 경우에는 앱 전체가 새로 실행될 수 있습니다.
 
+### Bypassing the service worker
+
+In some cases, you may want to bypass the service worker entirely and let the browser handle the
+request instead. An example is when you rely on a feature that is currently not supported in service
+workers (e.g.
+[reporting progress on uploaded files](https://github.com/w3c/ServiceWorker/issues/1141)).
+
+To bypass the service worker you can set `ngsw-bypass` as a request header, or as a query parameter.
+(The value of the header or query parameter is ignored and can be empty or omitted.)
+
 <!--
 ## Debugging the Angular service worker
 -->
@@ -482,12 +492,12 @@ an administrator ever needs to deactivate the service worker quickly.
 
 <!--
 To deactivate the service worker, remove or rename the
-`ngsw-config.json` file. When the service worker's request
+`ngsw.json` file. When the service worker's request
 for `ngsw.json` returns a `404`, then the service worker
 removes all of its caches and de-registers itself,
 essentially self-destructing.
 -->
-서비스 워커를 비활성화하려면 `ngsw-config.json` 파일을 제거하거나 다른 이름으로 변경하면 됩니다. 그리고 서비스 워커가 요청한 `ngsw.json` 요청의 응답으로 `404`를 받으면 서비스 워커가 모든 캐시를 제거하고 브라우저에 등록된 서비스 워커를 해지합니다.
+서비스 워커를 비활성화하려면 `ngsw.json` 파일을 제거하거나 다른 이름으로 변경하면 됩니다. 그리고 서비스 워커가 요청한 `ngsw.json` 요청의 응답으로 `404`를 받으면 서비스 워커가 모든 캐시를 제거하고 브라우저에 등록된 서비스 워커를 해지합니다.
 
 ### Safety Worker
 

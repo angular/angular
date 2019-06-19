@@ -12,8 +12,23 @@ import {ImportRewriter} from '../../imports';
 import {ImportManager, translateType} from '../../translator';
 
 import {CompileResult} from './api';
+import {IvyCompilation} from './compilation';
+import {addImports} from './utils';
 
 
+
+export function declarationTransformFactory(compilation: IvyCompilation):
+    ts.TransformerFactory<ts.Bundle|ts.SourceFile> {
+  return (context: ts.TransformationContext) => {
+    return (fileOrBundle) => {
+      if (ts.isBundle(fileOrBundle)) {
+        // Only attempt to transform source files.
+        return fileOrBundle;
+      }
+      return compilation.transformedDtsFor(fileOrBundle, context);
+    };
+  };
+}
 
 /**
  * Processes .d.ts file text and adds static field declarations, with types.
@@ -32,36 +47,33 @@ export class DtsFileTransformer {
   recordStaticField(name: string, decls: CompileResult[]): void { this.ivyFields.set(name, decls); }
 
   /**
-   * Process the .d.ts text for a file and add any declarations which were recorded.
+   * Transform the declaration file and add any declarations which were recorded.
    */
-  transform(dts: string, tsPath: string): string {
-    const dtsFile =
-        ts.createSourceFile('out.d.ts', dts, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+  transform(file: ts.SourceFile, context: ts.TransformationContext): ts.SourceFile {
+    const visitor: ts.Visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      // This class declaration needs to have fields added to it.
+      if (ts.isClassDeclaration(node) && node.name !== undefined &&
+          this.ivyFields.has(node.name.text)) {
+        const decls = this.ivyFields.get(node.name.text) !;
+        const newMembers = decls.map(decl => {
+          const modifiers = [ts.createModifier(ts.SyntaxKind.StaticKeyword)];
+          const typeRef = translateType(decl.type, this.imports);
+          return ts.createProperty(undefined, modifiers, decl.name, undefined, typeRef, undefined);
+        });
 
-    for (let i = dtsFile.statements.length - 1; i >= 0; i--) {
-      const stmt = dtsFile.statements[i];
-      if (ts.isClassDeclaration(stmt) && stmt.name !== undefined &&
-          this.ivyFields.has(stmt.name.text)) {
-        const decls = this.ivyFields.get(stmt.name.text) !;
-        const before = dts.substring(0, stmt.end - 1);
-        const after = dts.substring(stmt.end - 1);
-
-        dts = before +
-            decls
-                .map(decl => {
-                  const type = translateType(decl.type, this.imports);
-                  return `    static ${decl.name}: ${type};\n`;
-                })
-                .join('') +
-            after;
+        return ts.updateClassDeclaration(
+            node, node.decorators, node.modifiers, node.name, node.typeParameters,
+            node.heritageClauses, [...node.members, ...newMembers]);
       }
-    }
 
-    const imports = this.imports.getAllImports(tsPath);
-    if (imports.length !== 0) {
-      dts = imports.map(i => `import * as ${i.as} from '${i.name}';\n`).join('') + dts;
-    }
+      // Otherwise return node as is.
+      return ts.visitEachChild(node, visitor, context);
+    };
 
-    return dts;
+    // Recursively scan through the AST and add all class members needed.
+    const sf = ts.visitNode(file, visitor);
+
+    // Add new imports for this file.
+    return addImports(this.imports, sf);
   }
 }

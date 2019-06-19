@@ -933,7 +933,7 @@ export class CompileMetadataResolver {
       }
       if (token == null) {
         hasUnknownDeps = true;
-        return null !;
+        return {};
       }
 
       return {
@@ -949,7 +949,7 @@ export class CompileMetadataResolver {
 
     if (hasUnknownDeps) {
       const depsTokens =
-          dependenciesMetadata.map((dep) => dep ? stringifyType(dep.token) : '?').join(', ');
+          dependenciesMetadata.map((dep) => dep.token ? stringifyType(dep.token) : '?').join(', ');
       const message =
           `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`;
       if (throwOnUnknownDeps || this._config.strictInjectionParameters) {
@@ -1157,7 +1157,8 @@ export class CompileMetadataResolver {
       selectors,
       first: q.first,
       descendants: q.descendants, propertyName,
-      read: q.read ? this._getTokenMetadata(q.read) : null !
+      read: q.read ? this._getTokenMetadata(q.read) : null !,
+      static: q.static
     };
   }
 

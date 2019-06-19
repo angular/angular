@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, Injector, Optional, ReflectiveKey, Self, SkipSelf, forwardRef} from '@angular/core';
-import {getOriginalError} from '@angular/core/src/errors';
+import {Inject, InjectionToken, Injector, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
 import {stringify} from '../../src/util/stringify';
 
@@ -87,7 +87,7 @@ function factoryFn(a: any){}
     {provide: 'provider10', useValue: 1}
   ];
 
-  describe(`StaticInjector`, () => {
+  modifiedInIvy('Ivy uses R3Injector').describe(`StaticInjector`, () => {
 
     it('should instantiate a class without dependencies', () => {
       const injector = Injector.create([Engine.PROVIDER]);
@@ -414,9 +414,11 @@ function factoryFn(a: any){}
             [{provide: Car, useFactory: (e: Engine) => new Car(e), deps: [[Engine, new Self()]]}],
             parent);
 
+        const injectorName = ivyEnabled ? `R3Injector` : `StaticInjector`;
+
         expect(() => child.get(Car))
             .toThrowError(
-                `StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)}]: \n` +
+                `${injectorName}Error[${stringify(Car)} -> ${stringify(Engine)}]: \n` +
                 '  NullInjectorError: No provider for Engine!');
       });
     });
@@ -473,8 +475,11 @@ function factoryFn(a: any){}
 
   describe('displayName', () => {
     it('should work', () => {
+      const ivyError = `R3Injector[Engine, BrokenEngine, InjectionToken INJECTOR]`;
+      const viewEngineError =
+          `StaticInjector[Injector, InjectionToken INJECTOR, Engine, BrokenEngine]`;
       expect(Injector.create([Engine.PROVIDER, {provide: BrokenEngine, useValue: null}]).toString())
-          .toEqual('StaticInjector[Injector, InjectionToken INJECTOR, Engine, BrokenEngine]');
+          .toEqual(ivyEnabled ? ivyError : viewEngineError);
     });
   });
 }

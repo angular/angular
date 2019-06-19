@@ -11,7 +11,7 @@ import {AfterContentInit, AfterViewInit, Component, ContentChildren, Directive, 
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {modifiedInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
+import {modifiedInIvy} from '@angular/private/testing';
 
 if (ivyEnabled) {
   describe('ivy', () => { declareTests(); });
@@ -24,11 +24,6 @@ function declareTests(config?: {useJit: boolean}) {
   describe('<ng-container>', function() {
 
     beforeEach(() => {
-      // Injecting goog.getMsg-like function into global scope to unblock tests run outside of
-      // Closure Compiler. It's a *temporary* measure until runtime translation service support is
-      // introduced.
-      polyfillGoogGetMsg();
-
       TestBed.configureCompiler({...config});
       TestBed.configureTestingModule({
         declarations: [

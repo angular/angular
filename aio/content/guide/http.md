@@ -830,7 +830,7 @@ That's easy to implement with RxJS operators, as shown in this excerpt.
 <code-example 
   path="http/src/app/package-search/package-search.component.ts"
   region="debounce" 
-  header="app/package-search/package-search.component.ts (excerpt))">
+  header="app/package-search/package-search.component.ts (excerpt)">
 </code-example>
 
 <!--
@@ -1347,7 +1347,7 @@ HTTP 요청이 발생한 시간과 응답이 도착한 시간을 확인하고, �
 </code-example>
 
 <!--
-The RxJS `tap` operator captures whether the request succeed or failed.
+The RxJS `tap` operator captures whether the request succeeded or failed.
 The RxJS `finalize` operator is called when the response observable either errors or completes (which it must),
 and reports the outcome to the `MessageService`.
 -->
@@ -1551,6 +1551,9 @@ with the `reportProgress` option set true to enable tracking of progress events.
 Every progress event triggers change detection, so only turn them on if you truly intend to report progress in the UI.
 -->
 진행률 이벤트가 발생할 때마다 변화 감지 싸이클이 동작하기 때문에, 실제로 UI에서 활용할 필요가 있을 때만 이 옵션을 사용하세요.
+
+When using [`HttpClient#request()`](api/common/http/HttpClient#request) with an HTTP method, configure with
+[`observe: 'events'`](api/common/http/HttpClient#request) to see all events, including the progress of transfers.
 
 </div>
 

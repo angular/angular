@@ -46,7 +46,7 @@ export interface Announcement {
   template: `
   <div class="homepage-container" *ngIf="announcement">
     <div class="announcement-bar">
-      <img [src]="announcement.imageUrl">
+      <img [src]="announcement.imageUrl" alt="">
       <p [innerHTML]="announcement.message"></p>
       <a class="button" [href]="announcement.linkUrl">자세히 보기</a>
     </div>

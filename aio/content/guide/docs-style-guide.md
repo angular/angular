@@ -1,19 +1,60 @@
-# Authors Style Guide
+# Angular Documentation Style Guide
+<!-- formerly Authors Style Guide -->
 
-This page presents design and layout guidelines for Angular documentation pages.  These guidelines should be followed by all guide page authors. Deviations must be approved by the documentation editor.
+This Style Guide is for anyone who contributes to the Angular documentation (this site). 
+These guidelines should be followed by all authors. 
+Deviations must be approved by a documentation editor.
 
-Most guide pages should have [accompanying sample code](#from-code-samples) with
-[special markup](#source-code-markup) for the code snippets on the page.
-Code samples should adhere to the
-[style guide for Angular applications](guide/styleguide "Application Code Style Guide")
-because readers expect consistency.
+The guidelines described here serve two purposes: 
 
-For clarity and precision, every guideline on _this_ page is illustrated with a working example,
-followed by the page markup for that example ... as shown here.
+* To ensure a high-quality, consistent experience for Angular documentation users. 
 
-```html
-  followed by the page markup for that example ... as shown here.
-```
+* To simplify the writing process for contributing authors. 
+This guide helps you make decisions about tone, voice, and style. 
+It also helps you find the right markup quickly. 
+
+
+<div class="alert is-helpful">
+
+This guide is a *living document*; it changes over time. 
+We strive for consistency to the extent feasible, but you may find parts of our documentation that don't match this style guide. 
+When in doubt, **follow this guide rather than imitating existing documents.**
+
+</div>
+
+## Scope of these guidelines
+
+We ask all contributing authors to adhere to three aspects of style: 
+
+
+* **Writing style:** Word usage, grammar, capitalization, and punctuation. 
+Adherence to Angular's writing guidelines ensures a consistent "voice", helps ensure accuracy of the information, and facilitates use world-wide, by audiences with different backgrounds. 
+
+
+* **Markup style:** How to include images, tables, alert boxes, and code snippets. 
+Angular docs are written in Markdown, with custom extensions for this site. Correct markup ensures a consistent look-and-feel, and is essential for the doc to build and function correctly. 
+
+
+* **Angular coding style:** Coding style for example apps and code snippets. 
+Code examples are encouraged for demonstrating how to apply the concepts and features discussed. 
+Angular has a custom framework that enables authors to include code snippets directly from example apps  that are automatically tested as part of doc builds. 
+To contribute example code, you must understand Angular itself and the custom framework for Angular doc examples. 
+
+For each aspect of style, the following table explains where to find the primary guidelines and what this Angular Documentation Style Guide offers. 
+
+
+Style                    | Guidelines
+------------------------ | -------------------------------
+**Writing style**        | Primary: [Google Developer Documentation Style Guide](https://developers.google.com/style/)<br />This guide: Specifies any special considerations for Angular docs.  
+**Markup style**         | Primary: This guide<br />This guide: Specifies guidelines for markup of guides and tutorials, which are written primarily in Markdown. 
+**Angular coding style** | Primary: [Angular Style Guide](guide/styleguide "Angular Application Code Style Guide").<br />This guide: How to create, store, and include code examples in guides and tutorials. 
+
+<div class="alert is-helpful">
+
+Note: Angular API and CLI reference docs are generated from source code and/or related source files, which may have other markup styles and other ways of including code examples.
+
+</div>
+
 
 ## Doc generation and tooling
 

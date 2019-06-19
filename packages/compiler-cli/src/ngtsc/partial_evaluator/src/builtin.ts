@@ -6,16 +6,37 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BuiltinFn, DYNAMIC_VALUE, ResolvedValue, ResolvedValueArray} from './result';
+import * as ts from 'typescript';
+
+import {DynamicValue} from './dynamic';
+import {BuiltinFn, ResolvedValue, ResolvedValueArray} from './result';
 
 export class ArraySliceBuiltinFn extends BuiltinFn {
-  constructor(private lhs: ResolvedValueArray) { super(); }
+  constructor(private node: ts.Node, private lhs: ResolvedValueArray) { super(); }
 
   evaluate(args: ResolvedValueArray): ResolvedValue {
     if (args.length === 0) {
       return this.lhs;
     } else {
-      return DYNAMIC_VALUE;
+      return DynamicValue.fromUnknown(this.node);
     }
+  }
+}
+
+export class ArrayConcatBuiltinFn extends BuiltinFn {
+  constructor(private node: ts.Node, private lhs: ResolvedValueArray) { super(); }
+
+  evaluate(args: ResolvedValueArray): ResolvedValue {
+    const result: ResolvedValueArray = [...this.lhs];
+    for (const arg of args) {
+      if (arg instanceof DynamicValue) {
+        result.push(DynamicValue.fromDynamicInput(this.node, arg));
+      } else if (Array.isArray(arg)) {
+        result.push(...arg);
+      } else {
+        result.push(arg);
+      }
+    }
+    return result;
   }
 }

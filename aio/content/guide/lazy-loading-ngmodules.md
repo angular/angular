@@ -36,12 +36,18 @@ For the final sample app with two lazy loaded modules that this page describes, 
 ## 개요
 
 <!--
+By default, NgModules are eagerly loaded, which means that as soon as the app loads, so do all the NgModules, whether or not they are immediately necessary. For large apps with lots of routes, consider lazy loading&mdash;a design pattern that loads NgModules as needed. Lazy loading helps keep initial
+bundle sizes smaller, which in turn helps decrease load times.
+
 There are three main steps to setting up a lazy loaded feature module:
 
 1. Create the feature module.
 1. Create the feature module’s routing module.
 1. Configure the routes.
 -->
+By default, NgModules are eagerly loaded, which means that as soon as the app loads, so do all the NgModules, whether or not they are immediately necessary. For large apps with lots of routes, consider lazy loading&mdash;a design pattern that loads NgModules as needed. Lazy loading helps keep initial
+bundle sizes smaller, which in turn helps decrease load times.
+
 기능 모듈을 지연 로딩 하도록 지정하는 것은 세 단계로 구성됩니다.
 
 1. 기능 모듈을 생성합니다.
@@ -243,9 +249,9 @@ In `AppRoutingModule`, update the `routes` array with the following:
 </code-example>
 
 <!--
-The import statements stay the same. The first two paths are the routes to the `CustomersModule` and the `OrdersModule` respectively. Notice that the lazy loading syntax uses `loadChildren` followed by a string that is the relative path to the module, a hash mark or `#`, and the module’s class name.
+The import statements stay the same. The first two paths are the routes to the `CustomersModule` and the `OrdersModule` respectively. Notice that the lazy loading syntax uses `loadChildren` followed by a function that uses the browser's built-in `import('...')` syntax for dynamic imports. The import path is the relative path to the module.
 -->
-이 파일의 다른 부분은 그대로 둡니다. 라우터 설정을 지정한 것을 보면, 배열의 첫번째 항목은 `CustomersModule`로 라우팅하도록 지정했고, 두번째 항목은 `OrdersModule`로 라우팅하도록 지정했습니다. 이 떄 지연 로딩하는 모듈은 `loadChildren` 프로퍼티로 지정하며, 라우팅하려는 상대 주소에 `#` 기호와 모듈의 이름을 붙여서 지정합니다.
+이 파일의 다른 부분은 그대로 둡니다. 라우터 설정을 지정한 것을 보면, 배열의 첫번째 항목은 `CustomersModule`로 라우팅하도록 지정했고, 두번째 항목은 `OrdersModule`로 라우팅하도록 지정했습니다. 이 때 지연 로딩하는 모듈은 `loadChildren` 프로퍼티로 지정하며, 브라우저의 빌트인 `import('...')` 문법으로 동적로딩 합니다. 이 때 모듈은 상대주소로 지정합니다.
 
 <!--
 ### Inside the feature module
@@ -306,9 +312,9 @@ Now, if you view the app in the browser, the three buttons take you to each modu
 ## 동작 확인하기
 
 <!--
-You can check to see that a module is indeed being lazy loaded with the Chrome developer tools. In Chrome, open the dev tools by pressing `Cmd+Option+i` on a Mac or `Ctrl+Alt+i` on a PC and go to the Network Tab.
+You can check to see that a module is indeed being lazy loaded with the Chrome developer tools. In Chrome, open the dev tools by pressing `Cmd+Option+i` on a Mac or `Ctrl+Shift+j` on a PC and go to the Network Tab.
 -->
-Chrome 개발자 도구를 활용하면 모듈이 정말 지연 로딩되었는지 확인할 수 있습니다. Chrome 브라우저에서 개발자 도구를 열고 네트워크 탭으로 이동합니다.
+Chrome 개발자 도구를 활용하면 모듈이 정말 지연 로딩되었는지 확인할 수 있습니다. Chrome 브라우저에서 개발자 도구를 열고 네트워크 탭으로 이동합니다. Mac에서는 `Cmd+Option+i`, Windows에서는 `Ctrl+Shift+j`를 누르면 됩니다.
 
 <figure>
  <img src="generated/images/guide/lazy-loading-ngmodules/network-tab.png" width="600" alt="lazy loaded modules diagram">
@@ -358,9 +364,9 @@ knows that the route list is only responsible for providing additional routes an
 이와 다르게, 기능 모듈에 만든 라우팅 모듈은 `RouterModule.forChild(routes)`로 지정되어 있습니다. `forChild()` 함수를 사용하면 이 라우팅 모듈이 최상위 모듈의 자식 라우터로 동작한다는 것을 의미하며, 동시에 어떤 기능 모듈 안에 포함된다는 것으로 판단합니다. `forChild()` 함수는 여러번 사용해도 문제 없습니다.
 
 <!--
-`forRoot()` contains injector configuration which is global; such as configuring the Router. `forChild()` has no injector configuration, only directives such as `RouterOutlet` and `RouterLink`.
+For more information, see the [`forRoot()` pattern](guide/singleton-services#forRoot) section of the [Singleton Services](guide/singleton-services) guide.
 -->
-`forRoot()`를 사용하면 전역에서 사용할 수 있는 인젝터가 생성되는데, 브라우저 전체에서 사용되는 Router 객체가 이 인젝터에 포함됩니다. 반면에 `forChild()`는 `RouterOutlet`과 `RouterLink` 디렉티브만 제공합니다.
+더 자세한 내용은 [싱글턴 서비스](guide/singleton-services) 가이드 문서의 [`forRoot()` 패턴](guide/singleton-services#forRoot) 섹션을 참고하세요.
 
 <hr>
 

@@ -23,16 +23,14 @@ import {Zippy} from './app/zippy';
     </ul>
   `
 })
-class ZippyApp {
+export class ZippyApp {
   logs: string[] = [];
 
   pushLog(log: string) { this.logs.push(log); }
 }
 
 @NgModule({declarations: [ZippyApp, Zippy], bootstrap: [ZippyApp], imports: [BrowserModule]})
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

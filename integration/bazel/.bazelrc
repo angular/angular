@@ -13,3 +13,6 @@ build --local_resources=14336,8.0,1.0
 
 # Use the Angular 6 compiler
 build --define=compile=legacy
+
+# Don't create symlinks
+build --symlink_prefix=/

@@ -7,8 +7,7 @@
  */
 
 
-import {EventEmitter, Injectable, NO_ERRORS_SCHEMA} from '@angular/core';
-import {Component, Directive, Input} from '@angular/core/src/metadata';
+import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -138,7 +137,12 @@ class LocalsComp {
   template: `
    Bank Name: {{bank}}
    Account Id: {{id}}
- `
+ `,
+  host: {
+    'class': 'static-class',
+    '[class.absent-class]': 'false',
+    '[class.present-class]': 'true',
+  },
 })
 class BankAccount {
   // TODO(issue/24571): remove '!'.
@@ -148,6 +152,15 @@ class BankAccount {
 
   // TODO(issue/24571): remove '!'.
   normalizedBankName !: string;
+}
+
+@Component({
+  template: `
+    <div class="content" #content>Some content</div>
+ `
+})
+class SimpleContentComp {
+  @ViewChild('content', {static: false}) content !: ElementRef;
 }
 
 @Component({
@@ -165,6 +178,35 @@ class TestApp {
   width = 200;
   color = 'red';
   isClosed = true;
+}
+
+@Component({selector: 'test-cmpt', template: ``})
+class TestCmpt {
+}
+
+@Component({selector: 'host-class-binding', template: ''})
+class HostClassBindingCmp {
+  @HostBinding('class')
+  hostClasses = 'class-one class-two';
+}
+
+@Component({selector: 'test-cmpt-vcref', template: `<div></div>`})
+class TestCmptWithViewContainerRef {
+  constructor(private vcref: ViewContainerRef) {}
+}
+
+@Component({
+  template: `
+  <button
+    [disabled]="disabled"
+    [tabIndex]="tabIndex"
+    [title]="title">Click me</button>
+`
+})
+class TestCmptWithPropBindings {
+  disabled = true;
+  tabIndex = 1337;
+  title = 'hello';
 }
 
 {
@@ -185,6 +227,12 @@ class TestApp {
           ParentComp,
           TestApp,
           UsingFor,
+          BankAccount,
+          TestCmpt,
+          HostClassBindingCmp,
+          TestCmptWithViewContainerRef,
+          SimpleContentComp,
+          TestCmptWithPropBindings,
         ],
         providers: [Logger],
         schemas: [NO_ERRORS_SCHEMA],
@@ -276,6 +324,17 @@ class TestApp {
       expect(bankElem.classes['open']).toBe(false);
     });
 
+    it('should get element classes from host bindings', () => {
+      fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      const debugElement = fixture.debugElement.children[0];
+
+      expect(debugElement.classes['present-class'])
+          .toBe(true, 'Expected bound host CSS class "present-class" to be present');
+      expect(debugElement.classes['absent-class'])
+          .toBe(false, 'Expected bound host CSS class "absent-class" to be absent');
+    });
+
     it('should list element styles', () => {
       fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
@@ -306,6 +365,155 @@ class TestApp {
       expect(getDOM().hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
       expect(getDOM().hasClass(childTestEls[2].nativeElement, 'child')).toBe(true);
       expect(getDOM().hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
+    });
+
+    it('should query projected child elements by directive', () => {
+      @Directive({selector: 'example-directive-a'})
+      class ExampleDirectiveA {
+      }
+
+      @Component({
+        selector: 'wrapper-component',
+        template: `
+          <ng-content select="example-directive-a"></ng-content>
+        `
+      })
+      class WrapperComponent {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [
+          WrapperComponent,
+          ExampleDirectiveA,
+        ]
+      });
+
+      TestBed.overrideTemplate(TestApp, `<wrapper-component>
+        <div></div>
+        <example-directive-a></example-directive-a>
+       </wrapper-component>`);
+
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+
+      const debugElement = fixture.debugElement.query(By.directive(ExampleDirectiveA));
+      expect(debugElement).toBeTruthy();
+    });
+
+    it('should query re-projected child elements by directive', () => {
+      @Directive({selector: 'example-directive-a'})
+      class ExampleDirectiveA {
+      }
+
+      @Component({
+        selector: 'proxy-component',
+        template: `
+          <ng-content></ng-content>
+        `
+      })
+      class ProxyComponent {
+      }
+
+      @Component({
+        selector: 'wrapper-component',
+        template: `
+          <proxy-component>
+            <ng-content select="div"></ng-content>
+            <ng-content select="example-directive-a"></ng-content>
+          </proxy-component>
+        `
+      })
+      class WrapperComponent {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [
+          ProxyComponent,
+          WrapperComponent,
+          ExampleDirectiveA,
+        ]
+      });
+
+      TestBed.overrideTemplate(TestApp, `<wrapper-component>
+        <div></div>
+        <example-directive-a></example-directive-a>
+       </wrapper-component>`);
+
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+
+      const debugElements = fixture.debugElement.queryAll(By.directive(ExampleDirectiveA));
+      expect(debugElements.length).toBe(1);
+    });
+
+    it('should query directives on containers before directives in a view', () => {
+      @Directive({selector: '[text]'})
+      class TextDirective {
+        @Input() text: string|undefined;
+      }
+
+      TestBed.configureTestingModule({declarations: [TextDirective]});
+      TestBed.overrideTemplate(
+          TestApp,
+          `<ng-template text="first" [ngIf]="true"><div text="second"></div></ng-template>`);
+
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+
+      const debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
+      expect(debugNodes.length).toBe(2);
+      expect(debugNodes[0].injector.get(TextDirective).text).toBe('first');
+      expect(debugNodes[1].injector.get(TextDirective).text).toBe('second');
+    });
+
+    it('should query directives on views moved in the DOM', () => {
+      @Directive({selector: '[text]'})
+      class TextDirective {
+        @Input() text: string|undefined;
+      }
+
+      @Directive({selector: '[moveView]'})
+      class ViewManipulatingDirective {
+        constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<any>) {}
+
+        insert() { this._vcRef.createEmbeddedView(this._tplRef); }
+
+        removeFromTheDom() {
+          const viewRef = this._vcRef.get(0) as EmbeddedViewRef<any>;
+          viewRef.rootNodes.forEach(rootNode => { getDOM().remove(rootNode); });
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [TextDirective, ViewManipulatingDirective]});
+      TestBed.overrideTemplate(
+          TestApp, `<ng-template text="first" moveView><div text="second"></div></ng-template>`);
+
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+
+      const viewMover =
+          fixture.debugElement.queryAllNodes(By.directive(ViewManipulatingDirective))[0]
+              .injector.get(ViewManipulatingDirective);
+
+      let debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
+
+      // we've got just one directive on <ng-template>
+      expect(debugNodes.length).toBe(1);
+      expect(debugNodes[0].injector.get(TextDirective).text).toBe('first');
+
+      // insert a view - now we expect to find 2 directive instances
+      viewMover.insert();
+      fixture.detectChanges();
+      debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
+      expect(debugNodes.length).toBe(2);
+
+      // remove a view from the DOM (equivalent to moving it around)
+      // the logical tree is the same but DOM has changed
+      viewMover.removeFromTheDom();
+      debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
+      expect(debugNodes.length).toBe(2);
+      expect(debugNodes[0].injector.get(TextDirective).text).toBe('first');
+      expect(debugNodes[1].injector.get(TextDirective).text).toBe('second');
     });
 
     it('should list providerTokens', () => {
@@ -353,5 +561,180 @@ class TestApp {
       expect(fixture.componentInstance.customed).toBe(true);
 
     });
+
+    it('should include classes in properties.className', () => {
+      fixture = TestBed.createComponent(HostClassBindingCmp);
+      fixture.detectChanges();
+
+      const debugElement = fixture.debugElement;
+
+      expect(debugElement.properties.className).toBe('class-one class-two');
+
+      fixture.componentInstance.hostClasses = 'class-three';
+      fixture.detectChanges();
+
+      expect(debugElement.properties.className).toBe('class-three');
+
+      fixture.componentInstance.hostClasses = '';
+      fixture.detectChanges();
+
+      expect(debugElement.properties.className).toBeFalsy();
+    });
+
+    it('should preserve the type of the property values', () => {
+      const fixture = TestBed.createComponent(TestCmptWithPropBindings);
+      fixture.detectChanges();
+
+      const button = fixture.debugElement.query(By.css('button'));
+      expect(button.properties).toEqual({disabled: true, tabIndex: 1337, title: 'hello'});
+    });
+
+    describe('componentInstance on DebugNode', () => {
+
+      it('should return component associated with a node if a node is a component host', () => {
+        TestBed.overrideTemplate(TestCmpt, `<parent-comp></parent-comp>`);
+        fixture = TestBed.createComponent(TestCmpt);
+
+        const debugEl = fixture.debugElement.children[0];
+        expect(debugEl.componentInstance).toBeAnInstanceOf(ParentComp);
+      });
+
+      it('should return component associated with a node if a node is a component host (content projection)',
+         () => {
+           TestBed.overrideTemplate(
+               TestCmpt, `<parent-comp><child-comp></child-comp></parent-comp>`);
+           fixture = TestBed.createComponent(TestCmpt);
+
+           const debugEl = fixture.debugElement.query(By.directive(ChildComp));
+           expect(debugEl.componentInstance).toBeAnInstanceOf(ChildComp);
+         });
+
+      it('should return host component instance if a node has no associated component and there is no component projecting this node',
+         () => {
+           TestBed.overrideTemplate(TestCmpt, `<div></div>`);
+           fixture = TestBed.createComponent(TestCmpt);
+
+           const debugEl = fixture.debugElement.children[0];
+           expect(debugEl.componentInstance).toBeAnInstanceOf(TestCmpt);
+         });
+
+      it('should return host component instance if a node has no associated component and there is no component projecting this node (nested embedded views)',
+         () => {
+           TestBed.overrideTemplate(TestCmpt, `
+                <ng-template [ngIf]="true">
+                  <ng-template [ngIf]="true">
+                    <div mydir></div>
+                  </ng-template>
+                </ng-template>`);
+           fixture = TestBed.createComponent(TestCmpt);
+           fixture.detectChanges();
+
+           const debugEl = fixture.debugElement.query(By.directive(MyDir));
+           expect(debugEl.componentInstance).toBeAnInstanceOf(TestCmpt);
+         });
+
+      it('should return component instance that projects a given node if a node has no associated component',
+         () => {
+           TestBed.overrideTemplate(
+               TestCmpt, `<parent-comp><span><div></div></span></parent-comp>`);
+           fixture = TestBed.createComponent(TestCmpt);
+
+           const debugEl = fixture.debugElement.children[0].children[0].children[0];  // <div>
+           expect(debugEl.componentInstance).toBeAnInstanceOf(ParentComp);
+         });
+    });
+
+    it('should be able to query for elements that are not in the same DOM tree anymore', () => {
+      fixture = TestBed.createComponent(SimpleContentComp);
+      fixture.detectChanges();
+
+      const parent = getDOM().parentElement(fixture.nativeElement) !;
+      const content = fixture.componentInstance.content.nativeElement;
+
+      // Move the content element outside the component
+      // so that it can't be reached via querySelector.
+      getDOM().appendChild(parent, content);
+
+      expect(fixture.debugElement.query(By.css('.content'))).toBeTruthy();
+
+      getDOM().remove(content);
+    });
+
+    it('should support components with ViewContainerRef', () => {
+      fixture = TestBed.createComponent(TestCmptWithViewContainerRef);
+
+      const divEl = fixture.debugElement.query(By.css('div'));
+      expect(divEl).not.toBeNull();
+    });
+
+    it('should support querying on any debug element', () => {
+      TestBed.overrideTemplate(TestCmpt, `<span><div id="a"><div id="b"></div></div></span>`);
+      fixture = TestBed.createComponent(TestCmpt);
+
+      const divA = fixture.debugElement.query(By.css('div'));
+      expect(divA.nativeElement.getAttribute('id')).toBe('a');
+
+      const divB = divA.query(By.css('div'));
+      expect(divB.nativeElement.getAttribute('id')).toBe('b');
+    });
+
+    it('should be an instance of DebugNode', () => {
+      fixture = TestBed.createComponent(ParentComp);
+      fixture.detectChanges();
+      expect(fixture.debugElement).toBeAnInstanceOf(DebugNode);
+    });
+
+    it('should return the same element when queried twice', () => {
+      fixture = TestBed.createComponent(ParentComp);
+      fixture.detectChanges();
+
+      const childTestElsFirst = fixture.debugElement.queryAll(By.css('child-comp'));
+      const childTestElsSecond = fixture.debugElement.queryAll(By.css('child-comp'));
+
+      expect(childTestElsFirst.length).toBe(1);
+      expect(childTestElsSecond[0]).toBe(childTestElsFirst[0]);
+    });
+
+    it('should not query the descendants of a sibling node', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `
+          <div class="div.1">
+            <p class="p.1">
+              <span class="span.1">span.1</span>
+              <span class="span.2">span.2</span>
+            </p>
+            <p class="p.2">
+              <span class="span.3">span.3</span>
+              <span class="span.4">span.4</span>
+            </p>
+          </div>
+          <div class="div.2">
+            <p class="p.3">
+              <span class="span.5">span.5</span>
+              <span class="span.6">span.6</span>
+            </p>
+            <p class="p.4">
+              <span class="span.7">span.7</span>
+              <span class="span.8">span.8</span>
+            </p>
+          </div>
+        `
+      })
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const firstDiv = fixture.debugElement.query(By.css('div'));
+      const firstDivChildren = firstDiv.queryAll(By.css('span'));
+
+      expect(firstDivChildren.map(child => child.nativeNode.textContent.trim())).toEqual([
+        'span.1', 'span.2', 'span.3', 'span.4'
+      ]);
+    });
+
   });
 }

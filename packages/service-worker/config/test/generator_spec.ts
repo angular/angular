@@ -10,6 +10,8 @@ import {Generator} from '../src/generator';
 import {MockFilesystem} from '../testing/mock';
 
 describe('Generator', () => {
+  beforeEach(() => spyOn(Date, 'now').and.returnValue(1234567890123));
+
   it('generates a correct config', done => {
     const fs = new MockFilesystem({
       '/index.html': 'This is a test',
@@ -70,6 +72,7 @@ describe('Generator', () => {
     res.then(config => {
          expect(config).toEqual({
            configVersion: 1,
+           timestamp: 1234567890123,
            appData: {
              test: true,
            },
@@ -137,6 +140,7 @@ describe('Generator', () => {
     res.then(config => {
          expect(config).toEqual({
            configVersion: 1,
+           timestamp: 1234567890123,
            appData: undefined,
            index: '/test/index.html',
            assetGroups: [],

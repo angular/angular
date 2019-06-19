@@ -1,23 +1,26 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "annotations",
-    srcs = glob([
-        "index.ts",
+    srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    module_name = "@angular/compiler-cli/src/ngtsc/annotations",
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/cycles",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/routing",
+        "//packages/compiler-cli/src/ngtsc/scope",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/typecheck",
-        "@ngdeps//@types/node",
-        "@ngdeps//typescript",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "@npm//@types/node",
+        "@npm//typescript",
     ],
 )

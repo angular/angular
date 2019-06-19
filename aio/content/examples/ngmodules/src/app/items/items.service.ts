@@ -16,7 +16,7 @@ const ITEMS: Item[] = [
 
 const FETCH_LATENCY = 500;
 
-/** Simulate a data service that retrieves crises from a server */
+/** Simulate a data service that retrieves items from a server */
 @Injectable()
 export class ItemService implements OnDestroy {
 

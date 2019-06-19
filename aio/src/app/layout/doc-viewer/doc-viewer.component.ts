@@ -100,9 +100,10 @@ export class DocViewerComponent implements OnDestroy {
     if (needsToc && !embeddedToc) {
       // Add an embedded ToC if it's needed and there isn't one in the content already.
       titleEl!.insertAdjacentHTML('afterend', '<aio-toc class="embedded"></aio-toc>');
-    } else if (!needsToc && embeddedToc) {
+    } else if (!needsToc && embeddedToc && embeddedToc.parentNode !== null) {
       // Remove the embedded Toc if it's there and not needed.
-      embeddedToc.remove();
+      // We cannot use ChildNode.remove() because of IE11
+      embeddedToc.parentNode.removeChild(embeddedToc);
     }
 
     return () => {
@@ -205,7 +206,7 @@ export class DocViewerComponent implements OnDestroy {
                     // setting each style.
                     switchMap(() => raf$), tap(() => elem.style[prop] = from),
                     switchMap(() => raf$), tap(() => elem.style.transition = `all ${duration}ms ease-in-out`),
-                    switchMap(() => raf$), tap(() => (elem.style as any)[prop] = to),
+                    switchMap(() => raf$), tap(() => elem.style[prop] = to),
                     switchMap(() => timer(getActualDuration(elem))), switchMap(() => this.void$),
                 );
         };

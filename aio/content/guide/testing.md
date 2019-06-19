@@ -43,11 +43,11 @@ Angular 애플리케이션은 [Jasmine 테스트 프레임워크](https://jasmin
 
 <!--
 The `ng test` command builds the app in _watch mode_,
-and launches the [karma test runner](https://karma-runner.github.io).
+and launches the [Karma test runner](https://karma-runner.github.io).
 
 The console output looks a bit like this:
 -->
-`ng test` 명령을 실행하면 애플리케이션을 _워치 모드(watch mode)_ 로 빌드하고 [karma 테스트 러너](https://karma-runner.github.io)를 실행합니다.
+`ng test` 명령을 실행하면 애플리케이션을 _워치 모드(watch mode)_ 로 빌드하고 [Karma 테스트 러너](https://karma-runner.github.io)를 실행합니다.
 
 콘솔은 다음과 같이 출력될 것입니다:
 
@@ -104,15 +104,15 @@ The tests run again, the browser refreshes, and the new test results appear.
 #### 테스트 설정
 
 <!--
-The CLI takes care of Jasmine and karma configuration for you.
+The CLI takes care of Jasmine and Karma configuration for you.
 
 You can fine-tune many options by editing the `karma.conf.js` and
 the `test.ts` files in the `src/` folder.
 
-The `karma.conf.js` file is a partial karma configuration file.
-The CLI constructs the full runtime configuration in memory,based on application structure specified in the `angular.json` file, supplemented by `karma.conf.js`.
+The `karma.conf.js` file is a partial Karma configuration file.
+The CLI constructs the full runtime configuration in memory, based on application structure specified in the `angular.json` file, supplemented by `karma.conf.js`.
 
-Search the web for more details about Jasmine and karma configuration.
+Search the web for more details about Jasmine and Karma configuration.
 -->
 Angular CLI로 프로젝트를 생성하면 Jasmine과 Karma를 실행할 수 있는 환경 설정이 자동으로 구성됩니다.
 이후에 이 설정을 튜닝하고 싶으면 `karma.conf.js` 파일과 `src/test.ts` 파일을 수정하면 됩니다.
@@ -367,8 +367,8 @@ Now you can run the following commands to use the `--no-sandbox` flag:
 그러면 아래 명령들은 `--no-sandbox` 플래그가 지정된 채로 실행됩니다.
 
 <code-example language="sh" class="code-shell">
-  ng test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-  ng e2e -- --protractor-config=e2e/protractor-ci.conf.js
+  ng test --no-watch --no-progress --browsers=ChromeHeadlessCI
+  ng e2e --protractor-config=e2e/protractor-ci.conf.js
 </code-example>
 
 <div class="alert is-helpful">
@@ -480,7 +480,7 @@ written without assistance from Angular testing utilities.
 
 <!--
 Services often depend on other services that Angular injects into the constructor.
-In many cases, it easy to create and _inject_ these dependencies by hand while
+In many cases, it's easy to create and _inject_ these dependencies by hand while
 calling the service's constructor.
 
 The `MasterService` is a simple example:
@@ -531,7 +531,7 @@ Prefer spies as they are usually the easiest way to mock services.
 <!--
 These standard testing techniques are great for unit testing services in isolation.
 
-However, you almost always inject service into application classes using Angular
+However, you almost always inject services into application classes using Angular
 dependency injection and you should have tests that reflect that usage pattern.
 Angular testing utilities make it easy to investigate how injected services behave.
 -->
@@ -712,7 +712,7 @@ to extract the setup variables that it needs.
 Many developers feel this approach is cleaner and more explicit than the
 traditional `beforeEach()` style.
 
-Although this testing guide follows the tradition style and
+Although this testing guide follows the traditional style and
 the default [CLI schematics](https://github.com/angular/angular-cli)
 generate test files with `beforeEach()` and `TestBed`,
 feel free to adopt _this alternative approach_ in your own projects.
@@ -788,16 +788,6 @@ which covers testing with the `HttpClientTestingModule` in detail.
 하지만 `HttpClientTestingModule`을 활용하면 `HttpClient`가 실행되는 과정을 좀 더 편하게 제어할 수 있어서 테스트 시나리오를 작성하기도 편합니다.
 
 다만, 이 문서에서 `HttpClientTestingModule`의 내용을 다루기에는 그 내용이 너무 많기 때문에 이 내용을 자세하게 다루는 [Http guide](guide/http#http-요청-테스트하기) 문서를 참고하세요.
-
-<div class="alert is-helpful">
-
-<!--
-This guide's sample code also demonstrates testing of the _legacy_ `HttpModule`
-in `app/model/http-hero.service.spec.ts`.
--->
-_이전 버전에서 제공하던_ `HttpModule`을 사용하는 예제 코드는 `app/model/http-hero.service.spec.ts`에서 확인할 수 있습니다.
-
-</div>
 
 
 <!--
@@ -3815,7 +3805,7 @@ seen in the `AppComponent` template.
 <!--
 The URL bound to the `[routerLink]` attribute flows in to the directive's `linkParams` property.
 
-The `host` metadata property wires the click event of the host element
+The `HostListener` wires the click event of the host element
 (the `<a>` anchor elements in `AppComponent`) to the stub directive's `onClick` method.
 
 Clicking the anchor should trigger the `onClick()` method,
@@ -3825,7 +3815,7 @@ set the expected route definition.
 -->
 `[routerLink]` 어트리뷰트로 전달된 URL은 디렉티브의 `linkParams` 프로퍼티로 바인딩됩니다.
 
-그리고 호스트 엘리먼트(`AppComponent`에 있는 `<a>` 앵커 엘리먼트)에서 발생하는 클릭 이벤트는 `host` 메타데이터 프로퍼티를 사용해서 디렉티브의 `onClick` 메소드와 연결합니다.
+그리고 호스트 엘리먼트(`AppComponent`에 있는 `<a>` 앵커 엘리먼트)에서 발생하는 클릭 이벤트는 `HostListener`를 사용해서 디렉티브의 `onClick` 메소드와 연결합니다.
 
 이제 앵커 태그를 클릭하면 디렉티브에 정의된 `onClick()` 메소드가 실행되는데, 클릭 동작 이후에 디렉티브의 `navigateTo` 프로퍼티를 확인하면 원하는 주소로 이동하려고 하는 것인지 확인할 수 있습니다.
 
@@ -4156,7 +4146,7 @@ So when you call `createComponent()`, the `TestBed` compiles implicitly.
 
 That's not a problem when the source code is in memory.
 But the `BannerComponent` requires external files
-that the compile must read from the file system,
+that the compiler must read from the file system,
 an inherently _asynchronous_ operation.
 
 If the `TestBed` were allowed to continue, the tests would run and fail mysteriously
@@ -4650,10 +4640,10 @@ The [override metadata object](#metadata-override-object) is a generic defined a
 
 <!--
 <code-example format="." language="javascript">
-  type MetadataOverride<T> = {
-    add?: Partial<T>;
-    remove?: Partial<T>;
-    set?: Partial<T>;
+  type MetadataOverride&lt;T&gt; = {
+    add?: Partial&lt;T&gt;;
+    remove?: Partial&lt;T&gt;;
+    set?: Partial&lt;T&gt;;
   };
 </code-example>
 -->
@@ -4948,7 +4938,7 @@ Consider adding component tests such as this one:
 <!--
 Debug specs in the browser in the same way that you debug an application.
 
-1. Reveal the karma browser window (hidden earlier).
+1. Reveal the Karma browser window (hidden earlier).
 1. Click the **DEBUG** button; it opens a new browser tab and re-runs the tests.
 1. Open the browser's “Developer Tools” (`Ctrl-Shift-I` on windows; `Command-Option-I` in OSX).
 1. Pick the "sources" section.
@@ -5229,10 +5219,10 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
 
 <!--
 <code-example format="." language="javascript">
-  type MetadataOverride<T> = {
-    add?: Partial<T>;
-    remove?: Partial<T>;
-    set?: Partial<T>;
+  type MetadataOverride&lt;T&gt; = {
+    add?: Partial&lt;T&gt;;
+    remove?: Partial&lt;T&gt;;
+    set?: Partial&lt;T&gt;;
   };
 </code-example>
 -->

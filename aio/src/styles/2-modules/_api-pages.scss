@@ -74,6 +74,12 @@
           vertical-align: top;
         }
       }
+
+      &.property-table {
+        td {
+          vertical-align: top;
+        }
+      }
   }
 
   .class-overview {
@@ -86,19 +92,6 @@
 
   .short-description {
     margin: 6px 0 0 10px;
-  }
-
-  .properties-table {
-    font-size: 14px;
-
-    thead th {
-      &:nth-child(1) {
-        width: 20%;
-      }
-      &:nth-child(2) {
-        width: 20%;
-      }
-    }
   }
 }
 

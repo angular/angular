@@ -114,8 +114,10 @@ export class TemplateParser {
       directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
       templateUrl: string, preserveWhitespaces: boolean): TemplateParseResult {
     let htmlParseResult = typeof template === 'string' ?
-        this._htmlParser !.parse(
-            template, templateUrl, true, this.getInterpolationConfig(component)) :
+        this._htmlParser !.parse(template, templateUrl, {
+          tokenizeExpansionForms: true,
+          interpolationConfig: this.getInterpolationConfig(component)
+        }) :
         template;
 
     if (!preserveWhitespaces) {
@@ -439,13 +441,15 @@ class TemplateParseVisitor implements html.Visitor {
 
       } else if (bindParts[KW_ON_IDX]) {
         this._bindingParser.parseEvent(
-            bindParts[IDENT_KW_IDX], value, srcSpan, targetMatchableAttrs, boundEvents);
+            bindParts[IDENT_KW_IDX], value, srcSpan, attr.valueSpan || srcSpan,
+            targetMatchableAttrs, boundEvents);
 
       } else if (bindParts[KW_BINDON_IDX]) {
         this._bindingParser.parsePropertyBinding(
             bindParts[IDENT_KW_IDX], value, false, srcSpan, targetMatchableAttrs, targetProps);
         this._parseAssignmentEvent(
-            bindParts[IDENT_KW_IDX], value, srcSpan, targetMatchableAttrs, boundEvents);
+            bindParts[IDENT_KW_IDX], value, srcSpan, attr.valueSpan || srcSpan,
+            targetMatchableAttrs, boundEvents);
 
       } else if (bindParts[KW_AT_IDX]) {
         this._bindingParser.parseLiteralAttr(
@@ -456,7 +460,8 @@ class TemplateParseVisitor implements html.Visitor {
             bindParts[IDENT_BANANA_BOX_IDX], value, false, srcSpan, targetMatchableAttrs,
             targetProps);
         this._parseAssignmentEvent(
-            bindParts[IDENT_BANANA_BOX_IDX], value, srcSpan, targetMatchableAttrs, boundEvents);
+            bindParts[IDENT_BANANA_BOX_IDX], value, srcSpan, attr.valueSpan || srcSpan,
+            targetMatchableAttrs, boundEvents);
 
       } else if (bindParts[IDENT_PROPERTY_IDX]) {
         this._bindingParser.parsePropertyBinding(
@@ -465,7 +470,8 @@ class TemplateParseVisitor implements html.Visitor {
 
       } else if (bindParts[IDENT_EVENT_IDX]) {
         this._bindingParser.parseEvent(
-            bindParts[IDENT_EVENT_IDX], value, srcSpan, targetMatchableAttrs, boundEvents);
+            bindParts[IDENT_EVENT_IDX], value, srcSpan, attr.valueSpan || srcSpan,
+            targetMatchableAttrs, boundEvents);
       }
     } else {
       hasBinding = this._bindingParser.parsePropertyInterpolation(
@@ -505,10 +511,11 @@ class TemplateParseVisitor implements html.Visitor {
   }
 
   private _parseAssignmentEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan,
+      name: string, expression: string, sourceSpan: ParseSourceSpan, valueSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
     this._bindingParser.parseEvent(
-        `${name}Change`, `${expression}=$event`, sourceSpan, targetMatchableAttrs, targetEvents);
+        `${name}Change`, `${expression}=$event`, sourceSpan, valueSpan, targetMatchableAttrs,
+        targetEvents);
   }
 
   private _parseDirectives(selectorMatcher: SelectorMatcher, elementCssSelector: CssSelector):
@@ -892,7 +899,7 @@ export function removeSummaryDuplicates<T extends{type: CompileTypeMetadata}>(it
   return Array.from(map.values());
 }
 
-function isEmptyExpression(ast: AST): boolean {
+export function isEmptyExpression(ast: AST): boolean {
   if (ast instanceof ASTWithSource) {
     ast = ast.ast;
   }

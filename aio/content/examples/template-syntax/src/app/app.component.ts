@@ -66,7 +66,7 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   currentHero: Hero;
 
-  deleteHero(hero: Hero) {
+  deleteHero(hero?: Hero) {
     this.alert(`Delete ${hero ? hero.name : 'the hero'}.`);
   }
 
@@ -105,18 +105,18 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   get nullHero(): Hero { return null; }
 
-  onClickMe(event: KeyboardEvent) {
+  onClickMe(event?: KeyboardEvent) {
     let evtMsg = event ? ' Event target class is ' + (<HTMLElement>event.target).className  : '';
     this.alert('Click me.' + evtMsg);
   }
 
-  onSave(event: KeyboardEvent) {
+  onSave(event?: KeyboardEvent) {
     let evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).textContent : '';
     this.alert('Saved.' + evtMsg);
     if (event) { event.stopPropagation(); }
   }
 
-  onSubmit() {/* referenced but not used */}
+  onSubmit(data: any) {/* referenced but not used */}
 
   product = {
     name: 'frimfram',

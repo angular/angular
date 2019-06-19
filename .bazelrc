@@ -1,5 +1,3 @@
-# Load any settings specific to the current user
-try-import .bazelrc.user
 ################################
 # Settings for Angular team members only
 ################################
@@ -12,8 +10,10 @@ build:angular-team --remote_http_cache=https://storage.googleapis.com/angular-te
 
 # Make compilation fast, by keeping a few copies of the compilers
 # running as daemons, and cache SourceFile AST's to reduce parse time.
-build --strategy=TypeScriptCompile=worker
 build --strategy=AngularTemplateCompile=worker
+# TODO(alexeagle): re-enable after fixing worker instability with rxjs typings
+# build --strategy=TypeScriptCompile=worker
+build --strategy=TypeScriptCompile=standalone
 
 # Enable debugging tests with --config=debug
 test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
@@ -22,19 +22,52 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 # Filesystem interactions     #
 ###############################
 
-# Don't create symlinks like bazel-out in the project.
-# These cause VSCode to traverse a massive tree, opening file handles and
+# Create symlinks in the project:
+# - dist/bin for outputs
+# - dist/testlogs, dist/genfiles
+# - bazel-out
+# NB: bazel-out should be excluded from the editor configuration.
+# The checked-in /.vscode/settings.json does this for VSCode.
+# Other editors may require manual config to ignore this directory.
+# In the past, we say a problem where VSCode traversed a massive tree, opening file handles and
 # eventually a surprising failure with auto-discovery of the C++ toolchain in
 # MacOS High Sierra.
 # See https://github.com/bazelbuild/bazel/issues/4603
-build --symlink_prefix=/
+build --symlink_prefix=dist/
 
-# Performance: avoid stat'ing input files
-build --watchfs
+# Disable watchfs as it causes tests to be flaky on Windows
+# https://github.com/angular/angular/issues/29541
+build --nowatchfs
 
 # Turn off legacy external runfiles
 run --nolegacy_external_runfiles
 test --nolegacy_external_runfiles
+
+# Turn on --incompatible_strict_action_env which was on by default
+# in Bazel 0.21.0 but turned off again in 0.22.0. Follow
+# https://github.com/bazelbuild/bazel/issues/7026 for more details.
+# This flag is needed to so that the bazel cache is not invalidated
+# when running bazel via `yarn bazel`.
+# See https://github.com/angular/angular/issues/27514.
+build --incompatible_strict_action_env
+run --incompatible_strict_action_env
+test --incompatible_strict_action_env
+
+###############################
+# Saucelabs support           #
+# Turn on these settings with #
+#  --config=saucelabs         #
+###############################
+
+# Expose SauceLabs environment to actions
+# These environment variables are needed by
+# web_test_karma to run on Saucelabs
+test:saucelabs --action_env=SAUCE_USERNAME
+test:saucelabs --action_env=SAUCE_ACCESS_KEY
+test:saucelabs --action_env=SAUCE_READY_FILE
+test:saucelabs --action_env=SAUCE_PID_FILE
+test:saucelabs --action_env=SAUCE_TUNNEL_IDENTIFIER
+test:saucelabs --define=KARMA_WEB_TEST_MODE=SL_REQUIRED
 
 ###############################
 # Release support             #
@@ -83,16 +116,21 @@ build --define=compile=legacy
 #  --config=remote
 ###############################
 
-# Load default settings for Remote Build Execution
-# When updating, the URLs of bazel_toolchains in packages/bazel/package.bzl
-# may also need to be updated (see https://github.com/angular/angular/pull/27935)
-import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/bazel-0.21.0.bazelrc
+# Load default settings for Remote Build Execution.
+import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/.bazelrc.notoolchain
 
 # Increase the default number of jobs by 50% because our build has lots of
 # parallelism
 build:remote --jobs=150
 
-# Point to our custom execution platform; see tools/BUILD.bazel
+# Toolchain and platform related flags
+build:remote --host_javabase=@rbe_ubuntu1604_angular//java:jdk
+build:remote --javabase=@rbe_ubuntu1604_angular//java:jdk
+build:remote --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
+build:remote --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
+build:remote --crosstool_top=@rbe_ubuntu1604_angular//cc:toolchain
+build:remote --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build:remote --extra_toolchains=@rbe_ubuntu1604_angular//config:cc-toolchain
 build:remote --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
 build:remote --host_platform=//tools:rbe_ubuntu1604-angular
 build:remote --platforms=//tools:rbe_ubuntu1604-angular
@@ -103,3 +141,7 @@ build:remote --remote_instance_name=projects/internal-200822/instances/default_i
 # Do not accept remote cache.
 # We need to understand the security risks of using prior build artifacts.
 build:remote --remote_accept_cached=false
+
+# Load any settings specific to the current user. Needs to be last statement in this
+# config, as the user configuration should be able to overwrite flags from this file.
+try-import .bazelrc.user

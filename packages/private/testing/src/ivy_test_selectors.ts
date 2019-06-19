@@ -9,15 +9,6 @@
 import {bazelDefineCompileValue} from './bazel_define_compile_value';
 
 /**
- * Set this constant to `true` to run all tests and report which of the tests marked with `fixmeIvy`
- * are actually already passing.
- *
- * This is useful for locating already passing tests. The already passing tests should have their
- * `fixmeIvy` removed.
- */
-const FIND_PASSING_TESTS = false;
-
-/**
  * A function to conditionally include a test or a block of tests only when tests run against Ivy.
  *
  * The modification of the behavior must be well justified, not affect common usage patterns, and
@@ -34,30 +25,6 @@ const FIND_PASSING_TESTS = false;
  * ```
  */
 export const ivyEnabled = 'aot' === (bazelDefineCompileValue as string);
-
-
-/**
- * A function to conditionally skip the execution of tests that are yet to be fixed
- * when running against Ivy.
- *
- * ```
- * fixmeIvy('some reason').describe(...);
- * ```
- *
- * or
- *
- * ```
- * fixmeIvy('some reason').it(...);
- * ```
- */
-export function fixmeIvy(reason: string): JasmineMethods {
-  if (FIND_PASSING_TESTS) {
-    return ivyEnabled ? PASSTHROUGH : IGNORE;
-  } else {
-    return ivyEnabled ? IGNORE : PASSTHROUGH;
-  }
-}
-
 
 /**
  * A function to conditionally skip the execution of tests that are not relevant when
@@ -94,7 +61,7 @@ export function obsoleteInIvy(reason: string): JasmineMethods {
  * ```
  */
 export function onlyInIvy(reason: string): JasmineMethods {
-  return ivyEnabled && !FIND_PASSING_TESTS ? PASSTHROUGH : IGNORE;
+  return ivyEnabled ? PASSTHROUGH : IGNORE;
 }
 
 /**
@@ -123,69 +90,49 @@ export interface JasmineMethods {
   fit: typeof fit;
   describe: typeof describe;
   fdescribe: typeof fdescribe;
-  fixmeIvy: typeof fixmeIvy;
+
+  /**
+   * Runs jasmine expectations against the provided keys for `ngDevMode`.
+   *
+   * Will not perform expectations for keys that are not provided.
+   *
+   * ```ts
+   * // Expect that `ngDevMode.styleMap` is `1`, and `ngDevMode.tNode` is `3`, but we don't care
+   * // about the other values.
+   * onlyInIvy('perf counters').expectPerfCounters({
+   *   stylingMap: 1,
+   *   tNode: 3,
+   * })
+   * ```
+   */
+  expectPerfCounters: (expectedCounters: Partial<NgDevModePerfCounters>) => void;
   isEnabled: boolean;
 }
 
 const PASSTHROUGH: JasmineMethods = {
-  it: maybeAppendFindPassingTestsMarker(it),
-  fit: maybeAppendFindPassingTestsMarker(fit),
-  describe: maybeAppendFindPassingTestsMarker(describe),
-  fdescribe: maybeAppendFindPassingTestsMarker(fdescribe),
-  fixmeIvy: maybeAppendFindPassingTestsMarker(fixmeIvy),
+  it,
+  fit,
+  describe,
+  fdescribe,
+  expectPerfCounters,
   isEnabled: true,
 };
 
-const FIND_PASSING_TESTS_MARKER = '__FIND_PASSING_TESTS_MARKER__';
-function maybeAppendFindPassingTestsMarker<T extends Function>(fn: T): T {
-  return FIND_PASSING_TESTS ? function(...args: any[]) {
-    if (typeof args[0] == 'string') {
-      args[0] += FIND_PASSING_TESTS_MARKER;
-    }
-    return fn.apply(this, args);
-  } : fn as any;
-}
-
 function noop() {}
+
+function expectPerfCounters(expectedCounters: Partial<NgDevModePerfCounters>) {
+  Object.keys(expectedCounters).forEach(key => {
+    const expected = (expectedCounters as any)[key];
+    const actual = (ngDevMode as any)[key];
+    expect(actual).toBe(expected, `ngDevMode.${key}`);
+  });
+}
 
 const IGNORE: JasmineMethods = {
   it: noop,
   fit: noop,
   describe: noop,
   fdescribe: noop,
-  fixmeIvy: (reason) => IGNORE,
+  expectPerfCounters: noop,
   isEnabled: false,
 };
-
-if (FIND_PASSING_TESTS) {
-  const env = jasmine.getEnv();
-  const passingTests: jasmine.CustomReporterResult[] = [];
-  const stillFailing: jasmine.CustomReporterResult[] = [];
-  let specCount = 0;
-  env.clearReporters();
-  env.addReporter({
-    specDone: function(result: jasmine.CustomReporterResult) {
-      specCount++;
-      if (result.fullName.indexOf(FIND_PASSING_TESTS_MARKER) != -1) {
-        (result.status == 'passed' ? passingTests : stillFailing).push(result);
-      }
-    },
-    jasmineDone: function(details: jasmine.RunDetails) {
-      if (passingTests.length) {
-        passingTests.forEach((result) => {
-          // tslint:disable-next-line:no-console
-          console.log('ALREADY PASSING', result.fullName.replace(FIND_PASSING_TESTS_MARKER, ''));
-        });
-        // tslint:disable-next-line:no-console
-        console.log(
-            `${specCount} specs,`,                    //
-            `${passingTests.length} passing specs,`,  //
-            `${stillFailing.length} still failing specs`);
-
-      } else {
-        // tslint:disable-next-line:no-console
-        console.log('NO PASSING TESTS FOUND.');
-      }
-    }
-  });
-}

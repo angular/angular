@@ -15,6 +15,12 @@ import {IdleScheduler} from './idle';
 import {Manifest} from './manifest';
 
 
+const BACKWARDS_COMPATIBILITY_NAVIGATION_URLS = [
+  {positive: true, regex: '^/.*$'},
+  {positive: false, regex: '^/.*\\.[^/]*$'},
+  {positive: false, regex: '^/.*__'},
+];
+
 /**
  * A specific version of the application, identified by a unique manifest
  * as determined by its hash.
@@ -66,7 +72,7 @@ export class AppVersion implements UpdateSource {
     this.assetGroups = (manifest.assetGroups || []).map(config => {
       // Every asset group has a cache that's prefixed by the manifest hash and the name of the
       // group.
-      const prefix = `ngsw:${this.manifestHash}:assets`;
+      const prefix = `${adapter.cacheNamePrefix}:${this.manifestHash}:assets`;
       // Check the caching mode, which determines when resources will be fetched/updated.
       switch (config.installMode) {
         case 'prefetch':
@@ -83,7 +89,11 @@ export class AppVersion implements UpdateSource {
                           .map(
                               config => new DataGroup(
                                   this.scope, this.adapter, config, this.database,
-                                  `ngsw:${config.version}:data`));
+                                  `${adapter.cacheNamePrefix}:${config.version}:data`));
+
+    // This keeps backwards compatibility with app versions without navigation urls.
+    // Fix: https://github.com/angular/angular/issues/27209
+    manifest.navigationUrls = manifest.navigationUrls || BACKWARDS_COMPATIBILITY_NAVIGATION_URLS;
 
     // Create `include`/`exclude` RegExps for the `navigationUrls` declared in the manifest.
     const includeUrls = manifest.navigationUrls.filter(spec => spec.positive);

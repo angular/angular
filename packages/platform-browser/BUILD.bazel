@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "platform-browser",
@@ -10,13 +10,12 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/platform-browser",
     deps = [
         "//packages:types",
         "//packages/common",
         "//packages/core",
-        "@ngdeps//@types/hammerjs",
-        "@ngdeps//zone.js",
+        "@npm//@types/hammerjs",
+        "@npm//zone.js",
     ],
 )
 
@@ -34,6 +33,7 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
     ],
     deps = [

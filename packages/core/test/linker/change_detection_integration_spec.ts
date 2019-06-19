@@ -6,28 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DomElementSchemaRegistry, ElementSchemaRegistry, ResourceLoader, UrlResolver} from '@angular/compiler';
-import {MockResourceLoader, MockSchemaRegistry} from '@angular/compiler/testing';
+import {ResourceLoader, UrlResolver} from '@angular/compiler';
+import {MockResourceLoader} from '@angular/compiler/testing';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();
 }
 
 const TEST_COMPILER_PROVIDERS: Provider[] = [
-  {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {}, {}, [], [])},
   {provide: ResourceLoader, useClass: MockResourceLoader, deps: []},
   {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix, deps: []}
 ];
 
 
 (function() {
-  let elSchema: MockSchemaRegistry;
   let renderLog: RenderLog;
   let directiveLog: DirectiveLog;
 
@@ -43,10 +41,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
   }
 
   function initHelpers(): void {
-    elSchema = TestBed.get(ElementSchemaRegistry);
     renderLog = TestBed.get(RenderLog);
     directiveLog = TestBed.get(DirectiveLog);
-    elSchema.existingProperties['someProp'] = true;
     patchLoggingRenderer2(TestBed.get(RendererFactory2), renderLog);
   }
 
@@ -67,7 +63,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
   function _bindSimpleValue<T>(expression: any, compType: Type<T>): ComponentFixture<T>;
   function _bindSimpleValue<T>(
       expression: any, compType: Type<T> = <any>TestComponent): ComponentFixture<T> {
-    return _bindSimpleProp(`[someProp]='${expression}'`, compType);
+    return _bindSimpleProp(`[id]='${expression}'`, compType);
   }
 
   function _bindAndCheckSimpleValue(
@@ -117,145 +113,125 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
     describe('expressions', () => {
       it('should support literals',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue(10)).toEqual(['someProp=10']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue(10)).toEqual(['id=10']); }));
 
       it('should strip quotes from literals',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"str"')).toEqual(['someProp=str']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"str"')).toEqual(['id=str']); }));
 
-      it('should support newlines in literals', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('"a\n\nb"')).toEqual(['someProp=a\n\nb']);
-         }));
+      it('should support newlines in literals',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"a\n\nb"')).toEqual(['id=a\n\nb']); }));
 
       it('should support + operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 + 2')).toEqual(['someProp=12']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 + 2')).toEqual(['id=12']); }));
 
       it('should support - operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 - 2')).toEqual(['someProp=8']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 - 2')).toEqual(['id=8']); }));
 
       it('should support * operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 * 2')).toEqual(['someProp=20']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 * 2')).toEqual(['id=20']); }));
 
       it('should support / operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('10 / 2')).toEqual([`someProp=${5.0}`]);
+           expect(_bindAndCheckSimpleValue('10 / 2')).toEqual([`id=${5.0}`]);
          }));  // dart exp=5.0, js exp=5
 
       it('should support % operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('11 % 2')).toEqual(['someProp=1']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('11 % 2')).toEqual(['id=1']); }));
 
-      it('should support == operations on identical', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 == 1')).toEqual(['someProp=true']);
-         }));
+      it('should support == operations on identical',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 == 1')).toEqual(['id=true']); }));
 
-      it('should support != operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 != 1')).toEqual(['someProp=false']);
-         }));
+      it('should support != operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 != 1')).toEqual(['id=false']); }));
 
-      it('should support == operations on coerceible', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 == true')).toEqual([`someProp=true`]);
-         }));
+      it('should support == operations on coerceible',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 == true')).toEqual([`id=true`]); }));
 
-      it('should support === operations on identical', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 === 1')).toEqual(['someProp=true']);
-         }));
+      it('should support === operations on identical',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 === 1')).toEqual(['id=true']); }));
 
-      it('should support !== operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 !== 1')).toEqual(['someProp=false']);
-         }));
+      it('should support !== operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 !== 1')).toEqual(['id=false']); }));
 
       it('should support === operations on coerceible', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 === true')).toEqual(['someProp=false']);
+           expect(_bindAndCheckSimpleValue('1 === true')).toEqual(['id=false']);
          }));
 
-      it('should support true < operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 < 2')).toEqual(['someProp=true']);
-         }));
+      it('should support true < operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 < 2')).toEqual(['id=true']); }));
 
-      it('should support false < operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 < 1')).toEqual(['someProp=false']);
-         }));
+      it('should support false < operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 < 1')).toEqual(['id=false']); }));
 
-      it('should support false > operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 > 2')).toEqual(['someProp=false']);
-         }));
+      it('should support false > operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 > 2')).toEqual(['id=false']); }));
 
-      it('should support true > operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 > 1')).toEqual(['someProp=true']);
-         }));
+      it('should support true > operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 > 1')).toEqual(['id=true']); }));
 
-      it('should support true <= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 <= 2')).toEqual(['someProp=true']);
-         }));
+      it('should support true <= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 <= 2')).toEqual(['id=true']); }));
 
-      it('should support equal <= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 <= 2')).toEqual(['someProp=true']);
-         }));
+      it('should support equal <= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 <= 2')).toEqual(['id=true']); }));
 
-      it('should support false <= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 <= 1')).toEqual(['someProp=false']);
-         }));
+      it('should support false <= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 <= 1')).toEqual(['id=false']); }));
 
-      it('should support true >= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 >= 1')).toEqual(['someProp=true']);
-         }));
+      it('should support true >= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 >= 1')).toEqual(['id=true']); }));
 
-      it('should support equal >= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 >= 2')).toEqual(['someProp=true']);
-         }));
+      it('should support equal >= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 >= 2')).toEqual(['id=true']); }));
 
-      it('should support false >= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 >= 2')).toEqual(['someProp=false']);
-         }));
+      it('should support false >= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 >= 2')).toEqual(['id=false']); }));
 
       it('should support true && operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('true && true')).toEqual(['someProp=true']);
+           expect(_bindAndCheckSimpleValue('true && true')).toEqual(['id=true']);
          }));
 
       it('should support false && operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('true && false')).toEqual(['someProp=false']);
+           expect(_bindAndCheckSimpleValue('true && false')).toEqual(['id=false']);
          }));
 
       it('should support true || operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('true || false')).toEqual(['someProp=true']);
+           expect(_bindAndCheckSimpleValue('true || false')).toEqual(['id=true']);
          }));
 
       it('should support false || operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('false || false')).toEqual(['someProp=false']);
+           expect(_bindAndCheckSimpleValue('false || false')).toEqual(['id=false']);
          }));
 
-      it('should support negate', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('!true')).toEqual(['someProp=false']);
-         }));
+      it('should support negate',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('!true')).toEqual(['id=false']); }));
 
-      it('should support double negate', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('!!true')).toEqual(['someProp=true']);
-         }));
+      it('should support double negate',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('!!true')).toEqual(['id=true']); }));
 
-      it('should support true conditionals', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 < 2 ? 1 : 2')).toEqual(['someProp=1']);
-         }));
+      it('should support true conditionals',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 < 2 ? 1 : 2')).toEqual(['id=1']); }));
 
-      it('should support false conditionals', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 > 2 ? 1 : 2')).toEqual(['someProp=2']);
-         }));
+      it('should support false conditionals',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 > 2 ? 1 : 2')).toEqual(['id=2']); }));
 
       it('should support keyed access to a list item', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('["foo", "bar"][0]')).toEqual(['someProp=foo']);
+           expect(_bindAndCheckSimpleValue('["foo", "bar"][0]')).toEqual(['id=foo']);
          }));
 
       it('should support keyed access to a map item', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('{"foo": "bar"}["foo"]')).toEqual(['someProp=bar']);
+           expect(_bindAndCheckSimpleValue('{"foo": "bar"}["foo"]')).toEqual(['id=bar']);
          }));
 
       it('should report all changes on the first run including uninitialized values',
          fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('value', Uninitialized)).toEqual(['someProp=null']);
+           expect(_bindAndCheckSimpleValue('value', Uninitialized)).toEqual(['id=null']);
          }));
 
       it('should report all changes on the first run including null values', fakeAsync(() => {
            const ctx = _bindSimpleValue('a', TestData);
            ctx.componentInstance.a = null;
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=null']);
+           expect(renderLog.log).toEqual(['id=null']);
          }));
 
       it('should support simple chained property access', fakeAsync(() => {
@@ -263,7 +239,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            ctx.componentInstance.name = 'Victor';
            ctx.componentInstance.address = new Address('Grenoble');
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=Grenoble']);
+           expect(renderLog.log).toEqual(['id=Grenoble']);
          }));
 
       describe('safe navigation operator', () => {
@@ -271,54 +247,54 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
              const ctx = _bindSimpleValue('address?.city', Person);
              ctx.componentInstance.address = null !;
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should support calling methods on nulls', fakeAsync(() => {
              const ctx = _bindSimpleValue('address?.toString()', Person);
              ctx.componentInstance.address = null !;
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should support reading properties on non nulls', fakeAsync(() => {
              const ctx = _bindSimpleValue('address?.city', Person);
              ctx.componentInstance.address = new Address('MTV');
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=MTV']);
+             expect(renderLog.log).toEqual(['id=MTV']);
            }));
 
         it('should support calling methods on non nulls', fakeAsync(() => {
              const ctx = _bindSimpleValue('address?.toString()', Person);
              ctx.componentInstance.address = new Address('MTV');
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=MTV']);
+             expect(renderLog.log).toEqual(['id=MTV']);
            }));
 
         it('should support short-circuting safe navigation', fakeAsync(() => {
              const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
              ctx.componentInstance.value = null !;
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should support nested short-circuting safe navigation', fakeAsync(() => {
              const ctx = _bindSimpleValue('value.value?.address.city', PersonHolderHolder);
              ctx.componentInstance.value = new PersonHolder();
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should support chained short-circuting safe navigation', fakeAsync(() => {
              const ctx = _bindSimpleValue('value?.value?.address.city', PersonHolderHolder);
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should support short-circuting array index operations', fakeAsync(() => {
              const ctx = _bindSimpleValue('value?.phones[0]', PersonHolder);
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should still throw if right-side would throw', fakeAsync(() => {
@@ -335,21 +311,21 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       it('should support method calls', fakeAsync(() => {
            const ctx = _bindSimpleValue('sayHi("Jim")', Person);
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=Hi, Jim']);
+           expect(renderLog.log).toEqual(['id=Hi, Jim']);
          }));
 
       it('should support function calls', fakeAsync(() => {
            const ctx = _bindSimpleValue('a()(99)', TestData);
            ctx.componentInstance.a = () => (a: any) => a;
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=99']);
+           expect(renderLog.log).toEqual(['id=99']);
          }));
 
       it('should support chained method calls', fakeAsync(() => {
            const ctx = _bindSimpleValue('address.toString()', Person);
            ctx.componentInstance.address = new Address('MTV');
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=MTV']);
+           expect(renderLog.log).toEqual(['id=MTV']);
          }));
 
       it('should support NaN', fakeAsync(() => {
@@ -357,7 +333,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            ctx.componentInstance.age = NaN;
            ctx.detectChanges(false);
 
-           expect(renderLog.log).toEqual(['someProp=NaN']);
+           expect(renderLog.log).toEqual(['id=NaN']);
            renderLog.clear();
 
            ctx.detectChanges(false);
@@ -369,7 +345,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            ctx.componentInstance.name = 'misko';
 
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=misko']);
+           expect(renderLog.log).toEqual(['id=misko']);
            renderLog.clear();
 
            ctx.detectChanges(false);
@@ -378,7 +354,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
            ctx.componentInstance.name = 'Misko';
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=Misko']);
+           expect(renderLog.log).toEqual(['id=Misko']);
          }));
 
       it('should support literal array made of literals', fakeAsync(() => {
@@ -445,7 +421,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
 
       it('should ignore empty bindings', fakeAsync(() => {
-           const ctx = _bindSimpleProp('[someProp]', TestData);
+           const ctx = _bindSimpleProp('[id]', TestData);
            ctx.componentInstance.a = 'value';
            ctx.detectChanges(false);
 
@@ -453,23 +429,23 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
          }));
 
       it('should support interpolation', fakeAsync(() => {
-           const ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
+           const ctx = _bindSimpleProp('id="B{{a}}A"', TestData);
            ctx.componentInstance.a = 'value';
            ctx.detectChanges(false);
 
-           expect(renderLog.log).toEqual(['someProp=BvalueA']);
+           expect(renderLog.log).toEqual(['id=BvalueA']);
          }));
 
       it('should output empty strings for null values in interpolation', fakeAsync(() => {
-           const ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
+           const ctx = _bindSimpleProp('id="B{{a}}A"', TestData);
            ctx.componentInstance.a = null;
            ctx.detectChanges(false);
 
-           expect(renderLog.log).toEqual(['someProp=BA']);
+           expect(renderLog.log).toEqual(['id=BA']);
          }));
 
       it('should escape values in literals that indicate interpolation',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"$"')).toEqual(['someProp=$']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"$"')).toEqual(['id=$']); }));
 
       it('should read locals', fakeAsync(() => {
            const ctx = createCompFixture(
@@ -515,7 +491,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
              ctx.detectChanges(false);
 
-             expect(renderLog.log).toEqual(['someProp=Megatron']);
+             expect(renderLog.log).toEqual(['id=Megatron']);
 
              renderLog.clear();
              ctx.detectChanges(false);
@@ -528,12 +504,12 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
              ctx.detectChanges(false);
 
-             expect(renderLog.log).toEqual(['someProp=Megatron']);
+             expect(renderLog.log).toEqual(['id=Megatron']);
 
              renderLog.clear();
              ctx.detectChanges(false);
 
-             expect(renderLog.log).toEqual(['someProp=Megatron']);
+             expect(renderLog.log).toEqual(['id=Megatron']);
            }));
 
         it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
@@ -591,8 +567,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
             .it('should call pure pipes that are used multiple times only when the arguments change and share state between pipe instances',
                 fakeAsync(() => {
                   const ctx = createCompFixture(
-                      `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
-                          '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
+                      `<div [id]="name | countingPipe"></div><div [id]="age | countingPipe"></div>` +
+                          '<div *ngFor="let x of [1,2]" [id]="address.city | countingPipe"></div>',
                       Person);
                   ctx.componentInstance.name = 'a';
                   ctx.componentInstance.age = 10;
@@ -618,8 +594,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
             it('should call pure pipes that are used multiple times only when the arguments change',
                fakeAsync(() => {
                  const ctx = createCompFixture(
-                     `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
-                         '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
+                     `<div [id]="name | countingPipe"></div><div [id]="age | countingPipe"></div>` +
+                         '<div *ngFor="let x of [1,2]" [id]="address.city | countingPipe"></div>',
                      Person);
                  ctx.componentInstance.name = 'a';
                  ctx.componentInstance.age = 10;
@@ -731,7 +707,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       describe('reading directives', () => {
         it('should read directive properties', fakeAsync(() => {
              const ctx = createCompFixture(
-                 '<div testDirective [a]="42" ref-dir="testDirective" [someProp]="dir.a"></div>');
+                 '<div testDirective [a]="42" ref-dir="testDirective" [id]="dir.a"></div>');
              ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual([42]);
            }));
@@ -1183,56 +1159,55 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     });
 
     describe('enforce no new changes', () => {
-      modifiedInIvy('checkNoChanges has no effect before first change detection run')
-          .it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
-                @Directive({selector: '[changed]'})
-                class ChangingDirective {
-                  @Input() changed: any;
-                }
+      it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
+           @Directive({selector: '[changed]'})
+           class ChangingDirective {
+             @Input() changed: any;
+           }
 
-                TestBed.configureTestingModule({declarations: [ChangingDirective]});
+           TestBed.configureTestingModule({declarations: [ChangingDirective]});
 
-                const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
+           const ctx = createCompFixture('<div [id]="a" [changed]="b"></div>', TestData);
 
-                ctx.componentInstance.b = 1;
+           ctx.componentInstance.b = 1;
+           const errMsgRegExp = ivyEnabled ?
+               /Previous value: 'undefined'\. Current value: '1'/g :
+               /Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g;
+           expect(() => ctx.checkNoChanges()).toThrowError(errMsgRegExp);
+         }));
 
-                expect(() => ctx.checkNoChanges())
-                    .toThrowError(
-                        /Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g);
-              }));
 
+      it('should throw when a record gets changed after the first change detection pass',
+         fakeAsync(() => {
+           @Directive({selector: '[changed]'})
+           class ChangingDirective {
+             @Input() changed: any;
+           }
 
-      onlyInIvy('checkNoChanges has no effect before first change detection run')
-          .it('should throw when a record gets changed after the first change detection pass',
-              fakeAsync(() => {
-                @Directive({selector: '[changed]'})
-                class ChangingDirective {
-                  @Input() changed: any;
-                }
+           TestBed.configureTestingModule({declarations: [ChangingDirective]});
 
-                TestBed.configureTestingModule({declarations: [ChangingDirective]});
+           const ctx = createCompFixture('<div [id]="a" [changed]="b"></div>', TestData);
 
-                const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
+           ctx.componentInstance.b = 1;
+           ctx.detectChanges();
 
-                ctx.componentInstance.b = 1;
-                // should not throw here as change detection didn't run yet
-                ctx.checkNoChanges();
+           ctx.componentInstance.b = 2;
+           const errMsgRegExp = ivyEnabled ?
+               /Previous value: '1'\. Current value: '2'/g :
+               /Previous value: 'changed: 1'\. Current value: 'changed: 2'/g;
+           expect(() => ctx.checkNoChanges()).toThrowError(errMsgRegExp);
+         }));
 
-                ctx.detectChanges();
+      it('should warn when the view has been created in a cd hook', fakeAsync(() => {
+           const ctx = createCompFixture('<div *gh9882>{{ a }}</div>', TestData);
+           ctx.componentInstance.a = 1;
+           expect(() => ctx.detectChanges())
+               .toThrowError(
+                   /It seems like the view has been created after its parent and its children have been dirty checked/);
 
-                ctx.componentInstance.b = 2;
-                expect(() => ctx.checkNoChanges())
-                    .toThrowError(/Previous value: '1'\. Current value: '2'/g);
-              }));
-
-      fixmeIvy('FW-831: Views created in a cd hooks throw in view engine')
-          .it('should warn when the view has been created in a cd hook', fakeAsync(() => {
-                const ctx = createCompFixture('<div *gh9882>{{ a }}</div>', TestData);
-                ctx.componentInstance.a = 1;
-                expect(() => ctx.detectChanges())
-                    .toThrowError(
-                        /It seems like the view has been created after its parent and its children have been dirty checked/);
-              }));
+           // subsequent change detection should run without issues
+           ctx.detectChanges();
+         }));
 
       it('should not throw when two arrays are structurally the same', fakeAsync(() => {
            const ctx = _bindSimpleValue('a', TestData);
@@ -1242,15 +1217,14 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            expect(() => ctx.checkNoChanges()).not.toThrow();
          }));
 
-      modifiedInIvy('checkNoChanges has no effect before first change detection run')
-          .it('should not break the next run', fakeAsync(() => {
-                const ctx = _bindSimpleValue('a', TestData);
-                ctx.componentInstance.a = 'value';
-                expect(() => ctx.checkNoChanges()).toThrow();
+      it('should not break the next run', fakeAsync(() => {
+           const ctx = _bindSimpleValue('a', TestData);
+           ctx.componentInstance.a = 'value';
+           expect(() => ctx.checkNoChanges()).toThrow();
 
-                ctx.detectChanges();
-                expect(renderLog.loggedValues).toEqual(['value']);
-              }));
+           ctx.detectChanges();
+           expect(renderLog.loggedValues).toEqual(['value']);
+         }));
 
       it('should not break the next run (view engine and ivy)', fakeAsync(() => {
            const ctx = _bindSimpleValue('a', TestData);
@@ -1382,9 +1356,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            class Comp {
              name = 'Tom';
              // TODO(issue/24571): remove '!'.
-             @ViewChild('vc', {read: ViewContainerRef}) vc !: ViewContainerRef;
+             @ViewChild('vc', {read: ViewContainerRef, static: true}) vc !: ViewContainerRef;
              // TODO(issue/24571): remove '!'.
-             @ViewChild(TemplateRef) template !: TemplateRef<any>;
+             @ViewChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
            }
 
            TestBed.configureTestingModule({declarations: [Comp]});
@@ -1425,7 +1399,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
         })
         class OuterComp {
           // TODO(issue/24571): remove '!'.
-          @ContentChild(TemplateRef)
+          @ContentChild(TemplateRef, {static: true})
           tpl !: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
@@ -1439,7 +1413,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
         })
         class InnerComp {
           // TODO(issue/24571): remove '!'.
-          @ContentChild(TemplateRef)
+          @ContentChild(TemplateRef, {static: true})
           tpl !: TemplateRef<any>;
 
           // TODO(issue/24571): remove '!'.
@@ -1495,8 +1469,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           expect(log).toEqual(['inner-start', 'main-tpl', 'outer-tpl']);
         });
 
-        fixmeIvy(
-            'FW-842: View engine dirty-checks projected views when the declaration place is checked')
+        modifiedInIvy('Views should not be dirty checked if inserted into CD-detached view tree')
             .it('should dirty check projected views if the declaration place is dirty checked',
                 () => {
                   ctx.detectChanges(false);
@@ -1517,6 +1490,28 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
                   expect(log).toEqual(['main-start', 'main-tpl']);
                 });
+
+        onlyInIvy('Views should not be dirty checked if inserted into CD-detached view tree')
+            .it('should not dirty check views that are inserted into a detached tree, even if the declaration place is dirty checked',
+                () => {
+                  ctx.detectChanges(false);
+                  log = [];
+                  innerComp.cdRef.detach();
+                  mainComp.cdRef.detectChanges();
+
+                  expect(log).toEqual(['main-start', 'outer-start']);
+
+                  log = [];
+                  outerComp.cdRef.detectChanges();
+
+                  expect(log).toEqual(['outer-start']);
+
+                  log = [];
+                  outerComp.cdRef.detach();
+                  mainComp.cdRef.detectChanges();
+
+                  expect(log).toEqual(['main-start']);
+                });
       });
     });
 
@@ -1534,13 +1529,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
         }
 
         const ctx =
-            TestBed
-                .configureCompiler({
-                  providers:
-                      [{provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry}]
-                })
-                .configureTestingModule({declarations: [Comp, SomeDir]})
-                .createComponent(Comp);
+            TestBed.configureTestingModule({declarations: [Comp, SomeDir]}).createComponent(Comp);
 
         ctx.detectChanges();
 
@@ -1590,111 +1579,110 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
         childThrows: LifetimeMethods;
       }
 
-      fixmeIvy('FW-832: View engine supports recursive detectChanges() calls')
-          .describe('calling init', () => {
-            function initialize(options: Options) {
-              @Component({selector: 'my-child', template: ''})
-              class MyChild {
-                private thrown = LifetimeMethods.None;
+      describe('calling init', () => {
+        function initialize(options: Options) {
+          @Component({selector: 'my-child', template: ''})
+          class MyChild {
+            private thrown = LifetimeMethods.None;
 
-                // TODO(issue/24571): remove '!'.
-                @Input() inp !: boolean;
-                @Output() outp = new EventEmitter<any>();
+            // TODO(issue/24571): remove '!'.
+            @Input() inp !: boolean;
+            @Output() outp = new EventEmitter<any>();
 
-                constructor() {}
+            constructor() {}
 
-                ngDoCheck() { this.check(LifetimeMethods.ngDoCheck); }
-                ngOnInit() { this.check(LifetimeMethods.ngOnInit); }
-                ngOnChanges() { this.check(LifetimeMethods.ngOnChanges); }
-                ngAfterViewInit() { this.check(LifetimeMethods.ngAfterViewInit); }
-                ngAfterContentInit() { this.check(LifetimeMethods.ngAfterContentInit); }
+            ngDoCheck() { this.check(LifetimeMethods.ngDoCheck); }
+            ngOnInit() { this.check(LifetimeMethods.ngOnInit); }
+            ngOnChanges() { this.check(LifetimeMethods.ngOnChanges); }
+            ngAfterViewInit() { this.check(LifetimeMethods.ngAfterViewInit); }
+            ngAfterContentInit() { this.check(LifetimeMethods.ngAfterContentInit); }
 
-                private check(method: LifetimeMethods) {
-                  log(`MyChild::${LifetimeMethods[method]}()`);
+            private check(method: LifetimeMethods) {
+              log(`MyChild::${LifetimeMethods[method]}()`);
 
-                  if ((options.childRecursion & method) !== 0) {
-                    if (logged.length < 20) {
-                      this.outp.emit(null);
-                    } else {
-                      fail(`Unexpected MyChild::${LifetimeMethods[method]} recursion`);
-                    }
-                  }
-                  if ((options.childThrows & method) !== 0) {
-                    if ((this.thrown & method) === 0) {
-                      this.thrown |= method;
-                      log(`<THROW from MyChild::${LifetimeMethods[method]}>()`);
-                      throw new Error(`Throw from MyChild::${LifetimeMethods[method]}`);
-                    }
-                  }
+              if ((options.childRecursion & method) !== 0) {
+                if (logged.length < 20) {
+                  this.outp.emit(null);
+                } else {
+                  fail(`Unexpected MyChild::${LifetimeMethods[method]} recursion`);
                 }
               }
-
-              @Component({
-                selector: 'my-component',
-                template: `<my-child [inp]='true' (outp)='onOutp()'></my-child>`
-              })
-              class MyComponent {
-                constructor(private changeDetectionRef: ChangeDetectorRef) {}
-                ngDoCheck() { this.check(LifetimeMethods.ngDoCheck); }
-                ngOnInit() { this.check(LifetimeMethods.ngOnInit); }
-                ngAfterViewInit() { this.check(LifetimeMethods.ngAfterViewInit); }
-                ngAfterContentInit() { this.check(LifetimeMethods.ngAfterContentInit); }
-                onOutp() {
-                  log('<RECURSION START>');
-                  this.changeDetectionRef.detectChanges();
-                  log('<RECURSION DONE>');
-                }
-
-                private check(method: LifetimeMethods) {
-                  log(`MyComponent::${LifetimeMethods[method]}()`);
+              if ((options.childThrows & method) !== 0) {
+                if ((this.thrown & method) === 0) {
+                  this.thrown |= method;
+                  log(`<THROW from MyChild::${LifetimeMethods[method]}>()`);
+                  throw new Error(`Throw from MyChild::${LifetimeMethods[method]}`);
                 }
               }
+            }
+          }
 
-              TestBed.configureTestingModule({declarations: [MyChild, MyComponent]});
-
-              return createCompFixture(`<my-component></my-component>`);
+          @Component({
+            selector: 'my-component',
+            template: `<my-child [inp]='true' (outp)='onOutp()'></my-child>`
+          })
+          class MyComponent {
+            constructor(private changeDetectionRef: ChangeDetectorRef) {}
+            ngDoCheck() { this.check(LifetimeMethods.ngDoCheck); }
+            ngOnInit() { this.check(LifetimeMethods.ngOnInit); }
+            ngAfterViewInit() { this.check(LifetimeMethods.ngAfterViewInit); }
+            ngAfterContentInit() { this.check(LifetimeMethods.ngAfterContentInit); }
+            onOutp() {
+              log('<RECURSION START>');
+              this.changeDetectionRef.detectChanges();
+              log('<RECURSION DONE>');
             }
 
-            function ensureOneInit(options: Options) {
-              const ctx = initialize(options);
+            private check(method: LifetimeMethods) {
+              log(`MyComponent::${LifetimeMethods[method]}()`);
+            }
+          }
+
+          TestBed.configureTestingModule({declarations: [MyChild, MyComponent]});
+
+          return createCompFixture(`<my-component></my-component>`);
+        }
+
+        function ensureOneInit(options: Options) {
+          const ctx = initialize(options);
 
 
-              const throws = options.childThrows != LifetimeMethods.None;
-              if (throws) {
-                log(`<CYCLE 0 START>`);
-                expect(() => {
-                  // Expect child to throw.
-                  ctx.detectChanges();
-                }).toThrow();
-                log(`<CYCLE 0 END>`);
-                log(`<CYCLE 1 START>`);
-              }
+          const throws = options.childThrows != LifetimeMethods.None;
+          if (throws) {
+            log(`<CYCLE 0 START>`);
+            expect(() => {
+              // Expect child to throw.
               ctx.detectChanges();
-              if (throws) log(`<CYCLE 1 DONE>`);
-              expectOnceAndOnlyOnce('MyComponent::ngOnInit()');
-              expectOnceAndOnlyOnce('MyChild::ngOnInit()');
-              expectOnceAndOnlyOnce('MyComponent::ngAfterViewInit()');
-              expectOnceAndOnlyOnce('MyComponent::ngAfterContentInit()');
-              expectOnceAndOnlyOnce('MyChild::ngAfterViewInit()');
-              expectOnceAndOnlyOnce('MyChild::ngAfterContentInit()');
-            }
+            }).toThrow();
+            log(`<CYCLE 0 END>`);
+            log(`<CYCLE 1 START>`);
+          }
+          ctx.detectChanges();
+          if (throws) log(`<CYCLE 1 DONE>`);
+          expectOnceAndOnlyOnce('MyComponent::ngOnInit()');
+          expectOnceAndOnlyOnce('MyChild::ngOnInit()');
+          expectOnceAndOnlyOnce('MyComponent::ngAfterViewInit()');
+          expectOnceAndOnlyOnce('MyComponent::ngAfterContentInit()');
+          expectOnceAndOnlyOnce('MyChild::ngAfterViewInit()');
+          expectOnceAndOnlyOnce('MyChild::ngAfterContentInit()');
+        }
 
-            forEachMethod(LifetimeMethods.InitMethodsAndChanges, method => {
-              it(`should ensure that init hooks are called once an only once with recursion in ${LifetimeMethods[method]} `,
-                 () => {
-                   // Ensure all the init methods are called once.
-                   ensureOneInit({childRecursion: method, childThrows: LifetimeMethods.None});
-                 });
-            });
-            forEachMethod(LifetimeMethods.All, method => {
-              it(`should ensure that init hooks are called once an only once with a throw in ${LifetimeMethods[method]} `,
-                 () => {
-                   // Ensure all the init methods are called once.
-                   // the first cycle throws but the next cycle should complete the inits.
-                   ensureOneInit({childRecursion: LifetimeMethods.None, childThrows: method});
-                 });
-            });
-          });
+        forEachMethod(LifetimeMethods.InitMethodsAndChanges, method => {
+          it(`should ensure that init hooks are called once an only once with recursion in ${LifetimeMethods[method]} `,
+             () => {
+               // Ensure all the init methods are called once.
+               ensureOneInit({childRecursion: method, childThrows: LifetimeMethods.None});
+             });
+        });
+        forEachMethod(LifetimeMethods.All, method => {
+          it(`should ensure that init hooks are called once an only once with a throw in ${LifetimeMethods[method]} `,
+             () => {
+               // Ensure all the init methods are called once.
+               // the first cycle throws but the next cycle should complete the inits.
+               ensureOneInit({childRecursion: LifetimeMethods.None, childThrows: method});
+             });
+        });
+      });
     });
   });
 })();

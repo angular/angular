@@ -11,16 +11,43 @@
 # needed for jobs that run tests without Bazel. Bazel runs tests with browsers that will be
 # fetched by the Webtesting rules. Therefore for jobs that run tests with Bazel, we don't need a
 # docker image with browsers pre-installed.
-# **NOTE**: If you change the version of the docker images, also change the `cache_key` suffix.
+# **NOTE 1**: If you change the version of the `*-browsers` docker image, make sure the
+#             `CI_CHROMEDRIVER_VERSION_ARG` env var (in `.circleci/env.sh`) points to a ChromeDriver
+#             version that is compatible with the Chrome version in the image.
+# **NOTE 2**: If you change the version of the docker images, also change the `cache_key` suffix.
 var_1: &default_docker_image circleci/node:10.12
 var_2: &browsers_docker_image circleci/node:10.12-browsers
-var_3: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-node-10.12
+# We don't want to include the current branch name in the cache key because that would prevent
+# PRs from being able to restore the cache since the branch names are always different for PRs.
+# The cache key should only consist of dynamic values that change whenever something in the
+# cache changes. For example:
+# 1) yarn lock file changes --> cached "node_modules" are different.
+# 2) bazel repository definitions change --> cached bazel repositories are different.
+# **NOTE 1 **: If you change the cache key prefix, also sync the restore_cache fallback to match.
+# **NOTE 2 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
+# See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
+var_3: &cache_key v3-angular-node-10.12-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
 
-# Define common ENV vars
-var_4: &define_env_vars
+# Initializes the CI environment by setting up common environment variables.
+var_4: &init_environment
   run:
-    name: Define environment variables
-    command: ./.circleci/env.sh
+    name: Initializing environment (setting up variables, overwriting Yarn)
+    # Overwrite the yarn installed in the docker container with our own version.
+    command: |
+      ./.circleci/env.sh
+      ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.13.0/bin/yarn.js)
+      sudo chmod a+x $ourYarn
+      sudo ln -fs $ourYarn /usr/local/bin/yarn
+      echo "Yarn version: $(yarn --version)"
+
+      # Add GitHub to known hosts.
+      mkdir -p ~/.ssh
+      echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+
+      # use git+ssh instead of https
+      git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
+      git config --global gc.auto 0 || true
+
 
 var_5: &setup_bazel_remote_execution
   run:
@@ -36,33 +63,94 @@ var_6: &job_defaults
   docker:
   - image: *default_docker_image
 
-# After checkout, rebase on top of master.
-# Similar to travis behavior, but not quite the same.
-# See https://discuss.circleci.com/t/1662
+# After checkout, rebase on top of target branch.
 var_7: &post_checkout
-  post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
+  run:
+    name: Rebase PR on target branch
+    command: >
+      if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
+        # User is required for rebase.
+        git config user.name "angular-ci"
+        git config user.email "angular-ci"
+        # Rebase PR on top of target branch.
+        node tools/rebase-pr.js angular/angular ${CIRCLE_PR_NUMBER}
+      else
+        echo "This build is not over a PR, nothing to do."
+      fi
 
 var_8: &yarn_install
   run:
     name: Running Yarn install
-    command: yarn install --frozen-lockfile --non-interactive
+    command: |
+      # Yarn's requests sometimes take more than 10mins to complete.
+      # Print something to stdout, to prevent CircleCI from failing due to not output.
+      while true; do sleep 60; echo "[`date`] Keeping alive..."; done &
+      KEEP_ALIVE_PID=$!
+      yarn install --frozen-lockfile --non-interactive
+      kill $KEEP_ALIVE_PID
 
 var_9: &setup_circleci_bazel_config
   run:
     name: Setting up CircleCI bazel configuration
     command: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
 
+var_10: &restore_cache
+  restore_cache:
+    keys:
+      - *cache_key
+      # This fallback should be the cache_key without variables.
+      - v3-angular-node-10.12-
+
+# Branch filter that can be specified for jobs that should only run on publish branches
+# (e.g. master or the patch branch)
+var_12: &publish_branches_filter
+  branches:
+    only:
+      - master
+      # e.g. 7.0.x, 7.1.x, etc.
+      - /\d+\.\d+\.x/
+
+# Workspace initially persisted by the `install` job, and then enhanced by `test_aio` and
+# `build-npm-packages`.
+# https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
+# https://circleci.com/blog/deep-diving-into-circleci-workspaces/
+var_13: &attach_workspace
+  attach_workspace:
+    at: ~/
+
 version: 2
 jobs:
+  setup:
+    <<: *job_defaults
+    steps:
+      - checkout
+      - *post_checkout
+      # This cache is saved in the build-npm-packages so that Bazel cache is also included.
+      - *restore_cache
+      - *init_environment
+      - *yarn_install
+      - run: yarn --cwd aio install --frozen-lockfile --non-interactive
+      # Make the bazel directories and add a file to them if they don't exist already so that
+      # persist_to_workspace does not fail.
+      - run: |
+          if [ ! -d ~/bazel_repository_cache ]; then
+            mkdir ~/bazel_repository_cache
+            touch ~/bazel_repository_cache/MARKER
+          fi
+      # Persist any changes at this point to be reused by further jobs.
+      # **NOTE 1 **: Folders persisted here should be kept in sync with `var_13: &attach_workspace`.
+      # **NOTE 2 **: To add new content to the workspace, always persist on the same root.
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - ./ng
+            - ./bazel_repository_cache
+
   lint:
     <<: *job_defaults
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
-      - *yarn_install
+      - *attach_workspace
+      - *init_environment
 
       - run: 'yarn bazel:format -mode=check ||
               (echo "BUILD files not formatted. Please run ''yarn bazel:format''" ; exit 1)'
@@ -70,45 +158,31 @@ jobs:
       - run: 'yarn bazel:lint ||
               (echo -e "\n.bzl files have lint errors. Please run ''yarn bazel:lint-fix''"; exit 1)'
 
-      - run: ./node_modules/.bin/gulp lint
+      - run: yarn gulp lint
 
   test:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
+      - *attach_workspace
+      - *init_environment
       - *setup_circleci_bazel_config
-      - *yarn_install
-
+      # Enable remote/sibling docker which is needed by auto-selection of toolchain configs for RBE.
+      - setup_remote_docker
       # Setup remote execution and run RBE-compatible tests.
       - *setup_bazel_remote_execution
-      - run: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-local
-      # Now run RBE incompatible tests locally.
-      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
-      - run: yarn bazel test //... --build_tag_filters=-ivy-only,local --test_tag_filters=-ivy-only,local
-
-      - save_cache:
-          key: *cache_key
-          paths:
-            - "node_modules"
-            - "~/bazel_repository_cache"
+      - run: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
+      - *attach_workspace
+      - *init_environment
       - *setup_circleci_bazel_config
-      - *yarn_install
+      # Enable remote/sibling docker which is needed by auto-selection of toolchain configs for RBE.
+      - setup_remote_docker
       - *setup_bazel_remote_execution
 
         # We need to explicitly specify the --symlink_prefix option because otherwise we would
@@ -135,17 +209,43 @@ jobs:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
           destination: core/todo/bundle.br
 
+  test_saucelabs_bazel:
+    <<: *job_defaults
+    # In order to avoid the bottleneck of having a slow host machine, we acquire a better
+    # container for this job. This is necessary because we launch a lot of browsers concurrently
+    # and therefore the tunnel and Karma need to process a lot of file requests and tests.
+    resource_class: xlarge
+    steps:
+      - *attach_workspace
+      - *init_environment
+      - *setup_circleci_bazel_config
+      - run:
+          name: Preparing environment for running tests on Saucelabs.
+          command: setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
+      - run:
+          name: Starting Saucelabs tunnel
+          command: ./scripts/saucelabs/start-tunnel.sh
+          background: true
+        # Waits for the Saucelabs tunnel to be ready. This ensures that we don't run tests
+        # too early without Saucelabs not being ready.
+      - run: ./scripts/saucelabs/wait-for-tunnel.sh
+        # All web tests are contained within a single //:test_web_all target for Saucelabs
+        # as running each set of tests as a separate target will attempt to acquire too
+        # many browsers on Saucelabs (7 per target currently) and some tests will always
+        # fail to acquire browsers. For example:
+        # 14 02 2019 19:52:33.170:WARN [launcher]: chrome beta on SauceLabs have not captured in 180000 ms, killing.
+        # //packages/forms/test:web_test_sauce TIMEOUT in 315.0s
+      - run: yarn bazel test --config=saucelabs //:test_web_all
+      - run: ./scripts/saucelabs/stop-tunnel.sh
+
   test_aio:
     <<: *job_defaults
     docker:
       # Needed because the AIO tests and the PWA score test depend on Chrome being available.
       - image: *browsers_docker_image
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
+      - *attach_workspace
+      - *init_environment
         # Build aio
       - run: yarn --cwd aio build --progress=false
         # Lint the code
@@ -157,9 +257,9 @@ jobs:
         # (Run before unit and e2e tests, which destroy the `dist/` directory.)
       - run: yarn --cwd aio payload-size
         # Run unit tests
-      - run: yarn --cwd aio test --watch=false
+      - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
-      - run: yarn --cwd aio e2e
+      - run: yarn --cwd aio e2e --configuration=ci
         # Run unit tests for Firebase redirects
       - run: yarn --cwd aio redirects-test
 
@@ -169,13 +269,10 @@ jobs:
     # Needed because before deploying the deploy-production script runs the PWA score tests.
     - image: *browsers_docker_image
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
+      - *attach_workspace
+      - *init_environment
         # Deploy angular.io to production (if necessary)
-      - run: setPublicVar CI_STABLE_BRANCH "$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')"
+      - run: setPublicVar_CI_STABLE_BRANCH
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
@@ -184,33 +281,41 @@ jobs:
       # Needed because the AIO tests and the PWA score test depend on Chrome being available.
       - image: *browsers_docker_image
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - attach_workspace:
-          at: dist
-      - *define_env_vars
+      - *attach_workspace
+      - *init_environment
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local --progress=false
         # Run PWA-score tests
         # (Run before unit and e2e tests, which destroy the `dist/` directory.)
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Run unit tests
-      - run: yarn --cwd aio test --watch=false
+      - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
-      - run: yarn --cwd aio e2e
+      - run: yarn --cwd aio e2e --configuration=ci
+
+  test_aio_local_ivy:
+    <<: *job_defaults
+    docker:
+      # Needed because the AIO tests and the PWA score test depend on Chrome being available.
+      - image: *browsers_docker_image
+    steps:
+      - *attach_workspace
+      - *init_environment
+        # Build aio with Ivy (using local Angular packages)
+      - run: yarn --cwd aio build-with-ivy --progress=false
+        # Run PWA-score tests
+        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+        # Run unit tests
+      - run: yarn --cwd aio test --progress=false --watch=false
+        # Run e2e tests
+      - run: yarn --cwd aio e2e --configuration=ci
 
   test_aio_tools:
     <<: *job_defaults
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - attach_workspace:
-          at: dist
-      - *define_env_vars
+      - *attach_workspace
+      - *init_environment
         # Install
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run: yarn --cwd aio extract-cli-command-docs
@@ -223,23 +328,43 @@ jobs:
     docker:
       # Needed because the example e2e tests depend on Chrome.
       - image: *browsers_docker_image
-    parallelism: 3
+    parallelism: 4
+    resource_class: xlarge
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - attach_workspace:
-          at: dist
-      - *define_env_vars
-        # Install root
-      - *yarn_install
+      - *attach_workspace
+      - *init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
         # Since the parallelism is set to "3", there will be three parallel CircleCI containers
         # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
+      - run: yarn --cwd aio example-e2e --setup --local --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
+
+  test_docs_examples_ivy:
+    <<: *job_defaults
+    docker:
+      # Needed because the example e2e tests depend on Chrome.
+      - image: *browsers_docker_image
+    resource_class: xlarge
+    # We increase the parallelism here to five while the "test_docs_examples" job runs with
+    # a parallelism of four. This is necessary because this job also need to run NGCC which
+    # takes up more time and we don't want these jobs to impact the overall CI turnaround.
+    parallelism: 5
+    steps:
+      - *attach_workspace
+      - *init_environment
+        # Install aio
+      - run: yarn --cwd aio install --frozen-lockfile --non-interactive
+        # Rename the Ivy packages dist folder to "dist/packages-dist" as the AIO
+        # package installer picks up the locally built packages from that location.
+        # *Note*: We could also adjust the packages installer, but given we won't have
+        # two different folders of Angular distributions in the future, we should keep
+        # the packages installer unchanged.
+      - run: mv dist/packages-dist-ivy-aot dist/packages-dist
+        # Run examples tests with ivy. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
+        # Since the parallelism is set to "3", there will be three parallel CircleCI containers
+        # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
+      - run: yarn --cwd aio example-e2e --setup --local --ivy --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
@@ -247,12 +372,8 @@ jobs:
     environment:
        AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
-      - *yarn_install
+      - *attach_workspace
+      - *init_environment
       - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
       - store_artifacts:
           path: *aio_preview_artifact_path
@@ -268,45 +389,68 @@ jobs:
       # Needed because the test-preview script runs e2e tests and the PWA score test with Chrome.
       - image: *browsers_docker_image
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
-      - run: yarn install --cwd aio --frozen-lockfile --non-interactive
+      - *attach_workspace
+      - *init_environment
+      - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run:
           name: Wait for preview and run tests
           command: node aio/scripts/test-preview.js $CI_PULL_REQUEST $CI_COMMIT $CI_AIO_MIN_PWA_SCORE
 
-  # This job exists only for backwards-compatibility with old scripts and tests
-  # that rely on the pre-Bazel dist/packages-dist layout.
-  # It duplicates some work with the job above: we build the bazel packages
-  # twice. Even though we have a remote cache, these jobs will typically run in
-  # parallel so up-to-date outputs will not be available at the time the build
+
+  # The `build-npm-packages` tasks exist for backwards-compatibility with old scripts and
+  # tests that rely on the pre-Bazel `dist/packages-dist` output structure (build.sh).
+  # Having multiple jobs that independently build in this manner duplicates some work; we build
+  # the bazel packages more than once. Even though we have a remote cache, these jobs will
+  # typically run in parallel so up-to-date outputs will not be available at the time the build
   # starts.
-  # No new jobs should depend on this one.
-  build-packages-dist:
+
+  # Build the view engine npm packages. No new jobs should depend on this.
+  build-npm-packages:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
+      - *attach_workspace
+      - *init_environment
       - *setup_circleci_bazel_config
-      - *yarn_install
+      # Enable remote/sibling docker which is needed by auto-selection of toolchain configs for RBE.
+      - setup_remote_docker
       - *setup_bazel_remote_execution
 
       - run: scripts/build-packages-dist.sh
 
       # Save the npm packages from //packages/... for other workflow jobs to read
-      # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
       - persist_to_workspace:
-          root: dist
+          root: ~/
           paths:
-            - packages-dist
-            - packages-dist-ivy-aot
+            - ng/dist/packages-dist
+
+      # Save dependencies and bazel repository cache to use on subsequent runs.
+      - save_cache:
+          key: *cache_key
+          paths:
+            - "node_modules"
+            - "aio/node_modules"
+            - "~/bazel_repository_cache"
+
+  # Build the ivy npm packages.
+  build-ivy-npm-packages:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *attach_workspace
+      - *init_environment
+      - *setup_circleci_bazel_config
+      # Enable remote/sibling docker which is needed by auto-selection of toolchain configs for RBE.
+      - setup_remote_docker
+      - *setup_bazel_remote_execution
+
+      - run: scripts/build-ivy-npm-packages.sh
+
+      # Save the npm packages from //packages/... for other workflow jobs to read
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - ng/dist/packages-dist-ivy-aot
 
   # We run the integration tests outside of Bazel for now.
   # They are a separate workflow job so that they can be easily re-run.
@@ -325,13 +469,8 @@ jobs:
     # on a 4G worker so we use a larger machine here too.
     resource_class: xlarge
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - attach_workspace:
-          at: dist
-      - *define_env_vars
+      - *attach_workspace
+      - *init_environment
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
       # amount of container nodes for this job is controlled by the "parallelism" option.
       - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
@@ -341,21 +480,20 @@ jobs:
   publish_snapshot:
     <<: *job_defaults
     steps:
-      - checkout:
-          <<: *post_checkout
-      - *define_env_vars
       # See below - ideally this job should not trigger for non-upstream builds.
       # But since it does, we have to check this condition.
       - run:
           name: Skip this job for Pull Requests and Fork builds
-          # Note, `|| true` on the end makes this step always exit 0
-          command: '[[
-              "$CI_PULL_REQUEST" != "false"
-              || "$CI_REPO_OWNER" != "angular"
-              || "$CI_REPO_NAME" != "angular"
-          ]] && circleci step halt || true'
-      - attach_workspace:
-          at: dist
+          # Note: Using `CIRCLE_*` env variables (instead of those defined in `env.sh` so that this
+          #       step can be run before `init_environment`.
+          command: >
+            if [[ -n "${CIRCLE_PR_NUMBER}" ]] ||
+                [[ "$CIRCLE_PROJECT_USERNAME" != "angular" ]] ||
+                [[ "$CIRCLE_PROJECT_REPONAME" != "angular" ]]; then
+              circleci step halt
+            fi
+      - *attach_workspace
+      - *init_environment
       # CircleCI has a config setting to force SSH for all github connections
       # This is not compatible with our mechanism of using a Personal Access Token
       # Clear the global setting
@@ -365,41 +503,49 @@ jobs:
           command: 'openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git_credentials'
       - run: ./scripts/ci/publish-build-artifacts.sh
 
-  aio_monitoring:
+  aio_monitoring_stable:
     <<: *job_defaults
     docker:
       # This job needs Chrome to be globally installed because the tests run with Protractor
       # which does not load the browser through the Bazel webtesting rules.
       - image: *browsers_docker_image
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
+      - *attach_workspace
+      - *init_environment
+      - run: setPublicVar_CI_STABLE_BRANCH
       - run:
-          name: Run tests against the deployed apps
-          command: ./aio/scripts/test-production.sh $CI_AIO_MIN_PWA_SCORE
+          name: Check out `aio/` from the stable branch
+          command: |
+            git fetch origin $CI_STABLE_BRANCH
+            git checkout --force origin/$CI_STABLE_BRANCH -- aio/
+      - run:
+          name: Run tests against https://angular.io/
+          command: ./aio/scripts/test-production.sh https://angular.io/ $CI_AIO_MIN_PWA_SCORE
       - run:
           name: Notify caretaker about failure
-          command: 'curl --request POST --header "Content-Type: application/json" --data "{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}" $CI_SECRET_SLACK_CARETAKER_WEBHOOK_URL'
+          # `$SLACK_CARETAKER_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
+          # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
+          command: 'curl --request POST --header "Content-Type: application/json" --data "{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}" $SLACK_CARETAKER_WEBHOOK_URL'
           when: on_fail
 
-  legacy-unit-tests-local:
+  aio_monitoring_next:
     <<: *job_defaults
     docker:
+      # This job needs Chrome to be globally installed because the tests run with Protractor
+      # which does not load the browser through the Bazel webtesting rules.
       - image: *browsers_docker_image
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
-      - *yarn_install
-      - run: yarn tsc -p packages
-      - run: yarn tsc -p packages/examples
-      - run: yarn tsc -p modules
-      - run: yarn karma start ./karma-js.conf.js --single-run --browsers=ChromeNoSandbox
+      - *attach_workspace
+      - *init_environment
+      - run:
+          name: Run tests against https://next.angular.io/
+          command: ./aio/scripts/test-production.sh https://next.angular.io/ $CI_AIO_MIN_PWA_SCORE
+      - run:
+          name: Notify caretaker about failure
+          # `$SLACK_CARETAKER_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
+          # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
+          command: 'curl --request POST --header "Content-Type: application/json" --data "{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}" $SLACK_CARETAKER_WEBHOOK_URL'
+          when: on_fail
 
   legacy-unit-tests-saucelabs:
     <<: *job_defaults
@@ -408,12 +554,8 @@ jobs:
     # and therefore the tunnel and Karma need to process a lot of file requests and tests.
     resource_class: xlarge
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
-      - *yarn_install
+      - *attach_workspace
+      - *init_environment
       - run:
           name: Preparing environment for running tests on Saucelabs.
           command: |
@@ -424,7 +566,6 @@ jobs:
           command: ./scripts/saucelabs/start-tunnel.sh
           background: true
       - run: yarn tsc -p packages
-      - run: yarn tsc -p packages/examples
       - run: yarn tsc -p modules
         # Waits for the Saucelabs tunnel to be ready. This ensures that we don't run tests
         # too early without Saucelabs not being ready.
@@ -432,78 +573,111 @@ jobs:
       - run: yarn karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
       - run: ./scripts/saucelabs/stop-tunnel.sh
 
-  legacy-e2e-tests:
-    <<: *job_defaults
-    docker:
-      - image: *browsers_docker_image
-    steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
-      - *setup_circleci_bazel_config
-      - *yarn_install
-      - *setup_bazel_remote_execution
-      - attach_workspace:
-          at: dist
-        # Build the e2e tests using the existing Bazel "packages-dist" output that has been
-        # attached to this job. This avoids multiple rebuilds across various CI jobs.
-      - run: ./scripts/build-e2e-tests.sh --use-existing-packages-dist
-      - run:
-          name: Starting servers for e2e tests
-          command: yarn gulp serve serve-examples
-          background: true
-      - run: NODE_PATH=$NODE_PATH:./dist/all yarn protractor ./protractor-e2e.conf.js --bundles=true
-      - run: NODE_PATH=$NODE_PATH:./dist/all yarn protractor ./protractor-examples-e2e.conf.js --bundles=true
-      - run: NODE_PATH=$NODE_PATH:./dist/all yarn protractor ./protractor-perf.conf.js --bundles=true --dryrun
-
   legacy-misc-tests:
     <<: *job_defaults
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
-      - *yarn_install
-      - attach_workspace:
-          at: dist
+      - *attach_workspace
+      - *init_environment
       - run: yarn gulp check-cycle
       # TODO: disabled because the Bazel packages-dist does not seem to have map files for
       # the ESM5/ES2015 output. See: https://github.com/angular/angular/issues/27966
       # - run: yarn gulp source-map-test
 
+  # Job to run unit tests from angular/material2. Needs a browser since all
+  # component unit tests assume they're running in the browser environment.
+  material-unit-tests:
+    <<: *job_defaults
+    resource_class: xlarge
+    docker:
+      - image: *browsers_docker_image
+    # The Material unit tests support splitting the browsers across multiple CircleCI
+    # instances. Since by default this job launches two browsers, we run each browser
+    # in its own container instance.
+    # https://github.com/angular/material2/blob/7baeaa797b19da2d2998f0d26f6fede3c8a13714/test/karma.conf.js#L107-L110
+    parallelism: 2
+    environment:
+      # The Material unit tests also support launching the same browser multiple times by
+      # sharding individual specs across the defined multiple instances.
+      # See: https://github.com/angular/material2/blob/7baeaa797b19da2d2998f0d26f6fede3c8a13714/test/karma.conf.js#L113-L116
+      KARMA_PARALLEL_BROWSERS: 3
+    steps:
+      - *attach_workspace
+      - *init_environment
+      - run:
+          name: "Cloning Material repository"
+          command: ./scripts/ci/clone_angular_material_repo.sh
+      - restore_cache:
+          # Material directory must be kept in sync with the `$MATERIAL_REPO_TMP_DIR` env variable.
+          # It needs to be hardcoded here, because env variables interpolation is not supported.
+          keys:
+            - v2-angular-material-{{ checksum "/tmp/material2/yarn.lock" }}
+            - v2-angular-material-
+      - run:
+          name: Installing Material dependencies.
+          command: yarn --cwd ${MATERIAL_REPO_TMP_DIR} install --frozen-lockfile --non-interactive
+      # Save the cache before we run the Material unit tests script. This is necessary
+      # because we don't want to cache the node modules which have been modified to contain
+      # the attached Ivy package output.
+      - save_cache:
+          # Material directory must be kept in sync with the `$MATERIAL_REPO_TMP_DIR` env variable.
+          # It needs to be hardcoded here, because env variables interpolation is not supported.
+          key: v2-angular-material-{{ checksum "/tmp/material2/yarn.lock" }}
+          paths:
+            - "/tmp/material2/node_modules"
+      - run:
+          name: "Running Material unit tests"
+          command: ./scripts/ci/run_angular_material_unit_tests.sh
+
 workflows:
   version: 2
   default_workflow:
     jobs:
-      - lint
-      - test
-      - test_ivy_aot
-      - build-packages-dist
-      - test_aio
-      - legacy-unit-tests-local
-      - legacy-unit-tests-saucelabs
+      - setup
+      - lint:
+          requires:
+          - setup
+      - test:
+          requires:
+          - setup
+      - test_ivy_aot:
+          requires:
+          - setup
+      - build-npm-packages:
+          requires:
+          - setup
+      - build-ivy-npm-packages:
+          requires:
+          - setup
+      - test_aio:
+          requires:
+          - setup
+      - legacy-unit-tests-saucelabs:
+          requires:
+          - setup
       - deploy_aio:
           requires:
             - test_aio
-      - legacy-e2e-tests:
-          requires:
-            - build-packages-dist
       - legacy-misc-tests:
           requires:
-            - build-packages-dist
+            - build-npm-packages
       - test_aio_local:
           requires:
-            - build-packages-dist
+            - build-npm-packages
+      - test_aio_local_ivy:
+          requires:
+            - build-npm-packages
       - test_aio_tools:
           requires:
-            - build-packages-dist
+            - build-npm-packages
       - test_docs_examples:
           requires:
-            - build-packages-dist
+            - build-npm-packages
+      - test_docs_examples_ivy:
+          requires:
+            - build-ivy-npm-packages
       - aio_preview:
+          requires:
+            - setup
           # Only run on PR builds. (There can be no previews for non-PR builds.)
           filters:
             branches:
@@ -513,7 +687,7 @@ workflows:
             - aio_preview
       - integration_test:
           requires:
-            - build-packages-dist
+            - build-npm-packages
       - publish_snapshot:
           # Note: no filters on this job because we want it to run for all upstream branches
           # We'd really like to filter out pull requests here, but not yet available:
@@ -526,22 +700,48 @@ workflows:
             - integration_test
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
+            - test_aio_local_ivy
             - test_docs_examples
+            - test_docs_examples_ivy
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
-            - build-packages-dist
-            - legacy-e2e-tests
-            - legacy-misc-tests
-            - legacy-unit-tests-local
+            - build-npm-packages
+            - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
+            - legacy-misc-tests
+      - material-unit-tests:
+          requires:
+            - build-ivy-npm-packages
 
+  saucelabs_tests:
+    jobs:
+      - setup
+      - test_saucelabs_bazel:
+          requires:
+            - setup
+    triggers:
+      - schedule:
+          # Runs the Saucelabs legacy tests every hour. We still want to run Saucelabs
+          # frequently as the caretaker needs up-to-date results when merging PRs or creating
+          # a new release. Also we primarily moved the Saucelabs job into a cronjob that doesn't
+          # run for PRs, in order to ensure that PRs are not affected by Saucelabs flakiness or
+          # incidents. This is still guaranteed (even if we run the job every hour).
+          cron: "0 * * * *"
+          filters: *publish_branches_filter
 
   aio_monitoring:
     jobs:
-      - aio_monitoring
+      - setup
+      - aio_monitoring_stable:
+          requires:
+            - setup
+      - aio_monitoring_next:
+          requires:
+            - setup
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          # Runs AIO monitoring jobs at 10:00AM every day.
+          cron: "0 10 * * *"
           filters:
             branches:
               only:

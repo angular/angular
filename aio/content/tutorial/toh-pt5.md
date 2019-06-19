@@ -181,7 +181,7 @@ configure it with the `routes` in one step by calling
 ## 라우팅 영역 추가하기
 
 <!--
-Open the `AppComponent` template replace the `<app-heroes>` element with a `<router-outlet>` element.
+Open the `AppComponent` template and replace the `<app-heroes>` element with a `<router-outlet>` element.
 -->
 `AppComponent` 템플릿을 열어서 `<app-heroes>` 엘리먼트를 `<router-outlet>` 엘리먼트로 변경합니다.
 
@@ -860,12 +860,12 @@ The browser refreshes and the app is working again.
 You can click a hero in the dashboard or in the heroes list and navigate to that hero's detail view.
 
 If you paste `localhost:4200/detail/11` in the browser address bar,
-the router navigates to the detail view for the hero with `id: 11`,  "Mr. Nice".
+the router navigates to the detail view for the hero with `id: 11`,  "Dr Nice".
 -->
 브라우저가 갱신되고 나면 앱이 다시 동작합니다.
 그리고 대시보드나 히어로 목록 화면에서 히어로를 한 명 선택하면 이 히어로의 상세정보를 표시하는 화면으로 이동합니다.
 
-브라우저 주소표시줄에 `localhost:4200/detail/11`라는 값을 붙여넣으면 이 때도 마찬가지로 `id: 11`에 해당하는 "Mr. Nice" 히어로의 정보를 표시하는 화면으로 이동할 것입니다.
+브라우저 주소표시줄에 `localhost:4200/detail/11`라는 값을 붙여넣으면 이 때도 마찬가지로 `id: 11`에 해당하는 "Dr Nice" 히어로의 정보를 표시하는 화면으로 이동할 것입니다.
 
 {@a goback}
 

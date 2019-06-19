@@ -6,199 +6,81 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import * as ts from 'typescript'; // used as value, passed in by tsserver at runtime
+import * as tss from 'typescript/lib/tsserverlibrary'; // used as type only
 
 import {createLanguageService} from './language_service';
-import {Completion, Diagnostic, DiagnosticMessageChain, LanguageService, LanguageServiceHost} from './types';
+import {Completion, Diagnostic, DiagnosticMessageChain, Location} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
-const projectHostMap = new WeakMap<any, TypeScriptServiceHost>();
+const projectHostMap = new WeakMap<tss.server.Project, TypeScriptServiceHost>();
 
-export function getExternalFiles(project: any): string[]|undefined {
+export function getExternalFiles(project: tss.server.Project): string[]|undefined {
   const host = projectHostMap.get(project);
   if (host) {
-    return host.getTemplateReferences();
+    const externalFiles = host.getTemplateReferences();
+    return externalFiles;
   }
 }
 
-export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageService {
-  // Create the proxy
-  const proxy: ts.LanguageService = Object.create(null);
-  let oldLS: ts.LanguageService = info.languageService;
+function completionToEntry(c: Completion): ts.CompletionEntry {
+  return {
+    // TODO: remove any and fix type error.
+    kind: c.kind as any,
+    name: c.name,
+    sortText: c.sort,
+    kindModifiers: ''
+  };
+}
 
-  function tryCall<T>(fileName: string | undefined, callback: () => T): T|undefined {
-    if (fileName && !oldLS.getProgram() !.getSourceFile(fileName)) {
-      return undefined;
-    }
-    try {
-      return callback();
-    } catch {
-      return undefined;
-    }
+function diagnosticChainToDiagnosticChain(chain: DiagnosticMessageChain):
+    ts.DiagnosticMessageChain {
+  return {
+    messageText: chain.message,
+    category: ts.DiagnosticCategory.Error,
+    code: 0,
+    next: chain.next ? diagnosticChainToDiagnosticChain(chain.next) : undefined
+  };
+}
+
+function diagnosticMessageToDiagnosticMessageText(message: string | DiagnosticMessageChain): string|
+    ts.DiagnosticMessageChain {
+  if (typeof message === 'string') {
+    return message;
   }
+  return diagnosticChainToDiagnosticChain(message);
+}
 
-  function tryFilenameCall<T>(m: (fileName: string) => T): (fileName: string) => T | undefined {
-    return fileName => tryCall(fileName, () => <T>(m.call(ls, fileName)));
-  }
+function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
+  const result = {
+    file,
+    start: d.span.start,
+    length: d.span.end - d.span.start,
+    messageText: diagnosticMessageToDiagnosticMessageText(d.message),
+    category: ts.DiagnosticCategory.Error,
+    code: 0,
+    source: 'ng'
+  };
+  return result;
+}
 
-  function tryFilenameOneCall<T, P>(m: (fileName: string, p: P) => T): (filename: string, p: P) =>
-      T | undefined {
-    return (fileName, p) => tryCall(fileName, () => <T>(m.call(ls, fileName, p)));
-  }
-
-  function tryFilenameTwoCall<T, P1, P2>(m: (fileName: string, p1: P1, p2: P2) => T): (
-      filename: string, p1: P1, p2: P2) => T | undefined {
-    return (fileName, p1, p2) => tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2)));
-  }
-
-  function tryFilenameThreeCall<T, P1, P2, P3>(m: (fileName: string, p1: P1, p2: P2, p3: P3) => T):
-      (filename: string, p1: P1, p2: P2, p3: P3) => T | undefined {
-    return (fileName, p1, p2, p3) => tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2, p3)));
-  }
-
-  function tryFilenameFourCall<T, P1, P2, P3, P4>(
-      m: (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4) =>
-          T): (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4) => T | undefined {
-    return (fileName, p1, p2, p3, p4) =>
-               tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2, p3, p4)));
-  }
-
-  function tryFilenameFiveCall<T, P1, P2, P3, P4, P5>(
-      m: (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) =>
-          T): (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) => T | undefined {
-    return (fileName, p1, p2, p3, p4, p5) =>
-               tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2, p3, p4, p5)));
-  }
-
-  function typescriptOnly(ls: ts.LanguageService): ts.LanguageService {
-    const languageService: ts.LanguageService = {
-      cleanupSemanticCache: () => ls.cleanupSemanticCache(),
-      getSyntacticDiagnostics: tryFilenameCall(ls.getSyntacticDiagnostics),
-      getSemanticDiagnostics: tryFilenameCall(ls.getSemanticDiagnostics),
-      getCompilerOptionsDiagnostics: () => ls.getCompilerOptionsDiagnostics(),
-      getSyntacticClassifications: tryFilenameOneCall(ls.getSemanticClassifications),
-      getSemanticClassifications: tryFilenameOneCall(ls.getSemanticClassifications),
-      getEncodedSyntacticClassifications: tryFilenameOneCall(ls.getEncodedSyntacticClassifications),
-      getEncodedSemanticClassifications: tryFilenameOneCall(ls.getEncodedSemanticClassifications),
-      getCompletionsAtPosition: tryFilenameTwoCall(ls.getCompletionsAtPosition),
-      getCompletionEntryDetails: tryFilenameFiveCall(ls.getCompletionEntryDetails),
-      getCompletionEntrySymbol: tryFilenameThreeCall(ls.getCompletionEntrySymbol),
-      getJsxClosingTagAtPosition: tryFilenameOneCall(ls.getJsxClosingTagAtPosition),
-      getQuickInfoAtPosition: tryFilenameOneCall(ls.getQuickInfoAtPosition),
-      getNameOrDottedNameSpan: tryFilenameTwoCall(ls.getNameOrDottedNameSpan),
-      getBreakpointStatementAtPosition: tryFilenameOneCall(ls.getBreakpointStatementAtPosition),
-      getSignatureHelpItems: tryFilenameTwoCall(ls.getSignatureHelpItems),
-      getRenameInfo: tryFilenameOneCall(ls.getRenameInfo),
-      findRenameLocations: tryFilenameThreeCall(ls.findRenameLocations),
-      getDefinitionAtPosition: tryFilenameOneCall(ls.getDefinitionAtPosition),
-      getTypeDefinitionAtPosition: tryFilenameOneCall(ls.getTypeDefinitionAtPosition),
-      getImplementationAtPosition: tryFilenameOneCall(ls.getImplementationAtPosition),
-      getReferencesAtPosition: tryFilenameOneCall(ls.getReferencesAtPosition),
-      findReferences: tryFilenameOneCall(ls.findReferences),
-      getDocumentHighlights: tryFilenameTwoCall(ls.getDocumentHighlights),
-      /** @deprecated */
-      getOccurrencesAtPosition: tryFilenameOneCall(ls.getOccurrencesAtPosition),
-      getNavigateToItems:
-          (searchValue, maxResultCount, fileName, excludeDtsFiles) => tryCall(
-              fileName,
-              () => ls.getNavigateToItems(searchValue, maxResultCount, fileName, excludeDtsFiles)),
-      getNavigationBarItems: tryFilenameCall(ls.getNavigationBarItems),
-      getNavigationTree: tryFilenameCall(ls.getNavigationTree),
-      getOutliningSpans: tryFilenameCall(ls.getOutliningSpans),
-      getTodoComments: tryFilenameOneCall(ls.getTodoComments),
-      getBraceMatchingAtPosition: tryFilenameOneCall(ls.getBraceMatchingAtPosition),
-      getIndentationAtPosition: tryFilenameTwoCall(ls.getIndentationAtPosition),
-      getFormattingEditsForRange: tryFilenameThreeCall(ls.getFormattingEditsForRange),
-      getFormattingEditsForDocument: tryFilenameOneCall(ls.getFormattingEditsForDocument),
-      getFormattingEditsAfterKeystroke: tryFilenameThreeCall(ls.getFormattingEditsAfterKeystroke),
-      getDocCommentTemplateAtPosition: tryFilenameOneCall(ls.getDocCommentTemplateAtPosition),
-      isValidBraceCompletionAtPosition: tryFilenameTwoCall(ls.isValidBraceCompletionAtPosition),
-      getSpanOfEnclosingComment: tryFilenameTwoCall(ls.getSpanOfEnclosingComment),
-      getCodeFixesAtPosition: tryFilenameFiveCall(ls.getCodeFixesAtPosition),
-      applyCodeActionCommand:
-          <any>((action: any) => tryCall(undefined, () => ls.applyCodeActionCommand(action))),
-      getEmitOutput: tryFilenameCall(ls.getEmitOutput),
-      getProgram: () => ls.getProgram(),
-      dispose: () => ls.dispose(),
-      getApplicableRefactors: tryFilenameTwoCall(ls.getApplicableRefactors),
-      getEditsForRefactor: tryFilenameFiveCall(ls.getEditsForRefactor),
-      getDefinitionAndBoundSpan: tryFilenameOneCall(ls.getDefinitionAndBoundSpan),
-      getCombinedCodeFix:
-          (scope: ts.CombinedCodeFixScope, fixId: {}, formatOptions: ts.FormatCodeSettings,
-           preferences: ts.UserPreferences) =>
-              tryCall(
-                  undefined, () => ls.getCombinedCodeFix(scope, fixId, formatOptions, preferences)),
-      // TODO(kyliau): dummy implementation to compile with ts 2.8, create real one
-      getSuggestionDiagnostics: (fileName: string) => [],
-      // TODO(kyliau): dummy implementation to compile with ts 2.8, create real one
-      organizeImports: (scope: ts.CombinedCodeFixScope, formatOptions: ts.FormatCodeSettings) => [],
-      // TODO: dummy implementation to compile with ts 2.9, create a real one
-      getEditsForFileRename:
-          (oldFilePath: string, newFilePath: string, formatOptions: ts.FormatCodeSettings,
-           preferences: ts.UserPreferences | undefined) => []
-    } as ts.LanguageService;
-    return languageService;
-  }
-
-  oldLS = typescriptOnly(oldLS);
-
-  for (const k in oldLS) {
-    (<any>proxy)[k] = function() { return (oldLS as any)[k].apply(oldLS, arguments); };
-  }
-
-  function completionToEntry(c: Completion): ts.CompletionEntry {
-    return {
-      // TODO: remove any and fix type error.
-      kind: c.kind as any,
-      name: c.name,
-      sortText: c.sort,
-      kindModifiers: ''
-    };
-  }
-
-  function diagnosticChainToDiagnosticChain(chain: DiagnosticMessageChain):
-      ts.DiagnosticMessageChain {
-    return {
-      messageText: chain.message,
-      category: ts.DiagnosticCategory.Error,
-      code: 0,
-      next: chain.next ? diagnosticChainToDiagnosticChain(chain.next) : undefined
-    };
-  }
-
-  function diagnosticMessageToDiagnosticMessageText(message: string | DiagnosticMessageChain):
-      string|ts.DiagnosticMessageChain {
-    if (typeof message === 'string') {
-      return message;
-    }
-    return diagnosticChainToDiagnosticChain(message);
-  }
-
-  function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
-    const result = {
-      file,
-      start: d.span.start,
-      length: d.span.end - d.span.start,
-      messageText: diagnosticMessageToDiagnosticMessageText(d.message),
-      category: ts.DiagnosticCategory.Error,
-      code: 0,
-      source: 'ng'
-    };
-    return result;
-  }
+export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
+  const oldLS: ts.LanguageService = info.languageService;
+  const proxy: ts.LanguageService = Object.assign({}, oldLS);
+  const logger = info.project.projectService.logger;
 
   function tryOperation<T>(attempting: string, callback: () => T): T|null {
     try {
       return callback();
     } catch (e) {
-      info.project.projectService.logger.info(`Failed to ${attempting}: ${e.toString()}`);
-      info.project.projectService.logger.info(`Stack trace: ${e.stack}`);
+      logger.info(`Failed to ${attempting}: ${e.toString()}`);
+      logger.info(`Stack trace: ${e.stack}`);
       return null;
     }
   }
 
-  const serviceHost = new TypeScriptServiceHost(info.languageServiceHost, info.languageService);
-  const ls = createLanguageService(serviceHost as any);
+  const serviceHost = new TypeScriptServiceHost(info.languageServiceHost, oldLS);
+  const ls = createLanguageService(serviceHost);
   serviceHost.setSite(ls);
   projectHostMap.set(info.project, serviceHost);
 
@@ -261,7 +143,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
     let result = oldLS.getSemanticDiagnostics(fileName);
     const base = result || [];
     tryOperation('get diagnostics', () => {
-      info.project.projectService.logger.info(`Computing Angular semantic diagnostics...`);
+      logger.info(`Computing Angular semantic diagnostics...`);
       const ours = ls.getDiagnostics(fileName);
       if (ours && ours.length) {
         const file = oldLS.getProgram() !.getSourceFile(fileName);
@@ -274,36 +156,61 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
     return base;
   };
 
-  proxy.getDefinitionAtPosition = function(
-      fileName: string, position: number): ReadonlyArray<ts.DefinitionInfo> {
-    let base = oldLS.getDefinitionAtPosition(fileName, position);
-    if (base && base.length) {
-      return base;
-    }
+  proxy.getDefinitionAtPosition = function(fileName: string, position: number):
+                                      ReadonlyArray<ts.DefinitionInfo>|
+      undefined {
+        const base = oldLS.getDefinitionAtPosition(fileName, position);
+        if (base && base.length) {
+          return base;
+        }
+        const ours = ls.getDefinitionAt(fileName, position);
+        if (ours && ours.length) {
+          return ours.map((loc: Location) => {
+            return {
+              fileName: loc.fileName,
+              textSpan: {
+                start: loc.span.start,
+                length: loc.span.end - loc.span.start,
+              },
+              name: '',
+              kind: ts.ScriptElementKind.unknown,
+              containerName: loc.fileName,
+              containerKind: ts.ScriptElementKind.unknown,
+            };
+          });
+        }
+      };
 
-    return tryOperation('get definition', () => {
-             const ours = ls.getDefinitionAt(fileName, position);
-             let combined;
-
-             if (ours && ours.length) {
-               combined = base && base.concat([]) || [];
-               for (const loc of ours) {
-                 combined.push({
-                   fileName: loc.fileName,
-                   textSpan: {start: loc.span.start, length: loc.span.end - loc.span.start},
-                   name: '',
-                   // TODO: remove any and fix type error.
-                   kind: 'definition' as any,
-                   containerName: loc.fileName,
-                   containerKind: 'file' as any,
-                 });
-               }
-             } else {
-               combined = base;
-             }
-             return combined;
-           }) || [];
-  };
+  proxy.getDefinitionAndBoundSpan = function(fileName: string, position: number):
+                                        ts.DefinitionInfoAndBoundSpan |
+      undefined {
+        const base = oldLS.getDefinitionAndBoundSpan(fileName, position);
+        if (base && base.definitions && base.definitions.length) {
+          return base;
+        }
+        const ours = ls.getDefinitionAt(fileName, position);
+        if (ours && ours.length) {
+          return {
+            definitions: ours.map((loc: Location) => {
+              return {
+                fileName: loc.fileName,
+                textSpan: {
+                  start: loc.span.start,
+                  length: loc.span.end - loc.span.start,
+                },
+                name: '',
+                kind: ts.ScriptElementKind.unknown,
+                containerName: loc.fileName,
+                containerKind: ts.ScriptElementKind.unknown,
+              };
+            }),
+            textSpan: {
+              start: ours[0].span.start,
+              length: ours[0].span.end - ours[0].span.start,
+            },
+          };
+        }
+      };
 
   return proxy;
 }

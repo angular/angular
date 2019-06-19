@@ -243,7 +243,7 @@ describe('Collector', () => {
       version: METADATA_VERSION,
       metadata: {
         HEROES: [
-          {'id': 11, 'name': 'Mr. Nice', '$quoted$': ['id', 'name']},
+          {'id': 11, 'name': 'Dr Nice', '$quoted$': ['id', 'name']},
           {'id': 12, 'name': 'Narco', '$quoted$': ['id', 'name']},
           {'id': 13, 'name': 'Bombasto', '$quoted$': ['id', 'name']},
           {'id': 14, 'name': 'Celeritas', '$quoted$': ['id', 'name']},
@@ -1221,7 +1221,7 @@ const FILES: Directory = {
       import {Hero as Hero} from './hero';
 
       export const HEROES: Hero[] = [
-          {"id": 11, "name": "Mr. Nice"},
+          {"id": 11, "name": "Dr Nice"},
           {"id": 12, "name": "Narco"},
           {"id": 13, "name": "Bombasto"},
           {"id": 14, "name": "Celeritas"},

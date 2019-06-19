@@ -1,5 +1,10 @@
 import * as XRegExp from 'xregexp';
 
+// The `XRegExp` typings are not accurate.
+interface XRegExp extends RegExp {
+  xregexp: { captureNames?: string[] };
+}
+
 const dot = /\./g;
 const star = /\*/g;
 const doubleStar = /(^|\/)\*\*($|\/)/g;           // e.g. a/**/b or **/b or a/** but not a**b
@@ -36,7 +41,7 @@ export class FirebaseGlob {
           .replace(possiblyEmptySegments, '(?:/|/.*/)')   // deal with /**/ special cases
           .replace(willBeStar, '*');                      // other ** matches
       this.pattern = `^${pattern}$`;
-      this.regex = XRegExp(this.pattern);
+      this.regex = XRegExp(this.pattern) as XRegExp;
     } catch (e) {
       throw new Error(`Error in FirebaseGlob: "${glob}" - ${e.message}`);
     }
@@ -47,17 +52,17 @@ export class FirebaseGlob {
   }
 
   match(url: string) {
-    const match = XRegExp.exec(url, this.regex);
+    const match = XRegExp.exec(url, this.regex) as ReturnType<typeof XRegExp.exec> & { [captured: string]: string };
     if (match) {
-      const result = {};
-      const names = (this.regex as any).xregexp.captureNames || [];
-      names.forEach(name => result[name] = match[name]);
+      const result: { [key: string]: string } = {};
+      const names = this.regex.xregexp.captureNames || [];
+      names.forEach(name => result[name] = (match[name]));
       return result;
     }
   }
 }
 
-function replaceModifiedPattern(_, modifier, pattern) {
+function replaceModifiedPattern(_: string, modifier: string, pattern: string) {
   switch (modifier) {
     case '!':
       throw new Error(`"not" expansions are not supported: "${_}"`);

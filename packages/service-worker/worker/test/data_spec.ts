@@ -15,111 +15,110 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
 import {async_beforeEach, async_fit, async_it} from './async';
 
-const dist = new MockFileSystemBuilder()
-                 .addFile('/foo.txt', 'this is foo')
-                 .addFile('/bar.txt', 'this is bar')
-                 .addFile('/api/test', 'version 1')
-                 .addFile('/api/a', 'version A')
-                 .addFile('/api/b', 'version B')
-                 .addFile('/api/c', 'version C')
-                 .addFile('/api/d', 'version D')
-                 .addFile('/api/e', 'version E')
-                 .addFile('/fresh/data', 'this is fresh data')
-                 .addFile('/refresh/data', 'this is some data')
-                 .build();
-
-
-const distUpdate = new MockFileSystemBuilder()
-                       .addFile('/foo.txt', 'this is foo v2')
-                       .addFile('/bar.txt', 'this is bar')
-                       .addFile('/api/test', 'version 2')
-                       .addFile('/fresh/data', 'this is fresher data')
-                       .addFile('/refresh/data', 'this is refreshed data')
-                       .build();
-
-const manifest: Manifest = {
-  configVersion: 1,
-  index: '/index.html',
-  assetGroups: [
-    {
-      name: 'assets',
-      installMode: 'prefetch',
-      updateMode: 'prefetch',
-      urls: [
-        '/foo.txt',
-        '/bar.txt',
-      ],
-      patterns: [],
-    },
-  ],
-  dataGroups: [
-    {
-      name: 'testPerf',
-      maxSize: 3,
-      strategy: 'performance',
-      patterns: ['^/api/.*$'],
-      timeoutMs: 1000,
-      maxAge: 5000,
-      version: 1,
-    },
-    {
-      name: 'testRefresh',
-      maxSize: 3,
-      strategy: 'performance',
-      patterns: ['^/refresh/.*$'],
-      timeoutMs: 1000,
-      refreshAheadMs: 1000,
-      maxAge: 5000,
-      version: 1,
-    },
-    {
-      name: 'testFresh',
-      maxSize: 3,
-      strategy: 'freshness',
-      patterns: ['^/fresh/.*$'],
-      timeoutMs: 1000,
-      maxAge: 5000,
-      version: 1,
-    },
-  ],
-  navigationUrls: [],
-  hashTable: tmpHashTableForFs(dist),
-};
-
-const seqIncreasedManifest: Manifest = {
-  ...manifest,
-  dataGroups: [
-    {
-      ...manifest.dataGroups ![0],
-      version: 2,
-    },
-    manifest.dataGroups ![1],
-    manifest.dataGroups ![2],
-  ],
-};
-
-
-const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(manifest).build();
-
-const serverUpdate =
-    new MockServerStateBuilder().withStaticFiles(distUpdate).withManifest(manifest).build();
-
-const serverSeqUpdate = new MockServerStateBuilder()
-                            .withStaticFiles(distUpdate)
-                            .withManifest(seqIncreasedManifest)
-                            .build();
-
-const scope = new SwTestHarnessBuilder().withServerState(server).build();
-
-function asyncWrap(fn: () => Promise<void>): (done: DoneFn) => void {
-  return (done: DoneFn) => { fn().then(() => done(), err => done.fail(err)); };
-}
-
 (function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
   }
+
+  const dist = new MockFileSystemBuilder()
+                   .addFile('/foo.txt', 'this is foo')
+                   .addFile('/bar.txt', 'this is bar')
+                   .addFile('/api/test', 'version 1')
+                   .addFile('/api/a', 'version A')
+                   .addFile('/api/b', 'version B')
+                   .addFile('/api/c', 'version C')
+                   .addFile('/api/d', 'version D')
+                   .addFile('/api/e', 'version E')
+                   .addFile('/fresh/data', 'this is fresh data')
+                   .addFile('/refresh/data', 'this is some data')
+                   .build();
+
+
+  const distUpdate = new MockFileSystemBuilder()
+                         .addFile('/foo.txt', 'this is foo v2')
+                         .addFile('/bar.txt', 'this is bar')
+                         .addFile('/api/test', 'version 2')
+                         .addFile('/fresh/data', 'this is fresher data')
+                         .addFile('/refresh/data', 'this is refreshed data')
+                         .build();
+
+  const manifest: Manifest = {
+    configVersion: 1,
+    timestamp: 1234567890123,
+    index: '/index.html',
+    assetGroups: [
+      {
+        name: 'assets',
+        installMode: 'prefetch',
+        updateMode: 'prefetch',
+        urls: [
+          '/foo.txt',
+          '/bar.txt',
+        ],
+        patterns: [],
+      },
+    ],
+    dataGroups: [
+      {
+        name: 'testPerf',
+        maxSize: 3,
+        strategy: 'performance',
+        patterns: ['^/api/.*$'],
+        timeoutMs: 1000,
+        maxAge: 5000,
+        version: 1,
+      },
+      {
+        name: 'testRefresh',
+        maxSize: 3,
+        strategy: 'performance',
+        patterns: ['^/refresh/.*$'],
+        timeoutMs: 1000,
+        refreshAheadMs: 1000,
+        maxAge: 5000,
+        version: 1,
+      },
+      {
+        name: 'testFresh',
+        maxSize: 3,
+        strategy: 'freshness',
+        patterns: ['^/fresh/.*$'],
+        timeoutMs: 1000,
+        maxAge: 5000,
+        version: 1,
+      },
+    ],
+    navigationUrls: [],
+    hashTable: tmpHashTableForFs(dist),
+  };
+
+  const seqIncreasedManifest: Manifest = {
+    ...manifest,
+    dataGroups: [
+      {
+        ...manifest.dataGroups ![0],
+        version: 2,
+      },
+      manifest.dataGroups ![1],
+      manifest.dataGroups ![2],
+    ],
+  };
+
+
+  const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(manifest).build();
+
+  const serverUpdate =
+      new MockServerStateBuilder().withStaticFiles(distUpdate).withManifest(manifest).build();
+
+  const serverSeqUpdate = new MockServerStateBuilder()
+                              .withStaticFiles(distUpdate)
+                              .withManifest(seqIncreasedManifest)
+                              .build();
+
+  const scope = new SwTestHarnessBuilder().withServerState(server).build();
+
+
   describe('data cache', () => {
     let scope: SwTestHarness;
     let driver: Driver;
@@ -139,7 +138,7 @@ function asyncWrap(fn: () => Promise<void>): (done: DoneFn) => void {
       async_it('names the caches correctly', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         const keys = await scope.caches.keys();
-        expect(keys.every(key => key.startsWith('ngsw:'))).toEqual(true);
+        expect(keys.every(key => key.startsWith('ngsw:/:'))).toEqual(true);
       });
 
       async_it('caches a basic request', async() => {

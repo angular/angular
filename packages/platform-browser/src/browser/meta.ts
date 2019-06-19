@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, inject} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {Inject, Injectable, ɵɵinject} from '@angular/core';
 
 import {DomAdapter, getDOM} from '../dom/dom_adapter';
-import {DOCUMENT} from '../dom/dom_tokens';
 
 
 
@@ -34,7 +34,7 @@ export type MetaDefinition = {
  * Factory to create Meta service.
  */
 export function createMeta() {
-  return new Meta(inject(DOCUMENT));
+  return new Meta(ɵɵinject(DOCUMENT));
 }
 
 /**

@@ -2,7 +2,9 @@
 
 /**
  * Usage:
- *   node scripts/test-pwa-score <url> <min-score> [<log-file>]
+ * ```sh
+ * node scripts/test-pwa-score <url> <min-score> [<log-file>]
+ * ```
  *
  * Fails if the score is below `<min-score>`.
  * If `<log-file>` is defined, the full results will be logged there.
@@ -14,7 +16,6 @@
 const chromeLauncher = require('chrome-launcher');
 const lighthouse = require('lighthouse');
 const printer = require('lighthouse/lighthouse-cli/printer');
-const config = require('lighthouse/lighthouse-core/config/default-config.js');
 const logger = require('lighthouse-logger');
 
 // Constants
@@ -22,6 +23,7 @@ const CHROME_LAUNCH_OPTS = {};
 const LIGHTHOUSE_FLAGS = {logLevel: 'info'};
 const SKIPPED_HTTPS_AUDITS = ['redirects-http'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
+const WAIT_FOR_SW_DELAY = 5000;
 
 // Be less verbose on CI.
 if (process.env.CI) {
@@ -32,22 +34,31 @@ if (process.env.CI) {
 _main(process.argv.slice(2));
 
 // Functions - Definitions
-function _main(args) {
+async function _main(args) {
   const {url, minScore, logFile} = parseInput(args);
   const isOnHttp = /^http:/.test(url);
+  const config = {
+    extends: 'lighthouse:default',
+    // Since the Angular ServiceWorker waits for the app to stabilize before registering,
+    // wait a few seconds after load to allow Lighthouse to reliably detect it.
+    passes: [{passName: 'defaultPass', pauseAfterLoadMs: WAIT_FOR_SW_DELAY}],
+  }
 
   console.log(`Running PWA audit for '${url}'...`);
 
-  if (isOnHttp) {
-    skipHttpsAudits(config);
-  }
+  // If testing on HTTP, skip HTTPS-specific tests.
+  // (Note: Browsers special-case localhost and run ServiceWorker even on HTTP.)
+  if (isOnHttp) skipHttpsAudits(config);
 
   logger.setLevel(LIGHTHOUSE_FLAGS.logLevel);
 
-  launchChromeAndRunLighthouse(url, LIGHTHOUSE_FLAGS, config).
-    then(results => processResults(results, logFile)).
-    then(score => evaluateScore(minScore, score)).
-    catch(onError);
+  try {
+    const results = await launchChromeAndRunLighthouse(url, LIGHTHOUSE_FLAGS, config);
+    const score = await processResults(results, logFile);
+    evaluateScore(minScore, score);
+  } catch (err) {
+    onError(err);
+  }
 }
 
 function evaluateScore(expectedScore, actualScore) {
@@ -60,13 +71,15 @@ function evaluateScore(expectedScore, actualScore) {
   }
 }
 
-function launchChromeAndRunLighthouse(url, flags, config) {
-  return chromeLauncher.launch(CHROME_LAUNCH_OPTS).then(chrome => {
-    flags.port = chrome.port;
-    return lighthouse(url, flags, config).
-      then(results => chrome.kill().then(() => results)).
-      catch(err => chrome.kill().then(() => { throw err; }, () => { throw err; }));
-  });
+async function launchChromeAndRunLighthouse(url, flags, config) {
+  const chrome = await chromeLauncher.launch(CHROME_LAUNCH_OPTS);
+  flags.port = chrome.port;
+
+  try {
+    return await lighthouse(url, flags, config);
+  } finally {
+    await chrome.kill();
+  }
 }
 
 function onError(err) {
@@ -88,34 +101,35 @@ function parseInput(args) {
   return {url, minScore, logFile};
 }
 
-function processResults(results, logFile) {
+async function processResults(results, logFile) {
+  const lhVersion = results.lhr.lighthouseVersion;
   const categories = results.lhr.categories;
   const report = results.report;
 
-  return Promise.resolve().
-    then(() => {
-      if (logFile) {
-        console.log(`Saving results in '${logFile}'...`);
-        console.log(`(LightHouse viewer: ${VIEWER_URL})`);
+  if (logFile) {
+    console.log(`\nSaving results in '${logFile}'...`);
+    console.log(`(LightHouse viewer: ${VIEWER_URL})`);
 
-        return printer.write(report, printer.OutputMode.json, logFile);
-      }
-    }).
-    then(() => {
-      const categoryData = Object.keys(categories).map(name => categories[name]);
-      const maxTitleLen = Math.max(...categoryData.map(({title}) => title.length));
+    await printer.write(report, printer.OutputMode.json, logFile);
+  }
 
-      console.log('\nAudit scores:');
-      categoryData.forEach(({title, score}) => {
-        const paddedTitle = `${title}:`.padEnd(maxTitleLen + 1);
-        const paddedScore = (score * 100).toFixed(0).padStart(3);
-        console.log(`  - ${paddedTitle} ${paddedScore} / 100`);
-      });
-    }).
-    then(() => categories.pwa.score * 100);
+  const categoryData = Object.keys(categories).map(name => categories[name]);
+  const maxTitleLen = Math.max(...categoryData.map(({title}) => title.length));
+
+  console.log(`\nLighthouse version: ${lhVersion}`);
+
+  console.log('\nAudit scores:');
+  categoryData.forEach(({title, score}) => {
+    const paddedTitle = `${title}:`.padEnd(maxTitleLen + 1);
+    const paddedScore = (score * 100).toFixed(0).padStart(3);
+    console.log(`  - ${paddedTitle} ${paddedScore} / 100`);
+  });
+
+  return categories.pwa.score * 100;
 }
 
 function skipHttpsAudits(config) {
   console.info(`Skipping HTTPS-related audits (${SKIPPED_HTTPS_AUDITS.join(', ')})...`);
-  config.settings.skipAudits = SKIPPED_HTTPS_AUDITS;
+  const settings = config.settings || (config.settings = {});
+  settings.skipAudits = SKIPPED_HTTPS_AUDITS;
 }

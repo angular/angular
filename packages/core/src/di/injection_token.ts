@@ -8,14 +8,14 @@
 
 import {Type} from '../interface/type';
 
-import {defineInjectable} from './interface/defs';
+import {ɵɵdefineInjectable} from './interface/defs';
 
 /**
  * Creates a token that can be used in a DI Provider.
  *
  * Use an `InjectionToken` whenever the type you are injecting is not reified (does not have a
  * runtime representation) such as when injecting an interface, callable type, array or
- * parametrized type.
+ * parameterized type.
  *
  * `InjectionToken` is parameterized on `T` which is the type of object which will be returned by
  * the `Injector`. This provides additional level of type safety.
@@ -67,7 +67,7 @@ export class InjectionToken<T> {
       // We are using it to assign `-1` which is used to identify `Injector`.
       (this as any).__NG_ELEMENT_ID__ = options;
     } else if (options !== undefined) {
-      this.ngInjectableDef = defineInjectable({
+      this.ngInjectableDef = ɵɵdefineInjectable({
         providedIn: options.providedIn || 'root',
         factory: options.factory,
       });

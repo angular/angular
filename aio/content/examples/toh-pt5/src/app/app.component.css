@@ -1,7 +1,6 @@
 /* AppComponent에 적용되는 CSS 스타일 */
 h1 {
   font-size: 1.2em;
-  color: #999;
   margin-bottom: 0;
 }
 h2 {
@@ -18,7 +17,7 @@ nav a {
   border-radius: 4px;
 }
 nav a:visited, a:link {
-  color: #607d8b;
+  color: #334953;
 }
 nav a:hover {
   color: #039be5;

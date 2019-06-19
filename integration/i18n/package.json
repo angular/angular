@@ -23,7 +23,7 @@
     "protractor": "file:../../node_modules/protractor"
   },
   "scripts": {
-    "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
+    "postinstall": "webdriver-manager update --gecko false --standalone false $CI_CHROMEDRIVER_VERSION_ARG",
     "closure": "java -jar node_modules/google-closure-compiler/compiler.jar --flagfile closure.conf",
     "test": "ngc && yarn run closure && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first && npm run test-locale-folder",
     "test-locale-folder": "node test-locale-folder.js",

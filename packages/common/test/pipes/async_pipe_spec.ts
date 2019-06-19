@@ -82,6 +82,18 @@ import {SpyChangeDetectorRef} from '../spies';
                async.done();
              }, 10);
            }));
+
+        it('should return unwrapped value for unchanged NaN', () => {
+          const emitter = new EventEmitter<any>();
+          emitter.emit(null);
+          pipe.transform(emitter);
+          emitter.next(NaN);
+          const firstResult = pipe.transform(emitter);
+          const secondResult = pipe.transform(emitter);
+          expect(firstResult instanceof WrappedValue).toBe(true);
+          expect((firstResult as WrappedValue).wrapped).toBeNaN();
+          expect(secondResult).toBeNaN();
+        });
       });
 
       describe('ngOnDestroy', () => {

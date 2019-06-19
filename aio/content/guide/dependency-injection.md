@@ -1,11 +1,11 @@
 <!--
-# Dependency Injection in Angular 
+# Dependency Injection in Angular
 -->
 # Angular의 의존성 주입
 
 <!--
 Dependency injection (DI), is an important application design pattern.
-Angular has its own DI framework, which is typically 
+Angular has its own DI framework, which is typically
 used in the design of Angular applications to increase their efficiency and modularity.
 -->
 의존성 주입(Dependency injection, DI)은 애플리케이션 디자인 패턴 중에서도 아주 중요한 패턴입니다.
@@ -13,7 +13,7 @@ Angular는 독자적인 의존성 주입 시스템을 제공하고 있기 때문
 
 <!--
 Dependencies are services or objects that a class needs to perform its function.
-DI is a coding pattern in which a class asks for dependencies from external sources rather than creating them itself. 
+DI is a coding pattern in which a class asks for dependencies from external sources rather than creating them itself.
 -->
 의존성(dependencies)은 어떤 클래스가 동작하기 위해 필요한 서비스나 객체를 의미합니다.
 그리고 의존성 주입 패턴은 이 의존성을 직접 생성하지 않고 외부 어딘가에서 받아오도록 요청하는 패턴입니다.
@@ -94,7 +94,7 @@ The DI framework lets you supply data to a component from an injectable _service
 Having multiple classes in the same file can be confusing. We generally recommend that you define components and services in separate files.
 
 If you do combine a component and service in the same file,
-it is important to define the service first, and then the component. If you define the component before the service, you get a run-time null reference error. 
+it is important to define the service first, and then the component. If you define the component before the service, you get a run-time null reference error.
 
 It is possible to define the component first with the help of the `forwardRef()` method as explained in this [blog post](http://blog.thoughtram.io/angular/2015/09/03/forward-references-in-angular-2.html).
 
@@ -155,27 +155,27 @@ Angular 서비스를 정의하는 코드에서 `@Injectable()`이 가장 중요�
 <!--
 The class we have created provides a service. The `@Injectable()` decorator marks it as a service
 that can be injected, but Angular can't actually inject it anywhere until you configure
-an Angular [dependency injector](guide/glossary#injector) with a [provider](guide/glossary#provider) of that service. 
+an Angular [dependency injector](guide/glossary#injector) with a [provider](guide/glossary#provider) of that service.
 -->
 이렇게 만든 클래스는 Angular가 서비스로 인식하고 의존성으로 주입할 수 있도록 `@Injectable()` 데코레이터를 사용해서 [인젝터](guide/glossary#injector)에 [프로바이더](guide/glossary#provider)로 등록해야 합니다.
 
 <!--
-The injector is responsible for creating service instances and injecting them into classes like `HeroListComponent`.  
+The injector is responsible for creating service instances and injecting them into classes like `HeroListComponent`.
 You rarely create an Angular injector yourself. Angular creates injectors for you as it executes the app, starting with the _root injector_ that it creates during the [bootstrap process](guide/bootstrapping).
 -->
 서비스의 인스턴스를 생성하고 `HeroListComponent`와 같은 클래스에 주입하는 것은 인젝터의 역할입니다.
 Angular 애플리케이션을 개발하면서 인젝터를 직접 생성해야 하는 일은 거의 없습니다. 인젝터는 애플리케이션이 [부트스트랩](guide/bootstrapping)되는 과정에 _최상위 인젝터_ 부터 트리를 따라가면서 Angular가 생성합니다.
 
 <!--
-A provider tells an injector _how to create the service_. 
-You must configure an injector with a provider before that injector can create a service (or provide any other kind of dependency). 
+A provider tells an injector _how to create the service_.
+You must configure an injector with a provider before that injector can create a service (or provide any other kind of dependency).
 -->
 인젝터는 프로바이더로 등록된 방법으로 서비스의 인스턴스를 생성합니다.
 그래서 서비스나 다른 형태의 의존성 객체를 의존성으로 주입하려면 먼저 인젝터에 프로바이더를 등록해야 합니다.
 
 <!--
 A provider can be the service class itself, so that the injector can use `new` to create an instance.
-You might also define more than one class to provide the same service in different ways, 
+You might also define more than one class to provide the same service in different ways,
 and configure different injectors with different providers.
 -->
 프로바이더에 서비스 클래스를 그대로 등록하면 인젝터는 `new` 키워드를 사용해서 인스턴스를 생성합니다.
@@ -185,10 +185,10 @@ and configure different injectors with different providers.
 
 <!--
 Injectors are inherited, which means that if a given injector can't resolve a dependency,
-it asks the parent injector to resolve it.  
-A component can get services from its own injector, 
-from the injectors of its component ancestors, 
-from the injector of its parent NgModule, or from the `root` injector. 
+it asks the parent injector to resolve it.
+A component can get services from its own injector,
+from the injectors of its component ancestors,
+from the injector of its parent NgModule, or from the `root` injector.
 
 * Learn more about the [different kinds of providers](guide/dependency-injection-providers).
 
@@ -210,7 +210,7 @@ You can configure injectors with providers at different levels of your app, by s
 
 * In the `@NgModule()` decorator for an NgModule.
 
-* In the `@Component()` decorator for a component. 
+* In the `@Component()` decorator for a component.
 
 The `@Injectable()` decorator has the `providedIn` metadata option, where you can specify the provider of the decorated service class with the `root` injector, or with the injector for a specific NgModule.
 
@@ -241,7 +241,7 @@ Learn more about [where to configure providers](guide/hierarchical-dependency-in
 
 </div>
 
-{@a injector-config} 
+{@a injector-config}
 {@a bootstrap}
 
 <!--
@@ -250,7 +250,7 @@ Learn more about [where to configure providers](guide/hierarchical-dependency-in
 ## 서비스 주입하기
 
 <!--
-In order for `HeroListComponent` to get heroes from `HeroService`, it needs to ask for `HeroService` to be injected, rather than creating it's own `HeroService` instance with `new`.
+In order for `HeroListComponent` to get heroes from `HeroService`, it needs to ask for `HeroService` to be injected, rather than creating its own `HeroService` instance with `new`.
 
 You can tell Angular to inject a dependency in a component's constructor by specifying a **constructor parameter with the dependency type**. Here's the `HeroListComponent` constructor, asking for the `HeroService` to be injected.
 -->
@@ -278,7 +278,7 @@ Here's the revised component, making use of the injected service, side-by-side w
 </code-tabs>
 
 <!--
-`HeroService` must provided in some parent injector. The code in `HeroListComponent` doesn't depend on where `HeroService` comes from.
+`HeroService` must be provided in some parent injector. The code in `HeroListComponent` doesn't depend on where `HeroService` comes from.
 If you decided to provide `HeroService` in `AppModule`, `HeroListComponent` wouldn't change.
 -->
 이 때 `HeroService`는 부모 인젝터 중 어딘가에 반드시 등록되어야 하지만, `HeroListComponent`의 입장에서 `HeroService`가 어디에 등록되어 있는지는 중요하지 않습니다.
@@ -293,7 +293,7 @@ If you decided to provide `HeroService` in `AppModule`, `HeroListComponent` woul
 ### 인젝터 계층과 서비스 인스턴스
 
 <!--
-Services are singletons _within the scope of an injector_. That is, there is at most one instance of a service in a given injector. 
+Services are singletons _within the scope of an injector_. That is, there is at most one instance of a service in a given injector.
 -->
 서비스는 _인젝터의 범위 안에서_ 싱글턴으로 존재합니다. 그래서 인젝터에 존재하는 서비스의 인스턴스는 언제나 하나씩입니다.
 
@@ -303,26 +303,25 @@ There is only one root injector for an app. Providing `UserService` at the `root
 애플리케이션에 존재하는 최상위 인젝터는 언제나 하나입니다. 그래서 `root`나 `AppModule` 계층에 `UserService`를 등록한다는 것은 모두 서비스 프로바이더를 최상위 인젝터에 등록한다는 것을 의미합니다. 그러면 애플리케이션 전체 범위에서 `UserService` 인스턴스가 단 하나만 존재하며, _자식 인젝터_ 에 다시 프로바이더를 등록하지 않는 한 모두 같은 `UserService`를 주입받게 됩니다.
 
 <!--
-Angular DI has a [hierarchical injection system](guide/hierarchical-dependency-injection), which means that nested injectors can create their own service instances. 
+Angular DI has a [hierarchical injection system](guide/hierarchical-dependency-injection), which means that nested injectors can create their own service instances.
 Angular regularly creates nested injectors. Whenever Angular creates a new instance of a component that has `providers` specified in `@Component()`, it also creates a new _child injector_ for that instance.
-Similarly, when a new NgModule is lazy-loaded at run time, Angular can create an injector for it with its own providers. 
+Similarly, when a new NgModule is lazy-loaded at run time, Angular can create an injector for it with its own providers.
 -->
 Angular가 제공하는 의존성 주입 시스템은 [인젝터를 계층 구조로 구성](guide/hierarchical-dependency-injection)하기 때문에 자식 인젝터에서 서비스 인스턴스를 별개로 생성할 수도 있습니다.
 Angular는 중첩된 인젝터를 빈번하게 생성합니다. 컴포넌트의 인스턴스를 새로 만들 때마다 `@Component()` 데코레이터에 `providers`가 지정되어 있으면 이 컴포넌트 인스턴스에 새로운 _자식 인젝터_ 를 생성하며, 지연로딩되는 NgModule에 새로운 인젝터를 생성하기도 합니다.
 
 <!--
-Child modules and component injectors are independent of each other, and create their own separate instances of the provided services. When Angular destroys an NgModule or component instance, it also destroys that injector and that injector's service instances. 
+Child modules and component injectors are independent of each other, and create their own separate instances of the provided services. When Angular destroys an NgModule or component instance, it also destroys that injector and that injector's service instances.
 -->
 자식 모듈과 컴포넌트에 생성된 인젝터는 모두 독립적이기 때문에 서비스 인스턴스도 인젝터마다 따로 생성됩니다. 이렇게 생성된 서비스 인스턴스는 해당 NgModule이나 해당 컴포넌트가 종료되면서 함께 종료됩니다.
 
 <!--
 Thanks to [injector inheritance](guide/hierarchical-dependency-injection),
 you can still inject application-wide services into these components.
-A component's injector is a child of its parent component's injector,
-and a descendent of its parent's parent's injector, and so on all the way back to the application's _root_ injector. Angular can inject a service provided by any injector in that lineage.
+A component's injector is a child of its parent component's injector, and inherits from all ancestor injectors all the way back to the application's _root_ injector. Angular can inject a service provided by any injector in that lineage.
 -->
 [인젝터는 계층 구조로 구성](guide/hierarchical-dependency-injection)되기 때문에 애플리케이션 계층에 등록한 서비스도 컴포넌트에 주입할 수 있습니다.
-왜냐하면 컴포넌트의 인젝터는 부모 컴포넌트 인젝터의 자식 인젝터인데, 이 관계는 애플리케이션의 _root_ 인젝터에 도달할 때까지 동일하기 때문입니다. 부모 계층의 인젝터에 등록된 서비스는 자식 계층에 자유롭게 주입될 수 있습니다.
+왜냐하면 컴포넌트의 인젝터는 부모 컴포넌트 인젝터의 자식 인젝터인데, 이 관계는 애플리케이션의 _최상위_ 인젝터에 도달할 때까지 동일하기 때문입니다. 부모 계층의 인젝터에 등록된 서비스는 자식 계층에 자유롭게 주입될 수 있습니다.
 
 <!--
 For example, Angular can inject `HeroListComponent` with both the `HeroService` provided in `HeroComponent` and the `UserService` provided in `AppModule`.
@@ -363,12 +362,12 @@ Learn more in the [Testing](guide/testing) guide.
 {@a service-needs-service}
 
 <!--
-## Services that need other services 
+## Services that need other services
 -->
 ## 서비스에 다른 서비스 주입하기
 
 <!--
-Service can have their own dependencies. `HeroService` is very simple and doesn't have any dependencies of its own. Suppose, however, that you want it to report its activities through a logging service. You can apply the same *constructor injection* pattern,
+Services can have their own dependencies. `HeroService` is very simple and doesn't have any dependencies of its own. Suppose, however, that you want it to report its activities through a logging service. You can apply the same *constructor injection* pattern,
 adding a constructor that takes a `Logger` parameter.
 
 Here is the revised `HeroService` that injects `Logger`, side by side with the previous service for comparison.
@@ -403,7 +402,7 @@ Notice that the `Logger` service also has the `@Injectable()` decorator, even th
 
 <!--
 When Angular creates a class whose constructor has parameters, it looks for type and injection metadata about those parameters so that it can inject the correct service.
-If Angular can't find that parameter information, it throws an error. 
+If Angular can't find that parameter information, it throws an error.
 Angular can only find the parameter information _if the class has a decorator of some kind_.
 The `@Injectable()` decorator is the standard decorator for service classes.
 -->
@@ -416,7 +415,7 @@ Angular는 의존성 객체를 찾을 때 _데코레이터가 사용된 클래�
 
 <!--
  The decorator requirement is imposed by TypeScript. TypeScript normally discards parameter type information when it [transpiles](guide/glossary#transpile) the code to JavaScript. TypeScript preserves this information if the class has a decorator and the `emitDecoratorMetadata` compiler option is set `true` in TypeScript's `tsconfig.json` configuration file. The CLI configures `tsconfig.json` with `emitDecoratorMetadata: true`.
- 
+
  This means you're responsible for putting `@Injectable()` on your service classes.
 -->
  데코레이터는 TypeScript 문법을 활용한 것입니다. TypeScript에서 타입을 지정하는 문법은 JavaScript로 [트랜스파일(transpile)](guide/glossary#transpile)되면서 모두 사라지지만, `tsconfig.json` 파일에서 `emitDecoratorMetadata` 컴파일 옵션을 `true`로 지정하면 이 정보를 다른 형태로 저장할 수 있습니다. 그래서 Angular CLI로 생성된 기본 `tsconfig.json` 파일에는 `emitDecoratorMetadata: true`가 지정되어 있습니다.
@@ -463,7 +462,7 @@ Angular knows to inject the service associated with that `HeroService` class tok
 </code-example>
 
 <!--
-Many dependency values are provided by classes, but not all. The expanded *provide* object lets you associate different kinds of providers with a DI token. 
+Many dependency values are provided by classes, but not all. The expanded *provide* object lets you associate different kinds of providers with a DI token.
 
 * Learn more about [different kinds of providers](guide/dependency-injection-providers).
 -->
@@ -482,7 +481,7 @@ Many dependency values are provided by classes, but not all. The expanded *provi
 `HeroService` *requires* a logger, but what if it could get by without
 one?
 
-When a component or service declares a dependency, the class constructor takes that dependency as a parameter. 
+When a component or service declares a dependency, the class constructor takes that dependency as a parameter.
 You can tell Angular that the dependency is optional by annotating the
 constructor parameter with `@Optional()`.
 -->

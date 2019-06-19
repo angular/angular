@@ -35,13 +35,13 @@ import {serializeNodes} from './util/util';
 
     it('should support expansion', () => {
       const html = '{number, plural, =0 {none} =1 {one} other {many}}';
-      const ast = parser.parse(html, 'url', true);
+      const ast = parser.parse(html, 'url', {tokenizeExpansionForms: true});
       expect(serializeNodes(ast.rootNodes)).toEqual([html]);
     });
 
     it('should support comment', () => {
       const html = '<!--comment-->';
-      const ast = parser.parse(html, 'url', true);
+      const ast = parser.parse(html, 'url', {tokenizeExpansionForms: true});
       expect(serializeNodes(ast.rootNodes)).toEqual([html]);
     });
 
@@ -51,9 +51,9 @@ import {serializeNodes} from './util/util';
         <!--comment-->
         <p expansion="true">
           {number, plural, =0 {{sex, select, other {<b>?</b>}}}}
-        </p>                            
+        </p>
       </div>`;
-      const ast = parser.parse(html, 'url', true);
+      const ast = parser.parse(html, 'url', {tokenizeExpansionForms: true});
       expect(serializeNodes(ast.rootNodes)).toEqual([html]);
     });
   });

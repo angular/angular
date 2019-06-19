@@ -1,9 +1,8 @@
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//packages/bazel:__subpackages__"])
 
 filegroup(
     name = "package_assets",
-    srcs = ["modify_tsconfig.js"],
-    visibility = ["//packages/bazel:__subpackages__"],
+    srcs = glob(["*"]),
 )
 
 # For generating skydoc
@@ -13,13 +12,24 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 nodejs_binary(
     name = "rollup_with_build_optimizer",
-    data = ["@angular_cli//packages/angular_devkit/build_optimizer:lib"],
-    # Since our rule extends the one in rules_nodejs, we use the same runtime
-    # dependency @build_bazel_rules_nodejs_rollup_deps. We don't need any
-    # additional npm dependencies when we run rollup or uglify.
-    entry_point = "build_bazel_rules_nodejs_rollup_deps/node_modules/rollup/bin/rollup",
+    data = [
+        "@npm//@angular-devkit/build-optimizer",
+        "@npm//is-builtin-module",
+        "@npm//rollup",
+        "@npm//rollup-plugin-amd",
+        "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-json",
+        "@npm//rollup-plugin-node-resolve",
+        "@npm//rollup-plugin-sourcemaps",
+    ],
+    entry_point = "npm/node_modules/rollup/bin/rollup",
     install_source_map_support = False,
-    node_modules = "@build_bazel_rules_nodejs_rollup_deps//:node_modules",
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "empty_node_modules",
+    srcs = [],
 )
 
 nodejs_binary(
@@ -27,4 +37,6 @@ nodejs_binary(
     data = ["modify_tsconfig.js"],
     entry_point = "angular/packages/bazel/src/modify_tsconfig.js",
     install_source_map_support = False,
+    node_modules = ":empty_node_modules",
+    visibility = ["//visibility:public"],
 )

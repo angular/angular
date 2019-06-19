@@ -197,12 +197,8 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
       <!--
       Respond after Angular checks the component's views and child views / the view that a directive is in.
-
-      Called after the `ngAfterViewInit` and every subsequent `ngAfterContentChecked()`.
       -->
       Angular가 컴포넌트 뷰와 자식 컴포넌트 뷰, 뷰 안에 있는 디렉티브가 준비되었는지 검사한 후에 실행됩니다.
-
-      `ngAfterViewInit()`이 실행된 직후에 실행되며, `ngAfterContentChecked()`가 실행될 때마다 실행됩니다.
 
     </td>
   </tr>

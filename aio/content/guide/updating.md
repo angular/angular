@@ -1,7 +1,7 @@
 <!--
-# Updating your Angular projects
+# Keeping your Angular Projects Up-to-Date
 -->
-# Angular 프로젝트 업데이트하기
+# Angular 프로젝트를 최신 버전으로 유지하기
 
 <!--
 Just like Web and the entire web ecosystem, Angular is continuously improving. Angular balances continuous improvement with a strong focus on stability and making updates easy. Keeping your Angular app up-to-date enables you to take advantage of leading-edge new features, as well as optimizations and bug fixes. 
@@ -98,6 +98,8 @@ To make updating easy, we provide complete instructions in the interactive [Angu
 The Angular Update Guide provides customized update instructions, based on the current and target versions that you specify. It includes basic and advanced update paths, to match the complexity of your applications. It also includes troubleshooting information and any recommended manual changes to help you get the most out of the new release. 
 
 For simple updates, the CLI command [`ng update`](cli/update) is all you need. Without additional arguments, `ng update` lists the updates that are available to you and provides recommended steps to update your application to the most current version. 
+
+[Angular Versioning and Releases](guide/releases#versioning "Angular Release Practices, Versioning") describes the level of change that you can expect based a release's version number. It also describes supported update paths. 
 -->
 Angular는 라이브러리 업데이트를 쉽게 할 수 있도록 [Angular Update Guide](https://update.angular.io/ "Angular Update Guide") 툴을 제공합니다.
 
@@ -107,6 +109,9 @@ Angular는 라이브러리 업데이트를 쉽게 할 수 있도록 [Angular Upd
 
 간단하게 생각하면 Angular 라이브러리의 버전을 올리는 것은 Angular CLI 명령 [`ng update`](cli/update) 하나면 됩니다.
 이 명령을 옵션없이 실행하면 현재 사용하는 Angular 라이브러리 버전을 최신버전으로 올릴때 해야하는 과정을 안내합니다.
+
+릴리즈 버전이 바뀌면서 변경되는 코드의 양은 [Angular의 버전 정책과 릴리즈](guide/releases#versioning "Angular Release Practices, Versioning")를 통해 예상해볼 수 있습니다.
+이 문서는 업데이트 방법에 대해서도 안내합니다.
 
 {@a resources}
 <!--

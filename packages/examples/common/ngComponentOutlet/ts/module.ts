@@ -6,22 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
-import {Compiler, Component, Injectable, Injector, NgModule, NgModuleFactory, ReflectiveInjector} from '@angular/core';
+import {Component, Injectable, Injector, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-
 
 
 // #docregion SimpleExample
 @Component({selector: 'hello-world', template: 'Hello World!'})
-class HelloWorld {
+export class HelloWorld {
 }
 
 @Component({
   selector: 'ng-component-outlet-simple-example',
   template: `<ng-container *ngComponentOutlet="HelloWorld"></ng-container>`
 })
-class NgTemplateOutletSimpleExample {
+export class NgTemplateOutletSimpleExample {
   // This field is necessary to expose HelloWorld to the template.
   HelloWorld = HelloWorld;
 }
@@ -29,7 +27,7 @@ class NgTemplateOutletSimpleExample {
 
 // #docregion CompleteExample
 @Injectable()
-class Greeter {
+export class Greeter {
   suffix = '!';
 }
 
@@ -37,7 +35,7 @@ class Greeter {
   selector: 'complete-component',
   template: `Complete: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`
 })
-class CompleteComponent {
+export class CompleteComponent {
   constructor(public greeter: Greeter) {}
 }
 
@@ -48,7 +46,7 @@ class CompleteComponent {
                                       injector: myInjector; 
                                       content: myContent"></ng-container>`
 })
-class NgTemplateOutletCompleteExample {
+export class NgTemplateOutletCompleteExample {
   // This field is necessary to expose CompleteComponent to the template.
   CompleteComponent = CompleteComponent;
   myInjector: Injector;
@@ -56,28 +54,9 @@ class NgTemplateOutletCompleteExample {
   myContent = [[document.createTextNode('Ahoj')], [document.createTextNode('Svet')]];
 
   constructor(injector: Injector) {
-    this.myInjector = ReflectiveInjector.resolveAndCreate([Greeter], injector);
+    this.myInjector =
+        Injector.create({providers: [{provide: Greeter, deps: []}], parent: injector});
   }
-}
-// #enddocregion
-
-// #docregion NgModuleFactoryExample
-@Component({selector: 'other-module-component', template: `Other Module Component!`})
-class OtherModuleComponent {
-}
-
-@Component({
-  selector: 'ng-component-outlet-other-module-example',
-  template: `
-    <ng-container *ngComponentOutlet="OtherModuleComponent;
-                                      ngModuleFactory: myModule;"></ng-container>`
-})
-class NgTemplateOutletOtherModuleExample {
-  // This field is necessary to expose OtherModuleComponent to the template.
-  OtherModuleComponent = OtherModuleComponent;
-  myModule: NgModuleFactory<any>;
-
-  constructor(compiler: Compiler) { this.myModule = compiler.compileModuleSync(OtherModule); }
 }
 // #enddocregion
 
@@ -86,29 +65,18 @@ class NgTemplateOutletOtherModuleExample {
   selector: 'example-app',
   template: `<ng-component-outlet-simple-example></ng-component-outlet-simple-example>
              <hr/>
-             <ng-component-outlet-complete-example></ng-component-outlet-complete-example>
-             <hr/>
-             <ng-component-outlet-other-module-example></ng-component-outlet-other-module-example>`
+             <ng-component-outlet-complete-example></ng-component-outlet-complete-example>`
 })
-class ExampleApp {
+export class AppComponent {
 }
 
 @NgModule({
   imports: [BrowserModule],
   declarations: [
-    ExampleApp, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample,
-    NgTemplateOutletOtherModuleExample, HelloWorld, CompleteComponent
+    AppComponent, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample, HelloWorld,
+    CompleteComponent
   ],
-  entryComponents: [HelloWorld, CompleteComponent],
-  bootstrap: [ExampleApp]
+  entryComponents: [HelloWorld, CompleteComponent]
 })
 export class AppModule {
-}
-
-@NgModule({
-  imports: [CommonModule],
-  declarations: [OtherModuleComponent],
-  entryComponents: [OtherModuleComponent]
-})
-export class OtherModule {
 }

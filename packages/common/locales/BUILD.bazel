@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "npm_package", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "locales",
@@ -8,13 +8,16 @@ ts_library(
         ["**/*.ts"],
         exclude = ["closure-locale.ts"],
     ),
-    module_name = "@angular/common/locales",
 )
 
 npm_package(
     name = "package",
     srcs = ["package.json"],
     replacements = {
+
+        # Workaround for `.d.ts`` containing `/// <amd-module .../>`
+        # which are generated in TypeScript v2.9, but not before.
+        "/// <amd-module name=.*/>": "",
         # Workaround for https://github.com/angular/angular/issues/23217
         # Webpack will detect that the UMD outputs from TypeScript pass the
         # `require` function into the module, and cannot accurately track
@@ -22,10 +25,6 @@ npm_package(
         # We don't actually import anything in the locale code so we can
         # null out the require reference passed into the module.
         "factory\(require, exports\)": "factory(null, exports)",
-
-        # Workaround for `.d.ts`` containing `/// <amd-module .../>`
-        # which are generated in TypeScript v2.9, but not before.
-        "/// <amd-module name=.*/>": "",
     },
     deps = [":locales"],
 )

@@ -15,7 +15,7 @@ describe('providers App', () => {
 
   it('should display message saying app works', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Lazy loading feature modules');
+    expect(page.getTitleText()).toEqual('Lazy loading feature modules');
   });
 
   describe('Customers list', function() {

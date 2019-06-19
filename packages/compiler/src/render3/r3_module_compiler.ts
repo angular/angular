@@ -57,28 +57,136 @@ export interface R3NgModuleMetadata {
    * does not allow components to be tree-shaken, but is useful for JIT mode.
    */
   emitInline: boolean;
+
+  /**
+   * Whether to generate closure wrappers for bootstrap, declarations, imports, and exports.
+   */
+  containsForwardDecls: boolean;
+
+  /**
+   * The set of schemas that declare elements to be allowed in the NgModule.
+   */
+  schemas: R3Reference[]|null;
+
+  /** Unique ID or expression representing the unique ID of an NgModule. */
+  id: o.Expression|null;
 }
 
 /**
  * Construct an `R3NgModuleDef` for the given `R3NgModuleMetadata`.
  */
 export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
-  const {type: moduleType, bootstrap, declarations, imports, exports} = meta;
-  const expression = o.importExpr(R3.defineNgModule).callFn([mapToMapExpression({
+  const {
     type: moduleType,
-    bootstrap: o.literalArr(bootstrap.map(ref => ref.value)),
-    declarations: o.literalArr(declarations.map(ref => ref.value)),
-    imports: o.literalArr(imports.map(ref => ref.value)),
-    exports: o.literalArr(exports.map(ref => ref.value)),
-  })]);
+    bootstrap,
+    declarations,
+    imports,
+    exports,
+    schemas,
+    containsForwardDecls,
+    emitInline,
+    id
+  } = meta;
 
+  const additionalStatements: o.Statement[] = [];
+  const definitionMap = {
+    type: moduleType
+  } as{
+    type: o.Expression,
+    bootstrap: o.Expression,
+    declarations: o.Expression,
+    imports: o.Expression,
+    exports: o.Expression,
+    schemas: o.LiteralArrayExpr,
+    id: o.Expression
+  };
+
+  // Only generate the keys in the metadata if the arrays have values.
+  if (bootstrap.length) {
+    definitionMap.bootstrap = refsToArray(bootstrap, containsForwardDecls);
+  }
+
+  // If requested to emit scope information inline, pass the declarations, imports and exports to
+  // the `ɵɵdefineNgModule` call. The JIT compilation uses this.
+  if (emitInline) {
+    if (declarations.length) {
+      definitionMap.declarations = refsToArray(declarations, containsForwardDecls);
+    }
+
+    if (imports.length) {
+      definitionMap.imports = refsToArray(imports, containsForwardDecls);
+    }
+
+    if (exports.length) {
+      definitionMap.exports = refsToArray(exports, containsForwardDecls);
+    }
+  }
+
+  // If not emitting inline, the scope information is not passed into `ɵɵdefineNgModule` as it would
+  // prevent tree-shaking of the declarations, imports and exports references.
+  else {
+    const setNgModuleScopeCall = generateSetNgModuleScopeCall(meta);
+    if (setNgModuleScopeCall !== null) {
+      additionalStatements.push(setNgModuleScopeCall);
+    }
+  }
+
+  if (schemas && schemas.length) {
+    definitionMap.schemas = o.literalArr(schemas.map(ref => ref.value));
+  }
+
+  if (id) {
+    definitionMap.id = id;
+  }
+
+  const expression = o.importExpr(R3.defineNgModule).callFn([mapToMapExpression(definitionMap)]);
   const type = new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
     new o.ExpressionType(moduleType), tupleTypeOf(declarations), tupleTypeOf(imports),
     tupleTypeOf(exports)
   ]));
 
-  const additionalStatements: o.Statement[] = [];
+
   return {expression, type, additionalStatements};
+}
+
+/**
+ * Generates a function call to `ɵɵsetNgModuleScope` with all necessary information so that the
+ * transitive module scope can be computed during runtime in JIT mode. This call is marked pure
+ * such that the references to declarations, imports and exports may be elided causing these
+ * symbols to become tree-shakeable.
+ */
+function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|null {
+  const {type: moduleType, declarations, imports, exports, containsForwardDecls} = meta;
+
+  const scopeMap = {} as{
+    declarations: o.Expression,
+    imports: o.Expression,
+    exports: o.Expression,
+  };
+
+  if (declarations.length) {
+    scopeMap.declarations = refsToArray(declarations, containsForwardDecls);
+  }
+
+  if (imports.length) {
+    scopeMap.imports = refsToArray(imports, containsForwardDecls);
+  }
+
+  if (exports.length) {
+    scopeMap.exports = refsToArray(exports, containsForwardDecls);
+  }
+
+  if (Object.keys(scopeMap).length === 0) {
+    return null;
+  }
+
+  const fnCall = new o.InvokeFunctionExpr(
+      /* fn */ o.importExpr(R3.setNgModuleScope),
+      /* args */[moduleType, mapToMapExpression(scopeMap)],
+      /* type */ undefined,
+      /* sourceSpan */ undefined,
+      /* pure */ true);
+  return fnCall.toStmt();
 }
 
 export interface R3InjectorDef {
@@ -91,8 +199,8 @@ export interface R3InjectorMetadata {
   name: string;
   type: o.Expression;
   deps: R3DependencyMetadata[]|null;
-  providers: o.Expression;
-  imports: o.Expression;
+  providers: o.Expression|null;
+  imports: o.Expression[];
 }
 
 export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
@@ -102,11 +210,19 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
     deps: meta.deps,
     injectFn: R3.inject,
   });
-  const expression = o.importExpr(R3.defineInjector).callFn([mapToMapExpression({
+  const definitionMap = {
     factory: result.factory,
-    providers: meta.providers,
-    imports: meta.imports,
-  })]);
+  } as{factory: o.Expression, providers: o.Expression, imports: o.Expression};
+
+  if (meta.providers !== null) {
+    definitionMap.providers = meta.providers;
+  }
+
+  if (meta.imports.length > 0) {
+    definitionMap.imports = o.literalArr(meta.imports);
+  }
+
+  const expression = o.importExpr(R3.defineInjector).callFn([mapToMapExpression(definitionMap)]);
   const type =
       new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type)]));
   return {expression, type, statements: result.statements};
@@ -151,4 +267,9 @@ function accessExportScope(module: o.Expression): o.Expression {
 function tupleTypeOf(exp: R3Reference[]): o.Type {
   const types = exp.map(ref => o.typeofExpr(ref.type));
   return exp.length > 0 ? o.expressionType(o.literalArr(types)) : o.NONE_TYPE;
+}
+
+function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean): o.Expression {
+  const values = o.literalArr(refs.map(ref => ref.value));
+  return shouldForwardDeclare ? o.fn([], [new o.ReturnStatement(values)]) : values;
 }

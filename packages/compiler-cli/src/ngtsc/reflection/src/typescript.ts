@@ -8,7 +8,8 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost} from './host';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost} from './host';
+import {typeToValue} from './type_to_value';
 
 /**
  * reflector.ts implements static reflection of declarations using the TypeScript `ts.TypeChecker`.
@@ -25,17 +26,17 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         .filter((dec): dec is Decorator => dec !== null);
   }
 
-  getMembersOfClass(declaration: ts.Declaration): ClassMember[] {
-    const clazz = castDeclarationToClassOrDie(declaration);
-    return clazz.members.map(member => this._reflectMember(member))
+  getMembersOfClass(clazz: ClassDeclaration): ClassMember[] {
+    const tsClazz = castDeclarationToClassOrDie(clazz);
+    return tsClazz.members.map(member => this._reflectMember(member))
         .filter((member): member is ClassMember => member !== null);
   }
 
-  getConstructorParameters(declaration: ts.Declaration): CtorParameter[]|null {
-    const clazz = castDeclarationToClassOrDie(declaration);
+  getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null {
+    const tsClazz = castDeclarationToClassOrDie(clazz);
 
     // First, find the constructor.
-    const ctor = clazz.members.find(ts.isConstructorDeclaration);
+    const ctor = tsClazz.members.find(ts.isConstructorDeclaration);
     if (ctor === undefined) {
       return null;
     }
@@ -48,7 +49,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
       // It may or may not be possible to write an expression that refers to the value side of the
       // type named for the parameter.
-      let typeValueExpr: ts.Expression|null = null;
+
       let originalTypeNode = node.type || null;
       let typeNode = originalTypeNode;
 
@@ -67,30 +68,91 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         }
       }
 
-      // It's not possible to get a value expression if the parameter doesn't even have a type.
-      if (typeNode) {
-        // It's only valid to convert a type reference to a value reference if the type actually has
-        // a value declaration associated with it.
-        let type: ts.Type|null = this.checker.getTypeFromTypeNode(typeNode);
-
-        if (type && type.symbol !== undefined && type.symbol.valueDeclaration !== undefined) {
-          // The type points to a valid value declaration. Rewrite the TypeReference into an
-          // Expression
-          // which references the value pointed to by the TypeReference, if possible.
-          typeValueExpr = typeNodeToValueExpr(typeNode);
-        }
-      }
+      const typeValueReference = typeToValue(typeNode, this.checker);
 
       return {
         name,
-        nameNode: node.name,
-        typeExpression: typeValueExpr,
+        nameNode: node.name, typeValueReference,
         typeNode: originalTypeNode, decorators,
       };
     });
   }
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {
+    return this.getDirectImportOfIdentifier(id) || this.getImportOfNamespacedIdentifier(id);
+  }
+
+  getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
+    // In TypeScript code, modules are only ts.SourceFiles. Throw if the node isn't a module.
+    if (!ts.isSourceFile(node)) {
+      throw new Error(`getDeclarationsOfModule() called on non-SourceFile in TS code`);
+    }
+    const map = new Map<string, Declaration>();
+
+    // Reflect the module to a Symbol, and use getExportsOfModule() to get a list of exported
+    // Symbols.
+    const symbol = this.checker.getSymbolAtLocation(node);
+    if (symbol === undefined) {
+      return null;
+    }
+    this.checker.getExportsOfModule(symbol).forEach(exportSymbol => {
+      // Map each exported Symbol to a Declaration and add it to the map.
+      const decl = this.getDeclarationOfSymbol(exportSymbol);
+      if (decl !== null) {
+        map.set(exportSymbol.name, decl);
+      }
+    });
+    return map;
+  }
+
+  isClass(node: ts.Node): node is ClassDeclaration {
+    // In TypeScript code, classes are ts.ClassDeclarations.
+    // (`name` can be undefined in unnamed default exports: `default export class { ... }`)
+    return ts.isClassDeclaration(node) && (node.name !== undefined) && ts.isIdentifier(node.name);
+  }
+
+  hasBaseClass(clazz: ClassDeclaration): boolean {
+    return ts.isClassDeclaration(clazz) && clazz.heritageClauses !== undefined &&
+        clazz.heritageClauses.some(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
+  }
+
+  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+    // Resolve the identifier to a Symbol, and return the declaration of that.
+    let symbol: ts.Symbol|undefined = this.checker.getSymbolAtLocation(id);
+    if (symbol === undefined) {
+      return null;
+    }
+    return this.getDeclarationOfSymbol(symbol);
+  }
+
+  getDefinitionOfFunction<T extends ts.FunctionDeclaration|ts.MethodDeclaration|
+                          ts.FunctionExpression>(node: T): FunctionDefinition<T> {
+    return {
+      node,
+      body: node.body !== undefined ? Array.from(node.body.statements) : null,
+      parameters: node.parameters.map(param => {
+        const name = parameterName(param.name);
+        const initializer = param.initializer || null;
+        return {name, node: param, initializer};
+      }),
+    };
+  }
+
+  getGenericArityOfClass(clazz: ClassDeclaration): number|null {
+    if (!ts.isClassDeclaration(clazz)) {
+      return null;
+    }
+    return clazz.typeParameters !== undefined ? clazz.typeParameters.length : 0;
+  }
+
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
+    return declaration.initializer || null;
+  }
+
+  getDtsDeclaration(_: ts.Declaration): ts.Declaration|null { return null; }
+
+
+  protected getDirectImportOfIdentifier(id: ts.Identifier): Import|null {
     const symbol = this.checker.getSymbolAtLocation(id);
 
     if (symbol === undefined || symbol.declarations === undefined ||
@@ -122,73 +184,56 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {from, name};
   }
 
-  getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
-    // In TypeScript code, modules are only ts.SourceFiles. Throw if the node isn't a module.
-    if (!ts.isSourceFile(node)) {
-      throw new Error(`getDeclarationsOfModule() called on non-SourceFile in TS code`);
-    }
-    const map = new Map<string, Declaration>();
-
-    // Reflect the module to a Symbol, and use getExportsOfModule() to get a list of exported
-    // Symbols.
-    const symbol = this.checker.getSymbolAtLocation(node);
-    if (symbol === undefined) {
+  /**
+   * Try to get the import info for this identifier as though it is a namespaced import.
+   * For example, if the identifier is the `Directive` part of a qualified type chain like:
+   *
+   * ```
+   * core.Directive
+   * ```
+   *
+   * then it might be that `core` is a namespace import such as:
+   *
+   * ```
+   * import * as core from 'tslib';
+   * ```
+   *
+   * @param id the TypeScript identifier to find the import info for.
+   * @returns The import info if this is a namespaced import or `null`.
+   */
+  protected getImportOfNamespacedIdentifier(id: ts.Identifier): Import|null {
+    if (!(ts.isQualifiedName(id.parent) && id.parent.right === id)) {
       return null;
     }
-    this.checker.getExportsOfModule(symbol).forEach(exportSymbol => {
-      // Map each exported Symbol to a Declaration and add it to the map.
-      const decl = this.getDeclarationOfSymbol(exportSymbol);
-      if (decl !== null) {
-        map.set(exportSymbol.name, decl);
-      }
-    });
-    return map;
-  }
-
-  isClass(node: ts.Node): node is ts.NamedDeclaration {
-    // In TypeScript code, classes are ts.ClassDeclarations.
-    return ts.isClassDeclaration(node);
-  }
-
-  hasBaseClass(node: ts.Declaration): boolean {
-    return ts.isClassDeclaration(node) && node.heritageClauses !== undefined &&
-        node.heritageClauses.some(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
-  }
-
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    // Resolve the identifier to a Symbol, and return the declaration of that.
-    let symbol: ts.Symbol|undefined = this.checker.getSymbolAtLocation(id);
-    if (symbol === undefined) {
+    const namespaceIdentifier = getQualifiedNameRoot(id.parent);
+    if (!namespaceIdentifier) {
       return null;
     }
-    return this.getDeclarationOfSymbol(symbol);
-  }
+    const namespaceSymbol = this.checker.getSymbolAtLocation(namespaceIdentifier);
+    if (!namespaceSymbol) {
+      return null;
+    }
+    const declaration =
+        namespaceSymbol.declarations.length === 1 ? namespaceSymbol.declarations[0] : null;
+    if (!declaration) {
+      return null;
+    }
+    const namespaceDeclaration = ts.isNamespaceImport(declaration) ? declaration : null;
+    if (!namespaceDeclaration) {
+      return null;
+    }
 
-  getDefinitionOfFunction<T extends ts.FunctionDeclaration|ts.MethodDeclaration|
-                          ts.FunctionExpression>(node: T): FunctionDefinition<T> {
+    const importDeclaration = namespaceDeclaration.parent.parent;
+    if (!ts.isStringLiteral(importDeclaration.moduleSpecifier)) {
+      // Should not happen as this would be invalid TypesScript
+      return null;
+    }
+
     return {
-      node,
-      body: node.body !== undefined ? Array.from(node.body.statements) : null,
-      parameters: node.parameters.map(param => {
-        const name = parameterName(param.name);
-        const initializer = param.initializer || null;
-        return {name, node: param, initializer};
-      }),
+      from: importDeclaration.moduleSpecifier.text,
+      name: id.text,
     };
   }
-
-  getGenericArityOfClass(clazz: ts.Declaration): number|null {
-    if (!ts.isClassDeclaration(clazz)) {
-      return null;
-    }
-    return clazz.typeParameters !== undefined ? clazz.typeParameters.length : 0;
-  }
-
-  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
-    return declaration.initializer || null;
-  }
-
-  getDtsDeclaration(_: ts.Declaration): ts.Declaration|null { return null; }
 
   /**
    * Resolve a `ts.Symbol` to its declaration, keeping track of the `viaModule` along the way.
@@ -196,6 +241,16 @@ export class TypeScriptReflectionHost implements ReflectionHost {
    * @internal
    */
   protected getDeclarationOfSymbol(symbol: ts.Symbol): Declaration|null {
+    // If the symbol points to a ShorthandPropertyAssignment, resolve it.
+    if (symbol.valueDeclaration !== undefined &&
+        ts.isShorthandPropertyAssignment(symbol.valueDeclaration)) {
+      const shorthandSymbol =
+          this.checker.getShorthandAssignmentValueSymbol(symbol.valueDeclaration);
+      if (shorthandSymbol === undefined) {
+        return null;
+      }
+      return this.getDeclarationOfSymbol(shorthandSymbol);
+    }
     let viaModule: string|null = null;
     // Look through the Symbol's immediate declarations, and see if any of them are import-type
     // statements.
@@ -420,7 +475,8 @@ export function reflectObjectLiteral(node: ts.ObjectLiteralExpression): Map<stri
   return map;
 }
 
-function castDeclarationToClassOrDie(declaration: ts.Declaration): ts.ClassDeclaration {
+function castDeclarationToClassOrDie(declaration: ClassDeclaration):
+    ClassDeclaration<ts.ClassDeclaration> {
   if (!ts.isClassDeclaration(declaration)) {
     throw new Error(
         `Reflecting on a ${ts.SyntaxKind[declaration.kind]} instead of a ClassDeclaration.`);
@@ -436,29 +492,23 @@ function parameterName(name: ts.BindingName): string|null {
   }
 }
 
-export function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression|null {
-  if (ts.isTypeReferenceNode(node)) {
-    return entityNameToValue(node.typeName);
-  } else {
-    return null;
-  }
-}
-
-function entityNameToValue(node: ts.EntityName): ts.Expression|null {
-  if (ts.isQualifiedName(node)) {
-    const left = entityNameToValue(node.left);
-    return left !== null ? ts.createPropertyAccess(left, node.right) : null;
-  } else if (ts.isIdentifier(node)) {
-    return ts.getMutableClone(node);
-  } else {
-    return null;
-  }
-}
-
 function propertyNameToString(node: ts.PropertyName): string|null {
   if (ts.isIdentifier(node) || ts.isStringLiteral(node) || ts.isNumericLiteral(node)) {
     return node.text;
   } else {
     return null;
   }
+}
+
+/**
+ * Compute the left most identifier in a qualified type chain. E.g. the `a` of `a.b.c.SomeType`.
+ * @param qualifiedName The starting property access expression from which we want to compute
+ * the left most identifier.
+ * @returns the left most identifier in the chain or `null` if it is not an identifier.
+ */
+function getQualifiedNameRoot(qualifiedName: ts.QualifiedName): ts.Identifier|null {
+  while (ts.isQualifiedName(qualifiedName.left)) {
+    qualifiedName = qualifiedName.left;
+  }
+  return ts.isIdentifier(qualifiedName.left) ? qualifiedName.left : null;
 }

@@ -29,6 +29,7 @@ export interface Query {
   read: any;
   isViewQuery: boolean;
   selector: any;
+  static: boolean;
 }
 
 export const createContentChildren = makeMetadataFactory<Query>(
@@ -282,16 +283,20 @@ export interface MetadataFactory<T> {
 }
 
 function makeMetadataFactory<T>(name: string, props?: (...args: any[]) => T): MetadataFactory<T> {
-  const factory: any = (...args: any[]) => {
+  // This must be declared as a function, not a fat arrow, so that ES2015 devmode produces code
+  // that works with the static_reflector.ts in the ViewEngine compiler.
+  // In particular, `_registerDecoratorOrConstructor` assumes that the value returned here can be
+  // new'ed.
+  function factory(...args: any[]) {
     const values = props ? props(...args) : {};
     return {
       ngMetadataName: name,
       ...values,
     };
-  };
-  factory.isTypeOf = (obj: any) => obj && obj.ngMetadataName === name;
-  factory.ngMetadataName = name;
-  return factory;
+  }
+  (factory as any).isTypeOf = (obj: any) => obj && obj.ngMetadataName === name;
+  (factory as any).ngMetadataName = name;
+  return factory as any;
 }
 
 export interface Route {
@@ -430,10 +435,77 @@ export const enum AttributeMarker {
   Styles = 2,
 
   /**
-   * This marker indicates that the following attribute names were extracted from bindings (ex.:
-   * [foo]="exp") and / or event handlers (ex. (bar)="doSth()").
-   * Taking the above bindings and outputs as an example an attributes array could look as follows:
-   * ['class', 'fade in', AttributeMarker.SelectOnly, 'foo', 'bar']
+   * Signals that the following attribute names were extracted from input or output bindings.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div moo="car" [foo]="exp" (bar)="doSth()">
+   * ```
+   *
+   * the generated code is:
+   *
+   * ```
+   * var _c1 = ['moo', 'car', AttributeMarker.Bindings, 'foo', 'bar'];
+   * ```
    */
-  SelectOnly = 3,
+  Bindings = 3,
+
+  /**
+   * Signals that the following attribute names were hoisted from an inline-template declaration.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div *ngFor="let value of values; trackBy:trackBy" dirA [dirB]="value">
+   * ```
+   *
+   * the generated code for the `template()` instruction would include:
+   *
+   * ```
+   * ['dirA', '', AttributeMarker.Bindings, 'dirB', AttributeMarker.Template, 'ngFor', 'ngForOf',
+   * 'ngForTrackBy', 'let-value']
+   * ```
+   *
+   * while the generated code for the `element()` instruction inside the template function would
+   * include:
+   *
+   * ```
+   * ['dirA', '', AttributeMarker.Bindings, 'dirB']
+   * ```
+   */
+  Template = 4,
+
+  /**
+   * Signals that the following attribute is `ngProjectAs` and its value is a parsed `CssSelector`.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <h1 attr="value" ngProjectAs="[title]">
+   * ```
+   *
+   * the generated code for the `element()` instruction would include:
+   *
+   * ```
+   * ['attr', 'value', AttributeMarker.ProjectAs, ['', 'title', '']]
+   * ```
+   */
+  ProjectAs = 5,
+
+  /**
+   * Signals that the following attribute will be translated by runtime i18n
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div moo="car" foo="value" i18n-foo [bar]="binding" i18n-bar>
+   * ```
+   *
+   * the generated code is:
+   *
+   * ```
+   * var _c1 = ['moo', 'car', AttributeMarker.I18n, 'foo', 'bar'];
+   */
+  I18n = 6,
 }

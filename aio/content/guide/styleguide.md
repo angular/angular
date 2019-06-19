@@ -3,16 +3,6 @@
 -->
 # 코딩 스타일 가이드
 
-<!--
-Looking for an opinionated guide to Angular syntax, conventions, and application structure?
-Step right in!
-This style guide presents preferred conventions and, as importantly, explains why.
--->
-Angular 문법, 코딩 컨벤션, 애플리케이션 구조에 대한 가이드를 찾고 계신가요?
-바로 여기에 있습니다!
-이 문서에서는 많은 개발자들이 선호하는 코딩 스타일을 소개하면서, 왜 그렇게 사용하는지 이유도 함께 소개합니다.
-
-
 {@a toc}
 
 <!--
@@ -1089,7 +1079,7 @@ As always, strive for consistency.
 <!--
 **Why?** Follows a familiar convention from other technology platforms.
 -->
-**왜?** Angular 애플리케이션을 시작하는 로직은 애플리케이션을 실행하는 환경에 따라 달라질 수 있습니다. 이 로직은 플랫폼에 따라 다르게 구현할 수도 있기 때문에 애플리케이션 로직과 분리하는 것이 좋습니다.
+**왜?** 다른 언어나 프레임워크와 비슷한 방식을 사용하는 것이 익숙합니다.
 
 </div>
 
@@ -1182,11 +1172,10 @@ As always, strive for consistency.
 
 <div class="s-rule do">
 
-
 <!--
-**Do** use a hyphenated, lowercase element selector value (e.g. `admin-users`).
+**Do** use a hyphenated, lowercase element selector value; for example, `admin-users`.
 -->
-컴포넌트 셀렉터는 하이픈(`-`)으로 구분되는 소문자를 **사용하세요.** (예) `admin-users`)
+컴포넌트 셀렉터는 하이픈(`-`)으로 구분되는 소문자를 **사용하세요.** `admin-users`와 같이 지정하면 됩니다.
 
 </div>
 
@@ -2061,584 +2050,32 @@ A consistent class and file name convention make these modules easy to spot and 
 -->
 <a href="#toc">맨 위로</a>
 
-<!--
-## Coding conventions
--->
-## 코딩 컨벤션
-
-<!--
-Have a consistent set of coding, naming, and whitespace conventions.
--->
-코드, 클래스와 변수 이름, 공백문자에 대한 코딩 컨벤션을 소개합니다.
-
-
-{@a 03-01}
-
-<!--
-### Classes
--->
-### 클래스
-
-<!--
-#### Style 03-01
--->
-#### 스타일 03-01
-
-<div class="s-rule do">
-
-
-<!--
-**Do** use upper camel case when naming classes.
--->
-클래스 이름에는 대문자 캐멀 케이스를 **사용하세요.**
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** Follows conventional thinking for class names.
--->
-**왜?** 클래스 이름은 다른 언어에서와 비슷한 방식을 따르는 것이 좋습니다.
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-<!--
-**Why?** Classes can be instantiated and construct an instance.
-By convention, upper camel case indicates a constructable asset.
--->
-**왜?** 클래스 이름은 인스턴스를 생성할 때 사용됩니다.
-인스턴스로 생성되는 객체의 이름은 대문자 캐멀 케이스로 정의하는 것이 일반적입니다.
-
-</div>
-
-
-
-<code-example path="styleguide/src/03-01/app/core/exception.service.avoid.ts" region="example" header="app/shared/exception.service.ts">
-
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/03-01/app/core/exception.service.ts" region="example" header="app/shared/exception.service.ts">
-
-</code-example>
-
-
-
-<!--
-<a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
-
-
-{@a 03-02}
-
-<!--
-### Constants
--->
-### 상수
-
-<!--
-#### Style 03-02
--->
-#### 스타일 03-02
-
-<div class="s-rule do">
-
-
-<!--
-**Do** declare variables with `const` if their values should not change during the application lifetime.
--->
-애플리케이션이 실행되는 동안 값이 변하지 않는 변수는 `const`로 **선언하세요.**
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** Conveys to readers that the value is invariant.
--->
-**왜?** 이렇게 하면 해당 변수의 값이 변하지 않는다는 정보를 제공할 수 있습니다.
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-<!--
-**Why?** TypeScript helps enforce that intent by requiring immediate initialization and by
-preventing subsequent re-assignment.
--->
-**왜?** 이렇게 하면 TypeScript 컴파일러의 검사 로직이 동작하기 때문에, 상수를 선언할 때 값을 초기화해야 하고 값이 재할당되는 것을 언어 레벨에서 방지할 수 있습니다.
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-<!--
-**Consider** spelling `const` variables in lower camel case.
--->
-상수의 이름은 소문자 캐멀 케이스로 지정하는 것을 **권장합니다.**
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** Lower camel case variable names (`heroRoutes`) are easier to read and understand
-than the traditional UPPER_SNAKE_CASE names (`HERO_ROUTES`).
--->
-**왜?** `heroRoutes`와 같이 소문자 캐멀 케이스로 선언한 변수는 `HERO_ROUTES`와 같은 대문자\_스네이크\_케이스 보다 읽기 편합니다.
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-<!--
-**Why?** The tradition of naming constants in UPPER_SNAKE_CASE reflects
-an era before the modern IDEs that quickly reveal the `const` declaration.
-TypeScript prevents accidental reassignment.
--->
-**왜?** 상수의 이름은 대문자\_스네이크\_케이스 로 정의하는 것이 일반적입니다. 하지만 이 방식은 최신 IDE가 등장하기 이전의 방식이었고, 요즘 IDE에서는 `const` 키워드로 상수를 구별할 수 있습니다.
-상수에 값이 재할당되는 것은 TypeScript로 방지할 수 있습니다.
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-<!--
-**Do** tolerate _existing_ `const` variables that are spelled in UPPER_SNAKE_CASE.
--->
-이미 대문자\_스네이크\_케이스 로 사용된 `const` 변수는 그대로 **사용하세요.**
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-<!--
-**Why?** The tradition of UPPER_SNAKE_CASE remains popular and pervasive,
-especially in third party modules.
-It is rarely worth the effort to change them at the risk of breaking existing code and documentation.
--->
-**왜?** 대문자\_스네이크\_케이스 는 상수를 선언할 때 널리 사용되는 방법이며, 서드 파티 모듈이라면 더욱 그렇습니다.
-굳이 대문자\_스네이크\_케이스 를 소문자 캐멀 케이스로 바꿀 필요는 없으며, 이미 동작하고 있는 코드나 문서에 어긋나는 작업을 할 필요도 없습니다.
-
-</div>
-
-
-
-<code-example path="styleguide/src/03-02/app/core/data.service.ts" header="app/shared/data.service.ts">
-
-</code-example>
-
-
-
-<!--
-<a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
-
-
-{@a 03-03}
-
-<!--
-### Interfaces
--->
-### 인터페이스
-
-<!--
-#### Style 03-03
--->
-#### 스타일 03-03
-
-<div class="s-rule do">
-
-
-<!--
-**Do** name an interface using upper camel case.
--->
-인터페이스 이름은 대문자 캐멀 케이스로 **작성하세요.**
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-<!--
-**Consider** naming an interface without an `I` prefix.
--->
-인터페이스에 `I` 접두사는 사용하지 않는 것을 **권장합니다.**
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-<!--
-**Consider** using a class instead of an interface for services and declarables (components, directives, and pipes).
--->
-서비스나 컴포넌트, 디렉티브, 파이프에는 인터페이스 대신 클래스를 사용하는 것을 **권장합니다.**
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-<!--
-**Consider** using an interface for data models.
--->
-인터페이스는 데이터 모델로 사용하는 것을 **권장합니다.**
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">TypeScript guidelines</a>
-discourage the `I` prefix.
--->
-**왜?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">TypeScript 공식 가이드라인</a>에서도 `I` 접두사는 사용하지 않는 것을 권장하고 있습니다.
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** A class alone is less code than a _class-plus-interface_.
--->
-**왜?** _클래스와 인터페이스를 함께 사용하는 것_ 보다 클래스만 사용하는 것이 더 간단합니다.
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** A class can act as an interface (use `implements` instead of `extends`).
--->
-**왜?** 클래스는 인터페이스로 사용할 수도 있습니다. (`extends` 대신 `implements`로 사용할 수 있습니다.)
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-<!--
-**Why?** An interface-class can be a provider lookup token in Angular dependency injection.
--->
-**왜?** 인터페이스로 사용하는 클래스는 Angular 의존성을 주입할 때 토큰으로 참조할 수도 있습니다.
-
-</div>
-
-
-
-<code-example path="styleguide/src/03-03/app/core/hero-collector.service.avoid.ts" region="example" header="app/shared/hero-collector.service.ts">
-
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/03-03/app/core/hero-collector.service.ts" region="example" header="app/shared/hero-collector.service.ts">
-
-</code-example>
-
-
-
-<!--
-<a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
-
-{@a 03-04}
-
-<!--
-### Properties and methods
--->
-### 프로퍼티, 메소드
-
-<!--
-#### Style 03-04
--->
-#### 스타일 03-04
-
-<div class="s-rule do">
-
-
-<!--
-**Do** use lower camel case to name properties and methods.
--->
-프로퍼티와 메소드 이름에는 소문자 캐멀 케이스를 **사용하세요.**
-
-</div>
-
-
-
-<div class="s-rule avoid">
-
-
-<!--
-**Avoid** prefixing private properties and methods with an underscore.
--->
-private 프로퍼티나 메소드에 밑줄(`_`)을 붙이는 것은 **피하세요.**
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** Follows conventional thinking for properties and methods.
--->
-**왜?** 프로퍼티나 메소드 이름은 다른 언어에서도 사용하는 방식을 따르는 것이 좋습니다.
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** JavaScript lacks a true private property or method.
--->
-**왜?** JavaScript에서 정말 private인 것은 없습니다.
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-<!--
-**Why?** TypeScript tooling makes it easy to identify private vs. public properties and methods.
--->
-**왜?** private과 public을 구별하는 것은 TypeScript 툴로도 충분합니다.
-
-</div>
-
-
-
-<code-example path="styleguide/src/03-04/app/core/toast.service.avoid.ts" region="example" header="app/shared/toast.service.ts">
-
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/03-04/app/core/toast.service.ts" region="example" header="app/shared/toast.service.ts">
-
-</code-example>
-
-
-
-<!--
-<a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
-
-{@a 03-06}
-
-<!--
-### Import line spacing
--->
-### Import 줄의 공백
-
-<!--
-#### Style 03-06
--->
-#### 스타일 03-06
-
-<div class="s-rule consider">
-
-
-<!--
-**Consider** leaving one empty line between third party imports and application imports.
--->
-서드 파티 라이브러리를 로드하는 줄과 애플리케이션 심볼을 로드하는 줄 사이에는 빈 줄을 추가하는 것을 **권장합니다.**
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-<!--
-**Consider** listing import lines alphabetized by the module.
--->
-import 줄들은 로드하는 모듈 알파벳 순서로 정렬하는 것을 **권장합니다.**
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-<!--
-**Consider** listing destructured imported symbols alphabetically.
--->
-모듈 안에서 일부 심볼만 참조할 때, 이 심볼들은 알파벳 순서로 참조하는 것을 **권장합니다.**
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** The empty line separates _your_ stuff from _their_ stuff.
--->
-**왜?** 서드 파티를 로드하는 줄과 애플리케이션 심볼을 로드하는 줄 사이에 빈 줄을 추가하면, _내가 만든_ 심볼과 _서드 파티에서 불러온_ 심볼을 구분할 수 있습니다.
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-<!--
-**Why?** Alphabetizing makes it easier to read and locate symbols.
--->
-**왜?** 심볼을 알파벳 순서로 나열하면, 원하는 심볼을 쉽게 찾을 수 있습니다.
-
-</div>
-
-
-
-<code-example path="styleguide/src/03-06/app/heroes/shared/hero.service.avoid.ts" region="example" header="app/heroes/shared/hero.service.ts">
-
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/03-06/app/heroes/shared/hero.service.ts" region="example" header="app/heroes/shared/hero.service.ts">
-
-</code-example>
-
-
-
-<!--
-<a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
-
-<!--
 ## Application structure and NgModules
--->
-## 애플리케이션 구조와 NgModule
 
-<!--
 Have a near-term view of implementation and a long-term vision. Start small but keep in mind where the app is heading down the road.
--->
-단기적인 구현과 장기적인 계획을 함께 고려하세요. 코딩하는 내용이 적더라도 애플리케이션은 일관된 방향으로 나아가야 합니다.
 
-<!--
 All of the app's code goes in a folder named `src`.
 All feature areas are in their own folder, with their own NgModule.
--->
-애플리케이션의 코드는 모두 `src` 폴더 안에 작성하세요.
-그리고 모든 기능은 그 기능을 표현하는 폴더의 NgModule 안에 들어가야 합니다.
 
-<!--
 All content is one asset per file. Each component, service, and pipe is in its own file.
 All third party vendor scripts are stored in another folder and not in the `src` folder.
 You didn't write them and you don't want them cluttering `src`.
 Use the naming conventions for files in this guide.
--->
-모든 컴포넌트나 서비스, 파이프는 개별 파일에 정의되어야 합니다.
-그리고 서드 파티 스크립트들은 `src` 폴더가 아닌 다른 폴더에 보관해야 합니다.
-왜냐하면 이 코드들은 수정할 필요가 없으며 `src` 폴더의 내용과 함께 처리할 필요도 없기 때문입니다.
-각각의 파일 이름은 이 문서에서 설명하는 가이드를 참고하세요.
-
-<!--
 <a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
 
 {@a 04-01}
 
-<!--
 ### _LIFT_
--->
-#### _LIFT 규칙_
 
-<!--
 #### Style 04-01
--->
-#### 스타일 04-01
 
 <div class="s-rule do">
 
 
-<!--
 **Do** structure the app such that you can **L**ocate code quickly,
 **I**dentify the code at a glance,
 keep the **F**lattest structure you can, and
 **T**ry to be DRY.
--->
-애플리케이션 구조는 _LIFT 규칙_ 에 맞게 **마련하세요.**
-코드는 빠르게 접근할 수 있는 곳에 위치해야 하며(**L**ocate),
-파일 이름만 봐도 무슨 내용인지 확인할 수 있어야 하고(**I**dentify),
-최대한 단순한 구조여야 하며(**F**lattest),
-불필요하게 반복하는 내용이 적어야 합니다.(**T**ry to be DRY).
 
 </div>
 
@@ -2646,11 +2083,7 @@ keep the **F**lattest structure you can, and
 
 <div class="s-rule do">
 
-
-<!--
 **Do** define the structure to follow these four basic guidelines, listed in order of importance.
--->
-애플리케이션의 기본 구조는 이 라이드라인을 따라 **마련하세요.** 각 항목의 순서가 중요도의 순서입니다.
 
 </div>
 
@@ -2658,14 +2091,9 @@ keep the **F**lattest structure you can, and
 
 <div class="s-why-last">
 
-
-<!--
 **Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
 To confirm your intuition about a particular structure, ask:
 _can I quickly open and start work in all of the related files for this feature_?
--->
-**왜?** LIFT 규칙을 준수하면 애플리케이션의 구조를 일관되게 유지할 수 있으며, 애플리케이션의 규모가 커지거나 모듈을 구현하면서 코드를 나눌 때도 원하는 코드를 빠르게 찾을 수 있습니다.
-애플리케이션의 구조를 잡을 때 가장 중요한 내용을 생각해 보세요. 비슷한 파일들 중에 원하는 파일을 빠르게 열어서 바로 작업할 수 있는 것이 좋은 애플리케이션 구조입니다.
 
 </div>
 
@@ -2676,23 +2104,15 @@ _can I quickly open and start work in all of the related files for this feature_
 
 {@a 04-02}
 
-<!--
 ### Locate
--->
-### 위치 (Locate)
 
-<!--
 #### Style 04-02
--->
-#### 스타일 04-02
+
 
 <div class="s-rule do">
 
 
-<!--
 **Do** make locating code intuitive, simple and fast.
--->
-코드는 직관적으로 와닿는 곳에 **두세요.** 그래야 찾기 쉽습니다.
 
 </div>
 
@@ -2701,40 +2121,26 @@ _can I quickly open and start work in all of the related files for this feature_
 <div class="s-why-last">
 
 
-<!--
 **Why?** To work efficiently you must be able to find files quickly,
 especially when you do not know (or do not remember) the file _names_.
 Keeping related files near each other in an intuitive location saves time.
 A descriptive folder structure makes a world of difference to you and the people who come after you.
--->
-**왜?** 작업을 효율적으로 하려면 파일의 이름을 모르더라도 원하는 내용을 빠르게 찾을 수 있어야 합니다. 그래서 서로 연관된 파일은 비슷한 위치에 두면 원하는 코드를 찾을때 걸리는 시간을 줄일 수 있습니다. 폴더 구조에 일관성이 없으면 당신은 물론이고 주변 사람들도 모두 피곤하게 만들 수 있습니다.
 
 </div>
 
-<!--
 <a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
 
 {@a 04-03}
 
-<!--
 ### Identify
--->
-### 파일 이름 짓기 (Identify)
 
-<!--
 #### Style 04-03
--->
-#### 스타일 04-03
+
 
 <div class="s-rule do">
 
 
-<!--
 **Do** name the file such that you instantly know what it contains and represents.
--->
-파일의 이름은 그 파일의 내용이 무엇인지 바로 알아차릴 수 있는 이름으로 **지정하세요.**
 
 </div>
 
@@ -2743,10 +2149,7 @@ A descriptive folder structure makes a world of difference to you and the people
 <div class="s-rule do">
 
 
-<!--
 **Do** be descriptive with file names and keep the contents of the file to exactly one component.
--->
-파일의 이름은 그 파일의 내용을 명확하게 표현할 수 **있어야 하며**, 그렇기 때문에 한 파일에는 하나의 컴포넌트만 구현해야 **합니다.**
 
 </div>
 
@@ -2755,10 +2158,7 @@ A descriptive folder structure makes a world of difference to you and the people
 <div class="s-rule avoid">
 
 
-<!--
 **Avoid** files with multiple components, multiple services, or a mixture.
--->
-한 파일에 컴포넌트나 서비스를 여러개 정의하는 것은 **피하세요.**
 
 </div>
 
@@ -2767,12 +2167,8 @@ A descriptive folder structure makes a world of difference to you and the people
 <div class="s-why-last">
 
 
-<!--
 **Why?** Spend less time hunting and pecking for code, and become more efficient.
 Longer file names are far better than _short-but-obscure_ abbreviated names.
--->
-**왜?** 원하는 코드를 찾느라 들이는 시간은 최대한 줄이고, 그 시간을 좀 더 효율적으로 사용하세요.
-_알아볼 수 없게 줄여놓은_ 파일 이름보다, 조금은 길지만 파일을 충분히 설명할 수 있는 이름이 더 좋습니다.
 
 </div>
 
@@ -2780,13 +2176,10 @@ _알아볼 수 없게 줄여놓은_ 파일 이름보다, 조금은 길지만 파
 
 <div class="alert is-helpful">
 
-
-<!--
 It may be advantageous to deviate from the _one-thing-per-file_ rule when
 you have a set of small, closely-related features that are better discovered and understood
 in a single file than as multiple files. Be wary of this loophole.
--->
-아주 작지만 서로 연관된 기능을 구현한다면 _한 파일에 하나만 구현하는_ 규칙을 지키지 않는 것이 유리할 수도 있습니다. 이 코드들의 분량이 길지 않다면 여러 파일에 흩어져 있는 것보다 편하기 때문입니다. 다만, 이 파일에 너무 많은 내용이 들어가지 않도록 주의하세요.
+
 
 </div>
 
@@ -2801,7 +2194,7 @@ in a single file than as multiple files. Be wary of this loophole.
 <!--
 ### Flat
 -->
-### 폴더 구조는 단순하게 (Flat)
+### 단순한(flat) 폴더 구조
 
 <!--
 #### Style 04-04
@@ -2814,7 +2207,8 @@ in a single file than as multiple files. Be wary of this loophole.
 <!--
 **Do** keep a flat folder structure as long as possible.
 -->
-폴더 구조는 최대한 단순하게 **구성하세요.**
+폴더 구조는 최대한 단순하게 **유지하세요.**
+
 
 </div>
 
@@ -2823,10 +2217,8 @@ in a single file than as multiple files. Be wary of this loophole.
 <div class="s-rule consider">
 
 
-<!--
 **Consider** creating sub-folders when a folder reaches seven or more files.
--->
-폴더에 있는 파일이 7개가 넘어갈 때 하위 폴더를 만드는 것을 **권장합니다.**
+파일의 개수가 7개 이상 된다면 하위 폴더를 만들어서 분리하는 것을 **권장합니다.**
 
 </div>
 
@@ -2838,7 +2230,7 @@ in a single file than as multiple files. Be wary of this loophole.
 <!--
 **Consider** configuring the IDE to hide distracting, irrelevant files such as generated `.js` and `.js.map` files.
 -->
-`.js` 파일이나 `.js.map` 파일같이, IDE가 자동으로 생성하지만 개발 단계에서 필요 없는 파일은 IDE에 표시되지 않도록 설정하는 것을 **권장합니다.**
+`.js` 파일이나 `.js.map` 파일같이 개발 단계에서 직접 사용되지 않는 파일은 IDE에서 보이지 않도록 설정하는 것을 **권장합니다.**
 
 </div>
 
@@ -2847,56 +2239,34 @@ in a single file than as multiple files. Be wary of this loophole.
 <div class="s-why-last">
 
 
-<!--
+
 **Why?** No one wants to search for a file through seven levels of folders.
 A flat structure is easy to scan.
--->
-**왜?** 원하는 파일을 찾기 위해 7겹으로 된 하위 폴더를 여는 것은 아무도 좋아하지 않을 것입니다.
-폴더 구조는 단순해야 원하는 파일을 찾기 쉽습니다.
 
-<!--
 On the other hand,
 <a href="https://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two">psychologists believe</a>
 that humans start to struggle when the number of adjacent interesting things exceeds nine.
 So when a folder has ten or more files, it may be time to create subfolders.
--->
-하지만 <a href="https://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two">심리학자들의 의견</a>에 따르면, 비슷한 것이 9개 정도 모여있는 것은 사람들이 재미있어한다고 하기도 합니다.
-그렇다면 폴더에 있는 파일이 10개를 넘어가면 하위 폴더를 만드는 방법도 있습니다.
 
-<!--
 Base your decision on your comfort level.
 Use a flatter structure until there is an obvious value to creating a new folder.
--->
-폴더 안에 파일을 몇개까지 둘지는 개발자의 선택에 달려있습니다.
-새 폴더를 만들기 전까지는 최대한 단순한 폴더 구조를 유지하세요.
+
 
 </div>
 
-<!--
 <a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
 
 
 {@a 04-05}
 
-<!--
 ### _T-DRY_ (Try to be _DRY_)
--->
-### 불필요한 반복 피하기 (Try to be _DRY_)
 
-<!--
 #### Style 04-05
--->
-#### 스타일 04-05
 
 <div class="s-rule do">
 
 
-<!--
 **Do** be DRY (Don't Repeat Yourself).
--->
-DRY(Don't Repeat Yourself) 원칙을 최대한 **지키세요.**
 
 </div>
 
@@ -2905,10 +2275,7 @@ DRY(Don't Repeat Yourself) 원칙을 최대한 **지키세요.**
 <div class="s-rule avoid">
 
 
-<!--
 **Avoid** being so DRY that you sacrifice readability.
--->
-하지만 DRY 원칙 때문에 가독성을 포기하지는 **마세요.**
 
 </div>
 
@@ -2917,45 +2284,31 @@ DRY(Don't Repeat Yourself) 원칙을 최대한 **지키세요.**
 <div class="s-why-last">
 
 
-<!--
+
 **Why?** Being DRY is important, but not crucial if it sacrifices the other elements of LIFT.
 That's why it's called _T-DRY_.
 For example, it's redundant to name a template `hero-view.component.html` because
 with the `.html` extension, it is obviously a view.
 But if something is not obvious or departs from a convention, then spell it out.
--->
-**왜?** DRY 원칙을 지키도록 노력하는 것은 물론 중요하지만, 이것 때문에 다른 LIFT 원칙을 포기하는 것은 좋지 않습니다.
-그래서 DRY 원칙을 _반드시 지키라고_ 하지 않고 _할 수 있는 만큼 하라고_ 하는 것입니다.
-예를 들면, 템플릿 파일의 확장자는 `.html`이기 때문에 이 파일의 이름을 `hero-view.component.html`이라고 짓는 것은 불필요한 작업입니다. 파일의 확장자를 보면 이 파일의 역할을 명백하게 구별할 수 있습니다.
-하지만 애매한 부분이 있거나 일반적인 방식을 벗어난다면, 확실하게 명시하는 것이 좋습니다.
+
 
 </div>
 
-<!--
 <a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
 
 
 {@a 04-06}
 
-<!--
 ### Overall structural guidelines
--->
-### 애플리케이션 전체 구조 가이드라인
 
-<!--
 #### Style 04-06
--->
-#### 스타일 04-06
 
 <div class="s-rule do">
 
 
-<!--
+
 **Do** start small but keep in mind where the app is heading down the road.
--->
-애플리케이션은 작은 규모부터 시작하지만 최종 결과물이 어떤 방향으로 확장될지 항상 고려해야 **합니다.**
+
 
 </div>
 
@@ -2964,10 +2317,7 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-rule do">
 
 
-<!--
 **Do** have a near term view of implementation and a long term vision.
--->
-개발을 할 때 단기적인 계획과 장기적인 계획을 함께 **고려하세요.**
 
 </div>
 
@@ -2976,10 +2326,7 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-rule do">
 
 
-<!--
 **Do** put all of the app's code in a folder named `src`.
--->
-애플리케이션 코드는 모두 `src` 폴더 아래에 **작성하세요.**
 
 </div>
 
@@ -2988,11 +2335,8 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-rule consider">
 
 
-<!--
-**Consider** creating a folder for a component when it has multiple accompanying files (`.ts`, `.html`, `.css` and `.spec`).
--->
-컴포넌트를 구성하는 파일이 여러개라면(`.ts`, `.html`, `.css`, `.spec`) 컴포넌트를 표현하는 폴더를 따로 만들고 관련된 파일을 모두 이 폴더에 두는 것을 **권장합니다.**
 
+**Consider** creating a folder for a component when it has multiple accompanying files (`.ts`, `.html`, `.css` and `.spec`).
 </div>
 
 
@@ -3000,11 +2344,8 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-why">
 
 
-<!--
-**Why?** Helps keep the app structure small and easy to maintain in the early stages, while being easy to evolve as the app grows.
--->
-**왜?** 애플리케이션 구조를 유지보수하기 편하게 구성하면, 애플리케이션의 규모가 커지더라도 좀 더 편하게 확장할 수 있습니다.
 
+**Why?** Helps keep the app structure small and easy to maintain in the early stages, while being easy to evolve as the app grows.
 </div>
 
 
@@ -3012,21 +2353,17 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-why-last">
 
 
-<!--
-**Why?** Components often have four files (e.g. `*.html`, `*.css`, `*.ts`, and `*.spec.ts`) and can clutter a folder quickly.
--->
-**왜?** 컴포넌트는 보통 4개의 파일(`.html`, `*.css`, `.ts`, `.spec.ts`)로 구성되기 때문에 이 파일들은 한 폴더로 모으는 것이 좋습니다.
 
+**Why?** Components often have four files (e.g. `*.html`, `*.css`, `*.ts`, and `*.spec.ts`) and can clutter a folder quickly.
 </div>
 
 
 
 {@a file-tree}
 
-<!--
+
 Here is a compliant folder and file structure:
--->
-이 가이드라인을 따르면 다음과 같이 폴더와 파일 구조를 작성할 수 있습니다:
+
 
 <div class='filetree'>
 
@@ -3053,10 +2390,6 @@ Here is a compliant folder and file structure:
         </div>
 
         <div class='children'>
-
-          <div class='file'>
-            core.module.ts
-          </div>
 
           <div class='file'>
             exception.service.ts|spec.ts
@@ -3147,11 +2480,11 @@ Here is a compliant folder and file structure:
           </div>
 
           <div class='file'>
-            text-filter.component.ts|spec.ts
+            filter-text.component.ts|spec.ts
           </div>
 
           <div class='file'>
-            text-filter.service.ts|spec.ts
+            filter-text.service.ts|spec.ts
           </div>
 
         </div>
@@ -3258,173 +2591,98 @@ Here is a compliant folder and file structure:
 
 <div class="alert is-helpful">
 
-
-<!--
 While components in dedicated folders are widely preferred,
 another option for small apps is to keep components flat (not in a dedicated folder).
 This adds up to four files to the existing folder, but also reduces the folder nesting.
 Whatever you choose, be consistent.
--->
-컴포넌트와 관련된 파일은 개별 폴더에 두는 것을 권장하지만, 애플리케이션의 크기가 작다면 `components` 폴더에 하위 폴더 없이 그냥 두는 것도 좋습니다.
-그리고 `components` 폴더의 파일이 4개 이상 생기면 그때 하위 폴더를 만드는 것을 고려해 보세요.
-어떤 선택을 하던지, 일관성을 유지하기만 하면 됩니다.
+
 
 </div>
 
-<!--
 <a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
 
 {@a 04-07}
 
-<!--
 ### _Folders-by-feature_ structure
--->
-### 기능별로 폴더 구성하기
 
-<!--
 #### Style 04-07
--->
-#### 스타일 04-07
+
 
 <div class="s-rule do">
 
-
-<!--
 **Do** create folders named for the feature area they represent.
--->
-관련된 기능이 있으면 한 폴더로 묶고 해당 기능을 표현하는 이름을 **지정하세요.**
 
 </div>
 
-
-
 <div class="s-why">
 
-
-<!--
 **Why?** A developer can locate the code and identify what each file represents
 at a glance. The structure is as flat as it can be and there are no repetitive or redundant names.
--->
-**왜?** 파일의 이름은 자유롭게 지정해도 됩니다. 하지만 관련된 파일을 폴더로 묶으면 파일 이름에 반복적으로 들어가는 단어를 생략하고 더 간단하게 지정할 수 있습니다.
 
 </div>
 
-
-
 <div class="s-why">
 
-
-<!--
 **Why?** The LIFT guidelines are all covered.
--->
-**왜?** LIFT 원칙은 이 내용에도 유효합니다.
 
 </div>
 
-
-
 <div class="s-why">
 
-
-<!--
 **Why?** Helps reduce the app from becoming cluttered through organizing the
 content and keeping them aligned with the LIFT guidelines.
--->
-**왜?** 애플리케이션을 구성하는 파일들이 어수선하게 흩어져 있는 것을 방지하고 효율적으로 관리하려면 LIST 원칙을 지키는 것이 좋습니다.
 
 </div>
 
-
-
 <div class="s-why">
 
-
-<!--
 **Why?** When there are a lot of files, for example 10+,
 locating them is easier with a consistent folder structure
 and more difficult in a flat structure.
--->
-**왜?** 파일이 10개 이상 있다면 한 폴더에 모두 모아놓는 것보다 관련된 파일끼리 묶어둬야 관리하기 편합니다.
 
 </div>
-
-
 
 <div class="s-rule do">
 
-
-<!--
 **Do** create an NgModule for each feature area.
--->
-각 기능마다 NgModule을 **작성하세요.**
 
 </div>
-
-
 
 <div class="s-why">
 
-
-<!--
 **Why?** NgModules make it easy to lazy load routable features.
--->
-**왜?** NgModule을 사용하면 해당 기능을 지연 로딩할 수 있습니다.
 
 </div>
-
-
 
 <div class="s-why-last">
 
-
-<!--
 **Why?** NgModules make it easier to isolate, test, and reuse features.
--->
-**왜?** NgModule을 구성하면 애플리케이션 코드를 기능별로 분리할 수 있고, 테스트하거나 재사용하기 편해집니다.
 
 </div>
 
+<div>
 
+  For more information, refer to <a href="#file-tree">this folder and file structure example.</a>
 
-<div class='file-tree-reference'>
-  <!--
-  <a href="#file-tree">Refer to this _folder and file structure_ example.</a>
-  -->
-  <a href="#file-tree">여기에 설명한 _폴더와 파일 구조_ 예제를 참고하세요.</a>
 </div>
 
-<!--
 <a href="#toc">Back to top
--->
-<a href="#toc">맨 위로
 
 </a>
 
 
 {@a 04-08}
 
-<!--
 ### App _root module_
--->
-### 애플리케이션 _최상위 모듈_
 
-<!--
 #### Style 04-08
--->
-#### 스타일 04-08
 
 <div class="s-rule do">
 
 
-<!--
+
 **Do** create an NgModule in the app's root folder,
 for example, in `/src/app`.
--->
-애플리케이션의 최상위 모듈은 애플리케이션 최상위 폴더에 **생성하세요.**
-일반적으로는 `/src/app` 입니다.
-
 </div>
 
 
@@ -3432,11 +2690,8 @@ for example, in `/src/app`.
 <div class="s-why">
 
 
-<!--
-**Why?** Every app requires at least one root NgModule.
--->
-**왜?** 모든 앱에는 최상위 NgModule이 반드시 존재해야 합니다.
 
+**Why?** Every app requires at least one root NgModule.
 </div>
 
 
@@ -3444,11 +2699,8 @@ for example, in `/src/app`.
 <div class="s-rule consider">
 
 
-<!--
-**Consider** naming the root module `app.module.ts`.
--->
-최상위 모듈의 파일 이름은 `app.module.ts`를 권장합니다.
 
+**Consider** naming the root module `app.module.ts`.
 </div>
 
 
@@ -3456,11 +2708,8 @@ for example, in `/src/app`.
 <div class="s-why-last">
 
 
-<!--
-**Why?** Makes it easier to locate and identify the root module.
--->
-**왜?** 애플리케이션 최상위 모듈은 최상위 폴더에 두는 것이 가장 찾기 쉽습니다.
 
+**Why?** Makes it easier to locate and identify the root module.
 </div>
 
 
@@ -3468,7 +2717,6 @@ for example, in `/src/app`.
 <code-example path="styleguide/src/04-08/app/app.module.ts" region="example" header="app/app.module.ts">
 
 </code-example>
-
 
 
 <!--
@@ -3479,26 +2727,17 @@ for example, in `/src/app`.
 
 {@a 04-09}
 
-<!--
 ### Feature modules
--->
-### 기능 모듈
 
-<!--
 #### Style 04-09
--->
-#### 스타일 04-09
+
 
 <div class="s-rule do">
 
 
-<!--
+
 **Do** create an NgModule for all distinct features in an application;
 for example, a `Heroes` feature.
--->
-애플리케이션을 구성하는 기능마다 NgModule을 **만드세요.**
-히어로들의 여행 튜토리얼을 예를 들면 `Heroes` 기능을 따로 분리하는 식입니다.
-
 </div>
 
 
@@ -3506,13 +2745,9 @@ for example, a `Heroes` feature.
 <div class="s-rule do">
 
 
-<!--
+
 **Do** place the feature module in the same named folder as the feature area;
 for example, in `app/heroes`.
--->
-기능 모듈을 구현한 파일은 관련된 기능으로 묶은 폴더 안에 **두세요.**
-예를 들면 `app/heroes` 폴더 안에 구현할 수 있습니다.
-
 </div>
 
 
@@ -3520,12 +2755,10 @@ for example, in `app/heroes`.
 <div class="s-rule do">
 
 
-<!--
+
 **Do** name the feature module file reflecting the name of the feature area
 and folder; for example, `app/heroes/heroes.module.ts`.
--->
-기능 모듈의 파일 이름은 그 모듈이 담당하는 기능을 충분히 표현할 수 있도록 **지정하세요.**
-에를 들면 `app/heroes/heroes.module.ts`과 같이 지정할 수 있습니다.
+
 
 </div>
 
@@ -3534,12 +2767,10 @@ and folder; for example, `app/heroes/heroes.module.ts`.
 <div class="s-rule do">
 
 
-<!--
+
 **Do** name the feature module symbol reflecting the name of the feature
 area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `HeroesModule`.
--->
-기능 모듈의 심볼 이름은 그 모듈이 담당하는 기능을 충분히 표현할 수 있도록 **지정하세요.**
-예를 들면 `app/heroes/heroes.module.ts` 파일에 `HeroesModule`을 구현할 수 있습니다.
+
 
 </div>
 
@@ -3548,10 +2779,9 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
-<!--
+
 **Why?** A feature module can expose or hide its implementation from other modules.
--->
-**왜?** 기능 모듈은 원하는 기능을 모듈 밖으로 공개하면서, 원하지 않는 내용은 다른 모듈에서 참조할 수 없도록 감출 수 있습니다.
+
 
 </div>
 
@@ -3560,10 +2790,9 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
-<!--
+
 **Why?** A feature module identifies distinct sets of related components that comprise the feature area.
--->
-**왜?** 기능 모듈의 이름은 관련된 컴포넌트와 담당하는 기능을 모두 대표하는 이름으로 지정해야 합니다.
+
 
 </div>
 
@@ -3572,10 +2801,8 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
-<!--
 **Why?** A feature module can easily be routed to both eagerly and lazily.
--->
-**왜?** 기능 모듈은 애플리케이션이 시작되면서 바로 로드할 수도 있고, 원하면 지연로딩 할 수도 있습니다.
+
 
 </div>
 
@@ -3584,10 +2811,9 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
-<!--
+
 **Why?** A feature module defines clear boundaries between specific functionality and other application features.
--->
-**왜?** 기능 모듈은 애플리케이션에서 담당하는 역할로 따져봤을 때 다른 기능 모듈과 명확하게 구분되어야 합니다.
+
 
 </div>
 
@@ -3596,10 +2822,8 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
-<!--
+
 **Why?** A feature module helps clarify and make it easier to assign development responsibilities to different teams.
--->
-**왜?** 기능 모듈을 명확하게 구분하면 담당 개발자나 팀 단위로 업무를 분배하기에도 좋습니다.
 
 </div>
 
@@ -3608,39 +2832,28 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why-last">
 
 
-<!--
+
 **Why?** A feature module can easily be isolated for testing.
--->
-**왜?** 기능 모듈을 나누면 각 모듈을 따로 테스트하기에도 좋습니다.
+
 
 </div>
 
-<!--
 <a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
 
 {@a 04-10}
 
-<!--
 ### Shared feature module
--->
-### 공통 기능 모듈
 
-<!--
 #### Style 04-10
--->
-#### 스타일 04-10
+
 
 <div class="s-rule do">
 
 
-<!--
+
 **Do** create a feature module named `SharedModule` in a `shared` folder;
 for example, `app/shared/shared.module.ts` defines `SharedModule`.
--->
-공통 기능 모듈이라면 `shared` 폴더 안에 **만드세요.**
-예를 들면 `app/shared/shared.module.ts` 파일에 `SharedModule`을 만드는 식입니다.
+
 
 </div>
 
@@ -3649,11 +2862,9 @@ for example, `app/shared/shared.module.ts` defines `SharedModule`.
 <div class="s-rule do">
 
 
-<!--
+
 **Do** declare components, directives, and pipes in a shared module when those
 items will be re-used and referenced by the components declared in other feature modules.
--->
-공통 기능 모듈에 구현하는 컴포넌트나 디렉티브, 파이프는 다른 모듈에서도 쉽게 재사용할 수 있도록 **구현하세요.**
 
 </div>
 
@@ -3662,11 +2873,9 @@ items will be re-used and referenced by the components declared in other feature
 <div class="s-rule consider">
 
 
-<!--
+
 **Consider** using the name SharedModule when the contents of a shared
 module are referenced across the entire application.
--->
-애플리케이션 전반에 사용되는 공통 기능 모듈이라면 `SharedModule`이라고 이름 짓는 것을 **권장합니다.**
 
 </div>
 
@@ -3675,12 +2884,10 @@ module are referenced across the entire application.
 <div class="s-rule avoid">
 
 
-<!--
+
 **Consider** _not_ providing services in shared modules. Services are usually
 singletons that are provided once for the entire application or
 in a particular feature module. There are exceptions, however. For example, in the sample code that follows, notice that the `SharedModule` provides `FilterTextService`. This is acceptable here because the service is stateless;that is, the consumers of the service aren't impacted by new instances.
--->
-공통 모듈에서는 서비스 프로바이더를 제공하지 않는 것을 **권장합니다.** 서비스는 일반적으로 싱글턴이며, 전체 애플리케이션이나 특정 기능 모듈에 딱 하나만 존재해야 합니다. 하지만 스테이트를 처리하지 않는 서비스는 예외입니다. 아래 예제에서 `SharedModule`은 `FilterTextService`를 제공하고 있는데, 이 서비스 안에는 스테이트와 관련된 로직이 아무것도 없으며 단순하게 유틸리티로써 사용될 뿐입니다. 인스턴스의 영향을 받지 않는 서비스라면 이런 방식으로 사용하는 것도 문제 없습니다.
 
 </div>
 
@@ -3689,12 +2896,9 @@ in a particular feature module. There are exceptions, however. For example, in t
 <div class="s-rule do">
 
 
-<!--
+
 **Do** import all modules required by the assets in the `SharedModule`;
 for example, `CommonModule` and `FormsModule`.
--->
-애플리케이션에 자주 사용하는 모듈은 `SharedModule`에서 로드하고 모듈 외부로 공개하는 것이 좋습니다.
-예를 들면 `CommonModule`이나 `FormsModule`이 그렇습니다.
 
 </div>
 
@@ -3703,13 +2907,11 @@ for example, `CommonModule` and `FormsModule`.
 <div class="s-why">
 
 
-<!--
+
 **Why?** `SharedModule` will contain components, directives and pipes
 that may need features from another common module; for example,
 `ngFor` in `CommonModule`.
--->
-**왜?** 애플리케이션 공통 기능을 `SharedModule`에 로드하고 모듈 외부로 다시 공개하면 모듈 로딩 구문을 간단하게 작성할 수 있습니다.
-이렇게 구현하면 `CommonModule`을 따로 로드하지 않아도 `SharedModule`에서 제공하는 `ngFor` 디렉티브를 자연스럽게 사용할 수 있습니다.
+
 
 </div>
 
@@ -3718,10 +2920,8 @@ that may need features from another common module; for example,
 <div class="s-rule do">
 
 
-<!--
+
 **Do** declare all components, directives, and pipes in the `SharedModule`.
--->
-애플리케이션 전반에 사용되는 컴포넌트, 디렉티브, 파이프는 최대한 `SharedModule`에 **구현하세요.**
 
 </div>
 
@@ -3730,10 +2930,8 @@ that may need features from another common module; for example,
 <div class="s-rule do">
 
 
-<!--
+
 **Do** export all symbols from the `SharedModule` that other feature modules need to use.
--->
-다른 모듈에서 사용할 수 있는 심볼은 모두 `SharedModule` 밖으로 **공개(`export`)하세요.**
 
 </div>
 
@@ -3742,10 +2940,8 @@ that may need features from another common module; for example,
 <div class="s-why">
 
 
-<!--
+
 **Why?** `SharedModule` exists to make commonly used components, directives and pipes available for use in the templates of components in many other modules.
--->
-**왜?** `SharedModule`을 만드는 목적은 다른 모듈의 컴포넌트 템플릿에 자주 사용하는 컴포넌트, 디렉티브, 파이프를 모아두는 것이기 때문입니다.
 
 </div>
 
@@ -3754,11 +2950,9 @@ that may need features from another common module; for example,
 <div class="s-rule avoid">
 
 
-<!--
+
 **Avoid** specifying app-wide singleton providers in a `SharedModule`. Intentional singletons are OK. Take care.
--->
-애플리케이션 전역에 사용되는 싱글턴 프로바이더를 `SharedModule`에 구현하는 것은 **피하세요.**
-모듈 내부에만 사용되는 싱글턴이라면 문제 없습니다. 주의하세요.
+
 
 </div>
 
@@ -3767,10 +2961,9 @@ that may need features from another common module; for example,
 <div class="s-why">
 
 
-<!--
+
 **Why?** A lazy loaded feature module that imports that shared module will make its own copy of the service and likely have undesirable results.
--->
-**왜?** 지연로딩되는 모듈이 공통 모듈을 로드하면 서비스 인스턴스가 새로 만들어집니다.
+
 
 </div>
 
@@ -3779,12 +2972,10 @@ that may need features from another common module; for example,
 <div class="s-why-last">
 
 
-<!--
+
 **Why?** You don't want each module to have its own separate instance of singleton services.
 Yet there is a real danger of that happening if the `SharedModule` provides a service.
--->
-**왜?** 싱글턴 서비스를 모듈마다 생성하면 이 서비스는 더이상 싱글턴 인스턴스가 아닙니다.
-그래서 `SharedModule`이 서비스 프로바이더를 제공하면 애플리케이션이 예상한 대로 동작하지 않을 수 있습니다.
+
 
 </div>
 
@@ -3819,11 +3010,11 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
         </div>
 
         <div class='file'>
-          text-filter.component.ts|spec.ts
+          filter-text.component.ts|spec.ts
         </div>
 
         <div class='file'>
-          text-filter.service.ts|spec.ts
+          filter-text.service.ts|spec.ts
         </div>
 
       </div>
@@ -3892,6 +3083,7 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 
 
 
+
 <!--
 <a href="#toc">Back to top</a>
 -->
@@ -3900,448 +3092,11 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 {@a 04-11}
 
 <!--
-### Core feature module
--->
-### 코어 기능 모듈
-
-<!--
-#### Style 04-11
--->
-#### 스타일 04-11
-
-<div class="s-rule consider">
-
-
-<!--
-**Consider** collecting numerous, auxiliary, single-use classes inside a core module
-to simplify the apparent structure of a feature module.
--->
-보조 역할을 하는 클래스, 한 번만 사용하는 클래스는 기능 모듈의 구조를 간단하게 하기 위해 코어 기능 모듈에 모아두는 것을 **권장합니다.**
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-<!--
-**Consider** calling the application-wide core module, `CoreModule`.
-Importing `CoreModule` into the root `AppModule` reduces its complexity
-and emphasizes its role as orchestrator of the application as a whole.
--->
-애플리케이션 전역에 사용하는 코어 모듈은 `CoreModule`이라는 이름을 사용할 것을 **권장합니다.**
-코어 모듈의 이름을 이렇게 정의하면 `AppModule`에서 `CoreModule`을 로드하는 의미가 더욱 명확해집니다.
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-<!--
-**Do** create a feature module named `CoreModule` in a `core` folder (e.g. `app/core/core.module.ts` defines `CoreModule`).
--->
-`CoreModule`은 `core` 폴더에 **구현하세요.**
-예를 들면 `app/core/core.module.ts` 파일에 `CoreModule`을 구현하는 식입니다.
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-<!--
-**Do** put a singleton service whose instance will be shared throughout the application in the `CoreModule` (e.g. `ExceptionService` and `LoggerService`).
--->
-애플리케이션 전역에서 싱글턴으로 사용되는 서비스 프로바이더는 `CoreModule`에 **정의하세요.**
-`ExceptionService`나 `LoggerService`가 대상이 될 수 있습니다.
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-<!--
-**Do** import all modules required by the assets in the `CoreModule` (e.g. `CommonModule` and `FormsModule`).
--->
-애플리케이션 전역에서 자주 사용하는 모듈은 `CoreModule`에 로드하고 모듈 외부로 다시 **공개하세요.**
-`CommonModule`이나 `FormsModule`이 대상이 될 수 있습니다.
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** `CoreModule` provides one or more singleton services. Angular registers the providers with the app root injector, making a singleton instance of each service available to any component that needs them, whether that component is eagerly or lazily loaded.
--->
-**왜?** `CoreModule`은 싱글턴 서비스를 하나 이상 제공할 수 있습니다.
-최상위 모듈에서 생성한 싱글턴 서비스는 애플리케이션 최상위 인젝터에 등록되며, 이 서비스를 의존성으로 주입받는 컴포넌트들에서 의존성 주입을 요청할 때마다 인젝터에 등록된 프로바이더를 통해 인스턴스를 주입합니다.
-이 때 컴포넌트는 애플리케이션이 실행되면서 즉시 로드되던지, 지연 로딩되는 것과 상관없이 인스턴스를 주입받을 수 있습니다.
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** `CoreModule` will contain singleton services. When a lazy loaded module imports these, it will get a new instance and not the intended app-wide singleton.
--->
-**왜?** `CoreModule`에 등록된 서비스 프로바이더는 의존성 주입에 사용되는 서비스의 인스턴스를 생성합니다. 다만, 지연되는 모듈에서 코어 모듈을 로드한다면 애플리케이션이 시작될 때 생성된 서비스 인스턴스와 다른 서비스 인스턴스를 새로 생성합니다.
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-<!--
-**Do** gather application-wide, single use components in the `CoreModule`.
-Import it once (in the `AppModule`) when the app starts and never import it anywhere else. (e.g. `NavComponent` and `SpinnerComponent`).
--->
-애플리케이션 전역에 사용하는 컴포넌트는 `CoreModule`에 **모으세요.**
-그리고 `AppModule`에서 코어 모듈을 로드하면 애플리케이션이 시작되면서 이 컴포넌트들을 모두 로드하기 때문에, 다른 모듈에서 따로 로드하지 않아도 이 컴포넌트들을 자유롭게 사용할 수 있습니다.
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** Real world apps can have several single-use components (e.g., spinners, message toasts, and modal dialogs) that appear only in the `AppComponent` template.
-They are not imported elsewhere so they're not shared in that sense.
-Yet they're too big and messy to leave loose in the root folder.
--->
-**왜?** 실제로 배포되는 애플리케이션들에는 `AppComponent`의 템플릿에서만 사용되는 컴포넌트들이 있습니다. 로딩 이미지나 메시지 토스트, 모달 팝업이 이런 종류에 해당되며, 이 컴포넌트들은 `AppComponent`에서만 사용되기 때문에 공유 모듈에 들어갈 필요가 없습니다.
-이런 컴포넌트들이 너무 많아진다면 하위 폴더로 옮기는 것도 고려해 볼 만 합니다.
-
-</div>
-
-
-
-<div class="s-rule avoid">
-
-
-<!--
-**Avoid** importing the `CoreModule` anywhere except in the `AppModule`.
--->
-`CoreModule`을 `AppModule`이 아닌 모듈에서 로드하는 것은 **피하세요.**
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** A lazily loaded feature module that directly imports the `CoreModule` will make its own copy of services and likely have undesirable results.
--->
-**왜?** 지연로딩되는 모듈에서 `CoreModule`을 다시 로드하면, `CoreModule`에 정의된 서비스들의 인스턴스가 새로 만들어지며, 예상치 못한 동작을 할 수도 있습니다.
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** An eagerly loaded feature module already has access to the `AppModule`'s injector, and thus the `CoreModule`'s services.
--->
-**왜?** 애플리케이션이 시작되면서 즉시 로딩되는 기능 모듈은 `AppModule`의 인젝터에 자연스럽게 접근할 수 있으며, `CoreModule`에 생성된 서비스 인스턴스를 함께 사용합니다.
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-<!--
-**Do** export all symbols from the `CoreModule` that the `AppModule` will import and make available for other feature modules to use.
--->
-`CoreModule`에 정의된 심볼은 `AppModule`이나 다른 기능 모듈에서 사용할 수 있도록 모두 모듈 외부로 **공개하세요.**
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** `CoreModule` exists to make commonly used singleton services available for use in the many other modules.
--->
-**왜?** `CoreModule`은 다른 모듈에서 사용하는 싱글턴 서비스를 모아두기 위해 만드는 모듈입니다.
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-<!--
-**Why?** You want the entire app to use the one, singleton instance.
-You don't want each module to have its own separate instance of singleton services.
-Yet there is a real danger of that happening accidentally if the `CoreModule` provides a service.
--->
-**왜?** 애플리케이션에서 사용하는 싱글턴 서비스는 인스턴스를 딱 하나만 생성해야 합니다.
-싱글턴 서비스의 인스턴스가 모듈마다 생성되는 것은 싱글턴 서비스의 목적에 벗어나는 것이며, 원하는 대로 동작하지도 않을 것입니다.
-
-</div>
-
-
-
-<div class='filetree'>
-
-  <div class='file'>
-    src
-  </div>
-
-  <div class='children'>
-
-    <div class='file'>
-      app
-    </div>
-
-    <div class='children'>
-
-      <div class='file'>
-        core
-      </div>
-
-      <div class='children'>
-
-        <div class='file'>
-          core.module.ts
-        </div>
-
-        <div class='file'>
-          logger.service.ts|spec.ts
-        </div>
-
-        <div class='file'>
-          nav
-        </div>
-
-        <div class='children'>
-
-          <div class='file'>
-            nav.component.ts|html|css|spec.ts
-          </div>
-
-        </div>
-
-        <div class='file'>
-          spinner
-        </div>
-
-        <div class='children'>
-
-          <div class='file'>
-            spinner.component.ts|html|css|spec.ts
-          </div>
-
-          <div class='file'>
-            spinner.service.ts|spec.ts
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class='file'>
-        app.component.ts|html|css|spec.ts
-      </div>
-
-      <div class='file'>
-        app.module.ts
-      </div>
-
-      <div class='file'>
-        app-routing.module.ts
-      </div>
-
-    </div>
-
-    <div class='file'>
-      main.ts
-    </div>
-
-    <div class='file'>
-      index.html
-    </div>
-
-  </div>
-
-  <div class='file'>
-    ...
-  </div>
-
-</div>
-
-
-
-
-
-<code-tabs>
-
-  <code-pane header="app/app.module.ts" path="styleguide/src/04-11/app/app.module.ts" region="example">
-
-  </code-pane>
-
-  <code-pane header="app/core/core.module.ts" path="styleguide/src/04-11/app/core/core.module.ts">
-
-  </code-pane>
-
-  <code-pane header="app/core/logger.service.ts" path="styleguide/src/04-11/app/core/logger.service.ts">
-
-  </code-pane>
-
-  <code-pane header="app/core/nav/nav.component.ts" path="styleguide/src/04-11/app/core/nav/nav.component.ts">
-
-  </code-pane>
-
-  <code-pane header="app/core/nav/nav.component.html" path="styleguide/src/04-11/app/core/nav/nav.component.html">
-
-  </code-pane>
-
-  <code-pane header="app/core/spinner/spinner.component.ts" path="styleguide/src/04-11/app/core/spinner/spinner.component.ts">
-
-  </code-pane>
-
-  <code-pane header="app/core/spinner/spinner.component.html" path="styleguide/src/04-11/app/core/spinner/spinner.component.html">
-
-  </code-pane>
-
-  <code-pane header="app/core/spinner/spinner.service.ts" path="styleguide/src/04-11/app/core/spinner/spinner.service.ts">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-
-
-<div class="alert is-helpful">
-
-
-<!--
-`AppModule` is a little smaller because many app/root classes have moved to other modules.
-`AppModule` is stable because you will add future components and providers to other modules, not this one.
-`AppModule` delegates to imported modules rather than doing work.
-`AppModule` is focused on its main task, orchestrating the app as a whole.
--->
-일관된 규칙으로 모듈을 나누면 `AppModule`의 크기는 다른 모듈보다 많이 작아집니다.
-그리고 새로 추가되는 컴포넌트나 서비스 프로바이더도 해당 역할을 하는 모듈에 구현할 것이기 때문에 `AppModule`의 코드가 바뀌는 일은 그리 많지 않습니다.
-`AppModule`은 모듈을 로드하는 방법으로 애플리케이션의 모듈을 조합하며, 애플리케이션의 동작과 관련된 로직은 작성하지 않는 것이 좋습니다.
-`AppModule`의 역할은 애플리케이션 전체 모듈을 구성하는 것으로만 제한하는 것이 좋습니다.
-
-</div>
-
-<!--
-<a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
-
-{@a 04-12}
-
-<!--
-### Prevent re-import of the core module
--->
-### 코어 모듈을 중복 로드하지 말기
-
-<!--
-#### Style 04-12
--->
-#### 스타일 04-12
-
-<!--
-Only the root `AppModule` should import the `CoreModule`.
--->
-`CoreModule`은 `AppModule`에서만 로드해야 합니다.
-
-<div class="s-rule do">
-
-
-<!--
-**Do** guard against reimporting of `CoreModule` and fail fast by adding guard logic.
--->
-`CoreModule`이 두 번 이상 로드되면 에러를 발생하도록 방어 로직을 **작성하세요.**
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** Guards against reimporting of the `CoreModule`.
--->
-**왜?** 방어 로직을 작성하면 `CoreModule`이 여러번 로드되는 것을 방지할 수 있습니다.
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-<!--
-**Why?** Guards against creating multiple instances of assets intended to be singletons.
--->
-**왜?** `CoreModule`은 싱글턴 서비스를 제공하기 때문에, 싱글턴 서비스의 인스턴스를 하나로 제한하는 방어 로직을 작성하는 것이 좋습니다.
-
-</div>
-
-
-
-<code-tabs>
-
-  <code-pane header="app/core/module-import-guard.ts" path="styleguide/src/04-12/app/core/module-import-guard.ts">
-
-  </code-pane>
-
-  <code-pane header="app/core/core.module.ts" path="styleguide/src/04-12/app/core/core.module.ts">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-<!--
-<a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
-
-{@a 04-13}
-
-<!--
 ### Lazy Loaded folders
 -->
 ### 지연 로딩 모듈의 폴더
 
-<!--
-#### Style 04-13
--->
-#### 스타일 04-13
+#### Style 04-11
 
 <!--
 A distinct application feature or workflow may be *lazy loaded* or *loaded on demand* rather than when the application starts.
@@ -4360,8 +3115,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 </div>
 
-
-
 <div class="s-why-last">
 
 
@@ -4377,7 +3130,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 -->
 <a href="#toc">맨 위로</a>
 
-{@a 04-14}
+{@a 04-12}
 
 <!--
 ### Never directly import lazy loaded folders
@@ -4385,9 +3138,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ### 지연로딩 모듈을 직접 로드하지 마세요.
 
 <!--
-#### Style 04-14
+#### Style 04-12
 -->
-#### 스타일 04-14
+#### 스타일 04-12
 
 <div class="s-rule avoid">
 
@@ -4398,8 +3151,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 이웃 폴더나 부모 폴더에서 *지연로딩 모듈*을 직접 로드하는 것은 피하세요.**
 
 </div>
-
-
 
 <div class="s-why-last">
 
@@ -4443,13 +3194,11 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 </div>
 
-
-
 <div class="s-why">
 
 
 <!--
-**Why?** components have templates containing HTML and optional Angular template syntax.
+**Why?** Components have templates containing HTML and optional Angular template syntax.
 They display content.
 Developers place components on the page as they would native HTML elements and web components.
 -->
@@ -4458,8 +3207,6 @@ Developers place components on the page as they would native HTML elements and w
 따라서 네이티브 HTML 엘리먼트나 웹 컴포넌트와 동일한 계층을 사용해서 엘리먼트 셀렉터로 지정하는 것이 좋습니다.
 
 </div>
-
-
 
 <div class="s-why-last">
 
@@ -4484,15 +3231,9 @@ There are a few cases where you give a component an attribute, such as when you 
 
 </code-example>
 
-
-
-
-
 <code-example path="styleguide/src/05-03/app/app.component.avoid.html" header="app/app.component.html">
 
 </code-example>
-
-
 
 <code-tabs>
 
@@ -4546,8 +3287,6 @@ There are a few cases where you give a component an attribute, such as when you 
 템플릿 파일의 이름은 `[컴포넌트 이름].component.html`으로 **지정하세요.**
 
 </div>
-
-
 
 <div class="s-rule do">
 
@@ -5302,7 +4041,7 @@ helps instantly identify which members of the component serve which purpose.
 <!--
 **Why?** The property associated with `@HostBinding` or the method associated with `@HostListener`
 can be modified only in a single place&mdash;in the directive's class.
-If you use the `host` metadata property, you must modify both the property/method declaration in the 
+If you use the `host` metadata property, you must modify both the property/method declaration in the
 directive's class and the metadata in the decorator associated with the directive.
 -->
 **왜?** `@HostBinding`과 연결된 프로퍼티나 `@HostListener`에 연결된 메소드는 이 데코레이터가 지정된 디렉티브 클래스 안 어디에나 선언하기만 하면 됩니다.
@@ -5542,7 +4281,7 @@ Compare with the less preferred `host` metadata alternative.
 
 </div>
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts" linenums="false"> </code-example> 
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts" linenums="false"> </code-example>
 
 
 
@@ -5753,7 +4492,7 @@ Angular 컴포넌트가 실행되는 각 이벤트 시점을 활용하려면 라
 
 <!--
 **Why?** Lifecycle interfaces prescribe typed method
-signatures. use those signatures to flag spelling and syntax mistakes.
+signatures. Use those signatures to flag spelling and syntax mistakes.
 -->
 **왜?** 라이프싸이클 인터페이스는 Angular 컴포넌트의 이벤트 시점을 활용할 수 있는 메소드를 미리 정의해 둔 것입니다. 이 메소드를 그대로 활용하면 오타를 내거나 문법을 잘못 사용하는 실수를 방지할 수 있습니다.
 

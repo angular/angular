@@ -61,21 +61,21 @@ export class MockHeaders implements Headers {
 
   [Symbol.iterator]() { return this.map[Symbol.iterator](); }
 
-  append(name: string, value: string): void { this.map.set(name, value); }
+  append(name: string, value: string): void { this.map.set(name.toLowerCase(), value); }
 
-  delete (name: string): void { this.map.delete(name); }
+  delete (name: string): void { this.map.delete(name.toLowerCase()); }
 
   entries() { return this.map.entries(); }
 
   forEach(callback: Function): void { this.map.forEach(callback as any); }
 
-  get(name: string): string|null { return this.map.get(name) || null; }
+  get(name: string): string|null { return this.map.get(name.toLowerCase()) || null; }
 
-  has(name: string): boolean { return this.map.has(name); }
+  has(name: string): boolean { return this.map.has(name.toLowerCase()); }
 
   keys() { return this.map.keys(); }
 
-  set(name: string, value: string): void { this.map.set(name, value); }
+  set(name: string, value: string): void { this.map.set(name.toLowerCase(), value); }
 
   values() { return this.map.values(); }
 }

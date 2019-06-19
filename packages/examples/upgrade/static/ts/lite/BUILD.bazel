@@ -1,0 +1,14 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//packages/examples/upgrade:upgrade_example.bzl", "create_upgrade_example_targets")
+
+create_upgrade_example_targets(
+    name = "lite",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["e2e_test/*"],
+    ),
+    assets = ["styles.css"],
+    e2e_srcs = glob(["e2e_test/*.ts"]),
+    entry_module = "@angular/examples/upgrade/static/ts/lite/module",
+)

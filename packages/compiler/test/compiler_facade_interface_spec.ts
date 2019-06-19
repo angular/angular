@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as core from '../../core/src/render3/jit/compiler_facade_interface';
+import * as core from '../../core/src/compiler/compiler_facade_interface';
 import {R3ResolvedDependencyType} from '../public_api';
 import * as compiler from '../src/compiler_facade_interface';
 
@@ -35,6 +35,9 @@ const compilerCompilerFacade: compiler.CompilerFacade = null !as core.CompilerFa
 
 const coreCoreEnvironment: core.CoreEnvironment = null !as compiler.CoreEnvironment;
 const compilerCoreEnvironment: compiler.CoreEnvironment = null !as core.CoreEnvironment;
+
+const coreResourceLoader: core.ResourceLoader = null !as compiler.ResourceLoader;
+const compilerResourceLoader: compiler.ResourceLoader = null !as core.ResourceLoader;
 
 const coreStringMap: core.StringMap = null !as compiler.StringMap;
 const compilerStringMap: compiler.StringMap = null !as core.StringMap;

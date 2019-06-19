@@ -46,7 +46,7 @@ describe('compiler compliance: providers', () => {
     const result = compile(files, angularFiles);
     expectEmit(
         result.source,
-        'features: [i0.ɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}], [GreeterEN])],',
+        'features: [i0.ɵɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}], [GreeterEN])],',
         'Incorrect features');
   });
 
@@ -79,7 +79,7 @@ describe('compiler compliance: providers', () => {
     const result = compile(files, angularFiles);
     expectEmit(
         result.source,
-        'features: [i0.ɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}])],',
+        'features: [i0.ɵɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}])],',
         'Incorrect features');
   });
 
@@ -111,7 +111,7 @@ describe('compiler compliance: providers', () => {
 
     const result = compile(files, angularFiles);
     expectEmit(
-        result.source, 'features: [i0.ɵProvidersFeature([], [GreeterEN])],', 'Incorrect features');
+        result.source, 'features: [i0.ɵɵProvidersFeature([], [GreeterEN])],', 'Incorrect features');
   });
 
   it('should not emit the ProvidersFeature feature when no providers', () => {
@@ -144,9 +144,19 @@ describe('compiler compliance: providers', () => {
         result.source, `
     export class MyComponent {
     }
-    MyComponent.ngComponentDef = i0.ÉµdefineComponent({ type: MyComponent, selectors: [["my-component"]], factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }, consts: 1, vars: 0, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-            i0.Éµelement(0, "div");
-        } } });`,
+    MyComponent.ngComponentDef = i0.ɵɵdefineComponent({
+      type: MyComponent,
+      selectors: [["my-component"]],
+      factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
+      consts: 1,
+      vars: 0,
+      template: function MyComponent_Template(rf, ctx) {
+        if (rf & 1) {
+          i0.ɵɵelement(0, "div");
+        }
+      },
+      encapsulation: 2
+    });`,
         'Incorrect features');
   });
 });

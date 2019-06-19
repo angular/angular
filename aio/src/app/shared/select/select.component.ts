@@ -16,6 +16,7 @@ export class SelectComponent implements OnInit {
   @Input()
   options: Option[];
 
+  // tslint:disable-next-line: no-output-native
   @Output()
   change = new EventEmitter<{option: Option, index: number}>();
 

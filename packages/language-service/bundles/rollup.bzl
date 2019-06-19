@@ -14,7 +14,7 @@ load(
     "ROLLUP_ATTRS",
     "ROLLUP_DEPS_ASPECTS",
     "run_rollup",
-    "run_uglify",
+    "run_terser",
     "write_rollup_config",
 )
 load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
@@ -41,7 +41,7 @@ def _ls_rollup_bundle(ctx):
         output_format = "amd",
     )
     run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_umd)
-    source_map = run_uglify(ctx, ctx.outputs.build_umd, ctx.outputs.build_umd_min)
+    source_map = run_terser(ctx, ctx.outputs.build_umd, ctx.outputs.build_umd_min)
     return DefaultInfo(files = depset([ctx.outputs.build_umd, ctx.outputs.build_umd_min, source_map]))
 
 ls_rollup_bundle = rule(

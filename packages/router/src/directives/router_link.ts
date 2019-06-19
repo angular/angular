@@ -63,7 +63,7 @@ import {UrlTree} from '../url_tree';
  * </a>
  * ```
  *
- * You can tell the directive to how to handle queryParams, available options are:
+ * You can tell the directive how to handle queryParams. Available options are:
  *  - `'merge'`: merge the queryParams into the current queryParams
  *  - `'preserve'`: preserve the current queryParams
  *  - default/`''`: use the queryParams only
@@ -111,7 +111,7 @@ import {UrlTree} from '../url_tree';
  *
  * @publicApi
  */
-@Directive({selector: ':not(a)[routerLink]'})
+@Directive({selector: ':not(a):not(area)[routerLink]'})
 export class RouterLink {
   // TODO(issue/24571): remove '!'.
   @Input() queryParams !: {[k: string]: any};
@@ -191,7 +191,7 @@ export class RouterLink {
  *
  * @publicApi
  */
-@Directive({selector: 'a[routerLink]'})
+@Directive({selector: 'a[routerLink],area[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
   @HostBinding('attr.target') @Input() target !: string;

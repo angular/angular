@@ -46,17 +46,17 @@ This command creates the following `UserService` skeleton:
 -->
 그러면 `UserService`가 다음과 같이 생성됩니다:
 
-<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.0.ts" linenums="false"> </code-example>
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.ts" linenums="false"> </code-example>
 
 <!--
-You can now inject `UserService` anywhere in your application. 
+You can now inject `UserService` anywhere in your application.
+
+The service itself is a class that the CLI generated and that's decorated with `@Injectable()`. By default, this decorator has a `providedIn` property, which creates a provider for the service. In this case, `providedIn: 'root'` specifies that Angular should provide the service in the root injector.
 -->
 이제 이 `UserService`는 애플리케이션 어디에라도 의존성으로 자유롭게 주입할 수 있습니다.
 
-<!--
-The service itself is a class that the CLI generated and that's decorated with `@Injectable`. By default, this decorator is configured with a `providedIn` property, which creates a provider for the service. In this case, `providedIn: 'root'` specifies that the service should be provided in the root injector.
--->
 서비스는 단순하게 JavaScript 클래스일 뿐이며, Angular CLI로 서비스를 생성하면 CLI가 `@Injectable` 데코레이터를 자동으로 붙여서 Angular 서비스로 지정합니다. `@Injectable` 데코레이터 안에는 `providedIn` 프로퍼티가 있는데, 이 프로퍼티를 지정하면 서비스 프로바이더의 범위를 지정할 수 있습니다. 이 예제 코드에서 지정된 `providedIn: 'root'`는 이 서비스가 최상위 인젝터에 위치하도록 지정하는 코드입니다.
+
 
 <!--
 ## Provider scope
@@ -64,7 +64,7 @@ The service itself is a class that the CLI generated and that's decorated with `
 ## 프로바이더의 범위
 
 <!--
-When you add a service provider to the root application injector, it’s available throughout the app. Additionally, these providers are also available to all the classes in the app as long they have the lookup token. 
+When you add a service provider to the root application injector, it’s available throughout the app. Additionally, these providers are also available to all the classes in the app as long they have the lookup token.
 
 You should always provide your service in the root injector unless there is a case where you want the service to be available only if the consumer imports a particular `@NgModule`.
 -->
@@ -73,16 +73,16 @@ You should always provide your service in the root injector unless there is a ca
 서비스 프로바이더는 특정 `@NgModule`에 포함되지 않는 이상, 최상위 인젝터에 등록하는 것이 좋습니다.
 
 <!--
-## providedIn and NgModules
+## `providedIn` and NgModules
 -->
-## providedIn과 NgModule
+## `providedIn`과 NgModule
 
 <!--
 It's also possible to specify that a service should be provided in a particular `@NgModule`. For example, if you don't want `UserService` to be available to applications unless they import a `UserModule` you've created, you can specify that the service should be provided in the module:
 -->
 특정 `@NgModule`에 포함되도록 서비스를 등록할 수도 있습니다. 예를 들어 `UserModule`을 로드하지 않은 상태에서는 `UserService`를 사용할 수 없도록 하려면, 코드를 다음과 같이 작성하면 됩니다:
 
-<code-example path="providers/src/app/user.service.1.ts"  header="src/app/user.service.1.ts" linenums="false">  </code-example>
+<code-example path="providers/src/app/user.service.1.ts"  header="src/app/user.service.ts" linenums="false">  </code-example>
 
 <!--
 The example above shows the preferred way to provide a service in a module. This method is preferred because it enables tree-shaking of the service if nothing injects it. If it's not possible to specify in the service which module should provide it, you can also declare a provider for the service within the module:

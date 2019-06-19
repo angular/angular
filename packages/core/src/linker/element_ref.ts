@@ -50,8 +50,10 @@ export class ElementRef<T = any> {
 
   constructor(nativeElement: T) { this.nativeElement = nativeElement; }
 
-  /** @internal */
-  /** @nocollapse */
+  /**
+   * @internal
+   * @nocollapse
+   */
   static __NG_ELEMENT_ID__: () => ElementRef = () => SWITCH_ELEMENT_REF_FACTORY(ElementRef);
 }
 

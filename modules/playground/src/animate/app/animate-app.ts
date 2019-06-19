@@ -16,7 +16,7 @@ import {Component} from '@angular/core';
     '(@backgroundAnimation.done)': 'bgStatusChanged($event, "completed")'
   },
   selector: 'animate-app',
-  styleUrls: ['css/animate-app.css'],
+  styleUrls: ['../css/animate-app.css'],
   template: `
     <button (click)="state='start'">Start State</button>
     <button (click)="state='active'">Active State</button>

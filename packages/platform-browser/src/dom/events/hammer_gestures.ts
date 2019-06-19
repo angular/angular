@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, InjectionToken, Optional, ɵConsole as Console} from '@angular/core';
-
-import {DOCUMENT} from '../dom_tokens';
 
 import {EventManagerPlugin} from './event_manager';
 

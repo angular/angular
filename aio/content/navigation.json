@@ -26,7 +26,6 @@
       "title": "블로그"
     }
   ],
-
   "TopBarNarrow": [
     {
       "title!": "About Angular",
@@ -55,17 +54,15 @@
       ]
     }
   ],
-
   "SideNav": [
     {
       "url": "docs",
-      "title!": "Docs",
+      "title!": "Introduction",
       "title": "문서",
-      "tooltip!": "Angular Documentation",
-      "tooltip": "Angular 문서",
-      "hidden": true
+      "tooltip!": "Introduction to the Angular documentation",
+      "tooltip": "Angular 문서 소개",
+      "hidden": false
     },
-
     {
       "url": "guide/docs-style-guide",
       "title!": "Doc authors style guide",
@@ -74,77 +71,42 @@
       "tooltip": "문서 편집 가이드",
       "hidden": true
     },
-
     {
-      "url": "guide/quickstart",
-      "title!": "Getting Started",
-      "title": "시작하기",
-      "tooltip!": "A brief introduction to Angular and Angular CLI essentials.",
-      "tooltip": "Angular와 Angular CLI 기본부터 시작하기"
-    },
-
-    {
-      "title!": "Tutorial",
-      "title": "튜토리얼",
-      "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.",
+      "title": "Getting Started",
+      "tooltip": "Learn the basics by building your first Angular application.",
       "children": [
         {
-          "url": "tutorial",
-          "!title": "Introduction",
-          "title": "소개",
-          "!tooltip": "Introduction to the Tour of Heroes tutorial",
-          "tooltip": "히어로들의 여행 튜토리얼에 대해 소개합니다."
+          "url": "start",
+          "title": "Your First App",
+          "tooltip": "Introduction to Angular's component model, template syntax, and component communication."
         },
         {
-          "url": "tutorial/toh-pt0",
-          "!title": "The Application Shell",
-          "title": "애플리케이션 셸",
-          "!tooltip": "Creating the application shell",
-          "tooltip": "애플리케이션 셸을 구성해 봅시다."
+          "url": "start/routing",
+          "title": "Routing",
+          "tooltip": "Introduction to routing between components using the browser's URL."
         },
         {
-          "url": "tutorial/toh-pt1",
-          "!title": "1. The Hero Editor",
-          "title": "1. 히어로 에디터",
-          "!tooltip": "Part 1: Build a simple hero editor",
-          "tooltip": "1단계: 간단한 히어로 에디터를 만들어 봅시다."
+          "url": "start/data",
+          "title": "Managing Data",
+          "tooltip": "Introduction to services and accessing external data via HTTP."
         },
         {
-          "url": "tutorial/toh-pt2",
-          "!title": "2. Displaying a List",
-          "title": "2. 목록 표시하기",
-          "!tooltip": "Part 2: Build a master/detail page with a list of heroes.",
-          "tooltip": "2단계: 히어로의 목록을 표시하는 페이지를 구성해 봅시다."
+          "url": "start/forms",
+          "title": "Forms",
+          "tooltip": "Learn about fetching and managing data from users with forms."
         },
         {
-          "url": "tutorial/toh-pt3",
-          "!title": "3. Master/Detail Components",
-          "title": "3. 컴포넌트 구조",
-          "!tooltip": "Part 3: Refactor the master/detail view into separate components.",
-          "tooltip": "3단계: 목록/상세정보 화면을 개별 컴포넌트로 리팩토링해 봅시다."
-        },
-        {
-          "url": "tutorial/toh-pt4",
-          "!title": "4. Services",
-          "title": "4. 서비스",
-          "!tooltip": "Part 4: Create a reusable service to manage hero data.",
-          "tooltip": "4단계: 히어로의 데이터를 관리하는 서비스를 만들어 봅시다."
-        },
-        {
-          "url": "tutorial/toh-pt5",
-          "!title": "5. Routing",
-          "title": "5. 라우팅",
-          "!tooltip": "Part 5: Add the Angular router and navigate among the views.",
-          "tooltip": "5단계: Angular 라우터를 추가하고 화면을 전환해 봅시다."
-        },
-        {
-          "url": "tutorial/toh-pt6",
-          "title": "6. HTTP",
-          "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
+          "url": "start/deployment",
+          "title": "Deployment",
+          "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
         }
       ]
     },
-
+    {
+      "url": "guide/setup-local",
+      "title": "Setup",
+      "tooltip": "Setting up for local development with the Angular CLI."
+    },
     {
       "title!": "Fundamentals",
       "title": "기초 지식",
@@ -152,10 +114,54 @@
       "tooltip": "Angular 기초 지식",
       "children": [
         {
-          "title!": "Architecture",
-          "title": "아키텍처",
-          "tooltip!": "The basic building blocks of Angular applications.",
-          "tooltip": "Angular 애플리케이션을 구성하는 기본 요소",
+          "title": "Tour of Heroes App",
+          "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
+          "children": [
+          {
+            "url": "tutorial",
+            "title": "Introduction",
+            "tooltip": "Introduction to the Tour of Heroes tutorial"
+          },
+          {
+            "url": "tutorial/toh-pt0",
+            "title": "The Application Shell",
+            "tooltip": "Creating the application shell"
+          },
+          {
+            "url": "tutorial/toh-pt1",
+            "title": "1. The Hero Editor",
+            "tooltip": "Part 1: Build a simple hero editor"
+          },
+          {
+            "url": "tutorial/toh-pt2",
+            "title": "2. Displaying a List",
+            "tooltip": "Part 2: Build a master/detail page with a list of heroes."
+          },
+          {
+            "url": "tutorial/toh-pt3",
+            "title": "3. Master/Detail Components",
+            "tooltip": "Part 3: Refactor the master/detail view into separate components."
+          },
+          {
+            "url": "tutorial/toh-pt4",
+            "title": "4. Services",
+            "tooltip": "Part 4: Create a reusable service to manage hero data."
+          },
+          {
+            "url": "tutorial/toh-pt5",
+            "title": "5. Routing",
+            "tooltip": "Part 5: Add the Angular router and navigate among the views."
+          },
+          {
+            "url": "tutorial/toh-pt6",
+            "title": "6. HTTP",
+            "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
+          }
+          ]
+        },
+        {
+          "title": "Architecture",
+          "tooltip": "The basic building blocks of Angular applications.",
           "children": [
             {
               "url": "guide/architecture",
@@ -359,7 +365,6 @@
             }
           ]
         },
-
         {
           "url": "guide/bootstrapping",
           "title!": "Bootstrapping",
@@ -368,7 +373,6 @@
           "tooltip": "Angular가 \"AppModule\"을 어떻게 구성하고 실행하는지 알아봅니다."
         },
         {
-
           "title": "NgModule",
           "tooltip": "NgModule",
           "children": [
@@ -454,8 +458,8 @@
               "tooltip!": "Answers to frequently asked questions about NgModules.",
               "tooltip": "NgModule에 대해 자주 물어보는 질문"
             }
-        ]},
-
+          ]
+        },
         {
           "title!": "Dependency Injection",
           "title": "의존성 주입",
@@ -499,7 +503,6 @@
             }
           ]
         },
-
         {
           "url": "guide/http",
           "title": "HttpClient",
@@ -556,17 +559,14 @@
             }
           ]
         }
-    ]
-  },
-
-
+      ]
+    },
     {
       "title!": "Techniques",
       "title": "고급",
       "tooltip!": "Techniques for putting Angular to work in your environment",
       "tooltip": "Angular를 실제 프로젝트에 더 활용할 수 있는 방법에 대해 안내합니다.",
       "children": [
-
         {
           "url": "guide/security",
           "title!": "Security",
@@ -579,7 +579,6 @@
           "title": "Internationalization (i18n)",
           "tooltip": "Translate the app's template text into multiple languages."
         },
-
         {
           "!title": "Service Workers & PWA",
           "title": "서비스 워커 & PWA",
@@ -599,6 +598,11 @@
               "title": "시작하기",
               "tooltip!": "Enabling the service worker in a CLI project and observing behavior in the browser.",
               "tooltip": "CLI로 Angular 프로젝트를 만들면서 서비스 워커를 시작할 수 있습니다. 브라우저에서 서비스 워커 동작을 확인할 수도 있습니다."
+            },
+            {
+              "url": "guide/app-shell",
+              "title": "App Shell",
+              "tooltip": "Enabling the App Shell in a CLI project."
             },
             {
               "url": "guide/service-worker-communications",
@@ -679,52 +683,54 @@
               "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
             }
           ]
+        },
+        {
+          "title": "Schematics",
+          "tooltip": "Understanding schematics.",
+          "children": [
+            {
+              "url": "guide/schematics",
+              "title": "Schematics Overview",
+              "tooltip": "Understand how schematics are used in Angular."
+            },
+            {
+              "url": "guide/schematics-authoring",
+              "title": "Authoring Schematics",
+              "tooltip": "Understand the structure of a schematic."
+            },
+            {
+              "url": "guide/schematics-for-libraries",
+              "title": "Schematics for Libraries",
+              "tooltip": "Use schematics to integrate your library with the Angular CLI."
+            }
+          ]
+        },
+        {
+          "url": "guide/cli-builder",
+          "title": "CLI Builders",
+          "tooltip": "Using builders to customize Angular CLI."
+        },
+        {
+          "url": "guide/ivy",
+          "title": "Angular Ivy",
+          "tooltip": "Opting into Angular Ivy with Angular CLI."
+        },
+        {
+          "url": "guide/web-worker",
+          "title": "Web Workers",
+          "tooltip": "Using Web Workers with Angular CLI."
         }
       ]
     },
-
     {
-      "!title": "Setup & Deployment",
-      "title": "환경설정 & 배포",
-      "!tooltip": "Setup, build, testing, and deployment environment and tool information.",
-      "tooltip": "개발, 빌드, 테스트, 배포 환경을 모두 구성해 보세요.",
+      "title": "Dev Workflow",
+      "tooltip": "Build, testing, and deployment information.",
       "children": [
-
         {
           "url": "guide/setup",
-          "title": "Setup for local development",
-          "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine.",
+          "title": "Upgrade setup",
+          "tooltip": "How to set up the Angular QuickStart seed in the context of upgrading from AngularJS.",
           "hidden": true
-        },
-
-        {
-          "url": "guide/file-structure",
-          "!title": "Project File Structure",
-          "title": "프로젝트 파일 구성",
-          "!tooltip": "How your Angular workspace looks on your filesystem.",
-          "tooltip": "Angular 프로젝트가 어떻게 구성되는지 확인해 보세요."
-        },
-        {
-          "url": "guide/workspace-config",
-          "!title": "Workspace Configuration",
-          "title": "워크스페이스 설정",
-          "!tooltip": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands.",
-          "tooltip": "워크스페이스와 프로젝트에서 Angular CLI 명령을 실행할 때 적용되는 기본 설정은 \"angular.json\" 파일에 지정합니다."
-        },
-
-        {
-          "url": "guide/npm-packages",
-          "!title": "npm Dependencies",
-          "title": "npm 패키지",
-          "!tooltip": "Description of npm packages required at development time and at runtime.",
-          "tooltip": "기본 프로젝트에 설치되는 npm 패키지에 대해 안내합니다."
-        },
-        {
-          "url": "guide/typescript-configuration",
-          "!title": "TypeScript Configuration",
-          "title": "TypeScript 설정",
-          "!tooltip": "TypeScript configuration for Angular developers.",
-          "tooltip": "Angular 개발을 위한 TypeScript configuration에 대해 안내합니다."
         },
         {
           "url": "guide/aot-compiler",
@@ -741,6 +747,11 @@
           "tooltip": "Angular 앱을 개발용, 운영용으로 빌드해 보세요."
         },
         {
+          "url": "guide/bazel",
+          "title": "Building with Bazel",
+          "tooltip": "How to set up your environment to build and test with Bazel."
+        },
+        {
           "url": "guide/testing",
           "!title": "Testing",
           "title": "테스트",
@@ -755,38 +766,55 @@
           "tooltip": "Angular 앱을 배포하는 방법에 대해 안내합니다."
         },
         {
-          "url": "guide/browser-support",
-          "!title": "Browser Support",
-          "title": "브라우저 지원",
-          "!tooltip": "Browser support and polyfills guide.",
-          "tooltip": "지원하는 브라우저와 폴리필에 대해 안내합니다."
-        },
-
-        {
-          "!title": "Dev Tool Integration",
-          "title": "개발 툴 지원",
-          "!tooltip": "Integrate with your development environment and tools.",
-          "tooltip": "개발 툴 지원 기능에 대해 안내합니다.",
+          "title": "Dev Tool Integration",
+          "tooltip": "Integrate with your development environment and tools.",
           "children": [
-           {
-             "url": "guide/language-service",
-             "!title": "Language Service",
-             "title": "언어 지원 서비스",
-             "!tooltip": "Use Angular Language Service to speed up dev time.",
-             "tooltip": "개발 효율을 향상시키는 Angular 언어 지원 서비스에 대해 알아보세요."
-           },
-           {
-             "url": "guide/visual-studio-2015",
-             "title": "Visual Studio 2015",
-             "tooltip": "Using Angular with Visual Studio 2015.",
-             "hidden": true
-           }
+            {
+              "url": "guide/language-service",
+              "title": "Language Service",
+              "tooltip": "Use Angular Language Service to speed up dev time."
+            },
+            {
+              "url": "guide/visual-studio-2015",
+              "title": "Visual Studio 2015",
+              "tooltip": "Using Angular with Visual Studio 2015.",
+              "hidden": true
+            }
           ]
         }
-     ]
+      ]
     },
-
-
+    {
+      "title": "Configuration",
+      "tooltip": "Workspace and project structure, configuration files.",
+      "children": [
+        {
+          "url": "guide/file-structure",
+          "title": "Project File Structure",
+          "tooltip": "How your Angular workspace looks on your filesystem."
+        },
+        {
+          "url": "guide/workspace-config",
+          "title": "Workspace Configuration",
+          "tooltip": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands."
+        },
+        {
+          "url": "guide/npm-packages",
+          "title": "npm Dependencies",
+          "tooltip": "Description of npm packages required at development time and at runtime."
+        },
+        {
+          "url": "guide/typescript-configuration",
+          "title": "TypeScript Configuration",
+          "tooltip": "TypeScript configuration for Angular developers."
+        },
+        {
+          "url": "guide/browser-support",
+          "title": "Browser Support",
+          "tooltip": "Browser support and polyfills guide."
+        }
+      ]
+    },
     {
       "!title": "Release Information",
       "title": "릴리즈 정보",
@@ -802,21 +830,24 @@
        },
         {
           "url": "guide/releases",
-          "!title": "Angular Releases",
-          "title": "Angular 릴리즈",
+          "!title": "Release Practices",
+          "title": "릴리즈 정책",
           "!tooltip": "Angular versioning, release, support, and deprecation policies and practices.",
           "tooltip": "Angular 버전 정책, 릴리즈 주기, 지원 정책, 지원 중단 정책에 대해 안내합니다."
+        },
+        {
+          "url": "guide/deprecations",
+          "title": "Deprecations",
+          "tooltip": "Summary of Angular APIs and features that are deprecated."
         }
       ]
     },
-
     {
       "!title": "Quick Reference",
       "title": "참고",
       "!tooltip": "Summaries of Angular syntax, coding, and terminology.",
       "tooltip": "Angular의 문법, 코딩 패턴, 기술에 대한 요약본을 제공합니다.",
       "children": [
-
         {
           "url": "guide/cheatsheet",
           "!title": "Cheat Sheet",
@@ -852,6 +883,11 @@
           "!tooltip": "An introduction to the CLI tool, commands, and syntax.",
           "tooltip": "Angular CLI 사용방법을 소개합니다.",
           "url": "cli"
+        },
+        {
+          "title": "Usage Analytics",
+          "tooltip": "For administrators, guide to gathering usage analytics from your users.",
+          "url": "cli/usage-analytics-gathering"
         }
       ]
     },
@@ -860,17 +896,8 @@
       "!tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
       "tooltip": "Angular 패키지, 클래스, 인터페이스, 타입 정보에 대해 알아보세요.",
       "url": "api"
-    },
-    {
-      "url": "guide/change-log",
-      "title!": "Change Log",
-      "title": "변경사항",
-      "tooltip!": "Angular Documentation Change Log",
-      "tooltip": "Angular 문서 변경사항",
-      "hidden": true
     }
   ],
-
   "Footer": [
     {
       "title!": "Resources",
@@ -902,6 +929,11 @@
           "title": "블로그",
           "tooltip!": "Angular Blog",
           "tooltip": "Angular 블로그"
+        },
+        {
+          "url": "analytics",
+          "title": "Usage Analytics",
+          "tooltip": "Angular Usage Analytics"
         }
       ]
     },
@@ -945,8 +977,8 @@
           "url": "events",
           "title!": "Events",
           "title": "행사일정",
-          "tooltip!": "Post issues and suggestions on github.",
-          "tooltip": "github에 등록된 행사 일정 확인하기"
+          "tooltip!": "Angular events around the world.",
+          "tooltip": "세계 각지에서 열리는 행사 일정 확인하기"
         },
         {
           "url": "http://www.meetup.com/topics/angularjs/",
@@ -997,11 +1029,26 @@
       ]
     }
   ],
-
   "docVersions": [
-    { "title": "v6", "url": "https://v6.angular.io" },
-    { "title": "v5", "url": "https://v5.angular.io" },
-    { "title": "v4", "url": "https://v4.angular.io" },
-    { "title": "v2", "url": "https://v2.angular.io" }
+    {
+      "title": "v7",
+      "url": "https://v7.angular.io/"
+    },
+    {
+      "title": "v6",
+      "url": "https://v6.angular.io/"
+    },
+    {
+      "title": "v5",
+      "url": "https://v5.angular.io/"
+    },
+    {
+      "title": "v4",
+      "url": "https://v4.angular.io/"
+    },
+    {
+      "title": "v2",
+      "url": "https://v2.angular.io/"
+    }
   ]
 }

@@ -2,7 +2,7 @@
 
 Ivy is a new backwards-compatible Angular renderer focused on further speed improvements, size reduction, and increased flexibility.
 
-Ivy is currently not feature complete, but can be tested via [`enableIvy: true`](https://next.angular.io/guide/aot-compiler#enableivy) [`angularCompilerOptions` flag](https://next.angular.io/guide/aot-compiler#angular-compiler-options).
+Ivy is currently not feature complete, but can be tested via [`enableIvy: true`](https://next.angular.io/guide/ivy#updating-an-existing-project-to-use-ivy) [`angularCompilerOptions` flag](https://next.angular.io/guide/aot-compiler#angular-compiler-options).
 
 We currently expect Ivy to remain behind the flag until it's feature complete and battle tested at Google. In the meantime you can check out this [Hello World demo](https://ng-ivy-demo.firebaseapp.com/).
 
@@ -10,8 +10,8 @@ We currently expect Ivy to remain behind the flag until it's feature complete an
 
 The work can be divided into three categories:
 - `@angular/compiler-cli`: TypeScript transformer pipeline which includes two command line tools:
-  - `ngtsc`: (Angular TypeScript Compiler) Angular compiler which strips out `@Component` (and friends) and replaces it with `defineComponent` (and friends).
-  - `ngcc`: (Angular Compatibility Compiler) NPM upgrade compiler which reads the `STORING_METADATA_IN_D.TS.json` files and `.js` files and adds `defineComponent` (and friends) into the `node_module`. This in effect converts a pre-ivy module into ivy module.
+  - `ngtsc`: (Angular TypeScript Compiler) Angular compiler which strips out `@Component` (and friends) and replaces it with `ɵɵdefineComponent` (and friends).
+  - `ngcc`: (Angular Compatibility Compiler) NPM upgrade compiler which reads the `STORING_METADATA_IN_D.TS.json` files and `.js` files and adds `ɵɵdefineComponent` (and friends) into the `node_module`. This in effect converts a pre-ivy module into ivy module.
 - `@angular/compiler`: Ivy Compiler which converts decorator into ivy
 - `@angular/core`: Decorators which can be patched with `@angular/compiler`.
 
@@ -20,7 +20,7 @@ The work can be divided into three categories:
 ### `ngtsc` TSC compiler transformer
 
 TSC transformer which removes and converts `@Pipe`, `@Component`, `@Directive` and `@NgModule`
-to the corresponding `definePipe`, `defineComponent`, `defineDirective` and `defineInjector`.
+to the corresponding `ɵɵdefinePipe`, `ɵɵdefineComponent`, `ɵɵdefineDirective` and `ɵɵdefineInjector`.
 
 - ✅ Basic setup of the transformer into `tsc`
 - ✅ Can read STORING_METADATA_IN_D.TS from `.d.ts` (see: [STORING_METADATA_IN_D.TS.md](./STORING_METADATA_IN_D.TS.md))
@@ -40,19 +40,19 @@ A tool which "upgrades" `node_module` compiled with non-ivy `ngc` into ivy compl
 
 ## `@angular/compiler` changes
 
-- ✅ Component compilation: Translates `@Component` => `defineComponent`
+- ✅ Component compilation: Translates `@Component` => `ɵɵdefineComponent`
   - ✅ `TemplateCompiler` (current known as `ViewCompiler`)
   - ✅ `StyleCompiler`
-- ✅ `PipeCompiler`: Translates `@Pipe` => `definePipe`
-- ✅ `DirectiveCompiler`: Translates `@Directive` => `defineDirective`
-- ✅ `InjectableCompiler`: Translates `@Injectable` => `defineInjectable`
-- ✅ `NgModuleCompiler`: Translates `@NgModule` => `defineInjector` (and `defineNgModule` only in jit)
+- ✅ `PipeCompiler`: Translates `@Pipe` => `ɵɵdefinePipe`
+- ✅ `DirectiveCompiler`: Translates `@Directive` => `ɵɵdefineDirective`
+- ✅ `InjectableCompiler`: Translates `@Injectable` => `ɵɵdefineInjectable`
+- ✅ `NgModuleCompiler`: Translates `@NgModule` => `ɵɵdefineInjector` (and `ɵɵdefineNgModule` only in jit)
 - ❌ Documentation
 
 
 ## `@angular/core` changes
 
-The goal is for the `@Component` (and friends) to be the compiler of template. Since decorators are functions which execute during parsing of the `.js` file, the decorator can compile the template into Ivy. The AoT compiler's job is to remove the `@Component` and replace it with call to `defineComponent`.
+The goal is for the `@Component` (and friends) to be the compiler of template. Since decorators are functions which execute during parsing of the `.js` file, the decorator can compile the template into Ivy. The AoT compiler's job is to remove the `@Component` and replace it with call to `ɵɵdefineComponent`.
 
 - ✅ `@angular/compiler` can patch itself onto:
   - ✅ `@Injectable`
@@ -68,15 +68,15 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 # Crosscutting
 
 ## Decorators
-| Annotation          | `defineXXX()`                  | Run time | Spec     | Compiler | 
-| -------------------- | ------------------------------ | ------- | -------- | -------- | 
-| `@Component`         | ✅ `defineComponent()`         |    ✅    |  ✅      |  ✅      |
-| `@Directive`         | ✅ `defineDirective()`         |    ✅    |  ✅      |  ✅      |
-| `@Directive`         | ✅ `defineBase()`              |    ✅    |  ✅      |  ✅      |
-| `@Pipe`              | ✅ `definePipe()`              |    ✅    |  ✅      |  ✅      |
-| `@Injectable`        | ✅ `defineInjectable()`        |    ✅    |  ✅      |  ✅      |
-| `@NgModule`          | ✅ `defineInjector()`          |    ✅    |  ✅      |  ✅      |
-| `@ConfigureInjector` | ✅ `defineInjector()`          |    ❌    |  ❌      |  ❌      |
+| Annotation          | `defineXXX()`                  | Run time | Spec     | Compiler |
+| -------------------- | ------------------------------ | ------- | -------- | -------- |
+| `@Component`         | ✅ `ɵɵdefineComponent()`         |    ✅    |  ✅      |  ✅      |
+| `@Directive`         | ✅ `ɵɵdefineDirective()`         |    ✅    |  ✅      |  ✅      |
+| `@Directive`         | ✅ `ɵɵdefineBase()`              |    ✅    |  ✅      |  ✅      |
+| `@Pipe`              | ✅ `ɵɵdefinePipe()`              |    ✅    |  ✅      |  ✅      |
+| `@Injectable`        | ✅ `ɵɵdefineInjectable()`        |    ✅    |  ✅      |  ✅      |
+| `@NgModule`          | ✅ `ɵɵdefineInjector()`          |    ✅    |  ✅      |  ✅      |
+| `@ConfigureInjector` | ✅ `ɵɵdefineInjector()`          |    ❌    |  ❌      |  ❌      |
 
 
 

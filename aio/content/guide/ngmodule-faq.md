@@ -177,7 +177,7 @@ components, directives, and pipes.
 그리고 현재 모듈에 등록된 컴포넌트나 디렉티브, 파이프가 다른 모듈과 연관되어 있다면 그 모듈을 로드하는 것이 좋습니다.
 
 <!--
-Import only [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) in the root `AppModule`.
+Import [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) only in the root `AppModule`.
 -->
 [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module)은 애플리케이션의 최상위 `AppModule`에서만 로드합니다.
 
@@ -375,23 +375,21 @@ You add that result to the `imports` list of the root `AppModule`.
 그리고 이 모듈을 `AppModule`의 `imports` 배열에 추가하면 라우터를 사용할 수 있습니다.
 
 <!--
-Only call and import a `.forRoot()` result in the root application module, `AppModule`.
-Importing it in any other module, particularly in a lazy-loaded module,
-is contrary to the intent and will likely produce a runtime error.
-For more information, see [Singleton Services](guide/singleton-services).
+Only call and import a `forRoot()` result in the root application module, `AppModule`.
+Avoid importing it in any other module, particularly in a lazy-loaded module. For more
+information on `forRoot()` see [the `forRoot()` pattern](guide/singleton-services#the-forroot-pattern) section of the [Singleton Services](guide/singleton-services) guide.
+
+For a service, instead of using `forRoot()`,  specify `providedIn: 'root'` on the service's `@Injectable()` decorator, which
+makes the service automatically available to the whole application and thus singleton by default.
 -->
 `forRoot()` 메소드는 애플리케이션의 최상위 모듈인 `AppModule`에서만 사용해야 합니다.
 앱 모듈이 아닌 기능 모듈, 특히 지연로딩 되는 다른 모듈에서 이 함수를 사용하면 런타임 에러가 발생할 수 있습니다.
-좀 더 자세한 내용을 확인하려면 [싱글턴 서비스](guide/singleton-services) 문서를 참고하세요.
+`forRoot()` 함수에 대해 더 알아보려면 [싱글턴 서비스](guide/singleton-services) 가이드 문서의 [`forRoot()` 패턴](guide/singleton-services#the-forroot-pattern) 섹션을 참고하세요.
 
-<!--
-For a service, instead of using `forRoot()`,  specify `providedIn: 'root'` on the service's `@Injectable()` decorator, which 
-makes the service automatically available to the whole application and thus singleton by default.
--->
 서비스를 싱글턴으로 만드는 것이라면 `forRoot()` 메소드 대신 `@Injectable()` 데코레이터 안에 `providedIn: 'root'`를 지정해도 됩니다. 이렇게 지정된 서비스는 앱 전역으로 사용할 수 있는 싱글턴 서비스로 생성됩니다.
 
 <!--
-`RouterModule` also offers a `forChild` static method for configuring the routes of lazy-loaded modules.
+`RouterModule` also offers a `forChild()` static method for configuring the routes of lazy-loaded modules.
 -->
 정적 모듈에서 `RouterModule`을 사용하려면 `forRoot()` 메소드 대신 `forChild()` 메소드를 사용해야 합니다.
 
@@ -402,10 +400,8 @@ configure services in root and feature modules respectively.
 `forRoot()` 메소드와 `forChild()` 메소드는 모두 앱 모듈이나 기능 모듈에 서비스를 편하게 등록하기 위한 용도로 제공되는 함수입니다.
 
 <!--
-Angular doesn't recognize these names but Angular developers do.
 Follow this convention when you write similar modules with configurable service providers.
 -->
-이런 개발 패턴은 Angular를 위한 것이 아니라 Angular 개발자를 위한 것입니다.
 서비스 프로바이더의 설정을 외부에서 지정하는 모듈이라면 이 패턴을 도입할 수 있는지 검토해 보세요.
 
 <hr/>
@@ -729,7 +725,7 @@ Providers should be configured using `@Injectable` syntax. If possible, they sho
 프로바이더는 `@Injectable` 문법으로 등록되어야 하며, 가능하다면 애플리케이션 최상위 계층에 존재하도록 `providedIn: 'root'`을 지정해야 합니다. 지연로딩되는 모듈에 등록된 프로바이더는 모듈과 함께 필요할 때 로딩됩니다.
 
 <!--
-If it's the consumer's decision whether a provider is available application-wide or not, 
+If it's the consumer's decision whether a provider is available application-wide or not,
 then register providers in modules (`@NgModule.providers`) instead of registering in components (`@Component.providers`).
 -->
 그리고 이 프로바이더가 애플리케이션 전역에 사용되는지 일부 범위에만 사용되는지에 따라 달라지지만, 프로바이더는 되도록 컴포넌트(`@Component.providers`)에 등록하는 것보다 모듈(`@NgModule.providers`)에 등록하는 것이 좋습니다.
@@ -900,12 +896,12 @@ You can throw an error or take other remedial action.
 
 <!--
 Certain NgModules, such as `BrowserModule`, implement such a guard.
-Here is a custom constructor for an NgModule called `CoreModule`.
+Here is a custom constructor for an NgModule called `GreetingModule`.
 -->
 그리고 `BrowserModule`과 같은 모듈은 이 문제를 방지하는 로직을 따로 마련하기도 했습니다.
-`BrowserModule`이 로드되기 전에 `CoreModule`이 이미 로드되었다면, 이 모듈은 다음과 같은 로직으로 에러를 발생시킵니다.
+`BrowserModule`이 로드되기 전에 `GreetingModule`이 이미 로드되었다면, 이 모듈은 다음과 같은 로직으로 에러를 발생시킵니다.
 
-<code-example path="ngmodule-faq/src/app/core/core.module.ts" region="ctor" header="src/app/core/core.module.ts (Constructor)" linenums="false">
+<code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor" header="src/app/greeting/greeting.module.ts (Constructor)" linenums="false">
 </code-example>
 
 <hr/>
@@ -1121,35 +1117,6 @@ both those loaded when the app starts and those you lazy load later.
 -->
 공유 모듈은 기능 모듈이 로드해서 사용합니다. 이 때 기능 모듈은 앱이 실행되면서 즉시 로드되는 모듈이던지, 지연 로딩되는 모듈이던지 상관없습니다.
 
-<!--
-### `CoreModule`
--->
-### 코어 모듈 (`CoreModule`)
-
-<!--
-`CoreModule` is a conventional name for an `NgModule` with `providers` for
-the singleton services you load when the application starts.
--->
-코어 모듈은 애플리케이션이 시작되면서 로드되고, 앱에서 사용하는 싱글턴 서비스에 대한 `providers` 목록을 제공하는 모듈을 의미합니다.
-
-<!--
-Import `CoreModule` in the root `AppModule` only.
-Never import `CoreModule` in any other module.
--->
-코어 모듈은 애플리케이션의 최상위 `AppModule`에만 사용합니다.
-다른 모듈은 코어 모듈을 로드하지 않는 것이 좋습니다.
-
-<!--
-Consider making `CoreModule` a pure services module
-with no `declarations`.
--->
-코어 모듈은 `declarations`에 아무것도 정의하지 않고, 서비스만 제공하는 것이 좋습니다.
-
-<!--
-For more information, see [Sharing NgModules](guide/sharing-ngmodules)
-and [Singleton Services](guide/singleton-services).
--->
-좀 더 자세한 내용은 [공유 모듈](guide/sharing-ngmodules)과 [싱글턴 서비스](guide/singleton-services) 문서를 참고하세요.
 
 <!--
 ### Feature Modules

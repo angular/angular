@@ -143,7 +143,7 @@ When the browser's URL changes, that router looks for a corresponding `Route`
 from which it can determine the component to display.
 
 A router has no routes until you configure it.
-The following example creates five route definitions, configures the router via the `RouterModule.forRoot` method,
+The following example creates five route definitions, configures the router via the `RouterModule.forRoot()` method,
 and adds the result to the `AppModule`'s `imports` array.
 -->
 라우터를 사용하는 Angular 애플리케이션이라면 *`Router`* 서비스 인스턴스가 싱글턴으로 존재합니다.
@@ -151,7 +151,7 @@ and adds the result to the `AppModule`'s `imports` array.
 
 개발자가 설정하기 전에는 아무 라우팅 규칙도 없습니다.
 다음 예제는 라우팅 규칙을 각각 다른 4가지 방식으로 정의한 예제 코드입니다.
-이 라우팅 규칙들은 라우터 모듈의 `RouterModule.forRoot` 메소드를 사용해서 `AppModule`의 `imports` 배열에 등록되었습니다.
+이 라우팅 규칙들은 라우터 모듈의 `RouterModule.forRoot()` 메소드를 사용해서 `AppModule`의 `imports` 배열에 등록되었습니다.
 
 <!--
 <code-example path="router/src/app/app.module.0.ts" linenums="false" header="src/app/app.module.ts (excerpt)">
@@ -166,10 +166,10 @@ and adds the result to the `AppModule`'s `imports` array.
 
 <!--
 The `appRoutes` array of *routes* describes how to navigate.
-Pass it to the `RouterModule.forRoot` method in the module `imports` to configure the router.
+Pass it to the `RouterModule.forRoot()` method in the module `imports` to configure the router.
 -->
 `appRoutes` 배열에는 네비게이션을 수행하는 *라우팅 규칙(routes)*을 정의합니다.
-그러면 라우팅 규칙들이 모듈의 `imports` 항목에 사용된 `RouterModule.forRoot` 메소드의 인자로 전달되어 애플리케이션에 등록됩니다.
+그러면 라우팅 규칙들이 모듈의 `imports` 항목에 사용된 `RouterModule.forRoot()` 메소드의 인자로 전달되어 애플리케이션에 등록됩니다.
 
 <!--
 Each `Route` maps a URL `path` to a component.
@@ -243,8 +243,8 @@ If you need to see what events are happening during the navigation lifecycle, th
 ### 라우팅 영역 (Router outlet)
 
 <!--
-The `RouterOutlet` is a directive from the router library that is used like a component. 
-It acts as a placeholder that marks the spot in the template where the router should 
+The `RouterOutlet` is a directive from the router library that is used like a component.
+It acts as a placeholder that marks the spot in the template where the router should
 display the components for that outlet.
 -->
 `RouterOutlet`은 라우터가 제공하는 디렉티브이며, 일반 컴포넌트처럼 사용합니다.
@@ -333,9 +333,9 @@ On each anchor tag, you see a [property binding](guide/template-syntax#property-
 
 <!--
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes
-that the Router will add when this link is active (and remove when the link is inactive). You set the `RouterLinkActive` 
-directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component 
-property that returns such a string. 
+that the Router will add when this link is active (and remove when the link is inactive). You set the `RouterLinkActive`
+directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component
+property that returns such a string.
 -->
 이 템플릿 표현식의 등호(=) 오른쪽에는 공백으로 구분하는 CSS 클래스를 지정하는데, 이 링크가 활성화되면 해당 클래스가 지정되고 링크가 비활성화되면 해당 클래스가 제거됩니다.
 그래서 `RouterLinkActive` 디렉티브에는 `[routerLinkActive]="'active fluffy'"`와 같은 문자열을 지정하거나 컴포넌트 클래스에서 문자열을 반환하는 프로퍼티나 메소드를 지정할 수 있습니다.
@@ -1333,11 +1333,11 @@ Replace the contents of each component with the sample HTML below.
 
 <code-tabs>
 
-  <code-pane header="src/app/crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.html">
+  <code-pane header="src/app/crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.1.html">
 
   </code-pane>
 
-  <code-pane header="src/app/hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.html" region="template">
+  <code-pane header="src/app/hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.1.html" region="template">
 
   </code-pane>
 
@@ -1356,9 +1356,9 @@ In order to use the Router, you must first register the `RouterModule` from the 
 <div class="alert is-important">
 
   <!--
-  **Note:** The `RouterModule.forRoot` method is a pattern used to register application-wide providers. Read more about application-wide providers in the [Singleton services](guide/singleton-services#forroot) guide.
+  **Note:** The `RouterModule.forRoot` method is a pattern used to register application-wide providers. Read more about application-wide providers in the [Singleton services](guide/singleton-services#forRoot-router) guide.
   -->
-  **참고:** `RouterModule.forRoot()` 메소드는 애플리케이션 전역에 사용하는 프로바이더를 등록하는 함수입니다. 애플리케이션 전역 프로바이더에 대해서 더 알아보려면 [싱글턴 서비스](guide/singleton-services#forroot) 문서를 참고하세요.
+  **참고:** `RouterModule.forRoot()` 메소드는 애플리케이션 전역에 사용하는 프로바이더를 등록하는 함수입니다. 애플리케이션 전역 프로바이더에 대해서 더 알아보려면 [싱글턴 서비스](guide/singleton-services#forRoot-router) 문서를 참고하세요.
 
 </div>
 
@@ -1457,9 +1457,9 @@ To test this feature, add a button with a `RouterLink` to the `HeroListComponent
 동작을 테스트하기 위해 `HeroListComponent` 템플릿에 `RouterLink`를 사용하는 버튼을 하나 추가하고, 이 버튼의 링크를 `"/sidekicks"`로 지정합니다.
 
 <!--
-<code-example path="router/src/app/hero-list/hero-list.component.html" linenums="false" header="src/app/hero-list/hero-list.component.html (excerpt)">
+<code-example path="router/src/app/hero-list/hero-list.component.1.html" linenums="false" header="src/app/hero-list/hero-list.component.html (excerpt)">
 -->
-<code-example path="router/src/app/hero-list/hero-list.component.html" linenums="false" header="src/app/hero-list/hero-list.component.html (일부)">
+<code-example path="router/src/app/hero-list/hero-list.component.1.html" linenums="false" header="src/app/hero-list/hero-list.component.html (일부)">
 
 </code-example>
 
@@ -1596,12 +1596,12 @@ The default route should redirect to the `HeroListComponent` _only_ when the _en
 Remember to restore the redirect to `pathMatch = 'full'`.
 
 Learn more in Victor Savkin's
-[post on redirects](http://victorsavkin.com/post/146722301646/angular-router-empty-paths-componentless-routes).
+[post on redirects](http://vsavkin.tumblr.com/post/146722301646/angular-router-empty-paths-componentless-routes).
 -->
 그래서 기본 라우팅 규칙은 _반드시_ _전체_ URL이 `''`일 때만 적용되어야 합니다.
 코드를 `pathMatch = 'full'`로 다시 수정하는 것을 잊지 마세요.
 
-리다이렉트에 대한 내용은 Victor Savkin이 작성한 [블로그 글](http://victorsavkin.com/post/146722301646/angular-router-empty-paths-componentless-routes)에서 자세하게 확인할 수 있습니다.
+리다이렉트에 대한 내용은 Victor Savkin이 작성한 [블로그 글](http://vsavkin.tumblr.com/post/146722301646/angular-router-empty-paths-componentless-routes)에서 자세하게 확인할 수 있습니다.
 
 </div>
 
@@ -1622,7 +1622,7 @@ You've learned how to do the following:
 * Load the router library.
 * Add a nav bar to the shell template with anchor tags, `routerLink`  and `routerLinkActive` directives.
 * Add a `router-outlet` to the shell template where views will be displayed.
-* Configure the router module with `RouterModule.forRoot`.
+* Configure the router module with `RouterModule.forRoot()`.
 * Set the router to compose HTML5 browser URLs.
 * handle invalid routes with a `wildcard` route.
 * navigate to the default route when the app launches with an empty path.
@@ -1711,7 +1711,7 @@ The starter app's structure looks like this:
             hero-list.component.ts
 
           </div>
-          
+
         </div>
 
         <div class='file'>
@@ -1737,7 +1737,7 @@ The starter app's structure looks like this:
             page-not-found.component.ts
 
           </div>
-          
+
         </div>
 
         <div class='file'>
@@ -1805,11 +1805,11 @@ Here are the files discussed in this milestone.
 
   </code-pane>
 
-  <code-pane header="hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.html">
+  <code-pane header="hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.1.html">
 
   </code-pane>
 
-  <code-pane header="crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.html">
+  <code-pane header="crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.1.html">
 
   </code-pane>
 
@@ -1865,7 +1865,7 @@ The **Routing Module** has several characteristics:
 
 <!--
 The sample routing application does not include routing by default.
-When you use the [Angular CLI](cli) to create a project that will use routing, set the `--routing` option for the project or app, and for each NgModule. 
+When you use the [Angular CLI](cli) to create a project that will use routing, set the `--routing` option for the project or app, and for each NgModule.
 When you create or initialize a new project (using the CLI [`ng new`](cli/new) command) or a new app (using the [`ng generate app`](cli/generate) command), specify the `--routing` option.  This tells the CLI to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
 You can then use routing in any NgModule that you add to the project or app.
 -->
@@ -1912,14 +1912,14 @@ Create an `AppRouting` module in the `/app` folder to contain the routing config
 <!--
 Import the `CrisisListComponent`, `HeroListComponent`, and `PageNotFoundComponent` symbols
 just like you did in the `app.module.ts`. Then move the `Router` imports
-and routing configuration, including `RouterModule.forRoot`, into this routing module.
+and routing configuration, including `RouterModule.forRoot()`, into this routing module.
 
 Re-export the Angular `RouterModule` by adding it to the module `exports` array.
 By re-exporting the `RouterModule` here the components declared in `AppModule` will have access to router directives such as `RouterLink` and `RouterOutlet`.
 
 After these steps, the file should look like this.
 -->
-그리고 나면 `app.module.ts` 파일에 작성했던 것처럼 `CrisisListComponent`, `HeroListComponent`, `PageNotFoundComponent` 심볼을 로드해서 라우팅 규칙을 등록하면 됩니다. `app.module.ts` 파일에 설정했던 `Router` 설정이 라우팅 모듈로 옮겨가기 때문에 `RouterModule.forRoot` 메소드를 사용하는 부분도 라우팅 모듈로 옮기면 됩니다.
+그리고 나면 `app.module.ts` 파일에 작성했던 것처럼 `CrisisListComponent`, `HeroListComponent`, `PageNotFoundComponent` 심볼을 로드해서 라우팅 규칙을 등록하면 됩니다. `app.module.ts` 파일에 설정했던 `Router` 설정이 라우팅 모듈로 옮겨가기 때문에 `RouterModule.forRoot()` 메소드를 사용하는 부분도 라우팅 모듈로 옮기면 됩니다.
 
 라우팅 모듈은 Angular에서 제공하는 `RouterModule`을 모듈의 `exports` 배열에 등록해서 모듈 외부로 공개해야 합니다.
 그래야 `AppModule` 범위에서도 `RouterLink`나 `RouterOutlet`과 같은 라우터 관련 디렉티브를 사용할 수 있습니다.
@@ -1931,7 +1931,7 @@ After these steps, the file should look like this.
 </code-example>
 
 <!--
-Next, update the `app.module.ts` file, removing `RouterModule.forRoot` in 
+Next, update the `app.module.ts` file, removing `RouterModule.forRoot` in
 the `imports` array.
 -->
 그 다음에는 `app.module.ts` 파일에서 이전에 `imports` 배열에 등록했던 `RouterModule.forRoot`를 제거하고 라우팅 모듈을 로드합니다.
@@ -2202,7 +2202,7 @@ When you're done, you'll have these *hero management* files:
 
     <div class='file'>
       hero.service.ts
-    </div>    
+    </div>
 
     <div class='file'>
       hero.ts
@@ -2210,7 +2210,7 @@ When you're done, you'll have these *hero management* files:
 
     <div class='file'>
       heroes-routing.module.ts
-    </div>    
+    </div>
 
     <div class='file'>
       heroes.module.ts
@@ -2255,7 +2255,7 @@ Now that you have routes for the `Heroes` module, register them with the `Router
 `RouterModule` _almost_ as you did in the `AppRoutingModule`.
 
 There is a small but critical difference.
-In the `AppRoutingModule`, you used the static **`RouterModule.forRoot`** method to register the routes and application level service providers.
+In the `AppRoutingModule`, you used the static **`RouterModule.forRoot()`** method to register the routes and application level service providers.
 In a feature module you use the static **`forChild`** method.
 -->
 히어로 모듈은 히어로의 목록을 표시하는 컴포넌트와 히어로의 상세 정보를 표시하는 컴포넌트로 구성됩니다.
@@ -2272,18 +2272,19 @@ In a feature module you use the static **`forChild`** method.
 이 단계가 `Heroes` 모듈에 라우팅 규칙을 등록하는 단계입니다. 라우팅 규칙은 `AppRoutingModule`에서 살펴봤던 것처럼 `RouterModule`을 사용해서 `Router`에 등록합니다.
 
 그런데 이 때 꼭 짚고 넘어가야 할 다른 점이 하나 있습니다.
-`AppRoutingModule`에서는 애플리케이션 계층에 필요한 라우팅 규칙과 서비스 프로바이더를 등록하기 위해 **`RouterModule.forRoot`** 메소드를 사용했습니다.
+`AppRoutingModule`에서는 애플리케이션 계층에 필요한 라우팅 규칙과 서비스 프로바이더를 등록하기 위해 **`RouterModule.forRoot()`** 메소드를 사용했습니다.
 하지만 기능 모듈에서는 **`forChild`** 메소드를 사용해야 합니다.
 
+<<<<<<< HEAD
 <div class="alert is-helpful">
 
 
 <!--
-Only call `RouterModule.forRoot` in the root `AppRoutingModule`
+Only call `RouterModule.forRoot()` in the root `AppRoutingModule`
 (or the `AppModule` if that's where you register top level application routes).
 In any other module, you must call the **`RouterModule.forChild`** method to register additional routes.
 -->
-`RouterModule.forRoot` 메소드는 애플리케이션 최상위 라우팅 모듈인 `AppRoutingModule` (라우팅 모듈이 따로 없다면 `AppModule`)에서만 사용합니다.
+`RouterModule.forRoot()` 메소드는 애플리케이션 최상위 라우팅 모듈인 `AppRoutingModule` (라우팅 모듈이 따로 없다면 `AppModule`)에서만 사용합니다.
 다른 모듈에서는 서비스 프로바이더를 생략하고 라우팅 규칙만 등록하기 위해 **`RouterModule.forChild`** 메소드를 사용합니다.
 
 </div>
@@ -2525,9 +2526,9 @@ Accordingly, the _link parameters array_ has *two* items:  the routing _path_ an
 그러면 이 정보를 컴포넌트에 전달하기 위해 사용자가 선택한 히어로의 `id`가 컴포넌트로 이동하는 라우팅 경로에 전달되어야 합니다.
 
 <!--
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (link-parameters-array)" region="link-parameters-array">
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array">
 -->
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (링크에 사용된 배열 형태의 인자)" region="link-parameters-array">
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (링크에 사용된 배열 형태의 인자)" region="link-parameters-array">
 
 </code-example>
 
@@ -2970,9 +2971,9 @@ When navigating to the `HeroDetailComponent` you specified the _required_ `id` o
 `HeroDetailComponent`로 네비게이션하는 경우에는 원하는 히어로를 구분하기 위해 `id` 라우팅 변수가 _필수 항목_ 입니다. 그래서 네비게이션할 때 [_링크 변수 배열_](#link-parameters-array)을 다음과 같이 지정했습니다.
 
 <!--
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (link-parameters-array)" region="link-parameters-array">
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array">
 -->
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (링크 변수 배열)" region="link-parameters-array">
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (링크 변수 배열)" region="link-parameters-array">
 
 </code-example>
 
@@ -3288,10 +3289,10 @@ This file does the following:
 
 You could also create more transitions for other routes. This trigger is sufficient for the current milestone.
 
-Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/router` package and the `slideInDownAnimation` from 
+Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/router` package and the `slideInAnimation` from
 `'./animations.ts`.
 
-Add an `animations` array to the `@Component` metadata's that contains the `slideInDownAnimation`.
+Add an `animations` array to the `@Component` metadata's that contains the `slideInAnimation`.
 -->
 이 파일의 내용은 이렇습니다:
 
@@ -3305,7 +3306,7 @@ Add an `animations` array to the `@Component` metadata's that contains the `slid
 
 `AppComponent`로 돌아가서 `@angular/router` 패키지에 있는 `RouterOutlet` 토큰과 `./animations.ts` 파일에 정의한 `slideInDownAnimation`을 로드합니다.
 
-그리고 `@Component` 메타데이터의 `animations` 배열에 다음과 같이 `slideInDownAnimation`을 적용합니다.
+그리고 `@Component` 메타데이터의 `animations` 배열에 다음과 같이 `slideInAnimation`을 적용합니다.
 
 <code-example path="router/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (animations)" region="animation-imports">
 
@@ -3329,9 +3330,9 @@ For the `@routeAnimation` transitions to key off states, you'll need to provide 
 </code-example>
 
 <!--
-The `@routeAnimation` property is bound to the `getAnimationData` with the provided `routerOutlet` reference, so you'll need to define that function in the `AppComponent`. The `getAnimationData` function returns the animation property from the `data` provided through the `ActivatedRoute`. The `animation` property matches the `transition` names you used in the `slideDownAnimation` defined in `animations.ts`.
+The `@routeAnimation` property is bound to the `getAnimationData` with the provided `routerOutlet` reference, so you'll need to define that function in the `AppComponent`. The `getAnimationData` function returns the animation property from the `data` provided through the `ActivatedRoute`. The `animation` property matches the `transition` names you used in the `slideInAnimation` defined in `animations.ts`.
 -->
-그리고 `@routerAnimation` 프로퍼티에 `routerOutlet` 객체를 전달하기 위해 `AppComponent`에 `getAnimationData` 함수를 정의합니다. `getAnimationData` 함수는 `ActivatedRoute`로 전달된 `data`에서 애니메이션 프로퍼티 값을 반환합니다. 이렇게 반환된 `animation` 프로퍼티 값은 `animations.ts` 파일의 `slideDownAnimation`에 정의된 `transition` 이름과 매칭되면서 애니메이션이 동작합니다.
+그리고 `@routerAnimation` 프로퍼티에 `routerOutlet` 객체를 전달하기 위해 `AppComponent`에 `getAnimationData` 함수를 정의합니다. `getAnimationData` 함수는 `ActivatedRoute`로 전달된 `data`에서 애니메이션 프로퍼티 값을 반환합니다. 이렇게 반환된 `animation` 프로퍼티 값은 `animations.ts` 파일의 `slideInAnimation`에 정의된 `transition` 이름과 매칭되면서 애니메이션이 동작합니다.
 
 <!--
 <code-example path="router/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (router outlet)" region="function-binding">
@@ -3412,7 +3413,7 @@ After these changes, the folder structure looks like this:
               crisis-list.component.ts
             </div>
 
-          </div>      
+          </div>
 
         <div class='file'>
           heroes
@@ -3462,7 +3463,7 @@ After these changes, the folder structure looks like this:
 
           <div class='file'>
             hero.service.ts
-          </div>    
+          </div>
 
           <div class='file'>
             hero.ts
@@ -3470,7 +3471,7 @@ After these changes, the folder structure looks like this:
 
           <div class='file'>
             heroes-routing.module.ts
-          </div>    
+          </div>
 
           <div class='file'>
             heroes.module.ts
@@ -3505,7 +3506,7 @@ After these changes, the folder structure looks like this:
             page-not-found.component.ts
 
           </div>
-          
+
         </div>
 
       </div>
@@ -3540,7 +3541,7 @@ After these changes, the folder structure looks like this:
 
       <div class='file'>
         message.service.ts
-      </div>      
+      </div>
 
       <div class='file'>
         index.html
@@ -3577,7 +3578,7 @@ Here are the relevant files for this version of the sample application.
 
   <code-pane header="animations.ts" path="router/src/app/animations.ts">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane header="app.component.html" path="router/src/app/app.component.2.html">
 
@@ -3597,11 +3598,11 @@ Here are the relevant files for this version of the sample application.
 
   <code-pane header="hero-list.component.css" path="router/src/app/heroes/hero-list/hero-list.component.css">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane header="hero-list.component.html" path="router/src/app/heroes/hero-list/hero-list.component.html">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane header="hero-list.component.ts" path="router/src/app/heroes/hero-list/hero-list.component.ts">
 
@@ -3629,7 +3630,7 @@ Here are the relevant files for this version of the sample application.
 
   <code-pane header="message.service.ts" path="router/src/app/message.service.ts">
 
-  </code-pane>  
+  </code-pane>
 
 </code-tabs>
 
@@ -3829,7 +3830,7 @@ display the `Crisis Center Home` and `Crisis Detail` route components.
 
 The `Crisis Detail` route is a child of the `Crisis List`. The router [reuses components](#reuse)
 by default, so the `Crisis Detail` component will be re-used as you select different crises.
-In contrast, back in the `Hero Detail` route, the component was recreated each time you selected a different hero.
+In contrast, back in the `Hero Detail` route, [the component was recreated](#snapshot-the-no-observable-alternative) each time you selected a different hero from the list of heroes.
 -->
 이 때 _자식 라우팅 규칙_ 을 처리하면서 `AppComponent`에서 했던 것과 *다른 점*이 있습니다.
 
@@ -3838,7 +3839,7 @@ In contrast, back in the `Hero Detail` route, the component was recreated each t
 `CrisisListComponent`는 발생한 위기들의 목록을 표시하면서 `RouterOutlet`에 `위기대응센터 홈` 컴포넌트나 `위기 상세정보` 컴포넌트를 표시할 것입니다.
 
 `위기 상세정보`에 연결된 라우팅 규칙은 `위기 목록`의 자식 라우팅 규칙입니다. 기본적으로 `위기 상세정보` 라우팅 규칙은 [재사용되는 컴포넌트](#reuse)이며, 사용자가 위기 목록에서 특정 위기를 선택할 때마다 재사용될 것입니다.
-하지만 이와 다르게 `Hero Detail` 라우팅 규칙은 사용자가 히어로 목록에서 특정 히어로를 선택할 때마다 인스턴스가 다시 생성됩니다.
+하지만 이와 다르게 `Hero Detail` 라우팅 규칙은 사용자가 히어로 목록에서 특정 히어로를 선택할 때마다 [인스턴스가 다시 생성됩니다](#snapshot-the-no-observable-alternative).
 
 <!--
 At the top level, paths that begin with `/` refer to the root of the application.
@@ -3904,7 +3905,7 @@ _before_ the `AppRoutingModule`:
 
   <code-pane path="router/src/app/crisis-center/crisis-center.module.ts"header="src/app/crisis-center/crisis-center.module.ts">
 
-  </code-pane> 
+  </code-pane>
 
   <!--
   <code-pane path="router/src/app/app.module.4.ts" linenums="false" header="src/app/app.module.ts (import CrisisCenterModule)" region="crisis-center-module">
@@ -4862,7 +4863,7 @@ update the admin route with a `canActivate` guard property that references it:
 </code-example>
 
 
- <!--
+<!--
 The admin feature is now protected by the guard, albeit protected poorly.
 -->
 아직 라우팅 가드가 실제로 동작하지는 않지만 관리자 모듈이 라우팅 가드로 보호되었습니다.
@@ -4981,7 +4982,7 @@ Register a `/login` route in the `auth/auth-routing.module.ts`. In `app.module.t
 
   <code-pane header="src/app/auth/login/login.component.html" path="router/src/app/auth/login/login.component.html">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane header="src/app/auth/login/login.component.ts" path="router/src/app/auth/login/login.component.1.ts">
 
@@ -5495,7 +5496,7 @@ The relevant *Crisis Center* code for this milestone follows.
 
   </code-pane>
 
-  <code-pane header="crisis-detail.component.html" path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.html">
+  <code-pane header="crisis-detail.component.ts" path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts">
 
   </code-pane>
 
@@ -5558,13 +5559,13 @@ Update the `AuthGuard` to provide a `session_id` query that will remain after na
 
 Add an `anchor` element so you can jump to a certain point on the page.
 
-Add the `NavigationExtras` object to the `router.navigate` method that navigates you to the `/login` route.
+Add the `NavigationExtras` object to the `router.navigate()` method that navigates you to the `/login` route.
 -->
 `AuthGuard`가 다음번에 적용될 라우팅 규칙에 `session_id`를 제공할 수 있도록 수정해 봅시다.
 
 이 데이터는 `anchor` 엘리먼트에 적용되어 특정 페이지로 이동하는 용도로 사용할 것입니다.
 
-이렇게 구현하려면 `/login` 페이지로 이동하기 위해 `router.navigate` 메소드를 실행할 때 인자로 `NavigationExtras` 객체를 전달하면 됩니다.
+이렇게 구현하려면 `/login` 페이지로 이동하기 위해 `router.navigate()` 메소드를 실행할 때 인자로 `NavigationExtras` 객체를 전달하면 됩니다.
 
 <code-example path="router/src/app/auth/auth.guard.4.ts" linenums="false" header="src/app/auth/auth.guard.ts (v3)">
 
@@ -5574,12 +5575,12 @@ Add the `NavigationExtras` object to the `router.navigate` method that navigates
 <!--
 You can also preserve query parameters and fragments across navigations without having to provide them
 again when navigating. In the `LoginComponent`, you'll add an *object* as the
-second argument in the `router.navigate` function
+second argument in the `router.navigateUrl()` function
 and provide the `queryParamsHandling` and `preserveFragment` to pass along the current query parameters
 and fragment to the next route.
 -->
 쿼리 파라미터와 프래그먼트는 보통 네비게이션 과정 중에 활용하지만, 네비게이션이 실행된 이후에 사용할 수 있도록 보관해 둘 수도 있습니다.
-`LoginComponent`에서 `router.navigate` 함수에 `NavigationExtras` 객체를 전달할 때 객체에 `queryParamsHandling` 프로퍼티와 `preserveFragment` 프로퍼티를 지정하면 됩니다.
+`LoginComponent`에서 `router.navigateUrl()` 함수에 `NavigationExtras` 객체를 전달할 때 객체에 `queryParamsHandling` 프로퍼티와 `preserveFragment` 프로퍼티를 지정하면 됩니다.
 그러면 다음에 적용될 라우팅 규칙에 이 데이터를 활용할 수 있습니다.
 
 <code-example path="router/src/app/auth/login/login.component.ts" linenums="false" header="src/app/auth/login/login.component.ts (preserve)" region="preserve">
@@ -5715,14 +5716,17 @@ Users will still visit `/admin` and the `AdminComponent` still serves as the *Ro
 <!--
 Open the `AppRoutingModule` and add a new `admin` route to its `appRoutes` array.
 
-Give it a `loadChildren` property instead of a `children` property, set to the address of the `AdminModule`.
-The address is the `AdminModule` file location (relative to the app root),
-followed by a `#` separator, followed by the name of the exported module class, `AdminModule`.
+Give it a `loadChildren` property instead of a `children` property.
+The `loadChildren` property takes a function that returns a promise using the browser's built-in syntax for lazy loading code using dynamic imports `import('...')`.
+The path is the location of the `AdminModule` (relative to the app root).
+After the code is requested and loaded, the `Promise` resolves an object that contains the `NgModule`, in this case the `AdminModule`.
 -->
 `AppRoutingModule`을 열고 `appRoutes` 배열에 새로운 `admin` 라우팅을 추가합니다.
 
-그리고 `children` 프로퍼티 대신 `loadChildren` 프로퍼티를 사용해서 `AdminModule`의 위치를 지정합니다.
-이 때 지정하는 `AdminModule`의 위치는 애플리케이션 최상위 폴더부터 시작되는 상대주소입니다. 파일의 경로까지 지정했으면 `#` 구분자를 붙이고 지연로딩 하려는 모듈의 이름을 지정합니다.
+Give it a `loadChildren` property instead of a `children` property.
+The `loadChildren` property takes a function that returns a promise using the browser's built-in syntax for lazy loading code using dynamic imports `import('...')`.
+The path is the location of the `AdminModule` (relative to the app root).
+After the code is requested and loaded, the `Promise` resolves an object that contains the `NgModule`, in this case the `AdminModule`.
 
 <!--
 <code-example path="router/src/app/app-routing.module.5.ts" region="admin-1" header="app-routing.module.ts (load children)">
@@ -6005,16 +6009,16 @@ You could try this now and confirm that the  `CrisisCenterModule` loads after yo
 
 To enable preloading of all lazy loaded modules, import the `PreloadAllModules` token from the Angular router package.
 
-The second argument in the `RouterModule.forRoot` method takes an object for additional configuration options.
+The second argument in the `RouterModule.forRoot()` method takes an object for additional configuration options.
 The `preloadingStrategy` is one of those options.
-Add the `PreloadAllModules` token to the `forRoot` call:
+Add the `PreloadAllModules` token to the `forRoot()` call:
 -->
 이렇게 구현한 후에 사용자가 "Crisis Center" 버튼을 클릭하면 `CrisisCenterModule`이 로드되는 것을 확인할 수 있습니다.
 
 그리고 지연로딩되는 모듈을 모두 사전로딩하려면 라우터 패키지에서 `PreloadAllModules`를 로드해서 적용하면 됩니다.
 
-`RouterModule.forRoot` 메소드는 두 번째 인자로 라우터 설정 옵션을 받을 수 있는데, `preloadingStrategy`가 여기에 적용할 수 있는 옵션  중 하나입니다.
-`forRoot` 메소드에 다음과 같이 `PreloadAllModules` 토큰을 추가합니다.
+`RouterModule.forRoot` 메소드는 두 번째 인자로 라우터 설정 옵션을 받을 수 있는데, `preloadingStrategy`가 여기에 적용할 수 있는 옵션 중 하나입니다.
+`forRoot()` 메소드에 다음과 같이 `PreloadAllModules` 토큰을 추가합니다.
 
 <!--
 <code-example path="router/src/app/app-routing.module.6.ts" linenums="false" header="src/app/app-routing.module.ts (preload all)" region="forRoot">
@@ -6164,14 +6168,14 @@ Shortly, you'll extend the `AdminDashboardComponent` to inject this service and 
 But first, make a few changes to the `AppRoutingModule`.
 
 1. Import `SelectivePreloadingStrategyService` into `AppRoutingModule`.
-1. Replace the `PreloadAllModules` strategy in the call to `forRoot` with this `SelectivePreloadingStrategyService`.
+1. Replace the `PreloadAllModules` strategy in the call to `forRoot()` with this `SelectivePreloadingStrategyService`.
 1. Add the `SelectivePreloadingStrategyService` strategy to the `AppRoutingModule` providers array so it can be injected
 elsewhere in the app.
 -->
 그러기 위해서는 먼저 `AppRoutingModule`을 조금 수정해야 합니다.
 
 1. `AppRoutingModule`에 `SelectivePreloadingStrategyService`를 로드합니다.
-1. `forRoot`에 적용했던 `PreloadAllModules` 정책을 `SelectivePreloadingStrategyService`로 변경합니다.
+1. `forRoot()`에 적용했던 `PreloadAllModules` 정책을 `SelectivePreloadingStrategyService`로 변경합니다.
 1. 애플리케이션 전역에 사용할 수 있도록 `SelectivePreloadingStrategyService` 정책을 `AppRoutingModule` 프로바이더 배열에 추가합니다.
 
 <!--
@@ -6566,7 +6570,7 @@ The router supports both styles with two `LocationStrategy` providers:
 1. `PathLocationStrategy`&mdash;the default "HTML5 pushState" style.
 1. `HashLocationStrategy`&mdash;the "hash URL" style.
 
-The `RouterModule.forRoot` function sets the `LocationStrategy` to the `PathLocationStrategy`,
+The `RouterModule.forRoot()` function sets the `LocationStrategy` to the `PathLocationStrategy`,
 making it the default strategy.
 You can switch to the `HashLocationStrategy` with an override during the bootstrapping process if you prefer it.
 -->
@@ -6575,7 +6579,7 @@ You can switch to the `HashLocationStrategy` with an override during the bootstr
 1. `PathLocationStrategy`&mdash;기본값이며 "HTML5 pushState" 스타일을 사용합니다.
 1. `HashLocationStrategy`&mdash;"해시방식의 URL" 스타일을 사용합니다.
 
-이 옵션은 `RouterModule.forRoot` 함수에 지정합니다.
+이 옵션은 `RouterModule.forRoot()` 함수에 지정합니다.
 그래서 `HashLocationStrategy` 방식을 사용하려면 부트스트랩 과정에 이 옵션을 적용하면 됩니다.
 
 <div class="alert is-helpful">
@@ -6746,7 +6750,7 @@ Those developers may still use HTML5 URLs by taking two remedial steps:
 
 <!--
 You can go old-school with the `HashLocationStrategy` by
-providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot`
+providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot()`
 in the `AppModule`.
 -->
 `AppModule`에 등록하는 `RouterModule.forRoot` 메소드에는 두 번째 인자로 옵션을 지정할 수 있는데, 이 객체에 `useHash: true`를 지정하면 `HashLocationStrategy` 방식을 사용할 수 있습니다.

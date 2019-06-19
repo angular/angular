@@ -8,6 +8,7 @@
 
 
 import {Injectable, Optional} from '../di';
+import {ivyEnabled} from '../ivy_switch';
 
 import {Compiler} from './compiler';
 import {NgModuleFactory} from './ng_module_factory';
@@ -23,6 +24,8 @@ declare var System: any;
  * token.
  *
  * @publicApi
+ * @deprecated the `string` form of `loadChildren` is deprecated, and `SystemJsNgModuleLoaderConfig`
+ * is part of its implementation. See `LoadChildren` for more details.
  */
 export abstract class SystemJsNgModuleLoaderConfig {
   /**
@@ -46,6 +49,8 @@ const DEFAULT_CONFIG: SystemJsNgModuleLoaderConfig = {
 /**
  * NgModuleFactoryLoader that uses SystemJS to load NgModuleFactory
  * @publicApi
+ * @deprecated the `string` form of `loadChildren` is deprecated, and `SystemJsNgModuleLoader` is
+ * part of its implementation. See `LoadChildren` for more details.
  */
 @Injectable()
 export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
@@ -56,8 +61,8 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
   }
 
   load(path: string): Promise<NgModuleFactory<any>> {
-    const offlineMode = this._compiler instanceof Compiler;
-    return offlineMode ? this.loadFactory(path) : this.loadAndCompile(path);
+    const legacyOfflineMode = !ivyEnabled && this._compiler instanceof Compiler;
+    return legacyOfflineMode ? this.loadFactory(path) : this.loadAndCompile(path);
   }
 
   private loadAndCompile(path: string): Promise<NgModuleFactory<any>> {

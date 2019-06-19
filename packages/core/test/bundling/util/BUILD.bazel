@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 # Either loads reflect-metadata or is a no-op, depending on whether compilation is in JIT mode.
 ts_library(
@@ -12,7 +12,7 @@ ts_library(
         ":metadata_switch",
     ],
     module_name = "@angular/core/test/bundling/util/src/reflect_metadata",
-    deps = ["@ngdeps//reflect-metadata"],
+    deps = ["@npm//reflect-metadata"],
 )
 
 # See packages/core/BUILD.bazel.

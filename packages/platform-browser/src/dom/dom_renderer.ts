@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
@@ -63,7 +63,9 @@ export class DomRendererFactory2 implements RendererFactory2 {
   private rendererByCompId = new Map<string, Renderer2>();
   private defaultRenderer: Renderer2;
 
-  constructor(private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost) {
+  constructor(
+      private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
+      @Inject(APP_ID) private appId: string) {
     this.defaultRenderer = new DefaultDomRenderer2(eventManager);
   }
 
@@ -75,8 +77,8 @@ export class DomRendererFactory2 implements RendererFactory2 {
       case ViewEncapsulation.Emulated: {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
-          renderer =
-              new EmulatedEncapsulationDomRenderer2(this.eventManager, this.sharedStylesHost, type);
+          renderer = new EmulatedEncapsulationDomRenderer2(
+              this.eventManager, this.sharedStylesHost, type, this.appId);
           this.rendererByCompId.set(type.id, renderer);
         }
         (<EmulatedEncapsulationDomRenderer2>renderer).applyToHost(element);
@@ -111,7 +113,9 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string): any {
     if (namespace) {
-      return document.createElementNS(NAMESPACE_URIS[namespace], name);
+      // In cases where Ivy (not ViewEngine) is giving us the actual namespace, the look up by key
+      // will result in undefined, so we just return the namespace here.
+      return document.createElementNS(NAMESPACE_URIS[namespace] || namespace, name);
     }
 
     return document.createElement(name);
@@ -153,7 +157,9 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
-      name = `${namespace}:${name}`;
+      name = namespace + ':' + name;
+      // TODO(benlesh): Ivy may cause issues here because it's passing around
+      // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
         el.setAttributeNS(namespaceUri, name, value);
@@ -167,10 +173,15 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     if (namespace) {
+      // TODO(benlesh): Ivy may cause issues here because it's passing around
+      // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
         el.removeAttributeNS(namespaceUri, name);
       } else {
+        // TODO(benlesh): Since ivy is passing around full URIs for namespaces
+        // this could result in properties like `http://www.w3.org/2000/svg:cx="123"`,
+        // which is wrong.
         el.removeAttribute(`${namespace}:${name}`);
       }
     } else {
@@ -220,7 +231,7 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 }
 
-const AT_CHARCODE = '@'.charCodeAt(0);
+const AT_CHARCODE = (() => '@'.charCodeAt(0))();
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
     throw new Error(
@@ -234,13 +245,13 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
 
   constructor(
       eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
-      private component: RendererType2) {
+      private component: RendererType2, appId: string) {
     super(eventManager);
-    const styles = flattenStyles(component.id, component.styles, []);
+    const styles = flattenStyles(appId + '-' + component.id, component.styles, []);
     sharedStylesHost.addStyles(styles);
 
-    this.contentAttr = shimContentAttribute(component.id);
-    this.hostAttr = shimHostAttribute(component.id);
+    this.contentAttr = shimContentAttribute(appId + '-' + component.id);
+    this.hostAttr = shimHostAttribute(appId + '-' + component.id);
   }
 
   applyToHost(element: any) { super.setAttribute(element, this.hostAttr, ''); }

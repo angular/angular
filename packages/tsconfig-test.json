@@ -6,4 +6,8 @@
   "compilerOptions": {
     "types": ["node", "jasmine"],
   },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true,
+    "devmodeTargetOverride": "es5"
+  }
 }

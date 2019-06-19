@@ -17,13 +17,13 @@ const appRoutes: Routes = [
   },
   {
     path: 'admin',
-    loadChildren: './admin/admin.module#AdminModule',
+    loadChildren: () => import('./admin/admin.module').then(mod => mod.AdminModule),
     canLoad: [AuthGuard]
   },
   // #docregion preload-v2
   {
     path: 'crisis-center',
-    loadChildren: './crisis-center/crisis-center.module#CrisisCenterModule',
+    loadChildren: () => import('./crisis-center/crisis-center.module').then(mod => mod.CrisisCenterModule),
     data: { preload: true }
   },
   // #enddocregion preload-v2

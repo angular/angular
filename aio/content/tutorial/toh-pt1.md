@@ -27,9 +27,9 @@ Using the Angular CLI, generate a new component named `heroes`.
 
 <!--
 The CLI creates a new folder, `src/app/heroes/`, and generates
-the three files of the  `HeroesComponent`.
+the four files of the  `HeroesComponent`.
 -->
-그러면 CLI가 `src/app/heroes/`폴더를 생성하고 `HeroesComponent`를 구성하는 파일 3개를 생성합니다.
+그러면 CLI가 `src/app/heroes/`폴더를 생성하고 `HeroesComponent`를 구성하는 파일 4개를 생성합니다.
 
 <!--
 The `HeroesComponent` class file is as follows:

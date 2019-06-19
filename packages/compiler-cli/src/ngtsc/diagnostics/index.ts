@@ -7,5 +7,5 @@
  */
 
 export {ErrorCode, ngErrorCode} from './src/code';
-export {FatalDiagnosticError, isFatalDiagnosticError} from './src/error';
+export {FatalDiagnosticError, isFatalDiagnosticError, makeDiagnostic} from './src/error';
 export {replaceTsWithNgInErrors} from './src/util';

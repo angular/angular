@@ -54,24 +54,25 @@ export interface R3DirectiveMetadata {
   queries: R3QueryMetadata[];
 
   /**
+   * Information about the view queries made by the directive.
+   */
+  viewQueries: R3QueryMetadata[];
+
+  /**
    * Mappings indicating how the directive interacts with its host element (host bindings,
    * listeners, etc).
    */
-  host: {
-    /**
-     * A mapping of attribute binding keys to unparsed expressions.
-     */
-    attributes: {[key: string]: string};
+  host: R3HostMetadata;
 
+  /**
+   * Information about usage of specific lifecycle events which require special treatment in the
+   * code generator.
+   */
+  lifecycle: {
     /**
-     * A mapping of event binding keys to unparsed expressions.
+     * Whether the directive uses NgOnChanges.
      */
-    listeners: {[key: string]: string};
-
-    /**
-     * A mapping of property binding keys to unparsed expressions.
-     */
-    properties: {[key: string]: string};
+    usesOnChanges: boolean;
   };
 
   /**
@@ -114,11 +115,6 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
      */
     nodes: t.Node[];
   };
-
-  /**
-   * Information about the view queries made by the component.
-   */
-  viewQueries: R3QueryMetadata[];
 
   /**
    * A map of pipe names to an expression referencing the pipe type which are in the scope of the
@@ -218,6 +214,21 @@ export interface R3QueryMetadata {
    * for a given node is to be returned.
    */
   read: o.Expression|null;
+
+  /**
+   * Whether or not this query should collect only static results.
+   *
+   * If static is true, the query's results will be set on the component after nodes are created,
+   * but before change detection runs. This means that any results that relied upon change detection
+   * to run (e.g. results inside *ngIf or *ngFor views) will not be collected. Query results are
+   * available in the ngOnInit hook.
+   *
+   * If static is false, the query's results will be set on the component after change detection
+   * runs. This means that the query results can contain nodes inside *ngIf or *ngFor views, but
+   * the results will not be available in the ngOnInit hook (only in the ngAfterContentInit for
+   * content hooks and ngAfterViewInit for view hooks).
+   */
+  static: boolean;
 }
 
 /**
@@ -236,4 +247,27 @@ export interface R3ComponentDef {
   expression: o.Expression;
   type: o.Type;
   statements: o.Statement[];
+}
+
+/**
+ * Mappings indicating how the class interacts with its
+ * host element (host bindings, listeners, etc).
+ */
+export interface R3HostMetadata {
+  /**
+   * A mapping of attribute binding keys to `o.Expression`s.
+   */
+  attributes: {[key: string]: o.Expression};
+
+  /**
+   * A mapping of event binding keys to unparsed expressions.
+   */
+  listeners: {[key: string]: string};
+
+  /**
+   * A mapping of property binding keys to unparsed expressions.
+   */
+  properties: {[key: string]: string};
+
+  specialAttributes: {styleAttr?: string; classAttr?: string;};
 }

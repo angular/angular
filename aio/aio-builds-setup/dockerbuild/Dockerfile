@@ -1,5 +1,5 @@
 # Image metadata and config
-FROM debian:jessie
+FROM debian:stretch
 
 LABEL name="angular.io PR preview" \
       description="This image implements the PR preview functionality for angular.io." \
@@ -26,8 +26,8 @@ ARG      AIO_GITHUB_ORGANIZATION=angular
 ARG TEST_AIO_GITHUB_ORGANIZATION=test-org
 ARG      AIO_GITHUB_REPO=angular
 ARG TEST_AIO_GITHUB_REPO=test-repo
-ARG      AIO_GITHUB_TEAM_SLUGS=team,aio-contributors
-ARG TEST_AIO_GITHUB_TEAM_SLUGS=team,aio-contributors
+ARG      AIO_GITHUB_TEAM_SLUGS=aio-auto-previews,aio-contributors
+ARG TEST_AIO_GITHUB_TEAM_SLUGS=test-team-1,test-team-2
 ARG      AIO_NGINX_HOSTNAME=$AIO_DOMAIN_NAME
 ARG TEST_AIO_NGINX_HOSTNAME=$TEST_AIO_DOMAIN_NAME
 ARG      AIO_NGINX_PORT_HTTP=80
@@ -40,7 +40,7 @@ ARG      AIO_TRUSTED_PR_LABEL="aio: preview"
 ARG TEST_AIO_TRUSTED_PR_LABEL="aio: preview"
 ARG      AIO_PREVIEW_SERVER_HOSTNAME=preview.localhost
 ARG TEST_AIO_PREVIEW_SERVER_HOSTNAME=preview.localhost
-ARG      AIO_ARTIFACT_MAX_SIZE=20971520
+ARG      AIO_ARTIFACT_MAX_SIZE=26214400
 ARG TEST_AIO_ARTIFACT_MAX_SIZE=200
 ARG      AIO_PREVIEW_SERVER_PORT=3000
 ARG TEST_AIO_PREVIEW_SERVER_PORT=3001
@@ -76,21 +76,20 @@ RUN apt-get update -y && apt-get install -y curl
 RUN curl --silent --show-error --location https://deb.nodesource.com/setup_10.x | bash -
 RUN curl --silent --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN echo "deb http://ftp.debian.org/debian jessie-backports main" | tee /etc/apt/sources.list.d/backports.list
+RUN echo "deb http://ftp.debian.org/debian stretch-backports main" | tee /etc/apt/sources.list.d/backports.list
 
 
 # Install packages
 RUN apt-get update -y && apt-get install -y \
-    chkconfig \
-    cron \
-    dnsmasq \
-    nano \
-    nodejs \
-    openssl \
-    rsyslog \
-    yarn
-RUN apt-get install -t jessie-backports -y nginx
-RUN yarn global add pm2@2
+    cron=3.0pl1-128+deb9u1 \
+    dnsmasq=2.76-5+deb9u2 \
+    nano=2.7.4-1 \
+    nginx=1.10.3-1+deb9u2 \
+    nodejs=10.15.3-1nodesource1 \
+    openssl=1.1.0j-1~deb9u1 \
+    rsyslog=8.24.0-1 \
+    yarn=1.15.2-1
+RUN yarn global add pm2@3.5.0
 
 
 # Set up log rotation
@@ -151,8 +150,7 @@ RUN sed -i "s|{{\$AIO_PREVIEW_SERVER_PORT}}|$TEST_AIO_PREVIEW_SERVER_PORT|g" /et
 
 
 # Set up pm2
-RUN pm2 startup systemv -u root > /dev/null
-RUN chkconfig pm2-root on
+RUN pm2 startup --user root > /dev/null
 
 
 # Set up the shell scripts

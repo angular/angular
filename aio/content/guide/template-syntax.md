@@ -1455,7 +1455,6 @@ content harmlessly.
 
 
 <hr/>
-
 {@a other-bindings}
 {@a 기타-바인딩}
 
@@ -1711,44 +1710,30 @@ _스타일 프로퍼티_ 이름은 [대시 케이스](guide/glossary#dash-case)�
 -->
 {@a 이벤트-바인딩}
 
-<!--
-## Event binding  ( <span class="syntax">(event)</span> )
--->
-## 이벤트 바인딩 ( <span class="syntax">(이벤트)</span> )
+
+## Event binding `(event)`
 
 <!--
-The bindings directives you've met so far flow data in one direction: **from a component to an element**.
--->
-지금까지 알아본 바인딩은 **컴포넌트에서 엘리먼트로** 향하는 단방향 바인딩이었습니다.
+Event binding allows you to listen for certain events such as
+keystrokes, mouse movements, clicks, and touches. For an example
+demonstrating all of the points in this section, see the <live-example name="event-binding">event binding example</live-example>.
 
-<!--
-Users don't just stare at the screen. They enter text into input boxes. They pick items from lists.
-They click buttons. Such user actions may result in a flow of data in the opposite direction:
-**from an element to a component**.
--->
-하지만 사용자가 화면만 보고 있는 것은 아닙니다. 입력 필드에 텍스트를 입력하기도 하고, 리스트에 있는 아이템을 선택하기도 하며, 버튼을 클릭하기도 합니다.
-이런 사용자 동작에 대한 정보는 **엘리먼트에서 컴포넌트로** 향하는 방향으로 전달되어야 합니다.
-
-<!--
-The only way to know about a user action is to listen for certain events such as
-keystrokes, mouse movements, clicks, and touches.
-You declare your interest in user actions through Angular event binding.
--->
-사용자의 동작에 반응하려면 키 입력이나 마우스 이벤트, 터치 이벤트가 발생하는지 컴포넌트가 감지하고 있어야 하며,
-이 때 Angular에서는 제공하는 이벤트 바인딩 기능을 사용합니다.
-
-<!--
-Event binding syntax consists of a **target event** name
+Angular event binding syntax consists of a **target event** name
 within parentheses on the left of an equal sign, and a quoted
-[template statement](guide/template-syntax#template-statements) on the right.
+template statement on the right.
 The following event binding listens for the button's click events, calling
 the component's `onSave()` method whenever a click occurs:
 -->
-이벤트 바인딩은 **대상 이벤트** 이름을 괄호(`(`, `)`)로 감싸고 [템플릿 실행문](guide/template-syntax#템플릿-실행문) 을 등호로 연결해서 작성합니다.
+Event binding allows you to listen for certain events such as
+keystrokes, mouse movements, clicks, and touches. For an example
+demonstrating all of the points in this section, see the <live-example name="event-binding">event binding example</live-example>.
+
+이벤트 바인딩은 **대상 이벤트** 이름을 괄호(`(`, `)`)로 감싸고 템플릿 실행문을 등호로 연결해서 작성합니다.
 예를 들어 버튼의 클릭 이벤트를 감지하고 있다가 사용자가 버튼을 클릭할 때 컴포넌트에 있는 `onSave()` 메소드를 실행하려면 다음과 같이 구현합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+<figure>
+  <img src='generated/images/guide/template-syntax/syntax-diagram.svg' alt="Syntax diagram">
+</figure>
 
 <!--
 ### Target event
@@ -1756,20 +1741,19 @@ the component's `onSave()` method whenever a click occurs:
 ### 대상 이벤트
 
 <!--
-A **name between parentheses** &mdash; for example, `(click)` &mdash;
-identifies the target event. In the following example, the target is the button's click event.
+As above, the target is the button's click event.
 -->
-대상 이벤트는 **괄호로 둘러싼 이벤트 이름**으로 구별합니다. 위 코드에서는 `click` 이벤트를 괄호로 감싸서 `(click)`과 같이 작성했기 때문에 `click` 이벤트가 대상 이벤트이며, 아래 코드에서도 바인딩 대상 이벤트는 버튼의 클릭 이벤트입니다.
+위에서 언급한 것처럼, 대상 이벤트는 버튼 클릭 이벤트입니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" header="src/app/app.component.html" linenums="false">
+<code-example path="event-binding/src/app/app.component.html" region="event-binding-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
-Some people prefer the `on-` prefix alternative, known as the **canonical form**:
+Alternatively, use the `on-` prefix, known as the canonical form:
 -->
 이 방식이 익숙하지 않다면 다음과 같이 `on-` 접두사를 사용할 수도 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-2" header="src/app/app.component.html" linenums="false">
+<code-example path="event-binding/src/app/app.component.html" region="event-binding-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1778,18 +1762,8 @@ of a known directive, as it does in the following example:
 -->
 엘리먼트에서 발생하는 이벤트는 HTML 스펙에 정의된 이벤트인 경우가 대부분입니다. 하지만 커스텀 이벤트가 정의되어 있다면 그 이벤트도 같은 방식으로 사용할 수 있습니다. 커스텀 이벤트의 이름이 일반 이벤트 이름과 겹치면 커스텀 이벤트의 우선순위가 더 높습니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-3" header="src/app/app.component.html" linenums="false">
+<code-example path="event-binding/src/app/app.component.html" region="custom-directive" header="src/app/app.component.html" linenums="false">
 </code-example>
-
-<div class="alert is-helpful">
-
-<!--
-The `myClick` directive is further described in the section
-on [aliasing input/output properties](guide/template-syntax#aliasing-io).
--->
-`myClick` 디렉티브는 [입출력 프로퍼티 이름 변경하기](guide/template-syntax#aliasing-io) 섹션에서 자세하게 알아봅니다.
-
-</div>
 
 <!--
 If the name fails to match an element event or an output property of a known directive,
@@ -1797,7 +1771,6 @@ Angular reports an “unknown directive” error.
 -->
 그리고 엘리먼트 이벤트나 커스텀 디렉티브에서 해당되는 이벤트 이름을 찾지 못하면 “unknown directive” 에러가 발생합니다.
 
-<!--
 ### *$event* and event handling statements
 -->
 ### *$event* 객체와 이벤트 처리 실행문
@@ -1817,18 +1790,17 @@ into a model.
 이 템플릿 실행문을 사용해서 원하는 동작을 실행할 수 있습니다.
 
 <!--
-The binding conveys information about the event, including data values, through
-an **event object named `$event`**.
--->
-이 때 템플릿 실행문에는 이벤트에 대한 정보와 이벤트가 발생한 HTML 컨트롤에 대한 정보가 `$event` 라는 객체에 담겨 전달됩니다.
+The binding conveys information about the event. This information can include data values such as an event object, string, or number named `$event`.
 
-<!--
-The shape of the event object is determined by the target event.
+The target event determines the shape of the `$event` object.
 If the target event is a native DOM element event, then `$event` is a
 [DOM event object](https://developer.mozilla.org/en-US/docs/Web/Events),
 with properties such as `target` and `target.value`.
 -->
-이벤트 객체의 형식은 대상 이벤트에 따라 달라집니다.
+이 때 템플릿 실행문에는 이벤트에 대한 정보와 이벤트가 발생한 HTML 컨트롤에 대한 정보가 `$event` 라는 객체에 담겨 전달됩니다.
+그리고 이 정보는 `$event`라는 이름으로 뭉뚱그려지기는 했지만 객체가 될 수도 있고 문자열이나 숫자가 될 수도 있습니다.
+
+`$event` 객체의 타입은 이벤트가 어떤것이냐에 따라 달라집니다.
 대상 이벤트가 네이티브 DOM 엘리먼트의 이벤트라면 `$envet` 객체는 [DOM 이벤트 객체](https://developer.mozilla.org/en-US/docs/Web/Events)이며, 이 객체에서 `target` 프로퍼티나 `target.value` 값을 참조할 수 있습니다.
 
 <!--
@@ -1836,17 +1808,18 @@ Consider this example:
 -->
 다음 예제를 봅시다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html" linenums="false">
+<code-example path="event-binding/src/app/app.component.html" region="event-binding-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
-This code sets the input box `value` property by binding to the `name` property.
-To listen for changes to the value, the code binds to the input box's `input` event.
+This code sets the `<input>` `value` property by binding to the `name` property.
+To listen for changes to the value, the code binds to the `input`
+event of the `<input>` element.
 When the user makes changes, the `input` event is raised, and the binding executes
 the statement within a context that includes the DOM event object, `$event`.
 -->
-이 코드에서는 `currentHero.hero` 값을 입력 필드의 `value` 프로퍼티로 바인딩하면서 초기값을 지정합니다.
-그리고 값이 변경되는 것을 감지하기 위해 `input` 이벤트를 `(input)` 으로 바인딩합니다.
+이 코드에서는 `currentHero.name` 프로퍼티를 `<input>` 엘리먼트의 `value` 프로퍼티로 바인딩하면서 초기값을 지정합니다.
+그리고 값이 변경되는 것을 감지하기 위해 `<input>` 엘리먼트의 `input` 이벤트를 바인딩합니다.
 사용자가 입력 필드의 값을 변경하면 `input` 이벤트가 발생하고 이 이벤트에 연결된 템플릿 실행문이 실행되는데, 이 때 DOM 이벤트 객체가 `$event` 객체로 템플릿 실행문에 전달됩니다.
 
 <!--
@@ -1855,22 +1828,12 @@ To update the `name` property, the changed text is retrieved by following the pa
 그리고 이벤트 객체에서 값을 참조해서 `name` 프로퍼티 값을 다시 지정하기 위해 템플릿 실행문을 `$event.target.value` 와 같이 작성했습니다.
 
 <!--
-If the event belongs to a directive (recall that components are directives),
-`$event` has whatever shape the directive decides to produce.
+If the event belongs to a directive&mdash;recall that components
+are directives&mdash;`$event` has whatever shape the directive produces.
 -->
-대상 이벤트가 DOM 엘리먼트의 이벤트가 아니고 커스텀 디렉티브(컴포넌트)에서 정의하는 이벤트라면, `$event` 객체는 해당 디렉티브에서 정의하는 형식의 객체가 됩니다.
+대상 이벤트가 DOM 엘리먼트의 이벤트가 아니고 커스텀 디렉티브(컴포넌트)에서 정의하는 이벤트라면, `$event` 객체는 해당 디렉티브에서 정의하는 대로 자유로운 형식이 될 수 있습니다.
 
-{@a eventemitter}
-
-<!--
-{@a custom-event}
--->
-{@a 커스텀-이벤트}
-
-<!--
-### Custom events with <span class="syntax">EventEmitter</span>
--->
-### 커스텀 이벤트와 <span class="syntax">EventEmitter</span>
+### Custom events with `EventEmitter`
 
 <!--
 Directives typically raise custom events with an Angular [EventEmitter](api/core/EventEmitter).
@@ -1884,47 +1847,48 @@ Angular에서 제공하는 [EventEmitter](api/core/EventEmitter)를 사용하면
 부모 디렉티브에서는 자식 디렉티브의 이벤트 프로퍼티를 바인딩해서 이 커스텀 이벤트를 감지하고 있다가, 이벤트가 발생했을 때 `$event` 이벤트에 담긴 데이터를 받아서 처리하면 됩니다.
 
 <!--
-Consider a `HeroDetailComponent` that presents hero information and responds to user actions.
-Although the `HeroDetailComponent` has a delete button it doesn't know how to delete the hero itself.
-The best it can do is raise an event reporting the user's delete request.
+Consider an `ItemDetailComponent` that presents item information and responds to user actions.
+Although the `ItemDetailComponent` has a delete button, it doesn't know how to delete the hero. It can only raise an event reporting the user's delete request.
+
+Here are the pertinent excerpts from that `ItemDetailComponent`:
 -->
-`HeroDetailComponent` 는 히어로의 정보를 보여주면서 사용자의 동작에도 반응해야 한다고 합시다.
-이 컴포넌트에 히어로 삭제 버튼을 마련해 둘 수 있지만, 이 컴포넌트에서는 히어로를 어떻게 삭제하는지 알지 못합니다.
+`ItemDetailComponent` 는 아이템을 화면에 표시하면서 사용자의 동작에도 반응해야 한다고 합시다.
+그런데 이 컴포넌트에 삭제 버튼이 있다고 해도 이 컴포넌트는 히어로를 어떻게 삭제하는지 알지 못합니다.
 이 동작을 구현하려면 사용자가 삭제 요청을 했을 때 이벤트를 발생시키고, 부모 컴포넌트에서 이 이벤트를 받아 처리하는 방법이 가장 좋습니다.
 
-<!--
-Here are the pertinent excerpts from that `HeroDetailComponent`:
--->
-`HeroDetailComponent` 코드에서 관련된 부분을 봅시다:
+`ItemDetailComponent` 코드에서 관련된 부분을 봅시다:
 
-<code-example path="template-syntax/src/app/hero-detail.component.ts" linenums="false" header="src/app/hero-detail.component.ts (template)" region="template-1">
+
+<code-example path="event-binding/src/app/item-detail/item-detail.component.html" linenums="false" header="src/app/item-detail/item-detail.component.html (template)" region="line-through">
 </code-example>
 
-<code-example path="template-syntax/src/app/hero-detail.component.ts" linenums="false" header="src/app/hero-detail.component.ts (deleteRequest)" region="deleteRequest">
+<code-example path="event-binding/src/app/item-detail/item-detail.component.ts" linenums="false" header="src/app/item-detail/item-detail.component.ts (deleteRequest)" region="deleteRequest">
 </code-example>
 
 <!--
 The component defines a `deleteRequest` property that returns an `EventEmitter`.
 When the user clicks *delete*, the component invokes the `delete()` method,
-telling the `EventEmitter` to emit a `Hero` object.
--->
-사용자가 *삭제* 버튼을 클릭하면 `delete()` 메소드를 실행하고,
-이 함수에서는 컴포넌트에 `EventEmitter` 타입으로 선언한 `deleteRequest` 프로퍼티에 `Hero` 객체를 담아 컴포넌트 외부로 보냅니다.
+telling the `EventEmitter` to emit an `Item` object.
 
-<!--
-Now imagine a hosting parent component that binds to the `HeroDetailComponent`'s `deleteRequest` event.
+Now imagine a hosting parent component that binds to the `deleteRequest` event
+of the `ItemDetailComponent`.
 -->
+컴포넌트에는 `EventEmitter`를 반환하는 `deleteRequest` 프로퍼티가 존재합니다.
+사용자가 *삭제* 버튼을 클릭하면 `delete()` 메소드를 실행하고,
+이 함수에서는 컴포넌트에 `EventEmitter` 타입으로 선언한 `deleteRequest` 프로퍼티에 `Item` 객체를 담아 컴포넌트 외부로 보냅니다.
+
 그러면 부모 컴포넌트에서 이 이벤트를 받기 위해 `deleteRequest` 프로퍼티를 바인딩하고 있어야 합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (event-binding-to-component)" region="event-binding-to-component">
+<code-example path="event-binding/src/app/app.component.html" linenums="false" header="src/app/app.component.html (event-binding-to-component)" region="event-binding-to-component">
 </code-example>
 
 <!--
-When the `deleteRequest` event fires, Angular calls the parent component's `deleteHero` method,
-passing the *hero-to-delete* (emitted by `HeroDetail`) in the `$event` variable.
+When the `deleteRequest` event fires, Angular calls the parent component's
+`deleteItem()` method, passing the *item-to-delete* (emitted by `ItemDetail`)
+in the `$event` variable.
 -->
-최종적으로 `deleteRequest` 이벤트가 발생하면 Angular는 부모 컴포넌트의 `deleteHero` 메소드를 실행하면서
-*삭제해야할 히어로*에 대한 정보를 `$event` 변수에 담아 전달합니다.
+최종적으로 `deleteRequest` 이벤트가 발생하면 Angular는 부모 컴포넌트의 `deleteItem()` 메소드를 실행하면서
+(`ItemDetail`에서 보낸) *삭제해야 할 아이템*에 대한 정보를 `$event` 변수에 담아 전달합니다.
 
 <!--
 ### Template statements have side effects
@@ -1932,18 +1896,19 @@ passing the *hero-to-delete* (emitted by `HeroDetail`) in the `$event` variable.
 ### 템플릿 실행문의 영향
 
 <!--
-The `deleteHero` method has a side effect: it deletes a hero.
-Template statement side effects are not just OK, but expected.
--->
-`deleteHero()` 메소드는 히어로 목록 중 하나를 삭제합니다.
-템플릿 실행문이 항상 애플리케이션에 영향을 줄지 정확하게 알 수는 없지만, 영향을 줄 가능성은 있습니다.
+Though [template expressions](guide/template-syntax#template-expressions) shouldn't have [side effects](guide/template-syntax#avoid-side-effects), template
+statements usually do. The `deleteItem()` method does have
+a side effect: it deletes an item.
 
-<!--
-Deleting the hero updates the model, perhaps triggering other changes
-including queries and saves to a remote server.
-These changes percolate through the system and are ultimately displayed in this and other views.
+Deleting an item updates the model, and depending on your code, triggers
+other changes including queries and saving to a remote server.
+These changes propagate through the system and ultimately display in this and other views.
 -->
-예제 코드로 보면, 히어로를 삭제하면 모델이 업데이트 되면서 서버에 새로운 목록을 요청하거나 삭제 요청을 보내는 등 다른 동작을 유발할 수 있습니다.
+Though [template expressions](guide/template-syntax#template-expressions) shouldn't have [side effects](guide/template-syntax#avoid-side-effects), template
+statements usually do. The `deleteItem()` method does have
+a side effect: it deletes an item.
+
+예제 코드로 보면, 아이템을 삭제하면 모델이 업데이트 되면서 서버에 새로운 목록을 요청하거나 삭제 요청을 보내는 등 다른 동작을 유발할 수 있습니다.
 이런 동작들은 뷰 데이터를 갱신하고 서버에 반영하면서 시스템을 자연스럽게 유지합니다.
 
 <hr/>
@@ -3651,53 +3616,47 @@ You'll need this template operator when you turn on strict null checks. It's opt
 
 <hr/>
 
+{@a built-in-template-functions}
+
+## Built-in template functions
+
 {@a any-type-cast-function}
-{@a any-타입-캐스트-함수}
+{@a any-타입-캐스팅-함수}
 
 <!--
-## The `$any` type cast function (`$any( <expression> )`) 
+### The `$any()` type cast function
 -->
-## `$any` 타입 캐스트 함수 (`$any( <expression> )`) 
+### `$any` 타입 캐스팅 함수
 
 <!--
-Sometimes a binding expression will be reported as a type error and it is not possible or difficult
-to fully specify the type. To silence the error, you can use the `$any` cast function to cast
-the expression to [the `any` type](http://www.typescriptlang.org/docs/handbook/basic-types.html#any).
+Sometimes a binding expression triggers a type error during [AOT compilation](guide/aot-compiler) and it is not possible or difficult
+to fully specify the type. To silence the error, you can use the `$any()` cast function to cast
+the expression to [the `any` type](http://www.typescriptlang.org/docs/handbook/basic-types.html#any) as in the following example:
 -->
-바인딩 표현식을 사용하다보면 변수 타입에 맞지 않다는 에러가 종종 발생합니다. 이 에러를 없애기 위해 타입을 정확히 맞춰도 되지만, 타입을 맞추기 까다로운 경우라면 `$any` 타입 캐스트 함수를 사용해서 바인딩 표현식의 결과값이 [`any` 타입](http://www.typescriptlang.org/docs/handbook/basic-types.html#any)이 되도록 지정할 수 있습니다.
+바인딩 표현식을 사용하다보면 [AOT 컴파일러](guide/aot-compiler)로 컴파일할 때 변수 타입에 맞지 않다는 에러가 발생하지만, 이 객체의 타입을 특정지을 수 없는 경우가 종종 발생합니다.
+이 에러를 없애려면 `$any()` 타입 캐스팅 함수를 사용해서 바인딩 표현식의 결과값이 [`any` 타입](http://www.typescriptlang.org/docs/handbook/basic-types.html#any)이 되도록 변환할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-1" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
-In this example, when the Angular compiler turns your template into TypeScript code,
-it prevents TypeScript from reporting that `marker` is not a member of the `Hero`
-interface.
--->
-Angular가 이 코드를 TypeScript 코드로 변환하면 `Hero` 객체에 `marker` 멤버가 없어도 TypeScript가 컴파일 할 때 에러가 발생하지 않습니다.
+When the Angular compiler turns this template into TypeScript code,
+it prevents TypeScript from reporting that `bestByDate` is not a member of the `item`
+object when it runs type checking on the template.
 
-<!--
-The `$any` cast function can be used in conjunction with `this` to allow access to undeclared members of
+The `$any()` cast function also works with `this` to allow access to undeclared members of
 the component.
 -->
+When the Angular compiler turns this template into TypeScript code,
+it prevents TypeScript from reporting that `bestByDate` is not a member of the `item`
+object when it runs type checking on the template.
+
 그리고 템플릿에서 `this`를 사용해서 컴포넌트 클래스에 직접 접근할 때도 `$any` 캐스트 함수를 사용할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-2" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
-The `$any` cast function can be used anywhere in a binding expression where a method call is valid.
+The `$any()` cast function works anywhere in a binding expression where a method call is valid.
 -->
-`$any` 캐스트 함수는 함수를 실행할 수 있는 바인딩 표현식이라면 어디에나 자유롭게 사용할 수 있습니다.
-
-<!--
-## Summary
--->
-## 정리
-
-<!--
-You've completed this survey of template syntax.
-Now it's time to put that knowledge to work on your own components and directives.
--->
-지금까지 템플릿 문법에 대해 아주 자세하게 알아봤습니다.
-이 문서에서 알아본 템플릿 문법을 컴포넌트와 디렉티브에 직접 적용해 보세요.
+`$any()` 캐스팅 함수는 함수를 실행할 수 있는 바인딩 표현식이라면 어디에나 자유롭게 사용할 수 있습니다.

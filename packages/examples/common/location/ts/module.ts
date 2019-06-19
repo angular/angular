@@ -17,14 +17,13 @@ import {PathLocationComponent} from './path_location_component';
   selector: 'example-app',
   template: `<hash-location></hash-location><path-location></path-location>`
 })
-export class ExampleAppComponent {
+export class AppComponent {
 }
 
 @NgModule({
-  declarations: [ExampleAppComponent, PathLocationComponent, HashLocationComponent],
+  declarations: [AppComponent, PathLocationComponent, HashLocationComponent],
   providers: [{provide: APP_BASE_HREF, useValue: '/'}],
   imports: [BrowserModule],
-  bootstrap: [ExampleAppComponent]
 })
 export class AppModule {
 }

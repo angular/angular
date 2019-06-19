@@ -22,7 +22,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
     tabindex="0"
   >{{shiftEnter ? 'You pressed shift.enter!' : ''}}</div>`
 })
-class KeyEventsApp {
+export class KeyEventsApp {
   lastKey: string = '(none)';
   shiftEnter: boolean = false;
 
@@ -71,9 +71,7 @@ class KeyEventsApp {
 }
 
 @NgModule({declarations: [KeyEventsApp], bootstrap: [KeyEventsApp], imports: [BrowserModule]})
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

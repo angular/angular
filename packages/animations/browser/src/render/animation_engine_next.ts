@@ -66,8 +66,8 @@ export class AnimationEngine {
     this._transitionEngine.insertNode(namespaceId, element, parent, insertBefore);
   }
 
-  onRemove(namespaceId: string, element: any, context: any): void {
-    this._transitionEngine.removeNode(namespaceId, element, context);
+  onRemove(namespaceId: string, element: any, context: any, isHostElement?: boolean): void {
+    this._transitionEngine.removeNode(namespaceId, element, isHostElement || false, context);
   }
 
   disableAnimations(element: any, disable: boolean) {

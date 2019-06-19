@@ -1,18 +1,17 @@
+load("//tools:defaults.bzl", "ng_module")
+
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
 
-load("//tools:defaults.bzl", "ng_module")
-
 ng_module(
     name = "testing",
     srcs = glob(["**/*.ts"]),
-    module_name = "@angular/platform-browser/testing",
     deps = [
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",
-        "@ngdeps//@types/jasmine",
-        "@rxjs",
+        "@npm//@types/jasmine",
+        "@npm//rxjs",
     ],
 )

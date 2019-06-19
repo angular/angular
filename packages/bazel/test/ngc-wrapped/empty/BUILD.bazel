@@ -8,6 +8,6 @@ ng_module(
     tsconfig = ":tsconfig.json",
     deps = [
         "//packages/core",
-        "@ngdeps//@types",
+        "@npm//@types",
     ],
 )

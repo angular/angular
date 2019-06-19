@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {$, browser} from 'protractor';
-
-import {openBrowser} from '../../../e2e_util/e2e_util';
-import {runBenchmark} from '../../../e2e_util/perf_util';
+import {$} from 'protractor';
+import {openTreeBenchmark, runTreeBenchmark} from './tree_perf_test_utils';
 
 describe('benchmark render', () => {
   it('should work for createDestroy', () => {
@@ -26,20 +24,15 @@ describe('benchmark render', () => {
     $('#createDom').click();
     expect($('#root').getText()).toContain('A');
   });
-
-  it('should work for detectChanges', () => {
-    openTreeBenchmark();
-    $('#detectChanges').click();
-    expect($('#numberOfChecks').getText()).toContain('10');
-  });
-
 });
 
 describe('benchmarks', () => {
 
   it('should work for createOnly', done => {
     runTreeBenchmark({
-      id: 'createOnly',
+      // This cannot be called "createOnly" because the actual destroy benchmark
+      // has the "createOnly" id already. See: https://github.com/angular/angular/pull/21503
+      id: 'createOnlyForReal',
       prepare: () => $('#destroyDom').click(),
       work: () => $('#createDom').click()
     }).then(done, done.fail);
@@ -47,6 +40,8 @@ describe('benchmarks', () => {
 
   it('should work for destroy', done => {
     runTreeBenchmark({
+      // This is actually a benchmark for destroying the dom, but it has been accidentally
+      // named "createOnly". See https://github.com/angular/angular/pull/21503.
       id: 'createOnly',
       prepare: () => $('#createDom').click(),
       work: () => $('#destroyDom').click()
@@ -66,36 +61,4 @@ describe('benchmarks', () => {
   it('should work for update', done => {
     runTreeBenchmark({id: 'update', work: () => $('#createDom').click()}).then(done, done.fail);
   });
-
-  it('should work for detectChanges', done => {
-    runTreeBenchmark({
-      id: 'detectChanges',
-      work: () => $('#detectChanges').click(),
-      setup: () => $('#destroyDom').click()
-    }).then(done, done.fail);
-  });
-
 });
-
-function runTreeBenchmark({id, prepare, setup, work}:
-                              {id: string; prepare ? () : void; setup ? () : void; work(): void;}) {
-  browser.rootEl = '#root';
-  return runBenchmark({
-    id: id,
-    url: '',
-    ignoreBrowserSynchronization: true,
-    params: [{name: 'depth', value: 11}],
-    work: work,
-    prepare: prepare,
-    setup: setup
-  });
-}
-
-function openTreeBenchmark() {
-  browser.rootEl = '#root';
-  openBrowser({
-    url: '',
-    ignoreBrowserSynchronization: true,
-    params: [{name: 'depth', value: 4}],
-  });
-}

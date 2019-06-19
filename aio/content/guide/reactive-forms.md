@@ -435,7 +435,7 @@ After you update the model in the component class, update the template to connec
 컴포넌트 클래스의 모델을 수정하고 나면, 템플릿에도 이 내용과 관련된 폼 그룹 인스턴스와 입력 엘리먼트를 수정해야 합니다.
 
 <!--
-Add the `address` form group containing the `firstName` and `lastName` fields to the `ProfileEditor` template.
+Add the `address` form group containing the `street`, `city`, `state`, and `zip` fields to the `ProfileEditor` template.
 -->
 `ProfileEditor` 템플릿에 다음과 같이 `address` 폼 그룹을 추가합니다.
 

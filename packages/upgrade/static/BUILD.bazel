@@ -1,24 +1,20 @@
+load("//tools:defaults.bzl", "ng_module")
+
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
 
-load("//tools:defaults.bzl", "ng_module")
-
 ng_module(
     name = "static",
-    # Note: There is Bazel issue where Windows symlinks
-    #       aka. junctions are not traversed by glob.
     srcs = glob(
         [
             "*.ts",
-            "src/common/**/*.ts",
-            "src/static/**/*.ts",
+            "src/*.ts",
         ],
     ),
-    module_name = "@angular/upgrade/static",
     deps = [
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
+        "//packages/upgrade/src/common",
     ],
 )

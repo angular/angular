@@ -6,15 +6,11 @@
 
 <mat-toolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
   <mat-toolbar-row class="notification-container">
-    <aio-notification
-      notificationId="angular-v6-announcement"
-      expirationDate="2018-07-01"
-      [dismissOnContentClick]="true"
-      (dismissed)="notificationDismissed()">
-      <a href="https://blog.angular.io/version-6-0-0-of-angular-now-available-cc56b0efa7a4">
+    <aio-notification notificationId="survey-february-2019" expirationDate="2019-03-01" [dismissOnContentClick]="true" (dismissed)="notificationDismissed()">
+      <a href="http://bit.ly/angular-survey-2019">
         <mat-icon class="icon" svgIcon="insert_comment" aria-label="Announcement"></mat-icon>
-        <span class="message">Version 6 of Angular Now Available!</span>
-        <span class="action-button">Learn More</span>
+        <span class="message">Help Angular by taking a <b>1 minute survey</b>!</span>
+        <span class="action-button">Go to survey</span>
       </a>
     </aio-notification>
   </mat-toolbar-row>
@@ -52,17 +48,12 @@
     </div>
   </mat-sidenav>
 
-  <section class="sidenav-content" [id]="pageId" role="content">
+  <main class="sidenav-content" [id]="pageId" role="main">
     <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
-    <aio-doc-viewer [class.no-animations]="isStarting"
-        [doc]="currentDocument"
-        (docReady)="onDocReady()"
-        (docRemoved)="onDocRemoved()"
-        (docInserted)="onDocInserted()"
-        (docRendered)="onDocRendered()">
+    <aio-doc-viewer [class.no-animations]="isStarting" [doc]="currentDocument" (docReady)="onDocReady()" (docRemoved)="onDocRemoved()" (docInserted)="onDocInserted()" (docRendered)="onDocRendered()">
     </aio-doc-viewer>
-    <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
-  </section>
+    <aio-dt *ngIf="dtOn" [(doc)]="currentDocument"></aio-dt>
+  </main>
 
 </mat-sidenav-container>
 
@@ -71,7 +62,7 @@
 </div>
 
 <footer class="no-print">
-  <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo" ></aio-footer>
+  <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo"></aio-footer>
 </footer>
 
 <!--
@@ -80,4 +71,6 @@
   material icons on other pages are displayed correctly in offline mode.
   (Note: Instantiate lazily to avoid affecting the initial rendering.)
 -->
-<mat-icon class="cdk-visually-hidden" *ngIf="!isStarting">&nbsp;</mat-icon>
+<div class="cdk-visually-hidden" *ngIf="!isStarting">
+  <mat-icon>&nbsp;</mat-icon>
+</div>

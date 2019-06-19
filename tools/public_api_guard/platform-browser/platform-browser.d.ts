@@ -16,9 +16,6 @@ export declare class By {
 
 export declare function disableDebugTools(): void;
 
-/** @deprecated */
-export declare const DOCUMENT: InjectionToken<Document>;
-
 export declare abstract class DomSanitizer implements Sanitizer {
     abstract bypassSecurityTrustHtml(value: string): SafeHtml;
     abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;

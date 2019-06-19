@@ -31,7 +31,7 @@ describe('Architecture', () => {
 
 function heroTests() {
 
-  const targetHero: Hero = { id: 2, name: 'Mr. Nice' };
+  const targetHero: Hero = { id: 2, name: 'Dr Nice' };
 
   it('has the right number of heroes', () => {
     let page = getPageElts();

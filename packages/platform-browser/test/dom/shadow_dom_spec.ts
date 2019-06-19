@@ -27,9 +27,13 @@ if (browserDetection.supportsShadowDom) {
 
     it('should use the shadow root to encapsulate styles', () => {
       const compEl = TestBed.createComponent(StyledShadowComponent).nativeElement;
-      expect(window.getComputedStyle(compEl).border).toEqual('1px solid rgb(0, 0, 0)');
+      // Firefox and Chrome return different computed styles. Chrome supports CSS property
+      // shorthands in the computed style object while Firefox expects explicit CSS properties.
+      // e.g. we can't use the "border" CSS property for this test as "border" is a shorthand
+      // property and therefore would not work within Firefox.
+      expect(window.getComputedStyle(compEl).backgroundColor).toEqual('rgb(0, 0, 0)');
       const redDiv = compEl.shadowRoot.querySelector('div.red');
-      expect(window.getComputedStyle(redDiv).border).toEqual('1px solid rgb(255, 0, 0)');
+      expect(window.getComputedStyle(redDiv).backgroundColor).toEqual('rgb(255, 0, 0)');
     });
 
     it('should allow the usage of <slot> elements', () => {
@@ -86,7 +90,7 @@ class ShadowComponent {
   selector: 'styled-shadow-comp',
   template: '<div class="red"></div>',
   encapsulation: ViewEncapsulation.ShadowDom,
-  styles: [`:host { border: 1px solid black; } .red { border: 1px solid red; }`]
+  styles: [`:host { background: black; } .red { background: red; }`]
 })
 class StyledShadowComponent {
 }

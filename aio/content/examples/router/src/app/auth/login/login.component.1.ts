@@ -27,10 +27,10 @@ export class LoginComponent {
       if (this.authService.isLoggedIn) {
         // AuthService에서 리다이렉트할 URL을 가져옵니다.
         // 저장된 주소가 없으면 기본 페이지로 이동합니다.
-        let redirect = this.authService.redirectUrl ? this.authService.redirectUrl : '/crisis-center/admin';
+        let redirect = this.authService.redirectUrl ? this.router.parseUrl(this.authService.redirectUrl) : '/admin';
 
         // 최종 주소로 이동합니다.
-        this.router.navigate([redirect]);
+        this.router.navigateByUrl(redirect);
       }
     });
   }

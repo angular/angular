@@ -22,7 +22,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 
@@ -41,6 +41,7 @@ ts_library(
         "//packages/compiler/test/ml_parser/util",
         "//packages/compiler/testing",
         "//packages/core",
+        "//packages/core/src/compiler",
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
@@ -63,7 +64,7 @@ ts_library(
         "//packages/compiler/test/expression_parser/utils",
         "//packages/compiler/testing",
         "//packages/core",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 
@@ -82,10 +83,9 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         ":test_node_only_lib",
-        "//packages/core",
         "//tools/testing:node",
-        "@ngdeps//base64-js",
-        "@ngdeps//source-map",
+        "@npm//base64-js",
+        "@npm//source-map",
     ],
 )
 

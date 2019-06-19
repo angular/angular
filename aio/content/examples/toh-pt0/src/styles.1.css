@@ -13,7 +13,7 @@ body {
   margin: 2em;
 }
 body, input[type="text"], button {
-  color: #888;
+  color: #333;
   font-family: Cambria, Georgia;
 }
 /* 모든 엘리먼트에 적용되는 스타일 */

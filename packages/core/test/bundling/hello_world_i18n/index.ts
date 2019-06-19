@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, NgModule, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, NgModule, ɵi18nConfigureLocalize, ɵrenderComponent as renderComponent} from '@angular/core';
+
+const translations = {
+  'Hello World!': 'Bonjour Monde!',
+  'Hello Title!': 'Bonjour Titre!',
+};
+
+ɵi18nConfigureLocalize({translations});
 
 @Component({
   selector: 'hello-world',

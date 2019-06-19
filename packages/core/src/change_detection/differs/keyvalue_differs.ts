@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Optional, SkipSelf, StaticProvider, defineInjectable} from '../../di';
+import {Optional, SkipSelf, StaticProvider, ɵɵdefineInjectable} from '../../di';
 import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ';
 
 
@@ -118,7 +118,7 @@ export interface KeyValueDifferFactory {
  */
 export class KeyValueDiffers {
   /** @nocollapse */
-  static ngInjectableDef = defineInjectable({
+  static ngInjectableDef = ɵɵdefineInjectable({
     providedIn: 'root',
     factory: () => new KeyValueDiffers([new DefaultKeyValueDifferFactory()])
   });

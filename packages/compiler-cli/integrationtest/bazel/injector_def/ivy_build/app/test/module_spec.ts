@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, InjectionToken, Injector, NgModule, createInjector, forwardRef} from '@angular/core';
+import {Injectable, InjectionToken, Injector, NgModule, forwardRef, ɵcreateInjector as createInjector} from '@angular/core';
 import {AOT_TOKEN, AotModule, AotService} from 'app_built/src/module';
 
 describe('Ivy NgModule', () => {

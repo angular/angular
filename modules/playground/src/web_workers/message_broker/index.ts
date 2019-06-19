@@ -11,10 +11,6 @@ import {ClientMessageBrokerFactory, FnArg, SerializerTypes, UiArguments, bootstr
 
 const ECHO_CHANNEL = 'ECHO';
 
-export function main() {
-  bootstrapWorkerUi('loader.js').then(afterBootstrap);
-}
-
 function afterBootstrap(ref: PlatformRef) {
   const brokerFactory: ClientMessageBrokerFactory = ref.injector.get(ClientMessageBrokerFactory);
   const broker = brokerFactory.createMessageBroker(ECHO_CHANNEL, false);
@@ -32,3 +28,5 @@ function afterBootstrap(ref: PlatformRef) {
     });
   });
 }
+
+bootstrapWorkerUi('loader.js').then(afterBootstrap);

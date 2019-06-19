@@ -1,40 +1,34 @@
 {
   "angularCompilerOptions": {
-    // For TypeScript 1.8, we have to lay out generated files
-    // in the same source directory with your code.
-    "genDir": ".",
+    "alwaysCompileGeneratedCode": true,
+    "annotationsAs": "static fields",
     "debug": true,
     "enableSummariesForJit": true,
-    "alwaysCompileGeneratedCode": true,
     "i18nFormat": "xlf"
   },
 
   "compilerOptions": {
-    "target": "es5",
-    "experimentalDecorators": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "skipLibCheck": true,
-    "moduleResolution": "node",
-    "rootDir": "",
-    "declaration": true,
-    "lib": ["es6", "dom"],
     "baseUrl": ".",
-    // Prevent scanning up the directory tree for types
-    "typeRoots": ["node_modules/@types"],
+    "declaration": true,
+    "experimentalDecorators": true,
+    "lib": ["es6", "dom"],
+    "moduleResolution": "node",
+    "noImplicitAny": true,
     "noUnusedLocals": true,
-    "sourceMap": true
+    "rootDir": "",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    // compatible with the option. Disabled until the integration test support the strict flag.
+    // TODO(devversion): this has been enabled without the integration test code being
+    "strictPropertyInitialization": false,
+    "target": "es5"
   },
 
   "files": [
     "src/module",
     "src/bootstrap",
     "test/all_spec",
-    "test/test_ngtools_api",
-    "benchmarks/src/tree/ng2/index_aot.ts",
-    "benchmarks/src/tree/ng2_switch/index_aot.ts",
-    "benchmarks/src/largetable/ng2/index_aot.ts",
-    "benchmarks/src/largetable/ng2_switch/index_aot.ts"
+    "test/test_ngtools_api"
   ]
 }

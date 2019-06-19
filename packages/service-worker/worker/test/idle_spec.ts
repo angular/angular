@@ -15,6 +15,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
   if (!SwTestHarness.envIsSupported()) {
     return;
   }
+
   describe('IdleScheduler', () => {
     let scope: SwTestHarness;
     let idle: IdleScheduler;

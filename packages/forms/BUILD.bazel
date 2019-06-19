@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "forms",
@@ -10,11 +10,11 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/forms",
+    bundle_dts = True,
     deps = [
         "//packages/core",
         "//packages/platform-browser",
-        "@rxjs",
+        "@npm//rxjs",
     ],
 )
 
@@ -28,6 +28,7 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler-cli/test/diagnostics:__pkg__",
         "//packages/language-service/test:__pkg__",
     ],

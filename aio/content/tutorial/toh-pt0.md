@@ -30,23 +30,9 @@ In this part of the tutorial, you'll do the following:
 ## 개발환경 설정하기
 
 <!--
-To set up your development environment, follow these instructions in [Getting Started](guide/quickstart):
-
-* [Prerequisites](guide/quickstart#prerequisites)
-* [Install the Angular CLI](guide/quickstart#install-cli)
+To set up your development environment, follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development").
 -->
-애플리케이션의 개발 환경을 구성하려면 [시작하기](guide/quickstart) 문서에 있는 다음 내용을 확인하는 것이 좋습니다.
-
-* [사전지식](guide/quickstart#prerequisites)
-* [Angular CLI 설치하기](guide/quickstart#install-cli)
-
-<div class="alert is-helpful">
-
-<!--
-**Note:** You do not need to complete the entire Getting Started. After you complete the above two sections of Getting Started, your environment is set up. Continue below to create the Tour of Heroes workspace and an initial app project.
--->
-**참고:** 시작하기 문서에 있는 내용을 모두 완료할 필요없이 위에서 언급한 두 섹션만 참고하면 개발환경 설정은 모두 끝납니다. 이렇게 설정한 환경에서 히어로들의 여행 앱 개발을 시작하면 됩니다.
-</div>
+애플리케이션의 개발 환경을 구성하려면 [로컬 환경 설정](guide/setup-local "Setting up for Local Development") 문서를 참고하는 것이 좋습니다.
 
 <!--
 ## Create a new workspace and an initial application
@@ -245,10 +231,10 @@ Put your application-wide styles there.
 Angular CLI로 프로젝트를 생성하면 빈 내용으로 `styles.css` 파일이 생성되는데, 이 파일에 스타일을 정의하면 애플리케이션 전역에 지정되는 스타일을 지정할 수 있습니다.
 
 <!--
-Here's an excerpt from the `styles.css` for the _Tour of Heroes_ sample app.
+Open `src/styles.css` and add the code below to the file.
 -->
-다음 코드는 Tour of Heroes 앱의 styles.css 파일의 일부입니다.
-<!--
+`src/styles.css` 파일을 열고 아래에 다음 코드를 추가합니다.
+
 <code-example path="toh-pt0/src/styles.1.css" header="src/styles.css (excerpt)">
 -->
 <code-example path="toh-pt0/src/styles.1.css" header="src/styles.css (일부)">

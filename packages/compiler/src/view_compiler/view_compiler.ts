@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompilePipeSummary, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompilePipeSummary, CompileQueryMetadata, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {BindingForm, BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {ArgumentType, BindingFlags, ChangeDetectionStrategy, NodeFlags, QueryBindingType, QueryValueType, ViewFlags} from '../core';
@@ -145,7 +145,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         const queryId = queryIndex + 1;
         const bindingType = query.first ? QueryBindingType.First : QueryBindingType.All;
         const flags =
-            NodeFlags.TypeViewQuery | calcStaticDynamicQueryFlags(queryIds, queryId, query.first);
+            NodeFlags.TypeViewQuery | calcStaticDynamicQueryFlags(queryIds, queryId, query);
         this.nodes.push(() => ({
                           sourceSpan: null,
                           nodeFlags: flags,
@@ -493,7 +493,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     dirAst.directive.queries.forEach((query, queryIndex) => {
       const queryId = dirAst.contentQueryStartId + queryIndex;
       const flags =
-          NodeFlags.TypeContentQuery | calcStaticDynamicQueryFlags(queryIds, queryId, query.first);
+          NodeFlags.TypeContentQuery | calcStaticDynamicQueryFlags(queryIds, queryId, query);
       const bindingType = query.first ? QueryBindingType.First : QueryBindingType.All;
       this.nodes.push(() => ({
                         sourceSpan: dirAst.sourceSpan,
@@ -1023,7 +1023,7 @@ interface StaticAndDynamicQueryIds {
 }
 
 
-function findStaticQueryIds(
+export function findStaticQueryIds(
     nodes: TemplateAst[], result = new Map<TemplateAst, StaticAndDynamicQueryIds>()):
     Map<TemplateAst, StaticAndDynamicQueryIds> {
   nodes.forEach((node) => {
@@ -1056,7 +1056,7 @@ function findStaticQueryIds(
   return result;
 }
 
-function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>):
+export function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>):
     StaticAndDynamicQueryIds {
   const staticQueryIds = new Set<number>();
   const dynamicQueryIds = new Set<number>();
@@ -1081,16 +1081,26 @@ function elementEventNameAndTarget(
 }
 
 function calcStaticDynamicQueryFlags(
-    queryIds: StaticAndDynamicQueryIds, queryId: number, isFirst: boolean) {
+    queryIds: StaticAndDynamicQueryIds, queryId: number, query: CompileQueryMetadata) {
   let flags = NodeFlags.None;
   // Note: We only make queries static that query for a single item.
   // This is because of backwards compatibility with the old view compiler...
-  if (isFirst && (queryIds.staticQueryIds.has(queryId) || !queryIds.dynamicQueryIds.has(queryId))) {
+  if (query.first && shouldResolveAsStaticQuery(queryIds, queryId, query)) {
     flags |= NodeFlags.StaticQuery;
   } else {
     flags |= NodeFlags.DynamicQuery;
   }
   return flags;
+}
+
+function shouldResolveAsStaticQuery(
+    queryIds: StaticAndDynamicQueryIds, queryId: number, query: CompileQueryMetadata): boolean {
+  // If query.static has been set by the user, use that value to determine whether
+  // the query is static. If none has been set, sort the query into static/dynamic
+  // based on query results (i.e. dynamic if CD needs to run to get all results).
+  return query.static ||
+      query.static == null &&
+      (queryIds.staticQueryIds.has(queryId) || !queryIds.dynamicQueryIds.has(queryId));
 }
 
 export function elementEventFullName(target: string | null, name: string): string {

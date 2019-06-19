@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, WrappedValue, ɵisObservable, ɵisPromise} from '@angular/core';
+import {ChangeDetectorRef, EventEmitter, Injectable, OnDestroy, Pipe, PipeTransform, WrappedValue, ɵisObservable, ɵisPromise, ɵlooseIdentical} from '@angular/core';
 import {Observable, SubscriptionLike} from 'rxjs';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -67,6 +67,7 @@ const _observableStrategy = new ObservableStrategy();
  *
  * @publicApi
  */
+@Injectable()
 @Pipe({name: 'async', pure: false})
 export class AsyncPipe implements OnDestroy, PipeTransform {
   private _latestValue: any = null;
@@ -102,7 +103,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
       return this.transform(obj as any);
     }
 
-    if (this._latestValue === this._latestReturnedValue) {
+    if (ɵlooseIdentical(this._latestValue, this._latestReturnedValue)) {
       return this._latestReturnedValue;
     }
 

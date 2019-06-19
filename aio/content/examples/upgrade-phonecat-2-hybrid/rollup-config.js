@@ -6,11 +6,13 @@ import uglify      from 'rollup-plugin-uglify'
 
 //paths are relative to the execution path
 export default {
-  entry: 'app/main-aot.js',
-  dest: 'aot/dist/build.js', // output a single application bundle
-  sourceMap: true,
-  sourceMapFile: 'aot/dist/build.js.map',
-  format: 'iife',
+  input: 'app/main-aot.js',
+  output: {
+    file: 'aot/dist/build.js', // output a single application bundle
+    format: 'iife',
+    sourcemap: true,
+    sourcemapFile: 'aot/dist/build.js.map'
+  },
   plugins: [
     nodeResolve({jsnext: true, module: true}),
     commonjs({

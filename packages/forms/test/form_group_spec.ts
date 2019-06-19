@@ -86,6 +86,67 @@ import {of } from 'rxjs';
 
     });
 
+    describe('markAllAsTouched', () => {
+      it('should mark all descendants as touched', () => {
+        const formGroup: FormGroup = new FormGroup({
+          'c1': new FormControl('v1'),
+          'group': new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
+          'array': new FormArray([
+            new FormControl('v4'), new FormControl('v5'),
+            new FormGroup({'c4': new FormControl('v4')})
+          ])
+        });
+
+        expect(formGroup.touched).toBe(false);
+
+        const control1 = formGroup.get('c1') as FormControl;
+
+        expect(control1.touched).toBe(false);
+
+        const innerGroup = formGroup.get('group') as FormGroup;
+
+        expect(innerGroup.touched).toBe(false);
+
+        const innerGroupFirstChildCtrl = innerGroup.get('c2') as FormControl;
+
+        expect(innerGroupFirstChildCtrl.touched).toBe(false);
+
+        formGroup.markAllAsTouched();
+
+        expect(formGroup.touched).toBe(true);
+
+        expect(control1.touched).toBe(true);
+
+        expect(innerGroup.touched).toBe(true);
+
+        expect(innerGroupFirstChildCtrl.touched).toBe(true);
+
+        const innerGroupSecondChildCtrl = innerGroup.get('c3') as FormControl;
+
+        expect(innerGroupSecondChildCtrl.touched).toBe(true);
+
+        const array = formGroup.get('array') as FormArray;
+
+        expect(array.touched).toBe(true);
+
+        const arrayFirstChildCtrl = array.at(0) as FormControl;
+
+        expect(arrayFirstChildCtrl.touched).toBe(true);
+
+        const arraySecondChildCtrl = array.at(1) as FormControl;
+
+        expect(arraySecondChildCtrl.touched).toBe(true);
+
+        const arrayFirstChildGroup = array.at(2) as FormGroup;
+
+        expect(arrayFirstChildGroup.touched).toBe(true);
+
+        const arrayFirstChildGroupFirstChildCtrl = arrayFirstChildGroup.get('c4') as FormControl;
+
+        expect(arrayFirstChildGroupFirstChildCtrl.touched).toBe(true);
+      });
+    });
+
     describe('adding and removing controls', () => {
       it('should update value and validity when control is added', () => {
         const g = new FormGroup({'one': new FormControl('1')});
@@ -593,6 +654,23 @@ import {of } from 'rxjs';
           g.reset({'one': {value: '', disabled: true}});
           expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
         });
+
+        it('should mark as pristine and not dirty before emitting valueChange and statusChange events when resetting',
+           () => {
+             const pristineAndNotDirty = () => {
+               expect(form.pristine).toBe(true);
+               expect(form.dirty).toBe(false);
+             };
+
+             c3.markAsDirty();
+             expect(form.pristine).toBe(false);
+             expect(form.dirty).toBe(true);
+
+             form.valueChanges.subscribe(pristineAndNotDirty);
+             form.statusChanges.subscribe(pristineAndNotDirty);
+
+             form.reset();
+           });
       });
 
     });

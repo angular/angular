@@ -13,13 +13,10 @@ ts_library(
         "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
-        "//packages/http",
-        "//packages/http/testing",
         "//packages/platform-browser",
         "//packages/platform-server",
         "//packages/private/testing",
-        "@rxjs",
-        "@rxjs//operators",
+        "@npm//rxjs",
     ],
 )
 

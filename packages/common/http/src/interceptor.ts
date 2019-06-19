@@ -14,32 +14,39 @@ import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
 /**
- * Intercepts `HttpRequest` and handles them.
+ * Intercepts `HttpRequest` or `HttpResponse` and handles them.
  *
- * Most interceptors will transform the outgoing request before passing it to the
+ * Most interceptors transform the outgoing request before passing it to the
  * next interceptor in the chain, by calling `next.handle(transformedReq)`.
+ * An interceptor may transform the
+ * response event stream as well, by applying additional RxJS operators on the stream
+ * returned by `next.handle()`.
  *
- * In rare cases, interceptors may wish to completely handle a request themselves,
- * and not delegate to the remainder of the chain. This behavior is allowed.
+ * More rarely, an interceptor may handle the request entirely,
+ * and compose a new event stream instead of invoking `next.handle()`. This is an
+ * acceptable behavior, but keep in mind that further interceptors will be skipped entirely.
+ *
+ * It is also rare but valid for an interceptor to return multiple responses on the
+ * event stream for a single request.
  *
  * @publicApi
+ *
+ * @see [HTTP Guide](guide/http#intercepting-requests-and-responses)
+ *
+ * @usageNotes
+ *
+ * To use the same instance of `HttpInterceptors` for the entire app, import the `HttpClientModule`
+ * only in your `AppModule`, and add the interceptors to the root application injector .
+ * If you import `HttpClientModule` multiple times across different modules (for example, in lazy
+ * loading modules), each import creates a new copy of the `HttpClientModule`, which overwrites the interceptors
+ * provided in the root module.
+ *
  */
 export interface HttpInterceptor {
   /**
-   * Intercept an outgoing `HttpRequest` and optionally transform it or the
-   * response.
+   * * **req**: The outgoing request to handle
+   * * **next**: The next interceptor in the chain, or the backend if no interceptors in the chain.
    *
-   * Typically an interceptor will transform the outgoing request before returning
-   * `next.handle(transformedReq)`. An interceptor may choose to transform the
-   * response event stream as well, by applying additional Rx operators on the stream
-   * returned by `next.handle()`.
-   *
-   * More rarely, an interceptor may choose to completely handle the request itself,
-   * and compose a new event stream instead of invoking `next.handle()`. This is
-   * acceptable behavior, but keep in mind further interceptors will be skipped entirely.
-   *
-   * It is also rare but valid for an interceptor to return multiple responses on the
-   * event stream for a single request.
    */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
 }

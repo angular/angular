@@ -6,28 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Host, Inject, Injectable, Optional, ReflectiveInjector, Self, SkipSelf} from '@angular/core';
+import {Component, Directive, Host, Injectable, Injector, Optional, Self, SkipSelf} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 {
   describe('di metadata examples', () => {
     describe('Inject', () => {
-      it('works', () => {
-        // #docregion Inject
-        class Engine {}
-
-        @Injectable()
-        class Car {
-          constructor(@Inject('MyEngine') public engine: Engine) {}
-        }
-
-        const injector =
-            ReflectiveInjector.resolveAndCreate([{provide: 'MyEngine', useClass: Engine}, Car]);
-
-        expect(injector.get(Car).engine instanceof Engine).toBe(true);
-        // #enddocregion
-      });
-
       it('works without decorator', () => {
         // #docregion InjectWithoutDecorator
         class Engine {}
@@ -38,7 +22,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           }  // same as constructor(@Inject(Engine) engine:Engine)
         }
 
-        const injector = ReflectiveInjector.resolveAndCreate([Engine, Car]);
+        const injector = Injector.create(
+            {providers: [{provide: Engine, deps: []}, {provide: Car, deps: [Engine]}]});
         expect(injector.get(Car).engine instanceof Engine).toBe(true);
         // #enddocregion
       });
@@ -54,7 +39,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           constructor(@Optional() public engine: Engine) {}
         }
 
-        const injector = ReflectiveInjector.resolveAndCreate([Car]);
+        const injector =
+            Injector.create({providers: [{provide: Car, deps: [[new Optional(), Engine]]}]});
         expect(injector.get(Car).engine).toBeNull();
         // #enddocregion
       });
@@ -72,20 +58,12 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           constructor(public service: UsefulService) {}
         }
 
-        const injector = ReflectiveInjector.resolveAndCreate([NeedsService, UsefulService]);
+        const injector = Injector.create({
+          providers: [
+            {provide: NeedsService, deps: [UsefulService]}, {provide: UsefulService, deps: []}
+          ]
+        });
         expect(injector.get(NeedsService).service instanceof UsefulService).toBe(true);
-        // #enddocregion
-      });
-
-      it('throws without Injectable', () => {
-        // #docregion InjectableThrows
-        class UsefulService {}
-
-        class NeedsService {
-          constructor(public service: UsefulService) {}
-        }
-
-        expect(() => ReflectiveInjector.resolveAndCreate([NeedsService, UsefulService])).toThrow();
         // #enddocregion
       });
     });
@@ -100,13 +78,20 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           constructor(@Self() public dependency: Dependency) {}
         }
 
-        let inj = ReflectiveInjector.resolveAndCreate([Dependency, NeedsDependency]);
+        let inj = Injector.create({
+          providers: [
+            {provide: Dependency, deps: []},
+            {provide: NeedsDependency, deps: [[new Self(), Dependency]]}
+          ]
+        });
         const nd = inj.get(NeedsDependency);
 
         expect(nd.dependency instanceof Dependency).toBe(true);
 
-        inj = ReflectiveInjector.resolveAndCreate([Dependency]);
-        const child = inj.resolveAndCreateChild([NeedsDependency]);
+        const child = Injector.create({
+          providers: [{provide: NeedsDependency, deps: [[new Self(), Dependency]]}],
+          parent: inj
+        });
         expect(() => child.get(NeedsDependency)).toThrowError();
         // #enddocregion
       });
@@ -122,11 +107,13 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           constructor(@SkipSelf() public dependency: Dependency) { this.dependency = dependency; }
         }
 
-        const parent = ReflectiveInjector.resolveAndCreate([Dependency]);
-        const child = parent.resolveAndCreateChild([NeedsDependency]);
+        const parent = Injector.create({providers: [{provide: Dependency, deps: []}]});
+        const child =
+            Injector.create({providers: [{provide: NeedsDependency, deps: [Dependency]}], parent});
         expect(child.get(NeedsDependency).dependency instanceof Dependency).toBe(true);
 
-        const inj = ReflectiveInjector.resolveAndCreate([Dependency, NeedsDependency]);
+        const inj = Injector.create(
+            {providers: [{provide: NeedsDependency, deps: [[new Self(), Dependency]]}]});
         expect(() => inj.get(NeedsDependency)).toThrowError();
         // #enddocregion
       });

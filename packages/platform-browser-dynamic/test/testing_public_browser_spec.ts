@@ -11,7 +11,6 @@ import {Compiler, Component, NgModule} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 
 import {ResourceLoaderImpl} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_impl';
-import {fixmeIvy} from '@angular/private/testing';
 
 
 
@@ -63,11 +62,10 @@ if (isBrowser) {
               {providers: [{provide: FancyService, useValue: new FancyService()}]});
         });
 
-        fixmeIvy('FW-919: TestBed.get should be able to retrieve tokens from Compiler\'s injector')
-            .it('provides a real ResourceLoader instance',
-                inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
-                  expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
-                }));
+        it('provides a real ResourceLoader instance',
+           inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
+             expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
+           }));
 
         it('should allow the use of fakeAsync',
            fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
@@ -80,20 +78,19 @@ if (isBrowser) {
     });
 
     describe('Compiler', () => {
-      fixmeIvy('FW-855: TestBed.get(Compiler) should return TestBed-specific Compiler instance')
-          .it('should return NgModule id when asked', () => {
-            @NgModule({
-              id: 'test-module',
-            })
-            class TestModule {
-            }
+      it('should return NgModule id when asked', () => {
+        @NgModule({
+          id: 'test-module',
+        })
+        class TestModule {
+        }
 
-            TestBed.configureTestingModule({
-              imports: [TestModule],
-            });
-            const compiler = TestBed.get(Compiler) as Compiler;
-            expect(compiler.getModuleId(TestModule)).toBe('test-module');
-          });
+        TestBed.configureTestingModule({
+          imports: [TestModule],
+        });
+        const compiler = TestBed.get(Compiler) as Compiler;
+        expect(compiler.getModuleId(TestModule)).toBe('test-module');
+      });
     });
 
     describe('errors', () => {
@@ -118,41 +115,36 @@ if (isBrowser) {
 
       const restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
-      fixmeIvy('FW-553: TestBed is unaware of async compilation')
-          .it('should fail when an ResourceLoader fails', done => {
-            const itPromise = patchJasmineIt();
+      it('should fail when an ResourceLoader fails', done => {
+        const itPromise = patchJasmineIt();
 
-            it('should fail with an error from a promise', async(() => {
-                 TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
-                 TestBed.compileComponents();
-               }));
+        it('should fail with an error from a promise', async(() => {
+             TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
+             TestBed.compileComponents();
+           }));
 
-            itPromise.then(
-                () => { done.fail('Expected test to fail, but it did not'); },
-                (err: any) => {
-                  expect(err.message)
-                      .toEqual('Uncaught (in promise): Failed to load non-existent.html');
-                  done();
-                });
-            restoreJasmineIt();
-          }, 10000);
+        itPromise.then(
+            () => { done.fail('Expected test to fail, but it did not'); },
+            (err: any) => {
+              expect(err.message)
+                  .toEqual('Uncaught (in promise): Failed to load non-existent.html');
+              done();
+            });
+        restoreJasmineIt();
+      }, 10000);
     });
 
     describe('TestBed createComponent', function() {
-      fixmeIvy('FW-553: TestBed is unaware of async compilation')
-          .it('should allow an external templateUrl', async(() => {
-                TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
-                TestBed.compileComponents().then(() => {
-                  const componentFixture = TestBed.createComponent(ExternalTemplateComp);
-                  componentFixture.detectChanges();
-                  expect(componentFixture.nativeElement.textContent)
-                      .toEqual('from external template');
-                });
-              }),
-              10000);  // Long timeout here because this test makes an actual ResourceLoader
-                       // request, and
-                       // is slow
-                       // on Edge.
+      it('should allow an external templateUrl', async(() => {
+           TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
+           TestBed.compileComponents().then(() => {
+             const componentFixture = TestBed.createComponent(ExternalTemplateComp);
+             componentFixture.detectChanges();
+             expect(componentFixture.nativeElement.textContent).toEqual('from external template');
+           });
+         }),
+         10000);  // Long timeout here because this test makes an actual ResourceLoader
+                  // request, and is slow on Edge.
     });
   });
 }
