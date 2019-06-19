@@ -10,14 +10,7 @@ import {Type} from '../../interface/type';
 
 /**
  * Configures the `Injector` to return a value for a token.
- *
- * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
- *
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='ValueSansProvider'}
+ * Base for `ValueProvider` decorator.
  *
  * @publicApi
  */
@@ -60,14 +53,7 @@ export interface ValueProvider extends ValueSansProvider {
 
 /**
  * Configures the `Injector` to return an instance of `useClass` for a token.
- *
- * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
- *
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='StaticClassSansProvider'}
+ * Base for `StaticClassProvider` decorator.
  *
  * @publicApi
  */
