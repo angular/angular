@@ -647,7 +647,7 @@ Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with th
   }
 },
 
-</code-example
+</code-example>
 
 You can then run the tests with this configuration
 
