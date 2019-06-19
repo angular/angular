@@ -79,7 +79,7 @@ Make a note of the user name and project name in GitHub.
 1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
    <code-example language="none" class="code-shell">
      ng build --prod --output-path docs --base-href /<project_name>/
-    </code-example>
+   </code-example>
 
 1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
 
@@ -182,7 +182,6 @@ modified to serve `index.html`:
         &lt;/rules&gt;
       &lt;/rewrite&gt;
     &lt;/system.webServer&gt;
-
   </code-example>
 
 
@@ -205,7 +204,6 @@ and to
       "source": "**",
       "destination": "/index.html"
     } ]
-
   </code-example>
 
 {@a cors}
