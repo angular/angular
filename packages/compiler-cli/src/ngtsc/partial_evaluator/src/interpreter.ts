@@ -100,6 +100,8 @@ export class StaticInterpreter {
       return true;
     } else if (node.kind === ts.SyntaxKind.FalseKeyword) {
       return false;
+    } else if (node.kind === ts.SyntaxKind.NullKeyword) {
+      return null;
     } else if (ts.isStringLiteral(node)) {
       return node.text;
     } else if (ts.isNoSubstitutionTemplateLiteral(node)) {
@@ -215,7 +217,11 @@ export class StaticInterpreter {
   private visitIdentifier(node: ts.Identifier, context: Context): ResolvedValue {
     const decl = this.host.getDeclarationOfIdentifier(node);
     if (decl === null) {
-      return DynamicValue.fromUnknownIdentifier(node);
+      if (node.originalKeywordKind === ts.SyntaxKind.UndefinedKeyword) {
+        return undefined;
+      } else {
+        return DynamicValue.fromUnknownIdentifier(node);
+      }
     }
     const result =
         this.visitDeclaration(decl.node, {...context, ...joinModuleContext(context, node, decl)});
