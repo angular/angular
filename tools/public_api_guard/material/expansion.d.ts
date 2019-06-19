@@ -75,11 +75,13 @@ export declare class MatExpansionPanelDescription {
 }
 
 export declare class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
+    _animationsDisabled: boolean;
     collapsedHeight: string;
     readonly disabled: any;
     expandedHeight: string;
     panel: MatExpansionPanel;
     constructor(panel: MatExpansionPanel, _element: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, defaultOptions?: MatExpansionPanelDefaultOptions);
+    _animationStarted(): void;
     _getExpandedState(): string;
     _getPanelId(): string;
     _getTogglePosition(): MatAccordionTogglePosition;

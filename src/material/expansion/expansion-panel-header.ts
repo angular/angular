@@ -61,6 +61,8 @@ import {MatAccordionTogglePosition} from './accordion-base';
     '[class.mat-expansion-toggle-indicator-before]': `_getTogglePosition() === 'before'`,
     '(click)': '_toggle()',
     '(keydown)': '_keydown($event)',
+    '[@.disabled]': '_animationsDisabled',
+    '(@expansionHeight.start)': '_animationStarted()',
     '[@expansionHeight]': `{
         value: _getExpandedState(),
         params: {
@@ -72,6 +74,9 @@ import {MatAccordionTogglePosition} from './accordion-base';
 })
 export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
   private _parentChangeSubscription = Subscription.EMPTY;
+
+  /** Whether Angular animations in the panel header should be disabled. */
+  _animationsDisabled = true;
 
   constructor(
       @Host() public panel: MatExpansionPanel,
@@ -114,6 +119,18 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
       this.expandedHeight = defaultOptions.expandedHeight;
       this.collapsedHeight = defaultOptions.collapsedHeight;
     }
+  }
+
+  _animationStarted() {
+    // Currently the `expansionHeight` animation has a `void => collapsed` transition which is
+    // there to work around a bug in Angular (see #13088), however this introduces a different
+    // issue. The new transition will cause the header to animate in on init (see #16067), if the
+    // consumer has set a header height that is different from the default one. We work around it
+    // by disabling animations on the header and re-enabling them after the first animation has run.
+    // Note that Angular dispatches animation events even if animations are disabled. Ideally this
+    // wouldn't be necessary if we remove the `void => collapsed` transition, but we have to wait
+    // for https://github.com/angular/angular/issues/18847 to be resolved.
+    this._animationsDisabled = false;
   }
 
   /** Height of the header while the panel is expanded. */
