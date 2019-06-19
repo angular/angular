@@ -98,7 +98,7 @@ export class MatButton extends _MatButtonMixinBase
     // attributes, add the correct corresponding class.
     for (const attr of BUTTON_HOST_ATTRIBUTES) {
       if (this._hasHostAttributes(attr)) {
-        (elementRef.nativeElement as HTMLElement).classList.add(attr);
+        (this._getHostElement() as HTMLElement).classList.add(attr);
       }
     }
 
