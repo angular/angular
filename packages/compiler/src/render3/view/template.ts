@@ -1889,10 +1889,10 @@ export interface ParseTemplateOptions {
    */
   escapedString?: boolean;
   /**
- * An array of characters that should be considered as leading trivia.
- * Leading trivia are characters that are not important to the developer, and so should not be
- * included in source-map segments.  A common example is whitespace.
- */
+   * An array of characters that should be considered as leading trivia.
+   * Leading trivia are characters that are not important to the developer, and so should not be
+   * included in source-map segments.  A common example is whitespace.
+   */
   leadingTriviaChars?: string[];
 }
 
