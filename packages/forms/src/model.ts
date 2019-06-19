@@ -537,16 +537,16 @@ export abstract class AbstractControl {
   enable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     // If parent has been marked artificially dirty we don't want to re-calculate the
     // parent's dirtiness based on the children.
-      const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
+    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
 
-      (this as{status: string}).status = VALID;
-      this._forEachChild(
-          (control: AbstractControl) => { control.enable({...opts, onlySelf: true}); });
-      if (this.enabled !== true) {
-        this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
-      }
-      this._updateAncestors({...opts, skipPristineCheck});
-      this._onDisabledChange.forEach((changeFn) => changeFn(false));
+    (this as{status: string}).status = VALID;
+    this._forEachChild(
+        (control: AbstractControl) => { control.enable({...opts, onlySelf: true}); });
+    if (this.enabled !== true) {
+      this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
+    }
+    this._updateAncestors({...opts, skipPristineCheck});
+    this._onDisabledChange.forEach((changeFn) => changeFn(false));
   }
 
   private _updateAncestors(
