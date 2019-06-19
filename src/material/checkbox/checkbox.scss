@@ -293,7 +293,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
   // We do this here, rather than having a `:not(.mat-checkbox-disabled)`
   // above in the `:hover`, because the `:not` will bump the specificity
   // a lot and will cause it to overide the focus styles.
-  &, .mat-checkbox.mat-disabled .mat-checkbox-inner-container:hover & {
+  &, .mat-checkbox.mat-checkbox-disabled .mat-checkbox-inner-container:hover & {
     opacity: 0;
   }
 
