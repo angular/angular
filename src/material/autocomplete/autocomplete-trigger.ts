@@ -611,6 +611,11 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, 
         if (event.keyCode === ESCAPE || (event.keyCode === UP_ARROW && event.altKey)) {
           this._resetActiveItem();
           this._closeKeyEventStream.next();
+
+          // We need to stop propagation, otherwise the event will eventually
+          // reach the input itself and cause the overlay to be reopened.
+          event.stopPropagation();
+          event.preventDefault();
         }
       });
 
