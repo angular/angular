@@ -2721,8 +2721,8 @@ describe('ngtsc behavioral tests', () => {
 
       @Directive({
         selector: '[somedir]',
-        inputs: ['track-type', 'track-name', 'inputTrackName'],
-        outputs: ['output-track-type', 'output-track-name', 'outputTrackName']
+        inputs: ['track-type', 'track-name', 'inputTrackName', 'src.xl'],
+        outputs: ['output-track-type', 'output-track-name', 'outputTrackName', 'output.event']
       })
       export class SomeDir {
         @Input('track-type') trackType: string;
@@ -2737,13 +2737,15 @@ describe('ngtsc behavioral tests', () => {
         "track-type": "track-type",
         "track-name": "track-name",
         inputTrackName: "inputTrackName",
+        "src.xl": "src.xl",
         trackType: ["track-type", "trackType"],
         trackName: ["track-name", "trackName"]
       },
       outputs: {
         "output-track-type": "output-track-type",
         "output-track-name": "output-track-name",
-        outputTrackName: "outputTrackName"
+        outputTrackName: "outputTrackName",
+        "output.event": "output.event"
       }
     `;
     expect(trim(jsContents)).toContain(trim(inputsAndOutputs));
