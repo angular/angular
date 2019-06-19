@@ -1940,6 +1940,12 @@ export interface ParseTemplateOptions {
    * but the new line should increment the current line for source mapping.
    */
   escapedString?: boolean;
+  /**
+   * An array of characters that should be considered as leading trivia.
+   * Leading trivia are characters that are not important to the developer, and so should not be
+   * included in source-map segments.  A common example is whitespace.
+   */
+  leadingTriviaChars?: string[];
 }
 
 /**
@@ -1957,7 +1963,7 @@ export function parseTemplate(
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(
       template, templateUrl,
-      {...options, tokenizeExpansionForms: true, leadingTriviaChars: LEADING_TRIVIA_CHARS});
+      {leadingTriviaChars: LEADING_TRIVIA_CHARS, ...options, tokenizeExpansionForms: true});
 
   if (parseResult.errors && parseResult.errors.length > 0) {
     return {errors: parseResult.errors, nodes: [], styleUrls: [], styles: []};
