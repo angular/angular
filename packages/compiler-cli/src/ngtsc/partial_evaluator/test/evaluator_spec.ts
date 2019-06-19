@@ -172,6 +172,21 @@ runInEachFileSystem(() => {
       expect(evaluate(`const x = 3;`, '!!x')).toEqual(true);
     });
 
+    it('supports boolean literals', () => {
+      expect(evaluate('const a = true;', 'a')).toEqual(true);
+      expect(evaluate('const a = false;', 'a')).toEqual(false);
+    });
+
+    it('supports undefined',
+       () => { expect(evaluate('const a = undefined;', 'a')).toEqual(undefined); });
+
+    it('supports null', () => { expect(evaluate('const a = null;', 'a')).toEqual(null); });
+
+    it('negation works', () => {
+      expect(evaluate(`const x = 3;`, '!x')).toEqual(false);
+      expect(evaluate(`const x = 3;`, '!!x')).toEqual(true);
+    });
+
     it('resolves access from external variable declarations as dynamic value', () => {
       const value = evaluate('declare const window: any;', 'window.location');
       if (!(value instanceof DynamicValue)) {
