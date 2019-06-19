@@ -31,6 +31,7 @@ You will need two terminals to get the live-reload experience.
 
   <code-example language="none" class="code-shell">
    ng build --watch
+
   </code-example>
 
   Like the `ng serve` command, this regenerates output files when source files change.
@@ -39,6 +40,7 @@ You will need two terminals to get the live-reload experience.
 
   <code-example language="none" class="code-shell">
    lite-server --baseDir="dist"
+
   </code-example>
 
    The server will automatically reload your browser when new files are output.
@@ -57,6 +59,7 @@ For the simplest deployment, create a production build and copy the output direc
 
   <code-example language="none" class="code-shell">
     ng build --prod
+
   </code-example>
 
 
@@ -79,6 +82,7 @@ Make a note of the user name and project name in GitHub.
 1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
    <code-example language="none" class="code-shell">
      ng build --prod --output-path docs --base-href /<project_name>/
+
    </code-example>
 
 1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
@@ -152,6 +156,7 @@ The list is by no means exhaustive, but should provide you with a good starting 
 
     &#35 If the requested resource doesn't exist, use index.html
     RewriteRule ^ /index.html
+
   </code-example>
 
 
@@ -161,6 +166,7 @@ modified to serve `index.html`:
 
   <code-example format=".">
     try_files $uri $uri/ /index.html;
+
   </code-example>
 
 
@@ -182,6 +188,7 @@ modified to serve `index.html`:
         &lt;/rules&gt;
       &lt;/rewrite&gt;
     &lt;/system.webServer&gt;
+
   </code-example>
 
 
@@ -204,6 +211,7 @@ and to
       "source": "**",
       "destination": "/index.html"
     } ]
+
   </code-example>
 
 {@a cors}
@@ -245,9 +253,10 @@ See [`ng build`](cli/build) for more about CLI build options and what they do.
 
 In addition to build optimizations, Angular also has a runtime production mode. Angular apps run in development mode by default, as you can see by the following message on the browser console:
 
-```
+<code-example format="nocode">
   Angular is running in the development mode. Call enableProdMode() to enable the production mode.
-```
+
+</code-example>
 
 Switching to _production mode_ makes it run faster by disabling development specific checks such as the dual change detection cycles.
 
@@ -312,18 +321,21 @@ Install `source-map-explorer`:
 
 <code-example language="none" class="code-shell">
   npm install source-map-explorer --save-dev
+
 </code-example>
 
 Build your app for production _including the source maps_
 
 <code-example language="none" class="code-shell">
   ng build --prod --source-map
+
 </code-example>
 
 List the generated bundles in the `dist/` folder.
 
 <code-example language="none" class="code-shell">
   ls dist/*.bundle.js
+
 </code-example>
 
 Run the explorer to generate a graphical representation of one of the bundles.
@@ -331,6 +343,7 @@ The following example displays the graph for the _main_ bundle.
 
 <code-example language="none" class="code-shell">
   node_modules/.bin/source-map-explorer dist/main.*.bundle.js
+
 </code-example>
 
 The `source-map-explorer` analyzes the source map generated with the bundle and draws a map of all dependencies,
@@ -434,6 +447,7 @@ The `index.html` file is also modified during the build process to include scrip
   <script src="main-es5.js" nomodule></script>
 </body>
 <!-- ... -->
+
 </code-example>
 
 Each script tag has a `type="module"` or `nomodule` attribute. Browsers with native support for ES modules only load the scripts with the `module` type attribute and ignore scripts with the `nomodule` attribute. Legacy browsers only load the scripts with the `nomodule` attribute, and ignore the script tags with the `module` type that load ES modules.
@@ -486,6 +500,7 @@ The `tsconfig.json` looks like this:
     ]
   }
 }
+
 </code-example>
 
 By default, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015. As a result, this produces two builds, and differential loading is enabled. If you ignore browsers without ES2015 support, a single build is produced. To see the build result for differential loading based on different configurations, refer to the table below.
@@ -539,6 +554,7 @@ To do this for `ng serve`, create a new file, `tsconfig-es5.app.json` next to `t
      "target": "es5"
   }
 }
+
 </code-example>
 
 In `angular.json` add two new configuration sections under the `build` and `serve` targets to point to the new TypeScript configuration.
@@ -572,12 +588,14 @@ In `angular.json` add two new configuration sections under the `build` and `serv
     }
   }
 },
+
 </code-example>
 
 You can then run the serve with this configuration.
 
 <code-example language="none" class="code-shell">
 ng serve --configuration es5
+
 </code-example>
 
 {@ differential-test}
@@ -593,6 +611,7 @@ Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with th
      "target": "es5"
   }
 }
+
 </code-example>
 
 <code-example language="json" format="." linenums="false">
@@ -607,12 +626,14 @@ Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with th
     }
   }
 },
+
 </code-example
 
 You can then run the tests with this configuration
 
 <code-example language="none" class="code-shell">
 ng test --configuration es5
+
 </code-example>
 
 ### Configuring the e2e command
@@ -634,10 +655,12 @@ Create an ES5 serve configuration as explained above (link to the above serve se
     }
   }
 },
+
 </code-example>
 
 You can then run the e2e's with this configuration
 
 <code-example language="none" class="code-shell">
 ng e2e --configuration es5
+
 </code-example>
