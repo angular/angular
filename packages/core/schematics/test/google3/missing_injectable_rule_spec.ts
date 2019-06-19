@@ -184,19 +184,21 @@ describe('Google3 missing injectable tslint rule', () => {
   it('should create new import for @Injectable when migrating provider', () => {
     writeFile('/index.ts', `
       import {NgModule} from '@angular/core';
-      import {MyService} from './service';
+      import {MyService, MySecondService} from './service';
                     
-      @NgModule({providers: [MyService]})
+      @NgModule({providers: [MyService, MySecondService]})
       export class MyModule {}
     `);
 
-    writeFile('/service.ts', `
-      export class MyService {}
+    writeFile('/service.ts', `export class MyService {}
+    
+      export class MySecondService {}
     `);
 
     runTSLint();
 
     expect(getFile('/service.ts')).toMatch(/@Injectable\(\)\s+export class MyService/);
+    expect(getFile('/service.ts')).toMatch(/@Injectable\(\)\s+export class MySecondService/);
     expect(getFile('/service.ts')).toMatch(/import { Injectable } from "@angular\/core";/);
   });
 

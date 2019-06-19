@@ -104,14 +104,20 @@ function runMissingInjectableMigration(
     const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     const recorder: UpdateRecorder = {
       addClassDecorator(node: ts.ClassDeclaration, text: string) {
-        treeRecorder.insertLeft(node.getStart(), `${text}\n`);
+        // New imports should be inserted at the left while decorators should be inserted
+        // at the right in order to ensure that imports are inserted before the decorator
+        // if the start position of import and decorator is the source file start.
+        treeRecorder.insertRight(node.getStart(), `${text}\n`);
       },
       replaceDecorator(decorator: ts.Decorator, newText: string) {
         treeRecorder.remove(decorator.getStart(), decorator.getWidth());
         treeRecorder.insertRight(decorator.getStart(), newText);
       },
       addNewImport(start: number, importText: string) {
-        treeRecorder.insertRight(start, importText);
+        // New imports should be inserted at the left while decorators should be inserted
+        // at the right in order to ensure that imports are inserted before the decorator
+        // if the start position of import and decorator is the source file start.
+        treeRecorder.insertLeft(start, importText);
       },
       updateExistingImport(namedBindings: ts.NamedImports, newNamedBindings: string) {
         treeRecorder.remove(namedBindings.getStart(), namedBindings.getWidth());

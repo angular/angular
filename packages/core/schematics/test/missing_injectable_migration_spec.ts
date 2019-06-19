@@ -414,20 +414,23 @@ describe('Missing injectable migration', () => {
   it('should create new import for @Injectable when migrating provider', async() => {
     writeFile('/index.ts', `
       import {NgModule} from '@angular/core';
-      import {MyService} from './service';
+      import {MyService, MySecondService} from './service';
                     
-      @NgModule({providers: [MyService]})
+      @NgModule({providers: [MyService, MySecondService]})
       export class MyModule {}
     `);
 
-    writeFile('/service.ts', `
-      export class MyService {}
+    writeFile('/service.ts', `export class MyService {}
+    
+      export class MySecondService {}
     `);
 
     await runMigration();
 
     expect(warnOutput.length).toBe(0);
     expect(tree.readContent('/service.ts')).toMatch(/@Injectable\(\)\s+export class MyService/);
+    expect(tree.readContent('/service.ts'))
+        .toMatch(/@Injectable\(\)\s+export class MySecondService/);
     expect(tree.readContent('/service.ts')).toMatch(/import { Injectable } from "@angular\/core";/);
   });
 

@@ -17,7 +17,10 @@ export class TslintUpdateRecorder implements UpdateRecorder {
   constructor(private ruleName: string, private sourceFile: ts.SourceFile) {}
 
   addClassDecorator(node: ts.ClassDeclaration, decoratorText: string) {
-    this.failures.push(new RuleFailure(
+    // Adding a decorator should be the last replacement. Replacements/rule failures
+    // are handled in reverse and in case a decorator and import are inserted at
+    // the start of the file, the class decorator should come after the import.
+    this.failures.unshift(new RuleFailure(
         this.sourceFile, node.getStart(), 0, `Class needs to be decorated with: ${decoratorText}`,
         this.ruleName, Replacement.appendText(node.getStart(), `${decoratorText}\n`)));
   }
