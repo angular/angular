@@ -1018,6 +1018,27 @@ describe('ngtsc behavioral tests', () => {
       expect(trim(errors[0].messageText as string))
           .toContain('Directive TestDir has no selector, please add it!');
     });
+
+    it('should throw error if content queries share a property with inputs', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component, ContentChild, Input} from '@angular/core';
+
+        @Component({
+          selector: 'content-query-component',
+          template: \`
+            <div><ng-content></ng-content></div>
+          \`
+        })
+        export class ContentQueryComponent {
+          @Input() @ContentChild('foo', {static: false}) foo: any;
+        }
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(trim(errors[0].messageText as string))
+          .toContain('Cannot combine @Input decorators with query decorators');
+    });
   });
 
   describe('multiple decorators on classes', () => {

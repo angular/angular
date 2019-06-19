@@ -435,16 +435,24 @@ export function queriesFromFields(
     fields: {member: ClassMember, decorators: Decorator[]}[], reflector: ReflectionHost,
     evaluator: PartialEvaluator): R3QueryMetadata[] {
   return fields.map(({member, decorators}) => {
+    const decorator = decorators[0];
+    const node = member.node || decorator.node;
+
     // Throw in case of `@Input() @ContentChild('foo') foo: any`, which is not supported in Ivy
     if (member.decorators !.some(v => v.name === 'Input')) {
-      throw new Error(`Cannot combine @Input decorators with query decorators`);
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_COLLISION, node,
+          'Cannot combine @Input decorators with query decorators');
     }
     if (decorators.length !== 1) {
-      throw new Error(`Cannot have multiple query decorators on the same class member`);
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_COLLISION, node,
+          'Cannot have multiple query decorators on the same class member');
     } else if (!isPropertyTypeMember(member)) {
-      throw new Error(`Query decorator must go on a property-type member`);
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_UNEXPECTED, node,
+          'Query decorator must go on a property-type member');
     }
-    const decorator = decorators[0];
     return extractQueryMetadata(
         decorator.node, decorator.name, decorator.args || [], member.name, reflector, evaluator);
   });
