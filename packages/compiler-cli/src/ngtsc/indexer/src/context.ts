@@ -6,11 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, TmplAstNode} from '@angular/compiler';
+import {BoundTarget, DirectiveMeta, TmplAstNode} from '@angular/compiler';
 import {InterpolationConfig} from '@angular/compiler/src/compiler';
-import {DirectiveMeta} from '../../metadata';
+import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
+export interface ComponentMeta extends DirectiveMeta {
+  ref: Reference<ClassDeclaration>;
+  /**
+   * Unparsed selector of the directive.
+   */
+  selector: string;
+}
 
 /**
  * An intermediate representation of a component.
@@ -29,7 +36,7 @@ export interface ComponentInfo {
    * BoundTarget containing the parsed template. Can be used to query for directives used in the
    * template.
    */
-  scope: BoundTarget<DirectiveMeta>|null;
+  scope: BoundTarget<ComponentMeta>|null;
 
   /** Interpolation configuration for a template */
   interpolationConfig: InterpolationConfig;
@@ -50,9 +57,9 @@ export class IndexingContext {
   /**
    * Gets the class declaration of components used in a template.
    */
-  getUsedComponents(template: TmplAstNode[]): Set<ClassDeclaration> {
+  getUsedComponentsOf(compDecl: ClassDeclaration): Set<ClassDeclaration> {
     const components = Array.from(this.components);
-    const component = components.find(comp => comp.template === template);
+    const component = components.find(comp => comp.declaration === compDecl);
     if (!component || !component.scope) {
       return new Set();
     }
