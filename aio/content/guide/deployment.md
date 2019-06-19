@@ -394,7 +394,7 @@ the subfolder is `my/app/` and you should add `<base href="/my/app/">` to the se
 When the `base` tag is mis-configured, the app fails to load and the browser console displays `404 - Not Found` errors
 for the missing files. Look at where it _tried_ to find those files and adjust the base tag appropriately.
 
-{@ differential-loading}
+{@a differential-loading}
 
 ## Differential Loading
 
@@ -546,7 +546,7 @@ To explicitly disable differential loading:
 - Enable the `dead` or `IE` browsers in the `browserslist` config file by removing the `not` keyword in front of them.
 - Set the `target` in the `compilerOptions` to `es5`.
 
-{@ test-and-serve}
+{@a test-and-serve}
 
 ## Local development in older browsers
 
@@ -556,7 +556,7 @@ The `ng serve`, `ng test`, and `ng e2e` commands, however, generate a single ES2
 If you want to run ES5 code during development, you could disable differential loading completely.
 To maintain the benefits of differential loading, however, a better option is to define multiple configurations for `ng serve`, `ng e2e`, and `ng test`.
 
-{@ differential-serve}
+{@a differential-serve}
 
 ### Configuring serve for ES5
 
@@ -616,7 +616,7 @@ ng serve --configuration es5
 
 </code-example>
 
-{@ differential-test}
+{@a differential-test}
 
 ### Configuring the test command
 
