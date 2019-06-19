@@ -598,7 +598,7 @@ export class ComponentDecoratorHandler implements
         interpolation, ...parseTemplate(templateStr, templateUrl, {
           preserveWhitespaces,
           interpolationConfig: interpolation,
-          range: templateRange, escapedString,
+          range: templateRange, escapedString
         }),
     };
   }
