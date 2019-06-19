@@ -37,9 +37,6 @@ export interface ComponentInfo {
    * template.
    */
   scope: BoundTarget<ComponentMeta>|null;
-
-  /** Interpolation configuration for a template */
-  interpolationConfig: InterpolationConfig;
 }
 
 /**
@@ -53,18 +50,4 @@ export class IndexingContext {
    * Adds a component to the context.
    */
   addComponent(info: ComponentInfo) { this.components.add(info); }
-
-  /**
-   * Gets the class declaration of components used in a template.
-   */
-  getUsedComponentsOf(compDecl: ClassDeclaration): Set<ClassDeclaration> {
-    const components = Array.from(this.components);
-    const component = components.find(comp => comp.declaration === compDecl);
-    if (!component || !component.scope) {
-      return new Set();
-    }
-    return new Set(component.scope.getUsedDirectives()
-                       .filter(dir => dir.isComponent)
-                       .map(comp => comp.ref.node));
-  }
 }

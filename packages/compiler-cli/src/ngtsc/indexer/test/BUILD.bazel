@@ -6,8 +6,7 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob([
-        "**/transform_spec.ts",
-        "**/util.ts",
+        "**/*.ts",
     ]),
     deps = [
         "//packages/compiler",

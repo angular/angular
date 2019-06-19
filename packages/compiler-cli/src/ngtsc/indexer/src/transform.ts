@@ -20,9 +20,18 @@ import {getTemplateIdentifiers} from './template';
 export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, IndexedComponent> {
   const analysis = new Map<ts.Declaration, IndexedComponent>();
 
-  context.components.forEach(({declaration, selector, interpolationConfig, template}) => {
+  context.components.forEach(({declaration, selector, scope, template}) => {
     const name = declaration.name.getText();
-    const usedComponents = context.getUsedComponents(template);
+
+    const usedComponents = new Set<ts.Declaration>();
+    if (scope) {
+      const usedDirs = scope.getUsedDirectives();
+      usedDirs.forEach(dir => {
+        if (dir.isComponent) {
+          usedComponents.add(dir.ref.node);
+        }
+      })
+    }
 
     analysis.set(declaration, {
       name,
@@ -30,10 +39,7 @@ export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, 
       sourceFile: declaration.getSourceFile().fileName,
       content: declaration.getSourceFile().getFullText(),
       template: {
-        identifiers: getTemplateIdentifiers(template, {
-          preserveWhitespaces: true,
-          interpolationConfig,
-        }),
+        identifiers: getTemplateIdentifiers(template),
         usedComponents,
       },
     });

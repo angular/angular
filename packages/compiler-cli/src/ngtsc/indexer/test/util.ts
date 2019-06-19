@@ -14,7 +14,7 @@ import {ClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 
 /** Dummy file URL */
-export const TESTFILE = './TESTFILE.ts';
+export const TESTFILE = '/TESTFILE.ts';
 
 /**
  * Creates a class declaration from a component source code.

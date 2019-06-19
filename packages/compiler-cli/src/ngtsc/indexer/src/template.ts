@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, HtmlParser, Lexer, MethodCall, ParseSourceFile, ParseSpan, PropertyRead, RecursiveAstVisitor, TmplAstNode, TokenType, visitAll} from '@angular/compiler';
+import {AST, MethodCall, PropertyRead, RecursiveAstVisitor, TmplAstNode} from '@angular/compiler';
+import {ImplicitReceiver} from '@angular/compiler/src/compiler';
 import {BoundText, Element, Node, RecursiveVisitor as RecursiveTemplateVisitor, Template} from '@angular/compiler/src/render3/r3_ast';
-import {htmlAstToRender3Ast} from '@angular/compiler/src/render3/r3_template_transform';
-import {I18nMetaVisitor} from '@angular/compiler/src/render3/view/i18n/meta';
-import {makeBindingParser} from '@angular/compiler/src/render3/view/template';
-import {AbsoluteSourceSpan, IdentifierKind, RestoreTemplateOptions, TemplateIdentifier} from './api';
+import {AbsoluteSourceSpan, IdentifierKind, TemplateIdentifier} from './api';
 
 /**
  * A parsed node in a template, which may have a name (if it is a selector) or
@@ -20,46 +18,6 @@ import {AbsoluteSourceSpan, IdentifierKind, RestoreTemplateOptions, TemplateIden
 interface HTMLNode extends Node {
   tagName?: string;
   name?: string;
-}
-
-/**
- * Updates the location of an identifier to its real anchor in a source code.
- *
- * The compiler's expression parser records the location of some expressions in a manner not
- * useful to the indexer. For example, a `MethodCall` `foo(a, b)` will record the span of the
- * entire method call, but the indexer is interested only in the method identifier.
- *
- * To remedy all this, the visitor tokenizes the template node the expression was discovered in,
- * and updates the locations of entities found during expression traversal with those of the
- * tokens.
- *
- * TODO(ayazhafiz): Think about how to handle `PropertyRead`s in `BoundAttribute`s. The Lexer
- * tokenizes the attribute as a string and ignores quotes.
- *
- * @param entities entities to update
- * @param currentNode node expression was in
- */
-function updateIdentifierSpans(identifiers: TemplateIdentifier[], currentNode: Node) {
-  const localSpan = currentNode.sourceSpan;
-  const localExpression = localSpan.toString();
-
-  const lexedIdentifiers =
-      new Lexer().tokenize(localExpression).filter(token => token.type === TokenType.Identifier);
-
-  // Join the relative position of the expression within a node with the absolute position of the
-  // node to get the absolute position of the expression in the source code.
-  const absoluteOffset = currentNode.sourceSpan.start.offset;
-  identifiers.forEach((id, index) => {
-    const lexedId = lexedIdentifiers[index];
-    if (id.name !== lexedId.strValue) {
-      throw new Error(
-          'Impossible state: lexed and parsed expression should contain the same tokens.');
-    }
-
-    const start = absoluteOffset + lexedId.index;
-    const absoluteSpan = new AbsoluteSourceSpan(start, start + lexedId.strValue.length);
-    id.span = absoluteSpan;
-  });
 }
 
 /**
@@ -72,22 +30,19 @@ function updateIdentifierSpans(identifiers: TemplateIdentifier[], currentNode: N
  * 11}}]`.
  */
 class ExpressionVisitor extends RecursiveAstVisitor {
-  private readonly file: ParseSourceFile;
+  readonly identifiers: TemplateIdentifier[] = [];
 
-  private constructor(context: Node, readonly identifiers: TemplateIdentifier[] = []) {
+  private constructor(
+      context: Node, private readonly expressionStr = context.sourceSpan.toString(),
+      private readonly absoluteOffset = context.sourceSpan.start.offset,
+      private readonly file = context.sourceSpan.start.file, ) {
     super();
-
-    this.file = context.sourceSpan.start.file;
   }
 
   static getIdentifiers(ast: AST, context: Node): TemplateIdentifier[] {
     const visitor = new ExpressionVisitor(context);
     visitor.visit(ast);
-    const identifiers = visitor.identifiers;
-
-    updateIdentifierSpans(identifiers, context);
-
-    return identifiers;
+    return visitor.identifiers;
   }
 
   visit(ast: AST) { ast.visit(this); }
@@ -102,12 +57,27 @@ class ExpressionVisitor extends RecursiveAstVisitor {
     super.visitPropertyRead(ast, context);
   }
 
-  private addIdentifier(ast: AST&{name: string}, kind: IdentifierKind) {
-    this.identifiers.push({
-      name: ast.name,
-      span: ast.span, kind,
-      file: this.file,
-    });
+  private addIdentifier(ast: AST&{name: string, receiver: AST}, kind: IdentifierKind) {
+    if (ast.receiver instanceof ImplicitReceiver) {
+      // Get the location of the identifier of real interest.
+      // The compiler's expression parser records the location of some expressions in a manner not
+      // useful to the indexer. For example, a `MethodCall` `foo(a, b)` will record the span of the
+      // entire method call, but the indexer is interested only in the method identifier.
+      const localExpression = this.expressionStr.substr(ast.span.start, ast.span.end);
+      const identifierStart = ast.span.start + localExpression.indexOf(ast.name);
+
+      // Join the relative position of the expression within a node with the absolute position
+      // of the node to get the absolute position of the expression in the source code.
+      const absoluteStart = this.absoluteOffset + identifierStart;
+      const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
+
+      this.identifiers.push({
+        name: ast.name,
+        span,
+        kind,
+        file: this.file,
+      });
+    }
   }
 }
 
@@ -152,65 +122,13 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
 }
 
 /**
- * Unwraps and reparses a template, preserving whitespace and with no leading trivial characters.
- *
- * A template may previously have been parsed without preserving whitespace, and was definitely
- * parsed with leading trivial characters (see `parseTemplate` from the compiler package API).
- * Both of these are detrimental for indexing as they result in a manipulated AST not representing
- * the template source code.
- */
-function restoreTemplate(template: TmplAstNode[], options: RestoreTemplateOptions): TmplAstNode[] {
-  // Try to recapture the template content and URL.
-  // If there was nothing in the template to begin with, this is just a no-op.
-  if (template.length === 0) {
-    return [];
-  }
-  const {content: templateStr, url: templateUrl} = template[0].sourceSpan.start.file;
-
-  // Ignore inline templates for now, as their file content includes the entire component and
-  // requires extra parsing.
-  // TODO(ayazhafiz): Fix this when `restoreTemplate` is removed.
-  if (templateUrl.endsWith('.ts')) {
-    return [];
-  }
-
-  options.preserveWhitespaces = true;
-  const {interpolationConfig, preserveWhitespaces} = options;
-
-  const bindingParser = makeBindingParser(interpolationConfig);
-  const htmlParser = new HtmlParser();
-  const parseResult = htmlParser.parse(templateStr, templateUrl, {
-    ...options,
-    tokenizeExpansionForms: true,
-  });
-
-  if (parseResult.errors && parseResult.errors.length > 0) {
-    throw new Error('Impossible state: template must have been successfully parsed previously.');
-  }
-
-  const rootNodes = visitAll(
-      new I18nMetaVisitor(interpolationConfig, !preserveWhitespaces), parseResult.rootNodes);
-
-  const {nodes, errors} = htmlAstToRender3Ast(rootNodes, bindingParser);
-  if (errors && errors.length > 0) {
-    throw new Error('Impossible state: template must have been successfully parsed previously.');
-  }
-
-  return nodes;
-}
-
-/**
  * Traverses a template AST and builds identifiers discovered in it.
  * @param template template to extract indentifiers from
  * @param options options for restoring the parsed template to a indexable state
  * @return identifiers in template
  */
-export function getTemplateIdentifiers(
-    template: TmplAstNode[], options: RestoreTemplateOptions): Set<TemplateIdentifier> {
-  // TODO(ayazhafiz): template restoration is the most expensive step in the indexing pipeline.
-  // Consider removing this if/when `leadingTriviaChars` inconsistency issues are resolved.
-  const restoredTemplate = restoreTemplate(template, options);
+export function getTemplateIdentifiers(template: TmplAstNode[]): Set<TemplateIdentifier> {
   const visitor = new TemplateVisitor();
-  visitor.visitAll(restoredTemplate);
+  visitor.visitAll(template);
   return visitor.identifiers;
 }

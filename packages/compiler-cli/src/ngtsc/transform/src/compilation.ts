@@ -257,9 +257,9 @@ export class IvyCompilation {
   index(context: IndexingContext) {
     this.ivyClasses.forEach((ivyClass, declaration) => {
       for (const match of ivyClass.matchedHandlers) {
-        const handler = match.handler;
-        if (handler.index) {
-          handler.index(context, declaration, match.detected.metadata);
+        if (match.handler.index !== undefined && match.analyzed !== null &&
+            match.analyzed.analysis !== undefined) {
+          match.handler.index(context, declaration, match.analyzed.analysis);
         }
       }
     });

@@ -6,10 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AbsoluteSourceSpan, IdentifierKind} from '@angular/compiler-cli/src/ngtsc/indexer';
+import {ParseSourceFile} from '@angular/compiler/src/compiler';
+import * as path from 'path';
 import {NgtscTestEnvironment} from './env';
 
 describe('ngtsc component indexing', () => {
   let env !: NgtscTestEnvironment;
+
+  function testPath(testFile: string): string { return path.posix.join(env.basePath, testFile); }
 
   beforeEach(() => {
     env = NgtscTestEnvironment.setup();
@@ -34,17 +39,15 @@ describe('ngtsc component indexing', () => {
       const [[decl, indexedComp]] = indexed.entries();
 
       expect(decl.getText()).toContain('export class TestCmp {}');
-      expect(indexedComp.name).toBe('TestCmp');
-      expect(indexedComp.selector).toBe('test-cmp');
-      expect(indexedComp.sourceFile).toContain('/test.ts');
-      expect(indexedComp.content).toBe(componentContent);
-      expect(indexedComp.template.identifiers.size).toBe(0);
-      expect(indexedComp.template.usedComponents.size).toBe(0);
+      expect(indexedComp).toEqual(jasmine.objectContaining({
+        name: 'TestCmp',
+        selector: 'test-cmp',
+        content: componentContent,
+        sourceFile: testPath('test.ts'),
+      }));
     });
 
-    // Ignore inline templates for until the indexer module no longer has to restore templates.
-    // TODO(ayazhafiz): Fix once `restoreTemplate` in indexer module is removed.
-    it('should ignore index inline templates', () => {
+    it('should index inline templates', () => {
       const componentContent = `
         import {Component} from '@angular/core';
 
@@ -59,8 +62,16 @@ describe('ngtsc component indexing', () => {
       const [[_, indexedComp]] = indexed.entries();
       const template = indexedComp.template;
 
-      expect(template.identifiers.size).toBe(0);
+      expect(template.identifiers.size).toBe(1);
       expect(template.usedComponents.size).toBe(0);
+      const [identifier] = template.identifiers.values();
+
+      expect(identifier).toEqual(jasmine.objectContaining({
+        name: 'foo',
+        kind: IdentifierKind.Property,
+        span: new AbsoluteSourceSpan(132, 135),
+        file: new ParseSourceFile(componentContent, 'test.ts'),
+      }));
     });
 
     it('should index external templates', () => {
@@ -80,14 +91,45 @@ describe('ngtsc component indexing', () => {
 
       expect(template.identifiers.size).toBe(1);
       expect(template.usedComponents.size).toBe(0);
-
       const [identifier] = template.identifiers.values();
 
-      expect(identifier.name).toBe('foo');
-      expect(identifier.span.start).toBe(7);
-      expect(identifier.span.end).toBe(10);
-      expect(identifier.file.content).toBe('<div>{{foo}}</div>');
-      expect(identifier.file.url).toContain('/test.html');
+      expect(identifier).toEqual(jasmine.objectContaining({
+        name: 'foo',
+        kind: IdentifierKind.Property,
+        span: new AbsoluteSourceSpan(7, 10),
+        file: new ParseSourceFile('<div>{{foo}}</div>', testPath('test.html')),
+      }));
+    });
+
+    it('should index templates compiled without preserving whitespace', () => {
+      env.tsconfig({
+        preserveWhitespaces: false,
+      });
+
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          templateUrl: './test.html',
+        })
+        export class TestCmp { foo = 0; }
+      `);
+      env.write('test.html', '<div>{{foo}}</div>');
+      const indexed = env.driveIndexer();
+      const [[_, indexedComp]] = indexed.entries();
+      const template = indexedComp.template;
+
+      expect(template.identifiers.size).toBe(1);
+      expect(template.usedComponents.size).toBe(0);
+      const [identifier] = template.identifiers.values();
+
+      expect(identifier).toEqual(jasmine.objectContaining({
+        name: 'foo',
+        kind: IdentifierKind.Property,
+        span: new AbsoluteSourceSpan(7, 10),
+        file: new ParseSourceFile('<div>{{foo}}</div>', testPath('test.html')),
+      }));
     });
 
     it('should generated information about used components', () => {
@@ -128,6 +170,7 @@ describe('ngtsc component indexing', () => {
       const testImportComp = indexedComps.find(cmp => cmp.name === 'TestImportCmp');
       expect(testComp).toBeDefined();
       expect(testImportComp).toBeDefined();
+
       expect(testComp !.template.usedComponents.size).toBe(0);
       expect(testImportComp !.template.usedComponents.size).toBe(1);
 
