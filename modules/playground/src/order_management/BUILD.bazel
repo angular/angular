@@ -23,12 +23,12 @@ ts_devserver(
     index_html = "index.html",
     port = 4200,
     scripts = [
-        "@npm//node_modules/tslib:tslib.js",
+        "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
     static_files = [
-        "@npm//node_modules/zone.js:dist/zone.js",
-        "@npm//node_modules/reflect-metadata:Reflect.js",
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     deps = [":order_management"],
 )
