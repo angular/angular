@@ -881,6 +881,12 @@
             "rev": true,
             "title": "Angular.de (German)",
             "url": "https://angular.de/"
+          },
+          "lips.pune": {
+            "desc": "Onsite Angular Training for developers, we also conduct workshops in pune.",
+            "rev": true,
+            "title": "Lips India Pune",
+            "url": "https://www.lipsindia.com/angular-7-training-pune-angular-7-course"
           }
         }
       }
