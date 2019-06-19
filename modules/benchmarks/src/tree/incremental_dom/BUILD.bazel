@@ -21,7 +21,7 @@ ts_devserver(
     index_html = "index.html",
     port = 4200,
     static_files = [
-        "@npm//node_modules/incremental-dom:dist/incremental-dom.js",
+        "@npm//:node_modules/incremental-dom/dist/incremental-dom.js",
     ],
     deps = [":incremental_dom"],
 )

@@ -13,7 +13,6 @@ load(
     "DEFAULT_NG_COMPILER",
     "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
-    "NodeModuleInfo",
     "NodeModuleSources",
     "TsConfigInfo",
     "collect_node_modules_aspect",
@@ -557,13 +556,7 @@ def ng_module_impl(ctx, ts_compile_actions):
     providers = ts_compile_actions(
         ctx,
         is_library = True,
-        # Filter out the node_modules from deps passed to TypeScript compiler
-        # since they don't have the required providers.
-        # They were added to the action inputs for tsc_wrapped already.
-        # strict_deps checking currently skips node_modules.
-        # TODO(alexeagle): turn on strict deps checking when we have a real
-        # provider for JS/DTS inputs to ts_library.
-        deps = [d for d in ctx.attr.deps if not NodeModuleInfo in d],
+        deps = ctx.attr.deps,
         compile_action = _prodmode_compile_action,
         devmode_compile_action = _devmode_compile_action,
         tsc_wrapped_tsconfig = _ngc_tsconfig,
