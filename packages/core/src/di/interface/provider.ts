@@ -304,14 +304,9 @@ export interface TypeProvider extends Type<any> {}
 
 /**
  * Configures the `Injector` to return a value by invoking a `useClass` function.
+ * Base for `ClassProvider` decorator.
  *
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
- *
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='ClassSansProvider'}
  *
  * @publicApi
  */
