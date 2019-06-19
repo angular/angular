@@ -16,7 +16,7 @@ describe('ComponentAnalysisContext', () => {
 
   it('should store and return information about components', () => {
     const context = new IndexingContext();
-    const declaration = util.getComponentDeclaration('class C {};');
+    const declaration = util.getComponentDeclaration('class C {};', 'C');
     const selector = 'c-selector';
     const template = util.getParsedTemplate('<div></div>');
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta>());
@@ -53,11 +53,11 @@ describe('ComponentAnalysisContext', () => {
 
   it('should return declarations of components used in templates', () => {
     const context = new IndexingContext();
-    const declaration = util.getComponentDeclaration('class C {}');
+    const declaration = util.getComponentDeclaration('class C {}', 'C');
     const templateStr = '<test></test>';
     const template = util.getParsedTemplate(templateStr);
 
-    const usedDecl = util.getComponentDeclaration('class Test {}');
+    const usedDecl = util.getComponentDeclaration('class Test {}', 'Test');
     const scope = util.bindTemplate(templateStr, [{selector: 'test', declaration: usedDecl}]);
 
     context.addComponent({
@@ -66,7 +66,7 @@ describe('ComponentAnalysisContext', () => {
       interpolationConfig: DEFAULT_INTERPOLATION,
     });
 
-    const usedComps = context.getUsedComponents(template);
+    const usedComps = context.getUsedComponents(declaration);
     expect(usedComps).toEqual(new Set([
       usedDecl,
     ]));

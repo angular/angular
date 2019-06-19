@@ -11,19 +11,20 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {DirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
+import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 
 /** Dummy file URL */
-export const TESTFILE = 'TESTFILE';
+export const TESTFILE = './TESTFILE.ts';
 
 /**
  * Creates a class declaration from a component source code.
  */
-export function getComponentDeclaration(component: string): ClassDeclaration {
-  const sourceFile = ts.createSourceFile(
-      TESTFILE, component, ts.ScriptTarget.ES2015,
-      /* setParentNodes */ true);
+export function getComponentDeclaration(componentStr: string, className: string): ClassDeclaration {
+  const program = makeProgram([{name: TESTFILE, contents: componentStr}]);
 
-  return sourceFile.statements.filter(ts.isClassDeclaration)[0] as ClassDeclaration;
+  return getDeclaration(
+      program.program, TESTFILE, className,
+      (value: ts.Declaration): value is ClassDeclaration => ts.isClassDeclaration(value));
 }
 
 /**
