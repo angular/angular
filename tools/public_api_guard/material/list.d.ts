@@ -68,6 +68,7 @@ export declare class MatNavList extends _MatListMixinBase implements CanDisableR
 export declare class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption, CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
     _keyManager: FocusKeyManager<MatListOption>;
     _onTouched: () => void;
+    _value: string[] | null;
     color: ThemePalette;
     compareWith: (o1: any, o2: any) => boolean;
     disabled: boolean;

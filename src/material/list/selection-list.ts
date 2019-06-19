@@ -49,7 +49,8 @@ import {
   ThemePalette,
 } from '@angular/material/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list';
 
 
@@ -103,8 +104,8 @@ export class MatSelectionListChange {
     // its theme. The accent theme palette is the default and doesn't need to be set.
     '[class.mat-primary]': 'color === "primary"',
     '[class.mat-warn]': 'color === "warn"',
-    '[attr.aria-selected]': 'selected.toString()',
-    '[attr.aria-disabled]': 'disabled.toString()',
+    '[attr.aria-selected]': 'selected',
+    '[attr.aria-disabled]': 'disabled',
   },
   templateUrl: 'list-option.html',
   encapsulation: ViewEncapsulation.None,
@@ -177,13 +178,19 @@ export class MatListOption extends _MatListOptionMixinBase
   }
 
   ngOnInit() {
+    const list = this.selectionList;
+
+    if (list._value && list._value.some(value => list.compareWith(value, this._value))) {
+      this._setSelected(true);
+    }
+
+    const wasSelected = this._selected;
+
     // List options that are selected at initialization can't be reported properly to the form
     // control. This is because it takes some time until the selection-list knows about all
     // available options. Also it can happen that the ControlValueAccessor has an initial value
     // that should be used instead. Deferring the value change report to the next tick ensures
     // that the form control value is not being overwritten.
-    const wasSelected = this._selected;
-
     Promise.resolve().then(() => {
       if (this._selected || wasSelected) {
         this.selected = true;
@@ -337,7 +344,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
    * options should appear as selected. The first argument is the value of an options. The second
    * one is a value from the selected value. A boolean must be returned.
    */
-  @Input() compareWith: (o1: any, o2: any) => boolean;
+  @Input() compareWith: (o1: any, o2: any) => boolean = (a1, a2) => a1 === a2;
 
   /** Whether the selection list is disabled. */
   @Input()
@@ -359,17 +366,17 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   /** View to model callback that should be called whenever the selected options change. */
   private _onChange: (value: any) => void = (_: any) => {};
 
-  /** Used for storing the values that were assigned before the options were initialized. */
-  private _tempValues: string[]|null;
+  /** Keeps track of the currently-selected value. */
+  _value: string[]|null;
 
-  /** Subscription to sync value changes in the SelectionModel back to the SelectionList. */
-  private _modelChanges = Subscription.EMPTY;
+  /** Emits when the list has been destroyed. */
+  private _destroyed = new Subject<void>();
 
   /** View to model callback that should be called if the list or its options lost focus. */
   _onTouched: () => void = () => {};
 
   /** Whether the list has been destroyed. */
-  private _destroyed: boolean;
+  private _isDestroyed: boolean;
 
   constructor(private _element: ElementRef<HTMLElement>, @Attribute('tabindex') tabIndex: string) {
     super();
@@ -385,13 +392,12 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
       .skipPredicate(() => false)
       .withAllowedModifierKeys(['shiftKey']);
 
-    if (this._tempValues) {
-      this._setOptionsFromValues(this._tempValues);
-      this._tempValues = null;
+    if (this._value) {
+      this._setOptionsFromValues(this._value);
     }
 
     // Sync external changes to the model back to the options.
-    this._modelChanges = this.selectedOptions.onChange.subscribe(event => {
+    this.selectedOptions.onChange.pipe(takeUntil(this._destroyed)).subscribe(event => {
       if (event.added) {
         for (let item of event.added) {
           item.selected = true;
@@ -417,8 +423,9 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   }
 
   ngOnDestroy() {
-    this._destroyed = true;
-    this._modelChanges.unsubscribe();
+    this._destroyed.next();
+    this._destroyed.complete();
+    this._isDestroyed = true;
   }
 
   /** Focuses the selection list. */
@@ -504,8 +511,10 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
     // Stop reporting value changes after the list has been destroyed. This avoids
     // cases where the list might wrongly reset its value once it is removed, but
     // the form control is still live.
-    if (this.options && !this._destroyed) {
-      this._onChange(this._getSelectedOptionValues());
+    if (this.options && !this._isDestroyed) {
+      const value = this._getSelectedOptionValues();
+      this._onChange(value);
+      this._value = value;
     }
   }
 
@@ -516,10 +525,10 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   /** Implemented as part of ControlValueAccessor. */
   writeValue(values: string[]): void {
+    this._value = values;
+
     if (this.options) {
       this._setOptionsFromValues(values || []);
-    } else {
-      this._tempValues = values;
     }
   }
 
@@ -546,11 +555,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
       const correspondingOption = this.options.find(option => {
         // Skip options that are already in the model. This allows us to handle cases
         // where the same primitive value is selected multiple times.
-        if (option.selected) {
-          return false;
-        }
-
-        return this.compareWith ? this.compareWith(option.value, value) : option.value === value;
+        return option.selected ? false : this.compareWith(option.value, value);
       });
 
       if (correspondingOption) {

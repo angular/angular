@@ -1098,6 +1098,20 @@ describe('MatSelectionList with forms', () => {
       expect(fixture.componentInstance.formControl.value).toEqual(['opt2']);
     }));
 
+    it('should mark options added at a later point as selected', () => {
+      fixture.componentInstance.formControl.setValue(['opt4']);
+      fixture.detectChanges();
+
+      fixture.componentInstance.renderExtraOption = true;
+      fixture.detectChanges();
+
+      listOptions = fixture.debugElement.queryAll(By.directive(MatListOption))
+        .map(optionDebugEl => optionDebugEl.componentInstance);
+
+      expect(listOptions.length).toBe(4);
+      expect(listOptions[3].selected).toBe(true);
+    });
+
   });
 
   describe('preselected values', () => {
@@ -1285,12 +1299,14 @@ class SelectionListWithModel {
       <mat-list-option value="opt1">Option 1</mat-list-option>
       <mat-list-option value="opt2">Option 2</mat-list-option>
       <mat-list-option value="opt3">Option 3</mat-list-option>
+      <mat-list-option value="opt4" *ngIf="renderExtraOption">Option 4</mat-list-option>
     </mat-selection-list>
   `
 })
 class SelectionListWithFormControl {
   formControl = new FormControl();
   renderList = true;
+  renderExtraOption = false;
 }
 
 
