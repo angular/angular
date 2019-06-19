@@ -154,8 +154,7 @@ describe('r3_view_compiler', () => {
           $i0$.ɵɵelement(0, "div");
         }
         if (rf & 2) {
-          $i0$.ɵɵproperty("@attr", …);
-          $i0$.ɵɵproperty("@binding", …);
+          $i0$.ɵɵproperty("@attr", …)("@binding", …);
         }
       }`;
       const result = compile(files, angularFiles);
