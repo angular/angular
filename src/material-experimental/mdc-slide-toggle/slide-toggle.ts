@@ -154,8 +154,6 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
     if (this._foundation) {
       this._foundation.setChecked(this._checked);
     }
-
-    this._changeDetectorRef.markForCheck();
   }
 
   /** Whether to disable the ripple on this checkbox. */
@@ -179,8 +177,6 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
     if (this._foundation) {
       this._foundation.setDisabled(this._disabled);
     }
-
-    this._changeDetectorRef.markForCheck();
   }
   private _disabled = false;
 
@@ -268,6 +264,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   /** Implemented as part of ControlValueAccessor. */
   writeValue(value: any): void {
     this.checked = !!value;
+    this._changeDetectorRef.markForCheck();
   }
 
   /** Implemented as part of ControlValueAccessor. */
