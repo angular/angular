@@ -5,9 +5,7 @@
 # Make compilation fast, by keeping a few copies of the compilers
 # running as daemons, and cache SourceFile AST's to reduce parse time.
 build --strategy=AngularTemplateCompile=worker
-# TODO(alexeagle): re-enable after fixing worker instability with rxjs typings
-# build --strategy=TypeScriptCompile=worker
-build --strategy=TypeScriptCompile=standalone
+build --strategy=TypeScriptCompile=worker
 
 # Enable debugging tests with --config=debug
 test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
