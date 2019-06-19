@@ -50,7 +50,7 @@ export class TestMainComponent {
     this.asyncCounter = 0;
     this.memo = '';
     this.testTools = ['Protractor', 'TestBed', 'Other'];
-    this.testMethods = ['Unit Test', 'Integration Test', 'Performance Test'];
+    this.testMethods = ['Unit Test', 'Integration Test', 'Performance Test', 'Mutation Test'];
     setTimeout(() => {
       this.asyncCounter = 5;
       this._cdr.markForCheck();

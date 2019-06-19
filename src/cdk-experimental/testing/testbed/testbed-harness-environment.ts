@@ -48,11 +48,6 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
     return new TestbedHarnessEnvironment(element, this._fixture);
   }
 
-  protected async getRawElement(selector: string): Promise<Element | null> {
-    await this._stabilize();
-    return this.rawRootElement.querySelector(selector) || null;
-  }
-
   protected async getAllRawElements(selector: string): Promise<Element[]> {
     await this._stabilize();
     return Array.from(this.rawRootElement.querySelectorAll(selector));

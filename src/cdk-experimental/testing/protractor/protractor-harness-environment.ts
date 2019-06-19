@@ -35,14 +35,13 @@ export class ProtractorHarnessEnvironment extends HarnessEnvironment<ElementFind
     return new ProtractorHarnessEnvironment(element);
   }
 
-  protected async getRawElement(selector: string): Promise<ElementFinder | null> {
-    const element = this.rawRootElement.element(by.css(selector));
-    return await element.isPresent() ? element : null;
-  }
-
   protected async getAllRawElements(selector: string): Promise<ElementFinder[]> {
-    const elements = this.rawRootElement.all(by.css(selector));
-    return elements.reduce(
-        (result: ElementFinder[], el: ElementFinder) => el ? result.concat([el]) : result, []);
+    const elementFinderArray = this.rawRootElement.all(by.css(selector));
+    const length = await elementFinderArray.count();
+    const elements: ElementFinder[] = [];
+    for (let i = 0; i < length; i++) {
+      elements.push(elementFinderArray.get(i));
+    }
+    return elements;
   }
 }
