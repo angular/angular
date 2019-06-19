@@ -29,6 +29,7 @@ import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReferen
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
+const WHITESPACE_LEADING_TRIVIA_CHARS = [' ', '\n', '\r', '\t'];
 
 export interface ComponentHandlerData {
   meta: R3ComponentMetadata;
@@ -598,7 +599,8 @@ export class ComponentDecoratorHandler implements
         interpolation, ...parseTemplate(templateStr, templateUrl, {
           preserveWhitespaces,
           interpolationConfig: interpolation,
-          range: templateRange, escapedString
+          range: templateRange, escapedString,
+          leadingTriviaChars: WHITESPACE_LEADING_TRIVIA_CHARS,
         }),
     };
   }
