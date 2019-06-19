@@ -364,9 +364,9 @@ jobs:
     - *checkout_code
     - *restore_cache
     - *yarn_download
-    - *yarn_install
 
-    - run: node ./scripts/circleci/setup-angular-snapshots.js
+    - run: python ./scripts/circleci/setup-angular-snapshots.py --tag master
+    - *yarn_install
     - run: ./scripts/circleci/run-local-browser-tests.sh
 
 
@@ -392,7 +392,7 @@ jobs:
       # we use ngcc to apply the ivy switches because ngcc currently does not handle the
       # UMD format which is used by Bazel when running tests. UMD processing is in
       # progress and tracked with FW-85.
-      - run: bazel run @nodejs//:node -- ./scripts/circleci/setup-angular-snapshots.js --tag 8.1.0-next.1-ivy-aot+82e0b4a
+      - run: python ./scripts/circleci/setup-angular-snapshots.py --tag 8.1.0-next.1-ivy-aot+82e0b4a
       # Disable type checking when building with Ivy. This is necessary because
       # type checking is not complete yet and can incorrectly break compilation.
       # Issue is tracked with FW-1004.
@@ -417,7 +417,7 @@ jobs:
       - *setup_bazel_remote_execution
 
       # Setup Angular ivy snapshots built with ngtsc.
-      - run: bazel run @nodejs//:node -- ./scripts/circleci/setup-angular-snapshots.js --tag master-ivy-aot
+      - run: python ./scripts/circleci/setup-angular-snapshots.py --tag master-ivy-aot
       # Disable type checking when building with Ivy. This is necessary because
       # type checking is not complete yet and can incorrectly break compilation.
       # Issue is tracked with FW-1004.
