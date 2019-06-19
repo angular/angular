@@ -1,3 +1,15 @@
+<a name="8.0.2"></a>
+## [8.0.2](https://github.com/angular/angular/compare/8.0.1...8.0.2) (2019-06-19)
+
+
+### Bug Fixes
+
+* **bazel:** builder workspace should use nodejs v10.16.0 ([#31088](https://github.com/angular/angular/issues/31088)) ([c198dc6](https://github.com/angular/angular/commit/c198dc6))
+* **core:** temporarily remove [@deprecated](https://github.com/deprecated) jsdoc tag for a TextBedStatic.get overload ([#30714](https://github.com/angular/angular/issues/30714)) ([0a7aebb](https://github.com/angular/angular/commit/0a7aebb)), closes [#30514](https://github.com/angular/angular/issues/30514)
+* **language-service:** Remove 'any' in getQuickInfoAtPosition ([#31014](https://github.com/angular/angular/issues/31014)) ([7f21449](https://github.com/angular/angular/commit/7f21449))
+
+
+
 <a name="8.1.0-next.2"></a>
 # [8.1.0-next.2](https://github.com/angular/angular/compare/8.1.0-next.1...8.1.0-next.2) (2019-06-13)
 
