@@ -1025,12 +1025,10 @@ describe('ngtsc behavioral tests', () => {
         import {Component, ContentChild, Input} from '@angular/core';
 
         @Component({
-          selector: 'content-query-component',
-          template: \`
-            <div><ng-content></ng-content></div>
-          \`
+          selector: 'test-cmp',
+          template: '<ng-content></ng-content>'
         })
-        export class ContentQueryComponent {
+        export class TestCmp {
           @Input() @ContentChild('foo', {static: false}) foo: any;
         }
       `);
@@ -1038,6 +1036,47 @@ describe('ngtsc behavioral tests', () => {
       const errors = env.driveDiagnostics();
       expect(trim(errors[0].messageText as string))
           .toContain('Cannot combine @Input decorators with query decorators');
+    });
+
+    it('should throw error if multiple query decorators are used on the same field', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component, ContentChild} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '...'
+        })
+        export class TestCmp {
+          @ContentChild('bar', {static: true})
+          @ContentChild('foo', {static: false})
+          foo: any;
+        }
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(trim(errors[0].messageText as string))
+          .toContain('Cannot have multiple query decorators on the same class member');
+    });
+
+    it('should throw error if query decorators are used on non property-type member', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component, ContentChild} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '...'
+        })
+        export class TestCmp {
+          @ContentChild('foo', {static: false})
+          private someFn() {}
+        }
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(trim(errors[0].messageText as string))
+          .toContain('Query decorator must go on a property-type member');
     });
   });
 
