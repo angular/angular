@@ -31,10 +31,6 @@ export const enum I18nMutateOpCode {
    * Mask for OpCode
    */
   MASK_OPCODE = 0b111,
-  /**
-   * Mask for reference index
-   */
-  MASK_REF = ((2 ^ 16) - 1) << SHIFT_REF,
 
   /**
    * OpCode to select a node. (next OpCode will contain the operation.)
@@ -44,10 +40,6 @@ export const enum I18nMutateOpCode {
    * OpCode to append the current node to `PARENT`.
    */
   AppendChild = 0b001,
-  /**
-   * OpCode to insert the current node to `PARENT` before `REF`.
-   */
-  InsertBefore = 0b010,
   /**
    * OpCode to remove the `REF` node from `PARENT`.
    */
@@ -170,17 +162,9 @@ export const enum I18nUpdateOpCode {
    */
   SHIFT_REF = 2,
   /**
-   * Stores shift amount for bits 31-17 that contain which ICU in i18n block are we referring to.
-   */
-  SHIFT_ICU = 17,
-  /**
    * Mask for OpCode
    */
   MASK_OPCODE = 0b11,
-  /**
-   * Mask for reference index.
-   */
-  MASK_REF = ((2 ^ 16) - 1) << SHIFT_REF,
 
   /**
    * OpCode to update a text node.
