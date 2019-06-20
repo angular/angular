@@ -1,7 +1,6 @@
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle")
-load("@npm_bazel_karma//:index.bzl", "karma_web_test", "karma_web_test_suite")
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
 
 exports_files([
     "assets/sample.json",
@@ -12,11 +11,11 @@ exports_files([
 ts_library(
     name = "common_spec_env",
     testonly = True,
-    srcs = glob([
+    srcs = [
+        "test-env-setup-jasmine.ts",
         "test_fake_polyfill.ts",
         "wtf_mock.ts",
-        "test-env-setup-jasmine.ts",
-    ]),
+    ],
     deps = [
         "//packages/zone.js/lib",
     ],
@@ -45,9 +44,7 @@ ts_library(
 ts_library(
     name = "common_spec_util",
     testonly = True,
-    srcs = glob([
-        "test-util.ts",
-    ]),
+    srcs = ["test-util.ts"],
     deps = [
         "//packages/zone.js/lib",
     ],
@@ -56,9 +53,9 @@ ts_library(
 ts_library(
     name = "error_spec_srcs",
     testonly = True,
-    srcs = glob([
+    srcs = [
         "common/Error.spec.ts",
-    ]),
+    ],
     deps = [
         ":common_spec_util",
         "//packages/zone.js/lib",
@@ -68,16 +65,12 @@ ts_library(
 ts_library(
     name = "test_node_lib",
     testonly = True,
-    srcs = glob(
-        [
-            "node/*.ts",
-            "node-env-setup.ts",
-            "node_entry_point_common.ts",
-            "node_entry_point.ts",
-            "node_entry_point_no_patch_clock.ts",
-            "test-env-setup-jasmine-no-patch-clock.ts",
-        ],
-    ),
+    srcs = glob(["node/*.ts"]) + [
+        "node-env-setup.ts",
+        "node_entry_point.ts",
+        "node_entry_point_no_patch_clock.ts",
+        "test-env-setup-jasmine-no-patch-clock.ts",
+    ],
     deps = [
         ":common_spec_env",
         ":common_spec_srcs",
@@ -94,10 +87,10 @@ ts_library(
 ts_library(
     name = "bluebird_spec",
     testonly = True,
-    srcs = glob([
+    srcs = [
         "extra/bluebird.spec.ts",
         "node_bluebird_entry_point.ts",
-    ]),
+    ],
     deps = [
         ":common_spec_env",
         "//packages/zone.js/lib",
@@ -108,11 +101,11 @@ ts_library(
 ts_library(
     name = "error_spec",
     testonly = True,
-    srcs = glob([
-        "node_error_entry_point.ts",
+    srcs = [
         "node_error_disable_policy_entry_point.ts",
+        "node_error_entry_point.ts",
         "node_error_lazy_policy_entry_point.ts",
-    ]),
+    ],
     deps = [
         ":common_spec_env",
         ":common_spec_util",
@@ -192,16 +185,13 @@ jasmine_node_test(
 ts_library(
     name = "test_browser_lib",
     testonly = True,
-    srcs = glob(
-        [
-            "browser/*.ts",
-            "extra/cordova.spec.ts",
-            "mocha-patch.spec.ts",
-            "jasmine-patch.spec.ts",
-            "common_tests.ts",
-            "browser_entry_point.ts",
-        ],
-    ),
+    srcs = glob(["browser/*.ts"]) + [
+        "extra/cordova.spec.ts",
+        "mocha-patch.spec.ts",
+        "jasmine-patch.spec.ts",
+        "common_tests.ts",
+        "browser_entry_point.ts",
+    ],
     deps = [
         ":common_spec_env",
         ":common_spec_srcs",
@@ -219,10 +209,10 @@ ts_library(
 ts_library(
     name = "browser_env_setup",
     testonly = True,
-    srcs = glob([
+    srcs = [
         "browser-env-setup.ts",
         "browser_symbol_setup.ts",
-    ]),
+    ],
     deps = [
         ":common_spec_env",
     ],
