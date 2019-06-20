@@ -81,7 +81,7 @@ describe('generateAnalysis', () => {
     const info = analysis.get(decl);
     expect(info).toBeDefined();
     expect(info !.template.file).toEqual(new ParseSourceFile('<div>{{foo}}</div>', util.TESTFILE));
-  })
+  });
 
   it('should emit used components', () => {
     const context = new IndexingContext();
