@@ -1,12 +1,8 @@
 # JavaScript Modules vs. NgModules
 
-#### Prerequisites
-A basic understanding of [JavaScript/ECMAScript modules](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/).
-
-<hr>
-
 JavaScript and Angular use modules to organize code, and
 though they organize it differently, Angular apps rely on both.
+
 
 ## JavaScript modules
 
@@ -23,6 +19,8 @@ import { AppComponent } from './app.component';
 ```
 
 JavaScript modules help you namespace, preventing accidental global variables.
+
+For more information on JavaScript modules, see [JavaScript/ECMAScript modules](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/).
 
 ## NgModules
 
