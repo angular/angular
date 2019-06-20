@@ -114,29 +114,29 @@
     "@bazel/bazel-linux_x64" "0.26.1"
     "@bazel/bazel-win32_x64" "0.26.1"
 
-"@bazel/buildifier-darwin_x64@0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier-darwin_x64/-/buildifier-darwin_x64-0.25.1.tgz#bcb8643ae46c6aa4f4981f59648ecd9087b30a11"
-  integrity sha512-9fD3tXYgSjpZCEUGFBadfwDw89b3z3acYLd8+a0F6Sb/9LB0jzXOCMzqFMA7m1b3wOh1ecgWOyT0TyPUDSLRkg==
+"@bazel/buildifier-darwin_x64@0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier-darwin_x64/-/buildifier-darwin_x64-0.26.0.tgz#0e4f5066750f7984689857e332f93368e0d782dd"
+  integrity sha512-yvlHuaP2FIMJ4Z4Ucs/R1wgwkDjhDkwvGD1eyhy9Qblqu7Ypgxtv2wz8dygrxDJVxhk3Kiwzlrp3otq6OYjv5A==
 
-"@bazel/buildifier-linux_x64@0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier-linux_x64/-/buildifier-linux_x64-0.25.1.tgz#50cc7c3b8f9dfa818ea6cc9f2ec761cbd39471ea"
-  integrity sha512-Wt2yA+yeimi6i0USHoE1T2EhRJwtKDBmDLQx2E8Q+QXysULLm4usMEIGPdQYbHqKyjL75jbwlwZTlm9EzdXgCg==
+"@bazel/buildifier-linux_x64@0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier-linux_x64/-/buildifier-linux_x64-0.26.0.tgz#05020641f17441145056821ec33a2c667e253a3f"
+  integrity sha512-4+ZGEVMQdJr39My2eH6GmQrBIQfuw/DWO3Vwpy5vS1p61EvV0a5+jaukRelA3p//FD0j2cAKaBvwZdsijtDsZw==
 
-"@bazel/buildifier-win32_x64@0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier-win32_x64/-/buildifier-win32_x64-0.25.1.tgz#d990afed296f65675c1406ae36580473cab65f4c"
-  integrity sha512-ak91iv940z04NJfEhWHMSudjlZK5PrpDNL8k/cmYowi1JSfYvCchfABiXWxfWURmvqgSGE+KV72xxZ0HLU60bw==
+"@bazel/buildifier-win32_x64@0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier-win32_x64/-/buildifier-win32_x64-0.26.0.tgz#51d983d36fd41f59063347e027487a447e4ea83e"
+  integrity sha512-S3QvjopF6cQ0rMv8zxi/SWfRBtA+oBGiTPcfpn1wJZa8Q21PdOcjH9ZgPJKpIV53x6sJ8XBVs7HSW44dPrwxQA==
 
-"@bazel/buildifier@^0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-0.25.1.tgz#e29ab77802d99d70a891b9a471f62e80030fc326"
-  integrity sha512-d3+DgsGmQ3cSLCm99321cl+vKD/c3pNSQINCBnipmNeNd7UA3/UQ2Ibp6MXZslF8fMQDpuLxhhCFUOnFAoNWsw==
+"@bazel/buildifier@^0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-0.26.0.tgz#65af3851f9ebe8b9ac651185d051b1a155012dbb"
+  integrity sha512-PVzkCOYhjlgcRCXUO31dy/GmtjDWzeTyVmPCFc4pxTFBvlrG7qkVlUW3DCIbBI5neTes0pY8mju837UBdK0OFQ==
   optionalDependencies:
-    "@bazel/buildifier-darwin_x64" "0.25.1"
-    "@bazel/buildifier-linux_x64" "0.25.1"
-    "@bazel/buildifier-win32_x64" "0.25.1"
+    "@bazel/buildifier-darwin_x64" "0.26.0"
+    "@bazel/buildifier-linux_x64" "0.26.0"
+    "@bazel/buildifier-win32_x64" "0.26.0"
 
 "@bazel/ibazel@~0.9.0":
   version "0.9.0"
