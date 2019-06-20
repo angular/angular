@@ -70,7 +70,7 @@ describe('generateAnalysis', () => {
     const info = analysis.get(decl);
     expect(info).toBeDefined();
     expect(info !.template.file).toEqual(new ParseSourceFile('class C {}', util.TESTFILE));
-  })
+  });
 
   it('should give external templates their own source file', () => {
     const context = new IndexingContext();

@@ -38,7 +38,7 @@ export interface ComponentInfo {
 
     /** Template file recorded by template parser */
     file: ParseSourceFile;
-  }
+  };
 
   /**
    * BoundTarget containing the parsed template. Can be used to query for directives used in the
