@@ -742,7 +742,12 @@ export class Router {
                   t.resolve(false);
 
                   if (redirecting) {
-                    this.navigateByUrl(e.url);
+                    // setTimeout is required so this navigation finishes with the return EMPTY
+                    // below. If it isn't allowed to finish processing, there can be multiple
+                    // navigations to the same URL.
+                    setTimeout(
+                        () => this.navigateByUrl(
+                            e.url, {replaceUrl: this.urlUpdateStrategy === 'eager'}), 0);
                   }
 
                   /* All other errors should reset to the router's internal URL reference to the
