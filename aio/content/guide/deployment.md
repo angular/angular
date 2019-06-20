@@ -82,18 +82,19 @@ Another simple way to deploy your Angular app is to use [GitHub Pages](https://h
 1. You need to [create a GitHub account](https://github.com/join) if you don't have one, and then [create a repository](https://help.github.com/articles/create-a-repo/) for your project.
 Make a note of the user name and project name in GitHub.
 
-1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
-   <code-example language="none" class="code-shell">
+2. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
 
-     ng build --prod --output-path docs --base-href /&lt;project_name&gt;/
+  <code-example language="none" class="code-shell">
 
-   </code-example>
+     ng build --prod --output-path docs --base-href /<project_name>/
 
-1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
+  </code-example>
 
-1. Commit your changes and push.
+3. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
 
-1. On the GitHub project page, configure it to [publish from the docs folder](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
+4. Commit your changes and push.
+
+5. On the GitHub project page, configure it to [publish from the docs folder](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
 
 You can see your deployed page at `https://<user_name>.github.io/<project_name>/`.
 
