@@ -7,10 +7,8 @@
  */
 
 import {ParseSourceFile, R3TargetBinder, SelectorMatcher} from '@angular/compiler/src/compiler';
-
 import {DirectiveMeta} from '../../metadata';
 import {IndexingContext} from '../src/context';
-
 import * as util from './util';
 
 describe('ComponentAnalysisContext', () => {

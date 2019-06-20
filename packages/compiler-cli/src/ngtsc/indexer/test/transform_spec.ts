@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget} from '@angular/compiler';
-import {ParseSourceFile} from '@angular/compiler/src/compiler';
+import {BoundTarget, ParseSourceFile} from '@angular/compiler';
 import {DirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {IndexingContext} from '../src/context';
 import {getTemplateIdentifiers} from '../src/template';
 import {generateAnalysis} from '../src/transform';
-
 import * as util from './util';
 
 /**

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
-import {ParseSourceFile} from '@angular/compiler/src/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import {ParseTemplateOptions} from '@angular/compiler/src/render3/view/template';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -173,15 +172,19 @@ export class ComponentDecoratorHandler implements
     // Parse the template.
     // If a preanalyze phase was executed, the template may already exist in parsed form, so check
     // the preanalyzeTemplateCache.
+    // Extract a closure of the template parsing code so that it can be reparsed with different
+    // options if needed, like in the indexing pipeline.
     let parseTemplate: (options?: ParseTemplateOptions) => ParsedTemplate;
     if (this.preanalyzeTemplateCache.has(node)) {
       // The template was parsed in preanalyze. Use it and delete it to save memory.
       const template = this.preanalyzeTemplateCache.get(node) !;
       this.preanalyzeTemplateCache.delete(node);
 
+      // A pre-analyzed template cannot be reparsed. Pre-analysis is never run with the indexing
+      // pipeline.
       parseTemplate = (options?: ParseTemplateOptions) => {
         if (options !== undefined) {
-          throw new Error(`Cannot reparse a pre-analyzed template`);
+          throw new Error(`Cannot reparse a pre-analyzed template with new options`);
         }
         return template;
       };
@@ -317,6 +320,10 @@ export class ComponentDecoratorHandler implements
   }
 
   index(context: IndexingContext, node: ClassDeclaration, analysis: ComponentHandlerData) {
+    // The component template may have been previously parsed without preserving whitespace or with
+    // `leadingTriviaChar`s, both of which may manipulate the AST into a form not representative of
+    // the source code, making it unsuitable for indexing. The template is reparsed with preserving
+    // options to remedy this.
     const template = analysis.parseTemplate({
       preserveWhitespaces: true,
       leadingTriviaChars: [],

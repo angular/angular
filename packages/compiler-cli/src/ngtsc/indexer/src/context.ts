@@ -25,7 +25,7 @@ export interface ComponentInfo {
   /** Component TypeScript class declaration */
   declaration: ClassDeclaration;
 
-  /** Component template selector */
+  /** Component template selector if it exists, otherwise null. */
   selector: string|null;
 
   /** Parsed component template */
@@ -43,13 +43,16 @@ export interface ComponentInfo {
   /**
    * BoundTarget containing the parsed template. Can be used to query for directives used in the
    * template.
+   * Null if there is no registry of the component by the decorator handler.
    */
   scope: BoundTarget<ComponentMeta>|null;
 }
 
 /**
- * Stores analysis information about components in a compilation for and provides methods for
- * querying information about components.
+ * A context for storing indexing infromation about components of a program.
+ *
+ * An `IndexingContext` collects component and template analysis information from
+ * `DecoratorHandler`s and exposes them to be indexed.
  */
 export class IndexingContext {
   readonly components = new Set<ComponentInfo>();

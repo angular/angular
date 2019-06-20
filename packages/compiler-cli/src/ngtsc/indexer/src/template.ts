@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, MethodCall, PropertyRead, RecursiveAstVisitor, TmplAstNode} from '@angular/compiler';
-import {ImplicitReceiver} from '@angular/compiler/src/compiler';
+import {AST, ImplicitReceiver, MethodCall, PropertyRead, RecursiveAstVisitor, TmplAstNode} from '@angular/compiler';
 import {BoundText, Element, Node, RecursiveVisitor as RecursiveTemplateVisitor, Template} from '@angular/compiler/src/render3/r3_ast';
 import {AbsoluteSourceSpan, IdentifierKind, TemplateIdentifier} from './api';
 
@@ -57,25 +56,29 @@ class ExpressionVisitor extends RecursiveAstVisitor {
   }
 
   private addIdentifier(ast: AST&{name: string, receiver: AST}, kind: IdentifierKind) {
-    if (ast.receiver instanceof ImplicitReceiver) {
-      // Get the location of the identifier of real interest.
-      // The compiler's expression parser records the location of some expressions in a manner not
-      // useful to the indexer. For example, a `MethodCall` `foo(a, b)` will record the span of the
-      // entire method call, but the indexer is interested only in the method identifier.
-      const localExpression = this.expressionStr.substr(ast.span.start, ast.span.end);
-      const identifierStart = ast.span.start + localExpression.indexOf(ast.name);
-
-      // Join the relative position of the expression within a node with the absolute position
-      // of the node to get the absolute position of the expression in the source code.
-      const absoluteStart = this.absoluteOffset + identifierStart;
-      const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
-
-      this.identifiers.push({
-        name: ast.name,
-        span,
-        kind,
-      });
+    // The definition of a non-top-level property such as `bar` in `{{foo.bar}}` is currently
+    // impossible to determine by an indexer and unsupported by the indexing module.
+    if (!(ast.receiver instanceof ImplicitReceiver)) {
+      return;
     }
+
+    // Get the location of the identifier of real interest.
+    // The compiler's expression parser records the location of some expressions in a manner not
+    // useful to the indexer. For example, a `MethodCall` `foo(a, b)` will record the span of the
+    // entire method call, but the indexer is interested only in the method identifier.
+    const localExpression = this.expressionStr.substr(ast.span.start, ast.span.end);
+    const identifierStart = ast.span.start + localExpression.indexOf(ast.name);
+
+    // Join the relative position of the expression within a node with the absolute position
+    // of the node to get the absolute position of the expression in the source code.
+    const absoluteStart = this.absoluteOffset + identifierStart;
+    const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
+
+    this.identifiers.push({
+      name: ast.name,
+      span,
+      kind,
+    });
   }
 }
 
