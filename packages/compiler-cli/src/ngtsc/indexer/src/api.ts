@@ -32,7 +32,6 @@ export interface TemplateIdentifier {
   name: string;
   span: AbsoluteSourceSpan;
   kind: IdentifierKind;
-  file: ParseSourceFile;
 }
 
 /**
@@ -41,10 +40,11 @@ export interface TemplateIdentifier {
 export interface IndexedComponent {
   name: string;
   selector: string|null;
-  sourceFile: string;
-  content: string;
+  file: ParseSourceFile;
   template: {
     identifiers: Set<TemplateIdentifier>,
     usedComponents: Set<ts.Declaration>,
+    isInline: boolean,
+    file: ParseSourceFile;
   };
 }

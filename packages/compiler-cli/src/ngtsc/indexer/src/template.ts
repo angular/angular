@@ -34,8 +34,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
 
   private constructor(
       context: Node, private readonly expressionStr = context.sourceSpan.toString(),
-      private readonly absoluteOffset = context.sourceSpan.start.offset,
-      private readonly file = context.sourceSpan.start.file, ) {
+      private readonly absoluteOffset = context.sourceSpan.start.offset) {
     super();
   }
 
@@ -75,7 +74,6 @@ class ExpressionVisitor extends RecursiveAstVisitor {
         name: ast.name,
         span,
         kind,
-        file: this.file,
       });
     }
   }

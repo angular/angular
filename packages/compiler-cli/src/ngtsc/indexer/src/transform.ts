@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ParseSourceFile} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 import {IndexedComponent} from './api';
 import {IndexingContext} from './context';
@@ -33,14 +34,26 @@ export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, 
       });
     }
 
+    // Get source files for the component and the template. If the template is inline, its source
+    // file is the component's.
+    const componentFile = new ParseSourceFile(
+        declaration.getSourceFile().getFullText(), declaration.getSourceFile().fileName);
+    let templateFile: ParseSourceFile;
+    if (template.isInline) {
+      templateFile = componentFile;
+    } else {
+      templateFile = template.file;
+    }
+
     analysis.set(declaration, {
       name,
       selector,
-      sourceFile: declaration.getSourceFile().fileName,
-      content: declaration.getSourceFile().getFullText(),
+      file: componentFile,
       template: {
-        identifiers: getTemplateIdentifiers(template),
+        identifiers: getTemplateIdentifiers(template.nodes),
         usedComponents,
+        isInline: template.isInline,
+        file: templateFile,
       },
     });
   });

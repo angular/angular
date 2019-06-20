@@ -7,6 +7,7 @@
  */
 
 import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ParseSourceFile} from '@angular/compiler/src/compiler';
 import {ParseTemplateOptions} from '@angular/compiler/src/render3/view/template';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -316,12 +317,10 @@ export class ComponentDecoratorHandler implements
   }
 
   index(context: IndexingContext, node: ClassDeclaration, analysis: ComponentHandlerData) {
-    const template = analysis
-                         .parseTemplate({
-                           preserveWhitespaces: true,
-                           leadingTriviaChars: [],
-                         })
-                         .nodes;
+    const template = analysis.parseTemplate({
+      preserveWhitespaces: true,
+      leadingTriviaChars: [],
+    });
     const scope = this.scopeRegistry.getScopeForComponent(node);
     const selector = analysis.meta.selector;
     let boundTemplate = null;
@@ -332,7 +331,7 @@ export class ComponentDecoratorHandler implements
         matcher.addSelectables(CssSelector.parse(selector), directive);
       }
       const binder = new R3TargetBinder(matcher);
-      boundTemplate = binder.bind({template});
+      boundTemplate = binder.bind({template: template.nodes});
     }
 
     context.addComponent({
@@ -642,11 +641,14 @@ export class ComponentDecoratorHandler implements
     }
 
     return {
-        interpolation, ...parseTemplate(templateStr, templateUrl, {
-          preserveWhitespaces,
-          interpolationConfig: interpolation,
-          range: templateRange, escapedString, ...options,
-        }),
+      interpolation,
+      ...parseTemplate(templateStr, templateUrl, {
+        preserveWhitespaces,
+        interpolationConfig: interpolation,
+        range: templateRange, escapedString, ...options,
+      }),
+      isInline: component.has('template'),
+      file: new ParseSourceFile(templateStr, templateUrl),
     };
   }
 
@@ -708,4 +710,6 @@ interface ParsedTemplate {
   nodes: TmplAstNode[];
   styleUrls: string[];
   styles: string[];
+  isInline: boolean;
+  file: ParseSourceFile;
 }

@@ -7,7 +7,7 @@
  */
 
 import {BoundTarget} from '@angular/compiler';
-import {InterpolationConfig} from '@angular/compiler/src/compiler';
+import {ParseSourceFile} from '@angular/compiler/src/compiler';
 import {DirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {IndexingContext} from '../src/context';
@@ -21,16 +21,22 @@ import * as util from './util';
  */
 function populateContext(
     context: IndexingContext, component: ClassDeclaration, selector: string, template: string,
-    scope: BoundTarget<DirectiveMeta>| null) {
+    scope: BoundTarget<DirectiveMeta>| null, isInline: boolean = false) {
   const parsedTemplate = util.getParsedTemplate(template);
   context.addComponent({
     declaration: component,
-    template: parsedTemplate, selector, scope,
+    template: {
+      nodes: parsedTemplate,
+      isInline,
+      file: new ParseSourceFile(template, util.TESTFILE),
+    },
+    selector,
+    scope,
   });
 }
 
 describe('generateAnalysis', () => {
-  it('should emit analysis information', () => {
+  it('should emit component and template analysis information', () => {
     const context = new IndexingContext();
     const decl = util.getComponentDeclaration('class C {}', 'C');
     populateContext(context, decl, 'c-selector', '<div>{{foo}}</div>', null);
@@ -40,16 +46,44 @@ describe('generateAnalysis', () => {
 
     const info = analysis.get(decl);
     expect(info).toEqual({
-      content: 'class C {}',
       name: 'C',
       selector: 'c-selector',
-      sourceFile: util.TESTFILE,
+      file: new ParseSourceFile('class C {}', util.TESTFILE),
       template: {
         identifiers: getTemplateIdentifiers(util.getParsedTemplate('<div>{{foo}}</div>')),
         usedComponents: new Set(),
+        isInline: false,
+        file: new ParseSourceFile('<div>{{foo}}</div>', util.TESTFILE),
       }
     });
   });
+
+  it('should give inline templates the component source file', () => {
+    const context = new IndexingContext();
+    const decl = util.getComponentDeclaration('class C {}', 'C');
+    populateContext(
+        context, decl, 'c-selector', '<div>{{foo}}</div>', null, /* inline template */ true);
+    const analysis = generateAnalysis(context);
+
+    expect(analysis.size).toBe(1);
+
+    const info = analysis.get(decl);
+    expect(info).toBeDefined();
+    expect(info !.template.file).toEqual(new ParseSourceFile('class C {}', util.TESTFILE));
+  })
+
+  it('should give external templates their own source file', () => {
+    const context = new IndexingContext();
+    const decl = util.getComponentDeclaration('class C {}', 'C');
+    populateContext(context, decl, 'c-selector', '<div>{{foo}}</div>', null);
+    const analysis = generateAnalysis(context);
+
+    expect(analysis.size).toBe(1);
+
+    const info = analysis.get(decl);
+    expect(info).toBeDefined();
+    expect(info !.template.file).toEqual(new ParseSourceFile('<div>{{foo}}</div>', util.TESTFILE));
+  })
 
   it('should emit used components', () => {
     const context = new IndexingContext();

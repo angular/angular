@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InterpolationConfig, ParseSourceFile, TmplAstNode, parseTemplate} from '@angular/compiler';
+import {TmplAstNode, parseTemplate} from '@angular/compiler';
 import {AbsoluteSourceSpan, IdentifierKind} from '..';
 import {getTemplateIdentifiers} from '../src/template';
-
-const TEST_FILE = 'TEST';
+import {TESTFILE} from './util';
 
 function parse(template: string): TmplAstNode[] {
-  return parseTemplate(template, TEST_FILE, {
+  return parseTemplate(template, TESTFILE, {
            preserveWhitespaces: true,
            leadingTriviaChars: [],
          })
@@ -28,68 +27,92 @@ describe('getTemplateIdentifiers', () => {
   });
 
   it('should ignore comments', () => {
-    const refs = getTemplateIdentifiers(parse(`
-    <!-- {{my_module}} -->
-    <div><!-- {{goodbye}} --></div>
-    `));
+    const refs = getTemplateIdentifiers(parse('<!-- {{comment}} -->'));
 
     expect(refs.size).toBe(0);
   });
 
-  describe('generates identifiers for PropertyReads', () => {
-    it('should ignore identifiers that are not implicitly received by the template', () => {
-      const template = '<div>{{foo.bar.baz}} {{m().p}}</div>';
-      const refs = getTemplateIdentifiers(parse(template));
-      expect(refs.size).toBe(2);
+  it('should handle arbitrary whitespace', () => {
+    const template = '<div>\n\n   {{foo}}</div>';
+    const refs = getTemplateIdentifiers(parse(template));
 
-      const [foo, m] = Array.from(refs);
-      expect(foo.name).toBe('foo');
-      expect(m.name).toBe('m');
+    const [ref] = Array.from(refs);
+    expect(ref).toEqual({
+      name: 'foo',
+      kind: IdentifierKind.Property,
+      span: new AbsoluteSourceSpan(12, 15),
+    });
+  });
+
+  describe('generates identifiers for PropertyReads', () => {
+    it('should discover component properties', () => {
+      const template = '{{foo}}';
+      const refs = getTemplateIdentifiers(parse(template));
+      expect(refs.size).toBe(1);
+
+      const [ref] = Array.from(refs);
+      expect(ref).toEqual({
+        name: 'foo',
+        kind: IdentifierKind.Property,
+        span: new AbsoluteSourceSpan(2, 5),
+      });
     });
 
-    it('should discover component properties', () => {
-      const template = '<div>{{foo}}</div>';
+    it('should discover nested properties', () => {
+      const template = '<div><span>{{foo}}</span></div>';
+      const refs = getTemplateIdentifiers(parse(template));
+
+      const refArr = Array.from(refs);
+      expect(refArr).toEqual(jasmine.arrayContaining([{
+        name: 'foo',
+        kind: IdentifierKind.Property,
+        span: new AbsoluteSourceSpan(13, 16),
+      }]));
+    });
+
+    it('should ignore identifiers that are not implicitly received by the template', () => {
+      const template = '{{foo.bar.baz}}';
       const refs = getTemplateIdentifiers(parse(template));
       expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
       expect(ref.name).toBe('foo');
-      expect(ref.kind).toBe(IdentifierKind.Property);
-      expect(ref.span).toEqual(new AbsoluteSourceSpan(7, 10));
-      expect(ref.file).toEqual(new ParseSourceFile(template, TEST_FILE));
     });
+  });
 
+  describe('generates identifiers for MethodCalls', () => {
     it('should discover component method calls', () => {
-      const template = '<div>{{foo()}}</div>';
+      const template = '{{foo()}}';
       const refs = getTemplateIdentifiers(parse(template));
+      expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
-      expect(ref.name).toBe('foo');
-      expect(ref.kind).toBe(IdentifierKind.Method);
-      expect(ref.span).toEqual(new AbsoluteSourceSpan(7, 10));
-      expect(ref.file).toEqual(new ParseSourceFile(template, TEST_FILE));
+      expect(ref).toEqual({
+        name: 'foo',
+        kind: IdentifierKind.Method,
+        span: new AbsoluteSourceSpan(2, 5),
+      });
     });
 
-    it('should handle arbitrary whitespace', () => {
-      const template = '<div>\n\n   {{foo}}</div>';
+    it('should discover nested properties', () => {
+      const template = '<div><span>{{foo()}}</span></div>';
       const refs = getTemplateIdentifiers(parse(template));
 
-      const [ref] = Array.from(refs);
-      expect(ref.name).toBe('foo');
-      expect(ref.kind).toBe(IdentifierKind.Property);
-      expect(ref.span).toEqual(new AbsoluteSourceSpan(12, 15));
-      expect(ref.file).toEqual(new ParseSourceFile(template, TEST_FILE));
+      const refArr = Array.from(refs);
+      expect(refArr).toEqual(jasmine.arrayContaining([{
+        name: 'foo',
+        kind: IdentifierKind.Method,
+        span: new AbsoluteSourceSpan(13, 16),
+      }]));
     });
 
-    it('should handle nested scopes', () => {
-      const template = '<div><span>{{foo}}</span></div>';
+    it('should ignore identifiers that are not implicitly received by the template', () => {
+      const template = '{{foo().bar().baz()}}';
       const refs = getTemplateIdentifiers(parse(template));
+      expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
       expect(ref.name).toBe('foo');
-      expect(ref.kind).toBe(IdentifierKind.Property);
-      expect(ref.span).toEqual(new AbsoluteSourceSpan(13, 16));
-      expect(ref.file).toEqual(new ParseSourceFile(template, TEST_FILE));
     });
   });
 });

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, DirectiveMeta, TmplAstNode} from '@angular/compiler';
-import {InterpolationConfig} from '@angular/compiler/src/compiler';
+import {BoundTarget, DirectiveMeta, ParseSourceFile, TmplAstNode} from '@angular/compiler';
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
@@ -30,7 +29,16 @@ export interface ComponentInfo {
   selector: string|null;
 
   /** Parsed component template */
-  template: TmplAstNode[];
+  template: {
+    /** Template nodes */
+    nodes: TmplAstNode[];
+
+    /** Whether the component template is inline */
+    isInline: boolean;
+
+    /** Template file recorded by template parser */
+    file: ParseSourceFile;
+  }
 
   /**
    * BoundTarget containing the parsed template. Can be used to query for directives used in the

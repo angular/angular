@@ -42,8 +42,7 @@ describe('ngtsc component indexing', () => {
       expect(indexedComp).toEqual(jasmine.objectContaining({
         name: 'TestCmp',
         selector: 'test-cmp',
-        content: componentContent,
-        sourceFile: testPath('test.ts'),
+        file: new ParseSourceFile(componentContent, testPath('test.ts')),
       }));
     });
 
@@ -53,7 +52,7 @@ describe('ngtsc component indexing', () => {
 
         @Component({
           selector: 'test-cmp',
-          template: '<div>{{foo}}</div>',
+          template: '{{foo}}',
         })
         export class TestCmp { foo = 0; }
       `;
@@ -62,16 +61,16 @@ describe('ngtsc component indexing', () => {
       const [[_, indexedComp]] = Array.from(indexed.entries());
       const template = indexedComp.template;
 
-      expect(template.identifiers.size).toBe(1);
-      expect(template.usedComponents.size).toBe(0);
-      const [identifier] = Array.from(template.identifiers.values());
-
-      expect(identifier).toEqual(jasmine.objectContaining({
-        name: 'foo',
-        kind: IdentifierKind.Property,
-        span: new AbsoluteSourceSpan(132, 135),
-        file: new ParseSourceFile(componentContent, 'test.ts'),
-      }));
+      expect(template).toEqual({
+        identifiers: new Set([{
+          name: 'foo',
+          kind: IdentifierKind.Property,
+          span: new AbsoluteSourceSpan(127, 130),
+        }]),
+        usedComponents: new Set(),
+        isInline: true,
+        file: new ParseSourceFile(componentContent, testPath('test.ts')),
+      });
     });
 
     it('should index external templates', () => {
@@ -84,21 +83,21 @@ describe('ngtsc component indexing', () => {
         })
         export class TestCmp { foo = 0; }
       `);
-      env.write('test.html', '<div>{{foo}}</div>');
+      env.write('test.html', '{{foo}}');
       const indexed = env.driveIndexer();
       const [[_, indexedComp]] = Array.from(indexed.entries());
       const template = indexedComp.template;
 
-      expect(template.identifiers.size).toBe(1);
-      expect(template.usedComponents.size).toBe(0);
-      const [identifier] = Array.from(template.identifiers.values());
-
-      expect(identifier).toEqual(jasmine.objectContaining({
-        name: 'foo',
-        kind: IdentifierKind.Property,
-        span: new AbsoluteSourceSpan(7, 10),
-        file: new ParseSourceFile('<div>{{foo}}</div>', testPath('test.html')),
-      }));
+      expect(template).toEqual({
+        identifiers: new Set([{
+          name: 'foo',
+          kind: IdentifierKind.Property,
+          span: new AbsoluteSourceSpan(2, 5),
+        }]),
+        usedComponents: new Set(),
+        isInline: false,
+        file: new ParseSourceFile('{{foo}}', testPath('test.html')),
+      });
     });
 
     it('should index templates compiled without preserving whitespace', () => {
@@ -120,16 +119,16 @@ describe('ngtsc component indexing', () => {
       const [[_, indexedComp]] = Array.from(indexed.entries());
       const template = indexedComp.template;
 
-      expect(template.identifiers.size).toBe(1);
-      expect(template.usedComponents.size).toBe(0);
-      const [identifier] = Array.from(template.identifiers.values());
-
-      expect(identifier).toEqual(jasmine.objectContaining({
-        name: 'foo',
-        kind: IdentifierKind.Property,
-        span: new AbsoluteSourceSpan(12, 15),
+      expect(template).toEqual({
+        identifiers: new Set([{
+          name: 'foo',
+          kind: IdentifierKind.Property,
+          span: new AbsoluteSourceSpan(12, 15),
+        }]),
+        usedComponents: new Set(),
+        isInline: false,
         file: new ParseSourceFile('<div>  \n  {{foo}}</div>', testPath('test.html')),
-      }));
+      });
     });
 
     it('should generated information about used components', () => {
