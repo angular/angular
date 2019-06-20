@@ -82,7 +82,7 @@ export interface DecoratorHandler<A, M> {
    * `IndexingContext`, which stores information about components discovered in the
    * program.
    */
-  index?(context: IndexingContext, node: ClassDeclaration, metadata: M): void;
+  index?(context: IndexingContext, node: ClassDeclaration, metadata: A): void;
 
   /**
    * Perform resolution on the given decorator along with the result of analysis.
