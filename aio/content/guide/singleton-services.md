@@ -1,14 +1,9 @@
 # Singleton services
 
-#### Prerequisites:
-
-* A basic understanding of [Bootstrapping](guide/bootstrapping).
-* Familiarity with [Providers](guide/providers).
+A singleton service is a service for which only once instance exists in an app.
 
 For a sample app using the app-wide singleton service that this page describes, see the
 <live-example name="ngmodules"></live-example> showcasing all the documented features of NgModules.
-
-<hr />
 
 ## Providing a singleton service
 

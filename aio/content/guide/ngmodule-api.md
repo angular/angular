@@ -1,15 +1,5 @@
 # NgModule API
 
-#### Prerequisites
-
-A basic understanding of the following concepts:
-* [Bootstrapping](guide/bootstrapping).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-
-<hr />
-
-## Purpose of `@NgModule`
-
 At a high level, NgModules are a way to organize Angular apps
 and they accomplish this through the metadata in the `@NgModule`
 decorator.

@@ -1,13 +1,5 @@
 # NgModules
 
-#### Prerequisites
-
-A basic understanding of the following concepts:
-* [Bootstrapping](guide/bootstrapping).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-
-<hr>
-
 **NgModules** configure the injector and the compiler and help organize related things together.
 
 An NgModule is a class marked by the `@NgModule` decorator.
