@@ -7,6 +7,8 @@
  */
 
 import {CustomTransformers, Program} from '@angular/compiler-cli';
+import {IndexedComponent} from '@angular/compiler-cli/src/ngtsc/indexer';
+import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
 import {setWrapHostForTest} from '@angular/compiler-cli/src/transformers/compiler_host';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -202,6 +204,13 @@ export class NgtscTestEnvironment {
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
     return program.listLazyRoutes(entryPoint);
+  }
+
+  driveIndexer(): Map<ts.Declaration, IndexedComponent> {
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(['-p', this.basePath]);
+    const host = createCompilerHost({options});
+    const program = createProgram({rootNames, host, options});
+    return (program as NgtscProgram).getIndexedComponents();
   }
 }
 
