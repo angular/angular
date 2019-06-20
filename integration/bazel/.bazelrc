@@ -20,3 +20,12 @@ build --symlink_prefix=/
 # Turn on managed directories feature in Bazel
 # This allows us to avoid installing a second copy of node_modules
 common --experimental_allow_incremental_repository_updates
+
+# This option is changed to true in Bazel 0.27 and exposes a possible
+# regression in Bazel 0.27.0.
+# See root /.bazelrc for more info. integration/bazel uses
+# ng_package which depends on npm_package so this flag needs to be set
+# her as well.
+build --incompatible_list_based_execution_strategy_selection=false
+test --incompatible_list_based_execution_strategy_selection=false
+run --incompatible_list_based_execution_strategy_selection=false
