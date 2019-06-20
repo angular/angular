@@ -6,12 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, HtmlParser, Lexer, MethodCall, ParseSourceFile, PropertyRead, RecursiveAstVisitor, TmplAstNode, TokenType, visitAll} from '@angular/compiler';
+import {AST, BoundTarget, DirectiveMeta, ImplicitReceiver, MethodCall, PropertyRead, RecursiveAstVisitor} from '@angular/compiler';
 import {BoundText, Element, Node, RecursiveVisitor as RecursiveTemplateVisitor, Template} from '@angular/compiler/src/render3/r3_ast';
-import {htmlAstToRender3Ast} from '@angular/compiler/src/render3/r3_template_transform';
-import {I18nMetaVisitor} from '@angular/compiler/src/render3/view/i18n/meta';
-import {makeBindingParser} from '@angular/compiler/src/render3/view/template';
-import {AbsoluteSourceSpan, IdentifierKind, RestoreTemplateOptions, TemplateIdentifier} from './api';
+import {AbsoluteSourceSpan, IdentifierKind, TemplateIdentifier} from './api';
 
 /**
  * A parsed node in a template, which may have a name (if it is a selector) or
@@ -20,46 +17,6 @@ import {AbsoluteSourceSpan, IdentifierKind, RestoreTemplateOptions, TemplateIden
 interface HTMLNode extends Node {
   tagName?: string;
   name?: string;
-}
-
-/**
- * Updates the location of an identifier to its real anchor in a source code.
- *
- * The compiler's expression parser records the location of some expressions in a manner not
- * useful to the indexer. For example, a `MethodCall` `foo(a, b)` will record the span of the
- * entire method call, but the indexer is interested only in the method identifier.
- *
- * To remedy all this, the visitor tokenizes the template node the expression was discovered in,
- * and updates the locations of entities found during expression traversal with those of the
- * tokens.
- *
- * TODO(ayazhafiz): Think about how to handle `PropertyRead`s in `BoundAttribute`s. The Lexer
- * tokenizes the attribute as a string and ignores quotes.
- *
- * @param entities entities to update
- * @param currentNode node expression was in
- */
-function updateIdentifierSpans(identifiers: TemplateIdentifier[], currentNode: Node) {
-  const localSpan = currentNode.sourceSpan;
-  const localExpression = localSpan.toString();
-
-  const lexedIdentifiers =
-      new Lexer().tokenize(localExpression).filter(token => token.type === TokenType.Identifier);
-
-  // Join the relative position of the expression within a node with the absolute position of the
-  // node to get the absolute position of the expression in the source code.
-  const absoluteOffset = currentNode.sourceSpan.start.offset;
-  identifiers.forEach((id, index) => {
-    const lexedId = lexedIdentifiers[index];
-    if (id.name !== lexedId.strValue) {
-      throw new Error(
-          'Impossible state: lexed and parsed expression should contain the same tokens.');
-    }
-
-    const start = absoluteOffset + lexedId.index;
-    const absoluteSpan = new AbsoluteSourceSpan(start, start + lexedId.strValue.length);
-    id.span = absoluteSpan;
-  });
 }
 
 /**
@@ -72,41 +29,74 @@ function updateIdentifierSpans(identifiers: TemplateIdentifier[], currentNode: N
  * 11}}]`.
  */
 class ExpressionVisitor extends RecursiveAstVisitor {
-  private readonly file: ParseSourceFile;
+  readonly identifiers: TemplateIdentifier[] = [];
 
-  private constructor(context: Node, readonly identifiers: TemplateIdentifier[] = []) {
+  private constructor(
+      context: Node, private readonly boundTemplate: BoundTarget<DirectiveMeta>,
+      private readonly expressionStr = context.sourceSpan.toString(),
+      private readonly absoluteOffset = context.sourceSpan.start.offset) {
     super();
-
-    this.file = context.sourceSpan.start.file;
   }
 
-  static getIdentifiers(ast: AST, context: Node): TemplateIdentifier[] {
-    const visitor = new ExpressionVisitor(context);
+  /**
+   * Returns identifiers discovered in an expression.
+   *
+   * @param ast expression AST to visit
+   * @param context HTML node expression is defined in
+   * @param boundTemplate bound target of the entire template, which can be used to query for the
+   * entities expressions target.
+   */
+  static getIdentifiers(ast: AST, context: Node, boundTemplate: BoundTarget<DirectiveMeta>):
+      TemplateIdentifier[] {
+    const visitor = new ExpressionVisitor(context, boundTemplate);
     visitor.visit(ast);
-    const identifiers = visitor.identifiers;
-
-    updateIdentifierSpans(identifiers, context);
-
-    return identifiers;
+    return visitor.identifiers;
   }
 
   visit(ast: AST) { ast.visit(this); }
 
   visitMethodCall(ast: MethodCall, context: {}) {
-    this.addIdentifier(ast, IdentifierKind.Method);
+    this.visitIdentifier(ast, IdentifierKind.Method);
     super.visitMethodCall(ast, context);
   }
 
   visitPropertyRead(ast: PropertyRead, context: {}) {
-    this.addIdentifier(ast, IdentifierKind.Property);
+    this.visitIdentifier(ast, IdentifierKind.Property);
     super.visitPropertyRead(ast, context);
   }
 
-  private addIdentifier(ast: AST&{name: string}, kind: IdentifierKind) {
+  /**
+   * Visits an identifier, adding it to the identifier store if it is useful for indexing.
+   *
+   * @param ast expression AST the identifier is in
+   * @param kind identifier kind
+   */
+  private visitIdentifier(ast: AST&{name: string, receiver: AST}, kind: IdentifierKind) {
+    // The definition of a non-top-level property such as `bar` in `{{foo.bar}}` is currently
+    // impossible to determine by an indexer and unsupported by the indexing module.
+    // The indexing module also does not currently support references to identifiers declared in the
+    // template itself, which have a non-null expression target.
+    if (!(ast.receiver instanceof ImplicitReceiver) ||
+        this.boundTemplate.getExpressionTarget(ast) !== null) {
+      return;
+    }
+
+    // Get the location of the identifier of real interest.
+    // The compiler's expression parser records the location of some expressions in a manner not
+    // useful to the indexer. For example, a `MethodCall` `foo(a, b)` will record the span of the
+    // entire method call, but the indexer is interested only in the method identifier.
+    const localExpression = this.expressionStr.substr(ast.span.start, ast.span.end);
+    const identifierStart = ast.span.start + localExpression.indexOf(ast.name);
+
+    // Join the relative position of the expression within a node with the absolute position
+    // of the node to get the absolute position of the expression in the source code.
+    const absoluteStart = this.absoluteOffset + identifierStart;
+    const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
+
     this.identifiers.push({
       name: ast.name,
-      span: ast.span, kind,
-      file: this.file,
+      span,
+      kind,
     });
   }
 }
@@ -120,7 +110,16 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
   readonly identifiers = new Set<TemplateIdentifier>();
 
   /**
+   * Creates a template visitor for a bound template target. The bound target can be used when
+   * deferred to the expression visitor to get information about the target of an expression.
+   *
+   * @param boundTemplate bound template target
+   */
+  constructor(private boundTemplate: BoundTarget<DirectiveMeta>) { super(); }
+
+  /**
    * Visits a node in the template.
+   *
    * @param node node to visit
    */
   visit(node: HTMLNode) { node.visit(this); }
@@ -138,72 +137,30 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
     this.visitAll(template.references);
     this.visitAll(template.variables);
   }
-  visitBoundText(text: BoundText) { this.addIdentifiers(text); }
+  visitBoundText(text: BoundText) { this.visitExpression(text); }
 
   /**
-   * Adds identifiers to the visitor's state.
-   * @param visitedEntities interesting entities to add as identifiers
-   * @param curretNode node entities were discovered in
+   * Visits a node's expression and adds its identifiers, if any, to the visitor's state.
+   *
+   * @param curretNode node whose expression to visit
    */
-  private addIdentifiers(node: Node&{value: AST}) {
-    const identifiers = ExpressionVisitor.getIdentifiers(node.value, node);
+  private visitExpression(node: Node&{value: AST}) {
+    const identifiers = ExpressionVisitor.getIdentifiers(node.value, node, this.boundTemplate);
     identifiers.forEach(id => this.identifiers.add(id));
   }
 }
 
 /**
- * Unwraps and reparses a template, preserving whitespace and with no leading trivial characters.
- *
- * A template may previously have been parsed without preserving whitespace, and was definitely
- * parsed with leading trivial characters (see `parseTemplate` from the compiler package API).
- * Both of these are detrimental for indexing as they result in a manipulated AST not representing
- * the template source code.
- *
- * TODO(ayazhafiz): Remove once issues with `leadingTriviaChars` and `parseTemplate` are resolved.
- */
-function restoreTemplate(template: TmplAstNode[], options: RestoreTemplateOptions): TmplAstNode[] {
-  // try to recapture the template content and URL
-  // if there was nothing in the template to begin with, this is just a no-op
-  if (template.length === 0) {
-    return [];
-  }
-  const {content: templateStr, url: templateUrl} = template[0].sourceSpan.start.file;
-
-  options.preserveWhitespaces = true;
-  const {interpolationConfig, preserveWhitespaces} = options;
-
-  const bindingParser = makeBindingParser(interpolationConfig);
-  const htmlParser = new HtmlParser();
-  const parseResult = htmlParser.parse(templateStr, templateUrl, {
-    ...options,
-    tokenizeExpansionForms: true,
-  });
-
-  if (parseResult.errors && parseResult.errors.length > 0) {
-    throw new Error('Impossible state: template must have been successfully parsed previously.');
-  }
-
-  const rootNodes = visitAll(
-      new I18nMetaVisitor(interpolationConfig, !preserveWhitespaces), parseResult.rootNodes);
-
-  const {nodes, errors} = htmlAstToRender3Ast(rootNodes, bindingParser);
-  if (errors && errors.length > 0) {
-    throw new Error('Impossible state: template must have been successfully parsed previously.');
-  }
-
-  return nodes;
-}
-
-/**
  * Traverses a template AST and builds identifiers discovered in it.
- * @param template template to extract indentifiers from
- * @param options options for restoring the parsed template to a indexable state
+ *
+ * @param boundTemplate bound template target, which can be used for querying expression targets.
  * @return identifiers in template
  */
-export function getTemplateIdentifiers(
-    template: TmplAstNode[], options: RestoreTemplateOptions): Set<TemplateIdentifier> {
-  const restoredTemplate = restoreTemplate(template, options);
-  const visitor = new TemplateVisitor();
-  visitor.visitAll(restoredTemplate);
+export function getTemplateIdentifiers(boundTemplate: BoundTarget<DirectiveMeta>):
+    Set<TemplateIdentifier> {
+  const visitor = new TemplateVisitor(boundTemplate);
+  if (boundTemplate.target.template !== undefined) {
+    visitor.visitAll(boundTemplate.target.template);
+  }
   return visitor.identifiers;
 }
