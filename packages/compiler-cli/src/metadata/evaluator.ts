@@ -555,7 +555,7 @@ export class Evaluator {
               return !operand;
           }
         }
-        let operatorText: string;
+        let operatorText: '+'|'-'|'~'|'!';
         switch (prefixUnaryExpression.operator) {
           case ts.SyntaxKind.PlusToken:
             operatorText = '+';
