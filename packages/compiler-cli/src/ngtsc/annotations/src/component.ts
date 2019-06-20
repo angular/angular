@@ -7,12 +7,14 @@
  */
 
 import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ParseTemplateOptions} from '@angular/compiler/src/render3/view/template';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {IndexingContext} from '../../indexer';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
@@ -35,6 +37,7 @@ export interface ComponentHandlerData {
   meta: R3ComponentMetadata;
   parsedTemplate: TmplAstNode[];
   metadataStmt: Statement|null;
+  parseTemplate(options?: ParseTemplateOptions): ParsedTemplate;
 }
 
 /**
@@ -169,11 +172,18 @@ export class ComponentDecoratorHandler implements
     // Parse the template.
     // If a preanalyze phase was executed, the template may already exist in parsed form, so check
     // the preanalyzeTemplateCache.
-    let template: ParsedTemplate;
+    let parseTemplate: (options?: ParseTemplateOptions) => ParsedTemplate;
     if (this.preanalyzeTemplateCache.has(node)) {
       // The template was parsed in preanalyze. Use it and delete it to save memory.
-      template = this.preanalyzeTemplateCache.get(node) !;
+      const template = this.preanalyzeTemplateCache.get(node) !;
       this.preanalyzeTemplateCache.delete(node);
+
+      parseTemplate = (options?: ParseTemplateOptions) => {
+        if (options !== undefined) {
+          throw new Error(`Cannot reparse a pre-analyzed template`);
+        }
+        return template;
+      };
     } else {
       // The template was not already parsed. Either there's a templateUrl, or an inline template.
       if (component.has('templateUrl')) {
@@ -187,9 +197,9 @@ export class ComponentDecoratorHandler implements
         const templateStr = this.resourceLoader.load(templateUrl);
         this.resourceDependencies.recordResourceDependency(node.getSourceFile(), templateUrl);
 
-        template = this._parseTemplate(
+        parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
             component, templateStr, sourceMapUrl(templateUrl), /* templateRange */ undefined,
-            /* escapedString */ false);
+            /* escapedString */ false, options);
       } else {
         // Expect an inline template to be present.
         const inlineTemplate = this._extractInlineTemplate(component, relativeContextFilePath);
@@ -199,10 +209,11 @@ export class ComponentDecoratorHandler implements
               'component is missing a template');
         }
         const {templateStr, templateUrl, templateRange, escapedString} = inlineTemplate;
-        template =
-            this._parseTemplate(component, templateStr, templateUrl, templateRange, escapedString);
+        parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
+            component, templateStr, templateUrl, templateRange, escapedString, options);
       }
     }
+    const template = parseTemplate();
 
     if (template.errors !== undefined) {
       throw new Error(
@@ -294,7 +305,7 @@ export class ComponentDecoratorHandler implements
         },
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore),
-        parsedTemplate: template.nodes,
+        parsedTemplate: template.nodes, parseTemplate,
       },
       typeCheck: true,
     };
@@ -302,6 +313,34 @@ export class ComponentDecoratorHandler implements
       (output.analysis.meta as R3ComponentMetadata).changeDetection = changeDetection;
     }
     return output;
+  }
+
+  index(context: IndexingContext, node: ClassDeclaration, analysis: ComponentHandlerData) {
+    const template = analysis
+                         .parseTemplate({
+                           preserveWhitespaces: true,
+                           leadingTriviaChars: [],
+                         })
+                         .nodes;
+    const scope = this.scopeRegistry.getScopeForComponent(node);
+    const selector = analysis.meta.selector;
+    let boundTemplate = null;
+    if (scope !== null) {
+      const matcher = new SelectorMatcher<DirectiveMeta>();
+      for (const directive of scope.compilation.directives) {
+        const {selector} = directive;
+        matcher.addSelectables(CssSelector.parse(selector), directive);
+      }
+      const binder = new R3TargetBinder(matcher);
+      boundTemplate = binder.bind({template});
+    }
+
+    context.addComponent({
+      declaration: node,
+      selector,
+      template,
+      scope: boundTemplate,
+    });
   }
 
   typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: ComponentHandlerData): void {
@@ -576,7 +615,8 @@ export class ComponentDecoratorHandler implements
 
   private _parseTemplate(
       component: Map<string, ts.Expression>, templateStr: string, templateUrl: string,
-      templateRange: LexerRange|undefined, escapedString: boolean): ParsedTemplate {
+      templateRange: LexerRange|undefined, escapedString: boolean,
+      options: ParseTemplateOptions = {}): ParsedTemplate {
     let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
       const expr = component.get('preserveWhitespaces') !;
@@ -605,7 +645,7 @@ export class ComponentDecoratorHandler implements
         interpolation, ...parseTemplate(templateStr, templateUrl, {
           preserveWhitespaces,
           interpolationConfig: interpolation,
-          range: templateRange, escapedString
+          range: templateRange, escapedString, ...options,
         }),
     };
   }
