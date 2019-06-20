@@ -12,6 +12,13 @@
     to flatten **all** dependencies and could cause unexpected results. We **only** want to
     explicitly flatten out all `@angular/*` dependencies. This can be achieved with resolutions.
     Read more here: https://yarnpkg.com/lang/en/docs/package-json/#toc-resolutions
+
+    **Note** that this script has to be written in Python because the docker container which
+    is used for our CI does not come with NodeJS pre-installed. Since this script needs to run
+    before the Bazel analysis phase is started, we can only run this script only with tools that
+    are pre-installed in the image. Python is a pre-installed in the google/bazel official image
+    and therefore we use that for the "package.json" modification. Note that this script is only
+    running on CI and therefore there are no implications with writing this in python.
 """
 
 import json
