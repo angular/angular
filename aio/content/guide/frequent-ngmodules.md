@@ -1,12 +1,5 @@
 # Frequently Used Modules
 
-#### Prerequisites
-
-A basic understanding of [Bootstrapping](guide/bootstrapping).
-
-
-<hr>
-
 An Angular app needs at least one module that serves as the root module.
 As you add features to your app, you can add them in modules.
 The following are frequently used Angular modules with examples
