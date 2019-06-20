@@ -115,7 +115,7 @@ describe('ngtsc component indexing', () => {
         })
         export class TestCmp { foo = 0; }
       `);
-      env.write('test.html', '<div>{{foo}}</div>');
+      env.write('test.html', '<div>  \n  {{foo}}</div>');
       const indexed = env.driveIndexer();
       const [[_, indexedComp]] = Array.from(indexed.entries());
       const template = indexedComp.template;
@@ -127,8 +127,8 @@ describe('ngtsc component indexing', () => {
       expect(identifier).toEqual(jasmine.objectContaining({
         name: 'foo',
         kind: IdentifierKind.Property,
-        span: new AbsoluteSourceSpan(7, 10),
-        file: new ParseSourceFile('<div>{{foo}}</div>', testPath('test.html')),
+        span: new AbsoluteSourceSpan(12, 15),
+        file: new ParseSourceFile('<div>  \n  {{foo}}</div>', testPath('test.html')),
       }));
     });
 
