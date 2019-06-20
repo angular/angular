@@ -36,7 +36,7 @@ describe('ngtsc component indexing', () => {
       const indexed = env.driveIndexer();
       expect(indexed.size).toBe(1);
 
-      const [[decl, indexedComp]] = indexed.entries();
+      const [[decl, indexedComp]] = Array.from(indexed.entries());
 
       expect(decl.getText()).toContain('export class TestCmp {}');
       expect(indexedComp).toEqual(jasmine.objectContaining({
@@ -59,12 +59,12 @@ describe('ngtsc component indexing', () => {
       `;
       env.write('test.ts', componentContent);
       const indexed = env.driveIndexer();
-      const [[_, indexedComp]] = indexed.entries();
+      const [[_, indexedComp]] = Array.from(indexed.entries());
       const template = indexedComp.template;
 
       expect(template.identifiers.size).toBe(1);
       expect(template.usedComponents.size).toBe(0);
-      const [identifier] = template.identifiers.values();
+      const [identifier] = Array.from(template.identifiers.values());
 
       expect(identifier).toEqual(jasmine.objectContaining({
         name: 'foo',
@@ -86,12 +86,12 @@ describe('ngtsc component indexing', () => {
       `);
       env.write('test.html', '<div>{{foo}}</div>');
       const indexed = env.driveIndexer();
-      const [[_, indexedComp]] = indexed.entries();
+      const [[_, indexedComp]] = Array.from(indexed.entries());
       const template = indexedComp.template;
 
       expect(template.identifiers.size).toBe(1);
       expect(template.usedComponents.size).toBe(0);
-      const [identifier] = template.identifiers.values();
+      const [identifier] = Array.from(template.identifiers.values());
 
       expect(identifier).toEqual(jasmine.objectContaining({
         name: 'foo',
@@ -117,12 +117,12 @@ describe('ngtsc component indexing', () => {
       `);
       env.write('test.html', '<div>{{foo}}</div>');
       const indexed = env.driveIndexer();
-      const [[_, indexedComp]] = indexed.entries();
+      const [[_, indexedComp]] = Array.from(indexed.entries());
       const template = indexedComp.template;
 
       expect(template.identifiers.size).toBe(1);
       expect(template.usedComponents.size).toBe(0);
-      const [identifier] = template.identifiers.values();
+      const [identifier] = Array.from(template.identifiers.values());
 
       expect(identifier).toEqual(jasmine.objectContaining({
         name: 'foo',
@@ -174,7 +174,7 @@ describe('ngtsc component indexing', () => {
       expect(testComp !.template.usedComponents.size).toBe(0);
       expect(testImportComp !.template.usedComponents.size).toBe(1);
 
-      const [usedComp] = testImportComp !.template.usedComponents;
+      const [usedComp] = Array.from(testImportComp !.template.usedComponents);
       expect(indexed.get(usedComp)).toEqual(testComp);
     });
   });

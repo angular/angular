@@ -30,7 +30,7 @@ export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, 
         if (dir.isComponent) {
           usedComponents.add(dir.ref.node);
         }
-      })
+      });
     }
 
     analysis.set(declaration, {
