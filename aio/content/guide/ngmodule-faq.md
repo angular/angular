@@ -1,13 +1,5 @@
 # NgModule FAQs
 
-
-#### Prerequisites:
-
-A basic understanding of the following concepts:
-* [NgModules](guide/ngmodules).
-
-<hr />
-
 NgModules help organize an application into cohesive blocks of functionality.
 
 This page answers the questions many developers ask about NgModule design and implementation.

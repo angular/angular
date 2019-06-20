@@ -1,15 +1,9 @@
 # Providers
 
-#### Prerequisites:
-* A basic understanding of [Bootstrapping](guide/bootstrapping).
-* Familiarity with [Frequently Used Modules](guide/frequent-ngmodules).
+A provider is an instruction to the DI system on how to obtain a value for a dependency. Most of the time, these dependencies are services that you create and provide.
 
 For the final sample app using the provider that this page describes,
 see the <live-example></live-example>.
-
-<hr>
-
-A provider is an instruction to the DI system on how to obtain a value for a dependency. Most of the time, these dependencies are services that you create and provide.
 
 ## Providing a service
 

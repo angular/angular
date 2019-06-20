@@ -1,12 +1,6 @@
 # Feature Modules
 
-Feature modules are NgModules for the purpose of  organizing code.
-
-#### Prerequisites
-A basic understanding of the following:
-* [Bootstrapping](guide/bootstrapping).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-* [Frequently Used Modules](guide/frequent-ngmodules).
+Feature modules are NgModules for the purpose of organizing code.
 
 For the final sample app with a feature module that this page describes,
 see the <live-example></live-example>.

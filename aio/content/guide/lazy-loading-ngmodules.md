@@ -1,22 +1,12 @@
 # Lazy Loading Feature Modules
 
-#### Prerequisites
-A basic understanding of the following:
-* [Feature Modules](guide/feature-modules).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-* [Frequently Used Modules](guide/frequent-ngmodules).
-* [Types of Feature Modules](guide/module-types).
-* [Routing and Navigation](guide/router).
-
-For the final sample app with two lazy loaded modules that this page describes, see the
-<live-example></live-example>.
-
-<hr>
-
 ## High level view
 
 By default, NgModules are eagerly loaded, which means that as soon as the app loads, so do all the NgModules, whether or not they are immediately necessary. For large apps with lots of routes, consider lazy loading&mdash;a design pattern that loads NgModules as needed. Lazy loading helps keep initial
 bundle sizes smaller, which in turn helps decrease load times.
+
+For the final sample app with two lazy loaded modules that this page describes, see the
+<live-example></live-example>.
 
 There are three main steps to setting up a lazy loaded feature module:
 

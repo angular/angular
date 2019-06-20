@@ -1,15 +1,4 @@
-
-
 # Types of Feature Modules
-
-#### Prerequisites
-
-A basic understanding of the following concepts:
-* [Feature Modules](guide/feature-modules).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-* [Frequently Used Modules](guide/frequent-ngmodules).
-
-<hr>
 
 There are five general categories of feature modules which
 tend to fall into the following groups:

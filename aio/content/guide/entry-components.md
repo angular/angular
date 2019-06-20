@@ -1,12 +1,5 @@
 # Entry Components
 
-#### Prerequisites:
-
-A basic understanding of the following concepts:
-* [Bootstrapping](guide/bootstrapping).
-
-<hr />
-
 An entry component is any component that Angular loads imperatively, (which means you’re not referencing it in the template), by type. You specify an entry component by bootstrapping it in an NgModule, or including it in a routing definition.
 
 <div class="alert is-helpful">

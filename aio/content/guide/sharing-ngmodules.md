@@ -1,18 +1,5 @@
 # Sharing Modules
 
-#### Prerequisites
-A basic understanding of the following:
-* [Feature Modules](guide/feature-modules).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-* [Frequently Used Modules](guide/frequent-ngmodules).
-* [Routing and Navigation](guide/router).
-* [Lazy loading modules](guide/lazy-loading-ngmodules).
-
-
-<!--* Components (#TBD) We don’t have a page just on the concept of components, but I think one would be helpful for beginners.-->
-
-<hr>
-
 Creating shared modules allows you to organize and streamline your code. You can put commonly
 used directives, pipes, and components into one module and then import just that module wherever
 you need it in other parts of your app.
@@ -54,7 +41,7 @@ to import `FormsModule`, `SharedModule` can still export
 way, you can give other modules access to `FormsModule` without
 having to import it directly into the `@NgModule` decorator.
 
-### Using components vs services from other modules.
+### Using components vs services from other modules
 
 There is an important distinction between using another module's component and
 using a service from another module. Import modules when you want to use
