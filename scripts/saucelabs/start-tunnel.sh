@@ -35,4 +35,4 @@ fi
 
 echo "Starting Sauce Connect in the background. Passed arguments: ${sauceArgs}"
 
-sauce-connect/bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} ${sauceArgs} &
+sauce-connect/bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} ${sauceArgs}

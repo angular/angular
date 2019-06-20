@@ -68,3 +68,7 @@ browserstack-tunnel/BrowserStackLocal -k ${BROWSER_STACK_ACCESS_KEY} ${ARGS} 2>&
 
 # Wait for the tunnel to be ready and create the readyfile with the Browserstack PID
 create_ready_file ${!} &
+
+# Wait for all sub processes to finish. This ensures that no zombie
+# processes are left over.
+wait

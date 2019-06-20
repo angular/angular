@@ -19,10 +19,5 @@ tunnelProcessId=$(cat ${tunnelPidFile})
 # we cannot use killall because CircleCI base container images don't have it installed.
 kill ${tunnelProcessId}
 
-while (ps -p ${tunnelProcessId} &> /dev/null); do
-  printf "."
-  sleep .5
-done
-
 echo ""
-echo "Sauce Connect tunnel has been shut down"
+echo "Sauce Connect tunnel interrupt signal has been sent."

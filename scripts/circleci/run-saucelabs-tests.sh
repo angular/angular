@@ -11,7 +11,7 @@ cd $(dirname ${0})/../..
 export SAUCE_ACCESS_KEY=`echo ${SAUCE_ACCESS_KEY} | rev`
 
 # Start tunnel and wait for it being ready.
-./scripts/saucelabs/start-tunnel.sh
+./scripts/saucelabs/start-tunnel.sh &
 ./scripts/saucelabs/wait-tunnel.sh
 
 # Setup the test platform environment variable that will be read
@@ -24,3 +24,6 @@ yarn gulp ci:test
 # Kill the Saucelabs tunnel. This is necessary in order to avoid rate-limit
 # errors that cause the unit tests to be flaky.
 ./scripts/saucelabs/stop-tunnel.sh
+
+# Wait for all sub processes to terminate properly.
+wait
