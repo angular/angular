@@ -20,7 +20,8 @@ export class HeroesComponent implements OnInit {
   }
 
   getHeroes(): void {
-    this.heroesService.getHeroes().subscribe(heroes => (this.heroes = heroes));
+    this.heroesService.getHeroes()
+      .subscribe(heroes => (this.heroes = heroes));
   }
 
   add(name: string): void {
@@ -42,7 +43,9 @@ export class HeroesComponent implements OnInit {
   delete(hero: Hero): void {
     this.heroes = this.heroes.filter(h => h !== hero);
     // #docregion delete-hero-subscribe
-    this.heroesService.deleteHero(hero.id).subscribe();
+    this.heroesService
+      .deleteHero(hero.id)
+      .subscribe();
     // #enddocregion delete-hero-subscribe
     /*
     // #docregion delete-hero-no-subscribe
@@ -67,7 +70,9 @@ export class HeroesComponent implements OnInit {
 
   update() {
     if (this.editHero) {
-      this.heroesService.updateHero(this.editHero).subscribe(hero => {
+      this.heroesService
+        .updateHero(this.editHero)
+        .subscribe(hero => {
         // replace the hero in the heroes list with update from server
         const ix = hero ? this.heroes.findIndex(h => h.id === hero.id) : -1;
         if (ix > -1) {
