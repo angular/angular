@@ -7,7 +7,7 @@
  */
 
 import {StaticSymbolResolverHost} from '@angular/compiler';
-import {CompilerOptions, MetadataCollector, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
+import {MetadataCollector, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -16,9 +16,10 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost, Me
   // the collector will collect errors instead of throwing
   private metadataCollector = new MetadataCollector({verboseInvalidExpression: true});
 
-  constructor(private host: ts.LanguageServiceHost, private getProgram: () => ts.Program) {
-    if (host.directoryExists)
-      this.directoryExists = directoryName => this.host.directoryExists !(directoryName);
+  constructor(
+    private readonly host: ts.LanguageServiceHost,
+    private readonly getProgram: () => ts.Program) {
+
   }
 
   fileExists(fileName: string): boolean { return !!this.host.getScriptSnapshot(fileName); }
@@ -33,8 +34,12 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost, Me
     return undefined !;
   }
 
-  // TODO(issue/24571): remove '!'.
-  directoryExists !: (directoryName: string) => boolean;
+  directoryExists(directoryName: string): boolean {
+    if (this.host.directoryExists) {
+      return this.host.directoryExists(directoryName);
+    }
+    return false;
+  };
 
   getSourceFileMetadata(fileName: string) {
     const sf = this.getProgram().getSourceFile(fileName);
@@ -51,10 +56,8 @@ export class ReflectorHost implements StaticSymbolResolverHost {
   private hostAdapter: ReflectorModuleModuleResolutionHost;
   private metadataReaderCache = createMetadataReaderCache();
 
-  constructor(
-      getProgram: () => ts.Program, serviceHost: ts.LanguageServiceHost,
-      private options: CompilerOptions) {
-    this.hostAdapter = new ReflectorModuleModuleResolutionHost(serviceHost, getProgram);
+  constructor(getProgram: () => ts.Program, private readonly tsLSHost: ts.LanguageServiceHost) {
+    this.hostAdapter = new ReflectorModuleModuleResolutionHost(tsLSHost, getProgram);
   }
 
   getMetadataFor(modulePath: string): {[key: string]: any}[]|undefined {
@@ -62,15 +65,28 @@ export class ReflectorHost implements StaticSymbolResolverHost {
   }
 
   moduleNameToFileName(moduleName: string, containingFile?: string): string|null {
+    const compilerOptions = this.tsLSHost.getCompilationSettings();
     if (!containingFile) {
-      if (moduleName.indexOf('.') === 0) {
+      if (moduleName.startsWith('.')) {
         throw new Error('Resolution of relative paths requires a containing file.');
       }
+      let baseUrl = compilerOptions.baseUrl;
+      if (!baseUrl) {
+        // Make up a context by finding the first script and using that as the base dir.
+        const scripts = this.tsLSHost.getScriptFileNames();
+        if (scripts.length === 0) {
+          throw new Error(
+              'ReflectorHost could not find suitable file to resolve absolute imports. ' +
+              'There is no scripts in ts.LanguageServiceHost.');
+        }
+        baseUrl = path.dirname(scripts[0]);
+      }
       // Any containing file gives the same result for absolute imports
-      containingFile = path.join(this.options.basePath !, 'index.ts').replace(/\\/g, '/');
+      containingFile = path.join(baseUrl, 'index.ts').replace(/\\/g, '/');
     }
+
     const resolved =
-        ts.resolveModuleName(moduleName, containingFile !, this.options, this.hostAdapter)
+        ts.resolveModuleName(moduleName, containingFile, compilerOptions, this.hostAdapter)
             .resolvedModule;
     return resolved ? resolved.resolvedFileName : null;
   }

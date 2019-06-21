@@ -7,10 +7,8 @@
  */
 
 import {AotSummaryResolver, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
-import {CompilerOptions, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
+import {getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {AstResult, TemplateInfo} from './common';
@@ -394,18 +392,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         throw new Error('Internal error: no context could be determined');
       }
 
-      const tsConfigPath = findTsConfig(source.fileName);
-      const basePath = path.dirname(tsConfigPath || this.context);
-      const options: CompilerOptions = {basePath, genDir: basePath};
-      const compilerOptions = this.host.getCompilationSettings();
-      if (compilerOptions && compilerOptions.baseUrl) {
-        options.baseUrl = compilerOptions.baseUrl;
-      }
-      if (compilerOptions && compilerOptions.paths) {
-        options.paths = compilerOptions.paths;
-      }
       result = this._reflectorHost =
-          new ReflectorHost(() => this.tsService.getProgram() !, this.host, options);
+          new ReflectorHost(() => this.tsService.getProgram() !, this.host);
     }
     return result;
   }
@@ -677,17 +665,6 @@ function findSuitableDefaultModule(modules: NgAnalyzedModules): CompileNgModuleM
   return result;
 }
 
-function findTsConfig(fileName: string): string|undefined {
-  let dir = path.dirname(fileName);
-  while (fs.existsSync(dir)) {
-    const candidate = path.join(dir, 'tsconfig.json');
-    if (fs.existsSync(candidate)) return candidate;
-    const parentDir = path.dirname(dir);
-    if (parentDir === dir) break;
-    dir = parentDir;
-  }
-}
-
 function spanOf(node: ts.Node): Span {
   return {start: node.getStart(), end: node.getEnd()};
 }
@@ -712,15 +689,6 @@ function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|u
       return {start: node.getStart(), end: node.getEnd()};
     }
   }
-}
-
-function chainedMessage(chain: DiagnosticMessageChain, indent = ''): string {
-  return indent + chain.message + (chain.next ? chainedMessage(chain.next, indent + '  ') : '');
-}
-
-class DiagnosticMessageChainImpl implements DiagnosticMessageChain {
-  constructor(public message: string, public next?: DiagnosticMessageChain) {}
-  toString(): string { return chainedMessage(this); }
 }
 
 function convertChain(chain: FormattedMessageChain): DiagnosticMessageChain {
