@@ -72,7 +72,7 @@ export class Element implements Node {
       public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {
     // If the element is empty then the source span should include any closing tag
     if (children.length === 0 && startSourceSpan && endSourceSpan) {
-      this.sourceSpan = {...sourceSpan, end: endSourceSpan.end};
+      this.sourceSpan = new ParseSourceSpan(sourceSpan.start, endSourceSpan.end);
     }
   }
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitElement(this); }
