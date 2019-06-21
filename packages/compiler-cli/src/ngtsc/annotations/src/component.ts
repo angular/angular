@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
-import {ParseTemplateOptions} from '@angular/compiler/src/render3/view/template';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, ParseTemplateOptions, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -37,7 +36,7 @@ export interface ComponentHandlerData {
   meta: R3ComponentMetadata;
   parsedTemplate: TmplAstNode[];
   metadataStmt: Statement|null;
-  parseTemplate(options?: ParseTemplateOptions): ParsedTemplate;
+  parseTemplate: (options?: ParseTemplateOptions) => ParsedTemplate;
 }
 
 /**

@@ -44,6 +44,18 @@ describe('getTemplateIdentifiers', () => {
     });
   });
 
+  it('should ignore identifiers defined in the template', () => {
+    const template = `
+      <input #model />
+      {{model.valid}}
+    `;
+    const refs = getTemplateIdentifiers(parse(template));
+
+    const refArr = Array.from(refs);
+    const modelId = refArr.find(ref => ref.name === 'model');
+    expect(modelId).toBeUndefined();
+  });
+
   describe('generates identifiers for PropertyReads', () => {
     it('should discover component properties', () => {
       const template = '{{foo}}';

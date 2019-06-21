@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ImplicitReceiver, MethodCall, PropertyRead, RecursiveAstVisitor, TmplAstNode} from '@angular/compiler';
+import {AST, BoundTarget, DirectiveMeta, ImplicitReceiver, MethodCall, PropertyRead, R3TargetBinder, RecursiveAstVisitor, SelectorMatcher, TmplAstNode} from '@angular/compiler';
 import {BoundText, Element, Node, RecursiveVisitor as RecursiveTemplateVisitor, Template} from '@angular/compiler/src/render3/r3_ast';
 import {AbsoluteSourceSpan, IdentifierKind, TemplateIdentifier} from './api';
 
@@ -32,13 +32,22 @@ class ExpressionVisitor extends RecursiveAstVisitor {
   readonly identifiers: TemplateIdentifier[] = [];
 
   private constructor(
-      context: Node, private readonly expressionStr = context.sourceSpan.toString(),
+      context: Node, private readonly boundTemplate: BoundTarget<DirectiveMeta>,
+      private readonly expressionStr = context.sourceSpan.toString(),
       private readonly absoluteOffset = context.sourceSpan.start.offset) {
     super();
   }
 
-  static getIdentifiers(ast: AST, context: Node): TemplateIdentifier[] {
-    const visitor = new ExpressionVisitor(context);
+  /**
+   * Returns identifiers discovered in an expression.
+   * @param ast expression AST to visit
+   * @param context HTML node expression is defined in
+   * @param boundTemplate bound target of the entire template, which can be used to query for the
+   * entities expressions target.
+   */
+  static getIdentifiers(ast: AST, context: Node, boundTemplate: BoundTarget<DirectiveMeta>):
+      TemplateIdentifier[] {
+    const visitor = new ExpressionVisitor(context, boundTemplate);
     visitor.visit(ast);
     return visitor.identifiers;
   }
@@ -58,7 +67,10 @@ class ExpressionVisitor extends RecursiveAstVisitor {
   private addIdentifier(ast: AST&{name: string, receiver: AST}, kind: IdentifierKind) {
     // The definition of a non-top-level property such as `bar` in `{{foo.bar}}` is currently
     // impossible to determine by an indexer and unsupported by the indexing module.
-    if (!(ast.receiver instanceof ImplicitReceiver)) {
+    // The indexing module also does not currently support references to identifiers declared in the
+    // template itself, which have a non-null expression target.
+    if (!(ast.receiver instanceof ImplicitReceiver) ||
+        this.boundTemplate.getExpressionTarget(ast) !== null) {
       return;
     }
 
@@ -91,6 +103,13 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
   readonly identifiers = new Set<TemplateIdentifier>();
 
   /**
+   * Creates a template visitor for a bound template target. The bound target can be used when
+   * deferred to the expression visitor to get information about the target of an expression.
+   * @param boundTemplate bound template target
+   */
+  constructor(private boundTemplate: BoundTarget<DirectiveMeta>) { super(); }
+
+  /**
    * Visits a node in the template.
    * @param node node to visit
    */
@@ -109,15 +128,14 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
     this.visitAll(template.references);
     this.visitAll(template.variables);
   }
-  visitBoundText(text: BoundText) { this.addIdentifiers(text); }
+  visitBoundText(text: BoundText) { this.visitExpression(text); }
 
   /**
-   * Adds identifiers to the visitor's state.
-   * @param visitedEntities interesting entities to add as identifiers
-   * @param curretNode node entities were discovered in
+   * Visits a node's expression and adds its identifiers, if any, to the visitor's state.
+   * @param curretNode node whose expression to visit
    */
-  private addIdentifiers(node: Node&{value: AST}) {
-    const identifiers = ExpressionVisitor.getIdentifiers(node.value, node);
+  private visitExpression(node: Node&{value: AST}) {
+    const identifiers = ExpressionVisitor.getIdentifiers(node.value, node, this.boundTemplate);
     identifiers.forEach(id => this.identifiers.add(id));
   }
 }
@@ -129,7 +147,8 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
  * @return identifiers in template
  */
 export function getTemplateIdentifiers(template: TmplAstNode[]): Set<TemplateIdentifier> {
-  const visitor = new TemplateVisitor();
+  const boundTemplate = new R3TargetBinder(new SelectorMatcher()).bind({template});
+  const visitor = new TemplateVisitor(boundTemplate);
   visitor.visitAll(template);
   return visitor.identifiers;
 }
