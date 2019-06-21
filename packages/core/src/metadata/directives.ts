@@ -163,18 +163,25 @@ export interface Directive {
    * ### Example
    *
    * ```typescript
-   * @Directive({
+   * @Component({
    *   selector: 'child-dir',
-   *   exportAs: 'child'
+   *   outputs: [ 'bankNameChange' ]
+   *   template: `<input (input)="bankNameChange.emit($event.target.value)" />`
    * })
    * class ChildDir {
+   *  bankNameChange: EventEmitter<string> = new EventEmitter<string>();
    * }
    *
    * @Component({
    *   selector: 'main',
-   *   template: `<child-dir #c="child"></child-dir>`
+   *   template: ` {{ bankName }} <child-dir (bankNameChange)="onBankNameChange($event)"></child-dir>`
    * })
    * class MainComponent {
+   *  bankName: string;
+   * 
+   *   onBankNameChange(bankName: string) {
+   *     this.bankName = bankName;
+   *   }
    * }
    * ```
    *
