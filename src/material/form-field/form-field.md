@@ -129,7 +129,7 @@ the prefix. Similarly, adding `matSuffix` will designate it as the suffix.
 In addition to the form field controls that Angular Material provides, it is possible to create
 custom form field controls that work with `<mat-form-field>` in the same way. For additional
 information on this see the guide on
-[Creating Custom mat-form-field Controls](https://material.angular.io/guide/creating-a-custom-form-field-control).
+[Creating Custom mat-form-field Controls](/guide/creating-a-custom-form-field-control).
 
 ### Theming
 
