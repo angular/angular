@@ -1,9 +1,3 @@
-################################
-# Settings for Angular team members only
-################################
-# To enable this feature check the "Remote caching" section in docs/BAZEL.md.
-build:angular-team --remote_http_cache=https://storage.googleapis.com/angular-team-cache
-
 ###############################
 # Typescript / Angular / Sass #
 ###############################
@@ -139,9 +133,12 @@ build:remote --platforms=//tools:rbe_ubuntu1604-angular
 build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
 build:remote --project_id=internal-200822
 
-# Do not accept remote cache.
-# We need to understand the security risks of using prior build artifacts.
+# Remote caching
+build:remote --remote_cache=remotebuildexecution.googleapis.com
+# By default, do not accept remote cache, to be set to true for CI based on environment
 build:remote --remote_accept_cached=false
+# By default, do not upload local results to cache, to be set to true for CI based on environment
+build:remote --remote_upload_local_results=false
 
 # Build Event Service Configuration
 build:remote --bes_backend=buildeventservice.googleapis.com
