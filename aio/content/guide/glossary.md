@@ -362,7 +362,7 @@ Compare to [custom element](#custom-element).
 
 ## entry point
 
-A JavaScript module(#module) that is intended to be imported by a user of [an
+A [JavaScript module](#module) that is intended to be imported by a user of [an
 npm package](guide/npm-packages). An entry-point module typically re-exports
 symbols from other internal modules. A package can contain multiple
 entry points. For example, the `@angular/core` package has two entry-point
