@@ -55,16 +55,21 @@ class ExpressionVisitor extends RecursiveAstVisitor {
   visit(ast: AST) { ast.visit(this); }
 
   visitMethodCall(ast: MethodCall, context: {}) {
-    this.addIdentifier(ast, IdentifierKind.Method);
+    this.visitIdentifier(ast, IdentifierKind.Method);
     super.visitMethodCall(ast, context);
   }
 
   visitPropertyRead(ast: PropertyRead, context: {}) {
-    this.addIdentifier(ast, IdentifierKind.Property);
+    this.visitIdentifier(ast, IdentifierKind.Property);
     super.visitPropertyRead(ast, context);
   }
 
-  private addIdentifier(ast: AST&{name: string, receiver: AST}, kind: IdentifierKind) {
+  /**
+   * Visits an identifier, adding it to the identifier store if it is useful for indexing.
+   * @param ast expression AST the identifier is in
+   * @param kind identifier kind
+   */
+  private visitIdentifier(ast: AST&{name: string, receiver: AST}, kind: IdentifierKind) {
     // The definition of a non-top-level property such as `bar` in `{{foo.bar}}` is currently
     // impossible to determine by an indexer and unsupported by the indexing module.
     // The indexing module also does not currently support references to identifiers declared in the
