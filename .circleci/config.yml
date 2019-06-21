@@ -58,7 +58,17 @@ var_5: &setup_bazel_remote_execution
       # cause decryption failures based on the openssl version. https://stackoverflow.com/a/39641378/4317734
       openssl aes-256-cbc -d -in .circleci/gcp_token -md md5 -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials
       echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV
-      sudo bash -c "echo 'build --config=remote' >> /etc/bazel.bazelrc"
+      touch .bazelrc.user
+      sudo bash -c "echo -e 'build --config=remote\n' >> .bazelrc.user"
+      sudo bash -c "echo -e 'build:remote --remote_accept_cached=true\n' >> .bazelrc.user"
+      echo "Reading from remote cache for bazel remote jobs."
+      if [[ "$CI_PULL_REQUEST" == "false" ]]; then
+        sudo bash -c "echo -e 'build:remote --remote_upload_local_results=true\n' >> .bazelrc.user"
+        echo "Uploading local build results to remote cache."
+      else
+        sudo bash -c "echo -e 'build:remote --remote_upload_local_results=false\n' >> .bazelrc.user"
+        echo "Not uploading local build results to remote cache."
+      fi
 
 # Settings common to each job
 var_6: &job_defaults
