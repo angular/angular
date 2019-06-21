@@ -10,7 +10,7 @@ These include Material Design components and the Angular Component Development K
 [Documentation, demos, and guides][aio] |
 [Google group](https://groups.google.com/forum/#!forum/angular-material2) |
 [Contributing](https://github.com/angular/components/blob/master/CONTRIBUTING.md) |
-[StackBlitz Template](https://goo.gl/wwnhMV)
+[StackBlitz Template](https://stackblitz.com/fork/components-issue)
 
 ### Getting started
 
