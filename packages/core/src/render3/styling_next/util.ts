@@ -11,6 +11,7 @@ import {isDifferent} from '../util/misc_utils';
 import {StylingMapArray, StylingMapArrayIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
 
 const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
+const TEMPLATE_DIRECTIVE_INDEX = 0;
 
 /**
  * Creates a new instance of the `TStylingContext`.
@@ -27,17 +28,14 @@ export function allocTStylingContext(initialStyling?: StylingMapArray | null): T
   // (this means that when map-based values are applied then sanitization will
   // be checked against each property).
   const mapBasedConfig = TStylingContextPropConfigFlags.SanitizationRequired;
-  const context: TStylingContext = [
-    initialStyling || null,
+  return [
+    initialStyling || [''],  // empty initial-styling map value
     TStylingConfigFlags.Initial,
-    // the LastDirectiveIndex value in the context is used to track which directive is the last
-    // to call `stylingApply()`. The `-1` value implies that no directive has been set yet.
-    -1,
+    TEMPLATE_DIRECTIVE_INDEX,
     mapBasedConfig,
     0,
     MAP_BASED_ENTRY_PROP_NAME,
   ];
-  return context;
 }
 
 /**
@@ -54,12 +52,17 @@ export function allocTStylingContext(initialStyling?: StylingMapArray | null): T
  */
 export function updateLastDirectiveIndex(
     context: TStylingContext, lastDirectiveIndex: number): void {
-  const currentValue = context[TStylingContextIndex.LastDirectiveIndexPosition];
-  if (lastDirectiveIndex !== currentValue) {
-    context[TStylingContextIndex.LastDirectiveIndexPosition] = lastDirectiveIndex;
-    if (currentValue === 0 && lastDirectiveIndex > 0) {
+  if (lastDirectiveIndex === TEMPLATE_DIRECTIVE_INDEX) {
+    const currentValue = context[TStylingContextIndex.LastDirectiveIndexPosition];
+    if (currentValue > TEMPLATE_DIRECTIVE_INDEX) {
+      // This means that a directive or two contained a host bindings function, but
+      // now the template function also contains styling. When this combination of sources
+      // comes up then we need to tell the context to store the state between updates
+      // (because host bindings evaluation happens after template binding evaluation).
       markContextToPersistState(context);
     }
+  } else {
+    context[TStylingContextIndex.LastDirectiveIndexPosition] = lastDirectiveIndex;
   }
 }
 
@@ -227,4 +230,24 @@ export function setMapValue(
 
 export function getMapValue(map: StylingMapArray, index: number): string|null {
   return map[index + StylingMapArrayIndex.ValueOffset] as string | null;
+}
+
+export function forceClassesAsString(classes: string | {[key: string]: any} | null | undefined):
+    string {
+  if (classes && typeof classes !== 'string') {
+    classes = Object.keys(classes).join(' ');
+  }
+  return (classes as string) || '';
+}
+
+export function forceStylesAsString(styles: {[key: string]: any} | null | undefined): string {
+  let str = '';
+  if (styles) {
+    const props = Object.keys(styles);
+    for (let i = 0; i < props.length; i++) {
+      const prop = props[i];
+      str = concatString(str, `${prop}:${styles[prop]}`, ';');
+    }
+  }
+  return str;
 }

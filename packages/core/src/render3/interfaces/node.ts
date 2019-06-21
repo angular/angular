@@ -6,12 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {StylingMapArray, TStylingContext} from '../styling_next/interfaces';
-
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
-import {StylingContext} from './styling';
 import {LView, TView} from './view';
-
 
 
 /**
@@ -405,7 +402,6 @@ export interface TNode {
    */
   parent: TElementNode|TContainerNode|null;
 
-  stylingTemplate: StylingContext|null;
   /**
    * List of projected TNodes for a given component host element OR index into the said nodes.
    *
@@ -446,19 +442,6 @@ export interface TNode {
    * projectable nodes during dynamic component creation.
    */
   projection: (TNode|RNode[])[]|number|null;
-
-  /**
-   * A buffer of functions that will be called once `elementEnd` (or `element`) completes.
-   *
-   * Due to the nature of how directives work in Angular, some directive code may
-   * need to fire after any template-level code runs. If present, this array will
-   * be flushed (each function will be invoked) once the associated element is
-   * created.
-   *
-   * If an element is created multiple times then this function will be populated
-   * with functions each time the creation block is called.
-   */
-  onElementCreationFns: Function[]|null;
 
   /**
    * A collection of all style bindings and/or static style values for an element.

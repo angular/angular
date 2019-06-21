@@ -555,6 +555,35 @@ describe('styling', () => {
             expect(capturedMyClassBindingValue !).toEqual('foo');
           });
 
+  onlyInIvy('only ivy balances styling across directives and component host bindings')
+      .it('should allow multiple directives to set dynamic and static classes independent of one another',
+          () => {
+            @Component({
+              template: `
+        <div dir-one dir-two></div>
+      `
+            })
+            class Cmp {
+            }
+
+            @Directive({selector: '[dir-one]', host: {'[class.dir-one]': 'dirOneExp'}})
+            class DirOne {
+              dirOneExp = true;
+            }
+
+            @Directive({selector: '[dir-two]', host: {'class': 'dir-two'}})
+            class DirTwo {
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirOne, DirTwo]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            const element = fixture.nativeElement.querySelector('div');
+            expect(element.classList.contains('dir-one')).toBeTruthy();
+            expect(element.classList.contains('dir-two')).toBeTruthy();
+          });
+
   describe('NgClass', () => {
 
     // We had a bug where NgClass would not allocate sufficient slots for host bindings,
@@ -601,7 +630,5 @@ describe('styling', () => {
       expect(fixture.debugElement.nativeElement.textContent).toContain('Hello');
 
     });
-
-
   });
 });

@@ -14,7 +14,6 @@ import {isContentQueryHost} from '../interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
-import {applyOnCreateInstructions} from '../node_util';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {registerInitialStylingOnTNode} from '../styling_next/instructions';
 
@@ -94,10 +93,6 @@ export function ɵɵelementContainerEnd(): void {
   }
 
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.ElementContainer);
-
-  // this is required for all host-level styling-related instructions to run
-  // in the correct order
-  previousOrParentTNode.onElementCreationFns && applyOnCreateInstructions(previousOrParentTNode);
 
   registerPostOrderHooks(tView, previousOrParentTNode);
 

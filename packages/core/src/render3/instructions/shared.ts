@@ -25,17 +25,14 @@ import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/inj
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {StylingContext} from '../interfaces/styling';
 import {isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, namespaceHTMLInternal, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex} from '../state';
-import {initializeStaticContext as initializeStaticStylingContext} from '../styling/class_and_style_bindings';
-import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../styling/util';
 import {renderStylingMap} from '../styling_next/bindings';
-import {getInitialStylingValue, getStylingMapArray} from '../styling_next/util';
 import {NO_CHANGE} from '../tokens';
+import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
 import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
@@ -760,11 +757,9 @@ export function createTNode(
                          null,       // projectionNext: ITNode|null
                          null,       // child: ITNode|null
                          tParent,    // parent: TElementNode|TContainerNode|null
-                         null,       // stylingTemplate: StylingContext|null
                          null,       // projection: number|(ITNode|RNode[])[]|null
-                         null,       // onElementCreationFns: Function[]|null
-                         null,       // newStyles: TStylingContext|null
-                         null,       // newClasses: TStylingContext|null
+                         null,       // styles: TStylingContext|null
+                         null,       // classes: TStylingContext|null
                          ) :
                      {
                        type: type,
@@ -787,9 +782,7 @@ export function createTNode(
                        projectionNext: null,
                        child: null,
                        parent: tParent,
-                       stylingTemplate: null,
                        projection: null,
-                       onElementCreationFns: null,
                        styles: null,
                        classes: null,
                      };
@@ -1474,8 +1467,8 @@ const LContainerArray: any = ngDevMode && createNamedArrayType('LContainer');
  * @returns LContainer
  */
 export function createLContainer(
-    hostNative: RElement | RComment | StylingContext | LView, currentView: LView, native: RComment,
-    tNode: TNode, isForViewContainerRef?: boolean): LContainer {
+    hostNative: RElement | RComment | LView, currentView: LView, native: RComment, tNode: TNode,
+    isForViewContainerRef?: boolean): LContainer {
   ngDevMode && assertDomNode(native);
   ngDevMode && assertLView(currentView);
   // https://jsperf.com/array-literal-vs-new-array-really
