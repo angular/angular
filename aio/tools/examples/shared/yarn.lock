@@ -795,9 +795,9 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
-"angular-in-memory-web-api@github:brandonroberts/in-memory-web-api-bazel#50a34d8":
+"angular-in-memory-web-api@github:brandonroberts/in-memory-web-api-bazel#240ca24":
   version "0.8.0"
-  resolved "https://codeload.github.com/brandonroberts/in-memory-web-api-bazel/tar.gz/50a34d84b627ec88816242dec77603d6dcb9c880"
+  resolved "https://codeload.github.com/brandonroberts/in-memory-web-api-bazel/tar.gz/240ca247c1c421dc8e3cff801ddef4eeb1c5c35f"
   dependencies:
     tslib "^1.9.0"
 

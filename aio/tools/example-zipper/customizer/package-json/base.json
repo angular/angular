@@ -12,7 +12,7 @@
     "@angular/platform-browser-dynamic",
     "@angular/router",
     "@angular/upgrade",
-    "angular-in-memory-web-api",
+    { "name": "angular-in-memory-web-api", "version": "^0.8.0" },
     "core-js",
     "rxjs",
     "zone.js"

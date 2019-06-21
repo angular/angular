@@ -104,3 +104,8 @@ With every major release, we update the examples to be on the latest version. Th
 * In the `shared` folder, run `yarn` to update the dependencies for the shared `node_modules` and the `yarn.lock` file.
 * In the `boilerplate` folder, go through each sub-folder and update the `package.json` dependencies if one is present.
 * Follow the [update guide](./shared/boilerplate/UPDATING_CLI.md) to update the common files used in the examples based on project type.
+
+### Ivy Notes
+
+In the `shared/package.json` folder, the `angular-in-memory-web-api` dependency used for the examples is using a custom build as a workaround. This
+is due to in incompatibility of the published npm version with ngcc for usage with Ivy. After the compatibility support is added, the version should be changed back to the published npm version.

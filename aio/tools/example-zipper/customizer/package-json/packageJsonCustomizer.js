@@ -28,13 +28,23 @@ class PackageJsonCustomizer {
       packageJson.scripts[finalName] = finalScript;
     });
 
-    rules.dependencies.forEach((name) => {
-      const version = this.dependenciesPackageJson.dependencies[name];
+    rules.dependencies.forEach((pkg) => {
+      const name = pkg.name || pkg;
+      // If the package has a custom version, use it instead
+      // This is a workaround for angular-in-memory-web-api being broken with Ivy
+      // Until then, we don't want users to download the workaround build
+      const version = pkg.version || this.dependenciesPackageJson.dependencies[name];
+
       packageJson.dependencies[name] = version;
     });
 
-    rules.devDependencies.forEach((name) => {
-      const version = this.dependenciesPackageJson.devDependencies[name];
+    rules.devDependencies.forEach((pkg) => {
+      const name = pkg.name || pkg;
+      // If the package has a custom version, use it instead
+      // This is a workaround for angular-in-memory-web-api being broken with Ivy
+      // Until then, we don't want users to download the workaround build
+      const version = pkg.version || this.dependenciesPackageJson.devDependencies[name];
+
       packageJson.devDependencies[name] = version;
     });
 
