@@ -150,7 +150,7 @@ sudo: false
 
 language: node_js
 node_js:
-  - "8"
+  - "10"
   
 addons:
   apt:
