@@ -260,6 +260,7 @@ jobs:
         # //packages/forms/test:web_test_sauce TIMEOUT in 315.0s
       - run: yarn bazel test --config=saucelabs //:test_web_all
       - run: ./scripts/saucelabs/stop-tunnel.sh
+      - *notify_dev_infra_on_fail
 
   test_aio:
     <<: *job_defaults
