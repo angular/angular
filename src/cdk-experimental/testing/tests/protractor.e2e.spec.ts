@@ -1,6 +1,6 @@
+import {HarnessLoader} from '@angular/cdk-experimental/testing';
+import {ProtractorHarnessEnvironment} from '@angular/cdk-experimental/testing/protractor';
 import {browser} from 'protractor';
-import {HarnessLoader} from '../component-harness';
-import {ProtractorHarnessEnvironment} from '../protractor';
 import {MainComponentHarness} from './harnesses/main-component-harness';
 import {SubComponentHarness} from './harnesses/sub-component-harness';
 

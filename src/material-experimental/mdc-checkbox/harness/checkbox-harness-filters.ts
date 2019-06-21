@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './component-harness';
-export * from './harness-environment';
-export * from './test-element';
+export type CheckboxHarnessFilters = {
+  label?: string | RegExp
+};

@@ -93,6 +93,8 @@ System.config({
     '@angular/cdk-experimental/popover-edit': 'dist/packages/cdk-experimental/popover-edit/index.js',
     '@angular/cdk-experimental/scrolling': 'dist/packages/cdk-experimental/scrolling/index.js',
     '@angular/cdk-experimental/testing': 'dist/packages/cdk-experimental/testing/index.js',
+    '@angular/cdk-experimental/testing/testbed': 'dist/packages/cdk-experimental/testing/testbed/index.js',
+    '@angular/cdk-experimental/testing/protractor': 'dist/packages/cdk-experimental/testing/protractor/index.js',
 
     '@angular/material/autocomplete': 'dist/packages/material/autocomplete/index.js',
     '@angular/material/badge': 'dist/packages/material/badge/index.js',

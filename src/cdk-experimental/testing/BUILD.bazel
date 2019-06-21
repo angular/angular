@@ -9,15 +9,9 @@ ng_module(
         ["**/*.ts"],
         exclude = [
             "**/*.spec.ts",
-            "tests/**",
         ],
     ),
     module_name = "@angular/cdk-experimental/testing",
-    deps = [
-        "//src/cdk/testing",
-        "@npm//@angular/core",
-        "@npm//protractor",
-    ],
 )
 
 ng_web_test_suite(

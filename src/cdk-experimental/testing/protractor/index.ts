@@ -6,5 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './protractor-element';
-export * from './protractor-harness-environment';
+export * from './public-api';

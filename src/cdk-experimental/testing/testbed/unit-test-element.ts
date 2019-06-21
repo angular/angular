@@ -86,7 +86,7 @@ export class UnitTestElement implements TestElement {
 
   async text(): Promise<string> {
     await this._stabilize();
-    return this.element.textContent || '';
+    return (this.element.textContent || '').trim();
   }
 
   async getAttribute(name: string): Promise<string|null> {
@@ -99,5 +99,10 @@ export class UnitTestElement implements TestElement {
       return (this.element as unknown as {[key: string]: string|null})[name];
     }
     return value;
+  }
+
+  async hasClass(name: string): Promise<boolean> {
+    await this._stabilize();
+    return this.element.classList.contains(name);
   }
 }

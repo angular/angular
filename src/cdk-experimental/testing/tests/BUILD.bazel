@@ -36,6 +36,7 @@ ng_test_library(
         ":test_components",
         ":test_harnesses",
         "//src/cdk-experimental/testing",
+        "//src/cdk-experimental/testing/testbed",
     ],
 )
 
@@ -45,5 +46,6 @@ ng_e2e_test_library(
     deps = [
         ":test_harnesses",
         "//src/cdk-experimental/testing",
+        "//src/cdk-experimental/testing/protractor",
     ],
 )

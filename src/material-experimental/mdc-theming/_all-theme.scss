@@ -1,0 +1,21 @@
+@import '../mdc-button/mdc-button';
+@import '../mdc-card/mdc-card';
+@import '../mdc-checkbox/mdc-checkbox';
+@import '../mdc-chips/mdc-chips';
+@import '../mdc-menu/mdc-menu';
+@import '../mdc-radio/mdc-radio';
+@import '../mdc-slide-toggle/mdc-slide-toggle';
+@import '../mdc-tabs/mdc-tabs';
+
+@mixin angular-material-theme-mdc($theme) {
+  @include mat-button-theme-mdc($theme);
+  @include mat-fab-theme-mdc($theme);
+  @include mat-icon-button-theme-mdc($theme);
+  @include mat-card-theme-mdc($theme);
+  @include mat-checkbox-theme-mdc($theme);
+  @include mat-chips-theme-mdc($theme);
+  @include mat-menu-theme-mdc($theme);
+  @include mat-radio-theme-mdc($theme);
+  @include mat-slide-toggle-theme-mdc($theme);
+  @include mat-tabs-theme-mdc($theme);
+}

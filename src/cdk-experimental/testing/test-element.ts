@@ -43,4 +43,7 @@ export interface TestElement {
    * falls back to reading the property.
    */
   getAttribute(name: string): Promise<string | null>;
+
+  /** Checks whether the element has the given class. */
+  hasClass(name: string): Promise<boolean>;
 }

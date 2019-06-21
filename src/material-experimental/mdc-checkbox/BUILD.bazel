@@ -2,13 +2,16 @@ package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite", "ts_library")
 
 ng_module(
     name = "mdc-checkbox",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "harness/**",
+        ],
     ),
     assets = [":checkbox_scss"] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-checkbox",
@@ -22,6 +25,18 @@ ng_module(
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//material-components-web",
+    ],
+)
+
+ts_library(
+    name = "harness",
+    srcs = glob(
+        ["harness/**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    deps = [
+        "//src/cdk-experimental/testing",
+        "//src/cdk/coercion",
     ],
 )
 
@@ -55,8 +70,12 @@ ng_test_library(
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
+        ":harness",
         ":mdc-checkbox",
+        "//src/cdk-experimental/testing",
+        "//src/cdk-experimental/testing/testbed",
         "//src/cdk/testing",
+        "//src/material/checkbox",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
     ],

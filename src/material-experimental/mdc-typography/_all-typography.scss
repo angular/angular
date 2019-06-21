@@ -1,0 +1,21 @@
+@import '../mdc-button/mdc-button';
+@import '../mdc-card/mdc-card';
+@import '../mdc-checkbox/mdc-checkbox';
+@import '../mdc-chips/mdc-chips';
+@import '../mdc-menu/mdc-menu';
+@import '../mdc-radio/mdc-radio';
+@import '../mdc-slide-toggle/mdc-slide-toggle';
+@import '../mdc-tabs/mdc-tabs';
+
+@mixin angular-material-typography-mdc($config: null) {
+  @include mat-button-typography-mdc($config);
+  @include mat-fab-typography-mdc($config);
+  @include mat-icon-button-typography-mdc($config);
+  @include mat-card-typography-mdc($config);
+  @include mat-checkbox-typography-mdc($config);
+  @include mat-chips-typography-mdc($config);
+  @include mat-menu-typography-mdc($config);
+  @include mat-radio-typography-mdc($config);
+  @include mat-slide-toggle-typography-mdc($config);
+  @include mat-tabs-typography-mdc($config);
+}

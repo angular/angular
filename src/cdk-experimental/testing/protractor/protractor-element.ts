@@ -50,4 +50,9 @@ export class ProtractorElement implements TestElement {
   async getAttribute(name: string): Promise<string|null> {
     return this.element.getAttribute(name);
   }
+
+  async hasClass(name: string): Promise<boolean> {
+    const classes = (await this.getAttribute('class')) || '';
+    return new Set(classes.split(/\s+/).filter(c => c)).has(name);
+  }
 }
