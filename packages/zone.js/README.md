@@ -24,7 +24,7 @@ You can think of it as [thread-local storage](http://en.wikipedia.org/wiki/Threa
 
 See this video from ng-conf 2014 for a detailed explanation:
 
-[![screenshot of the zone.js presentation and ng-conf 2014](/presentation.png)](//www.youtube.com/watch?v=3IqtmUscE_U&t=150)
+[![screenshot of the zone.js presentation and ng-conf 2014](./presentation.png)](//www.youtube.com/watch?v=3IqtmUscE_U&t=150)
 
 ## See also
 * [async-listener](https://github.com/othiym23/async-listener) - a similar library for node
