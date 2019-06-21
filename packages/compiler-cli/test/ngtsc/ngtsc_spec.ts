@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import {LazyRoute} from '@angular/compiler-cli/src/ngtsc/routing';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -1034,7 +1035,9 @@ describe('ngtsc behavioral tests', () => {
       `);
 
       const errors = env.driveDiagnostics();
-      expect(trim(errors[0].messageText as string))
+      const {code, messageText} = errors[0];
+      expect(code).toBe(ngErrorCode(ErrorCode.DECORATOR_COLLISION));
+      expect(trim(messageText as string))
           .toContain('Cannot combine @Input decorators with query decorators');
     });
 
@@ -1055,7 +1058,9 @@ describe('ngtsc behavioral tests', () => {
       `);
 
       const errors = env.driveDiagnostics();
-      expect(trim(errors[0].messageText as string))
+      const {code, messageText} = errors[0];
+      expect(code).toBe(ngErrorCode(ErrorCode.DECORATOR_COLLISION));
+      expect(trim(messageText as string))
           .toContain('Cannot have multiple query decorators on the same class member');
     });
 
@@ -1075,7 +1080,9 @@ describe('ngtsc behavioral tests', () => {
       `);
 
       const errors = env.driveDiagnostics();
-      expect(trim(errors[0].messageText as string))
+      const {code, messageText} = errors[0];
+      expect(code).toBe(ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED));
+      expect(trim(messageText as string))
           .toContain('Query decorator must go on a property-type member');
     });
   });
