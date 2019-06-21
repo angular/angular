@@ -106,7 +106,7 @@ var_10: &restore_cache
 
 # Branch filter that can be specified for jobs that should only run on publish branches
 # (e.g. master or the patch branch)
-var_12: &publish_branches_filter
+var_11: &publish_branches_filter
   branches:
     only:
       - master
@@ -117,9 +117,29 @@ var_12: &publish_branches_filter
 # `build-npm-packages`.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
 # https://circleci.com/blog/deep-diving-into-circleci-workspaces/
-var_13: &attach_workspace
+var_12: &attach_workspace
   attach_workspace:
     at: ~/
+
+var_13: &notify_caretaker_on_fail
+  run:
+    when: on_fail
+    name: Notify caretaker about failure
+    # `$SLACK_CARETAKER_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
+    # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
+    command: |
+      notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
+      curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_CARETAKER_WEBHOOK_URL
+
+var_14: &notify_dev_infra_on_fail
+  run:
+    when: on_fail
+    name: Notify dev-infra about failure
+    # `$SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
+    # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
+    command: |
+      notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
+      curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
 version: 2
 jobs:
@@ -534,16 +554,8 @@ jobs:
       - run:
           name: Run tests against https://angular.io/
           command: ./aio/scripts/test-production.sh https://angular.io/ $CI_AIO_MIN_PWA_SCORE
-      - run:
-          when: on_fail
-          name: Notify caretaker and dev-infra about failure
-          # `$SLACK_CARETAKER_WEBHOOK_URL` and `$SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK` are secret env
-          # vars defined in CircleCI project settings.
-          # The URLs come from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
-          command: |
-            notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
-            curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_CARETAKER_WEBHOOK_URL
-            curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
+      - *notify_caretaker_on_fail
+      - *notify_dev_infra_on_fail
 
   aio_monitoring_next:
     <<: *job_defaults
@@ -557,16 +569,8 @@ jobs:
       - run:
           name: Run tests against https://next.angular.io/
           command: ./aio/scripts/test-production.sh https://next.angular.io/ $CI_AIO_MIN_PWA_SCORE
-      - run:
-          when: on_fail
-          name: Notify caretaker and dev-infra about failure
-          # `$SLACK_CARETAKER_WEBHOOK_URL` and `$SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL` are secret env
-          # vars defined in CircleCI project settings.
-          # The URLs come from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
-          command: |
-            notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
-            curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_CARETAKER_WEBHOOK_URL
-            curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
+      - *notify_caretaker_on_fail
+      - *notify_dev_infra_on_fail
 
   legacy-unit-tests-saucelabs:
     <<: *job_defaults
