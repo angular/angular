@@ -332,8 +332,7 @@ export class ComponentDecoratorHandler implements
     const matcher = new SelectorMatcher<DirectiveMeta>();
     if (scope !== null) {
       for (const directive of scope.compilation.directives) {
-        const {selector} = directive;
-        matcher.addSelectables(CssSelector.parse(selector), directive);
+        matcher.addSelectables(CssSelector.parse(directive.selector), directive);
       }
     }
     const binder = new R3TargetBinder(matcher);
