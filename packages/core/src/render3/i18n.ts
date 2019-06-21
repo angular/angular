@@ -24,7 +24,6 @@ import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
-import {StylingContext} from './interfaces/styling';
 import {isLContainer} from './interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {appendChild, appendProjectedNodes, createTextNode, nativeRemoveNode} from './node_manipulation';
@@ -915,7 +914,7 @@ function removeNode(index: number, viewData: LView) {
     nativeRemoveNode(viewData[RENDERER], removedPhRNode);
   }
 
-  const slotValue = ɵɵload(index) as RElement | RComment | LContainer | StylingContext;
+  const slotValue = ɵɵload(index) as RElement | RComment | LContainer;
   if (isLContainer(slotValue)) {
     const lContainer = slotValue as LContainer;
     if (removedPhTNode.type !== TNodeType.Container) {

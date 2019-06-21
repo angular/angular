@@ -10,8 +10,6 @@ import {CssSelector} from '../interfaces/projection';
 import {ProceduralRenderer3, RElement, isProceduralRenderer} from '../interfaces/renderer';
 import {RENDERER} from '../interfaces/view';
 import {getLView} from '../state';
-import {isAnimationProp} from '../styling/util';
-
 
 
 /**
@@ -114,4 +112,10 @@ export function attrsStylingIndexOf(attrs: TAttributes, startIndex: number): num
 export function isNameOnlyAttributeMarker(marker: string | AttributeMarker | CssSelector) {
   return marker === AttributeMarker.Bindings || marker === AttributeMarker.Template ||
       marker === AttributeMarker.I18n;
+}
+
+export const ANIMATION_PROP_PREFIX = '@';
+
+export function isAnimationProp(name: string): boolean {
+  return name[0] === ANIMATION_PROP_PREFIX;
 }
