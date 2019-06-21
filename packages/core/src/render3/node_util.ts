@@ -11,21 +11,6 @@ import {TContainerNode, TElementNode, TNode} from './interfaces/node';
 import {DECLARATION_VIEW, LView, T_HOST} from './interfaces/view';
 import {getParentInjectorViewOffset} from './util/injector_utils';
 
-export function applyOnCreateInstructions(tNode: TNode) {
-  // there may be some instructions that need to run in a specific
-  // order because the CREATE block in a directive runs before the
-  // CREATE block in a template. To work around this instructions
-  // can get access to the function array below and defer any code
-  // to run after the element is created.
-  let fns: Function[]|null;
-  if (fns = tNode.onElementCreationFns) {
-    for (let i = 0; i < fns.length; i++) {
-      fns[i]();
-    }
-    tNode.onElementCreationFns = null;
-  }
-}
-
 /**
  * Unwraps a parent injector location number to find the view offset from the current injector,
  * then walks up the declaration view tree until the TNode of the parent injector is found.

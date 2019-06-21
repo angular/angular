@@ -11,16 +11,15 @@ import {AttributeMarker, TAttributes, TNode, TNodeType} from '../interfaces/node
 import {RElement} from '../interfaces/renderer';
 import {BINDING_INDEX, LView, RENDERER, TVIEW} from '../interfaces/view';
 import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getActiveDirectiveSuperClassHeight, getCurrentStyleSanitizer, getLView, getPreviousOrParentTNode, getSelectedIndex, setCurrentStyleSanitizer} from '../state';
-import {forceClassesAsString, forceStylesAsString} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
 import {flushStyling, updateClassBinding, updateStyleBinding} from './bindings';
-import {StylingMapArrayIndex, TStylingContext} from './interfaces';
+import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from './interfaces';
 import {activateStylingMapFeature, addItemToStylingMap, normalizeIntoStylingMap, stylingMapToString} from './map_based_bindings';
 import {attachStylingDebugObject} from './styling_debug';
-import {allocTStylingContext, concatString, getInitialStylingValue, getStylingMapArray, hasClassInput, hasStyleInput, hasValueChanged, isContextLocked, isStylingContext, updateLastDirectiveIndex as _updateLastDirectiveIndex} from './util';
+import {allocTStylingContext, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, hasClassInput, hasStyleInput, hasValueChanged, isContextLocked, isStylingContext, updateLastDirectiveIndex as _updateLastDirectiveIndex} from './util';
 
 
 
@@ -49,19 +48,9 @@ import {allocTStylingContext, concatString, getInitialStylingValue, getStylingMa
  * @codeGenApi
  */
 export function ɵɵstyling() {
-  const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getLView()[TVIEW];
   if (tView.firstTemplatePass) {
-    const tNode = getPreviousOrParentTNode();
-    const directiveStylingIndex = getActiveDirectiveStylingIndex();
-
-    // temporary workaround until `select(n)` is fully compatible
-    if (directiveStylingIndex) {
-      const fns = tNode.onElementCreationFns = tNode.onElementCreationFns || [];
-      fns.push(() => updateLastDirectiveIndex(tNode, directiveStylingIndex));
-    } else {
-      updateLastDirectiveIndex(tNode, directiveStylingIndex);
-    }
+    updateLastDirectiveIndex(getPreviousOrParentTNode(), getActiveDirectiveStylingIndex());
   }
 }
 
@@ -389,16 +378,12 @@ function normalizeStylingDirectiveInputValue(
 }
 
 /**
- * Temporary function to bridge styling functionality between this new
- * refactor (which is here inside of `styling_next/`) and the old
- * implementation (which lives inside of `styling/`).
+ * Flushes all styling code to the element.
  *
- * The new styling refactor ensures that styling flushing is called
- * automatically when a template function exits or a follow-up element
- * is visited (i.e. when `select(n)` is called). Because the `select(n)`
- * instruction is not fully implemented yet (it doesn't actually execute
- * host binding instruction code at the right time), this means that a
- * styling apply function is still needed.
+ * This function is designed to be called from the template and hostBindings
+ * functions and may be called multiple times depending whether multiple
+ * sources of styling exist. If called multiple times, only the last call
+ * to `stlyingApply()` will render styling to the element.
  *
  * @codeGenApi
  */
@@ -447,16 +432,25 @@ export function registerInitialStylingOnTNode(
   }
 
   if (classes && classes.length > StylingMapArrayIndex.ValuesStartPosition) {
-    classes[StylingMapArrayIndex.RawValuePosition] = stylingMapToString(classes, true);
-    tNode.classes = classes;
+    if (!tNode.classes) {
+      tNode.classes = classes;
+    }
+    updateRawValueOnContext(tNode.classes, stylingMapToString(classes, true));
   }
 
   if (styles && styles.length > StylingMapArrayIndex.ValuesStartPosition) {
-    styles[StylingMapArrayIndex.RawValuePosition] = stylingMapToString(styles, false);
-    tNode.styles = styles;
+    if (!tNode.styles) {
+      tNode.styles = styles;
+    }
+    updateRawValueOnContext(tNode.styles, stylingMapToString(styles, false));
   }
 
   return hasAdditionalInitialStyling;
+}
+
+function updateRawValueOnContext(context: TStylingContext | StylingMapArray, value: string) {
+  const stylingMapArr = getStylingMapArray(context) !;
+  stylingMapArr[StylingMapArrayIndex.RawValuePosition] = value;
 }
 
 export function getActiveDirectiveStylingIndex(): number {

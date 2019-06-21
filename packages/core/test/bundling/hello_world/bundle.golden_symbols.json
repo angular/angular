@@ -105,9 +105,6 @@
     "name": "RENDERER_FACTORY"
   },
   {
-    "name": "RendererStyleFlags3"
-  },
-  {
     "name": "SANITIZER"
   },
   {
@@ -157,9 +154,6 @@
   },
   {
     "name": "appendChild"
-  },
-  {
-    "name": "applyOnCreateInstructions"
   },
   {
     "name": "attachPatchData"
@@ -288,12 +282,6 @@
     "name": "getLViewParent"
   },
   {
-    "name": "getMapProp"
-  },
-  {
-    "name": "getMapValue"
-  },
-  {
     "name": "getNativeAnchorNode"
   },
   {
@@ -348,9 +336,6 @@
     "name": "getSelectedIndex"
   },
   {
-    "name": "getStylingMapArray"
-  },
-  {
     "name": "hasParentInjector"
   },
   {
@@ -394,9 +379,6 @@
   },
   {
     "name": "isRootView"
-  },
-  {
-    "name": "isStylingContext"
   },
   {
     "name": "leaveView"
@@ -459,13 +441,7 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderInitialStyling"
-  },
-  {
     "name": "renderStringify"
-  },
-  {
-    "name": "renderStylingMap"
   },
   {
     "name": "resetAllStylingState"
@@ -487,9 +463,6 @@
   },
   {
     "name": "setBindingRoot"
-  },
-  {
-    "name": "setClass"
   },
   {
     "name": "setCurrentDirectiveDef"
@@ -517,9 +490,6 @@
   },
   {
     "name": "setSelectedIndex"
-  },
-  {
-    "name": "setStyle"
   },
   {
     "name": "setTNodeAndViewData"

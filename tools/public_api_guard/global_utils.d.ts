@@ -10,8 +10,6 @@ export declare function getInjector(target: {}): Injector;
 
 export declare function getListeners(element: Element): Listener[];
 
-export declare function getPlayers(ref: ComponentInstance | DirectiveInstance | HTMLElement): Player[];
-
 export declare function getRootComponents(target: {}): any[];
 
 export declare function getViewComponent<T = {}>(element: Element | {}): T | null;

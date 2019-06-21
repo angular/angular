@@ -16,7 +16,6 @@ import {isContentQueryHost} from '../interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
-import {applyOnCreateInstructions} from '../node_util';
 import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {registerInitialStylingOnTNode} from '../styling_next/instructions';
 import {StylingMapArray, TStylingContext} from '../styling_next/interfaces';
@@ -120,12 +119,8 @@ export function ɵɵelementEnd(): void {
   }
 
   const tNode = previousOrParentTNode;
-
-  // this is required for all host-level styling-related instructions to run
-  // in the correct order
-  tNode.onElementCreationFns && applyOnCreateInstructions(tNode);
-
   ngDevMode && assertNodeType(tNode, TNodeType.Element);
+
   const lView = getLView();
   const tView = lView[TVIEW];
 
