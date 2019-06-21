@@ -14,7 +14,6 @@ import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
 import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
-import {setCachedStylingContext} from './styling/state';
 import {resetAllStylingState, resetStylingState} from './styling_next/state';
 import {resetPreOrderHookFlags} from './util/view_utils';
 
@@ -489,7 +488,6 @@ export function leaveView(newView: LView, safeToRunHooks: boolean): void {
       lView[BINDING_INDEX] = tView.bindingStartIndex;
     }
   }
-  setCachedStylingContext(null);
   enterView(newView, null);
 }
 
@@ -513,10 +511,6 @@ export function getSelectedIndex() {
  */
 export function setSelectedIndex(index: number) {
   _selectedIndex = index;
-
-  // remove the styling context from the cache
-  // because we are now on a different element
-  setCachedStylingContext(null);
 
   // we have now jumped to another element
   // therefore the state is stale
