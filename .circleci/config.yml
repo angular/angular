@@ -8,23 +8,22 @@
 # http://yaml-online-parser.appspot.com/
 
 var_1: &docker_image circleci/node:10.16
-var_2: &docker_bazel_image l.gcr.io/google/bazel:0.26.1
 
 # **Note**: When updating the beginning of the cache key, also update the cache key to match
 # the new cache key prefix. This allows us to take advantage of CircleCI's fallback caching.
 # Read more here: https://circleci.com/docs/2.0/caching/#restoring-cache.
-var_3: &cache_key v3-ng-mat-{{ checksum "WORKSPACE" }}-{{ checksum "yarn.lock" }}
-var_4: &cache_fallback_key v3-ng-mat-
+var_2: &cache_key v4-ng-mat-{{ checksum "WORKSPACE" }}-{{ checksum "yarn.lock" }}
+var_3: &cache_fallback_key v4-ng-mat-
 
 # Settings common to each job
-var_5: &job_defaults
+var_4: &job_defaults
   working_directory: ~/ng
   docker:
     - image: *docker_image
 
 # Job step for checking out the source code from GitHub. This also ensures that the source code
 # is rebased on top of master.
-var_6: &checkout_code
+var_5: &checkout_code
   checkout:
     # After checkout, rebase on top of master. By default, PRs are not rebased on top of master,
     # which we want. See https://discuss.circleci.com/t/1662
@@ -32,7 +31,7 @@ var_6: &checkout_code
 
 # Restores the cache that could be available for the current Yarn lock file. The cache usually
 # includes the node modules and the Bazel repository cache.
-var_7: &restore_cache
+var_6: &restore_cache
   restore_cache:
     keys:
       - *cache_key
@@ -40,7 +39,7 @@ var_7: &restore_cache
 
 # Saves the cache for the current Yarn lock file. We store the node modules and the Bazel
 # repository cache in order to make subsequent builds faster.
-var_8: &save_cache
+var_7: &save_cache
   save_cache:
     key: *cache_key
     paths:
@@ -48,19 +47,19 @@ var_8: &save_cache
       - "~/bazel_repository_cache"
 
 # Decryption token that is used to decode the GCP credentials file in ".circleci/gcp_token".
-var_9: &gcp_decrypt_token "angular"
+var_8: &gcp_decrypt_token "angular"
 
 # Job step that ensures that the node module dependencies are installed and up-to-date. We use
 # Yarn with the frozen lockfile option in order to make sure that lock file and package.json are
 # in sync. Unlike in Travis, we don't need to manually purge the node modules if stale because
 # CircleCI automatically discards the cache if the checksum of the lock file has changed.
-var_10: &yarn_install
+var_9: &yarn_install
   run:
     name: "Installing project dependencies"
     command: yarn install --frozen-lockfile --non-interactive
 
 # Anchor that can be used to download and install Yarn globally in the bash environment.
-var_11: &yarn_download
+var_10: &yarn_download
   run:
     name: "Downloading and installing Yarn"
     command: |
@@ -68,7 +67,7 @@ var_11: &yarn_download
       curl -o- -L https://yarnpkg.com/install.sh | PROFILE=$BASH_ENV bash -s -- --version "1.16.0"
 
 # Sets up the Bazel config which is specific for CircleCI builds.
-var_12: &setup_bazel_ci_config
+var_11: &setup_bazel_ci_config
   run:
     name: "Setting up Bazel configuration for CI"
     command: |
@@ -76,21 +75,21 @@ var_12: &setup_bazel_ci_config
 
 # Sets up a different Docker image that includes a moe recent Firefox version which
 # is needed for headless testing.
-var_13: &docker-firefox-image
+var_12: &docker-firefox-image
   # TODO(devversion): Temporarily use a image that includes Firefox 62 because the
   # ngcontainer image does include an old Firefox version that does not support headless.
   - image: circleci/node:11.4.0-browsers
 
 # Attaches the release output which has been stored in the workspace to the current job.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
-var_14: &attach_release_output
+var_13: &attach_release_output
   attach_workspace:
     at: dist/
 
 # Branch filter that we can specify for jobs that should only run on publish branches. This filter
 # is used to ensure that not all upstream branches will be published as Github builds
 # (e.g. revert branches, feature branches)
-var_15: &publish_branches_filter
+var_14: &publish_branches_filter
   branches:
     only:
       - master
@@ -104,7 +103,7 @@ var_15: &publish_branches_filter
 # In order to reduce duplication we use a YAML anchor that just always excludes the "_presubmit"
 # branch. We don't want to run Circle for the temporary "_presubmit" branch which is reserved
 # for the caretaker.
-var_16: &ignore_presubmit_branch_filter
+var_15: &ignore_presubmit_branch_filter
   branches:
     ignore:
       - "_presubmit"
@@ -112,7 +111,7 @@ var_16: &ignore_presubmit_branch_filter
 
 # Runs a script that sets up the Bazel remote execution. This will be used by jobs that run
 # Bazel primarily and should benefit from remote caching and execution.
-var_17: &setup_bazel_remote_execution
+var_16: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
     command: ./scripts/circleci/bazel/setup-remote-execution.sh
@@ -132,8 +131,7 @@ jobs:
   # Build and test job that uses Bazel.
   # -----------------------------------
   bazel_build_test:
-    docker:
-      - image: *docker_bazel_image
+    <<: *job_defaults
     resource_class: xlarge
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
@@ -142,17 +140,18 @@ jobs:
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
+      - *yarn_download
+      - *yarn_install
 
-      - run: bazel build src/... --build_tag_filters=-docs-package
-      - run: bazel test src/... --build_tag_filters=-docs-package --test_tag_filters=-e2e
+      - run: yarn bazel build src/... --build_tag_filters=-docs-package
+      - run: yarn bazel test src/... --build_tag_filters=-docs-package --test_tag_filters=-e2e
 
   # --------------------------------------------------------------------------------------------
   # Job that runs ts-api-guardian against our API goldens in "tools/public_api_guard".
   # This job fails whenever an API has been updated but not explicitly approved through goldens.
   # --------------------------------------------------------------------------------------------
   api_golden_checks:
-    docker:
-      - image: *docker_bazel_image
+    <<: *job_defaults
     resource_class: xlarge
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
@@ -161,15 +160,16 @@ jobs:
     - *restore_cache
     - *setup_bazel_ci_config
     - *setup_bazel_remote_execution
+    - *yarn_download
+    - *yarn_install
 
-    - run: bazel test tools/public_api_guard/...
+    - run: yarn bazel test tools/public_api_guard/...
 
   # -----------------------------------------------------------------
   # Job that runs the e2e tests with Protractor and Chromium headless
   # -----------------------------------------------------------------
   e2e_tests:
-    docker:
-      - image: *docker_bazel_image
+    <<: *job_defaults
     resource_class: xlarge
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
@@ -178,8 +178,10 @@ jobs:
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
+      - *yarn_download
+      - *yarn_install
 
-      - run: bazel test src/... --test_tag_filters=e2e
+      - run: yarn bazel test src/... --test_tag_filters=e2e
 
   # ------------------------------------------------------------------------------------------
   # Job that runs the unit tests on locally installed browsers (Chrome and Firefox headless).
@@ -330,8 +332,7 @@ jobs:
   # Job that publishes the build snapshots
   # ----------------------------------------
   publish_snapshots:
-    docker:
-      - image: *docker_bazel_image
+    <<: *job_defaults
     resource_class: xlarge
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
@@ -341,6 +342,8 @@ jobs:
       - *attach_release_output
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
+      - *yarn_download
+      - *yarn_install
 
       # CircleCI has a config setting to enforce SSH for all github connections.
       # This is not compatible with our mechanism of using a Personal Access Token
@@ -349,7 +352,7 @@ jobs:
 
       # TODO(devversion): Ideally the "build_release_packages" job should build all packages with
       # Bazel, but for now we mix up the Gulp and bazel setup, so we need to build the package here.
-      - run: bazel build src/material-examples:npm_package --config=release
+      - run: yarn bazel build src/material-examples:npm_package --config=release
 
       - run: ./scripts/circleci/publish-snapshots.sh
 
@@ -365,8 +368,11 @@ jobs:
     - *restore_cache
     - *yarn_download
 
-    - run: python ./scripts/circleci/setup-angular-snapshots.py --tag master
-    - *yarn_install
+    - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master
+      # Install yarn dependencies after the package.json has been updated. Note that
+      # we can't use frozen-lockfile since the setup snapshots script does not update
+      # the lock file.
+    - run: yarn install --non-interactive
     - run: ./scripts/circleci/run-local-browser-tests.sh
 
 
@@ -375,8 +381,7 @@ jobs:
   # specified in the project dev dependencies.
   # ----------------------------------------------------------------------------
   ivy_test:
-    docker:
-      - image: *docker_bazel_image
+    <<: *job_defaults
     resource_class: xlarge
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
@@ -385,6 +390,8 @@ jobs:
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
+      - *yarn_download
+      - *yarn_install
 
       # Setup Angular ivy snapshots built with ngtsc but locked to a specific tag. We
       # cannot determine the tag automatically based on the Angular version specified in
@@ -392,21 +399,20 @@ jobs:
       # we use ngcc to apply the ivy switches because ngcc currently does not handle the
       # UMD format which is used by Bazel when running tests. UMD processing is in
       # progress and tracked with FW-85.
-      - run: python ./scripts/circleci/setup-angular-snapshots.py --tag 8.1.0-next.1-ivy-aot+82e0b4a
+      - run: node ./scripts/circleci/setup-angular-snapshots.js --tag 8.1.0-next.1-ivy-aot+82e0b4a
       # Disable type checking when building with Ivy. This is necessary because
       # type checking is not complete yet and can incorrectly break compilation.
       # Issue is tracked with FW-1004.
       - run: sed -i "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" tools/defaults.bzl
       # Run project tests with ngtsc and the Ivy Angular packages.
-      - run: bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
-      - run: bazel test src/... --build_tag_filters=-docs-package --define=compile=aot --test_tag_filters=-e2e
+      - run: yarn bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
+      - run: yarn bazel test src/... --build_tag_filters=-docs-package --define=compile=aot --test_tag_filters=-e2e
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against Ivy from angular/angular#master.
   # ----------------------------------------------------------------------------
   ivy_snapshot_test_cronjob:
-    docker:
-      - image: *docker_bazel_image
+    <<: *job_defaults
     resource_class: xlarge
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
@@ -415,16 +421,18 @@ jobs:
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
+      - *yarn_download
+      - *yarn_install
 
       # Setup Angular ivy snapshots built with ngtsc.
-      - run: python ./scripts/circleci/setup-angular-snapshots.py --tag master-ivy-aot
+      - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master-ivy-aot
       # Disable type checking when building with Ivy. This is necessary because
       # type checking is not complete yet and can incorrectly break compilation.
       # Issue is tracked with FW-1004.
       - run: sed -i "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" tools/defaults.bzl
       # Run project tests with ngtsc and the Ivy Angular packages.
-      - run: bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
-      - run: bazel test src/... --build_tag_filters=-docs-package --define=compile=aot --test_tag_filters=-e2e
+      - run: yarn bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
+      - run: yarn bazel test src/... --build_tag_filters=-docs-package --define=compile=aot --test_tag_filters=-e2e
 
 # ----------------------------------------------------------------------------------------
 # Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
