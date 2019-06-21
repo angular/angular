@@ -21,28 +21,26 @@ import {getTemplateIdentifiers} from './template';
 export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, IndexedComponent> {
   const analysis = new Map<ts.Declaration, IndexedComponent>();
 
-  context.components.forEach(({declaration, selector, scope, template}) => {
+  context.components.forEach(({declaration, selector, boundTemplate, templateMeta}) => {
     const name = declaration.name.getText();
 
     const usedComponents = new Set<ts.Declaration>();
-    if (scope) {
-      const usedDirs = scope.getUsedDirectives();
-      usedDirs.forEach(dir => {
-        if (dir.isComponent) {
-          usedComponents.add(dir.ref.node);
-        }
-      });
-    }
+    const usedDirs = boundTemplate.getUsedDirectives();
+    usedDirs.forEach(dir => {
+      if (dir.isComponent) {
+        usedComponents.add(dir.ref.node);
+      }
+    });
 
     // Get source files for the component and the template. If the template is inline, its source
     // file is the component's.
     const componentFile = new ParseSourceFile(
         declaration.getSourceFile().getFullText(), declaration.getSourceFile().fileName);
     let templateFile: ParseSourceFile;
-    if (template.isInline) {
+    if (templateMeta.isInline) {
       templateFile = componentFile;
     } else {
-      templateFile = template.file;
+      templateFile = templateMeta.file;
     }
 
     analysis.set(declaration, {
@@ -50,9 +48,9 @@ export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, 
       selector,
       file: componentFile,
       template: {
-        identifiers: getTemplateIdentifiers(template.nodes),
+        identifiers: getTemplateIdentifiers(boundTemplate),
         usedComponents,
-        isInline: template.isInline,
+        isInline: templateMeta.isInline,
         file: templateFile,
       },
     });

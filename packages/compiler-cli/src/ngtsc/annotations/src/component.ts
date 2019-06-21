@@ -329,22 +329,24 @@ export class ComponentDecoratorHandler implements
     });
     const scope = this.scopeRegistry.getScopeForComponent(node);
     const selector = analysis.meta.selector;
-    let boundTemplate = null;
+    const matcher = new SelectorMatcher<DirectiveMeta>();
     if (scope !== null) {
-      const matcher = new SelectorMatcher<DirectiveMeta>();
       for (const directive of scope.compilation.directives) {
         const {selector} = directive;
         matcher.addSelectables(CssSelector.parse(selector), directive);
       }
-      const binder = new R3TargetBinder(matcher);
-      boundTemplate = binder.bind({template: template.nodes});
     }
+    const binder = new R3TargetBinder(matcher);
+    const boundTemplate = binder.bind({template: template.nodes});
 
     context.addComponent({
       declaration: node,
       selector,
-      template,
-      scope: boundTemplate,
+      boundTemplate,
+      templateMeta: {
+        isInline: template.isInline,
+        file: template.file,
+      },
     });
   }
 

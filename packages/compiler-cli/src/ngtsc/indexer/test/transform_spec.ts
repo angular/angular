@@ -19,17 +19,15 @@ import * as util from './util';
  */
 function populateContext(
     context: IndexingContext, component: ClassDeclaration, selector: string, template: string,
-    scope: BoundTarget<DirectiveMeta>| null, isInline: boolean = false) {
-  const parsedTemplate = util.getParsedTemplate(template);
+    boundTemplate: BoundTarget<DirectiveMeta>, isInline: boolean = false) {
   context.addComponent({
     declaration: component,
-    template: {
-      nodes: parsedTemplate,
+    selector,
+    boundTemplate,
+    templateMeta: {
       isInline,
       file: new ParseSourceFile(template, util.TESTFILE),
     },
-    selector,
-    scope,
   });
 }
 
@@ -37,7 +35,8 @@ describe('generateAnalysis', () => {
   it('should emit component and template analysis information', () => {
     const context = new IndexingContext();
     const decl = util.getComponentDeclaration('class C {}', 'C');
-    populateContext(context, decl, 'c-selector', '<div>{{foo}}</div>', null);
+    const template = '<div>{{foo}}</div>';
+    populateContext(context, decl, 'c-selector', template, util.getBoundTemplate(template));
     const analysis = generateAnalysis(context);
 
     expect(analysis.size).toBe(1);
@@ -48,7 +47,7 @@ describe('generateAnalysis', () => {
       selector: 'c-selector',
       file: new ParseSourceFile('class C {}', util.TESTFILE),
       template: {
-        identifiers: getTemplateIdentifiers(util.getParsedTemplate('<div>{{foo}}</div>')),
+        identifiers: getTemplateIdentifiers(util.getBoundTemplate('<div>{{foo}}</div>')),
         usedComponents: new Set(),
         isInline: false,
         file: new ParseSourceFile('<div>{{foo}}</div>', util.TESTFILE),
@@ -59,8 +58,10 @@ describe('generateAnalysis', () => {
   it('should give inline templates the component source file', () => {
     const context = new IndexingContext();
     const decl = util.getComponentDeclaration('class C {}', 'C');
+    const template = '<div>{{foo}}</div>';
     populateContext(
-        context, decl, 'c-selector', '<div>{{foo}}</div>', null, /* inline template */ true);
+        context, decl, 'c-selector', '<div>{{foo}}</div>', util.getBoundTemplate(template),
+        /* inline template */ true);
     const analysis = generateAnalysis(context);
 
     expect(analysis.size).toBe(1);
@@ -73,7 +74,8 @@ describe('generateAnalysis', () => {
   it('should give external templates their own source file', () => {
     const context = new IndexingContext();
     const decl = util.getComponentDeclaration('class C {}', 'C');
-    populateContext(context, decl, 'c-selector', '<div>{{foo}}</div>', null);
+    const template = '<div>{{foo}}</div>';
+    populateContext(context, decl, 'c-selector', template, util.getBoundTemplate(template));
     const analysis = generateAnalysis(context);
 
     expect(analysis.size).toBe(1);
@@ -92,11 +94,13 @@ describe('generateAnalysis', () => {
     const templateB = '<a-selector></a-selector>';
     const declB = util.getComponentDeclaration('class B {}', 'B');
 
-    const scopeA = util.bindTemplate(templateA, [{selector: 'b-selector', declaration: declB}]);
-    const scopeB = util.bindTemplate(templateB, [{selector: 'a-selector', declaration: declA}]);
+    const boundA =
+        util.getBoundTemplate(templateA, {}, [{selector: 'b-selector', declaration: declB}]);
+    const boundB =
+        util.getBoundTemplate(templateB, {}, [{selector: 'a-selector', declaration: declA}]);
 
-    populateContext(context, declA, 'a-selector', templateA, scopeA);
-    populateContext(context, declB, 'b-selector', templateB, scopeB);
+    populateContext(context, declA, 'a-selector', templateA, boundA);
+    populateContext(context, declB, 'b-selector', templateB, boundB);
 
     const analysis = generateAnalysis(context);
 

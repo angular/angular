@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, CssSelector, R3TargetBinder, SelectorMatcher, TmplAstNode, parseTemplate} from '@angular/compiler/src/compiler';
+import {BoundTarget, CssSelector, ParseTemplateOptions, R3TargetBinder, SelectorMatcher, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {DirectiveMeta} from '../../metadata';
@@ -28,20 +28,17 @@ export function getComponentDeclaration(componentStr: string, className: string)
 }
 
 /**
- * Parses a template source code.
+ * Parses a template source code and returns a template-bound target, optionally with information
+ * about used components.
+ *
+ * @param template template to parse
+ * @param options extra template parsing options
+ * @param components components to bind to the template target
  */
-export function getParsedTemplate(template: string): TmplAstNode[] {
-  return parseTemplate(template, TESTFILE).nodes;
-}
-
-/**
- * Binds information about a component on a template (a target). The BoundTarget
- * describes the scope of the template and can be queried for directives the
- * template uses.
- */
-export function bindTemplate(
-    template: string, components: Array<{selector: string, declaration: ClassDeclaration}>):
-    BoundTarget<DirectiveMeta> {
+export function getBoundTemplate(
+    template: string, options: ParseTemplateOptions = {},
+    components: Array<{selector: string, declaration: ClassDeclaration}> =
+        []): BoundTarget<DirectiveMeta> {
   const matcher = new SelectorMatcher<DirectiveMeta>();
   components.forEach(({selector, declaration}) => {
     matcher.addSelectables(CssSelector.parse(selector), {
@@ -60,5 +57,5 @@ export function bindTemplate(
   });
   const binder = new R3TargetBinder(matcher);
 
-  return binder.bind({template: getParsedTemplate(template)});
+  return binder.bind({template: parseTemplate(template, TESTFILE, options).nodes});
 }

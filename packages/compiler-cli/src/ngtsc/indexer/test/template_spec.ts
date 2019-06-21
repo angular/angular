@@ -6,35 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TmplAstNode, parseTemplate} from '@angular/compiler';
 import {AbsoluteSourceSpan, IdentifierKind} from '..';
 import {getTemplateIdentifiers} from '../src/template';
-import {TESTFILE} from './util';
+import * as util from './util';
 
-function parse(template: string): TmplAstNode[] {
-  return parseTemplate(template, TESTFILE, {
-           preserveWhitespaces: true,
-           leadingTriviaChars: [],
-         })
-      .nodes;
+function bind(template: string) {
+  return util.getBoundTemplate(template, {
+    preserveWhitespaces: true,
+    leadingTriviaChars: [],
+  });
 }
 
 describe('getTemplateIdentifiers', () => {
   it('should generate nothing in HTML-only template', () => {
-    const refs = getTemplateIdentifiers(parse('<div></div>'));
+    const refs = getTemplateIdentifiers(bind('<div></div>'));
 
     expect(refs.size).toBe(0);
   });
 
   it('should ignore comments', () => {
-    const refs = getTemplateIdentifiers(parse('<!-- {{comment}} -->'));
+    const refs = getTemplateIdentifiers(bind('<!-- {{comment}} -->'));
 
     expect(refs.size).toBe(0);
   });
 
   it('should handle arbitrary whitespace', () => {
     const template = '<div>\n\n   {{foo}}</div>';
-    const refs = getTemplateIdentifiers(parse(template));
+    const refs = getTemplateIdentifiers(bind(template));
 
     const [ref] = Array.from(refs);
     expect(ref).toEqual({
@@ -49,7 +47,7 @@ describe('getTemplateIdentifiers', () => {
       <input #model />
       {{model.valid}}
     `;
-    const refs = getTemplateIdentifiers(parse(template));
+    const refs = getTemplateIdentifiers(bind(template));
 
     const refArr = Array.from(refs);
     const modelId = refArr.find(ref => ref.name === 'model');
@@ -59,7 +57,7 @@ describe('getTemplateIdentifiers', () => {
   describe('generates identifiers for PropertyReads', () => {
     it('should discover component properties', () => {
       const template = '{{foo}}';
-      const refs = getTemplateIdentifiers(parse(template));
+      const refs = getTemplateIdentifiers(bind(template));
       expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
@@ -72,7 +70,7 @@ describe('getTemplateIdentifiers', () => {
 
     it('should discover nested properties', () => {
       const template = '<div><span>{{foo}}</span></div>';
-      const refs = getTemplateIdentifiers(parse(template));
+      const refs = getTemplateIdentifiers(bind(template));
 
       const refArr = Array.from(refs);
       expect(refArr).toEqual(jasmine.arrayContaining([{
@@ -84,7 +82,7 @@ describe('getTemplateIdentifiers', () => {
 
     it('should ignore identifiers that are not implicitly received by the template', () => {
       const template = '{{foo.bar.baz}}';
-      const refs = getTemplateIdentifiers(parse(template));
+      const refs = getTemplateIdentifiers(bind(template));
       expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
@@ -95,7 +93,7 @@ describe('getTemplateIdentifiers', () => {
   describe('generates identifiers for MethodCalls', () => {
     it('should discover component method calls', () => {
       const template = '{{foo()}}';
-      const refs = getTemplateIdentifiers(parse(template));
+      const refs = getTemplateIdentifiers(bind(template));
       expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
@@ -108,7 +106,7 @@ describe('getTemplateIdentifiers', () => {
 
     it('should discover nested properties', () => {
       const template = '<div><span>{{foo()}}</span></div>';
-      const refs = getTemplateIdentifiers(parse(template));
+      const refs = getTemplateIdentifiers(bind(template));
 
       const refArr = Array.from(refs);
       expect(refArr).toEqual(jasmine.arrayContaining([{
@@ -120,7 +118,7 @@ describe('getTemplateIdentifiers', () => {
 
     it('should ignore identifiers that are not implicitly received by the template', () => {
       const template = '{{foo().bar().baz()}}';
-      const refs = getTemplateIdentifiers(parse(template));
+      const refs = getTemplateIdentifiers(bind(template));
       expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);

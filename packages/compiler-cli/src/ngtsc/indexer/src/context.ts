@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, DirectiveMeta, ParseSourceFile, TmplAstNode} from '@angular/compiler';
+import {BoundTarget, DirectiveMeta, ParseSourceFile} from '@angular/compiler';
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
@@ -28,24 +28,20 @@ export interface ComponentInfo {
   /** Component template selector if it exists, otherwise null. */
   selector: string|null;
 
-  /** Parsed component template */
-  template: {
-    /** Template nodes */
-    nodes: TmplAstNode[];
+  /**
+   * BoundTarget containing the parsed template. Can also be used to query for directives used in
+   * the template.
+   */
+  boundTemplate: BoundTarget<ComponentMeta>;
 
+  /** Metadata about the template */
+  templateMeta: {
     /** Whether the component template is inline */
     isInline: boolean;
 
     /** Template file recorded by template parser */
     file: ParseSourceFile;
   };
-
-  /**
-   * BoundTarget containing the parsed template. Can be used to query for directives used in the
-   * template.
-   * Null if there is no registry of the component by the decorator handler.
-   */
-  scope: BoundTarget<ComponentMeta>|null;
 }
 
 /**

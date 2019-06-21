@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BoundTarget, DirectiveMeta, ImplicitReceiver, MethodCall, PropertyRead, R3TargetBinder, RecursiveAstVisitor, SelectorMatcher, TmplAstNode} from '@angular/compiler';
+import {AST, BoundTarget, DirectiveMeta, ImplicitReceiver, MethodCall, PropertyRead, RecursiveAstVisitor} from '@angular/compiler';
 import {BoundText, Element, Node, RecursiveVisitor as RecursiveTemplateVisitor, Template} from '@angular/compiler/src/render3/r3_ast';
 import {AbsoluteSourceSpan, IdentifierKind, TemplateIdentifier} from './api';
 
@@ -40,6 +40,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
 
   /**
    * Returns identifiers discovered in an expression.
+   *
    * @param ast expression AST to visit
    * @param context HTML node expression is defined in
    * @param boundTemplate bound target of the entire template, which can be used to query for the
@@ -66,6 +67,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
 
   /**
    * Visits an identifier, adding it to the identifier store if it is useful for indexing.
+   *
    * @param ast expression AST the identifier is in
    * @param kind identifier kind
    */
@@ -110,12 +112,14 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
   /**
    * Creates a template visitor for a bound template target. The bound target can be used when
    * deferred to the expression visitor to get information about the target of an expression.
+   *
    * @param boundTemplate bound template target
    */
   constructor(private boundTemplate: BoundTarget<DirectiveMeta>) { super(); }
 
   /**
    * Visits a node in the template.
+   *
    * @param node node to visit
    */
   visit(node: HTMLNode) { node.visit(this); }
@@ -137,6 +141,7 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
 
   /**
    * Visits a node's expression and adds its identifiers, if any, to the visitor's state.
+   *
    * @param curretNode node whose expression to visit
    */
   private visitExpression(node: Node&{value: AST}) {
@@ -147,13 +152,15 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
 
 /**
  * Traverses a template AST and builds identifiers discovered in it.
- * @param template template to extract indentifiers from
- * @param options options for restoring the parsed template to a indexable state
+ *
+ * @param boundTemplate bound template target, which can be used for querying expression targets.
  * @return identifiers in template
  */
-export function getTemplateIdentifiers(template: TmplAstNode[]): Set<TemplateIdentifier> {
-  const boundTemplate = new R3TargetBinder(new SelectorMatcher()).bind({template});
+export function getTemplateIdentifiers(boundTemplate: BoundTarget<DirectiveMeta>):
+    Set<TemplateIdentifier> {
   const visitor = new TemplateVisitor(boundTemplate);
-  visitor.visitAll(template);
+  if (boundTemplate.target.template !== undefined) {
+    visitor.visitAll(boundTemplate.target.template);
+  }
   return visitor.identifiers;
 }
