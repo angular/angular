@@ -7,7 +7,8 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-import {assertDefined, assertDomNode, assertNotEqual} from '../util/assert';
+import {assertDefined, assertDomNode} from '../util/assert';
+
 import {assertLContainer, assertLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -16,6 +17,7 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {StylingContext} from './interfaces/styling';
 import {CHILD_HEAD, CLEANUP, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
@@ -68,24 +70,21 @@ const enum WalkTNodeTreeAction {
  */
 function executeNodeAction(
     action: WalkTNodeTreeAction, renderer: Renderer3, parent: RElement | null,
-    nodeOrLContainerOrLView: RNode | LContainer | LView, beforeNode?: RNode | null) {
-  ngDevMode && assertDefined(nodeOrLContainerOrLView, '\'nodeOrLContainer\' is undefined');
-  let wrappedNode: any = nodeOrLContainerOrLView;
+    lNodeToHandle: RNode | LContainer | LView | StylingContext, beforeNode?: RNode | null) {
+  ngDevMode && assertDefined(lNodeToHandle, '\'lNodeToHandle\' is undefined');
   let lContainer: LContainer|undefined;
   let isComponent = false;
   // We are expecting an RNode, but in the case of a component or LContainer the `RNode` is wrapped
   // in an array which needs to be unwrapped. We need to know if it is a component and if
   // it has LContainer so that we can process all of those cases appropriately.
-  while (Array.isArray(wrappedNode)) {
-    if (isLContainer(wrappedNode)) {
-      lContainer = wrappedNode;
-    }
-    if (isLView(wrappedNode)) {
-      isComponent = true;
-    }
-    wrappedNode = wrappedNode[HOST];
+  if (isLContainer(lNodeToHandle)) {
+    lContainer = lNodeToHandle;
+  } else if (isLView(lNodeToHandle)) {
+    isComponent = true;
+    ngDevMode && assertDefined(lNodeToHandle[HOST], 'HOST must be defined for a component LView');
+    lNodeToHandle = lNodeToHandle[HOST] !;
   }
-  const rNode: RNode = wrappedNode;
+  const rNode: RNode = unwrapRNode(lNodeToHandle);
   ngDevMode && assertDomNode(rNode);
 
   if (action === WalkTNodeTreeAction.Insert) {
@@ -353,8 +352,8 @@ function cleanUpView(view: LView | LContainer): void {
 
 /** Removes listeners and unsubscribes from output subscriptions */
 function removeListeners(lView: LView): void {
-  const tCleanup = lView[TVIEW].cleanup !;
-  if (tCleanup != null) {  // !`null` and !`undefined`
+  const tCleanup = lView[TVIEW].cleanup;
+  if (tCleanup !== null) {
     const lCleanup = lView[CLEANUP] !;
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
       if (typeof tCleanup[i] === 'string') {
@@ -514,7 +513,7 @@ function nativeAppendChild(renderer: Renderer3, parent: RElement, child: RNode):
 
 function nativeAppendOrInsertBefore(
     renderer: Renderer3, parent: RElement, child: RNode, beforeNode: RNode | null) {
-  if (beforeNode != null) {
+  if (beforeNode !== null) {
     nativeInsertBefore(renderer, parent, child, beforeNode);
   } else {
     nativeAppendChild(renderer, parent, child);
@@ -747,10 +746,12 @@ function appendProjectedNode(
  *               complication is that the nodes we are projecting can themselves have Containers
  *               or other Projections.
  *
- * As you can see this is a very recursive problem. Yes recursion is not most efficient but the
- * code is complicated enough that trying to implemented with recursion becomes unmaintainable.
+ * As you can see this is a very recursive problem. While the recursive implementation is not the
+ * most efficient one, trying to unroll recursion results in very complex code that is very hard (to
+ * maintain). We are sacrificing a bit of performance for readability using recursive
+ * implementation.
  *
- * @param renderer Render to use
+ * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
  * @param lView The LView which needs to be inserted, detached, destroyed.
  * @param renderParent parent DOM element for insertion/removal.
@@ -761,7 +762,7 @@ function applyView(
     beforeNode: RNode | null | undefined) {
   const tView = lView[TVIEW];
   ngDevMode && assertNodeType(tView.node !, TNodeType.View);
-  let viewRootTNode: TNode|null = tView.node !.child;  // Why is this not `tView.firstChild`???;
+  let viewRootTNode: TNode|null = tView.node !.child;
   while (viewRootTNode !== null) {
     const viewRootTNodeType = viewRootTNode.type;
     if (viewRootTNodeType === TNodeType.ElementContainer) {
@@ -786,7 +787,7 @@ function applyView(
  * Inserting a projection requires us to locate the projected nodes from the parent component. The
  * complication is that those nodes themselves could be re-projected from its parent component.
  *
- * @param renderer Render to use
+ * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
  * @param lView The LView which needs to be inserted, detached, destroyed.
  * @param renderParent parent DOM element for insertion/removal.
@@ -801,15 +802,28 @@ function applyProjection(
   const nodeToProject = componentNode.projection ![tProjectionNode.projection] !;
   if (Array.isArray(nodeToProject)) {
     for (let i = 0; i < nodeToProject.length; i++) {
-      const node = nodeToProject[i];
-      executeNodeAction(action, renderer, renderParent, node, beforeNode);
+      const rNode = nodeToProject[i];
+      ngDevMode && assertDomNode(rNode);
+      executeNodeAction(action, renderer, renderParent, rNode, beforeNode);
     }
   } else {
     let projectionTNode: TNode|null = nodeToProject;
-    const projectedComponentLView = findComponentView(componentLView[PARENT] as LView);
+    const projectedComponentLView = componentLView[PARENT] as LView;
     while (projectionTNode !== null) {
-      const node = projectedComponentLView[projectionTNode.index];
-      executeNodeAction(action, renderer, renderParent, node, beforeNode);
+      if (projectionTNode.type === TNodeType.ElementContainer) {
+        applyElementContainer(
+            renderer, action, projectedComponentLView, projectionTNode as TElementContainerNode,
+            renderParent, beforeNode);
+      } else if (projectionTNode.type === TNodeType.Projection) {
+        applyProjection(
+            renderer, action, projectedComponentLView, projectionTNode as TProjectionNode,
+            renderParent, beforeNode);
+      } else {
+        const rNode = projectedComponentLView[projectionTNode.index];
+        ngDevMode &&
+            assertNodeOfPossibleTypes(projectionTNode, TNodeType.Element, TNodeType.Container);
+        executeNodeAction(action, renderer, renderParent, rNode, beforeNode);
+      }
       projectionTNode = projectionTNode.projectionNext;
     }
   }
@@ -821,9 +835,9 @@ function applyProjection(
  * (insert, detach, destroy)
  *
  * Inserting a Container is complicated by the fact that the container may have Views which
- * themselves have container or projections.
+ * themselves have containers or projections.
  *
- * @param renderer Render to use
+ * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
  * @param lContainer The LContainer which needs to be inserted, detached, destroyed.
  * @param renderParent parent DOM element for insertion/removal.
@@ -835,11 +849,13 @@ function applyContainer(
   ngDevMode && assertLContainer(lContainer);
   const anchor = lContainer[NATIVE];  // LContainer has its own before node.
   const native = unwrapRNode(lContainer);
+  // A LContainer can be created dynamically on any node by injecting ViewContainerRef.
+  // Asking for a ViewContainerRef on an element will result in a creation of a separate anchor node
+  // (comment in the DOM) that will be different from the LContainer's host node. In this particular
+  // case we need to execute action on 2 nodes:
+  // - container's host node (this is done in the executeNodeAction)
+  // - container's host node (this is done here)
   if (anchor !== native) {
-    // This is very strange to me (Misko). I would expect that the native is same as anchor. I don't
-    // see a reason why they should be different, but they are.
-    //
-    // If they are we need to process the second anchor as well.
     executeNodeAction(action, renderer, renderParent, anchor, beforeNode);
   }
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
@@ -850,13 +866,10 @@ function applyContainer(
 
 
 /**
- * `applyElementContainer` performs operation on the element-container and its views as specified by
- * `action` (insert, detach, destroy)
+ * `applyElementContainer` performs operation on the ng-container node and its child nodes as
+ * specified by the `action` (insert, detach, destroy)
  *
- * Inserting an ElementContainer is complicated by the fact that the container may have Views which
- * themselves have container or projections.
- *
- * @param renderer Render to use
+ * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
  * @param lView The LView which needs to be inserted, detached, destroyed.
  * @param tElementContainerNode The TNode associated with the ElementContainer.
@@ -872,15 +885,19 @@ function applyElementContainer(
   let elementContainerRootTNode: TNode|null = tElementContainerNode.child;
   while (elementContainerRootTNode) {
     const elementContainerRootTNodeType = elementContainerRootTNode.type;
-    const nodeOrLContainer = lView[elementContainerRootTNode.index];
     if (elementContainerRootTNodeType === TNodeType.ElementContainer) {
       applyElementContainer(
           renderer, action, lView, elementContainerRootTNode as TElementContainerNode, renderParent,
           beforeNode);
+    } else if (elementContainerRootTNodeType === TNodeType.Projection) {
+      applyProjection(
+          renderer, action, lView, elementContainerRootTNode as TProjectionNode, renderParent,
+          beforeNode);
     } else {
       ngDevMode && assertNodeOfPossibleTypes(
                        elementContainerRootTNode, TNodeType.Element, TNodeType.Container);
-      executeNodeAction(action, renderer, renderParent, nodeOrLContainer, beforeNode);
+      executeNodeAction(
+          action, renderer, renderParent, lView[elementContainerRootTNode.index], beforeNode);
     }
     elementContainerRootTNode = elementContainerRootTNode.next;
   }

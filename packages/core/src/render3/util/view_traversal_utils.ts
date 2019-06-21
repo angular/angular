@@ -42,11 +42,11 @@ export function getRootView(componentOrLView: LView | {}): LView {
 }
 
 /**
- * Given an `LView` find the closest declaration view which is not and embedded view.
+ * Given an `LView`, find the closest declaration view which is not an embedded view.
  *
  * This method searches for the `LView` associated with the component which declared the `LView`.
  *
- * This function may return itself if the `LView` passed in is not an embeded `LView`. Otherwise
+ * This function may return itself if the `LView` passed in is not an embedded `LView`. Otherwise
  * it walks the declaration parents until it finds a component view (non-embedded-view.)
  *
  * @param lView LView for which we want a host element node
