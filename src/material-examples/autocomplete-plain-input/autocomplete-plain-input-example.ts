@@ -11,7 +11,7 @@ import {startWith, map} from 'rxjs/operators';
   templateUrl: 'autocomplete-plain-input-example.html',
   styleUrls: ['autocomplete-plain-input-example.css'],
 })
-export class PlainInputAutocompleteExample implements OnInit {
+export class AutocompletePlainInputExample implements OnInit {
   control = new FormControl();
   streets: string[] = ['Champs-Élysées', 'Lombard Street', 'Abbey Road', 'Fifth Avenue'];
   filteredStreets: Observable<string[]>;
