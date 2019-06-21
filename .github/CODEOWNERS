@@ -53,6 +53,7 @@
 #  IgorMinar - Igor Minar
 #  jasonaden - Jason Aden
 #  jenniferfell - Jennifer Fell
+#  JiaLiPassion - Jia Li
 #  josephperrott - Joey Perrott
 #  kara - Kara Erickson
 #  kyliau - Keen Yee Liau
@@ -246,6 +247,15 @@
 #
 #   - IgorMinar
 #   - mhevery
+
+
+# ===========================================================
+#  @angular/fw-zones
+# ===========================================================
+#
+#   - JiaLiPassion
+#   - mhevery
+#   - vikerman
 
 
 # ===========================================================
@@ -729,6 +739,13 @@ testing/**                                                      @angular/fw-test
 /aio/content/examples/security/**                               @angular/fw-security @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/guide/security/**                           @angular/fw-security @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
+
+
+# ================================================
+#  zone.js
+# ================================================
+
+/packages/zone.js/**                                            @angular/fw-zones @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 # ================================================
