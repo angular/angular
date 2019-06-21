@@ -183,9 +183,6 @@
     "name": "appendChild"
   },
   {
-    "name": "applyOnCreateInstructions"
-  },
-  {
     "name": "attachPatchData"
   },
   {
@@ -694,6 +691,9 @@
   },
   {
     "name": "unwrapRNode"
+  },
+  {
+    "name": "updateRawValueOnContext"
   },
   {
     "name": "viewAttachedToChangeDetector"

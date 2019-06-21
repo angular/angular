@@ -43,7 +43,7 @@ export * from './projection';
 export * from './property';
 export * from './property_interpolation';
 export * from './select';
-export {ɵɵstyling, ɵɵstyleSanitizer, ɵɵstyleMap, ɵɵclassMap, ɵɵstyleProp, ɵɵclassProp, ɵɵstylingApply} from '../styling_next/instructions';
+export * from '../styling_next/instructions';
 export * from './text';
 export * from './text_interpolation';
 export * from './class_map_interpolation';

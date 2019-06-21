@@ -17,8 +17,6 @@ import {PropertyAliases, TContainerNode, TElementNode, TNode as ITNode, TNode, T
 import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
-import {StylingContext} from '../interfaces/styling';
-
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
 import {TStylingContext} from '../styling_next/interfaces';
 import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling_next/styling_debug';
@@ -129,9 +127,7 @@ export const TNodeConstructor = class TNode implements ITNode {
       public projectionNext: ITNode|null,                                      //
       public child: ITNode|null,                                               //
       public parent: TElementNode|TContainerNode|null,                         //
-      public stylingTemplate: StylingContext|null,                             //
       public projection: number|(ITNode|RNode[])[]|null,                       //
-      public onElementCreationFns: Function[]|null,                            //
       public styles: TStylingContext|null,                                     //
       public classes: TStylingContext|null,                                    //
       ) {}
@@ -331,7 +327,6 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
       const rawValue = lView[tNode.index];
       const native = unwrapRNode(rawValue);
       const componentLViewDebug = toDebug(readLViewValue(rawValue));
-
       const styles = isStylingContext(tNode.styles) ?
           new NodeStylingDebug(tNode.styles as any as TStylingContext, lView) :
           null;
@@ -362,7 +357,7 @@ export class LContainerDebug {
   }
   get parent(): LViewDebug|LContainerDebug|null { return toDebug(this._raw_lContainer[PARENT]); }
   get movedViews(): LView[]|null { return this._raw_lContainer[MOVED_VIEWS]; }
-  get host(): RElement|RComment|StylingContext|LView { return this._raw_lContainer[HOST]; }
+  get host(): RElement|RComment|LView { return this._raw_lContainer[HOST]; }
   get native(): RComment { return this._raw_lContainer[NATIVE]; }
   get __other__() {
     return {

@@ -7,7 +7,6 @@
  */
 import {ɵmarkDirty as markDirty} from '@angular/core';
 
-import {getPlayers} from '../../src/render3/players';
 import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getRootComponents, getViewComponent} from '../../src/render3/util/discovery_utils';
 import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/util/global_utils';
 import {global} from '../../src/util/global';
@@ -46,8 +45,6 @@ describe('global utils', () => {
     it('should publish getInjector', () => { assertPublished('getInjector', getInjector); });
 
     it('should publish markDirty', () => { assertPublished('markDirty', markDirty); });
-
-    it('should publish getPlayers', () => { assertPublished('getPlayers', getPlayers); });
   });
 });
 

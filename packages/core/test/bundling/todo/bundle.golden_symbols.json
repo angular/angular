@@ -231,6 +231,9 @@
     "name": "SkipSelf"
   },
   {
+    "name": "TEMPLATE_DIRECTIVE_INDEX"
+  },
+  {
     "name": "TNODE"
   },
   {
@@ -460,9 +463,6 @@
   },
   {
     "name": "appendChild"
-  },
-  {
-    "name": "applyOnCreateInstructions"
   },
   {
     "name": "applyStyling"
@@ -1399,6 +1399,9 @@
   },
   {
     "name": "updateLastDirectiveIndex"
+  },
+  {
+    "name": "updateRawValueOnContext"
   },
   {
     "name": "updateStyleBinding"

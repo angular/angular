@@ -9,7 +9,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, ElementRef, HostBinding, HostListener, NgModule, ɵPlayState as PlayState, ɵPlayer as Player, ɵPlayerHandler as PlayerHandler, ɵaddPlayer as addPlayer, ɵbindPlayerFactory as bindPlayerFactory, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, Directive, ElementRef, HostBinding, HostListener, NgModule, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
 
 @Directive({
   selector: '[make-color-grey]',

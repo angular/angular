@@ -13,7 +13,6 @@ import {ɵɵallocHostVars, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainer
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {StylingIndex} from '../../src/render3/interfaces/styling';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';

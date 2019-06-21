@@ -284,7 +284,7 @@ import {LView} from '../interfaces/view';
 export interface TStylingContext extends
     Array<number|string|number|boolean|null|StylingMapArray|{}> {
   /** Initial value position for static styles */
-  [TStylingContextIndex.InitialStylingValuePosition]: StylingMapArray|null;
+  [TStylingContextIndex.InitialStylingValuePosition]: StylingMapArray;
 
   /** Configuration data for the context */
   [TStylingContextIndex.ConfigPosition]: TStylingConfigFlags;

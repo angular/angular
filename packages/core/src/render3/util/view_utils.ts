@@ -12,25 +12,21 @@ import {LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
 import {TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer';
-import {StylingContext} from '../interfaces/styling';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, TData, TVIEW} from '../interfaces/view';
 
 
 
 /**
- * For efficiency reasons we often put several different data types (`RNode`, `LView`, `LContainer`,
- * `StylingContext`) in same location in `LView`. This is because we don't want to pre-allocate
- * space for it because the storage is sparse. This file contains utilities for dealing with such
- * data types.
+ * For efficiency reasons we often put several different data types (`RNode`, `LView`, `LContainer`)
+ * in same location in `LView`. This is because we don't want to pre-allocate space for it
+ * because the storage is sparse. This file contains utilities for dealing with such data types.
  *
  * How do we know what is stored at a given location in `LView`.
  * - `Array.isArray(value) === false` => `RNode` (The normal storage value)
  * - `Array.isArray(value) === true` => then the `value[0]` represents the wrapped value.
  *   - `typeof value[TYPE] === 'object'` => `LView`
  *      - This happens when we have a component at a given location
- *   - `typeof value[TYPE] === 'number'` => `StylingContext`
- *      - This happens when we have style/class binding at a given location.
  *   - `typeof value[TYPE] === true` => `LContainer`
  *      - This happens when we have `LContainer` binding at a given location.
  *
@@ -76,22 +72,6 @@ export function unwrapLContainer(value: RNode | LView | LContainer): LContainer|
   }
   return null;
 }
-
-/**
- * Returns `StylingContext` or `null` if not found.
- * @param value wrapped value of `RNode`, `LView`, `LContainer`, `StylingContext`
- */
-export function unwrapStylingContext(value: RNode | LView | LContainer | StylingContext):
-    StylingContext|null {
-  while (Array.isArray(value)) {
-    // This check is same as `isStylingContext()` but we don't call at as we don't want to call
-    // `Array.isArray()` twice and give JITer more work for inlining.
-    if (typeof value[TYPE] === 'number') return value as StylingContext;
-    value = value[HOST] as any;
-  }
-  return null;
-}
-
 
 /**
  * Retrieves an element value from the provided `viewData`, by unwrapping
