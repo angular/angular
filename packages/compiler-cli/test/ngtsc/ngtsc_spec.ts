@@ -423,6 +423,24 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('background-color: blue');
     });
 
+    it('should include generic type for ngBaseDef declarations', () => {
+      env.write('test.ts', `
+        import {Component, Input, NgModule} from '@angular/core';
+
+        export class TestBase {
+          @Input() input: any;
+        }
+    `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('i0.ɵɵdefineBase({ inputs: { input: "input" } });');
+
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents).toContain('static ngBaseDef: i0.ɵɵBaseDef<TestBase>');
+    });
+
     it('should compile NgModules without errors', () => {
       env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';

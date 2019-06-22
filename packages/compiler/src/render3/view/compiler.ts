@@ -142,6 +142,7 @@ export function compileDirectiveFromMetadata(
 
 export interface R3BaseRefMetaData {
   name: string;
+  type: o.Expression;
   typeSourceSpan: ParseSourceSpan;
   inputs?: {[key: string]: string | [string, string]};
   outputs?: {[key: string]: string};
@@ -188,7 +189,8 @@ export function compileBaseDefFromMetadata(
   }
 
   const expression = o.importExpr(R3.defineBase).callFn([definitionMap.toLiteralMap()]);
-  const type = new o.ExpressionType(o.importExpr(R3.BaseDef));
+  const type = new o.ExpressionType(
+      o.importExpr(R3.BaseDef), /* modifiers */ null, [o.expressionType(meta.type)]);
 
   return {expression, type};
 }
