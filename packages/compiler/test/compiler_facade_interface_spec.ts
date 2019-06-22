@@ -94,6 +94,10 @@ const coreR3ComponentMetadataFacade: core.R3ComponentMetadataFacade =
 const compilerR3ComponentMetadataFacade: compiler.R3ComponentMetadataFacade =
     null !as core.R3ComponentMetadataFacade;
 
+const coreR3BaseMetadataFacade: core.R3BaseMetadataFacade = null !as compiler.R3BaseMetadataFacade;
+const compilerR3BaseMetadataFacade: compiler.R3BaseMetadataFacade =
+    null !as core.R3BaseMetadataFacade;
+
 const coreViewEncapsulation: core.ViewEncapsulation = null !as compiler.ViewEncapsulation;
 const compilerViewEncapsulation: compiler.ViewEncapsulation = null !as core.ViewEncapsulation;
 
