@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
 
-import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
+import {BaseMeta, DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
 import {extractDirectiveGuards, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
 
 /**
@@ -114,6 +114,15 @@ export class DtsMetadataReader implements MetadataReader {
     }
     const name = type.literal.text;
     return {ref, name};
+  }
+
+  /**
+   * Read pipe metadata from a referenced class in a .d.ts file.
+   */
+  getBaseMetadata(ref: Reference<ClassDeclaration>): BaseMeta|null {
+    // TODO(joost): Introduce BaseDefWithMeta so that the declaration
+    // has inputs and outputs that can be resolved here
+    return null;
   }
 }
 

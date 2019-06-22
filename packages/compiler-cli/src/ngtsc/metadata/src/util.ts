@@ -12,7 +12,7 @@ import {Reference} from '../../imports';
 import {ClassDeclaration, ClassMember, ClassMemberKind, ReflectionHost, isNamedClassDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
-import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
+import {BaseMeta, DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 
 export function extractReferencesFromType(
     checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string | null,
@@ -144,9 +144,20 @@ export class CompoundMetadataReader implements MetadataReader {
     }
     return null;
   }
+
   getPipeMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): PipeMeta|null {
     for (const reader of this.readers) {
       const meta = reader.getPipeMetadata(node);
+      if (meta !== null) {
+        return meta;
+      }
+    }
+    return null;
+  }
+
+  getBaseMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): BaseMeta|null {
+    for (const reader of this.readers) {
+      const meta = reader.getBaseMetadata(node);
       if (meta !== null) {
         return meta;
       }

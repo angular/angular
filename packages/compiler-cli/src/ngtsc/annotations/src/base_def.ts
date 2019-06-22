@@ -8,12 +8,14 @@
 
 import {ConstantPool, R3BaseRefMetaData, compileBaseDefFromMetadata, makeBindingParser} from '@angular/compiler';
 
+import {Reference} from '../../imports';
+import {MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, Decorator, ReflectionHost} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {extractHostBindings, queriesFromFields} from './directive';
-import {isAngularDecorator} from './util';
+import {isAngularDecorator, readBaseClass} from './util';
 
 function containsNgTopLevelDecorator(decorators: Decorator[] | null, isCore: boolean): boolean {
   if (!decorators) {
@@ -29,7 +31,7 @@ export class BaseDefDecoratorHandler implements
     DecoratorHandler<R3BaseRefMetaData, R3BaseRefDecoratorDetection> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private isCore: boolean) {}
+      private metaRegistry: MetadataRegistry, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.WEAK;
 
@@ -144,6 +146,13 @@ export class BaseDefDecoratorHandler implements
       analysis.host = extractHostBindings(
           metadata.host, this.evaluator, this.isCore ? undefined : '@angular/core');
     }
+
+    this.metaRegistry.registerBaseMetadata({
+      ref: new Reference(node),
+      inputs: analysis.inputs || {},
+      outputs: analysis.outputs || {},
+      baseClass: readBaseClass(node, this.reflector, this.evaluator),
+    });
 
     return {analysis};
   }

@@ -7,7 +7,7 @@
  */
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, MetadataReader} from '../../metadata';
+import {BaseMeta, DirectiveMeta, MetadataReader} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 /**
@@ -29,11 +29,12 @@ export function flattenInheritedDirectiveMetadata(
   let outputs: {[key: string]: string} = {};
   let isDynamic = false;
 
-  const addMetadata = (meta: DirectiveMeta): void => {
+  const addMetadata = (meta: DirectiveMeta | BaseMeta): void => {
     if (meta.baseClass === 'dynamic') {
       isDynamic = true;
     } else if (meta.baseClass !== null) {
-      const baseMeta = reader.getDirectiveMetadata(meta.baseClass);
+      const baseMeta =
+          reader.getDirectiveMetadata(meta.baseClass) || reader.getBaseMetadata(meta.baseClass);
       if (baseMeta !== null) {
         addMetadata(baseMeta);
       } else {

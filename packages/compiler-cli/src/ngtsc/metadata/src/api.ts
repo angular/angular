@@ -71,6 +71,35 @@ export interface PipeMeta {
 }
 
 /**
+ * Metadata for an undecorated class that uses Angular decorators
+ */
+export interface BaseMeta {
+  ref: Reference<ClassDeclaration>;
+
+  /**
+   * Set of inputs which this directive claims.
+   *
+   * Goes from property names to field names.
+   */
+  inputs: {[property: string]: string | [string, string]};
+
+  /**
+   * Set of outputs which this directive claims.
+   *
+   * Goes from property names to field names.
+   */
+  outputs: {[property: string]: string};
+
+  /**
+   * A `Reference` to the base class for the directive, if one was detected.
+   *
+   * A value of `'dynamic'` indicates that while the analyzer detected that this directive extends
+   * another type, it could not statically determine the base class.
+   */
+  baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+}
+
+/**
  * Reads metadata for directives, pipes, and modules from a particular source, such as .d.ts files
  * or a registry.
  */
@@ -78,6 +107,7 @@ export interface MetadataReader {
   getDirectiveMetadata(node: Reference<ClassDeclaration>): DirectiveMeta|null;
   getNgModuleMetadata(node: Reference<ClassDeclaration>): NgModuleMeta|null;
   getPipeMetadata(node: Reference<ClassDeclaration>): PipeMeta|null;
+  getBaseMetadata(node: Reference<ClassDeclaration>): BaseMeta|null;
 }
 
 /**
@@ -87,4 +117,5 @@ export interface MetadataRegistry {
   registerDirectiveMetadata(meta: DirectiveMeta): void;
   registerNgModuleMetadata(meta: NgModuleMeta): void;
   registerPipeMetadata(meta: PipeMeta): void;
+  registerBaseMetadata(meta: BaseMeta): void;
 }

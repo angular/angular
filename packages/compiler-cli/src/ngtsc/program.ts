@@ -496,7 +496,7 @@ export class NgtscProgram implements api.Program {
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers = [
-      new BaseDefDecoratorHandler(this.reflector, evaluator, this.isCore),
+      new BaseDefDecoratorHandler(this.reflector, evaluator, metaRegistry, this.isCore),
       new ComponentDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.metaReader !, scopeRegistry, this.isCore,
           this.resourceManager, this.rootDirs, this.options.preserveWhitespaces || false,

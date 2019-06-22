@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
+import {BaseMeta, DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
 import {DependencyTracker} from '../../partial_evaluator';
 import {ClassDeclaration} from '../../reflection';
 import {ResourceDependencyRecorder} from '../../util/src/resource_recorder';
@@ -100,6 +100,15 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
     metadata.pipeMeta.set(meta.ref.node, meta);
   }
 
+  getBaseMetadata(ref: Reference<ClassDeclaration>): BaseMeta|null {
+    const metadata = this.metadata.get(ref.node.getSourceFile()) || null;
+    return metadata && metadata.baseMeta.get(ref.node) || null;
+  }
+  registerBaseMetadata(meta: BaseMeta): void {
+    const metadata = this.ensureMetadata(meta.ref.node.getSourceFile());
+    metadata.baseMeta.set(meta.ref.node, meta);
+  }
+
   recordResourceDependency(file: ts.SourceFile, resourcePath: string): void {
     const metadata = this.ensureMetadata(file);
     metadata.resourcePaths.add(resourcePath);
@@ -131,4 +140,5 @@ class FileMetadata {
   directiveMeta = new Map<ClassDeclaration, DirectiveMeta>();
   ngModuleMeta = new Map<ClassDeclaration, NgModuleMeta>();
   pipeMeta = new Map<ClassDeclaration, PipeMeta>();
+  baseMeta = new Map<ClassDeclaration, BaseMeta>();
 }

@@ -9,7 +9,7 @@
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from './api';
+import {BaseMeta, DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from './api';
 
 /**
  * A registry of directive, pipe, and module metadata for types defined in the current compilation
@@ -19,6 +19,7 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
   private directives = new Map<ClassDeclaration, DirectiveMeta>();
   private ngModules = new Map<ClassDeclaration, NgModuleMeta>();
   private pipes = new Map<ClassDeclaration, PipeMeta>();
+  private baseClasses = new Map<ClassDeclaration, BaseMeta>();
 
   getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
     return this.directives.has(ref.node) ? this.directives.get(ref.node) ! : null;
@@ -29,10 +30,14 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
   getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta|null {
     return this.pipes.has(ref.node) ? this.pipes.get(ref.node) ! : null;
   }
+  getBaseMetadata(ref: Reference<ClassDeclaration>): BaseMeta|null {
+    return this.baseClasses.has(ref.node) ? this.baseClasses.get(ref.node) ! : null;
+  }
 
   registerDirectiveMetadata(meta: DirectiveMeta): void { this.directives.set(meta.ref.node, meta); }
   registerNgModuleMetadata(meta: NgModuleMeta): void { this.ngModules.set(meta.ref.node, meta); }
   registerPipeMetadata(meta: PipeMeta): void { this.pipes.set(meta.ref.node, meta); }
+  registerBaseMetadata(meta: BaseMeta): void { this.baseClasses.set(meta.ref.node, meta); }
 }
 
 /**
@@ -56,6 +61,12 @@ export class CompoundMetadataRegistry implements MetadataRegistry {
   registerPipeMetadata(meta: PipeMeta): void {
     for (const registry of this.registries) {
       registry.registerPipeMetadata(meta);
+    }
+  }
+
+  registerBaseMetadata(meta: BaseMeta): void {
+    for (const registry of this.registries) {
+      registry.registerBaseMetadata(meta);
     }
   }
 }

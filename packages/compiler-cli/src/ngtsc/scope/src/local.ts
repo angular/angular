@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic} from '../../diagnostics';
 import {AliasGenerator, Reexport, Reference, ReferenceEmitter} from '../../imports';
-import {DirectiveMeta, LocalMetadataRegistry, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
+import {BaseMeta, DirectiveMeta, LocalMetadataRegistry, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
 
@@ -118,6 +118,8 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
   registerDirectiveMetadata(directive: DirectiveMeta): void {}
 
   registerPipeMetadata(pipe: PipeMeta): void {}
+
+  registerBaseMetadata(base: BaseMeta): void {}
 
   getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null {
     if (!this.declarationToModule.has(clazz)) {
