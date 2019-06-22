@@ -241,7 +241,7 @@ function extractBaseDefMetadata(type: Type<any>): R3BaseMetadataFacade|null {
 
   // Only generate the base def if there's any info inside it.
   if (inputs || outputs || viewQueries.length || queries.length || hasHostDecorators) {
-    return {name: type.name, inputs, outputs, viewQueries, queries, propMetadata};
+    return {name: type.name, type, inputs, outputs, viewQueries, queries, propMetadata};
   }
 
   return null;
