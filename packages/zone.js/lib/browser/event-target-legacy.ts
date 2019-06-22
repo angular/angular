@@ -52,7 +52,7 @@ export function eventTargetLegacyPatch(_global: any, api: _ZonePrivate) {
   }
 
   //  predefine all task.source string
-  for (let i = 0; i < WTF_ISSUE_555.length; i++) {
+  for (let i = 0; i < WTF_ISSUE_555_ARRAY.length; i++) {
     const target: any = WTF_ISSUE_555_ARRAY[i];
     const targets: any = globalSources[target] = {};
     for (let j = 0; j < eventNames.length; j++) {
