@@ -171,7 +171,7 @@ ts_library(
     testonly = True,
     srcs = ["npm_package/npm_package.spec.ts"],
     deps = [
-        "@npm//@types",
+        "@npm//@types/shelljs",
     ],
 )
 
