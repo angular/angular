@@ -285,6 +285,7 @@ to consider the consequences of adding and removing elements and of creating and
 
 
 {@a asterisk}
+{@a the-asterisk--prefix}
 
 <!--
 ## The asterisk (*) prefix
@@ -473,10 +474,9 @@ is a great way to learn more.
 세부 문법은 커스텀 구조 디렉티브를 구현할 때도 활용할 수 있습니다.
 [`NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")나 [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")의 소스 코드를 분석해 보는 것도 큰 도움이 될 것입니다.
 
-<!--
 {@a template-input-variable}
 
-
+<!--
 {@a template-input-variables}
 -->
 {@a 템플릿-입력-변수}
@@ -524,6 +524,7 @@ variable as the `hero` declared as `#hero`.
 템플릿 _입력_ 변수와 _참조_ 변수의 이름은 각각의 네임스페이스 안에 존재합니다. 그래서 `let hero`라고 선언했을 때의 `hero`와 `#hero`라고 선언했을 때의 `hero`는 다른 변수입니다.
 
 {@a one-per-element}
+{@a one-structural-directive-per-host-element}
 
 <!--
 ### One structural directive per host element

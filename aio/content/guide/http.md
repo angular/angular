@@ -916,6 +916,8 @@ consider moving it to a utility function or into the `PackageSearchService` itse
 
 </div>
 
+{@a intercepting-requests-and-responses}
+
 <!--
 ### Intercepting requests and responses
 -->

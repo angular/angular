@@ -186,6 +186,8 @@ if some ancestor element has the CSS class `theme-light`.
 <code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css" linenums="false">
 </code-example>
 
+{@a deprecated-deep--and-ng-deep}
+
 <!--
 ### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
 -->

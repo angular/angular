@@ -194,6 +194,8 @@ Angular versions ^4.0.0 and ^5.0.0 are no longer under support.
 Angular ^4.0.0 버전과 ^5.0.0 버전에 대한 지원은 종료되었습니다.
 
 {@a deprecation}
+{@a deprecation-practices}
+
 <!--
 ## Deprecation practices
 -->

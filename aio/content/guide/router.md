@@ -2528,7 +2528,7 @@ Accordingly, the _link parameters array_ has *two* items:  the routing _path_ an
 <!--
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array">
 -->
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (링크에 사용된 배열 형태의 인자)" region="link-parameters-array">
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (링크에 사용된 배열 형태의 인자)" region="link-parameters-array">
 
 </code-example>
 
@@ -2803,6 +2803,8 @@ Feel free to unsubscribe anyway. It is harmless and never a bad practice.
 
 {@a snapshot}
 
+{@a snapshot-the-no-observable-alternative}
+
 <!--
 #### _Snapshot_: the _no-observable_ alternative
 -->
@@ -2973,7 +2975,7 @@ When navigating to the `HeroDetailComponent` you specified the _required_ `id` o
 <!--
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array">
 -->
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (링크 변수 배열)" region="link-parameters-array">
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (링크 변수 배열)" region="link-parameters-array">
 
 </code-example>
 
@@ -6511,6 +6513,8 @@ any legal sequence of route paths, (required) router parameters, and (optional) 
 
 
 {@a location-strategy}
+
+{@a appendix-locationstrategy-and-browser-url-styles}
 
 
 <!--

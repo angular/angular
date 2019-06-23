@@ -180,15 +180,13 @@ Here's `forRoot()` that takes a `UserServiceConfig` object:
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-Lastly, call it within the `imports` list of the `AppModule`.
--->
-이제 이 `forRoot()` 메소드는 `AppModule`의 `imports`에 다음과 같이 사용합니다.
-=======
 Lastly, call it within the `imports` list of the `AppModule`. In the following
 snippet, other parts of the file are left out. For the complete file, see the <live-example name="ngmodules"></live-example>, or continue to the next section of this document.
->>>>>>> 3f98ac19e3176db5f23b8c4482dd04c7d65cbb41
+-->
+이제 이 `forRoot()` 메소드는 `AppModule`의 `imports`에 다음과 같이 사용합니다.
+Lastly, call it within the `imports` list of the `AppModule`.
+In the following snippet, other parts of the file are left out. For the complete file, see the <live-example name="ngmodules"></live-example>, or continue to the next section of this document.
 
 <code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" header="src/app/app.module.ts (imports)" linenums="false">
 

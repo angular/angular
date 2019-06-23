@@ -135,6 +135,8 @@ You can update your workspace schema file to set a different default for a sub-c
 
 {@a architect}
 
+{@a project-tool-configuration-options}
+
 <!--
 ## Project tool configuration options
 -->

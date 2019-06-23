@@ -235,6 +235,7 @@ Open `src/styles.css` and add the code below to the file.
 -->
 `src/styles.css` 파일을 열고 아래에 다음 코드를 추가합니다.
 
+<!--
 <code-example path="toh-pt0/src/styles.1.css" header="src/styles.css (excerpt)">
 -->
 <code-example path="toh-pt0/src/styles.1.css" header="src/styles.css (일부)">

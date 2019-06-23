@@ -81,6 +81,7 @@ Begin with the first form of data binding&mdash;interpolation&mdash;to see how m
 {@a interpolation}
 {@a 문자열-바인딩}
 
+
 <!--
 ## Interpolation and Template Expressions
 -->
@@ -179,6 +180,8 @@ option in the `Component` metadata.
 `Component` 메타데이터에 [interpolation](api/core/Component#interpolation) 옵션을 지정하면 `{{`와 `}}` 대신 다른 표기법을 사용할 수 있습니다.
 
 </div>
+
+{@a template-expressions}
 
 <!--
 ### Template expressions
@@ -1265,6 +1268,8 @@ Such inputs map to the directive's own properties.
 If the name fails to match a property of a known directive or element, Angular reports an “unknown directive” error.
 -->
 디렉티브나 엘리먼트에서 프로퍼티 이름을 찾지 못하면 “unknown directive” 에러가 발생합니다.
+
+{@a avoid-side-effects}
 
 <!--
 ### Avoid side effects
@@ -2881,6 +2886,8 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 
 {@a template-reference-variable}
 
+{@a template-reference-variables--var-}
+
 {@a ref-vars}
 
 {@a ref-var}
@@ -3415,9 +3422,8 @@ The generated output would look something like this
 
 <hr/>
 
-<!--
 {@a safe-navigation-operator}
--->
+
 {@a 안전-참조-연산자}
 
 <!--
