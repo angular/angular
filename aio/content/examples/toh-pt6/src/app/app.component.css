@@ -11,6 +11,7 @@ h2 {
 nav a {
   padding: 5px 10px;
   text-decoration: none;
+  margin-right: 10px;
   margin-top: 10px;
   display: inline-block;
   background-color: #eee;
