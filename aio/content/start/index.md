@@ -204,6 +204,12 @@ You might have noticed that the product list component also defines a `products`
 
 We're going to create a new alert feature. The alert feature will take a product as an input. It will then check the product's price, and, if the price is greater than $700, it will display a "Notify Me" button that lets users sign up for notifications when the product goes on sale. 
 
+<div class="alert is-helpful">
+
+Learn more: This manual uses StackBlitz Generator for simplification. Take a look at [Angular CLI](cli) to get an overview of our CLI commands.
+
+</div>
+
 1. Create a new product alerts component. 
 
     1. Right click on the `app` folder and use the `Angular Generator` to generate a new component named `product-alerts`.
