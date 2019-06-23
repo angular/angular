@@ -75,7 +75,6 @@ describe('compiler compliance: template', () => {
           const $middle1$ = $i0$.ɵɵnextContext().$implicit;
           const $outer1$ = $i0$.ɵɵnextContext().$implicit;
           const $myComp1$ = $i0$.ɵɵnextContext();
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("title", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component));
           $r3$.ɵɵselect(1);
           $i0$.ɵɵtextInterpolate1(" ", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component), " ");
@@ -113,7 +112,6 @@ describe('compiler compliance: template', () => {
           $i0$.ɵɵtemplate(0, MyComponent_ul_0_Template, 2, 1, "ul", $c0$);
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("ngForOf", ctx.items);
         }
       }`;
@@ -170,11 +168,62 @@ describe('compiler compliance: template', () => {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", $t0_attrs$);
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵproperty("ngForOf", ctx._data);
           }
         }
         `;
+
+    const result = compile(files, angularFiles);
+
+    expectEmit(result.source, template, 'Incorrect template');
+  });
+
+  it('should correctly bind to implicit receiver in template', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-component',
+            template: \`
+              <div *ngIf="true" (click)="greet(this)"></div>
+              <div *ngIf="true" [id]="this"></div>
+            \`
+          })
+          export class MyComponent {
+            greet(val: any) {} 
+          }
+
+          @NgModule({declarations: [MyComponent]})
+          export class MyModule {}
+        `
+      }
+    };
+
+    const template = `
+      function MyComponent_div_0_Template(rf, ctx) {
+        if (rf & 1) {
+          const $_r2$ = i0.ɵɵgetCurrentView();
+          $r3$.ɵɵelementStart(0, "div", $_c1$);
+          $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener($event) {
+            i0.ɵɵrestoreView($_r2$);
+            const $ctx_r1$ = i0.ɵɵnextContext();
+            return $ctx_r1$.greet($ctx_r1$);
+          });
+          $r3$.ɵɵelementEnd();
+        }
+      }
+      // ...
+      function MyComponent_div_1_Template(rf, ctx) {
+        if (rf & 1) {
+          $r3$.ɵɵelement(0, "div", $_c3$);
+        } if (rf & 2) {
+          const $ctx_0$ = i0.ɵɵnextContext();
+          $r3$.ɵɵproperty("id", $ctx_0$);
+        }
+      }
+    `;
 
     const result = compile(files, angularFiles);
 
@@ -224,7 +273,6 @@ describe('compiler compliance: template', () => {
           $i0$.ɵɵtemplate(0, MyComponent_span_0_Template, 2, 2, "span", _c0);
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("ngForOf", ctx.items);
         }
       }`;
@@ -295,7 +343,6 @@ describe('compiler compliance: template', () => {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", $c0$);
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("ngForOf", ctx.items);
         }
       }`;
@@ -378,7 +425,6 @@ describe('compiler compliance: template', () => {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", $c0$);
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("ngForOf", ctx.items);
         }
       }`;
@@ -425,7 +471,6 @@ describe('compiler compliance: template', () => {
           $i0$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", $c0$);
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("boundAttr", ctx.b);
         }
       }`;
@@ -716,7 +761,6 @@ describe('compiler compliance: template', () => {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", $c0$);
           $i0$.ɵɵpipe(1, "pipe");
         } if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("ngIf", $i0$.ɵɵpipeBind1(1, 1, ctx.val));
         }
       }`;

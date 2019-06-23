@@ -14,23 +14,23 @@ if [[ $? != 0 ]]; then exit 1; fi
 # Did it add the appropriate build markers?
 
   # - esm2015
-  grep '"__processed_by_ivy_ngcc__":[^}]*"esm2015":"' node_modules/@angular/common/package.json
+  cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"esm2015": "'
   if [[ $? != 0 ]]; then exit 1; fi
 
   # - fesm2015
-  grep '"__processed_by_ivy_ngcc__":[^}]*"fesm2015":"' node_modules/@angular/common/package.json
+  cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"fesm2015": "'
   if [[ $? != 0 ]]; then exit 1; fi
-  grep '"__processed_by_ivy_ngcc__":[^}]*"es2015":"' node_modules/@angular/common/package.json
+  cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"es2015": "'
   if [[ $? != 0 ]]; then exit 1; fi
 
   # - esm5
-  grep '"__processed_by_ivy_ngcc__":[^}]*"esm5":"' node_modules/@angular/common/package.json
+  cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"esm5": "'
   if [[ $? != 0 ]]; then exit 1; fi
 
   # - fesm5
-  grep '"__processed_by_ivy_ngcc__":[^}]*"module":"' node_modules/@angular/common/package.json
+  cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"module": "'
   if [[ $? != 0 ]]; then exit 1; fi
-  grep '"__processed_by_ivy_ngcc__":[^}]*"fesm5":"' node_modules/@angular/common/package.json
+  cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"fesm5": "'
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it replace the PRE_R3 markers correctly?
@@ -60,6 +60,12 @@ if [[ $? != 0 ]]; then exit 1; fi
   if [[ $? != 0 ]]; then exit 1; fi
   grep "const ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table.es5.js
   if [[ $? != 0 ]]; then exit 1; fi
+
+# Did it generate a base definition for undecorated classes with inputs and view queries?
+grep "_MatMenuBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ inputs: {" node_modules/@angular/material/esm2015/menu.js
+if [[ $? != 0 ]]; then exit 1; fi
+grep "_MatMenuBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ inputs: {" node_modules/@angular/material/esm5/menu.es5.js
+if [[ $? != 0 ]]; then exit 1; fi
 
 # Can it be safely run again (as a noop)?
 # And check that it logged skipping compilation as expected

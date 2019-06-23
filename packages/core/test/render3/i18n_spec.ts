@@ -8,13 +8,14 @@
 
 import {noop} from '../../../compiler/src/render3/view/util';
 import {getTranslationForTemplate, ɵɵi18nAttributes, ɵɵi18nPostprocess, ɵɵi18nStart} from '../../src/render3/i18n';
-import {ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/all';
+import {setDelayProjection, ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/all';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
 import {TemplateFixture} from './render_util';
 
 describe('Runtime i18n', () => {
+  afterEach(() => { setDelayProjection(false); });
   describe('getTranslationForTemplate', () => {
     it('should crop messages for the selected template', () => {
       let message = `simple text`;

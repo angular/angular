@@ -276,13 +276,50 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   get attributes(): {[key: string]: string | null;} {
     const attributes: {[key: string]: string | null;} = {};
     const element = this.nativeElement;
-    if (element) {
-      const eAttrs = element.attributes;
-      for (let i = 0; i < eAttrs.length; i++) {
-        const attr = eAttrs[i];
+
+    if (!element) {
+      return attributes;
+    }
+
+    const context = loadLContext(element);
+    const lView = context.lView;
+    const tNodeAttrs = (lView[TVIEW].data[context.nodeIndex] as TNode).attrs;
+    const lowercaseTNodeAttrs: string[] = [];
+
+    // For debug nodes we take the element's attribute directly from the DOM since it allows us
+    // to account for ones that weren't set via bindings (e.g. ViewEngine keeps track of the ones
+    // that are set through `Renderer2`). The problem is that the browser will lowercase all names,
+    // however since we have the attributes already on the TNode, we can preserve the case by going
+    // through them once, adding them to the `attributes` map and putting their lower-cased name
+    // into an array. Afterwards when we're going through the native DOM attributes, we can check
+    // whether we haven't run into an attribute already through the TNode.
+    if (tNodeAttrs) {
+      let i = 0;
+      while (i < tNodeAttrs.length) {
+        const attrName = tNodeAttrs[i];
+
+        // Stop as soon as we hit a marker. We only care about the regular attributes. Everything
+        // else will be handled below when we read the final attributes off the DOM.
+        if (typeof attrName !== 'string') break;
+
+        const attrValue = tNodeAttrs[i + 1];
+        attributes[attrName] = attrValue as string;
+        lowercaseTNodeAttrs.push(attrName.toLowerCase());
+
+        i += 2;
+      }
+    }
+
+    const eAttrs = element.attributes;
+    for (let i = 0; i < eAttrs.length; i++) {
+      const attr = eAttrs[i];
+      // Make sure that we don't assign the same attribute both in its
+      // case-sensitive form and the lower-cased one from the browser.
+      if (lowercaseTNodeAttrs.indexOf(attr.name) === -1) {
         attributes[attr.name] = attr.value;
       }
     }
+
     return attributes;
   }
 

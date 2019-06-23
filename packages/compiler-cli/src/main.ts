@@ -24,7 +24,8 @@ export function main(
     args: string[], consoleError: (s: string) => void = console.error,
     config?: NgcParsedConfiguration, customTransformers?: api.CustomTransformers, programReuse?: {
       program: api.Program | undefined,
-    }): number {
+    },
+    modifiedResourceFiles?: Set<string>): number {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
@@ -45,7 +46,7 @@ export function main(
     options,
     emitFlags,
     oldProgram,
-    emitCallback: createEmitCallback(options), customTransformers
+    emitCallback: createEmitCallback(options), customTransformers, modifiedResourceFiles
   });
   if (programReuse !== undefined) {
     programReuse.program = program;

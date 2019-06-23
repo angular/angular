@@ -1,0 +1,370 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle")
+load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//:__pkg__"])
+
+exports_files([
+    "assets/sample.json",
+    "assets/worker.js",
+    "assets/import.html",
+])
+
+ts_library(
+    name = "common_spec_env",
+    testonly = True,
+    srcs = [
+        "test-env-setup-jasmine.ts",
+        "test_fake_polyfill.ts",
+        "wtf_mock.ts",
+    ],
+    deps = [
+        "//packages/zone.js/lib",
+    ],
+)
+
+ts_library(
+    name = "common_spec_srcs",
+    testonly = True,
+    srcs = glob(
+        [
+            "common/*.ts",
+            "zone-spec/*.ts",
+            "rxjs/*.ts",
+        ],
+        exclude = [
+            "common/Error.spec.ts",
+        ],
+    ),
+    deps = [
+        ":common_spec_util",
+        "//packages/zone.js/lib",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "common_spec_util",
+    testonly = True,
+    srcs = ["test-util.ts"],
+    deps = [
+        "//packages/zone.js/lib",
+    ],
+)
+
+ts_library(
+    name = "error_spec_srcs",
+    testonly = True,
+    srcs = [
+        "common/Error.spec.ts",
+    ],
+    deps = [
+        ":common_spec_util",
+        "//packages/zone.js/lib",
+    ],
+)
+
+ts_library(
+    name = "test_node_lib",
+    testonly = True,
+    srcs = glob(["node/*.ts"]) + [
+        "node-env-setup.ts",
+        "node_entry_point.ts",
+        "node_entry_point_no_patch_clock.ts",
+        "test-env-setup-jasmine-no-patch-clock.ts",
+    ],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_srcs",
+        ":common_spec_util",
+        "//packages/zone.js/lib",
+        "@npm//@types/shelljs",
+        "@npm//@types/systemjs",
+        "@npm//rxjs",
+        "@npm//shelljs",
+        "@npm//systemjs",
+    ],
+)
+
+ts_library(
+    name = "bluebird_spec",
+    testonly = True,
+    srcs = [
+        "extra/bluebird.spec.ts",
+        "node_bluebird_entry_point.ts",
+    ],
+    deps = [
+        ":common_spec_env",
+        "//packages/zone.js/lib",
+        "@npm//bluebird",
+    ],
+)
+
+ts_library(
+    name = "error_spec",
+    testonly = True,
+    srcs = [
+        "node_error_disable_policy_entry_point.ts",
+        "node_error_entry_point.ts",
+        "node_error_lazy_policy_entry_point.ts",
+    ],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_util",
+        ":error_spec_srcs",
+        "//packages/zone.js/lib",
+    ],
+)
+
+jasmine_node_test(
+    name = "test_node",
+    bootstrap = [
+        "angular/packages/zone.js/test/node_entry_point.js",
+    ],
+    deps = [
+        ":test_node_lib",
+    ],
+)
+
+jasmine_node_test(
+    name = "test_node_no_jasmine_clock",
+    bootstrap = [
+        "angular/packages/zone.js/test/node_entry_point_no_patch_clock.js",
+    ],
+    deps = [
+        ":test_node_lib",
+    ],
+)
+
+jasmine_node_test(
+    name = "test_node_bluebird",
+    bootstrap = [
+        "angular/packages/zone.js/test/node_bluebird_entry_point.js",
+    ],
+    deps = [
+        ":bluebird_spec",
+    ],
+)
+
+jasmine_node_test(
+    name = "test_node_error_disable_policy",
+    bootstrap = [
+        "angular/packages/zone.js/test/node_error_disable_policy_entry_point.js",
+    ],
+    deps = [
+        ":error_spec",
+    ],
+)
+
+jasmine_node_test(
+    name = "test_node_error_lazy_policy",
+    bootstrap = [
+        "angular/packages/zone.js/test/node_error_lazy_policy_entry_point.js",
+    ],
+    deps = [
+        ":error_spec",
+    ],
+)
+
+ts_library(
+    name = "npm_package_spec_lib",
+    testonly = True,
+    srcs = ["npm_package/npm_package.spec.ts"],
+    deps = [
+        "@npm//@types",
+    ],
+)
+
+jasmine_node_test(
+    name = "test_npm_package",
+    srcs = [":npm_package_spec_lib"],
+    data = [
+        "//packages/zone.js:npm_package",
+        "@npm//shelljs",
+    ],
+)
+
+ts_library(
+    name = "test_browser_lib",
+    testonly = True,
+    srcs = glob(["browser/*.ts"]) + [
+        "extra/cordova.spec.ts",
+        "mocha-patch.spec.ts",
+        "jasmine-patch.spec.ts",
+        "common_tests.ts",
+        "browser_entry_point.ts",
+    ],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_srcs",
+        ":common_spec_util",
+        ":error_spec_srcs",
+        "//packages/zone.js/lib",
+        "@npm//@types/shelljs",
+        "@npm//@types/systemjs",
+        "@npm//rxjs",
+        "@npm//shelljs",
+        "@npm//systemjs",
+    ],
+)
+
+ts_library(
+    name = "browser_env_setup",
+    testonly = True,
+    srcs = [
+        "browser-env-setup.ts",
+        "browser_symbol_setup.ts",
+    ],
+    deps = [
+        ":common_spec_env",
+    ],
+)
+
+rollup_bundle(
+    name = "browser_test_env_setup_rollup",
+    testonly = True,
+    entry_point = ":browser-env-setup.ts",
+    deps = [
+        ":browser_env_setup",
+    ],
+)
+
+filegroup(
+    name = "browser_test_env_setup_rollup.es5",
+    testonly = True,
+    srcs = [":browser_test_env_setup_rollup"],
+    output_group = "umd",
+)
+
+rollup_bundle(
+    name = "browser_test_rollup",
+    testonly = True,
+    entry_point = ":browser_entry_point.ts",
+    globals = {
+        "electron": "electron",
+    },
+    deps = [
+        ":test_browser_lib",
+    ],
+)
+
+filegroup(
+    name = "browser_test_rollup.es5",
+    testonly = True,
+    srcs = [":browser_test_rollup"],
+    output_group = "umd",
+)
+
+genrule(
+    name = "browser_test_trim_map",
+    testonly = True,
+    srcs = [
+        ":browser_test_rollup.es5",
+    ],
+    outs = [
+        "browser_test_rollup_trim_map.js",
+    ],
+    cmd = " && ".join([
+        "cp $(@D)/browser_test_rollup.umd.js $@",
+    ]),
+)
+
+genrule(
+    name = "browser_test_env_setup_trim_map",
+    testonly = True,
+    srcs = [
+        ":browser_test_env_setup_rollup.es5",
+    ],
+    outs = [
+        "browser_test_env_setup_rollup_trim_map.js",
+    ],
+    cmd = " && ".join([
+        "cp $(@D)/browser_test_env_setup_rollup.umd.js $@",
+    ]),
+)
+
+_karma_test_required_dist_files = [
+    "//packages/zone.js/dist:task-tracking-dist-dev-test",
+    "//packages/zone.js/dist:wtf-dist-dev-test",
+    "//packages/zone.js/dist:webapis-notification-dist-dev-test",
+    "//packages/zone.js/dist:webapis-media-query-dist-dev-test",
+    "//packages/zone.js/dist:zone-patch-canvas-dist-dev-test",
+    "//packages/zone.js/dist:zone-patch-fetch-dist-dev-test",
+    "//packages/zone.js/dist:zone-patch-resize-observer-dist-dev-test",
+    "//packages/zone.js/dist:zone-patch-user-media-dist-dev-test",
+    ":browser_test_trim_map",
+]
+
+karma_web_test_suite(
+    name = "karma_jasmine_test",
+    srcs = [
+        "fake_entry.js",
+    ],
+    bootstrap = [
+        ":browser_test_env_setup_trim_map",
+        "//packages/zone.js/dist:zone-testing-bundle-dist-dev-test",
+    ] + _karma_test_required_dist_files,
+    static_files = [
+        ":assets/sample.json",
+        ":assets/worker.js",
+        ":assets/import.html",
+    ],
+    tags = ["zone_karma_test"],
+    runtime_deps = [
+        "@npm//karma-browserstack-launcher",
+    ],
+)
+
+karma_web_test_suite(
+    name = "karma_jasmine_evergreen_test",
+    srcs = [
+        "fake_entry.js",
+    ],
+    bootstrap = [
+        ":browser_test_env_setup_trim_map",
+        "//packages/zone.js/dist:zone-evergreen-dist-dev-test",
+        "//packages/zone.js/dist:zone-testing-dist-dev-test",
+    ] + _karma_test_required_dist_files,
+    data = [
+        "//:browser-providers.conf.js",
+        "//tools:jasmine-seed-generator.js",
+    ],
+    static_files = [
+        ":assets/sample.json",
+        ":assets/worker.js",
+        ":assets/import.html",
+    ],
+    tags = ["zone_karma_test"],
+    runtime_deps = [
+        "@npm//karma-browserstack-launcher",
+    ],
+)
+
+karma_web_test_suite(
+    name = "karma_jasmine_test_ci",
+    srcs = [
+        "fake_entry.js",
+    ],
+    bootstrap = [
+        ":saucelabs.js",
+        ":browser_test_env_setup_trim_map",
+        "//packages/zone.js/dist:zone-testing-bundle-dist-test",
+    ] + _karma_test_required_dist_files,
+    config_file = "//:karma-js.conf.js",
+    configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
+    data = [
+        "//:browser-providers.conf.js",
+        "//tools:jasmine-seed-generator.js",
+    ],
+    static_files = [
+        ":assets/sample.json",
+        ":assets/worker.js",
+        ":assets/import.html",
+    ],
+    tags = ["zone_karma_test"],
+    # Visible to //:test_web_all target
+    visibility = ["//:__pkg__"],
+    runtime_deps = [
+        "@npm//karma-browserstack-launcher",
+    ],
+)

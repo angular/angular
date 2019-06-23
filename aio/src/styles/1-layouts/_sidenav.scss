@@ -6,7 +6,7 @@
 aio-nav-menu {
   display: block;
   margin: 0 auto;
-  font-size: 13px;
+  @include font-size(13);
   ul, a {
     padding: 0;
     margin: 0;
@@ -28,7 +28,7 @@ mat-sidenav.mat-sidenav.sidenav {
   left: 0;
   padding: 0;
   min-width: 260px;
-  background-color: $offwhite;
+  background-color: $white;
   box-shadow: 6px 0 6px rgba(0,0,0,0.10);
 
   &.collapsed {
@@ -46,6 +46,11 @@ mat-sidenav-container.sidenav-container {
   &.has-floating-toc {
     max-width: 82%;
   }
+}
+
+mat-sidenav-container.sidenav-container.mat-drawer-container.mat-sidenav-container,
+mat-sidenav-container .sidenav-content {
+  background-color: $white;
 }
 
 mat-sidenav-container div.mat-sidenav-content {
@@ -132,7 +137,7 @@ button.vertical-menu-item {
 
 .level-1 {
   font-family: $main-font;
-  font-size: 14px;
+  @include font-size(14);
   font-weight: 400;
   margin-left: 14px;
   transition: background-color 0.2s;
@@ -142,7 +147,7 @@ button.vertical-menu-item {
 .level-2 {
   color: $mediumgray;
   font-family: $main-font;
-  font-size: 14px;
+  @include font-size(14);
   font-weight: 400;
   margin-left: 12px;
   text-transform: none;
@@ -151,7 +156,7 @@ button.vertical-menu-item {
 .level-3 {
   color: $mediumgray;
   font-family: $main-font;
-  font-size: 14px;
+  @include font-size(14);
   margin-left: 10px;
 }
 
@@ -190,7 +195,7 @@ mat-sidenav .doc-version {
 
     option {
       font-family: $main-font;
-      font-size: 14px;
+      @include font-size(14);
     }
   }
 }

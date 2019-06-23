@@ -1,0 +1,11 @@
+{
+  "name": "@angular/upgrade/static/testing",
+  "main": "../../bundles/upgrade-static-testing.umd.js",
+  "module": "../../fesm5/static/testing.js",
+  "es2015": "../../fesm2015/static/testing.js",
+  "esm5": "../../esm5/static/testing/testing.js",
+  "esm2015": "../../esm2015/static/testing/testing.js",
+  "fesm5": "../../fesm5/static/testing.js",
+  "fesm2015": "../../fesm2015/static/testing.js",
+  "typings": "./testing.d.ts"
+}

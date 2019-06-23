@@ -316,7 +316,6 @@ describe('compiler compliance', () => {
             $r3$.ɵɵelement(0, "div", $e0_attrs$);
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
             $r3$.ɵɵproperty("id", ctx.id);
           }
         }
@@ -362,7 +361,6 @@ describe('compiler compliance', () => {
       // `$r3$.ɵɵproperty("ternary", (ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$));`
       ///////////////
 
-      const $e0_attrs$ = [];
       const factory =
           'factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
@@ -372,11 +370,7 @@ describe('compiler compliance', () => {
             $r3$.ɵɵpipe(1,"pipe");
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
-            $r3$.ɵɵproperty("ternary", ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$);
-            $r3$.ɵɵproperty("pipe", $r3$.ɵɵpipeBind3(1, 4, ctx.value, 1, 2));
-            $r3$.ɵɵproperty("and", ctx.cond && $r3$.ɵɵpureFunction1(10, $c0$, ctx.b));
-            $r3$.ɵɵproperty("or", ctx.cond || $r3$.ɵɵpureFunction1(12, $c0$, ctx.c));
+            $r3$.ɵɵproperty("ternary", ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$)("pipe", $r3$.ɵɵpipeBind3(1, 4, ctx.value, 1, 2))("and", ctx.cond && $r3$.ɵɵpureFunction1(10, $c0$, ctx.b))("or", ctx.cond || $r3$.ɵɵpureFunction1(12, $c0$, ctx.c));
           }
         }
       `;
@@ -444,19 +438,17 @@ describe('compiler compliance', () => {
             $r3$.ɵɵallocHostVars(14);
           }
           if (rf & 2) {
-            $r3$.ɵɵcomponentHostSyntheticProperty(elIndex, "@expansionHeight",
-              $r3$.ɵɵbind(
+            $r3$.ɵɵupdateSyntheticHostBinding("@expansionHeight",
                 $r3$.ɵɵpureFunction2(5, $_c1$, ctx.getExpandedState(),
                   $r3$.ɵɵpureFunction2(2, $_c0$, ctx.collapsedHeight, ctx.expandedHeight)
                 )
-              ), null, true
+              , null, true
             );
-            $r3$.ɵɵcomponentHostSyntheticProperty(elIndex, "@expansionWidth",
-              $r3$.ɵɵbind(
+            $r3$.ɵɵupdateSyntheticHostBinding("@expansionWidth",
                 $r3$.ɵɵpureFunction2(11, $_c1$, ctx.getExpandedState(),
                   $r3$.ɵɵpureFunction2(8, $_c2$, ctx.collapsedWidth, ctx.expandedWidth)
                 )
-              ), null, true
+              , null, true
             );
           }
         },
@@ -506,7 +498,6 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵelementEnd();
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
                 $r3$.ɵɵstyleProp(0, ctx.color);
                 $r3$.ɵɵclassProp(0, ctx.error);
                 $r3$.ɵɵstylingApply();
@@ -888,7 +879,6 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵelement(0, "my-comp", $e0_attrs$);
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
                 $r3$.ɵɵproperty("names", $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.customName));
               }
             },
@@ -971,7 +961,6 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵelement(0, "my-comp", $e0_attr$);
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
                 $r3$.ɵɵproperty("names",
                     $r3$.ɵɵpureFunctionV(1, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8]));
               }
@@ -1035,7 +1024,6 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵelement(0, "object-comp", $e0_attrs$);
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
                 $r3$.ɵɵproperty("config", $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.name));
               }
             },
@@ -1104,7 +1092,6 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵelement(0, "nested-comp", $e0_attrs$);
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
                 $r3$.ɵɵproperty(
                     "config",
                     $r3$.ɵɵpureFunction2(5, $e0_ff_2$, ctx.name, $r3$.ɵɵpureFunction1(3, $e0_ff_1$, $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.duration))));
@@ -1316,7 +1303,6 @@ describe('compiler compliance', () => {
               $r3$.ɵɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
             }
             if (rf & 2) {
-              $r3$.ɵɵselect(0);
               $r3$.ɵɵproperty("ngIf", ctx.visible);
               $r3$.ɵɵselect(1);
               $r3$.ɵɵproperty("ngIf", ctx.visible);
@@ -2121,7 +2107,6 @@ describe('compiler compliance', () => {
                   $r3$.ɵɵelementEnd();
                 }
                 if (rf & 2) {
-                  $r3$.ɵɵselect(0);
                   $r3$.ɵɵtextInterpolate($r3$.ɵɵpipeBind2(1, 3, $r3$.ɵɵpipeBind2(2, 6, ctx.name, ctx.size), ctx.size));
                   $r3$.ɵɵselect(4);
                   $r3$.ɵɵtextInterpolate2("", $r3$.ɵɵpipeBindV(5, 9, $r3$.ɵɵpureFunction1(18, $c0$, ctx.name)), " ", ctx.name ? 1 : $r3$.ɵɵpipeBind1(6, 16, 2), "");
@@ -2186,7 +2171,6 @@ describe('compiler compliance', () => {
                   $r3$.ɵɵpipe(5, "myPipe");
                 }
                 if (rf & 2) {
-                  $r3$.ɵɵselect(0);
                   $r3$.ɵɵtextInterpolate5(
                     "0:", i0.ɵɵpipeBind1(1, 5, ctx.name),
                     "1:", i0.ɵɵpipeBind2(2, 7, ctx.name, 1),
@@ -2414,7 +2398,6 @@ describe('compiler compliance', () => {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 1, "div", $c0$);
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("ngForOf", ctx.items);
         }
       }`;
@@ -2495,7 +2478,6 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵelement(1, "lifecycle-comp", $e1_attrs$);
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
                 $r3$.ɵɵproperty("name", ctx.name1);
                 $r3$.ɵɵselect(1);
                 $r3$.ɵɵproperty("name", ctx.name2);
@@ -2933,6 +2915,28 @@ describe('compiler compliance', () => {
 
       expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ngDirectiveDef');
     });
+
+    it('should not throw for empty property bindings on ng-template', () => {
+      const files = {
+        app: {
+          'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-app',
+            template: '<ng-template [id]=""></ng-template>'
+          })
+          export class MyComponent {
+          }
+
+          @NgModule({declarations: [MyComponent]})
+          export class MyModule {}`
+        }
+      };
+
+      expect(() => compile(files, angularFiles)).not.toThrow();
+    });
+
 
   });
 

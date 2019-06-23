@@ -40,7 +40,7 @@ export interface InjectableDecorator {
    *
    * The following example shows how service classes are properly marked as
    * injectable.
-   *Z
+   *
    * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"></code-example>
    *
    */
@@ -90,6 +90,7 @@ function render2CompileInjectable(
     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
   if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
     injectableType.ngInjectableDef = ɵɵdefineInjectable({
+      token: injectableType,
       providedIn: options.providedIn,
       factory: convertInjectableProviderToFactory(injectableType, options),
     });

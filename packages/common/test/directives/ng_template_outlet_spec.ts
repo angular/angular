@@ -204,6 +204,20 @@ describe('NgTemplateOutlet', () => {
     fixture.componentInstance.value = 'baz';
     detectChangesAndExpectText('');
   });
+
+  // https://github.com/angular/angular/issues/30801
+  it('should not throw if the context is left blank', () => {
+    const template = `
+      <ng-template #testTemplate>test</ng-template>
+      <ng-template [ngTemplateOutlet]="testTemplate" [ngTemplateOutletContext]=""></ng-template>
+    `;
+
+    expect(() => {
+      fixture = createTestComponent(template);
+      detectChangesAndExpectText('test');
+    }).not.toThrow();
+  });
+
 });
 
 @Injectable()

@@ -15,7 +15,7 @@ import {assertDefined, assertEqual} from '../util/assert';
 
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
-import {DirectiveDef} from './interfaces/definition';
+import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
@@ -481,8 +481,8 @@ function searchTokensOnInjector<T>(
   // on the host element node.
   const isHostSpecialCase = (flags & InjectFlags.Host) && hostTElementNode === tNode;
 
-  const injectableIdx =
-      locateDirectiveOrProvider(tNode, lView, token, canAccessViewProviders, isHostSpecialCase);
+  const injectableIdx = locateDirectiveOrProvider(
+      tNode, currentTView, token, canAccessViewProviders, isHostSpecialCase);
   if (injectableIdx !== null) {
     return getNodeInjectable(currentTView.data, lView, injectableIdx, tNode as TElementNode);
   } else {
@@ -494,16 +494,15 @@ function searchTokensOnInjector<T>(
  * Searches for the given token among the node's directives and providers.
  *
  * @param tNode TNode on which directives are present.
- * @param lView The view we are currently processing
+ * @param tView The tView we are currently processing
  * @param token Provider token or type of a directive to look for.
  * @param canAccessViewProviders Whether view providers should be considered.
  * @param isHostSpecialCase Whether the host special case applies.
  * @returns Index of a found directive or provider, or null when none found.
  */
 export function locateDirectiveOrProvider<T>(
-    tNode: TNode, lView: LView, token: Type<T>| InjectionToken<T>, canAccessViewProviders: boolean,
+    tNode: TNode, tView: TView, token: Type<T>| InjectionToken<T>, canAccessViewProviders: boolean,
     isHostSpecialCase: boolean | number): number|null {
-  const tView = lView[TVIEW];
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
 
@@ -637,7 +636,7 @@ export class NodeInjector implements Injector {
 /**
  * @codeGenApi
  */
-export function ɵɵgetFactoryOf<T>(type: Type<any>): ((type: Type<T>| null) => T)|null {
+export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
   const typeAny = type as any;
   const def = getComponentDef<T>(typeAny) || getDirectiveDef<T>(typeAny) ||
       getPipeDef<T>(typeAny) || getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);

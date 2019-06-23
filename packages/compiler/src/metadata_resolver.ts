@@ -907,7 +907,7 @@ export class CompileMetadataResolver {
       let isOptional = false;
       let token: any = null;
       if (Array.isArray(param)) {
-        param.forEach((paramEntry) => {
+        param.forEach((paramEntry: any) => {
           if (createHost.isTypeOf(paramEntry)) {
             isHost = true;
           } else if (createSelf.isTypeOf(paramEntry)) {
@@ -918,11 +918,12 @@ export class CompileMetadataResolver {
             isOptional = true;
           } else if (createAttribute.isTypeOf(paramEntry)) {
             isAttribute = true;
-            token = paramEntry.attributeName;
+            token = (paramEntry as any).attributeName;
           } else if (createInject.isTypeOf(paramEntry)) {
-            token = paramEntry.token;
+            token = (paramEntry as any).token;
           } else if (
-              createInjectionToken.isTypeOf(paramEntry) || paramEntry instanceof StaticSymbol) {
+              createInjectionToken.isTypeOf(paramEntry) ||
+              (paramEntry as any) instanceof StaticSymbol) {
             token = paramEntry;
           } else if (isValidType(paramEntry) && token == null) {
             token = paramEntry;

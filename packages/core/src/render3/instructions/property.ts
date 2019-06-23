@@ -8,7 +8,7 @@
 import {assertNotEqual} from '../../util/assert';
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {BINDING_INDEX} from '../interfaces/view';
+import {BINDING_INDEX, LView} from '../interfaces/view';
 import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
@@ -40,7 +40,8 @@ export function ɵɵproperty<T>(
     nativeOnly?: boolean): TsickleIssue1009 {
   const index = getSelectedIndex();
   ngDevMode && assertNotEqual(index, -1, 'selected index cannot be -1');
-  const bindReconciledValue = ɵɵbind(value);
+  const lView = getLView();
+  const bindReconciledValue = bind(lView, value);
   if (bindReconciledValue !== NO_CHANGE) {
     elementPropertyInternal(index, propName, bindReconciledValue, sanitizer, nativeOnly);
   }
@@ -50,41 +51,13 @@ export function ɵɵproperty<T>(
 /**
  * Creates a single value binding.
  *
+ * @param lView Current view
  * @param value Value to diff
- *
- * @codeGenApi
  */
-export function ɵɵbind<T>(value: T): T|NO_CHANGE {
-  const lView = getLView();
+export function bind<T>(lView: LView, value: T): T|NO_CHANGE {
   const bindingIndex = lView[BINDING_INDEX]++;
   storeBindingMetadata(lView);
   return bindingUpdated(lView, bindingIndex, value) ? value : NO_CHANGE;
-}
-
-/**
-* **TODO: Remove this function after `property` is in use**
-* Update a property on an element.
-*
-* If the property name also exists as an input property on one of the element's directives,
-* the component property will be set instead of the element property. This check must
-* be conducted at runtime so child components that add new @Inputs don't have to be re-compiled.
-*
-* @param index The index of the element to update in the data array
-* @param propName Name of property. Because it is going to DOM, this is not subject to
-*        renaming as part of minification.
-* @param value New value to write.
-* @param sanitizer An optional function used to sanitize the value.
-* @param nativeOnly Whether or not we should only set native properties and skip input check
-* (this is necessary for host property bindings)
- *
- * @codeGenApi
-*/
-export function ɵɵelementProperty<T>(
-    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
-    nativeOnly?: boolean): void {
-  if (value !== NO_CHANGE) {
-    elementPropertyInternal(index, propName, value, sanitizer, nativeOnly);
-  }
 }
 
 /**
@@ -110,10 +83,13 @@ export function ɵɵelementProperty<T>(
  *
  * @codeGenApi
  */
-export function ɵɵcomponentHostSyntheticProperty<T>(
-    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
-    nativeOnly?: boolean) {
-  if (value !== NO_CHANGE) {
-    elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);
+export function ɵɵupdateSyntheticHostBinding<T>(
+    propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean) {
+  const index = getSelectedIndex();
+  const lView = getLView();
+  // TODO(benlesh): remove bind call here.
+  const bound = bind(lView, value);
+  if (bound !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, bound, sanitizer, nativeOnly, loadComponentRenderer);
   }
 }

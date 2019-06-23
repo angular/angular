@@ -9,7 +9,7 @@
 import {Directive as _Directive, Pipe as _Pipe, PipeTransform, WrappedValue, ɵɵdefinePipe} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {ɵɵinterpolation1, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵinterpolation1, ɵɵselect, ɵɵtext, ɵɵtextBinding, ɵɵtextInterpolate1} from '../../src/render3/instructions/all';
 import {ɵɵpipe, ɵɵpipeBind1} from '../../src/render3/pipe';
 
 import {TemplateFixture} from './render_util';
@@ -43,7 +43,8 @@ describe('pipe', () => {
     }
 
     function updateTemplate() {
-      ɵɵtextBinding(0, ɵɵinterpolation1('', ɵɵpipeBind1(1, 1, null), ''));
+      ɵɵselect(0);
+      ɵɵtextInterpolate1('', ɵɵpipeBind1(1, 1, null), '');
     }
 
     it('should unwrap', () => {

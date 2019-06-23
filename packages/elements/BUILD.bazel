@@ -23,7 +23,7 @@ ng_package(
         "**/*.externs.js",
         "**/package.json",
     ]),
-    entry_point = "packages/elements/index.js",
+    entry_point = ":index.ts",
     packages = [
         "//packages/elements/schematics:npm_package",
     ],

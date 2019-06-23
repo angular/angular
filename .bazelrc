@@ -137,11 +137,31 @@ build:remote --platforms=//tools:rbe_ubuntu1604-angular
 
 # Remote instance.
 build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
+build:remote --project_id=internal-200822
 
 # Do not accept remote cache.
 # We need to understand the security risks of using prior build artifacts.
 build:remote --remote_accept_cached=false
 
-# Load any settings specific to the current user. Needs to be last statement in this
-# config, as the user configuration should be able to overwrite flags from this file.
+# Build Event Service Configuration
+build:remote --bes_backend=buildeventservice.googleapis.com
+build:remote --bes_timeout=30s
+build:remote --bes_results_url="https://source.cloud.google.com/results/invocations/"
+
+###############################
+# NodeJS rules settings
+# These settings are required for rules_nodejs
+###############################
+
+# Turn on managed directories feature in Bazel
+# This allows us to avoid installing a second copy of node_modules
+common --experimental_allow_incremental_repository_updates
+
+####################################################
+# User bazel configuration
+# NOTE: This needs to be the *last* entry in the config.
+####################################################
+
+# Load any settings which are specific to the current user. Needs to be *last* statement
+# in this config, as the user configuration should be able to overwrite flags from this file.
 try-import .bazelrc.user

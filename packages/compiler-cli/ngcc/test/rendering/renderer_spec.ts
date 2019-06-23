@@ -167,7 +167,6 @@ describe('Renderer', () => {
               `A.ngComponentDef = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], factory: function A_Factory(t) { return new (t || A)(); }, consts: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵtext(0);
     } if (rf & 2) {
-        ɵngcc0.ɵɵselect(0);
         ɵngcc0.ɵɵtextInterpolate(ctx.person.name);
     } }, encapsulation: 2 });
 /*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
@@ -234,6 +233,38 @@ describe('Renderer', () => {
            expect(values[0][0].getText())
                .toEqual(`{ type: Directive, args: [{ selector: '[a]' }] }`);
          });
+
+      it('should render classes without decorators if handler matches', () => {
+        const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+               testFormatter} = createTestRenderer('test-package', [{
+                                                     name: '/src/file.js',
+                                                     contents: `
+              import { Directive, ViewChild } from '@angular/core';
+              
+              export class UndecoratedBase { test = null; }
+              
+              UndecoratedBase.propDecorators = {
+                test: [{
+                  type: ViewChild,
+                  args: ["test", {static: true}]
+                }],
+              };
+            `
+                                                   }]);
+
+        renderer.renderProgram(
+            decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+
+        const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
+        expect(addDefinitionsSpy.calls.first().args[2])
+            .toEqual(
+                `UndecoratedBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ viewQuery: function (rf, ctx) { if (rf & 1) {
+        ɵngcc0.ɵɵstaticViewQuery(_c0, true, null);
+    } if (rf & 2) {
+        var _t;
+        ɵngcc0.ɵɵqueryRefresh(_t = ɵngcc0.ɵɵloadViewQuery()) && (ctx.test = _t.first);
+    } } });`);
+      });
 
       it('should call renderImports after other abstract methods', () => {
         // This allows the other methods to add additional imports if necessary

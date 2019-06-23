@@ -15,20 +15,16 @@ declare var global: any /** TODO #9100 */;
 // Not yet available in TypeScript: https://github.com/Microsoft/TypeScript/pull/29332
 declare var globalThis: any /** TODO #9100 */;
 
-function getGlobal(): any {
-  const __globalThis = typeof globalThis !== 'undefined' && globalThis;
-  const __window = typeof window !== 'undefined' && window;
-  const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
-      self instanceof WorkerGlobalScope && self;
-  const __global = typeof global !== 'undefined' && global;
+const __globalThis = typeof globalThis !== 'undefined' && globalThis;
+const __window = typeof window !== 'undefined' && window;
+const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
+    self instanceof WorkerGlobalScope && self;
+const __global = typeof global !== 'undefined' && global;
 
-  // Always use __globalThis if available, which is the spec-defined global variable across all
-  // environments, then fallback to __global first, because in Node tests both __global and
-  // __window may be defined and _global should be __global in that case.
-  return __globalThis || __global || __window || __self;
-}
-
-const _global = getGlobal();
+// Always use __globalThis if available, which is the spec-defined global variable across all
+// environments, then fallback to __global first, because in Node tests both __global and
+// __window may be defined and _global should be __global in that case.
+const _global = __globalThis || __global || __window || __self;
 
 /**
  * Attention: whenever providing a new value, be sure to add an

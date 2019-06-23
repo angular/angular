@@ -37,6 +37,11 @@ module.exports = (gulp) => () => {
         // TODO(alfaproject): make generated files lintable
         '!**/*.d.ts',
         '!**/*.ngfactory.ts',
+
+        // Ignore zone.js directory
+        // TODO(JiaLiPassion): add zone.js back later
+        '!packages/zone.js/**/*.js',
+        '!packages/zone.js/**/*.ts',
       ])
       .pipe(tslint({
         configuration: path.resolve(__dirname, '../../tslint.json'),

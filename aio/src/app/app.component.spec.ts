@@ -7,11 +7,12 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSidenav } from '@angular/material/sidenav';
 import { By } from '@angular/platform-browser';
 
-import { of, timer } from 'rxjs';
+import { Subject, of, timer } from 'rxjs';
 import { first, mapTo } from 'rxjs/operators';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
+import { CurrentNodes } from 'app/navigation/navigation.model';
 import { DocumentService } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Deployment } from 'app/shared/deployment.service';
@@ -22,7 +23,7 @@ import { Logger } from 'app/shared/logger.service';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
-import { NavigationNode } from 'app/navigation/navigation.service';
+import { NavigationNode, NavigationService } from 'app/navigation/navigation.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
@@ -809,106 +810,43 @@ describe('AppComponent', () => {
     });
 
     describe('archive redirection', () => {
-      it('should redirect to `docs` if deployment mode is `archive` and not at a docs page', () => {
-        createTestingModule('', 'archive');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+      const redirectionPerMode: {[mode: string]: boolean} = {
+        archive: true,
+        next: false,
+        stable: false,
+      };
 
-        createTestingModule('resources', 'archive');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+      Object.keys(redirectionPerMode).forEach(mode => {
+        const doRedirect = redirectionPerMode[mode];
+        const description =
+            `should ${doRedirect ? '' : 'not '}redirect to 'docs' if deployment mode is '${mode}' ` +
+            'and at a marketing page';
+        const verifyNoRedirection = () => expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+        const verifyRedirection = () => expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+        const verifyPossibleRedirection = doRedirect ? verifyRedirection : verifyNoRedirection;
 
-        createTestingModule('guide/aot-compiler', 'archive');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+        it(description, () => {
+          createTestingModule('', mode);
 
-        createTestingModule('tutorial', 'archive');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+          const navService = TestBed.get(NavigationService) as NavigationService;
+          const testCurrentNodes = navService.currentNodes = new Subject<CurrentNodes>();
 
-        createTestingModule('tutorial/toh-pt1', 'archive');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+          initializeTest(false);
 
-        createTestingModule('docs', 'archive');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+          testCurrentNodes.next({SideNav: {url: 'foo', view: 'SideNav', nodes: []}});
+          verifyNoRedirection();
 
-        createTestingModule('api', 'archive');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+          testCurrentNodes.next({NoSideNav: {url: 'bar', view: 'SideNav', nodes: []}});
+          verifyPossibleRedirection();
 
-        createTestingModule('api/core/getPlatform', 'archive');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-      });
+          locationService.replace.calls.reset();
+          testCurrentNodes.next({});
+          verifyPossibleRedirection();
 
-      it('should not redirect if deployment mode is `next`', () => {
-        createTestingModule('', 'next');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('resources', 'next');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('guide/aot-compiler', 'next');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('tutorial', 'next');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('tutorial/toh-pt1', 'next');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('docs', 'next');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('api', 'next');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('api/core/getPlatform', 'next');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-      });
-
-      it('should not redirect to `docs` if deployment mode is `stable`', () => {
-        createTestingModule('', 'stable');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('resources', 'stable');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('guide/aot-compiler', 'stable');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('tutorial', 'stable');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('tutorial/toh-pt1', 'stable');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('docs', 'stable');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('api', 'stable');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
-
-        createTestingModule('api/core/getPlatform', 'stable');
-        initializeTest(false);
-        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+          locationService.replace.calls.reset();
+          testCurrentNodes.next({SideNav: {url: 'baz', view: 'SideNav', nodes: []}});
+          verifyNoRedirection();
+        });
       });
     });
   });

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵreference, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵreference, ɵɵselect, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-
 import {ComponentFixture, createComponent} from './render_util';
 
 describe('exports', () => {
@@ -39,7 +38,8 @@ describe('exports', () => {
                 }
                 if (rf1 & RenderFlags.Update) {
                   const tmp = ɵɵreference(2) as any;
-                  ɵɵtextBinding(0, ɵɵbind(tmp.value));
+                  ɵɵselect(0);
+                  ɵɵtextBinding(tmp.value);
                 }
               }
               ɵɵembeddedViewEnd();

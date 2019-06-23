@@ -220,26 +220,30 @@ export function exitCodeFromResult(diags: Diagnostics | undefined): number {
   return diags.some(d => d.source === 'angular' && d.code === api.UNKNOWN_ERROR_CODE) ? 2 : 1;
 }
 
-export function performCompilation({rootNames, options, host, oldProgram, emitCallback,
-                                    mergeEmitResultsCallback,
-                                    gatherDiagnostics = defaultGatherDiagnostics,
-                                    customTransformers, emitFlags = api.EmitFlags.Default}: {
-  rootNames: string[],
-  options: api.CompilerOptions,
-  host?: api.CompilerHost,
-  oldProgram?: api.Program,
-  emitCallback?: api.TsEmitCallback,
-  mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback,
-  gatherDiagnostics?: (program: api.Program) => Diagnostics,
-  customTransformers?: api.CustomTransformers,
-  emitFlags?: api.EmitFlags
-}): PerformCompilationResult {
+export function performCompilation(
+    {rootNames, options, host, oldProgram, emitCallback, mergeEmitResultsCallback,
+     gatherDiagnostics = defaultGatherDiagnostics, customTransformers,
+     emitFlags = api.EmitFlags.Default, modifiedResourceFiles}: {
+      rootNames: string[],
+      options: api.CompilerOptions,
+      host?: api.CompilerHost,
+      oldProgram?: api.Program,
+      emitCallback?: api.TsEmitCallback,
+      mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback,
+      gatherDiagnostics?: (program: api.Program) => Diagnostics,
+      customTransformers?: api.CustomTransformers,
+      emitFlags?: api.EmitFlags,
+      modifiedResourceFiles?: Set<string>,
+    }): PerformCompilationResult {
   let program: api.Program|undefined;
   let emitResult: ts.EmitResult|undefined;
   let allDiagnostics: Array<ts.Diagnostic|api.Diagnostic> = [];
   try {
     if (!host) {
       host = ng.createCompilerHost({options});
+    }
+    if (modifiedResourceFiles) {
+      host.getModifiedResourceFiles = () => modifiedResourceFiles;
     }
 
     program = ng.createProgram({rootNames, host, options, oldProgram});

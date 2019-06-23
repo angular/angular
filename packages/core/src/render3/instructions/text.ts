@@ -8,13 +8,17 @@
 import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {TNodeType} from '../interfaces/node';
 import {RText, isProceduralRenderer} from '../interfaces/renderer';
-import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {appendChild, createTextNode} from '../node_manipulation';
-import {getLView, setIsNotParent} from '../state';
+import {getLView, getSelectedIndex, setIsNotParent} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex} from '../util/view_utils';
-import {getOrCreateTNode} from './shared';
+
+import {bind} from './property';
+import {getOrCreateTNode, textBindingInternal} from './shared';
+
+
 
 /**
  * Create static text node
@@ -32,6 +36,7 @@ export function ɵɵtext(index: number, value?: any): void {
   ngDevMode && ngDevMode.rendererCreateTextNode++;
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
   const textNative = lView[index + HEADER_OFFSET] = createTextNode(value, lView[RENDERER]);
+  ngDevMode && ngDevMode.rendererSetText++;
   const tNode = getOrCreateTNode(lView[TVIEW], lView[T_HOST], index, TNodeType.Element, null, null);
 
   // Text nodes are self closing.
@@ -43,20 +48,15 @@ export function ɵɵtext(index: number, value?: any): void {
  * Create text node with binding
  * Bindings should be handled externally with the proper interpolation(1-8) method
  *
- * @param index Index of the node in the data array.
  * @param value Stringified value to write.
  *
  * @codeGenApi
  */
-export function ɵɵtextBinding<T>(index: number, value: T | NO_CHANGE): void {
-  if (value !== NO_CHANGE) {
-    const lView = getLView();
-    ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
-    const element = getNativeByIndex(index, lView) as any as RText;
-    ngDevMode && assertDefined(element, 'native element should exist');
-    ngDevMode && ngDevMode.rendererSetText++;
-    const renderer = lView[RENDERER];
-    isProceduralRenderer(renderer) ? renderer.setValue(element, renderStringify(value)) :
-                                     element.textContent = renderStringify(value);
+export function ɵɵtextBinding<T>(value: T | NO_CHANGE): void {
+  const lView = getLView();
+  const index = getSelectedIndex();
+  const bound = bind(lView, value);
+  if (bound !== NO_CHANGE) {
+    textBindingInternal(lView, index, renderStringify(bound));
   }
 }

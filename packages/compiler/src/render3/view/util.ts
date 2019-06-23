@@ -21,7 +21,7 @@ import {isI18nAttribute} from './i18n/util';
  * TODO(FW-1136): this is a temporary solution, we need to come up with a better way of working with
  * inputs that contain potentially unsafe chars.
  */
-const UNSAFE_OBJECT_KEY_NAME_REGEXP = /-/;
+const UNSAFE_OBJECT_KEY_NAME_REGEXP = /[-.]/;
 
 /** Name of the temporary to use during data binding */
 export const TEMPORARY_NAME = '_t';

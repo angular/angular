@@ -40,6 +40,22 @@
   }
 }
 
+// REM Font Adjustments
+@mixin font-size($sizeValue) {
+  font-size: ($sizeValue) + px;
+  font-size: ($sizeValue / 10) + rem;
+}
+
+@mixin letter-spacing($spacingValue) {
+  letter-spacing: ($spacingValue) + px;
+  letter-spacing: ($spacingValue / 10) + rem;
+}
+
+@mixin line-height($heightValue) {
+  line-height: ($heightValue) + px;
+  line-height: ($heightValue / 10) + rem;
+}
+
 @mixin rotate($degrees) {
   -moz-transform: rotate($degrees);
   -webkit-transform: rotate($degrees);

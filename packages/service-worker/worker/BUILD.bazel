@@ -24,7 +24,7 @@ ts_library(
 
 ng_rollup_bundle(
     name = "ngsw_worker",
-    entry_point = "packages/service-worker/worker/main.js",
+    entry_point = ":main.ts",
     deps = [
         ":main",
     ],

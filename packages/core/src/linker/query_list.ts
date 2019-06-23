@@ -12,6 +12,9 @@ import {EventEmitter} from '../event_emitter';
 import {flatten} from '../util/array_utils';
 import {getSymbolIterator} from '../util/symbol';
 
+function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
+  return ((this as any as{_results: Array<T>})._results as any)[getSymbolIterator()]();
+}
 
 /**
  * An unmodifiable list of items that Angular keeps up to date when the state
@@ -49,6 +52,16 @@ export class QueryList<T>/* implements Iterable<T> */ {
   readonly first !: T;
   // TODO(issue/24571): remove '!'.
   readonly last !: T;
+
+  constructor() {
+    // This function should be declared on the prototype, but doing so there will cause the class
+    // declaration to have side-effects and become not tree-shakable. For this reason we do it in
+    // the constructor.
+    // [getSymbolIterator()](): Iterator<T> { ... }
+    const symbol = getSymbolIterator();
+    const proto = QueryList.prototype as any;
+    if (!proto[symbol]) proto[symbol] = symbolIterator;
+  }
 
   /**
    * See
@@ -98,8 +111,6 @@ export class QueryList<T>/* implements Iterable<T> */ {
    * Returns a copy of the internal results list as an Array.
    */
   toArray(): T[] { return this._results.slice(); }
-
-  [getSymbolIterator()](): Iterator<T> { return (this._results as any)[getSymbolIterator()](); }
 
   toString(): string { return this._results.toString(); }
 

@@ -13,7 +13,6 @@ import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined} from '../utils';
 
-import {DecoratedClass} from './decorated_class';
 import {ModuleWithProvidersFunction, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
@@ -233,6 +232,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return superDeclaration;
   }
 
+  /** Gets all decorators of the given class symbol. */
+  getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
+    const decoratorsProperty = this.getStaticProperty(symbol, DECORATORS);
+    if (decoratorsProperty) {
+      return this.getClassDecoratorsFromStaticProperty(decoratorsProperty);
+    } else {
+      return this.getClassDecoratorsFromHelperCall(symbol);
+    }
+  }
+
   /**
    * Search the given module for variable declarations in which the initializer
    * is an identifier marked with the `PRE_R3_MARKER`.
@@ -306,24 +315,24 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * Find all the classes that contain decorations in a given file.
-   * @param sourceFile The source file to search for decorated classes.
-   * @returns An array of decorated classes.
+   * Find all top-level class symbols in the given file.
+   * @param sourceFile The source file to search for classes.
+   * @returns An array of class symbols.
    */
-  findDecoratedClasses(sourceFile: ts.SourceFile): DecoratedClass[] {
-    const classes: DecoratedClass[] = [];
+  findClassSymbols(sourceFile: ts.SourceFile): ClassSymbol[] {
+    const classes: ClassSymbol[] = [];
     this.getModuleStatements(sourceFile).forEach(statement => {
       if (ts.isVariableStatement(statement)) {
         statement.declarationList.declarations.forEach(declaration => {
-          const decoratedClass = this.getDecoratedClassFromSymbol(this.getClassSymbol(declaration));
-          if (decoratedClass) {
-            classes.push(decoratedClass);
+          const classSymbol = this.getClassSymbol(declaration);
+          if (classSymbol) {
+            classes.push(classSymbol);
           }
         });
       } else if (ts.isClassDeclaration(statement)) {
-        const decoratedClass = this.getDecoratedClassFromSymbol(this.getClassSymbol(statement));
-        if (decoratedClass) {
-          classes.push(decoratedClass);
+        const classSymbol = this.getClassSymbol(statement);
+        if (classSymbol) {
+          classes.push(classSymbol);
         }
       }
     });
@@ -486,25 +495,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected getModuleStatements(sourceFile: ts.SourceFile): ts.Statement[] {
     return Array.from(sourceFile.statements);
-  }
-
-  protected getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
-    const decoratorsProperty = this.getStaticProperty(symbol, DECORATORS);
-    if (decoratorsProperty) {
-      return this.getClassDecoratorsFromStaticProperty(decoratorsProperty);
-    } else {
-      return this.getClassDecoratorsFromHelperCall(symbol);
-    }
-  }
-
-  protected getDecoratedClassFromSymbol(symbol: ClassSymbol|undefined): DecoratedClass|null {
-    if (symbol) {
-      const decorators = this.getDecoratorsOfSymbol(symbol);
-      if (decorators && decorators.length) {
-        return new DecoratedClass(symbol.name, symbol.valueDeclaration, decorators);
-      }
-    }
-    return null;
   }
 
   /**
@@ -1329,7 +1319,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return null;
     }
     const declaration = implementation;
-    const body = this.getDefinitionOfFunction(declaration).body;
+    const definition = this.getDefinitionOfFunction(declaration);
+    if (definition === null) {
+      return null;
+    }
+    const body = definition.body;
     const lastStatement = body && body[body.length - 1];
     const returnExpression =
         lastStatement && ts.isReturnStatement(lastStatement) && lastStatement.expression || null;

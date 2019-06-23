@@ -40,7 +40,12 @@ const content = `
 }
 `;
 
-const fileInfo = {content, baseName: 'add'};
+const fileInfo = {
+  content,
+  baseName: 'add',
+  relativePath: 'add.json',
+  basePath: __dirname + '/mocks/help',
+};
 
 describe('cli-command reader', () => {
   describe('getDocs', () => {
@@ -77,8 +82,8 @@ describe('cli-command reader', () => {
     it('should compute the bread crumbs', () => {
       const docs = reader.getDocs(fileInfo);
       expect(docs[0].breadCrumbs).toEqual([
-        { text: 'CLI', path: 'cli' },
-        { text: 'add', path: 'cli/add' },
+        {text: 'CLI', path: 'cli'},
+        {text: 'add', path: 'cli/add'},
       ]);
     });
 
@@ -89,7 +94,9 @@ describe('cli-command reader', () => {
 
     it('should extract the long description', () => {
       const docs = reader.getDocs(fileInfo);
-      expect(docs[0].longDescription).toEqual('Add support for a library in your project, for example adding `@angular/pwa` which would configure\nyour project for PWA support.\n');
+      expect(docs[0].longDescription)
+          .toEqual(
+              'Add support for a library in your project, for example adding `@angular/pwa` which would configure\nyour project for PWA support.\n');
     });
 
     it('should extract the command type', () => {
@@ -110,10 +117,19 @@ describe('cli-command reader', () => {
     it('should extract the options', () => {
       const docs = reader.getDocs(fileInfo);
       expect(docs[0].options).toEqual([
-        jasmine.objectContaining({ name: 'collection' }),
-        jasmine.objectContaining({ name: 'help' }),
-        jasmine.objectContaining({ name: 'helpJson' }),
+        jasmine.objectContaining({name: 'collection'}),
+        jasmine.objectContaining({name: 'help'}),
+        jasmine.objectContaining({name: 'helpJson'}),
       ]);
+    });
+
+    it('should extract file info for the long description', () => {
+      const [doc] = reader.getDocs(fileInfo);
+      expect(doc.longDescriptionDoc).toEqual({
+        docType: 'content',
+        startingLine: 0,
+        fileInfo: {realProjectRelativePath: 'packages/angular/cli/commands/add-long.md'}
+      });
     });
   });
 });

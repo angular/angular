@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵRenderFlags, ɵrenderComponent as renderComponent, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdefineComponent, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵselect, ɵɵstyleProp, ɵɵstyling, ɵɵtext, ɵɵtextBinding} from '@angular/core';
+import {ɵRenderFlags, ɵrenderComponent as renderComponent, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdefineComponent, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵselect, ɵɵstyleProp, ɵɵstyling, ɵɵtext, ɵɵtextInterpolate1} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
 import {createDom, destroyDom, detectChanges} from '../render3/tree';
@@ -51,7 +51,7 @@ export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
     ɵɵstyleProp(0, ctx.depth % 2 ? '' : 'grey');
     ɵɵstyling();
     ɵɵselect(2);
-    ɵɵtextBinding(2, ɵɵinterpolation1(' ', ctx.value, ' '));
+    ɵɵtextInterpolate1(' ', ctx.value, ' ');
     ɵɵcontainerRefreshStart(3);
     {
       if (ctx.left != null) {

@@ -26,7 +26,7 @@
     }
 
     .card-footer {
-      line-height: 32px;
+      @include line-height(32);
       padding: 8px 16px;
       background-color: rgba($blue, 0.1);
       color: $blue;
@@ -35,9 +35,9 @@
 
 
   section {
-    color: $darkgray;
-    font-size: 20px;
-    line-height: 24px;
+    color: $deepgray;
+    @include font-size(20);
+    @include line-height(24);
     margin: 0;
     padding: 32px 0 24px;
     text-transform: none;
@@ -46,8 +46,8 @@
 
   p {
     color: $darkgray;
-    font-size: 13px;
-    line-height: 24px;
+    @include font-size(13);
+    @include line-height(24);
     padding: 0 16px;
     margin: 0;
     text-align: center;
@@ -57,7 +57,7 @@
     bottom: 0;
     border-top: 0.5px solid $lightgray;
     box-sizing: border-box;
-    line-height: 48px;
+    @include line-height(48);
     left: 0;
     position: absolute;
     right: 0;
@@ -66,7 +66,7 @@
 
     a {
       color: $mediumgray;
-      font-size: 13px;
+      @include font-size(13);
     }
   }
   .card-footer.center {

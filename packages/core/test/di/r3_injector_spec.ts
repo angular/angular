@@ -13,6 +13,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 describe('InjectorDef-based createInjector()', () => {
   class CircularA {
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: CircularA,
       providedIn: null,
       factory: () => ɵɵinject(CircularB),
     });
@@ -20,6 +21,7 @@ describe('InjectorDef-based createInjector()', () => {
 
   class CircularB {
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: CircularB,
       providedIn: null,
       factory: () => ɵɵinject(CircularA),
     });
@@ -27,6 +29,7 @@ describe('InjectorDef-based createInjector()', () => {
 
   class Service {
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: Service,
       providedIn: null,
       factory: () => new Service(),
     });
@@ -34,6 +37,7 @@ describe('InjectorDef-based createInjector()', () => {
 
   class OptionalService {
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: OptionalService,
       providedIn: null,
       factory: () => new OptionalService(),
     });
@@ -56,8 +60,11 @@ describe('InjectorDef-based createInjector()', () => {
     constructor(readonly service: Service) {}
 
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: ServiceWithDep,
       providedIn: null,
-      factory: () => new ServiceWithDep(ɵɵinject(Service)),
+      // ChildService is derived from ServiceWithDep, so the factory function here must do the right
+      // thing and create an instance of the requested type if one is given.
+      factory: (t?: typeof ServiceWithDep) => new (t || ServiceWithDep)(ɵɵinject(Service)),
     });
   }
 
@@ -65,6 +72,7 @@ describe('InjectorDef-based createInjector()', () => {
     constructor(@Optional() readonly service: OptionalService|null) {}
 
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: ServiceWithOptionalDep,
       providedIn: null,
       factory: () => new ServiceWithOptionalDep(ɵɵinject(OptionalService, InjectFlags.Optional)),
     });
@@ -74,6 +82,7 @@ describe('InjectorDef-based createInjector()', () => {
     constructor(readonly service: Service) {}
 
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: ServiceWithMissingDep,
       providedIn: null,
       factory: () => new ServiceWithMissingDep(ɵɵinject(Service)),
     });
@@ -83,6 +92,7 @@ describe('InjectorDef-based createInjector()', () => {
     constructor(readonly locale: string[]) {}
 
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: ServiceWithMultiDep,
       providedIn: null,
       factory: () => new ServiceWithMultiDep(ɵɵinject(LOCALE)),
     });
@@ -90,6 +100,7 @@ describe('InjectorDef-based createInjector()', () => {
 
   class ServiceTwo {
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: ServiceTwo,
       providedIn: null,
       factory: () => new ServiceTwo(),
     });
@@ -98,6 +109,7 @@ describe('InjectorDef-based createInjector()', () => {
   let deepServiceDestroyed = false;
   class DeepService {
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: DeepService,
       providedIn: null,
       factory: () => new DeepService(),
     });
@@ -108,6 +120,7 @@ describe('InjectorDef-based createInjector()', () => {
   let eagerServiceCreated: boolean = false;
   class EagerService {
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: EagerService,
       providedIn: undefined,
       factory: () => new EagerService(),
     });
@@ -152,11 +165,14 @@ describe('InjectorDef-based createInjector()', () => {
     });
   }
 
+  class ChildService extends ServiceWithDep {}
+
   class Module {
     static ngInjectorDef = ɵɵdefineInjector({
       factory: () => new Module(),
       imports: [IntermediateModule],
       providers: [
+        ChildService,
         ServiceWithDep,
         ServiceWithOptionalDep,
         ServiceWithMultiDep,
@@ -203,6 +219,7 @@ describe('InjectorDef-based createInjector()', () => {
   let scopedServiceDestroyed = false;
   class ScopedService {
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: ScopedService,
       providedIn: Module,
       factory: () => new ScopedService(),
     });
@@ -212,6 +229,7 @@ describe('InjectorDef-based createInjector()', () => {
 
   class WrongScopeService {
     static ngInjectableDef = ɵɵdefineInjectable({
+      token: WrongScopeService,
       providedIn: OtherModule,
       factory: () => new WrongScopeService(),
     });
@@ -344,6 +362,11 @@ describe('InjectorDef-based createInjector()', () => {
     const instance = injector.get(ScopedService);
     expect(instance instanceof ScopedService).toBeTruthy();
     expect(instance).toBe(injector.get(ScopedService));
+  });
+
+  it('allows injecting an inherited service', () => {
+    const instance = injector.get(ChildService);
+    expect(instance instanceof ChildService).toBe(true);
   });
 
   it('does not create instances of a service not in scope',

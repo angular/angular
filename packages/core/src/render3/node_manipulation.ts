@@ -7,7 +7,6 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-
 import {assertLContainer, assertLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -15,7 +14,7 @@ import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
-import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CHILD_HEAD, CLEANUP, FLAGS, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
@@ -558,11 +557,12 @@ function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
 
   // Skip over element and ICU containers as those are represented by a comment node and
   // can't be used as a render parent.
-  const parent = getHighestElementOrICUContainer(tNode).parent;
+  const parent = getHighestElementOrICUContainer(tNode);
+  const renderParent = parent.parent;
 
   // If the parent is null, then we are inserting across views: either into an embedded view or a
   // component view.
-  if (parent == null) {
+  if (renderParent == null) {
     const hostTNode = currentView[T_HOST] !;
     if (hostTNode.type === TNodeType.View) {
       // We are inserting a root element of an embedded view We might delay insertion of children
@@ -579,10 +579,17 @@ function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
       return getHostNative(currentView);
     }
   } else {
-    ngDevMode && assertNodeType(parent, TNodeType.Element);
-    if (parent.flags & TNodeFlags.isComponent) {
+    const isIcuCase = parent && parent.type === TNodeType.IcuContainer;
+    // If the parent of this node is an ICU container, then it is represented by comment node and we
+    // need to use it as an anchor. If it is projected then its direct parent node is the renderer.
+    if (isIcuCase && parent.flags & TNodeFlags.isProjected) {
+      return getNativeByTNode(parent, currentView).parentNode as RElement;
+    }
+
+    ngDevMode && assertNodeType(renderParent, TNodeType.Element);
+    if (renderParent.flags & TNodeFlags.isComponent && !isIcuCase) {
       const tData = currentView[TVIEW].data;
-      const tNode = tData[parent.index] as TNode;
+      const tNode = tData[renderParent.index] as TNode;
       const encapsulation = (tData[tNode.directiveStart] as ComponentDef<any>).encapsulation;
 
       // We've got a parent which is an element in the current view. We just need to verify if the
@@ -597,7 +604,7 @@ function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
       }
     }
 
-    return getNativeByTNode(parent, currentView) as RElement;
+    return getNativeByTNode(renderParent, currentView) as RElement;
   }
 }
 
@@ -776,18 +783,37 @@ export function appendProjectedNodes(
     appendChild(nodeToProject, tProjectionNode, lView);
   } else {
     while (nodeToProject) {
-      if (nodeToProject.type === TNodeType.Projection) {
-        appendProjectedNodes(
-            lView, tProjectionNode, (nodeToProject as TProjectionNode).projection,
-            findComponentView(projectedView));
-      } else {
-        // This flag must be set now or we won't know that this node is projected
-        // if the nodes are inserted into a container later.
-        nodeToProject.flags |= TNodeFlags.isProjected;
-        appendProjectedNode(nodeToProject, tProjectionNode, lView, projectedView);
+      if (!(nodeToProject.flags & TNodeFlags.isDetached)) {
+        if (nodeToProject.type === TNodeType.Projection) {
+          appendProjectedNodes(
+              lView, tProjectionNode, (nodeToProject as TProjectionNode).projection,
+              findComponentView(projectedView));
+        } else {
+          // This flag must be set now or we won't know that this node is projected
+          // if the nodes are inserted into a container later.
+          nodeToProject.flags |= TNodeFlags.isProjected;
+          appendProjectedNode(nodeToProject, tProjectionNode, lView, projectedView);
+        }
       }
       nodeToProject = nodeToProject.projectionNext;
     }
+  }
+}
+
+/**
+ * Loops over all children of a TNode container and appends them to the DOM
+ *
+ * @param ngContainerChildTNode The first child of the TNode container
+ * @param tProjectionNode The projection (ng-content) TNode
+ * @param currentView Current LView
+ * @param projectionView Projection view (view above current)
+ */
+function appendProjectedChildren(
+    ngContainerChildTNode: TNode | null, tProjectionNode: TNode, currentView: LView,
+    projectionView: LView) {
+  while (ngContainerChildTNode) {
+    appendProjectedNode(ngContainerChildTNode, tProjectionNode, currentView, projectionView);
+    ngContainerChildTNode = ngContainerChildTNode.next;
   }
 }
 
@@ -821,13 +847,15 @@ function appendProjectedNode(
     for (let i = CONTAINER_HEADER_OFFSET; i < nodeOrContainer.length; i++) {
       addRemoveViewFromContainer(nodeOrContainer[i], true, nodeOrContainer[NATIVE]);
     }
+  } else if (projectedTNode.type === TNodeType.IcuContainer) {
+    // The node we are adding is an ICU container which is why we also need to project all the
+    // children nodes that might have been created previously and are linked to this anchor
+    let ngContainerChildTNode: TNode|null = projectedTNode.child as TNode;
+    appendProjectedChildren(
+        ngContainerChildTNode, ngContainerChildTNode, projectionView, projectionView);
   } else {
     if (projectedTNode.type === TNodeType.ElementContainer) {
-      let ngContainerChildTNode: TNode|null = projectedTNode.child as TNode;
-      while (ngContainerChildTNode) {
-        appendProjectedNode(ngContainerChildTNode, tProjectionNode, currentView, projectionView);
-        ngContainerChildTNode = ngContainerChildTNode.next;
-      }
+      appendProjectedChildren(projectedTNode.child, tProjectionNode, currentView, projectionView);
     }
 
     if (isLContainer(nodeOrContainer)) {

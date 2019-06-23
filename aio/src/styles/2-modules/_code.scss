@@ -5,7 +5,6 @@ code-example, code-tabs {
 
 code-example {
 
-
   &:not(.no-box) {
     background-color: rgba($backgroundgray, 0.2);
     border: 0.5px solid $lightgray;
@@ -38,6 +37,10 @@ code-example, code-tabs {
   }
 }
 
+code-tabs {
+  margin: 16px 0;
+}
+
 // TERMINAL / SHELL TEXT STYLES
 
 code-example.code-shell, code-example[language=sh], code-example[language=bash] {
@@ -48,7 +51,7 @@ code-example header {
   background-color: $accentblue;
   border-radius: 5px 5px 0 0;
   color: $offwhite;
-  font-size: 16px;
+  @include font-size(16);
   padding: 8px 16px;
 }
 
@@ -85,7 +88,7 @@ aio-code pre {
     align-items: center;
 
     code span {
-      line-height: 24px;
+      @include line-height(24);
     }
 }
 
@@ -151,11 +154,12 @@ ol.linenums {
   margin: 0;
   font-family: $main-font;
   color: #B3B6B7;
+
   li {
     margin: 0;
     font-family: $code-font;
     font-size: 90%;
-    line-height: 24px;
+    @include line-height(24);
   }
 }
 

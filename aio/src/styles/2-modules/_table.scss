@@ -2,7 +2,7 @@ table {
   margin: 24px 0px;
   box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
   border-radius: 2px;
-  background: $offwhite;
+  background: $white;
 
   &.is-full-width {
     width: 100%;
@@ -25,12 +25,12 @@ table {
       background: rgba($lightgray, 0.2);
       border-bottom: 1px solid $lightgray;
       color: $darkgray;
-      font-size: 12px;
+      @include font-size(12);
       font-weight: 500;
       padding: 8px 24px;
       text-align: left;
       text-transform: uppercase;
-      line-height: 28px;
+      @include line-height(28);
     }
   }
 
@@ -40,7 +40,7 @@ table {
       border-bottom: 1px solid $lightgray;
       padding: 16px;
       text-align: left;
-      line-height: 24px;
+      @include line-height(24);
       vertical-align: top;
 
       @media (max-width: 480px) {
@@ -53,7 +53,7 @@ table {
     }
 
     td {
-      letter-spacing: 0.30px;
+      @include letter-spacing(0.3);
 
       tr td:first-child {
         @media (max-width: 480px) {

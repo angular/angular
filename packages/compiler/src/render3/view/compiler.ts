@@ -632,7 +632,7 @@ function createHostBindingsFunction(
   const eventBindings =
       bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
   if (eventBindings && eventBindings.length) {
-    const listeners = createHostListeners(bindingContext, eventBindings, name);
+    const listeners = createHostListeners(eventBindings, name);
     createStatements.push(...listeners);
   }
 
@@ -667,18 +667,7 @@ function createHostBindingsFunction(
           sanitizerFn = resolveSanitizationFn(securityContexts[0], isAttribute);
         }
       }
-      const isInstructionWithoutElementIndex =
-          instruction === R3.property || instruction === R3.attribute;
-      const instructionParams: o.Expression[] = isInstructionWithoutElementIndex ?
-          [
-            o.literal(bindingName),
-            bindingExpr.currValExpr,
-          ] :
-          [
-            elVarExp,
-            o.literal(bindingName),
-            o.importExpr(R3.bind).callFn([bindingExpr.currValExpr]),
-          ];
+      const instructionParams = [o.literal(bindingName), bindingExpr.currValExpr];
       if (sanitizerFn) {
         instructionParams.push(sanitizerFn);
       }
@@ -783,7 +772,7 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
       // host bindings that have a synthetic property (e.g. @foo) should always be rendered
       // in the context of the component and not the parent. Therefore there is a special
       // compatibility instruction available for this purpose.
-      instruction = R3.componentHostSyntheticProperty;
+      instruction = R3.updateSyntheticHostBinding;
     } else {
       instruction = R3.property;
     }
@@ -792,16 +781,14 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
   return {bindingName, instruction, isAttribute: !!attrMatches};
 }
 
-function createHostListeners(
-    bindingContext: o.Expression, eventBindings: ParsedEvent[], name?: string): o.Statement[] {
+function createHostListeners(eventBindings: ParsedEvent[], name?: string): o.Statement[] {
   return eventBindings.map(binding => {
     let bindingName = binding.name && sanitizeIdentifier(binding.name);
     const bindingFnName = binding.type === ParsedEventType.Animation ?
         prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase) :
         bindingName;
     const handlerName = name && bindingName ? `${name}_${bindingFnName}_HostBindingHandler` : null;
-    const params = prepareEventListenerParameters(
-        BoundEvent.fromParsedEvent(binding), bindingContext, handlerName);
+    const params = prepareEventListenerParameters(BoundEvent.fromParsedEvent(binding), handlerName);
     const instruction =
         binding.type == ParsedEventType.Animation ? R3.componentHostSyntheticListener : R3.listener;
     return o.importExpr(instruction).callFn(params).toStmt();

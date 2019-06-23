@@ -23,8 +23,9 @@ ng_package(
     srcs = [
         "package.json",
         "//packages/upgrade/static:package.json",
+        "//packages/upgrade/static/testing:package.json",
     ],
-    entry_point = "packages/upgrade/index.js",
+    entry_point = ":index.ts",
     tags = [
         "release-with-framework",
     ],
@@ -34,5 +35,6 @@ ng_package(
     deps = [
         ":upgrade",
         "//packages/upgrade/static",
+        "//packages/upgrade/static/testing",
     ],
 )

@@ -29,17 +29,13 @@ export class Identifiers {
 
   static elementEnd: o.ExternalReference = {name: 'ɵɵelementEnd', moduleName: CORE};
 
-  static elementProperty: o.ExternalReference = {name: 'ɵɵelementProperty', moduleName: CORE};
-
   static select: o.ExternalReference = {name: 'ɵɵselect', moduleName: CORE};
 
-  static componentHostSyntheticProperty:
-      o.ExternalReference = {name: 'ɵɵcomponentHostSyntheticProperty', moduleName: CORE};
+  static updateSyntheticHostBinding:
+      o.ExternalReference = {name: 'ɵɵupdateSyntheticHostBinding', moduleName: CORE};
 
   static componentHostSyntheticListener:
       o.ExternalReference = {name: 'ɵɵcomponentHostSyntheticListener', moduleName: CORE};
-
-  static elementAttribute: o.ExternalReference = {name: 'ɵɵelementAttribute', moduleName: CORE};
 
   static attribute: o.ExternalReference = {name: 'ɵɵattribute', moduleName: CORE};
 
@@ -93,8 +89,6 @@ export class Identifiers {
   static text: o.ExternalReference = {name: 'ɵɵtext', moduleName: CORE};
 
   static textBinding: o.ExternalReference = {name: 'ɵɵtextBinding', moduleName: CORE};
-
-  static bind: o.ExternalReference = {name: 'ɵɵbind', moduleName: CORE};
 
   static enableBindings: o.ExternalReference = {name: 'ɵɵenableBindings', moduleName: CORE};
 

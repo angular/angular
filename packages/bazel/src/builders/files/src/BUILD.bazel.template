@@ -5,11 +5,20 @@ load("@npm_bazel_karma//:index.bzl", "ts_web_test_suite")
 load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle", "history_server")
 load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
 load("@npm_bazel_typescript//:index.bzl", "ts_devserver", "ts_library")
-load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary")
+load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary", "sass_binary")
+
+sass_binary(
+  name = "global_stylesheet",
+  src = glob(["styles.css", "styles.scss"])[0],
+  output_name = "global_stylesheet.css",
+)
 
 multi_sass_binary(
     name = "styles",
-    srcs = glob(["**/*.scss"]),
+    srcs = glob(
+      include = ["**/*.scss"],
+      exclude = ["styles.scss"],
+    ),
 )
 
 ng_module(
@@ -38,7 +47,7 @@ ng_module(
 
 rollup_bundle(
     name = "bundle",
-    entry_point = "src/main.prod",
+    entry_point = ":main.prod.ts",
     deps = [
         "//src",
         "@npm//@angular/router",
@@ -52,6 +61,7 @@ web_package(
         # do not sort
         "@npm//node_modules/zone.js:dist/zone.min.js",
         ":bundle.min.js",
+        ":global_stylesheet",
     ],
     data = [
         "favicon.ico",
@@ -85,6 +95,7 @@ ts_devserver(
     ],
     static_files = [
         "@npm//node_modules/zone.js:dist/zone.min.js",
+        ":global_stylesheet",
     ],
     data = [
         "favicon.ico",

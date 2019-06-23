@@ -53,11 +53,12 @@ aio-search-results.embedded .search-results {
     margin: 16px 16px;
     height: 100%;
 
-    h3 {
-        font-size: 16px;
+    .search-section-header {
+        @include font-size(16);
         font-weight: 400;
         margin: 10px 0px 5px;
         text-transform: uppercase;
+        color: $white;
     }
 
     ul {
@@ -70,7 +71,7 @@ aio-search-results.embedded .search-results {
     }
 
     a {
-        font-size: 14px;
+        @include font-size(14);
         color: $lightgray;
         text-decoration: none;
         font-weight: normal;

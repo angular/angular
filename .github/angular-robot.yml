@@ -85,11 +85,7 @@ merge:
     # This enables us to request reviews from both eng and tech writers, or multiple eng folks, and prevents accidental merges.
     # Rather than merging PRs with pending reviews, if all approvals are obtained and additional reviews are not needed, any pending reviewers should be removed via GitHub UI (this also leaves an audit trail behind these decisions).
     requireReviews: true,
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
     # whether the PR shouldn't have a conflict with the base branch
     noConflict: true
     # list of labels that a PR needs to have, checked with a regexp (e.g. "PR target:" will work for the label "PR target: master")

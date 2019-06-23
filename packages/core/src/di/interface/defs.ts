@@ -38,9 +38,16 @@ export interface ɵɵInjectableDef<T> {
   providedIn: InjectorType<any>|'root'|'any'|null;
 
   /**
+   * The token to which this definition belongs.
+   *
+   * Note that this may not be the same as the type that the `factory` will create.
+   */
+  token: unknown;
+
+  /**
    * Factory method to execute to create an instance of the injectable.
    */
-  factory: () => T;
+  factory: (t?: Type<any>) => T;
 
   /**
    * In a case of no explicit injector, a location where the instance of the injectable is stored.
@@ -132,11 +139,13 @@ export interface InjectorTypeWithProviders<T> {
  * @codeGenApi
  */
 export function ɵɵdefineInjectable<T>(opts: {
+  token: unknown,
   providedIn?: Type<any>| 'root' | 'any' | null,
   factory: () => T,
 }): never {
   return ({
-    providedIn: opts.providedIn as any || null, factory: opts.factory, value: undefined,
+    token: opts.token, providedIn: opts.providedIn as any || null, factory: opts.factory,
+        value: undefined,
   } as ɵɵInjectableDef<T>) as never;
 }
 
@@ -181,7 +190,15 @@ export function ɵɵdefineInjector(options: {factory: () => any, providers?: any
  * @param type A type which may have its own (non-inherited) `ngInjectableDef`.
  */
 export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
-  return type && type.hasOwnProperty(NG_INJECTABLE_DEF) ? type[NG_INJECTABLE_DEF] : null;
+  const def = type[NG_INJECTABLE_DEF] as ɵɵInjectableDef<T>;
+  // The definition read above may come from a base class. `hasOwnProperty` is not sufficient to
+  // distinguish this case, as in older browsers (e.g. IE10) static property inheritance is
+  // implemented by copying the properties.
+  //
+  // Instead, the ngInjectableDef's token is compared to the type, and if they don't match then the
+  // property was not defined directly on the type itself, and was likely inherited. The definition
+  // is only returned if the type matches the def.token.
+  return def && def.token === type ? def : null;
 }
 
 /**

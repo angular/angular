@@ -279,6 +279,9 @@
     "name": "UnsubscriptionErrorImpl"
   },
   {
+    "name": "VIEW_REFS"
+  },
+  {
     "name": "ViewContainerRef"
   },
   {
@@ -303,13 +306,25 @@
     "name": "__forward_ref__"
   },
   {
+    "name": "__global"
+  },
+  {
+    "name": "__globalThis"
+  },
+  {
     "name": "__read"
+  },
+  {
+    "name": "__self"
   },
   {
     "name": "__spread"
   },
   {
     "name": "__values"
+  },
+  {
+    "name": "__window"
   },
   {
     "name": "_activeStylingMapApplyFn"
@@ -493,6 +508,9 @@
   },
   {
     "name": "baseResolveDirective"
+  },
+  {
+    "name": "bind"
   },
   {
     "name": "bindingUpdated"
@@ -808,9 +826,6 @@
   },
   {
     "name": "getErrorLogger"
-  },
-  {
-    "name": "getGlobal"
   },
   {
     "name": "getGuardMask"
@@ -1377,6 +1392,9 @@
     "name": "searchTokensOnInjector"
   },
   {
+    "name": "selectInternal"
+  },
+  {
     "name": "setActiveHostElement"
   },
   {
@@ -1506,6 +1524,9 @@
     "name": "syncViewWithBlueprint"
   },
   {
+    "name": "textBindingInternal"
+  },
+  {
     "name": "throwMultipleComponentError"
   },
   {
@@ -1558,9 +1579,6 @@
   },
   {
     "name": "wrapListener"
-  },
-  {
-    "name": "ɵɵbind"
   },
   {
     "name": "ɵɵclassProp"
@@ -1624,9 +1642,6 @@
   },
   {
     "name": "ɵɵtext"
-  },
-  {
-    "name": "ɵɵtextBinding"
   },
   {
     "name": "ɵɵtextInterpolate"

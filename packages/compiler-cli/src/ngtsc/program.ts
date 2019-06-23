@@ -19,6 +19,7 @@ import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
+import {IndexedComponent} from './indexer';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
 import {PartialEvaluator} from './partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from './path';
@@ -42,7 +43,6 @@ export class NgtscProgram implements api.Program {
   private compilation: IvyCompilation|undefined = undefined;
   private factoryToSourceInfo: Map<string, FactoryInfo>|null = null;
   private sourceToFactorySymbols: Map<string, Set<string>>|null = null;
-  private host: ts.CompilerHost;
   private _coreImportsFrom: ts.SourceFile|null|undefined = undefined;
   private _importRewriter: ImportRewriter|undefined = undefined;
   private _reflector: TypeScriptReflectionHost|undefined = undefined;
@@ -67,20 +67,23 @@ export class NgtscProgram implements api.Program {
   private incrementalState: IncrementalState;
   private typeCheckFilePath: AbsoluteFsPath;
 
+  private modifiedResourceFiles: Set<string>|null;
+
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
-      host: api.CompilerHost, oldProgram?: NgtscProgram) {
+      private host: api.CompilerHost, oldProgram?: NgtscProgram) {
     if (shouldEnablePerfTracing(options)) {
       this.perfTracker = PerfTracker.zeroedToNow();
       this.perfRecorder = this.perfTracker;
     }
 
+    this.modifiedResourceFiles =
+        this.host.getModifiedResourceFiles && this.host.getModifiedResourceFiles() || null;
     this.rootDirs = getRootDirs(host, options);
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceManager = new HostResourceLoader(host, options);
     const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
     const normalizedRootNames = rootNames.map(n => AbsoluteFsPath.from(n));
-    this.host = host;
     if (host.fileNameToModuleName !== undefined) {
       this.fileToModuleHost = host as FileToModuleHost;
     }
@@ -158,7 +161,8 @@ export class NgtscProgram implements api.Program {
       this.incrementalState = IncrementalState.fresh();
     } else {
       this.incrementalState = IncrementalState.reconcile(
-          oldProgram.incrementalState, oldProgram.reuseTsProgram, this.tsProgram);
+          oldProgram.incrementalState, oldProgram.reuseTsProgram, this.tsProgram,
+          this.modifiedResourceFiles);
     }
   }
 
@@ -262,6 +266,10 @@ export class NgtscProgram implements api.Program {
 
     this.ensureAnalyzed();
     return this.routeAnalyzer !.listLazyRoutes(entryRoute);
+  }
+
+  getIndexedComponents(): Map<ts.Declaration, IndexedComponent> {
+    throw new Error('Method not implemented.');
   }
 
   getLibrarySummaries(): Map<string, api.LibrarySummary> {
@@ -493,7 +501,7 @@ export class NgtscProgram implements api.Program {
           this.reflector, evaluator, metaRegistry, this.metaReader !, scopeRegistry, this.isCore,
           this.resourceManager, this.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer,
-          this.refEmitter, this.defaultImportTracker),
+          this.refEmitter, this.defaultImportTracker, this.incrementalState),
       new DirectiveDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
       new InjectableDecoratorHandler(

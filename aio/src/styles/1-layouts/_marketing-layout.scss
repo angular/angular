@@ -22,9 +22,9 @@
 
   .hero-title {
     display: inline-block;
-    font-size: 28px;
+    @include font-size(28);
     font-weight: 400;
-    line-height: 48px;
+    @include line-height(48);
     margin: 0 8px 0 0;
     text-transform: uppercase;
 
@@ -42,7 +42,7 @@ section#intro {
   height: 480px;
   margin: 0 auto -32px;
   padding: 48px 0 0;
-  color: white;
+  color: $white;
 
   @media (max-width: 780px) {
     flex-direction: column;
@@ -76,8 +76,8 @@ section#intro {
   }
 
   .hero-headline {
-    font-size: 40px;
-    line-height: 64px;
+    @include font-size(40);
+    @include line-height(64);
     font-weight: 500;
     margin: 32px 0;
 
@@ -90,8 +90,8 @@ section#intro {
     }
 
     @media (max-width: 575px) {
-      font-size: 32px;
-      line-height: 50px;
+      @include font-size(32);
+      @include line-height(50);
     }
   }
 
@@ -154,7 +154,7 @@ section#intro {
     align-items: center;
     height: 40px;
     min-width: 160px;
-    font-size: 16px;
+    @include font-size(16);
     color: $white;
     background-color: $blue;
     border-radius: 48px;
@@ -172,11 +172,11 @@ section#intro {
     right: 0;
     position: static;
     transition: all 0.3s ease-in;
-    font-size: 16px;
+    @include font-size(16);
   }
 
   p {
-    font-size: 16px;
+    @include font-size(16);
     margin: 8px;
     text-align: center;
   }
@@ -252,9 +252,9 @@ section#intro {
   width: 184px;
   height: 40px;
   padding: 0 24px;
-  font-size: 18px;
+  @include font-size(18);
   font-weight: 600;
-  line-height: 40px;
+  @include line-height(40);
   background-color: $white;
   border-radius: 48px;
   box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
@@ -325,7 +325,7 @@ aio-shell {
 }
 
 .text-headline {
-  font-size: 20px;
+  @include font-size(20);
   font-weight: 500;
   color: $blue;
   margin-top: 10px;
@@ -424,15 +424,15 @@ div[layout=row]{
 
   .banner-headline {
     text-transform: uppercase;
-    font-size: 24px;
+    @include font-size(24);
     font-weight: 300;
-    color: white;
+    color: $white;
     margin: 0;
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;
 
     @media (max-width: 600px) {
-      font-size: 18px;
+      @include font-size(18);
       font-weight: 400;
     }
 

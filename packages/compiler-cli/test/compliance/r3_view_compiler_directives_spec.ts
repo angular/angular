@@ -139,7 +139,6 @@ describe('compiler compliance: directives', () => {
                             $r3$.ɵɵelement(0, "div", _c0);
                         }
                         if (rf & 2) {
-                            $r3$.ɵɵselect(0);
                             $r3$.ɵɵproperty("someDirective", true);
                         }
                     },
@@ -254,7 +253,6 @@ describe('compiler compliance: directives', () => {
               $r3$.ɵɵtemplate(0, MyComponent_ng_container_0_Template, 2, 0, "ng-container", $_c0$);
             }
             if (rf & 2) {
-              $r3$.ɵɵselect(0);
               $r3$.ɵɵproperty("ngIf", ctx.showing);
             }
           },
@@ -302,7 +300,6 @@ describe('compiler compliance: directives', () => {
                             $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", $c0_a0$);
                         }
                         if (rf & 2) {
-                            $r3$.ɵɵselect(0);
                             $r3$.ɵɵproperty("someDirective", true);
                         }
                     },

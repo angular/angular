@@ -16,7 +16,7 @@ nodejs_binary(
         "fake-devserver.js",
         "@npm//minimist",
     ],
-    entry_point = "angular/packages/bazel/test/protractor-utils/fake-devserver.js",
+    entry_point = ":fake-devserver.ts",
 )
 
 jasmine_node_test(

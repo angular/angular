@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import '../util/ng_dev_mode';
+
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors';
@@ -255,8 +257,7 @@ export class R3Injector {
         (ngModule === undefined) ? (defOrWrappedDef as InjectorType<any>) : ngModule;
 
     // Check for circular dependencies.
-    // TODO(FW-1307): Re-add ngDevMode when closure can handle it
-    if (parents.indexOf(defType) !== -1) {
+    if (ngDevMode && parents.indexOf(defType) !== -1) {
       const defName = stringify(defType);
       throw new Error(
           `Circular dependency in DI detected for type ${defName}. Dependency path: ${parents.map(defType => stringify(defType)).join(' > ')} > ${defName}.`);
@@ -286,8 +287,7 @@ export class R3Injector {
     if (def.imports != null && !isDuplicate) {
       // Before processing defType's imports, add it to the set of parents. This way, if it ends
       // up deeply importing itself, this can be detected.
-      // TODO(FW-1307): Re-add ngDevMode when closure can handle it
-      parents.push(defType);
+      ngDevMode && parents.push(defType);
       // Add it to the set of dedups. This way we can detect multiple imports of the same module
       dedupStack.push(defType);
 
@@ -303,8 +303,7 @@ export class R3Injector {
         });
       } finally {
         // Remove it from the parents set when finished.
-        // TODO(FW-1307): Re-add ngDevMode when closure can handle it
-        parents.pop();
+        ngDevMode && parents.pop();
       }
 
       // Imports which are declared with providers (TypeWithProviders) need to be processed
@@ -439,7 +438,7 @@ function getUndecoratedInjectableFactory(token: Function) {
   // just instantiates the zero-arg constructor.
   const inheritedInjectableDef = getInheritedInjectableDef(token);
   if (inheritedInjectableDef !== null) {
-    return inheritedInjectableDef.factory;
+    return () => inheritedInjectableDef.factory(token as Type<any>);
   } else {
     return () => new (token as Type<any>)();
   }

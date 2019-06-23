@@ -10,8 +10,8 @@ import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, DoCheck} from '../../src/core';
 import {whenRendered} from '../../src/render3/component';
-import {LifecycleHooksFeature, getRenderedText, ɵɵdefineComponent, ɵɵgetCurrentView} from '../../src/render3/index';
-import {detectChanges, markDirty, tick, ɵɵbind, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵlistener, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {LifecycleHooksFeature, getRenderedText, ɵɵdefineComponent, ɵɵgetCurrentView, ɵɵproperty, ɵɵselect, ɵɵtextInterpolate1, ɵɵtextInterpolate2} from '../../src/render3/index';
+import {detectChanges, markDirty, tick, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵlistener, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {FLAGS, LViewFlags} from '../../src/render3/interfaces/view';
@@ -38,7 +38,8 @@ describe('change detection', () => {
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            ɵɵtextBinding(1, ɵɵbind(ctx.value));
+            ɵɵselect(1);
+            ɵɵtextBinding(ctx.value);
           }
         }
       });
@@ -120,7 +121,8 @@ describe('change detection', () => {
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            ɵɵtextBinding(0, ɵɵinterpolation2('', ctx.doCheckCount, ' - ', ctx.name, ''));
+            ɵɵselect(0);
+            ɵɵtextInterpolate2('', ctx.doCheckCount, ' - ', ctx.name, '');
           }
         },
         changeDetection: ChangeDetectionStrategy.OnPush,
@@ -163,7 +165,8 @@ describe('change detection', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵtextBinding(0, ɵɵinterpolation2('', ctx.doCheckCount, ' - ', ctx.name, ''));
+              ɵɵselect(0);
+              ɵɵtextInterpolate2('', ctx.doCheckCount, ' - ', ctx.name, '');
             }
           },
           changeDetection: ChangeDetectionStrategy.OnPush,
@@ -186,7 +189,8 @@ describe('change detection', () => {
               ɵɵelement(0, 'manual-comp');
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'name', ɵɵbind(ctx.name));
+              ɵɵselect(0);
+              ɵɵproperty('name', ctx.name);
             }
 
           },
@@ -242,7 +246,8 @@ describe('change detection', () => {
                    ɵɵelement(1, 'manual-comp');
                  }
                  if (rf & RenderFlags.Update) {
-                   ɵɵtextBinding(0, ɵɵinterpolation1('', ctx.doCheckCount, ' - '));
+                   ɵɵselect(0);
+                   ɵɵtextInterpolate1('', ctx.doCheckCount, ' - ');
                  }
                },
                directives: () => [ManualComponent],
@@ -317,7 +322,8 @@ describe('change detection', () => {
             ɵɵtext(0);
           }
           if (rf & RenderFlags.Update) {
-            ɵɵtextBinding(0, ɵɵbind(ctx.value));
+            ɵɵselect(0);
+            ɵɵtextBinding(ctx.value);
           }
         }
       });

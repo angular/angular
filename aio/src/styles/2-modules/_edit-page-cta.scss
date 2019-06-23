@@ -1,6 +1,6 @@
 .edit-page-cta {
     font-weight: 400;
-    font-size: 14px;
+    @include font-size(14);
     color: $blue;
     text-align: right;
     margin-right: 32px;

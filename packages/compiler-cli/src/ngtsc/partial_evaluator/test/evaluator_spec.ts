@@ -9,8 +9,10 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {FunctionDefinition, TsHelperFn, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {DynamicValue} from '../src/dynamic';
+import {PartialEvaluator} from '../src/interface';
 import {EnumValue} from '../src/result';
 
 import {evaluate, firstArgFfr, makeEvaluator, makeExpression, owningModuleOf} from './utils';
@@ -36,6 +38,9 @@ describe('ngtsc metadata', () => {
 
   it('map access works',
      () => { expect(evaluate('const obj = {a: "test"};', 'obj.a')).toEqual('test'); });
+
+  it('resolves undefined property access',
+     () => { expect(evaluate('const obj: any = {}', 'obj.bar')).toEqual(undefined); });
 
   it('function calls work', () => {
     expect(evaluate(`function foo(bar) { return bar; }`, 'foo("test")')).toEqual('test');
@@ -343,6 +348,27 @@ describe('ngtsc metadata', () => {
     expect((value.node as ts.CallExpression).expression.getText()).toBe('foo');
   });
 
+  it('should evaluate TypeScript __spread helper', () => {
+    const {checker, expression} = makeExpression(
+        `
+        import * as tslib from 'tslib';
+        const a = [1];
+        const b = [2, 3];
+      `,
+        'tslib.__spread(a, b)', [
+          {
+            name: 'node_modules/tslib/index.d.ts',
+            contents: `
+          export declare function __spread(...args: any[]): any[];
+        `
+          },
+        ]);
+    const reflectionHost = new TsLibAwareReflectionHost(checker);
+    const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const value = evaluator.evaluate(expression);
+    expect(value).toEqual([1, 2, 3]);
+  });
+
   describe('(visited file tracking)', () => {
     it('should track each time a source file is visited', () => {
       const trackFileDependency = jasmine.createSpy('DependencyTracker');
@@ -393,3 +419,34 @@ describe('ngtsc metadata', () => {
     });
   });
 });
+
+/**
+ * Customizes the resolution of functions to recognize functions from tslib. Such functions are not
+ * handled specially in the default TypeScript host, as only ngcc's ES5 host will have special
+ * powers to recognize functions from tslib.
+ */
+class TsLibAwareReflectionHost extends TypeScriptReflectionHost {
+  getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
+    if (ts.isFunctionDeclaration(node)) {
+      const helper = getTsHelperFn(node);
+      if (helper !== null) {
+        return {
+          node,
+          body: null, helper,
+          parameters: [],
+        };
+      }
+    }
+    return super.getDefinitionOfFunction(node);
+  }
+}
+
+function getTsHelperFn(node: ts.FunctionDeclaration): TsHelperFn|null {
+  const name = node.name !== undefined && ts.isIdentifier(node.name) && node.name.text;
+
+  if (name === '__spread') {
+    return TsHelperFn.Spread;
+  } else {
+    return null;
+  }
+}

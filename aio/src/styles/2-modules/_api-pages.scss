@@ -6,7 +6,7 @@
 
       th {
           text-transform: none;
-          font-size: 16px;
+          @include font-size(16);
           font-weight: bold;
       }
 
@@ -52,7 +52,7 @@
 
       &.parameters-table {
         margin-top: 0;
-        font-size: 14px;
+        @include font-size(14);
         box-shadow: none;
 
         tr {
@@ -120,7 +120,7 @@
   .material-icons {
     border-radius: 4px;
     padding: 4px;
-    font-size: 20px;
+    @include font-size(20);
     &:hover {
       background-color: $mist;
     }
@@ -166,7 +166,7 @@
     }
 
     h4 {
-      font-size: 14px;
+      @include font-size(14);
       font-weight: bold;
       margin-top: 12px;
     }
@@ -175,12 +175,12 @@
 
   .api-heading {
     padding: 5px 0;
-    font-size: 14px;
+    @include font-size(14);
   }
 
   .parameters-table {
     margin-top: 0;
-    font-size: 14px;
+    @include font-size(14);
     td:nth-child(1) {
       width: 20%;
     }
@@ -245,9 +245,9 @@
 
 
   .from-constructor, .read-only-property, .write-only-property {
-    font-size: 12px;
+    @include font-size(12);
     font-weight: 600;
-    letter-spacing: 0.5px;
+    @include letter-spacing(0.5);
     font-style: italic;
     background-color: $lightgray;
     border-radius: 4px;

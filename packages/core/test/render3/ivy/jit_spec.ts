@@ -168,6 +168,7 @@ ivyEnabled && describe('render3 jit', () => {
   it('compiles a module to an ngInjectorDef with the providers', () => {
     class Token {
       static ngInjectableDef = ɵɵdefineInjectable({
+        token: Token,
         providedIn: 'root',
         factory: () => 'default',
       });
@@ -243,7 +244,7 @@ ivyEnabled && describe('render3 jit', () => {
     const pipeDef = (P as any).ngPipeDef as PipeDef<P>;
     expect(pipeDef.name).toBe('test-pipe');
     expect(pipeDef.pure).toBe(false, 'pipe should not be pure');
-    expect(pipeDef.factory(null) instanceof P)
+    expect(pipeDef.factory() instanceof P)
         .toBe(true, 'factory() should create an instance of the pipe');
   });
 
