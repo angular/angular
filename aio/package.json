@@ -62,7 +62,7 @@
     "boilerplate:test": "node tools/examples/test.js",
     "generate-stackblitz": "node ./tools/stackblitz-builder/generateStackblitz",
     "generate-zips": "node ./tools/example-zipper/generateZips",
-    "build-404-page": "node scripts/build-404-page",
+    "build-404-page": "cp dist/index.html dist/404.html",
     "update-webdriver": "webdriver-manager update --standalone false --gecko false $CI_CHROMEDRIVER_VERSION_ARG",
     "~~check-env": "node scripts/check-environment",
     "~~clean-generated": "node --eval \"require('shelljs').rm('-rf', 'src/generated')\"",
