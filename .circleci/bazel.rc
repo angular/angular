@@ -15,8 +15,7 @@ import %workspace%/.circleci/base-rbe-bazelrc
 
 # Use the Angular team internal GCP instance for remote execution.
 build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
+build:remote --project_id=internal-200822
 
-# We want to accept remote cached build artifacts to speed up our builds incrementally.
-# TODO(devversion): Temporary disabled since we don't have much insight on possible security
-# issues. Enable this once we investigated this further and talked to the RBE team.
-build:remote --remote_accept_cached=false
+# Always read from remote cache on CI.
+build:remote --remote_accept_cached=true

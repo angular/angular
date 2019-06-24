@@ -12,6 +12,11 @@ build:remote --remote_executor=remotebuildexecution.googleapis.com
 build:remote --tls_enabled=true
 build:remote --auth_enabled=true
 
+# Setup Build Event Service
+build:remote --bes_backend=buildeventservice.googleapis.com
+build:remote --bes_timeout=30s
+build:remote --bes_results_url="https://source.cloud.google.com/results/invocations/"	
+
 # Setup the toolchain and platform for the remote build execution. The platform
 # is automatically configured by the "rbe_autoconfig" rule in the project workpsace.
 build:remote --crosstool_top=@rbe_default//cc:toolchain
