@@ -114,8 +114,6 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
                               .withManifest(seqIncreasedManifest)
                               .build();
 
-  const scope = new SwTestHarnessBuilder().withServerState(server).build();
-
 
   describe('data cache', () => {
     let scope: SwTestHarness;
@@ -242,28 +240,16 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
   });
 })();
 
-async function makeRequest(scope: SwTestHarness, url: string, clientId?: string):
-    Promise<string|null> {
-      const [resPromise, done] = scope.handleFetch(new MockRequest(url), clientId || 'default');
-      await done;
-      const res = await resPromise;
-      if (res !== undefined) {
-        return res.text();
-      }
-      return null;
-    }
+function makeRequest(scope: SwTestHarness, url: string, clientId?: string): Promise<string|null> {
+  const [resTextPromise, done] = makePendingRequest(scope, url, clientId);
+  return done.then(() => resTextPromise);
+}
 
-function makePendingRequest(scope: SwTestHarness, url: string, clientId?: string):
-    [Promise<string|null>, Promise<void>] {
-      const [resPromise, done] = scope.handleFetch(new MockRequest(url), clientId || 'default');
-      return [
-        (async() => {
-          const res = await resPromise;
-          if (res !== undefined) {
-            return res.text();
-          }
-          return null;
-        })(),
-        done
-      ];
-    }
+function makePendingRequest(
+    scope: SwTestHarness, url: string, clientId?: string): [Promise<string|null>, Promise<void>] {
+  const [resPromise, done] = scope.handleFetch(new MockRequest(url), clientId || 'default');
+  return [
+    resPromise.then<string|null>(res => res ? res.text() : null),
+    done,
+  ];
+}
