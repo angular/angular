@@ -10,7 +10,7 @@ import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
 import {bind} from './property';
-import {elementAttributeInternal} from './shared';
+import {TsickleIssue1009, elementAttributeInternal} from './shared';
 
 
 
@@ -28,12 +28,14 @@ import {elementAttributeInternal} from './shared';
  * @codeGenApi
  */
 export function ɵɵattribute(
-    name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string) {
+    name: string, value: any, sanitizer?: SanitizerFn | null,
+    namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
   // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const bound = bind(lView, value);
   if (bound !== NO_CHANGE) {
-    return elementAttributeInternal(index, name, bound, lView, sanitizer, namespace);
+    elementAttributeInternal(index, name, bound, lView, sanitizer, namespace);
   }
+  return ɵɵattribute;
 }

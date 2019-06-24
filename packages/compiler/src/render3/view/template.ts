@@ -711,7 +711,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // special value to symbolize that there is no RHS to this binding
     // TODO (matsko): revisit this once FW-959 is approached
     const emptyValueBindInstruction = o.literal(undefined);
-    const propertyBindings: ChainablePropertyBinding[] = [];
+    const propertyBindings: ChainableBindingInstruction[] = [];
+    const attributeBindings: ChainableBindingInstruction[] = [];
 
     // Generate element input bindings
     allOtherInputs.forEach((input: t.BoundAttribute) => {
@@ -781,8 +782,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             } else {
               const boundValue = value instanceof Interpolation ? value.expressions[0] : value;
               // [attr.name]="value" or attr.name="{{value}}"
-              this.boundUpdateInstruction(
-                  R3.attribute, elementIndex, attrName, input, boundValue, params);
+              // Collect the attribute bindings so that they can be chained at the end.
+              attributeBindings.push({
+                name: attrName,
+                input,
+                value: () => this.convertPropertyBinding(boundValue), params
+              });
             }
           } else {
             // class prop
@@ -798,7 +803,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     if (propertyBindings.length > 0) {
-      this.propertyInstructionChain(elementIndex, propertyBindings);
+      this.updateInstructionChain(elementIndex, R3.property, propertyBindings);
+    }
+
+    if (attributeBindings.length > 0) {
+      this.updateInstructionChain(elementIndex, R3.attribute, attributeBindings);
     }
 
     // Traverse element child nodes
@@ -1025,7 +1034,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private templatePropertyBindings(
       templateIndex: number, attrs: (t.BoundAttribute|t.TextAttribute)[]) {
-    const propertyBindings: ChainablePropertyBinding[] = [];
+    const propertyBindings: ChainableBindingInstruction[] = [];
     attrs.forEach(input => {
       if (input instanceof t.BoundAttribute) {
         const value = input.value.visit(this._valueConverter);
@@ -1039,7 +1048,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     if (propertyBindings.length > 0) {
-      this.propertyInstructionChain(templateIndex, propertyBindings);
+      this.updateInstructionChain(templateIndex, R3.property, propertyBindings);
     }
   }
 
@@ -1083,23 +1092,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private updateInstructionChain(
-      nodeIndex: number, span: ParseSourceSpan|null, reference: o.ExternalReference,
-      callsOrFn?: o.Expression[][]|(() => o.Expression[][])) {
+      nodeIndex: number, reference: o.ExternalReference, bindings: ChainableBindingInstruction[]) {
+    const span = bindings.length ? bindings[0].input.sourceSpan : null;
+
     this.addSelectInstructionIfNecessary(nodeIndex, span);
     this._updateCodeFns.push(() => {
-      const calls = typeof callsOrFn === 'function' ? callsOrFn() : callsOrFn;
-      return chainedInstruction(span, reference, calls || []).toStmt();
-    });
-  }
+      const calls = bindings.map(
+          property => [o.literal(property.name), property.value(), ...(property.params || [])]);
 
-  private propertyInstructionChain(
-      nodeIndex: number, propertyBindings: ChainablePropertyBinding[]) {
-    this.updateInstructionChain(
-        nodeIndex, propertyBindings.length ? propertyBindings[0].input.sourceSpan : null,
-        R3.property, () => {
-          return propertyBindings.map(
-              property => [o.literal(property.name), property.value(), ...(property.params || [])]);
-        });
+      return chainedInstruction(span, reference, calls).toStmt();
+    });
   }
 
   private addSelectInstructionIfNecessary(nodeIndex: number, span: ParseSourceSpan|null) {
@@ -2024,7 +2026,7 @@ function hasTextChildrenOnly(children: t.Node[]): boolean {
   return children.every(isTextNode);
 }
 
-interface ChainablePropertyBinding {
+interface ChainableBindingInstruction {
   name: string;
   input: t.BoundAttribute;
   value: () => o.Expression;
