@@ -30,12 +30,12 @@
     rxjs "6.4.0"
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "8.1.0-beta.0"
+  version "8.0.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "0.0.0"
+  version "8.0.0-rc.0"
   dependencies:
     "@angular-devkit/architect" "^0.800.0-beta.15"
     "@angular-devkit/core" "^8.0.0-beta.15"
@@ -47,13 +47,22 @@
     shelljs "0.8.2"
     tsickle "^0.35.0"
 
+"@angular/cdk@8.0.1":
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-8.0.1.tgz#106872aa7fac0c55144ed5dd60df9af7e24b436a"
+  integrity sha512-Ul7rVU/rr4qGHs1w24P/6MHEosYp8AHRxBHrp/yJ50eHbHVS31FyfO8gKfNqPc1bnL1YoYYCs0hIBwNDaz8uDg==
+  dependencies:
+    tslib "^1.7.1"
+  optionalDependencies:
+    parse5 "^5.0.0"
+
 "@angular/common@file:../../dist/packages-dist/common":
-  version "8.1.0-beta.0"
+  version "8.0.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "0.0.0"
+  version "8.0.0-rc.0"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^2.1.1"
@@ -68,51 +77,63 @@
     yargs "13.1.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "8.1.0-beta.0"
+  version "8.0.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "8.1.0-beta.0"
+  version "8.0.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
+"@angular/forms@file:../../dist/packages-dist/forms":
+  version "8.0.0-rc.0"
+  dependencies:
+    tslib "^1.9.0"
+
+"@angular/material@8.0.1":
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-8.0.1.tgz#cbb3f7776d2405a1d75b6e7eb6675fd80a8a5cf5"
+  integrity sha512-BozIS+9yiqFTfXBoZfhFUibY8meDUcv/e+CxhSHyv3vZw9XVTNTbiaX7tX/FX0Ai+1VKnwRTGrKvPKGFSqynCA==
+  dependencies:
+    tslib "^1.7.1"
+
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "8.1.0-beta.0"
+  version "8.0.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "8.1.0-beta.0"
+  version "8.0.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/router@file:../../dist/packages-dist/router":
-  version "8.1.0-beta.0"
+  version "8.0.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
-"@bazel/bazel-darwin_x64@0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.26.0.tgz#24660853a01e286359636025618a1fda1aa978e1"
-  integrity sha512-9qcRlTW9g8TPJ1PWYIkNDUMsEjdhN4sJz5fDjva3GM7mnIST0sgJiRRW5Y9L3Ksv9+jNWmIOlj5wsibAUYyb5w==
+"@bazel/bazel-darwin_x64@0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.26.1.tgz#1b5c69b635e5c2a8c3090fa5f6bcb45735f06045"
+  integrity sha512-9VjrR+ce+iS9xS1lgeAo1RAPXlxCvez/r3smN1lP4s4YNF0s5LAT0cevIl6Zz2nwyEha/6JvY3v6Euemy36F0w==
 
-"@bazel/bazel-linux_x64@0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.26.0.tgz#9302b6df4363b5c492f2755174988935b84fb076"
-  integrity sha512-v9RTFIZb/A8Ej0Q1uCc/uTCRFZIRGqQpBVLO9Vqkbg4kScND9FxAI2RO0bv3Zhz7YTXBvJ8+kSfd/DY+0azwsA==
+"@bazel/bazel-linux_x64@0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.26.1.tgz#04dd194bdcd6b9d45bd865a9a60c280d0d600251"
+  integrity sha512-oZooDxI1C4p7o18zx2Uns2cK/NN2hgF2YSBKH0aVDPAAxQA85h+g124CWDEbsghOdRMSBM0Hd0SSeIqwZcqLSw==
 
-"@bazel/bazel-win32_x64@0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.26.0.tgz#ae878cf2aae0ad9799141e554c47417f426c1aa7"
-  integrity sha512-hmhuWQUzTmVLDusSt701LFzkWoRdEsakDtEGKgIuQuAJ7zqwH8QUn3PpWIg5BA0qF0gxJBKMfTHGvNhMft3pmg==
+"@bazel/bazel-win32_x64@0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.26.1.tgz#9351f07313173b1f98006da8131c94db7aa7c506"
+  integrity sha512-0FkOo8+bxw13X2m6ALhXX2241gG9ZXgcLu0E/IbCWy/TmOB5bR0Z73CslszWbXIldVYnANuhFmnkxIa745Du5Q==
 
 "@bazel/bazel@file:../../node_modules/@bazel/bazel":
-  version "0.26.0"
+  version "0.26.1"
   optionalDependencies:
-    "@bazel/bazel-darwin_x64" "0.26.0"
-    "@bazel/bazel-linux_x64" "0.26.0"
-    "@bazel/bazel-win32_x64" "0.26.0"
+    "@bazel/bazel-darwin_x64" "0.26.1"
+    "@bazel/bazel-linux_x64" "0.26.1"
+    "@bazel/bazel-win32_x64" "0.26.1"
 
 "@bazel/karma@0.30.1":
   version "0.30.1"
@@ -2354,6 +2375,11 @@ pako@~1.0.2:
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.10.tgz#4328badb5086a426aa90f541977d4955da5c9732"
   integrity sha512-0DTvPVU3ed8+HNXOu5Bs+o//Mbdj9VNQMUOe9oKCwh8l0GNwpTDMKCWbRjgtD291AWnkAgkqA/LOnQS8AmS1tw==
 
+parse5@^5.0.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/parse5/-/parse5-5.1.0.tgz#c59341c9723f414c452975564c7c00a68d58acd2"
+  integrity sha512-fxNG2sQjHvlVAYmzBZS9YlDp6PTSSDwa98vkD4QgVDDCAo84z5X1t5XyJQ62ImdLXx5NdIIfihey6xpum9/gRQ==
+
 parseqs@0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/parseqs/-/parseqs-0.0.5.tgz#d5208a3738e46766e291ba2ea173684921a8b89d"
@@ -3212,6 +3238,11 @@ tslib@1.9.3, tslib@^1.8.1, tslib@^1.9.0:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
   integrity sha512-4krF8scpejhaOgqzBEcGM7yDIEfi0/8+8zDRZhNZZ2kjmHJ4hv3zCbQWxoJGz1iw5U0Jl0nma13xzHXcncMavQ==
+
+tslib@^1.7.1:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
+  integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
 tsutils@2.27.2:
   version "2.27.2"
