@@ -19,8 +19,6 @@ import {SwTestHarness, SwTestHarnessBuilder} from '@angular/service-worker/worke
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 
-import {async_beforeEach, async_fit, async_it} from './async';
-
 (function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
@@ -80,7 +78,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
     let scope: SwTestHarness;
     let driver: Driver;
 
-    async_beforeEach(async() => {
+    beforeEach(async() => {
       // Fire up the client.
       mock = new MockServiceWorkerContainer();
       comm = new NgswCommChannel(mock as any);
@@ -100,12 +98,12 @@ import {async_beforeEach, async_fit, async_it} from './async';
       await driver.initialized;
     });
 
-    async_it('communicates back and forth via update check', async() => {
+    it('communicates back and forth via update check', async() => {
       const update = new SwUpdate(comm);
       await update.checkForUpdate();
     });
 
-    async_it('detects an actual update', async() => {
+    it('detects an actual update', async() => {
       const update = new SwUpdate(comm);
       scope.updateServerState(serverUpdate);
 
@@ -116,7 +114,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       await gotUpdateNotice;
     });
 
-    async_it('receives push message notifications', async() => {
+    it('receives push message notifications', async() => {
       const push = new SwPush(comm);
       scope.updateServerState(serverUpdate);
 
@@ -133,7 +131,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       await gotPushNotice;
     });
 
-    async_it('receives push message click events', async() => {
+    it('receives push message click events', async() => {
       const push = new SwPush(comm);
       scope.updateServerState(serverUpdate);
 
