@@ -120,11 +120,12 @@ export class MockServerState {
       throw new Error('Offline.');
     }
 
-    if (req.credentials === 'include') {
+    this.requests.push(req);
+
+    if ((req.credentials === 'include') || (req.mode === 'no-cors')) {
       return new MockResponse(null, {status: 0, statusText: '', type: 'opaque'});
     }
     const url = req.url.split('?')[0];
-    this.requests.push(req);
     if (this.resources.has(url)) {
       return this.resources.get(url) !.clone();
     }
