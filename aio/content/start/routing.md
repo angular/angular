@@ -23,7 +23,7 @@ The app is already set up to use the Angular router and to use routing to naviga
 
     Reminder: In the file list, right-click the `app` folder, choose `Angular Generator` and `Component`. 
 
-1. In `app.module.ts`, add a route for product details, with a `path` of `products/:productId` and `ProductDetailsComponent` for the `component`.
+1. In `app.module.ts`, add a route for product details, with a `path` of `products/:productId` and `ProductDetailsComponent` for the `component`. We also add a `declarations` key with a list containing our component, which will allow our component to be available in the HTML template.
 
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="product-details-route">
     </code-example>

@@ -11,8 +11,9 @@ import { AppComponent } from './app.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { ProductListComponent } from './product-list/product-list.component';
 import { ProductAlertsComponent } from './product-alerts/product-alerts.component';
+// #docregion product-details-route
 import { ProductDetailsComponent } from './product-details/product-details.component';
-// #enddocregion http-client-module
+// #enddocregion http-client-module, product-details-route
 import { CartComponent } from './cart/cart.component';
 import { ShippingComponent } from './shipping/shipping.component';
 
@@ -37,12 +38,16 @@ import { ShippingComponent } from './shipping/shipping.component';
     ])
   ],
   // #enddocregion product-details-route, cart-route
+  // #docregion product-details-route
   declarations: [
+  // #enddocregion product-details-route
     AppComponent,
     TopBarComponent,
     ProductListComponent,
     ProductAlertsComponent,
+// #docregion product-details-route
     ProductDetailsComponent,
+// #enddocregion product-details-route
     CartComponent,
 // #enddocregion http-client-module
     ShippingComponent
@@ -50,6 +55,8 @@ import { ShippingComponent } from './shipping/shipping.component';
   ],
   bootstrap: [
     AppComponent
+// #docregion product-details-route
   ]
 })
+// #enddocregion product-details-route
 export class AppModule { }
