@@ -117,9 +117,7 @@
       "enum": [
         "css",
         "scss",
-        "sass",
-        "less",
-        "styl"
+        "sass"
       ],
       "x-prompt": {
         "message": "Which stylesheet format would you like to use?",
@@ -127,9 +125,7 @@
         "items": [
           { "value": "css",  "label": "CSS" },
           { "value": "scss", "label": "SCSS   [ http://sass-lang.com/documentation/file.SASS_REFERENCE.html#syntax ]" },
-          { "value": "sass", "label": "Sass   [ http://sass-lang.com/documentation/file.INDENTED_SYNTAX.html       ]" },
-          { "value": "less", "label": "Less   [ http://lesscss.org                                                 ]" },
-          { "value": "styl", "label": "Stylus [ http://stylus-lang.com                                             ] " }
+          { "value": "sass", "label": "Sass   [ http://sass-lang.com/documentation/file.INDENTED_SYNTAX.html       ]" }
         ]
       }
     },
