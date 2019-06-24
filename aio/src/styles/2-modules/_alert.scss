@@ -38,6 +38,26 @@
         }
     }
 
+    &.archive-warning {
+      background-color: $darkred;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+
+      * {
+        color: $white;
+      }
+
+      a {
+        color: $white;
+        font-weight: bold;
+        text-decoration: underline;
+
+        &:hover {
+          opacity: 0.9;
+        }
+      }
+    }
+
     > * {
         margin: 8px 16px;
     }
