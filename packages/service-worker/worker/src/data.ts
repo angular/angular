@@ -378,7 +378,7 @@ export class DataGroup {
 
     // If the network fetch times out or errors, fall back on the cache.
     if (res === undefined) {
-      ctx.waitUntil(this.safeCacheResponse(req, networkFetch));
+      ctx.waitUntil(this.safeCacheResponse(req, networkFetch, true));
 
       // Ignore the age, the network response will be cached anyway due to the
       // behavior of freshness.
@@ -434,9 +434,10 @@ export class DataGroup {
     }
   }
 
-  private async safeCacheResponse(req: Request, res: Promise<Response>): Promise<void> {
+  private async safeCacheResponse(req: Request, res: Promise<Response>, okToCacheOpaque?: boolean):
+      Promise<void> {
     try {
-      await this.cacheResponse(req, await res, await this.lru());
+      await this.cacheResponse(req, await res, await this.lru(), okToCacheOpaque);
     } catch {
       // TODO: handle this error somehow?
     }
