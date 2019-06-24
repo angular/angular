@@ -1,1 +1,31 @@
-// TODO: copy in demo styles from existing mat-chips demo.
+.demo-chips {
+  .mat-mdc-chip-set-stacked {
+    display: block;
+    max-width: 200px;
+  }
+
+  .mat-card {
+    padding: 0;
+    margin: 16px;
+
+    & .mat-toolbar {
+      margin: 0;
+    }
+
+    & .mat-card-content {
+      padding: 24px;
+    }
+  }
+
+  mat-basic-chip {
+    margin: auto 10px;
+  }
+
+  mat-chip-grid input {
+    width: 150px;
+  }
+}
+
+.demo-has-chip-list {
+  width: 100%;
+}

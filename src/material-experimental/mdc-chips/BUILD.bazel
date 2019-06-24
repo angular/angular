@@ -14,8 +14,10 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-chips",
     deps = [
         "//src/material/core",
+        "//src/material/form-field",
         "@npm//@angular/common",
         "@npm//@angular/core",
+        "@npm//@angular/forms",
         "@npm//material-components-web",
     ],
 )
@@ -37,6 +39,7 @@ sass_binary(
         "external/npm/node_modules",
     ],
     deps = [
+        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
         "//src/material/core:all_themes",
     ],

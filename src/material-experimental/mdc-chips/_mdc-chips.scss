@@ -1,13 +1,44 @@
+@import '@material/chips/mixins';
 @import '../mdc-helpers/mdc-helpers';
+@import '@material/theme/functions';
 
 @mixin mat-chips-theme-mdc($theme) {
-  @include mat-using-mdc-theme($theme) {
-    // TODO: MDC theme styles here.
+  @include mdc-chip-set-core-styles($query: $mat-theme-styles-query);
+  @include mdc-chip-without-ripple($query: $mat-theme-styles-query);
+
+  $primary: mat-color(map-get($theme, primary));
+  $accent: mat-color(map-get($theme, accent));
+  $warn: mat-color(map-get($theme, warn));
+  $background: map-get($theme, background);
+
+  $unselected-background: mat-color($background, unselected-chip);
+
+  .mat-mdc-chip {
+    @include mdc-chip-fill-color-accessible($unselected-background);
+
+    &.mat-primary {
+      &.mdc-chip--selected, &.mat-mdc-chip-highlighted {
+         @include mdc-chip-fill-color-accessible($primary);
+      }
+    }
+
+    &.mat-accent {
+      &.mdc-chip--selected, &.mat-mdc-chip-highlighted {
+         @include mdc-chip-fill-color-accessible($accent);
+      }
+    }
+
+    &.mat-warn {
+      &.mdc-chip--selected, &.mat-mdc-chip-highlighted {
+         @include mdc-chip-fill-color-accessible($warn);
+      }
+    }
   }
 }
 
 @mixin mat-chips-typography-mdc($config) {
+  @include mdc-chip-set-core-styles($query: $mat-typography-styles-query);
   @include mat-using-mdc-typography($config) {
-    // TODO: MDC typography styles here.
+    @include mdc-chip-without-ripple($query: $mat-typography-styles-query);
   }
 }

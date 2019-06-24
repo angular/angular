@@ -1,1 +1,51 @@
-// TODO: MDC core styles here.
+@import '@material/chips/mixins';
+@import '../mdc-helpers/mdc-helpers';
+
+@include mdc-chip-without-ripple($query: $mat-base-styles-query);
+@include mdc-chip-set-core-styles($query: $mat-base-styles-query);
+
+
+// The MDC chip styles related to hover and focus states are intertwined with the MDC ripple styles.
+// We currently don't use the MDC ripple due to size concerns, therefore we need to add some
+// additional styles to restore these states.
+.mat-mdc-chip:not(.mat-mdc-chip-disabled) {
+  &:hover, &:focus {
+    ::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      top: 0;
+      left:0;
+      pointer-events: none;
+    }
+  }
+}
+
+// Angular Material supports disabled chips, which MDC does not.
+// Dim the disabled chips and stop MDC from changing the icon color on click.
+.mat-mdc-chip-disabled.mat-mdc-chip {
+  opacity: 0.4;
+
+  .mat-mdc-chip-trailing-icon {
+    pointer-events: none;
+  }
+}
+
+// Angular Material supports vertically-stacked chips, which MDC does not.
+.mat-mdc-chip-set-stacked {
+  flex-direction: column;
+  align-items: flex-start;
+
+  .mat-mdc-chip {
+    width: 100%;
+  }
+}
+
+// Add styles for the matChipInputFor input element.
+$mat-chip-input-width: 150px;
+
+input.mat-chip-input {
+  flex: 1 0 $mat-chip-input-width;
+}

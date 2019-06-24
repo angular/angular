@@ -1,0 +1,9 @@
+<div role="gridcell" *ngIf="leadingIcon">
+  <ng-content select="[mat-chip-avatar], [matChipAvatar]"></ng-content>
+</div>
+<div role="gridcell" class="mdc-chip__text">
+  <ng-content></ng-content>
+</div>
+<div role="gridcell" *ngIf="trailingIcon">
+  <ng-content select="[mat-chip-trailing-icon],[matChipRemove],[matChipTrailingIcon]"></ng-content>
+</div>
