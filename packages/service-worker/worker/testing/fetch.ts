@@ -15,10 +15,10 @@ export class MockBody implements Body {
   async arrayBuffer(): Promise<ArrayBuffer> {
     const body = this.getBody();
     const buffer = new ArrayBuffer(body.length);
-    const access = new Uint8Array(buffer);
+    const view = new Uint8Array(buffer);
 
     for (let i = 0; i < body.length; i++) {
-      access[i] = body.charCodeAt(i);
+      view[i] = body.charCodeAt(i);
     }
 
     return buffer;
