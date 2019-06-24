@@ -8,7 +8,6 @@
 
 import {IdleScheduler} from '../src/idle';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
-import {async_beforeEach, async_fit, async_it} from './async';
 
 (function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
@@ -29,7 +28,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
 
     // Validate that a single idle task executes when trigger()
     // is called and the idle timeout passes.
-    async_it('executes scheduled work on time', async() => {
+    it('executes scheduled work on time', async() => {
       // Set up a single idle task to set the completed flag to true when it runs.
       let completed: boolean = false;
       idle.schedule('work', async() => { completed = true; });
@@ -53,7 +52,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(completed).toEqual(true);
     });
 
-    async_it('waits for multiple tasks to complete serially', async() => {
+    it('waits for multiple tasks to complete serially', async() => {
       // Schedule several tasks that will increase a counter according to its
       // current value. If these tasks execute in parallel, the writes to the counter
       // will race, and the test will fail.
@@ -93,7 +92,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
 
     // Validate that a single idle task does not execute until trigger() has been called
     // and sufficient time passes without it being called again.
-    async_it('does not execute work until timeout passes with no triggers', async() => {
+    it('does not execute work until timeout passes with no triggers', async() => {
       // Set up a single idle task to set the completed flag to true when it runs.
       let completed: boolean = false;
       idle.schedule('work', async() => { completed = true; });
