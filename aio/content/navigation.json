@@ -72,40 +72,54 @@
       "hidden": true
     },
     {
-      "title": "Getting Started",
-      "tooltip": "Learn the basics by building your first Angular application.",
+      "title!": "Getting Started",
+      "title": "시작하기",
+      "tooltip!": "Learn the basics by building your first Angular application.",
+      "tooltip": "Angular 애플리케이션의 기본 구성 요소에 대해 알아보세요.",
       "children": [
         {
           "url": "start",
-          "title": "Your First App",
-          "tooltip": "Introduction to Angular's component model, template syntax, and component communication."
+          "title!": "Your First App",
+          "title": "첫번째 앱 만들기",
+          "tooltip!": "Introduction to Angular's component model, template syntax, and component communication.",
+          "tooltip": "Angular의 컴포넌트 모델, 템플릿 문법, 컴포넌트끼리 통신하는 방법에 대해 소개합니다."
         },
         {
           "url": "start/routing",
-          "title": "Routing",
-          "tooltip": "Introduction to routing between components using the browser's URL."
+          "title!": "Routing",
+          "title": "라우팅",
+          "tooltip!": "Introduction to routing between components using the browser's URL.",
+          "tooltip": "브라우저 URL에 따라 컴포넌트를 전환하는 방법에 대해 소개합니다."
         },
         {
           "url": "start/data",
-          "title": "Managing Data",
-          "tooltip": "Introduction to services and accessing external data via HTTP."
+          "title!": "Managing Data",
+          "title": "데이터 다루기",
+          "tooltip!": "Introduction to services and accessing external data via HTTP.",
+          "tooltip": "서비스를 사용해서 HTTP 프로토콜로 외부와 데이터 통신하는 방법에 대해 소개합니다."
         },
         {
           "url": "start/forms",
-          "title": "Forms",
-          "tooltip": "Learn about fetching and managing data from users with forms."
+          "title!": "Forms",
+          "title": "폼",
+          "tooltip!": "Learn about fetching and managing data from users with forms.",
+          "tooltip": "사용자가 입력하는 데이터를 폼으로 처리하는 방법에 대해 소개합니다."
         },
         {
           "url": "start/deployment",
-          "title": "Deployment",
-          "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
+          "title!": "Deployment",
+          "title": "배포",
+          "tooltip!": "Move to local development, or deploy your application to Firebase or your own server.",
+          "tooltip": "로컬 개발환경을 설정하는 방법, Firebase나 자체 서버에 애플리케이션을 배포하는 방법에 대해 소개합니다."
         }
       ]
     },
     {
       "url": "guide/setup-local",
-      "title": "Setup",
-      "tooltip": "Setting up for local development with the Angular CLI."
+      "title!": "Setup",
+      "title": "환경설정",
+      "tooltip!": "Setting up for local development with the Angular CLI.",
+      "tooltip": "Angular CLI로 로컬 개발환경을 설정해 보세요."
     },
     {
       "title!": "Fundamentals",
@@ -114,54 +128,73 @@
       "tooltip": "Angular 기초 지식",
       "children": [
         {
-          "title": "Tour of Heroes App",
-          "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
+          "title!": "Tour of Heroes App",
+          "title": "히어로들의 여행 앱",
+          "tooltip!": "The Tour of Heroes app is used as a reference point in many Angular examples.",
+          "tooltip": "히어로들의 여행 앱을 자세하게 살펴보면서 Angular에 대해 알아봅시다.",
           "children": [
           {
             "url": "tutorial",
-            "title": "Introduction",
-            "tooltip": "Introduction to the Tour of Heroes tutorial"
+            "title!": "Introduction",
+            "title": "소개",
+            "tooltip!": "Introduction to the Tour of Heroes tutorial",
+            "tooltip": "히어로들의 여행 튜토리얼 앱에 대해 소개합니다."
           },
           {
             "url": "tutorial/toh-pt0",
-            "title": "The Application Shell",
-            "tooltip": "Creating the application shell"
+            "title!": "The Application Shell",
+            "title": "애플리케이션 기본 틀",
+            "tooltip!": "Creating the application shell",
+            "tooltip": "애플리케이션 기본 틀을 만들어 봅시다."
           },
           {
             "url": "tutorial/toh-pt1",
-            "title": "1. The Hero Editor",
-            "tooltip": "Part 1: Build a simple hero editor"
+            "title!": "1. The Hero Editor",
+            "title": "1. 히어로 편집기",
+            "tooltip!": "Part 1: Build a simple hero editor",
+            "tooltip": "1단계: 간단한 히어로 편집기를 만들어 봅시다."
           },
           {
             "url": "tutorial/toh-pt2",
-            "title": "2. Displaying a List",
-            "tooltip": "Part 2: Build a master/detail page with a list of heroes."
+            "title!": "2. Displaying a List",
+            "title": "2. 목록 표시하기",
+            "tooltip!": "Part 2: Build a master/detail page with a list of heroes.",
+            "tooltip": "2단계: 히어로의 목록을 표시하는 마스터/상세정보 페이지를 만들어 봅시다."
           },
           {
             "url": "tutorial/toh-pt3",
-            "title": "3. Master/Detail Components",
-            "tooltip": "Part 3: Refactor the master/detail view into separate components."
+            "title!": "3. Master/Detail Components",
+            "title": "3. 마스터/상세정보 컴포넌트",
+            "tooltip!": "Part 3: Refactor the master/detail view into separate components.",
+            "tooltip": "3단계: 마스터/상세정보 화면을 개별 컴포넌트로 리팩토링해 봅시다."
           },
           {
             "url": "tutorial/toh-pt4",
-            "title": "4. Services",
-            "tooltip": "Part 4: Create a reusable service to manage hero data."
+            "title!": "4. Services",
+            "title": "4. 서비스",
+            "tooltip!": "Part 4: Create a reusable service to manage hero data.",
+            "tooltip": "4단계: 히어로 데이터를 처리하는 로직은 재사용할 수 있게 서비스로 만들어 봅시다."
           },
           {
             "url": "tutorial/toh-pt5",
-            "title": "5. Routing",
-            "tooltip": "Part 5: Add the Angular router and navigate among the views."
+            "title!": "5. Routing",
+            "title": "5. 라우팅",
+            "tooltip!": "Part 5: Add the Angular router and navigate among the views.",
+            "tooltip": "5단계: Angular 라우터를 추가하고 화면을 전환해 봅시다."
           },
           {
             "url": "tutorial/toh-pt6",
             "title": "6. HTTP",
-            "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
+            "tooltip!": "Part 6: Use HTTP to retrieve and save hero data.",
+            "tooltip": "6단계: HTTP 통신으로 히어로 데이터를 가져오고 저장해 봅시다."
           }
           ]
         },
         {
-          "title": "Architecture",
-          "tooltip": "The basic building blocks of Angular applications.",
+          "title!": "Architecture",
+          "title": "아키텍처",
+          "tooltip!": "The basic building blocks of Angular applications.",
+          "tooltip": "Angular 애플리케이션을 구성하는 기본 요소에 대해 알아봅시다.",
           "children": [
             {
               "url": "guide/architecture",
@@ -326,8 +359,8 @@
               "tooltip": "FormGroup으로 동적 폼을 구성해 보세요."
             }
           ]
-       },
-       {
+        },
+        {
           "!title": "Observables & RxJS",
           "title": "옵저버블 & RxJS",
           "!tooltip": "Observables & RxJS",
@@ -664,23 +697,31 @@
           ]
         },
         {
-          "title": "Angular Libraries",
-          "tooltip": "Extending Angular with shared libraries.",
+          "title!": "Angular Libraries",
+          "title": "Angular 라이브러리",
+          "tooltip!": "Extending Angular with shared libraries.",
+          "tooltip": "다른 개발자가 공유한 라이브러리로 Angular는 확장해보세요.",
           "children": [
             {
               "url": "guide/libraries",
-              "title": "Libraries Overview",
-              "tooltip": "Understand how and when to use or create libraries."
+              "title!": "Libraries Overview",
+              "title": "개요",
+              "tooltip!": "Understand how and when to use or create libraries.",
+              "tooltip": "라이브러리는 언제 만들고 어떻게 사용하는지 알아봅시다."
             },
             {
               "url": "guide/using-libraries",
-              "title": "Using Published Libraries",
-              "tooltip": "Integrate published libraries into an app."
+              "title!": "Using Published Libraries",
+              "title": "공유된 라이브러리 사용하기",
+              "tooltip!": "Integrate published libraries into an app.",
+              "tooltip": "공유된 라이브러리를 앱에 추가해 봅시다."
             },
             {
               "url": "guide/creating-libraries",
-              "title": "Creating Libraries",
-              "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
+              "title!": "Creating Libraries",
+              "title": "라이브러리 만들기",
+              "tooltip!": "Extend Angular by creating, publishing, and using your own libraries.",
+              "tooltip": "라이브러리를 만들고 배포해서 Angular 생태계를 직접 확장해 보세요."
             }
           ]
         },
@@ -827,7 +868,7 @@
            "title": "최신 버전 적용하기",
            "!tooltip": "Information about updating Angular applications and libraries to the latest version.",
            "tooltip": "Angular 프레임워크를 최신 버전으로 업데이트하는 방법을 안내합니다."
-       },
+        },
         {
           "url": "guide/releases",
           "!title": "Release Practices",
