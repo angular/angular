@@ -29,7 +29,7 @@ import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {findComponentView} from './util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer, isRootView, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
+import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer, isLView, isRootView, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 import {ViewRef} from './view_ref';
 
 
@@ -389,6 +389,7 @@ export function createViewRef(
   return null !;
 }
 
+/** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
 function getOrCreateRenderer2(view: LView): Renderer2 {
   const renderer = view[RENDERER];
   if (isProceduralRenderer(renderer)) {
@@ -398,7 +399,12 @@ function getOrCreateRenderer2(view: LView): Renderer2 {
   }
 }
 
-/** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
+/** Injects a Renderer2 for the current component. */
 export function injectRenderer2(): Renderer2 {
-  return getOrCreateRenderer2(getLView());
+  // We need the Renderer to be based on the component that it's being injected into, however since
+  // DI happens before we've entered its view, `getLView` will return the parent view instead.
+  const lView = getLView();
+  const tNode = getPreviousOrParentTNode();
+  const nodeAtIndex = getComponentViewByIndex(tNode.index, lView);
+  return getOrCreateRenderer2(isLView(nodeAtIndex) ? nodeAtIndex : lView);
 }
