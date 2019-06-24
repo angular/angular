@@ -314,8 +314,7 @@ jobs:
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
-      # Temporary disabled due to a problem with patch branch (8.0.x)
-      # - run: yarn --cwd aio payload-size aio-local
+      - run: yarn --cwd aio payload-size aio-local
 
   test_aio_local_ivy:
     <<: *job_defaults
@@ -334,8 +333,7 @@ jobs:
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
-      # Temporary disabled due to a problem with patch branch (8.0.x)
-      # - run: yarn --cwd aio payload-size aio-local-ivy
+      - run: yarn --cwd aio payload-size aio-local-ivy
 
   test_aio_tools:
     <<: *job_defaults
