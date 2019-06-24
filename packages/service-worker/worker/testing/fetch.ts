@@ -13,46 +13,34 @@ export class MockBody implements Body {
   constructor(public _body: string|null) {}
 
   async arrayBuffer(): Promise<ArrayBuffer> {
-    this.markBodyUsed();
-    if (this._body !== null) {
-      const buffer = new ArrayBuffer(this._body.length);
-      const access = new Uint8Array(buffer);
-      for (let i = 0; i < this._body.length; i++) {
-        access[i] = this._body.charCodeAt(i);
-      }
-      return buffer;
-    } else {
-      throw new Error('No body');
+    const body = this.getBody();
+    const buffer = new ArrayBuffer(body.length);
+    const access = new Uint8Array(buffer);
+
+    for (let i = 0; i < body.length; i++) {
+      access[i] = body.charCodeAt(i);
     }
+
+    return buffer;
   }
 
   async blob(): Promise<Blob> { throw 'Not implemented'; }
 
-  async json(): Promise<any> {
-    this.markBodyUsed();
-    if (this._body !== null) {
-      return JSON.parse(this._body);
-    } else {
-      throw new Error('No body');
-    }
-  }
+  async json(): Promise<any> { return JSON.parse(this.getBody()); }
 
-  async text(): Promise<string> {
-    this.markBodyUsed();
-    if (this._body !== null) {
-      return this._body;
-    } else {
-      throw new Error('No body');
-    }
-  }
+  async text(): Promise<string> { return this.getBody(); }
 
   async formData(): Promise<FormData> { throw 'Not implemented'; }
 
-  private markBodyUsed(): void {
+  private getBody(): string {
     if (this.bodyUsed === true) {
       throw new Error('Cannot reuse body without cloning.');
     }
     this.bodyUsed = true;
+
+    // According to the spec, a `null` body results in an empty `ReadableStream` (which for our
+    // needs is equivalent to `''`). See https://fetch.spec.whatwg.org/#concept-body-consume-body.
+    return this._body || '';
   }
 }
 
