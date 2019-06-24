@@ -13,8 +13,6 @@ import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
-import {async_beforeEach, async_fit, async_it} from './async';
-
 (function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
@@ -122,7 +120,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
   describe('data cache', () => {
     let scope: SwTestHarness;
     let driver: Driver;
-    async_beforeEach(async() => {
+    beforeEach(async() => {
       server.clearRequests();
       scope = new SwTestHarnessBuilder().withServerState(server).build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
@@ -135,13 +133,13 @@ import {async_beforeEach, async_fit, async_it} from './async';
     });
 
     describe('in performance mode', () => {
-      async_it('names the caches correctly', async() => {
+      it('names the caches correctly', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         const keys = await scope.caches.keys();
         expect(keys.every(key => key.startsWith('ngsw:/:'))).toEqual(true);
       });
 
-      async_it('caches a basic request', async() => {
+      it('caches a basic request', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         server.assertSawRequestFor('/api/test');
         scope.advance(1000);
@@ -149,7 +147,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         server.assertNoOtherRequests();
       });
 
-      async_it('refreshes after awhile', async() => {
+      it('refreshes after awhile', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         server.clearRequests();
         scope.advance(10000);
@@ -157,7 +155,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(await makeRequest(scope, '/api/test')).toEqual('version 2');
       });
 
-      async_it('expires the least recently used entry', async() => {
+      it('expires the least recently used entry', async() => {
         expect(await makeRequest(scope, '/api/a')).toEqual('version A');
         expect(await makeRequest(scope, '/api/b')).toEqual('version B');
         expect(await makeRequest(scope, '/api/c')).toEqual('version C');
@@ -175,7 +173,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         server.assertNoOtherRequests();
       });
 
-      async_it('does not carry over cache with new version', async() => {
+      it('does not carry over cache with new version', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         scope.updateServerState(serverSeqUpdate);
         expect(await driver.checkForUpdate()).toEqual(true);
@@ -185,7 +183,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
     });
 
     describe('in freshness mode', () => {
-      async_it('goes to the server first', async() => {
+      it('goes to the server first', async() => {
         expect(await makeRequest(scope, '/fresh/data')).toEqual('this is fresh data');
         server.assertSawRequestFor('/fresh/data');
         server.clearRequests();
@@ -198,7 +196,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         serverUpdate.assertNoOtherRequests();
       });
 
-      async_it('falls back on the cache when server times out', async() => {
+      it('falls back on the cache when server times out', async() => {
         expect(await makeRequest(scope, '/fresh/data')).toEqual('this is fresh data');
         server.assertSawRequestFor('/fresh/data');
         server.clearRequests();
@@ -225,7 +223,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         expect(await res2).toEqual('this is fresher data');
       });
 
-      async_it('refreshes ahead', async() => {
+      it('refreshes ahead', async() => {
         server.assertNoOtherRequests();
         serverUpdate.assertNoOtherRequests();
         expect(await makeRequest(scope, '/refresh/data')).toEqual('this is some data');
