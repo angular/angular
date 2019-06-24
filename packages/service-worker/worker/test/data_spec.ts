@@ -150,6 +150,14 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         server.assertNoOtherRequests();
       });
 
+      it('does not cache opaque responses', async() => {
+        expect(await makeNoCorsRequest(scope, '/api/test')).toBe('');
+        server.assertSawRequestFor('/api/test');
+
+        expect(await makeNoCorsRequest(scope, '/api/test')).toBe('');
+        server.assertSawRequestFor('/api/test');
+      });
+
       it('refreshes after awhile', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         server.clearRequests();
@@ -197,6 +205,16 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         expect(await makeRequest(scope, '/fresh/data')).toEqual('this is fresher data');
         serverUpdate.assertSawRequestFor('/fresh/data');
         serverUpdate.assertNoOtherRequests();
+      });
+
+      it('caches opaque responses', async() => {
+        expect(await makeNoCorsRequest(scope, '/fresh/data')).toBe('');
+        server.assertSawRequestFor('/fresh/data');
+
+        server.online = false;
+
+        expect(await makeRequest(scope, '/fresh/data')).toBe('');
+        server.assertNoOtherRequests();
       });
 
       it('falls back on the cache when server times out', async() => {
@@ -250,9 +268,18 @@ function makeRequest(scope: SwTestHarness, url: string, clientId?: string): Prom
   return done.then(() => resTextPromise);
 }
 
+function makeNoCorsRequest(
+    scope: SwTestHarness, url: string, clientId?: string): Promise<String|null> {
+  const req = new MockRequest(url, {mode: 'no-cors'});
+  const [resTextPromise, done] = makePendingRequest(scope, req, clientId);
+  return done.then(() => resTextPromise);
+}
+
 function makePendingRequest(
-    scope: SwTestHarness, url: string, clientId?: string): [Promise<string|null>, Promise<void>] {
-  const [resPromise, done] = scope.handleFetch(new MockRequest(url), clientId || 'default');
+    scope: SwTestHarness, urlOrReq: string | MockRequest,
+    clientId?: string): [Promise<string|null>, Promise<void>] {
+  const req = (typeof urlOrReq === 'string') ? new MockRequest(urlOrReq) : urlOrReq;
+  const [resPromise, done] = scope.handleFetch(req, clientId || 'default');
   return [
     resPromise.then<string|null>(res => res ? res.text() : null),
     done,
