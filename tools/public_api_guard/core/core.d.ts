@@ -665,7 +665,7 @@ export interface OutputDecorator {
 
 export declare function ɵɵallocHostVars(count: number): void;
 
-export declare function ɵɵattribute(name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): void;
+export declare function ɵɵattribute(name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): TsickleIssue1009;
 
 export declare function ɵɵattributeInterpolate1(attrName: string, prefix: string, v0: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
 
