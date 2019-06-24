@@ -140,6 +140,9 @@ export function ɵɵembeddedViewEnd(): void {
   refreshDescendantViews(lView);  // update mode pass
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);
-  leaveView(lContainer[PARENT] !);
+  // It's always safe to run hooks here, as `leaveView` is not called during the 'finally' block
+  // of a try-catch-finally statement, so it can never be reached while unwinding the stack due to
+  // an error being thrown.
+  leaveView(lContainer[PARENT] !, /* safeToRunHooks */ true);
   setPreviousOrParentTNode(viewHost !, false);
 }

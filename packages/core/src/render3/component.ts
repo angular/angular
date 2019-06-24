@@ -136,6 +136,9 @@ export function renderComponent<T>(
 
   const oldView = enterView(rootView, null);
   let component: T;
+
+  // Will become true if the `try` block executes with no errors.
+  let safeToRunHooks = false;
   try {
     if (rendererFactory.begin) rendererFactory.begin();
     const componentView = createRootComponentView(
@@ -149,8 +152,9 @@ export function renderComponent<T>(
     rootView[FLAGS] &= ~LViewFlags.CreationMode;
     resetPreOrderHookFlags(rootView);
     refreshDescendantViews(rootView);  // update mode pass
+    safeToRunHooks = true;
   } finally {
-    leaveView(oldView);
+    leaveView(oldView, safeToRunHooks);
     if (rendererFactory.end) rendererFactory.end();
   }
 

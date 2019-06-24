@@ -607,6 +607,7 @@ describe('di', () => {
           null, createTView(-1, null, 1, 0, null, null, null, null), null, LViewFlags.CheckAlways,
           null, null, {} as any, {} as any);
       const oldView = enterView(contentView, null);
+      let safeToRunHooks = false;
       try {
         const parentTNode =
             getOrCreateTNode(contentView[TVIEW], null, 0, TNodeType.Element, null, null);
@@ -617,8 +618,9 @@ describe('di', () => {
 
         const injector = getOrCreateNodeInjectorForNode(parentTNode, contentView);
         expect(injector).not.toEqual(-1);
+        safeToRunHooks = true;
       } finally {
-        leaveView(oldView);
+        leaveView(oldView, safeToRunHooks);
       }
     });
   });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgModule, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -1737,4 +1737,34 @@ describe('acceptance integration tests', () => {
     expect(clicks).toBe(1);
   });
 
+  it('should not mask errors thrown during lifecycle hooks', () => {
+    @Directive({
+      selector: '[dir]',
+      inputs: ['dir'],
+    })
+    class Dir {
+      get dir(): any { return null; }
+
+      set dir(value: any) { throw new Error('this error is expected'); }
+    }
+
+    @Component({
+      template: '<div [dir]="3"></div>',
+    })
+    class Cmp {
+      ngAfterViewInit(): void {
+        // This lifecycle hook should never run, since attempting to bind to Dir's input will throw
+        // an error. If the runtime continues to run lifecycle hooks after that error, then it will
+        // execute this hook and throw this error, which will mask the real problem. This test
+        // verifies this don't happen.
+        throw new Error('this error is unexpected');
+      }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [Cmp, Dir],
+    });
+    const fixture = TestBed.createComponent(Cmp);
+    expect(() => fixture.detectChanges()).toThrowError('this error is expected');
+  });
 });

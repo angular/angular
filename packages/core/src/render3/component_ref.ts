@@ -177,6 +177,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     let component: T;
     let tElementNode: TElementNode;
+
+    // Will become true if the `try` block executes with no errors.
+    let safeToRunHooks = false;
     try {
       const componentView = createRootComponentView(
           hostRNode, this.componentDef, rootLView, rendererFactory, renderer);
@@ -199,8 +202,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
       addToViewTree(rootLView, componentView);
       refreshDescendantViews(rootLView);
+      safeToRunHooks = true;
     } finally {
-      leaveView(oldLView);
+      leaveView(oldLView, safeToRunHooks);
     }
 
     const componentRef = new ComponentRef(

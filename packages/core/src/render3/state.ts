@@ -465,17 +465,20 @@ export function resetComponentState() {
  * the direction of traversal (up or down the view tree) a bit clearer.
  *
  * @param newView New state to become active
+ * @param safeToRunHooks Whether the runtime is in a state where running lifecycle hooks is valid.
+ * This is not always the case (for example, the application may have crashed and `leaveView` is
+ * being executed while unwinding the call stack).
  */
-export function leaveView(newView: LView): void {
+export function leaveView(newView: LView, safeToRunHooks: boolean): void {
   const tView = lView[TVIEW];
   if (isCreationMode(lView)) {
     lView[FLAGS] &= ~LViewFlags.CreationMode;
   } else {
     try {
       resetPreOrderHookFlags(lView);
-      executeHooks(
-          lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode,
-          InitPhaseState.AfterViewInitHooksToBeRun, undefined);
+      safeToRunHooks && executeHooks(
+                            lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode,
+                            InitPhaseState.AfterViewInitHooksToBeRun, undefined);
     } finally {
       // Views are clean and in update mode after being checked, so these bits are cleared
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
