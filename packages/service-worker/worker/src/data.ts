@@ -481,10 +481,10 @@ export class DataGroup {
    * If the request times out on the server, an error will be returned but the real network
    * request will still be running in the background, to be cached when it completes.
    */
-  private async cacheResponse(
-      req: Request, res: Response, lru: LruList, okToCacheOpaque: boolean = false): Promise<void> {
+  private async cacheResponse(req: Request, res: Response, lru: LruList, okToCacheOpaque = false):
+      Promise<void> {
     // Only cache successful responses.
-    if (!res.ok || (okToCacheOpaque && res.type === 'opaque')) {
+    if (!(res.ok || (okToCacheOpaque && res.type === 'opaque'))) {
       return;
     }
 
