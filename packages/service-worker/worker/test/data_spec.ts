@@ -119,15 +119,20 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
     let scope: SwTestHarness;
     let driver: Driver;
     beforeEach(async() => {
-      server.clearRequests();
       scope = new SwTestHarnessBuilder().withServerState(server).build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
       // Initialize.
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
+      server.clearRequests();
+      serverUpdate.clearRequests();
+      serverSeqUpdate.clearRequests();
+    });
+    afterEach(() => {
       server.reset();
       serverUpdate.reset();
+      serverSeqUpdate.reset();
     });
 
     describe('in performance mode', () => {
