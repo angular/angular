@@ -96,10 +96,8 @@ export interface CommitObject {
 */
 export declare enum Style {
   Css = "css",
-  Less = "less",
   Sass = "sass",
   Scss = "scss",
-  Styl = "styl"
 }
 /**
 * The view encapsulation strategy to use in the initial project.
