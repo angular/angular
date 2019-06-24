@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, ComponentRef, InjectionToken, NgModule, OnDestroy, Type, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, NgModule, OnDestroy, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -178,4 +178,79 @@ describe('component', () => {
               'Expected component onDestroy method to be called when its parent view is destroyed');
     });
   });
+
+  it('should use a new ngcontent attribute for child elements created w/ Renderer2', () => {
+    @Component({
+      selector: 'app-root',
+      template: '<parent-comp></parent-comp>',
+      styles: [':host { color: red; }'],  // `styles` must exist for encapsulation to apply.
+      encapsulation: ViewEncapsulation.Emulated,
+    })
+    class AppRoot {
+    }
+
+    @Component({
+      selector: 'parent-comp',
+      template: '',
+      styles: [':host { color: orange; }'],  // `styles` must exist for encapsulation to apply.
+      encapsulation: ViewEncapsulation.Emulated,
+    })
+    class ParentComponent {
+      constructor(elementRef: ElementRef, renderer: Renderer2) {
+        const elementFromRenderer = renderer.createElement('p');
+        renderer.appendChild(elementRef.nativeElement, elementFromRenderer);
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [AppRoot, ParentComponent]});
+    const fixture = TestBed.createComponent(AppRoot);
+    fixture.detectChanges();
+
+    const secondParentEl: HTMLElement = fixture.nativeElement.querySelector('parent-comp');
+    const elementFromRenderer: HTMLElement = fixture.nativeElement.querySelector('p');
+    const getNgContentAttr = (element: HTMLElement) => {
+      return Array.from(element.attributes).map(a => a.name).find(a => /ngcontent/.test(a));
+    };
+
+    const hostNgContentAttr = getNgContentAttr(secondParentEl);
+    const viewNgContentAttr = getNgContentAttr(elementFromRenderer);
+
+    expect(hostNgContentAttr)
+        .not.toBe(
+            viewNgContentAttr,
+            'Expected child manually created via Renderer2 to have a different view encapsulation' +
+                'attribute than its host element');
+  });
+
+  it('should create a new Renderer2 for each component', () => {
+    @Component({
+      selector: 'child',
+      template: '',
+      styles: [':host { color: red; }'],
+      encapsulation: ViewEncapsulation.Emulated,
+    })
+    class Child {
+      constructor(public renderer: Renderer2) {}
+    }
+
+    @Component({
+      template: '<child></child>',
+      styles: [':host { color: orange; }'],
+      encapsulation: ViewEncapsulation.Emulated,
+    })
+    class Parent {
+      @ViewChild(Child, {static: false}) childInstance !: Child;
+      constructor(public renderer: Renderer2) {}
+    }
+
+    TestBed.configureTestingModule({declarations: [Parent, Child]});
+    const fixture = TestBed.createComponent(Parent);
+    const componentInstance = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // Assert like this, rather than `.not.toBe` so we get a better failure message.
+    expect(componentInstance.renderer !== componentInstance.childInstance.renderer)
+        .toBe(true, 'Expected renderers to be different.');
+  });
+
 });
