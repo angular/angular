@@ -20,7 +20,7 @@ export function addFontsToIndex(options: Schema): (host: Tree) => Tree {
     const projectIndexHtmlPath = getIndexHtmlPath(project);
 
     const fonts = [
-      'https://fonts.googleapis.com/css?family=Roboto:300,400,500',
+      'https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap',
       'https://fonts.googleapis.com/icon?family=Material+Icons',
     ];
 

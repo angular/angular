@@ -132,7 +132,8 @@ describe('ng-add schematic', () => {
     expect(htmlContent)
         .toContain('  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"');
     expect(htmlContent)
-        .toContain('  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"');
+        .toContain(
+          '  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap"');
   });
 
   it('should add material app styles', async () => {
