@@ -367,11 +367,12 @@ jobs:
     - *checkout_code
     - *restore_cache
     - *yarn_download
+    - *yarn_install
 
     - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master
-      # Install yarn dependencies after the package.json has been updated. Note that
-      # we can't use frozen-lockfile since the setup snapshots script does not update
-      # the lock file.
+      # We need to re-run yarn install in order to pull the Angular snapshot builds. Note
+      # that we can't use the "--frozen-lockfile" option since the setup snapshots script does
+      # not update the lock file.
     - run: yarn install --non-interactive
     - run: ./scripts/circleci/run-local-browser-tests.sh
 
