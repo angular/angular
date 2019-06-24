@@ -354,10 +354,11 @@ export class DataGroup {
 
       // Cache the network response eventually.
       ctx.waitUntil(this.safeCacheResponse(req, networkFetch));
+    } else {
+      // The request completed in time, so cache it inline with the response flow.
+      await this.cacheResponse(req, res, lru);
     }
 
-    // The request completed in time, so cache it inline with the response flow.
-    await this.cacheResponse(req, res, lru);
     return res;
   }
 
