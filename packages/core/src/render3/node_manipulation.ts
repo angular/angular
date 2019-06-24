@@ -764,18 +764,7 @@ function applyView(
   ngDevMode && assertNodeType(tView.node !, TNodeType.View);
   let viewRootTNode: TNode|null = tView.node !.child;
   while (viewRootTNode !== null) {
-    const viewRootTNodeType = viewRootTNode.type;
-    if (viewRootTNodeType === TNodeType.ElementContainer) {
-      applyElementContainer(
-          renderer, action, lView, viewRootTNode as TElementContainerNode, renderParent,
-          beforeNode);
-    } else if (viewRootTNodeType === TNodeType.Projection) {
-      applyProjection(
-          renderer, action, lView, viewRootTNode as TProjectionNode, renderParent, beforeNode);
-    } else {
-      ngDevMode && assertNodeOfPossibleTypes(viewRootTNode, TNodeType.Element, TNodeType.Container);
-      executeNodeAction(action, renderer, renderParent, lView[viewRootTNode.index], beforeNode);
-    }
+    executeActionOnTNode(renderer, action, lView, viewRootTNode, renderParent, beforeNode);
     viewRootTNode = viewRootTNode.next;
   }
 }
@@ -810,20 +799,8 @@ function applyProjection(
     let projectionTNode: TNode|null = nodeToProject;
     const projectedComponentLView = componentLView[PARENT] as LView;
     while (projectionTNode !== null) {
-      if (projectionTNode.type === TNodeType.ElementContainer) {
-        applyElementContainer(
-            renderer, action, projectedComponentLView, projectionTNode as TElementContainerNode,
-            renderParent, beforeNode);
-      } else if (projectionTNode.type === TNodeType.Projection) {
-        applyProjection(
-            renderer, action, projectedComponentLView, projectionTNode as TProjectionNode,
-            renderParent, beforeNode);
-      } else {
-        const rNode = projectedComponentLView[projectionTNode.index];
-        ngDevMode &&
-            assertNodeOfPossibleTypes(projectionTNode, TNodeType.Element, TNodeType.Container);
-        executeNodeAction(action, renderer, renderParent, rNode, beforeNode);
-      }
+      executeActionOnTNode(
+          renderer, action, projectedComponentLView, projectionTNode, renderParent, beforeNode);
       projectionTNode = projectionTNode.projectionNext;
     }
   }
@@ -882,23 +859,24 @@ function applyElementContainer(
     beforeNode: RNode | null | undefined) {
   const node = lView[tElementContainerNode.index];
   executeNodeAction(action, renderer, renderParent, node, beforeNode);
-  let elementContainerRootTNode: TNode|null = tElementContainerNode.child;
-  while (elementContainerRootTNode) {
-    const elementContainerRootTNodeType = elementContainerRootTNode.type;
-    if (elementContainerRootTNodeType === TNodeType.ElementContainer) {
-      applyElementContainer(
-          renderer, action, lView, elementContainerRootTNode as TElementContainerNode, renderParent,
-          beforeNode);
-    } else if (elementContainerRootTNodeType === TNodeType.Projection) {
-      applyProjection(
-          renderer, action, lView, elementContainerRootTNode as TProjectionNode, renderParent,
-          beforeNode);
-    } else {
-      ngDevMode && assertNodeOfPossibleTypes(
-                       elementContainerRootTNode, TNodeType.Element, TNodeType.Container);
-      executeNodeAction(
-          action, renderer, renderParent, lView[elementContainerRootTNode.index], beforeNode);
-    }
-    elementContainerRootTNode = elementContainerRootTNode.next;
+  let childTNode: TNode|null = tElementContainerNode.child;
+  while (childTNode) {
+    executeActionOnTNode(renderer, action, lView, childTNode, renderParent, beforeNode);
+    childTNode = childTNode.next;
+  }
+}
+
+function executeActionOnTNode(
+    renderer: Renderer3, action: WalkTNodeTreeAction, lView: LView, tNode: TNode,
+    renderParent: RElement | null, beforeNode: RNode | null | undefined): void {
+  const elementContainerRootTNodeType = tNode.type;
+  if (elementContainerRootTNodeType === TNodeType.ElementContainer) {
+    applyElementContainer(
+        renderer, action, lView, tNode as TElementContainerNode, renderParent, beforeNode);
+  } else if (elementContainerRootTNodeType === TNodeType.Projection) {
+    applyProjection(renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
+  } else {
+    ngDevMode && assertNodeOfPossibleTypes(tNode, TNodeType.Element, TNodeType.Container);
+    executeNodeAction(action, renderer, renderParent, lView[tNode.index], beforeNode);
   }
 }
