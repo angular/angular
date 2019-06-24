@@ -73,6 +73,104 @@ describe('attribute binding', () => {
     expect(a.href).toEqual('https://angular.io/robots.txt');
   });
 
+  it('should be able to bind multiple attribute values per element', () => {
+    @Component({
+      template: `<a [attr.id]="id" [attr.href]="url" [attr.tabindex]="'-1'"></a>`,
+    })
+    class Comp {
+      url = 'https://angular.io/robots.txt';
+      id = 'my-link';
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+
+    const a = fixture.debugElement.query(By.css('a')).nativeElement;
+    // NOTE: different browsers will add `//` into the URI.
+    expect(a.getAttribute('href')).toBe('https://angular.io/robots.txt');
+    expect(a.getAttribute('id')).toBe('my-link');
+    expect(a.getAttribute('tabindex')).toBe('-1');
+  });
+
+  it('should be able to bind multiple attributes in the presence of other bindings', () => {
+    @Component({
+      template: `<a [id]="id" [attr.href]="url" [title]="'hello'"></a>`,
+    })
+    class Comp {
+      url = 'https://angular.io/robots.txt';
+      id = 'my-link';
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+
+    const a = fixture.debugElement.query(By.css('a')).nativeElement;
+    // NOTE: different browsers will add `//` into the URI.
+    expect(a.getAttribute('href')).toBe('https://angular.io/robots.txt');
+    expect(a.id).toBe('my-link');
+    expect(a.getAttribute('title')).toBe('hello');
+  });
+
+  it('should be able to bind attributes with interpolations', () => {
+    @Component({
+      template: `
+        <button
+          attr.id="my-{{id}}-button"
+          [attr.title]="title"
+          attr.tabindex="{{1 + 3 + 7}}"></button>`,
+    })
+    class Comp {
+      title = 'hello';
+      id = 'custom';
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+
+    const button = fixture.debugElement.query(By.css('button')).nativeElement;
+
+    expect(button.getAttribute('id')).toBe('my-custom-button');
+    expect(button.getAttribute('tabindex')).toBe('11');
+    expect(button.getAttribute('title')).toBe('hello');
+  });
+
+
+  it('should be able to bind attributes both to parent and child nodes', () => {
+    @Component({
+      template: `
+        <button
+          attr.id="my-{{id}}-button"
+          [attr.title]="title"
+          attr.tabindex="{{1 + 3 + 7}}">
+
+          <span attr.title="span-{{title}}" id="custom-span" [attr.tabindex]="-1"></span>
+        </button>
+      `,
+    })
+    class Comp {
+      title = 'hello';
+      id = 'custom';
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+
+    const button = fixture.debugElement.query(By.css('button')).nativeElement;
+    const span = fixture.debugElement.query(By.css('span')).nativeElement;
+
+    expect(button.getAttribute('id')).toBe('my-custom-button');
+    expect(button.getAttribute('tabindex')).toBe('11');
+    expect(button.getAttribute('title')).toBe('hello');
+
+    expect(span.getAttribute('id')).toBe('custom-span');
+    expect(span.getAttribute('tabindex')).toBe('-1');
+    expect(span.getAttribute('title')).toBe('span-hello');
+  });
+
   it('should sanitize attribute values', () => {
     @Component({
       template: `<a [attr.href]="badUrl"></a>`,

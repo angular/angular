@@ -229,9 +229,9 @@ describe('compiler compliance: bindings', () => {
           template: function MyComponent_Template(rf, ctx) {
             …
             if (rf & 2) {
-              $r3$.ɵɵattribute("id", 2);
               $r3$.ɵɵpropertyInterpolate("aria-label", 1 + 3);
               $r3$.ɵɵproperty("title", 1)("tabindex", 3);
+              $r3$.ɵɵattribute("id", 2);
             }
           }
         `;
@@ -399,6 +399,212 @@ describe('compiler compliance: bindings', () => {
               $r3$.ɵɵproperty("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
               $r3$.ɵɵselect(1);
               $r3$.ɵɵproperty("id", 1)("title", "hello")("someProp", 1 + 2);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+  });
+
+  describe('attribute bindings', () => {
+    it('should chain multiple attribute bindings into a single instruction', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <button [attr.title]="myTitle" attr.id="{{buttonId}}" [attr.tabindex]="1"></button>
+              \`
+            })
+            export class MyComponent {
+              myTitle = 'hello';
+              buttonId = 'special-button';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵattribute("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple single-interpolation attribute bindings into one instruction', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <button attr.title="{{myTitle}}" attr.id="{{buttonId}}" attr.tabindex="{{1}}"></button>
+              \`
+            })
+            export class MyComponent {
+              myTitle = 'hello';
+              buttonId = 'special-button';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵattribute("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain attribute bindings in the presence of other instructions', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <button [attr.title]="1" [id]="2" [attr.tabindex]="3" attr.aria-label="prefix-{{1 + 3}}">
+                </button>
+              \`
+            })
+            export class MyComponent {}`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵattributeInterpolate1("aria-label", "prefix-", 1 + 3, "");
+              $r3$.ɵɵproperty("id", 2);
+              $r3$.ɵɵattribute("title", 1)("tabindex", 3);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should not add interpolated attributes to the attribute instruction chain', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <button
+                  [attr.title]="1"
+                  [attr.id]="2"
+                  attr.tabindex="prefix-{{0 + 3}}"
+                  attr.aria-label="hello-{{1 + 3}}-{{2 + 3}}"></button>\`
+            })
+            export class MyComponent {}`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵattributeInterpolate1("tabindex", "prefix-", 0 + 3, "");
+              $r3$.ɵɵattributeInterpolate2("aria-label", "hello-", 1 + 3, "-", 2 + 3, "");
+              $r3$.ɵɵattribute("title", 1)("id", 2);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple attribute bindings when there are multiple elements', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <button [attr.title]="myTitle" [attr.id]="buttonId" [attr.tabindex]="1"></button>
+                <span [attr.id]="1" [attr.title]="'hello'" [attr.some-attr]="1 + 2"></span>
+                <custom-element [attr.some-attr]="'one'" [attr.some-other-attr]="2"></custom-element>
+              \`
+            })
+            export class MyComponent {
+              myTitle = 'hello';
+              buttonId = 'special-button';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵattribute("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
+              $r3$.ɵɵselect(1);
+              $r3$.ɵɵattribute("id", 1)("title", "hello")("some-attr", 1 + 2);
+              $r3$.ɵɵselect(2);
+              $r3$.ɵɵattribute("some-attr", "one")("some-other-attr", 2);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple attribute bindings when there are child elements', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <button [attr.title]="myTitle" [attr.id]="buttonId" [attr.tabindex]="1">
+                  <span [attr.id]="1" [attr.title]="'hello'" [attr.some-attr]="1 + 2"></span>
+                </button>\`
+            })
+            export class MyComponent {
+              myTitle = 'hello';
+              buttonId = 'special-button';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵattribute("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
+              $r3$.ɵɵselect(1);
+              $r3$.ɵɵattribute("id", 1)("title", "hello")("some-attr", 1 + 2);
             }
           }
         `;

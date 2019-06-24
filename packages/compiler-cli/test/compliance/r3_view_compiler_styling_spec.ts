@@ -812,8 +812,7 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵɵelement(0, "div", $e0_attrs$);
                 }
                 if (rf & 2) {
-                  $r3$.ɵɵattribute("class", "round");
-                  $r3$.ɵɵattribute("style", "height:100px", $r3$.ɵɵsanitizeStyle);
+                  $r3$.ɵɵattribute("class", "round")("style", "height:100px", $r3$.ɵɵsanitizeStyle);
                 }
               },
               encapsulation: 2
