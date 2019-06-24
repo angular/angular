@@ -825,7 +825,7 @@ export interface HostListenerDecorator {
  */
 export interface HostListener {
   /**
-   * The CSS event to listen for.
+   * The DOM event to listen for.
    */
   eventName?: string;
   /**
@@ -835,7 +835,7 @@ export interface HostListener {
 }
 
 /**
- * Binds a CSS event to a host listener and supplies configuration metadata.
+ * Binds a DOM event to a host listener and supplies configuration metadata.
  * Angular invokes the supplied handler method when the host element emits the specified event,
  * and updates the bound element with the result.
  * If the handler method returns false, applies `preventDefault` on the bound element.
