@@ -259,6 +259,36 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         expect(await makeRequest(scope, '/refresh/data')).toEqual('this is refreshed data');
         serverUpdate.assertNoOtherRequests();
       });
+
+      it('caches opaque responses on refresh', async() => {
+        // Make the initial request and populate the cache.
+        expect(await makeRequest(scope, '/fresh/data')).toBe('this is fresh data');
+        server.assertSawRequestFor('/fresh/data');
+        server.clearRequests();
+
+        // Update the server state and pause the server, so the next request times out.
+        scope.updateServerState(serverUpdate);
+        serverUpdate.pause();
+        const [res, done] =
+            makePendingRequest(scope, new MockRequest('/fresh/data', {mode: 'no-cors'}));
+
+        // The network request times out after 1,000ms and the cached response is returned.
+        await serverUpdate.nextRequest;
+        scope.advance(2000);
+        expect(await res).toBe('this is fresh data');
+
+        // Unpause the server to allow the network request to complete and be cached.
+        serverUpdate.unpause();
+        await done;
+
+        // Pause the server to force the cached (opaque) response to be returned.
+        serverUpdate.pause();
+        const [res2] = makePendingRequest(scope, '/fresh/data');
+        await serverUpdate.nextRequest;
+        scope.advance(2000);
+
+        expect(await res2).toBe('');
+      });
     });
   });
 })();
