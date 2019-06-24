@@ -395,9 +395,7 @@ export class DataGroup {
     }
 
     // No response in the cache. No choice but to fall back on the full network fetch.
-    res = await networkFetch;
-    await this.cacheResponse(req, res, lru, true);
-    return res;
+    return networkFetch;
   }
 
   private networkFetchWithTimeout(req: Request): [Promise<Response|undefined>, Promise<Response>] {
