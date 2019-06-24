@@ -390,6 +390,8 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
     // This is a root view inside the view tree
     tickRootContext(getRootContext(viewToRender));
   } else {
+    // Will become true if the `try` block executes with no errors.
+    let safeToRunHooks = false;
     try {
       setPreviousOrParentTNode(null !, true);
 
@@ -404,8 +406,9 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       viewToRender[TVIEW].firstTemplatePass = false;
 
       refreshDescendantViews(viewToRender);
+      safeToRunHooks = true;
     } finally {
-      leaveView(oldView !);
+      leaveView(oldView !, safeToRunHooks);
       setPreviousOrParentTNode(_previousOrParentTNode, _isParent);
     }
   }
@@ -417,6 +420,9 @@ export function renderComponentOrTemplate<T>(
   const oldView = enterView(hostView, hostView[T_HOST]);
   const normalExecutionPath = !getCheckNoChangesMode();
   const creationModeIsActive = isCreationMode(hostView);
+
+  // Will become true if the `try` block executes with no errors.
+  let safeToRunHooks = false;
   try {
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.begin) {
       rendererFactory.begin();
@@ -434,11 +440,12 @@ export function renderComponentOrTemplate<T>(
     resetPreOrderHookFlags(hostView);
     templateFn && executeTemplate(hostView, templateFn, RenderFlags.Update, context);
     refreshDescendantViews(hostView);
+    safeToRunHooks = true;
   } finally {
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.end) {
       rendererFactory.end();
     }
-    leaveView(oldView);
+    leaveView(oldView, safeToRunHooks);
   }
 }
 
@@ -1724,6 +1731,8 @@ export function checkView<T>(hostView: LView, component: T) {
   const templateFn = hostTView.template !;
   const creationMode = isCreationMode(hostView);
 
+  // Will become true if the `try` block executes with no errors.
+  let safeToRunHooks = false;
   try {
     resetPreOrderHookFlags(hostView);
     creationMode && executeViewQueryFn(RenderFlags.Create, hostTView, component);
@@ -1733,8 +1742,9 @@ export function checkView<T>(hostView: LView, component: T) {
     if (!creationMode || hostTView.staticViewQueries) {
       executeViewQueryFn(RenderFlags.Update, hostTView, component);
     }
+    safeToRunHooks = true;
   } finally {
-    leaveView(oldView);
+    leaveView(oldView, safeToRunHooks);
   }
 }
 
