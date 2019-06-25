@@ -41,11 +41,11 @@ ts_devserver(
     index_html = "//packages/examples:index.html",
     port = 4200,
     scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
     static_files = [
-        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
     ],
     deps = [":forms_examples"],
 )

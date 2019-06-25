@@ -40,11 +40,11 @@ ts_devserver(
     port = 4200,
     scripts = [
         "//tools/rxjs:rxjs_umd_modules",
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
     ],
     static_files = [
         "ngsw-worker.js",
-        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
     ],
     deps = [":sw_registration_options_examples"],
 )

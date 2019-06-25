@@ -22,7 +22,7 @@ nodejs_binary(
         "@npm//rollup-plugin-node-resolve",
         "@npm//rollup-plugin-sourcemaps",
     ],
-    entry_point = "@npm//:node_modules/rollup/bin/rollup",
+    entry_point = "@npm//node_modules/rollup:bin/rollup",
     install_source_map_support = False,
     visibility = ["//visibility:public"],
 )

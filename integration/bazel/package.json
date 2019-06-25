@@ -23,9 +23,8 @@
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@bazel/bazel": "file:../../node_modules/@bazel/bazel",
-    "@bazel/hide-bazel-files": "0.32.2",
-    "@bazel/karma": "0.32.2",
-    "@bazel/typescript": "0.32.2",
+    "@bazel/karma": "0.30.1",
+    "@bazel/typescript": "0.30.1",
     "@types/jasmine": "2.8.8",
     "@types/source-map": "0.5.1",
     "protractor": "5.1.2",
@@ -33,6 +32,7 @@
   },
   "scripts": {
     "test": "bazel build ... --noshow_progress && bazel test ...",
-    "postinstall": "ngc -p ./angular-metadata.tsconfig.json"
+    "postinstall": "ngc -p ./angular-metadata.tsconfig.json",
+    "//": "TODO(gregmagolan): figure out how to keep dependencies here up to date with the root package.json"
   }
 }
