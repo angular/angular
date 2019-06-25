@@ -25,6 +25,7 @@ import {NoopResourceDependencyRecorder, ResourceDependencyRecorder} from '../../
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 
 import {ResourceLoader} from './api';
+import {getDirectiveDiagnostics} from './diagnostics';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, unwrapExpression} from './util';
@@ -467,7 +468,11 @@ export class ComponentDecoratorHandler implements
         this.scopeRegistry.setComponentAsRequiringRemoteScoping(node);
       }
     }
-    return {};
+
+    const diagnostics = getDirectiveDiagnostics(node, this.metaReader, this.evaluator);
+    return {
+      diagnostics: diagnostics !== null ? diagnostics : undefined,
+    };
   }
 
   compile(node: ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):

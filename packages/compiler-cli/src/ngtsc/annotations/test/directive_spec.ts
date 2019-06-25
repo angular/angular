@@ -49,7 +49,8 @@ runInEachFileSystem(() => {
           metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
           null);
       const handler = new DirectiveDecoratorHandler(
-          reflectionHost, evaluator, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER, false);
+          reflectionHost, evaluator, metaReader, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
+          false);
 
       const analyzeDirective = (dirName: string) => {
         const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);

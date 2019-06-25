@@ -2337,6 +2337,9 @@ runInEachFileSystem(os => {
       env.write(`test.ts`, `
         import {Directive} from '@angular/core';
 
+        @Directive({
+          selector: '[base]',
+        })
         class Base {}
 
         @Directive({
@@ -4139,8 +4142,131 @@ export const Foo = Foo__PRE_R3__;
       });
     });
 
+    describe('inherited directives', () => {
+      beforeEach(() => {
+        env.write('local.ts', `
+        import {Component, Directive} from '@angular/core';
+
+        export class BasePlain {}
+        
+        @Component({
+          selector: 'base-cmp',
+          template: 'BaseCmp',
+        })
+        export class BaseCmp {}
+
+        @Directive({
+          selector: '[base]',
+        })
+        export class BaseDir {}
+      `);
+
+        env.write('lib.d.ts', `
+        import {ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta} from '@angular/core';
+
+        export declare class BasePlain {}
+  
+        export declare class BaseCmp {
+          static ngComponentDef: ɵɵComponentDefWithMeta<BaseCmp, "base-cmp", never, {}, {}, never>
+        }
+
+        export declare class BaseDir {
+          static ngDirectiveDef: ɵɵDirectiveDefWithMeta<BaseDir, '[base]', never, never, never, never>;
+        }
+      `);
+      });
+
+      it('should not error when inheriting a constructor from a decorated directive class', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+      import {Directive, Component} from '@angular/core';
+      import {BaseDir, BaseCmp} from './local';
+
+      @Directive({
+        selector: '[dir]',
+      })
+      export class Dir extends BaseDir {}
+
+      @Component({
+        selector: 'test-cmp',
+        template: 'TestCmp',
+      })
+      export class Cmp extends BaseCmp {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should error when inheriting a constructor from an undecorated class', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+        import {Directive, Component} from '@angular/core';
+        import {BasePlain} from './local';
+
+        @Directive({
+          selector: '[dir]',
+        })
+        export class Dir extends BasePlain {}
+
+        @Component({
+          selector: 'test-cmp',
+          template: 'TestCmp',
+        })
+        export class Cmp extends BasePlain {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toContain('Dir');
+        expect(diags[0].messageText).toContain('BasePlain');
+        expect(diags[1].messageText).toContain('Cmp');
+        expect(diags[1].messageText).toContain('BasePlain');
+      });
+
+      it('should not error when inheriting a constructor from decorated directive or component classes in a .d.ts file',
+         () => {
+           env.tsconfig();
+           env.write('test.ts', `
+            import {Component, Directive} from '@angular/core';
+            import {BaseDir, BaseCmp} from './lib';
+
+            @Directive({
+              selector: '[dir]',
+            })
+            export class Dir extends BaseDir {}
+
+            @Component({
+              selector: 'test-cmp',
+              template: 'TestCmp',
+            })
+            export class Cmp extends BaseCmp {}
+         `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+
+      it('should error when inheriting a constructor from an undecorated class in a .d.ts file',
+         () => {
+           env.tsconfig();
+           env.write('test.ts', `
+            import {Directive} from '@angular/core';
+
+            import {BasePlain} from './lib';
+
+            @Directive({
+              selector: '[dir]',
+            })
+            export class Dir extends BasePlain {}
+          `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText).toContain('Dir');
+           expect(diags[0].messageText).toContain('Base');
+         });
+    });
+
     describe('inline resources', () => {
       it('should process inline <style> tags', () => {
+        env.tsconfig();
         env.write('test.ts', `
         import {Component} from '@angular/core';
 
