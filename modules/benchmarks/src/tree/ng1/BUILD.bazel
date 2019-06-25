@@ -20,7 +20,7 @@ ts_devserver(
     index_html = "index.html",
     port = 4200,
     static_files = [
-        "@npm//:node_modules/angular/angular.js",
+        "@npm//node_modules/angular:angular.js",
     ],
     deps = [":ng1"],
 )

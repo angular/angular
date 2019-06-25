@@ -46,13 +46,13 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         port = 4200,
         entry_module = entry_module,
         static_files = [
-            "@npm//:node_modules/zone.js/dist/zone.js",
-            "@npm//:node_modules/angular/angular.js",
-            "@npm//:node_modules/reflect-metadata/Reflect.js",
+            "@npm//node_modules/zone.js:dist/zone.js",
+            "@npm//node_modules/angular:angular.js",
+            "@npm//node_modules/reflect-metadata:Reflect.js",
         ],
         index_html = "//packages/examples:index.html",
         scripts = [
-            "@npm//:node_modules/tslib/tslib.js",
+            "@npm//node_modules/tslib:tslib.js",
             "//tools/rxjs:rxjs_umd_modules",
         ],
         deps = [":%s_sources" % name],

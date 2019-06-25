@@ -43,7 +43,7 @@ ts_devserver(
     static_files = [
         ":bundle.min_debug.js",
         ":bundle.min.js",
-        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
         "index.html",
     ],
 )
@@ -53,12 +53,12 @@ ts_devserver(
     entry_module = "angular/modules/benchmarks/src/expanding_rows/index",
     index_html = "index.html",
     scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
     serving_path = "/index.js",
     static_files = [
-        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
         "index.html",
     ],
     deps = [":application_lib"],

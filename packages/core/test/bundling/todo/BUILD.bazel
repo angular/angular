@@ -76,7 +76,7 @@ js_expected_symbol_test(
 genrule(
     name = "tslib",
     srcs = [
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
     ],
     outs = [
         "tslib.js",

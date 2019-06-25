@@ -59,7 +59,7 @@ web_package(
     name = "prodapp",
     assets = [
         # do not sort
-        "@npm//:node_modules/zone.js/dist/zone.min.js",
+        "@npm//node_modules/zone.js:dist/zone.min.js",
         ":bundle.min.js",
         ":global_stylesheet",
     ],
@@ -79,7 +79,7 @@ filegroup(
     name = "rxjs_umd_modules",
     srcs = [
         # do not sort
-        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
         ":rxjs_shims.js",
     ],
 )
@@ -90,11 +90,11 @@ ts_devserver(
     entry_module = "project/src/main.dev",
     serving_path = "/bundle.min.js",
     scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
         ":rxjs_umd_modules",
     ],
     static_files = [
-        "@npm//:node_modules/zone.js/dist/zone.min.js",
+        "@npm//node_modules/zone.js:dist/zone.min.js",
         ":global_stylesheet",
     ],
     data = [
@@ -132,15 +132,15 @@ ts_library(
 ts_web_test_suite(
     name = "test",
     srcs = [
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
     ],
     runtime_deps = [
         ":initialize_testbed",
     ],
     # do not sort
     bootstrap = [
-        "@npm//:node_modules/zone.js/dist/zone-testing-bundle.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
     ],
     browsers = [
         "@io_bazel_rules_webtesting//browsers:chromium-local",
