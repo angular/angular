@@ -6,6 +6,11 @@ This tutorial introduces you to the essentials of Angular.
 It leverages what you already know about HTML and JavaScript&mdash;plus some useful Angular features&mdash;to build a simple online store application, with a catalog, shopping cart, and check-out form. 
 You don't need to install anything: you'll build the app using the [StackBlitz](https://stackblitz.com/ "StackBlitz web site") online development environment.
 
+<div class="alert is-helpful">
+
+We are using the StackBlitz Generator to show you a ready-made, simple application that you can examine and play with interactively. In actual development you will typically use the [Angular CLI](guide/glossary#command-line-interface-cli), a powerful command-line tool that lets you generate and modify applications. For more information, see the [CLI Overview](cli).
+
+</div>
 
 <div class="callout is-helpful">
 <header>New to web development?</header>
@@ -203,12 +208,6 @@ Currently, the product list displays the name and description of each product.
 You might have noticed that the product list component also defines a `products` property that contains imported data for each product. (See the `products` array in `products.ts`.)
 
 We're going to create a new alert feature. The alert feature will take a product as an input. It will then check the product's price, and, if the price is greater than $700, it will display a "Notify Me" button that lets users sign up for notifications when the product goes on sale. 
-
-<div class="alert is-helpful">
-
-Learn more: This manual uses StackBlitz Generator for simplification. Take a look at [Angular CLI](cli) to get an overview of our CLI commands.
-
-</div>
 
 1. Create a new product alerts component. 
 
