@@ -56,6 +56,16 @@
   line-height: ($heightValue / 10) + rem;
 }
 
+// PLACEHOLDER
+// NOTE: Vendor-prefixed selectors must be on separate blocks, because one invalid/unknown
+//       selector will invalidate the whole block.
+@mixin placeholder {
+  &:-ms-input-placeholder      { @content; }  // IE
+  &::-ms-input-placeholder     { @content; }  // Edge
+  &::-webkit-input-placeholder { @content; }  // QQ Browser
+  &::placeholder               { @content; }  // Chrome/Firefox/Safari
+}
+
 @mixin rotate($degrees) {
   -moz-transform: rotate($degrees);
   -webkit-transform: rotate($degrees);
