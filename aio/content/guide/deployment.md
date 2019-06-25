@@ -83,11 +83,12 @@ Another simple way to deploy your Angular app is to use [GitHub Pages](https://h
 Make a note of the user name and project name in GitHub.
 
 1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
-   <code-example language="none" class="code-shell">
 
-     ng build --prod --output-path docs --base-href /&lt;project_name&gt;/
+  <code-example language="none" class="code-shell">
 
-   </code-example>
+    ng build --prod --output-path docs --base-href /&lt;project_name&gt;/
+
+  </code-example>
 
 1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
 
