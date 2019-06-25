@@ -97,10 +97,6 @@ mat-sidenav-container div.mat-sidenav-content {
 
   //icons _within_ nav
   .mat-icon {
-    // position: absolute;
-    // top: 8px;
-    // right: 8px;
-    // margin: 0;
     height: 24px;
     width: 24px;
   }
@@ -161,11 +157,13 @@ button.vertical-menu-item {
   transition: background-color 0.2s;
   text-transform: uppercase;
 
-  &.expanded .mat-icon, .level-2.expanded .mat-icon {
+  &.expanded .mat-icon,
+  .level-2.expanded .mat-icon {
     @include rotate(90deg);
   }
 
-  &:not(.expanded) .mat-icon, .level-2:not(.expanded) .mat-icon {
+  &:not(.expanded) .mat-icon,
+  .level-2:not(.expanded) .mat-icon {
     @include rotate(0deg);
   }
 
