@@ -15,6 +15,7 @@ load(
 )
 load(
     "@build_bazel_rules_nodejs//internal/common:node_module_info.bzl",
+    _NodeModuleInfo = "NodeModuleInfo",
     _NodeModuleSources = "NodeModuleSources",
     _collect_node_modules_aspect = "collect_node_modules_aspect",
 )
@@ -23,6 +24,7 @@ load(
     _TsConfigInfo = "TsConfigInfo",
 )
 
+NodeModuleInfo = _NodeModuleInfo
 NodeModuleSources = _NodeModuleSources
 collect_node_modules_aspect = _collect_node_modules_aspect
 
