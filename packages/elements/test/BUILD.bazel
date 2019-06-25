@@ -23,10 +23,10 @@ filegroup(
     testonly = True,
     # do not sort
     srcs = [
-        "@npm//:node_modules/@webcomponents/custom-elements/src/native-shim.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
-        "@npm//:node_modules/zone.js/dist/zone.js",
-        "@npm//:node_modules/zone.js/dist/zone-testing.js",
+        "@npm//node_modules/@webcomponents/custom-elements:src/native-shim.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
+        "@npm//node_modules/zone.js:dist/zone-testing.js",
     ],
 )
 

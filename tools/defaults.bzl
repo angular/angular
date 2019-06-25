@@ -159,7 +159,7 @@ def ts_web_test(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
     if not bootstrap:
         bootstrap = ["//:web_test_bootstrap_scripts"]
     local_deps = [
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ] + deps
     local_runtime_deps = [
@@ -178,7 +178,7 @@ def ts_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
     if not bootstrap:
         bootstrap = ["//:web_test_bootstrap_scripts"]
     local_deps = [
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ] + deps
     local_runtime_deps = [
@@ -209,7 +209,7 @@ def karma_web_test(bootstrap = [], deps = [], data = [], runtime_deps = [], **kw
         bootstrap = ["//:web_test_bootstrap_scripts"]
     local_deps = [
         "@npm//karma-browserstack-launcher",
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ] + deps
     local_runtime_deps = [
@@ -234,7 +234,7 @@ def karma_web_test_suite(bootstrap = [], deps = [], **kwargs):
     if not bootstrap:
         bootstrap = ["//:web_test_bootstrap_scripts"]
     local_deps = [
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ] + deps
 

@@ -49,10 +49,9 @@ function addDevDependenciesToPackageJson(options: Schema) {
     const devDependencies: {[k: string]: string} = {
       '@angular/bazel': angularCoreVersion,
       '@bazel/bazel': '^0.27.0',
-      '@bazel/hide-bazel-files': '0.32.2',
       '@bazel/ibazel': '^0.10.2',
-      '@bazel/karma': '0.32.2',
-      '@bazel/typescript': '0.32.2',
+      '@bazel/karma': '0.31.1',
+      '@bazel/typescript': '0.31.1',
     };
 
     const recorder = host.beginUpdate(packageJson);

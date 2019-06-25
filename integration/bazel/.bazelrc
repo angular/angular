@@ -20,3 +20,7 @@ build --symlink_prefix=/
 # Turn on managed directories feature in Bazel
 # This allows us to avoid installing a second copy of node_modules
 common --experimental_allow_incremental_repository_updates
+
+# Temporary flag to for using nodejs rules 0.31.1 with Bazel 0.27.0
+# TODO(gregmagolan): remove after updating to next nodejs rules release
+common --incompatible_depset_is_not_iterable=false
