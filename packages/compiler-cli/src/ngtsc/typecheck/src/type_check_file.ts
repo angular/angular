@@ -5,13 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-/// <reference types="node" />
-import * as path from 'path';
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath, join} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
-import {AbsoluteFsPath} from '../../path';
 import {ClassDeclaration} from '../../reflection';
 import {ImportManager} from '../../translator';
 
@@ -71,5 +68,5 @@ export class TypeCheckFile extends Environment {
 
 export function typeCheckFilePath(rootDirs: AbsoluteFsPath[]): AbsoluteFsPath {
   const shortest = rootDirs.concat([]).sort((a, b) => a.length - b.length)[0];
-  return AbsoluteFsPath.fromUnchecked(path.posix.join(shortest, '__ng_typecheck__.ts'));
+  return join(shortest, '__ng_typecheck__.ts');
 }

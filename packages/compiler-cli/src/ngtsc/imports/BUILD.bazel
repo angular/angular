@@ -10,7 +10,7 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/path",
+        "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/util",
         "@npm//@types/node",

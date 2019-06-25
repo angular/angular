@@ -7,8 +7,7 @@
  */
 
 import {DepGraph} from 'dependency-graph';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
+import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
 import {DependencyHost} from './dependency_host';
@@ -176,7 +175,7 @@ export class DependencyResolver {
 
       if (format === 'esm2015' || format === 'esm5' || format === 'umd' || format === 'commonjs') {
         const formatPath = entryPoint.packageJson[property] !;
-        return {format, path: AbsoluteFsPath.resolve(entryPoint.path, formatPath)};
+        return {format, path: resolve(entryPoint.path, formatPath)};
       }
     }
     throw new Error(

@@ -17,10 +17,13 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         type_check = False,
         deps = [
             "@npm//@types/angular",
+            "@npm//@types/jasmine",
             "//packages/core",
             "//packages/platform-browser",
             "//packages/platform-browser-dynamic",
             "//packages/upgrade/static",
+            "//packages/core/testing",
+            "//packages/upgrade/static/testing",
         ],
         tsconfig = "//packages/examples/upgrade:tsconfig-build.json",
     )

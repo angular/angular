@@ -163,18 +163,25 @@ export interface Directive {
    * ### Example
    *
    * ```typescript
-   * @Directive({
+   * @Component({
    *   selector: 'child-dir',
-   *   exportAs: 'child'
+   *   outputs: [ 'bankNameChange' ]
+   *   template: `<input (input)="bankNameChange.emit($event.target.value)" />`
    * })
    * class ChildDir {
+   *  bankNameChange: EventEmitter<string> = new EventEmitter<string>();
    * }
    *
    * @Component({
    *   selector: 'main',
-   *   template: `<child-dir #c="child"></child-dir>`
+   *   template: ` {{ bankName }} <child-dir (bankNameChange)="onBankNameChange($event)"></child-dir>`
    * })
    * class MainComponent {
+   *  bankName: string;
+   * 
+   *   onBankNameChange(bankName: string) {
+   *     this.bankName = bankName;
+   *   }
    * }
    * ```
    *
@@ -825,7 +832,7 @@ export interface HostListenerDecorator {
  */
 export interface HostListener {
   /**
-   * The CSS event to listen for.
+   * The DOM event to listen for.
    */
   eventName?: string;
   /**
@@ -835,7 +842,7 @@ export interface HostListener {
 }
 
 /**
- * Binds a CSS event to a host listener and supplies configuration metadata.
+ * Binds a DOM event to a host listener and supplies configuration metadata.
  * Angular invokes the supplied handler method when the host element emits the specified event,
  * and updates the bound element with the result.
  * If the handler method returns false, applies `preventDefault` on the bound element.

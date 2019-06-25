@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
 import {IncrementalState} from '../../incremental';
+import {IndexingContext} from '../../indexer';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
@@ -248,6 +249,20 @@ export class IvyCompilation {
     } else {
       return undefined;
     }
+  }
+
+  /**
+   * Feeds components discovered in the compilation to a context for indexing.
+   */
+  index(context: IndexingContext) {
+    this.ivyClasses.forEach((ivyClass, declaration) => {
+      for (const match of ivyClass.matchedHandlers) {
+        if (match.handler.index !== undefined && match.analyzed !== null &&
+            match.analyzed.analysis !== undefined) {
+          match.handler.index(context, declaration, match.analyzed.analysis);
+        }
+      }
+    });
   }
 
   resolve(): void {

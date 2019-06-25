@@ -80,6 +80,10 @@ export interface ClassProvider extends ClassSansProvider {
     provide: any;
 }
 
+export interface ClassSansProvider {
+    useClass: Type<any>;
+}
+
 /** @deprecated */
 export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {
 }
@@ -661,7 +665,7 @@ export interface OutputDecorator {
 
 export declare function ɵɵallocHostVars(count: number): void;
 
-export declare function ɵɵattribute(name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): void;
+export declare function ɵɵattribute(name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): TsickleIssue1009;
 
 export declare function ɵɵattributeInterpolate1(attrName: string, prefix: string, v0: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009;
 
@@ -695,8 +699,6 @@ export interface ɵɵBaseDef<T> {
     };
     viewQuery: ViewQueriesFunction<T> | null;
 }
-
-export declare function ɵɵbind<T>(value: T): T | NO_CHANGE;
 
 export declare function ɵɵclassMap(classes: {
     [styleName: string]: any;
@@ -778,6 +780,7 @@ export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
 }) => never;
 
 export declare function ɵɵdefineInjectable<T>(opts: {
+    token: unknown;
     providedIn?: Type<any> | 'root' | 'any' | null;
     factory: () => T;
 }): never;
@@ -836,7 +839,7 @@ export declare function ɵɵenableBindings(): void;
 
 export declare function ɵɵgetCurrentView(): OpaqueViewState;
 
-export declare function ɵɵgetFactoryOf<T>(type: Type<any>): ((type: Type<T> | null) => T) | null;
+export declare function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T> | null;
 
 export declare function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T;
 
@@ -848,7 +851,7 @@ export declare function ɵɵi18nAttributes(index: number, values: string[]): voi
 
 export declare function ɵɵi18nEnd(): void;
 
-export declare function ɵɵi18nExp<T>(expression: T | NO_CHANGE): void;
+export declare function ɵɵi18nExp<T>(value: T): TsickleIssue1009;
 
 /** @deprecated */
 export declare function ɵɵi18nLocalize(input: string, placeholders?: {
@@ -867,8 +870,9 @@ export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>): T;
 export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
 
 export interface ɵɵInjectableDef<T> {
-    factory: () => T;
+    factory: (t?: Type<any>) => T;
     providedIn: InjectorType<any> | 'root' | 'any' | null;
+    token: unknown;
     value: T | undefined;
 }
 
@@ -1049,7 +1053,7 @@ export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LVie
 
 export declare function ɵɵtext(index: number, value?: any): void;
 
-export declare function ɵɵtextBinding<T>(index: number, value: T | NO_CHANGE): void;
+export declare function ɵɵtextBinding<T>(value: T | NO_CHANGE): void;
 
 export declare function ɵɵtextInterpolate(v0: any): TsickleIssue1009;
 
@@ -1384,6 +1388,10 @@ export interface TypeProvider extends Type<any> {
 export interface ValueProvider extends ValueSansProvider {
     multi?: boolean;
     provide: any;
+}
+
+export interface ValueSansProvider {
+    useValue: any;
 }
 
 export declare class Version {

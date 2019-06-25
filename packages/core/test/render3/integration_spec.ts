@@ -9,7 +9,7 @@
 import {RendererType2} from '../../src/render/api';
 import {getLContext} from '../../src/render3/context_discovery';
 import {AttributeMarker, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵproperty} from '../../src/render3/index';
-import {ɵɵallocHostVars, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵallocHostVars, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -17,7 +17,6 @@ import {StylingIndex} from '../../src/render3/interfaces/styling';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
-
 import {NgIf} from './common_with_def';
 import {ComponentFixture, MockRendererFactory, renderToHtml} from './render_util';
 
@@ -28,8 +27,7 @@ describe('render3 integration test', () => {
       it('should support creation-time values in text nodes', () => {
         function Template(rf: RenderFlags, value: string) {
           if (rf & RenderFlags.Create) {
-            ɵɵtext(0);
-            ɵɵtextBinding(0, value);
+            ɵɵtext(0, value);
           }
         }
         expect(renderToHtml(Template, 'once', 1, 1)).toEqual('once');
@@ -70,7 +68,8 @@ describe('render3 integration test', () => {
               ɵɵtext(0);
             }
             if (rf1 & RenderFlags.Update) {
-              ɵɵtextBinding(0, ɵɵbind(ctx.label));
+              ɵɵselect(0);
+              ɵɵtextBinding(ctx.label);
             }
             ɵɵembeddedViewEnd();
           }

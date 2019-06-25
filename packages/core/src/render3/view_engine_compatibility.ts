@@ -19,7 +19,7 @@ import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 
 import {NodeInjector, getParentInjectorLocation} from './di';
 import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions/shared';
-import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from './interfaces/container';
+import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
 import {CONTEXT, LView, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
@@ -29,7 +29,7 @@ import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {findComponentView} from './util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer, isRootView, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
+import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer, isLView, isRootView, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 import {ViewRef} from './view_ref';
 
 
@@ -174,8 +174,6 @@ export function createContainerRef(
   if (!R3ViewContainerRef) {
     // TODO: Fix class name, should be ViewContainerRef, but there appears to be a rollup bug
     R3ViewContainerRef = class ViewContainerRef_ extends ViewContainerRefToken {
-      private _viewRefs: viewEngine_ViewRef[] = [];
-
       constructor(
           private _lContainer: LContainer,
           private _hostTNode: TElementNode|TContainerNode|TElementContainerNode,
@@ -206,7 +204,9 @@ export function createContainerRef(
         }
       }
 
-      get(index: number): viewEngine_ViewRef|null { return this._viewRefs[index] || null; }
+      get(index: number): viewEngine_ViewRef|null {
+        return this._lContainer[VIEW_REFS] !== null && this._lContainer[VIEW_REFS] ![index] || null;
+      }
 
       get length(): number {
         // Note that if there are no views, the container
@@ -217,11 +217,12 @@ export function createContainerRef(
 
       createEmbeddedView<C>(templateRef: ViewEngine_TemplateRef<C>, context?: C, index?: number):
           viewEngine_EmbeddedViewRef<C> {
+        this.allocateContainerIfNeeded();
         const adjustedIdx = this._adjustIndex(index);
         const viewRef = (templateRef as any)
                             .createEmbeddedView(context || <any>{}, this._lContainer, adjustedIdx);
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
-        this._viewRefs.splice(adjustedIdx, 0, viewRef);
+        this._lContainer[VIEW_REFS] !.splice(adjustedIdx, 0, viewRef);
         return viewRef;
       }
 
@@ -244,6 +245,7 @@ export function createContainerRef(
         if (viewRef.destroyed) {
           throw new Error('Cannot insert a destroyed View in a ViewContainer!');
         }
+        this.allocateContainerIfNeeded();
         const lView = (viewRef as ViewRef<any>)._lView !;
         const adjustedIdx = this._adjustIndex(index);
 
@@ -259,7 +261,7 @@ export function createContainerRef(
         addRemoveViewFromContainer(lView, true, beforeNode);
 
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
-        this._viewRefs.splice(adjustedIdx, 0, viewRef);
+        this._lContainer[VIEW_REFS] !.splice(adjustedIdx, 0, viewRef);
 
         return viewRef;
       }
@@ -274,18 +276,24 @@ export function createContainerRef(
         return viewRef;
       }
 
-      indexOf(viewRef: viewEngine_ViewRef): number { return this._viewRefs.indexOf(viewRef); }
+      indexOf(viewRef: viewEngine_ViewRef): number {
+        return this._lContainer[VIEW_REFS] !== null ?
+            this._lContainer[VIEW_REFS] !.indexOf(viewRef) :
+            0;
+      }
 
       remove(index?: number): void {
+        this.allocateContainerIfNeeded();
         const adjustedIdx = this._adjustIndex(index, -1);
         removeView(this._lContainer, adjustedIdx);
-        this._viewRefs.splice(adjustedIdx, 1);
+        this._lContainer[VIEW_REFS] !.splice(adjustedIdx, 1);
       }
 
       detach(index?: number): viewEngine_ViewRef|null {
+        this.allocateContainerIfNeeded();
         const adjustedIdx = this._adjustIndex(index, -1);
         const view = detachView(this._lContainer, adjustedIdx);
-        const wasDetached = view && this._viewRefs.splice(adjustedIdx, 1)[0] != null;
+        const wasDetached = view && this._lContainer[VIEW_REFS] !.splice(adjustedIdx, 1)[0] != null;
         return wasDetached ? new ViewRef(view !, view ![CONTEXT], -1) : null;
       }
 
@@ -299,6 +307,12 @@ export function createContainerRef(
           assertLessThan(index, this.length + 1 + shift, 'index');
         }
         return index;
+      }
+
+      private allocateContainerIfNeeded(): void {
+        if (this._lContainer[VIEW_REFS] === null) {
+          this._lContainer[VIEW_REFS] = [];
+        }
       }
     };
   }
@@ -375,6 +389,7 @@ export function createViewRef(
   return null !;
 }
 
+/** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
 function getOrCreateRenderer2(view: LView): Renderer2 {
   const renderer = view[RENDERER];
   if (isProceduralRenderer(renderer)) {
@@ -384,7 +399,12 @@ function getOrCreateRenderer2(view: LView): Renderer2 {
   }
 }
 
-/** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
+/** Injects a Renderer2 for the current component. */
 export function injectRenderer2(): Renderer2 {
-  return getOrCreateRenderer2(getLView());
+  // We need the Renderer to be based on the component that it's being injected into, however since
+  // DI happens before we've entered its view, `getLView` will return the parent view instead.
+  const lView = getLView();
+  const tNode = getPreviousOrParentTNode();
+  const nodeAtIndex = getComponentViewByIndex(tNode.index, lView);
+  return getOrCreateRenderer2(isLView(nodeAtIndex) ? nodeAtIndex : lView);
 }

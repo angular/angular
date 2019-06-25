@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
-import {FileSystem} from '../file_system/file_system';
 import {Logger} from '../logging/logger';
 import {PathMappings} from '../utils';
+
 import {EntryPoint, getEntryPointInfo} from './entry_point';
 
 export class EntryPointFinder {
@@ -55,9 +55,9 @@ export class EntryPointFinder {
       AbsoluteFsPath[] {
     const basePaths = [sourceDirectory];
     if (pathMappings) {
-      const baseUrl = AbsoluteFsPath.resolve(pathMappings.baseUrl);
+      const baseUrl = resolve(pathMappings.baseUrl);
       values(pathMappings.paths).forEach(paths => paths.forEach(path => {
-        basePaths.push(AbsoluteFsPath.join(baseUrl, extractPathPrefix(path)));
+        basePaths.push(join(baseUrl, extractPathPrefix(path)));
       }));
     }
     basePaths.sort();  // Get the paths in order with the shorter ones first.
@@ -70,7 +70,12 @@ export class EntryPointFinder {
    * @param sourceDirectory An absolute path to the root directory where searching begins.
    */
   private walkDirectoryForEntryPoints(sourceDirectory: AbsoluteFsPath): EntryPoint[] {
-    const entryPoints: EntryPoint[] = [];
+    const entryPoints = this.getEntryPointsForPackage(sourceDirectory);
+    if (entryPoints.length > 0) {
+      // The `sourceDirectory` is an entry-point itself so no need to search its sub-directories.
+      return entryPoints;
+    }
+
     this.fs
         .readdir(sourceDirectory)
         // Not interested in hidden files
@@ -79,23 +84,19 @@ export class EntryPointFinder {
         .filter(p => p !== 'node_modules')
         // Only interested in directories (and only those that are not symlinks)
         .filter(p => {
-          const stat = this.fs.lstat(AbsoluteFsPath.resolve(sourceDirectory, p));
+          const stat = this.fs.lstat(resolve(sourceDirectory, p));
           return stat.isDirectory() && !stat.isSymbolicLink();
         })
         .forEach(p => {
           // Either the directory is a potential package or a namespace containing packages (e.g
           // `@angular`).
-          const packagePath = AbsoluteFsPath.join(sourceDirectory, p);
-          if (p.startsWith('@')) {
-            entryPoints.push(...this.walkDirectoryForEntryPoints(packagePath));
-          } else {
-            entryPoints.push(...this.getEntryPointsForPackage(packagePath));
+          const packagePath = join(sourceDirectory, p);
+          entryPoints.push(...this.walkDirectoryForEntryPoints(packagePath));
 
-            // Also check for any nested node_modules in this package
-            const nestedNodeModulesPath = AbsoluteFsPath.join(packagePath, 'node_modules');
-            if (this.fs.exists(nestedNodeModulesPath)) {
-              entryPoints.push(...this.walkDirectoryForEntryPoints(nestedNodeModulesPath));
-            }
+          // Also check for any nested node_modules in this package
+          const nestedNodeModulesPath = join(packagePath, 'node_modules');
+          if (this.fs.exists(nestedNodeModulesPath)) {
+            entryPoints.push(...this.walkDirectoryForEntryPoints(nestedNodeModulesPath));
           }
         });
     return entryPoints;
@@ -111,11 +112,14 @@ export class EntryPointFinder {
 
     // Try to get an entry point from the top level package directory
     const topLevelEntryPoint = getEntryPointInfo(this.fs, this.logger, packagePath, packagePath);
-    if (topLevelEntryPoint !== null) {
-      entryPoints.push(topLevelEntryPoint);
+
+    // If there is no primary entry-point then exit
+    if (topLevelEntryPoint === null) {
+      return [];
     }
 
-    // Now search all the directories of this package for possible entry points
+    // Otherwise store it and search for secondary entry-points
+    entryPoints.push(topLevelEntryPoint);
     this.walkDirectory(packagePath, subdir => {
       const subEntryPoint = getEntryPointInfo(this.fs, this.logger, packagePath, subdir);
       if (subEntryPoint !== null) {
@@ -141,11 +145,11 @@ export class EntryPointFinder {
         .filter(p => p !== 'node_modules')
         // Only interested in directories (and only those that are not symlinks)
         .filter(p => {
-          const stat = this.fs.lstat(AbsoluteFsPath.resolve(dir, p));
+          const stat = this.fs.lstat(resolve(dir, p));
           return stat.isDirectory() && !stat.isSymbolicLink();
         })
         .forEach(subDir => {
-          const resolvedSubDir = AbsoluteFsPath.resolve(dir, subDir);
+          const resolvedSubDir = resolve(dir, subDir);
           fn(resolvedSubDir);
           this.walkDirectory(resolvedSubDir, fn);
         });

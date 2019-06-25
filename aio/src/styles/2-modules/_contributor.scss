@@ -72,7 +72,7 @@ aio-contributor {
 
     .info-item {
       color: $white;
-      font-size: 14px;
+      @include font-size(14);
       font-weight: 500;
       margin: 8px;
       padding: 0;
@@ -142,8 +142,8 @@ aio-contributor {
 
       p {
         margin: 8px 0;
-        font-size: 12px;
-        line-height: 14px;
+        @include font-size(12);
+        @include line-height(14);
         text-align: left;
       }
 
@@ -172,7 +172,7 @@ aio-contributor {
   }
 
   section {
-    font-size: 14px;
+    @include font-size(14);
     font-weight: 500;
     padding: 8px;
     margin: 0;
@@ -184,11 +184,11 @@ aio-contributor {
 
   p {
     cursor: pointer;
-    font-size: 14px;
-    line-height: 18px;
+    @include font-size(14);
+    @include line-height(18);
     margin: 8px 16px;
     text-overflow: ellipsis;
-    overflow: scroll;
+    overflow-y: auto;
     font-weight: 400;
   }
 }

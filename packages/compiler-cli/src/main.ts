@@ -17,14 +17,16 @@ import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
 import {GENERATED_FILES} from './transformers/util';
 
-import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult, filterErrorsAndWarnings} from './perform_compile';
+import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, filterErrorsAndWarnings} from './perform_compile';
 import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
+import {NodeJSFileSystem, setFileSystem} from './ngtsc/file_system';
 
 export function main(
     args: string[], consoleError: (s: string) => void = console.error,
     config?: NgcParsedConfiguration, customTransformers?: api.CustomTransformers, programReuse?: {
       program: api.Program | undefined,
-    }): number {
+    },
+    modifiedResourceFiles?: Set<string>): number {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
@@ -45,7 +47,7 @@ export function main(
     options,
     emitFlags,
     oldProgram,
-    emitCallback: createEmitCallback(options), customTransformers
+    emitCallback: createEmitCallback(options), customTransformers, modifiedResourceFiles
   });
   if (programReuse !== undefined) {
     programReuse.program = program;
@@ -226,5 +228,7 @@ export function watchMode(
 // CLI entry point
 if (require.main === module) {
   const args = process.argv.slice(2);
+  // We are running the real compiler so run against the real file-system
+  setFileSystem(new NodeJSFileSystem());
   process.exitCode = main(args);
 }

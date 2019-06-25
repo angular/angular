@@ -30,7 +30,7 @@
     rxjs "6.4.0"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "8.0.0-beta.13"
+  version "0.0.0"
   dependencies:
     "@angular-devkit/architect" "^0.800.0-beta.15"
     "@angular-devkit/core" "^8.0.0-beta.15"
@@ -40,7 +40,7 @@
     "@types/node" "6.0.84"
     semver "^5.6.0"
     shelljs "0.8.2"
-    tsickle "0.34.3"
+    tsickle "^0.35.0"
 
 "@angular/cli@file:../../node_modules/@angular/cli":
   version "8.0.0-beta.15"
@@ -62,27 +62,27 @@
     universal-analytics "^0.4.20"
     uuid "^3.3.2"
 
-"@bazel/bazel-darwin_x64@0.24.0":
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.24.0.tgz#828ef298d8d542961df388f17b0244f4f4302a74"
-  integrity sha512-xly44vkcD/fauUb7Lm5Lme4qhEZdkuuyBKSVQUHPbYAGDdbj/W8dupI3bZREkJAgG/WrRU+WXUemMj4U8ZcLcw==
+"@bazel/bazel-darwin_x64@0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.26.1.tgz#1b5c69b635e5c2a8c3090fa5f6bcb45735f06045"
+  integrity sha512-9VjrR+ce+iS9xS1lgeAo1RAPXlxCvez/r3smN1lP4s4YNF0s5LAT0cevIl6Zz2nwyEha/6JvY3v6Euemy36F0w==
 
-"@bazel/bazel-linux_x64@0.24.0":
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.24.0.tgz#9ef2e7266833ad2221fe4af4ceb6763d2897e3ff"
-  integrity sha512-p5ylPLWnJZDGbaIFBrtD/tp3Su5rMdzeeNJKU24XyiWQTHVZ3OD3I2Fb0ILCgfBjY8AlA7EtCtOI4hYnAuIOtg==
+"@bazel/bazel-linux_x64@0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.26.1.tgz#04dd194bdcd6b9d45bd865a9a60c280d0d600251"
+  integrity sha512-oZooDxI1C4p7o18zx2Uns2cK/NN2hgF2YSBKH0aVDPAAxQA85h+g124CWDEbsghOdRMSBM0Hd0SSeIqwZcqLSw==
 
-"@bazel/bazel-win32_x64@0.24.0":
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.24.0.tgz#02d83113a6c6ed99795a3e41bff5631aa141638d"
-  integrity sha512-/bcSEx+GoV/q7H4WM0jazfxTcurSiIIePhRv+d05mxRDcaWwhCO8KzmmZRWH1abW6npvq5tLkbSQi7G7nUBhgg==
+"@bazel/bazel-win32_x64@0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.26.1.tgz#9351f07313173b1f98006da8131c94db7aa7c506"
+  integrity sha512-0FkOo8+bxw13X2m6ALhXX2241gG9ZXgcLu0E/IbCWy/TmOB5bR0Z73CslszWbXIldVYnANuhFmnkxIa745Du5Q==
 
 "@bazel/bazel@file:../../node_modules/@bazel/bazel":
-  version "0.24.0"
+  version "0.26.1"
   optionalDependencies:
-    "@bazel/bazel-darwin_x64" "0.24.0"
-    "@bazel/bazel-linux_x64" "0.24.0"
-    "@bazel/bazel-win32_x64" "0.24.0"
+    "@bazel/bazel-darwin_x64" "0.26.1"
+    "@bazel/bazel-linux_x64" "0.26.1"
+    "@bazel/bazel-win32_x64" "0.26.1"
 
 "@microsoft/api-extractor@^7.0.21":
   version "7.0.22"
@@ -1610,10 +1610,10 @@ tough-cookie@~2.4.3:
     psl "^1.1.24"
     punycode "^1.4.1"
 
-tsickle@0.34.3:
-  version "0.34.3"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.34.3.tgz#8085067a26d7bff466ddadb2eba18849b49159b8"
-  integrity sha512-mb1v3nsr6rYaZky22xj0d6qv4ogAR40Bc6r37jwWOg3bEIO/ZppEFZiEADs/NNVLcWTPgmNmPZgaX5CfAH6oXA==
+tsickle@^0.35.0:
+  version "0.35.0"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.35.0.tgz#59235df45937c0ec5d072c616c26d2d97fba54b9"
+  integrity sha512-irsZLX4293YUl9TuwNC5Fy020eLSc4bC3LfKnxnx1oq5wmZD9zSP8qvNNTiwRmf2/rxH+58JINcTARDjuvn+oQ==
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"

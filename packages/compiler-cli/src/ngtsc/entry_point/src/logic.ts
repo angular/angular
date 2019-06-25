@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '../../path/src/types';
+import {AbsoluteFsPath, getFileSystem} from '../../file_system';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
-export function findFlatIndexEntryPoint(rootFiles: ReadonlyArray<AbsoluteFsPath>): string|null {
+export function findFlatIndexEntryPoint(rootFiles: ReadonlyArray<AbsoluteFsPath>): AbsoluteFsPath|
+    null {
   // There are two ways for a file to be recognized as the flat module index:
   // 1) if it's the only file!!!!!!
   // 2) (deprecated) if it's named 'index.ts' and has the shortest path of all such files.
   const tsFiles = rootFiles.filter(file => isNonDeclarationTsPath(file));
-  let resolvedEntryPoint: string|null = null;
+  let resolvedEntryPoint: AbsoluteFsPath|null = null;
 
   if (tsFiles.length === 1) {
     // There's only one file - this is the flat module index.
@@ -26,7 +27,7 @@ export function findFlatIndexEntryPoint(rootFiles: ReadonlyArray<AbsoluteFsPath>
     //
     // This behavior is DEPRECATED and only exists to support existing usages.
     for (const tsFile of tsFiles) {
-      if (tsFile.endsWith('/index.ts') &&
+      if (getFileSystem().basename(tsFile) === 'index.ts' &&
           (resolvedEntryPoint === null || tsFile.length <= resolvedEntryPoint.length)) {
         resolvedEntryPoint = tsFile;
       }

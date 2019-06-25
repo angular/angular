@@ -61,6 +61,12 @@ if [[ $? != 0 ]]; then exit 1; fi
   grep "const ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table.es5.js
   if [[ $? != 0 ]]; then exit 1; fi
 
+# Did it generate a base definition for undecorated classes with inputs and view queries?
+grep "_MatMenuBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ inputs: {" node_modules/@angular/material/esm2015/menu.js
+if [[ $? != 0 ]]; then exit 1; fi
+grep "_MatMenuBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ inputs: {" node_modules/@angular/material/esm5/menu.es5.js
+if [[ $? != 0 ]]; then exit 1; fi
+
 # Can it be safely run again (as a noop)?
 # And check that it logged skipping compilation as expected
 ivy-ngcc -l debug | grep 'Skipping'

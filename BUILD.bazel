@@ -74,6 +74,7 @@ karma_web_test(
         "//packages/core/test:test_lib",
         "//packages/forms/test:test_lib",
         "//packages/http/test:test_lib",
+        "//packages/zone.js/test:karma_jasmine_test_ci",
         # "//packages/router/test:test_lib",
         # //packages/router/test:test_lib fails with:
         # IE 11.0.0 (Windows 8.1.0.0) bootstrap should restore the scrolling position FAILED

@@ -24,7 +24,7 @@ ts_devserver(
 
 rollup_bundle(
     name = "bundle",
-    entry_point = "packages/bazel/test/protractor-2/app",
+    entry_point = ":app.ts",
     deps = [":app"],
 )
 

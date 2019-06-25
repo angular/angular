@@ -7,18 +7,16 @@
  */
 
 import '../util/ng_i18n_closure_mode';
-
 import {getPluralCase} from '../i18n/localization';
 import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
-
 import {attachPatchData} from './context_discovery';
-import {setDelayProjection, ɵɵload, ɵɵtextBinding} from './instructions/all';
+import {bind, setDelayProjection, ɵɵload} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
-import {allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty} from './instructions/shared';
+import {allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, textBindingInternal, TsickleIssue1009} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from './interfaces/node';
@@ -488,10 +486,10 @@ function i18nStartFirstPass(
   tView.data[index + HEADER_OFFSET] = tI18n;
 }
 
-function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode | null): TNode {
+function appendI18nNode(
+    tNode: TNode, parentTNode: TNode, previousTNode: TNode | null, viewData: LView): TNode {
   ngDevMode && ngDevMode.rendererMoveNode++;
   const nextNode = tNode.next;
-  const viewData = getLView();
   if (!previousTNode) {
     previousTNode = parentTNode;
   }
@@ -737,7 +735,7 @@ function readCreateOpCodes(
               assertDefined(
                   currentTNode !,
                   `You need to create or select a node before you can insert it into the DOM`);
-          previousTNode = appendI18nNode(currentTNode !, destinationTNode, previousTNode);
+          previousTNode = appendI18nNode(currentTNode !, destinationTNode, previousTNode, viewData);
           break;
         case I18nMutateOpCode.Select:
           const nodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
@@ -839,7 +837,7 @@ function readUpdateOpCodes(
                 elementPropertyInternal(nodeIndex, propName, value, sanitizeFn);
                 break;
               case I18nUpdateOpCode.Text:
-                ɵɵtextBinding(nodeIndex, value);
+                textBindingInternal(viewData, nodeIndex, value);
                 break;
               case I18nUpdateOpCode.IcuSwitch:
                 tIcuIndex = updateOpCodes[++j] as number;
@@ -1013,15 +1011,20 @@ let shiftsCounter = 0;
  * Stores the values of the bindings during each update cycle in order to determine if we need to
  * update the translated nodes.
  *
- * @param expression The binding's new value or NO_CHANGE
+ * @param value The binding's value
+ * @returns This function returns itself so that it may be chained
+ * (e.g. `i18nExp(ctx.name)(ctx.title)`)
  *
  * @codeGenApi
  */
-export function ɵɵi18nExp<T>(expression: T | NO_CHANGE): void {
+export function ɵɵi18nExp<T>(value: T): TsickleIssue1009 {
+  const lView = getLView();
+  const expression = bind(lView, value);
   if (expression !== NO_CHANGE) {
     changeMask = changeMask | (1 << shiftsCounter);
   }
   shiftsCounter++;
+  return ɵɵi18nExp;
 }
 
 /**
@@ -1315,13 +1318,14 @@ const LOCALIZE_PH_REGEXP = /\{\$(.*?)\}/g;
  * @codeGenApi
  * @deprecated this method is temporary & should not be used as it will be removed soon
  */
-export function ɵɵi18nLocalize(input: string, placeholders: {[key: string]: string} = {}) {
+export function ɵɵi18nLocalize(input: string, placeholders?: {[key: string]: string}) {
   if (typeof TRANSLATIONS[input] !== 'undefined') {  // to account for empty string
     input = TRANSLATIONS[input];
   }
-  return Object.keys(placeholders).length ?
-      input.replace(LOCALIZE_PH_REGEXP, (match, key) => placeholders[key] || '') :
-      input;
+  if (placeholders !== undefined && Object.keys(placeholders).length) {
+    return input.replace(LOCALIZE_PH_REGEXP, (_, key) => placeholders[key] || '');
+  }
+  return input;
 }
 
 /**

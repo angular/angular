@@ -10,14 +10,13 @@ import * as ts from 'typescript';
 
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
+import {AbsoluteFsPath, FileSystem, LogicalFileSystem, absoluteFrom, dirname, resolve} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {AbsoluteFsPath, LogicalFileSystem} from '../../../src/ngtsc/path';
+import {ClassDeclaration, ClassSymbol, Decorator} from '../../../src/ngtsc/reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
 import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
-import {FileSystem} from '../file_system/file_system';
-import {DecoratedClass} from '../host/decorated_class';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {isDefined} from '../utils';
 
@@ -26,7 +25,10 @@ export interface AnalyzedFile {
   analyzedClasses: AnalyzedClass[];
 }
 
-export interface AnalyzedClass extends DecoratedClass {
+export interface AnalyzedClass {
+  name: string;
+  decorators: Decorator[]|null;
+  declaration: ClassDeclaration;
   diagnostics?: ts.Diagnostic[];
   matches: {handler: DecoratorHandler<any, any>; analysis: any;}[];
 }
@@ -54,9 +56,9 @@ class NgccResourceLoader implements ResourceLoader {
   constructor(private fs: FileSystem) {}
   canPreload = false;
   preload(): undefined|Promise<void> { throw new Error('Not implemented.'); }
-  load(url: string): string { return this.fs.readFile(AbsoluteFsPath.resolve(url)); }
+  load(url: string): string { return this.fs.readFile(resolve(url)); }
   resolve(url: string, containingFile: string): string {
-    return AbsoluteFsPath.resolve(AbsoluteFsPath.dirname(AbsoluteFsPath.from(containingFile)), url);
+    return resolve(dirname(absoluteFrom(containingFile)), url);
   }
 }
 
@@ -133,19 +135,18 @@ export class DecorationAnalyzer {
   }
 
   protected analyzeFile(sourceFile: ts.SourceFile): AnalyzedFile|undefined {
-    const decoratedClasses = this.reflectionHost.findDecoratedClasses(sourceFile);
-    return decoratedClasses.length ? {
-      sourceFile,
-      analyzedClasses: decoratedClasses.map(clazz => this.analyzeClass(clazz)).filter(isDefined)
-    } :
-                                     undefined;
+    const analyzedClasses = this.reflectionHost.findClassSymbols(sourceFile)
+                                .map(symbol => this.analyzeClass(symbol))
+                                .filter(isDefined);
+    return analyzedClasses.length ? {sourceFile, analyzedClasses} : undefined;
   }
 
-  protected analyzeClass(clazz: DecoratedClass): AnalyzedClass|null {
+  protected analyzeClass(symbol: ClassSymbol): AnalyzedClass|null {
+    const declaration = symbol.valueDeclaration;
+    const decorators = this.reflectionHost.getDecoratorsOfSymbol(symbol);
     const matchingHandlers = this.handlers
                                  .map(handler => {
-                                   const detected =
-                                       handler.detect(clazz.declaration, clazz.decorators);
+                                   const detected = handler.detect(declaration, decorators);
                                    return {handler, detected};
                                  })
                                  .filter(isMatchingHandler);
@@ -183,13 +184,19 @@ export class DecorationAnalyzer {
     const matches: {handler: DecoratorHandler<any, any>, analysis: any}[] = [];
     const allDiagnostics: ts.Diagnostic[] = [];
     for (const {handler, detected} of detections) {
-      const {analysis, diagnostics} = handler.analyze(clazz.declaration, detected.metadata);
+      const {analysis, diagnostics} = handler.analyze(declaration, detected.metadata);
       if (diagnostics !== undefined) {
         allDiagnostics.push(...diagnostics);
       }
       matches.push({handler, analysis});
     }
-    return {...clazz, matches, diagnostics: allDiagnostics.length > 0 ? allDiagnostics : undefined};
+    return {
+      name: symbol.name,
+      declaration,
+      decorators,
+      matches,
+      diagnostics: allDiagnostics.length > 0 ? allDiagnostics : undefined
+    };
   }
 
   protected compileFile(analyzedFile: AnalyzedFile): CompiledFile {

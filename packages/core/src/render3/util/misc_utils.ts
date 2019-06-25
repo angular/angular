@@ -8,6 +8,7 @@
 
 import {global} from '../../util/global';
 import {RElement} from '../interfaces/renderer';
+import {NO_CHANGE} from '../tokens';
 
 /**
  * Returns whether the values are different from a change detection stand point.

@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, TsHelperFn, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
 import {getNameText, hasNameIdentifier} from '../utils';
 
@@ -148,8 +148,28 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param node the function declaration to parse.
    * @returns an object containing the node, statements and parameters of the function.
    */
-  getDefinitionOfFunction<T extends ts.FunctionDeclaration|ts.MethodDeclaration|
-                          ts.FunctionExpression>(node: T): FunctionDefinition<T> {
+  getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
+    if (!ts.isFunctionDeclaration(node) && !ts.isMethodDeclaration(node) &&
+        !ts.isFunctionExpression(node) && !ts.isVariableDeclaration(node)) {
+      return null;
+    }
+
+    const tsHelperFn = getTsHelperFn(node);
+    if (tsHelperFn !== null) {
+      return {
+        node,
+        body: null,
+        helper: tsHelperFn,
+        parameters: [],
+      };
+    }
+
+    // If the node was not identified to be a TypeScript helper, a variable declaration at this
+    // point cannot be resolved as a function.
+    if (ts.isVariableDeclaration(node)) {
+      return null;
+    }
+
     const parameters =
         node.parameters.map(p => ({name: getNameText(p.name), node: p, initializer: null}));
     let lookingForParamInitializers = true;
@@ -161,7 +181,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       return !lookingForParamInitializers;
     });
 
-    return {node, body: statements || null, parameters};
+    return {node, body: statements || null, helper: null, parameters};
   }
 
   /**
@@ -189,6 +209,16 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     }
 
     return this.getMembersOfSymbol(innerFunctionSymbol);
+  }
+
+  /** Gets all decorators of the given class symbol. */
+  getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
+    // The necessary info is on the inner function declaration (inside the ES5 class IIFE).
+    const innerFunctionSymbol =
+        this.getInnerFunctionSymbolFromClassDeclaration(symbol.valueDeclaration);
+    if (!innerFunctionSymbol) return null;
+
+    return super.getDecoratorsOfSymbol(innerFunctionSymbol);
   }
 
 
@@ -299,15 +329,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     if (!innerFunctionSymbol) return [];
 
     return super.getConstructorParamInfo(innerFunctionSymbol, parameterNodes);
-  }
-
-  protected getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
-    // The necessary info is on the inner function declaration (inside the ES5 class IIFE).
-    const innerFunctionSymbol =
-        this.getInnerFunctionSymbolFromClassDeclaration(symbol.valueDeclaration);
-    if (!innerFunctionSymbol) return null;
-
-    return super.getDecoratorsOfSymbol(innerFunctionSymbol);
   }
 
   /**
@@ -429,6 +450,41 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   protected getStatementsForClass(classSymbol: ClassSymbol): ts.Statement[] {
     const classDeclarationParent = classSymbol.valueDeclaration.parent;
     return ts.isBlock(classDeclarationParent) ? Array.from(classDeclarationParent.statements) : [];
+  }
+
+  /**
+   * Try to retrieve the symbol of a static property on a class.
+   *
+   * In ES5, a static property can either be set on the inner function declaration inside the class'
+   * IIFE, or it can be set on the outer variable declaration. Therefore, the ES5 host checks both
+   * places, first looking up the property on the inner symbol, and if the property is not found it
+   * will fall back to looking up the property on the outer symbol.
+   *
+   * @param symbol the class whose property we are interested in.
+   * @param propertyName the name of static property.
+   * @returns the symbol if it is found or `undefined` if not.
+   */
+  protected getStaticProperty(symbol: ClassSymbol, propertyName: ts.__String): ts.Symbol|undefined {
+    // The symbol corresponds with the inner function declaration. First lets see if the static
+    // property is set there.
+    const prop = super.getStaticProperty(symbol, propertyName);
+    if (prop !== undefined) {
+      return prop;
+    }
+
+    // Otherwise, obtain the outer variable declaration and resolve its symbol, in order to lookup
+    // static properties there.
+    const outerClass = getClassDeclarationFromInnerFunctionDeclaration(symbol.valueDeclaration);
+    if (outerClass === undefined) {
+      return undefined;
+    }
+
+    const outerSymbol = this.checker.getSymbolAtLocation(outerClass.name);
+    if (outerSymbol === undefined || outerSymbol.valueDeclaration === undefined) {
+      return undefined;
+    }
+
+    return super.getStaticProperty(outerSymbol as ClassSymbol, propertyName);
   }
 }
 
@@ -563,6 +619,21 @@ function getReturnStatement(declaration: ts.Expression | undefined): ts.ReturnSt
 
 function reflectArrayElement(element: ts.Expression) {
   return ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null;
+}
+
+/**
+ * Inspects a function declaration to determine if it corresponds with a TypeScript helper function,
+ * returning its kind if so or null if the declaration does not seem to correspond with such a
+ * helper.
+ */
+function getTsHelperFn(node: ts.NamedDeclaration): TsHelperFn|null {
+  const name = node.name !== undefined && ts.isIdentifier(node.name) && node.name.text;
+
+  if (name === '__spread') {
+    return TsHelperFn.Spread;
+  } else {
+    return null;
+  }
 }
 
 /**

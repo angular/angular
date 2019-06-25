@@ -12,7 +12,7 @@ import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHasToken, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation2, ɵɵprojection, ɵɵprojectionDef, ɵɵreference, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation2, ɵɵprojection, ɵɵprojectionDef, ɵɵreference, ɵɵselect, ɵɵtext, ɵɵtextBinding, ɵɵtextInterpolate2} from '../../src/render3/index';
 import {TNODE} from '../../src/render3/interfaces/injector';
 import {TNodeType} from '../../src/render3/interfaces/node';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
@@ -143,7 +143,8 @@ describe('di', () => {
                           }
                           if (rf2 & RenderFlags.Update) {
                             const dir = ɵɵreference(1) as DirA;
-                            ɵɵtextBinding(2, ɵɵbind(dir.dirB.value));
+                            ɵɵselect(2);
+                            ɵɵtextBinding(dir.dirB.value);
                           }
                         }
                         ɵɵembeddedViewEnd();
@@ -397,7 +398,8 @@ describe('di', () => {
                     }
                     if (rf1 & RenderFlags.Update) {
                       const tmp = ɵɵreference(1) as any;
-                      ɵɵtextBinding(2, ɵɵbind(tmp.value));
+                      ɵɵselect(2);
+                      ɵɵtextBinding(tmp.value);
                     }
                   }
                   ɵɵembeddedViewEnd();
@@ -584,7 +586,8 @@ describe('di', () => {
             if (rf & RenderFlags.Update) {
               const tmp1 = ɵɵreference(1) as any;
               const tmp2 = ɵɵreference(2) as any;
-              ɵɵtextBinding(3, ɵɵinterpolation2('', tmp1.value, '-', tmp2.value, ''));
+              ɵɵselect(3);
+              ɵɵtextInterpolate2('', tmp1.value, '-', tmp2.value, '');
             }
             ɵɵembeddedViewEnd();
           }

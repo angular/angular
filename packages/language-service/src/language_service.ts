@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgAnalyzedModules, Parser, TemplateParser} from '@angular/compiler';
+import {CompileMetadataResolver, CompilePipeSummary} from '@angular/compiler';
+import {DiagnosticTemplateInfo, getTemplateExpressionDiagnostics} from '@angular/compiler-cli/src/language_services';
 
-import {AstResult, TemplateInfo} from './common';
 import {getTemplateCompletions} from './completions';
 import {getDefinition} from './definitions';
-import {getDeclarationDiagnostics, getTemplateDiagnostics} from './diagnostics';
+import {getDeclarationDiagnostics} from './diagnostics';
 import {getHover} from './hover';
 import {Completions, Definition, Diagnostic, DiagnosticKind, Diagnostics, Hover, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
+import {offsetSpan, spanOf} from './utils';
+
 
 
 /**
@@ -36,7 +38,7 @@ class LanguageServiceImpl implements LanguageService {
     let results: Diagnostics = [];
     let templates = this.host.getTemplates(fileName);
     if (templates && templates.length) {
-      results.push(...getTemplateDiagnostics(fileName, this, templates));
+      results.push(...this.getTemplateDiagnostics(fileName, templates));
     }
 
     let declarations = this.host.getDeclarations(fileName);
@@ -49,7 +51,7 @@ class LanguageServiceImpl implements LanguageService {
   }
 
   getPipesAt(fileName: string, position: number): CompilePipeSummary[] {
-    let templateInfo = this.getTemplateAstAtPosition(fileName, position);
+    let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return templateInfo.pipes;
     }
@@ -57,98 +59,57 @@ class LanguageServiceImpl implements LanguageService {
   }
 
   getCompletionsAt(fileName: string, position: number): Completions {
-    let templateInfo = this.getTemplateAstAtPosition(fileName, position);
+    let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getTemplateCompletions(templateInfo);
     }
   }
 
   getDefinitionAt(fileName: string, position: number): Definition {
-    let templateInfo = this.getTemplateAstAtPosition(fileName, position);
+    let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getDefinition(templateInfo);
     }
   }
 
   getHoverAt(fileName: string, position: number): Hover|undefined {
-    let templateInfo = this.getTemplateAstAtPosition(fileName, position);
+    let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getHover(templateInfo);
     }
   }
 
-  private getTemplateAstAtPosition(fileName: string, position: number): TemplateInfo|undefined {
-    let template = this.host.getTemplateAt(fileName, position);
-    if (template) {
-      let astResult = this.getTemplateAst(template, fileName);
-      if (astResult && astResult.htmlAst && astResult.templateAst && astResult.directive &&
-          astResult.directives && astResult.pipes && astResult.expressionParser)
-        return {
-          position,
-          fileName,
-          template,
-          htmlAst: astResult.htmlAst,
-          directive: astResult.directive,
-          directives: astResult.directives,
-          pipes: astResult.pipes,
-          templateAst: astResult.templateAst,
-          expressionParser: astResult.expressionParser
-        };
-    }
-    return undefined;
-  }
-
-  getTemplateAst(template: TemplateSource, contextFile: string): AstResult {
-    let result: AstResult|undefined = undefined;
-    try {
-      const resolvedMetadata =
-          this.metadataResolver.getNonNormalizedDirectiveMetadata(template.type as any);
-      const metadata = resolvedMetadata && resolvedMetadata.metadata;
-      if (metadata) {
-        const rawHtmlParser = new HtmlParser();
-        const htmlParser = new I18NHtmlParser(rawHtmlParser);
-        const expressionParser = new Parser(new Lexer());
-        const config = new CompilerConfig();
-        const parser = new TemplateParser(
-            config, this.host.resolver.getReflector(), expressionParser,
-            new DomElementSchemaRegistry(), htmlParser, null !, []);
-        const htmlResult = htmlParser.parse(template.source, '', {tokenizeExpansionForms: true});
-        const analyzedModules = this.host.getAnalyzedModules();
-        let errors: Diagnostic[]|undefined = undefined;
-        let ngModule = analyzedModules.ngModuleByPipeOrDirective.get(template.type);
-        if (!ngModule) {
-          // Reported by the the declaration diagnostics.
-          ngModule = findSuitableDefaultModule(analyzedModules);
-        }
-        if (ngModule) {
-          const resolvedDirectives = ngModule.transitiveModule.directives.map(
-              d => this.host.resolver.getNonNormalizedDirectiveMetadata(d.reference));
-          const directives = removeMissing(resolvedDirectives).map(d => d.metadata.toSummary());
-          const pipes = ngModule.transitiveModule.pipes.map(
-              p => this.host.resolver.getOrLoadPipeMetadata(p.reference).toSummary());
-          const schemas = ngModule.schemas;
-          const parseResult = parser.tryParseHtml(htmlResult, metadata, directives, pipes, schemas);
-          result = {
-            htmlAst: htmlResult.rootNodes,
-            templateAst: parseResult.templateAst,
-            directive: metadata, directives, pipes,
-            parseErrors: parseResult.errors, expressionParser, errors
+  private getTemplateDiagnostics(fileName: string, templates: TemplateSource[]): Diagnostics {
+    const results: Diagnostics = [];
+    for (const template of templates) {
+      const ast = this.host.getTemplateAst(template, fileName);
+      if (ast) {
+        if (ast.parseErrors && ast.parseErrors.length) {
+          results.push(...ast.parseErrors.map<Diagnostic>(
+              e => ({
+                kind: DiagnosticKind.Error,
+                span: offsetSpan(spanOf(e.span), template.span.start),
+                message: e.msg
+              })));
+        } else if (ast.templateAst && ast.htmlAst) {
+          const info: DiagnosticTemplateInfo = {
+            templateAst: ast.templateAst,
+            htmlAst: ast.htmlAst,
+            offset: template.span.start,
+            query: template.query,
+            members: template.members
           };
+          const expressionDiagnostics = getTemplateExpressionDiagnostics(info);
+          results.push(...expressionDiagnostics);
+        }
+        if (ast.errors) {
+          results.push(...ast.errors.map<Diagnostic>(
+              e => ({kind: e.kind, span: e.span || template.span, message: e.message})));
         }
       }
-    } catch (e) {
-      let span = template.span;
-      if (e.fileName == contextFile) {
-        span = template.query.getSpanAt(e.line, e.column) || span;
-      }
-      result = {errors: [{kind: DiagnosticKind.Error, message: e.message, span}]};
     }
-    return result || {};
+    return results;
   }
-}
-
-function removeMissing<T>(values: (T | null | undefined)[]): T[] {
-  return values.filter(e => !!e) as T[];
 }
 
 function uniqueBySpan < T extends {
@@ -172,17 +133,4 @@ function uniqueBySpan < T extends {
     }
     return result;
   }
-}
-
-function findSuitableDefaultModule(modules: NgAnalyzedModules): CompileNgModuleMetadata|undefined {
-  let result: CompileNgModuleMetadata|undefined = undefined;
-  let resultSize = 0;
-  for (const module of modules.ngModules) {
-    const moduleSize = module.transitiveModule.directives.length;
-    if (moduleSize > resultSize) {
-      result = module;
-      resultSize = moduleSize;
-    }
-  }
-  return result;
 }

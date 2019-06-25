@@ -1,28 +1,30 @@
-workspace(name = "bazel_integration_test")
+workspace(
+    name = "bazel_integration_test",
+    managed_directories = {"@npm": ["node_modules"]},
+)
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "395b7568f20822c13fc5abc65b1eced637446389181fda3a108fdd6ff2cac1e9",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.29.2/rules_nodejs-0.29.2.tar.gz"],
+    sha256 = "e04a82a72146bfbca2d0575947daa60fda1878c8d3a3afe868a8ec39a6b968bb",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.31.1/rules_nodejs-0.31.1.tar.gz"],
 )
 
 # Fetch sass rules for compiling sass files
+# TODO: change back to upstream release after https://github.com/bazelbuild/rules_sass/pull/87 merged and released
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "dbe9fb97d5a7833b2a733eebc78c9c1e3880f676ac8af16e58ccf2139cbcad03",
-    strip_prefix = "rules_sass-1.11.0",
-    url = "https://github.com/bazelbuild/rules_sass/archive/1.11.0.zip",
+    strip_prefix = "rules_sass-9862dfc96a4a1f66fe171ef5e043b29853e8445b",
+    url = "https://github.com/manekinekko/rules_sass/archive/9862dfc96a4a1f66fe171ef5e043b29853e8445b.zip",
 )
 
 # Check the bazel version and download npm dependencies
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-# Bazel version must be at least v0.21.0 because:
-#   - 0.21.0 Using --incompatible_strict_action_env flag fixes cache when running `yarn bazel`
-#            (see https://github.com/angular/angular/issues/27514#issuecomment-451438271)
+# Bazel version must be at least the following version because:
+#   - 0.26.0 managed_directories feature added which is required for nodejs rules 0.30.0
 check_bazel_version(
     message = """
 You no longer need to install Bazel on your machine.
@@ -31,7 +33,7 @@ Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
 """,
-    minimum_bazel_version = "0.21.0",
+    minimum_bazel_version = "0.26.0",
 )
 
 # Setup the Node.js toolchain
@@ -43,12 +45,8 @@ node_repositories(
 # Install our npm dependencies into @npm
 yarn_install(
     name = "npm",
-    data = [
-        # Needed because this tsconfig file is used in the "postinstall" script.
-        "//:angular-metadata.tsconfig.json",
-    ],
-    package_json = "//src:package.json",
-    yarn_lock = "//src:yarn.lock",
+    package_json = "//:package.json",
+    yarn_lock = "//:yarn.lock",
 )
 
 # Install all bazel dependencies of our npm packages

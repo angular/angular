@@ -6,6 +6,11 @@ This tutorial introduces you to the essentials of Angular.
 It leverages what you already know about HTML and JavaScript&mdash;plus some useful Angular features&mdash;to build a simple online store application, with a catalog, shopping cart, and check-out form. 
 You don't need to install anything: you'll build the app using the [StackBlitz](https://stackblitz.com/ "StackBlitz web site") online development environment.
 
+<div class="alert is-helpful">
+
+We are using the StackBlitz Generator to show you a ready-made, simple application that you can examine and play with interactively. In actual development you will typically use the [Angular CLI](guide/glossary#command-line-interface-cli), a powerful command-line tool that lets you generate and modify applications. For more information, see the [CLI Overview](cli).
+
+</div>
 
 <div class="callout is-helpful">
 <header>New to web development?</header>

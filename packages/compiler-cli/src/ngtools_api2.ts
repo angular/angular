@@ -25,7 +25,6 @@ import {ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {formatDiagnostics as formatDiagnosticsOrig} from './perform_compile';
-import {Program as ProgramOrig} from './transformers/api';
 import {createCompilerHost as createCompilerOrig} from './transformers/compiler_host';
 import {createProgram as createProgramOrig} from './transformers/program';
 

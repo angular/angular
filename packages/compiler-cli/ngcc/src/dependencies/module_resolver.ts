@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
+import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, isRoot, join, resolve} from '../../../src/ngtsc/file_system';
 import {PathMappings, isRelativePath} from '../utils';
+
+
 
 /**
  * This is a very cut-down implementation of the TypeScript module resolution strategy.
@@ -55,7 +56,7 @@ export class ModuleResolver {
    * Convert the `pathMappings` into a collection of `PathMapper` functions.
    */
   private processPathMappings(pathMappings: PathMappings): ProcessedPathMapping[] {
-    const baseUrl = AbsoluteFsPath.from(pathMappings.baseUrl);
+    const baseUrl = absoluteFrom(pathMappings.baseUrl);
     return Object.keys(pathMappings.paths).map(pathPattern => {
       const matcher = splitOnStar(pathPattern);
       const templates = pathMappings.paths[pathPattern].map(splitOnStar);
@@ -71,9 +72,8 @@ export class ModuleResolver {
    * If neither of these files exist then the method returns `null`.
    */
   private resolveAsRelativePath(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
-    const resolvedPath = this.resolvePath(
-        AbsoluteFsPath.resolve(AbsoluteFsPath.dirname(fromPath), moduleName),
-        this.relativeExtensions);
+    const resolvedPath =
+        this.resolvePath(resolve(dirname(fromPath), moduleName), this.relativeExtensions);
     return resolvedPath && new ResolvedRelativeModule(resolvedPath);
   }
 
@@ -118,13 +118,13 @@ export class ModuleResolver {
    */
   private resolveAsEntryPoint(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
     let folder = fromPath;
-    while (!AbsoluteFsPath.isRoot(folder)) {
-      folder = AbsoluteFsPath.dirname(folder);
+    while (!isRoot(folder)) {
+      folder = dirname(folder);
       if (folder.endsWith('node_modules')) {
         // Skip up if the folder already ends in node_modules
-        folder = AbsoluteFsPath.dirname(folder);
+        folder = dirname(folder);
       }
-      const modulePath = AbsoluteFsPath.resolve(folder, 'node_modules', moduleName);
+      const modulePath = resolve(folder, 'node_modules', moduleName);
       if (this.isEntryPoint(modulePath)) {
         return new ResolvedExternalModule(modulePath);
       } else if (this.resolveAsRelativePath(modulePath, fromPath)) {
@@ -141,7 +141,7 @@ export class ModuleResolver {
    */
   private resolvePath(path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
     for (const postFix of postFixes) {
-      const testPath = AbsoluteFsPath.fromUnchecked(path + postFix);
+      const testPath = absoluteFrom(path + postFix);
       if (this.fs.exists(testPath)) {
         return testPath;
       }
@@ -155,7 +155,7 @@ export class ModuleResolver {
    * This is achieved by checking for the existence of `${modulePath}/package.json`.
    */
   private isEntryPoint(modulePath: AbsoluteFsPath): boolean {
-    return this.fs.exists(AbsoluteFsPath.join(modulePath, 'package.json'));
+    return this.fs.exists(join(modulePath, 'package.json'));
   }
 
   /**
@@ -215,8 +215,7 @@ export class ModuleResolver {
    */
   private computeMappedTemplates(mapping: ProcessedPathMapping, match: string) {
     return mapping.templates.map(
-        template =>
-            AbsoluteFsPath.resolve(mapping.baseUrl, template.prefix + match + template.postfix));
+        template => resolve(mapping.baseUrl, template.prefix + match + template.postfix));
   }
 
   /**
@@ -225,9 +224,9 @@ export class ModuleResolver {
    */
   private findPackagePath(path: AbsoluteFsPath): AbsoluteFsPath|null {
     let folder = path;
-    while (!AbsoluteFsPath.isRoot(folder)) {
-      folder = AbsoluteFsPath.dirname(folder);
-      if (this.fs.exists(AbsoluteFsPath.join(folder, 'package.json'))) {
+    while (!isRoot(folder)) {
+      folder = dirname(folder);
+      if (this.fs.exists(join(folder, 'package.json'))) {
         return folder;
       }
     }

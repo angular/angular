@@ -30,9 +30,10 @@
             "url": "https://www.reddit.com/r/Angular2/"
           },
           "angular-devto" : {
+            "desc": "Read and share content and chat about Angular on DEV Community.",
             "url": "https://dev.to/t/angular",
             "rev": true,
-            "title": "Read and share content and chat about Angular on DEV Community."
+            "title": "DEV Community"
           }
         }
       },
@@ -402,6 +403,13 @@
             "rev": true,
             "title": "Material Community Components",
             "url": "https://github.com/tiaguinho/material-community-components"
+          },
+          "mosaic": {
+            "desc": "Positive Technologies UI components based on Angular",
+            "logo": "https://i.ibb.co/fQNPgv6/logo-png-200.png",
+            "rev": true,
+            "title": "Mosaic - Angular UI Components",
+            "url": "https://github.com/positive-js/mosaic"
           },
           "ngzorro": {
             "desc": "A set of enterprise-class UI components based on Ant Design and Angular",

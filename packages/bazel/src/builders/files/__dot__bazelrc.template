@@ -29,3 +29,7 @@ test --test_output=errors
 
 # Use the Angular 6 compiler
 build --define=compile=legacy
+
+# Turn on managed directories feature in Bazel
+# This allows us to avoid installing a second copy of node_modules
+common --experimental_allow_incremental_repository_updates

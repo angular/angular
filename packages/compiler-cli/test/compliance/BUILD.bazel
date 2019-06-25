@@ -10,6 +10,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler/test:test_utils",
         "@npm//typescript",
     ],
@@ -21,6 +22,7 @@ jasmine_node_test(
     data = [
         "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
     ],
+    shard_count = 4,
     tags = [
         "ivy-only",
     ],

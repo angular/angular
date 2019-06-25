@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
+import {AbsoluteFsPath, FileSystem, dirname, resolve} from '../../../src/ngtsc/file_system';
+import {patchTsGetExpandoInitializer, restoreGetExpandoInitializer} from './patch_ts_expando_initializer';
 
 /**
 * An entry point bundle contains one or two programs, e.g. `src` and `dts`,
@@ -34,10 +33,16 @@ export interface BundleProgram {
 export function makeBundleProgram(
     fs: FileSystem, isCore: boolean, path: AbsoluteFsPath, r3FileName: string,
     options: ts.CompilerOptions, host: ts.CompilerHost): BundleProgram {
-  const r3SymbolsPath =
-      isCore ? findR3SymbolsPath(fs, AbsoluteFsPath.dirname(path), r3FileName) : null;
+  const r3SymbolsPath = isCore ? findR3SymbolsPath(fs, dirname(path), r3FileName) : null;
   const rootPaths = r3SymbolsPath ? [path, r3SymbolsPath] : [path];
+
+  const originalGetExpandoInitializer = patchTsGetExpandoInitializer();
   const program = ts.createProgram(rootPaths, options, host);
+  // Ask for the typeChecker to trigger the binding phase of the compilation.
+  // This will then exercise the patched function.
+  program.getTypeChecker();
+  restoreGetExpandoInitializer(originalGetExpandoInitializer);
+
   const file = program.getSourceFile(path) !;
   const r3SymbolsFile = r3SymbolsPath && program.getSourceFile(r3SymbolsPath) || null;
 
@@ -49,7 +54,7 @@ export function makeBundleProgram(
  */
 export function findR3SymbolsPath(
     fs: FileSystem, directory: AbsoluteFsPath, filename: string): AbsoluteFsPath|null {
-  const r3SymbolsFilePath = AbsoluteFsPath.resolve(directory, filename);
+  const r3SymbolsFilePath = resolve(directory, filename);
   if (fs.exists(r3SymbolsFilePath)) {
     return r3SymbolsFilePath;
   }
@@ -62,13 +67,12 @@ export function findR3SymbolsPath(
           .filter(p => p !== 'node_modules')
           // Only interested in directories (and only those that are not symlinks)
           .filter(p => {
-            const stat = fs.lstat(AbsoluteFsPath.resolve(directory, p));
+            const stat = fs.lstat(resolve(directory, p));
             return stat.isDirectory() && !stat.isSymbolicLink();
           });
 
   for (const subDirectory of subDirectories) {
-    const r3SymbolsFilePath =
-        findR3SymbolsPath(fs, AbsoluteFsPath.resolve(directory, subDirectory), filename);
+    const r3SymbolsFilePath = findR3SymbolsPath(fs, resolve(directory, subDirectory), filename);
     if (r3SymbolsFilePath) {
       return r3SymbolsFilePath;
     }

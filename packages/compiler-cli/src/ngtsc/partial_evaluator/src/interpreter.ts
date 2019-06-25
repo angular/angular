@@ -17,6 +17,7 @@ import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {DependencyTracker, ForeignFunctionResolver} from './interface';
 import {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
+import {evaluateTsHelperInline} from './ts_helpers';
 
 
 /**
@@ -51,6 +52,10 @@ const BINARY_OPERATORS = new Map<ts.SyntaxKind, BinaryOperatorDef>([
   [ts.SyntaxKind.LessThanEqualsToken, literalBinaryOp((a, b) => a <= b)],
   [ts.SyntaxKind.GreaterThanToken, literalBinaryOp((a, b) => a > b)],
   [ts.SyntaxKind.GreaterThanEqualsToken, literalBinaryOp((a, b) => a >= b)],
+  [ts.SyntaxKind.EqualsEqualsToken, literalBinaryOp((a, b) => a == b)],
+  [ts.SyntaxKind.EqualsEqualsEqualsToken, literalBinaryOp((a, b) => a === b)],
+  [ts.SyntaxKind.ExclamationEqualsToken, literalBinaryOp((a, b) => a != b)],
+  [ts.SyntaxKind.ExclamationEqualsEqualsToken, literalBinaryOp((a, b) => a !== b)],
   [ts.SyntaxKind.LessThanLessThanToken, literalBinaryOp((a, b) => a << b)],
   [ts.SyntaxKind.GreaterThanGreaterThanToken, literalBinaryOp((a, b) => a >> b)],
   [ts.SyntaxKind.GreaterThanGreaterThanGreaterThanToken, literalBinaryOp((a, b) => a >>> b)],
@@ -328,7 +333,7 @@ export class StaticInterpreter {
       if (lhs.has(strIndex)) {
         return lhs.get(strIndex) !;
       } else {
-        throw new Error(`Invalid map access: [${Array.from(lhs.keys())}] dot ${rhs}`);
+        return undefined;
       }
     } else if (Array.isArray(lhs)) {
       if (rhs === 'length') {
@@ -386,11 +391,22 @@ export class StaticInterpreter {
 
     if (!(lhs instanceof Reference)) {
       return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
-    } else if (!isFunctionOrMethodReference(lhs)) {
-      return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
     }
 
     const fn = this.host.getDefinitionOfFunction(lhs.node);
+    if (fn === null) {
+      return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
+    }
+
+    // If the function corresponds with a tslib helper function, evaluate it with custom logic.
+    if (fn.helper !== null) {
+      const args = this.evaluateFunctionArguments(node, context);
+      return evaluateTsHelperInline(fn.helper, node, args);
+    }
+
+    if (!isFunctionOrMethodReference(lhs)) {
+      return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
+    }
 
     // If the function is foreign (declared through a d.ts file), attempt to resolve it with the
     // foreignFunctionResolver, if one is specified.

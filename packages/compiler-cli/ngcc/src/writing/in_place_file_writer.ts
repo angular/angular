@@ -6,8 +6,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
+import {FileSystem, absoluteFrom, dirname} from '../../../src/ngtsc/file_system';
 import {EntryPoint} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';
@@ -25,8 +24,8 @@ export class InPlaceFileWriter implements FileWriter {
   }
 
   protected writeFileAndBackup(file: FileToWrite): void {
-    this.fs.ensureDir(AbsoluteFsPath.dirname(file.path));
-    const backPath = AbsoluteFsPath.fromUnchecked(`${file.path}.__ivy_ngcc_bak`);
+    this.fs.ensureDir(dirname(file.path));
+    const backPath = absoluteFrom(`${file.path}.__ivy_ngcc_bak`);
     if (this.fs.exists(backPath)) {
       throw new Error(
           `Tried to overwrite ${backPath} with an ngcc back up file, which is disallowed.`);

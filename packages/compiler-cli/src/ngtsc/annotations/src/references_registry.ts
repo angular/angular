@@ -8,7 +8,6 @@
 
 import * as ts from 'typescript';
 import {Reference} from '../../imports';
-import {Declaration} from '../../reflection';
 
 /**
  * Implement this interface if you want DecoratorHandlers to register

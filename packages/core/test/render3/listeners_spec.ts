@@ -8,12 +8,11 @@
 
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
-import {markDirty, ɵɵbind, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵreference, ɵɵresolveBody, ɵɵresolveDocument, ɵɵtextBinding} from '../../src/render3/index';
+import {markDirty, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵreference, ɵɵresolveBody, ɵɵresolveDocument, ɵɵselect, ɵɵtextBinding} from '../../src/render3/index';
 import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵgetCurrentView, ɵɵlistener, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {GlobalTargetResolver} from '../../src/render3/interfaces/renderer';
 import {ɵɵrestoreView} from '../../src/render3/state';
-
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, TemplateFixture, containerEl, createComponent, getDirectiveOnNode, renderToHtml, requestAnimationFrame} from './render_util';
 
@@ -472,7 +471,8 @@ describe('event listeners', () => {
                   ɵɵelementEnd();
                 }
                 if (rf1 & RenderFlags.Update) {
-                  ɵɵtextBinding(3, ɵɵbind(ctx.counters[i]));
+                  ɵɵselect(3);
+                  ɵɵtextBinding(ctx.counters[i]);
                 }
                 ɵɵembeddedViewEnd();
               }

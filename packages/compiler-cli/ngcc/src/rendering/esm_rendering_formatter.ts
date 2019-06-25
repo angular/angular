@@ -7,7 +7,7 @@
  */
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-import {PathSegment, AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {relative, dirname, AbsoluteFsPath, absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {CompiledClass} from '../analysis/decoration_analyzer';
@@ -46,8 +46,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
 
       if (from) {
         const basePath = stripExtension(from);
-        const relativePath =
-            './' + PathSegment.relative(AbsoluteFsPath.dirname(entryPointBasePath), basePath);
+        const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
         exportFrom = entryPointBasePath !== basePath ? ` from '${relativePath}'` : '';
       }
 
@@ -136,12 +135,11 @@ export class EsmRenderingFormatter implements RenderingFormatter {
       importManager: ImportManager): void {
     moduleWithProviders.forEach(info => {
       const ngModuleName = info.ngModule.node.name.text;
-      const declarationFile = AbsoluteFsPath.fromSourceFile(info.declaration.getSourceFile());
-      const ngModuleFile = AbsoluteFsPath.fromSourceFile(info.ngModule.node.getSourceFile());
+      const declarationFile = absoluteFromSourceFile(info.declaration.getSourceFile());
+      const ngModuleFile = absoluteFromSourceFile(info.ngModule.node.getSourceFile());
       const importPath = info.ngModule.viaModule ||
           (declarationFile !== ngModuleFile ?
-               stripExtension(
-                   `./${PathSegment.relative(AbsoluteFsPath.dirname(declarationFile), ngModuleFile)}`) :
+               stripExtension(`./${relative(dirname(declarationFile), ngModuleFile)}`) :
                null);
       const ngModule = generateImportString(importManager, importPath, ngModuleName);
 

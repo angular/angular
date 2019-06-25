@@ -8,24 +8,24 @@
 /* API LIST STYLES */
 
 aio-api-list {
-    div.form-search i.material-icons {
-        width: 20px;
-        pointer-events: none;
-    }
+  div.form-search i.material-icons {
+    width: 20px;
+    pointer-events: none;
+  }
 
-    .form-search input {
-        width: 182px;
-    }
+  .form-search input {
+    width: 182px;
+  }
 
-    .api-list-container {
-      display: flex;
-      flex-direction: column;
-      margin: 0 auto;
+  .api-list-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
 
-      h2 {
-        margin-top: 16px;
-      }
+    h2 {
+      margin-top: 16px;
     }
+  }
 }
 
 .api-filter {
@@ -33,12 +33,12 @@ aio-api-list {
   margin: 0 auto;
 
   @media (max-width: 600px) {
-      flex-direction: column;
-      margin: 16px auto;
+    flex-direction: column;
+    margin: 16px auto;
   }
 
   .form-select-menu, .form-search {
-      margin: 8px;
+    margin: 8px;
   }
 }
 
@@ -70,29 +70,31 @@ aio-api-list {
     box-sizing: border-box;
     border: 1px solid $white;
     color: $blue-600;
-    font-size: 16px;
+    @include font-size(16);
     height: 32px;
-    line-height: 32px;
+    @include line-height(32);
     outline: none;
     padding: 0 16px 0 32px;
     transition: all .2s;
 
     // PLACEHOLDER TEXT
-    &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    // NOTE: Vendor-prefixed selectors must be on separate blocks, because one invalid/unknown
+    //       selector will invalidate the whole block.
+    &::placeholder {  // Chrome/Firefox/Safari
       color: $blue-grey-100;
-      font-size: 14px;
+      @include font-size(14);
     }
-    &::-moz-placeholder { /* Firefox 19+ */
+    &::-webkit-input-placeholder {  // QQ Browser
       color: $blue-grey-100;
-      font-size: 14px;
+      @include font-size(14);
     }
-    &:-ms-input-placeholder { /* IE 10+ */
+    &::-ms-input-placeholder {  // Edge
       color: $blue-grey-100;
-      font-size: 14px;
+      @include font-size(14);
     }
-    &:-moz-placeholder { /* Firefox 18- */
+    &:-ms-input-placeholder {  // IE
       color: $blue-grey-100;
-      font-size: 14px;
+      @include font-size(14);
     }
 
     &:focus {
@@ -103,7 +105,7 @@ aio-api-list {
 
   .material-icons {
     color: $blue-grey-100;
-    font-size: 20px;
+    @include font-size(20);
     left: 8px;
     position: absolute;
     top: 6px;
@@ -120,9 +122,9 @@ aio-api-list {
   box-shadow: 0 1px 2px rgba($black, .24);
   color: $white;
   display: inline-block;
-  font-size: 10px;
+  @include font-size(10);
   font-weight: 600;
-  line-height: 16px;
+  @include line-height(16);
   text-align: center;
   width: 16px;
 
@@ -166,13 +168,13 @@ aio-api-list {
   overflow: hidden;
 
   @media screen and (max-width: 600px) {
-        margin: 0 0 0 -8px;
-    }
+    margin: 0 0 0 -8px;
+  }
 
   li {
-    font-size: 14px;
+    @include font-size(14);
     margin: 8px 0;
-    line-height: 14px;
+    @include line-height(14);
     padding: 0;
     float: left;
     width: 33%;
@@ -184,10 +186,11 @@ aio-api-list {
     .symbol {
       margin-right: 8px;
     }
+
     a {
       color: $blue-grey-600;
       display: inline-block;
-      line-height: 16px;
+      @include line-height(16);
       padding: 0 16px 0;
       text-decoration: none;
       transition: all .3s;
@@ -208,8 +211,8 @@ aio-api-list {
 
 .docs-content .h2-api-docs,
 .docs-content .h2-api-docs:first-of-type {
-  font-size: 18px;
-  line-height: 24px;
+  @include font-size(18);
+  @include line-height(24);
   margin-top: 0;
 }
 
@@ -230,7 +233,6 @@ aio-api-list {
 }
 
 p {
-
   &.selector {
     margin: 0;
   }
@@ -251,7 +253,7 @@ p {
 .row-margin {
   margin-bottom: 36px;
   h2 {
-    line-height: 28px;
+    @include line-height(28);
   }
 }
 
@@ -292,7 +294,7 @@ p {
 }
 
 .api-doc-code {
-  font-size: 14px;
+  @include font-size(14);
   color: #1a2326;
 
   // the last .pln (white space) creates additional spacing between sections of the api doc. Remove it.
@@ -314,11 +316,11 @@ p {
   }
 
   .api-doc-code {
-    font-size: 12px;
+    @include font-size(12);
   }
 
   p.location-badge {
     position: relative;
-    font-size: 11px;
+    @include font-size(11);
   }
 }

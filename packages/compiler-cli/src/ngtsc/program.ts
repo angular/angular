@@ -17,11 +17,13 @@ import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
+import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from './file_system';
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
+import {IndexedComponent, IndexingContext} from './indexer';
+import {generateAnalysis} from './indexer/src/transform';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
 import {PartialEvaluator} from './partial_evaluator';
-import {AbsoluteFsPath, LogicalFileSystem} from './path';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
@@ -33,7 +35,7 @@ import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from '
 import {aliasTransformFactory} from './transform/src/alias';
 import {TypeCheckContext, TypeCheckingConfig, typeCheckFilePath} from './typecheck';
 import {normalizeSeparators} from './util/src/path';
-import {getRootDirs, isDtsPath, resolveModuleName} from './util/src/typescript';
+import {getRootDirs, getSourceFileOrNull, isDtsPath, resolveModuleName} from './util/src/typescript';
 
 export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
@@ -42,7 +44,6 @@ export class NgtscProgram implements api.Program {
   private compilation: IvyCompilation|undefined = undefined;
   private factoryToSourceInfo: Map<string, FactoryInfo>|null = null;
   private sourceToFactorySymbols: Map<string, Set<string>>|null = null;
-  private host: ts.CompilerHost;
   private _coreImportsFrom: ts.SourceFile|null|undefined = undefined;
   private _importRewriter: ImportRewriter|undefined = undefined;
   private _reflector: TypeScriptReflectionHost|undefined = undefined;
@@ -67,20 +68,23 @@ export class NgtscProgram implements api.Program {
   private incrementalState: IncrementalState;
   private typeCheckFilePath: AbsoluteFsPath;
 
+  private modifiedResourceFiles: Set<string>|null;
+
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
-      host: api.CompilerHost, oldProgram?: NgtscProgram) {
+      private host: api.CompilerHost, oldProgram?: NgtscProgram) {
     if (shouldEnablePerfTracing(options)) {
       this.perfTracker = PerfTracker.zeroedToNow();
       this.perfRecorder = this.perfTracker;
     }
 
+    this.modifiedResourceFiles =
+        this.host.getModifiedResourceFiles && this.host.getModifiedResourceFiles() || null;
     this.rootDirs = getRootDirs(host, options);
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceManager = new HostResourceLoader(host, options);
     const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
-    const normalizedRootNames = rootNames.map(n => AbsoluteFsPath.from(n));
-    this.host = host;
+    const normalizedRootNames = rootNames.map(n => absoluteFrom(n));
     if (host.fileNameToModuleName !== undefined) {
       this.fileToModuleHost = host as FileToModuleHost;
     }
@@ -111,7 +115,7 @@ export class NgtscProgram implements api.Program {
     generators.push(new TypeCheckShimGenerator(this.typeCheckFilePath));
     rootFiles.push(this.typeCheckFilePath);
 
-    let entryPoint: string|null = null;
+    let entryPoint: AbsoluteFsPath|null = null;
     if (options.flatModuleOutFile !== undefined) {
       entryPoint = findFlatIndexEntryPoint(normalizedRootNames);
       if (entryPoint === null) {
@@ -150,7 +154,7 @@ export class NgtscProgram implements api.Program {
         ts.createProgram(rootFiles, options, this.host, oldProgram && oldProgram.reuseTsProgram);
     this.reuseTsProgram = this.tsProgram;
 
-    this.entryPoint = entryPoint !== null ? this.tsProgram.getSourceFile(entryPoint) || null : null;
+    this.entryPoint = entryPoint !== null ? getSourceFileOrNull(this.tsProgram, entryPoint) : null;
     this.moduleResolver = new ModuleResolver(this.tsProgram, options, this.host);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
     this.defaultImportTracker = new DefaultImportTracker();
@@ -158,7 +162,8 @@ export class NgtscProgram implements api.Program {
       this.incrementalState = IncrementalState.fresh();
     } else {
       this.incrementalState = IncrementalState.reconcile(
-          oldProgram.incrementalState, oldProgram.reuseTsProgram, this.tsProgram);
+          oldProgram.incrementalState, oldProgram.reuseTsProgram, this.tsProgram,
+          this.modifiedResourceFiles);
     }
   }
 
@@ -340,7 +345,7 @@ export class NgtscProgram implements api.Program {
     const emitSpan = this.perfRecorder.start('emit');
     const emitResults: ts.EmitResult[] = [];
 
-    const typeCheckFile = this.tsProgram.getSourceFile(this.typeCheckFilePath);
+    const typeCheckFile = getSourceFileOrNull(this.tsProgram, this.typeCheckFilePath);
 
     for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
       if (targetSourceFile.isDeclarationFile || targetSourceFile === typeCheckFile) {
@@ -426,6 +431,13 @@ export class NgtscProgram implements api.Program {
     return diagnostics;
   }
 
+  getIndexedComponents(): Map<ts.Declaration, IndexedComponent> {
+    const compilation = this.ensureAnalyzed();
+    const context = new IndexingContext();
+    compilation.index(context);
+    return generateAnalysis(context);
+  }
+
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();
 
@@ -493,7 +505,7 @@ export class NgtscProgram implements api.Program {
           this.reflector, evaluator, metaRegistry, this.metaReader !, scopeRegistry, this.isCore,
           this.resourceManager, this.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer,
-          this.refEmitter, this.defaultImportTracker),
+          this.refEmitter, this.defaultImportTracker, this.incrementalState),
       new DirectiveDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
       new InjectableDecoratorHandler(

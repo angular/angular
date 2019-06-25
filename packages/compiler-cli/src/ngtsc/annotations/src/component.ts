@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
-import * as path from 'path';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, ParseTemplateOptions, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {IndexingContext} from '../../indexer';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
@@ -20,6 +21,7 @@ import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from 
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TypeCheckContext} from '../../typecheck';
+import {NoopResourceDependencyRecorder, ResourceDependencyRecorder} from '../../util/src/resource_recorder';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 
 import {ResourceLoader} from './api';
@@ -34,6 +36,7 @@ export interface ComponentHandlerData {
   meta: R3ComponentMetadata;
   parsedTemplate: TmplAstNode[];
   metadataStmt: Statement|null;
+  parseTemplate: (options?: ParseTemplateOptions) => ParsedTemplate;
 }
 
 /**
@@ -48,7 +51,9 @@ export class ComponentDecoratorHandler implements
       private resourceLoader: ResourceLoader, private rootDirs: string[],
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
-      private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder) {}
+      private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
+      private resourceDependencies:
+          ResourceDependencyRecorder = new NoopResourceDependencyRecorder()) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -151,7 +156,7 @@ export class ComponentDecoratorHandler implements
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
     const relativeContextFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
-      const candidate = path.posix.relative(rootDir, containingFile);
+      const candidate = relative(absoluteFrom(rootDir), absoluteFrom(containingFile));
       if (previous === undefined || candidate.length < previous.length) {
         return candidate;
       } else {
@@ -166,11 +171,22 @@ export class ComponentDecoratorHandler implements
     // Parse the template.
     // If a preanalyze phase was executed, the template may already exist in parsed form, so check
     // the preanalyzeTemplateCache.
-    let template: ParsedTemplate;
+    // Extract a closure of the template parsing code so that it can be reparsed with different
+    // options if needed, like in the indexing pipeline.
+    let parseTemplate: (options?: ParseTemplateOptions) => ParsedTemplate;
     if (this.preanalyzeTemplateCache.has(node)) {
       // The template was parsed in preanalyze. Use it and delete it to save memory.
-      template = this.preanalyzeTemplateCache.get(node) !;
+      const template = this.preanalyzeTemplateCache.get(node) !;
       this.preanalyzeTemplateCache.delete(node);
+
+      // A pre-analyzed template cannot be reparsed. Pre-analysis is never run with the indexing
+      // pipeline.
+      parseTemplate = (options?: ParseTemplateOptions) => {
+        if (options !== undefined) {
+          throw new Error(`Cannot reparse a pre-analyzed template with new options`);
+        }
+        return template;
+      };
     } else {
       // The template was not already parsed. Either there's a templateUrl, or an inline template.
       if (component.has('templateUrl')) {
@@ -182,23 +198,25 @@ export class ComponentDecoratorHandler implements
         }
         const templateUrl = this.resourceLoader.resolve(evalTemplateUrl, containingFile);
         const templateStr = this.resourceLoader.load(templateUrl);
+        this.resourceDependencies.recordResourceDependency(node.getSourceFile(), templateUrl);
 
-        template = this._parseTemplate(
+        parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
             component, templateStr, sourceMapUrl(templateUrl), /* templateRange */ undefined,
-            /* escapedString */ false);
+            /* escapedString */ false, options);
       } else {
         // Expect an inline template to be present.
-        const inlineTemplate = this._extractInlineTemplate(component, relativeContextFilePath);
+        const inlineTemplate = this._extractInlineTemplate(component, containingFile);
         if (inlineTemplate === null) {
           throw new FatalDiagnosticError(
               ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node,
               'component is missing a template');
         }
         const {templateStr, templateUrl, templateRange, escapedString} = inlineTemplate;
-        template =
-            this._parseTemplate(component, templateStr, templateUrl, templateRange, escapedString);
+        parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
+            component, templateStr, templateUrl, templateRange, escapedString, options);
       }
     }
+    const template = parseTemplate();
 
     if (template.errors !== undefined) {
       throw new Error(
@@ -236,7 +254,9 @@ export class ComponentDecoratorHandler implements
       }
       for (const styleUrl of styleUrls) {
         const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
-        styles.push(this.resourceLoader.load(resourceUrl));
+        const resourceStr = this.resourceLoader.load(resourceUrl);
+        styles.push(resourceStr);
+        this.resourceDependencies.recordResourceDependency(node.getSourceFile(), resourceUrl);
       }
     }
     if (component.has('styles')) {
@@ -288,7 +308,7 @@ export class ComponentDecoratorHandler implements
         },
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore),
-        parsedTemplate: template.nodes,
+        parsedTemplate: template.nodes, parseTemplate,
       },
       typeCheck: true,
     };
@@ -296,6 +316,37 @@ export class ComponentDecoratorHandler implements
       (output.analysis.meta as R3ComponentMetadata).changeDetection = changeDetection;
     }
     return output;
+  }
+
+  index(context: IndexingContext, node: ClassDeclaration, analysis: ComponentHandlerData) {
+    // The component template may have been previously parsed without preserving whitespace or with
+    // `leadingTriviaChar`s, both of which may manipulate the AST into a form not representative of
+    // the source code, making it unsuitable for indexing. The template is reparsed with preserving
+    // options to remedy this.
+    const template = analysis.parseTemplate({
+      preserveWhitespaces: true,
+      leadingTriviaChars: [],
+    });
+    const scope = this.scopeRegistry.getScopeForComponent(node);
+    const selector = analysis.meta.selector;
+    const matcher = new SelectorMatcher<DirectiveMeta>();
+    if (scope !== null) {
+      for (const directive of scope.compilation.directives) {
+        matcher.addSelectables(CssSelector.parse(directive.selector), directive);
+      }
+    }
+    const binder = new R3TargetBinder(matcher);
+    const boundTemplate = binder.bind({template: template.nodes});
+
+    context.addComponent({
+      declaration: node,
+      selector,
+      boundTemplate,
+      templateMeta: {
+        isInline: template.isInline,
+        file: template.file,
+      },
+    });
   }
 
   typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: ComponentHandlerData): void {
@@ -506,6 +557,7 @@ export class ComponentDecoratorHandler implements
       if (templatePromise !== undefined) {
         return templatePromise.then(() => {
           const templateStr = this.resourceLoader.load(resourceUrl);
+          this.resourceDependencies.recordResourceDependency(node.getSourceFile(), resourceUrl);
           const template = this._parseTemplate(
               component, templateStr, sourceMapUrl(resourceUrl), /* templateRange */ undefined,
               /* escapedString */ false);
@@ -531,8 +583,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  private _extractInlineTemplate(
-      component: Map<string, ts.Expression>, relativeContextFilePath: string): {
+  private _extractInlineTemplate(component: Map<string, ts.Expression>, containingFile: string): {
     templateStr: string,
     templateUrl: string,
     templateRange: LexerRange|undefined,
@@ -554,7 +605,7 @@ export class ComponentDecoratorHandler implements
       // strip
       templateRange = getTemplateRange(templateExpr);
       templateStr = templateExpr.getSourceFile().text;
-      templateUrl = relativeContextFilePath;
+      templateUrl = containingFile;
       escapedString = true;
     } else {
       const resolvedTemplate = this.evaluator.evaluate(templateExpr);
@@ -569,7 +620,8 @@ export class ComponentDecoratorHandler implements
 
   private _parseTemplate(
       component: Map<string, ts.Expression>, templateStr: string, templateUrl: string,
-      templateRange: LexerRange|undefined, escapedString: boolean): ParsedTemplate {
+      templateRange: LexerRange|undefined, escapedString: boolean,
+      options: ParseTemplateOptions = {}): ParsedTemplate {
     let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
       const expr = component.get('preserveWhitespaces') !;
@@ -595,11 +647,14 @@ export class ComponentDecoratorHandler implements
     }
 
     return {
-        interpolation, ...parseTemplate(templateStr, templateUrl, {
-          preserveWhitespaces,
-          interpolationConfig: interpolation,
-          range: templateRange, escapedString
-        }),
+      interpolation,
+      ...parseTemplate(templateStr, templateUrl, {
+        preserveWhitespaces,
+        interpolationConfig: interpolation,
+        range: templateRange, escapedString, ...options,
+      }),
+      isInline: component.has('template'),
+      file: new ParseSourceFile(templateStr, templateUrl),
     };
   }
 
@@ -661,4 +716,6 @@ interface ParsedTemplate {
   nodes: TmplAstNode[];
   styleUrls: string[];
   styles: string[];
+  isInline: boolean;
+  file: ParseSourceFile;
 }

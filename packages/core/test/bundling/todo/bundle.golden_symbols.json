@@ -279,6 +279,9 @@
     "name": "UnsubscriptionErrorImpl"
   },
   {
+    "name": "VIEW_REFS"
+  },
+  {
     "name": "ViewContainerRef"
   },
   {
@@ -505,6 +508,9 @@
   },
   {
     "name": "baseResolveDirective"
+  },
+  {
+    "name": "bind"
   },
   {
     "name": "bindingUpdated"
@@ -1518,6 +1524,9 @@
     "name": "syncViewWithBlueprint"
   },
   {
+    "name": "textBindingInternal"
+  },
+  {
     "name": "throwMultipleComponentError"
   },
   {
@@ -1570,9 +1579,6 @@
   },
   {
     "name": "wrapListener"
-  },
-  {
-    "name": "ɵɵbind"
   },
   {
     "name": "ɵɵclassProp"
@@ -1636,9 +1642,6 @@
   },
   {
     "name": "ɵɵtext"
-  },
-  {
-    "name": "ɵɵtextBinding"
   },
   {
     "name": "ɵɵtextInterpolate"

@@ -418,8 +418,9 @@ export class MetadataCollector {
             const maybeFunc = maybeGetSimpleFunction(functionDeclaration);
             if (name) {
               if (!metadata) metadata = {};
-              metadata[name] =
-                  maybeFunc ? recordEntry(maybeFunc.func, node) : {__symbolic: 'function'};
+              // TODO(alxhub): The literal here is not valid FunctionMetadata.
+              metadata[name] = maybeFunc ? recordEntry(maybeFunc.func, node) :
+                                           ({ __symbolic: 'function' } as any);
             }
           }
           break;
@@ -448,13 +449,15 @@ export class MetadataCollector {
               if (typeof enumValue === 'number') {
                 nextDefaultValue = enumValue + 1;
               } else if (name) {
+                // TODO(alxhub): 'left' here has a name propery which is not valid for
+                // MetadataSymbolicSelectExpression.
                 nextDefaultValue = {
                   __symbolic: 'binary',
                   operator: '+',
                   left: {
                     __symbolic: 'select',
                     expression: recordEntry({__symbolic: 'reference', name: enumName}, node), name
-                  }
+                  } as any,
                 };
               } else {
                 nextDefaultValue =
