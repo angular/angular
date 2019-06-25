@@ -192,6 +192,11 @@ aio-search-box.search-container {
       outline: none;
     }
 
+    @include placeholder {
+      @include font-size(14);
+      color: $mediumgray;
+    }
+
     @include bp(big) {
       transition: width 0.4s ease-in-out;
 

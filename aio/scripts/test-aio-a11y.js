@@ -21,7 +21,7 @@ sh.set('-e');
 // Constants
 const MIN_SCORES_PER_PAGE = {
   '': 100,
-  'api': 90,
+  'api': 100,
   'api/core/Directive': 90,
   'cli': 91,
   'cli/add': 91,
