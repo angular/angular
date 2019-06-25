@@ -8,24 +8,24 @@
 /* API LIST STYLES */
 
 aio-api-list {
-    div.form-search i.material-icons {
-        width: 20px;
-        pointer-events: none;
-    }
+  div.form-search i.material-icons {
+    width: 20px;
+    pointer-events: none;
+  }
 
-    .form-search input {
-        width: 182px;
-    }
+  .form-search input {
+    width: 182px;
+  }
 
-    .api-list-container {
-      display: flex;
-      flex-direction: column;
-      margin: 0 auto;
+  .api-list-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
 
-      h2 {
-        margin-top: 16px;
-      }
+    h2 {
+      margin-top: 16px;
     }
+  }
 }
 
 .api-filter {
@@ -33,12 +33,12 @@ aio-api-list {
   margin: 0 auto;
 
   @media (max-width: 600px) {
-      flex-direction: column;
-      margin: 16px auto;
+    flex-direction: column;
+    margin: 16px auto;
   }
 
   .form-select-menu, .form-search {
-      margin: 8px;
+    margin: 8px;
   }
 }
 
@@ -162,8 +162,8 @@ aio-api-list {
   overflow: hidden;
 
   @media screen and (max-width: 600px) {
-        margin: 0 0 0 -8px;
-    }
+    margin: 0 0 0 -8px;
+  }
 
   li {
     @include font-size(14);
@@ -180,6 +180,7 @@ aio-api-list {
     .symbol {
       margin-right: 8px;
     }
+
     a {
       color: $blue-grey-600;
       display: inline-block;
@@ -226,7 +227,6 @@ aio-api-list {
 }
 
 p {
-
   &.selector {
     margin: 0;
   }
