@@ -726,46 +726,61 @@
           ]
         },
         {
-          "title": "Schematics",
-          "tooltip": "Understanding schematics.",
+          "title!": "Schematics",
+          "title": "스키매틱",
+          "tooltip!": "Understanding schematics.",
+          "tooltip": "스키매틱 이해하기",
           "children": [
             {
               "url": "guide/schematics",
-              "title": "Schematics Overview",
-              "tooltip": "Understand how schematics are used in Angular."
+              "title!": "Schematics Overview",
+              "title": "스키매틱 소개",
+              "tooltip!": "Understand how schematics are used in Angular.",
+              "tooltip": "Angular에서 스키매틱이 어떻게 사용되는지 알아봅시다."
             },
             {
               "url": "guide/schematics-authoring",
-              "title": "Authoring Schematics",
-              "tooltip": "Understand the structure of a schematic."
+              "title!": "Authoring Schematics",
+              "title": "스키매틱 정의하기",
+              "tooltip!": "Understand the structure of a schematic.",
+              "tooltip": "스키매틱을 구성하는 요소에 대해 알아봅시다."
             },
             {
               "url": "guide/schematics-for-libraries",
-              "title": "Schematics for Libraries",
-              "tooltip": "Use schematics to integrate your library with the Angular CLI."
+              "title!": "Schematics for Libraries",
+              "title": "스키매틱을 라이브러리로 사용하기",
+              "tooltip!": "Use schematics to integrate your library with the Angular CLI.",
+              "tooltip": "Angular CLI를 사용해서 스키매틱을 라이브러리처럼 사용해 보세요."
             }
           ]
         },
         {
           "url": "guide/cli-builder",
-          "title": "CLI Builders",
-          "tooltip": "Using builders to customize Angular CLI."
+          "title!": "CLI Builders",
+          "title": "CLI 빌더",
+          "tooltip!": "Using builders to customize Angular CLI.",
+          "tooltip": "빌더를 사용해서 Angular CLI를 커스터마이징 해보세요."
         },
         {
           "url": "guide/ivy",
           "title": "Angular Ivy",
-          "tooltip": "Opting into Angular Ivy with Angular CLI."
+          "tooltip!": "Opting into Angular Ivy with Angular CLI.",
+          "tooltip": "Angular CLI를 사용해서 Angular Ivy를 도입해 보세요."
         },
         {
           "url": "guide/web-worker",
-          "title": "Web Workers",
-          "tooltip": "Using Web Workers with Angular CLI."
+          "title!": "Web Workers",
+          "title": "웹 워커",
+          "tooltip!": "Using Web Workers with Angular CLI.",
+          "tooltip": "Angular CLI를 사용해서 웹 워커를 도입해 보세요."
         }
       ]
     },
     {
-      "title": "Dev Workflow",
-      "tooltip": "Build, testing, and deployment information.",
+      "title!": "Dev Workflow",
+      "title": "개발 과정",
+      "tooltip!": "Build, testing, and deployment information.",
+      "tooltip": "빌드, 테스트, 배포 과정에 대해 설명합니다.",
       "children": [
         {
           "url": "guide/setup",
@@ -789,8 +804,10 @@
         },
         {
           "url": "guide/bazel",
-          "title": "Building with Bazel",
-          "tooltip": "How to set up your environment to build and test with Bazel."
+          "title!": "Building with Bazel",
+          "title": "Bazel로 빌드하기",
+          "tooltip!": "How to set up your environment to build and test with Bazel.",
+          "tooltip": "Bazel을 사용한 빌드 환경을 어떻게 구성하는지, 이 환경에서 테스트는 어떻게 실행하는지 안내합니다."
         },
         {
           "url": "guide/testing",
@@ -807,13 +824,17 @@
           "tooltip": "Angular 앱을 배포하는 방법에 대해 안내합니다."
         },
         {
-          "title": "Dev Tool Integration",
-          "tooltip": "Integrate with your development environment and tools.",
+          "title!": "Dev Tool Integration",
+          "title": "개발 툴 지원",
+          "tooltip!": "Integrate with your development environment and tools.",
+          "tooltip": "개발 환경과 툴에 적용할 수 있는 Angular 지원 기능에 대해 안내합니다.",
           "children": [
             {
               "url": "guide/language-service",
-              "title": "Language Service",
-              "tooltip": "Use Angular Language Service to speed up dev time."
+              "title!": "Language Service",
+              "title": "언어 지원 서비스",
+              "tooltip!": "Use Angular Language Service to speed up dev time.",
+              "tooltip": "Angular 언어 지원 서비스를 활용하면 개발 속도를 빠르게 향상시킬 수 있습니다."
             },
             {
               "url": "guide/visual-studio-2015",
@@ -826,33 +847,45 @@
       ]
     },
     {
-      "title": "Configuration",
-      "tooltip": "Workspace and project structure, configuration files.",
+      "title!": "Configuration",
+      "title": "개발환경 설정",
+      "tooltip!": "Workspace and project structure, configuration files.",
+      "tooltip": "워크스페이스와 프로젝트 구조, 환경설정 파일에 대해 안내합니다.",
       "children": [
         {
           "url": "guide/file-structure",
-          "title": "Project File Structure",
-          "tooltip": "How your Angular workspace looks on your filesystem."
+          "title!": "Project File Structure",
+          "title": "프로젝트 파일 구조",
+          "tooltip!": "How your Angular workspace looks on your filesystem.",
+          "tooltip": "Angular 워크스페이스는 어떤 구조인지 확인해 봅시다."
         },
         {
           "url": "guide/workspace-config",
-          "title": "Workspace Configuration",
-          "tooltip": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands."
+          "title!": "Workspace Configuration",
+          "title": "워크스페이스 설정",
+          "tooltip!": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands.",
+          "tooltip": "워크스페이스와 프로젝트 환경에서 동작하는 Angular CLI 명령의 기본값을 설정하는 \"angular.json\" 파일에 대해 알아봅시다."
         },
         {
           "url": "guide/npm-packages",
-          "title": "npm Dependencies",
-          "tooltip": "Description of npm packages required at development time and at runtime."
+          "title!": "npm Dependencies",
+          "title": "npm 의존성 패키지",
+          "tooltip!": "Description of npm packages required at development time and at runtime.",
+          "tooltip": "개발 환경과 실행 환경에 필요한 npm 패키지들에 대해 알아봅시다."
         },
         {
           "url": "guide/typescript-configuration",
-          "title": "TypeScript Configuration",
-          "tooltip": "TypeScript configuration for Angular developers."
+          "title!": "TypeScript Configuration",
+          "title": "TypeScript 설정",
+          "tooltip!": "TypeScript configuration for Angular developers.",
+          "tooltip": "Angular 코드에 적용되는 TypeScript 설정에 대해 알아봅시다."
         },
         {
           "url": "guide/browser-support",
-          "title": "Browser Support",
-          "tooltip": "Browser support and polyfills guide."
+          "title!": "Browser Support",
+          "title": "브라우저 지원",
+          "tooltip!": "Browser support and polyfills guide.",
+          "tooltip": "브라우저 지원과 폴리필 가이드에 대해 안내합니다."
         }
       ]
     },
@@ -878,8 +911,10 @@
         },
         {
           "url": "guide/deprecations",
-          "title": "Deprecations",
-          "tooltip": "Summary of Angular APIs and features that are deprecated."
+          "title!": "Deprecations",
+          "title": "지원 중단 기능",
+          "tooltip!": "Summary of Angular APIs and features that are deprecated.",
+          "tooltip": "지원이 중단되는 Angular API와 기능에 대해 알아봅시다."
         }
       ]
     },
@@ -926,8 +961,10 @@
           "url": "cli"
         },
         {
-          "title": "Usage Analytics",
-          "tooltip": "For administrators, guide to gathering usage analytics from your users.",
+          "title!": "Usage Analytics",
+          "title": "사용 통계",
+          "tooltip!": "For administrators, guide to gathering usage analytics from your users.",
+          "tooltip": "사용자들이 앱을 어떻게 사용하는지 통계를 작성할 수 있습니다. 관리자를 위한 기능입니다.",
           "url": "cli/usage-analytics-gathering"
         }
       ]
