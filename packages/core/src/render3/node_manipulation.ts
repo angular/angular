@@ -734,7 +734,7 @@ function appendProjectedNode(
 
 
 /**
- * `executeActionOnView` performs operation on the view as specified in `action` (insert, detach,
+ * `executeActionOnView` performs an operation on the view as specified in `action` (insert, detach,
  * destroy)
  *
  * Inserting a view without projection or containers at top level is simple. Just iterate over the
@@ -748,9 +748,9 @@ function appendProjectedNode(
  *               or other Projections.
  *
  * As you can see this is a very recursive problem. While the recursive implementation is not the
- * most efficient one, trying to unroll recursion results in very complex code that is very hard (to
- * maintain). We are sacrificing a bit of performance for readability using recursive
- * implementation.
+ * most efficient one, trying to unroll the nodes non-recursively results in very complex code that
+ * is very hard (to maintain). We are sacrificing a bit of performance for readability using a
+ * recursive implementation.
  *
  * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
@@ -771,12 +771,11 @@ function executeActionOnView(
 }
 
 /**
- * `executeActionOnProjection` performs operation on the projection specified by `action` (insert,
- * detach,
- * destroy)
+ * `executeActionOnProjection` performs an operation on the projection specified by `action` (insert,
+ * detach, destroy)
  *
  * Inserting a projection requires us to locate the projected nodes from the parent component. The
- * complication is that those nodes themselves could be re-projected from its parent component.
+ * complication is that those nodes themselves could be re-projected from their parent component.
  *
  * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
@@ -810,9 +809,8 @@ function executeActionOnProjection(
 
 
 /**
- * `executeActionOnContainer` performs operation on the container and its views as specified by
- * `action`
- * (insert, detach, destroy)
+ * `executeActionOnContainer` performs an operation on the container and its views as specified by
+ * `action` (insert, detach, destroy)
  *
  * Inserting a Container is complicated by the fact that the container may have Views which
  * themselves have containers or projections.
@@ -829,7 +827,7 @@ function executeActionOnContainer(
   ngDevMode && assertLContainer(lContainer);
   const anchor = lContainer[NATIVE];  // LContainer has its own before node.
   const native = unwrapRNode(lContainer);
-  // A LContainer can be created dynamically on any node by injecting ViewContainerRef.
+  // An LContainer can be created dynamically on any node by injecting ViewContainerRef.
   // Asking for a ViewContainerRef on an element will result in a creation of a separate anchor node
   // (comment in the DOM) that will be different from the LContainer's host node. In this particular
   // case we need to execute action on 2 nodes:
@@ -846,9 +844,8 @@ function executeActionOnContainer(
 
 
 /**
- * `executeActionOnElementContainer` performs operation on the ng-container node and its child nodes
- * as
- * specified by the `action` (insert, detach, destroy)
+ * `executeActionOnElementContainer` performs an operation on the ng-container node and its child nodes
+ * as specified by the `action` (insert, detach, destroy)
  *
  * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
