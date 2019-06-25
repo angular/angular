@@ -15,12 +15,17 @@ aio-api-list {
 
   .form-search input {
     width: 182px;
+
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
   }
 
   .api-list-container {
     display: flex;
     flex-direction: column;
     margin: 0 auto;
+    padding-left: 0;
 
     h2 {
       margin-top: 16px;
@@ -37,8 +42,17 @@ aio-api-list {
     margin: 16px auto;
   }
 
-  .form-select-menu, .form-search {
+  .form-select-menu,
+  .form-search {
     margin: 8px;
+
+    @media screen and (max-width: 600px) {
+      margin-left: 0;
+    }
+  }
+
+  aio-select:first-child .form-select-menu {
+    margin-left: 0;
   }
 }
 
@@ -69,32 +83,17 @@ aio-api-list {
     box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
     box-sizing: border-box;
     border: 1px solid $white;
-    color: $blue-600;
-    @include font-size(16);
-    height: 32px;
+    border-radius: 4px;
+    color: $darkgray;
+    @include font-size(14);
     @include line-height(32);
     outline: none;
-    padding: 0 16px 0 32px;
+    padding: 4px 16px 4px 32px;
     transition: all .2s;
 
-    // PLACEHOLDER TEXT
-    // NOTE: Vendor-prefixed selectors must be on separate blocks, because one invalid/unknown
-    //       selector will invalidate the whole block.
-    &::placeholder {  // Chrome/Firefox/Safari
-      color: $blue-grey-100;
+    @include placeholder {
       @include font-size(14);
-    }
-    &::-webkit-input-placeholder {  // QQ Browser
-      color: $blue-grey-100;
-      @include font-size(14);
-    }
-    &::-ms-input-placeholder {  // Edge
-      color: $blue-grey-100;
-      @include font-size(14);
-    }
-    &:-ms-input-placeholder {  // IE
-      color: $blue-grey-100;
-      @include font-size(14);
+      color: $mediumgray;
     }
 
     &:focus {
@@ -108,7 +107,7 @@ aio-api-list {
     @include font-size(20);
     left: 8px;
     position: absolute;
-    top: 6px;
+    top: 12px;
     z-index: $layer-1;
   }
 }
@@ -148,6 +147,10 @@ aio-api-list {
 .api-filter {
   aio-select {
     width: 200px;
+
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
 
     .symbol {
       margin-right: 8px;

@@ -9,21 +9,24 @@
   box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
   box-sizing: border-box;
   border: 1px solid $white;
+  border-radius: 4px;
   color: $blue-grey-600;
-  @include font-size(12);
+  @include font-size(14);
   font-weight: 400;
-  height: 32px;
   @include line-height(32);
   outline: none;
-  padding: 0 16px;
+  padding: 4px 16px;
   text-align: left;
   width: 100%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
 
   strong {
     font-weight: 600;
     margin-right: 8px;
-    text-transform: uppercase;
+    text-transform: capitalize;
   }
 
   &:focus {
@@ -54,9 +57,18 @@
     @include font-size(14);
     @include line-height(32);
     margin: 0;
-    padding: 0 16px 0 40px;
+    padding: 4px 16px 4px 40px;
     position: relative;
     transition: all .2s;
+    border: 1px solid transparent;
+
+    &:first-child {
+      border-radius: 4px 4px 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 4px 4px;
+    }
 
     &:hover {
       background: $blue-grey-50;
@@ -70,7 +82,7 @@
     .symbol {
       left: 16px;
       position: absolute;
-      top: 8px;
+      top: 12px;
       z-index: $layer-5;
     }
   }
