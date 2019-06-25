@@ -190,8 +190,6 @@ jobs:
       - *attach_workspace
       - *init_environment
       - *setup_circleci_bazel_config
-      # Enable remote/sibling docker which is needed by auto-selection of toolchain configs for RBE.
-      - setup_remote_docker
       # Setup remote execution and run RBE-compatible tests.
       - *setup_bazel_remote_execution
       - run: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
@@ -211,8 +209,6 @@ jobs:
       - *attach_workspace
       - *init_environment
       - *setup_circleci_bazel_config
-      # Enable remote/sibling docker which is needed by auto-selection of toolchain configs for RBE.
-      - setup_remote_docker
       - *setup_bazel_remote_execution
 
         # We need to explicitly specify the --symlink_prefix option because otherwise we would
@@ -443,8 +439,6 @@ jobs:
       - *attach_workspace
       - *init_environment
       - *setup_circleci_bazel_config
-      # Enable remote/sibling docker which is needed by auto-selection of toolchain configs for RBE.
-      - setup_remote_docker
       - *setup_bazel_remote_execution
 
       - run: scripts/build-packages-dist.sh
@@ -471,8 +465,6 @@ jobs:
       - *attach_workspace
       - *init_environment
       - *setup_circleci_bazel_config
-      # Enable remote/sibling docker which is needed by auto-selection of toolchain configs for RBE.
-      - setup_remote_docker
       - *setup_bazel_remote_execution
 
       - run: scripts/build-ivy-npm-packages.sh
