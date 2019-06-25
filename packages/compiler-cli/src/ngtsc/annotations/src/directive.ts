@@ -11,12 +11,13 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {MetadataRegistry} from '../../metadata';
+import {MetadataReader, MetadataRegistry} from '../../metadata';
 import {extractDirectiveGuards} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 
+import {getDirectiveDiagnostics} from './diagnostics';
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getValidConstructorDependencies, readBaseClass, unwrapExpression, unwrapForwardRef} from './util';
 
@@ -30,8 +31,8 @@ export class DirectiveDecoratorHandler implements
     DecoratorHandler<DirectiveHandlerData, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean) {}
+      private metaReader: MetadataReader, private metaRegistry: MetadataRegistry,
+      private defaultImportRecorder: DefaultImportRecorder, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -82,6 +83,13 @@ export class DirectiveDecoratorHandler implements
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore),
       }
+    };
+  }
+
+  resolve(node: ClassDeclaration, analysis: DirectiveHandlerData): ResolveResult {
+    const diagnostics = getDirectiveDiagnostics(node, this.metaReader, this.evaluator);
+    return {
+      diagnostics: diagnostics !== null ? diagnostics : undefined,
     };
   }
 

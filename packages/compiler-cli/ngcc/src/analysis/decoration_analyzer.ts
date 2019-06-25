@@ -106,8 +106,8 @@ export class DecorationAnalyzer {
         /* i18nUseExternalIds */ true, this.moduleResolver, this.cycleAnalyzer, this.refEmitter,
         NOOP_DEFAULT_IMPORT_RECORDER),
     new DirectiveDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.fullRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
-        this.isCore),
+        this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
+        NOOP_DEFAULT_IMPORT_RECORDER, this.isCore),
     new InjectableDecoratorHandler(
         this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
         /* strictCtorDeps */ false),

@@ -56,6 +56,12 @@ export enum ErrorCode {
    * otherwise imported.
    */
   NGMODULE_INVALID_REEXPORT = 6004,
+
+  /**
+   * Raised when a Directive inherits its constructor from a base class without an Angular
+   * decorator.
+   */
+  DIRECTIVE_INHERITS_UNDECORATED_CTOR = 7001,
 }
 
 export function ngErrorCode(code: ErrorCode): number {
