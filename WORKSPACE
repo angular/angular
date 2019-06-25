@@ -124,17 +124,20 @@ load("@bazel_toolchains//rules:rbe_repo.bzl", "rbe_autoconfig")
 
 rbe_autoconfig(
     name = "rbe_ubuntu1604_angular",
-    # The sha256 of marketplace.gcr.io/google/rbe-ubuntu16-04 container that is
-    # used by rbe_autoconfig() to pair toolchain configs in the @bazel_toolchains repo.
-    base_container_digest = "sha256:677c1317f14c6fd5eba2fd8ec645bfdc5119f64b3e5e944e13c89e0525cc8ad1",
+    # Need to specify a base container digest in order to ensure that we can use the checked-in
+    # platform configurations for the "ubuntu16_04" image. Otherwise the autoconfig rule would
+    # need to pull the image and run it in order determine the toolchain configuration. See:
+    # https://github.com/bazelbuild/bazel-toolchains/blob/0.27.0/configs/ubuntu16_04_clang/versions.bzl
+    base_container_digest = "sha256:94d7d8552902d228c32c8c148cc13f0effc2b4837757a6e95b73fdc5c5e4b07b",
     # Note that if you change the `digest`, you might also need to update the
     # `base_container_digest` to make sure marketplace.gcr.io/google/rbe-ubuntu16-04-webtest:<digest>
     # and marketplace.gcr.io/google/rbe-ubuntu16-04:<base_container_digest> have
-    # the same Clang and JDK installed.
-    # Clang is needed because of the dependency on @com_google_protobuf.
-    # Java is needed for the Bazel's test executor Java tool.
-    digest = "sha256:74a8e9dca4781d5f277a7bd8e7ea7ed0f5906c79c9cd996205b6d32f090c62f3",
+    # the same Clang and JDK installed. Clang is needed because of the dependency on
+    # @com_google_protobuf. Java is needed for the Bazel's test executor Java tool.
+    digest = "sha256:76e2e4a894f9ffbea0a0cb2fbde741b5d223d40f265dbb9bca78655430173990",
     env = clang_env(),
     registry = "marketplace.gcr.io",
+    # We can't use the default "ubuntu16_04" RBE image provided by the autoconfig because we need
+    # a specific Linux kernel that comes with "libx11" in order to run headless browser tests.
     repository = "google/rbe-ubuntu16-04-webtest",
 )
