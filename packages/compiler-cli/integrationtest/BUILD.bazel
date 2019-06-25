@@ -54,6 +54,6 @@ nodejs_test(
         "//packages/platform-server:npm_package",
         "//packages/router:npm_package",
     ] + glob(["**/*"]),
-    entry_point = "test.js",
+    entry_point = "//packages/compiler-cli/integrationtest:test.ts",
     tags = ["no-ivy-aot"],
 )
