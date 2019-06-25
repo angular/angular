@@ -21,21 +21,21 @@ ts_devserver(
     data = [
         "loader.js",
         "//modules/playground/src/web_workers:worker-config",
-        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
+        "@npm//node_modules/tslib:tslib.js",
     ],
     entry_module = "angular/modules/playground/src/web_workers/message_broker/index",
     index_html = "index.html",
     port = 4200,
     scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
     static_files = [
-        "@npm//:node_modules/systemjs/dist/system.js",
-        "@npm//:node_modules/zone.js/dist/zone.js",
-        "@npm//:node_modules/zone.js/dist/long-stack-trace-zone.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "@npm//node_modules/systemjs:dist/system.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
+        "@npm//node_modules/zone.js:dist/long-stack-trace-zone.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
     ],
     deps = [":message_broker"],
 )

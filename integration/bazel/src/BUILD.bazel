@@ -26,7 +26,7 @@ filegroup(
     name = "rxjs_umd_modules",
     srcs = [
         # do not sort
-        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
         ":rxjs_shims.js",
     ],
 )
@@ -40,7 +40,7 @@ ts_devserver(
     ],
     serving_path = "/bundle.min.js",
     static_files = [
-        "@npm//:node_modules/zone.js/dist/zone.min.js",
+        "@npm//node_modules/zone.js:dist/zone.min.js",
     ],
     deps = ["//src"],
 )
@@ -64,7 +64,7 @@ web_package(
     name = "prodapp",
     assets = [
         # do not sort
-        "@npm//:node_modules/zone.js/dist/zone.min.js",
+        "@npm//node_modules/zone.js:dist/zone.min.js",
         ":bundle.min.js",
     ],
     data = [

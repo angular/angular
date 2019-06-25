@@ -9,9 +9,7 @@ ts_library(
             "*.ts",
             "src/**/*.ts",
         ],
-        exclude = [
-            "main.ts",
-        ],
+        exclude = ["main.ts"],
     ),
     tsconfig = ":tsconfig.json",
     deps = ["@npm//@types/node"],

@@ -8,16 +8,16 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "6d4edbf28ff6720aedf5f97f9b9a7679401bf7fca9d14a0fff80f644a99992b4",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.32.2/rules_nodejs-0.32.2.tar.gz"],
+    sha256 = "e04a82a72146bfbca2d0575947daa60fda1878c8d3a3afe868a8ec39a6b968bb",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.31.1/rules_nodejs-0.31.1.tar.gz"],
 )
 
 # Fetch sass rules for compiling sass files
+# TODO: change back to upstream release after https://github.com/bazelbuild/rules_sass/pull/87 merged and released
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "4f05239080175a3f4efa8982d2b7775892d656bb47e8cf56914d5f9441fb5ea6",
-    strip_prefix = "rules_sass-86ca977cf2a8ed481859f83a286e164d07335116",
-    url = "https://github.com/bazelbuild/rules_sass/archive/86ca977cf2a8ed481859f83a286e164d07335116.zip",
+    strip_prefix = "rules_sass-9862dfc96a4a1f66fe171ef5e043b29853e8445b",
+    url = "https://github.com/manekinekko/rules_sass/archive/9862dfc96a4a1f66fe171ef5e043b29853e8445b.zip",
 )
 
 # Check the bazel version and download npm dependencies
@@ -39,14 +39,7 @@ Try running `yarn bazel` instead.
 
 # Setup the Node.js toolchain
 node_repositories(
-    # Use same node version as root angular WORKSPACE since
-    # we share node_module packages and some require node >= 10.15.0
-    node_repositories = {
-        "10.16.0-darwin_amd64": ("node-v10.16.0-darwin-x64.tar.gz", "node-v10.16.0-darwin-x64", "6c009df1b724026d84ae9a838c5b382662e30f6c5563a0995532f2bece39fa9c"),
-        "10.16.0-linux_amd64": ("node-v10.16.0-linux-x64.tar.xz", "node-v10.16.0-linux-x64", "1827f5b99084740234de0c506f4dd2202a696ed60f76059696747c34339b9d48"),
-        "10.16.0-windows_amd64": ("node-v10.16.0-win-x64.zip", "node-v10.16.0-win-x64", "aa22cb357f0fb54ccbc06b19b60e37eefea5d7dd9940912675d3ed988bf9a059"),
-    },
-    node_version = "10.16.0",
+    node_version = "10.9.0",
     yarn_version = "1.12.1",
 )
 
