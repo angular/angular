@@ -16,7 +16,7 @@ import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '
 import {attachPatchData} from './context_discovery';
 import {bind, setDelayProjection, ɵɵload} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
-import {allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, textBindingInternal} from './instructions/shared';
+import {allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, textBindingInternal, TsickleIssue1009} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from './interfaces/node';
@@ -1012,16 +1012,19 @@ let shiftsCounter = 0;
  * update the translated nodes.
  *
  * @param value The binding's value
+ * @returns This function returns itself so that it may be chained
+ * (e.g. `i18nExp(ctx.name)(ctx.title)`)
  *
  * @codeGenApi
  */
-export function ɵɵi18nExp<T>(value: T): void {
+export function ɵɵi18nExp<T>(value: T): TsickleIssue1009 {
   const lView = getLView();
   const expression = bind(lView, value);
   if (expression !== NO_CHANGE) {
     changeMask = changeMask | (1 << shiftsCounter);
   }
   shiftsCounter++;
+  return ɵɵi18nExp;
 }
 
 /**

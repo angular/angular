@@ -456,10 +456,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // setup accumulated bindings
     const {index, bindings} = this.i18n;
     if (bindings.size) {
+      const chainBindings: ChainableBindingInstruction[] = [];
       bindings.forEach(binding => {
-        this.updateInstruction(
-            index, span, R3.i18nExp, () => [this.convertPropertyBinding(binding)]);
+        chainBindings.push({
+          sourceSpan: span,
+          value: () => this.convertPropertyBinding(binding)
+        });
       });
+      this.updateInstructionChain(index, R3.i18nExp, chainBindings);
       this.updateInstruction(index, span, R3.i18nApply, [o.literal(index)]);
     }
     if (!selfClosing) {
@@ -641,6 +645,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (i18nAttrs.length) {
         let hasBindings: boolean = false;
         const i18nAttrArgs: o.Expression[] = [];
+        const bindings: ChainableBindingInstruction[] = [];
         i18nAttrs.forEach(attr => {
           const message = attr.i18n !as i18n.Message;
           if (attr instanceof t.TextAttribute) {
@@ -654,13 +659,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(message, params));
               converted.expressions.forEach(expression => {
                 hasBindings = true;
-                this.updateInstruction(
-                    elementIndex, element.sourceSpan, R3.i18nExp,
-                    () => [this.convertExpressionBinding(expression)]);
+                bindings.push({
+                  sourceSpan: element.sourceSpan,
+                  value: () => this.convertExpressionBinding(expression)
+                });
               });
             }
           }
         });
+        if (bindings.length) {
+          this.updateInstructionChain(elementIndex, R3.i18nExp, bindings);
+        }
         if (i18nAttrArgs.length) {
           const index: o.Expression = o.literal(this.allocateDataSlot());
           const args = this.constantPool.getConstLiteral(o.literalArr(i18nAttrArgs), true);
@@ -733,7 +742,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
         propertyBindings.push({
           name: prepareSyntheticPropertyName(input.name),
-          input,
+          sourceSpan: input.sourceSpan,
           value: () => hasValue ? this.convertPropertyBinding(value) : emptyValueBindInstruction
         });
       } else {
@@ -771,7 +780,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               // [prop]="value"
               // Collect all the properties so that we can chain into a single function at the end.
               propertyBindings.push(
-                  {name: attrName, input, value: () => this.convertPropertyBinding(value), params});
+                  {name: attrName, sourceSpan: input.sourceSpan, value: () => this.convertPropertyBinding(value), params});
             }
           } else if (inputType === BindingType.Attribute) {
             if (value instanceof Interpolation && getInterpolationArgsLength(value) > 1) {
@@ -785,7 +794,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               // Collect the attribute bindings so that they can be chained at the end.
               attributeBindings.push({
                 name: attrName,
-                input,
+                sourceSpan: input.sourceSpan,
                 value: () => this.convertPropertyBinding(boundValue), params
               });
             }
@@ -828,18 +837,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
       this.creationInstruction(span, isNgContainer ? R3.elementContainerEnd : R3.elementEnd);
     }
-  }
-
-  /**
-   * Adds an update instruction for a bound property or attribute, such as `[prop]="value"` or
-   * `[attr.title]="value"`
-   */
-  boundUpdateInstruction(
-      instruction: o.ExternalReference, elementIndex: number, attrName: string,
-      input: t.BoundAttribute, value: any, params: any[]) {
-    this.updateInstruction(elementIndex, input.sourceSpan, instruction, () => {
-      return [o.literal(attrName), this.convertPropertyBinding(value), ...params];
-    });
   }
 
   /**
@@ -1042,7 +1039,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         if (value !== undefined) {
           this.allocateBindingSlots(value);
           propertyBindings.push(
-              {name: input.name, input, value: () => this.convertPropertyBinding(value)});
+              {name: input.name, sourceSpan: input.sourceSpan, value: () => this.convertPropertyBinding(value)});
         }
       }
     });
@@ -1093,12 +1090,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private updateInstructionChain(
       nodeIndex: number, reference: o.ExternalReference, bindings: ChainableBindingInstruction[]) {
-    const span = bindings.length ? bindings[0].input.sourceSpan : null;
+    const span = bindings.length ? bindings[0].sourceSpan : null;
 
     this.addSelectInstructionIfNecessary(nodeIndex, span);
     this._updateCodeFns.push(() => {
-      const calls = bindings.map(
-          property => [o.literal(property.name), property.value(), ...(property.params || [])]);
+      const calls = bindings.map(property => {
+        const fnParams = [property.value(), ...(property.params || [])];
+        if (property.name) {
+          fnParams.unshift(o.literal(property.name));
+        }
+        return fnParams;
+      });
 
       return chainedInstruction(span, reference, calls).toStmt();
     });
@@ -2027,8 +2029,8 @@ function hasTextChildrenOnly(children: t.Node[]): boolean {
 }
 
 interface ChainableBindingInstruction {
-  name: string;
-  input: t.BoundAttribute;
+  name?: string;
+  sourceSpan: ParseSourceSpan|null;
   value: () => o.Expression;
   params?: any[];
 }
