@@ -27,7 +27,6 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "check_rules
 
 # Bazel version must be at least the following version because:
 #   - 0.26.0 managed_directories feature added which is required for nodejs rules 0.30.0
-#   - 0.27.0 has a fix for managed_directories after `rm -rf node_modules`
 check_bazel_version(
     message = """
 You no longer need to install Bazel on your machine.
@@ -36,7 +35,7 @@ Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
 """,
-    minimum_bazel_version = "0.27.0",
+    minimum_bazel_version = "0.26.0",
 )
 
 # The NodeJS rules version must be at least the following version because:
