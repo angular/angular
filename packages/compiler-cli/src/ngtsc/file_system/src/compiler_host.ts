@@ -58,7 +58,7 @@ export class NgtscCompilerHost implements ts.CompilerHost {
 
   fileExists(fileName: string): boolean {
     const absPath = this.fs.resolve(fileName);
-    return this.fs.exists(absPath);
+    return this.fs.exists(absPath) && this.fs.stat(absPath).isFile();
   }
 
   readFile(fileName: string): string|undefined {
