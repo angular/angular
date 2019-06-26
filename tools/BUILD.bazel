@@ -22,5 +22,9 @@ platform(
             name: "dockerAddCapabilities"
             value: "SYS_ADMIN"
         }
+        properties: {
+            name: "Pool"
+            value: "default"
+        }
         """,
 )
