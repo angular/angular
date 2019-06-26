@@ -27,6 +27,8 @@ const srcsToFmt = [
   `!${I18N_FOLDER}/locale_en.ts`,
   '!tools/gulp-tasks/cldr/extract.js',
   '!tools/ts-api-guardian/test/fixtures/**',
+  // Ignore packages/zone.js since it matches as a file but is a directory
+  '!packages/zone.js',
 ];
 
 /**
