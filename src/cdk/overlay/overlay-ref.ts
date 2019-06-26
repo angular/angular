@@ -37,6 +37,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   private _positionStrategy: PositionStrategy | undefined;
   private _scrollStrategy: ScrollStrategy | undefined;
   private _locationChanges: SubscriptionLike = Subscription.EMPTY;
+  private _backdropClickHandler = (event: MouseEvent) => this._backdropClick.next(event);
 
   /**
    * Reference to the parent of the `_host` at the time it was detached. Used to restore
@@ -390,8 +391,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
 
     // Forward backdrop clicks such that the consumer of the overlay can perform whatever
     // action desired when such a click occurs (usually closing the overlay).
-    this._backdropElement.addEventListener('click',
-        (event: MouseEvent) => this._backdropClick.next(event));
+    this._backdropElement.addEventListener('click', this._backdropClickHandler);
 
     // Add class to fade-in the backdrop after one frame.
     if (typeof requestAnimationFrame !== 'undefined') {
@@ -431,8 +431,13 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     let timeoutId: number;
     let finishDetach = () => {
       // It may not be attached to anything in certain cases (e.g. unit tests).
-      if (backdropToDetach && backdropToDetach.parentNode) {
-        backdropToDetach.parentNode.removeChild(backdropToDetach);
+      if (backdropToDetach) {
+        backdropToDetach.removeEventListener('click', this._backdropClickHandler);
+        backdropToDetach.removeEventListener('transitionend', finishDetach);
+
+        if (backdropToDetach.parentNode) {
+          backdropToDetach.parentNode.removeChild(backdropToDetach);
+        }
       }
 
       // It is possible that a new portal has been attached to this overlay since we started

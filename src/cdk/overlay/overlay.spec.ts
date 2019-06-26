@@ -745,6 +745,30 @@ describe('Overlay', () => {
         .toBeLessThan(children.indexOf(host), 'Expected backdrop to be before the host in the DOM');
     });
 
+    it('should remove the event listener from the backdrop', () => {
+      let overlayRef = overlay.create(config);
+      overlayRef.attach(componentPortal);
+
+      viewContainerFixture.detectChanges();
+      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      expect(backdrop).toBeTruthy();
+      expect(backdrop.classList).not.toContain('cdk-overlay-backdrop-showing');
+
+      let backdropClickHandler = jasmine.createSpy('backdropClickHander');
+      overlayRef.backdropClick().subscribe(backdropClickHandler);
+
+      backdrop.click();
+      expect(backdropClickHandler).toHaveBeenCalledTimes(1);
+
+      overlayRef.detach();
+      dispatchFakeEvent(backdrop, 'transitionend');
+      zone.simulateZoneExit();
+      viewContainerFixture.detectChanges();
+
+      backdrop.click();
+      expect(backdropClickHandler).toHaveBeenCalledTimes(1);
+    });
+
   });
 
   describe('panelClass', () => {
