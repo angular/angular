@@ -1176,10 +1176,10 @@ Visualize a *banana in a box* to remember that the parentheses go _inside_ the b
 
 </div>
 
-The `[()]` syntax is easy to demonstrate when the element has a settable
-property called `x` and a corresponding event named `xChange`.
-Here's a `SizerComponent` that fits this pattern.
-It has a `size` value property and a companion `sizeChange` event:
+Two-way binding happens when the `[()]` syntax is used **and** the element has a settable
+property (e.g. `x`) with a corresponding event with the same name plus a `Change` suffix
+(e.g. `xChange`). For example, here's a `SizerComponent` that fits this pattern. It has a
+`size` value property and a companion `sizeChange` event:
 
 <code-example path="two-way-binding/src/app/sizer/sizer.component.ts" header="src/app/sizer.component.ts" linenums="false">
 </code-example>
