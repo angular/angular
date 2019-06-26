@@ -534,12 +534,20 @@ export function ɵɵnamespaceMathML() {
 }
 
 /**
- * Sets the namespace used to create elements no `null`, which forces element creation to use
+ * Sets the namespace used to create elements to `null`, which forces element creation to use
  * `createElement` rather than `createElementNS`.
  *
  * @codeGenApi
  */
 export function ɵɵnamespaceHTML() {
+  namespaceHTMLInternal();
+}
+
+/**
+ * Sets the namespace used to create elements to `null`, which forces element creation to use
+ * `createElement` rather than `createElementNS`.
+ */
+export function namespaceHTMLInternal() {
   _currentNamespace = null;
 }
 

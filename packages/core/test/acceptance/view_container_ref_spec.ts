@@ -1049,6 +1049,43 @@ describe('ViewContainerRef', () => {
       expect(() => fixture.componentRef.destroy()).not.toThrow();
     });
 
+    it('should create the root node in the correct namespace when previous node is SVG', () => {
+      @Component({
+        template: `
+          <div>Some random content</div>
+          <!-- Note that it's important for the test that the <svg> element is last. -->
+          <svg></svg>
+        `
+      })
+      class TestComp {
+        constructor(
+            public viewContainerRef: ViewContainerRef,
+            public componentFactoryResolver: ComponentFactoryResolver) {}
+      }
+
+      @Component({selector: 'dynamic-comp', template: ''})
+      class DynamicComponent {
+      }
+
+      @NgModule({declarations: [DynamicComponent], entryComponents: [DynamicComponent]})
+      class DeclaresDynamicComponent {
+      }
+
+      TestBed.configureTestingModule(
+          {imports: [DeclaresDynamicComponent], declarations: [TestComp]});
+      const fixture = TestBed.createComponent(TestComp);
+
+      // Note: it's important that we **don't** call `fixture.detectChanges` between here and
+      // the component being created, because running change detection will reset Ivy's
+      // namespace state which will make the test pass.
+
+      const {viewContainerRef, componentFactoryResolver} = fixture.componentInstance;
+      const componentRef = viewContainerRef.createComponent(
+          componentFactoryResolver.resolveComponentFactory(DynamicComponent));
+      const element = componentRef.location.nativeElement;
+      expect((element.namespaceURI || '').toLowerCase()).not.toContain('svg');
+    });
+
   });
 
   describe('insertion points and declaration points', () => {
