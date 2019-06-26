@@ -192,6 +192,18 @@ describe('MatBottomSheet', () => {
     expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeFalsy();
   }));
 
+  it('should dispose of bottom sheet if view container is destroyed while animating',
+    fakeAsync(() => {
+      const bottomSheetRef = bottomSheet.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+
+      bottomSheetRef.dismiss();
+      viewContainerFixture.detectChanges();
+      viewContainerFixture.destroy();
+      flush();
+
+      expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
+    }));
+
   it('should emit the backdropClick stream when clicking on the overlay backdrop', fakeAsync(() => {
     const bottomSheetRef = bottomSheet.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
     const spy = jasmine.createSpy('backdropClick spy');
