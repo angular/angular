@@ -1,3 +1,16 @@
+<a name="8.0.3"></a>
+## [8.0.3](https://github.com/angular/angular/compare/8.0.2...8.0.3) (2019-06-26)
+
+
+### Bug Fixes
+
+* **bazel:** exclude all angular schematics folders from metadata build ([#31237](https://github.com/angular/angular/issues/31237)) ([6bad2ca](https://github.com/angular/angular/commit/6bad2ca)), closes [#31235](https://github.com/angular/angular/issues/31235)
+* **bazel:** remove unsupported Css pre-processors from ng new ([#31234](https://github.com/angular/angular/issues/31234)) ([980bcaf](https://github.com/angular/angular/commit/980bcaf)), closes [#31209](https://github.com/angular/angular/issues/31209)
+* **bazel:** update ng new schema to match the current ng new schema of [@schematics](https://github.com/schematics)/angular ([#31234](https://github.com/angular/angular/issues/31234)) ([48f7f65](https://github.com/angular/angular/commit/48f7f65)), closes [#31233](https://github.com/angular/angular/issues/31233)
+* **service-worker:** registration failed on Safari ([#31140](https://github.com/angular/angular/issues/31140)) ([f470e69](https://github.com/angular/angular/commit/f470e69)), closes [#31061](https://github.com/angular/angular/issues/31061)
+
+
+
 <a name="8.1.0-next.3"></a>
 # [8.1.0-next.3](https://github.com/angular/angular/compare/8.1.0-next.2...8.1.0-next.3) (2019-06-19)
 
