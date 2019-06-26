@@ -164,6 +164,10 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
         deps = [
             "//test:angular_test_init",
         ] + deps,
+        browsers = [
+            "@io_bazel_rules_webtesting//browsers:chromium-local",
+            "@io_bazel_rules_webtesting//browsers:firefox-local",
+        ],
         bootstrap = [
             "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
             "@npm//node_modules/reflect-metadata:Reflect.js",

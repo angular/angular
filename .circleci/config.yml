@@ -128,9 +128,9 @@ version: 2
 jobs:
 
   # -----------------------------------
-  # Build and test job that uses Bazel.
+  # Job to test that everything builds with Bazel
   # -----------------------------------
-  bazel_build_test:
+  bazel_build:
     <<: *job_defaults
     resource_class: xlarge
     environment:
@@ -144,7 +144,6 @@ jobs:
       - *yarn_install
 
       - run: yarn bazel build src/... --build_tag_filters=-docs-package
-      - run: yarn bazel test src/... --build_tag_filters=-docs-package --test_tag_filters=-e2e
 
   # --------------------------------------------------------------------------------------------
   # Job that runs ts-api-guardian against our API goldens in "tools/public_api_guard".
@@ -185,18 +184,22 @@ jobs:
 
   # ------------------------------------------------------------------------------------------
   # Job that runs the unit tests on locally installed browsers (Chrome and Firefox headless).
-  # The available browsers are installed through the angular/ngcontainer Docker image.
+  # The available browsers are chromium and firefox
   # ------------------------------------------------------------------------------------------
   tests_local_browsers:
-    docker: *docker-firefox-image
+    <<: *job_defaults
     resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-    - *checkout_code
-    - *restore_cache
-    - *yarn_download
-    - *yarn_install
+      - *checkout_code
+      - *restore_cache
+      - *setup_bazel_ci_config
+      - *setup_bazel_remote_execution
+      - *yarn_download
+      - *yarn_install
 
-    - run: ./scripts/circleci/run-local-browser-tests.sh
+      - run: yarn bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e
 
   # ----------------------------------------------------------------------------
   # Job that runs the unit tests on Browserstack. The browsers that will be used
@@ -447,17 +450,17 @@ workflows:
 
   bazel_targets:
     jobs:
-      - bazel_build_test:
+      - bazel_build:
           filters: *ignore_presubmit_branch_filter
       - ivy_test:
           filters: *ignore_presubmit_branch_filter
       - api_golden_checks:
           filters: *ignore_presubmit_branch_filter
+      - tests_local_browsers:
+          filters: *ignore_presubmit_branch_filter
 
   unit_tests:
     jobs:
-      - tests_local_browsers:
-          filters: *ignore_presubmit_branch_filter
       - tests_browserstack:
           filters: *ignore_presubmit_branch_filter
       - tests_saucelabs:
