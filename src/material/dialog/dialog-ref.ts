@@ -42,6 +42,9 @@ export class MatDialogRef<T, R = any> {
   /** Result to be passed to afterClosed. */
   private _result: R | undefined;
 
+  /** Handle to the timeout that's running as a fallback in case the exit animation doesn't fire. */
+  private _closeFallbackTimeout: number;
+
   constructor(
     private _overlayRef: OverlayRef,
     public _containerInstance: MatDialogContainer,
@@ -66,7 +69,10 @@ export class MatDialogRef<T, R = any> {
     _containerInstance._animationStateChanged.pipe(
       filter(event => event.phaseName === 'done' && event.toState === 'exit'),
       take(1)
-    ).subscribe(() => this._overlayRef.dispose());
+    ).subscribe(() => {
+      clearTimeout(this._closeFallbackTimeout);
+      this._overlayRef.dispose();
+    });
 
     _overlayRef.detachments().subscribe(() => {
       this._beforeClosed.next(this._result);
@@ -99,10 +105,19 @@ export class MatDialogRef<T, R = any> {
       filter(event => event.phaseName === 'start'),
       take(1)
     )
-    .subscribe(() => {
+    .subscribe(event => {
       this._beforeClosed.next(dialogResult);
       this._beforeClosed.complete();
       this._overlayRef.detachBackdrop();
+
+      // The logic that disposes of the overlay depends on the exit animation completing, however
+      // it isn't guaranteed if the parent view is destroyed while it's running. Add a fallback
+      // timeout which will clean everything up if the animation hasn't fired within the specified
+      // amount of time plus 100ms. We don't need to run this outside the NgZone, because for the
+      // vast majority of cases the timeout will have been cleared before it has the chance to fire.
+      this._closeFallbackTimeout = setTimeout(() => {
+        this._overlayRef.dispose();
+      }, event.totalTime + 100);
     });
 
     this._containerInstance._startExitAnimation();

@@ -194,6 +194,17 @@ describe('MatDialog', () => {
     expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
   }));
 
+  it('should dispose of dialog if view container is destroyed while animating', fakeAsync(() => {
+    const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+
+    dialogRef.close();
+    viewContainerFixture.detectChanges();
+    viewContainerFixture.destroy();
+    flush();
+
+    expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
+  }));
+
   it('should dispatch the beforeClose and afterClose events when the ' +
     'overlay is detached externally', fakeAsync(inject([Overlay], (overlay: Overlay) => {
       const dialogRef = dialog.open(PizzaMsg, {
@@ -1064,6 +1075,7 @@ describe('MatDialog', () => {
 
       document.body.removeChild(button);
       document.body.removeChild(input);
+      flush();
     }));
 
     it('should move focus to the container if there are no focusable elements in the dialog',
