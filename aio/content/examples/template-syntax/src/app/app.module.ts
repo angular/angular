@@ -8,6 +8,7 @@ import { ClickDirective, ClickDirective2 } from './click.directive';
 import { HeroFormComponent }      from './hero-form.component';
 import { heroSwitchComponents }   from './hero-switch.components';
 import { SizerComponent }         from './sizer.component';
+import { SvgComponent }           from './svg.component';
 
 @NgModule({
   imports: [
@@ -22,7 +23,8 @@ import { SizerComponent }         from './sizer.component';
     heroSwitchComponents,
     ClickDirective,
     ClickDirective2,
-    SizerComponent
+    SizerComponent,
+    SvgComponent
   ],
   bootstrap: [ AppComponent ]
 })
