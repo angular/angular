@@ -781,8 +781,8 @@ const Zone: ZoneType = (function(global: any) {
       }
       const _callback = this._zoneDelegate.intercept(this, callback, source);
       const zone: Zone = this;
-      return function() {
-        return zone.runGuarded(_callback, (this as any), <any>arguments, source);
+      return function(this: unknown) {
+        return zone.runGuarded(_callback, this, <any>arguments, source);
       } as any as T;
     }
 

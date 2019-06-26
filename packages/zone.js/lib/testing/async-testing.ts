@@ -17,7 +17,7 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     // function when asynchronous activity is finished.
     if (global.jasmine) {
       // Not using an arrow function to preserve context passed from call site
-      return function(done: any) {
+      return function(this: unknown, done: any) {
         if (!done) {
           // if we run beforeEach in @angular/core/testing/testing_internal then we get no done
           // fake it here and assume sync.
@@ -37,7 +37,7 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     // is finished. This will be correctly consumed by the Mocha framework with
     // it('...', async(myFn)); or can be used in a custom framework.
     // Not using an arrow function to preserve context passed from call site
-    return function() {
+    return function(this: unknown) {
       return new Promise<void>((finishCallback, failCallback) => {
         runInTestZone(fn, this, finishCallback, failCallback);
       });

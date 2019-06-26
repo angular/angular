@@ -2,9 +2,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "noImplicitAny": true,
-    "noImplicitReturns": false,
-    "noImplicitThis": false,
     "outDir": "build",
     "inlineSourceMap": true,
     "inlineSources": true,

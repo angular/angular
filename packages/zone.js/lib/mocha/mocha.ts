@@ -67,7 +67,7 @@
 
   function wrapDescribeInZone(args: IArguments): any[] {
     const syncTest: any = function(fn: Function) {
-      return function() { return syncZone.run(fn, this, arguments as any as any[]); };
+      return function(this: unknown) { return syncZone.run(fn, this, arguments as any as any[]); };
     };
 
     return modifyArguments(args, syncTest);
@@ -75,11 +75,11 @@
 
   function wrapTestInZone(args: IArguments): any[] {
     const asyncTest = function(fn: Function) {
-      return function(done: Function) { return testZone !.run(fn, this, [done]); };
+      return function(this: unknown, done: Function) { return testZone !.run(fn, this, [done]); };
     };
 
     const syncTest: any = function(fn: Function) {
-      return function() { return testZone !.run(fn, this); };
+      return function(this: unknown) { return testZone !.run(fn, this); };
     };
 
     return modifyArguments(args, syncTest, asyncTest);
@@ -87,11 +87,11 @@
 
   function wrapSuiteInZone(args: IArguments): any[] {
     const asyncTest = function(fn: Function) {
-      return function(done: Function) { return suiteZone.run(fn, this, [done]); };
+      return function(this: unknown, done: Function) { return suiteZone.run(fn, this, [done]); };
     };
 
     const syncTest: any = function(fn: Function) {
-      return function() { return suiteZone.run(fn, this); };
+      return function(this: unknown) { return suiteZone.run(fn, this); };
     };
 
     return modifyArguments(args, syncTest, asyncTest);

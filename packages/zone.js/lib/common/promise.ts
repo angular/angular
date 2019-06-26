@@ -54,7 +54,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
 
   const UNHANDLED_PROMISE_REJECTION_HANDLER_SYMBOL = __symbol__('unhandledPromiseRejectionHandler');
 
-  function handleUnhandledRejection(e: any) {
+  function handleUnhandledRejection(this: unknown, e: any) {
     api.onUnhandledError(e);
     try {
       const handler = (Zone as any)[UNHANDLED_PROMISE_REJECTION_HANDLER_SYMBOL];
@@ -198,7 +198,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   }
 
   const REJECTION_HANDLED_HANDLER = __symbol__('rejectionHandledHandler');
-  function clearRejectedNoCatch(promise: ZoneAwarePromise<any>): void {
+  function clearRejectedNoCatch(this: unknown, promise: ZoneAwarePromise<any>): void {
     if ((promise as any)[symbolState] === REJECTED_NO_CATCH) {
       // if the promise is rejected no catch status
       // and queue.length > 0, means there is a error handler
@@ -453,7 +453,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   api.patchThen = patchThen;
 
   function zoneify(fn: Function) {
-    return function() {
+    return function(this: unknown) {
       let resultPromise = fn.apply(this, arguments);
       if (resultPromise instanceof ZoneAwarePromise) {
         return resultPromise;

@@ -78,7 +78,9 @@ function renderLongStackTrace(frames: LongStackTrace[], stack?: string): string 
   return longTrace.join(NEWLINE);
 }
 
-(Zone as any)['longStackTraceZoneSpec'] = <ZoneSpec>{
+type LongStackTraceZoneSpec = ZoneSpec & {longStackTraceLimit: number};
+
+(Zone as any)['longStackTraceZoneSpec'] = <LongStackTraceZoneSpec>{
   name: 'long-stack-trace',
   longStackTraceLimit: 10,  // Max number of task to keep the stack trace for.
   // add a getLongStackTrace method in spec to
