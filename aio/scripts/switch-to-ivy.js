@@ -35,13 +35,9 @@ function _main() {
   console.log(`\nNew config: ${newTsConfigStr}`);
   writeFileSync(tsConfigPath, newTsConfigStr);
 
-  // Run ngcc.
-  const ngccArgs = '--loglevel debug --properties es2015 module';
-  console.log(`\nRunning ngcc (with args: ${ngccArgs})...`);
-  exec(`yarn ivy-ngcc ${ngccArgs}`);
-
   // Done.
   console.log('\nReady to build with Ivy!');
-  console.log('(To switch back to ViewEngine (with packages from npm), undo the changes in ' +
-              `\`${tsConfigPath}\` and run \`yarn aio-use-npm && yarn example-use-npm\`.)`);
+  console.log(
+      '(To switch back to ViewEngine (with packages from npm), undo the changes in ' +
+      `\`${tsConfigPath}\` and run \`yarn aio-use-npm && yarn example-use-npm\`.)`);
 }
