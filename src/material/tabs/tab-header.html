@@ -9,12 +9,11 @@
   <div class="mat-tab-header-pagination-chevron"></div>
 </div>
 
-<div class="mat-tab-label-container" #tabListContainer
-     (keydown)="_handleKeydown($event)">
+<div class="mat-tab-label-container" #tabListContainer (keydown)="_handleKeydown($event)">
   <div
+    #tabList
     class="mat-tab-list"
     [class._mat-animation-noopable]="_animationMode === 'NoopAnimations'"
-    #tabList
     role="tablist"
     (cdkObserveContent)="_onContentChanges()">
     <div class="mat-tab-labels">

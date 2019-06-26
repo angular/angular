@@ -1,12 +1,22 @@
-@import '../core/style/variables';
-@import '../core/style/layout-common';
-@import '../core/style/vendor-prefixes';
 @import '../core/style/noop-animation';
 @import './tabs-common';
 
-.mat-tab-header {
-  display: flex;
-  @include tab-header;
+@include paginated-tab-header;
+
+.mat-ink-bar {
+  @include ink-bar;
+}
+
+.mat-tab-labels {
+  @include paginated-tab-header-item-wrapper;
+}
+
+.mat-tab-label-container {
+  @include paginated-tab-header-container;
+}
+
+.mat-tab-list {
+  @include _noop-animation();
 }
 
 // Wraps each tab label
@@ -18,82 +28,5 @@
 @media ($mat-xsmall) {
   .mat-tab-label {
     min-width: 72px;
-  }
-}
-
-// The ink bar that displays under the active tab label
-.mat-ink-bar {
-  @include ink-bar;
-}
-
-.mat-tab-header-pagination {
-  @include user-select(none);
-  position: relative;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  min-width: 32px;
-  cursor: pointer;
-  z-index: 2;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: none;
-
-  .mat-tab-header-pagination-controls-enabled & {
-    display: flex;
-  }
-}
-
-// The pagination control that is displayed on the left side of the tab header.
-.mat-tab-header-pagination-before, .mat-tab-header-rtl .mat-tab-header-pagination-after {
-  padding-left: 4px;
-  .mat-tab-header-pagination-chevron {
-    transform: rotate(-135deg);
-  }
-}
-
-// The pagination control that is displayed on the right side of the tab header.
-.mat-tab-header-rtl .mat-tab-header-pagination-before, .mat-tab-header-pagination-after {
-  padding-right: 4px;
-  .mat-tab-header-pagination-chevron {
-    transform: rotate(45deg);
-  }
-}
-
-.mat-tab-header-pagination-chevron {
-  border-style: solid;
-  border-width: 2px 2px 0 0;
-  content: '';
-  height: 8px;
-  width: 8px;
-}
-
-.mat-tab-header-pagination-disabled {
-  box-shadow: none;
-  cursor: default;
-}
-
-.mat-tab-label-container {
-  display: flex;
-  flex-grow: 1;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.mat-tab-list {
-  @include _noop-animation();
-  flex-grow: 1;
-  position: relative;
-  transition: transform 500ms cubic-bezier(0.35, 0, 0.25, 1);
-}
-
-.mat-tab-labels {
-  display: flex;
-
-  [mat-align-tabs='center'] & {
-    justify-content: center;
-  }
-
-  [mat-align-tabs='end'] & {
-    justify-content: flex-end;
   }
 }

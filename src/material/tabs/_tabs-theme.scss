@@ -96,7 +96,7 @@
 
 @mixin _mat-tabs-background($background-color) {
   // Set background color for the tab group
-  .mat-tab-header, .mat-tab-links {
+  .mat-tab-header, .mat-tab-links, .mat-tab-header-pagination {
     background-color: mat-color($background-color);
   }
 

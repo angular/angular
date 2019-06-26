@@ -16,4 +16,8 @@ export class TabNavBarBasicExample {
   toggleBackground() {
     this.background = this.background ? '' : 'primary';
   }
+
+  addLink() {
+    this.links.push(`Link ${this.links.length + 1}`);
+  }
 }

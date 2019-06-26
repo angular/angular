@@ -15,10 +15,11 @@ export {
   MatTabBodyPositionState,
   MatTabBodyPortal
 } from './tab-body';
-export {MatTabHeader, ScrollDirection} from './tab-header';
+export {MatTabHeader} from './tab-header';
 export {MatTabLabelWrapper} from './tab-label-wrapper';
 export {MatTab} from './tab';
 export {MatTabLabel} from './tab-label';
 export {MatTabNav, MatTabLink} from './tab-nav-bar/index';
 export {MatTabContent} from './tab-content';
+export {ScrollDirection} from './paginated-tab-header';
 export * from './tabs-animations';
