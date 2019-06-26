@@ -9,7 +9,7 @@
 import {Rule} from '@angular-devkit/schematics';
 import {createUpgradeRule, TargetVersion, UpgradeTSLintConfig} from '@angular/cdk/schematics';
 import {green, yellow} from 'chalk';
-import {sync as globSync} from 'glob';
+import {join} from 'path';
 
 import {materialUpgradeData} from './upgrade-data';
 
@@ -33,7 +33,11 @@ const upgradeRules = [
 ];
 
 /** List of absolute paths that refer to directories that contain the Material upgrade rules. */
-const ruleDirectories = globSync('upgrade-rules/**/', {cwd: __dirname, absolute: true});
+const ruleDirectories = [
+  'misc-checks/',
+  'misc-ripples-v7/',
+  'package-imports-v8/',
+].map(relativePath => join(__dirname, 'upgrade-rules/', relativePath));
 
 /** TSLint upgrade configuration that will be passed to the CDK ng-update rule. */
 const tslintUpgradeConfig: UpgradeTSLintConfig = {
