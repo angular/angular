@@ -27,7 +27,7 @@ Running this command will:
     // Create a new
     const worker = new Worker('./app.worker', { type: 'module' });
     worker.onmessage = ({ data }) => {
-      console.log('page got message: $\{data\}');
+      console.log(`page got message: ${data}`);
     };
     worker.postMessage('hello');
   } else {
