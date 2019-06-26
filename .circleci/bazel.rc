@@ -5,17 +5,3 @@
 # Save downloaded repositories in a location that can be cached by CircleCI. This helps us
 # speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
 build --repository_cache=/home/circleci/bazel_repository_cache
-
-########################################
-# Remote Build Execution support on CI #
-########################################
-
-# Load base settings for remote build execution.
-import %workspace%/.circleci/base-rbe-bazelrc
-
-# Use the Angular team internal GCP instance for remote execution.
-build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
-build:remote --project_id=internal-200822
-
-# Always read from remote cache on CI.
-build:remote --remote_accept_cached=true

@@ -42,3 +42,4 @@ testem.log
 /.chrome
 /.git
 /.firebase
+/.bazelrc.user
