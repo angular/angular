@@ -16,9 +16,9 @@ Zone.__load_patch('toString', (global: any) => {
   const ORIGINAL_DELEGATE_SYMBOL = zoneSymbol('OriginalDelegate');
   const PROMISE_SYMBOL = zoneSymbol('Promise');
   const ERROR_SYMBOL = zoneSymbol('Error');
-  const newFunctionToString = function toString() {
+  const newFunctionToString = function toString(this: unknown) {
     if (typeof this === 'function') {
-      const originalDelegate = this[ORIGINAL_DELEGATE_SYMBOL];
+      const originalDelegate = (this as any)[ORIGINAL_DELEGATE_SYMBOL];
       if (originalDelegate) {
         if (typeof originalDelegate === 'function') {
           return originalFunctionToString.call(originalDelegate);

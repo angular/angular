@@ -247,9 +247,9 @@ describe('AsyncTestZoneSpec', function() {
   const asyncTest: any = (Zone as any)[Zone.__symbol__('asyncTest')];
 
   function wrapAsyncTest(fn: Function, doneFn?: Function) {
-    return function(done: Function) {
+    return function(this: unknown, done: Function) {
       const asyncWrapper = asyncTest(fn);
-      return asyncWrapper.apply(this, [function() {
+      return asyncWrapper.apply(this, [function(this: unknown) {
                                   if (doneFn) {
                                     doneFn();
                                   }
