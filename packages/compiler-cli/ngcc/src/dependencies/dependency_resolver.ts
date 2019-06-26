@@ -130,12 +130,13 @@ export class DependencyResolver {
         removeNodes(entryPoint, Array.from(missing));
       } else {
         dependencies.forEach(dependencyPath => {
-          if (graph.hasNode(dependencyPath)) {
-            if (graph.hasNode(entryPoint.path)) {
-              // The entry-point is still valid (i.e. has no missing dependencies) and
-              // the dependency maps to an entry point that exists in the graph so add it
-              graph.addDependency(entryPoint.path, dependencyPath);
-            }
+          if (!graph.hasNode(entryPoint.path)) {
+            // The entry-point has already been identified as invalid so we don't need
+            // to do any further work on it.
+          } else if (graph.hasNode(dependencyPath)) {
+            // The entry-point is still valid (i.e. has no missing dependencies) and
+            // the dependency maps to an entry point that exists in the graph so add it
+            graph.addDependency(entryPoint.path, dependencyPath);
           } else if (invalidEntryPoints.some(i => i.entryPoint.path === dependencyPath)) {
             // The dependency path maps to an entry-point that was previously removed
             // from the graph, so remove this entry-point as well.
