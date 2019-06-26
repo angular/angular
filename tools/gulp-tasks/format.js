@@ -11,6 +11,7 @@ const {I18N_FOLDER, I18N_DATA_FOLDER} = require('./cldr/extract');
 // clang-format entry points
 const srcsToFmt = [
   'packages/**/*.{js,ts}',
+  '!packages/zone.js',  // Ignore the `zone.js/` directory itself. (The contents are still matched.)
   `!${I18N_DATA_FOLDER}/**/*.{js,ts}`,
   `!${I18N_FOLDER}/available_locales.ts`,
   `!${I18N_FOLDER}/currencies.ts`,
