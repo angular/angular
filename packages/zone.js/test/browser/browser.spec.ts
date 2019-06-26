@@ -279,68 +279,68 @@ describe('Zone', function() {
 
           // TODO: JiaLiPassion, need to find out why the test bundle is not `use strict`.
           xit('event handler with null context should use event.target',
-             ifEnvSupports(canPatchOnProperty(Document.prototype, 'onmousedown'), function() {
-               const ieVer = getIEVersion();
-               if (ieVer && ieVer === 9) {
-                 // in ie9, this is window object even we call func.apply(undefined)
-                 return;
-               }
-               const logs: string[] = [];
-               const EventTarget = (window as any)['EventTarget'];
-               let oriAddEventListener = EventTarget && EventTarget.prototype ?
-                   (EventTarget.prototype as any)[zoneSymbol('addEventListener')] :
-                   (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')];
+              ifEnvSupports(canPatchOnProperty(Document.prototype, 'onmousedown'), function() {
+                const ieVer = getIEVersion();
+                if (ieVer && ieVer === 9) {
+                  // in ie9, this is window object even we call func.apply(undefined)
+                  return;
+                }
+                const logs: string[] = [];
+                const EventTarget = (window as any)['EventTarget'];
+                let oriAddEventListener = EventTarget && EventTarget.prototype ?
+                    (EventTarget.prototype as any)[zoneSymbol('addEventListener')] :
+                    (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')];
 
-               if (!oriAddEventListener) {
-                 // no patched addEventListener found
-                 return;
-               }
-               let handler1: Function;
-               let handler2: Function;
+                if (!oriAddEventListener) {
+                  // no patched addEventListener found
+                  return;
+                }
+                let handler1: Function;
+                let handler2: Function;
 
-               const listener = function() { logs.push('listener1'); };
+                const listener = function() { logs.push('listener1'); };
 
-               const listener1 = function() { logs.push('listener2'); };
+                const listener1 = function() { logs.push('listener2'); };
 
-               HTMLSpanElement.prototype.addEventListener = function(
-                   eventName: string, callback: any) {
-                 if (eventName === 'click') {
-                   handler1 = callback;
-                 } else if (eventName === 'mousedown') {
-                   handler2 = callback;
-                 }
-                 return oriAddEventListener.apply(this, arguments);
-               };
+                HTMLSpanElement.prototype.addEventListener = function(
+                    eventName: string, callback: any) {
+                  if (eventName === 'click') {
+                    handler1 = callback;
+                  } else if (eventName === 'mousedown') {
+                    handler2 = callback;
+                  }
+                  return oriAddEventListener.apply(this, arguments);
+                };
 
-               (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')] = null;
+                (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')] = null;
 
-               patchEventTarget(window, [HTMLSpanElement.prototype]);
+                patchEventTarget(window, [HTMLSpanElement.prototype]);
 
-               const span = document.createElement('span');
-               document.body.appendChild(span);
+                const span = document.createElement('span');
+                document.body.appendChild(span);
 
-               zone.run(function() {
-                 span.addEventListener('click', listener);
-                 span.onmousedown = listener1;
-               });
+                zone.run(function() {
+                  span.addEventListener('click', listener);
+                  span.onmousedown = listener1;
+                });
 
-               expect(handler1 !).toBe(handler2 !);
+                expect(handler1 !).toBe(handler2 !);
 
-               handler1 !.apply(null, [{type: 'click', target: span}]);
+                handler1 !.apply(null, [{type: 'click', target: span}]);
 
-               handler2 !.apply(null, [{type: 'mousedown', target: span}]);
+                handler2 !.apply(null, [{type: 'mousedown', target: span}]);
 
-               expect(hookSpy).toHaveBeenCalled();
-               expect(logs).toEqual(['listener1', 'listener2']);
-               document.body.removeChild(span);
-               if (EventTarget) {
-                 (EventTarget.prototype as any)[zoneSymbol('addEventListener')] =
-                     oriAddEventListener;
-               } else {
-                 (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')] =
-                     oriAddEventListener;
-               }
-             }));
+                expect(hookSpy).toHaveBeenCalled();
+                expect(logs).toEqual(['listener1', 'listener2']);
+                document.body.removeChild(span);
+                if (EventTarget) {
+                  (EventTarget.prototype as any)[zoneSymbol('addEventListener')] =
+                      oriAddEventListener;
+                } else {
+                  (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')] =
+                      oriAddEventListener;
+                }
+              }));
 
           it('SVGElement onclick should be in zone',
              ifEnvSupports(

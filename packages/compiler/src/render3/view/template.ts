@@ -458,10 +458,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (bindings.size) {
       const chainBindings: ChainableBindingInstruction[] = [];
       bindings.forEach(binding => {
-        chainBindings.push({
-          sourceSpan: span,
-          value: () => this.convertPropertyBinding(binding)
-        });
+        chainBindings.push({sourceSpan: span, value: () => this.convertPropertyBinding(binding)});
       });
       this.updateInstructionChain(index, R3.i18nExp, chainBindings);
       this.updateInstruction(index, span, R3.i18nApply, [o.literal(index)]);
@@ -779,8 +776,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             } else {
               // [prop]="value"
               // Collect all the properties so that we can chain into a single function at the end.
-              propertyBindings.push(
-                  {name: attrName, sourceSpan: input.sourceSpan, value: () => this.convertPropertyBinding(value), params});
+              propertyBindings.push({
+                name: attrName,
+                sourceSpan: input.sourceSpan,
+                value: () => this.convertPropertyBinding(value), params
+              });
             }
           } else if (inputType === BindingType.Attribute) {
             if (value instanceof Interpolation && getInterpolationArgsLength(value) > 1) {
@@ -1038,8 +1038,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
         if (value !== undefined) {
           this.allocateBindingSlots(value);
-          propertyBindings.push(
-              {name: input.name, sourceSpan: input.sourceSpan, value: () => this.convertPropertyBinding(value)});
+          propertyBindings.push({
+            name: input.name,
+            sourceSpan: input.sourceSpan,
+            value: () => this.convertPropertyBinding(value)
+          });
         }
       }
     });
