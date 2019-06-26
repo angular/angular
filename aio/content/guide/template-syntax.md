@@ -1796,7 +1796,7 @@ Though `@Input()` and `@Output()` often appear together in apps, you can use
 them separately. If the nested
 component is such that it only needs to send data to its parent, you wouldn't
 need an `@Input()`, only an `@Output()`. The reverse is also true in that if the
-child only needs to receive data from the parent, you'd only neeed `@Input()`.
+child only needs to receive data from the parent, you'd only need `@Input()`.
 
 </div>
 
