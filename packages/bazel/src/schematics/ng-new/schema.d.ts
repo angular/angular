@@ -95,16 +95,16 @@ export interface CommitObject {
 * The file extension or preprocessor to use for style files.
 */
 export declare enum Style {
-  Css = "css",
-  Sass = "sass",
-  Scss = "scss",
+  Css = 'css',
+  Sass = 'sass',
+  Scss = 'scss',
 }
 /**
 * The view encapsulation strategy to use in the initial project.
 */
 export declare enum ViewEncapsulation {
-  Emulated = "Emulated",
-  Native = "Native",
-  None = "None",
-  ShadowDom = "ShadowDom"
+  Emulated = 'Emulated',
+  Native = 'Native',
+  None = 'None',
+  ShadowDom = 'ShadowDom'
 }
