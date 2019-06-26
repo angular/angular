@@ -9,10 +9,10 @@
 import {LayoutModule} from './layout-module';
 import {BreakpointObserver, BreakpointState} from './breakpoints-observer';
 import {MediaMatcher} from './media-matcher';
-import {fakeAsync, TestBed, inject, flush} from '@angular/core/testing';
+import {fakeAsync, TestBed, inject, flush, tick} from '@angular/core/testing';
 import {Injectable} from '@angular/core';
 import {Subscription} from 'rxjs';
-import {take} from 'rxjs/operators';
+import {skip, take} from 'rxjs/operators';
 
 describe('BreakpointObserver', () => {
   let breakpointObserver: BreakpointObserver;
@@ -93,10 +93,10 @@ describe('BreakpointObserver', () => {
       queryMatchState = state.matches;
     });
 
-    flush();
+    tick();
     expect(queryMatchState).toBeTruthy();
     mediaMatcher.setMatchesQuery(query, false);
-    flush();
+    tick();
     expect(queryMatchState).toBeFalsy();
   }));
 
@@ -108,15 +108,16 @@ describe('BreakpointObserver', () => {
       breakpointObserver.observe([queryOne, queryTwo]).subscribe((breakpoint: BreakpointState) => {
         state = breakpoint;
       });
+      expect(state.breakpoints).toEqual({[queryOne]: true, [queryTwo]: true});
 
       mediaMatcher.setMatchesQuery(queryOne, false);
       mediaMatcher.setMatchesQuery(queryTwo, false);
-      flush();
+      tick();
       expect(state.breakpoints).toEqual({[queryOne]: false, [queryTwo]: false});
 
       mediaMatcher.setMatchesQuery(queryOne, true);
       mediaMatcher.setMatchesQuery(queryTwo, false);
-      flush();
+      tick();
       expect(state.breakpoints).toEqual({[queryOne]: true, [queryTwo]: false});
   }));
 
@@ -124,6 +125,7 @@ describe('BreakpointObserver', () => {
     const query = '(width: 999px)';
     breakpointObserver.observe(query).subscribe();
     mediaMatcher.setMatchesQuery(query, true);
+    tick();
     expect(breakpointObserver.isMatched(query)).toBeTruthy();
   }));
 
@@ -131,13 +133,29 @@ describe('BreakpointObserver', () => {
     const query = '(width: 999px)';
     breakpointObserver.observe(query).subscribe();
     mediaMatcher.setMatchesQuery(query, false);
+    tick();
     expect(breakpointObserver.isMatched(query)).toBeFalsy();
+  }));
+
+  it('emits one event when multiple queries change', fakeAsync(() => {
+    const observer = jasmine.createSpy('observer');
+    const queryOne = '(width: 700px)';
+    const queryTwo = '(width: 999px)';
+    breakpointObserver.observe([queryOne, queryTwo])
+      .pipe(skip(1))
+      .subscribe(observer);
+
+    mediaMatcher.setMatchesQuery(queryOne, false);
+    mediaMatcher.setMatchesQuery(queryTwo, false);
+
+    tick();
+    expect(observer).toHaveBeenCalledTimes(1);
   }));
 
   it('should not complete other subscribers when preceding subscriber completes', fakeAsync(() => {
     const queryOne = '(width: 700px)';
     const queryTwo = '(width: 999px)';
-    const breakpoint = breakpointObserver.observe([queryOne, queryTwo]);
+    const breakpoint = breakpointObserver.observe([queryOne, queryTwo]).pipe(skip(1));
     const subscriptions: Subscription[] = [];
     let emittedValues: number[] = [];
 
@@ -148,14 +166,14 @@ describe('BreakpointObserver', () => {
 
     mediaMatcher.setMatchesQuery(queryOne, true);
     mediaMatcher.setMatchesQuery(queryTwo, false);
-    flush();
+    tick();
 
     expect(emittedValues).toEqual([1, 2, 3, 4]);
     emittedValues = [];
 
     mediaMatcher.setMatchesQuery(queryOne, false);
     mediaMatcher.setMatchesQuery(queryTwo, true);
-    flush();
+    tick();
 
     expect(emittedValues).toEqual([1, 3, 4]);
 
@@ -172,7 +190,11 @@ export class FakeMediaQueryList {
   /** Toggles the matches state and "emits" a change event. */
   setMatches(matches: boolean) {
     this.matches = matches;
-    this._listeners.forEach(listener => listener(this as any));
+
+    /** Simulate an asynchronous task. */
+    setTimeout(() => {
+      this._listeners.forEach(listener => listener(this as any));
+    });
   }
 
   /** Registers a callback method for change events. */
