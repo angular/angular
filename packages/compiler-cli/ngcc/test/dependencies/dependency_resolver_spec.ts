@@ -125,6 +125,21 @@ runInEachFileSystem(() => {
         ]);
       });
 
+      it('should cope with entry points having multiple indirect missing dependencies', () => {
+        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/first/index.js')]: {resolved: [], missing: ['/missing1']},
+          [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing2']},
+          [_('/third/index.js')]: {resolved: [first.path, second.path], missing: []},
+        }));
+        const result = resolver.sortEntryPointsByDependency([first, second, third]);
+        expect(result.entryPoints).toEqual([]);
+        expect(result.invalidEntryPoints).toEqual([
+          {entryPoint: first, missingDependencies: ['/missing1']},
+          {entryPoint: second, missingDependencies: ['/missing2']},
+          {entryPoint: third, missingDependencies: [first.path]},
+        ]);
+      });
+
       it('should error if the entry point does not have a suitable format', () => {
         expect(() => resolver.sortEntryPointsByDependency([
           { path: '/first', packageJson: {}, compiledByAngular: true } as EntryPoint
