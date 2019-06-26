@@ -36,6 +36,7 @@
     "service-worker",
     "upgrade",
     "packaging",
-    "changelog"
+    "changelog",
+    "zone.js"
   ]
 }
