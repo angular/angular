@@ -86,7 +86,7 @@ export function isSupportSetErrorStack() {
 
 (isSupportSetErrorStack as any).message = 'supportSetErrorStack';
 
-export function asyncTest(testFn: Function, zone: Zone = Zone.current) {
+export function asyncTest(this: unknown, testFn: Function, zone: Zone = Zone.current) {
   const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
   return (done: Function) => {
     let asyncTestZone: Zone =

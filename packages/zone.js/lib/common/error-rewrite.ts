@@ -115,7 +115,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
    * This is ZoneAwareError which processes the stack frame and cleans up extra frames as well as
    * adds zone information to it.
    */
-  function ZoneAwareError(): Error {
+  function ZoneAwareError(this: unknown | typeof NativeError): Error {
     // We always have to return native error otherwise the browser console will not work.
     let error: Error = NativeError.apply(this, arguments);
     // Save original stack trace
