@@ -174,11 +174,13 @@ export interface Directive {
    *
    * @Component({
    *   selector: 'main',
-   *   template: ` {{ bankName }} <child-dir (bankNameChange)="onBankNameChange($event)"></child-dir>`
+   *   template: `
+   *     {{ bankName }} <child-dir (bankNameChange)="onBankNameChange($event)"></child-dir>
+   *   `
    * })
    * class MainComponent {
    *  bankName: string;
-   * 
+   *
    *   onBankNameChange(bankName: string) {
    *     this.bankName = bankName;
    *   }

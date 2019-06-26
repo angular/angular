@@ -771,8 +771,8 @@ function executeActionOnView(
 }
 
 /**
- * `executeActionOnProjection` performs an operation on the projection specified by `action` (insert,
- * detach, destroy)
+ * `executeActionOnProjection` performs an operation on the projection specified by `action`
+ * (insert, detach, destroy).
  *
  * Inserting a projection requires us to locate the projected nodes from the parent component. The
  * complication is that those nodes themselves could be re-projected from their parent component.
@@ -844,8 +844,8 @@ function executeActionOnContainer(
 
 
 /**
- * `executeActionOnElementContainer` performs an operation on the ng-container node and its child nodes
- * as specified by the `action` (insert, detach, destroy)
+ * `executeActionOnElementContainer` performs an operation on the ng-container node and its child
+ * nodes as specified by the `action` (insert, detach, destroy).
  *
  * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
