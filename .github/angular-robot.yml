@@ -58,7 +58,7 @@ merge:
     # list of PR statuses that need to be successful
     requiredStatuses:
       - "ci/circleci: lint"
-      - "ci/circleci: bazel_build_test"
+      - "ci/circleci: bazel_build"
       - "ci/circleci: tests_local_browsers"
       - "ci/circleci: tests_browserstack"
       - "ci/circleci: tests_saucelabs"
