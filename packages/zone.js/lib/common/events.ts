@@ -112,7 +112,7 @@ export function patchEventTarget(
   };
 
   // global shared zoneAwareCallback to handle all event callback with capture = false
-  const globalZoneAwareCallback = function(event: Event) {
+  const globalZoneAwareCallback = function(this: unknown, event: Event) {
     // https://github.com/angular/zone.js/issues/911, in IE, sometimes
     // event will be undefined, so we need to use window.event
     event = event || _global.event;
@@ -144,7 +144,7 @@ export function patchEventTarget(
   };
 
   // global shared zoneAwareCallback to handle all event callback with capture = true
-  const globalZoneAwareCaptureCallback = function(event: Event) {
+  const globalZoneAwareCaptureCallback = function(this: unknown, event: Event) {
     // https://github.com/angular/zone.js/issues/911, in IE, sometimes
     // event will be undefined, so we need to use window.event
     event = event || _global.event;
@@ -330,7 +330,7 @@ export function patchEventTarget(
     const makeAddListener = function(
         nativeListener: any, addSource: string, customScheduleFn: any, customCancelFn: any,
         returnTarget = false, prepend = false) {
-      return function() {
+      return function(this: unknown) {
         const target = this || _global;
         const eventName = arguments[0];
         let delegate = arguments[1];
