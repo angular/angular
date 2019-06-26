@@ -231,6 +231,7 @@ There are currently a few exceptions to the "use package name" rule:
 * **changelog**: used for updating the release notes in CHANGELOG.md
 * **docs-infra**: used for docs-app (angular.io) related changes within the /aio directory of the
   repo
+* **ivy**: used for changes to the [Ivy renderer](https://github.com/angular/angular/issues/21706).
 * none/empty string: useful for `style`, `test` and `refactor` changes that are done across all
   packages (e.g. `style: add missing semicolons`) and for docs changes that are not related to a
   specific package (e.g. `docs: fix typo in tutorial`).
