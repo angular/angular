@@ -132,20 +132,28 @@ export class MatDialogContainer extends BasePortalOutlet {
 
   /** Moves the focus inside the focus trap. */
   private _trapFocus() {
+    const element = this._elementRef.nativeElement;
+
     if (!this._focusTrap) {
-      this._focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
+      this._focusTrap = this._focusTrapFactory.create(element);
     }
 
-    // If were to attempt to focus immediately, then the content of the dialog would not yet be
+    // If we were to attempt to focus immediately, then the content of the dialog would not yet be
     // ready in instances where change detection has to run first. To deal with this, we simply
     // wait for the microtask queue to be empty.
     if (this._config.autoFocus) {
       this._focusTrap.focusInitialElementWhenReady();
     } else {
+      const activeElement = this._document.activeElement;
+
       // Otherwise ensure that focus is on the dialog container. It's possible that a different
       // component tried to move focus while the open animation was running. See:
-      // https://github.com/angular/components/issues/16215
-      this._elementRef.nativeElement.focus();
+      // https://github.com/angular/components/issues/16215. Note that we only want to do this
+      // if the focus isn't inside the dialog already, because it's possible that the consumer
+      // turned off `autoFocus` in order to move focus themselves.
+      if (activeElement !== element && !element.contains(activeElement)) {
+        element.focus();
+      }
     }
   }
 
