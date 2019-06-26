@@ -1,6 +1,6 @@
 # Re-export of Bazel rules with repository-wide defaults
 
-load("@npm_angular_bazel//:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
+load("@npm_angular_bazel//:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm_bazel_typescript//:defs.bzl", _ts_library = "ts_library")
 load("@npm_bazel_karma//:defs.bzl", _ts_web_test_suite = "ts_web_test_suite")
@@ -119,6 +119,15 @@ def ts_web_test_suite(deps = [], srcs = [], **kwargs):
         srcs = [
             "@npm//node_modules/tslib:tslib.js",
         ] + ANGULAR_LIBRARY_UMDS + srcs,
+        **kwargs
+    )
+
+# Protractor web test targets are flaky by default as the browser can sometimes
+# crash (e.g. due to too much concurrency). Passing the "flaky" flag ensures that
+# Bazel detects flaky tests and re-runs these a second time in case of a flake.
+def protractor_web_test_suite(flaky = True, **kwargs):
+    _protractor_web_test_suite(
+        flaky = flaky,
         **kwargs
     )
 

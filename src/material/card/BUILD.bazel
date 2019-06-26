@@ -1,8 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
-load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "markdown_to_html", "ng_e2e_test_library", "ng_module")
+load("//tools:defaults.bzl", "markdown_to_html", "ng_e2e_test_library", "ng_module", "protractor_web_test_suite")
 
 ng_module(
     name = "card",

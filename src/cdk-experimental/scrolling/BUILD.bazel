@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite", "protractor_web_test_suite")
 
 ng_module(
     name = "scrolling",
