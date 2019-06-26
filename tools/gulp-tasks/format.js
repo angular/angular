@@ -11,22 +11,22 @@ const {I18N_FOLDER, I18N_DATA_FOLDER} = require('./cldr/extract');
 // clang-format entry points
 const srcsToFmt = [
   'packages/**/*.{js,ts}',
+  `!${I18N_DATA_FOLDER}/**/*.{js,ts}`,
+  `!${I18N_FOLDER}/available_locales.ts`,
+  `!${I18N_FOLDER}/currencies.ts`,
+  `!${I18N_FOLDER}/locale_en.ts`,
   'modules/benchmarks/**/*.{js,ts}',
   'modules/e2e_util/**/*.{js,ts}',
   'modules/playground/**/*.{js,ts}',
   'tools/**/*.{js,ts}',
+  '!tools/gulp-tasks/cldr/extract.js',
   '!tools/public_api_guard/**/*.d.ts',
+  '!tools/ts-api-guardian/test/fixtures/**',
   './*.{js,ts}',
   '!**/node_modules/**',
   '!**/dist/**',
   '!**/built/**',
   '!shims_for_IE.js',
-  `!${I18N_DATA_FOLDER}/**/*.{js,ts}`,
-  `!${I18N_FOLDER}/available_locales.ts`,
-  `!${I18N_FOLDER}/currencies.ts`,
-  `!${I18N_FOLDER}/locale_en.ts`,
-  '!tools/gulp-tasks/cldr/extract.js',
-  '!tools/ts-api-guardian/test/fixtures/**',
 ];
 
 /**
