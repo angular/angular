@@ -582,6 +582,9 @@
     "name": "matchTemplateAttribute"
   },
   {
+    "name": "namespaceHTMLInternal"
+  },
+  {
     "name": "nativeAppendChild"
   },
   {

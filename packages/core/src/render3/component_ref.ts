@@ -30,7 +30,7 @@ import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {LView, LViewFlags, RootContext, TVIEW} from './interfaces/view';
-import {enterView, leaveView} from './state';
+import {enterView, leaveView, namespaceHTMLInternal} from './state';
 import {defaultScheduler} from './util/misc_utils';
 import {getTNode} from './util/view_utils';
 import {createElementRef} from './view_engine_compatibility';
@@ -140,6 +140,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         rootViewInjector.get(RendererFactory2, domRendererFactory3) as RendererFactory3;
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
+    // Ensure that the namespace for the root node is correct,
+    // otherwise the browser might not render out the element properly.
+    namespaceHTMLInternal();
     const hostRNode = isInternalRootView ?
         elementCreate(this.selector, rendererFactory.createRenderer(null, this.componentDef)) :
         locateHostElement(rendererFactory, rootSelectorOrNode);

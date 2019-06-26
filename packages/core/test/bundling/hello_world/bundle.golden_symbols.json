@@ -387,6 +387,9 @@
     "name": "locateHostElement"
   },
   {
+    "name": "namespaceHTMLInternal"
+  },
+  {
     "name": "nativeAppendChild"
   },
   {
