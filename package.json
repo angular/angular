@@ -137,7 +137,7 @@
     "firefox-profile": "1.0.3",
     "glob": "7.1.2",
     "gulp": "3.9.1",
-    "gulp-clang-format": "1.0.27",
+    "gulp-clang-format": "1.0.23",
     "gulp-connect": "5.0.0",
     "gulp-conventional-changelog": "^2.0.3",
     "gulp-filter": "^5.1.0",
