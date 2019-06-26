@@ -16,9 +16,12 @@ regionParserImpl.regionMatchers = {
   es6: inlineC,
   dart: inlineC,
   html: html,
+  svg: html,
   css: blockC,
   yaml: inlineHash,
+  yml: inlineHash,
   jade: inlineCOnly,
+  pug: inlineCOnly,
   json: inlineC,
   'json.annotated': inlineC
 };
