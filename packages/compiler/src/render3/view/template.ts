@@ -36,8 +36,8 @@ import {I18nContext} from './i18n/context';
 import {I18nMetaVisitor} from './i18n/meta';
 import {getSerializedI18nContent} from './i18n/serializer';
 import {I18N_ICU_MAPPING_PREFIX, TRANSLATION_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, formatI18nPlaceholderName, getTranslationConstPrefix, getTranslationDeclStmts, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, metaFromI18nMessage, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
-import {Instruction, StylingBuilder} from './styling_builder';
-import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, chainedInstruction, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
+import {StylingBuilder, StylingInstruction} from './styling_builder';
+import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, chainedInstruction, getAttrsForDirectiveMatching, getInterpolationArgsLength, invalid, trimTrailingNulls, unsupported} from './util';
 
 
 
@@ -852,6 +852,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         () => [o.literal(attrName), ...this.getUpdateInstructionArguments(value), ...params]);
   }
 
+  /**
+   * Adds an update instruction for an interpolated map-based style binding
+   * (e.g. `<div class="foo-{{bar}}">`).
+   */
+  interpolatedStylingMapInstruction(
+      instruction: o.ExternalReference, elementIndex: number, sourceSpan: ParseSourceSpan|null,
+      value: any) {
+    this.updateInstruction(
+        elementIndex, sourceSpan, instruction, () => this.getUpdateInstructionArguments(value));
+  }
+
   visitTemplate(template: t.Template) {
     const NG_TEMPLATE_TAG_NAME = 'ng-template';
     const templateIndex = this.allocateDataSlot();
@@ -1067,14 +1078,26 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private processStylingInstruction(
-      elementIndex: number, instruction: Instruction|null, createMode: boolean) {
+      elementIndex: number, instruction: StylingInstruction|null, createMode: boolean) {
     if (instruction) {
-      const paramsFn = () => instruction.buildParams(value => this.convertPropertyBinding(value));
       if (createMode) {
-        this.creationInstruction(instruction.sourceSpan, instruction.reference, paramsFn);
+        this.creationInstruction(instruction.sourceSpan, instruction.reference, () => {
+          if (instruction.params instanceof Interpolation) {
+            return error('Interpolated styling instructions in creation mode are not supported');
+          }
+
+          return instruction.params(value => this.convertPropertyBinding(value));
+        });
       } else {
-        this.updateInstruction(
-            elementIndex, instruction.sourceSpan, instruction.reference, paramsFn);
+        const params = instruction.params;
+        if (params instanceof Interpolation) {
+          this.interpolatedStylingMapInstruction(
+              instruction.reference, elementIndex, instruction.sourceSpan, instruction.params);
+        } else {
+          this.updateInstruction(
+              elementIndex, instruction.sourceSpan, instruction.reference,
+              () => params(value => this.convertPropertyBinding(value)));
+        }
       }
     }
   }
@@ -1150,12 +1173,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private convertPropertyBinding(value: AST): o.Expression {
-    const interpolationFn =
-        value instanceof Interpolation ? interpolate : () => error('Unexpected interpolation');
-
     const convertedPropertyBinding = convertPropertyBinding(
         this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.TrySimple,
-        interpolationFn);
+        () => error('Unexpected interpolation'));
     const valExpr = convertedPropertyBinding.currValExpr;
     this._tempVariables.push(...convertedPropertyBinding.stmts);
 
@@ -1751,31 +1771,6 @@ function getNgProjectAsLiteral(attribute: t.TextAttribute): o.Expression[] {
   return [o.literal(core.AttributeMarker.ProjectAs), asLiteral(parsedR3Selector)];
 }
 
-function interpolate(args: o.Expression[]): o.Expression {
-  args = args.slice(1);  // Ignore the length prefix added for render2
-  switch (args.length) {
-    case 3:
-      return o.importExpr(R3.interpolation1).callFn(args);
-    case 5:
-      return o.importExpr(R3.interpolation2).callFn(args);
-    case 7:
-      return o.importExpr(R3.interpolation3).callFn(args);
-    case 9:
-      return o.importExpr(R3.interpolation4).callFn(args);
-    case 11:
-      return o.importExpr(R3.interpolation5).callFn(args);
-    case 13:
-      return o.importExpr(R3.interpolation6).callFn(args);
-    case 15:
-      return o.importExpr(R3.interpolation7).callFn(args);
-    case 17:
-      return o.importExpr(R3.interpolation8).callFn(args);
-  }
-  (args.length >= 19 && args.length % 2 == 1) ||
-      error(`Invalid interpolation argument length ${args.length}`);
-  return o.importExpr(R3.interpolationV).callFn([o.literalArr(args)]);
-}
-
 /**
  * Gets the instruction to generate for an interpolated property
  * @param interpolation An Interpolation AST
@@ -1861,22 +1856,6 @@ function getTextInterpolationExpression(interpolation: Interpolation): o.Externa
   }
 }
 
-/**
- * Gets the number of arguments expected to be passed to a generated instruction in the case of
- * interpolation instructions.
- * @param interpolation An interpolation ast
- */
-function getInterpolationArgsLength(interpolation: Interpolation) {
-  const {expressions, strings} = interpolation;
-  if (expressions.length === 1 && strings.length === 2 && strings[0] === '' && strings[1] === '') {
-    // If the interpolation has one interpolated value, but the prefix and suffix are both empty
-    // strings, we only pass one argument, to a special instruction like `propertyInterpolate` or
-    // `textInterpolate`.
-    return 1;
-  } else {
-    return expressions.length + strings.length;
-  }
-}
 /**
  * Options that can be used to modify how a template is parsed by `parseTemplate()`.
  */

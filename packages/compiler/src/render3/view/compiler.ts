@@ -12,7 +12,7 @@ import {CompileReflector} from '../../compile_reflector';
 import {BindingForm, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
+import {AST, Interpolation, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan, typeSourceSpan} from '../../parse_util';
@@ -28,7 +28,7 @@ import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
-import {Instruction, StylingBuilder} from './styling_builder';
+import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
@@ -775,8 +775,12 @@ function bindingFn(implicit: any, value: AST) {
 }
 
 function createStylingStmt(
-    instruction: Instruction, bindingContext: any, bindingFn: Function): o.Statement {
-  const params = instruction.buildParams(value => bindingFn(bindingContext, value).currValExpr);
+    instruction: StylingInstruction, bindingContext: any, bindingFn: Function): o.Statement {
+  if (instruction.params instanceof Interpolation) {
+    return error('Unexpected interpolation');
+  }
+
+  const params = instruction.params(value => bindingFn(bindingContext, value).currValExpr);
   return o.importExpr(instruction.reference, null, instruction.sourceSpan)
       .callFn(params, instruction.sourceSpan)
       .toStmt();

@@ -48,3 +48,4 @@ export * from './styling';
 export {styleSanitizer as ɵɵstyleSanitizer} from '../styling_next/instructions';
 export * from './text';
 export * from './text_interpolation';
+export * from './class_map_interpolation';
