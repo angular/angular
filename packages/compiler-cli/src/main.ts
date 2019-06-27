@@ -26,7 +26,7 @@ export function main(
     config?: NgcParsedConfiguration, customTransformers?: api.CustomTransformers, programReuse?: {
       program: api.Program | undefined,
     },
-    modifiedResourceFiles?: Set<string>): number {
+    modifiedResourceFiles?: Set<string>| null): number {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
