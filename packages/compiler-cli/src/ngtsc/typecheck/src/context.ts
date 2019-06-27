@@ -162,13 +162,15 @@ export class TypeCheckContext {
     return ts.createSourceFile(sf.fileName, code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   }
 
+  renderTypeCheckFile(): ts.SourceFile { return this.typeCheckFile.render(); }
+
   calculateTemplateDiagnostics(
       originalProgram: ts.Program, originalHost: ts.CompilerHost,
       originalOptions: ts.CompilerOptions): {
     diagnostics: ts.Diagnostic[],
     program: ts.Program,
   } {
-    const typeCheckSf = this.typeCheckFile.render();
+    const typeCheckSf = this.renderTypeCheckFile();
     // First, build the map of original source files.
     const sfMap = new Map<string, ts.SourceFile>();
     const interestingFiles: ts.SourceFile[] = [typeCheckSf];
@@ -189,28 +191,30 @@ export class TypeCheckContext {
       rootNames: originalProgram.getRootFileNames(),
     });
 
+    return {
+      diagnostics: this.readTemplateDiagnostics(typeCheckProgram, interestingFiles),
+      program: typeCheckProgram,
+    };
+  }
+
+  readTemplateDiagnostics(typeCheckProgram: ts.Program, interestingFiles: ts.SourceFile[]):
+      ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
     for (const sf of interestingFiles) {
       diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(sf));
     }
 
-    return {
-      diagnostics: diagnostics.filter(
-          (diag: ts.Diagnostic):
-              boolean => {
-                if (diag.code === 6133 /* $var is declared but its value is never read. */) {
-                  return false;
-                } else if (diag.code === 6199 /* All variables are unused. */) {
-                  return false;
-                } else if (
-                    diag.code ===
-                    2695 /* Left side of comma operator is unused and has no side effects. */) {
-                  return false;
-                }
-                return true;
-              }),
-      program: typeCheckProgram,
-    };
+    return diagnostics.filter((diag: ts.Diagnostic): boolean => {
+      if (diag.code === 6133 /* $var is declared but its value is never read. */) {
+        return false;
+      } else if (diag.code === 6199 /* All variables are unused. */) {
+        return false;
+      } else if (
+          diag.code === 2695 /* Left side of comma operator is unused and has no side effects. */) {
+        return false;
+      }
+      return true;
+    });
   }
 
   private addInlineTypeCheckBlock(

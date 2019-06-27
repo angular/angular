@@ -235,6 +235,26 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * @internal
    */
   ivyTemplateTypeCheck?: boolean;
+
+  /**
+   * The master switch which controls whether the Ivy analysis pipeline is run during View Engine
+   * compilations.
+   *
+   * If this is `true`, then an Ivy context will be initialized within the View Engine compiler.
+   * This context won't be capable of emitting code, since no transform will be installed to
+   * generate and merge Ivy code into the `ts.Program` before emitting. However, it can be used to
+   * produce diagnostics and perform other checks that validate the codebase's readiness for Ivy.
+   *
+   * If this is `false`, no Ivy analysis will be attempted, no matter the values of other flags.
+   *
+   * @internal
+   */
+  ivyBridgeEnabled?: boolean;
+
+  /**
+   * Whether Ivy template typechecking is bridged into the View Engine.
+   */
+  ivyBridgeTemplateTypeChecking?: boolean;
 }
 
 export interface CompilerHost extends ts.CompilerHost {

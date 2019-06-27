@@ -16,10 +16,13 @@ import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diag
 import {compareVersions} from '../diagnostics/typescript_version';
 import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata';
 import {NgtscProgram} from '../ngtsc/program';
+import {typeCheckFilePath} from '../ngtsc/typecheck';
+import {getRootDirs} from '../ngtsc/util/src/typescript';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {InlineResourcesMetadataTransformer, getInlineResourcesTransformFactory} from './inline_resources';
+import {IvyBridge} from './ivy_bridge/src/bridge';
 import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {MetadataCache, MetadataTransformer} from './metadata_cache';
 import {nocollapseHack} from './nocollapse_hack';
@@ -29,6 +32,7 @@ import {StripDecoratorsMetadataTransformer, getDecoratorStripTransformerFactory}
 import {getAngularClassTransformerFactory} from './r3_transform';
 import {TscPassThroughProgram} from './tsc_pass_through';
 import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
+
 
 
 /**
@@ -102,8 +106,20 @@ class AngularCompilerProgram implements Program {
   private _compiler !: AotCompiler;
   // TODO(issue/24571): remove '!'.
   private _hostAdapter !: TsCompilerAotCompilerTypeCheckHostAdapter;
+
+  /**
+   * The tsProgram is the most current `ts.Program` known to the compiler. It's replaced as the
+   * compilation proceeds with an updated program that includes any type-checking changes as well as
+   * generated file changes.
+   */
   // TODO(issue/24571): remove '!'.
   private _tsProgram !: ts.Program;
+
+  /**
+   * The userProgram is the `ts.Program` that the user authored, without any type-checking or
+   * generated file changes. It's used to emit the user files, and never the generated files.
+   */
+  private _userProgram !: ts.Program;
   private _analyzedModules: NgAnalyzedModules|undefined;
   private _analyzedInjectables: NgAnalyzedFileWithInjectables[]|undefined;
   private _structuralDiagnostics: Diagnostic[]|undefined;
@@ -111,6 +127,8 @@ class AngularCompilerProgram implements Program {
   private _optionsDiagnostics: Diagnostic[] = [];
   // TODO(issue/24571): remove '!'.
   private _reifiedDecorators !: Set<StaticSymbol>;
+
+  private ngtscAdapter: IvyBridge|null = null;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: CompilerOptions,
@@ -216,6 +234,9 @@ class AngularCompilerProgram implements Program {
         diags.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
       }
     });
+    if (this.ngtscAdapter !== null && diags.length === 0) {
+      diags.push(...this.ngtscAdapter.getTsDiagnostics());
+    }
     return diags;
   }
 
@@ -698,6 +719,9 @@ class AngularCompilerProgram implements Program {
         tsFiles.push(sf.fileName);
       }
     });
+
+    if (!!this.options.ivyBridgeEnabled) {
+    }
     return {tmpProgram, sourceFiles, tsFiles, rootNames};
   }
 
@@ -719,6 +743,9 @@ class AngularCompilerProgram implements Program {
         }
       }
     });
+    // The user program contains the user files as they originally appeared, without the changes
+    // introduced by the IvyBridge.
+    this._userProgram = tmpProgram;
     this._tsProgram = ts.createProgram(rootNames, this.options, this.hostAdapter, tmpProgram);
     // Note: the new ts program should be completely reusable by TypeScript as:
     // - we cache all the files in the hostAdapter
@@ -727,6 +754,21 @@ class AngularCompilerProgram implements Program {
     if (tsStructureIsReused(tmpProgram) !== StructureIsReused.Completely) {
       throw new Error(`Internal Error: The structure of the program changed during codegen.`);
     }
+  }
+
+  private enableIvyBridge(program: ts.Program): void {
+    const {
+      _symbolResolver: symResolver,
+      _metadataResolver: metaResolver,
+    } = this.compiler as any;
+
+    // Figure out the type checking file path.
+    const typeCheckPath = typeCheckFilePath(getRootDirs(this.host, this.options));
+
+
+    this.ngtscAdapter = new IvyBridge(
+        this.hostAdapter, program, symResolver, metaResolver, typeCheckPath,
+        !!this.options.ivyBridgeTemplateTypeChecking);
   }
 
   private _createProgramOnError(e: any) {
@@ -802,7 +844,7 @@ class AngularCompilerProgram implements Program {
   private getSourceFilesForEmit(): ts.SourceFile[]|undefined {
     // TODO(tbosch): if one of the files contains a `const enum`
     // always emit all files -> return undefined!
-    let sourceFilesToEmit = this.tsProgram.getSourceFiles().filter(
+    let sourceFilesToEmit = this._userProgram.getSourceFiles().filter(
         sf => { return !sf.isDeclarationFile && !GENERATED_FILES.test(sf.fileName); });
     if (this.oldProgramEmittedSourceFiles) {
       sourceFilesToEmit = sourceFilesToEmit.filter(sf => {

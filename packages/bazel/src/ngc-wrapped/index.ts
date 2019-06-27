@@ -477,7 +477,7 @@ function gatherDiagnosticsForInputsOnly(
     // Note: We only get the diagnostics for individual files
     // to e.g. not check libraries.
     diagnostics.push(...tsProgram.getSyntacticDiagnostics(sf));
-    diagnostics.push(...tsProgram.getSemanticDiagnostics(sf));
+    diagnostics.push(...ngProgram.getTsSemanticDiagnostics(sf));
   }
   if (!diagnostics.length) {
     // only gather the angular diagnostics if we have no diagnostics

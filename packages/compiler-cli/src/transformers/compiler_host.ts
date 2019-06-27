@@ -7,6 +7,7 @@
  */
 
 import {AotCompilerHost, EmitterVisitorContext, GeneratedFile, ParseSourceSpan, TypeScriptEmitter, collectExternalReferences, syntaxError} from '@angular/compiler';
+import {isGeneratedFile} from '@angular/compiler/src/aot/util';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -15,6 +16,7 @@ import {ModuleMetadata} from '../metadata/index';
 import {join} from '../ngtsc/file_system';
 
 import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
+import {IvyBridge} from './ivy_bridge/src/bridge';
 import {MetadataReaderHost, createMetadataReaderCache, readMetadata} from './metadata_reader';
 import {DTS, GENERATED_FILES, isInRootDir, relativeToRootDirs} from './util';
 
@@ -81,6 +83,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   private generatedCodeFor = new Map<string, string[]>();
   private emitter = new TypeScriptEmitter();
   private metadataReaderHost: MetadataReaderHost;
+
+  private ivyBridge: IvyBridge|null = null;
 
   // TODO(issue/24571): remove '!'.
   getCancellationToken !: () => ts.CancellationToken;
@@ -169,6 +173,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     }
     return rm;
   }
+
+  enableIvyBridgeTemplateTypeChecking(ivyBridge: IvyBridge): void { this.ivyBridge = ivyBridge; }
 
   // Note: We implement this method so that TypeScript and Angular share the same
   // ts.ModuleResolutionCache
@@ -457,6 +463,11 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
         this.generatedCodeFor.set(fileName, genFileNames);
       }
     }
+
+    if (sf !== null && this.ivyBridge !== null && !isGeneratedFile(fileName)) {
+      sf = this.ivyBridge.transformFileForTemplateTypeChecking(sf);
+    }
+
     if (sf) {
       addReferencesToSourceFile(sf, genFileNames);
     }

@@ -117,8 +117,9 @@ export class DtsMetadataReader implements MetadataReader {
   }
 }
 
-function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflector: ReflectionHost):
-    Reference<ClassDeclaration>|'dynamic'|null {
+export function readBaseClass(
+    clazz: ClassDeclaration, checker: ts.TypeChecker,
+    reflector: ReflectionHost): Reference<ClassDeclaration>|'dynamic'|null {
   if (!isNamedClassDeclaration(clazz)) {
     // Technically this is an error in a .d.ts file, but for the purposes of finding the base class
     // it's ignored.

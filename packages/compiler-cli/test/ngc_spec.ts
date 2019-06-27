@@ -2283,4 +2283,42 @@ describe('ngc transformer command-line', () => {
     let exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
     expect(exitCode).toEqual(0);
   });
+
+  fit('blah', () => {
+    // first only generate .d.ts / .js / .metadata.json files
+    writeConfig(`{
+      "extends": "./tsconfig-base.json",
+      "angularCompilerOptions": {
+        "skipTemplateCodegen": true,
+        "strictMetadataEmit": true,
+        "fullTemplateTypeCheck": true
+      },
+      "compilerOptions": {
+        "outDir": "lib"
+      },
+      "files": ["main.ts"]
+    }`);
+    write('main.ts', `
+    import {Directive, NgModule} from '@angular/core';
+    import {NgIf} from '@angular/common';
+
+    export class Service {}
+
+    export class Base {
+      constructor(value: Service) {}
+    }
+
+    @Directive({
+      selector: '[test]',
+    })
+    export class Dir extends NgIf {}
+
+    @NgModule({
+      declarations: [Dir],
+    })
+    export class Module {}
+  `);
+    let exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+    expect(exitCode).toEqual(0);
+  });
 });

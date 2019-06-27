@@ -52,6 +52,7 @@ export class DirectiveDecoratorHandler implements
   }
 
   analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<DirectiveHandlerData> {
+    debugger;
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore);
     const analysis = directiveResult && directiveResult.metadata;
