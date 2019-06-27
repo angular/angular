@@ -1086,6 +1086,38 @@ describe('ViewContainerRef', () => {
       expect((element.namespaceURI || '').toLowerCase()).not.toContain('svg');
     });
 
+    it('should be compatible with componentRef generated via TestBed.createComponent in component factory',
+       () => {
+         @Component({
+           selector: 'child',
+           template: `Child Component`,
+         })
+         class Child {
+         }
+
+         @Component({
+           selector: 'comp',
+           template: '<ng-template #ref></ng-template>',
+         })
+         class Comp {
+           @ViewChild('ref', {read: ViewContainerRef, static: true})
+           viewContainerRef?: ViewContainerRef;
+
+           ngOnInit() {
+             const makeComponentFactory = (componentType: any) => ({
+               create: () => TestBed.createComponent(componentType).componentRef,
+             });
+             this.viewContainerRef !.createComponent(makeComponentFactory(Child) as any);
+           }
+         }
+
+         TestBed.configureTestingModule({declarations: [Comp, Child]});
+
+         const fixture = TestBed.createComponent(Comp);
+         fixture.detectChanges();
+
+         expect(fixture.debugElement.nativeElement.innerHTML).toContain('Child Component');
+       });
   });
 
   describe('insertion points and declaration points', () => {
