@@ -29,7 +29,7 @@ ng generate app-shell --client-project my-app --universal-project server-app
 
 After running this command you will notice that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
 
-<code-example format="." language="none" linenums="false">
+<code-example format="." language="json" linenums="false">
 "server": {
   "builder": "@angular-devkit/build-angular:server",
   "options": {
