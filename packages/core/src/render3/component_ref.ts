@@ -214,8 +214,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         this.componentType, component,
         createElementRef(viewEngine_ElementRef, tElementNode, rootLView), rootLView, tElementNode);
 
-    if (isInternalRootView) {
-      // The host element of the internal root view is attached to the component's host view node
+    if (isInternalRootView || isIsolated) {
+      // The host element of the internal or isolated root view is attached to the component's host
+      // view node.
       componentRef.hostView._tViewNode !.child = tElementNode;
     }
     return componentRef;
