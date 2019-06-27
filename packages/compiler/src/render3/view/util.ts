@@ -8,10 +8,13 @@
 
 import {ConstantPool} from '../../constant_pool';
 import * as o from '../../output/output_ast';
+import {ParseSourceSpan} from '../../parse_util';
 import {splitAtColon} from '../../util';
 import * as t from '../r3_ast';
+
 import {R3QueryMetadata} from './api';
 import {isI18nAttribute} from './i18n/util';
+
 
 /**
  * Checks whether an object key contains potentially unsafe chars, thus the key should be wrapped in
@@ -180,4 +183,21 @@ export function getAttrsForDirectiveMatching(elOrTpl: t.Element | t.Template):
   }
 
   return attributesMap;
+}
+
+/** Returns a call expression to a chained instruction, e.g. `property(params[0])(params[1])`. */
+export function chainedInstruction(
+    reference: o.ExternalReference, calls: o.Expression[][], span?: ParseSourceSpan | null) {
+  let expression = o.importExpr(reference, null, span) as o.Expression;
+
+  if (calls.length > 0) {
+    for (let i = 0; i < calls.length; i++) {
+      expression = expression.callFn(calls[i], span);
+    }
+  } else {
+    // Add a blank invocation, in case the `calls` array is empty.
+    expression = expression.callFn([], span);
+  }
+
+  return expression;
 }

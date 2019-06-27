@@ -1388,8 +1388,7 @@ describe('compiler compliance: styling', () => {
           $r3$.ɵɵstyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
         }
         if (rf & 2) {
-          $r3$.ɵɵproperty("id", ctx.id, null, true);
-          $r3$.ɵɵproperty("title", ctx.title, null, true);
+          $r3$.ɵɵproperty("id", ctx.id, null, true)("title", ctx.title, null, true);
           $r3$.ɵɵstyleMap(ctx.myStyle);
           $r3$.ɵɵclassMap(ctx.myClass);
           $r3$.ɵɵstylingApply();
@@ -1435,8 +1434,7 @@ describe('compiler compliance: styling', () => {
           $r3$.ɵɵstyling($_c0$, $_c1$);
         }
         if (rf & 2) {
-          $r3$.ɵɵproperty("id", ctx.id, null, true);
-          $r3$.ɵɵproperty("title", ctx.title, null, true);
+          $r3$.ɵɵproperty("id", ctx.id, null, true)("title", ctx.title, null, true);
           $r3$.ɵɵstyleProp(0, ctx.myWidth);
           $r3$.ɵɵclassProp(0, ctx.myFooClass);
           $r3$.ɵɵstylingApply();
