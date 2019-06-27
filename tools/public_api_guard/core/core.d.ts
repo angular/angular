@@ -1075,7 +1075,7 @@ export declare function ɵɵtextInterpolate8(prefix: string, v0: any, i0: string
 
 export declare function ɵɵtextInterpolateV(values: any[]): TsickleIssue1009;
 
-export declare function ɵɵupdateSyntheticHostBinding<T>(propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): void;
+export declare function ɵɵupdateSyntheticHostBinding<T>(propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): TsickleIssue1009;
 
 export declare function ɵɵviewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): QueryList<T>;
 

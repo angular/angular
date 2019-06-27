@@ -443,8 +443,7 @@ describe('compiler compliance', () => {
                   $r3$.ɵɵpureFunction2(2, $_c0$, ctx.collapsedHeight, ctx.expandedHeight)
                 )
               , null, true
-            );
-            $r3$.ɵɵupdateSyntheticHostBinding("@expansionWidth",
+            )("@expansionWidth",
                 $r3$.ɵɵpureFunction2(11, $_c1$, ctx.getExpandedState(),
                   $r3$.ɵɵpureFunction2(8, $_c2$, ctx.collapsedWidth, ctx.expandedWidth)
                 )

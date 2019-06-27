@@ -30,7 +30,7 @@ import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, type
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
 import {Instruction, StylingBuilder} from './styling_builder';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
-import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
+import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -638,6 +638,10 @@ function createHostBindingsFunction(
 
   // Calculate the host property bindings
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
+  const propertyBindings: o.Expression[][] = [];
+  const attributeBindings: o.Expression[][] = [];
+  const syntheticHostBindings: o.Expression[][] = [];
+
   (bindings || []).forEach((binding: ParsedProperty) => {
     const name = binding.name;
     const stylingInputWasSet =
@@ -681,9 +685,31 @@ function createHostBindingsFunction(
       }
 
       updateStatements.push(...bindingExpr.stmts);
-      updateStatements.push(o.importExpr(instruction).callFn(instructionParams).toStmt());
+
+      if (instruction === R3.property) {
+        propertyBindings.push(instructionParams);
+      } else if (instruction === R3.attribute) {
+        attributeBindings.push(instructionParams);
+      } else if (instruction === R3.updateSyntheticHostBinding) {
+        syntheticHostBindings.push(instructionParams);
+      } else {
+        updateStatements.push(o.importExpr(instruction).callFn(instructionParams).toStmt());
+      }
     }
   });
+
+  if (propertyBindings.length > 0) {
+    updateStatements.push(chainedInstruction(R3.property, propertyBindings).toStmt());
+  }
+
+  if (attributeBindings.length > 0) {
+    updateStatements.push(chainedInstruction(R3.attribute, attributeBindings).toStmt());
+  }
+
+  if (syntheticHostBindings.length > 0) {
+    updateStatements.push(
+        chainedInstruction(R3.updateSyntheticHostBinding, syntheticHostBindings).toStmt());
+  }
 
   // since we're dealing with directives/components and both have hostBinding
   // functions, we need to generate a special hostAttrs instruction that deals

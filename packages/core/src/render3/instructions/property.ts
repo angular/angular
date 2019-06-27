@@ -84,7 +84,8 @@ export function bind<T>(lView: LView, value: T): T|NO_CHANGE {
  * @codeGenApi
  */
 export function ɵɵupdateSyntheticHostBinding<T>(
-    propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean) {
+    propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
+    nativeOnly?: boolean): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
   // TODO(benlesh): remove bind call here.
@@ -92,4 +93,5 @@ export function ɵɵupdateSyntheticHostBinding<T>(
   if (bound !== NO_CHANGE) {
     elementPropertyInternal(index, propName, bound, sanitizer, nativeOnly, loadComponentRenderer);
   }
+  return ɵɵupdateSyntheticHostBinding;
 }

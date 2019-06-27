@@ -1795,8 +1795,8 @@ runInEachFileSystem(os => {
           i0.ɵɵstyling(_c0);
         }
         if (rf & 2) {
-          i0.ɵɵattribute("hello", ctx.foo);
           i0.ɵɵproperty("prop", ctx.bar, null, true);
+          i0.ɵɵattribute("hello", ctx.foo);
           i0.ɵɵclassProp(0, ctx.someClass);
           i0.ɵɵstylingApply();
         }
@@ -3236,12 +3236,7 @@ runInEachFileSystem(os => {
             i0.ɵɵallocHostVars(6);
           }
           if (rf & 2) {
-            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl);
-            i0.ɵɵattribute("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl);
-            i0.ɵɵattribute("action", ctx.attrAction, i0.ɵɵsanitizeUrl);
-            i0.ɵɵattribute("profile", ctx.attrProfile, i0.ɵɵsanitizeResourceUrl);
-            i0.ɵɵattribute("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml);
-            i0.ɵɵattribute("title", ctx.attrSafeTitle);
+            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrl)("profile", ctx.attrProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
           }
         }
       `;
@@ -3291,12 +3286,7 @@ runInEachFileSystem(os => {
             i0.ɵɵallocHostVars(6);
           }
           if (rf & 2) {
-            i0.ɵɵproperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl, true);
-            i0.ɵɵproperty("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl, true);
-            i0.ɵɵproperty("action", ctx.propAction, i0.ɵɵsanitizeUrl, true);
-            i0.ɵɵproperty("profile", ctx.propProfile, i0.ɵɵsanitizeResourceUrl, true);
-            i0.ɵɵproperty("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml, true);
-            i0.ɵɵproperty("title", ctx.propSafeTitle, null, true);
+            i0.ɵɵproperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl, true)("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl, true)("action", ctx.propAction, i0.ɵɵsanitizeUrl, true)("profile", ctx.propProfile, i0.ɵɵsanitizeResourceUrl, true)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml, true)("title", ctx.propSafeTitle, null, true);
           }
         }
       `;
@@ -3331,12 +3321,8 @@ runInEachFileSystem(os => {
             i0.ɵɵallocHostVars(6);
           }
           if (rf & 2) {
-            i0.ɵɵproperty("src", ctx.srcProp, null, true);
-            i0.ɵɵproperty("href", ctx.hrefProp, null, true);
-            i0.ɵɵproperty("title", ctx.titleProp, null, true);
-            i0.ɵɵattribute("src", ctx.srcAttr);
-            i0.ɵɵattribute("href", ctx.hrefAttr);
-            i0.ɵɵattribute("title", ctx.titleAttr);
+            i0.ɵɵproperty("src", ctx.srcProp, null, true)("href", ctx.hrefProp, null, true)("title", ctx.titleProp, null, true);
+            i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr)("title", ctx.titleAttr);
           }
         }
       `;
