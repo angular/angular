@@ -224,7 +224,7 @@ export function exitCodeFromResult(diags: Diagnostics | undefined): number {
 export function performCompilation(
     {rootNames, options, host, oldProgram, emitCallback, mergeEmitResultsCallback,
      gatherDiagnostics = defaultGatherDiagnostics, customTransformers,
-     emitFlags = api.EmitFlags.Default, modifiedResourceFiles}: {
+     emitFlags = api.EmitFlags.Default, modifiedResourceFiles = null}: {
       rootNames: string[],
       options: api.CompilerOptions,
       host?: api.CompilerHost,
@@ -234,7 +234,7 @@ export function performCompilation(
       gatherDiagnostics?: (program: api.Program) => Diagnostics,
       customTransformers?: api.CustomTransformers,
       emitFlags?: api.EmitFlags,
-      modifiedResourceFiles?: Set<string>,
+      modifiedResourceFiles?: Set<string>| null,
     }): PerformCompilationResult {
   let program: api.Program|undefined;
   let emitResult: ts.EmitResult|undefined;
