@@ -104,8 +104,7 @@ export function createTemplateRef<T>(
         super();
       }
 
-      createEmbeddedView(context: T, container?: LContainer, index?: number):
-          viewEngine_EmbeddedViewRef<T> {
+      createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
         const currentQueries = this._declarationParentView[QUERIES];
         // Query container may be missing if this view was created in a directive
         // constructor. Create it now to avoid losing results in embedded views.
@@ -115,9 +114,7 @@ export function createTemplateRef<T>(
         const lView = createEmbeddedViewAndNode(
             this._tView, context, this._declarationParentView, this._hostLContainer[QUERIES],
             this._injectorIndex);
-        if (container) {
-          insertView(lView, container, index !);
-        }
+
         renderEmbeddedTemplate(lView, this._tView, context);
         const viewRef = new ViewRef(lView, context, -1);
         viewRef._tViewNode = lView[T_HOST] as TViewNode;
@@ -217,13 +214,10 @@ export function createContainerRef(
 
       createEmbeddedView<C>(templateRef: ViewEngine_TemplateRef<C>, context?: C, index?: number):
           viewEngine_EmbeddedViewRef<C> {
-        this.allocateContainerIfNeeded();
-        const adjustedIdx = this._adjustIndex(index);
-        const viewRef = (templateRef as any)
-                            .createEmbeddedView(context || <any>{}, this._lContainer, adjustedIdx);
-        (viewRef as ViewRef<any>).attachToViewContainerRef(this);
-        this._lContainer[VIEW_REFS] !.splice(adjustedIdx, 0, viewRef);
-        return viewRef;
+        const embeddedViewRef = templateRef.createEmbeddedView(context || {} as C);
+        this.insert(embeddedViewRef, index);
+
+        return embeddedViewRef;
       }
 
       createComponent<C>(

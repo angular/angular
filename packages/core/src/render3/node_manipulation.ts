@@ -870,18 +870,18 @@ function executeActionOnElementContainerOrIcuContainer(
 function executeActionOnNode(
     renderer: Renderer3, action: WalkTNodeTreeAction, lView: LView, tNode: TNode,
     renderParent: RElement | null, beforeNode: RNode | null | undefined): void {
-  const elementContainerRootTNodeType = tNode.type;
-  if (elementContainerRootTNodeType === TNodeType.ElementContainer ||
-      elementContainerRootTNodeType === TNodeType.IcuContainer) {
-    executeActionOnElementContainerOrIcuContainer(
-        renderer, action, lView, tNode as TElementContainerNode | TIcuContainerNode, renderParent,
-        beforeNode);
-  } else if (elementContainerRootTNodeType === TNodeType.Projection) {
-    executeActionOnProjection(
-        renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
-  } else {
-    ngDevMode && assertNodeOfPossibleTypes(tNode, TNodeType.Element, TNodeType.Container);
-    executeActionOnElementOrContainer(
-        action, renderer, renderParent, lView[tNode.index], beforeNode);
+  if (!(tNode.flags & TNodeFlags.isDetached)) {
+    const tNodeType = tNode.type;
+    if (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
+      executeActionOnElementContainerOrIcuContainer(
+          renderer, action, lView, tNode as TElementContainerNode, renderParent, beforeNode);
+    } else if (tNodeType === TNodeType.Projection) {
+      executeActionOnProjection(
+          renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
+    } else {
+      ngDevMode && assertNodeOfPossibleTypes(tNode, TNodeType.Element, TNodeType.Container);
+      executeActionOnElementOrContainer(
+          action, renderer, renderParent, lView[tNode.index], beforeNode);
+    }
   }
 }
