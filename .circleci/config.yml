@@ -138,7 +138,7 @@ var_13: &notify_caretaker_on_fail
     # `$SLACK_CARETAKER_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
     # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
     command: |
-      notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
+      notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job for $CIRCLE_BRANCH branch failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
       curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_CARETAKER_WEBHOOK_URL
 
 var_14: &notify_dev_infra_on_fail
@@ -148,7 +148,7 @@ var_14: &notify_dev_infra_on_fail
     # `$SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
     # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
     command: |
-      notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
+      notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job for $CIRCLE_BRANCH branch failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
       curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
 version: 2
