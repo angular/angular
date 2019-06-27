@@ -1551,6 +1551,33 @@ describe('ViewContainerRef', () => {
               '<child-with-view>Before (inside)- Before projected <header vcref="">blah</header><span>bar</span> After projected -After (inside)</child-with-view>');
     });
 
+    it('should handle empty re-projection into the root of a view', () => {
+      @Component({
+        selector: 'root-comp',
+        template: `<ng-template [ngIf]="show"><ng-content></ng-content></ng-template>`,
+      })
+      class RootComp {
+        @Input() show: boolean = true;
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: `<root-comp [show]="show"><ng-content></ng-content><div></div></root-comp>`
+      })
+      class MyApp {
+        show = true;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyApp, RootComp]});
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelectorAll('div').length).toBe(1);
+
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelectorAll('div').length).toBe(0);
+    });
+
     describe('with select', () => {
 
       @Component({
