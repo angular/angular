@@ -200,4 +200,177 @@ describe('styling', () => {
     // that we use to run tests doesn't support `clip-path` in `CSSStyleDeclaration`.
     expect(html).toMatch(/style=["|']clip-path:\s*url\(.*#test.*\)/);
   });
+
+  it('should support interpolations inside a class binding', () => {
+    @Component({
+      template: `
+        <div class="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j"></div>
+        <div class="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i"></div>
+        <div class="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h"></div>
+        <div class="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g"></div>
+        <div class="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f"></div>
+        <div class="a{{one}}b{{two}}c{{three}}d{{four}}e"></div>
+        <div class="a{{one}}b{{two}}c{{three}}d"></div>
+        <div class="a{{one}}b{{two}}c"></div>
+        <div class="a{{one}}b"></div>
+        <div class="{{one}}"></div>
+      `
+    })
+    class Cmp {
+      one = 'one';
+      two = 'two';
+      three = 'three';
+      four = 'four';
+      five = 'five';
+      six = 'six';
+      seven = 'seven';
+      eight = 'eight';
+      nine = 'nine';
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    const instance = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const divs = fixture.nativeElement.querySelectorAll('div');
+
+    expect(divs[0].getAttribute('class')).toBe('aonebtwocthreedfourefivefsixgsevenheightininej');
+    expect(divs[1].getAttribute('class')).toBe('aonebtwocthreedfourefivefsixgsevenheighti');
+    expect(divs[2].getAttribute('class')).toBe('aonebtwocthreedfourefivefsixgsevenh');
+    expect(divs[3].getAttribute('class')).toBe('aonebtwocthreedfourefivefsixg');
+    expect(divs[4].getAttribute('class')).toBe('aonebtwocthreedfourefivef');
+    expect(divs[5].getAttribute('class')).toBe('aonebtwocthreedfoure');
+    expect(divs[6].getAttribute('class')).toBe('aonebtwocthreed');
+    expect(divs[7].getAttribute('class')).toBe('aonebtwoc');
+    expect(divs[8].getAttribute('class')).toBe('aoneb');
+    expect(divs[9].getAttribute('class')).toBe('one');
+
+    instance.one = instance.two = instance.three = instance.four = instance.five = instance.six =
+        instance.seven = instance.eight = instance.nine = '';
+    fixture.detectChanges();
+
+    expect(divs[0].getAttribute('class')).toBe('abcdefghij');
+    expect(divs[1].getAttribute('class')).toBe('abcdefghi');
+    expect(divs[2].getAttribute('class')).toBe('abcdefgh');
+    expect(divs[3].getAttribute('class')).toBe('abcdefg');
+    expect(divs[4].getAttribute('class')).toBe('abcdef');
+    expect(divs[5].getAttribute('class')).toBe('abcde');
+    expect(divs[6].getAttribute('class')).toBe('abcd');
+    expect(divs[7].getAttribute('class')).toBe('abc');
+    expect(divs[8].getAttribute('class')).toBe('ab');
+    expect(divs[9].getAttribute('class')).toBeFalsy();
+  });
+
+  it('should support interpolations inside a class binding when other classes are present', () => {
+    @Component({template: '<div class="zero i-{{one}} {{two}} three"></div>'})
+    class Cmp {
+      one = 'one';
+      two = 'two';
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+    const classList = fixture.nativeElement.querySelector('div').classList;
+
+    expect(classList).toContain('zero');
+    expect(classList).toContain('i-one');
+    expect(classList).toContain('two');
+    expect(classList).toContain('three');
+
+    fixture.componentInstance.one = fixture.componentInstance.two = '';
+    fixture.detectChanges();
+
+    expect(classList).toContain('zero');
+    expect(classList).toContain('i-');
+    expect(classList).toContain('three');
+    expect(classList).not.toContain('i-one');
+    expect(classList).not.toContain('two');
+  });
+
+  it('should support interpolations inside a style property binding', () => {
+    @Component({
+      template: `
+        <div style.font-family="f{{one}}{{two}}{{three}}{{four}}{{five}}{{six}}{{seven}}{{eight}}{{nine}}"></div>
+        <div style.font-family="f{{one}}{{two}}{{three}}{{four}}{{five}}{{six}}{{seven}}{{eight}}"></div>
+        <div style.font-family="f{{one}}{{two}}{{three}}{{four}}{{five}}{{six}}{{seven}}"></div>
+        <div style.font-family="f{{one}}{{two}}{{three}}{{four}}{{five}}{{six}}"></div>
+        <div style.font-family="f{{one}}{{two}}{{three}}{{four}}{{five}}"></div>
+        <div style.font-family="f{{one}}{{two}}{{three}}{{four}}"></div>
+        <div style.font-family="f{{one}}{{two}}{{three}}"></div>
+        <div style.font-family="f{{one}}{{two}}"></div>
+        <div style.font-family="f{{one}}"></div>
+        <div style.width="{{singleBinding}}"></div>
+      `
+    })
+    class Cmp {
+      singleBinding: string|null = '1337px';
+      one = 1;
+      two = 2;
+      three = 3;
+      four = 4;
+      five = 5;
+      six = 6;
+      seven = 7;
+      eight = 8;
+      nine = 9;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    const instance = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const divs: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('div');
+
+    expect(divs[0].style.fontFamily).toBe('f123456789');
+    expect(divs[1].style.fontFamily).toBe('f12345678');
+    expect(divs[2].style.fontFamily).toBe('f1234567');
+    expect(divs[3].style.fontFamily).toBe('f123456');
+    expect(divs[4].style.fontFamily).toBe('f12345');
+    expect(divs[5].style.fontFamily).toBe('f1234');
+    expect(divs[6].style.fontFamily).toBe('f123');
+    expect(divs[7].style.fontFamily).toBe('f12');
+    expect(divs[8].style.fontFamily).toBe('f1');
+    expect(divs[9].style.width).toBe('1337px');
+
+    instance.singleBinding = null;
+    instance.one = instance.two = instance.three = instance.four = instance.five = instance.six =
+        instance.seven = instance.eight = instance.nine = 1;
+    fixture.detectChanges();
+
+    expect(divs[0].style.fontFamily).toBe('f111111111');
+    expect(divs[1].style.fontFamily).toBe('f11111111');
+    expect(divs[2].style.fontFamily).toBe('f1111111');
+    expect(divs[3].style.fontFamily).toBe('f111111');
+    expect(divs[4].style.fontFamily).toBe('f11111');
+    expect(divs[5].style.fontFamily).toBe('f1111');
+    expect(divs[6].style.fontFamily).toBe('f111');
+    expect(divs[7].style.fontFamily).toBe('f11');
+    expect(divs[8].style.fontFamily).toBe('f1');
+    expect(divs[9].style.width).toBeFalsy();
+  });
+
+  it('should support interpolations when a style property has a unit suffix', () => {
+    @Component({template: '<div style.width.px="{{one}}{{three}}{{three}}7"></div>'})
+    class Cmp {
+      one = 1;
+      three = 3;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+    const div = fixture.nativeElement.querySelector('div');
+
+    expect(div.style.width).toBe('1337px');
+
+    fixture.componentInstance.one = 2;
+    fixture.componentInstance.three = 6;
+    fixture.detectChanges();
+
+    expect(div.style.width).toBe('2667px');
+  });
+
 });

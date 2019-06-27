@@ -36,6 +36,16 @@ export {
   ɵɵattributeInterpolateV,
 
   ɵɵclassMap,
+  ɵɵclassMapInterpolate1,
+  ɵɵclassMapInterpolate2,
+  ɵɵclassMapInterpolate3,
+  ɵɵclassMapInterpolate4,
+  ɵɵclassMapInterpolate5,
+  ɵɵclassMapInterpolate6,
+  ɵɵclassMapInterpolate7,
+  ɵɵclassMapInterpolate8,
+  ɵɵclassMapInterpolateV,
+
   ɵɵclassProp,
   ɵɵcomponentHostSyntheticListener,
 
@@ -97,7 +107,18 @@ export {
 
   ɵɵselect,
   ɵɵstyleMap,
+
   ɵɵstyleProp,
+  ɵɵstylePropInterpolate1,
+  ɵɵstylePropInterpolate2,
+  ɵɵstylePropInterpolate3,
+  ɵɵstylePropInterpolate4,
+  ɵɵstylePropInterpolate5,
+  ɵɵstylePropInterpolate6,
+  ɵɵstylePropInterpolate7,
+  ɵɵstylePropInterpolate8,
+  ɵɵstylePropInterpolateV,
+
   ɵɵstyleSanitizer,
   ɵɵstyling,
   ɵɵstylingApply,

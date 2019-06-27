@@ -310,7 +310,7 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
  *
  * @codeGenApi
  */
-export function ɵɵclassMap(classes: {[styleName: string]: any} | NO_CHANGE | string | null): void {
+export function ɵɵclassMap(classes: {[styleName: string]: any} | string | null): void {
   const index = getSelectedIndex();
   const lView = getLView();
   const stylingContext = getStylingContext(index, lView);
@@ -323,7 +323,7 @@ export function ɵɵclassMap(classes: {[styleName: string]: any} | NO_CHANGE | s
     // inputs are only evaluated from a template binding into a directive, therefore,
     // there should not be a situation where a directive host bindings function
     // evaluates the inputs (this should only happen in the template function)
-    if (hasClassInput(tNode) && classes !== NO_CHANGE) {
+    if (hasClassInput(tNode)) {
       const initialClasses = getInitialClassNameValue(stylingContext);
       const classInputVal =
           (initialClasses.length ? (initialClasses + ' ') : '') + forceClassesAsString(classes);
