@@ -112,7 +112,7 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
   }
 
   private hasChangedResourceDependencies(sf: ts.SourceFile): boolean {
-    if (this.modifiedResourceFiles === undefined || !this.metadata.has(sf)) {
+    if (this.modifiedResourceFiles === null || !this.metadata.has(sf)) {
       return false;
     }
     const resourceDeps = this.metadata.get(sf) !.resourcePaths;

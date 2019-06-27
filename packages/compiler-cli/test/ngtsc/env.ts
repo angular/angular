@@ -26,7 +26,7 @@ import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 export class NgtscTestEnvironment {
   private multiCompileHostExt: MultiCompileHostExt|null = null;
   private oldProgram: Program|null = null;
-  private changedResources: Set<string>|undefined = undefined;
+  private changedResources: Set<string>|null = null;
 
   private constructor(
       private fs: FileSystem, readonly outDir: AbsoluteFsPath, readonly basePath: AbsoluteFsPath) {}
@@ -106,6 +106,12 @@ export class NgtscTestEnvironment {
     this.changedResources !.clear();
     this.multiCompileHostExt.flushWrittenFileTracking();
   }
+
+  /**
+   * Older versions of the CLI do not provide the `CompilerHost.getModifiedResourceFiles()` method.
+   * This results in the `changedResources` set being `null`.
+   */
+  simulateLegacyCLICompilerHost() { this.changedResources = null; }
 
   getFilesWrittenSinceLastFlush(): Set<string> {
     if (this.multiCompileHostExt === null) {

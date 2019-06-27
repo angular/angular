@@ -23,6 +23,23 @@ runInEachFileSystem(() => {
       env.tsconfig();
     });
 
+    it('should not crash if CLI does not provide getModifiedResourceFiles()', () => {
+      env.write('component1.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'cmp', templateUrl: './component1.template.html'})
+      export class Cmp1 {}
+    `);
+      env.write('component1.template.html', 'cmp1');
+      env.driveMain();
+
+      // Simulate a change to `component1.html`
+      env.flushWrittenFileTracking();
+      env.invalidateCachedFile('component1.html');
+      env.simulateLegacyCLICompilerHost();
+      env.driveMain();
+    });
+
     it('should skip unchanged services', () => {
       env.write('service.ts', `
       import {Injectable} from '@angular/core';
