@@ -454,10 +454,9 @@ A form of property [data binding](#data-binding) in which a [template expression
 That text can be concatenated with neighboring text before it is assigned to an element property
 or displayed between element tags, as in this example.
 
-<code-example language="html" escape="html">
-  <label>My current hero is {{hero.name}}</label>
-
-</code-example>
+```html
+<label>My current hero is {{hero.name}}</label>
+```
 
 
 Read more about [interpolation](guide/template-syntax#interpolation) in [Template Syntax](guide/template-syntax).
