@@ -253,7 +253,7 @@ In the `package.json` file, add a `builders` key that tells the Architect tool w
 </code-example>
 
 The official name of our builder is now ` @example/command-runner:command`.
-The first part  of this is the package name (resolved using node resolution), and the second part is the builder name (resolved using the `builder.json` file).
+The first part  of this is the package name (resolved using node resolution), and the second part is the builder name (resolved using the `builders.json` file).
 
 Using one of our `options` is very straightforward, we did this in the previous section when we accessed `options.command`.
 
@@ -279,28 +279,28 @@ By default, for example, the `build` command runs the builder  `@angular-devkit/
   "myApp": {
     ...
     "architect": {
-        "build": {
-             "builder": "@angular-devkit/build-angular:browser",
-             "options": {
-            "outputPath": "dist/myApp",
-            "index": "src/index.html",
-        ...
-   },
-          "configurations": {
-            "production": {
-                 "fileReplacements": [
-                    {
-                         "replace": "src/environments/environment.ts",
-                         "with": "src/environments/environment.prod.ts"
-                    }
-                 ],
-               "optimization": true,
-               "outputHashing": "all",
-      ...
-            }
-             }
+      "build": {
+        "builder": "@angular-devkit/build-angular:browser",
+        "options": {
+          "outputPath": "dist/myApp",
+          "index": "src/index.html",
+          ...
         },
-       ...
+        "configurations": {
+          "production": {
+            "fileReplacements": [
+              {
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.prod.ts"
+              }
+            ],
+            "optimization": true,
+            "outputHashing": "all",
+            ...
+          }
+        }
+      },
+      ...
 
 </code-example>
 
@@ -419,15 +419,13 @@ We need to update the `angular.json` file to add a target for this builder to th
   "projects": {
     "builder-test": {
       "architect": {
-        "builder-test": {
-          "touch": {
-            "builder": "@example/command-runner:command",
-            "options": {
-              "command": "touch",
-              "args": [
-                "src/main.ts"
-              ]
-            }
+        "touch": {
+          "builder": "@example/command-runner:command",
+          "options": {
+            "command": "touch",
+            "args": [
+              "src/main.ts"
+            ]
           }
         },
         "build": {
@@ -497,14 +495,14 @@ The test uses the builder to run the `ls` command, then validates that it ran su
 
 <code-example format="." language="typescript" linenums="false">
 
-import { Architect, ArchitectHost } from '@angular-devkit/architect';
+import { Architect } from '@angular-devkit/architect';
 import { TestingArchitectHost } from '@angular-devkit/architect/testing';
 // Our builder forwards the STDOUT of the command to the logger.
 import { logging, schema } from '@angular-devkit/core';
 
 describe('Command Runner Builder', () => {
   let architect: Architect;
-  let architectHost: ArchitectHost;
+  let architectHost: TestingArchitectHost;
 
   beforeEach(async () => {
     const registry = new schema.CoreSchemaRegistry();
