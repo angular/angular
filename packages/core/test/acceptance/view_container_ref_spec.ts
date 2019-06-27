@@ -1111,7 +1111,7 @@ describe('ViewContainerRef', () => {
            }
          }
 
-         TestBed.configureTestingModule({declarations: [Comp]});
+         TestBed.configureTestingModule({declarations: [Comp, Child]});
 
          const fixture = TestBed.createComponent(Comp);
          fixture.detectChanges();
