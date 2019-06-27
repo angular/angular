@@ -772,6 +772,40 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
          expect(fixture.debugElement.nativeElement.innerHTML)
              .toBe('<my-cmp><div>ONE<!--ICU 15--></div><!--container--></my-cmp>');
        });
+
+    it('with nested containers', () => {
+      @Component({
+        selector: 'comp',
+        template: `
+        <ng-container [ngSwitch]="visible">
+          <ng-container *ngSwitchCase="isVisible()" i18n>
+            {type, select, A { A } B { B } other { C }}
+          </ng-container>
+          <ng-container *ngSwitchCase="!isVisible()" i18n>
+            {type, select, A1 { A1 } B1 { B1 } other { C1 }}
+          </ng-container>
+        </ng-container>
+      `,
+      })
+      class Comp {
+        type = 'A';
+        visible = true;
+        isVisible() { return true; }
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp]});
+
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('A');
+
+      fixture.componentInstance.visible = false;
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.nativeElement.innerHTML).not.toContain('A');
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('C1');
+    });
   });
 
   describe('should support attributes', () => {

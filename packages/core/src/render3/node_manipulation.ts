@@ -14,7 +14,7 @@ import {attachPatchData} from './context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
-import {TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
@@ -844,23 +844,23 @@ function executeActionOnContainer(
 
 
 /**
- * `executeActionOnElementContainer` performs an operation on the ng-container node and its child
- * nodes as specified by the `action` (insert, detach, destroy).
+ * `executeActionOnElementContainerOrIcuContainer` performs an operation on the ng-container node
+ * and its child nodes as specified by the `action` (insert, detach, destroy).
  *
  * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
  * @param lView The LView which needs to be inserted, detached, destroyed.
- * @param tElementContainerNode The TNode associated with the ElementContainer.
+ * @param tNode The TNode associated with the `ElementContainer` or `IcuContainer`.
  * @param renderParent parent DOM element for insertion/removal.
  * @param beforeNode Before which node the insertions should happen.
  */
-function executeActionOnElementContainer(
+function executeActionOnElementContainerOrIcuContainer(
     renderer: Renderer3, action: WalkTNodeTreeAction, lView: LView,
-    tElementContainerNode: TElementContainerNode, renderParent: RElement | null,
+    tNode: TElementContainerNode | TIcuContainerNode, renderParent: RElement | null,
     beforeNode: RNode | null | undefined) {
-  const node = lView[tElementContainerNode.index];
+  const node = lView[tNode.index];
   executeActionOnElementOrContainer(action, renderer, renderParent, node, beforeNode);
-  let childTNode: TNode|null = tElementContainerNode.child;
+  let childTNode: TNode|null = tNode.child;
   while (childTNode) {
     executeActionOnNode(renderer, action, lView, childTNode, renderParent, beforeNode);
     childTNode = childTNode.next;
@@ -871,9 +871,11 @@ function executeActionOnNode(
     renderer: Renderer3, action: WalkTNodeTreeAction, lView: LView, tNode: TNode,
     renderParent: RElement | null, beforeNode: RNode | null | undefined): void {
   const elementContainerRootTNodeType = tNode.type;
-  if (elementContainerRootTNodeType === TNodeType.ElementContainer) {
-    executeActionOnElementContainer(
-        renderer, action, lView, tNode as TElementContainerNode, renderParent, beforeNode);
+  if (elementContainerRootTNodeType === TNodeType.ElementContainer ||
+      elementContainerRootTNodeType === TNodeType.IcuContainer) {
+    executeActionOnElementContainerOrIcuContainer(
+        renderer, action, lView, tNode as TElementContainerNode | TIcuContainerNode, renderParent,
+        beforeNode);
   } else if (elementContainerRootTNodeType === TNodeType.Projection) {
     executeActionOnProjection(
         renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
