@@ -210,7 +210,7 @@ describe('compiler compliance: bindings', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should chain property bindings in the presence of other instructions', () => {
+    it('should chain property bindings in the presence of other bindings', () => {
       const files = {
         app: {
           'example.ts': `
@@ -473,7 +473,7 @@ describe('compiler compliance: bindings', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should chain attribute bindings in the presence of other instructions', () => {
+    it('should chain attribute bindings in the presence of other bindings', () => {
       const files = {
         app: {
           'example.ts': `
@@ -860,6 +860,250 @@ describe('compiler compliance: bindings', () => {
       const source = result.source;
       expectEmit(source, CompAndDirDeclaration, 'Invalid host attribute code');
     });
+
+    it('should chain multiple host property bindings into a single instruction', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Directive} from '@angular/core';
+
+            @Directive({
+              selector: '[my-dir]',
+              host: {
+                '[title]': 'myTitle',
+                '[tabindex]': '1',
+                '[id]': 'myId'
+              }
+            })
+            export class MyDirective {
+              myTitle = 'hello';
+              myId = 'special-directive';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵproperty("title", ctx.myTitle, null, true)("tabindex", 1, null, true)("id", ctx.myId, null, true);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain both host properties in the decorator and on the class', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Directive, HostBinding} from '@angular/core';
+
+            @Directive({
+              selector: '[my-dir]',
+              host: {
+                '[tabindex]': '1'
+              }
+            })
+            export class MyDirective {
+              @HostBinding('title')
+              myTitle = 'hello';
+
+              @HostBinding('id')
+              myId = 'special-directive';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵproperty("tabindex", 1, null, true)("title", ctx.myTitle, null, true)("id", ctx.myId, null, true);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple host property bindings in the presence of other bindings', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Directive} from '@angular/core';
+
+            @Directive({
+              selector: '[my-dir]',
+              host: {
+                '[title]': '"my title"',
+                '[attr.tabindex]': '1',
+                '[id]': '"my-id"'
+              }
+            })
+            export class MyDirective {}`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵproperty("title", "my title", null, true)("id", "my-id", null, true);
+              $r3$.ɵɵattribute("tabindex", 1);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple synthetic properties into a single instruction call', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Directive} from '@angular/core';
+
+            @Directive({
+              selector: '[my-dir]',
+              host: {
+                '[@expand]': 'expandedState',
+                '[@fadeOut]': 'true',
+                '[@shrink]': 'isSmall'
+              }
+            })
+            export class MyDirective {
+              expandedState = 'collapsed';
+              isSmall = true;
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+        …
+        hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+          …
+          if (rf & 2) {
+            $r3$.ɵɵupdateSyntheticHostBinding("@expand", ctx.expandedState, null, true)("@fadeOut", true, null, true)("@shrink", ctx.isSmall, null, true);
+          }
+        }
+      `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple host attribute bindings into a single instruction', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Directive} from '@angular/core';
+
+            @Directive({
+              selector: '[my-dir]',
+              host: {
+                '[attr.title]': 'myTitle',
+                '[attr.tabindex]': '1',
+                '[attr.id]': 'myId'
+              }
+            })
+            export class MyDirective {
+              myTitle = 'hello';
+              myId = 'special-directive';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵattribute("title", ctx.myTitle)("tabindex", 1)("id", ctx.myId);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain both host attributes in the decorator and on the class', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Directive, HostBinding} from '@angular/core';
+
+            @Directive({
+              selector: '[my-dir]',
+              host: {
+                '[attr.tabindex]': '1'
+              }
+            })
+            export class MyDirective {
+              @HostBinding('attr.title')
+              myTitle = 'hello';
+
+              @HostBinding('attr.id')
+              myId = 'special-directive';
+            }`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+          …
+          hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+            …
+            if (rf & 2) {
+              $r3$.ɵɵattribute("tabindex", 1)("title", ctx.myTitle)("id", ctx.myId);
+            }
+          }
+        `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should chain multiple host attribute bindings in the presence of other bindings', () => {
+      const files = {
+        app: {
+          'example.ts': `
+            import {Directive} from '@angular/core';
+
+            @Directive({
+              selector: '[my-dir]',
+              host: {
+                '[attr.title]': '"my title"',
+                '[tabindex]': '1',
+                '[attr.id]': '"my-id"'
+              }
+            })
+            export class MyDirective {}`
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      const template = `
+            …
+            hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
+              …
+              if (rf & 2) {
+                $r3$.ɵɵproperty("tabindex", 1, null, true);
+                $r3$.ɵɵattribute("title", "my title")("id", "my-id");
+              }
+            }
+          `;
+
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
   });
 
   describe('non bindable behavior', () => {

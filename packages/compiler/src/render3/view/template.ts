@@ -37,7 +37,8 @@ import {I18nMetaVisitor} from './i18n/meta';
 import {getSerializedI18nContent} from './i18n/serializer';
 import {I18N_ICU_MAPPING_PREFIX, TRANSLATION_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, formatI18nPlaceholderName, getTranslationConstPrefix, getTranslationDeclStmts, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, metaFromI18nMessage, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
 import {Instruction, StylingBuilder} from './styling_builder';
-import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
+import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, chainedInstruction, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
+
 
 
 // Selector attribute name of `<ng-content>`
@@ -1105,7 +1106,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         return fnParams;
       });
 
-      return chainedInstruction(span, reference, calls).toStmt();
+      return chainedInstruction(reference, calls, span).toStmt();
     });
   }
 
@@ -1415,22 +1416,6 @@ function instruction(
     span: ParseSourceSpan | null, reference: o.ExternalReference,
     params: o.Expression[]): o.Expression {
   return o.importExpr(reference, null, span).callFn(params, span);
-}
-
-function chainedInstruction(
-    span: ParseSourceSpan | null, reference: o.ExternalReference, calls: o.Expression[][]) {
-  let expression = o.importExpr(reference, null, span) as o.Expression;
-
-  if (calls.length > 0) {
-    for (let i = 0; i < calls.length; i++) {
-      expression = expression.callFn(calls[i], span);
-    }
-  } else {
-    // Add a blank invocation, in case the `calls` array is empty.
-    expression = expression.callFn([], span);
-  }
-
-  return expression;
 }
 
 // e.g. x(2);
