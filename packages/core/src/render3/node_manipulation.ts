@@ -780,6 +780,7 @@ function executeActionOnView(
  * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
  * @param lView The LView which needs to be inserted, detached, destroyed.
+ * @param tProjectionNode projection TNode to process
  * @param renderParent parent DOM element for insertion/removal.
  * @param beforeNode Before which node the insertions should happen.
  */
@@ -789,20 +790,25 @@ function executeActionOnProjection(
     beforeNode: RNode | null | undefined) {
   const componentLView = findComponentView(lView);
   const componentNode = componentLView[T_HOST] as TElementNode;
-  const nodeToProject = componentNode.projection ![tProjectionNode.projection] !;
-  if (Array.isArray(nodeToProject)) {
-    for (let i = 0; i < nodeToProject.length; i++) {
-      const rNode = nodeToProject[i];
-      ngDevMode && assertDomNode(rNode);
-      executeActionOnElementOrContainer(action, renderer, renderParent, rNode, beforeNode);
-    }
-  } else {
-    let projectionTNode: TNode|null = nodeToProject;
-    const projectedComponentLView = componentLView[PARENT] as LView;
-    while (projectionTNode !== null) {
-      executeActionOnNode(
-          renderer, action, projectedComponentLView, projectionTNode, renderParent, beforeNode);
-      projectionTNode = projectionTNode.projectionNext;
+  ngDevMode && assertDefined(
+                   componentNode.projection,
+                   'Element nodes for which projection is processed must have projection defined.');
+  const nodeToProject = componentNode.projection ![tProjectionNode.projection];
+  if (nodeToProject !== undefined) {
+    if (Array.isArray(nodeToProject)) {
+      for (let i = 0; i < nodeToProject.length; i++) {
+        const rNode = nodeToProject[i];
+        ngDevMode && assertDomNode(rNode);
+        executeActionOnElementOrContainer(action, renderer, renderParent, rNode, beforeNode);
+      }
+    } else {
+      let projectionTNode: TNode|null = nodeToProject;
+      const projectedComponentLView = componentLView[PARENT] as LView;
+      while (projectionTNode !== null) {
+        executeActionOnNode(
+            renderer, action, projectedComponentLView, projectionTNode, renderParent, beforeNode);
+        projectionTNode = projectionTNode.projectionNext;
+      }
     }
   }
 }
@@ -870,13 +876,12 @@ function executeActionOnElementContainerOrIcuContainer(
 function executeActionOnNode(
     renderer: Renderer3, action: WalkTNodeTreeAction, lView: LView, tNode: TNode,
     renderParent: RElement | null, beforeNode: RNode | null | undefined): void {
-  const elementContainerRootTNodeType = tNode.type;
-  if (elementContainerRootTNodeType === TNodeType.ElementContainer ||
-      elementContainerRootTNodeType === TNodeType.IcuContainer) {
+  const nodeType = tNode.type;
+  if (nodeType === TNodeType.ElementContainer || nodeType === TNodeType.IcuContainer) {
     executeActionOnElementContainerOrIcuContainer(
         renderer, action, lView, tNode as TElementContainerNode | TIcuContainerNode, renderParent,
         beforeNode);
-  } else if (elementContainerRootTNodeType === TNodeType.Projection) {
+  } else if (nodeType === TNodeType.Projection) {
     executeActionOnProjection(
         renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
   } else {
