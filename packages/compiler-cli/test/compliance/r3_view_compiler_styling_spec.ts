@@ -454,7 +454,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵɵclassMap($r3$.ɵɵinterpolation1("foo foo-", $ctx$.fooId, ""));
+              $r3$.ɵɵclassMapInterpolate1("foo foo-", $ctx$.fooId, "");
               $r3$.ɵɵstylingApply();
             }
           }
@@ -468,7 +468,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵɵclassMap($r3$.ɵɵinterpolation2("foo foo-", $ctx$.fooId, "-", $ctx$.fooUsername, ""));
+              $r3$.ɵɵclassMapInterpolate2("foo foo-", $ctx$.fooId, "-", $ctx$.fooUsername, "");
               $r3$.ɵɵstylingApply();
             }
           }
@@ -1338,6 +1338,239 @@ describe('compiler compliance: styling', () => {
          const result = compile(files, angularFiles);
          expectEmit(result.source, template, 'Incorrect template');
        });
+  });
+
+  describe('interpolations', () => {
+    it('should generate the proper update instructions for interpolated classes', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <div class="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j"></div>
+                <div class="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i"></div>
+                <div class="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h"></div>
+                <div class="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g"></div>
+                <div class="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f"></div>
+                <div class="a{{one}}b{{two}}c{{three}}d{{four}}e"></div>
+                <div class="a{{one}}b{{two}}c{{three}}d"></div>
+                <div class="a{{one}}b{{two}}c"></div>
+                <div class="a{{one}}b"></div>
+                <div class="{{one}}"></div>
+              \`
+            })
+            export class MyComponent {
+            }
+          `
+        }
+      };
+
+      const template = `
+      …
+        if (rf & 2) {
+          $r3$.ɵɵclassMapInterpolateV(["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(1);
+          $r3$.ɵɵclassMapInterpolate8("a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(2);
+          $r3$.ɵɵclassMapInterpolate7("a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(3);
+          $r3$.ɵɵclassMapInterpolate6("a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(4);
+          $r3$.ɵɵclassMapInterpolate5("a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(5);
+          $r3$.ɵɵclassMapInterpolate4("a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(6);
+          $r3$.ɵɵclassMapInterpolate3("a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(7);
+          $r3$.ɵɵclassMapInterpolate2("a", ctx.one, "b", ctx.two, "c");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(8);
+          $r3$.ɵɵclassMapInterpolate1("a", ctx.one, "b");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(9);
+          $r3$.ɵɵclassMap(ctx.one);
+          $r3$.ɵɵstylingApply();
+      }
+      …
+      `;
+      const result = compile(files, angularFiles);
+
+      expectEmit(result.source, template, 'Incorrect handling of interpolated classes');
+    });
+
+    it('should throw for interpolations inside `style`', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<div style="color:{{red}}"></div>'
+            })
+            export class MyComponent {
+            }
+          `
+        }
+      };
+
+      expect(() => compile(files, angularFiles)).toThrowError(/Unexpected interpolation/);
+    });
+
+    it('should throw for interpolations inside individual class bindings', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<div class.something="{{isEnabled}}"></div>'
+            })
+            export class MyComponent {
+            }
+          `
+        }
+      };
+
+      expect(() => compile(files, angularFiles)).toThrowError(/Unexpected interpolation/);
+    });
+
+    it('should generate the proper update instructions for interpolated style properties', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <div style.color="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j"></div>
+                <div style.color="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i"></div>
+                <div style.color="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h"></div>
+                <div style.color="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g"></div>
+                <div style.color="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f"></div>
+                <div style.color="a{{one}}b{{two}}c{{three}}d{{four}}e"></div>
+                <div style.color="a{{one}}b{{two}}c{{three}}d"></div>
+                <div style.color="a{{one}}b{{two}}c"></div>
+                <div style.color="a{{one}}b"></div>
+                <div style.color="{{one}}"></div>
+              \`
+            })
+            export class MyComponent {
+            }
+          `
+        }
+      };
+
+      const template = `
+      …
+        if (rf & 2) {
+          $r3$.ɵɵstylePropInterpolateV(0, ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(1);
+          $r3$.ɵɵstylePropInterpolate8(0, "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(2);
+          $r3$.ɵɵstylePropInterpolate7(0, "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(3);
+          $r3$.ɵɵstylePropInterpolate6(0, "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(4);
+          $r3$.ɵɵstylePropInterpolate5(0, "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(5);
+          $r3$.ɵɵstylePropInterpolate4(0, "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(6);
+          $r3$.ɵɵstylePropInterpolate3(0, "a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(7);
+          $r3$.ɵɵstylePropInterpolate2(0, "a", ctx.one, "b", ctx.two, "c");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(8);
+          $r3$.ɵɵstylePropInterpolate1(0, "a", ctx.one, "b");
+          $r3$.ɵɵstylingApply();
+          $r3$.ɵɵselect(9);
+          $r3$.ɵɵstyleProp(0, ctx.one);
+          $r3$.ɵɵstylingApply();
+      }
+      …
+      `;
+      const result = compile(files, angularFiles);
+
+      expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
+    });
+
+    it('should generate update instructions for interpolated style properties with a suffix',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <div style.width.px="a{{one}}b{{two}}c"></div>
+              \`
+            })
+            export class MyComponent {
+            }
+          `
+           }
+         };
+
+         const template = `
+            …
+            if (rf & 2) {
+              $r3$.ɵɵstylePropInterpolate2(0, "a", ctx.one, "b", ctx.two, "c", "px");
+              $r3$.ɵɵstylingApply();
+            }
+            …
+          `;
+         const result = compile(files, angularFiles);
+
+         expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
+       });
+
+    it('should generate update instructions for interpolated style properties with !important',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                <div style.width!important="a{{one}}b{{two}}c"></div>
+              \`
+            })
+            export class MyComponent {
+            }
+          `
+           }
+         };
+
+         const template = `
+            …
+            if (rf & 2) {
+              $r3$.ɵɵstylePropInterpolate2(0, "a", ctx.one, "b", ctx.two, "c", null, true);
+              $r3$.ɵɵstylingApply();
+            }
+            …
+          `;
+         const result = compile(files, angularFiles);
+
+         expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
+       });
+
   });
 
   it('should count only non-style and non-class host bindings on Components', () => {

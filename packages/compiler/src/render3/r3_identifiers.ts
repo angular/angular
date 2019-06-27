@@ -72,7 +72,45 @@ export class Identifiers {
 
   static classMap: o.ExternalReference = {name: 'ɵɵclassMap', moduleName: CORE};
 
+  static classMapInterpolate1:
+      o.ExternalReference = {name: 'ɵɵclassMapInterpolate1', moduleName: CORE};
+  static classMapInterpolate2:
+      o.ExternalReference = {name: 'ɵɵclassMapInterpolate2', moduleName: CORE};
+  static classMapInterpolate3:
+      o.ExternalReference = {name: 'ɵɵclassMapInterpolate3', moduleName: CORE};
+  static classMapInterpolate4:
+      o.ExternalReference = {name: 'ɵɵclassMapInterpolate4', moduleName: CORE};
+  static classMapInterpolate5:
+      o.ExternalReference = {name: 'ɵɵclassMapInterpolate5', moduleName: CORE};
+  static classMapInterpolate6:
+      o.ExternalReference = {name: 'ɵɵclassMapInterpolate6', moduleName: CORE};
+  static classMapInterpolate7:
+      o.ExternalReference = {name: 'ɵɵclassMapInterpolate7', moduleName: CORE};
+  static classMapInterpolate8:
+      o.ExternalReference = {name: 'ɵɵclassMapInterpolate8', moduleName: CORE};
+  static classMapInterpolateV:
+      o.ExternalReference = {name: 'ɵɵclassMapInterpolateV', moduleName: CORE};
+
   static styleProp: o.ExternalReference = {name: 'ɵɵstyleProp', moduleName: CORE};
+
+  static stylePropInterpolate1:
+      o.ExternalReference = {name: 'ɵɵstylePropInterpolate1', moduleName: CORE};
+  static stylePropInterpolate2:
+      o.ExternalReference = {name: 'ɵɵstylePropInterpolate2', moduleName: CORE};
+  static stylePropInterpolate3:
+      o.ExternalReference = {name: 'ɵɵstylePropInterpolate3', moduleName: CORE};
+  static stylePropInterpolate4:
+      o.ExternalReference = {name: 'ɵɵstylePropInterpolate4', moduleName: CORE};
+  static stylePropInterpolate5:
+      o.ExternalReference = {name: 'ɵɵstylePropInterpolate5', moduleName: CORE};
+  static stylePropInterpolate6:
+      o.ExternalReference = {name: 'ɵɵstylePropInterpolate6', moduleName: CORE};
+  static stylePropInterpolate7:
+      o.ExternalReference = {name: 'ɵɵstylePropInterpolate7', moduleName: CORE};
+  static stylePropInterpolate8:
+      o.ExternalReference = {name: 'ɵɵstylePropInterpolate8', moduleName: CORE};
+  static stylePropInterpolateV:
+      o.ExternalReference = {name: 'ɵɵstylePropInterpolateV', moduleName: CORE};
 
   static stylingApply: o.ExternalReference = {name: 'ɵɵstylingApply', moduleName: CORE};
 
