@@ -209,7 +209,12 @@ export class ASTWithSource extends AST {
       public errors: ParserError[]) {
     super(new ParseSpan(0, source == null ? 0 : source.length));
   }
-  visit(visitor: AstVisitor, context: any = null): any { return this.ast.visit(visitor, context); }
+  visit(visitor: AstVisitor, context: any = null): any {
+    if (visitor.visitASTWithSource) {
+      return visitor.visitASTWithSource(this, context);
+    }
+    return this.ast.visit(visitor, context);
+  }
   toString(): string { return `${this.source} in ${this.location}`; }
 }
 
@@ -240,6 +245,7 @@ export interface AstVisitor {
   visitQuote(ast: Quote, context: any): any;
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any;
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any;
+  visitASTWithSource?(ast: ASTWithSource, context: any): any;
   visit?(ast: AST, context?: any): any;
 }
 
