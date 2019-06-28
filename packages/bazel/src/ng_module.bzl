@@ -268,7 +268,7 @@ def _expected_outs(ctx):
     # TODO(alxhub): i18n is only produced by the legacy compiler currently. This should be re-enabled
     # when ngtsc can extract messages
     if is_legacy_ngc:
-        i18n_messages_files = [ctx.actions.declare_file("/".join([ctx.genfiles_dir.path, ctx.label.name + "_ngc_messages.xmb"]))]
+        i18n_messages_files = [ctx.actions.declare_file(ctx.label.name + "_ngc_messages.xmb")]
     else:
         i18n_messages_files = []
 
@@ -431,10 +431,7 @@ def ngc_compile_action(
             executable = ctx.executable.ng_xi18n,
             arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
                          [tsconfig_file.path] +
-                         # The base path is bin_dir because of the way the ngc
-                         # compiler host is configured. So we need to explicitly
-                         # point to genfiles/ to redirect the output.
-                         ["../genfiles/" + messages_out[0].short_path]),
+                         [messages_out[0].short_path]),
             progress_message = "Extracting Angular 2 messages (ng_xi18n)",
             mnemonic = "Angular2MessageExtractor",
         )
