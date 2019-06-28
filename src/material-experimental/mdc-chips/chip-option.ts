@@ -16,7 +16,6 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
-
 import {MatChip} from './chip';
 
 
@@ -40,21 +39,21 @@ export class MatChipSelectionChange {
   selector: 'mat-basic-chip-option, mat-chip-option',
   templateUrl: 'chip-option.html',
   styleUrls: ['chips.css'],
-  inputs: ['color', 'disabled', 'disableRipple'],
+  inputs: ['color', 'disableRipple', 'tabIndex'],
   host: {
     'role': 'option',
     '[class.mat-mdc-chip-disabled]': 'disabled',
     '[class.mat-mdc-chip-highlighted]': 'highlighted',
     '[class.mat-mdc-chip-with-avatar]': 'leadingIcon',
-    '[class.mat-mdc-chip-with-trailing-icon]': 'trailingIcon',
+    '[class.mat-mdc-chip-with-trailing-icon]': 'trailingIcon || removeIcon',
     '[class.mat-mdc-chip-selected]': 'selected',
     '[id]': 'id',
-    '[tabIndex]': 'disabled ? null : -1',
+    '[tabIndex]': 'tabIndex',
     '[attr.disabled]': 'disabled || null',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-selected]': 'ariaSelected',
-    '(click)': '_handleClick($event)',
-    '(keydown)': '_handleKeydown($event)',
+    '(click)': '_click($event)',
+    '(keydown)': '_keydown($event)',
     '(focus)': 'focus()',
     '(blur)': '_blur()',
     '(transitionend)': '_chipFoundation.handleTransitionEnd($event)'
@@ -168,8 +167,37 @@ export class MatChipOption extends MatChip {
     });
   }
 
+  /** Allows for programmatic focusing of the chip. */
+  focus(): void {
+    if (this.disabled) {
+      return;
+    }
+
+    if (!this._hasFocus) {
+      this._elementRef.nativeElement.focus();
+      this._onFocus.next({chip: this});
+    }
+    this._hasFocusInternal = true;
+  }
+
+  /** Resets the state of the chip when it loses focus. */
+  _blur(): void {
+    this._hasFocusInternal = false;
+    this._onBlur.next({chip: this});
+  }
+
+  /** Handles click events on the chip. */
+  _click(event: MouseEvent) {
+    if (this.disabled) {
+      event.preventDefault();
+    } else {
+      this._handleInteraction(event);
+      event.stopPropagation();
+    }
+  }
+
   /** Handles custom key presses. */
-  _handleKeydown(event: KeyboardEvent): void {
+  _keydown(event: KeyboardEvent): void {
     if (this.disabled) {
       return;
     }

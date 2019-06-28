@@ -9,8 +9,8 @@
 // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
 // additional styles to restore these states.
 .mat-mdc-chip:not(.mat-mdc-chip-disabled) {
-  &:hover, &:focus {
-    ::after {
+  &:hover, &:focus, div:focus {
+    .mdc-chip__text::after {
       content: '';
       position: absolute;
       width: 100%;
@@ -28,7 +28,7 @@
 .mat-mdc-chip-disabled.mat-mdc-chip {
   opacity: 0.4;
 
-  .mat-mdc-chip-trailing-icon {
+  .mat-mdc-chip-trailing-icon, .mat-chip-row-focusable-text-content {
     pointer-events: none;
   }
 }

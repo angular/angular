@@ -27,13 +27,13 @@ import {
 import {
   CanColor,
   CanColorCtor,
-  CanDisable,
-  CanDisableCtor,
   CanDisableRipple,
   CanDisableRippleCtor,
+  HasTabIndex,
+  HasTabIndexCtor,
   mixinColor,
-  mixinDisabled,
   mixinDisableRipple,
+  mixinTabIndex,
   RippleConfig,
   RippleRenderer,
   RippleTarget,
@@ -41,6 +41,7 @@ import {
 import {MDCChipAdapter, MDCChipFoundation} from '@material/chips';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {MatChipAvatar, MatChipTrailingIcon, MatChipRemove} from './chip-icons';
 
 
 let uid = 0;
@@ -49,79 +50,6 @@ let uid = 0;
 export interface MatChipEvent {
   /** The chip the event was fired on. */
   chip: MatChip;
-}
-
-/**
- * Directive to add CSS classes to chip leading icon.
- * @docs-private
- */
-@Directive({
-  selector: 'mat-chip-avatar, [matChipAvatar]',
-  host: {
-    'class': 'mat-mdc-chip-avatar mdc-chip__icon mdc-chip__icon--leading',
-    'role': 'img'
-  }
-})
-export class MatChipAvatar {
-  constructor(private _changeDetectorRef: ChangeDetectorRef,
-              private _elementRef: ElementRef) {}
-
-  /** Sets whether the given CSS class should be applied to the leading icon. */
-  setClass(cssClass: string, active: boolean) {
-    const element = this._elementRef.nativeElement;
-    active ? element.addClass(cssClass) : element.removeClass(cssClass);
-    this._changeDetectorRef.markForCheck();
-  }
-}
-
-/**
- * Directive to add CSS class to chip trailing icon and notify parent chip
- * about trailing icon interactions.
- *
- * If matChipRemove is used to add this directive, the parent chip will be
- * removed when the trailing icon is clicked.
- *
- * @docs-private
- */
-@Directive({
-  selector: 'mat-chip-trailing-icon, [matChipTrailingIcon], [matChipRemove]',
-  host: {
-    'class': 'mat-mdc-chip-trailing-icon mdc-chip__icon mdc-chip__icon--trailing',
-    '[tabIndex]': 'tabIndex',
-    '[attr.aria-hidden]': '!shouldRemove',
-    '[attr.role]': 'shouldRemove ? "button" : null',
-    '(click)': 'interaction.emit($event)',
-    '(keydown)': 'interaction.emit($event)',
-    '(blur)': 'parentChip ? parentChip._blur() : {}',
-    '(focus)': 'parentChip ? parentChip._hasFocus = true : {}'
-  }
-})
-export class MatChipTrailingIcon {
-  /** Whether interaction with this icon should remove the parent chip. */
-  shouldRemove!: boolean;
-
-  /** The MatChip component associated with this icon. */
-  @Input() parentChip?: MatChip;
-
-  /** The tab index for this icon. */
-  get tabIndex(): number|null {
-    if ((this.parentChip && this.parentChip.disabled) || !this.shouldRemove) {
-      return -1;
-    }
-    return 0;
-  }
-
-  /** Emits when the user interacts with the icon. */
-  @Output() interaction = new EventEmitter<MouseEvent | KeyboardEvent>();
-
-  constructor(private _elementRef: ElementRef) {
-    this.shouldRemove = this._isMatChipRemoveIcon();
-  }
-
-  /** Returns true if the icon was created with the matChipRemove directive. */
-  _isMatChipRemoveIcon(): boolean {
-    return this._elementRef.nativeElement.getAttribute('matChipRemove') !== null;
-  }
 }
 
 /**
@@ -140,11 +68,16 @@ export class MatChipCssInternalOnly { }
  * @docs-private
  */
 class MatChipBase {
+  disabled!: boolean;
   constructor(public _elementRef: ElementRef) {}
 }
 
-const _MatChipMixinBase: CanColorCtor & CanDisableRippleCtor & CanDisableCtor & typeof MatChipBase =
-    mixinColor(mixinDisableRipple(mixinDisabled(MatChipBase)), 'primary');
+const _MatChipMixinBase:
+  CanColorCtor &
+  CanDisableRippleCtor &
+  HasTabIndexCtor &
+  typeof MatChipBase =
+    mixinTabIndex(mixinColor(mixinDisableRipple(MatChipBase), 'primary'), -1);
 
 /**
  * Material design styled Chip base component. Used inside the MatChipSet component.
@@ -154,7 +87,7 @@ const _MatChipMixinBase: CanColorCtor & CanDisableRippleCtor & CanDisableCtor & 
 @Component({
   moduleId: module.id,
   selector: 'mat-basic-chip, mat-chip',
-  inputs: ['color', 'disabled', 'disableRipple'],
+  inputs: ['color', 'disableRipple'],
   exportAs: 'matChip',
   templateUrl: 'chip.html',
   styleUrls: ['chips.css'],
@@ -162,7 +95,7 @@ const _MatChipMixinBase: CanColorCtor & CanDisableRippleCtor & CanDisableCtor & 
     '[class.mat-mdc-chip-disabled]': 'disabled',
     '[class.mat-mdc-chip-highlighted]': 'highlighted',
     '[class.mat-mdc-chip-with-avatar]': 'leadingIcon',
-    '[class.mat-mdc-chip-with-trailing-icon]': 'trailingIcon',
+    '[class.mat-mdc-chip-with-trailing-icon]': 'trailingIcon || removeIcon',
     '[id]': 'id',
     '[attr.disabled]': 'disabled || null',
     '[attr.aria-disabled]': 'disabled.toString()',
@@ -172,21 +105,39 @@ const _MatChipMixinBase: CanColorCtor & CanDisableRippleCtor & CanDisableCtor & 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatChip extends _MatChipMixinBase implements AfterContentInit, AfterViewInit,
-  CanColor, CanDisable, CanDisableRipple, RippleTarget, OnDestroy {
+  CanColor, CanDisableRipple, HasTabIndex, RippleTarget, OnDestroy {
   /** Emits when the chip is focused. */
   readonly _onFocus = new Subject<MatChipEvent>();
 
   /** Emits when the chip is blurred. */
   readonly _onBlur = new Subject<MatChipEvent>();
 
+  readonly HANDLED_KEYS: number[] = [];
+
   /** Whether the chip has focus. */
-  _hasFocus: boolean = false;
+  protected _hasFocusInternal = false;
+
+  get _hasFocus() {
+    return this._hasFocusInternal;
+  }
 
   /** Default unique id for the chip. */
   private _uniqueId = `mat-mdc-chip-${uid++}`;
 
   /** A unique id for the chip. If none is supplied, it will be auto-generated. */
   @Input() id: string = this._uniqueId;
+
+
+  @Input()
+  get disabled(): boolean { return this._disabled; }
+  set disabled(value: boolean) {
+    this._disabled = coerceBooleanProperty(value);
+    if (this.removeIcon) {
+      this.removeIcon.disabled = value;
+    }
+  }
+  protected _disabled: boolean = false;
+
 
   /** The value of the chip. Defaults to the content inside `<mat-chip>` tags. */
   @Input()
@@ -218,8 +169,8 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   }
   protected _highlighted: boolean = false;
 
-  /** Emitted when the user interacts with the trailing icon. */
-  @Output() trailingIconInteraction = new EventEmitter<string>();
+  /** Emitted when the user interacts with the remove icon. */
+  @Output() removeIconInteraction = new EventEmitter<string>();
 
   /** Emitted when the user interacts with the chip. */
   @Output() interaction = new EventEmitter<string>();
@@ -237,7 +188,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   protected basicChipAttrName = 'mat-basic-chip';
 
   /** Subject that emits when the component has been destroyed. */
-  private _destroyed = new Subject<void>();
+  protected _destroyed = new Subject<void>();
 
   /** The ripple renderer for this chip. */
   private _rippleRenderer: RippleRenderer;
@@ -267,6 +218,9 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   /** The chip's trailing icon. */
   @ContentChild(MatChipTrailingIcon, {static: false}) trailingIcon: MatChipTrailingIcon;
 
+  /** The chip's trailing remove icon. */
+  @ContentChild(MatChipRemove, {static: false}) removeIcon: MatChipRemove;
+
  /**
   * Implementation of the MDC chip adapter interface.
   * These methods are called by the chip foundation.
@@ -285,7 +239,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
       // No-op. We call dispatchSelectionEvent ourselves in MatChipOption, because we want to
       // specify whether selection occurred via user input.
     },
-    notifyTrailingIconInteraction: () => this.trailingIconInteraction.emit(this.id),
+    notifyTrailingIconInteraction: () => this.removeIconInteraction.emit(this.id),
     notifyRemoval: () => this.removed.emit({chip: this}),
     getComputedStyleValue: (propertyName) => {
       return window.getComputedStyle(this._elementRef.nativeElement).getPropertyValue(propertyName);
@@ -310,7 +264,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   }
 
   ngAfterContentInit() {
-    this._initTrailingIcon();
+    this._initRemoveIcon();
   }
 
   ngAfterViewInit() {
@@ -326,58 +280,33 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     this._chipFoundation.destroy();
   }
 
-  /** Allows for programmatic focusing of the chip. */
-  focus(): void {
-    if (this.disabled) {
-      return;
-    }
-
-    if (!this._hasFocus) {
-      this._elementRef.nativeElement.focus();
-      this._onFocus.next({chip: this});
-    }
-    this._hasFocus = true;
-  }
-
-  /** Resets the state of the chip when it loses focus. */
-  _blur(): void {
-    this._hasFocus = false;
-    this._onBlur.next({chip: this});
-  }
-
-  /** Handles click events on the chip. */
-  _handleClick(event: MouseEvent) {
-    if (this.disabled) {
-      event.preventDefault();
-    } else {
-      this._handleInteraction(event);
-      event.stopPropagation();
+  /** Sets up the remove icon chip foundation, and subscribes to remove icon events. */
+  _initRemoveIcon() {
+    if (this.removeIcon) {
+      this._chipFoundation.setShouldRemoveOnTrailingIconClick(true);
+      this._listenToRemoveIconInteraction();
+      this.removeIcon.disabled = this.disabled;
     }
   }
 
-  /** Registers this chip with the trailing icon, and subscribes to trailing icon events. */
-  _initTrailingIcon() {
-    if (this.trailingIcon) {
-      this.trailingIcon.parentChip = this;
-      this._chipFoundation.setShouldRemoveOnTrailingIconClick(this.trailingIcon.shouldRemove);
-      this._listenToTrailingIconInteraction();
-    }
-  }
-
-  /** Handles interaction with the trailing icon. */
-  _listenToTrailingIconInteraction() {
-    this.trailingIcon.interaction
+  /** Handles interaction with the remove icon. */
+  _listenToRemoveIconInteraction() {
+    this.removeIcon.interaction
         .pipe(takeUntil(this._destroyed))
         .subscribe((event) => {
-          if (!this.disabled) {
-            this._chipFoundation.handleTrailingIconInteraction(event);
+          // The MDC chip foundation calls stopPropagation() for any trailing icon interaction
+          // event, even ones it doesn't handle, so we want to avoid passing it keyboard events
+          // for which we have a custom handler.
+          if (this.disabled || (event instanceof KeyboardEvent &&
+            this.HANDLED_KEYS.indexOf(event.keyCode) !== -1)) {
+            return;
           }
+          this._chipFoundation.handleTrailingIconInteraction(event);
         });
   }
 
   /**
-   * Allows for programmatic removal of the chip. Called when the DELETE or BACKSPACE
-   * keys are pressed.
+   * Allows for programmatic removal of the chip.
    *
    * Informs any listeners of the removal request. Does not remove the chip from the DOM.
    */

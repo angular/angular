@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {BACKSPACE} from '@angular/cdk/keycodes';
+import {BACKSPACE, TAB} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ContentChildren,
   DoCheck,
   ElementRef,
   EventEmitter,
@@ -21,6 +23,7 @@ import {
   OnDestroy,
   Optional,
   Output,
+  QueryList,
   Self,
   ViewEncapsulation
 } from '@angular/core';
@@ -35,9 +38,10 @@ import {MatFormFieldControl} from '@angular/material/form-field';
 import {MatChipTextControl} from './chip-text-control';
 import {merge, Observable, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
-
 import {MatChipEvent} from './chip';
+import {MatChipRow} from './chip-row';
 import {MatChipSet} from './chip-set';
+import {GridFocusKeyManager} from './grid-focus-key-manager';
 
 
 /** Change event object that is emitted when the chip grid value has changed. */
@@ -76,10 +80,11 @@ const _MatChipGridMixinBase: CanUpdateErrorStateCtor & typeof MatChipGridBase =
   selector: 'mat-chip-grid',
   template: '<ng-content></ng-content>',
   styleUrls: ['chips.css'],
+  inputs: ['tabIndex'],
   host: {
     'class': 'mat-mdc-chip-set mat-mdc-chip-grid mdc-chip-set',
     'role': 'grid',
-    '[tabIndex]': 'empty ? -1 : 0',
+    '[tabIndex]': 'tabIndex',
     // TODO: replace this binding with use of AriaDescriber
     '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[attr.aria-required]': 'required.toString()',
@@ -88,6 +93,9 @@ const _MatChipGridMixinBase: CanUpdateErrorStateCtor & typeof MatChipGridBase =
     '[class.mat-mdc-chip-list-disabled]': 'disabled',
     '[class.mat-mdc-chip-list-invalid]': 'errorState',
     '[class.mat-mdc-chip-list-required]': 'required',
+    '(focus)': 'focus()',
+    '(blur)': '_blur()',
+    '(keydown)': '_keydown($event)',
     '[id]': '_uid',
   },
   providers: [{provide: MatFormFieldControl, useExisting: MatChipGrid}],
@@ -105,6 +113,9 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   /** Subscription to blur changes in the chips. */
   private _chipBlurSubscription: Subscription | null;
 
+  /** Subscription to focus changes in the chips. */
+  private _chipFocusSubscription: Subscription | null;
+
   /** The chip input to add more chips */
   protected _chipInput: MatChipTextControl;
 
@@ -119,6 +130,9 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
    * @docs-private
    */
   _onChange: (value: any) => void = () => {};
+
+  /** The GridFocusKeyManager which handles focus. */
+  _keyManager: GridFocusKeyManager;
 
   /**
    * Implemented as part of MatFormFieldControl.
@@ -187,6 +201,11 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     return merge(...this._chips.map(chip => chip._onBlur));
   }
 
+  /** Combined stream of all of the child chips' focus events. */
+  get chipFocusChanges(): Observable<MatChipEvent> {
+    return merge(...this._chips.map(chip => chip._onFocus));
+  }
+
   /** Emits when the chip grid value has been changed by the user. */
   @Output() readonly change: EventEmitter<MatChipGridChange> =
       new EventEmitter<MatChipGridChange>();
@@ -198,8 +217,16 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
    */
   @Output() readonly valueChange: EventEmitter<any> = new EventEmitter<any>();
 
+  @ContentChildren(MatChipRow, {
+    // We need to use `descendants: true`, because Ivy will no longer match
+    // indirect descendants if it's left as false.
+    descendants: true
+  })
+  _rowChips: QueryList<MatChipRow>;
+
   constructor(_elementRef: ElementRef,
               _changeDetectorRef: ChangeDetectorRef,
+              @Optional() private _dir: Directionality,
               @Optional() _parentForm: NgForm,
               @Optional() _parentFormGroup: FormGroupDirective,
               _defaultErrorStateMatcher: ErrorStateMatcher,
@@ -214,7 +241,11 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
 
   ngAfterContentInit() {
     super.ngAfterContentInit();
+    this._initKeyManager();
+
     this._chips.changes.pipe(startWith(null), takeUntil(this._destroyed)).subscribe(() => {
+      this._updateTabIndex();
+
       // Check to see if we have a destroyed chip and need to refocus
       this._updateFocusForDestroyedChips();
 
@@ -269,7 +300,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     }
 
     if (this._chips.length > 0) {
-      this._chips.toArray()[0].focus();
+      this._keyManager.setFirstCellActive();
     } else {
       this._focusInput();
     }
@@ -320,6 +351,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     // Timeout is needed to wait for the focus() event trigger on chip input.
     setTimeout(() => {
       if (!this.focused) {
+        this._keyManager.setActiveCell({row: -1, column: -1});
         this._propagateChanges();
         this._markAsTouched();
       }
@@ -332,7 +364,18 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
    * it back to the first chip, creating a focus trap, if it user tries to tab away.
    */
   _allowFocusEscape() {
-    // TODO
+    if (this._chipInput.focused) {
+      return;
+    }
+
+    if (this.tabIndex !== -1) {
+      this.tabIndex = -1;
+
+      setTimeout(() => {
+        this.tabIndex = 0;
+        this._changeDetectorRef.markForCheck();
+      });
+    }
   }
 
   /** Handles custom keyboard events. */
@@ -342,11 +385,15 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     // If they are on an empty input and hit backspace, focus the last chip
     if (event.keyCode === BACKSPACE && this._isEmptyInput(target)) {
       if (this._chips.length) {
-        this._chips.toArray()[this._chips.length - 1].focus();
+        this._keyManager.setLastCellActive();
       }
       event.preventDefault();
+    } else if (event.keyCode === TAB) {
+      this._allowFocusEscape();
+    } else {
+      this._keyManager.onKeydown(event);
     }
-      this.stateChanges.next();
+    this.stateChanges.next();
   }
 
   /** Unsubscribes from all chip events. */
@@ -356,12 +403,41 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
       this._chipBlurSubscription.unsubscribe();
       this._chipBlurSubscription = null;
     }
+
+    if (this._chipFocusSubscription) {
+      this._chipFocusSubscription.unsubscribe();
+      this._chipFocusSubscription = null;
+    }
   }
 
   /** Subscribes to events on the child chips. */
   protected _subscribeToChipEvents() {
     super._subscribeToChipEvents();
+    this._listenToChipsFocus();
     this._listenToChipsBlur();
+  }
+
+  /** Initializes the key manager to manage focus. */
+  private _initKeyManager() {
+    this._keyManager = new GridFocusKeyManager(this._rowChips)
+      .withDirectionality(this._dir ? this._dir.value : 'ltr');
+
+    if (this._dir) {
+      this._dir.change
+        .pipe(takeUntil(this._destroyed))
+        .subscribe(dir => this._keyManager.withDirectionality(dir));
+    }
+  }
+
+   /** Subscribes to chip focus events. */
+  private _listenToChipsFocus(): void {
+    this._chipFocusSubscription = this.chipFocusChanges.subscribe((event: MatChipEvent) => {
+      let chipIndex: number = this._chips.toArray().indexOf(event.chip);
+
+      if (this._isValidIndex(chipIndex)) {
+        this._keyManager.updateActiveCell({row: chipIndex, column: 0});
+      }
+    });
   }
 
   /** Subscribes to chip blur events. */
@@ -409,17 +485,23 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
    * If the amount of chips changed, we need to focus the next closest chip.
    */
   private _updateFocusForDestroyedChips() {
+    // Wait for chips to be updated in keyManager
+    setTimeout(() => {
     // Move focus to the closest chip. If no other chips remain, focus the chip-grid itself.
     if (this._lastDestroyedChipIndex != null) {
       if (this._chips.length) {
         const newChipIndex = Math.min(this._lastDestroyedChipIndex, this._chips.length - 1);
-        this._chips.toArray()[newChipIndex].focus();
+        this._keyManager.setActiveCell({
+          row: newChipIndex,
+          column: this._keyManager.activeColumnIndex
+        });
       } else {
         this.focus();
       }
     }
 
     this._lastDestroyedChipIndex = null;
+    });
   }
 
   /** Focus input element. */
@@ -435,5 +517,13 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     }
 
     return false;
+  }
+
+  /**
+   * Check the tab index as you should not be allowed to focus an empty grid.
+   */
+  protected _updateTabIndex(): void {
+    // If we have 0 chips, we should not allow keyboard focus
+    this.tabIndex = this._chips.length === 0 ? -1 : 0;
   }
 }

@@ -10,42 +10,35 @@ import {ENTER} from '@angular/cdk/keycodes';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ErrorStateMatcher, MatCommonModule} from '@angular/material/core';
-import {MatChip, MatChipAvatar, MatChipCssInternalOnly, MatChipTrailingIcon} from './chip';
+import {MatChip, MatChipCssInternalOnly} from './chip';
+import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
+import {MatChipGrid} from './chip-grid';
+import {MatChipAvatar, MatChipRemove, MatChipTrailingIcon} from './chip-icons';
+import {MatChipInput} from './chip-input';
+import {MatChipListbox} from './chip-listbox';
 import {MatChipRow} from './chip-row';
 import {MatChipOption} from './chip-option';
-import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
-import {MatChipInput} from './chip-input';
 import {MatChipSet} from './chip-set';
-import {MatChipGrid} from './chip-grid';
-import {MatChipListbox} from './chip-listbox';
+
+
+const CHIP_DECLARATIONS = [
+  MatChip,
+  MatChipAvatar,
+  MatChipCssInternalOnly,
+  MatChipGrid,
+  MatChipInput,
+  MatChipListbox,
+  MatChipOption,
+  MatChipRemove,
+  MatChipRow,
+  MatChipSet,
+  MatChipTrailingIcon,
+];
 
 @NgModule({
   imports: [MatCommonModule, CommonModule],
-  exports: [
-    MatChip,
-    MatChipAvatar,
-    MatChipCssInternalOnly,
-    MatChipGrid,
-    MatChipInput,
-    MatChipListbox,
-    MatChipOption,
-    MatChipRow,
-    MatChipSet,
-    MatChipTrailingIcon,
-    MatCommonModule
-  ],
-  declarations: [
-    MatChip,
-    MatChipAvatar,
-    MatChipCssInternalOnly,
-    MatChipGrid,
-    MatChipInput,
-    MatChipListbox,
-    MatChipOption,
-    MatChipRow,
-    MatChipSet,
-    MatChipTrailingIcon
-  ],
+  exports: CHIP_DECLARATIONS,
+  declarations: CHIP_DECLARATIONS,
   providers: [
     ErrorStateMatcher,
     {

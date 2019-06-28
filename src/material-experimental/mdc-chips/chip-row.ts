@@ -6,9 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {BACKSPACE, DELETE} from '@angular/cdk/keycodes';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewChild,
+  ViewEncapsulation
+} from '@angular/core';
 import {MatChip} from './chip';
+import {GridKeyManagerRow, NAVIGATION_KEYS} from './grid-key-manager';
+
 
 /**
  * An extension of the MatChip component used with MatChipGrid and
@@ -19,36 +29,110 @@ import {MatChip} from './chip';
   selector: 'mat-chip-row, mat-basic-chip-row',
   templateUrl: 'chip-row.html',
   styleUrls: ['chips.css'],
-  inputs: ['color', 'disabled', 'disableRipple'],
+  inputs: ['color', 'disableRipple', 'tabIndex'],
   host: {
     'role': 'row',
     '[class.mat-mdc-chip-disabled]': 'disabled',
     '[class.mat-mdc-chip-highlighted]': 'highlighted',
     '[class.mat-mdc-chip-with-avatar]': 'leadingIcon',
-    '[class.mat-mdc-chip-with-trailing-icon]': 'trailingIcon',
+    '[class.mat-mdc-chip-with-trailing-icon]': 'trailingIcon || removeIcon',
     '[id]': 'id',
-    '[tabIndex]': 'disabled ? null : -1',
     '[attr.disabled]': 'disabled || null',
     '[attr.aria-disabled]': 'disabled.toString()',
-    '(click)': '_handleClick($event)',
-    '(keydown)': '_handleKeydown($event)',
-    '(focus)': 'focus()',
-    '(blur)': '_blur()',
-    '(transitionend)': '_chipFoundation.handleTransitionEnd($event)'
+    '[tabIndex]': 'tabIndex',
+    '(click)': '_click($event)',
+    '(keydown)': '_keydown($event)',
+    '(transitionend)': '_chipFoundation.handleTransitionEnd($event)',
+    '(focusin)': '_focusin()',
+    '(focusout)': '_focusout()'
   },
   providers: [{provide: MatChip, useExisting: MatChipRow}],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatChipRow extends MatChip {
+export class MatChipRow extends MatChip implements AfterContentInit, AfterViewInit,
+  GridKeyManagerRow<HTMLElement> {
   protected basicChipAttrName = 'mat-basic-chip-row';
 
-  /** Handle custom key presses. */
-  _handleKeydown(event: KeyboardEvent): void {
+  /**
+   * The focusable wrapper element in the first gridcell, which contains all
+   * chip content other than the remove icon.
+   */
+  @ViewChild('chipContent', {static: false}) chipContent: ElementRef;
+
+  /** The focusable grid cells for this row. Implemented as part of GridKeyManagerRow. */
+  cells!: HTMLElement[];
+
+  /** Key codes for which this component has a custom handler. */
+  HANDLED_KEYS = NAVIGATION_KEYS.concat([BACKSPACE, DELETE]);
+
+  ngAfterContentInit() {
+    super.ngAfterContentInit();
+
+    if (this.removeIcon) {
+      // removeIcon has tabIndex 0 for regular chips, but should only be focusable by
+      // the GridFocusKeyManager for row chips.
+      this.removeIcon.tabIndex = -1;
+    }
+  }
+
+  ngAfterViewInit() {
+    super.ngAfterViewInit();
+    this.cells = this.removeIcon ?
+      [this.chipContent.nativeElement, this.removeIcon._elementRef.nativeElement] :
+      [this.chipContent.nativeElement];
+  }
+
+  /**
+   * Allows for programmatic focusing of the chip.
+   * Sends focus to the first grid cell. The row chip element itself
+   * is never focused.
+   */
+  focus(): void {
     if (this.disabled) {
       return;
     }
 
+    this.chipContent.nativeElement.focus();
+    this._hasFocusInternal = true;
+    this._onFocus.next({chip: this});
+  }
+
+  /**
+   * Emits a blur event when one of the gridcells loses focus, unless focus moved
+   * to the other gridcell.
+   */
+  _focusout() {
+    this._hasFocusInternal = false;
+    // Wait to see if focus moves to the other gridcell
+    setTimeout(() => {
+      if (this._hasFocus) {
+        return;
+      }
+      this._onBlur.next({chip: this});
+    });
+  }
+
+  /** Records that the chip has focus when one of the gridcells is focused. */
+  _focusin() {
+    this._hasFocusInternal = true;
+  }
+
+  /** Sends focus to the first gridcell when the user clicks anywhere inside the chip. */
+  _click(event: MouseEvent) {
+    if (this.disabled) {
+      event.preventDefault();
+    } else {
+      this.focus();
+      event.stopPropagation();
+    }
+  }
+
+  /** Handles custom key presses. */
+  _keydown(event: KeyboardEvent): void {
+    if (this.disabled) {
+      return;
+    }
     switch (event.keyCode) {
       case DELETE:
       case BACKSPACE:

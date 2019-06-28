@@ -1,9 +1,10 @@
-<div role="gridcell" *ngIf="leadingIcon">
-  <ng-content select="[mat-chip-avatar], [matChipAvatar]"></ng-content>
+<div role="gridcell">
+  <div #chipContent tabindex="-1" class="mat-chip-row-focusable-text-content">
+  	 <ng-content select="[mat-chip-avatar], [matChipAvatar]"></ng-content>
+  	 <span class="mdc-chip__text"><ng-content></ng-content></span>
+  	 <ng-content select="[mat-chip-trailing-icon],[matChipTrailingIcon]"></ng-content>
+  </div>
 </div>
-<div role="gridcell" class="mdc-chip__text">
-  <ng-content></ng-content>
-</div>
-<div role="gridcell" *ngIf="trailingIcon">
-  <ng-content select="[mat-chip-trailing-icon],[matChipRemove],[matChipTrailingIcon]"></ng-content>
+<div role="gridcell" *ngIf="removeIcon">
+  <ng-content select="[matChipRemove]"></ng-content>
 </div>

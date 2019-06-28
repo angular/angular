@@ -7,6 +7,7 @@
  */
 
 import {FocusKeyManager} from '@angular/cdk/a11y';
+import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {HOME, END} from '@angular/cdk/keycodes';
 import {
@@ -19,6 +20,7 @@ import {
   EventEmitter,
   forwardRef,
   Input,
+  Optional,
   Output,
   QueryList,
   ViewEncapsulation
@@ -27,7 +29,6 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {MDCChipSetAdapter, MDCChipSetFoundation} from '@material/chips';
 import {merge, Observable, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
-
 import {MatChip, MatChipEvent} from './chip';
 import {MatChipOption, MatChipSelectionChange} from './chip-option';
 import {MatChipSet} from './chip-set';
@@ -62,15 +63,17 @@ export const MAT_CHIP_LISTBOX_CONTROL_VALUE_ACCESSOR: any = {
   selector: 'mat-chip-listbox',
   template: '<ng-content></ng-content>',
   styleUrls: ['chips.css'],
+  inputs: ['tabIndex'],
   host: {
     'class': 'mat-mdc-chip-set mat-mdc-chip-listbox mdc-chip-set',
     'role': 'listbox',
-    '[tabIndex]': 'disabled ? null : _tabIndex',
+    '[tabIndex]': 'tabIndex',
     // TODO: replace this binding with use of AriaDescriber
     '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[attr.aria-required]': 'required.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-multiselectable]': 'multiple',
+    '[attr.aria-orientation]': 'ariaOrientation',
     '[class.mat-mdc-chip-list-disabled]': 'disabled',
     '[class.mat-mdc-chip-list-required]': 'required',
     '(focus)': 'focus()',
@@ -109,9 +112,6 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
     }
   };
 
-  /** Tab index for the chip list. */
-  _tabIndex = 0;
-
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager<MatChip>;
 
@@ -142,6 +142,9 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
     const selectedChips = this._optionChips.toArray().filter(chip => chip.selected);
     return this.multiple ? selectedChips : selectedChips[0];
   }
+
+  /** Orientation of the chip list. */
+  @Input('aria-orientation') ariaOrientation: 'horizontal' | 'vertical' = 'horizontal';
 
   /**
    * Whether or not this chip listbox is selectable.
@@ -216,7 +219,8 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
   _optionChips: QueryList<MatChipOption>;
 
   constructor(protected _elementRef: ElementRef,
-              _changeDetectorRef: ChangeDetectorRef) {
+              _changeDetectorRef: ChangeDetectorRef,
+              @Optional() private _dir: Directionality) {
     super(_elementRef, _changeDetectorRef);
     // Reinitialize the foundation with our overridden adapter
     this._chipSetFoundation = new MDCChipSetFoundation(this._chipSetAdapter);
@@ -336,11 +340,11 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
    * it back to the first chip, creating a focus trap, if it user tries to tab away.
    */
   _allowFocusEscape() {
-    if (this._tabIndex !== -1) {
-      this._tabIndex = -1;
+    if (this.tabIndex !== -1) {
+      this.tabIndex = -1;
 
       setTimeout(() => {
-        this._tabIndex = 0;
+        this.tabIndex = 0;
         this._changeDetectorRef.markForCheck();
       });
     }
@@ -442,10 +446,16 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
 
   /** Initializes the key manager to manage focus. */
   private _initKeyManager() {
-    this._keyManager = new FocusKeyManager<MatChip>(this._chips)
+    this._keyManager = new FocusKeyManager<MatChip>(this._optionChips)
       .withWrap()
       .withVerticalOrientation()
-      .withHorizontalOrientation('ltr');
+      .withHorizontalOrientation(this._dir ? this._dir.value : 'ltr');
+
+    if (this._dir) {
+      this._dir.change
+        .pipe(takeUntil(this._destroyed))
+        .subscribe(dir => this._keyManager.withHorizontalOrientation(dir));
+    }
 
     this._keyManager.tabOut.pipe(takeUntil(this._destroyed)).subscribe(() => {
       this._allowFocusEscape();
@@ -523,7 +533,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
    */
   protected _updateTabIndex(): void {
     // If we have 0 chips, we should not allow keyboard focus
-    this._tabIndex = this._chips.length === 0 ? -1 : 0;
+    this.tabIndex = this._chips.length === 0 ? -1 : 0;
   }
 
   /**

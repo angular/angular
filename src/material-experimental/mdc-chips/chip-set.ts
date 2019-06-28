@@ -24,8 +24,26 @@ import {MDCChipSetAdapter, MDCChipSetFoundation} from '@material/chips';
 import {MatChip, MatChipEvent} from './chip';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
+import {
+  HasTabIndex,
+  HasTabIndexCtor,
+  mixinTabIndex,
+} from '@angular/material/core';
+
 
 let uid = 0;
+
+
+/**
+ * Boilerplate for applying mixins to MatChipSet.
+ * @docs-private
+ */
+class MatChipSetBase {
+  disabled!: boolean;
+  constructor(_elementRef: ElementRef) {}
+}
+const _MatChipSetMixinBase: HasTabIndexCtor & typeof MatChipSetBase =
+    mixinTabIndex(MatChipSetBase);
 
 /**
  * Basic container component for the MatChip component.
@@ -47,7 +65,8 @@ let uid = 0;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatChipSet implements AfterContentInit, AfterViewInit, OnDestroy {
+export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit, AfterViewInit,
+  HasTabIndex, OnDestroy {
   /** Subscription to remove changes in chips. */
   private _chipRemoveSubscription: Subscription | null;
 
@@ -122,6 +141,7 @@ export class MatChipSet implements AfterContentInit, AfterViewInit, OnDestroy {
 
   constructor(protected _elementRef: ElementRef,
               protected _changeDetectorRef: ChangeDetectorRef) {
+    super(_elementRef);
     this._chipSetFoundation = new MDCChipSetFoundation(this._chipSetAdapter);
   }
 
