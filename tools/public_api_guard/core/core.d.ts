@@ -1061,6 +1061,24 @@ export declare function ɵɵstyleMap(styles: {
 
 export declare function ɵɵstyleProp(styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
 
+export declare function ɵɵstylePropInterpolate1(styleIndex: number, prefix: string, v0: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+
+export declare function ɵɵstylePropInterpolate2(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+
+export declare function ɵɵstylePropInterpolate3(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+
+export declare function ɵɵstylePropInterpolate4(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+
+export declare function ɵɵstylePropInterpolate5(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+
+export declare function ɵɵstylePropInterpolate6(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+
+export declare function ɵɵstylePropInterpolate7(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+
+export declare function ɵɵstylePropInterpolate8(styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+
+export declare function ɵɵstylePropInterpolateV(styleIndex: number, values: any[], valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009;
+
 export declare function ɵɵstyling(classBindingNames?: string[] | null, styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null): void;
 
 export declare function ɵɵstylingApply(): void;

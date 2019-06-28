@@ -776,10 +776,6 @@ function bindingFn(implicit: any, value: AST) {
 
 function createStylingStmt(
     instruction: StylingInstruction, bindingContext: any, bindingFn: Function): o.Statement {
-  if (instruction.params instanceof Interpolation) {
-    return error('Unexpected interpolation');
-  }
-
   const params = instruction.params(value => bindingFn(bindingContext, value).currValExpr);
   return o.importExpr(instruction.reference, null, instruction.sourceSpan)
       .callFn(params, instruction.sourceSpan)

@@ -107,7 +107,18 @@ export {
 
   ɵɵselect,
   ɵɵstyleMap,
+
   ɵɵstyleProp,
+  ɵɵstylePropInterpolate1,
+  ɵɵstylePropInterpolate2,
+  ɵɵstylePropInterpolate3,
+  ɵɵstylePropInterpolate4,
+  ɵɵstylePropInterpolate5,
+  ɵɵstylePropInterpolate6,
+  ɵɵstylePropInterpolate7,
+  ɵɵstylePropInterpolate8,
+  ɵɵstylePropInterpolateV,
+
   ɵɵstyleSanitizer,
   ɵɵstyling,
   ɵɵstylingApply,

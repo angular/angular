@@ -852,17 +852,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         () => [o.literal(attrName), ...this.getUpdateInstructionArguments(value), ...params]);
   }
 
-  /**
-   * Adds an update instruction for an interpolated map-based style binding
-   * (e.g. `<div class="foo-{{bar}}">`).
-   */
-  interpolatedStylingMapInstruction(
-      instruction: o.ExternalReference, elementIndex: number, sourceSpan: ParseSourceSpan|null,
-      value: any) {
-    this.updateInstruction(
-        elementIndex, sourceSpan, instruction, () => this.getUpdateInstructionArguments(value));
-  }
-
   visitTemplate(template: t.Template) {
     const NG_TEMPLATE_TAG_NAME = 'ng-template';
     const templateIndex = this.allocateDataSlot();
@@ -1082,22 +1071,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (instruction) {
       if (createMode) {
         this.creationInstruction(instruction.sourceSpan, instruction.reference, () => {
-          if (instruction.params instanceof Interpolation) {
-            return error('Interpolated styling instructions in creation mode are not supported');
-          }
-
-          return instruction.params(value => this.convertPropertyBinding(value));
+          return instruction.params(value => this.convertPropertyBinding(value)) as o.Expression[];
         });
       } else {
-        const params = instruction.params;
-        if (params instanceof Interpolation) {
-          this.interpolatedStylingMapInstruction(
-              instruction.reference, elementIndex, instruction.sourceSpan, instruction.params);
-        } else {
-          this.updateInstruction(
-              elementIndex, instruction.sourceSpan, instruction.reference,
-              () => params(value => this.convertPropertyBinding(value)));
-        }
+        this.updateInstruction(elementIndex, instruction.sourceSpan, instruction.reference, () => {
+          return instruction
+              .params(value => {
+                return (instruction.supportsInterpolation && value instanceof Interpolation) ?
+                    this.getUpdateInstructionArguments(value) :
+                    this.convertPropertyBinding(value);
+              }) as o.Expression[];
+        });
       }
     }
   }

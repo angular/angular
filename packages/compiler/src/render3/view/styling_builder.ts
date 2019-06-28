@@ -29,7 +29,8 @@ export interface StylingInstruction {
   sourceSpan: ParseSourceSpan|null;
   reference: o.ExternalReference;
   allocateBindingSlots: number;
-  params: ((convertFn: (value: any) => o.Expression) => o.Expression[])|Interpolation;
+  supportsInterpolation?: boolean;
+  params: ((convertFn: (value: any) => o.Expression | o.Expression[]) => o.Expression[]);
 }
 
 /**
@@ -367,7 +368,8 @@ export class StylingBuilder {
   }
 
   private _buildMapBasedInstruction(
-      valueConverter: ValueConverter, isClassBased: boolean, stylingInput: BoundStylingEntry) {
+      valueConverter: ValueConverter, isClassBased: boolean,
+      stylingInput: BoundStylingEntry): StylingInstruction {
     let totalBindingSlotsRequired = 0;
     if (compilerIsNewStylingInUse()) {
       // the old implementation does not reserve slot values for
@@ -380,13 +382,7 @@ export class StylingBuilder {
     // pipes can be picked up in time before the template is built
     const mapValue = stylingInput.value.visit(valueConverter);
     let reference: o.ExternalReference;
-    if (mapValue instanceof Interpolation) {
-      if (!isClassBased) {
-        // We only support interpolations inside class bindings.
-        error(
-            'Unexpected interpolation. Interpolated values are not supported in the `style` property.');
-      }
-
+    if (mapValue instanceof Interpolation && isClassBased) {
       totalBindingSlotsRequired += mapValue.expressions.length;
       reference = getClassMapInterpolationExpression(mapValue);
     } else {
@@ -397,20 +393,30 @@ export class StylingBuilder {
       sourceSpan: stylingInput.sourceSpan,
       reference,
       allocateBindingSlots: totalBindingSlotsRequired,
-      params: mapValue instanceof Interpolation ?
-          mapValue :
-          (convertFn: (value: any) => o.Expression) => { return [convertFn(mapValue)]; }
+      supportsInterpolation: isClassBased,
+      params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
+        const convertResult = convertFn(mapValue);
+        return Array.isArray(convertResult) ? convertResult : [convertResult];
+      }
     };
   }
 
   private _buildSingleInputs(
       reference: o.ExternalReference, inputs: BoundStylingEntry[], mapIndex: Map<string, number>,
-      allowUnits: boolean, valueConverter: ValueConverter): StylingInstruction[] {
+      allowUnits: boolean, valueConverter: ValueConverter,
+      getInterpolationExpressionFn?: (value: Interpolation) => o.ExternalReference):
+      StylingInstruction[] {
     let totalBindingSlotsRequired = 0;
     return inputs.map(input => {
       const bindingIndex: number = mapIndex.get(input.name !) !;
       const value = input.value.visit(valueConverter);
-      totalBindingSlotsRequired += (value instanceof Interpolation) ? value.expressions.length : 0;
+      if (value instanceof Interpolation) {
+        totalBindingSlotsRequired += value.expressions.length;
+
+        if (getInterpolationExpressionFn) {
+          reference = getInterpolationExpressionFn(value);
+        }
+      }
       if (compilerIsNewStylingInUse()) {
         // the old implementation does not reserve slot values for
         // binding entries. The new one does.
@@ -418,14 +424,18 @@ export class StylingBuilder {
       }
       return {
         sourceSpan: input.sourceSpan,
+        supportsInterpolation: !!getInterpolationExpressionFn,
         allocateBindingSlots: totalBindingSlotsRequired, reference,
-        params: (convertFn: (value: any) => o.Expression) => {
+        params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
           // min params => stylingProp(elmIndex, bindingIndex, value)
           // max params => stylingProp(elmIndex, bindingIndex, value, overrideFlag)
-          const params: o.Expression[] = [];
-          params.push(o.literal(bindingIndex));
-          params.push(convertFn(value));
-
+          const params: o.Expression[] = [o.literal(bindingIndex)];
+          const convertResult = convertFn(value);
+          if (Array.isArray(convertResult)) {
+            params.push(...convertResult);
+          } else {
+            params.push(convertResult);
+          }
           if (allowUnits) {
             if (input.unit) {
               params.push(o.literal(input.unit));
@@ -455,7 +465,8 @@ export class StylingBuilder {
   private _buildStyleInputs(valueConverter: ValueConverter): StylingInstruction[] {
     if (this._singleStyleInputs) {
       return this._buildSingleInputs(
-          R3.styleProp, this._singleStyleInputs, this._stylesIndex, true, valueConverter);
+          R3.styleProp, this._singleStyleInputs, this._stylesIndex, true, valueConverter,
+          getStylePropInterpolationExpression);
     }
     return [];
   }
@@ -588,5 +599,34 @@ function getClassMapInterpolationExpression(interpolation: Interpolation): o.Ext
       return R3.classMapInterpolate8;
     default:
       return R3.classMapInterpolateV;
+  }
+}
+
+/**
+ * Gets the instruction to generate for an interpolated style prop.
+ * @param interpolation An Interpolation AST
+ */
+function getStylePropInterpolationExpression(interpolation: Interpolation) {
+  switch (getInterpolationArgsLength(interpolation)) {
+    case 1:
+      return R3.styleProp;
+    case 3:
+      return R3.stylePropInterpolate1;
+    case 5:
+      return R3.stylePropInterpolate2;
+    case 7:
+      return R3.stylePropInterpolate3;
+    case 9:
+      return R3.stylePropInterpolate4;
+    case 11:
+      return R3.stylePropInterpolate5;
+    case 13:
+      return R3.stylePropInterpolate6;
+    case 15:
+      return R3.stylePropInterpolate7;
+    case 17:
+      return R3.stylePropInterpolate8;
+    default:
+      return R3.stylePropInterpolateV;
   }
 }
