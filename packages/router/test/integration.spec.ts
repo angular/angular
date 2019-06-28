@@ -2464,39 +2464,6 @@ describe('Integration', () => {
                [NavigationEnd, '/'],
              ]);
            })));
-
-        it('replaces URL when URL is updated eagerly so back button can still work',
-           fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
-             router.urlUpdateStrategy = 'eager';
-             router.resetConfig([
-               {path: '', component: SimpleCmp},
-               {path: 'one', component: RouteCmp, canActivate: ['returnUrlTree']},
-               {path: 'redirected', component: SimpleCmp}
-             ]);
-             const fixture = createRoot(router, RootCmp);
-             router.navigateByUrl('/one');
-
-             tick();
-
-             expect(location.path()).toEqual('/redirected');
-             expect(location.urlChanges).toEqual(['replace: /', '/one', 'replace: /redirected']);
-           })));
-
-        it('should resolve navigateByUrl promise after redirect finishes',
-           fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
-             let resolvedPath = '';
-             router.urlUpdateStrategy = 'eager';
-             router.resetConfig([
-               {path: '', component: SimpleCmp},
-               {path: 'one', component: RouteCmp, canActivate: ['returnUrlTree']},
-               {path: 'redirected', component: SimpleCmp}
-             ]);
-             const fixture = createRoot(router, RootCmp);
-             router.navigateByUrl('/one').then(v => { resolvedPath = location.path(); });
-
-             tick();
-             expect(resolvedPath).toBe('/redirected');
-           })));
       });
 
       describe('runGuardsAndResolvers', () => {
