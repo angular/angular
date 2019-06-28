@@ -75,6 +75,12 @@ var_6: &job_defaults
   working_directory: ~/ng
   docker:
   - image: *default_docker_image
+var_6_win: &job_defaults_win
+  working_directory: ~/ng
+  resource_class: windows.medium
+  shell: powershell.exe -ExecutionPolicy Bypass
+  machine:
+    image: windows-server-2019
 
 # After checkout, rebase on top of target branch.
 var_7: &post_checkout
@@ -90,6 +96,14 @@ var_7: &post_checkout
       else
         echo "This build is not over a PR, nothing to do."
       fi
+var_7_win: &post_checkout_win
+  run:
+    name: Rebase PR on target branch
+    command: >
+      if (Test-Path env:CIRCLE_PR_NUMBER) {
+        git config user.name "angular-ci"
+        git config user.email "angular-ci"
+        node tools\rebase-pr.js angular/angular $env:CIRCLE_PR_NUMBER }
 
 var_8: &yarn_install
   run:
@@ -151,6 +165,13 @@ var_14: &notify_dev_infra_on_fail
       notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job for $CIRCLE_BRANCH branch failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
       curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
+var_15: &env_win
+  run:
+    # Need to install node and yarn before, as the base windows image doesn't have anything.
+    # TODO: remove when CircleCI provides preconfigured node images/VMs.
+    name: Setup windows node environment
+    command: ./.circleci/windows-env.ps1
+
 version: 2
 jobs:
   setup:
@@ -202,14 +223,12 @@ jobs:
       - *setup_circleci_bazel_config
       # Setup remote execution and run RBE-compatible tests.
       - *setup_bazel_remote_execution
-      - run: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
-      - run: mkdir ~/testlogs
-      - run: cp -Lr dist/testlogs/* ~/testlogs
-      - store_test_results:
-          # Bazel always writes test.xml files under this directory
-          path: ~/testlogs
-      - store_artifacts:
-          path: ~/testlogs
+      - run:
+          command: yarn bazel test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-browser:chromium-local //...
+          no_output_timeout: 20m
+      - run:
+          command: yarn bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local //...
+          no_output_timeout: 20m
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
@@ -667,130 +686,160 @@ jobs:
       - run: yarn --cwd packages/zone.js promisetest
       - run: yarn --cwd packages/zone.js promisefinallytest
 
+  # Windows jobs
+  # CircleCI support for Windows jobs is still in preview.
+  # Docs: https://github.com/CircleCI-Public/windows-preview-docs
+  test-win:
+    <<: *job_defaults_win
+    # Skipping cache and workspace for now because it takes 10x longer than on linux.
+    # TODO: when/if CircleCI makes them faster, use cache and workspaces fully.
+    # Notes:
+    # - windows needs its own cache key because binaries in node_modules are different.
+    # - windows might need its own workspace for the same reason.
+    # - get cache dir on windows via `yarn cache dir` (was `C:\Users\circleci\AppData\Local\Yarn\Cache\v4` last time)
+    steps:
+      - checkout
+      - *env_win
+      - *post_checkout_win
+      - run: node --version
+      - run: yarn --version
+      - run: yarn install --frozen-lockfile --non-interactive
+      - run: copy .circleci\bazel_win.rc $env:ProgramData\bazel.bazelrc
+      - run: yarn bazel info
+      # Ran into a some command parsing problem where `-browser:chromium-local` was converted to
+      # `-browser: chromium-local` (a space was added) in https://circleci.com/gh/angular/angular/357511.
+      # Probably a powershell command parsing thing. This way there's no problem.
+      - run: yarn circleci-win-ve
+      - run: yarn circleci-win-ivy
+
+
 workflows:
   version: 2
   default_workflow:
     jobs:
+      - test-win
+        # filters:
+        #   branches:
+        #     ignore:
+        #       - /pull\/.*/
       - setup
-      - lint:
-          requires:
-          - setup
       - test:
           requires:
           - setup
-      - test_ivy_aot:
-          requires:
-          - setup
-      - build-npm-packages:
-          requires:
-          - setup
-      - build-ivy-npm-packages:
-          requires:
-          - setup
-      - test_aio:
-          requires:
-          - setup
-      - legacy-unit-tests-saucelabs:
-          requires:
-          - setup
-      - deploy_aio:
-          requires:
-            - test_aio
-      - legacy-misc-tests:
-          requires:
-            - build-npm-packages
-      - test_aio_local:
-          requires:
-            - build-npm-packages
-      - test_aio_local_ivy:
-          requires:
-            - build-npm-packages
-      - test_aio_tools:
-          requires:
-            - build-npm-packages
-      - test_docs_examples:
-          requires:
-            - build-npm-packages
-      - test_docs_examples_ivy:
-          requires:
-            - build-ivy-npm-packages
-      - aio_preview:
-          requires:
-            - setup
-          # Only run on PR builds. (There can be no previews for non-PR builds.)
-          filters:
-            branches:
-              only: /pull\/\d+/
-      - test_aio_preview:
-          requires:
-            - aio_preview
-      - integration_test:
-          requires:
-            - build-npm-packages
-      - publish_snapshot:
-          # Note: no filters on this job because we want it to run for all upstream branches
-          # We'd really like to filter out pull requests here, but not yet available:
-          # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
-          # Instead, the job just exits immediately at the first step.
-          requires:
-            # Only publish if tests and integration tests pass
-            - test
-            - test_ivy_aot
-            - integration_test
-            # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
-            - test_aio_local
-            - test_aio_local_ivy
-            - test_docs_examples
-            - test_docs_examples_ivy
-            # Get the artifacts to publish from the build-packages-dist job
-            # since the publishing script expects the legacy outputs layout.
-            - build-npm-packages
-            - build-ivy-npm-packages
-            - legacy-unit-tests-saucelabs
-            - legacy-misc-tests
-      - material-unit-tests:
-          requires:
-            - build-ivy-npm-packages
-      - test_zonejs:
-          requires:
-            - setup
+      # - test_ivy_aot:
+      #     requires:
+      #     - setup
+      # - build-npm-packages:
+      #     requires:
+      #     - setup
+      # - build-ivy-npm-packages:
+      #     requires:
+      #     - setup
+      # - test_aio:
+      #     requires:
+      #     - setup
+      # - legacy-unit-tests-saucelabs:
+      #     requires:
+      #     - setup
+      # - deploy_aio:
+      #     requires:
+      #       - test_aio
+      # - legacy-misc-tests:
+      #     requires:
+      #       - build-npm-packages
+      # - test_aio_local:
+      #     requires:
+      #       - build-npm-packages
+      # - test_aio_local_ivy:
+      #     requires:
+      #       - build-npm-packages
+      # - test_aio_tools:
+      #     requires:
+      #       - build-npm-packages
+      # - test_docs_examples:
+      #     requires:
+      #       - build-npm-packages
+      # - test_docs_examples_ivy:
+      #     requires:
+      #       - build-ivy-npm-packages
+      # - aio_preview:
+      #     requires:
+      #       - setup
+      #     # Only run on PR builds. (There can be no previews for non-PR builds.)
+      #     filters:
+      #       branches:
+      #         only: /pull\/\d+/
+      # - test_aio_preview:
+      #     requires:
+      #       - aio_preview
+      # - integration_test:
+      #     requires:
+      #       - build-npm-packages
+      # - publish_snapshot:
+      #     # Note: no filters on this job because we want it to run for all upstream branches
+      #     # We'd really like to filter out pull requests here, but not yet available:
+      #     # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
+      #     # Instead, the job just exits immediately at the first step.
+      #     requires:
+      #       # Only publish if tests and integration tests pass
+      #       - test
+      #       - test_ivy_aot
+      #       - integration_test
+      #       # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
+      #       - test_aio_local
+      #       - test_aio_local_ivy
+      #       - test_docs_examples
+      #       - test_docs_examples_ivy
+      #       # Get the artifacts to publish from the build-packages-dist job
+      #       # since the publishing script expects the legacy outputs layout.
+      #       - build-npm-packages
+      #       - build-ivy-npm-packages
+      #       - legacy-unit-tests-saucelabs
+      #       - legacy-misc-tests
+      # - material-unit-tests:
+      #     requires:
+      #       - build-ivy-npm-packages
+      # - test_zonejs:
+      #     requires:
+      #       - setup
 
-  saucelabs_tests:
-    jobs:
-      - setup
-      - test_saucelabs_bazel:
-          requires:
-            - setup
-    triggers:
-      - schedule:
-          # Runs the Saucelabs legacy tests every hour. We still want to run Saucelabs
-          # frequently as the caretaker needs up-to-date results when merging PRs or creating
-          # a new release. Also we primarily moved the Saucelabs job into a cronjob that doesn't
-          # run for PRs, in order to ensure that PRs are not affected by Saucelabs flakiness or
-          # incidents. This is still guaranteed (even if we run the job every hour).
-          cron: "0 * * * *"
-          filters: *publish_branches_filter
-
-  aio_monitoring:
-    jobs:
-      - setup
-      - aio_monitoring_stable:
-          requires:
-            - setup
-      - aio_monitoring_next:
-          requires:
-            - setup
-    triggers:
-      - schedule:
-          # Runs AIO monitoring jobs at 10:00AM every day.
-          cron: "0 10 * * *"
-          filters:
-            branches:
-              only:
-                - master
-
-# TODO:
-# - don't build the g3 branch
-# - verify that we are bootstrapping with the right yarn version coming from the docker image
-# - check local chrome version pulled from docker image
-# - remove /tools/ngcontainer
+#  saucelabs_tests:
+#    jobs:
+#      - setup
+#      - test_saucelabs_bazel:
+#          requires:
+#            - setup
+#    triggers:
+#      - schedule:
+#          # Runs the Saucelabs legacy tests every hour. We still want to run Saucelabs
+#          # frequently as the caretaker needs up-to-date results when merging PRs or creating
+#          # a new release. Also we primarily moved the Saucelabs job into a cronjob that doesn't
+#          # run for PRs, in order to ensure that PRs are not affected by Saucelabs flakiness or
+#          # incidents. This is still guaranteed (even if we run the job every hour).
+#          cron: "0 * * * *"
+#          filters: *publish_branches_filter
+#
+#  aio_monitoring:
+#    jobs:
+#      - setup
+#      - aio_monitoring_stable:
+#          requires:
+#            - setup
+#      - aio_monitoring_next:
+#          requires:
+#            - setup
+#    triggers:
+#      - schedule:
+#          # Runs AIO monitoring jobs at 10:00AM every day.
+#          cron: "0 10 * * *"
+#          filters:
+#            branches:
+#              only:
+#                - master
+#
+## TODO:
+## - don't build the g3 branch
+## - verify that we are bootstrapping with the right yarn version coming from the docker image
+## - check local chrome version pulled from docker image
+## - remove /tools/ngcontainer
+#

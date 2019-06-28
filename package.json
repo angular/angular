@@ -7,7 +7,7 @@
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
   "engines": {
-    "node": ">=10.9.0 <11.0.0",
+    "node": ">=10.9.0 <13.0.0",
     "yarn": ">=1.12.1 <=1.16.0"
   },
   "repository": {
@@ -26,7 +26,9 @@
     "test-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot",
     "test-fixme-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot",
     "list-fixme-ivy-targets": "bazel query --output=label 'attr(\"tags\", \"\\[.*fixme-ivy.*\\]\", //...) except kind(\"sh_binary\", //...) except kind(\"devmode_js_sources\", //...)' | sort",
-    "bazel": "bazel"
+    "bazel": "bazel",
+    "circleci-win-ve": "yarn bazel test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-browser:chromium-local //...",
+    "circleci-win-ivy": "yarn bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local //..."
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
