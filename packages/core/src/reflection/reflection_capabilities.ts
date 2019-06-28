@@ -64,7 +64,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       // migration, but this can be revisited.
       if (typeof paramTypes === 'undefined') {
         result[i] = [];
-      } else if (paramTypes[i] != Object) {
+      } else if (paramTypes[i] && paramTypes[i] != Object) {
         result[i] = [paramTypes[i]];
       } else {
         result[i] = [];

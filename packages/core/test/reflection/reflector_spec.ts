@@ -109,6 +109,16 @@ class TestObj {
         class ForwardDep {}
         expect(reflector.parameters(Forward)).toEqual([[ForwardDep]]);
       });
+
+      it('should not return undefined types for downleveled types', () => {
+        class Dep {}
+
+        class TestService {
+          constructor() {}
+          static ctorParameters = () => [{type: undefined, decorators: []}, {type: Dep}];
+        }
+        expect(reflector.parameters(TestService)).toEqual([[], [Dep]]);
+      });
     });
 
     describe('propMetadata', () => {
