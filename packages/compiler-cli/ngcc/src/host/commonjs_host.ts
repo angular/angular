@@ -8,13 +8,16 @@
 
 import * as ts from 'typescript';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {Declaration, Import} from '../../../src/ngtsc/reflection';
+import {ClassSymbol, Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
+import {isDefined} from '../utils';
+
 import {Esm5ReflectionHost} from './esm5_host';
 
 export class CommonJsReflectionHost extends Esm5ReflectionHost {
   protected commonJsExports = new Map<ts.SourceFile, Map<string, Declaration>|null>();
+  protected topLevelHelperCalls = new Map<string, Map<ts.SourceFile, ts.CallExpression[]>>();
   constructor(
       logger: Logger, isCore: boolean, protected program: ts.Program,
       protected compilerHost: ts.CompilerHost, dts?: BundleProgram|null) {
@@ -38,11 +41,50 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   getCommonJsExports(sourceFile: ts.SourceFile): Map<string, Declaration>|null {
-    if (!this.commonJsExports.has(sourceFile)) {
-      const moduleExports = this.computeExportsOfCommonJsModule(sourceFile);
-      this.commonJsExports.set(sourceFile, moduleExports);
+    return getOrDefault(
+        this.commonJsExports, sourceFile, () => this.computeExportsOfCommonJsModule(sourceFile));
+  }
+
+  /**
+   * Search statements related to the given class for calls to the specified helper.
+   *
+   * In CommonJS these helper calls can be outside the class's IIFE at the top level of the
+   * source file. Searching the top level statements for helpers can be expensive, so we
+   * try to get helpers from the IIFE first and only fall back on searching the top level if
+   * no helpers are found.
+   *
+   * @param classSymbol the class whose helper calls we are interested in.
+   * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested in.
+   * @returns an array of nodes of calls to the helper with the given name.
+   */
+  protected getHelperCallsForClass(classSymbol: ClassSymbol, helperName: string):
+      ts.CallExpression[] {
+    const esm5HelperCalls = super.getHelperCallsForClass(classSymbol, helperName);
+    if (esm5HelperCalls.length > 0) {
+      return esm5HelperCalls;
+    } else {
+      const sourceFile = classSymbol.valueDeclaration.getSourceFile();
+      return this.getTopLevelHelperCalls(sourceFile, helperName);
     }
-    return this.commonJsExports.get(sourceFile) !;
+  }
+
+  /**
+   * Find all the helper calls at the top level of a source file.
+   *
+   * We cache the helper calls per source file so that we don't have to keep parsing the code for
+   * each class in a file.
+   *
+   * @param sourceFile the source who may contain helper calls.
+   * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested in.
+   * @returns an array of nodes of calls to the helper with the given name.
+   */
+  private getTopLevelHelperCalls(sourceFile: ts.SourceFile, helperName: string):
+      ts.CallExpression[] {
+    const helperCallsMap = getOrDefault(this.topLevelHelperCalls, helperName, () => new Map());
+    return getOrDefault(
+        helperCallsMap, sourceFile,
+        () => sourceFile.statements.map(statement => this.getHelperCall(statement, helperName))
+                  .filter(isDefined));
   }
 
   private computeExportsOfCommonJsModule(sourceFile: ts.SourceFile): Map<string, Declaration> {
@@ -183,4 +225,11 @@ function isReexportStatement(statement: ts.Statement): statement is ReexportStat
 
 function stripExtension(fileName: string): string {
   return fileName.replace(/\..+$/, '');
+}
+
+function getOrDefault<K, V>(map: Map<K, V>, key: K, factory: (key: K) => V): V {
+  if (!map.has(key)) {
+    map.set(key, factory(key));
+  }
+  return map.get(key) !;
 }
