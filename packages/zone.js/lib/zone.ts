@@ -309,10 +309,15 @@ interface ZoneType {
    */
   root: Zone;
 
-  /** @internal */
+  /**
+  * load patch for specified native module, allow user to
+  * define their own patch, user can use this API after loading zone.js
+  */
   __load_patch(name: string, fn: _PatchFn): void;
 
-  /** Was @ internal but this prevents compiling tests as separate unit */
+  /**
+   * Zone symbol API to generate a string with __zone_symbol__ prefix
+   */
   __symbol__(name: string): string;
 }
 
