@@ -11,28 +11,35 @@ import * as ts from 'typescript';
 
 import {HelperFunction, getHelper} from '../helpers';
 import {migrateExpression, replaceImport} from '../migration';
-import {findRendererImport, findRendererReferences} from '../util';
+import {findCoreImport, findRendererReferences} from '../util';
 
+/**
+ * TSLint rule that migrates from `Renderer` to `Renderer2`. More information on how it works:
+ * https://hackmd.angular.io/UTzUZTnPRA-cSa_4mHyfYw
+ */
 export class Rule extends Rules.TypedRule {
   applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const typeChecker = program.getTypeChecker();
     const printer = ts.createPrinter();
     const failures: RuleFailure[] = [];
-    const rendererImport = findRendererImport(sourceFile);
+    const rendererImport = findCoreImport(sourceFile, 'Renderer');
 
     // If there are no imports for the `Renderer`, we can exit early.
     if (!rendererImport) {
       return failures;
     }
 
-    const {typedNodes, methodCalls} = findRendererReferences(sourceFile, typeChecker);
+    const {typedNodes, methodCalls, forwardRefs} =
+        findRendererReferences(sourceFile, typeChecker, rendererImport);
     const helpersToAdd = new Set<HelperFunction>();
 
     failures.push(this._getNamedImportsFailure(rendererImport, sourceFile, printer));
     typedNodes.forEach(node => failures.push(this._getTypedNodeFailure(node, sourceFile)));
+    forwardRefs.forEach(node => failures.push(this._getIdentifierNodeFailure(node, sourceFile)));
 
     methodCalls.forEach(call => {
-      const {failure, requiredHelpers} = this._getMethodCallFailure(call, sourceFile, printer);
+      const {failure, requiredHelpers} =
+          this._getMethodCallFailure(call, sourceFile, typeChecker, printer);
 
       failures.push(failure);
 
@@ -59,7 +66,8 @@ export class Rule extends Rules.TypedRule {
         ts.EmitHint.Unspecified, replaceImport(node, 'Renderer', 'Renderer2'), sourceFile);
 
     return new RuleFailure(
-        sourceFile, node.getStart(), node.getEnd(), 'Imports of Renderer are not allowed.',
+        sourceFile, node.getStart(), node.getEnd(),
+        'Imports of deprecated Renderer are not allowed. Please use Renderer2 instead.',
         this.ruleName, new Replacement(node.getStart(), node.getWidth(), replacementText));
   }
 
@@ -70,15 +78,24 @@ export class Rule extends Rules.TypedRule {
     const type = node.type !;
 
     return new RuleFailure(
-        sourceFile, type.getStart(), type.getEnd(), 'References to Renderer are not allowed.',
+        sourceFile, type.getStart(), type.getEnd(),
+        'References to deprecated Renderer are not allowed. Please use Renderer2 instead.',
         this.ruleName, new Replacement(type.getStart(), type.getWidth(), 'Renderer2'));
+  }
+
+  /** Gets a failure for an identifier node. */
+  private _getIdentifierNodeFailure(node: ts.Identifier, sourceFile: ts.SourceFile): RuleFailure {
+    return new RuleFailure(
+        sourceFile, node.getStart(), node.getEnd(),
+        'References to deprecated Renderer are not allowed. Please use Renderer2 instead.',
+        this.ruleName, new Replacement(node.getStart(), node.getWidth(), 'Renderer2'));
   }
 
   /** Gets a failure for a Renderer method call. */
   private _getMethodCallFailure(
-      call: ts.CallExpression, sourceFile: ts.SourceFile,
+      call: ts.CallExpression, sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker,
       printer: ts.Printer): {failure: RuleFailure, requiredHelpers?: HelperFunction[]} {
-    const {node, requiredHelpers} = migrateExpression(call);
+    const {node, requiredHelpers} = migrateExpression(call, typeChecker);
     let fix: Replacement|undefined;
 
     if (node) {
@@ -87,8 +104,9 @@ export class Rule extends Rules.TypedRule {
           call.getStart(), call.getWidth(),
           printer.printNode(ts.EmitHint.Unspecified, node, sourceFile));
     } else if (call.parent && ts.isExpressionStatement(call.parent)) {
-      // Otherwise if the call is inside an expression statement, drop the
-      // entire statement. This takes care of any trailing semicolons.
+      // Otherwise if the call is inside an expression statement, drop the entire statement.
+      // This takes care of any trailing semicolons. We only need to drop nodes for cases like
+      // `setBindingDebugInfo` which have been noop for a while so they can be removed safely.
       fix = new Replacement(call.parent.getStart(), call.parent.getWidth(), '');
     }
 

@@ -1,8 +1,8 @@
 ## Renderer -> Renderer2 migration
 
 Automatically migrates from `Renderer` to `Renderer2` by changing method calls, renaming imports
-and types. Tries to either map method calls directly from one renderer to the other, or if that's
-not possible, inserts custom helper functions at the bottom of the file.
+and renaming types. Tries to either map method calls directly from one renderer to the other, or
+if that's not possible, inserts custom helper functions at the bottom of the file.
 
 #### Before
 ```ts

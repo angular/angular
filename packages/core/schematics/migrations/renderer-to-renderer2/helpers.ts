@@ -10,16 +10,17 @@ import * as ts from 'typescript';
 
 /** Names of the helper functions that are supported for this migration. */
 export const enum HelperFunction {
-  createElement = '__rendererCreateElementHelper',
-  createText = '__rendererCreateTextHelper',
-  createTemplateAnchor = '__rendererCreateTemplateAnchorHelper',
-  projectNodes = '__rendererProjectNodesHelper',
-  animate = '__rendererAnimateHelper',
-  destroyView = '__rendererDestroyViewHelper',
-  detachView = '__rendererDetachViewHelper',
-  attachViewAfter = '__rendererAttachViewAfterHelper',
-  splitNamespace = '__rendererSplitNamespaceHelper',
-  setElementAttribute = '__rendererSetElementAttributeHelper'
+  any = 'AnyDuringRendererMigration',
+  createElement = 'ngRendererCreateElementHelper',
+  createText = 'ngRendererCreateTextHelper',
+  createTemplateAnchor = 'ngRendererCreateTemplateAnchorHelper',
+  projectNodes = 'ngRendererProjectNodesHelper',
+  animate = 'ngRendererAnimateHelper',
+  destroyView = 'ngRendererDestroyViewHelper',
+  detachView = 'ngRendererDetachViewHelper',
+  attachViewAfter = 'ngRendererAttachViewAfterHelper',
+  splitNamespace = 'ngRendererSplitNamespaceHelper',
+  setElementAttribute = 'ngRendererSetElementAttributeHelper'
 }
 
 /** Gets the string representation of a helper function. */
@@ -30,8 +31,10 @@ export function getHelper(
 }
 
 /** Creates a function declaration for the specified helper name. */
-function getHelperDeclaration(name: HelperFunction): ts.FunctionDeclaration {
+function getHelperDeclaration(name: HelperFunction): ts.Node {
   switch (name) {
+    case HelperFunction.any:
+      return createAnyTypeHelper();
     case HelperFunction.createElement:
       return getCreateElementHelper();
     case HelperFunction.createText:
@@ -57,12 +60,20 @@ function getHelperDeclaration(name: HelperFunction): ts.FunctionDeclaration {
   throw new Error(`Unsupported helper called "${name}".`);
 }
 
+/** Creates a helper our custom `any` type during the migration. */
+function createAnyTypeHelper(): ts.TypeAliasDeclaration {
+  // type AnyDuringRendererMigration = any;
+  return ts.createTypeAliasDeclaration(
+      [], [], HelperFunction.any, [], ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+}
+
 /** Creates a function parameter that is typed as `any`. */
 function getAnyTypedParameter(
     parameterName: string | ts.Identifier, isRequired = true): ts.ParameterDeclaration {
-  // Declare the parameter as `any` so we don't have to add extra logic
-  // to ensure that the generated code will pass type checking.
-  const type = ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
+  // Declare the parameter as `any` so we don't have to add extra logic to ensure that the
+  // generated code will pass type checking. Use our custom `any` type so people have an incentive
+  // to clean it up afterwards and to avoid potentially introducing lint warnings in G3.
+  const type = ts.createTypeReferenceNode(HelperFunction.any, []);
   return ts.createParameter(
       [], [], undefined, parameterName,
       isRequired ? undefined : ts.createToken(ts.SyntaxKind.QuestionToken), type);

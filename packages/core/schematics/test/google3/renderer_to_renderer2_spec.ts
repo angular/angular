@@ -22,7 +22,10 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     shx.mkdir('-p', tmpDir);
 
     // We need to declare the Angular symbols we're testing for, otherwise type checking won't work.
-    writeFile('angular.d.ts', 'export declare abstract class Renderer {}');
+    writeFile('angular.d.ts', `
+      export declare abstract class Renderer {}
+      export declare function forwardRef(fn: () => any): any {}
+    `);
 
     writeFile('tsconfig.json', JSON.stringify({
       compilerOptions: {
@@ -74,9 +77,9 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     const failures = linter.getResult().failures.map(failure => failure.getFailure());
 
     expect(failures.length).toBe(3);
-    expect(failures[0]).toMatch(/Imports of Renderer are not allowed/);
-    expect(failures[1]).toMatch(/References to Renderer are not allowed/);
-    expect(failures[2]).toMatch(/References to Renderer are not allowed/);
+    expect(failures[0]).toMatch(/Imports of deprecated Renderer are not allowed/);
+    expect(failures[1]).toMatch(/References to deprecated Renderer are not allowed/);
+    expect(failures[2]).toMatch(/References to deprecated Renderer are not allowed/);
   });
 
   it('should change Renderer imports and typed nodes to Renderer2', () => {
@@ -101,6 +104,40 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     expect(content).toContain('(renderer: Renderer2)');
   });
 
+  it('should change Renderer inside single-line forwardRefs to Renderer2', () => {
+    writeFile('/index.ts', `
+      import { Renderer, Component, forwardRef, Inject } from '@angular/core';
+
+      @Component({template: ''})
+      export class MyComp {
+        constructor(@Inject(forwardRef(() => Renderer)) private _renderer: Renderer) {}
+      }
+    `);
+
+    runTSLint(true);
+    const content = getFile('index.ts');
+
+    expect(content).toContain(
+        `constructor(@Inject(forwardRef(() => Renderer2)) private _renderer: Renderer2) {}`);
+  });
+
+  it('should change Renderer inside multi-line forwardRefs to Renderer2', () => {
+    writeFile('/index.ts', `
+      import { Renderer, Component, forwardRef, Inject } from '@angular/core';
+
+      @Component({template: ''})
+      export class MyComp {
+        constructor(@Inject(forwardRef(() => { return Renderer; })) private _renderer: Renderer) {}
+      }
+    `);
+
+    runTSLint(true);
+    const content = getFile('index.ts');
+
+    expect(content).toContain(
+        `constructor(@Inject(forwardRef(() => { return Renderer2; })) private _renderer: Renderer2) {}`);
+  });
+
   it('should flag something that was cast to Renderer', () => {
     writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
@@ -118,8 +155,8 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     const failures = linter.getResult().failures.map(failure => failure.getFailure());
 
     expect(failures.length).toBe(3);
-    expect(failures[0]).toMatch(/Imports of Renderer are not allowed/);
-    expect(failures[1]).toMatch(/References to Renderer are not allowed/);
+    expect(failures[0]).toMatch(/Imports of deprecated Renderer are not allowed/);
+    expect(failures[1]).toMatch(/References to deprecated Renderer are not allowed/);
     expect(failures[2]).toMatch(/Calls to Renderer methods are not allowed/);
   });
 
@@ -160,9 +197,9 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     runTSLint(true);
     const content = getFile('index.ts');
 
-    expect(content).toContain(`function __rendererCreateElementHelper(`);
-    expect(content).toContain(`function __rendererSetElementAttributeHelper(`);
-    expect(content).toContain(`function __rendererProjectNodesHelper(`);
+    expect(content).toContain(`function ngRendererCreateElementHelper(`);
+    expect(content).toContain(`function ngRendererSetElementAttributeHelper(`);
+    expect(content).toContain(`function ngRendererProjectNodesHelper(`);
   });
 
   it('should only insert each helper only once per file', () => {
@@ -187,8 +224,31 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     runTSLint(true);
     const content = getFile('index.ts');
 
-    expect(content.match(/function __rendererCreateElementHelper\(/g) !.length).toBe(1);
-    expect(content.match(/function __rendererSetElementAttributeHelper\(/g) !.length).toBe(1);
+    expect(content.match(/function ngRendererCreateElementHelper\(/g) !.length).toBe(1);
+    expect(content.match(/function ngRendererSetElementAttributeHelper\(/g) !.length).toBe(1);
+  });
+
+  it('should insert helpers after the user\'s code', () => {
+    writeFile('/index.ts', `
+        import { Renderer, Component, ElementRef } from '@angular/core';
+
+        @Component({template: ''})
+        export class MyComp {
+          constructor(renderer: Renderer, element: ElementRef) {
+            const el = renderer.createElement(element.nativeElement, 'div');
+            renderer.setElementAttribute(el, 'title', 'hello');
+          }
+        }
+
+        //---
+      `);
+
+    runTSLint(true);
+    const content = getFile('index.ts');
+    const [contentBeforeSeparator, contentAfterSeparator] = content.split('//---');
+
+    expect(contentBeforeSeparator).not.toContain('function ngRendererCreateElementHelper(');
+    expect(contentAfterSeparator).toContain('function ngRendererCreateElementHelper(');
   });
 
   // Note that this is intended primarily as a sanity test. All of the replacement logic is the
@@ -249,8 +309,8 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     // One failure for the import, one for the constructor param, one at the end that is used as
     // an anchor for inserting helper functions and the rest are for method calls.
     expect(failures.length).toBe(21);
-    expect(failures[0]).toMatch(/Imports of Renderer are not allowed/);
-    expect(failures[1]).toMatch(/References to Renderer are not allowed/);
+    expect(failures[0]).toMatch(/Imports of deprecated Renderer are not allowed/);
+    expect(failures[1]).toMatch(/References to deprecated Renderer are not allowed/);
     expect(failures[failures.length - 1]).toMatch(/File should contain Renderer helper functions/);
     expect(failures.slice(2, -1).every(message => {
       return /Calls to Renderer methods are not allowed/.test(message);
@@ -316,17 +376,17 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     const content = getFile('index.ts');
 
     expect(content).toContain(
-        `const span = __rendererCreateElementHelper(_renderer, _element.nativeElement, 'span');`);
+        `const span = ngRendererCreateElementHelper(_renderer, _element.nativeElement, 'span');`);
     expect(content).toContain(
-        `const greeting = __rendererCreateTextHelper(_renderer, _element.nativeElement, 'hello');`);
+        `const greeting = ngRendererCreateTextHelper(_renderer, _element.nativeElement, 'hello');`);
     expect(content).toContain(`_renderer.setProperty(_element.nativeElement, 'disabled', true);`);
     expect(content).toContain(
         `_renderer.listen('window', 'resize', () => console.log('resized'));`);
     expect(content).toContain(
-        `__rendererSetElementAttributeHelper(_renderer, _element.nativeElement, 'title', 'hello');`);
-    expect(content).toContain('__rendererAnimateHelper();');
-    expect(content).toContain('__rendererDetachViewHelper(_renderer, []);');
-    expect(content).toContain('__rendererDestroyViewHelper(_renderer, []);');
+        `ngRendererSetElementAttributeHelper(_renderer, _element.nativeElement, 'title', 'hello');`);
+    expect(content).toContain('ngRendererAnimateHelper();');
+    expect(content).toContain('ngRendererDetachViewHelper(_renderer, []);');
+    expect(content).toContain('ngRendererDestroyViewHelper(_renderer, []);');
     expect(content).toContain(`_element.nativeElement.focus()`);
     expect(content).toContain(
         `color == null ? _renderer.removeStyle(_element.nativeElement, 'color') : ` +
@@ -339,11 +399,11 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
         `shouldAdd ? this._renderer.addClass(this._element.nativeElement, className) : ` +
         `this._renderer.removeClass(this._element.nativeElement, className);`);
     expect(content).toContain(
-        `return __rendererCreateTemplateAnchorHelper(this._renderer, this._element.nativeElement);`);
+        `return ngRendererCreateTemplateAnchorHelper(this._renderer, this._element.nativeElement);`);
     expect(content).toContain(
-        `__rendererAttachViewAfterHelper(this._renderer, this._element.nativeElement, rootNodes);`);
+        `ngRendererAttachViewAfterHelper(this._renderer, this._element.nativeElement, rootNodes);`);
     expect(content).toContain(
-        `__rendererProjectNodesHelper(this._renderer, this._element.nativeElement, nodesToProject);`);
+        `ngRendererProjectNodesHelper(this._renderer, this._element.nativeElement, nodesToProject);`);
 
     // Expect the `createRoot` only to return `this._element.nativeElement`.
     expect(content).toMatch(/createRoot\(\) \{\s+return this\._element\.nativeElement;\s+\}/);

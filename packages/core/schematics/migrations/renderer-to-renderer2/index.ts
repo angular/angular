@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {dirname, relative} from 'path';
 import * as ts from 'typescript';
 
@@ -15,17 +15,23 @@ import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 
 import {HelperFunction, getHelper} from './helpers';
 import {migrateExpression, replaceImport} from './migration';
-import {findRendererImport, findRendererReferences} from './util';
+import {findCoreImport, findRendererReferences} from './util';
 
 
 /**
- * Runs a migration over a TypeScript project that changes `Renderer` usages to `Renderer2`.
+ * Migration that switches from `Renderer` to `Renderer2`. More information on how it works:
+ * https://hackmd.angular.io/UTzUZTnPRA-cSa_4mHyfYw
  */
 export default function(): Rule {
-  return (tree: Tree) => {
+  return (tree: Tree, context: SchematicContext) => {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
+    const logger = context.logger;
+
+    logger.info('------ Renderer to Renderer2 Migration ------');
+    logger.info('As of Angular 9, the Renderer class is no longer available.');
+    logger.info('Renderer2 should be used instead.');
 
     if (!allPaths.length) {
       throw new SchematicsException(
@@ -58,14 +64,15 @@ function runRendererToRenderer2Migration(tree: Tree, tsconfigPath: string, baseP
       f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
   sourceFiles.forEach(sourceFile => {
-    const rendererImport = findRendererImport(sourceFile);
+    const rendererImport = findCoreImport(sourceFile, 'Renderer');
 
     // If there are no imports for the `Renderer`, we can exit early.
     if (!rendererImport) {
       return;
     }
 
-    const {typedNodes, methodCalls} = findRendererReferences(sourceFile, typeChecker);
+    const {typedNodes, methodCalls, forwardRefs} =
+        findRendererReferences(sourceFile, typeChecker, rendererImport);
     const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     const helpersToAdd = new Set<HelperFunction>();
 
@@ -87,9 +94,15 @@ function runRendererToRenderer2Migration(tree: Tree, tsconfigPath: string, baseP
       }
     });
 
+    // Change all identifiers inside `forwardRef` referring to the `Renderer`.
+    forwardRefs.forEach(identifier => {
+      update.remove(identifier.getStart(), identifier.getWidth());
+      update.insertRight(identifier.getStart(), 'Renderer2');
+    });
+
     // Migrate all of the method calls.
     methodCalls.forEach(call => {
-      const {node, requiredHelpers} = migrateExpression(call);
+      const {node, requiredHelpers} = migrateExpression(call, typeChecker);
 
       if (node) {
         // If we migrated the node to a new expression, replace only the call expression.
@@ -97,8 +110,9 @@ function runRendererToRenderer2Migration(tree: Tree, tsconfigPath: string, baseP
         update.insertRight(
             call.getStart(), printer.printNode(ts.EmitHint.Unspecified, node, sourceFile));
       } else if (call.parent && ts.isExpressionStatement(call.parent)) {
-        // Otherwise if the call is inside an expression statement, drop the
-        // entire statement. This takes care of any trailing semicolons.
+        // Otherwise if the call is inside an expression statement, drop the entire statement.
+        // This takes care of any trailing semicolons. We only need to drop nodes for cases like
+        // `setBindingDebugInfo` which have been noop for a while so they can be removed safely.
         update.remove(call.parent.getStart(), call.parent.getWidth());
       }
 
