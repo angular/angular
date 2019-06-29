@@ -52,6 +52,9 @@ const testClosureFunction = () => {
     }
   };
 
+  Zone.__load_patch('test_closure_load_patch', function() {});
+  Zone.__symbol__('test_symbol');
+
   const testZone: Zone = Zone.current.fork(testZoneSpec);
   testZone.runGuarded(() => {
     testZone.run(() => {
