@@ -1,83 +1,145 @@
+<!--
 # Getting Started with Angular: Your First App
+-->
+# Angular 시작하기: 첫번째 앱 만들기
 
+<!--
 Welcome to Angular!
 
 This tutorial introduces you to the essentials of Angular. 
 It leverages what you already know about HTML and JavaScript&mdash;plus some useful Angular features&mdash;to build a simple online store application, with a catalog, shopping cart, and check-out form. 
 You don't need to install anything: you'll build the app using the [StackBlitz](https://stackblitz.com/ "StackBlitz web site") online development environment.
+-->
+Angular의 세계에 오신 것을 환영합니다!
 
+이 튜토리얼은 Angular의 기본 내용을 소개하기 위해 작성되었습니다.
+이 문서에서는 이미 익숙하게 사용하던 HTML과 JavaScript를 바탕으로 Angular의 기능을 더해 상품 소개, 장바구니, 주문 폼으로 구성된 간단한 온라인 쇼핑몰 애플리케이션을 만들어 볼 것입니다.
+아직까지는 아무것도 설치할 필요가 없습니다: 이 튜토리얼은 온라인 개발 환경인 [StackBlitz](https://stackblitz.com/ "StackBlitz web site")로 진행합니다.
 
 <div class="callout is-helpful">
+<!--
 <header>New to web development?</header>
+-->
+<header>웹 개발이 처음인가요?</header>
 
-
+<!--
 You'll find many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codeacademy](https://www.codecademy.com/ "Codeacademy online courses"), also cover web development basics. 
-
+-->
+Angular 가이드 문서 외에도 참고할만한 자료는 많습니다. [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials")과 [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript")에 대해 알아보려면 Mozilla에서 제공하는 MDN 문서를 참고할 수 있습니다. 그리고 [TypeScript에서 제공하는 문서](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") 중 5분 튜토리얼 문서도 참고할 만 합니다. 그리고 웹 개발에 대한 기본적인 내용은 [Udemy](http://www.udemy.com "Udemy online courses")나 [Codeacademy](https://www.codecademy.com/ "Codeacademy online courses")와 같은 온라인 플랫폼을 통해 학습할 수도 있습니다.
 
 </div> 
 
 
 
 {@a new-project}
+<!--
 ## Create a new project
+-->
+## 프로젝트 생성하기
 
 <h4>
+<!--
 <live-example name="getting-started-v0" noDownload>Click here to create a new project in StackBlitz.</live-example> 
+-->
+<live-example name="getting-started-v0" noDownload>StackBlitz에 새로운 프로젝트를 생성하려면 여기를 클릭하세요.</live-example> 
 </h4>
 
+<!--
 StackBlitz creates a starter Angular app. 
 We've seeded this particular app with a top bar&mdash;containing the store name and checkout icon&mdash;and the title for a product list. 
-
+-->
+위 링크를 클릭하면 StackBlitz에 새로운 Angular 앱이 생성됩니다.
+이렇게 생성된 프로젝트에는 쇼핑몰의 이름과 주문 버튼, 상품 목록이 표시되는 화면이 존재합니다.
 
 <figure>
+    <!--
     <img src="generated/images/guide/start/new-app.png" alt="Starter online store app">
+    -->
+    <img src="generated/images/guide/start/new-app.png" alt="온라인 쇼핑몰 앱 초기화면">
 </figure>
 
 
 <div class="callout is-helpful">
+<!--
 <header>StackBlitz tips</header>
+-->
+<header>StackBlitz 팁</header>
 
+<!--
 * Log into StackBlitz, so you can save and resume your work. If you have a GitHub account, you can log into StackBlitz with that account. 
 * To copy a code example from this tutorial, click the icon at the top right of the code example box, and then paste the code snippet from the clipboard into StackBlitz. 
 * If the StackBlitz preview pane isn't showing what you expect, save and then click the refresh button. 
 * StackBlitz is continually improving, so there may be slight differences in generated code, but the app's behavior will be the same.
+-->
+* StackBlitz에 가입하면 작업한 내용을 저장했다가 다음에 다시 이어서 작업할 수 있습니다. StackBlitz에 가입할 때 GitHub 계정을 사용할 수도 있습니다.
+* 이 튜토리얼에서 제공하는 예제 코드 오른쪽 위에 있는 버튼을 클릭하면 코드의 내용이 클립보드에 복사됩니다. 이렇게 복사된 내용은 StackBlitz에 그대로 붙여넣을 수 있습니다.
+* StackBlitz 미리보기 화면에 원하는 결과가 표시되지 않으면, 작업내용을 저장하고 새로고침 버튼을 클릭해 보세요.
+* StackBlitz 플랫폼은 지속적으로 개선되고 있기 때문에, 자동으로 생성되는 코드는 약간씩 달라질 수 있지만 애플리케이션의 동작은 동일할 것입니다.
 
 </div>
 
 {@a template-syntax}
+<!--
 ## Template syntax
+-->
+## 템플릿 문법
 
+<!-- 원래 문서에서 주석 -->
 <!-- 
 Angular extends HTML with a template syntax that gives components control over the display of content. 
 This section introduces five things you can do in an Angular template to affect what your user sees, based on the component's state and behavior: 
 -->
 
+<!--
 Angular's template syntax extends HTML and JavaScript. 
 In this section, you'll learn about template syntax by enhancing the "Products" area. 
 
 (So that you can focus on the template syntax, the following steps use predefined product data and methods from the `product-list.component.ts` file.) 
+-->
+Angular 템플릿 문법을 사용하면 HTML과 JavaScript을 확장할 수 있습니다.
+이번 섹션에서는 "Products" 영역을 어떻게 확장할 수 있는지 알아봅시다.
 
+(템플릿 문법에만 집중하기 위해 아래 예제에서는 `product-list.component.ts` 파일에 미리 정의된 제품 데이터와 메소드를 사용합니다.)
+
+<!--
 1. In the `product-list` folder, open the template file `product-list.component.html`. 
 
 1. Modify the product list template to display a list of product names. 
 
     1. We want each product in the list to be displayed the same way, one after the other on the page. To iterate over the predefined list of products, use the `*ngFor` directive. Put the `*ngFor` directive on a `<div>`, as shown below:  
+-->
+1. `product-list` 폴더에 있는 `product-list.component.html` 템플릿 파일을 엽니다.
+
+1. 제품의 이름을 표시할 수 있도록 템플릿을 수정합니다.
+
+    1. 목록에 있는 제품들은 화면에 동일한 모습으로 표현하려고 합니다. 이 때 목록 안에 있는 제품 정보를 반복해서 표시하기 위해 `*ngFor` 디렉티브를 사용합니다. `*ngFor` 디렉티브를 `<div>` 엘리먼트에 다음과 같이 추가합니다:
 
       <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.2.html" region="ngfor">
       </code-example>
 
+      <!--
       `*ngFor` causes the `<div>` to be repeated for each product in the list. 
+      -->
+      `<div>`에 `*ngFor`를 사용하면 목록에 있는 제품마다 같은 템플릿을 반복할 수 있습니다.
 
       <div class="alert is-helpful">
+      <!--
       `*ngFor` is a "structural directive". Structural directives shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Any directive with an * is a structural directive.
+      -->
+      `*ngFor`는 "구조 디렉티브(structural directive)" 중 하나입니다. 구조 디렉티브는 일반적으로 엘리먼트를 추가하거나 제거하고, 변형하는 방식으로 DOM 구조를 구성하는 디렉티브입니다. * 로 시작하는 디렉티브는 모두 구조 디렉티브입니다.
       </div>
-
+    <!--
     1. To display the names of the products, use the interpolation syntax {{ }}. Interpolation renders a property's value as text. Inside the `<div>`, add an `<h3>` heading to display the interpolation of the product's name property: 
+    -->
+    1. 제품의 이름을 표시할 때는 문자열 바인딩 문법(interpolation syntax) {{ }} 를 사용합니다. 이 문법을 사용하면 프로퍼티 값을 문자열로 표시할 수 있습니다. 그래서 `<div>` 안에 제품의 이름을 표시하기 위해 다음과 같이 `<h3>` 엘리먼트를 추가합니다:
 
       <code-example path="getting-started/src/app/product-list/product-list.component.2.html" region="interpolation">
       </code-example>
 
+      <!--
       The preview pane immediately updates to display the name of each product in the list. 
+      -->
+      그러면 다음과 같이 미리보기 화면에 제품 이름이 표시됩니다:
 
       <figure>
         <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
