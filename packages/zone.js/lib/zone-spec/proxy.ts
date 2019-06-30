@@ -42,8 +42,7 @@ class ProxyZoneSpec implements ZoneSpec {
       this.propertyKeys = Object.keys(delegateSpec.properties);
       this.propertyKeys.forEach((k) => this.properties[k] = delegateSpec.properties ![k]);
     }
-    // if set a new delegateSpec, shoulde check whether need to
-    // trigger hasTask or not
+    // if a new delegateSpec was set, check if we need to trigger hasTask
     if (isNewDelegate && this.lastTaskState &&
         (this.lastTaskState.macroTask || this.lastTaskState.microTask)) {
       this.isNeedToTriggerHasTask = true;
@@ -90,7 +89,7 @@ class ProxyZoneSpec implements ZoneSpec {
               .join(',');
       return `type: ${task.type}, source: ${task.source}, args: {${dataInfo}}`;
     });
-    const pendingTasksInfo = '--Pendng async tasks are: [' + taskInfo + ']';
+    const pendingTasksInfo = '--Pending async tasks are: [' + taskInfo + ']';
     // clear tasks
     this.tasks = [];
 
