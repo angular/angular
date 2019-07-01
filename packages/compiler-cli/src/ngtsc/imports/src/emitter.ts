@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Expression, ExternalExpr, WrappedNodeExpr} from '@angular/compiler';
-import {ExternalReference} from '@angular/compiler/src/compiler';
+import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 import {LogicalFileSystem, LogicalProjectPath, absoluteFrom} from '../../file_system';
 import {ReflectionHost} from '../../reflection';
