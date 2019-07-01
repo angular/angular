@@ -29,6 +29,7 @@ module.exports =
         .processor(require('./processors/processClassLikeMembers'))
         .processor(require('./processors/markBarredODocsAsPrivate'))
         .processor(require('./processors/filterPrivateDocs'))
+        .processor(require('./processors/filterMembers'))
         .processor(require('./processors/computeSearchTitle'))
         .processor(require('./processors/simplifyMemberAnchors'))
         .processor(require('./processors/computeStability'))
@@ -174,6 +175,13 @@ module.exports =
 
         .config(function(filterContainedDocs, API_CONTAINED_DOC_TYPES) {
           filterContainedDocs.docTypes = API_CONTAINED_DOC_TYPES;
+        })
+
+        .config(function(filterMembers) {
+          filterMembers.notAllowedPatterns.push(
+            /^__/,
+            /^ng[A-Z].*Def$/
+          );
         })
 
 
