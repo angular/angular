@@ -403,7 +403,7 @@ Differential loading, which is supported by default in Angular CLI version 8 and
 
 Differential loading is a strategy where the CLI builds two separate bundles as part of your deployed application.
 
-* The first bundle contains modern ES1015 syntax, takes advantage of built-in support in modern browsers, ships less polyfills, and results in a smaller bundle size.
+* The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships less polyfills, and results in a smaller bundle size.
 
 * The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This results in a larger bundle size, but supports older browsers.
 
