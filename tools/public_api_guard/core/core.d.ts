@@ -297,8 +297,8 @@ export interface Directive {
 export declare const Directive: DirectiveDecorator;
 
 export interface DirectiveDecorator {
-    (obj: Directive): TypeDecorator;
-    new (obj: Directive): Directive;
+    (obj?: Directive): TypeDecorator;
+    new (obj?: Directive): Directive;
 }
 
 export interface DoBootstrap {
