@@ -12,7 +12,7 @@ import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ng
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {ClassMemberKind, Import, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
-import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
+import {loadFakeCore, loadTestFiles, loadTsLib} from '../../../test/helpers';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {convertToDirectTsLibImport, makeTestBundleProgram} from '../helpers/utils';
@@ -122,6 +122,7 @@ runInEachFileSystem(() => {
       describe(`[${label}]`, () => {
         beforeEach(() => {
           const fs = getFileSystem();
+          loadTsLib(fs);
           loadFakeCore(fs);
           loadTestFiles(FILES[label]);
         });

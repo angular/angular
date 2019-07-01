@@ -11,7 +11,7 @@ import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ng
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {ClassMemberKind, Import, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
-import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
+import {loadFakeCore, loadTestFiles, loadTsLib} from '../../../test/helpers';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {convertToDirectTsLibImport, makeTestBundleProgram} from '../helpers/utils';
@@ -143,6 +143,7 @@ export { SomeDirective };
       describe(`[${label}]`, () => {
         beforeEach(() => {
           const fs = getFileSystem();
+          loadTsLib(fs);
           loadFakeCore(fs);
           loadTestFiles(FILES[label]);
         });

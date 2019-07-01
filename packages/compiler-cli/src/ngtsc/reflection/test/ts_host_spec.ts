@@ -19,7 +19,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => _ = absoluteFrom);
 
-    describe('ctor params', () => {
+    describe('getConstructorParameters()', () => {
       it('should reflect a single argument', () => {
         const {program} = makeProgram([{
           name: _('/entry.ts'),
@@ -213,46 +213,215 @@ runInEachFileSystem(() => {
       });
     });
 
-    it('should reflect a re-export', () => {
-      const {program} = makeProgram([
-        {name: _('/node_modules/absolute/index.ts'), contents: 'export class Target {}'},
-        {name: _('/local1.ts'), contents: `export {Target as AliasTarget} from 'absolute';`},
-        {name: _('/local2.ts'), contents: `export {AliasTarget as Target} from './local1';`}, {
-          name: _('/entry.ts'),
-          contents: `
-          import {Target} from './local2';
-          import {Target as DirectTarget} from 'absolute';
 
-          const target = Target;
-          const directTarget = DirectTarget;
-      `
+    describe('getImportOfIdentifier()', () => {
+      it('should resolve a direct import', () => {
+        const {program} = makeProgram([
+          {name: _('/node_modules/absolute/index.ts'), contents: 'export class Target {}'},
+          {
+            name: _('/entry.ts'),
+            contents: `
+            import {Target} from 'absolute';
+            let foo: Target;
+        `
+          },
+        ]);
+        const checker = program.getTypeChecker();
+        const host = new TypeScriptReflectionHost(checker);
+
+        const foo = getDeclaration(program, _('/entry.ts'), 'foo', ts.isVariableDeclaration);
+        if (foo.type === undefined || !ts.isTypeReferenceNode(foo.type) ||
+            !ts.isIdentifier(foo.type.typeName)) {
+          return fail('Unexpected type for foo');
         }
-      ]);
-      const target = getDeclaration(program, _('/entry.ts'), 'target', ts.isVariableDeclaration);
-      if (target.initializer === undefined || !ts.isIdentifier(target.initializer)) {
-        return fail('Unexpected initializer for target');
-      }
-      const directTarget =
-          getDeclaration(program, _('/entry.ts'), 'directTarget', ts.isVariableDeclaration);
-      if (directTarget.initializer === undefined || !ts.isIdentifier(directTarget.initializer)) {
-        return fail('Unexpected initializer for directTarget');
-      }
-      const Target = target.initializer;
-      const DirectTarget = directTarget.initializer;
+        const Target = foo.type.typeName;
+        const directImport = host.getImportOfIdentifier(Target);
+        expect(directImport).toEqual({
+          name: 'Target',
+          from: 'absolute',
+        });
+      });
 
-      const checker = program.getTypeChecker();
-      const host = new TypeScriptReflectionHost(checker);
-      const targetDecl = host.getDeclarationOfIdentifier(Target);
-      const directTargetDecl = host.getDeclarationOfIdentifier(DirectTarget);
-      if (targetDecl === null) {
-        return fail('No declaration found for Target');
-      } else if (directTargetDecl === null) {
-        return fail('No declaration found for DirectTarget');
-      }
-      expect(targetDecl.node.getSourceFile().fileName).toBe(_('/node_modules/absolute/index.ts'));
-      expect(ts.isClassDeclaration(targetDecl.node)).toBe(true);
-      expect(directTargetDecl.viaModule).toBe('absolute');
-      expect(directTargetDecl.node).toBe(targetDecl.node);
+      it('should resolve a namespaced import', () => {
+        const {program} = makeProgram([
+          {name: _('/node_modules/absolute/index.ts'), contents: 'export class Target {}'},
+          {
+            name: _('/entry.ts'),
+            contents: `
+            import * as abs from 'absolute';
+            let foo: abs.Target;
+        `
+          },
+        ]);
+        const checker = program.getTypeChecker();
+        const host = new TypeScriptReflectionHost(checker);
+
+        const foo = getDeclaration(program, _('/entry.ts'), 'foo', ts.isVariableDeclaration);
+        if (foo.type === undefined || !ts.isTypeReferenceNode(foo.type) ||
+            !ts.isQualifiedName(foo.type.typeName)) {
+          return fail('Unexpected type for foo');
+        }
+        const Target = foo.type.typeName.right;
+        const namespacedImport = host.getImportOfIdentifier(Target);
+        expect(namespacedImport).toEqual({
+          name: 'Target',
+          from: 'absolute',
+        });
+      });
+    });
+
+    describe('getDeclarationOfIdentifier()', () => {
+      it('should reflect a re-export', () => {
+        const {program} = makeProgram([
+          {name: _('/node_modules/absolute/index.ts'), contents: 'export class Target {}'},
+          {name: _('/local1.ts'), contents: `export {Target as AliasTarget} from 'absolute';`},
+          {name: _('/local2.ts'), contents: `export {AliasTarget as Target} from './local1';`}, {
+            name: _('/entry.ts'),
+            contents: `
+            import {Target} from './local2';
+            import {Target as DirectTarget} from 'absolute';
+
+            const target = Target;
+            const directTarget = DirectTarget;
+        `
+          }
+        ]);
+        const target = getDeclaration(program, _('/entry.ts'), 'target', ts.isVariableDeclaration);
+        if (target.initializer === undefined || !ts.isIdentifier(target.initializer)) {
+          return fail('Unexpected initializer for target');
+        }
+        const directTarget =
+            getDeclaration(program, _('/entry.ts'), 'directTarget', ts.isVariableDeclaration);
+        if (directTarget.initializer === undefined || !ts.isIdentifier(directTarget.initializer)) {
+          return fail('Unexpected initializer for directTarget');
+        }
+        const Target = target.initializer;
+        const DirectTarget = directTarget.initializer;
+
+        const checker = program.getTypeChecker();
+        const host = new TypeScriptReflectionHost(checker);
+        const targetDecl = host.getDeclarationOfIdentifier(Target);
+        const directTargetDecl = host.getDeclarationOfIdentifier(DirectTarget);
+        if (targetDecl === null) {
+          return fail('No declaration found for Target');
+        } else if (directTargetDecl === null) {
+          return fail('No declaration found for DirectTarget');
+        }
+        expect(targetDecl.node.getSourceFile().fileName).toBe(_('/node_modules/absolute/index.ts'));
+        expect(ts.isClassDeclaration(targetDecl.node)).toBe(true);
+        expect(directTargetDecl.viaModule).toBe('absolute');
+        expect(directTargetDecl.node).toBe(targetDecl.node);
+      });
+
+      it('should resolve a direct import', () => {
+        const {program} = makeProgram([
+          {name: _('/node_modules/absolute/index.ts'), contents: 'export class Target {}'},
+          {
+            name: _('/entry.ts'),
+            contents: `
+            import {Target} from 'absolute';
+            let foo: Target;
+        `
+          },
+        ]);
+        const checker = program.getTypeChecker();
+        const host = new TypeScriptReflectionHost(checker);
+
+        const targetDecl = getDeclaration(
+            program, _('/node_modules/absolute/index.ts'), 'Target', ts.isClassDeclaration);
+        const foo = getDeclaration(program, _('/entry.ts'), 'foo', ts.isVariableDeclaration);
+        if (foo.type === undefined || !ts.isTypeReferenceNode(foo.type) ||
+            !ts.isIdentifier(foo.type.typeName)) {
+          return fail('Unexpected type for foo');
+        }
+        const Target = foo.type.typeName;
+        const decl = host.getDeclarationOfIdentifier(Target);
+        expect(decl).toEqual({
+          node: targetDecl,
+          viaModule: 'absolute',
+        });
+      });
+
+      it('should resolve a namespaced import', () => {
+        const {program} = makeProgram([
+          {name: _('/node_modules/absolute/index.ts'), contents: 'export class Target {}'},
+          {
+            name: _('/entry.ts'),
+            contents: `
+            import * as abs from 'absolute';
+            let foo: abs.Target;
+        `
+          },
+        ]);
+        const checker = program.getTypeChecker();
+        const host = new TypeScriptReflectionHost(checker);
+
+        const targetDecl = getDeclaration(
+            program, _('/node_modules/absolute/index.ts'), 'Target', ts.isClassDeclaration);
+        const foo = getDeclaration(program, _('/entry.ts'), 'foo', ts.isVariableDeclaration);
+        if (foo.type === undefined || !ts.isTypeReferenceNode(foo.type) ||
+            !ts.isQualifiedName(foo.type.typeName)) {
+          return fail('Unexpected type for foo');
+        }
+        const Target = foo.type.typeName.right;
+        const decl = host.getDeclarationOfIdentifier(Target);
+        expect(decl).toEqual({
+          node: targetDecl,
+          viaModule: 'absolute',
+        });
+      });
+    });
+
+    describe('getExportsOfModule()', () => {
+      it('should handle simple exports', () => {
+        const {program} = makeProgram([
+          {
+            name: _('/entry.ts'),
+            contents: `
+            export const x = 10;
+            export function foo() {}
+            export type T = string;
+            export interface I {}
+            export enum E {}
+        `
+          },
+        ]);
+        const checker = program.getTypeChecker();
+        const host = new TypeScriptReflectionHost(checker);
+        const exportedDeclarations =
+            host.getExportsOfModule(program.getSourceFile(_('/entry.ts')) !);
+        expect(Array.from(exportedDeclarations !.keys())).toEqual(['foo', 'x', 'T', 'I', 'E']);
+        expect(Array.from(exportedDeclarations !.values()).map(v => v.viaModule)).toEqual([
+          null, null, null, null, null
+        ]);
+      });
+
+      it('should handle re-exports', () => {
+        const {program} = makeProgram([
+          {name: _('/node_modules/absolute/index.ts'), contents: 'export class Target {}'},
+          {name: _('/local1.ts'), contents: `export {Target as AliasTarget} from 'absolute';`},
+          {name: _('/local2.ts'), contents: `export {AliasTarget as Target} from './local1';`},
+          {
+            name: _('/entry.ts'),
+            contents: `
+            export {Target as Target1} from 'absolute';
+            export {AliasTarget} from './local1';
+            export {Target as AliasTarget2} from './local2';
+            export * from 'absolute';
+        `
+          },
+        ]);
+        const checker = program.getTypeChecker();
+        const host = new TypeScriptReflectionHost(checker);
+        const exportedDeclarations =
+            host.getExportsOfModule(program.getSourceFile(_('/entry.ts')) !);
+        expect(Array.from(exportedDeclarations !.keys())).toEqual([
+          'Target1', 'AliasTarget', 'AliasTarget2', 'Target'
+        ]);
+        expect(Array.from(exportedDeclarations !.values()).map(v => v.viaModule)).toEqual([
+          null, null, null, null
+        ]);
+      });
     });
   });
 
