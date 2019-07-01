@@ -68,12 +68,12 @@ export interface DirectiveDecorator {
    *
    * @Annotation
    */
-  (obj: Directive): TypeDecorator;
+  (obj?: Directive): TypeDecorator;
 
   /**
    * See the `Directive` decorator.
    */
-  new (obj: Directive): Directive;
+  new (obj?: Directive): Directive;
 }
 
 /**
