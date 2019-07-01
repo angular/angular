@@ -31,9 +31,7 @@ export function loadStandardTestFiles(
       tmpFs, resolveNpmTreeArtifact('typescript'),
       tmpFs.resolve(basePath, 'node_modules/typescript'));
 
-  loadTestDirectory(
-      tmpFs, resolveNpmTreeArtifact('tslib'), tmpFs.resolve(basePath, 'node_modules/tslib'));
-
+  loadTsLib(tmpFs, basePath);
 
   if (fakeCore) {
     loadFakeCore(tmpFs, basePath);
@@ -49,6 +47,11 @@ export function loadStandardTestFiles(
   }
 
   return tmpFs.dump();
+}
+
+export function loadTsLib(fs: FileSystem, basePath: string = '/') {
+  loadTestDirectory(
+      fs, resolveNpmTreeArtifact('tslib'), fs.resolve(basePath, 'node_modules/tslib'));
 }
 
 export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
