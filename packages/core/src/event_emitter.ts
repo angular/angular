@@ -21,7 +21,7 @@ import {Subject, Subscription} from 'rxjs';
  * that create event emitters. When the title is clicked, the emitter
  * emits an open or close event to toggle the current visibility state.
  *
- * ```
+ * ```html
  * @Component({
  *   selector: 'zippy',
  *   template: `
@@ -50,16 +50,9 @@ import {Subject, Subscription} from 'rxjs';
  * Access the event object with the `$event` argument passed to the output event
  * handler:
  *
- * ```
+ * ```html
  * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
  * ```
- *
- * ### Notes
- *
- * Uses Rx.Observable but provides an adapter to make it work as specified here:
- * https://github.com/jhusain/observable-spec
- *
- * Once a reference implementation of the spec is available, switch to it.
  *
  * @publicApi
  */
