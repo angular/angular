@@ -11,18 +11,16 @@ import {Component, ContentChild, Directive, Input} from '@angular/core';
 
 @Directive({selector: 'pane'})
 export class Pane {
-  // TODO(issue/24571): remove '!'.
   @Input() id !: string;
 }
 
 @Component({
   selector: 'tab',
   template: `
-    <div>pane: {{pane?.id}}</div> 
+    <div>pane: {{pane?.id}}</div>
   `
 })
 export class Tab {
-  // TODO(issue/24571): remove '!'.
   @ContentChild(Pane, {static: false}) pane !: Pane;
 }
 
@@ -33,7 +31,7 @@ export class Tab {
       <pane id="1" *ngIf="shouldShow"></pane>
       <pane id="2" *ngIf="!shouldShow"></pane>
     </tab>
-    
+
     <button (click)="toggle()">Toggle</button>
   `,
 })

@@ -24,8 +24,9 @@ import {ViewEncapsulation} from './view';
  */
 export interface DirectiveDecorator {
   /**
-   * Marks a class as an Angular directive. You can define your own
-   * directives to attach custom behavior to elements in the DOM.
+   * Decorator that marks a class as an Angular directive.
+   * You can define your own directives to attach custom behavior to elements in the DOM.
+   *
    * The options provide configuration metadata that determines
    * how the directive should be processed, instantiated and used at
    * runtime.
@@ -37,7 +38,7 @@ export interface DirectiveDecorator {
    * @usageNotes
    * To define a directive, mark the class with the decorator and provide metadata.
    *
-   * ```
+   * ```ts
    * import {Directive} from '@angular/core';
    *
    * @Directive({
@@ -58,7 +59,7 @@ export interface DirectiveDecorator {
    * a directive imported from another module.
    * List the directive class in the `declarations` field of an NgModule.
    *
-   * ```
+   * ```ts
    * declarations: [
    *  AppComponent,
    *  MyDirective
@@ -122,9 +123,8 @@ export interface Directive {
    * - `bindingProperty` specifies the DOM property where the value is read from.
    *
    * When `bindingProperty` is not provided, it is assumed to be equal to `directiveProperty`.
-   * @usageNotes
    *
-   * ### Example
+   * @usageNotes
    *
    * The following example creates a component with two data-bound properties.
    *
@@ -159,8 +159,6 @@ export interface Directive {
    * - `bindingProperty` specifies the DOM property the event handler is attached to.
    *
    * @usageNotes
-   *
-   * ### Example
    *
    * ```typescript
    * @Component({
@@ -202,9 +200,7 @@ export interface Directive {
    *
    * @usageNotes
    *
-   * ### Simple Example
-   *
-   * ```
+   * ```ts
    * @Directive({
    *   selector: 'child-dir',
    *   exportAs: 'child'
@@ -231,12 +227,10 @@ export interface Directive {
    *
    * @usageNotes
    *
-   * ### Example
-   *
    * The following example shows how queries are defined
    * and when their results are available in lifecycle hooks:
    *
-   * ```
+   * ```ts
    * @Component({
    *   selector: 'someDir',
    *   queries: {
@@ -338,7 +332,8 @@ export interface ComponentDecorator {
    * The following example creates a component with two data-bound properties,
    * specified by the `inputs` value.
    *
-   * <code-example path="core/ts/metadata/directives.ts" region="component-input">
+   * <code-example path="core/ts/metadata/directives.ts" region="component-input"
+   * linenums="false">
    * </code-example>
    *
    *
@@ -347,14 +342,15 @@ export interface ComponentDecorator {
    * The following example shows two event emitters that emit on an interval. One
    * emits an output every second, while the other emits every five seconds.
    *
-   * {@example core/ts/metadata/directives.ts region='component-output-interval'}
+   * {@example core/ts/metadata/directives.ts region='component-output-interval
+   * linenums="false"}
    *
    * ### Injecting a class with a view provider
    *
    * The following simple example injects a class into a component
    * using the view provider specified in component metadata:
    *
-   * ```
+   * ```ts
    * class Greeter {
    *    greet(name:string) {
    *      return 'Hello ' + name + '!';
@@ -395,13 +391,13 @@ export interface ComponentDecorator {
    * * Trims all whitespaces at the beginning and the end of a template.
    * * Removes whitespace-only text nodes. For example,
    *
-   * ```
+   * ```html
    * <button>Action 1</button>  <button>Action 2</button>
    * ```
    *
    * becomes:
    *
-   * ```
+   * ```html
    * <button>Action 1</button><button>Action 2</button>
    * ```
    *
@@ -844,9 +840,10 @@ export interface HostListener {
 }
 
 /**
- * Binds a DOM event to a host listener and supplies configuration metadata.
+ * Decorator that binds a DOM event to a host listener and supplies configuration metadata.
  * Angular invokes the supplied handler method when the host element emits the specified event,
  * and updates the bound element with the result.
+ *
  * If the handler method returns false, applies `preventDefault` on the bound element.
  *
  * @usageNotes
@@ -854,7 +851,7 @@ export interface HostListener {
  * The following example declares a directive
  * that attaches a click listener to a button and counts clicks.
  *
- * ```
+ * ```ts
  * @Directive({selector: 'button[counting]'})
  * class CountClicks {
  *   numberOfClicks = 0;
