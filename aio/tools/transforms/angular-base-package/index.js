@@ -14,7 +14,7 @@ const linksPackage = require('../links-package');
 const examplesPackage = require('../examples-package');
 const targetPackage = require('../target-package');
 const remarkPackage = require('../remark-package');
-const postProcessPackage = require('../post-process-package');
+const postProcessPackage = require('dgeni-packages/post-process-html');
 
 const { PROJECT_ROOT, CONTENTS_PATH, OUTPUT_PATH, DOCS_OUTPUT_PATH, TEMPLATES_PATH, AIO_PATH, requireFolder } = require('../config');
 
