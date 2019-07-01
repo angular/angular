@@ -31,7 +31,7 @@ export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
  */
 export interface InjectableDecorator {
   /**
-   * Marks a class as available to `Injector` for creation.
+   * Decorator that marks a class as available to `Injector` for creation.
    *
    * @see [Introduction to Services and DI](guide/architecture-services)
    * @see [Dependency Injection Guide](guide/dependency-injection)
@@ -41,7 +41,8 @@ export interface InjectableDecorator {
    * The following example shows how service classes are properly marked as
    * injectable.
    *
-   * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"></code-example>
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"
+   *  linenums="false"></code-example>
    *
    */
   (): TypeDecorator;
