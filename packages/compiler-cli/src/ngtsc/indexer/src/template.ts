@@ -5,9 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {AST, BoundTarget, ImplicitReceiver, MethodCall, PropertyRead, RecursiveAstVisitor} from '@angular/compiler';
-import {BoundText, Element, Node, RecursiveVisitor as RecursiveTemplateVisitor, Template} from '@angular/compiler/src/render3/r3_ast';
+import {AST, BoundTarget, ImplicitReceiver, MethodCall, PropertyRead, RecursiveAstVisitor, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstTemplate} from '@angular/compiler';
 import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, TemplateIdentifier, TopLevelIdentifier} from './api';
 import {ComponentMeta} from './context';
 
@@ -15,7 +13,7 @@ import {ComponentMeta} from './context';
  * A parsed node in a template, which may have a name (if it is a selector) or
  * be anonymous (like a text span).
  */
-interface HTMLNode extends Node {
+interface HTMLNode extends TmplAstNode {
   tagName?: string;
   name?: string;
 }
@@ -35,7 +33,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
   readonly identifiers: ExpressionIdentifier[] = [];
 
   private constructor(
-      context: Node, private readonly boundTemplate: BoundTarget<ComponentMeta>,
+      context: TmplAstNode, private readonly boundTemplate: BoundTarget<ComponentMeta>,
       private readonly expressionStr = context.sourceSpan.toString(),
       private readonly absoluteOffset = context.sourceSpan.start.offset) {
     super();
@@ -49,7 +47,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
    * @param boundTemplate bound target of the entire template, which can be used to query for the
    * entities expressions target.
    */
-  static getIdentifiers(ast: AST, context: Node, boundTemplate: BoundTarget<ComponentMeta>):
+  static getIdentifiers(ast: AST, context: TmplAstNode, boundTemplate: BoundTarget<ComponentMeta>):
       TopLevelIdentifier[] {
     const visitor = new ExpressionVisitor(context, boundTemplate);
     visitor.visit(ast);
@@ -108,7 +106,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
  * Visits the AST of a parsed Angular template. Discovers and stores
  * identifiers of interest, deferring to an `ExpressionVisitor` as needed.
  */
-class TemplateVisitor extends RecursiveTemplateVisitor {
+class TemplateVisitor extends TmplAstRecursiveVisitor {
   // identifiers of interest found in the template
   readonly identifiers = new Set<TopLevelIdentifier>();
 
@@ -127,14 +125,14 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
    */
   visit(node: HTMLNode) { node.visit(this); }
 
-  visitAll(nodes: Node[]) { nodes.forEach(node => this.visit(node)); }
+  visitAll(nodes: TmplAstNode[]) { nodes.forEach(node => this.visit(node)); }
 
   /**
    * Add an identifier for an HTML element and visit its children recursively.
    *
    * @param element
    */
-  visitElement(element: Element) {
+  visitElement(element: TmplAstElement) {
     // Record the element's attributes, which an indexer can later traverse to see if any of them
     // specify a used directive on the element.
     const attributes = element.attributes.map(({name, value, sourceSpan}): AttributeIdentifier => {
@@ -166,20 +164,20 @@ class TemplateVisitor extends RecursiveTemplateVisitor {
     this.visitAll(element.children);
     this.visitAll(element.references);
   }
-  visitTemplate(template: Template) {
+  visitTemplate(template: TmplAstTemplate) {
     this.visitAll(template.attributes);
     this.visitAll(template.children);
     this.visitAll(template.references);
     this.visitAll(template.variables);
   }
-  visitBoundText(text: BoundText) { this.visitExpression(text); }
+  visitBoundText(text: TmplAstBoundText) { this.visitExpression(text); }
 
   /**
    * Visits a node's expression and adds its identifiers, if any, to the visitor's state.
    *
    * @param node node whose expression to visit
    */
-  private visitExpression(node: Node&{value: AST}) {
+  private visitExpression(node: TmplAstNode&{value: AST}) {
     const identifiers = ExpressionVisitor.getIdentifiers(node.value, node, this.boundTemplate);
     identifiers.forEach(id => this.identifiers.add(id));
   }
