@@ -97,7 +97,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
     this.checker.getExportsOfModule(symbol).forEach(exportSymbol => {
       // Map each exported Symbol to a Declaration and add it to the map.
-      const decl = this.getDeclarationOfSymbol(exportSymbol);
+      const decl = this.getDeclarationOfSymbol(exportSymbol, null);
       if (decl !== null) {
         map.set(exportSymbol.name, decl);
       }
@@ -122,7 +122,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (symbol === undefined) {
       return null;
     }
-    return this.getDeclarationOfSymbol(symbol);
+    return this.getDeclarationOfSymbol(symbol, id);
   }
 
   getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
@@ -244,7 +244,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
    *
    * @internal
    */
-  protected getDeclarationOfSymbol(symbol: ts.Symbol): Declaration|null {
+  private getDeclarationOfSymbol(symbol: ts.Symbol, originalId: ts.Identifier|null): Declaration
+      |null {
     // If the symbol points to a ShorthandPropertyAssignment, resolve it.
     if (symbol.valueDeclaration !== undefined &&
         ts.isShorthandPropertyAssignment(symbol.valueDeclaration)) {
@@ -253,31 +254,14 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       if (shorthandSymbol === undefined) {
         return null;
       }
-      return this.getDeclarationOfSymbol(shorthandSymbol);
+      return this.getDeclarationOfSymbol(shorthandSymbol, originalId);
     }
-    let viaModule: string|null = null;
-    // Look through the Symbol's immediate declarations, and see if any of them are import-type
-    // statements.
-    if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
-      for (let i = 0; i < symbol.declarations.length; i++) {
-        const decl = symbol.declarations[i];
-        if (ts.isImportSpecifier(decl) && decl.parent !== undefined &&
-            decl.parent.parent !== undefined && decl.parent.parent.parent !== undefined) {
-          // Find the ImportDeclaration that imported this Symbol.
-          const importDecl = decl.parent.parent.parent;
-          // The moduleSpecifier should always be a string.
-          if (ts.isStringLiteral(importDecl.moduleSpecifier)) {
-            // Check if the moduleSpecifier is absolute. If it is, this symbol comes from an
-            // external module, and the import path becomes the viaModule.
-            const moduleSpecifier = importDecl.moduleSpecifier.text;
-            if (!moduleSpecifier.startsWith('.')) {
-              viaModule = moduleSpecifier;
-              break;
-            }
-          }
-        }
-      }
-    }
+
+    const importInfo = originalId && this.getImportOfIdentifier(originalId);
+    const viaModule =
+        importInfo !== null && importInfo.from !== null && !importInfo.from.startsWith('.') ?
+        importInfo.from :
+        null;
 
     // Now, resolve the Symbol to its declaration by following any and all aliases.
     while (symbol.flags & ts.SymbolFlags.Alias) {
