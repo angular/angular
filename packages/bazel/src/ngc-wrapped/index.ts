@@ -249,6 +249,8 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   const bazelHost = new CompilerHost(
       files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
   if (oldBazelHost) {
+    // TODO(ayazhafiz): this kind of patching is hacky. Revisit this after the
+    // indexer consumer of this code is known to be working.
     Object.assign(bazelHost, oldBazelHost);
   }
 
