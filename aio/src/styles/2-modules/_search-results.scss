@@ -19,8 +19,6 @@ aio-search-results {
     box-sizing: border-box;
 
     .search-area {
-      display: flex;
-      flex-direction: column;
       margin: 16px;
       height: 100%;
 
@@ -66,18 +64,10 @@ aio-search-results {
           }
         }
       }
-
-      @include bp(tiny) {
-        display: block;
-      }
     }
 
     @media (max-width: 480px) {
       display: block;
-
-      .search-area {
-        display: block;
-      }
     }
   }
 
