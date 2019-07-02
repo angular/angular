@@ -68,7 +68,15 @@ You can see examples of this pattern in Angular Material: [`MatButton`](https://
 
 ### Using containers for native elements
 
-You can create a container for native elements in order to apply accessibility features consistently. An example is the [`MatFormField`](https://github.com/angular/components/blob/master/src/material/form-field/form-field), a component used to wrap other Angular Material components and apply common Text field styles, including floating labels. A floating label specified in the wrapper is automatically used as the label for the contained form field controls.  Without it, you would have to label the form field controls individually, using `aria-label`, `aria-labelledby` or `<label for=...>`. In addtion, any errors and hints added to the form field are automatically added to the form field control's `aria-describedby` set.
+Sometimes using the appropriate native element requires a container element.
+For example, the native `<input>` element cannot have children, so any custom text entry components need
+to wrap an `<input>` with additional elements.
+While you might just include the `<input>` in your custom component's template,
+this makes it impossible for users of the component to set arbitrary properties and attributes to the input element.
+Instead, you can create a container component that uses content projection to include the native control in the
+component's API.
+
+You can see [`MatFormField`](https://material.angular.io/components/form-field/overview) as an example of this pattern.
 
 ## Case study: Building a custom progress bar
 
@@ -99,7 +107,7 @@ The following example shows how to make a simple progress bar accessible by usin
    })
    export class ExampleProgressbar  {
      /** Current value of the progressbar. */
-     @Input() progress: number = 0;
+     @Input() value: number = 0;
    }
    ```
 
