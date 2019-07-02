@@ -1,3 +1,31 @@
+## 8.0.2 "metal-mushroom" (2019-07-02)
+
+
+### Bug Fixes
+
+* **autocomplete:** alt + up arrow to close panel not working ([#15364](https://github.com/angular/components/issues/15364)) ([219ad33](https://github.com/angular/components/commit/219ad33))
+* **bottom-sheet:** DOM nodes not cleaned up if view container is destroyed mid-animation ([#16349](https://github.com/angular/components/issues/16349)) ([f8d32fe](https://github.com/angular/components/commit/f8d32fe)), closes [#16309](https://github.com/angular/components/issues/16309)
+* **breakpoint-observer:** fix the breakpoint observer emit count and accuracy ([#15964](https://github.com/angular/components/issues/15964)) ([43b2df6](https://github.com/angular/components/commit/43b2df6)), closes [#10925](https://github.com/angular/components/issues/10925)
+* **checkbox:** hover indication showing when disabled ([#16159](https://github.com/angular/components/issues/16159)) ([bd52ce0](https://github.com/angular/components/commit/bd52ce0)), closes [#16157](https://github.com/angular/components/issues/16157)
+* **chips:** disable all animations when using NoopAnimationsModule ([#11546](https://github.com/angular/components/issues/11546)) ([7fc7da1](https://github.com/angular/components/commit/7fc7da1)), closes [#10590](https://github.com/angular/components/issues/10590)
+* **datepicker:** align multi-year-view based on minDate and maxDate ([#16018](https://github.com/angular/components/issues/16018)) ([400a95b](https://github.com/angular/components/commit/400a95b)), closes [#10646](https://github.com/angular/components/issues/10646)
+* **dialog:** DOM nodes not cleaned up if view container is destroyed mid-animation ([#16309](https://github.com/angular/components/issues/16309)) ([a9a266a](https://github.com/angular/components/commit/a9a266a)), closes [#16284](https://github.com/angular/components/issues/16284)
+* **dialog:** don't move focus to dialog container if focus is already inside the dialog ([#16297](https://github.com/angular/components/issues/16297)) ([62447be](https://github.com/angular/components/commit/62447be))
+* **dialog:** not moving focus to container if autoFocus is disabled and focus was moved from a different component ([#16221](https://github.com/angular/components/issues/16221)) ([2669b90](https://github.com/angular/components/commit/2669b90)), closes [#16215](https://github.com/angular/components/issues/16215)
+* **expansion-panel:** header animating on init when using non-default height ([#16122](https://github.com/angular/components/issues/16122)) ([f58840c](https://github.com/angular/components/commit/f58840c)), closes [#13088](https://github.com/angular/components/issues/13088) [#16067](https://github.com/angular/components/issues/16067)
+* **list:** matching item not preselected if added after init ([#16080](https://github.com/angular/components/issues/16080)) ([90b1d5d](https://github.com/angular/components/commit/90b1d5d)), closes [#16062](https://github.com/angular/components/issues/16062)
+* **ng-update:** do not rely on node-glob for finding rule directories ([#16381](https://github.com/angular/components/issues/16381)) ([6732be5](https://github.com/angular/components/commit/6732be5)), closes [#16208](https://github.com/angular/components/issues/16208)
+* **overlay:** events not being unbound from destroyed backdrop ([#16268](https://github.com/angular/components/issues/16268)) ([c0efe17](https://github.com/angular/components/commit/c0efe17))
+* **popover-edit:** remove fallthroughs in switch statement ([#16281](https://github.com/angular/components/issues/16281)) ([14246de](https://github.com/angular/components/commit/14246de))
+* **tabs:** disable all animations when using NoopAnimationsModule ([#11395](https://github.com/angular/components/issues/11395)) ([91326e9](https://github.com/angular/components/commit/91326e9)), closes [#10590](https://github.com/angular/components/issues/10590)
+
+
+### Performance Improvements
+
+* **drag-drop:** use narrower check for touch events ([#16082](https://github.com/angular/components/issues/16082)) ([b7aa763](https://github.com/angular/components/commit/b7aa763))
+
+
+
 ## 8.0.1 "yarn-barn" (2019-06-10)
 
 
