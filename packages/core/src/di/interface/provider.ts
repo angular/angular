@@ -164,12 +164,6 @@ export interface ConstructorProvider extends ConstructorSansProvider {
  *
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
- * @usageNotes
- *
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='ExistingSansProvider'}
- *
  * @publicApi
  */
 export interface ExistingSansProvider {
@@ -213,11 +207,6 @@ export interface ExistingProvider extends ExistingSansProvider {
  * Configures the `Injector` to return a value by invoking a `useFactory` function.
  *
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
- *
- * @usageNotes
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='FactorySansProvider'}
  *
  * @publicApi
  */
