@@ -66,6 +66,12 @@ aio-search-results {
       }
     }
 
+    .not-found {
+      color: $white;
+      text-align: center;
+      margin: 16px;
+    }
+
     @media (max-width: 600px) {
       display: block;
     }
@@ -92,6 +98,10 @@ aio-search-results {
             color: $accentblue;
           }
         }
+      }
+
+      .not-found {
+        color: $darkgray;
       }
     }
   }
