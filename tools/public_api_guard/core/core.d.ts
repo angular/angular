@@ -165,6 +165,11 @@ export declare abstract class ComponentRef<C> {
     abstract onDestroy(callback: Function): void;
 }
 
+export interface ConstructorProvider extends ConstructorSansProvider {
+    multi?: boolean;
+    provide: Type<any>;
+}
+
 export interface ConstructorSansProvider {
     deps?: any[];
 }
@@ -332,9 +337,18 @@ export interface ExistingProvider extends ExistingSansProvider {
     provide: any;
 }
 
+export interface ExistingSansProvider {
+    useExisting: any;
+}
+
 export interface FactoryProvider extends FactorySansProvider {
     multi?: boolean;
     provide: any;
+}
+
+export interface FactorySansProvider {
+    deps?: any[];
+    useFactory: Function;
 }
 
 export declare function forwardRef(forwardRefFn: ForwardRefFn): Type<any>;
@@ -1361,6 +1375,16 @@ export declare const SkipSelf: SkipSelfDecorator;
 export interface SkipSelfDecorator {
     (): any;
     new (): SkipSelf;
+}
+
+export interface StaticClassProvider extends StaticClassSansProvider {
+    multi?: boolean;
+    provide: any;
+}
+
+export interface StaticClassSansProvider {
+    deps: any[];
+    useClass: Type<any>;
 }
 
 export declare type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
