@@ -197,9 +197,9 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     runTSLint(true);
     const content = getFile('index.ts');
 
-    expect(content).toContain(`function ngRendererCreateElementHelper(`);
-    expect(content).toContain(`function ngRendererSetElementAttributeHelper(`);
-    expect(content).toContain(`function ngRendererProjectNodesHelper(`);
+    expect(content).toContain(`function __ngRendererCreateElementHelper(`);
+    expect(content).toContain(`function __ngRendererSetElementAttributeHelper(`);
+    expect(content).toContain(`function __ngRendererProjectNodesHelper(`);
   });
 
   it('should only insert each helper only once per file', () => {
@@ -224,8 +224,8 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     runTSLint(true);
     const content = getFile('index.ts');
 
-    expect(content.match(/function ngRendererCreateElementHelper\(/g) !.length).toBe(1);
-    expect(content.match(/function ngRendererSetElementAttributeHelper\(/g) !.length).toBe(1);
+    expect(content.match(/function __ngRendererCreateElementHelper\(/g) !.length).toBe(1);
+    expect(content.match(/function __ngRendererSetElementAttributeHelper\(/g) !.length).toBe(1);
   });
 
   it('should insert helpers after the user\'s code', () => {
@@ -247,8 +247,8 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     const content = getFile('index.ts');
     const [contentBeforeSeparator, contentAfterSeparator] = content.split('//---');
 
-    expect(contentBeforeSeparator).not.toContain('function ngRendererCreateElementHelper(');
-    expect(contentAfterSeparator).toContain('function ngRendererCreateElementHelper(');
+    expect(contentBeforeSeparator).not.toContain('function __ngRendererCreateElementHelper(');
+    expect(contentAfterSeparator).toContain('function __ngRendererCreateElementHelper(');
   });
 
   // Note that this is intended primarily as a sanity test. All of the replacement logic is the
@@ -376,17 +376,17 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     const content = getFile('index.ts');
 
     expect(content).toContain(
-        `const span = ngRendererCreateElementHelper(_renderer, _element.nativeElement, 'span');`);
+        `const span = __ngRendererCreateElementHelper(_renderer, _element.nativeElement, 'span');`);
     expect(content).toContain(
-        `const greeting = ngRendererCreateTextHelper(_renderer, _element.nativeElement, 'hello');`);
+        `const greeting = __ngRendererCreateTextHelper(_renderer, _element.nativeElement, 'hello');`);
     expect(content).toContain(`_renderer.setProperty(_element.nativeElement, 'disabled', true);`);
     expect(content).toContain(
         `_renderer.listen('window', 'resize', () => console.log('resized'));`);
     expect(content).toContain(
-        `ngRendererSetElementAttributeHelper(_renderer, _element.nativeElement, 'title', 'hello');`);
-    expect(content).toContain('ngRendererAnimateHelper();');
-    expect(content).toContain('ngRendererDetachViewHelper(_renderer, []);');
-    expect(content).toContain('ngRendererDestroyViewHelper(_renderer, []);');
+        `__ngRendererSetElementAttributeHelper(_renderer, _element.nativeElement, 'title', 'hello');`);
+    expect(content).toContain('__ngRendererAnimateHelper();');
+    expect(content).toContain('__ngRendererDetachViewHelper(_renderer, []);');
+    expect(content).toContain('__ngRendererDestroyViewHelper(_renderer, []);');
     expect(content).toContain(`_element.nativeElement.focus()`);
     expect(content).toContain(
         `color == null ? _renderer.removeStyle(_element.nativeElement, 'color') : ` +
@@ -399,11 +399,11 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
         `shouldAdd ? this._renderer.addClass(this._element.nativeElement, className) : ` +
         `this._renderer.removeClass(this._element.nativeElement, className);`);
     expect(content).toContain(
-        `return ngRendererCreateTemplateAnchorHelper(this._renderer, this._element.nativeElement);`);
+        `return __ngRendererCreateTemplateAnchorHelper(this._renderer, this._element.nativeElement);`);
     expect(content).toContain(
-        `ngRendererAttachViewAfterHelper(this._renderer, this._element.nativeElement, rootNodes);`);
+        `__ngRendererAttachViewAfterHelper(this._renderer, this._element.nativeElement, rootNodes);`);
     expect(content).toContain(
-        `ngRendererProjectNodesHelper(this._renderer, this._element.nativeElement, nodesToProject);`);
+        `__ngRendererProjectNodesHelper(this._renderer, this._element.nativeElement, nodesToProject);`);
 
     // Expect the `createRoot` only to return `this._element.nativeElement`.
     expect(content).toMatch(/createRoot\(\) \{\s+return this\._element\.nativeElement;\s+\}/);

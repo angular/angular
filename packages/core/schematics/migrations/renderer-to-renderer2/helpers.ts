@@ -11,16 +11,16 @@ import * as ts from 'typescript';
 /** Names of the helper functions that are supported for this migration. */
 export const enum HelperFunction {
   any = 'AnyDuringRendererMigration',
-  createElement = 'ngRendererCreateElementHelper',
-  createText = 'ngRendererCreateTextHelper',
-  createTemplateAnchor = 'ngRendererCreateTemplateAnchorHelper',
-  projectNodes = 'ngRendererProjectNodesHelper',
-  animate = 'ngRendererAnimateHelper',
-  destroyView = 'ngRendererDestroyViewHelper',
-  detachView = 'ngRendererDetachViewHelper',
-  attachViewAfter = 'ngRendererAttachViewAfterHelper',
-  splitNamespace = 'ngRendererSplitNamespaceHelper',
-  setElementAttribute = 'ngRendererSetElementAttributeHelper'
+  createElement = '__ngRendererCreateElementHelper',
+  createText = '__ngRendererCreateTextHelper',
+  createTemplateAnchor = '__ngRendererCreateTemplateAnchorHelper',
+  projectNodes = '__ngRendererProjectNodesHelper',
+  animate = '__ngRendererAnimateHelper',
+  destroyView = '__ngRendererDestroyViewHelper',
+  detachView = '__ngRendererDetachViewHelper',
+  attachViewAfter = '__ngRendererAttachViewAfterHelper',
+  splitNamespace = '__ngRendererSplitNamespaceHelper',
+  setElementAttribute = '__ngRendererSetElementAttributeHelper'
 }
 
 /** Gets the string representation of a helper function. */
@@ -60,7 +60,7 @@ function getHelperDeclaration(name: HelperFunction): ts.Node {
   throw new Error(`Unsupported helper called "${name}".`);
 }
 
-/** Creates a helper our custom `any` type during the migration. */
+/** Creates a helper for a custom `any` type during the migration. */
 function createAnyTypeHelper(): ts.TypeAliasDeclaration {
   // type AnyDuringRendererMigration = any;
   return ts.createTypeAliasDeclaration(

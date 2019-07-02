@@ -261,7 +261,7 @@ describe('Renderer to Renderer2 migration', () => {
 
       const content = tree.readContent('/index.ts');
 
-      expect(content.match(/function ngRendererCreateElementHelper\(/g) !.length)
+      expect(content.match(/function __ngRendererCreateElementHelper\(/g) !.length)
           .toBe(1, 'Expected exactly one helper for createElement.');
     });
 
@@ -284,8 +284,8 @@ describe('Renderer to Renderer2 migration', () => {
       const content = tree.readContent('/index.ts');
       const [contentBeforeSeparator, contentAfterSeparator] = content.split('//---');
 
-      expect(contentBeforeSeparator).not.toContain('function ngRendererCreateElementHelper(');
-      expect(contentAfterSeparator).toContain('function ngRendererCreateElementHelper(');
+      expect(contentBeforeSeparator).not.toContain('function __ngRendererCreateElementHelper(');
+      expect(contentAfterSeparator).toContain('function __ngRendererCreateElementHelper(');
     });
 
     it('should be able to handle multiple helpers per file', async() => {
@@ -315,15 +315,15 @@ describe('Renderer to Renderer2 migration', () => {
 
       const content = tree.readContent('/index.ts');
 
-      expect(content.match(/function ngRendererCreateTextHelper\(/g) !.length)
+      expect(content.match(/function __ngRendererCreateTextHelper\(/g) !.length)
           .toBe(1, 'Expected exactly one helper for createElement.');
-      expect(content.match(/function ngRendererCreateElementHelper\(/g) !.length)
+      expect(content.match(/function __ngRendererCreateElementHelper\(/g) !.length)
           .toBe(1, 'Expected exactly one helper for createText.');
-      expect(content.match(/function ngRendererCreateTemplateAnchorHelper\(/g) !.length)
+      expect(content.match(/function __ngRendererCreateTemplateAnchorHelper\(/g) !.length)
           .toBe(1, 'Expected exactly one helper for createTemplateAnchor.');
     });
 
-    it('should create the ngRendererSplitNamespaceHelper', async() => {
+    it('should create the __ngRendererSplitNamespaceHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -338,7 +338,7 @@ describe('Renderer to Renderer2 migration', () => {
       await runMigration();
 
       expect(stripWhitespace(tree.readContent('/index.ts'))).toContain(stripWhitespace(`
-        function ngRendererSplitNamespaceHelper(name: AnyDuringRendererMigration) {
+        function __ngRendererSplitNamespaceHelper(name: AnyDuringRendererMigration) {
           if (name[0] === ":") {
             const match = name.match(/^:([^:]+):(.+)$/);
             return [match[1], match[2]];
@@ -626,7 +626,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('setElementAttribute migration', () => {
-    it('should migrate to calls to the ngRendererSetElementAttributeHelper', async() => {
+    it('should migrate to calls to the __ngRendererSetElementAttributeHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -647,12 +647,12 @@ describe('Renderer to Renderer2 migration', () => {
       const content = tree.readContent('/index.ts');
 
       expect(content).toContain(
-          `ngRendererSetElementAttributeHelper(_renderer, _element.nativeElement, 'title', 'hello');`);
+          `__ngRendererSetElementAttributeHelper(_renderer, _element.nativeElement, 'title', 'hello');`);
       expect(content).toContain(
-          'ngRendererSetElementAttributeHelper(this._renderer, this._element.nativeElement, name);');
+          '__ngRendererSetElementAttributeHelper(this._renderer, this._element.nativeElement, name);');
     });
 
-    it('should declare the ngRendererSetElementAttributeHelper', async() => {
+    it('should declare the __ngRendererSetElementAttributeHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -669,8 +669,8 @@ describe('Renderer to Renderer2 migration', () => {
       const content = stripWhitespace(tree.readContent('/index.ts'));
 
       expect(content).toContain(stripWhitespace(`
-        function ngRendererSetElementAttributeHelper(renderer: AnyDuringRendererMigration, element: AnyDuringRendererMigration, namespaceAndName: AnyDuringRendererMigration, value?: AnyDuringRendererMigration) {
-          const [namespace, name] = ngRendererSplitNamespaceHelper(namespaceAndName);
+        function __ngRendererSetElementAttributeHelper(renderer: AnyDuringRendererMigration, element: AnyDuringRendererMigration, namespaceAndName: AnyDuringRendererMigration, value?: AnyDuringRendererMigration) {
+          const [namespace, name] = __ngRendererSplitNamespaceHelper(namespaceAndName);
           if (value != null) {
             renderer.setAttribute(element, name, value, namespace);
           } else {
@@ -679,7 +679,7 @@ describe('Renderer to Renderer2 migration', () => {
         }
       `));
 
-      expect(content).toContain(stripWhitespace('function ngRendererSplitNamespaceHelper('));
+      expect(content).toContain(stripWhitespace('function __ngRendererSplitNamespaceHelper('));
     });
 
   });
@@ -807,7 +807,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('createElement migration', () => {
-    it('should migrate to calls to the ngRendererCreateElementHelper', async() => {
+    it('should migrate to calls to the __ngRendererCreateElementHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -829,12 +829,12 @@ describe('Renderer to Renderer2 migration', () => {
       const content = tree.readContent('/index.ts');
 
       expect(content).toContain(
-          `const message = ngRendererCreateElementHelper(_renderer, _element.nativeElement, 'span');`);
+          `const message = __ngRendererCreateElementHelper(_renderer, _element.nativeElement, 'span');`);
       expect(content).toContain(
-          'return ngRendererCreateElementHelper(this._renderer, this._element.nativeElement, nodeName);');
+          'return __ngRendererCreateElementHelper(this._renderer, this._element.nativeElement, nodeName);');
     });
 
-    it('should declare the ngRendererCreateElementHelper', async() => {
+    it('should declare the __ngRendererCreateElementHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -851,8 +851,8 @@ describe('Renderer to Renderer2 migration', () => {
       const content = stripWhitespace(tree.readContent('/index.ts'));
 
       expect(content).toContain(stripWhitespace(`
-        function ngRendererCreateElementHelper(renderer: AnyDuringRendererMigration, parent: AnyDuringRendererMigration, namespaceAndName: AnyDuringRendererMigration) {
-          const [namespace, name] = ngRendererSplitNamespaceHelper(namespaceAndName);
+        function __ngRendererCreateElementHelper(renderer: AnyDuringRendererMigration, parent: AnyDuringRendererMigration, namespaceAndName: AnyDuringRendererMigration) {
+          const [namespace, name] = __ngRendererSplitNamespaceHelper(namespaceAndName);
           const node = renderer.createElement(name, namespace);
           if (parent) {
             renderer.appendChild(parent, node);
@@ -861,13 +861,13 @@ describe('Renderer to Renderer2 migration', () => {
         }
       `));
 
-      expect(content).toContain(stripWhitespace('function ngRendererSplitNamespaceHelper('));
+      expect(content).toContain(stripWhitespace('function __ngRendererSplitNamespaceHelper('));
     });
 
   });
 
   describe('createText migration', () => {
-    it('should migrate to calls to the ngRendererCreateTextHelper', async() => {
+    it('should migrate to calls to the __ngRendererCreateTextHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -889,12 +889,12 @@ describe('Renderer to Renderer2 migration', () => {
       const content = tree.readContent('/index.ts');
 
       expect(content).toContain(
-          `const message = ngRendererCreateTextHelper(_renderer, _element.nativeElement, 'hello');`);
+          `const message = __ngRendererCreateTextHelper(_renderer, _element.nativeElement, 'hello');`);
       expect(content).toContain(
-          'return ngRendererCreateTextHelper(this._renderer, this._element.nativeElement, value);');
+          'return __ngRendererCreateTextHelper(this._renderer, this._element.nativeElement, value);');
     });
 
-    it('should declare the ngRendererCreateTextHelper', async() => {
+    it('should declare the __ngRendererCreateTextHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -909,7 +909,7 @@ describe('Renderer to Renderer2 migration', () => {
       await runMigration();
 
       expect(stripWhitespace(tree.readContent('/index.ts'))).toContain(stripWhitespace(`
-        function ngRendererCreateTextHelper(renderer: AnyDuringRendererMigration, parent: AnyDuringRendererMigration, value: AnyDuringRendererMigration) {
+        function __ngRendererCreateTextHelper(renderer: AnyDuringRendererMigration, parent: AnyDuringRendererMigration, value: AnyDuringRendererMigration) {
           const node = renderer.createText(value);
           if (parent) {
             renderer.appendChild(parent, node);
@@ -922,7 +922,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('createTemplateAnchor migration', () => {
-    it('should migrate to calls to the ngRendererCreateTemplateAnchorHelper', async() => {
+    it('should migrate to calls to the __ngRendererCreateTemplateAnchorHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -943,12 +943,12 @@ describe('Renderer to Renderer2 migration', () => {
       const content = tree.readContent('/index.ts');
 
       expect(content).toContain(
-          `console.log(ngRendererCreateTemplateAnchorHelper(_renderer, _element.nativeElement));`);
+          `console.log(__ngRendererCreateTemplateAnchorHelper(_renderer, _element.nativeElement));`);
       expect(content).toContain(
-          'return ngRendererCreateTemplateAnchorHelper(this._renderer, this._element.nativeElement);');
+          'return __ngRendererCreateTemplateAnchorHelper(this._renderer, this._element.nativeElement);');
     });
 
-    it('should declare the ngRendererCreateTemplateAnchorHelper', async() => {
+    it('should declare the __ngRendererCreateTemplateAnchorHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -963,7 +963,7 @@ describe('Renderer to Renderer2 migration', () => {
       await runMigration();
 
       expect(stripWhitespace(tree.readContent('/index.ts'))).toContain(stripWhitespace(`
-        function ngRendererCreateTemplateAnchorHelper(renderer: AnyDuringRendererMigration, parent: AnyDuringRendererMigration) {
+        function __ngRendererCreateTemplateAnchorHelper(renderer: AnyDuringRendererMigration, parent: AnyDuringRendererMigration) {
           const node = renderer.createComment("");
           if (parent) {
             renderer.appendChild(parent, node);
@@ -976,7 +976,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('projectNodes migration', () => {
-    it('should migrate to calls to the ngRendererProjectNodesHelper', async() => {
+    it('should migrate to calls to the __ngRendererProjectNodesHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -995,10 +995,10 @@ describe('Renderer to Renderer2 migration', () => {
 
       expect(tree.readContent('/index.ts'))
           .toContain(
-              'ngRendererProjectNodesHelper(this._renderer, this._element.nativeElement, nodesToProject);');
+              '__ngRendererProjectNodesHelper(this._renderer, this._element.nativeElement, nodesToProject);');
     });
 
-    it('should declare the ngRendererProjectNodesHelper', async() => {
+    it('should declare the __ngRendererProjectNodesHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1013,7 +1013,7 @@ describe('Renderer to Renderer2 migration', () => {
       await runMigration();
 
       expect(stripWhitespace(tree.readContent('/index.ts'))).toContain(stripWhitespace(`
-        function ngRendererProjectNodesHelper(renderer: AnyDuringRendererMigration, parent: AnyDuringRendererMigration, nodes: AnyDuringRendererMigration) {
+        function __ngRendererProjectNodesHelper(renderer: AnyDuringRendererMigration, parent: AnyDuringRendererMigration, nodes: AnyDuringRendererMigration) {
           for (let i = 0; i < nodes.length; i++) {
             renderer.appendChild(parent, nodes[i]);
           }
@@ -1024,7 +1024,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('animate migration', () => {
-    it('should migrate to calls to the ngRendererAnimateHelper', async() => {
+    it('should migrate to calls to the __ngRendererAnimateHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1041,10 +1041,10 @@ describe('Renderer to Renderer2 migration', () => {
 
       await runMigration();
 
-      expect(tree.readContent('/index.ts')).toContain('ngRendererAnimateHelper();');
+      expect(tree.readContent('/index.ts')).toContain('__ngRendererAnimateHelper();');
     });
 
-    it('should declare the ngRendererAnimateHelper', async() => {
+    it('should declare the __ngRendererAnimateHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1059,7 +1059,7 @@ describe('Renderer to Renderer2 migration', () => {
       await runMigration();
 
       expect(stripWhitespace(tree.readContent('/index.ts'))).toContain(stripWhitespace(`
-        function ngRendererAnimateHelper() {
+        function __ngRendererAnimateHelper() {
           throw new Error("Renderer.animate is no longer supported!");
         }
       `));
@@ -1068,7 +1068,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('destroyView migration', () => {
-    it('should migrate to calls to the ngRendererDestroyViewHelper', async() => {
+    it('should migrate to calls to the __ngRendererDestroyViewHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1086,10 +1086,10 @@ describe('Renderer to Renderer2 migration', () => {
       await runMigration();
 
       expect(tree.readContent('/index.ts'))
-          .toContain('ngRendererDestroyViewHelper(this._renderer, allNodes);');
+          .toContain('__ngRendererDestroyViewHelper(this._renderer, allNodes);');
     });
 
-    it('should declare the ngRendererDestroyViewHelper', async() => {
+    it('should declare the __ngRendererDestroyViewHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1107,7 +1107,7 @@ describe('Renderer to Renderer2 migration', () => {
       await runMigration();
 
       expect(stripWhitespace(tree.readContent('/index.ts'))).toContain(stripWhitespace(`
-        function ngRendererDestroyViewHelper(renderer: AnyDuringRendererMigration, allNodes: AnyDuringRendererMigration) {
+        function __ngRendererDestroyViewHelper(renderer: AnyDuringRendererMigration, allNodes: AnyDuringRendererMigration) {
           for (let i = 0; i < allNodes.length; i++) {
             renderer.destroyNode(allNodes[i]);
           }
@@ -1117,7 +1117,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('detachView migration', () => {
-    it('should migrate to calls to the ngRendererDetachViewHelper', async() => {
+    it('should migrate to calls to the __ngRendererDetachViewHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component } from '@angular/core';
 
@@ -1135,10 +1135,10 @@ describe('Renderer to Renderer2 migration', () => {
       await runMigration();
 
       expect(tree.readContent('/index.ts'))
-          .toContain('ngRendererDetachViewHelper(this._renderer, rootNodes);');
+          .toContain('__ngRendererDetachViewHelper(this._renderer, rootNodes);');
     });
 
-    it('should declare the ngRendererDetachViewHelper', async() => {
+    it('should declare the __ngRendererDetachViewHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component } from '@angular/core';
 
@@ -1156,7 +1156,7 @@ describe('Renderer to Renderer2 migration', () => {
       await runMigration();
 
       expect(stripWhitespace(tree.readContent('/index.ts'))).toContain(stripWhitespace(`
-        function ngRendererDetachViewHelper(renderer: AnyDuringRendererMigration, rootNodes: AnyDuringRendererMigration) {
+        function __ngRendererDetachViewHelper(renderer: AnyDuringRendererMigration, rootNodes: AnyDuringRendererMigration) {
           for (let i = 0; i < rootNodes.length; i++) {
             const node = rootNodes[i];
             renderer.removeChild(renderer.parentNode(node), node);
@@ -1167,7 +1167,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('attachViewAfter migration', () => {
-    it('should migrate to calls to the ngRendererAttachViewAfterHelper', async() => {
+    it('should migrate to calls to the __ngRendererAttachViewAfterHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1186,10 +1186,10 @@ describe('Renderer to Renderer2 migration', () => {
 
       expect(tree.readContent('/index.ts'))
           .toContain(
-              'ngRendererAttachViewAfterHelper(this._renderer, this._element.nativeElement, rootNodes);');
+              '__ngRendererAttachViewAfterHelper(this._renderer, this._element.nativeElement, rootNodes);');
     });
 
-    it('should declare the ngRendererAttachViewAfterHelper', async() => {
+    it('should declare the __ngRendererAttachViewAfterHelper', async() => {
       writeFile('/index.ts', `
         import { Renderer, Component } from '@angular/core';
 
@@ -1207,7 +1207,7 @@ describe('Renderer to Renderer2 migration', () => {
       await runMigration();
 
       expect(stripWhitespace(tree.readContent('/index.ts'))).toContain(stripWhitespace(`
-        function ngRendererAttachViewAfterHelper(renderer: AnyDuringRendererMigration, node: AnyDuringRendererMigration, rootNodes: AnyDuringRendererMigration) {
+        function __ngRendererAttachViewAfterHelper(renderer: AnyDuringRendererMigration, node: AnyDuringRendererMigration, rootNodes: AnyDuringRendererMigration) {
           const parent = renderer.parentNode(node);
           const nextSibling = renderer.nextSibling(node);
           for (let i = 0; i < rootNodes.length; i++) {
