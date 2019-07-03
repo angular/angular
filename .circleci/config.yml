@@ -504,6 +504,8 @@ jobs:
     steps:
       - *attach_workspace
       - *init_environment
+      # The integration/bazel folder needs the settings for running Bazel under CircleCI
+      - *setup_circleci_bazel_config
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
       # amount of container nodes for this job is controlled by the "parallelism" option.
       - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}

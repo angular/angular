@@ -1,11 +1,4 @@
-###############################
-# Typescript / Angular / Sass #
-###############################
-
-# Make compilation fast, by keeping a few copies of the compilers
-# running as daemons, and cache SourceFile AST's to reduce parse time.
-build --strategy=AngularTemplateCompile=worker
-build --strategy=TypeScriptCompile=worker
+import %workspace%/.bazelrc.common
 
 # Enable debugging tests with --config=debug
 test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
@@ -26,24 +19,6 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 # MacOS High Sierra.
 # See https://github.com/bazelbuild/bazel/issues/4603
 build --symlink_prefix=dist/
-
-# Disable watchfs as it causes tests to be flaky on Windows
-# https://github.com/angular/angular/issues/29541
-build --nowatchfs
-
-# Turn off legacy external runfiles
-run --nolegacy_external_runfiles
-test --nolegacy_external_runfiles
-
-# Turn on --incompatible_strict_action_env which was on by default
-# in Bazel 0.21.0 but turned off again in 0.22.0. Follow
-# https://github.com/bazelbuild/bazel/issues/7026 for more details.
-# This flag is needed to so that the bazel cache is not invalidated
-# when running bazel via `yarn bazel`.
-# See https://github.com/angular/angular/issues/27514.
-build --incompatible_strict_action_env
-run --incompatible_strict_action_env
-test --incompatible_strict_action_env
 
 ###############################
 # Saucelabs support           #
@@ -82,25 +57,6 @@ query --output=label_kind
 
 # By default, failing tests don't print any output, it goes to the log file
 test --test_output=errors
-
-# Show which actions are run under workers,
-# and print all the actions running in parallel.
-# Helps to demonstrate that bazel uses all the cores on the machine.
-build --experimental_ui
-test --experimental_ui
-
-################################
-# Settings for CircleCI        #
-################################
-
-# Bazel flags for CircleCI are in /.circleci/bazel.rc
-
-################################
-# Temporary Settings for Ivy   #
-################################
-# to determine if the compiler used should be Ivy or ViewEngine one can use `--define=compile=aot` on
-# any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
-build --define=compile=legacy
 
 ###############################
 # Remote Build Execution support
@@ -142,40 +98,6 @@ build:remote --remote_upload_local_results=false
 build:remote --bes_backend=buildeventservice.googleapis.com
 build:remote --bes_timeout=30s
 build:remote --bes_results_url="https://source.cloud.google.com/results/invocations/"
-
-###############################
-# NodeJS rules settings
-# These settings are required for rules_nodejs
-###############################
-
-# Turn on managed directories feature in Bazel
-# This allows us to avoid installing a second copy of node_modules
-common --experimental_allow_incremental_repository_updates
-
-# This option is changed to true in Bazel 0.27 and exposes a possible
-# regression in Bazel 0.27.0.
-# Error observed is in npm_package target `//packages/common/locales:package`:
-# ```
-# ERROR: /home/circleci/ng/packages/common/locales/BUILD.bazel:13:1: Assembling
-# npm package packages/common/locales/package failed: No usable spawn strategy found
-# for spawn with mnemonic SkylarkAction.  Your --spawn_strategyor --strategy flags
-# are probably too strict. Visit https://github.com/bazelbuild/bazel/issues/7480 for
-# migration advises
-# ```
-# Suspect is https://github.com/bazelbuild/rules_nodejs/blob/master/internal/npm_package/npm_package.bzl#L75-L82:
-# ```
-# execution_requirements = {
-#     # Never schedule this action remotely because it's not computationally expensive.
-#     # It just copies files into a directory; it's not worth copying inputs and outputs to a remote worker.
-#     # Also don't run it in a sandbox, because it resolves an absolute path to the bazel-out directory
-#     # allowing the .pack and .publish runnables to work with no symlink_prefix
-#     # See https://github.com/bazelbuild/rules_nodejs/issues/187
-#     "local": "1",
-# },
-# ```
-build --incompatible_list_based_execution_strategy_selection=false
-test --incompatible_list_based_execution_strategy_selection=false
-run --incompatible_list_based_execution_strategy_selection=false
 
 ####################################################
 # User bazel configuration
