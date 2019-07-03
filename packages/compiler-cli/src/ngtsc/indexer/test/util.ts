@@ -10,9 +10,9 @@ import {BoundTarget, CssSelector, ParseTemplateOptions, R3TargetBinder, Selector
 import * as ts from 'typescript';
 import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {Reference} from '../../imports';
-import {DirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
+import {ComponentMeta} from '../src/context';
 
 /** Dummy file URL */
 export function getTestFilePath(): AbsoluteFsPath {
@@ -41,16 +41,12 @@ export function getComponentDeclaration(componentStr: string, className: string)
 export function getBoundTemplate(
     template: string, options: ParseTemplateOptions = {},
     components: Array<{selector: string, declaration: ClassDeclaration}> =
-        []): BoundTarget<DirectiveMeta> {
-  const matcher = new SelectorMatcher<DirectiveMeta>();
+        []): BoundTarget<ComponentMeta> {
+  const matcher = new SelectorMatcher<ComponentMeta>();
   components.forEach(({selector, declaration}) => {
     matcher.addSelectables(CssSelector.parse(selector), {
       ref: new Reference(declaration),
       selector,
-      queries: [],
-      ngTemplateGuards: [],
-      hasNgTemplateContextGuard: false,
-      baseClass: null,
       name: declaration.name.getText(),
       isComponent: true,
       inputs: {},
