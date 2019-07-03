@@ -11,16 +11,16 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 
 /**
- * @description
- *
- * Name of the primary outlet.
+ * The primary routing outlet.
  *
  * @publicApi
  */
 export const PRIMARY_OUTLET = 'primary';
 
 /**
- * A collection of parameters.
+ * A collection of matrix and query URL parameters.
+ * @see `convertToParamMap()`
+ * @see `ParamMap`
  *
  * @publicApi
  */
@@ -29,34 +29,40 @@ export type Params = {
 };
 
 /**
- * Matrix and Query parameters.
+ * A map that provides access to the required and optional parameters
+ * specific to a route.
+ * The map supports retrieving a single value with `get()`
+ * or multiple values with `getAll()`.
  *
- * `ParamMap` makes it easier to work with parameters as they could have either a single value or
- * multiple value. Because this should be known by the user, calling `get` or `getAll` returns the
- * correct type (either `string` or `string[]`).
- *
- * The API is inspired by the URLSearchParams interface.
- * see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+ * @see [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams)
  *
  * @publicApi
  */
 export interface ParamMap {
+  /**
+   * Reports whether the map contains a given parameter.
+   * @param name The parameter name.
+   * @returns True if the map contains the given parameter, false otherwise.
+   */
   has(name: string): boolean;
   /**
-   * Return a single value for the given parameter name:
-   * - the value when the parameter has a single value,
-   * - the first value if the parameter has multiple values,
-   * - `null` when there is no such parameter.
+   * Retrieves a single value for a parameter.
+   * @param name The parameter name.
+   * @return The parameter's single value,
+   * or the first value if the parameter has multiple values,
+   * or `null` when there is no such parameter.
    */
   get(name: string): string|null;
   /**
-   * Return an array of values for the given parameter name.
+   * Retrieves multiple values for a parameter.
+   * @param name The parameter name.
+   * @return An array containing one or more values,
+   * or an empty array if there is no such parameter.
    *
-   * If there is no such parameter, an empty array is returned.
    */
   getAll(name: string): string[];
 
-  /** Name of the parameters */
+  /** Names of the parameters in the map. */
   readonly keys: string[];
 }
 
@@ -89,7 +95,9 @@ class ParamsAsMap implements ParamMap {
 }
 
 /**
- * Convert a `Params` instance to a `ParamMap`.
+ * Converts a `Params` instance to a `ParamMap`.
+ * @param params The instance to convert.
+ * @returns The new map instance.
  *
  * @publicApi
  */
