@@ -149,16 +149,6 @@ export class Identifiers {
 
   static restoreView: o.ExternalReference = {name: 'ɵɵrestoreView', moduleName: CORE};
 
-  static interpolation1: o.ExternalReference = {name: 'ɵɵinterpolation1', moduleName: CORE};
-  static interpolation2: o.ExternalReference = {name: 'ɵɵinterpolation2', moduleName: CORE};
-  static interpolation3: o.ExternalReference = {name: 'ɵɵinterpolation3', moduleName: CORE};
-  static interpolation4: o.ExternalReference = {name: 'ɵɵinterpolation4', moduleName: CORE};
-  static interpolation5: o.ExternalReference = {name: 'ɵɵinterpolation5', moduleName: CORE};
-  static interpolation6: o.ExternalReference = {name: 'ɵɵinterpolation6', moduleName: CORE};
-  static interpolation7: o.ExternalReference = {name: 'ɵɵinterpolation7', moduleName: CORE};
-  static interpolation8: o.ExternalReference = {name: 'ɵɵinterpolation8', moduleName: CORE};
-  static interpolationV: o.ExternalReference = {name: 'ɵɵinterpolationV', moduleName: CORE};
-
   static pureFunction0: o.ExternalReference = {name: 'ɵɵpureFunction0', moduleName: CORE};
   static pureFunction1: o.ExternalReference = {name: 'ɵɵpureFunction1', moduleName: CORE};
   static pureFunction2: o.ExternalReference = {name: 'ɵɵpureFunction2', moduleName: CORE};

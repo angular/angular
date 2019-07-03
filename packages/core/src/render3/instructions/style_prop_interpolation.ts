@@ -5,10 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {getLView} from '../state';
 import {NO_CHANGE} from '../tokens';
-import {ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV} from './interpolation';
+
+import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
 import {TsickleIssue1009} from './shared';
 import {ɵɵstyleProp} from './styling';
+
 
 
 /**
@@ -41,8 +44,7 @@ import {ɵɵstyleProp} from './styling';
 export function ɵɵstylePropInterpolate1(
     styleIndex: number, prefix: string, v0: any, suffix: string, valueSuffix?: string | null,
     forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = ɵɵinterpolation1(prefix, v0, suffix);
+  const interpolatedValue = interpolation1(getLView(), prefix, v0, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
   }
@@ -81,8 +83,7 @@ export function ɵɵstylePropInterpolate1(
 export function ɵɵstylePropInterpolate2(
     styleIndex: number, prefix: string, v0: any, i0: string, v1: any, suffix: string,
     valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = ɵɵinterpolation2(prefix, v0, i0, v1, suffix);
+  const interpolatedValue = interpolation2(getLView(), prefix, v0, i0, v1, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
   }
@@ -123,8 +124,7 @@ export function ɵɵstylePropInterpolate2(
 export function ɵɵstylePropInterpolate3(
     styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix);
+  const interpolatedValue = interpolation3(getLView(), prefix, v0, i0, v1, i1, v2, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
   }
@@ -168,8 +168,7 @@ export function ɵɵstylePropInterpolate4(
     styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     i2: string, v3: any, suffix: string, valueSuffix?: string | null,
     forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
+  const interpolatedValue = interpolation4(getLView(), prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
   }
@@ -215,8 +214,8 @@ export function ɵɵstylePropInterpolate5(
     styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     i2: string, v3: any, i3: string, v4: any, suffix: string, valueSuffix?: string | null,
     forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
+  const interpolatedValue =
+      interpolation5(getLView(), prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
   }
@@ -264,9 +263,8 @@ export function ɵɵstylePropInterpolate6(
     styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string,
     valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const interpolatedValue =
-      ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
+      interpolation6(getLView(), prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
   }
@@ -317,9 +315,8 @@ export function ɵɵstylePropInterpolate7(
     styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any,
     suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue =
-      ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
+  const interpolatedValue = interpolation7(
+      getLView(), prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
   }
@@ -373,9 +370,8 @@ export function ɵɵstylePropInterpolate8(
     i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string,
     v7: any, suffix: string, valueSuffix?: string | null,
     forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue =
-      ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
+  const interpolatedValue = interpolation8(
+      getLView(), prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     ɵɵstyleProp(styleIndex, interpolatedValue as string, valueSuffix, forceOverride);
   }
@@ -416,8 +412,7 @@ export function ɵɵstylePropInterpolate8(
 export function ɵɵstylePropInterpolateV(
     styleIndex: number, values: any[], valueSuffix?: string | null,
     forceOverride?: boolean): TsickleIssue1009 {
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolated = ɵɵinterpolationV(values);
+  const interpolated = interpolationV(getLView(), values);
   if (interpolated !== NO_CHANGE) {
     ɵɵstyleProp(styleIndex, interpolated as string, valueSuffix, forceOverride);
   }

@@ -8,7 +8,7 @@
 import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
-import {ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV} from './interpolation';
+import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
 import {TsickleIssue1009, textBindingInternal} from './shared';
 
 
@@ -60,7 +60,7 @@ export function ɵɵtextInterpolate(v0: any): TsickleIssue1009 {
 export function ɵɵtextInterpolate1(prefix: string, v0: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
-  const interpolated = ɵɵinterpolation1(prefix, v0, suffix);
+  const interpolated = interpolation1(lView, prefix, v0, suffix);
   if (interpolated !== NO_CHANGE) {
     textBindingInternal(lView, index, interpolated as string);
   }
@@ -90,7 +90,7 @@ export function ɵɵtextInterpolate2(
     prefix: string, v0: any, i0: string, v1: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
-  const interpolated = ɵɵinterpolation2(prefix, v0, i0, v1, suffix);
+  const interpolated = interpolation2(lView, prefix, v0, i0, v1, suffix);
   if (interpolated !== NO_CHANGE) {
     textBindingInternal(lView, index, interpolated as string);
   }
@@ -122,7 +122,7 @@ export function ɵɵtextInterpolate3(
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
-  const interpolated = ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix);
+  const interpolated = interpolation3(lView, prefix, v0, i0, v1, i1, v2, suffix);
   if (interpolated !== NO_CHANGE) {
     textBindingInternal(lView, index, interpolated as string);
   }
@@ -154,7 +154,7 @@ export function ɵɵtextInterpolate4(
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
-  const interpolated = ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
+  const interpolated = interpolation4(lView, prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
   if (interpolated !== NO_CHANGE) {
     textBindingInternal(lView, index, interpolated as string);
   }
@@ -186,7 +186,7 @@ export function ɵɵtextInterpolate5(
     i3: string, v4: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
-  const interpolated = ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
+  const interpolated = interpolation5(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
   if (interpolated !== NO_CHANGE) {
     textBindingInternal(lView, index, interpolated as string);
   }
@@ -220,7 +220,8 @@ export function ɵɵtextInterpolate6(
     i3: string, v4: any, i4: string, v5: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
-  const interpolated = ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
+  const interpolated =
+      interpolation6(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
   if (interpolated !== NO_CHANGE) {
     textBindingInternal(lView, index, interpolated as string);
   }
@@ -254,7 +255,7 @@ export function ɵɵtextInterpolate7(
   const index = getSelectedIndex();
   const lView = getLView();
   const interpolated =
-      ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
+      interpolation7(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
   if (interpolated !== NO_CHANGE) {
     textBindingInternal(lView, index, interpolated as string);
   }
@@ -287,8 +288,8 @@ export function ɵɵtextInterpolate8(
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
-  const interpolated =
-      ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
+  const interpolated = interpolation8(
+      lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
   if (interpolated !== NO_CHANGE) {
     textBindingInternal(lView, index, interpolated as string);
   }
@@ -322,7 +323,7 @@ export function ɵɵtextInterpolate8(
 export function ɵɵtextInterpolateV(values: any[]): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
-  const interpolated = ɵɵinterpolationV(values);
+  const interpolated = interpolationV(lView, values);
   if (interpolated !== NO_CHANGE) {
     textBindingInternal(lView, index, interpolated as string);
   }

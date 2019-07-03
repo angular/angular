@@ -70,16 +70,6 @@ export {
   ɵɵgetCurrentView,
   ɵɵinjectAttribute,
 
-  ɵɵinterpolation1,
-  ɵɵinterpolation2,
-  ɵɵinterpolation3,
-  ɵɵinterpolation4,
-  ɵɵinterpolation5,
-  ɵɵinterpolation6,
-  ɵɵinterpolation7,
-  ɵɵinterpolation8,
-  ɵɵinterpolationV,
-
   ɵɵlistener,
   ɵɵload,
 

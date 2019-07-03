@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {SanitizerFn} from '../interfaces/sanitization';
-import {getSelectedIndex} from '../state';
+import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
-import {ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV} from './interpolation';
+import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
 import {TsickleIssue1009, elementPropertyInternal} from './shared';
+
 
 
 /**
@@ -81,7 +82,7 @@ export function ɵɵpropertyInterpolate1(
     propName: string, prefix: string, v0: any, suffix: string,
     sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  const interpolatedValue = ɵɵinterpolation1(prefix, v0, suffix);
+  const interpolatedValue = interpolation1(getLView(), prefix, v0, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
   }
@@ -122,7 +123,7 @@ export function ɵɵpropertyInterpolate2(
     propName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
     sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  const interpolatedValue = ɵɵinterpolation2(prefix, v0, i0, v1, suffix);
+  const interpolatedValue = interpolation2(getLView(), prefix, v0, i0, v1, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
   }
@@ -166,7 +167,7 @@ export function ɵɵpropertyInterpolate3(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  const interpolatedValue = ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix);
+  const interpolatedValue = interpolation3(getLView(), prefix, v0, i0, v1, i1, v2, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
   }
@@ -212,7 +213,7 @@ export function ɵɵpropertyInterpolate4(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  const interpolatedValue = ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
+  const interpolatedValue = interpolation4(getLView(), prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
   }
@@ -260,7 +261,8 @@ export function ɵɵpropertyInterpolate5(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  const interpolatedValue = ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
+  const interpolatedValue =
+      interpolation5(getLView(), prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
   }
@@ -312,7 +314,7 @@ export function ɵɵpropertyInterpolate6(
     sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
   const interpolatedValue =
-      ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
+      interpolation6(getLView(), prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
   }
@@ -365,8 +367,8 @@ export function ɵɵpropertyInterpolate7(
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string,
     sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  const interpolatedValue =
-      ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
+  const interpolatedValue = interpolation7(
+      getLView(), prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
   }
@@ -421,8 +423,8 @@ export function ɵɵpropertyInterpolate8(
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  const interpolatedValue =
-      ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
+  const interpolatedValue = interpolation8(
+      getLView(), prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
   }
@@ -463,7 +465,7 @@ export function ɵɵpropertyInterpolateV(
     propName: string, values: any[], sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
 
-  const interpolatedValue = ɵɵinterpolationV(values);
+  const interpolatedValue = interpolationV(getLView(), values);
   if (interpolatedValue !== NO_CHANGE) {
     elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
   }
