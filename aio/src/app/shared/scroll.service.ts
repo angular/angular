@@ -1,7 +1,7 @@
 import { DOCUMENT, Location, PlatformLocation, PopStateEvent, ViewportScroller } from '@angular/common';
-import { Injectable, Inject } from '@angular/core';
-import { fromEvent } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { Injectable, Inject, OnDestroy } from '@angular/core';
+import { fromEvent, Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 type ScrollPosition = [number, number];
 interface ScrollPositionPopStateEvent extends PopStateEvent {
@@ -14,10 +14,11 @@ export const topMargin = 16;
  * A service that scrolls document elements into view
  */
 @Injectable()
-export class ScrollService {
+export class ScrollService implements OnDestroy {
 
   private _topOffset: number | null;
   private _topOfPageElement: Element;
+  private onDestroy = new Subject<void>();
 
   // The scroll position which has to be restored, after a `popstate` event.
   poppedStateScrollPosition: ScrollPosition | null = null;
@@ -49,10 +50,13 @@ export class ScrollService {
       private viewportScroller: ViewportScroller,
       private location: Location) {
     // On resize, the toolbar might change height, so "invalidate" the top offset.
-    fromEvent(window, 'resize').subscribe(() => this._topOffset = null);
+    fromEvent(window, 'resize')
+        .pipe(takeUntil(this.onDestroy))
+        .subscribe(() => this._topOffset = null);
 
     fromEvent(window, 'scroll')
-      .pipe(debounceTime(250)).subscribe(() => this.updateScrollPositionInHistory());
+        .pipe(debounceTime(250), takeUntil(this.onDestroy))
+        .subscribe(() => this.updateScrollPositionInHistory());
 
     // Change scroll restoration strategy to `manual` if it's supported
     if (this.supportManualScrollRestoration) {
@@ -73,6 +77,10 @@ export class ScrollService {
         }
       });
     }
+  }
+
+  ngOnDestroy() {
+    this.onDestroy.next();
   }
 
   /**

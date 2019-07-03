@@ -51,6 +51,8 @@ describe('ScrollService', () => {
     spyOn(window, 'scrollBy');
   });
 
+  afterEach(() => scrollService.ngOnDestroy());
+
   it('should debounce `updateScrollPositonInHistory()`', fakeAsync(() => {
     const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
 
@@ -63,6 +65,25 @@ describe('ScrollService', () => {
     expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
     tick(1);
     expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
+  }));
+
+  it('should stop updating scroll position once destroyed', fakeAsync(() => {
+    const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
+
+    window.dispatchEvent(new Event('scroll'));
+    tick(250);
+    expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
+
+    window.dispatchEvent(new Event('scroll'));
+    tick(250);
+    expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(2);
+
+    updateScrollPositionInHistorySpy.calls.reset();
+    scrollService.ngOnDestroy();
+
+    window.dispatchEvent(new Event('scroll'));
+    tick(250);
+    expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
   }));
 
   it('should set `scrollRestoration` to `manual` if supported', () => {
@@ -111,6 +132,23 @@ describe('ScrollService', () => {
 
       expect(scrollService.topOffset).toBe(100 + topMargin);
       expect(document.querySelector).toHaveBeenCalled();
+    });
+
+    it('should stop updating on resize once destroyed', () => {
+      let clientHeight = 50;
+      (document.querySelector as jasmine.Spy).and.callFake(() => ({clientHeight}));
+
+      expect(scrollService.topOffset).toBe(50 + topMargin);
+
+      clientHeight = 100;
+      window.dispatchEvent(new Event('resize'));
+      expect(scrollService.topOffset).toBe(100 + topMargin);
+
+      scrollService.ngOnDestroy();
+
+      clientHeight = 200;
+      window.dispatchEvent(new Event('resize'));
+      expect(scrollService.topOffset).toBe(100 + topMargin);
     });
   });
 
