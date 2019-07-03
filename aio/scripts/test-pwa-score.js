@@ -4,10 +4,23 @@
 /**
  * Usage:
  * ```sh
- * node scripts/test-pwa-score <url> <min-score> [<log-file>]
+ * node scripts/test-pwa-score <url> <min-scores> [<log-file>]
  * ```
  *
- * Fails if the score is below `<min-score>`.
+ * Runs audits against the specified URL on specific categories (accessibility, best practices, performance, PWA, SEO).
+ * It fails, if the score in any category is below the score specified in `<min-scores>`. (Only runs audits for the
+ * specified categories.)
+ *
+ * `<min-scores>` is either a number (in which case it is interpreted as `all:<min-score>`) or a list of comma-separated
+ * strings of the form `key:value`, where `key` is one of `accessibility`, `best-practices`, `performance`, `pwa`, `seo`
+ * or `all` and `value` is a number (between 0 and 100).
+ *
+ * Examples:
+ * - `95` _(Same as `all:95`.)_
+ * - `all:95` _(Run audits for all categories and require a score of 95 or higher.)_
+ * - `all:95,pwa:100` _(Same as `all:95`, except that a scope of 100 is required for the `pwa` category.)_
+ * - `performance:90` _(Only run audits for the `performance` category and require a score of 90 or higher.)_
+ *
  * If `<log-file>` is defined, the full results will be logged there.
  *
  * (Skips HTTPS-related audits, when run for an HTTP URL.)
@@ -20,6 +33,7 @@ const printer = require('lighthouse/lighthouse-cli/printer');
 const logger = require('lighthouse-logger');
 
 // Constants
+const AUDIT_CATEGORIES = ['accessibility', 'best-practices', 'performance', 'pwa', 'seo'];
 const CHROME_LAUNCH_OPTS = {chromeFlags: ['--headless']};
 const LIGHTHOUSE_FLAGS = {logLevel: process.env.CI ? 'error' : 'info'};  // Be less verbose on CI.
 const SKIPPED_HTTPS_AUDITS = ['redirects-http', 'uses-http2'];
@@ -31,42 +45,37 @@ _main(process.argv.slice(2));
 
 // Functions - Definitions
 async function _main(args) {
-  const {url, minScore, logFile} = parseInput(args);
+  const {url, minScores, logFile} = parseInput(args);
   const isOnHttp = /^http:/.test(url);
-  const config = {
+  const lhFlags = {...LIGHTHOUSE_FLAGS, onlyCategories: Object.keys(minScores).sort()};
+  const lhConfig = {
     extends: 'lighthouse:default',
     // Since the Angular ServiceWorker waits for the app to stabilize before registering,
     // wait a few seconds after load to allow Lighthouse to reliably detect it.
     passes: [{passName: 'defaultPass', pauseAfterLoadMs: WAIT_FOR_SW_DELAY}],
   };
 
-  console.log(`Running PWA audit for '${url}'...`);
+  console.log(`Running web-app audits for '${url}'...`);
+  console.log(`  Audit categories: ${lhFlags.onlyCategories.join(', ')}`);
 
   // If testing on HTTP, skip HTTPS-specific tests.
   // (Note: Browsers special-case localhost and run ServiceWorker even on HTTP.)
-  if (isOnHttp) skipHttpsAudits(config);
+  if (isOnHttp) skipHttpsAudits(lhConfig);
 
-  logger.setLevel(LIGHTHOUSE_FLAGS.logLevel);
+  logger.setLevel(lhFlags.logLevel);
 
   try {
     console.log('');
     const startTime = Date.now();
-    const results = await launchChromeAndRunLighthouse(url, LIGHTHOUSE_FLAGS, config);
-    const score = await processResults(results, logFile);
-    evaluateScore(minScore, score);
+    const results = await launchChromeAndRunLighthouse(url, lhFlags, lhConfig);
+    const success = await processResults(results, minScores, logFile);
     console.log(`\n(Completed in ${((Date.now() - startTime) / 1000).toFixed(1)}s.)\n`);
+
+    if (!success) {
+      throw new Error('One or more scores are too low.');
+    }
   } catch (err) {
     onError(err);
-  }
-}
-
-function evaluateScore(expectedScore, actualScore) {
-  console.log('\nLighthouse PWA score:');
-  console.log(`  - Expected: ${formatScore(expectedScore)} (or higher)`);
-  console.log(`  - Actual:   ${formatScore(actualScore)}`);
-
-  if (isNaN(actualScore) || (actualScore < expectedScore)) {
-    throw new Error(`PWA score is too low. (${actualScore} < ${expectedScore})`);
   }
 }
 
@@ -92,25 +101,46 @@ function onError(err) {
 }
 
 function parseInput(args) {
-  const [url, minScoreRaw, logFile] = args;
+  const [url, minScoresRaw, logFile] = args;
 
   if (!url) {
     onError('Invalid arguments: <url> not specified.');
-  } else if (!minScoreRaw) {
-    onError('Invalid arguments: <min-score> not specified.');
+  } else if (!minScoresRaw) {
+    onError('Invalid arguments: <min-scores> not specified.');
   }
 
-  const minScore = Number(minScoreRaw) / 100;
-  const isValid = (0 <= minScore) && (minScore <= 1);
+  const minScores = parseMinScores(minScoresRaw || '');
+  const unknownCategories = Object.keys(minScores).filter(cat => !AUDIT_CATEGORIES.includes(cat));
+  const allValuesValid = Object.values(minScores).every(x => (0 <= x) && (x <= 1));
 
-  if (!isValid) {
-    onError(`Invalid arguments: <min-score> has non-numeric or out-of-range values: ${minScoreRaw}`);
+  if (unknownCategories.length > 0) {
+    onError(`Invalid arguments: <min-scores> contains unknown category(-ies): ${unknownCategories.join(', ')}`);
+  } else if (!allValuesValid) {
+    onError(`Invalid arguments: <min-scores> has non-numeric or out-of-range values: ${minScoresRaw}`);
   }
 
-  return {url, minScore, logFile};
+  return {url, minScores, logFile};
 }
 
-async function processResults(results, logFile) {
+function parseMinScores(raw) {
+  if (/^\d+$/.test(raw)) {
+    raw = `all:${raw}`;
+  }
+
+  const minScores = raw.
+    split(',').
+    map(x => x.split(':')).
+    reduce((aggr, [key, val]) => (aggr[key] = Number(val) / 100, aggr), {});
+
+  if (minScores.hasOwnProperty('all')) {
+    AUDIT_CATEGORIES.forEach(cat => minScores.hasOwnProperty(cat) || (minScores[cat] = minScores.all));
+    delete minScores.all;
+  }
+
+  return minScores;
+}
+
+async function processResults(results, minScores, logFile) {
   const lhVersion = results.lhr.lighthouseVersion;
   const categories = results.lhr.categories;
   const report = results.report;
@@ -123,17 +153,22 @@ async function processResults(results, logFile) {
   }
 
   console.log(`\nLighthouse version: ${lhVersion}`);
-  console.log('\nAudit scores:');
+  console.log('\nAudit results:');
 
   const maxTitleLen = Math.max(...Object.values(categories).map(({title}) => title.length));
-  Object.keys(categories).sort().forEach(cat => {
+  const success = Object.keys(categories).sort().reduce((aggr, cat) => {
     const {title, score} = categories[cat];
     const paddedTitle = `${title}:`.padEnd(maxTitleLen + 1);
+    const minScore = minScores[cat];
+    const passed = !isNaN(score) && (score >= minScore);
 
-    console.log(`  - ${paddedTitle}  ${formatScore(score)}`);
-  });
+    console.log(
+      `  - ${paddedTitle}  ${formatScore(score)}  (Required: ${formatScore(minScore)})  ${passed ? 'OK' : 'FAILED'}`);
 
-  return categories.pwa.score;
+    return aggr && passed;
+  }, true);
+
+  return success;
 }
 
 function skipHttpsAudits(config) {
