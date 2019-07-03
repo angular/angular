@@ -227,3 +227,107 @@ The following example uses the `ignore` field to exclude certain files in the as
  { "glob": "**/*", "input": "src/assets/", "ignore": ["**/*.svg"], "output": "/assets/" },
 ]
 </code-example>
+
+{@a style-script-config}
+
+### Styles and scripts configuration
+
+An array entry for the `styles` and `scripts` options can be a simple path string, or an object that points to an extra entry-point file.
+The associated builder will load that file and its dependencies as a separate bundle during the build.
+With a configuration object, you have the option of naming the bundle for the entry point, using a `bundleName` field.
+
+The bundle is injected by default, but you can set `inject` to false to exclude the bundle from injection.
+For example, the following object values create and name a bundle that contains styles and scripts, and excludes it from injection:
+
+<code-example format="." language="json" linenums="false">
+
+   "styles": [
+     { "input": "src/external-module/styles.scss", "inject": false, "bundleName": "external-module" }
+   ],
+   "scripts": [
+     { "input": "src/external-module/main.js", "inject": false, "bundleName": "external-module" }
+   ]
+
+</code-example>
+
+You can mix simple and complex file references for styles and scripts.
+
+<code-example format="." language="json" linenums="false">
+
+"styles": [
+  "src/styles.css",
+  "src/more-styles.css",
+  { "input": "src/lazy-style.scss", "inject": false },
+  { "input": "src/pre-rename-style.scss", "bundleName": "renamed-style" },
+]
+
+</code-example>
+
+{@a style-preprocessor}
+
+#### Style preprocessor options
+
+In Sass and Stylus you can make use of the `includePaths` functionality for both component and global styles, which allows you to add extra base paths that will be checked for imports.
+
+To add paths, use the `stylePreprocessorOptions` option:
+
+<code-example format="." language="json" linenums="false">
+
+"stylePreprocessorOptions": {
+  "includePaths": [
+    "src/style-paths"
+  ]
+}
+
+</code-example>
+
+Files in that folder, such as `src/style-paths/_variables.scss`, can be imported from anywhere in your project without the need for a relative path:
+
+```ts
+// src/app/app.component.scss
+// A relative path works
+@import '../style-paths/variables';
+// But now this works as well
+@import 'variables';
+```
+
+Note that you will also need to add any styles or scripts to the `test` builder if you need them for unit tests.
+See also [Using runtime-global libraries inside your app](guide/using-libraries#using-runtime-global-libraries-inside-your-app).
+
+
+{@a optimize-and-srcmap}
+
+### Optimization and source map configuration
+
+The `optimization` and `sourceMap` command options are simple Boolean flags.
+You can supply an object as a configuration value for either of these to provide more detailed instruction.
+
+* The flag `--optimization="true"` applies to both scripts and styles. You can supply a value such as the following to apply optimization to one or the other:
+
+<code-example format="." language="json" linenums="false">
+
+   "optimization": { "scripts": true, "styles": false }
+
+</code-example>
+
+* The flag `--sourceMap="true"` outputs source maps for both scripts and styles.
+You can configure the option to apply to one or the other.
+You can also choose to output hidden source maps, or resolve vendor package source maps.
+For example:
+
+<code-example format="." language="json" linenums="false">
+
+   "sourceMaps": { "scripts": true, "styles": false, "hidden": true, "vendor": true }
+
+</code-example>
+
+<div class="alert is-helpful">
+
+   When using hidden source maps, source maps will not be referenced in the bundle.
+   These are useful if you only want source maps to map error stack traces in error reporting tools,
+   but don't want to expose your source maps in the browser developer tools.
+
+   For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by 
+   setting styles optimization to `true` and styles source maps to `false`.
+
+</div>
