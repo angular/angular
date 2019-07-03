@@ -7,9 +7,10 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, LOCALE_ID, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMPONENT_DEF as NG_COMPONENT_DEF, ɵNG_DIRECTIVE_DEF as NG_DIRECTIVE_DEF, ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF, ɵNG_MODULE_DEF as NG_MODULE_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
+import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMPONENT_DEF as NG_COMPONENT_DEF, ɵNG_DIRECTIVE_DEF as NG_DIRECTIVE_DEF, ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF, ɵNG_MODULE_DEF as NG_MODULE_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
+
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
 import {TestModuleMetadata} from './test_bed_common';
@@ -359,11 +360,19 @@ export class R3TestBedCompiler {
 
     const injectorDef: any = (moduleType as any)[NG_INJECTOR_DEF];
     if (this.providerOverridesByToken.size > 0) {
-      if (this.hasProviderOverrides(injectorDef.providers)) {
+      // Extract the list of providers from ModuleWithProviders, so we can define the final list of
+      // providers that might have overrides.
+      // Note: second `flatten` operation is needed to convert an array of providers
+      // (e.g. `[[], []]`) into one flat list, also eliminating empty arrays.
+      const providersFromModules = flatten(flatten(
+          injectorDef.imports, (imported: NgModuleType<any>| ModuleWithProviders<any>) =>
+                                   isModuleWithProviders(imported) ? imported.providers : []));
+      const providers = [...providersFromModules, ...injectorDef.providers];
+      if (this.hasProviderOverrides(providers)) {
         this.maybeStoreNgDef(NG_INJECTOR_DEF, moduleType);
 
         this.storeFieldOfDefOnType(moduleType, NG_INJECTOR_DEF, 'providers');
-        injectorDef.providers = this.getOverriddenProviders(injectorDef.providers);
+        injectorDef.providers = this.getOverriddenProviders(providers);
       }
 
       // Apply provider overrides to imported modules recursively
@@ -693,6 +702,10 @@ function getProviderToken(provider: Provider) {
 
 function isMultiProvider(provider: Provider) {
   return !!getProviderField(provider, 'multi');
+}
+
+function isModuleWithProviders(value: any): value is ModuleWithProviders<any> {
+  return value.hasOwnProperty('ngModule');
 }
 
 function forEachRight<T>(values: T[], fn: (value: T, idx: number) => void): void {
