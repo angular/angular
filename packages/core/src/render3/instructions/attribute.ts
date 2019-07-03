@@ -32,7 +32,6 @@ export function ɵɵattribute(
     namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   const lView = getLView();
-  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const bound = bind(lView, value);
   if (bound !== NO_CHANGE) {
     elementAttributeInternal(index, name, bound, lView, sanitizer, namespace);
