@@ -273,11 +273,11 @@ For example, the following object values create and name a bundle that contains 
 <code-example format="." language="json" linenums="false">
 
    "styles": [
-     {"input": "src/external-module/styles.scss", "inject": false, "bundleName: "external-module"}
-     ]
-   "scripts": [{
-     "input": "src/external-module/main.ts", "inject": false, "bundleName: "external-module"}
-     ]
+     { "input": "src/external-module/styles.scss", "inject": false, "bundleName": "external-module" }
+   ],
+   "scripts": [
+     { "input": "src/external-module/main.js", "inject": false, "bundleName": "external-module" }
+   ]
 
 </code-example>
 
@@ -288,9 +288,9 @@ You can mix simple and complex file references for styles and scripts.
 "styles": [
   "src/styles.css",
   "src/more-styles.css",
-  { "input": "src/lazy-style.scss", "lazy": true },
+  { "input": "src/lazy-style.scss", "inject": false },
   { "input": "src/pre-rename-style.scss", "bundleName": "renamed-style" },
-],
+]
 
 </code-example>
 
@@ -302,11 +302,15 @@ In Sass and Stylus you can make use of the `includePaths` functionality for both
 
 To add paths, use the `stylePreprocessorOptions` option:
 
+<code-example format="." language="json" linenums="false">
+
 "stylePreprocessorOptions": {
   "includePaths": [
     "src/style-paths"
   ]
-},
+}
+
+</code-example>
 
 Files in that folder, such as `src/style-paths/_variables.scss`, can be imported from anywhere in your project without the need for a relative path:
 
@@ -333,7 +337,7 @@ You can supply an object as a configuration value for either of these to provide
 
 <code-example format="." language="json" linenums="false">
 
-   "optimization": {"scripts": true, "styles": false}
+   "optimization": { "scripts": true, "styles": false }
 
 </code-example>
 
@@ -344,14 +348,17 @@ For example:
 
 <code-example format="." language="json" linenums="false">
 
-   "sourceMaps": {"scripts": true, "styles": false, "hidden": true, "vendor": true}
+   "sourceMaps": { "scripts": true, "styles": false, "hidden": true, "vendor": true }
 
 </code-example>
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
    When using hidden source maps, source maps will not be referenced in the bundle.
    These are useful if you only want source maps to map error stack traces in error reporting tools,
    but don't want to expose your source maps in the browser developer tools.
+
+   For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by 
+   setting styles optimization to `true` and styles source maps to `false`.
 
 </div>
