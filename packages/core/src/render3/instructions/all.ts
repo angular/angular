@@ -36,7 +36,6 @@ export * from './element';
 export * from './element_container';
 export * from './embedded_view';
 export * from './get_current_view';
-export * from './interpolation';
 export * from './listener';
 export * from './namespace';
 export * from './next_context';

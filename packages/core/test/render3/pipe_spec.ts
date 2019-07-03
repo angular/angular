@@ -9,7 +9,7 @@
 import {Directive as _Directive, Pipe as _Pipe, PipeTransform, WrappedValue, ɵɵdefinePipe} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {ɵɵinterpolation1, ɵɵselect, ɵɵtext, ɵɵtextBinding, ɵɵtextInterpolate1} from '../../src/render3/instructions/all';
+import {ɵɵselect, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/instructions/all';
 import {ɵɵpipe, ɵɵpipeBind1} from '../../src/render3/pipe';
 
 import {TemplateFixture} from './render_util';
