@@ -7,9 +7,8 @@
  */
 import {BoundTarget, ParseSourceFile} from '@angular/compiler';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {DirectiveMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
-import {IndexingContext} from '../src/context';
+import {ComponentMeta, IndexingContext} from '../src/context';
 import {getTemplateIdentifiers} from '../src/template';
 import {generateAnalysis} from '../src/transform';
 import * as util from './util';
@@ -19,7 +18,7 @@ import * as util from './util';
  */
 function populateContext(
     context: IndexingContext, component: ClassDeclaration, selector: string, template: string,
-    boundTemplate: BoundTarget<DirectiveMeta>, isInline: boolean = false) {
+    boundTemplate: BoundTarget<ComponentMeta>, isInline: boolean = false) {
   context.addComponent({
     declaration: component,
     selector,

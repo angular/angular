@@ -7,7 +7,7 @@
  */
 import {AbsoluteFsPath, resolve} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {AbsoluteSourceSpan, IdentifierKind} from '@angular/compiler-cli/src/ngtsc/indexer';
+import {AbsoluteSourceSpan, IdentifierKind, TopLevelIdentifier} from '@angular/compiler-cli/src/ngtsc/indexer';
 import {ParseSourceFile} from '@angular/compiler/src/compiler';
 
 import {NgtscTestEnvironment} from './env';
@@ -66,7 +66,7 @@ runInEachFileSystem(() => {
         const template = indexedComp.template;
 
         expect(template).toEqual({
-          identifiers: new Set([{
+          identifiers: new Set<TopLevelIdentifier>([{
             name: 'foo',
             kind: IdentifierKind.Property,
             span: new AbsoluteSourceSpan(127, 130),
@@ -93,7 +93,7 @@ runInEachFileSystem(() => {
         const template = indexedComp.template;
 
         expect(template).toEqual({
-          identifiers: new Set([{
+          identifiers: new Set<TopLevelIdentifier>([{
             name: 'foo',
             kind: IdentifierKind.Property,
             span: new AbsoluteSourceSpan(2, 5),
@@ -118,20 +118,20 @@ runInEachFileSystem(() => {
         })
         export class TestCmp { foo = 0; }
       `);
-        env.write(testTemplateFile, '<div>  \n  {{foo}}</div>');
+        env.write(testTemplateFile, '  \n  {{foo}}');
         const indexed = env.driveIndexer();
         const [[_, indexedComp]] = Array.from(indexed.entries());
         const template = indexedComp.template;
 
         expect(template).toEqual({
-          identifiers: new Set([{
+          identifiers: new Set<TopLevelIdentifier>([{
             name: 'foo',
             kind: IdentifierKind.Property,
-            span: new AbsoluteSourceSpan(12, 15),
+            span: new AbsoluteSourceSpan(7, 10),
           }]),
           usedComponents: new Set(),
           isInline: false,
-          file: new ParseSourceFile('<div>  \n  {{foo}}</div>', testTemplateFile),
+          file: new ParseSourceFile('  \n  {{foo}}', testTemplateFile),
         });
       });
 
