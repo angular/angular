@@ -21,7 +21,7 @@ const logger = require('lighthouse-logger');
 // Constants
 const CHROME_LAUNCH_OPTS = {};
 const LIGHTHOUSE_FLAGS = {logLevel: 'info'};
-const SKIPPED_HTTPS_AUDITS = ['redirects-http'];
+const SKIPPED_HTTPS_AUDITS = ['redirects-http', 'uses-http2'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
 const WAIT_FOR_SW_DELAY = 5000;
 
