@@ -93,16 +93,16 @@ export type ResolveData = {
 /**
  *
  * A function that is called to resolve a collection of lazy-loaded routes.
- * 
+ *
  * Often this function will be implemented using an ES dynamic `import()` expression. For example:
- * 
+ *
  * ```
  * [{
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
  * }];
  * ```
- * 
+ *
  * This function _must_ match the form above: an arrow function of the form
  * `() => import('...').then(mod => mod.MODULE)`.
  *
@@ -143,7 +143,8 @@ export type DeprecatedLoadChildren = string;
  * - `merge` : Merge new with current parameters.
  * - `preserve` : Preserve current parameters.
  *
- * @see `RouterLink#queryParamsHandling`.
+ * @see `NavigationExtras#queryParamsHandling`
+ * @see `RouterLink`
  * @publicApi
  */
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
