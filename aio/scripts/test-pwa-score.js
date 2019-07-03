@@ -19,7 +19,7 @@ const printer = require('lighthouse/lighthouse-cli/printer');
 const logger = require('lighthouse-logger');
 
 // Constants
-const CHROME_LAUNCH_OPTS = {};
+const CHROME_LAUNCH_OPTS = {chromeFlags: ['--headless']};
 const LIGHTHOUSE_FLAGS = {logLevel: 'info'};
 const SKIPPED_HTTPS_AUDITS = ['redirects-http', 'uses-http2'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
