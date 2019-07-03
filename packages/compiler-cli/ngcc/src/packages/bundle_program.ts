@@ -32,9 +32,11 @@ export interface BundleProgram {
  */
 export function makeBundleProgram(
     fs: FileSystem, isCore: boolean, path: AbsoluteFsPath, r3FileName: string,
-    options: ts.CompilerOptions, host: ts.CompilerHost): BundleProgram {
+    options: ts.CompilerOptions, host: ts.CompilerHost,
+    additionalFiles: AbsoluteFsPath[] = []): BundleProgram {
   const r3SymbolsPath = isCore ? findR3SymbolsPath(fs, dirname(path), r3FileName) : null;
-  const rootPaths = r3SymbolsPath ? [path, r3SymbolsPath] : [path];
+  let rootPaths =
+      r3SymbolsPath ? [path, r3SymbolsPath, ...additionalFiles] : [path, ...additionalFiles];
 
   const originalGetExpandoInitializer = patchTsGetExpandoInitializer();
   const program = ts.createProgram(rootPaths, options, host);
