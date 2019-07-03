@@ -33,8 +33,10 @@
     "set-opensearch-url": "node --eval \"const sh = require('shelljs'); sh.set('-e'); sh.sed('-i', /PLACEHOLDER_URL/g, process.argv[1], 'dist/assets/opensearch.xml');\"",
     "presmoke-tests": "yarn update-webdriver",
     "smoke-tests": "protractor tests/deployment/e2e/protractor.conf.js --suite smoke --baseUrl",
+    "test-a11y-score": "node scripts/test-aio-a11y",
+    "test-a11y-score-localhost": "run-p --race \"~~light-server -s dist -p 4200 --quiet\" \"test-a11y-score http://localhost:4200\" --",
     "test-pwa-score": "run-s \"~~audit-web-app {1} all:0,pwa:{2} {3}\" --",
-    "test-pwa-score-localhost": "run-p --race \"~~http-server dist -p 4200 --silent\" \"test-pwa-score http://localhost:4200 {1} {2}\" --",
+    "test-pwa-score-localhost": "run-p --race \"~~light-server -s dist -p 4200 --quiet\" \"test-pwa-score http://localhost:4200 {1} {2}\" --",
     "example-e2e": "yarn example-check-local && node ./tools/examples/run-example-e2e",
     "example-lint": "tslint --config \"content/examples/tslint.json\" \"content/examples/**/*.ts\" --exclude \"content/examples/styleguide/**/*.avoid.ts\"",
     "example-use-local": "node tools/ng-packages-installer overwrite ./tools/examples/shared --debug",
@@ -69,7 +71,7 @@
     "~~clean-generated": "node --eval \"require('shelljs').rm('-rf', 'src/generated')\"",
     "~~build": "ng build --configuration=stable",
     "post~~build": "yarn build-404-page",
-    "~~http-server": "http-server"
+    "~~light-server": "light-server --bind=localhost --historyindex=/index.html --no-reload"
   },
   "engines": {
     "node": ">=10.9.0 <11.0.0",
@@ -124,7 +126,6 @@
     "hast-util-is-element": "^1.0.0",
     "hast-util-to-string": "^1.0.0",
     "html": "^1.0.0",
-    "http-server": "^0.11.1",
     "ignore": "^3.3.3",
     "image-size": "^0.5.1",
     "jasmine": "^2.6.0",
@@ -141,6 +142,7 @@
     "karma-coverage-istanbul-reporter": "^1.3.0",
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "light-server": "^2.6.2",
     "lighthouse": "^5.1.0",
     "lighthouse-logger": "^1.2.0",
     "lodash": "^4.17.4",
