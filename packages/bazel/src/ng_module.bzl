@@ -267,8 +267,11 @@ def _expected_outs(ctx):
 
     # TODO(alxhub): i18n is only produced by the legacy compiler currently. This should be re-enabled
     # when ngtsc can extract messages
-    if is_legacy_ngc:
+    if is_legacy_ngc and _is_bazel():
         i18n_messages_files = [ctx.actions.declare_file(ctx.label.name + "_ngc_messages.xmb")]
+    elif is_legacy_ngc:
+        # write the xmb file to blaze-genfiles since that path appears in the translation console keys
+        i18n_messages_files = [ctx.new_file(ctx.genfiles_dir, ctx.label.name + "_ngc_messages.xmb")]
     else:
         i18n_messages_files = []
 
@@ -425,13 +428,19 @@ def ngc_compile_action(
     )
 
     if is_legacy_ngc and messages_out != None:
+        # The base path is bin_dir because of the way the ngc
+        # compiler host is configured. Under Blaze, we need to explicitly
+        # point to genfiles/ to redirect the output.
+        # See _expected_outs above, where the output path for the message file
+        # is conditional on whether we are in Bazel.
+        message_file_path = messages_out[0].short_path if _is_bazel() else "../genfiles/" + messages_out[0].short_path
         ctx.actions.run(
             inputs = inputs,
             outputs = messages_out,
             executable = ctx.executable.ng_xi18n,
             arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
                          [tsconfig_file.path] +
-                         [messages_out[0].short_path]),
+                         [message_file_path]),
             progress_message = "Extracting Angular 2 messages (ng_xi18n)",
             mnemonic = "Angular2MessageExtractor",
         )
