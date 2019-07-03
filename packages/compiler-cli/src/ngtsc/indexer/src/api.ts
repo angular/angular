@@ -15,13 +15,8 @@ import * as ts from 'typescript';
 export enum IdentifierKind {
   Property,
   Method,
-}
-
-/**
- * Describes the absolute byte offsets of a text anchor in a source code.
- */
-export class AbsoluteSourceSpan {
-  constructor(public start: number, public end: number) {}
+  Element,
+  Attribute,
 }
 
 /**
@@ -34,6 +29,43 @@ export interface TemplateIdentifier {
   kind: IdentifierKind;
 }
 
+/** Describes a property accessed in a template. */
+export interface PropertyIdentifier extends TemplateIdentifier { kind: IdentifierKind.Property; }
+
+/** Describes a method accessed in a template. */
+export interface MethodIdentifier extends TemplateIdentifier { kind: IdentifierKind.Method; }
+
+/** Describes an element attribute in a template. */
+export interface AttributeIdentifier extends TemplateIdentifier { kind: IdentifierKind.Attribute; }
+
+/**
+ * Describes an indexed element in a template. The name of an `ElementIdentifier` is the entire
+ * element tag, which can be parsed by an indexer to determine where used directives should be
+ * referenced.
+ */
+export interface ElementIdentifier extends TemplateIdentifier {
+  kind: IdentifierKind.Element;
+
+  /** Attributes on an element. */
+  attributes: Set<AttributeIdentifier>;
+
+  /** Directives applied to an element. */
+  usedDirectives: Set<ts.Declaration>;
+}
+
+/**
+ * Identifiers recorded at the top level of the template, without any context about the HTML nodes
+ * they were discovered in.
+ */
+export type TopLevelIdentifier = PropertyIdentifier | MethodIdentifier | ElementIdentifier;
+
+/**
+ * Describes the absolute byte offsets of a text anchor in a source code.
+ */
+export class AbsoluteSourceSpan {
+  constructor(public start: number, public end: number) {}
+}
+
 /**
  * Describes an analyzed, indexed component and its template.
  */
@@ -42,7 +74,7 @@ export interface IndexedComponent {
   selector: string|null;
   file: ParseSourceFile;
   template: {
-    identifiers: Set<TemplateIdentifier>,
+    identifiers: Set<TopLevelIdentifier>,
     usedComponents: Set<ts.Declaration>,
     isInline: boolean,
     file: ParseSourceFile;
