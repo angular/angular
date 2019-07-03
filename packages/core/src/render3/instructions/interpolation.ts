@@ -8,11 +8,9 @@
 
 import {assertEqual, assertLessThan} from '../../util/assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
-import {BINDING_INDEX, TVIEW} from '../interfaces/view';
-import {getLView} from '../state';
+import {BINDING_INDEX, LView, TVIEW} from '../interfaces/view';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
-
 import {storeBindingMetadata} from './shared';
 
 
@@ -28,14 +26,11 @@ import {storeBindingMetadata} from './shared';
  * - has evaluated expressions at odd indexes.
  *
  * Returns the concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
- *
- * @codeGenApi
  */
-export function ɵɵinterpolationV(values: any[]): string|NO_CHANGE {
+export function interpolationV(lView: LView, values: any[]): string|NO_CHANGE {
   ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
   ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
   let isBindingUpdated = false;
-  const lView = getLView();
   const tData = lView[TVIEW].data;
   let bindingIndex = lView[BINDING_INDEX];
 
@@ -73,11 +68,9 @@ export function ɵɵinterpolationV(values: any[]): string|NO_CHANGE {
  * @param prefix static value used for concatenation only.
  * @param v0 value checked for change.
  * @param suffix static value used for concatenation only.
- *
- * @codeGenApi
  */
-export function ɵɵinterpolation1(prefix: string, v0: any, suffix: string): string|NO_CHANGE {
-  const lView = getLView();
+export function interpolation1(lView: LView, prefix: string, v0: any, suffix: string): string|
+    NO_CHANGE {
   const different = bindingUpdated(lView, lView[BINDING_INDEX]++, v0);
   storeBindingMetadata(lView, prefix, suffix);
   return different ? prefix + renderStringify(v0) + suffix : NO_CHANGE;
@@ -85,12 +78,9 @@ export function ɵɵinterpolation1(prefix: string, v0: any, suffix: string): str
 
 /**
  * Creates an interpolation binding with 2 expressions.
- *
- * @codeGenApi
  */
-export function ɵɵinterpolation2(
-    prefix: string, v0: any, i0: string, v1: any, suffix: string): string|NO_CHANGE {
-  const lView = getLView();
+export function interpolation2(
+    lView: LView, prefix: string, v0: any, i0: string, v1: any, suffix: string): string|NO_CHANGE {
   const bindingIndex = lView[BINDING_INDEX];
   const different = bindingUpdated2(lView, bindingIndex, v0, v1);
   lView[BINDING_INDEX] += 2;
@@ -106,13 +96,10 @@ export function ɵɵinterpolation2(
 
 /**
  * Creates an interpolation binding with 3 expressions.
- *
- * @codeGenApi
  */
-export function ɵɵinterpolation3(
-    prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
-    NO_CHANGE {
-  const lView = getLView();
+export function interpolation3(
+    lView: LView, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
+    suffix: string): string|NO_CHANGE {
   const bindingIndex = lView[BINDING_INDEX];
   const different = bindingUpdated3(lView, bindingIndex, v0, v1, v2);
   lView[BINDING_INDEX] += 3;
@@ -132,13 +119,10 @@ export function ɵɵinterpolation3(
 
 /**
  * Create an interpolation binding with 4 expressions.
- *
- * @codeGenApi
  */
-export function ɵɵinterpolation4(
-    prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
-    suffix: string): string|NO_CHANGE {
-  const lView = getLView();
+export function interpolation4(
+    lView: LView, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, suffix: string): string|NO_CHANGE {
   const bindingIndex = lView[BINDING_INDEX];
   const different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
   lView[BINDING_INDEX] += 4;
@@ -160,13 +144,10 @@ export function ɵɵinterpolation4(
 
 /**
  * Creates an interpolation binding with 5 expressions.
- *
- * @codeGenApi
  */
-export function ɵɵinterpolation5(
-    prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
-    i3: string, v4: any, suffix: string): string|NO_CHANGE {
-  const lView = getLView();
+export function interpolation5(
+    lView: LView, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, suffix: string): string|NO_CHANGE {
   const bindingIndex = lView[BINDING_INDEX];
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
   different = bindingUpdated(lView, bindingIndex + 4, v4) || different;
@@ -190,13 +171,10 @@ export function ɵɵinterpolation5(
 
 /**
  * Creates an interpolation binding with 6 expressions.
- *
- * @codeGenApi
  */
-export function ɵɵinterpolation6(
-    prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
-    i3: string, v4: any, i4: string, v5: any, suffix: string): string|NO_CHANGE {
-  const lView = getLView();
+export function interpolation6(
+    lView: LView, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string): string|NO_CHANGE {
   const bindingIndex = lView[BINDING_INDEX];
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
   different = bindingUpdated2(lView, bindingIndex + 4, v4, v5) || different;
@@ -221,14 +199,11 @@ export function ɵɵinterpolation6(
 
 /**
  * Creates an interpolation binding with 7 expressions.
- *
- * @codeGenApi
  */
-export function ɵɵinterpolation7(
-    prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
-    i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string|
+export function interpolation7(
+    lView: LView, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string|
     NO_CHANGE {
-  const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
   different = bindingUpdated3(lView, bindingIndex + 4, v4, v5, v6) || different;
@@ -255,14 +230,11 @@ export function ɵɵinterpolation7(
 
 /**
  * Creates an interpolation binding with 8 expressions.
- *
- * @codeGenApi
  */
-export function ɵɵinterpolation8(
-    prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
-    i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
+export function interpolation8(
+    lView: LView, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): string|NO_CHANGE {
-  const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
   different = bindingUpdated4(lView, bindingIndex + 4, v4, v5, v6, v7) || different;

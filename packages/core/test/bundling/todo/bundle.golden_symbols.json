@@ -675,10 +675,10 @@
     "name": "executeActionOnContainer"
   },
   {
-    "name": "executeActionOnElementOrContainer"
+    "name": "executeActionOnElementContainerOrIcuContainer"
   },
   {
-    "name": "executeActionOnElementContainerOrIcuContainer"
+    "name": "executeActionOnElementOrContainer"
   },
   {
     "name": "executeActionOnNode"
@@ -1117,6 +1117,9 @@
   },
   {
     "name": "instantiateRootComponent"
+  },
+  {
+    "name": "interpolation1"
   },
   {
     "name": "invertObject"
@@ -1618,9 +1621,6 @@
   },
   {
     "name": "ɵɵinject"
-  },
-  {
-    "name": "ɵɵinterpolation1"
   },
   {
     "name": "ɵɵlistener"
