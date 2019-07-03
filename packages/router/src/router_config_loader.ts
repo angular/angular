@@ -13,7 +13,8 @@ import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './conf
 import {flatten, wrapIntoObservable} from './utils/collection';
 
 /**
- * @docsNotRequired
+ * The [DI token](guide/glossary/#di-token) for a router configuration.
+ * @see `ROUTES`
  * @publicApi
  */
 export const ROUTES = new InjectionToken<Route[][]>('ROUTES');

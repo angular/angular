@@ -31,19 +31,13 @@ import {flatten} from './utils/collection';
 
 
 /**
- * @description
- *
- * Contains a list of directives
- *
- *
+ * The directives defined in the `RouterModule`.
  */
 const ROUTER_DIRECTIVES =
     [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive, EmptyOutletComponent];
 
 /**
- * @description
- *
- * Is used in DI to configure the router.
+ * A [DI token](guide/glossary/#di-token) for the router service.
  *
  * @publicApi
  */
@@ -121,12 +115,12 @@ export function routerNgProbeToken() {
  * In addition, we often want to split applications into multiple bundles and load them on demand.
  * Doing this transparently is not trivial.
  *
- * The Angular router solves these problems. Using the router, you can declaratively specify
+ * The Angular router service solves these problems. Using the router, you can declaratively specify
  * application states, manage state transitions while taking care of the URL, and load bundles on
  * demand.
  *
- * [Read this developer guide](https://angular.io/docs/ts/latest/guide/router.html) to get an
- * overview of how the router should be used.
+ * @see [Routing and Navigation](guide/router.html) for an
+ * overview of how the router service should be used.
  *
  * @publicApi
  */
@@ -140,34 +134,12 @@ export class RouterModule {
   constructor(@Optional() @Inject(ROUTER_FORROOT_GUARD) guard: any, @Optional() router: Router) {}
 
   /**
-   * Creates a module with all the router providers and directives. It also optionally sets up an
-   * application listener to perform an initial navigation.
+   * Creates and configures a module with all the router providers and directives.
+   * Optionally sets up an application listener to perform an initial navigation.
    *
-   * Configuration Options:
-   *
-   * * `enableTracing` Toggles whether the router should log all navigation events to the console.
-   * * `useHash` Enables the location strategy that uses the URL fragment instead of the history
-   * API.
-   * * `initialNavigation` Disables the initial navigation.
-   * * `errorHandler` Defines a custom error handler for failed navigations.
-   * * `preloadingStrategy` Configures a preloading strategy. See `PreloadAllModules`.
-   * * `onSameUrlNavigation` Define what the router should do if it receives a navigation request to
-   * the current URL.
-   * * `scrollPositionRestoration` Configures if the scroll position needs to be restored when
-   * navigating back.
-   * * `anchorScrolling` Configures if the router should scroll to the element when the url has a
-   * fragment.
-   * * `scrollOffset` Configures the scroll offset the router will use when scrolling to an element.
-   * * `paramsInheritanceStrategy` Defines how the router merges params, data and resolved data from
-   * parent to child routes.
-   * * `malformedUriErrorHandler` Defines a custom malformed uri error handler function. This
-   * handler is invoked when encodedURI contains invalid character sequences.
-   * * `urlUpdateStrategy` Defines when the router updates the browser URL. The default behavior is
-   * to update after successful navigation.
-   * * `relativeLinkResolution` Enables the correct relative link resolution in components with
-   * empty paths.
-   *
-   * See `ExtraOptions` for more details about the above options.
+   * @param routes An array of `Route` objects that define the navigation paths for the application.
+   * @param config An `ExtraOptions` configuration object that controls how navigation is performed.
+   * @return The new router module.
   */
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule> {
     return {
@@ -235,12 +207,10 @@ export function provideForRootGuard(router: Router): any {
 }
 
 /**
- * @description
- *
- * Registers routes.
+ * Registers a [DI provider](guide/glossary#provider) for a set of routes.
+ * @param routes The route configuration to provide.
  *
  * @usageNotes
- * ### Example
  *
  * ```
  * @NgModule({
@@ -260,27 +230,25 @@ export function provideRoutes(routes: Routes): any {
 }
 
 /**
- * @description
+ * Allowed values in an `ExtraOptions` object that configure
+ * when the router performs the initial navigation operation.
  *
- * Represents an option to configure when the initial navigation is performed.
- *
- * * 'enabled' - the initial navigation starts before the root component is created.
+ * * 'enabled' (Default) The initial navigation starts before the root component is created.
  * The bootstrap is blocked until the initial navigation is complete.
- * * 'disabled' - the initial navigation is not performed. The location listener is set up before
- * the root component gets created.
- * * 'legacy_enabled'- the initial navigation starts after the root component has been created.
+ * * 'disabled' - The initial navigation is not performed. The location listener is set up before
+ * the root component gets created. Use if there is a reason to have
+ * more control over when the router starts its initial navigation due to some complex
+ * initialization logic.
+ * * 'legacy_enabled'- The initial navigation starts after the root component has been created.
  * The bootstrap is not blocked until the initial navigation is complete. @deprecated
- * * 'legacy_disabled'- the initial navigation is not performed. The location listener is set up
- * after @deprecated
- * the root component gets created.
+ * * 'legacy_disabled'- The initial navigation is not performed. The location listener is set up
+ * after the root component gets created. @deprecated
  * * `true` - same as 'legacy_enabled'. @deprecated since v4
  * * `false` - same as 'legacy_disabled'. @deprecated since v4
  *
- * The 'enabled' option should be used for applications unless there is a reason to have
- * more control over when the router starts its initial navigation due to some complex
- * initialization logic. In this case, 'disabled' should be used.
- *
  * The 'legacy_enabled' and 'legacy_disabled' should not be used for new applications.
+ *
+ * @see `forRoot()`
  *
  * @publicApi
  */
@@ -288,42 +256,49 @@ export type InitialNavigation =
     true | false | 'enabled' | 'disabled' | 'legacy_enabled' | 'legacy_disabled';
 
 /**
- * @description
- *
- * Represents options to configure the router.
+ * A set of configuration options for a router module, provided in the
+ * `forRoot()` method.
  *
  * @publicApi
  */
 export interface ExtraOptions {
   /**
-   * Makes the router log all its internal events to the console.
+   * When true, log all internal navigation events to the console.
+   * Use for debugging.
    */
   enableTracing?: boolean;
 
   /**
-   * Enables the location strategy that uses the URL fragment instead of the history API.
+   * When true, enable the location strategy that uses the URL fragment
+   * instead of the history API.
    */
   useHash?: boolean;
 
   /**
-   * Disables the initial navigation.
+   * One of `enabled` (the default) or `disabled`.
+   * By default, the initial navigation starts before the root component is created.
+   * The bootstrap is blocked until the initial navigation is complete.
+   * When set to `disabled`, the initial navigation is not performed.
+   * The location listener is set up before the root component gets created.
    */
   initialNavigation?: InitialNavigation;
 
   /**
-   * A custom error handler.
+   * A custom error handler for failed navigations.
    */
   errorHandler?: ErrorHandler;
 
   /**
-   * Configures a preloading strategy. See `PreloadAllModules`.
+   * Configures a preloading strategy.
+   * One of `PreloadAllModules` or `NoPreloading` (the default).
    */
   preloadingStrategy?: any;
 
   /**
    * Define what the router should do if it receives a navigation request to the current URL.
-   * By default, the router will ignore this navigation. However, this prevents features such
-   * as a "refresh" button. Use this option to configure the behavior when navigating to the
+   * Default is `ignore`, which causes the router ignores the navigation.
+   * This can disable features such as a "refresh" button.
+   * Use this option to configure the behavior when navigating to the
    * current URL. Default is 'ignore'.
    */
   onSameUrlNavigation?: 'reload'|'ignore';
@@ -331,14 +306,15 @@ export interface ExtraOptions {
   /**
    * Configures if the scroll position needs to be restored when navigating back.
    *
-   * * 'disabled'--does nothing (default).  Scroll position will be maintained on navigation.
-   * * 'top'--set the scroll position to x = 0, y = 0 on all navigation.
-   * * 'enabled'--restores the previous scroll position on backward navigation, else sets the
+   * * 'disabled'- (Default) Does nothing. Scroll position is maintained on navigation.
+   * * 'top'- Sets the scroll position to x = 0, y = 0 on all navigation.
+   * * 'enabled'- Restores the previous scroll position on backward navigation, else sets the
    * position to the anchor if one is provided, or sets the scroll position to [0, 0] (forward
    * navigation). This option will be the default in the future.
    *
    * You can implement custom scroll restoration behavior by adapting the enabled behavior as
-   * follows:
+   * in the following example.
+   *
    * ```typescript
    * class AppModule {
     *   constructor(router: Router, viewportScroller: ViewportScroller) {
@@ -363,10 +339,8 @@ export interface ExtraOptions {
   scrollPositionRestoration?: 'disabled'|'enabled'|'top';
 
   /**
-   * Configures if the router should scroll to the element when the url has a fragment.
-   *
-   * * 'disabled'--does nothing (default).
-   * * 'enabled'--scrolls to the element. This option will be the default in the future.
+   * When set to 'enabled', scrolls to the anchor element when the URL has a fragment.
+   * Anchor scrolling is disabled by default.
    *
    * Anchor scrolling does not happen on 'popstate'. Instead, we restore the position
    * that we stored or scroll to the top.
@@ -376,28 +350,28 @@ export interface ExtraOptions {
   /**
    * Configures the scroll offset the router will use when scrolling to an element.
    *
-   * When given a tuple with two numbers, the router will always use the numbers.
-   * When given a function, the router will invoke the function every time it restores scroll
-   * position.
+   * When given a tuple with x and y position value,
+   * the router uses that offset each time it scrolls.
+   * When given a function, the router invokes the function every time
+   * it restores scroll position.
    */
   scrollOffset?: [number, number]|(() => [number, number]);
 
   /**
-   * Defines how the router merges params, data and resolved data from parent to child
-   * routes. Available options are:
-   *
-   * - `'emptyOnly'`, the default, only inherits parent params for path-less or component-less
-   *   routes.
-   * - `'always'`, enables unconditional inheritance of parent params.
+   * Defines how the router merges parameters, data, and resolved data from parent to child
+   * routes. By default ('emptyOnly'), inherits parent parameters only for
+   * path-less or component-less routes.
+   * Set to 'always' to enable unconditional inheritance of parent parameters.
    */
   paramsInheritanceStrategy?: 'emptyOnly'|'always';
 
   /**
-   * A custom malformed uri error handler function. This handler is invoked when encodedURI contains
-   * invalid character sequences. The default implementation is to redirect to the root url dropping
-   * any path or param info. This function passes three parameters:
+   * A custom handler for malformed URI errors. The handler is invoked when `encodedURI` contains
+   * invalid character sequences.
+   * The default implementation is to redirect to the root URL, dropping
+   * any path or parameter information. The function takes three parameters:
    *
-   * - `'URIError'` - Error thrown when parsing a bad URL
+   * - `'URIError'` - Error thrown when parsing a bad URL.
    * - `'UrlSerializer'` - UrlSerializer that’s configured with the router.
    * - `'url'` -  The malformed URL that caused the URIError
    * */
@@ -405,14 +379,11 @@ export interface ExtraOptions {
       (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
 
   /**
-   * Defines when the router updates the browser URL. The default behavior is to update after
-   * successful navigation. However, some applications may prefer a mode where the URL gets
-   * updated at the beginning of navigation. The most common use case would be updating the
-   * URL early so if navigation fails, you can show an error message with the URL that failed.
-   * Available options are:
-   *
-   * - `'deferred'`, the default, updates the browser URL after navigation has finished.
-   * - `'eager'`, updates browser URL at the beginning of navigation.
+   * Defines when the router updates the browser URL. By default ('deferred'),
+   * update after successful navigation.
+   * Set to 'eager' if prefer to update the URL at the beginning of navigation.
+   * Updating the URL early allows you to handle a failure of navigation by
+   * showing an error message with the URL that failed.
    */
   urlUpdateStrategy?: 'deferred'|'eager';
 
@@ -505,13 +476,13 @@ export function rootRoute(router: Router): ActivatedRoute {
 }
 
 /**
- * To initialize the router properly we need to do in two steps:
+ * Router initialization requires two steps:
  *
- * We need to start the navigation in a APP_INITIALIZER to block the bootstrap if
- * a resolver or a guards executes asynchronously. Second, we need to actually run
- * activation in a BOOTSTRAP_LISTENER. We utilize the afterPreactivation
- * hook provided by the router to do that.
+ * First, we start the navigation in a `APP_INITIALIZER` to block the bootstrap if
+ * a resolver or a guard executes asynchronously.
  *
+ * Next, we actually run activation in a `BOOTSTRAP_LISTENER`, using the
+ * `afterPreactivation` hook provided by the router.
  * The router navigation starts, reaches the point when preactivation is done, and then
  * pauses. It waits for the hook to be resolved. We then resolve it only in a bootstrap listener.
  */
@@ -603,7 +574,8 @@ export function getBootstrapListener(r: RouterInitializer) {
 }
 
 /**
- * A token for the router initializer that will be called after the app is bootstrapped.
+ * A [DI token](guide/glossary/#di-token) for the router initializer that
+ * is called after the app is bootstrapped.
  *
  * @publicApi
  */
