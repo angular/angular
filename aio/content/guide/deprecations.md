@@ -368,7 +368,7 @@ These two properties have subtle differences, so switching to `textContent` unde
 All of the `wtf*` APIs are deprecated and will be removed in a future version.
 
 {@a webworker-apps}
-### Running Angular applications in platform-webworker 
+### Running Angular applications in platform-webworker
 
 The `@angular/platform-*` packages enable Angular to be run in different contexts. For examples,
 `@angular/platform-server` enables Angular to be run on the server, and `@angular/platform-browser`
@@ -382,7 +382,7 @@ worker is not the best strategy for most applications.
 
 Going forward, we will focus our efforts related to web workers around their primary use case of
 offloading CPU-intensive, non-critical work needed for initial rendering (such as in-memory search
-and image processing). Learn more in the 
+and image processing). Learn more in the
 [guide to Using Web Workers with the Angular CLI](guide/web-worker).
 
 As of Angular version 8, all  `platform-webworker` APIs are deprecated.
@@ -465,3 +465,151 @@ For more information about using `@angular/common/http`, see the [HttpClient gui
 | `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 | `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 
+
+## Renderer to Renderer2 migration
+
+The `Renderer` class has been marked as deprecated since Angular version 4, however there are apps that still depend on it. As such, this document describes the process of migrating to the newer `Renderer2` API. `Renderer2` supports a similar set of functionality to `Renderer`, however migration takes some attention to detail. An automated migration is helpful because the `Renderer` API surface is large (19 methods) and migrating away from it requires knowledge of the `Renderer2` internals.
+
+### Why migrate?
+
+Currently, Ivy uses `Renderer2` or the DOM, and doesn't support `Renderer`. By migrating from `Renderer` to `Renderer2`, you avoid having to add a special case that calls the correct API for the old `Renderer`&mdash;in addition to the existing logic for `Renderer2` and DOM&mdash; such as `attribute` instructions, `property` instructions, and `style` instructions. This would bloat code size and increase code complexity.
+
+Since `Renderer` is an API that has been deprecated since v4 and Core Team plans to remove it anyway in a future release, these trade-offs don't seem worth it. Migrating now will avoid the code bloat/complexity.
+
+### How does migrating work?
+
+The migration works by walking the AST, collecting the nodes that need to be migrated, passing them through a function that creates a new AST node based on the one being migrated and replacing the text in your source code.
+
+Migrating to `Renderer2` requires the following code changes:
+
+1. Changing imports from `Renderer` to `Renderer2`.
+2. Renaming property types, method parameters and type casts from `Renderer` to `Renderer2`.
+3. Migrating method calls to their `Renderer2` counterparts.
+
+#### Import renaming
+
+Changing imports should be straightforward, because you only need to go through
+each file's imports, find anything called `Renderer` that is imported from
+`@angular/core` and rename it to `Renderer2`. Additionally, you need to account
+for aliased imports; for example, `import {Renderer as SomeAlias} from '@angular/core'`.
+Furthermore, you can use the presence of a `Renderer` import as a way to exit a file early without having to traverse the entire AST.
+
+#### Property types, method parameters and type casts
+
+To migrate property types (`public _renderer: Renderer`), method parameters (`constructor(private _renderer: Renderer)`) and type casts (`something as Renderer`), the migration walks through the AST and looks for `ParameterDeclaration`, `PropertyDeclaration` or `AsExpression` nodes, respectively. Once it runs into one of these nodes, it uses the `TypeChecker` to check whether they're referring to a `Renderer` and change them to refer to the `Renderer2` instead.
+
+### Method call migrations
+
+`Renderer` and `Renderer2` have a similar set of functionality, however most of their method signatures differ. Some methods can be migrated as easily as renaming the method being called, removing an argument or changing the argument order, however others are a bit more complex and require things like loops and multiple function calls to work in the same way. There are three categories based on how much they differ from each other.
+
+#### Easily re-mappable methods
+
+These methods are easy to migrate because they either look exactly the same, they only have a different name or they have the same amount of arguments or fewer compared to their `Renderer2` counterpart. For example, a call to `renderer.listenGlobal('window', 'resize', 'callback')` can be migrated by having it refer to `listen` instead of `listenGlobal`.
+
+#### Method calls that can be replaced inline, but need extra logic
+
+In the transition between `Renderer` and `Renderer2` some methods were split into multiple statements. For example, in the deprecated `Renderer`, the expression `renderer.setElementStyle(element, key, value)` can mean either `renderer2.removeStyle(element, key)` or `renderer2.setStyle(element, key, value)`, depending on whether the `value` is `null`. Migration can safely replace these method calls with a single expression as long as it's matching the new `Renderer2` signature. For example, the `setElementStyle` call from above can be replaced inline with `value == null renderer.removeStyle(element, key) : renderer.setStyle(element, key, value)`. This is a safe replacement, because it won't change the type of a variable or the return value of a function, and it doesn't require us to insert any extra statements to make it work.
+
+#### Method calls that can't be safely replaced inline
+
+Some methods either don't have exact equivalents in `Renderer2`, or they correspond to more than one expression. For example, both renderers have a `createElement()` method, however they're not equal because a call like `renderer.createElement(parentNode, namespaceAndName)` in the `Renderer` corresponds to the following block of code in `Renderer2`:
+
+```ts
+const [namespace, name] = splitNamespace(namespaceAndName);
+const el = renderer.createElement(name, namespace);
+if (parentNode) {
+  renderer.appendChild(parentNode, el);
+}
+return el;
+```
+
+The aforementioned calls can't migrate inline safely, because migration has to guarantee that the return values of functions and types of variables stay the same. Doing this inline is difficult, because there are lots of edge cases that we'd need to cover and inserting variables using the AST is exceptionally difficult to do correctly.
+
+To handle these cases safely and without having to deal with edge cases, the migration process declares helper functions at the bottom of the user's file. These helpers encapsulate your own logic and keep the replacements inside you code down to a single function call. Here's an example of how the `createElement()` migration looks:
+
+
+**Before:**
+
+```ts
+public createAndAppendElement() {
+  const el = this.renderer.createElement('span');
+  el.textContent = 'hello world';
+  return el;
+}
+```
+
+**After:**
+
+<code-example linenums=false>
+
+public createAndAppendElement() {
+  const el = ngRendererCreateElement(this.renderer, this.element, 'span');
+  el.textContent = 'hello world';
+  return el;
+}
+
+// Generated code at the bottom of the file
+ngRendererCreateElement(renderer: any, parentNode: any, nameAndNamespace: any) {
+  const [namespace, name] = ngRendererSplitNamespace(namespaceAndName);
+  const el = renderer.createElement(name, namespace);
+  if (parentNode) {
+    renderer.appendChild(parentNode, el);
+  }
+  return el;
+}
+
+ngRendererSplitNamespace(nameAndNamespace: any) {
+  // returns the split name and namespace
+}
+</code-example>
+
+These helper functions are inspired by the ones that TypeScript inserts for things async/await and object spreads. When implementing them, migration has to ensure that they're only declared once per file and that their names are unique enough that there's a small chance of colliding with pre-existing functions in the user's code. Furthermore, migration keeps their parameter types as `any` so that it doesn't have to insert extra logic that ensures that their values have the correct type.
+
+### Full list of method migrations
+
+This is a table that shows how all methods should be mapped from `Renderer` to `Renderer2`.
+
+|Renderer|Renderer2|
+|---|---|
+|listen(renderElement, name, callback)|listen(renderElement, name, callback)|
+|setElementProperty(renderElement, propertyName, propertyValue)|setProperty(renderElement, propertyName, propertyValue)|
+|setText(renderNode, text)|setValue(renderNode, text)|
+|listenGlobal(target, name, callback)|listen(target, name, callback)|
+|selectRootElement(selectorOrNode, debugInfo?)|selectRootElement(selectorOrNode)|
+|createElement(parentElement, name, debugInfo?)|appendChild(parentElement, createElement(name))|
+|setElementStyle(el, style, value?)|value == null ? removeStyle(el, style) : setStyle(el, style, value)
+|setElementAttribute(el, name, value?)|attributeValue == null ? removeAttribute(el, name) : setAttribute(el, name, value)
+|createText(parentElement, value, debugInfo?)|appendChild(parentElement, createText(value))|
+|createTemplateAnchor(parentElement)|appendChild(parentElement, createComment(''))|
+|setElementClass(renderElement, className, isAdd)|isAdd ? addClass(renderElement, className) : removeClass(renderElement, className)|
+|projectNodes(parentElement, nodes)|for (let i = 0; i < nodes.length; i<ins></ins>) { appendChild(parentElement, nodes<i>); }|
+|attachViewAfter(node, viewRootNodes)|const parentElement = parentNode(node); const nextSibling = nextSibling(node); for (let i = 0; i < viewRootNodes.length; i<ins></ins>) { insertBefore(parentElement, viewRootNodes<i>, nextSibling);}|
+|detachView(viewRootNodes)|for (let i = 0; i < viewRootNodes.length; i<ins></ins>) {const node = viewRootNodes<i>; const parentElement = parentNode(node); removeChild(parentElement, node);}|
+|destroyView(hostElement, viewAllNodes)|for (let i = 0; i < viewAllNodes.length; i<ins></ins>) { destroyNode(viewAllNodes<i>); }|
+|setBindingDebugInfo()|Should be dropped.|
+|createViewRoot(hostElement)|Should be replaced with a reference to `hostElement`|
+|invokeElementMethod(renderElement, methodName, args?)|(renderElement as any)<methodName>.apply(renderElement, args);|
+|animate(element, startingStyles, keyframes, duration, delay, easing, previousPlayers?)|Throw an error (as the old animate function does)|
+
+
+### What does migration mean for libraries?
+
+Library authors should be able to use this migration to move away from the `Renderer`.
+
+If applications are using libraries that have not been updated to `Renderer`, the Angular Core Team will communicate using devrel that they need to update. **It is vital that libs get off deprecated APIs.**
+
+### Where and when should it be used?
+
+The migration should target Angular version **9.0.0** and it should be run both internally and externally.
+
+The Core Team wants to run it earlier internally since the `Renderer` isn't being provided under Ivy, which could be a source of errors.
+
+### Is there something to deprecate?
+
+`Renderer` is already marked as deprecated, and will be removed in **Angular version 9.0.0**.
+
+<!-- ## How will we prevent backsliding in G3?
+
+First, we can make a local mod that removes the `Renderer` for G3. Then after Angular version 8.3 goes out, we can remove it from `@angular/core` on Github. This must be later so we don't inadvertently make a breaking change in Angular version 8.1.
+
+Should this last paragraph stay since it's internal to Google? Or does it also impact external apps?-->
