@@ -4,7 +4,7 @@
 /**
  * Usage:
  * ```sh
- * node scripts/test-pwa-score <url> <min-scores> [<log-file>]
+ * node scripts/audit-web-app <url> <min-scores> [<log-file>]
  * ```
  *
  * Runs audits against the specified URL on specific categories (accessibility, best practices, performance, PWA, SEO).

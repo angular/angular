@@ -33,7 +33,7 @@
     "set-opensearch-url": "node --eval \"const sh = require('shelljs'); sh.set('-e'); sh.sed('-i', /PLACEHOLDER_URL/g, process.argv[1], 'dist/assets/opensearch.xml');\"",
     "presmoke-tests": "yarn update-webdriver",
     "smoke-tests": "protractor tests/deployment/e2e/protractor.conf.js --suite smoke --baseUrl",
-    "test-pwa-score": "run-s \"~~test-pwa-score {1} all:0,pwa:{2} {3}\" --",
+    "test-pwa-score": "run-s \"~~audit-web-app {1} all:0,pwa:{2} {3}\" --",
     "test-pwa-score-localhost": "run-p --race \"~~http-server dist -p 4200 --silent\" \"test-pwa-score http://localhost:4200 {1} {2}\" --",
     "example-e2e": "yarn example-check-local && node ./tools/examples/run-example-e2e",
     "example-lint": "tslint --config \"content/examples/tslint.json\" \"content/examples/**/*.ts\" --exclude \"content/examples/styleguide/**/*.avoid.ts\"",
@@ -64,12 +64,12 @@
     "generate-zips": "node ./tools/example-zipper/generateZips",
     "build-404-page": "node scripts/build-404-page",
     "update-webdriver": "webdriver-manager update --standalone false --gecko false $CI_CHROMEDRIVER_VERSION_ARG",
+    "~~audit-web-app": "node scripts/audit-web-app",
     "~~check-env": "node scripts/check-environment",
     "~~clean-generated": "node --eval \"require('shelljs').rm('-rf', 'src/generated')\"",
     "~~build": "ng build --configuration=stable",
     "post~~build": "yarn build-404-page",
-    "~~http-server": "http-server",
-    "~~test-pwa-score": "node scripts/test-pwa-score"
+    "~~http-server": "http-server"
   },
   "engines": {
     "node": ">=10.9.0 <11.0.0",
