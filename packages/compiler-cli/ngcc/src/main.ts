@@ -154,7 +154,8 @@ export function mainNgcc(
       // the property as processed even if its underlying format has been built already.
       if (!compiledFormats.has(formatPath) && (compileAllFormats || isFirstFormat)) {
         const bundle = makeEntryPointBundle(
-            fileSystem, entryPoint, formatPath, isCore, property, format, processDts, pathMappings);
+            fileSystem, entryPoint, formatPath, isCore, property, format, processDts, pathMappings,
+            true);
         if (bundle) {
           logger.info(`Compiling ${entryPoint.name} : ${property} as ${format}`);
           const transformedFiles = transformer.transform(bundle);
