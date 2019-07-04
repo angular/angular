@@ -12,7 +12,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Subject} from 'rxjs';
 
-import {NgElementConstructor, createCustomElement} from '../src/create-custom-element';
+import {NgElementConstructor, createCustomElement, NgElement} from '../src/create-custom-element';
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
 
 type WithFooBar = {
@@ -93,6 +93,17 @@ if (browserDetection.supportsCustomElements) {
 
       expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
       expect(strategy.inputs.get('barBar')).toBe('barBar-value');
+    });
+
+    it('should properly handle initial values on the element', () => {
+      const element = document.createElement('lazy-test-element') as NgElement & WithFooBar;
+      element.fooFoo = 'foo-foo-value';
+      expect(element.hasOwnProperty('fooFoo')).toBe(true);
+      customElements.define('lazy-test-element', createCustomElement(TestComponent, {injector}));
+      document.body.appendChild(element);
+      expect(element.hasOwnProperty('fooFoo')).toBe(false);
+      expect(element.fooFoo).toBe('foo-foo-value');
+
     });
   });
 }

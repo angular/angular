@@ -152,7 +152,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     this.implementsOnChanges =
         isFunction((this.componentRef.instance as any as OnChanges).ngOnChanges);
 
-    this.initializeInputs();
+    this.initializeInputs(element);
     this.initializeOutputs();
 
     this.detectChanges();
@@ -162,9 +162,16 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   }
 
   /** Set any stored initial inputs on the component's properties. */
-  protected initializeInputs(): void {
+  protected initializeInputs(element?: HTMLElement): void {
     this.componentFactory.inputs.forEach(({propName}) => {
-      const initialValue = this.initialInputValues.get(propName);
+      let initialValue;
+      // Remove values set before upgrade to unshadow setter/getter
+      if(element && element.hasOwnProperty(propName)){
+        initialValue = (element as {})[propName as keyof {}];
+        delete (element as {})[propName as keyof {}];
+        this.initialInputValues.set(propName, initialValue);
+      }
+      initialValue = this.initialInputValues.get(propName);
       if (initialValue) {
         this.setInputValue(propName, initialValue);
       } else {
