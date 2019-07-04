@@ -29,9 +29,13 @@ export interface KeyValue<K, V> {
  *
  * Transforms Object or Map into an array of key value pairs.
  *
- * The output array will be ordered by keys.
+ * When passed an Object, the output array will be ordered by keys.
  * By default the comparator will be by Unicode point value.
  * You can optionally pass a compareFn if your keys are complex types.
+ *
+ * When passed a Map, the output array's order will not be altered.
+ * You can optionally still pass a compareFn to override the sort order
+ * implicitly defined in the Map.
  *
  * @usageNotes
  * ### Examples
@@ -64,10 +68,13 @@ export class KeyValuePipe implements PipeTransform {
       Array<KeyValue<K, V>>;
   transform<K, V>(
       input: null|{[key: string]: V, [key: number]: V}|Map<K, V>,
-      compareFn: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number = defaultComparator):
-      Array<KeyValue<K, V>>|null {
+      compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>|null {
     if (!input || (!(input instanceof Map) && typeof input !== 'object')) {
       return null;
+    }
+    // If a compareFn isn't passed, assign the defaultComparator for non-Map inputs.
+    if (!compareFn && !(input instanceof Map)) {
+      compareFn = defaultComparator;
     }
 
     if (!this.differ) {
@@ -82,7 +89,9 @@ export class KeyValuePipe implements PipeTransform {
       differChanges.forEachItem((r: KeyValueChangeRecord<K, V>) => {
         this.keyValues.push(makeKeyValuePair(r.key, r.currentValue !));
       });
-      this.keyValues.sort(compareFn);
+      if (compareFn) {
+        this.keyValues.sort(compareFn);
+      }
     }
     return this.keyValues;
   }

@@ -24,6 +24,7 @@ describe('KeyValuePipe', () => {
     const fn = () => {};
     expect(pipe.transform(fn as any)).toEqual(null);
   });
+
   describe('object dictionary', () => {
     it('should return empty array of an empty dictionary', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
@@ -51,6 +52,14 @@ describe('KeyValuePipe', () => {
         {key: 'a', value: 1}, {key: 'b', value: 1}
       ]);
     });
+    it('should order by a passed in compareFn', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = {1: 1, 2: 1};
+      expect(pipe.transform(input, (a, b) => a.key < b.key ? 1 : -1)).toEqual([
+        {key: '2', value: 1},
+        {key: '1', value: 1},
+      ]);
+    });
     it('should return the same ref if nothing changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const transform1 = pipe.transform({1: 2});
@@ -74,27 +83,13 @@ describe('KeyValuePipe', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       expect(pipe.transform(new Map([[1, 2]]))).toEqual([{key: 1, value: 2}]);
     });
-    it('should order by alpha', () => {
+    it('should not modify the order of keys when a compareFn is not passed', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       expect(pipe.transform(new Map([['b', 1], ['a', 1]]))).toEqual([
-        {key: 'a', value: 1}, {key: 'b', value: 1}
+        {key: 'b', value: 1}, {key: 'a', value: 1}
       ]);
     });
-    it('should order by numerical', () => {
-      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
-      expect(pipe.transform(new Map([[2, 1], [1, 1]]))).toEqual([
-        {key: 1, value: 1}, {key: 2, value: 1}
-      ]);
-    });
-    it('should order by numerical and alpha', () => {
-      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
-      const input = [[2, 1], [1, 1], ['b', 1], [0, 1], [3, 1], ['a', 1]];
-      expect(pipe.transform(new Map(input as any))).toEqual([
-        {key: 0, value: 1}, {key: 1, value: 1}, {key: 2, value: 1}, {key: 3, value: 1},
-        {key: 'a', value: 1}, {key: 'b', value: 1}
-      ]);
-    });
-    it('should order by complex types with compareFn', () => {
+    it('should override the order of keys when a compareFn is passed', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const input = new Map([[{id: 1}, 1], [{id: 0}, 1]]);
       expect(pipe.transform<{id: number}, number>(input, (a, b) => a.key.id > b.key.id ? 1 : -1))
