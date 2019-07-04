@@ -229,33 +229,63 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello injected World !');
   });
 
-  it('allow to override a provider defined via ModuleWithProviders', () => {
-    const serviceOverride = {
-      get() { return 'override'; },
-    };
+  it('allow to override a provider defined via ModuleWithProviders (using TestBed.overrideProvider)',
+     () => {
+       const serviceOverride = {
+         get() { return 'override'; },
+       };
 
-    @Injectable({providedIn: 'root'})
-    class MyService {
-      get() { return 'original'; }
-    }
+       @Injectable({providedIn: 'root'})
+       class MyService {
+         get() { return 'original'; }
+       }
 
-    @NgModule({})
-    class MyModule {
-      static forRoot(): ModuleWithProviders<MyModule> {
-        return {
-          ngModule: MyModule,
-          providers: [MyService],
-        };
-      }
-    }
-    TestBed.overrideProvider(MyService, {useValue: serviceOverride});
-    TestBed.configureTestingModule({
-      imports: [MyModule.forRoot()],
-    });
+       @NgModule({})
+       class MyModule {
+         static forRoot(): ModuleWithProviders<MyModule> {
+           return {
+             ngModule: MyModule,
+             providers: [MyService],
+           };
+         }
+       }
+       TestBed.overrideProvider(MyService, {useValue: serviceOverride});
+       TestBed.configureTestingModule({
+         imports: [MyModule.forRoot()],
+       });
 
-    const service = TestBed.get(MyService);
-    expect(service.get()).toEqual('override');
-  });
+       const service = TestBed.get(MyService);
+       expect(service.get()).toEqual('override');
+     });
+
+  it('allow to override a provider defined via ModuleWithProviders (using TestBed.configureTestingModule)',
+     () => {
+       const serviceOverride = {
+         get() { return 'override'; },
+       };
+
+       @Injectable({providedIn: 'root'})
+       class MyService {
+         get() { return 'original'; }
+       }
+
+       @NgModule({})
+       class MyModule {
+         static forRoot(): ModuleWithProviders<MyModule> {
+           return {
+             ngModule: MyModule,
+             providers: [MyService],
+           };
+         }
+       }
+       TestBed.configureTestingModule({
+         imports: [MyModule.forRoot()],
+         providers: [{provide: MyService, useValue: serviceOverride}],
+       });
+
+       const service = TestBed.get(MyService);
+       expect(service.get()).toEqual('override');
+     });
 
   it('allow to override multi provider', () => {
     const MY_TOKEN = new InjectionToken('MyProvider');
