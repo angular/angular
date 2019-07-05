@@ -67,6 +67,9 @@ if [[ $? != 0 ]]; then exit 1; fi
 grep "_MatMenuBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ inputs: {" node_modules/@angular/material/esm5/menu.es5.js
 if [[ $? != 0 ]]; then exit 1; fi
 
+# Did it handle namespace imported decorators in UMD?
+grep "type: core.Injectable," node_modules/@angular/cdk/bundles/cdk-a11y.umd.js
+
 # Can it be safely run again (as a noop)?
 # And check that it logged skipping compilation as expected
 ivy-ngcc -l debug | grep 'Skipping'
