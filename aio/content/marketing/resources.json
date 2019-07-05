@@ -635,7 +635,7 @@
             "rev": true,
             "title": "Angular Concepts, Code and Collective Wisdom",
             "url": "https://www.udemy.com/angular-2-concepts-code-and-collective-wisdom/"
-          },
+          },          
           "-KLIzHwg-glQLXni1hvL": {
             "desc": "Spanish language Angular articles and information",
             "rev": true,
@@ -767,6 +767,12 @@
             "rev": true,
             "title": "Accelebrate",
             "url": "https://www.accelebrate.com/angular-training"
+          },
+          "-codingcamps": {
+            "desc": "Learn Angular in-person in DC, MD or VA or take our online instructor-led Angular training classes in 30 hours",
+            "rev": true,
+            "title": "Coding Bootcamps School",
+            "url": "https://coding-bootcamps.com/"
           },
           "-KLIBoFWStce29UCwkvY": {
             "desc": "Private Angular Training and Mentoring",
