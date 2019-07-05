@@ -72,6 +72,12 @@ The `<router-outlet>` container has an attribute directive that contains data ab
 
 Here, the `prepareRoute()` method takes the value of the output directive (established through `#outlet="outlet"`) and returns a string value representing the state of the animation based on the custom data of the current active route. You can use this data to control which transition to execute for each route.
 
+<div class="alert is-helpful">
+
+**Note:** For a routed feature module, the context of above example will be the root component of the feature instead of `AppComponent` where you have `<router-outlet>` for the feature.
+
+</div>
+
 ## Animation definition
 
 Animations can be defined directly inside your components. For this example we are defining the animations in a separate file, which allows us to re-use the animations.
