@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, Import, TypeScriptReflectionHost, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined} from '../utils';
@@ -803,12 +803,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * is not a valid decorator call.
    */
   protected reflectDecoratorCall(call: ts.CallExpression): Decorator|null {
-    // The call could be of the form `Decorator(...)` or `namespace_1.Decorator(...)`
-    const decoratorExpression =
-        ts.isPropertyAccessExpression(call.expression) ? call.expression.name : call.expression;
-    if (ts.isIdentifier(decoratorExpression)) {
+    const decoratorExpression = call.expression;
+    if (isDecoratorIdentifier(decoratorExpression)) {
       // We found a decorator!
-      const decoratorIdentifier = decoratorExpression;
+      const decoratorIdentifier =
+          ts.isIdentifier(decoratorExpression) ? decoratorExpression : decoratorExpression.name;
       return {
         name: decoratorIdentifier.text,
         identifier: decoratorIdentifier,
@@ -872,16 +871,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
           // Is the value of the `type` property an identifier?
           if (decorator.has('type')) {
-            let typeIdentifier = decorator.get('type') !;
-            if (ts.isPropertyAccessExpression(typeIdentifier)) {
-              // the type is in a namespace, e.g. `core.Directive`
-              typeIdentifier = typeIdentifier.name;
-            }
-            if (ts.isIdentifier(typeIdentifier)) {
+            let decoratorType = decorator.get('type') !;
+            if (isDecoratorIdentifier(decoratorType)) {
+              const decoratorIdentifier =
+                  ts.isIdentifier(decoratorType) ? decoratorType : decoratorType.name;
               decorators.push({
-                name: typeIdentifier.text,
-                identifier: typeIdentifier,
-                import: this.getImportOfIdentifier(typeIdentifier), node,
+                name: decoratorIdentifier.text,
+                identifier: decoratorType,
+                import: this.getImportOfIdentifier(decoratorIdentifier), node,
                 args: getDecoratorArgs(node),
               });
             }
@@ -1224,51 +1221,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * Try to get the import info for this identifier as though it is a namespaced import.
-   * For example, if the identifier is the `__metadata` part of a property access chain like:
-   *
-   * ```
-   * tslib_1.__metadata
-   * ```
-   *
-   * then it might be that `tslib_1` is a namespace import such as:
-   *
-   * ```
-   * import * as tslib_1 from 'tslib';
-   * ```
-   * @param id the TypeScript identifier to find the import info for.
-   * @returns The import info if this is a namespaced import or `null`.
-   */
-  protected getImportOfNamespacedIdentifier(id: ts.Identifier): Import|null {
-    if (!(ts.isPropertyAccessExpression(id.parent) && id.parent.name === id)) {
-      return null;
-    }
-
-    const namespaceIdentifier = getFarLeftIdentifier(id.parent);
-    const namespaceSymbol =
-        namespaceIdentifier && this.checker.getSymbolAtLocation(namespaceIdentifier);
-    const declaration = namespaceSymbol && namespaceSymbol.declarations.length === 1 ?
-        namespaceSymbol.declarations[0] :
-        null;
-    const namespaceDeclaration =
-        declaration && ts.isNamespaceImport(declaration) ? declaration : null;
-    if (!namespaceDeclaration) {
-      return null;
-    }
-
-    const importDeclaration = namespaceDeclaration.parent.parent;
-    if (!ts.isStringLiteral(importDeclaration.moduleSpecifier)) {
-      // Should not happen as this would be invalid TypesScript
-      return null;
-    }
-
-    return {
-      from: importDeclaration.moduleSpecifier.text,
-      name: id.text,
-    };
-  }
-
-  /**
    * Test whether a decorator was imported from `@angular/core`.
    *
    * Is the decorator:
@@ -1544,19 +1496,6 @@ function isNamedDeclaration(node: ts.Declaration): node is ts.NamedDeclaration&
 function isClassMemberType(node: ts.Declaration): node is ts.ClassElement|
     ts.PropertyAccessExpression|ts.BinaryExpression {
   return ts.isClassElement(node) || isPropertyAccess(node) || ts.isBinaryExpression(node);
-}
-
-/**
- * Compute the left most identifier in a property access chain. E.g. the `a` of `a.b.c.d`.
- * @param propertyAccess The starting property access expression from which we want to compute
- * the left most identifier.
- * @returns the left most identifier in the chain or `null` if it is not an identifier.
- */
-function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.Identifier|null {
-  while (ts.isPropertyAccessExpression(propertyAccess.expression)) {
-    propertyAccess = propertyAccess.expression;
-  }
-  return ts.isIdentifier(propertyAccess.expression) ? propertyAccess.expression : null;
 }
 
 /**

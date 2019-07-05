@@ -124,7 +124,7 @@ function classMemberToMetadata(
 function decoratorToMetadata(decorator: Decorator): ts.ObjectLiteralExpression {
   // Decorators have a type.
   const properties: ts.ObjectLiteralElementLike[] = [
-    ts.createPropertyAssignment('type', ts.updateIdentifier(decorator.identifier)),
+    ts.createPropertyAssignment('type', ts.getMutableClone(decorator.identifier)),
   ];
   // Sometimes they have arguments.
   if (decorator.args !== null && decorator.args.length > 0) {
