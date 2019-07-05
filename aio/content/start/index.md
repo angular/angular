@@ -84,7 +84,7 @@ In this section, you'll learn about template syntax by enhancing the "Products" 
       <code-example path="getting-started/src/app/product-list/product-list.component.2.html" region="interpolation">
       </code-example>
 
-      The preview pane immediately updates to display the name of each product in the list. 
+      The preview panel immediately updates to display the name of each product in the list. 
 
       <figure>
         <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
