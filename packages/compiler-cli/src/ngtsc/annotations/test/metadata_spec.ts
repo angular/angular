@@ -26,6 +26,16 @@ runInEachFileSystem(() => {
           `/*@__PURE__*/ i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null);`);
     });
 
+    it('should convert namespaced decorated class metadata', () => {
+      const res = compileAndPrint(`
+    import * as core from '@angular/core';
+
+    @core.Component('metadata') class Target {}
+    `);
+      expect(res).toEqual(
+          `/*@__PURE__*/ i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null);`);
+    });
+
     it('should convert decorated class constructor parameter metadata', () => {
       const res = compileAndPrint(`
     import {Component, Inject, Injector} from '@angular/core';
