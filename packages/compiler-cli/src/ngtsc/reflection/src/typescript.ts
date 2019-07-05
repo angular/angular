@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost, TsHelperFn} from './host';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost, isDecoratorIdentifier} from './host';
 import {typeToValue} from './type_to_value';
 
 /**
@@ -54,7 +54,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       let typeNode = originalTypeNode;
 
       // Check if we are dealing with a simple nullable union type e.g. `foo: Foo|null`
-      // and extract the type. More complext union types e.g. `foo: Foo|Bar` are not supported.
+      // and extract the type. More complex union types e.g. `foo: Foo|Bar` are not supported.
       // We also don't need to support `foo: Foo|undefined` because Angular's DI injects `null` for
       // optional tokes that don't have providers.
       if (typeNode && ts.isUnionTypeNode(typeNode)) {
@@ -79,7 +79,16 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   }
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {
-    return this.getDirectImportOfIdentifier(id) || this.getImportOfNamespacedIdentifier(id);
+    const directImport = this.getDirectImportOfIdentifier(id);
+    if (directImport !== null) {
+      return directImport;
+    } else if (ts.isQualifiedName(id.parent) && id.parent.right === id) {
+      return this.getImportOfNamespacedIdentifier(id, getQualifiedNameRoot(id.parent));
+    } else if (ts.isPropertyAccessExpression(id.parent) && id.parent.name === id) {
+      return this.getImportOfNamespacedIdentifier(id, getFarLeftIdentifier(id.parent));
+    } else {
+      return null;
+    }
   }
 
   getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
@@ -190,6 +199,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
   /**
    * Try to get the import info for this identifier as though it is a namespaced import.
+   *
    * For example, if the identifier is the `Directive` part of a qualified type chain like:
    *
    * ```
@@ -205,12 +215,9 @@ export class TypeScriptReflectionHost implements ReflectionHost {
    * @param id the TypeScript identifier to find the import info for.
    * @returns The import info if this is a namespaced import or `null`.
    */
-  protected getImportOfNamespacedIdentifier(id: ts.Identifier): Import|null {
-    if (!(ts.isQualifiedName(id.parent) && id.parent.right === id)) {
-      return null;
-    }
-    const namespaceIdentifier = getQualifiedNameRoot(id.parent);
-    if (!namespaceIdentifier) {
+  protected getImportOfNamespacedIdentifier(
+      id: ts.Identifier, namespaceIdentifier: ts.Identifier|null): Import|null {
+    if (namespaceIdentifier === null) {
       return null;
     }
     const namespaceSymbol = this.checker.getSymbolAtLocation(namespaceIdentifier);
@@ -300,14 +307,15 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
     // The final resolved decorator should be a `ts.Identifier` - if it's not, then something is
     // wrong and the decorator can't be resolved statically.
-    if (!ts.isIdentifier(decoratorExpr)) {
+    if (!isDecoratorIdentifier(decoratorExpr)) {
       return null;
     }
 
-    const importDecl = this.getImportOfIdentifier(decoratorExpr);
+    const decoratorIdentifier = ts.isIdentifier(decoratorExpr) ? decoratorExpr : decoratorExpr.name;
+    const importDecl = this.getImportOfIdentifier(decoratorIdentifier);
 
     return {
-      name: decoratorExpr.text,
+      name: decoratorIdentifier.text,
       identifier: decoratorExpr,
       import: importDecl, node, args,
     };
@@ -499,4 +507,17 @@ function getQualifiedNameRoot(qualifiedName: ts.QualifiedName): ts.Identifier|nu
     qualifiedName = qualifiedName.left;
   }
   return ts.isIdentifier(qualifiedName.left) ? qualifiedName.left : null;
+}
+
+/**
+ * Compute the left most identifier in a property access chain. E.g. the `a` of `a.b.c.d`.
+ * @param propertyAccess The starting property access expression from which we want to compute
+ * the left most identifier.
+ * @returns the left most identifier in the chain or `null` if it is not an identifier.
+ */
+function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.Identifier|null {
+  while (ts.isPropertyAccessExpression(propertyAccess.expression)) {
+    propertyAccess = propertyAccess.expression;
+  }
+  return ts.isIdentifier(propertyAccess.expression) ? propertyAccess.expression : null;
 }
