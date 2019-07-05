@@ -138,6 +138,5 @@ async function processResults(results, logFile) {
 
 function skipHttpsAudits(config) {
   console.log(`  Skipping HTTPS-related audits: ${SKIPPED_HTTPS_AUDITS.join(', ')}`);
-  const settings = config.settings || (config.settings = {});
-  settings.skipAudits = SKIPPED_HTTPS_AUDITS;
+  config.settings = {...config.settings, skipAudits: SKIPPED_HTTPS_AUDITS};
 }
