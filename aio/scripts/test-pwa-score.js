@@ -123,14 +123,16 @@ function parseInput(args) {
 }
 
 function parseMinScores(raw) {
+  const minScores = {};
+
   if (/^\d+$/.test(raw)) {
     raw = `all:${raw}`;
   }
 
-  const minScores = raw.
+  raw.
     split(',').
     map(x => x.split(':')).
-    reduce((aggr, [key, val]) => (aggr[key] = Number(val) / 100, aggr), {});
+    forEach(([key, val]) => minScores[key] = Number(val) / 100);
 
   if (minScores.hasOwnProperty('all')) {
     AUDIT_CATEGORIES.forEach(cat => minScores.hasOwnProperty(cat) || (minScores[cat] = minScores.all));
