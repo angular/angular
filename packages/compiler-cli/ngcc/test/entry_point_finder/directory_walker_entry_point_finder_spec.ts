@@ -166,6 +166,30 @@ runInEachFileSystem(() => {
         ]);
       });
 
+      it('should handle pathMappings that map to files or non-existent directories', () => {
+        const basePath = _Abs('/path_mapped/node_modules');
+        const pathMappings: PathMappings = {
+          baseUrl: '/path_mapped/dist',
+          paths: {
+            '@test': ['pkg2/fesm2015/pkg2.js'],
+            '@missing': ['pkg3'],
+          }
+        };
+        loadTestFiles([
+          ...createPackage(_Abs('/path_mapped/node_modules'), 'test', []),
+          ...createPackage(_Abs('/path_mapped/dist'), 'pkg2'),
+        ]);
+        resolver = new DependencyResolver(
+            fs, logger, {esm2015: new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings))});
+        const finder = new DirectoryWalkerEntryPointFinder(
+            fs, config, logger, resolver, basePath, pathMappings);
+        const {entryPoints} = finder.findEntryPoints();
+        expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
+          ['../dist/pkg2', '../dist/pkg2'],
+          ['test', 'test'],
+        ]);
+      });
+
       function createPackage(
           basePath: AbsoluteFsPath, packageName: string, deps: string[] = []): TestFile[] {
         return [
