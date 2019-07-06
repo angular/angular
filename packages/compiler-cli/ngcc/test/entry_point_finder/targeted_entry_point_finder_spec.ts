@@ -146,15 +146,18 @@ runInEachFileSystem(() => {
           paths: {
             '@x/*': ['*'],
             '@y/*/test': ['lib/*/test'],
+            '@z/*': ['../dist/moo/../*'],
           }
         };
         loadTestFiles([
           ...createPackage(
-              _Abs('/path_mapped/node_modules'), 'test', ['pkg1', '@x/pkg2', '@y/pkg3/test']),
+              _Abs('/path_mapped/node_modules'), 'test',
+              ['pkg1', '@x/pkg2', '@y/pkg3/test', '@z/pkg5']),
           ...createPackage(_Abs('/path_mapped/node_modules'), 'pkg1'),
           ...createPackage(_Abs('/path_mapped/dist'), 'pkg2', ['pkg4']),
           ...createPackage(_Abs('/path_mapped/dist/pkg2/node_modules'), 'pkg4'),
           ...createPackage(_Abs('/path_mapped/dist/lib/pkg3'), 'test'),
+          ...createPackage(_Abs('/path_mapped/dist'), 'pkg5'),
         ]);
         resolver = new DependencyResolver(
             fs, logger, {esm2015: new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings))});
@@ -166,6 +169,31 @@ runInEachFileSystem(() => {
           ['../dist/pkg2/node_modules/pkg4', '../dist/pkg2/node_modules/pkg4'],
           ['../dist/pkg2', '../dist/pkg2'],
           ['../dist/lib/pkg3/test', '../dist/lib/pkg3/test'],
+          ['../dist/pkg5', '../dist/pkg5'],
+          ['test', 'test'],
+        ]);
+      });
+
+      it('should handle pathMappings that map to files or non-existent directories', () => {
+        const basePath = _Abs('/path_mapped/node_modules');
+        const targetPath = _Abs('/path_mapped/node_modules/test');
+        const pathMappings: PathMappings = {
+          baseUrl: '/path_mapped/dist',
+          paths: {
+            '@test': ['pkg2/fesm2015/pkg2.js'],
+            '@missing': ['pkg3'],
+          }
+        };
+        loadTestFiles([
+          ...createPackage(_Abs('/path_mapped/node_modules'), 'test', []),
+          ...createPackage(_Abs('/path_mapped/dist'), 'pkg2'),
+        ]);
+        resolver = new DependencyResolver(
+            fs, logger, {esm2015: new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings))});
+        const finder = new TargetedEntryPointFinder(
+            fs, config, logger, resolver, basePath, targetPath, pathMappings);
+        const {entryPoints} = finder.findEntryPoints();
+        expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['test', 'test'],
         ]);
       });
