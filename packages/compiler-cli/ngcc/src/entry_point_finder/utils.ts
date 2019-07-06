@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, join, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, join, resolve} from '../../../src/ngtsc/file_system';
 import {PathMappings} from '../utils';
 
 /**
@@ -29,11 +29,17 @@ import {PathMappings} from '../utils';
  */
 export function getBasePaths(
     sourceDirectory: AbsoluteFsPath, pathMappings: PathMappings | undefined): AbsoluteFsPath[] {
-  const basePaths = [sourceDirectory];
+  const fs = getFileSystem();
+  let basePaths = [sourceDirectory];
   if (pathMappings) {
     const baseUrl = resolve(pathMappings.baseUrl);
     Object.values(pathMappings.paths).forEach(paths => paths.forEach(path => {
-      basePaths.push(join(baseUrl, extractPathPrefix(path)));
+      // We only want base paths that exists and are not files
+      let basePath = join(baseUrl, extractPathPrefix(path));
+      while (basePath !== baseUrl && !fs.exists(basePath) || fs.stat(basePath).isFile()) {
+        basePath = fs.dirname(basePath);
+      }
+      basePaths.push(basePath);
     }));
   }
   basePaths.sort();  // Get the paths in order with the shorter ones first.
