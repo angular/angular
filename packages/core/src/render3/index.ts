@@ -56,6 +56,7 @@ export {
   ɵɵdirectiveInject,
 
   ɵɵelement,
+  ɵɵelementContainer,
   ɵɵelementContainerEnd,
 
   ɵɵelementContainerStart,

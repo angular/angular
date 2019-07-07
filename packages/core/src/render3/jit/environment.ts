@@ -61,6 +61,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵelement': r3.ɵɵelement,
        'ɵɵelementContainerStart': r3.ɵɵelementContainerStart,
        'ɵɵelementContainerEnd': r3.ɵɵelementContainerEnd,
+       'ɵɵelementContainer': r3.ɵɵelementContainer,
        'ɵɵpureFunction0': r3.ɵɵpureFunction0,
        'ɵɵpureFunction1': r3.ɵɵpureFunction1,
        'ɵɵpureFunction2': r3.ɵɵpureFunction2,

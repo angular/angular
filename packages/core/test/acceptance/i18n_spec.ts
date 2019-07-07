@@ -8,7 +8,7 @@
 
 import {registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize, Pipe, PipeTransform} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -18,7 +18,7 @@ import {onlyInIvy} from '@angular/private/testing';
 
 onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({declarations: [AppComp, DirectiveWithTplRef]});
+    TestBed.configureTestingModule({declarations: [AppComp, DirectiveWithTplRef, UppercasePipe]});
   });
 
   afterEach(() => { setDelayProjection(false); });
@@ -313,6 +313,29 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       for (let i = 0; i < spans.length; i++) {
         expect(spans[i]).toHaveText('Bonjour');
       }
+    });
+
+    it('should be able to act as child elements inside i18n block (text + pipes)', () => {
+      // Note: for some reason keeping this key inline causes clang to reformat the entire file
+      // in a very weird way. Keeping it separated like this seems to make it happy.
+      const key = '{$startTagNgTemplate}Hello {$interpolation}{$closeTagNgTemplate}' +
+          '{$startTagNgContainer}Bye {$interpolation}{$closeTagNgContainer}';
+
+      ɵi18nConfigureLocalize({
+        translations: {
+          [key]:
+              '{$startTagNgTemplate}Hej {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Vi ses {$interpolation}{$closeTagNgContainer}'
+        }
+      });
+      const fixture = initWithTemplate(AppComp, `
+        <div i18n>
+          <ng-template tplRef>Hello {{name | uppercase}}</ng-template>
+          <ng-container>Bye {{name | uppercase}}</ng-container>
+        </div>
+      `);
+
+      const element = fixture.nativeElement.firstChild;
+      expect(element.textContent.replace(/\s+/g, ' ').trim()).toBe('Hej ANGULARVi ses ANGULAR');
     });
 
     it('should be able to handle deep nested levels with templates', () => {
@@ -1462,4 +1485,9 @@ class AppComp {
 class DirectiveWithTplRef {
   constructor(public vcRef: ViewContainerRef, public tplRef: TemplateRef<{}>) {}
   ngOnInit() { this.vcRef.createEmbeddedView(this.tplRef, {}); }
+}
+
+@Pipe({name: 'uppercase'})
+class UppercasePipe implements PipeTransform {
+  transform(value: string) { return value.toUpperCase(); }
 }
