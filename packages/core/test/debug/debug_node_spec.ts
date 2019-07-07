@@ -7,6 +7,7 @@
  */
 
 
+import {CommonModule, NgIfContext} from '@angular/common';
 import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -641,6 +642,50 @@ class TestCmptWithPropBindings {
 
            const debugEl = fixture.debugElement.children[0].children[0].children[0];  // <div>
            expect(debugEl.componentInstance).toBeAnInstanceOf(ParentComp);
+         });
+    });
+
+    describe('context on DebugNode', () => {
+      it('should return component associated with the node if both a structural directive and a component match the node',
+         () => {
+           @Component({selector: 'example-component', template: ''})
+           class ExampleComponent {
+           }
+
+           TestBed.configureTestingModule(
+               {imports: [CommonModule], declarations: [ExampleComponent]});
+           TestBed.overrideTemplate(
+               TestApp, '<example-component *ngIf="true"></example-component>');
+
+           const fixture = TestBed.createComponent(TestApp);
+           fixture.detectChanges();
+           const debugNode = fixture.debugElement.query(By.directive(ExampleComponent));
+
+           expect(debugNode.context instanceof ExampleComponent).toBe(true);
+         });
+
+      it('should return structural directive context if there is a structural directive on the node',
+         () => {
+           TestBed.configureTestingModule({imports: [CommonModule]});
+           TestBed.overrideTemplate(TestApp, '<span *ngIf="true"></span>');
+
+           const fixture = TestBed.createComponent(TestApp);
+           fixture.detectChanges();
+           const debugNode = fixture.debugElement.query(By.css('span'));
+
+           expect(debugNode.context instanceof NgIfContext).toBe(true);
+         });
+
+      it('should return the containing component if there is no structural directive or component on the node',
+         () => {
+           TestBed.configureTestingModule({declarations: [MyDir]});
+           TestBed.overrideTemplate(TestApp, '<span mydir></span>');
+
+           const fixture = TestBed.createComponent(TestApp);
+           fixture.detectChanges();
+           const debugNode = fixture.debugElement.query(By.directive(MyDir));
+
+           expect(debugNode.context instanceof TestApp).toBe(true);
          });
     });
 
