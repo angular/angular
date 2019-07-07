@@ -8,7 +8,7 @@
 
 import {ActivatedRoute} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {decode, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last, shallowEqual} from './utils/collection';
 
 export function createUrlTree(
@@ -123,6 +123,7 @@ function computeNavigation(commands: any[]): Navigation {
         } else if (urlPart === '..') {  //  '../a'
           numberOfDoubleDots++;
         } else if (urlPart != '') {
+          urlPart = decode(urlPart);
           res.push(urlPart);
         }
       });

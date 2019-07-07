@@ -699,6 +699,26 @@ describe('Router', () => {
       });
     });
   });
+
+  describe('createUrlTree', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [RouterTestingModule]});
+    });
+
+    it('should return parsed URL', inject([Router], (router: Router) => {
+         expect(router).toBeTruthy();
+
+         // parse URL
+         const parsedTree: UrlTree = router.parseUrl('/a/test%20page/b');
+         const parsedSegments = parsedTree.root.children.primary.segments;
+
+         // handle routerLink directive
+         const linkTree: UrlTree = router.createUrlTree(['/a/test%20page/b']);
+         const linkSegments = linkTree.root.children.primary.segments;
+
+         expect(parsedSegments).toEqual(linkSegments);
+       }));
+  });
 });
 
 function checkResolveData(
