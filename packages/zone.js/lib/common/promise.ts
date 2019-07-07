@@ -176,20 +176,25 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
         }
         if (queue.length == 0 && state == REJECTED) {
           (promise as any)[symbolState] = REJECTED_NO_CATCH;
-          try {
-            // try to print more readable error log
-            throw new Error(
-                'Uncaught (in promise): ' + readableObjectToString(value) +
-                (value && value.stack ? '\n' + value.stack : ''));
-          } catch (err) {
-            const error: UncaughtPromiseError = err;
-            error.rejection = value;
-            error.promise = promise;
-            error.zone = Zone.current;
-            error.task = Zone.currentTask !;
-            _uncaughtPromiseErrors.push(error);
-            api.scheduleMicroTask();  // to make sure that it is running
+          let uncaughtPromiseError: any;
+          if (value instanceof Error || (value && value.message)) {
+            uncaughtPromiseError = value;
+          } else {
+            try {
+              // try to print more readable error log
+              throw new Error(
+                  'Uncaught (in promise): ' + readableObjectToString(value) +
+                  (value && value.stack ? '\n' + value.stack : ''));
+            } catch (err) {
+              uncaughtPromiseError = err;
+            }
           }
+          uncaughtPromiseError.rejection = value;
+          uncaughtPromiseError.promise = promise;
+          uncaughtPromiseError.zone = Zone.current;
+          uncaughtPromiseError.task = Zone.currentTask !;
+          _uncaughtPromiseErrors.push(uncaughtPromiseError);
+          api.scheduleMicroTask();  // to make sure that it is running
         }
       }
     }
