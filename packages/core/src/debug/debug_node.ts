@@ -220,7 +220,9 @@ class DebugNode__POST_R3__ implements DebugNode {
     return nativeElement &&
         (getComponent(nativeElement as Element) || getViewComponent(nativeElement));
   }
-  get context(): any { return getContext(this.nativeNode as Element); }
+  get context(): any {
+    return getComponent(this.nativeNode as Element) || getContext(this.nativeNode as Element);
+  }
 
   get listeners(): DebugEventListener[] {
     return getListeners(this.nativeNode as Element).filter(isBrowserEvents);
