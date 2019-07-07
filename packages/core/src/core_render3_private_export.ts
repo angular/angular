@@ -127,6 +127,7 @@ export {
   ɵɵallocHostVars,
   ɵɵelementContainerStart,
   ɵɵelementContainerEnd,
+  ɵɵelementContainer,
   ɵɵstyling,
   ɵɵstyleMap,
   ɵɵclassMap,

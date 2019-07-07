@@ -839,6 +839,8 @@ export declare function ɵɵdisableBindings(): void;
 
 export declare function ɵɵelement(index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void;
 
+export declare function ɵɵelementContainer(index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void;
+
 export declare function ɵɵelementContainerEnd(): void;
 
 export declare function ɵɵelementContainerStart(index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void;
