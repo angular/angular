@@ -253,7 +253,7 @@ describe('compiler compliance', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should generate elementContainerStart/End instructions for empty <ng-container>', () => {
+    it('should generate self-closing elementContainer instruction for empty <ng-container>', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -276,8 +276,7 @@ describe('compiler compliance', () => {
           …
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              i0.ɵɵelementContainerStart(0);
-              i0.ɵɵelementContainerEnd();
+              i0.ɵɵelementContainer(0);
             }
           }
         `;
