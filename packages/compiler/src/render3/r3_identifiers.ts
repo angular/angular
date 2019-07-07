@@ -66,6 +66,8 @@ export class Identifiers {
   static elementContainerEnd:
       o.ExternalReference = {name: 'ɵɵelementContainerEnd', moduleName: CORE};
 
+  static elementContainer: o.ExternalReference = {name: 'ɵɵelementContainer', moduleName: CORE};
+
   static styling: o.ExternalReference = {name: 'ɵɵstyling', moduleName: CORE};
 
   static styleMap: o.ExternalReference = {name: 'ɵɵstyleMap', moduleName: CORE};

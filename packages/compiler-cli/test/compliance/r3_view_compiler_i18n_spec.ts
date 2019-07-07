@@ -1977,9 +1977,8 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵi18nStart(1, $I18N_0$);
             $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 2, 3, "ng-template");
-            $r3$.ɵɵelementContainerStart(3);
+            $r3$.ɵɵelementContainer(3);
             $r3$.ɵɵpipe(4, "uppercase");
-            $r3$.ɵɵelementContainerEnd();
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
           }
@@ -2324,6 +2323,76 @@ describe('i18n support in the view compiler', () => {
 
       verify(input, output);
     });
+
+    it('should generate a self-closing container instruction for ng-container inside i18n', () => {
+      const input = `
+        <div i18n>
+          Hello <ng-container>there</ng-container>
+        </div>
+      `;
+
+      const output = String.raw `
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+          const $MSG_APP_SPEC_TS_1$ = goog.getMsg(" Hello {$startTagNgContainer}there{$closeTagNgContainer}", { "startTagNgContainer": "\uFFFD#2\uFFFD", "closeTagNgContainer": "\uFFFD/#2\uFFFD" });
+          $I18N_0$ = $MSG_APP_SPEC_TS_1$;
+        }
+        else {
+          $I18N_0$ = $r3$.ɵɵi18nLocalize(" Hello {$startTagNgContainer}there{$closeTagNgContainer}", { "startTagNgContainer": "\uFFFD#2\uFFFD", "closeTagNgContainer": "\uFFFD/#2\uFFFD" });
+        }
+        …
+        consts: 3,
+        vars: 0,
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nStart(1, I18N_0);
+            $r3$.ɵɵelementContainer(2);
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
+
+    it('should not generate a self-closing container instruction for ng-container with non-text content inside i18n',
+       () => {
+         const input = `
+          <div i18n>
+            Hello <ng-container>there <strong>!</strong></ng-container>
+          </div>
+        `;
+
+         const output = String.raw `
+          var $I18N_0$;
+          if (ngI18nClosureMode) {
+            const $MSG_APP_SPEC_TS_1$ = goog.getMsg(" Hello {$startTagNgContainer}there {$startTagStrong}!{$closeTagStrong}{$closeTagNgContainer}", { "startTagNgContainer": "\uFFFD#2\uFFFD", "startTagStrong": "\uFFFD#3\uFFFD", "closeTagStrong": "\uFFFD/#3\uFFFD", "closeTagNgContainer": "\uFFFD/#2\uFFFD" });
+            $I18N_0$ = $MSG_APP_SPEC_TS_1$;
+          }
+          else {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize(" Hello {$startTagNgContainer}there {$startTagStrong}!{$closeTagStrong}{$closeTagNgContainer}", { "startTagNgContainer": "\uFFFD#2\uFFFD", "startTagStrong": "\uFFFD#3\uFFFD", "closeTagStrong": "\uFFFD/#3\uFFFD", "closeTagNgContainer": "\uFFFD/#2\uFFFD" });
+          }
+          …
+          consts: 4,
+          vars: 0,
+          template: function MyComponent_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵɵelementStart(0, "div");
+              $r3$.ɵɵi18nStart(1, I18N_0);
+              $r3$.ɵɵelementContainerStart(2);
+              $r3$.ɵɵelement(3, "strong");
+              $r3$.ɵɵelementContainerEnd();
+              $r3$.ɵɵi18nEnd();
+              $r3$.ɵɵelementEnd();
+            }
+          }
+        `;
+
+         verify(input, output);
+       });
+
   });
 
   describe('whitespace preserving mode', () => {

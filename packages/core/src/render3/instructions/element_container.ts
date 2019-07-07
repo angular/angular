@@ -100,3 +100,19 @@ export function ɵɵelementContainerEnd(): void {
 
   registerPostOrderHooks(tView, previousOrParentTNode);
 }
+
+/**
+ * Creates an empty logical container using {@link elementContainerStart}
+ * and {@link elementContainerEnd}
+ *
+ * @param index Index of the element in the LView array
+ * @param attrs Set of attributes to be used when matching directives.
+ * @param localRefs A set of local reference bindings on the element.
+ *
+ * @codeGenApi
+ */
+export function ɵɵelementContainer(
+    index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void {
+  ɵɵelementContainerStart(index, attrs, localRefs);
+  ɵɵelementContainerEnd();
+}

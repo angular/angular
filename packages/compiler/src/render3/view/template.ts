@@ -613,23 +613,21 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.i18n.appendElement(element.i18n !, elementIndex);
     }
 
-    const hasChildren = () => {
-      if (!isI18nRootElement && this.i18n) {
-        // we do not append text node instructions and ICUs inside i18n section,
-        // so we exclude them while calculating whether current element has children
-        return !hasTextChildrenOnly(element.children);
-      }
-      return element.children.length > 0;
-    };
+    // Note that we do not append text node instructions and ICUs inside i18n section,
+    // so we exclude them while calculating whether current element has children
+    const hasChildren = (!isI18nRootElement && this.i18n) ? !hasTextChildrenOnly(element.children) :
+                                                            element.children.length > 0;
 
-    const createSelfClosingInstruction = !stylingBuilder.hasBindings && !isNgContainer &&
-        element.outputs.length === 0 && i18nAttrs.length === 0 && !hasChildren();
+    const createSelfClosingInstruction = !stylingBuilder.hasBindings &&
+        element.outputs.length === 0 && i18nAttrs.length === 0 && !hasChildren;
 
     const createSelfClosingI18nInstruction = !createSelfClosingInstruction &&
         !stylingBuilder.hasBindings && hasTextChildrenOnly(element.children);
 
     if (createSelfClosingInstruction) {
-      this.creationInstruction(element.sourceSpan, R3.element, trimTrailingNulls(parameters));
+      this.creationInstruction(
+          element.sourceSpan, isNgContainer ? R3.elementContainer : R3.element,
+          trimTrailingNulls(parameters));
     } else {
       this.creationInstruction(
           element.sourceSpan, isNgContainer ? R3.elementContainerStart : R3.elementStart,
