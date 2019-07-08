@@ -299,4 +299,4 @@
     };
     return ZoneQueueRunner;
   })(QueueRunner);
-})(global);
+})(typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global);

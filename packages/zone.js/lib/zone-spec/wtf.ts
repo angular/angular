@@ -158,4 +158,4 @@
   }
 
   (Zone as any)['wtfZoneSpec'] = !wtfEnabled ? null : new WtfZoneSpec();
-})(global);
+})(typeof window === 'object' && window || typeof self === 'object' && self || global);

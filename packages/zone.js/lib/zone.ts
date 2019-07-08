@@ -1401,4 +1401,4 @@ const Zone: ZoneType = (function(global: any) {
 
   performanceMeasure('Zone', 'Zone');
   return global['Zone'] = Zone;
-})(global);
+})(typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global);
