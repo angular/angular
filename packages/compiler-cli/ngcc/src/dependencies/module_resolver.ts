@@ -94,14 +94,13 @@ export class ModuleResolver {
       const packagePath = this.findPackagePath(fromPath);
       if (packagePath !== null) {
         for (const mappedPath of mappedPaths) {
-          const isRelative =
-              mappedPath.startsWith(packagePath) && !mappedPath.includes('node_modules');
-          if (isRelative) {
-            return this.resolveAsRelativePath(mappedPath, fromPath);
-          } else if (this.isEntryPoint(mappedPath)) {
+          if (this.isEntryPoint(mappedPath)) {
             return new ResolvedExternalModule(mappedPath);
-          } else if (this.resolveAsRelativePath(mappedPath, fromPath)) {
-            return new ResolvedDeepImport(mappedPath);
+          }
+          const nonEntryPointImport = this.resolveAsRelativePath(mappedPath, fromPath);
+          if (nonEntryPointImport !== null) {
+            return isRelativeImport(packagePath, mappedPath) ? nonEntryPointImport :
+                                                               new ResolvedDeepImport(mappedPath);
           }
         }
       }
@@ -190,7 +189,9 @@ export class ModuleResolver {
       }
     }
 
-    return (bestMapping && bestMatch) ? this.computeMappedTemplates(bestMapping, bestMatch) : [];
+    return (bestMapping !== undefined && bestMatch !== undefined) ?
+        this.computeMappedTemplates(bestMapping, bestMatch) :
+        [];
   }
 
   /**
@@ -203,10 +204,13 @@ export class ModuleResolver {
    */
   private matchMapping(path: string, mapping: ProcessedPathMapping): string|null {
     const {prefix, postfix, hasWildcard} = mapping.matcher;
-    if (path.startsWith(prefix) && path.endsWith(postfix)) {
-      return hasWildcard ? path.substring(prefix.length, path.length - postfix.length) : '';
+    if (hasWildcard) {
+      return (path.startsWith(prefix) && path.endsWith(postfix)) ?
+          path.substring(prefix.length, path.length - postfix.length) :
+          null;
+    } else {
+      return (path === prefix) ? '' : null;
     }
-    return null;
   }
 
   /**
@@ -276,4 +280,8 @@ interface PathMappingPattern {
   prefix: string;
   postfix: string;
   hasWildcard: boolean;
+}
+
+function isRelativeImport(from: AbsoluteFsPath, to: AbsoluteFsPath) {
+  return to.startsWith(from) && !to.includes('node_modules');
 }
