@@ -27,12 +27,6 @@ query --output=label_kind
 # By default, failing tests don't print any output, it goes to the log file
 test --test_output=errors
 
-# Show which actions are run under workers,
-# and print all the actions running in parallel.
-# Helps to demonstrate that bazel uses all the cores on the machine.
-build --experimental_ui
-test --experimental_ui
-
 #################################
 # Release configuration.        #
 # Run with "--config=release"   #
