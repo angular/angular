@@ -37,23 +37,6 @@
           }
         }
       },
-      "Groups": {
-        "order": 2,
-        "resources": {
-          "sldkjfslkjfslkjdsklj": {
-            "desc": "Meetup in Barcelona, Spain. Express your motivations, share your ideas and play together creating awesome things in team.",
-            "rev": true,
-            "title": "Angular Beers",
-            "url": "http://www.meetup.com/AngularJS-Beers/"
-          },
-          "sldkjfslkjfslkjdskzzzlj": {
-            "desc": "Angular Conferences and Angular Camps in Barcelona, Spain.",
-            "rev": true,
-            "title": "Angular Camp",
-            "url": "http://angularcamp.org/"
-          }
-        }
-      },
       "Podcasts": {
         "order": 3,
         "resources": {
@@ -62,7 +45,7 @@
             "logo": "",
             "rev": true,
             "title": "Adventures in Angular",
-            "url": "https://devchat.tv/adventures-in-angular"
+            "url": "https://devchat.tv/adv-in-angular/"
           },
           "sdlkfjsldfkj": {
             "desc": "Weekly video podcast hosted by Jeff Whelpley with all the latest and greatest happenings in the wild world of Angular.",
@@ -77,13 +60,6 @@
             "rev": true,
             "title": "Happy Angular Podcast",
             "url": "https://happy-angular.de/"
-          },
-          "sldkfjsldjf": {
-            "desc": "The live broadcast podcast all about JavaScript",
-            "logo": "",
-            "rev": true,
-            "title": "Javascript Air",
-            "url": "https://javascriptair.com/"
           }
         }
       }
@@ -95,40 +71,26 @@
       "Cross-Platform Development": {
         "order": 5,
         "resources": {
-          "a2b": {
-            "desc": "Angular and React Native to build applications for Android and iOS",
-            "logo": "",
-            "rev": true,
-            "title": "ReactNative",
-            "url": "http://angular.github.io/react-native-renderer/"
-          },
           "a3b": {
             "desc": "Ionic offers a library of mobile-optimized HTML, CSS and JS components and tools for building highly interactive native and progressive web apps.",
             "logo": "http://ionicframework.com/img/ionic-logo-white.svg",
             "rev": true,
             "title": "Ionic",
-            "url": "http://ionicframework.com/docs/v2/"
+            "url": "https://ionicframework.com/docs"
           },
           "a4b": {
             "desc": "Electron Platform for Angular.",
             "logo": "",
             "rev": true,
             "title": "Electron",
-            "url": "http://github.com/angular/angular-electron"
+            "url": "https://github.com/maximegris/angular-electron"
           },
           "ab": {
             "desc": "NativeScript is how you build cross-platform, native iOS and Android apps with Angular and TypeScript. Get 100% access to native APIs via JavaScript and reuse of packages from NPM, CocoaPods and Gradle. Open source and backed by Telerik.​​​",
             "logo": "",
             "rev": true,
             "title": "NativeScript",
-            "url": "https://github.com/NativeScript/nativescript-angular"
-          },
-          "ab5": {
-            "desc": "An Universal Windows App (uwp) powered by Angular",
-            "logo": "",
-            "rev": true,
-            "title": "Windows (UWP)",
-            "url": "http://github.com/preboot/angular2-universal-windows-app"
+            "url": "https://docs.nativescript.org/angular/start/introduction"
           }
         }
       },
@@ -139,7 +101,7 @@
             "desc": "Reactive Extensions for Angular",
             "rev": true,
             "title": "ngrx",
-            "url": "http://github.com/ngrx"
+            "url": "https://ngrx.io/"
           },
           "ab": {
             "desc": "The official library for Firebase and Angular",
@@ -153,21 +115,14 @@
             "logo": "http://www.angular-meteor.com/images/logo.png",
             "rev": true,
             "title": "Meteor",
-            "url": "http://www.angular-meteor.com/angular2"
+            "url": "https://github.com/urigo/angular-meteor"
           },
           "ab3": {
             "desc": "Apollo is a data stack for modern apps, built with GraphQL.",
             "logo": "http://docs.apollostack.com/logo/large.png",
             "rev": true,
             "title": "Apollo",
-            "url": "http://docs.apollostack.com/apollo-client/angular2.html"
-          },
-          "ab4": {
-            "desc": "Angular Commerce is a solution for building modern e-commerce applications with power of Google Firebase. Set of components is design agnostic and allows to easily extend functionality.",
-            "logo": "",
-            "rev": true,
-            "title": "AngularCommerce",
-            "url": "https://github.com/NodeArt/angular-commerce"
+            "url": "https://www.apollographql.com/docs/angular/"
           },
           "ngx-api-utils": {
             "desc": "ngx-api-utils is a lean library of utilities and helpers to quickly integrate any HTTP API (REST, Ajax, and any other) with Angular.",
@@ -219,12 +174,6 @@
       "Tooling": {
         "order": 2,
         "resources": {
-          "-KLIzHfBEr1qMMUDxfq3": {
-            "desc": "Generate an Angular CRUD application from an existing database schema",
-            "rev": true,
-            "title": "Celerio Angular Quickstart",
-            "url": "https://github.com/jaxio/celerio-angular-quickstart"
-          },
           "a1": {
             "desc": "A Google Chrome Dev Tools extension for debugging Angular applications.",
             "logo": "https://augury.angular.io/images/augury-logo.svg",
@@ -259,26 +208,12 @@
             "title": "Codelyzer",
             "url": "https://github.com/mgechev/codelyzer"
           },
-          "e1": {
-            "desc": "This package provides facilities for developers building Angular applications on ASP.NET.",
-            "logo": "",
-            "rev": true,
-            "title": "Universal for ASP.NET",
-            "url": "https://github.com/aspnet/nodeservices"
-          },
           "f1": {
             "desc": "This tool generates dedicated documentation for Angular applications.",
             "logo": "",
             "rev": true,
             "title": "Compodoc",
             "url": "https://github.com/compodoc/compodoc"
-          },
-          "ncg": {
-            "desc": "Generate several types of CRUD apps complete with e2e testing using template-sets for Angular, Material Design, Bootstrap, Kendo UI, Ionic, ...",
-            "logo": "https://avatars3.githubusercontent.com/u/27976684",
-            "rev": true,
-            "title": "NinjaCodeGen - Angular CRUD Generator",
-            "url": "https://ninjaCodeGen.com"
           },
           "angular-playground": {
             "desc": "UI development environment for building, testing, and documenting Angular applications.",
@@ -329,12 +264,6 @@
             "rev": true,
             "title": "Clarity Design System",
             "url": "https://vmware.github.io/clarity/"
-          },
-          "-KLIzI9BTvvP_hUwutXk": {
-            "desc": "UI components for Angular using Semantic UI",
-            "rev": true,
-            "title": "Semantic UI",
-            "url": "https://github.com/vladotesanovic/ngSemantic"
           },
           "-KMVB8P4TDfht8c0L1AE": {
             "desc": "The Angular version of the Angular UI Bootstrap library. This library is being built from scratch in Typescript using the Bootstrap 4 CSS framework.",
@@ -520,12 +449,6 @@
       "Books": {
         "order": 1,
         "resources": {
-          "-KLI8vJ0ZkvWhqPembZ7": {
-            "desc": "A guide that helps developers get up to speed quickly on Angular and its accompanying technologies.",
-            "rev": true,
-            "title": "How to Get Started and Productive in Angular Fast",
-            "url": "http://www.amazon.com/How-Started-Productive-Angular-Fast-ebook/dp/B01D3B0ET4/ref=sr_1_1_twi_kin_2?ie=UTF8&qid=1462381159&sr=8-1"
-          },
           "-KLIzGEp8Mh5W-FkiQnL": {
             "desc": "Your quick, no-nonsense guide to building real-world apps with Angular",
             "rev": true,
@@ -536,37 +459,13 @@
             "desc": "More than 15 books from O'Reilly about Angular",
             "rev": true,
             "title": "O'Reilly Media",
-            "url": "https://ssearch.oreilly.com/?q=angular+2&x=0&y=0"
-          },
-          "8ab": {
-            "desc": "This books shows all the steps necessary for the development of SPA (Single Page Application) applications with the brand new Angular",
-            "rev": true,
-            "title": "Practical Angular",
-            "url": "https://leanpub.com/practical-angular-2"
-          },
-          "a2b": {
-            "desc": "Publications and books from Manning about Angular",
-            "rev": true,
-            "title": "Manning Publications",
-            "url": "https://www.manning.com/search?q=angular"
-          },
-          "a4b": {
-            "desc": "From getting started with the Angular toolchain to writing applications with scalable front end architectures, this book walks you through everything you need to know.",
-            "rev": true,
-            "title": "Rangle's Angular Training Book",
-            "url": "http://ngcourse.rangle.io/"
+            "url": "https://ssearch.oreilly.com/?q=angular"
           },
           "a5b": {
             "desc": "The in-depth, complete, and up-to-date book on Angular. Become an Angular expert today.",
             "rev": true,
             "title": "ng-book",
             "url": "https://www.ng-book.com/2/"
-          },
-          "a6b": {
-            "desc": "A Practical Introduction to the new Web Development Platform Angular",
-            "rev": true,
-            "title": "Angular Book",
-            "url": "https://leanpub.com/angular2-book"
           },
           "a7b": {
             "desc": "This ebook will help you getting the philosophy of the framework: what comes from 1.x, what has been introduced and why",
@@ -578,13 +477,13 @@
             "desc": "More than 10 books from Packt Publishing about Angular",
             "rev": true,
             "title": "Packt Publishing",
-            "url": "https://www.packtpub.com/all/?search=angular%202#"
+            "url": "https://www.packtpub.com/catalogsearch/result/?q=angular"
           },
           "cnoring-rxjs-fundamentals": {
             "desc": "A free book that covers all facets of working with Rxjs from your first Observable to how to make your code run at optimal speed with Schedulers.",
             "rev": true,
-            "title": "RxJS 5 Ultimate",
-            "url": "https://www.gitbook.com/book/chrisnoring/rxjs-5-ultimate/details"
+            "title": "RxJS Ultimate",
+            "url": "https://chrisnoring.gitbooks.io/rxjs-5-ultimate/content/"
           },
           "vsavkin-angular-router": {
             "desc": "This book is a comprehensive guide to the Angular router written by its designer. The book explores the library in depth, including the mental model, design constraints, subtleties of the API.",
@@ -642,18 +541,6 @@
             "title": "Academia Binaria (español)",
             "url": "http://academia-binaria.com/"
           },
-          "-KLIzIOgdPXzI4LMOzYP": {
-            "desc": "In this course, you will learn the features listed above and so much more. This amazing Angular tutorial will cover the fundamentals of Angular (you don’t even need to know Angular), TypeScript, and introduction to the programming concepts such as conditions, arrays, functions, directives, pipes, etc.",
-            "rev": true,
-            "title": "Eduonix Angular Fundamentals",
-            "url": "https://www.eduonix.com/courses/Web-Development/angular-2-fundamentals-for-web-developers"
-          },
-          "-KMUuOWwciL_S_o0fzFO": {
-            "desc": "The ngMigrate project is brought to you by Todd Motto, a Developer Advocate at Telerik, spreading the good word of Kendo UI, NativeScript and Angular & AngularJS. You can follow him on Twitter for questions, or even requests about this guide.",
-            "rev": true,
-            "title": "ngMigrate",
-            "url": "http://ngmigrate.telerik.com/"
-          },
           "-KN3uNQvxifu26D6WKJW": {
             "category": "Education",
             "desc": "Create the future of web applications by taking Angular for a test drive.",
@@ -674,14 +561,14 @@
             "logo": "",
             "rev": true,
             "title": "Pluralsight",
-            "url": "https://www.pluralsight.com/search?q=angular+2&categories=all"
+            "url": "https://www.pluralsight.com/paths/angular"
           },
           "ab3": {
             "desc": "Angular courses hosted by  Udemy",
             "logo": "",
             "rev": true,
             "title": "Udemy",
-            "url": "https://www.udemy.com/courses/search/?ref=home&src=ukw&q=angular+2&lang=en"
+            "url": "https://www.udemy.com/courses/search/?q=angular"
           },
           "ab4": {
             "desc": "Angular Fundamentals and advanced topics focused on Redux Style Angular Applications",
@@ -695,25 +582,13 @@
             "logo": "",
             "rev": true,
             "title": "Frontend Masters",
-            "url": "https://frontendmasters.com/courses/angular-2/"
-          },
-          "ac6": {
-            "desc": "French language Angular course covering TypeScript, ES6, Dependency Injection, Observables, and more.",
-            "rev": true,
-            "title": "Wishtack's Angular Course (francais)",
-            "url": "http://courses.wishtack.com/angular-2/ecmascript-6"
+            "url": "https://frontendmasters.com/courses/angular-core/"
           },
           "angular-love": {
             "desc": "Polish language Angular articles and information",
             "rev": true,
             "title": "angular.love (Polski)",
             "url": "http://www.angular.love/"
-          },
-          "angular2forms": {
-            "desc": "Learn about how to use Reactive Forms with Angular.",
-            "rev": true,
-            "title": "Angular Forms: Data Binding and Validation",
-            "url": "https://www.lynda.com/AngularJS-tutorials/Angular-2-Forms-Data-Binding-Validation/461451-2.html"
           },
           "learn-angular-fr": {
             "desc": "French language Angular content.",
@@ -790,7 +665,7 @@
             "desc": "Basic and Advanced training across Europe in German",
             "rev": true,
             "title": "TheCodeCampus (German)",
-            "url": "https://www.thecodecampus.de/#!/angularjs"
+            "url": "https://www.thecodecampus.de/schulungen/angular"
           },
           "-KLIzFhfGKi1xttqJ7Uh": {
             "desc": "4 day in-depth Angular training in Israel",
@@ -823,13 +698,6 @@
             "title": "Angular Boot Camp",
             "url": "https://angularbootcamp.com"
           },
-          "ab": {
-            "desc": "With Rangle’s Custom Training, you can cover Angular in comprehensive detail, on your premises or theirs. Learn directly from Angular experts who will tailor course material to suit your specific application needs.",
-            "logo": "",
-            "rev": true,
-            "title": "Rangle.io",
-            "url": "http://rangle.io/services/javascript-training/angular2-training/"
-          },
           "ab3": {
             "desc": "Trainings & Code Reviews. We help people to get a deep understanding of different technologies through trainings and code reviews. Our services can be arranged online, making it possible to join in from anywhere in the world, or on-site to get the best experience possible.",
             "logo": "",
@@ -843,12 +711,6 @@
             "rev": true,
             "title": "Learn Javascript (Russian)",
             "url": "https://learn.javascript.ru/courses/angular"
-          },
-          "sa200": {
-            "desc": "Free Angular training delivered by SFEIR in France",
-            "rev": true,
-            "title": "SFEIR School (French)",
-            "url": "https://school.sfeir.com/project/sa200/"
           },
           "zenika-angular": {
             "desc": "Angular trainings delivered by Zenika (FRANCE)",
