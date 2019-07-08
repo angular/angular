@@ -202,6 +202,37 @@ runInEachFileSystem(() => {
       // If program reuse were configured incorrectly (as was responsible for
       // https://github.com/angular/angular/issues/30079), this would have crashed.
     });
+
+    // https://github.com/angular/angular/pull/26036
+    it('should handle redirected source files', () => {
+      env.tsconfig({fullTemplateTypeCheck: true});
+
+      // This file structure has an identical version of "a" under the root node_modules and inside
+      // of "b". Because their package.json file indicates it is the exact same version of "a",
+      // TypeScript will transform the source file of "node_modules/b/node_modules/a/index.d.ts"
+      // into a redirect to "node_modules/a/index.d.ts". During incremental compilations, we must
+      // assure not to reintroduce "node_modules/b/node_modules/a/index.d.ts" as its redirected
+      // source file, but instead use its original file.
+      env.write('node_modules/a/index.js', `export class ServiceA {}`);
+      env.write('node_modules/a/index.d.ts', `export declare class ServiceA {}`);
+      env.write('node_modules/a/package.json', `{"name": "a", "version": "1.0"}`);
+      env.write('node_modules/b/node_modules/a/index.js', `export class ServiceA {}`);
+      env.write('node_modules/b/node_modules/a/index.d.ts', `export declare class ServiceA {}`);
+      env.write('node_modules/b/node_modules/a/package.json', `{"name": "a", "version": "1.0"}`);
+      env.write('node_modules/b/index.js', `export {ServiceA as ServiceB} from 'a';`);
+      env.write('node_modules/b/index.d.ts', `export {ServiceA as ServiceB} from 'a';`);
+      env.write('test.ts', `
+        import {ServiceA} from 'a';
+        import {ServiceB} from 'b';
+      `);
+      env.driveMain();
+      env.flushWrittenFileTracking();
+
+      // Pretend a change was made to test.ts. If redirect sources were introduced into the new
+      // program, this would fail due to an assertion failure in TS.
+      env.invalidateCachedFile('test.ts');
+      env.driveMain();
+    });
   });
 
   function setupFooBarProgram(env: NgtscTestEnvironment) {
