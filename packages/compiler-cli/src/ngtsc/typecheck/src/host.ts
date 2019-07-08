@@ -39,6 +39,13 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
       sf = this.delegate.getSourceFile(
           fileName, languageVersion, onError, shouldCreateNewSourceFile);
       sf && this.sfMap.set(fileName, sf);
+    } else {
+      // TypeScript doesn't allow returning redirect source files. To avoid unforseen errors we
+      // return the original source file instead of the redirect target.
+      const redirectInfo = (sf as any).redirectInfo;
+      if (redirectInfo !== undefined) {
+        sf = redirectInfo.unredirected;
+      }
     }
     return sf;
   }
