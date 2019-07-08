@@ -471,7 +471,9 @@ function i18nStartFirstPass(
     }
   }
 
-  allocExpando(viewData, i18nVarsCount);
+  if (i18nVarsCount > 0) {
+    allocExpando(viewData, i18nVarsCount);
+  }
 
   ngDevMode &&
       attachI18nOpCodesDebug(
