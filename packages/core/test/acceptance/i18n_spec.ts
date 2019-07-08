@@ -1463,6 +1463,30 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
           .toEqual(`<div-query>Contenu<!--ng-container--></div-query>`);
     });
   });
+
+  it('should not alloc expando slots when there is no new variable to create', () => {
+    @Component({
+      template: `
+      <div dialog i18n>
+          <div *ngIf="data">
+              Some content
+          </div>
+      </div>
+      <button [close]="true">Button label</button>
+  `
+    })
+    class ContentElementDialog {
+      data = false;
+    }
+
+    TestBed.configureTestingModule({declarations: [DialogDir, CloseBtn, ContentElementDialog]});
+
+    const fixture = TestBed.createComponent(ContentElementDialog);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toEqual(`<div dialog=""><!--bindings={
+  "ng-reflect-ng-if": "false"
+}--></div><button ng-reflect-dialog-result="true" title="Close dialog">Button label</button>`);
+  });
 });
 
 function initWithTemplate(compType: Type<any>, template: string) {
@@ -1490,4 +1514,14 @@ class DirectiveWithTplRef {
 @Pipe({name: 'uppercase'})
 class UppercasePipe implements PipeTransform {
   transform(value: string) { return value.toUpperCase(); }
+}
+
+@Directive({selector: `[dialog]`})
+export class DialogDir {
+}
+
+@Directive({selector: `button[close]`, host: {'[title]': 'name'}})
+export class CloseBtn {
+  @Input('close') dialogResult: any;
+  name: string = 'Close dialog';
 }
