@@ -11,7 +11,7 @@ import {Type} from '../../interface/type';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/security';
-import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertLessThan, assertNotEqual, assertNotSame} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertLessThan, assertNotEqual, assertNotSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertLView, assertPreviousIsParent} from '../assert';
@@ -316,24 +316,31 @@ export function assignTViewNodeToLView(
  * When elements are created dynamically after a view blueprint is created (e.g. through
  * i18nApply() or ComponentFactory.create), we need to adjust the blueprint for future
  * template passes.
+ *
+ * @param view The LView containing the blueprint to adjust
+ * @param numSlotsToAlloc The number of slots to alloc in the LView, should be >0
  */
 export function allocExpando(view: LView, numSlotsToAlloc: number) {
-  const tView = view[TVIEW];
-  if (tView.firstTemplatePass) {
-    for (let i = 0; i < numSlotsToAlloc; i++) {
-      tView.blueprint.push(null);
-      tView.data.push(null);
-      view.push(null);
-    }
+  ngDevMode && assertGreaterThan(
+                   numSlotsToAlloc, 0, 'The number of slots to alloc should be greater than 0');
+  if (numSlotsToAlloc > 0) {
+    const tView = view[TVIEW];
+    if (tView.firstTemplatePass) {
+      for (let i = 0; i < numSlotsToAlloc; i++) {
+        tView.blueprint.push(null);
+        tView.data.push(null);
+        view.push(null);
+      }
 
-    // We should only increment the expando start index if there aren't already directives
-    // and injectors saved in the "expando" section
-    if (!tView.expandoInstructions) {
-      tView.expandoStartIndex += numSlotsToAlloc;
-    } else {
-      // Since we're adding the dynamic nodes into the expando section, we need to let the host
-      // bindings know that they should skip x slots
-      tView.expandoInstructions.push(numSlotsToAlloc);
+      // We should only increment the expando start index if there aren't already directives
+      // and injectors saved in the "expando" section
+      if (!tView.expandoInstructions) {
+        tView.expandoStartIndex += numSlotsToAlloc;
+      } else {
+        // Since we're adding the dynamic nodes into the expando section, we need to let the host
+        // bindings know that they should skip x slots
+        tView.expandoInstructions.push(numSlotsToAlloc);
+      }
     }
   }
 }
