@@ -34,9 +34,9 @@ export function getBasePaths(
   if (pathMappings) {
     const baseUrl = resolve(pathMappings.baseUrl);
     Object.values(pathMappings.paths).forEach(paths => paths.forEach(path => {
-      // We only want base paths that exists and are not files
+      // We only want base paths that exist and are not files
       let basePath = join(baseUrl, extractPathPrefix(path));
-      while (basePath !== baseUrl && !fs.exists(basePath) || fs.stat(basePath).isFile()) {
+      while (basePath !== baseUrl && (!fs.exists(basePath) || fs.stat(basePath).isFile())) {
         basePath = fs.dirname(basePath);
       }
       basePaths.push(basePath);
