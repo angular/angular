@@ -1,5 +1,9 @@
+<!--
 # Managing Data
+-->
+# 데이터 다루기
 
+<!--
 At the end of [Routing](start/routing "Getting Started: Routing"), the online store application has a product catalog with two views: a product list and product details. 
 Users can click on a product name from the list to see details in a new view, with a distinct URL (route). 
 
@@ -7,31 +11,63 @@ In this section, you'll create the shopping cart. You'll:
 * Update the product details page to include a "Buy" button, which adds the current product to a list of products managed by a cart service. 
 * Add a cart component, which displays the items you added to your cart.
 * Add a shipping component, which retrieves shipping prices for the items in the cart by using Angular's HttpClient to retrieve shipping data from a `.json` file.
+-->
+[라우팅](start/routing "시작하기: 라우팅") 문서를 마지막까지 진행하고 나면 온라인 쇼핑몰 앱에는 제품 목록 화면과 제품 상세정보 화면이 존재합니다.
+그래서 제품 목록 화면에서 사용자가 제품의 이름을 클릭하면 새로운 화면으로 전환되면서 제품의 상세정보를 확인할 수 있습니다. 이 때 URL도 변경됩니다.
+
+이번 섹션에서는 장바구니 기능을 추가해봅시다. 이렇게 진행합니다:
+* 제품 상세정보 화면에 "Buy" 버튼을 추가합니다. 이 버튼을 클릭하면 현재 화면에 표시된 제품을 장바구니 서비스에 추가합니다.
+* 장바구니 컴포넌트를 추가합니다. 이 컴포넌트는 장바구니에 들어있는 제품 목록을 표시합니다.
+* 주문 컴포넌트를 추가합니다. 이 컴포넌트는 Angular의 HttpClient 모듈을 사용해서 현재 장바구니에 들어있는 제품의 가격을 `.json` 파일로 받아옵니다.
 
 {@a services}
+<!--
 ## Services
+-->
+## 서비스(Services)
 
+<!--
 Services are an integral part of Angular applications. In Angular, a service is an instance of a class that can be made available to any part of your application using Angular's [dependency injection system](guide/glossary#dependency-injection-di "dependency injection definition").
 
 Services are the place where you share data between parts of your application. For the online store, the cart service is where you store your cart data and methods.
+-->
+서비스는 Angular 애플리케이션에서 사용하는 데이터를 처리하는 객체입니다. Angular에서 서비스는 어떤 클래스의 인스턴스이며, Angular가 제공하는 [의존성 주입 시스템](guide/glossary#dependency-injection-di "dependency injection definition")을 사용해서 애플리케이션 어디에서도 자유롭게 사용할 수 있습니다.
+
+서비스는 보통 애플리케이션 안에서 여러번 사용하는 데이터를 공유하는 용도로 사용합니다. 그래서 온라인 쇼핑몰이라면 장바구니를 구현하기 위해 필요한 데이터와 메소드를 장바구니 서비스로 구현할 수 있습니다.
 
 {@a create-cart-service}
+<!--
 ## Create the shopping cart service
+-->
+## 장바구니 서비스 생성하기
 
+<!--
 Up to this point, users can view product information, and simulate sharing and being notified about product changes. They cannot, however, buy products. 
 
 In this section, you'll add a "Buy" button the product details page. 
 You'll also set up a cart service to store information about products in the cart.
+-->
+지금까지 작성한 앱에서 사용자는 제품의 정보를 확인하고, 공유하거나, 제품 가격이 변동되었을 때 알림을 받는 동작을 가상으로 구현해봤습니다. 이번에는 제품을 구매해봅시다.
+
+이 섹션에서는 제품 상세정보 페이지에 "Buy" 버튼을 추가할 것입니다.
+그리고 장바구니에 제품을 추가하기 위해 장바구니 서비스도 만들어 봅시다.
 
 <div class="alert is-helpful">
 
+<!--
 Later, in the [Forms](start/forms "Getting Started: Forms") part of this tutorial, this cart service also will be accessed from the page where the user checks out. 
+-->
+이 섹션에서 만드는 장바구니 서비스는 이후에 진행할 [폼](start/forms "시작하기: 폼") 문서에서도 활용합니다.
 
 </div>
 
 {@a generate-cart-service}
+<!--
 ### Define a cart service
+-->
+### 서비스 정의하기
 
+<!--
 1. Generate a cart service.
 
     1. Right click on the `app` folder, choose `Angular Generator`, and choose `**Service**`. Name the new service `cart`.
@@ -41,10 +77,23 @@ Later, in the [Forms](start/forms "Getting Started: Forms") part of this tutoria
     1. If the generated `@Injectable()` decorator does not include the `{ providedIn: 'root' }` statement, then insert it as shown above.
 
 1. In the `CartService` class, define an `items` property to store the list (array) of the current products in the cart. 
+-->
+1. 장바구니 서비스를 생성합니다.
+
+    1. `app` 폴더에 마우스 오른쪽 버튼을 클릭하고 `Angular Generator`를 선택합니다. 그리고 `**Service**`를 선택하고 `cart`라는 이름으로 서비스를 생성합니다.
+
+        <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.1.ts"></code-example>
+
+    1. 자동으로 생성된 `@Injectable()` 데코레이터에 `{ providedIn: 'root' }` 구문이 없다면 위 예제 코드처럼 추가해 줍니다.
+
+1. 장바구니에 담길 제품 목록을 저장하기 위해 `CartService` 클래스에 `items` 프로퍼티를 선언합니다.
 
     <code-example path="getting-started/src/app/cart.service.ts" region="props"></code-example>
 
+<!--
 1. Define methods to add items to the cart, return cart items, and clear the cart items: 
+-->
+3. 제품을 장바구니에 추가하는 메소드, 장바구니 목록을 반환하는 메소드, 장바구니를 비우는 메소드를 추가합니다:
 
     <code-example path="getting-started/src/app/cart.service.ts" region="methods" linenums="false"></code-example>
 
@@ -61,8 +110,12 @@ Later, in the [Forms](start/forms "Getting Started: Forms") part of this tutoria
     -->
 
 {@a product-details-use-cart-service}
+<!--
 ### Use the cart service 
+-->
+### 서비스 활용하기
 
+<!--
 In this section, you'll update the product details component to use the cart service. 
 You'll add a "Buy" button to the product details view. 
 When the "Buy" button is clicked, you'll use the cart service to add the current product to the cart. 
@@ -77,6 +130,20 @@ When the "Buy" button is clicked, you'll use the cart service to add the current
         </code-example>
 
     1. Inject the cart service.
+-->
+이번 섹션에서는 제품 상세정보 컴포넌트에서 장바구니 서비스를 활용할 수 있도록 수정해 봅시다.
+제품 상세정보 화면에 "Buy" 버튼을 추가한 후에, 사용자가 이 버튼을 클릭하면 현재 화면에 표시된 상품을 장바구니에 추가하는 기능을 구현합니다.
+
+1. `product-details.component.ts` 파일을 엽니다.
+
+1. 컴포넌트가 장바구니 서비스에 접근할 수 있도록 설정합니다.
+
+    1. 장바구니 서비스를 로드합니다.
+
+        <code-example header="src/app/product-details/product-details.component.ts" path="getting-started/src/app/product-details/product-details.component.ts" region="cart-service">
+        </code-example>
+
+    1. 그리고 이 서비스를 컴포넌트에 의존성으로 주입합니다.
 
         <code-example path="getting-started/src/app/product-details/product-details.component.ts" region="inject-cart-service">
         </code-example>
@@ -85,15 +152,24 @@ When the "Buy" button is clicked, you'll use the cart service to add the current
         To do: Consider defining "inject" and describing the concept of "dependency injection"
         -->
 
+<!--
 1. Define the `addToCart()` method, which adds the current product to the cart. 
 
     The `addToCart()` method:
     * Receives the current `product`
     * Uses the cart service's `#addToCart()` method to add the product the cart
     * Displays a message that the product has been added to the cart
+-->
+3. 현재 화면에 표시된 제품을 장바구니에 담을 수 있도록 `addToCart()` 메소드를 정의합니다. 
+
+    `addToCart()` 메소드는:
+    * 현재 할당된 `product`를 인자로 받습니다.
+    * 제품을 장바구니에 넣기 위해 장바구니 서비스의 `addCart()` 메소드를 실행합니다.
+    * 제품이 장바구니에 담겼다는 메시지를 표시합니다.
     
     <code-example path="getting-started/src/app/product-details/product-details.component.ts" region="add-to-cart"></code-example>
 
+<!--
 1. Update the product details template to have a "Buy" button that adds the current product to the cart. 
 
     1. Open `product-details.component.html`.
@@ -104,15 +180,38 @@ When the "Buy" button is clicked, you'll use the cart service to add the current
         </code-example>
 
 1. To see the new "Buy" button, refresh the application and click on a product's name to display its details.
+-->
+4. 그리고 제품 상세정보 템플릿에 "Buy" 버튼을 추가합니다. 사용자가 이 버튼을 클릭하면 제품을 장바구니에 담을 것입니다.
+
+    1. `product-details.component.html` 파일을 엽니다.
+
+    1. "Buy" 라고 적힌 버튼을 추가하고 이 버튼에서 발생하는 `click` 이벤트를 `addToCart()` 메소드와 바인딩합니다: 
+
+        <code-example header="src/app/product-details/product-details.component.html" path="getting-started/src/app/product-details/product-details.component.html">
+        </code-example>
+
+<!--
+1. To see the new "Buy" button, refresh the application and click on a product's name to display its details.
+-->
+5. "Buy" 버튼이 추가된 것을 확인하려면 애플리케이션을 새로고침한 후에 제품 목록에서 제품 이름을 클릭해서 상세정보 화면을 표시하면 됩니다.
 
    <figure>
+     <!--
      <img src='generated/images/guide/start/product-details-buy.png' alt="Display details for selected product with a Buy button">
+     -->
+     <img src='generated/images/guide/start/product-details-buy.png' alt="Buy 버튼이 추가된 모습">
    </figure>
  
+ <!--
  1. Click the "Buy" button. The product is added to the stored list of items in the cart, and a message is displayed. 
+ -->
+ 6. 이제 "Buy" 버튼을 클릭하면 제품이 장바구니에 들어가고 다음과 같은 안내 메시지가 표시됩니다.
 
     <figure>
+      <!--
       <img src='generated/images/guide/start/buy-alert.png' alt="Display details for selected product with a Buy button">
+      -->
+      <img src='generated/images/guide/start/buy-alert.png' alt="Buy 버튼을 눌렀을 때 알림을 표시하는 화면">
     </figure>
 
 
