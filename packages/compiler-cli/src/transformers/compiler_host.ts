@@ -441,6 +441,12 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
               fileName, summary.text, this.options.target || ts.ScriptTarget.Latest);
         }
         sf = summary.sourceFile;
+        // TypeScript doesn't allow returning redirect source files. To avoid unforseen errors we
+        // return the original source file instead of the redirect target.
+        const redirectInfo = (sf as any).redirectInfo;
+        if (redirectInfo !== undefined) {
+          sf = redirectInfo.unredirected;
+        }
         genFileNames = [];
       }
     }
