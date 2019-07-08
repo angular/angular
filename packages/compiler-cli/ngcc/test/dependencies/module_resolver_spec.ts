@@ -43,6 +43,11 @@ runInEachFileSystem(() => {
           name: _('/dist/package-4/sub-folder/index.js'),
           contents: `import {X} from '@shared/package-4/x';`
         },
+        {name: _('/dist/package-4/secondary-entry-point/x.js'), contents: `export class X {}`},
+        {
+          name: _('/dist/package-4/secondary-entry-point/package.json'),
+          contents: 'PACKAGE.JSON for secondary-entry-point'
+        },
         {
           name: _('/dist/sub-folder/package-4/package.json'),
           contents: 'PACKAGE.JSON for package-4'
@@ -199,6 +204,39 @@ runInEachFileSystem(() => {
                      _('/dist/package-4/sub-folder/index.js')))
               .toEqual(new ResolvedExternalModule(_('/dist/sub-folder/package-5/post-fix')));
         });
+
+        it('should resolve primary entry-points if they match non-wildcards exactly', () => {
+          const resolver = new ModuleResolver(
+              getFileSystem(), {baseUrl: '/dist', paths: {'package-4': ['package-4']}});
+          expect(resolver.resolveModuleImport('package-4', _('/libs/local-package/index.js')))
+              .toEqual(new ResolvedExternalModule(_('/dist/package-4')));
+          expect(resolver.resolveModuleImport(
+                     'package-4/secondary-entry-point', _('/libs/local-package/index.js')))
+              .toEqual(null);
+        });
+
+        it('should resolve secondary entry-points if wildcards match', () => {
+          const resolver = new ModuleResolver(getFileSystem(), {
+            baseUrl: '/dist',
+            paths: {'package-4': ['package-4'], 'package-4/*': ['package-4/*']}
+          });
+          expect(resolver.resolveModuleImport('package-4', _('/libs/local-package/index.js')))
+              .toEqual(new ResolvedExternalModule(_('/dist/package-4')));
+          expect(resolver.resolveModuleImport(
+                     'package-4/secondary-entry-point', _('/libs/local-package/index.js')))
+              .toEqual(new ResolvedExternalModule(_('/dist/package-4/secondary-entry-point')));
+        });
+
+        it('should resolve secondary-entry-points referenced from their primary entry-point',
+           () => {
+             const resolver = new ModuleResolver(getFileSystem(), {
+               baseUrl: '/dist',
+               paths: {'package-4': ['package-4'], 'package-4/*': ['package-4/*']}
+             });
+             expect(resolver.resolveModuleImport(
+                        'package-4/secondary-entry-point', _('/dist/package-4/index.js')))
+                 .toEqual(new ResolvedExternalModule(_('/dist/package-4/secondary-entry-point')));
+           });
       });
     });
   });
