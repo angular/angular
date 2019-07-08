@@ -273,10 +273,10 @@ For example, the following object values create and name a bundle that contains 
 <code-example format="." language="json" linenums="false">
 
    "styles": [
-     {"input": "src/external-module/styles.scss", "inject": false, "bundleName": "external-module"}
+     { "input": "src/external-module/styles.scss", "inject": false, "bundleName": "external-module" }
    ],
    "scripts": [
-     { "input": "src/external-module/main.js", "inject": false, "bundleName": "external-module"}
+     { "input": "src/external-module/main.js", "inject": false, "bundleName": "external-module" }
    ]
 
 </code-example>
@@ -358,7 +358,7 @@ For example:
    These are useful if you only want source maps to map error stack traces in error reporting tools,
    but don't want to expose your source maps in the browser developer tools.
 
-   For [Universal](guide/glossary#universal), it is recommanded to set styles optimization to `true` 
-   and styles source maps to `false`. This will reduce the code rendered in the HTML page.
+   For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by 
+   setting styles optimization to `true` and styles source maps to `false`.
 
 </div>
