@@ -100,7 +100,7 @@ ts_devserver(
     scripts = [
         ":devserver-configure.js",
         "//tools/rxjs:rxjs_umd_modules",
-        "@npm//node_modules/tslib:tslib.js",
+        "@npm//:node_modules/tslib/tslib.js",
     ] + ANGULAR_LIBRARY_UMDS,
     # Serving path of the bundle that serves all files specified in "deps" and "scripts".
     serving_path = "/bundle.js",

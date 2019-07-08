@@ -117,7 +117,7 @@ def ts_web_test_suite(deps = [], srcs = [], **kwargs):
         # Required for running the compiled ng modules that use TypeScript import helpers.
         # TODO(jelbourn): remove UMDs from here once we don't have to manually include them
         srcs = [
-            "@npm//node_modules/tslib:tslib.js",
+            "@npm//:node_modules/tslib/tslib.js",
         ] + ANGULAR_LIBRARY_UMDS + srcs,
         **kwargs
     )
@@ -127,6 +127,8 @@ def ts_web_test_suite(deps = [], srcs = [], **kwargs):
 # Bazel detects flaky tests and re-runs these a second time in case of a flake.
 def protractor_web_test_suite(flaky = True, **kwargs):
     _protractor_web_test_suite(
+        # TODO(josephperrott): Determine why we have to manually set this value.
+        protractor = "@npm//:node_modules/protractor/bin/protractor",
         flaky = flaky,
         **kwargs
     )
@@ -178,9 +180,9 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
             "@io_bazel_rules_webtesting//browsers:firefox-local",
         ],
         bootstrap = [
-            "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
-            "@npm//node_modules/reflect-metadata:Reflect.js",
-            "@npm//node_modules/hammerjs:hammer.js",
+            "@npm//:node_modules/zone.js/dist/zone-testing-bundle.js",
+            "@npm//:node_modules/reflect-metadata/Reflect.js",
+            "@npm//:node_modules/hammerjs/hammer.js",
         ] + bootstrap,
         **kwargs
     )
