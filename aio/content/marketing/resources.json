@@ -31,7 +31,8 @@
             "url": "https://www.madewithangular.com/"
           },
           "angular-subreddit": {
-            "desc": "An Angular-dedicated subreddit.",
+            "!desc": "An Angular-dedicated subreddit.",
+            "desc": "Angular 관련 서브 레딧 스레드입니다.",
             "rev": true,
             "title": "Angular Subreddit",
             "url": "https://www.reddit.com/r/Angular2/"
@@ -192,7 +193,8 @@
             "url": "https://github.com/NodeArt/angular-commerce"
           },
           "ngx-api-utils": {
-            "desc": "ngx-api-utils is a lean library of utilities and helpers to quickly integrate any HTTP API (REST, Ajax, and any other) with Angular.",
+            "!desc": "ngx-api-utils is a lean library of utilities and helpers to quickly integrate any HTTP API (REST, Ajax, and any other) with Angular.",
+            "desc": "ngx-api-utils는 Angular 앱에 HTTP API(REST, Ajax 등)를 간단하게 도입할 수 있는 유틸리티와 헬퍼 함수를 제공합니다.",
             "logo": "",
             "rev": true,
             "title": "ngx-api-utils",
@@ -206,7 +208,7 @@
         "resources": {
           "ab": {
             "//desc": "VS Code is a Free, Lightweight Tool for Editing and Debugging Web Apps.",
-            "desc": "VS Code는 웹 앱을 개발하거나 디버깅할 때 사용합니다. 가볍고 무료입니다.",
+            "desc": "VS Code는 웹 앱을 개발하거나 디버깅할 때 사용합니다. 가벼운데다 무료입니다.",
             "logo": "",
             "rev": true,
             "title": "Visual Studio Code",
@@ -345,7 +347,8 @@
             "url": "https://github.com/ui-jar/ui-jar"
           },
           "protactor": {
-            "desc": "The official end to end testing framework for Angular apps",
+            "!desc": "The official end to end testing framework for Angular apps",
+            "desc": "Angular 공식 엔드-투-엔드(end to end) 테스트 프레임워크입니다.",
             "logo": "",
             "rev": true,
             "title": "Protractor",
@@ -471,7 +474,8 @@
             "url": "https://ng.ant.design/docs/introduce/en"
           },
           "ngzorromobile": {
-            "desc": "A set of enterprise-class mobile UI components based on Ant Design Mobile and Angular",
+            "!desc": "A set of enterprise-class mobile UI components based on Ant Design Mobile and Angular",
+            "desc": "Ant Design Mobile을 바탕으로 기업용 앱에도 사용할 수 있는 모바일 UI 컴포넌트를 제공합니다.",
             "rev": true,
             "title": "Ant Design Mobile of Angular (ng-zorro-antd-mobile)",
             "url": "http://ng.mobile.ant.design/#/docs/introduce/en"
@@ -484,13 +488,15 @@
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
           },
           "fancygrid": {
-            "desc": "Angular grid library with charts integration and server communication for Enterprise.",
+            "!desc": "Angular grid library with charts integration and server communication for Enterprise.",
+            "desc": "서버와 통신해서 차트를 그릴 때 활용하기 좋은 Angular 그리드 라이브러리입니다. 기업용 앱에 활용하기에도 충분합니다.",
             "rev": true,
             "title": "FancyGrid",
             "url": "https://fancygrid.com/docs/getting-started/angular"
           },
           "ngx-smart-modal": {
-            "desc": "Angular smart, light and fast modal handler to manage modals and data everywhere.",
+            "!desc": "Angular smart, light and fast modal handler to manage modals and data everywhere.",
+            "desc": "스마트하고 가벼우면서 빠른 Angular 모달 핸들러를 제공합니다.",
             "rev": true,
             "title": "ngx-smart-modal",
             "url": "https://biig-io.github.io/ngx-smart-modal"
@@ -533,40 +539,47 @@
             "url": "http://truly-ui.com"
           },
           "ngsqui": {
-            "desc": "Simple Quality UI (SQ-UI) is a flexible and easily customizable UI-kit, aiming to provide maximum efficiency with as little overhead as possible. Driven by the idea that it should be strictly \"for developers by developers\", every new feature release includes functionalities demanded by the developers who are using it.",
+            "!desc": "Simple Quality UI (SQ-UI) is a flexible and easily customizable UI-kit, aiming to provide maximum efficiency with as little overhead as possible. Driven by the idea that it should be strictly \"for developers by developers\", every new feature release includes functionalities demanded by the developers who are using it.",
+            "desc": "Simple Quality UI (SQ-UI)는 쉽게 커스터마이징할 수 있는 UI 킷입니다. 이 라이브러리는 최소의 노력으로 최대의 효율을 내는 것을 목표로 합니다. 이 라이브러리를 만드는 팀은 \"개발자를 위한 개발자들\"을 지향하며, 새로 추가되는 기능도 개발자들의 요구사항을 바탕으로 합니다.",
             "logo": "https://sq-ui.github.io/ng-sq-ui/_media/sq-ui-logo.png",
             "rev": true,
             "title": "Simple Quality UI",
             "url": "https://sq-ui.github.io/ng-sq-ui/#/"
           },
           "smart": {
-            "desc": "Web Components for Angular. Dependency-free Angular components for building modern and mobile-friendly web apps",
+            "!desc": "Web Components for Angular. Dependency-free Angular components for building modern and mobile-friendly web apps",
+            "desc": "Angular를 위한 웹 컴포넌트를 제공합니다. 모던하고 모바일 친화적인 웹 앱을 개발하는데 활용할 수 있으며 의존성도 거의 없습니다.",
             "rev": true,
             "title": "Smart Web Components",
             "url": "https://www.htmlelements.com/angular/"
           },
           "AlyleUI": {
-            "desc": "Minimal Design, a set of components for Angular.",
+            "!desc": "Minimal Design, a set of components for Angular.",
+            "desc": "미니멀 디자인을 추구하는 Angular 컴포넌트 셋입니다.",
             "rev": true,
             "title": "Alyle UI",
             "url": "https://alyle-ui.firebaseapp.com/"
           },
           "nebular": {
-            "desc": "Theme System, UI Components, Auth and Security for your next Angular application.",
+            "!desc": "Theme System, UI Components, Auth and Security for your next Angular application.",
+            "desc": "테마 시스템, UI 컴포넌트, 인증과 보안 기능을 제공합니다.",
             "rev": true,
             "title": "Nebular",
             "url": "https://akveo.github.io/nebular/"
           },
           "carbondesignsystem": {
-            "desc": "An Angular implementation of the Carbon Design System for IBM.",
+            "!desc": "An Angular implementation of the Carbon Design System for IBM.",
+            "desc": "Carbon Design System은 IBM에서 Angular를 활용해서 만든 디자인 시스템입니다.",
             "rev": true,
             "title": "Carbon Components Angular",
             "url": "https://angular.carbondesignsystem.com/"
           },
           "jigsaw": {
-            "desc": "Jigsaw provides a set of web components based on Angular. It is supporting the development of all applications of Big Data Product of ZTE (http://www.zte.com.cn).",
+            "!desc": "Jigsaw provides a set of web components based on Angular. It is supporting the development of all applications of Big Data Product of ZTE (http://www.zte.com.cn).",
+            "desc": "Jigsaw는 Angular 웹 컴포넌트 셋을 제공하는 라이브러리입니다. ZTE(http://www.zte.com.cn)에서 사용하는 빅 데이터 분석 앱도 이 라이브러리를 활용했습니다.",
             "rev": true,
-            "title": "Awade Jigsaw (Chinese)",
+            "!title": "Awade Jigsaw (Chinese)",
+            "title": "Awade Jigsaw (중국어)",
             "url": "http://rdk.zte.com.cn/components"
           }
         }
@@ -686,8 +699,8 @@
             "desc": "최신 Angular 내용을 다루는 무료 오픈소스 가이드입니다. 실전 활용방법을 집중적으로 소개합니다.",
             "logo": "https://raw.githubusercontent.com/wishtack/gitbook-guide-angular/master/.gitbook/assets/wishtack-logo-with-text.png",
             "rev": true,
-            "title": "The Angular Guide by Wishtack (Français)",
-            "//title": "The Angular Guide by Wishtack (프랑스어)",
+            "!title": "The Angular Guide by Wishtack (Français)",
+            "title": "The Angular Guide by Wishtack (프랑스어)",
             "url": "https://guide-angular.wishtack.io/"
           },
           "ab5": {
@@ -822,7 +835,8 @@
             "url": "http://www.learn-angular.fr/"
           },
           "upgrading-ajs": {
-            "desc": "The world's most comprehensive, step-by-step course on using best practices and avoiding pitfalls while migrating from AngularJS to Angular.",
+            "!desc": "The world's most comprehensive, step-by-step course on using best practices and avoiding pitfalls while migrating from AngularJS to Angular.",
+            "desc": "AngularJS에서 Angular로 마이그레이션할 때 발생할 수 있는 시행착오를 최대한 피할 수 있는 방법을 단계별로 제공합니다. 이 분야에서는 세계 최고 수준이라고 할 수 있습니다.",
             "rev": true,
             "title": "Upgrading AngularJS",
             "url": "https://www.upgradingangularjs.com"
@@ -838,7 +852,8 @@
             "//desc": "Online video course in Chinese for newbies who need to learning from the scratch in Chinese.  It's covering Angular, Angular CLI, TypeScript, VSCode, and some must known knowledge of Angular development.",
             "desc": "Angular 입문자를 위해 제공되는 중국어 온라인 강의입니다. Angular와 Angular CLI, TypeScript, VSCode 등 Angular를 개발할 때 꼭 알아야 할 내용을 모두 다룹니다.",
             "rev": true,
-            "title": "Angular in Action: Start From Scratch (正體中文)",
+            "!title": "Angular in Action: Start From Scratch (正體中文)",
+            "title": "Angular in Action: Start From Scratch (중국어 정체자)",
             "url": "https://www.udemy.com/angular-zero/?couponCode=ANGULAR.IO"
           },
           "angular-firebase": {
@@ -863,7 +878,8 @@
         "order": 2,
         "resources": {
           "webucator": {
-            "desc": "Customized in-person instructor-led Angular training for private groups and public online instructor-led Angular classes.",
+            "!desc": "Customized in-person instructor-led Angular training for private groups and public online instructor-led Angular classes.",
+            "desc": "개별 그룹에 특화되거나 온라인으로 진행하는 Angular 트레이닝 코스입니다.",
             "rev": true,
             "title": "Webucator",
             "url": "https://www.webucator.com/webdev-training/angular-training"
@@ -930,7 +946,7 @@
           },
           "9ab": {
             "//desc": "OnSite Training From the Authors of  \"Become A Ninja with Angular\"",
-            "desc": "\"Beceome A Ninja with Angular\" 책의 저자가 직접 진행하는 수업입니다.",
+            "desc": "\"Become A Ninja with Angular\" 책의 저자가 직접 진행하는 수업입니다.",
             "rev": true,
             "title": "Ninja Squad",
             "url": "http://ninja-squad.com/formations/formation-angular2"
@@ -977,9 +993,11 @@
             "url": "https://school.sfeir.com/project/sa200/"
           },
           "zenika-angular": {
-            "desc": "Angular trainings delivered by Zenika (FRANCE)",
+            "!desc": "Angular trainings delivered by Zenika (FRANCE)",
+            "desc": "Zenika가 진행하는 Angular 트레이닝 코스입니다.",
             "rev": true,
-            "title": "Angular Trainings (French)",
+            "!title": "Angular Trainings (French)",
+            "title": "Angular Trainings (프랑스)",
             "url": "https://training.zenika.com/fr/training/angular2/description"
           },
           "formationjs": {
@@ -991,9 +1009,11 @@
             "url": "https://formationjavascript.com/formation-angular/"
           },
           "humancoders-angular": {
-            "desc": "Angular trainings delivered by Human Coders (France)",
+            "!desc": "Angular trainings delivered by Human Coders (France)",
+            "desc": "Human Coders가 진행하는 트레이닝 코스입니다.",
             "rev": true,
-            "title": "Formation Angular (French)",
+            "!title": "Formation Angular (French)",
+            "title": "Formation Angular (프랑스)",
             "url": "https://www.humancoders.com/formations/angular"
           },
           "wao": {
@@ -1021,10 +1041,12 @@
             "url": "https://strongbrew.io/"
           },
           "angular.de": {
-            "desc": "Onsite Angular Training delivered by the greatest community in the german speaking area in Germany, Austria and Switzerland. We also regularly post articles and tutorials on our blog.",
+            "!desc": "Onsite Angular Training delivered by the greatest community in the german speaking area in Germany, Austria and Switzerland. We also regularly post articles and tutorials on our blog.",
+            "desc": "독일, 오스트리아 스위스 최고의 커뮤니티가 모여 진행하는 Angular 트레이닝 코스입니다. 정기적으로 블로그나 튜토리얼을 작성하고 있습니다.",
             "logo": "https://angular.de/assets/img/angular-de-logo.svg",
             "rev": true,
-            "title": "Angular.de (German)",
+            "!title": "Angular.de (German)",
+            "title": "Angular.de (독일)",
             "url": "https://angular.de/"
           }
         }
