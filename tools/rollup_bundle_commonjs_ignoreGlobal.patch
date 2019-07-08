@@ -1,0 +1,15 @@
+diff --git a/internal/rollup/rollup.config.js b/internal/rollup/rollup.config.js
+index 720b5f6..cbfa99c 100644
+--- a/internal/rollup/rollup.config.js
++++ b/internal/rollup/rollup.config.js
+@@ -189,7 +189,9 @@ const config = {
+       // with the amd plugin.
+       include: /\.ngfactory\.js$/i,
+     }),
+-    commonjs(),
++    commonjs({
++      ignoreGlobal: true,
++    }),
+     {
+       name: 'notResolved',
+       resolveId: notResolved,
