@@ -523,7 +523,13 @@ export class DragRef<T = any> {
       // direction. Note that this is preferrable over doing something like `skip(minimumDistance)`
       // in the `pointerMove` subscription, because we're not guaranteed to have one move event
       // per pixel of movement (e.g. if the user moves their pointer quickly).
-      if (isOverThreshold && (Date.now() >= this._dragStartTime + (this.dragStartDelay || 0))) {
+      if (isOverThreshold) {
+        const isDelayElapsed = Date.now() >= this._dragStartTime + (this.dragStartDelay || 0);
+        if (!isDelayElapsed) {
+          this._endDragSequence(event);
+          return;
+        }
+
         // Prevent other drag sequences from starting while something in the container is still
         // being dragged. This can happen while we're waiting for the drop animation to finish
         // and can cause errors, because some elements might still be moving around.
@@ -586,6 +592,14 @@ export class DragRef<T = any> {
 
   /** Handler that is invoked when the user lifts their pointer up, after initiating a drag. */
   private _pointerUp = (event: MouseEvent | TouchEvent) => {
+    this._endDragSequence(event);
+  }
+
+  /**
+   * Clears subscriptions and stops the dragging sequence.
+   * @param event Browser event object that ended the sequence.
+   */
+  private _endDragSequence(event: MouseEvent | TouchEvent) {
     // Note that here we use `isDragging` from the service, rather than from `this`.
     // The difference is that the one from the service reflects whether a dragging sequence
     // has been initiated, whereas the one on `this` includes whether the user has passed
@@ -638,6 +652,8 @@ export class DragRef<T = any> {
     if (isTouchEvent(event)) {
       this._lastTouchEventTime = Date.now();
     }
+
+    this._toggleNativeDragInteractions();
 
     if (this._dropContainer) {
       const element = this._rootElement;
@@ -701,7 +717,6 @@ export class DragRef<T = any> {
       rootElement.style.webkitTapHighlightColor = 'transparent';
     }
 
-    this._toggleNativeDragInteractions();
     this._hasStartedDragging = this._hasMoved = false;
     this._initialContainer = this._dropContainer!;
 
@@ -1016,7 +1031,7 @@ export class DragRef<T = any> {
       return;
     }
 
-    const shouldEnable = this.disabled || this._handles.length > 0;
+    const shouldEnable = this._handles.length > 0 || !this.isDragging();
 
     if (shouldEnable !== this._nativeInteractionsEnabled) {
       this._nativeInteractionsEnabled = shouldEnable;

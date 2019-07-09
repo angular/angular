@@ -604,12 +604,36 @@ describe('CdkDrag', () => {
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
       const styles = dragElement.style;
 
-      expect(styles.touchAction || (styles as any).webkitUserDrag).toBe('none');
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBeFalsy();
 
       fixture.componentInstance.dragInstance.disabled = true;
       fixture.detectChanges();
 
       expect(styles.touchAction || (styles as any).webkitUserDrag).toBeFalsy();
+    }));
+
+    it('should enable native drag interactions if not dragging', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const styles = dragElement.style;
+
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBeFalsy();
+    }));
+
+    it('should disable native drag interactions if dragging', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const styles = dragElement.style;
+
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBeFalsy();
+
+      startDraggingViaMouse(fixture, dragElement);
+      dispatchMouseEvent(document, 'mousemove', 50, 100);
+      fixture.detectChanges();
+
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBe('none');
     }));
 
     it('should stop propagation for the drag sequence start event', fakeAsync(() => {
@@ -765,7 +789,7 @@ describe('CdkDrag', () => {
       }).toThrowError(/^cdkDrag must be attached to an element node/);
     }));
 
-    it('should allow for the dragging sequence to be delayed', fakeAsync(() => {
+    it('should cancel drag if the mouse moves before the delay is elapsed', fakeAsync(() => {
       // We can't use Jasmine's `clock` because Zone.js interferes with it.
       spyOn(Date, 'now').and.callFake(() => currentTime);
       let currentTime = 0;
@@ -780,13 +804,52 @@ describe('CdkDrag', () => {
       startDraggingViaMouse(fixture, dragElement);
       currentTime += 750;
       dispatchMouseEvent(document, 'mousemove', 50, 100);
+      currentTime += 500;
       fixture.detectChanges();
 
       expect(dragElement.style.transform)
-          .toBeFalsy('Expected element not to be moved if the drag timeout has not passed.');
+          .toBeFalsy('Expected element not to be moved if the mouse moved before the delay.');
+    }));
+
+    it('should enable native drag interactions if mouse moves before the delay', fakeAsync(() => {
+      // We can't use Jasmine's `clock` because Zone.js interferes with it.
+      spyOn(Date, 'now').and.callFake(() => currentTime);
+      let currentTime = 0;
+
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.componentInstance.dragStartDelay = 1000;
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const styles = dragElement.style;
+
+      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+
+      startDraggingViaMouse(fixture, dragElement);
+      currentTime += 750;
+      dispatchMouseEvent(document, 'mousemove', 50, 100);
+      currentTime += 500;
+      fixture.detectChanges();
+
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBeFalsy();
+    }));
+
+    it('should allow dragging after the drag start delay is elapsed', fakeAsync(() => {
+      // We can't use Jasmine's `clock` because Zone.js interferes with it.
+      spyOn(Date, 'now').and.callFake(() => currentTime);
+      let currentTime = 0;
+
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.componentInstance.dragStartDelay = 500;
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+
+      dispatchMouseEvent(dragElement, 'mousedown');
+      fixture.detectChanges();
+      currentTime += 750;
 
       // The first `mousemove` here starts the sequence and the second one moves the element.
-      currentTime += 500;
       dispatchMouseEvent(document, 'mousemove', 50, 100);
       dispatchMouseEvent(document, 'mousemove', 50, 100);
       fixture.detectChanges();
@@ -801,22 +864,17 @@ describe('CdkDrag', () => {
       let currentTime = 0;
 
       const fixture = createComponent(StandaloneDraggable);
-      fixture.componentInstance.dragStartDelay = '1000';
+      fixture.componentInstance.dragStartDelay = '500';
       fixture.detectChanges();
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
 
       expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
 
-      startDraggingViaMouse(fixture, dragElement);
-      currentTime += 750;
-      dispatchMouseEvent(document, 'mousemove', 50, 100);
+      dispatchMouseEvent(dragElement, 'mousedown');
       fixture.detectChanges();
-
-      expect(dragElement.style.transform)
-          .toBeFalsy('Expected element not to be moved if the drag timeout has not passed.');
+      currentTime += 750;
 
       // The first `mousemove` here starts the sequence and the second one moves the element.
-      currentTime += 500;
       dispatchMouseEvent(document, 'mousemove', 50, 100);
       dispatchMouseEvent(document, 'mousemove', 50, 100);
       fixture.detectChanges();

@@ -48,7 +48,7 @@
 
 <div class="demo-list">
   <h2>Free dragging</h2>
-  <div cdkDrag class="demo-free-draggable" [cdkDragLockAxis]="axisLock">Drag me around</div>
+  <div cdkDrag class="demo-free-draggable" [cdkDragLockAxis]="axisLock" [cdkDragStartDelay]="dragStartDelay">Drag me around</div>
 </div>
 
 <div>
@@ -67,5 +67,13 @@
       <mat-option value="x">X axis</mat-option>
       <mat-option value="y">Y axis</mat-option>
     </mat-select>
+  </mat-form-field>
+</div>
+
+<div>
+  <h2>Drag start delay</h2>
+
+  <mat-form-field>
+    <input matInput placeholder="Drag start delay" value="0" [(ngModel)]="dragStartDelay">
   </mat-form-field>
 </div>

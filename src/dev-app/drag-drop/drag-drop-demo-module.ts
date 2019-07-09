@@ -12,6 +12,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {RouterModule} from '@angular/router';
 import {DragAndDropDemo} from './drag-drop-demo';
@@ -23,6 +24,7 @@ import {DragAndDropDemo} from './drag-drop-demo';
     FormsModule,
     MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatSelectModule,
     RouterModule.forChild([{path: '', component: DragAndDropDemo}]),
   ],
