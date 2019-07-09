@@ -220,8 +220,12 @@ export function parseI18nMeta(meta?: string): I18nMeta {
  * @param name The placeholder name that should be formatted
  * @returns Formatted placeholder name
  */
-export function formatI18nPlaceholderName(name: string): string {
-  const chunks = toPublicName(name).split('_');
+export function formatI18nPlaceholderName(name: string, useCamelCase: boolean = true): string {
+  const publicName = toPublicName(name);
+  if (!useCamelCase) {
+    return publicName;
+  }
+  const chunks = publicName.split('_');
   if (chunks.length === 1) {
     // if no "_" found - just lowercase the value
     return name.toLowerCase();

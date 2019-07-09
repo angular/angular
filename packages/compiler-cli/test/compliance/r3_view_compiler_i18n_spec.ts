@@ -942,25 +942,30 @@ describe('i18n support in the view compiler', () => {
 
     it('should support named interpolations', () => {
       const input = `
-        <div i18n>Some value: {{ valueA // i18n(ph="PH_A") }}</div>
+        <div i18n>
+          Named interpolation: {{ valueA // i18n(ph="PH_A") }}
+          Named interpolation with spaces: {{ valueB // i18n(ph="PH B") }}
+        </div>
       `;
 
       const output = String.raw `
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$ = goog.getMsg("Some value: {$phA}", {
-              "phA": "\uFFFD0\uFFFD"
+            const $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$ = goog.getMsg(" Named interpolation: {$phA} Named interpolation with spaces: {$phB} ", {
+              "phA": "\uFFFD0\uFFFD",
+              "phB": "\uFFFD1\uFFFD"
             });
-            $I18N_0$ = $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$;
+            $I18N_0$ = $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.ɵɵi18nLocalize("Some value: {$phA}", {
-              "phA": "\uFFFD0\uFFFD"
+            $I18N_0$ = $r3$.ɵɵi18nLocalize(" Named interpolation: {$phA} Named interpolation with spaces: {$phB} ", {
+              "phA": "\uFFFD0\uFFFD",
+              "phB": "\uFFFD1\uFFFD"
             });
         }
         …
         consts: 2,
-        vars: 1,
+        vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -969,7 +974,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(1);
-            $r3$.ɵɵi18nExp(ctx.valueA);
+            $r3$.ɵɵi18nExp(ctx.valueA)(ctx.valueB);
             $r3$.ɵɵi18nApply(1);
           }
         }
@@ -3121,24 +3126,24 @@ describe('i18n support in the view compiler', () => {
           select,
             male {male {{ weight // i18n(ph="PH_A") }}}
             female {female {{ height // i18n(ph="PH_B") }}}
-            other {other {{ age // i18n(ph="PH_C") }}}
+            other {other {{ age // i18n(ph="PH WITH SPACES") }}}
         }</div>
       `;
 
       const output = String.raw `
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_C}}}");
-            $I18N_0$ = $MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$;
+            const $MSG_EXTERNAL_6318060397235942326$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_WITH_SPACES}}}");
+            $I18N_0$ = $MSG_EXTERNAL_6318060397235942326$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_C}}}");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_WITH_SPACES}}}");
         }
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD",
           "PH_A": "\uFFFD1\uFFFD",
           "PH_B": "\uFFFD2\uFFFD",
-          "PH_C": "\uFFFD3\uFFFD"
+          "PH_WITH_SPACES": "\uFFFD3\uFFFD"
         });
         …
         consts: 2,

@@ -39,6 +39,26 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     expect(fixture.nativeElement.innerHTML).toEqual(`<div>Bonjour John!</div>`);
   });
 
+  it('should support named interpolations', () => {
+    ɵi18nConfigureLocalize({
+      translations: {
+        ' Hello {$userName}! Emails: {$amountOfEmailsReceived} ':
+            ' Bonjour {$userName}! Emails: {$amountOfEmailsReceived} '
+      }
+    });
+    const fixture = initWithTemplate(AppComp, `
+      <div i18n>
+        Hello {{ name // i18n(ph="user_name") }}!
+        Emails: {{ count // i18n(ph="amount of emails received") }}
+      </div>
+    `);
+    expect(fixture.nativeElement.innerHTML).toEqual(`<div> Bonjour Angular! Emails: 0 </div>`);
+    fixture.componentRef.instance.name = `John`;
+    fixture.componentRef.instance.count = 5;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toEqual(`<div> Bonjour John! Emails: 5 </div>`);
+  });
+
   it('should support interpolations with custom interpolation config', () => {
     ɵi18nConfigureLocalize({translations: {'Hello {$interpolation}': 'Bonjour {$interpolation}'}});
     const interpolation = ['{%', '%}'] as[string, string];
@@ -805,6 +825,40 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
       expect(fixture.debugElement.nativeElement.innerHTML).not.toContain('A');
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('C1');
+    });
+
+    it('with named interpolations', () => {
+      @Component({
+        selector: 'comp',
+        template: `
+          <ng-container i18n>{
+            type,
+            select,
+              A {A - {{ typeA // i18n(ph="PH_A") }}}
+              B {B - {{ typeB // i18n(ph="PH_B") }}}
+              other {other - {{ typeC // i18n(ph="PH WITH SPACES") }}}
+          }</ng-container>
+        `,
+      })
+      class Comp {
+        type = 'A';
+        typeA = 'Type A';
+        typeB = 'Type B';
+        typeC = 'Type C';
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp]});
+
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('A - Type A');
+
+      fixture.componentInstance.type = 'C';  // trigger "other" case
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.nativeElement.innerHTML).not.toContain('A - Type A');
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('other - Type C');
     });
   });
 

@@ -26,7 +26,8 @@ class SerializerVisitor implements i18n.Visitor {
   private insideIcu = false;
 
   private formatPh(value: string): string {
-    return this.insideIcu ? `{${value}}` : `{$${formatI18nPlaceholderName(value)}}`;
+    const formatted = formatI18nPlaceholderName(value, /* useCamelCase */ !this.insideIcu);
+    return this.insideIcu ? `{${formatted}}` : `{$${formatted}}`;
   }
 
   visitText(text: i18n.Text, context: any): any { return text.value; }

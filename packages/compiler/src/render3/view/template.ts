@@ -324,16 +324,22 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Closure Compiler requires const names to start with `MSG_` but disallows any other const to
     // start with `MSG_`. We define a variable starting with `MSG_` just for the `goog.getMsg` call
     const closureVar = this.i18nGenerateClosureVar(message.id);
-    const _params: {[key: string]: any} = {};
-    if (params && Object.keys(params).length) {
-      Object.keys(params).forEach(key => _params[formatI18nPlaceholderName(key)] = params[key]);
-    }
+    const formattedParams = this.i18nFormatPlaceholderNames(params, /* useCamelCase */ true);
     const meta = metaFromI18nMessage(message);
     const content = getSerializedI18nContent(message);
     const statements =
-        getTranslationDeclStmts(_ref, closureVar, content, meta, _params, transformFn);
+        getTranslationDeclStmts(_ref, closureVar, content, meta, formattedParams, transformFn);
     this.constantPool.statements.push(...statements);
     return _ref;
+  }
+
+  i18nFormatPlaceholderNames(params: {[name: string]: o.Expression} = {}, useCamelCase: boolean) {
+    const _params: {[key: string]: o.Expression} = {};
+    if (params && Object.keys(params).length) {
+      Object.keys(params).forEach(
+          key => _params[formatI18nPlaceholderName(key, useCamelCase)] = params[key]);
+    }
+    return _params;
   }
 
   i18nAppendBindings(expressions: AST[]) {
@@ -1002,8 +1008,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // `goog.getMsg` does not process ICUs and uses the `{PLACEHOLDER}` format for placeholders
     // inside ICUs)
     // - all ICU vars (such as `VAR_SELECT` or `VAR_PLURAL`) are replaced with correct values
-    const transformFn = (raw: o.ReadVarExpr) =>
-        instruction(null, R3.i18nPostprocess, [raw, mapLiteral({...vars, ...placeholders}, true)]);
+    const transformFn = (raw: o.ReadVarExpr) => {
+      const params = {...vars, ...placeholders};
+      const formatted = this.i18nFormatPlaceholderNames(params, /* useCamelCase */ false);
+      return instruction(null, R3.i18nPostprocess, [raw, mapLiteral(formatted, true)]);
+    };
 
     // in case the whole i18n message is a single ICU - we do not need to
     // create a separate top-level translation, we can use the root ref instead
