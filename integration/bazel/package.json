@@ -27,7 +27,6 @@
     "@bazel/karma": "0.32.2",
     "@bazel/typescript": "0.32.2",
     "@types/jasmine": "2.8.8",
-    "@types/source-map": "0.5.1",
     "protractor": "5.1.2",
     "typescript": "3.4.2"
   },
