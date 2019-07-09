@@ -17,7 +17,6 @@
     "convert-source-map": "^1.5.1",
     "dependency-graph": "^0.7.2",
     "magic-string": "^0.25.0",
-    "shelljs": "^0.8.1",
     "source-map": "^0.6.1",
     "tslib": "^1.9.0",
     "yargs": "13.1.0"
