@@ -47,6 +47,7 @@ export class DragDrop {
    * @param element Element to which to attach the drop list functionality.
    */
   createDropList<T = any>(element: ElementRef<HTMLElement> | HTMLElement): DropListRef<T> {
-    return new DropListRef<T>(element, this._dragDropRegistry, this._document);
+    return new DropListRef<T>(element, this._dragDropRegistry, this._document, this._ngZone,
+        this._viewportRuler);
   }
 }

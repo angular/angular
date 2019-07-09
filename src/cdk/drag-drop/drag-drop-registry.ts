@@ -56,6 +56,9 @@ export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
    */
   readonly pointerUp: Subject<TouchEvent | MouseEvent> = new Subject<TouchEvent | MouseEvent>();
 
+  /** Emits when the viewport has been scrolled while the user is dragging an item. */
+  readonly scroll: Subject<Event> = new Subject<Event>();
+
   constructor(
     private _ngZone: NgZone,
     @Inject(DOCUMENT) _document: any) {
@@ -136,6 +139,9 @@ export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
           handler: (e: Event) => this.pointerUp.next(e as TouchEvent | MouseEvent),
           options: true
         })
+        .set('scroll', {
+          handler: (e: Event) => this.scroll.next(e)
+        })
         // Preventing the default action on `mousemove` isn't enough to disable text selection
         // on Safari so we need to prevent the selection event as well. Alternatively this can
         // be done by setting `user-select: none` on the `body`, however it has causes a style
@@ -144,15 +150,6 @@ export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
           handler: this._preventDefaultWhileDragging,
           options: activeCapturingEventOptions
         });
-
-      // TODO(crisbeto): prevent mouse wheel scrolling while
-      // dragging until we've set up proper scroll handling.
-      if (!isTouchEvent) {
-        this._globalListeners.set('wheel', {
-          handler: this._preventDefaultWhileDragging,
-          options: activeCapturingEventOptions
-        });
-      }
 
       this._ngZone.runOutsideAngular(() => {
         this._globalListeners.forEach((config, name) => {

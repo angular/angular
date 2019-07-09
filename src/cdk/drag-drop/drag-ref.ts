@@ -12,6 +12,7 @@ import {Direction} from '@angular/cdk/bidi';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
 import {Subscription, Subject, Observable} from 'rxjs';
+import {startWith} from 'rxjs/operators';
 import {DropListRefInternal as DropListRef} from './drop-list-ref';
 import {DragDropRegistry} from './drag-drop-registry';
 import {extendStyles, toggleNativeDragInteractions} from './drag-styling';
@@ -46,7 +47,6 @@ const activeEventListenerOptions = normalizePassiveListenerOptions({passive: fal
  */
 const MOUSE_EVENT_IGNORE_TIME = 800;
 
-// TODO(crisbeto): add auto-scrolling functionality.
 // TODO(crisbeto): add an API for moving a draggable up/down the
 // list programmatically. Useful for keyboard controls.
 
@@ -154,6 +154,9 @@ export class DragRef<T = any> {
 
   /** Subscription to the event that is dispatched when the user lifts their pointer. */
   private _pointerUpSubscription = Subscription.EMPTY;
+
+  /** Subscription to the viewport being scrolled. */
+  private _scrollSubscription = Subscription.EMPTY;
 
   /**
    * Time at which the last touch event occurred. Used to avoid firing the same
@@ -446,10 +449,20 @@ export class DragRef<T = any> {
     return this;
   }
 
+  /** Updates the item's sort order based on the last-known pointer position. */
+  _sortFromLastPointerPosition() {
+    const position = this._pointerPositionAtLastDirectionChange;
+
+    if (position && this._dropContainer) {
+      this._updateActiveDropContainer(position);
+    }
+  }
+
   /** Unsubscribes from the global subscriptions. */
   private _removeSubscriptions() {
     this._pointerMoveSubscription.unsubscribe();
     this._pointerUpSubscription.unsubscribe();
+    this._scrollSubscription.unsubscribe();
   }
 
   /** Destroys the preview element and its ViewRef. */
@@ -593,7 +606,14 @@ export class DragRef<T = any> {
 
     this.released.next({source: this});
 
-    if (!this._dropContainer) {
+    if (this._dropContainer) {
+      // Stop scrolling immediately, instead of waiting for the animation to finish.
+      this._dropContainer._stopScrolling();
+      this._animatePreviewToPlaceholder().then(() => {
+        this._cleanupDragArtifacts(event);
+        this._dragDropRegistry.stopDragging(this);
+      });
+    } else {
       // Convert the active transform into a passive one. This means that next time
       // the user starts dragging the item, its position will be calculated relatively
       // to the new passive transform.
@@ -606,13 +626,7 @@ export class DragRef<T = any> {
         });
       });
       this._dragDropRegistry.stopDragging(this);
-      return;
     }
-
-    this._animatePreviewToPlaceholder().then(() => {
-      this._cleanupDragArtifacts(event);
-      this._dragDropRegistry.stopDragging(this);
-    });
   }
 
   /** Starts the dragging sequence. */
@@ -695,8 +709,9 @@ export class DragRef<T = any> {
     this._removeSubscriptions();
     this._pointerMoveSubscription = this._dragDropRegistry.pointerMove.subscribe(this._pointerMove);
     this._pointerUpSubscription = this._dragDropRegistry.pointerUp.subscribe(this._pointerUp);
-
-    this._scrollPosition = this._viewportRuler.getViewportScrollPosition();
+    this._scrollSubscription = this._dragDropRegistry.scroll.pipe(startWith(null)).subscribe(() => {
+      this._scrollPosition = this._viewportRuler.getViewportScrollPosition();
+    });
 
     if (this._boundaryElement) {
       this._boundaryRect = this._boundaryElement.getBoundingClientRect();
@@ -789,6 +804,7 @@ export class DragRef<T = any> {
       });
     }
 
+    this._dropContainer!._startScrollingIfNecessary(x, y);
     this._dropContainer!._sortItem(this, x, y, this._pointerDirectionDelta);
     this._preview.style.transform =
         getTransform(x - this._pickupPositionInElement.x, y - this._pickupPositionInElement.y);

@@ -129,6 +129,10 @@ export class CdkDropList<T = any> implements CdkDropListContainer, AfterContentI
   @Input('cdkDropListEnterPredicate')
   enterPredicate: (drag: CdkDrag, drop: CdkDropList) => boolean = () => true
 
+  /** Whether to auto-scroll the view when the user moves their pointer close to the edges. */
+  @Input('cdkDropListAutoScrollDisabled')
+  autoScrollDisabled: boolean = false;
+
   /** Emits when the user drops an item inside the container. */
   @Output('cdkDropListDropped')
   dropped: EventEmitter<CdkDragDrop<T, any>> = new EventEmitter<CdkDragDrop<T, any>>();
@@ -298,6 +302,7 @@ export class CdkDropList<T = any> implements CdkDropListContainer, AfterContentI
       ref.disabled = this.disabled;
       ref.lockAxis = this.lockAxis;
       ref.sortingDisabled = this.sortingDisabled;
+      ref.autoScrollDisabled = this.autoScrollDisabled;
       ref
         .connectedTo(siblings.filter(drop => drop && drop !== this).map(list => list._dropListRef))
         .withOrientation(this.orientation);

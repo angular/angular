@@ -138,6 +138,7 @@ export interface CdkDragStart<T = any> {
 export declare class CdkDropList<T = any> implements CdkDropListContainer, AfterContentInit, OnDestroy {
     _draggables: QueryList<CdkDrag>;
     _dropListRef: DropListRef<CdkDropList<T>>;
+    autoScrollDisabled: boolean;
     connectedTo: (CdkDropList | string)[] | CdkDropList | string;
     data: T;
     disabled: boolean;
@@ -211,6 +212,7 @@ export declare class DragDropRegistry<I, C extends {
 }> implements OnDestroy {
     readonly pointerMove: Subject<TouchEvent | MouseEvent>;
     readonly pointerUp: Subject<TouchEvent | MouseEvent>;
+    readonly scroll: Subject<Event>;
     constructor(_ngZone: NgZone, _document: any);
     getDropContainer(id: string): C | undefined;
     isDragging(drag: I): boolean;
@@ -272,6 +274,7 @@ export declare class DragRef<T = any> {
         source: DragRef<any>;
     }>;
     constructor(element: ElementRef<HTMLElement> | HTMLElement, _config: DragRefConfig, _document: Document, _ngZone: NgZone, _viewportRuler: ViewportRuler, _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>);
+    _sortFromLastPointerPosition(): void;
     _withDropContainer(container: DropListRef): void;
     disableHandle(handle: HTMLElement): void;
     dispose(): void;
@@ -296,6 +299,7 @@ export interface DragRefConfig {
 }
 
 export declare class DropListRef<T = any> {
+    autoScrollDisabled: boolean;
     beforeStarted: Subject<void>;
     data: T;
     disabled: boolean;
@@ -328,7 +332,8 @@ export declare class DropListRef<T = any> {
         item: DragRef;
     }>;
     sortingDisabled: boolean;
-    constructor(element: ElementRef<HTMLElement> | HTMLElement, _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>, _document: any);
+    constructor(element: ElementRef<HTMLElement> | HTMLElement, _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>, _document: any,
+    _ngZone?: NgZone | undefined, _viewportRuler?: ViewportRuler | undefined);
     _canReceive(item: DragRef, x: number, y: number): boolean;
     _getSiblingContainerFromPosition(item: DragRef, x: number, y: number): DropListRef | undefined;
     _isOverContainer(x: number, y: number): boolean;
@@ -337,7 +342,9 @@ export declare class DropListRef<T = any> {
         y: number;
     }): void;
     _startReceiving(sibling: DropListRef): void;
+    _startScrollingIfNecessary(pointerX: number, pointerY: number): void;
     _stopReceiving(sibling: DropListRef): void;
+    _stopScrolling(): void;
     connectedTo(connectedTo: DropListRef[]): this;
     dispose(): void;
     drop(item: DragRef, currentIndex: number, previousContainer: DropListRef, isPointerOverContainer: boolean, distance?: Point): void;

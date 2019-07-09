@@ -5,6 +5,7 @@ import {
   dispatchEvent,
   dispatchMouseEvent,
   dispatchTouchEvent,
+  dispatchFakeEvent,
 } from '@angular/cdk/testing';
 import {
   AfterViewInit,
@@ -22,6 +23,7 @@ import {
 } from '@angular/core';
 import {TestBed, ComponentFixture, fakeAsync, flush, tick} from '@angular/core/testing';
 import {DOCUMENT} from '@angular/common';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {of as observableOf} from 'rxjs';
 
 import {DragDropModule} from '../drag-drop-module';
@@ -1478,6 +1480,96 @@ describe('CdkDrag', () => {
           .toEqual(['Zero', 'One', 'Two', 'Three']);
     }));
 
+    it('should calculate the index if the list is scrolled while dragging', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableVerticalDropZone);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+      const firstItem = dragItems.first;
+      const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+
+      startDraggingViaMouse(fixture, firstItem.element.nativeElement);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mousemove', thirdItemRect.left + 1, thirdItemRect.top + 1);
+      fixture.detectChanges();
+
+      list.scrollTop = ITEM_HEIGHT * 10;
+      dispatchFakeEvent(list, 'scroll');
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      // Assert the event like this, rather than `toHaveBeenCalledWith`, because Jasmine will
+      // go into an infinite loop trying to stringify the event, if the test fails.
+      expect(event).toEqual({
+        previousIndex: 0,
+        currentIndex: 12,
+        item: firstItem,
+        container: fixture.componentInstance.dropInstance,
+        previousContainer: fixture.componentInstance.dropInstance,
+        isPointerOverContainer: jasmine.any(Boolean),
+        distance: {x: jasmine.any(Number), y: jasmine.any(Number)}
+      });
+    }));
+
+    it('should calculate the index if the viewport is scrolled while dragging', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+
+      for (let i = 0; i < 200; i++) {
+        fixture.componentInstance.items.push({
+          value: `Extra item ${i}`,
+          height: ITEM_HEIGHT,
+          margin: 0
+        });
+      }
+
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+      const firstItem = dragItems.first;
+      const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+
+      startDraggingViaMouse(fixture, firstItem.element.nativeElement);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mousemove', thirdItemRect.left + 1, thirdItemRect.top + 1);
+      fixture.detectChanges();
+
+      scrollTo(0, ITEM_HEIGHT * 10);
+      dispatchFakeEvent(document, 'scroll');
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      // Assert the event like this, rather than `toHaveBeenCalledWith`, because Jasmine will
+      // go into an infinite loop trying to stringify the event, if the test fails.
+      expect(event).toEqual({
+        previousIndex: 0,
+        currentIndex: 12,
+        item: firstItem,
+        container: fixture.componentInstance.dropInstance,
+        previousContainer: fixture.componentInstance.dropInstance,
+        isPointerOverContainer: jasmine.any(Boolean),
+        distance: {x: jasmine.any(Number), y: jasmine.any(Number)}
+      });
+
+      scrollTo(0, 0);
+    }));
+
     it('should create a preview element while the item is dragged', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -2374,6 +2466,29 @@ describe('CdkDrag', () => {
       expect(preview.style.transform).toBe('translate3d(50px, 50px, 0px)');
     }));
 
+    it('should keep the preview next to the trigger if the page was scrolled', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
+      fixture.detectChanges();
+      const cleanup = makePageScrollable();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      startDraggingViaMouse(fixture, item, 50, 50);
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      expect(preview.style.transform).toBe('translate3d(50px, 50px, 0px)');
+
+      scrollTo(0, 500);
+      fixture.detectChanges();
+
+      // Move the pointer a bit so the preview has to reposition.
+      dispatchMouseEvent(document, 'mousemove', 55, 55);
+      fixture.detectChanges();
+
+      expect(preview.style.transform).toBe('translate3d(55px, 555px, 0px)');
+
+      cleanup();
+    }));
+
     it('should lock position inside a drop container along the x axis', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
       fixture.detectChanges();
@@ -2654,6 +2769,272 @@ describe('CdkDrag', () => {
 
         expect(document.querySelectorAll('.cdk-drag-dragging').length)
             .toBe(1, 'Expected only one item to continue to be dragged.');
+      }));
+
+    it('should should be able to disable auto-scrolling', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableVerticalDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const listRect = list.getBoundingClientRect();
+
+      fixture.componentInstance.dropInstance.autoScrollDisabled = true;
+      fixture.detectChanges();
+
+      expect(list.scrollTop).toBe(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove',
+        listRect.left + listRect.width / 2, listRect.top + listRect.height);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(list.scrollTop).toBe(0);
+    }));
+
+    it('should auto-scroll down if the user holds their pointer at bottom edge', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableVerticalDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const listRect = list.getBoundingClientRect();
+
+      expect(list.scrollTop).toBe(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove',
+        listRect.left + listRect.width / 2, listRect.top + listRect.height);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(list.scrollTop).toBeGreaterThan(0);
+    }));
+
+    it('should auto-scroll up if the user holds their pointer at top edge', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableVerticalDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const listRect = list.getBoundingClientRect();
+      const initialScrollDistance = list.scrollTop = list.scrollHeight;
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove', listRect.left + listRect.width / 2, listRect.top);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(list.scrollTop).toBeLessThan(initialScrollDistance);
+    }));
+
+    it('should auto-scroll right if the user holds their pointer at right edge', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableHorizontalDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const listRect = list.getBoundingClientRect();
+
+      expect(list.scrollLeft).toBe(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove', listRect.left + listRect.width,
+        listRect.top + listRect.height / 2);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(list.scrollLeft).toBeGreaterThan(0);
+    }));
+
+    it('should auto-scroll left if the user holds their pointer at left edge', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableHorizontalDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const listRect = list.getBoundingClientRect();
+      const initialScrollDistance = list.scrollLeft = list.scrollWidth;
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove', listRect.left, listRect.top + listRect.height / 2);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(list.scrollLeft).toBeLessThan(initialScrollDistance);
+    }));
+
+    it('should stop scrolling if the user moves their pointer away', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableVerticalDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const listRect = list.getBoundingClientRect();
+
+      expect(list.scrollTop).toBe(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove',
+        listRect.left + listRect.width / 2, listRect.top + listRect.height);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      const previousScrollTop = list.scrollTop;
+      expect(previousScrollTop).toBeGreaterThan(0);
+
+      // Move the pointer away from the edge of the element.
+      dispatchMouseEvent(document, 'mousemove',
+        listRect.left + listRect.width / 2, listRect.top + listRect.height / 2);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(list.scrollTop).toBe(previousScrollTop);
+    }));
+
+    it('should stop scrolling if the user stops dragging', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableVerticalDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const listRect = list.getBoundingClientRect();
+
+      expect(list.scrollTop).toBe(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove',
+        listRect.left + listRect.width / 2, listRect.top + listRect.height);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      const previousScrollTop = list.scrollTop;
+      expect(previousScrollTop).toBeGreaterThan(0);
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(list.scrollTop).toBe(previousScrollTop);
+    }));
+
+    it('should auto-scroll viewport down if the pointer is close to bottom edge', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const cleanup = makePageScrollable();
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+      const viewportSize = viewportRuler.getViewportSize();
+
+      expect(viewportRuler.getViewportScrollPosition().top).toBe(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove', viewportSize.width / 2, viewportSize.height);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(viewportRuler.getViewportScrollPosition().top).toBeGreaterThan(0);
+
+      cleanup();
+    }));
+
+    it('should auto-scroll viewport up if the pointer is close to top edge', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const cleanup = makePageScrollable();
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+      const viewportSize = viewportRuler.getViewportSize();
+
+      scrollTo(0, viewportSize.height * 5);
+      const initialScrollDistance = viewportRuler.getViewportScrollPosition().top;
+      expect(initialScrollDistance).toBeGreaterThan(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove', viewportSize.width / 2, 0);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(viewportRuler.getViewportScrollPosition().top).toBeLessThan(initialScrollDistance);
+
+      cleanup();
+    }));
+
+    it('should auto-scroll viewport right if the pointer is near right edge', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const cleanup = makePageScrollable('horizontal');
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+      const viewportSize = viewportRuler.getViewportSize();
+
+      expect(viewportRuler.getViewportScrollPosition().left).toBe(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove', viewportSize.width, viewportSize.height / 2);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(viewportRuler.getViewportScrollPosition().left).toBeGreaterThan(0);
+
+      cleanup();
+    }));
+
+    it('should auto-scroll viewport left if the pointer is close to left edge', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const cleanup = makePageScrollable('horizontal');
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+      const viewportSize = viewportRuler.getViewportSize();
+
+      scrollTo(viewportSize.width * 5, 0);
+      const initialScrollDistance = viewportRuler.getViewportScrollPosition().left;
+      expect(initialScrollDistance).toBeGreaterThan(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove', 0, viewportSize.height / 2);
+      fixture.detectChanges();
+      tickAnimationFrames(20);
+
+      expect(viewportRuler.getViewportScrollPosition().left).toBeLessThan(initialScrollDistance);
+
+      cleanup();
+    }));
+
+    it('should auto-scroll the viewport, not the list, when the pointer is over the edge of ' +
+      'both the list and the viewport', fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.detectChanges();
+
+        const list = fixture.componentInstance.dropInstance.element.nativeElement;
+        const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+        const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+
+        // Position the list so that its top aligns with the viewport top. That way the pointer
+        // will both over its top edge and the viewport's. We use top instead of bottom, because
+        // bottom behaves weirdly when we run tests on mobile devices.
+        list.style.position = 'fixed';
+        list.style.left = '50%';
+        list.style.top = '0';
+        list.style.margin = '0';
+
+        const listRect = list.getBoundingClientRect();
+        const cleanup = makePageScrollable();
+
+        scrollTo(0, viewportRuler.getViewportSize().height * 5);
+
+        const initialScrollDistance = viewportRuler.getViewportScrollPosition().top;
+        expect(initialScrollDistance).toBeGreaterThan(0);
+        expect(list.scrollTop).toBe(0);
+
+        startDraggingViaMouse(fixture, item);
+        dispatchMouseEvent(document, 'mousemove', listRect.left + listRect.width / 2, 0);
+        fixture.detectChanges();
+        tickAnimationFrames(20);
+
+        expect(viewportRuler.getViewportScrollPosition().top).toBeLessThan(initialScrollDistance);
+        expect(list.scrollTop).toBe(0);
+
+        cleanup();
       }));
 
   });
@@ -3654,6 +4035,7 @@ class StandaloneDraggableWithMultipleHandles {
 const DROP_ZONE_FIXTURE_TEMPLATE = `
   <div
     cdkDropList
+    class="drop-list"
     style="width: 100px; background: pink;"
     [id]="dropZoneId"
     [cdkDropListData]="items"
@@ -3696,36 +4078,63 @@ class DraggableInOnPushDropZone extends DraggableInDropZone {}
 
 
 @Component({
-  encapsulation: ViewEncapsulation.None,
-  styles: [
-  // Use inline blocks here to avoid flexbox issues and not to have to flip floats in rtl.
-  `
-    .cdk-drop-list {
-      display: block;
-      width: 500px;
-      background: pink;
-      font-size: 0;
-    }
+  template: DROP_ZONE_FIXTURE_TEMPLATE,
 
-    .cdk-drag {
-      height: ${ITEM_HEIGHT}px;
-      background: red;
-      display: inline-block;
+  // Note that it needs a margin to ensure that it's not flush against the viewport
+  // edge which will cause the viewport to scroll, rather than the list.
+  styles: [`
+    .drop-list {
+      max-height: 200px;
+      overflow: auto;
+      margin: 10vw 0 0 10vw;
     }
-  `],
-  template: `
+  `]
+})
+class DraggableInScrollableVerticalDropZone extends DraggableInDropZone {
+  constructor() {
+    super();
+
+    for (let i = 0; i < 60; i++) {
+      this.items.push({value: `Extra item ${i}`, height: ITEM_HEIGHT, margin: 0});
+    }
+  }
+}
+
+// Use inline blocks here to avoid flexbox issues and not to have to flip floats in rtl.
+const HORIZONTAL_FIXTURE_STYLES = `
+  .cdk-drop-list {
+    display: block;
+    width: 500px;
+    background: pink;
+    font-size: 0;
+  }
+
+  .cdk-drag {
+    height: ${ITEM_HEIGHT * 2}px;
+    background: red;
+    display: inline-block;
+  }
+`;
+
+const HORIZONTAL_FIXTURE_TEMPLATE = `
+  <div
+    class="drop-list"
+    cdkDropList
+    cdkDropListOrientation="horizontal"
+    [cdkDropListData]="items"
+    (cdkDropListDropped)="droppedSpy($event)">
     <div
-      cdkDropList
-      cdkDropListOrientation="horizontal"
-      [cdkDropListData]="items"
-      (cdkDropListDropped)="droppedSpy($event)">
-      <div
-        *ngFor="let item of items"
-        [style.width.px]="item.width"
-        [style.margin-right.px]="item.margin"
-        cdkDrag>{{item.value}}</div>
-    </div>
-  `
+      *ngFor="let item of items"
+      [style.width.px]="item.width"
+      [style.margin-right.px]="item.margin"
+      cdkDrag>{{item.value}}</div>
+  </div>
+`;
+
+@Component({
+  encapsulation: ViewEncapsulation.None,
+  styles: [HORIZONTAL_FIXTURE_STYLES],
+  template: HORIZONTAL_FIXTURE_TEMPLATE
 })
 class DraggableInHorizontalDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
@@ -3739,6 +4148,31 @@ class DraggableInHorizontalDropZone {
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   });
+}
+
+
+@Component({
+  template: HORIZONTAL_FIXTURE_TEMPLATE,
+
+  // Note that it needs a margin to ensure that it's not flush against the viewport
+  // edge which will cause the viewport to scroll, rather than the list.
+  styles: [HORIZONTAL_FIXTURE_STYLES, `
+    .drop-list {
+      max-width: 300px;
+      margin: 10vw 0 0 10vw;
+      overflow: auto;
+      white-space: nowrap;
+    }
+  `]
+})
+class DraggableInScrollableHorizontalDropZone extends DraggableInHorizontalDropZone {
+  constructor() {
+    super();
+
+    for (let i = 0; i < 60; i++) {
+      this.items.push({value: `Extra item ${i}`, width: ITEM_WIDTH, margin: 0});
+    }
+  }
 }
 
 @Component({
@@ -4264,10 +4698,10 @@ function getElementSibligsByPosition(element: Element, direction: 'top' | 'left'
  * Adds a large element to the page in order to make it scrollable.
  * @returns Function that should be used to clean up after the test is done.
  */
-function makePageScrollable() {
+function makePageScrollable(direction: 'vertical' | 'horizontal' = 'vertical') {
   const veryTallElement = document.createElement('div');
-  veryTallElement.style.width = '100%';
-  veryTallElement.style.height = '2000px';
+  veryTallElement.style.width = direction === 'vertical' ? '100%' : '4000px';
+  veryTallElement.style.height = direction === 'vertical' ? '2000px' : '5px';
   document.body.appendChild(veryTallElement);
 
   return () => {
@@ -4330,4 +4764,9 @@ function assertUpwardSorting(fixture: ComponentFixture<any>, items: Element[]) {
   dispatchMouseEvent(document, 'mouseup');
   fixture.detectChanges();
   flush();
+}
+
+/** Ticks the specified amount of `requestAnimationFrame`-s. */
+function tickAnimationFrames(amount: number) {
+  tick(16.6 * amount); // Angular turns rAF calls into 16.6ms timeouts in tests.
 }
