@@ -11,7 +11,7 @@ import {Type} from '../../interface/type';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/security';
-import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertLessThan, assertNotEqual, assertNotSame} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertLessThan, assertNotEqual, assertNotSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertLView, assertPreviousIsParent} from '../assert';
@@ -316,8 +316,13 @@ export function assignTViewNodeToLView(
  * When elements are created dynamically after a view blueprint is created (e.g. through
  * i18nApply() or ComponentFactory.create), we need to adjust the blueprint for future
  * template passes.
+ *
+ * @param view The LView containing the blueprint to adjust
+ * @param numSlotsToAlloc The number of slots to alloc in the LView, should be >0
  */
 export function allocExpando(view: LView, numSlotsToAlloc: number) {
+  ngDevMode && assertGreaterThan(
+                   numSlotsToAlloc, 0, 'The number of slots to alloc should be greater than 0');
   if (numSlotsToAlloc > 0) {
     const tView = view[TVIEW];
     if (tView.firstTemplatePass) {
