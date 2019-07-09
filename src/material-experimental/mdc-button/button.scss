@@ -1,5 +1,6 @@
 @import '@material/button/mixins';
 @import '../mdc-helpers/mdc-helpers';
+@import '../../cdk/a11y/a11y';
 
 @include mdc-button-without-ripple($query: $mat-base-styles-query);
 
@@ -11,5 +12,13 @@ $_mat-button-ripple-opacity: 0.1;
   .mat-ripple-element {
     opacity: $_mat-button-ripple-opacity;
     background-color: currentColor;
+  }
+
+  // Add an outline to make buttons more visible in high contrast mode. Stroked buttons
+  // don't need a special look in high-contrast mode, because those already have an outline.
+  @include cdk-high-contrast {
+    &:not(.mdc-button--outlined) {
+      outline: solid 1px;
+    }
   }
 }
