@@ -146,10 +146,17 @@ function initStyling(
 export function ɵɵstyleProp(
     styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
-  const index = getSelectedIndex();
+  stylePropInternal(
+      getLView(), getSelectedIndex(), styleIndex, getActiveDirectiveStylingIndex(), value, suffix,
+      forceOverride);
+}
+
+export function stylePropInternal(
+    lView: LView, selectedIndex: number, styleIndex: number, directiveStylingIndex: number,
+    value: string | number | String | PlayerFactory | null, suffix?: string | null,
+    forceOverride?: boolean): void {
   const valueToAdd = resolveStylePropValue(value, suffix);
-  const stylingContext = getStylingContext(index, getLView());
-  const directiveStylingIndex = getActiveDirectiveStylingIndex();
+  const stylingContext = getStylingContext(selectedIndex, lView);
   if (directiveStylingIndex) {
     const args: ParamsOf<typeof updatestyleProp> =
         [stylingContext, styleIndex, valueToAdd, directiveStylingIndex, forceOverride];
@@ -311,15 +318,18 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
  * @codeGenApi
  */
 export function ɵɵclassMap(classes: {[styleName: string]: any} | string | null): void {
-  const index = getSelectedIndex();
-  const lView = getLView();
-  const stylingContext = getStylingContext(index, lView);
-  const directiveStylingIndex = getActiveDirectiveStylingIndex();
+  classMapInternal(getLView(), getSelectedIndex(), getActiveDirectiveStylingIndex(), classes);
+}
+
+export function classMapInternal(
+    lView: LView, selectedIndex: number, directiveStylingIndex: number,
+    classes: {[styleName: string]: any} | string | null) {
+  const stylingContext = getStylingContext(selectedIndex, lView);
   if (directiveStylingIndex) {
     const args: ParamsOf<typeof updateClassMap> = [stylingContext, classes, directiveStylingIndex];
     enqueueHostInstruction(stylingContext, directiveStylingIndex, updateClassMap, args);
   } else {
-    const tNode = getTNode(index, lView);
+    const tNode = getTNode(selectedIndex, lView);
     // inputs are only evaluated from a template binding into a directive, therefore,
     // there should not be a situation where a directive host bindings function
     // evaluates the inputs (this should only happen in the template function)

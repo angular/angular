@@ -59,7 +59,7 @@ export function ɵɵlistener(
  *
  * @codeGenApi
 */
-export function ɵɵcomponentHostSyntheticListener<T>(
+export function ɵɵcomponentHostSyntheticListener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
   listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver, loadComponentRenderer);
