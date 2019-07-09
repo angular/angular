@@ -275,44 +275,170 @@ In this example, the `[ngClass]="odd"` stays on the `<div>`.
 {@a microsyntax}
 
 
-### Microsyntax
+## Microsyntax
 
 The Angular microsyntax lets you configure a directive in a compact, friendly string.
 The microsyntax parser translates that string into attributes on the `<ng-template>`:
 
 * The `let` keyword declares a [_template input variable_](guide/structural-directives#template-input-variable)
 that you reference within the template. The input variables in this example are `hero`, `i`, and `odd`.
-The parser translates `let hero`, `let i`, and `let odd` into variables named,
+The parser translates `let hero`, `let i`, and `let odd` into variables named
 `let-hero`, `let-i`, and `let-odd`.
 
-* The microsyntax parser takes `of` and `trackBy`, title-cases them (`of` -> `Of`, `trackBy` -> `TrackBy`),
-and prefixes them with the directive's attribute name (`ngFor`), yielding the names `ngForOf` and `ngForTrackBy`.
-Those are the names of two `NgFor` _input properties_ .
+* The microsyntax parser title-cases all directives and prefixes them with the directive's
+attribute name, such as `ngFor`. For example, the `ngFor` input properties,
+`of` and `trackBy`, become `ngForOf` and `ngForTrackBy`, respectively.
 That's how the directive learns that the list is `heroes` and the track-by function is `trackById`.
 
 * As the `NgFor` directive loops through the list, it sets and resets properties of its own _context_ object.
-These properties include `index` and `odd` and a special property named `$implicit`.
+These properties can include, but aren't limited to, `index`, `odd`, and a special property
+named `$implicit`.
 
 * The `let-i` and `let-odd` variables were defined as `let i=index` and `let odd=odd`.
 Angular sets them to the current value of the context's `index` and `odd` properties.
 
 * The context property for `let-hero` wasn't specified.
 Its intended source is implicit.
-Angular sets `let-hero` to the value of the context's `$implicit` property
+Angular sets `let-hero` to the value of the context's `$implicit` property,
 which `NgFor` has initialized with the hero for the current iteration.
 
-* The [API guide](api/common/NgForOf "API: NgFor")
+* The [`NgFor` API guide](api/common/NgForOf "API: NgFor")
 describes additional `NgFor` directive properties and context properties.
 
-* `NgFor` is implemented by the `NgForOf` directive. Read more about additional `NgForOf` directive properties and context properties [NgForOf API reference](api/common/NgForOf).
+* The `NgForOf` directive implements `NgFor`. Read more about additional `NgForOf` directive properties and context properties in the [NgForOf API reference](api/common/NgForOf).
+
+### Writing your own structural directives
+
+These microsyntax mechanisms are also available to you when you write your own structural directives.
+For example, microsyntax in Angular allows you to write `<div *ngFor="let item of items">{{item}}</div>`
+instead of `<ng-template ngFor [ngForOf]="items"><div>{{item}}</div></ng-template`.
+The following sections provide detailed information on constraints, grammar,
+and translation of microsyntax.
+
+### Constraints
+
+Microsyntax must meet the following requirements:
+
+- It must be known ahead of time so that IDEs can parse it without knowing the underlying semantics of the directive or what directives are present.
+- It must translate to key-value attributes in the DOM.
+
+### Grammar
+
+When you write your own structural directives, use the following grammar:
+
+```
+*:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )*"
+```
+
+The following tables describe each portion of the microsyntax grammar.
+
+<!-- What should I put in the table headers? -->
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+  </tr>
+  <tr>
+    <td><code>prefix</code></td>
+    <td>HTML attribute key</td>
+  </tr>
+  <tr>
+    <td><code>key</code></td>
+    <td>HTML attribute key</td>
+  </tr>
+  <tr>
+    <td><code>local</code></td>
+    <td>local variable name used in the template</td>
+  </tr>
+  <tr>
+    <td><code>export</code></td>
+    <td>value exported by the directive under a given name</td>
+  </tr>
+  <tr>
+    <td><code>expression</code></td>
+    <td>standard Angular expression</td>
+  </tr>
+</table>
+
+<!-- The items in this table seem different. Is there another name for how we should describe them? -->
+<table>
+  <tr>
+    <th></th>
+  </tr>
+  <tr>
+    <td colspan="3"><code>keyExp = :key ":"? :expression ("as" :local)? ";"? </code></td>
+  </tr>
+  <tr>
+    <td colspan="3"><code>let = "let" :local "=" :export ";"?</code></td>
+  </tr>
+  <tr>
+    <td colspan="3"><code>as = :export "as" :local ";"?</code></td>
+  </tr>
+</table>
 
 
-These microsyntax mechanisms are available to you when you write your own structural directives.
+### Translation
+
+A microsyntax is translated to the normal binding syntax as follows:
+
+<!-- What to put in the table headers below? Are these correct?-->
+<table>
+  <tr>
+    <th>Microsyntax</th>
+    <th>Translation</th>
+  </tr>
+  <tr>
+    <td><code>prefix</code> and naked <code>expression</code></td>
+    <td><code>[prefix]="expression"</code></td>
+  </tr>
+  <tr>
+    <td><code>keyExp</code></td>
+    <td><code>[prefixKey] "expression"
+    (let-prefixKey="export")</code>
+    <br />
+    Notice that the <code>prefix</code>
+    is added to the <code>key</code>
+    </td>
+  </tr>
+  <tr>
+    <td><code>let</code></td>
+    <td><code>let-local="export"</code></td>
+  </tr>
+</table>
+
+### Microsyntax examples
+
+The following table demonstrates how Angular desugars microsyntax.
+
+<table>
+  <tr>
+    <th>Microsyntax</th>
+    <th>Desugared</th>
+  </tr>
+  <tr>
+    <td><code>*ngFor="let item of [1,2,3]"</code></td>
+    <td><code>&lt;ng-template ngFor let-item [ngForOf]="[1,2,3]"&gt;</code></td>
+  </tr>
+  <tr>
+    <td><code>*ngFor="let item of [1,2,3] as items; trackBy: myTrack; index as i"</code></td>
+    <td><code>&lt;ng-template ngFor let-item [ngForOf]="[1,2,3]" let-items="ngForOf" [ngForTrackBy]="myTrack" let-i="index"&gt;</code>
+    </td>
+  </tr>
+  <tr>
+    <td><code>*ngIf="exp"</code></td>
+    <td><code>&lt;ng-template [ngIf]="exp"&gt;</code></td>
+  </tr>
+  <tr>
+    <td><code>*ngIf="exp as value"</code></td>
+    <td><code>&lt;ng-template [ngIf]="exp" let-value="ngIf"&gt;</code></td>
+  </tr>
+</table>
+
 Studying the
 [source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
 and [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")
 is a great way to learn more.
-
 
 
 {@a template-input-variable}
@@ -321,7 +447,7 @@ is a great way to learn more.
 {@a template-input-variables}
 
 
-### Template input variable
+## Template input variable
 
 A _template input variable_ is a variable whose value you can reference _within_ a single instance of the template.
 There are several such variables in this example: `hero`, `i`, and `odd`.
@@ -346,7 +472,7 @@ variable as the `hero` declared as `#hero`.
 {@a one-per-element}
 
 
-### One structural directive per host element
+## One structural directive per host element
 
 Someday you'll want to repeat a block of HTML but only when a particular condition is true.
 You'll _try_ to put both an `*ngFor` and an `*ngIf` on the same host element.
