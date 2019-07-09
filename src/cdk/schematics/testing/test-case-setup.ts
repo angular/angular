@@ -9,11 +9,12 @@
 import {getSystemPath, normalize} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import * as virtualFs from '@angular-devkit/core/src/virtual-fs/host';
+import {HostTree, Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {mkdirpSync, readFileSync, removeSync, writeFileSync} from 'fs-extra';
+import {readFileSync, removeSync} from 'fs-extra';
 import {sync as globSync} from 'glob';
-import {dirname, join, extname, basename, relative, sep} from 'path';
-import {createTestApp, runPostScheduledTasks} from '../testing';
+import {basename, extname, join, relative, sep} from 'path';
+import {createTestApp} from '../testing';
 
 /** Suffix that indicates whether a given file is a test case input. */
 const TEST_CASE_INPUT_SUFFIX = '_input.ts';
@@ -28,20 +29,32 @@ export function readFileContent(filePath: string): string {
 
 /**
  * Creates a test app schematic tree that will be copied over to a real filesystem location.
- * This is necessary because TSLint is not able to read from the virtual filesystem tree.
+ * This is necessary because otherwise the TypeScript compiler API would not be able to
+ * find source files within the tsconfig project.
+ * TODO(devversion): we should be able to make the TypeScript config parsing respect the
+ * schematic tree. This would allow us to fully take advantage of the virtual file system.
  */
 export async function createFileSystemTestApp(runner: SchematicTestRunner) {
   const tempFileSystemHost = new TempScopedNodeJsSyncHost();
-  const appTree: UnitTestTree = await createTestApp(runner, {name: 'cdk-testing'});
+  const hostTree = new HostTree(tempFileSystemHost);
+  const appTree: UnitTestTree = await createTestApp(runner, {name: 'cdk-testing'}, hostTree);
   const tempPath = getSystemPath(tempFileSystemHost.root);
 
-  // Since the TSLint fix task expects all files to be present on the real file system, we
+  // Since the TypeScript compiler API expects all files to be present on the real file system, we
   // map every file in the app tree to a temporary location on the file system.
-  appTree.files.map(f => normalize(f)).forEach(f => {
-    tempFileSystemHost.sync.write(f, virtualFs.stringToFileBuffer(appTree.readContent(f)));
-  });
+  appTree.files.forEach(f => writeFile(f, appTree.readContent(f)));
 
-  return {appTree, tempPath, removeTempDir: () => removeSync(tempPath)};
+  return {
+    appTree,
+    tempFileSystemHost,
+    tempPath,
+    writeFile,
+    removeTempDir: () => removeSync(tempPath),
+  };
+
+  function writeFile(filePath: string, content: string) {
+    tempFileSystemHost.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(content));
+  }
 }
 
 export async function createTestCaseSetup(migrationName: string, collectionPath: string,
@@ -51,30 +64,29 @@ export async function createTestCaseSetup(migrationName: string, collectionPath:
   const initialWorkingDir = process.cwd();
 
   let logOutput = '';
-  runner.logger.subscribe(entry => logOutput += entry.message);
+  runner.logger.subscribe(entry => logOutput += `${entry.message}\n`);
 
-  const {appTree, tempPath, removeTempDir} = await createFileSystemTestApp(runner);
+  const {appTree, tempPath, writeFile, removeTempDir} =
+    await createFileSystemTestApp(runner);
+
+  _patchTypeScriptDefaultLib(appTree);
 
   // Write each test-case input to the file-system. This is necessary because otherwise
-  // TSLint won't be able to pick up the test cases.
+  // TypeScript compiler API won't be able to pick up the test cases.
   inputFiles.forEach(inputFilePath => {
     const inputTestName = basename(inputFilePath, extname(inputFilePath));
-    const tempInputPath = join(tempPath, `projects/cdk-testing/src/test-cases/${inputTestName}.ts`);
+    const relativePath = `projects/cdk-testing/src/test-cases/${inputTestName}.ts`;
+    const inputContent = readFileContent(inputFilePath);
 
-    mkdirpSync(dirname(tempInputPath));
-    writeFileSync(tempInputPath, readFileContent(inputFilePath));
+    writeFile(relativePath, inputContent);
   });
 
   const runFixers = async function() {
-    await runner.runSchematicAsync(migrationName, {}, appTree).toPromise();
-
-    // Switch to the new temporary directory because otherwise TSLint cannot read the files.
+    // Switch to the new temporary directory to simulate that "ng update" is ran
+    // from within the project.
     process.chdir(tempPath);
 
-    // Run the scheduled TSLint fix task from the update schematic. This task is responsible for
-    // identifying outdated code parts and performs the fixes. Since tasks won't run automatically
-    // within a `SchematicTestRunner`, we manually need to run the scheduled task.
-    await runPostScheduledTasks(runner, 'tslint-fix').toPromise();
+    await runner.runSchematicAsync(migrationName, {}, appTree).toPromise();
 
     // Switch back to the initial working directory.
     process.chdir(initialWorkingDir);
@@ -82,7 +94,7 @@ export async function createTestCaseSetup(migrationName: string, collectionPath:
     return {logOutput};
   };
 
-  return {tempPath, removeTempDir, runFixers};
+  return {appTree, writeFile, tempPath, removeTempDir, runFixers};
 }
 
 /**
@@ -98,7 +110,7 @@ export function findBazelVersionTestCases(basePath: string) {
   // In case we are not on Windows where runfiles are symlinked, we just find all
   // test case files by using "glob" and store them in our result map.
   if (!manifestPath) {
-    const runfilesBaseDir = join(runfilesDir, basePath);
+    const runfilesBaseDir = join(runfilesDir!, basePath);
     const inputFiles = globSync(`**/*${TEST_CASE_INPUT_SUFFIX}`, {cwd: runfilesBaseDir});
 
     inputFiles.forEach(inputFile => {
@@ -144,16 +156,18 @@ export function defineJasmineTestCases(versionName: string, collectionFile: stri
     return;
   }
 
+  let appTree: UnitTestTree;
   let testCasesOutputPath: string;
   let cleanupTestApp: () => void;
 
   beforeAll(async () => {
-    const {tempPath, runFixers, removeTempDir} =
+    const {appTree: _tree, runFixers, removeTempDir} =
       await createTestCaseSetup(`migration-${versionName}`, collectionFile, inputFiles);
 
     await runFixers();
 
-    testCasesOutputPath = join(tempPath, 'projects/cdk-testing/src/test-cases/');
+    appTree = _tree;
+    testCasesOutputPath = '/projects/cdk-testing/src/test-cases/';
     cleanupTestApp = removeTempDir;
   });
 
@@ -165,8 +179,28 @@ export function defineJasmineTestCases(versionName: string, collectionFile: stri
     const inputTestName = basename(inputFile, extname(inputFile));
 
     it(`should apply update schematics to test case: ${inputTestName}`, () => {
-      expect(readFileContent(join(testCasesOutputPath, `${inputTestName}.ts`)))
+      expect(appTree.readContent(join(testCasesOutputPath, `${inputTestName}.ts`)))
         .toBe(readFileContent(inputFile.replace(TEST_CASE_INPUT_SUFFIX, TEST_CASE_OUTPUT_SUFFIX)));
     });
   });
+}
+
+/**
+ * Patches the specified virtual file system tree to be able to read the TypeScript
+ * default library typings. These need to be readable in unit tests because otherwise
+ * type checking within migration rules is not working as in real applications.
+ */
+export function _patchTypeScriptDefaultLib(tree: Tree) {
+  const _originalRead = tree.read;
+  tree.read = function(filePath: string) {
+    // In case a file within the TypeScript package is requested, we read the file from
+    // the real file system. This is necessary because within unit tests, the "typeScript"
+    // package from within the Bazel "@npm" repository  is used. The virtual tree can't be
+    // used because the "@npm" repository directory is not part of the virtual file system.
+    if (filePath.match(/node_modules[/\\]typescript/)) {
+      return readFileSync(filePath);
+    } else {
+      return _originalRead.apply(this, arguments);
+    }
+  };
 }

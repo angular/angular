@@ -26,7 +26,7 @@ export function isMaterialExportDeclaration(node: ts.Node) {
 }
 
 /** Whether the declaration is part of Angular Material. */
-function isMaterialDeclaration(declaration: ts.ImportDeclaration | ts.ExportDeclaration) {
+function isMaterialDeclaration(declaration: ts.ImportDeclaration|ts.ExportDeclaration) {
   if (!declaration.moduleSpecifier) {
     return false;
   }

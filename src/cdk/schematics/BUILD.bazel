@@ -26,6 +26,7 @@ ts_library(
     module_name = "@angular/cdk/schematics",
     tsconfig = ":tsconfig.json",
     deps = [
+        "//src/cdk/schematics/update-tool",
         "@npm//@schematics/angular",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
@@ -34,7 +35,6 @@ ts_library(
         "@npm//@types/node",
         "@npm//glob",
         "@npm//parse5",
-        "@npm//tslint",
         "@npm//typescript",
         "@npm//chalk",
     ],
@@ -73,12 +73,12 @@ ts_library(
     deps = [
         ":schematics",
         "//src/cdk/schematics/testing",
+        "//src/cdk/schematics/update-tool",
         "@npm//@angular-devkit/schematics",
         "@npm//@schematics/angular",
         "@npm//@types/jasmine",
         "@npm//@types/node",
         "@npm//mock-fs",
-        "@npm//tslint",
         "@npm//typescript",
     ],
 )

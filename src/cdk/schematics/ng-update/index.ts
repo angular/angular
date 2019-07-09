@@ -8,46 +8,34 @@
 
 import {Rule} from '@angular-devkit/schematics';
 import {green, yellow} from 'chalk';
-import {TargetVersion} from './target-version';
+import {TargetVersion} from '../update-tool/target-version';
 import {cdkUpgradeData} from './upgrade-data';
 import {createUpgradeRule} from './upgrade-rules';
-import {UpgradeTSLintConfig} from './upgrade-rules/tslint-config';
-
-/** List of additional upgrade rules which are specifically for the CDK. */
-const extraUpgradeRules = [
-  // Misc check rules
-  'check-template-misc',
-];
-
-/** TSLint upgrade configuration that will be passed to the CDK ng-update rule. */
-const tslintUpgradeConfig: UpgradeTSLintConfig = {
-  upgradeData: cdkUpgradeData,
-  extraUpgradeRules,
-};
 
 /** Entry point for the migration schematics with target of Angular Material 6.0.0 */
 export function updateToV6(): Rule {
-  return createUpgradeRule(TargetVersion.V6, tslintUpgradeConfig);
+  return createUpgradeRule(TargetVersion.V6, [], cdkUpgradeData, onMigrationComplete);
 }
 
 /** Entry point for the migration schematics with target of Angular Material 7.0.0 */
 export function updateToV7(): Rule {
-  return createUpgradeRule(TargetVersion.V7, tslintUpgradeConfig);
+  return createUpgradeRule(TargetVersion.V7, [], cdkUpgradeData, onMigrationComplete);
 }
 
 /** Entry point for the migration schematics with target of Angular Material 8.0.0 */
 export function updateToV8(): Rule {
-  return createUpgradeRule(TargetVersion.V8, tslintUpgradeConfig);
+  return createUpgradeRule(TargetVersion.V8, [], cdkUpgradeData, onMigrationComplete);
 }
 
-/** Post-update schematic to be called when update is finished. */
-export function postUpdate(): Rule {
-  return () => {
-    console.log();
-    console.log(green('  ✓  Angular CDK update complete'));
-    console.log();
+/** Function that will be called when the migration completed. */
+function onMigrationComplete(targetVersion: TargetVersion, hasFailures: boolean) {
+  console.log();
+  console.log(green(`  ✓  Updated Angular CDK to ${targetVersion}`));
+  console.log();
+
+  if (hasFailures) {
     console.log(yellow(
-        '  ⚠  Please check the output above for any issues that were detected ' +
-        'but could not be automatically fixed.'));
-  };
+      '  ⚠  Some issues were detected but could not be fixed automatically. Please check the ' +
+      'output above and fix these issues manually.'));
+  }
 }

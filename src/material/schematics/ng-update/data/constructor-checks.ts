@@ -19,38 +19,19 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
       pr: 'https://github.com/angular/components/pull/15647',
       changes: ['MatFormField', 'MatTabLink', 'MatVerticalStepper']
     },
-    {
-      pr: 'https://github.com/angular/components/pull/15757',
-      changes: ['MatBadge']
-    },
-    {
-      pr: 'https://github.com/angular/components/issues/15734',
-      changes: ['MatButton', 'MatAnchor']
-    },
+    {pr: 'https://github.com/angular/components/pull/15757', changes: ['MatBadge']},
+    {pr: 'https://github.com/angular/components/issues/15734', changes: ['MatButton', 'MatAnchor']},
     {
       pr: 'https://github.com/angular/components/pull/15761',
       changes: ['MatSpinner', 'MatProgressSpinner']
     },
-    {
-      pr: 'https://github.com/angular/components/pull/15723',
-      changes: ['MatList', 'MatListItem']
-    },
-    {
-      pr: 'https://github.com/angular/components/pull/15722',
-      changes: ['MatExpansionPanel']
-    },
-    {
+    {pr: 'https://github.com/angular/components/pull/15723', changes: ['MatList', 'MatListItem']},
+    {pr: 'https://github.com/angular/components/pull/15722', changes: ['MatExpansionPanel']}, {
       pr: 'https://github.com/angular/components/pull/15737',
       changes: ['MatTabHeader', 'MatTabBody']
     },
-    {
-      pr: 'https://github.com/angular/components/pull/15806',
-      changes: ['MatSlideToggle']
-    },
-    {
-      pr: 'https://github.com/angular/components/pull/15773',
-      changes: ['MatDrawerContainer']
-    }
+    {pr: 'https://github.com/angular/components/pull/15806', changes: ['MatSlideToggle']},
+    {pr: 'https://github.com/angular/components/pull/15773', changes: ['MatDrawerContainer']}
   ],
 
   [TargetVersion.V7]: [
@@ -58,10 +39,7 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
       pr: 'https://github.com/angular/components/pull/11706',
       changes: ['MatDrawerContent'],
     },
-    {
-      pr: 'https://github.com/angular/components/pull/11706',
-      changes: ['MatSidenavContent']
-    }
+    {pr: 'https://github.com/angular/components/pull/11706', changes: ['MatSidenavContent']}
   ],
 
   [TargetVersion.V6]: [

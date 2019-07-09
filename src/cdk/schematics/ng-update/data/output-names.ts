@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TargetVersion} from '../target-version';
-import {VersionChanges} from '../upgrade-data';
+import {TargetVersion} from '../../update-tool/target-version';
+import {VersionChanges} from '../../update-tool/version-changes';
 
 export interface OutputNameUpgradeData {
   /** The @Output() name to replace. */

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TargetVersion} from '../target-version';
-import {VersionChanges} from '../upgrade-data';
+import {TargetVersion} from '../../update-tool/target-version';
+import {VersionChanges} from '../../update-tool/version-changes';
 
 export type ConstructorChecksUpgradeData = string;
 
@@ -17,15 +17,13 @@ export type ConstructorChecksUpgradeData = string;
  * automatically through type checking.
  */
 export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
-  [TargetVersion.V8]: [
-    {
-      pr: 'https://github.com/angular/components/pull/15647',
-      changes: [
-        'CdkDrag', 'CdkDropList', 'ConnectedPositionStrategy', 'FlexibleConnectedPositionStrategy',
-        'OverlayPositionBuilder', 'CdkTable'
-      ]
-    }
-  ],
+  [TargetVersion.V8]: [{
+    pr: 'https://github.com/angular/components/pull/15647',
+    changes: [
+      'CdkDrag', 'CdkDropList', 'ConnectedPositionStrategy', 'FlexibleConnectedPositionStrategy',
+      'OverlayPositionBuilder', 'CdkTable'
+    ]
+  }],
   [TargetVersion.V7]: [],
   [TargetVersion.V6]: []
 };

@@ -6,53 +6,76 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Rule,
-  SchematicContext,
-  SchematicsException,
-  TaskId,
-  Tree
-} from '@angular-devkit/schematics';
-import {RunSchematicTask, TslintFixTask} from '@angular-devkit/schematics/tasks';
-import {sync as globSync} from 'glob';
-import {getProjectTsConfigPaths} from './project-tsconfig-paths';
-import {TargetVersion} from '../target-version';
-import {createTslintConfig, UpgradeTSLintConfig} from './tslint-config';
+import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 
-/** Creates a Angular schematic rule that runs the upgrade for the specified target version. */
-export function createUpgradeRule(targetVersion: TargetVersion,
-                                  upgradeConfig: UpgradeTSLintConfig): Rule {
+import {Constructor, runMigrationRules} from '../../update-tool';
+import {MigrationRule} from '../../update-tool/migration-rule';
+import {TargetVersion} from '../../update-tool/target-version';
+import {getProjectTsConfigPaths} from '../../utils/project-tsconfig-paths';
+import {RuleUpgradeData} from '../upgrade-data';
+
+import {AttributeSelectorsRule} from './attribute-selectors-rule';
+import {ClassInheritanceRule} from './class-inheritance-rule';
+import {ClassNamesRule} from './class-names-rule';
+import {ConstructorSignatureRule} from './constructor-signature-rule';
+import {CssSelectorsRule} from './css-selectors-rule';
+import {ElementSelectorsRule} from './element-selectors-rule';
+import {InputNamesRule} from './input-names-rule';
+import {MethodCallArgumentsRule} from './method-call-arguments-rule';
+import {MiscTemplateRule} from './misc-template-rule';
+import {OutputNamesRule} from './output-names-rule';
+import {PropertyNamesRule} from './property-names-rule';
+
+
+/** List of migration rules which run for the CDK update. */
+export const cdkMigrationRules: Constructor<MigrationRule<RuleUpgradeData>>[] = [
+  AttributeSelectorsRule,
+  ClassInheritanceRule,
+  ClassNamesRule,
+  ConstructorSignatureRule,
+  CssSelectorsRule,
+  ElementSelectorsRule,
+  InputNamesRule,
+  MethodCallArgumentsRule,
+  MiscTemplateRule,
+  OutputNamesRule,
+  PropertyNamesRule,
+];
+
+type NullableMigrationRule = Constructor<MigrationRule<RuleUpgradeData|null>>;
+
+/**
+ * Creates a Angular schematic rule that runs the upgrade for the
+ * specified target version.
+ */
+export function createUpgradeRule(
+    targetVersion: TargetVersion, extraRules: NullableMigrationRule[], upgradeData: RuleUpgradeData,
+    onMigrationCompleteFn?: (targetVersion: TargetVersion, hasFailures: boolean) => void): Rule {
   return (tree: Tree, context: SchematicContext) => {
+    const logger = context.logger;
+    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
 
-    const projectTsConfigPaths = getProjectTsConfigPaths(tree);
-    const tslintFixTasks: TaskId[] = [];
-
-    if (!projectTsConfigPaths.length) {
-      throw new SchematicsException('Could not find any tsconfig file. Please submit an issue ' +
-        'on the Angular Material repository that includes the path to your "tsconfig" file.');
-    }
-    // In some applications, developers will have global stylesheets which are not specified in any
-    // Angular component. Therefore we glob up all CSS and SCSS files outside of node_modules and
-    // dist. The files will be read by the individual stylesheet rules and checked.
-    const extraStyleFiles = globSync('!(node_modules|dist)/**/*.+(css|scss)', {absolute: true});
-    const tslintConfig = createTslintConfig(targetVersion, {
-      // Default options that can be overwritten if specified explicitly. e.g. if the
-      // Material update schematic wants to specify a different upgrade data.
-      extraStyleFiles: extraStyleFiles,
-      // Custom upgrade configuration options.
-      ...upgradeConfig,
-    });
-
-    for (const tsconfig of projectTsConfigPaths) {
-      // Run the update tslint rules.
-      tslintFixTasks.push(context.addTask(new TslintFixTask(tslintConfig, {
-        silent: false,
-        ignoreErrors: true,
-        tsConfigPath: tsconfig,
-      })));
+    if (!buildPaths.length && !testPaths.length) {
+      // We don't want to throw here because it would mean that other migrations in the
+      // pipeline don't run either. Rather print an error message.
+      logger.error('Could not find any TypeScript project in the CLI workspace configuration.');
+      return;
     }
 
-    // Delete the temporary schematics directory.
-    context.addTask(new RunSchematicTask('ng-post-update', {}), tslintFixTasks);
+    // Keep track of all project source files which have been checked/migrated. This is
+    // necessary because multiple TypeScript projects can contain the same source file and
+    // we don't want to check these again, as this would result in duplicated failure messages.
+    const analyzedFiles = new Set<string>();
+    let hasRuleFailures = false;
+
+    for (const tsconfigPath of [...buildPaths, ...testPaths]) {
+      hasRuleFailures = hasRuleFailures || runMigrationRules(
+          tree, context.logger, tsconfigPath, targetVersion, [...cdkMigrationRules, ...extraRules],
+          upgradeData, analyzedFiles);
+    }
+
+    if (onMigrationCompleteFn) {
+      onMigrationCompleteFn(targetVersion, hasRuleFailures);
+    }
   };
 }

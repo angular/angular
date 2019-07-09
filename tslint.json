@@ -138,7 +138,7 @@
     "file-name-casing": [true, {
       // Exclude custom lint rule files since they have to always be camel-cased and end
       // with "Rule".
-      ".*Rule.ts": "camel-case",
+      "\\w+Rule.ts": "camel-case",
       ".*": "kebab-case"
     }],
     "no-unescaped-html-tag": true

@@ -1,7 +1,6 @@
 # ng-update schematic  
 
-**Note** The CDK ng-update schematic is the foundation for the Angular Material update
-schematic. This is achieved by making the ng-update code for the CDK as abstract as possible.
+**Note** The CDK ng-update schematic is the foundation for the Angular Material update schematic. This is achieved by making the ng-update code for the CDK as reusable as possible.
  
 This means that this document also applies for the Angular Material `ng-update`.
 
@@ -11,7 +10,7 @@ The `ng-update` schematic consists of multiple migration entry-points where ever
 targets a specific Angular CDK or Angular Material version.  
 
 
-As of right now, we have two migration entry-points that handle the breaking changes for the
+As of right now, we have multiple migration entry-points that handle the breaking changes for a
 given target version:  
   
 | Target Version | Description            |
@@ -20,32 +19,57 @@ given target version:
 | V7 | Upgrade from any version to v7.0.0 |  
 | V8 | Upgrade from any version to v8.0.0 |  
   
-Note that the migrations run _in order_ if multiple versions are transitively targeted. For
+Note that the migrations run _in order_ if multiple versions are implicitly targeted. For
 example, consider an application which uses Angular Material v5.0.0. In case the developer runs
-`ng update`, the Angular CLI **only** installs V7 and runs the V6 and V7 migrations in order.
+`ng update`, the Angular CLI **only** installs V7 and runs the V6 and V7 migrations _in order_.
  
-This shows that the we technically need to keep all migrations from V5 in this code base, because
-the CLI usually only installs the latest version and expects all version migrations to be present.
+This shows that we technically need to keep all migrations in the code base because
+the CLI usually only installs the latest version and expects all migrations for past
+major versions to be present.
   
 ## Update concept  
   
 The goal of the update schematic is to automatically migrate code that is affected by breaking
-changes of the target version. Most of the time, we can apply such automatic migrations, but
+changes of the target version. Most of the time we can apply such automatic migrations, but
 there are also a few breaking changes that cannot be migrated automatically.
   
 In that case, our goal should be to notify the developer about the breaking change that needs
-developer attention.  
+attention.
   
 ## Transforming TypeScript files  
   
-In order to automatically migrate TypeScript source files, we take advantage of the `tslint`
-which allows us to create custom rules that can:
- 
-* Easily `visit` specific types of TypeScript nodes (e.g. `visitClassDeclaration`)  
-* Structure migrations based on the _upgrade data_ or type of migration (different TSLint rules)  
-* Easily apply replacements / fixes for specific TypeScript nodes.  
-* Easily report breaking changes at TypeScript nodes that cannot be migrated automatically  
-* Double check for rule migrations (TSLint always runs rule again after migrations have been applied)  
+In order to automatically migrate TypeScript source files, we take advantage of the TypeScript
+Compiler API which allows us to parse and work with the AST of project source files. We built
+a small framework for analyzing and updating project source files that is called `update-tool`.
+
+The `update-tool` has been specifically built with the goal of being extremely fast and
+flexible. This tool had to be built because our initial `ng update` implementation which
+leveraged `tslint` caused various problems:
+
+* No support for HTML templates and stylesheets (workaround was needed)
+* Reruns all upgrade lint rules after file has been updated (significant performance issue for projects with a lot of files)
+* Recreates the TypeScript program each time a source file has been updated (significant memory pressure for big TypeScript projects, causing OOM exceptions)
+* TSLint recursively visits the nodes of all source files for each upgrade lint rule (performance issue)
+* TSLint is not guaranteed to be installed in CLI projects. See: https://github.com/angular/angular-cli/issues/14555
+* TSLint replacements lead to memory leaks due to the retained TypeScript nodes
+* No way to have a *global analysis* phase since lint rules are only able to visit source files.
+* No flexibility. i.e. 
+  * No way to ensure source files are only analyzed a single time 
+  * No way to implement a progress bar
+  * No easy way to add support for HTML templates or stylesheets
+
+All of these problems that `tslint` had, have been solved when we built the
+`update-tool`. The tool currently has the following differences compared to `tslint`:
+
+* Integrated support for the HTML templates and stylesheets
+* Only runs migration rules once per source file.
+  * Even if a source file is part of multiple TypeScript projects.
+* Program is only created once per TypeScript project. Also the type checker is only retrieved once.
+* Migration failures are guaranteed to not retain `ts.Node` instances (avoiding a common tslint memory leak)
+* Replacements are performed within the virtual file system (best practice for schematics)
+* TypeScript program is only recursively visited **once**
+* Full flexibility (e.g. allowing us to implement a progress bar)
+* Possibility to have a *global analysis* phase (unlike with tslint where only individual source files can be analyzed)
 
 There also other various concepts for transforming TypeScript source files, but most of them
 don't provide a simple API for replacements and reporting. Read more about the possible
@@ -54,38 +78,12 @@ approaches below:
 |Description | Evaluation |  
 |------------|------------|  
 | Regular Expressions | Too brittle. No type checking possible. Regular Expression _can_ be used in combination with some real AST walking |  
-| TypeScript transforms (no emit) | This would be a good solution that avoids using TSLint. No simple API for reporting and visiting specific types of nodes |  
-| Plain TypeScript AST | This would be similar to the TypeScript transforms. Extra effort in creating the replacement API; reporting API; walking logic |
-  
-## ## Transforming CSS and HTML files  
-  
-Since `TSLint` allows us to only visit TypeScript nodes, we can technically just apply migrations
-for inline styles or templates which are part of the TypeScript AST. In our case, the update
-schematic should also apply migrations for external templates or styles. In order to archive
-this with TSLint, we have a customized implementation of a `TSLint.RuleWalker`. The custom
-RuleWalker which is called `ComponentWalker` determines external templates and stylesheets from
-the _component/directive_ metadata.
-
-The given resource files will then be wrapped inside of an in-memory TypeScript source file that
-can be applied to the rule walker. This ensures that only referenced resource files will be
-migrated and also allows us to take advantage of the simple replacement and reporting API from
-TSLint.
-  
-This also makes the rule walker API consistent with the handling of inline resource files.    
-  
-```ts
-// PSEUDO CODE
-visitExternalTemplate(node: ts.SourceFile) {
-  const parsedHtml = parse5.parse(node.getFullText());
-  
-  this._findOutdatedInputs(parsedHtml)
-   .forEach(offsetStart => this._addExternalFailure(offsetStart, 'Outdated input', _myFix);}
-```
+| TypeScript transforms (no emit) | This would be a good solution but there is no API to serialize the transformed AST into source code without using the `ts.Printer`. The printer can be used to serialize the AST but it breaks formatting, code style and more. This is not acceptable for a migration. |  
 
 ### Upgrade data for target versions
   
 The upgrade data for migrations is separated based on the target version. This is necessary in
-order to allow migrations run sequentially. For example:  
+order to allow migrations run sequentially. For example: 
   
 * In V6: `onChange` has been renamed to `changed`
 * In V7: `changed` has been renamed to `onValueChange`

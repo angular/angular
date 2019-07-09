@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
 import {getExportDeclaration, getImportDeclaration} from '@angular/cdk/schematics';
+import * as ts from 'typescript';
 
 /** Name of the Angular Material module specifier. */
 export const materialModuleSpecifier = '@angular/material';
@@ -26,7 +26,7 @@ export function isMaterialExportDeclaration(node: ts.Node) {
 }
 
 /** Whether the declaration is part of Angular Material. */
-function isMaterialDeclaration(declaration: ts.ImportDeclaration | ts.ExportDeclaration) {
+function isMaterialDeclaration(declaration: ts.ImportDeclaration|ts.ExportDeclaration) {
   if (!declaration.moduleSpecifier) {
     return false;
   }
