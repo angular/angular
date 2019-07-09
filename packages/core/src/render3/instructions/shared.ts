@@ -30,7 +30,7 @@ import {StylingContext} from '../interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex, ɵɵnamespaceHTML} from '../state';
+import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, namespaceHTMLInternal, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {initializeStaticContext as initializeStaticStylingContext} from '../styling/class_and_style_bindings';
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
@@ -38,8 +38,10 @@ import {attrsStylingIndexOf} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
 import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootView, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
+
 import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeInitialData, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLView, cloneToTViewData} from './lview_debug';
 import {selectInternal} from './select';
+
 
 
 /**
@@ -458,7 +460,7 @@ export function renderComponentOrTemplate<T>(
 
 function executeTemplate<T>(
     lView: LView, templateFn: ComponentTemplate<T>, rf: RenderFlags, context: T) {
-  ɵɵnamespaceHTML();
+  namespaceHTMLInternal();
   const prevSelectedIndex = getSelectedIndex();
   try {
     setActiveHostElement(null);
