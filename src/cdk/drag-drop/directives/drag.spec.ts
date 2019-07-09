@@ -853,6 +853,27 @@ describe('CdkDrag', () => {
       expect(dragInstance.getFreeDragPosition()).toEqual({x: 50, y: 100});
     }));
 
+    it('should be able to get the up-to-date position as the user is dragging', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const dragInstance = fixture.componentInstance.dragInstance;
+
+      expect(dragInstance.getFreeDragPosition()).toEqual({x: 0, y: 0});
+
+      startDraggingViaMouse(fixture, dragElement);
+      dispatchMouseEvent(document, 'mousemove', 50, 100);
+      fixture.detectChanges();
+
+      expect(dragInstance.getFreeDragPosition()).toEqual({x: 50, y: 100});
+
+      dispatchMouseEvent(document, 'mousemove', 100, 200);
+      fixture.detectChanges();
+
+      expect(dragInstance.getFreeDragPosition()).toEqual({x: 100, y: 200});
+    }));
+
     it('should react to changes in the free drag position', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
       fixture.componentInstance.freeDragPosition = {x: 50, y: 100};

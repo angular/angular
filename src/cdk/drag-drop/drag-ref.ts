@@ -430,7 +430,8 @@ export class DragRef<T = any> {
    * Gets the current position in pixels the draggable outside of a drop container.
    */
   getFreeDragPosition(): Readonly<Point> {
-    return {x: this._passiveTransform.x, y: this._passiveTransform.y};
+    const position = this.isDragging() ? this._activeTransform : this._passiveTransform;
+    return {x: position.x, y: position.y};
   }
 
   /**
