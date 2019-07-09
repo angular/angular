@@ -2063,14 +2063,14 @@ to declare inputs and outputs, you can identify
 members in the `inputs` and `outputs` arrays
 of the directive metadata, as in this example:
 
-<code-example path="inputs-outputs/src/app/in-the-metadata/in-the-metadata.component.ts" region="metadata" header="src/app/app.component.html" linenums="false">
+<code-example path="inputs-outputs/src/app/in-the-metadata/in-the-metadata.component.ts" region="metadata" header="src/app/in-the-metadata/in-the-metadata.component.ts" linenums="false">
 </code-example>
 
 While declaring `inputs` and `outputs` in the `@Directive` and `@Component`
 metadata is possible, it is a better practice to use the `@Input()` and `@Output()`
 class decorators instead, as follows:
 
-<code-example path="inputs-outputs/src/app/input-output/input-output.component.ts" region="input-output" header="src/app/app.component.html" linenums="false">
+<code-example path="inputs-outputs/src/app/input-output/input-output.component.ts" region="input-output" header="src/app/input-output/input-output.component.ts" linenums="false">
 </code-example>
 
 See the [Decorate input and output properties](guide/styleguide#decorate-input-and-output-properties) section of the
@@ -2104,7 +2104,7 @@ offer a solution.
 Alias inputs and outputs in the metadata using a colon-delimited (`:`) string with
 the directive property name on the left and the public alias on the right:
 
-<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias" header="src/app/app.component.html" linenums="false">
+<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias" header="src/app/aliasing/aliasing.component.ts" linenums="false">
 </code-example>
 
 
@@ -2112,7 +2112,7 @@ the directive property name on the left and the public alias on the right:
 
 You can specify the alias for the property name by passing the alias name to the `@Input()`/`@Output()` decorator. The internal name remains as usual.
 
-<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias-input-output" header="src/app/app.component.html" linenums="false">
+<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias-input-output" header="src/app/aliasing/aliasing.component.ts" linenums="false">
 </code-example>
 
 
