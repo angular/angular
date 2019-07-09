@@ -26,7 +26,6 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/util",
         "@npm//@types/convert-source-map",
         "@npm//@types/node",
-        "@npm//@types/source-map",
         "@npm//@types/yargs",
         "@npm//canonical-path",
         "@npm//dependency-graph",
