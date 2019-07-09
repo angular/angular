@@ -61,13 +61,18 @@ export class OverlayConfig {
 
   constructor(config?: OverlayConfig) {
     if (config) {
-      Object.keys(config).forEach(k => {
-        const key = k as keyof OverlayConfig;
-
-        if (typeof config[key] !== 'undefined') {
-          this[key] = config[key];
+      const configKeys = Object.keys(config) as Array<keyof OverlayConfig>;
+      for (const key of configKeys) {
+        if (config[key] !== undefined) {
+          // TypeScript, as of version 3.5, sees the left-hand-side of this expression
+          // as "I don't know *which* key this is, so the only valid value is the intersection
+          // of all the posible values." In this case, that happens to be `undefined`. TypeScript
+          // is not smart enough to see that the right-hand-side is actually an access of the same
+          // exact type with the same exact key, meaning that the value type must be identical.
+          // So we use `any` to work around this.
+          this[key] = config[key] as any;
         }
-      });
+      }
     }
   }
 }
