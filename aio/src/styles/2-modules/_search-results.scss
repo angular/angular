@@ -42,9 +42,11 @@ aio-search-results {
           @include font-size(14);
           color: $lightgray;
           font-weight: normal;
+
           &a {
             text-decoration: none;
           }
+
           &:hover {
             color: $white;
           }
@@ -85,8 +87,13 @@ aio-search-results {
       box-shadow: none;
 
       .search-area {
+        .search-section-header {
+          color: $darkgray;
+        }
+
         .search-result-item {
           color: lighten($darkgray, 10);
+
           &:hover {
             color: $accentblue;
           }
