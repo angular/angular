@@ -37,6 +37,16 @@ export interface MatMenuPanel<T = any> {
   lazyContent?: MatMenuContent;
   backdropClass?: string;
   hasBackdrop?: boolean;
+
+  /**
+   * @deprecated To be removed.
+   * @breaking-change 8.0.0
+   */
   addItem?: (item: T) => void;
+
+  /**
+   * @deprecated To be removed.
+   * @breaking-change 8.0.0
+   */
   removeItem?: (item: T) => void;
 }

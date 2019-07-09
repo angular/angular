@@ -98,11 +98,11 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   private _yPosition: MenuPositionY = this._defaultOptions.yPosition;
   private _previousElevation: string;
 
-  /** Menu items inside the current menu. */
-  private _items: MatMenuItem[] = [];
+  /** All items inside the menu. Includes items nested inside another menu. */
+  @ContentChildren(MatMenuItem, {descendants: true}) _allItems: QueryList<MatMenuItem>;
 
-  /** Emits whenever the amount of menu items changes. */
-  private _itemChanges = new Subject<MatMenuItem[]>();
+  /** Only the direct descendant menu items. */
+  private _directDescendantItems = new QueryList<MatMenuItem>();
 
   /** Subscription to tab events on the menu panel */
   private _tabSubscription = Subscription.EMPTY;
@@ -242,22 +242,40 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   }
 
   ngAfterContentInit() {
-    this._keyManager = new FocusKeyManager<MatMenuItem>(this._items).withWrap().withTypeAhead();
+    this._updateDirectDescendants();
+    this._keyManager = new FocusKeyManager(this._directDescendantItems).withWrap().withTypeAhead();
     this._tabSubscription = this._keyManager.tabOut.subscribe(() => this.closed.emit('tab'));
   }
 
   ngOnDestroy() {
+    this._directDescendantItems.destroy();
     this._tabSubscription.unsubscribe();
     this.closed.complete();
   }
 
   /** Stream that emits whenever the hovered menu item changes. */
   _hovered(): Observable<MatMenuItem> {
-    return this._itemChanges.pipe(
-      startWith(this._items),
-      switchMap(items => merge(...items.map(item => item._hovered)))
+    return this._directDescendantItems.changes.pipe(
+      startWith(this._directDescendantItems),
+      switchMap(items => merge<MatMenuItem>(...items.map((item: MatMenuItem) => item._hovered)))
     );
   }
+
+  /*
+   * Registers a menu item with the menu.
+   * @docs-private
+   * @deprecated No longer being used. To be removed.
+   * @breaking-change 9.0.0
+   */
+  addItem(_item: MatMenuItem) {}
+
+  /**
+   * Removes an item from the menu.
+   * @docs-private
+   * @deprecated No longer being used. To be removed.
+   * @breaking-change 9.0.0
+   */
+  removeItem(_item: MatMenuItem) {}
 
   /** Handle a keyboard event from the menu, delegating to the appropriate action. */
   _handleKeydown(event: KeyboardEvent) {
@@ -340,35 +358,6 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   }
 
   /**
-   * Registers a menu item with the menu.
-   * @docs-private
-   */
-  addItem(item: MatMenuItem) {
-    // We register the items through this method, rather than picking them up through
-    // `ContentChildren`, because we need the items to be picked up by their closest
-    // `mat-menu` ancestor. If we used `@ContentChildren(MatMenuItem, {descendants: true})`,
-    // all descendant items will bleed into the top-level menu in the case where the consumer
-    // has `mat-menu` instances nested inside each other.
-    if (this._items.indexOf(item) === -1) {
-      this._items.push(item);
-      this._itemChanges.next(this._items);
-    }
-  }
-
-  /**
-   * Removes an item from the menu.
-   * @docs-private
-   */
-  removeItem(item: MatMenuItem) {
-    const index = this._items.indexOf(item);
-
-    if (this._items.indexOf(item) > -1) {
-      this._items.splice(index, 1);
-      this._itemChanges.next(this._items);
-    }
-  }
-
-  /**
    * Adds classes to the menu panel based on its position. Can be used by
    * consumers to add specific styling based on the position.
    * @param posX Position of the menu along the x axis.
@@ -413,6 +402,21 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
     if (event.toState === 'enter' && this._keyManager.activeItemIndex === 0) {
       event.element.scrollTop = 0;
     }
+  }
+
+  /**
+   * Sets up a stream that will keep track of any newly-added menu items and will update the list
+   * of direct descendants. We collect the descendants this way, because `_allItems` can include
+   * items that are part of child menus, and using a custom way of registering items is unreliable
+   * when it comes to maintaining the item order.
+   */
+  private _updateDirectDescendants() {
+    this._allItems.changes
+      .pipe(startWith(this._allItems))
+      .subscribe((items: QueryList<MatMenuItem>) => {
+        this._directDescendantItems.reset(items.filter(item => item._parentMenu === this));
+        this._directDescendantItems.notifyOnChanges();
+      });
   }
 }
 
