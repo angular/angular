@@ -262,7 +262,7 @@ requires. This is accomplished by subclassing `DateAdapter` and providing your s
 `DateAdapter` implementation. You will also want to make sure that the `MAT_DATE_FORMATS` provided
 in your app are formats that can be understood by your date implementation. See
 [_Customizing the parse and display formats_](#customizing-the-parse-and-display-formats)for more
-information about `MAT_DATE_FORMATS`. <!-- TODO(mmalerba): Add a guide about this -->
+information about `MAT_DATE_FORMATS`.
 
 ```ts
 @NgModule({
@@ -297,6 +297,37 @@ export class MyApp {}
 ```
 
 <!-- example(datepicker-formats) -->
+
+##### MomentDateModule formats
+
+To use custom formats with the `MomentDateModule` you can pick from the parse formats documented
+[here](https://momentjs.com/docs/#/parsing/string-format/) and the display formats documented
+[here](https://momentjs.com/docs/#/displaying/format/).
+
+It is also possible to support multiple parse formats. For example:
+
+```ts
+@NgModule({
+  imports: [MatDatepickerModule, MomentDateModule],
+  providers: [
+    {
+      provide: MAT_DATE_FORMATS,
+      useValue: {
+        parse: {
+          dateInput: ['l', 'LL'],
+        },
+        display: {
+          dateInput: 'L',
+          monthYearLabel: 'MMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY',
+        },
+      },
+    },
+  ],
+})
+export class MyApp {}
+```
 
 #### Customizing the calendar header
 
