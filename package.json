@@ -57,7 +57,6 @@
     "@types/node": "^10.9.4",
     "@types/selenium-webdriver": "3.0.7",
     "@types/shelljs": "^0.7.8",
-    "@types/source-map": "^0.5.1",
     "@types/systemjs": "0.19.32",
     "@types/yargs": "^11.1.1",
     "@webcomponents/custom-elements": "^1.0.4",
