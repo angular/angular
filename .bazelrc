@@ -1,12 +1,3 @@
-###############################
-# Typescript / Angular / Sass #
-###############################
-
-# Make compilation fast, by keeping a few copies of the compilers
-# running as daemons, and cache SourceFile AST's to reduce parse time.
-build --strategy=AngularTemplateCompile=worker
-build --strategy=TypeScriptCompile=worker
-
 # Enable debugging tests with --config=debug
 test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
 
@@ -145,31 +136,6 @@ build:remote --bes_results_url="https://source.cloud.google.com/results/invocati
 # Turn on managed directories feature in Bazel
 # This allows us to avoid installing a second copy of node_modules
 common --experimental_allow_incremental_repository_updates
-
-# This option is changed to true in Bazel 0.27 and exposes a possible
-# regression in Bazel 0.27.0.
-# Error observed is in npm_package target `//packages/common/locales:package`:
-# ```
-# ERROR: /home/circleci/ng/packages/common/locales/BUILD.bazel:13:1: Assembling
-# npm package packages/common/locales/package failed: No usable spawn strategy found
-# for spawn with mnemonic SkylarkAction.  Your --spawn_strategyor --strategy flags
-# are probably too strict. Visit https://github.com/bazelbuild/bazel/issues/7480 for
-# migration advises
-# ```
-# Suspect is https://github.com/bazelbuild/rules_nodejs/blob/master/internal/npm_package/npm_package.bzl#L75-L82:
-# ```
-# execution_requirements = {
-#     # Never schedule this action remotely because it's not computationally expensive.
-#     # It just copies files into a directory; it's not worth copying inputs and outputs to a remote worker.
-#     # Also don't run it in a sandbox, because it resolves an absolute path to the bazel-out directory
-#     # allowing the .pack and .publish runnables to work with no symlink_prefix
-#     # See https://github.com/bazelbuild/rules_nodejs/issues/187
-#     "local": "1",
-# },
-# ```
-build --incompatible_list_based_execution_strategy_selection=false
-test --incompatible_list_based_execution_strategy_selection=false
-run --incompatible_list_based_execution_strategy_selection=false
 
 ####################################################
 # User bazel configuration
