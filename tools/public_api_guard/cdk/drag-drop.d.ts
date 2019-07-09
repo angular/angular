@@ -13,7 +13,7 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     _previewTemplate: CdkDragPreview;
     boundaryElement: string | ElementRef<HTMLElement> | HTMLElement;
     boundaryElementSelector: string;
-    constrainPosition?: (point: Point) => Point;
+    constrainPosition?: (point: Point, dragRef: DragRef) => Point;
     data: T;
     disabled: boolean;
     dragStartDelay: number;
@@ -227,7 +227,7 @@ export declare class DragDropRegistry<I, C extends {
 
 export declare class DragRef<T = any> {
     beforeStarted: Subject<void>;
-    constrainPosition?: (point: Point) => Point;
+    constrainPosition?: (point: Point, dragRef: DragRef) => Point;
     data: T;
     disabled: boolean;
     dragStartDelay: number;

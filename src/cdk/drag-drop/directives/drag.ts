@@ -152,7 +152,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
    * of the user's pointer on the page and should return a point describing where the item should
    * be rendered.
    */
-  @Input('cdkDragConstrainPosition') constrainPosition?: (point: Point) => Point;
+  @Input('cdkDragConstrainPosition') constrainPosition?: (point: Point, dragRef: DragRef) => Point;
 
   /** Emits when the user starts dragging the item. */
   @Output('cdkDragStarted') started: EventEmitter<CdkDragStart> = new EventEmitter<CdkDragStart>();

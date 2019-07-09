@@ -271,7 +271,7 @@ export class DragRef<T = any> {
    * of the user's pointer on the page and should return a point describing where the item should
    * be rendered.
    */
-  constrainPosition?: (point: Point) => Point;
+  constrainPosition?: (point: Point, dragRef: DragRef) => Point;
 
   constructor(
     element: ElementRef<HTMLElement> | HTMLElement,
@@ -956,7 +956,7 @@ export class DragRef<T = any> {
   /** Gets the pointer position on the page, accounting for any position constraints. */
   private _getConstrainedPointerPosition(event: MouseEvent | TouchEvent): Point {
     const point = this._getPointerPositionOnPage(event);
-    const constrainedPoint = this.constrainPosition ? this.constrainPosition(point) : point;
+    const constrainedPoint = this.constrainPosition ? this.constrainPosition(point, this) : point;
     const dropContainerLock = this._dropContainer ? this._dropContainer.lockAxis : null;
 
     if (this.lockAxis === 'x' || dropContainerLock === 'x') {
