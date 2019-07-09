@@ -249,7 +249,7 @@ describe('Serializer', () => {
       // ICU with nested HTML
       [
         '{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}',
-        '{VAR_PLURAL, plural, 10 {{$startBoldText}ten{$closeBoldText}} other {{$startTagDiv}other{$closeTagDiv}}}'
+        '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}'
       ]
     ];
 

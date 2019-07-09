@@ -39,6 +39,26 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     expect(fixture.nativeElement.innerHTML).toEqual(`<div>Bonjour John!</div>`);
   });
 
+  it('should support named interpolations', () => {
+    ɵi18nConfigureLocalize({
+      translations: {
+        ' Hello {$userName}! Emails: {$amountOfEmailsReceived} ':
+            ' Bonjour {$userName}! Emails: {$amountOfEmailsReceived} '
+      }
+    });
+    const fixture = initWithTemplate(AppComp, `
+      <div i18n>
+        Hello {{ name // i18n(ph="user_name") }}!
+        Emails: {{ count // i18n(ph="amount of emails received") }}
+      </div>
+    `);
+    expect(fixture.nativeElement.innerHTML).toEqual(`<div> Bonjour Angular! Emails: 0 </div>`);
+    fixture.componentRef.instance.name = `John`;
+    fixture.componentRef.instance.count = 5;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toEqual(`<div> Bonjour John! Emails: 5 </div>`);
+  });
+
   it('should support interpolations with custom interpolation config', () => {
     ɵi18nConfigureLocalize({translations: {'Hello {$interpolation}': 'Bonjour {$interpolation}'}});
     const interpolation = ['{%', '%}'] as[string, string];
@@ -470,8 +490,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     it('multiple', () => {
       ɵi18nConfigureLocalize({
         translations: {
-          '{VAR_PLURAL, plural, =0 {no {$startBoldText}emails{$closeBoldText}!} =1 {one {$startItalicText}email{$closeItalicText}} other {{$interpolation} {$startTagSpan}emails{$closeTagSpan}}}':
-              '{VAR_PLURAL, plural, =0 {aucun {$startBoldText}email{$closeBoldText}!} =1 {un {$startItalicText}email{$closeItalicText}} other {{$interpolation} {$startTagSpan}emails{$closeTagSpan}}}',
+          '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}':
+              '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
           '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
         }
       });
@@ -516,8 +536,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     it('inside HTML elements', () => {
       ɵi18nConfigureLocalize({
         translations: {
-          '{VAR_PLURAL, plural, =0 {no {$startBoldText}emails{$closeBoldText}!} =1 {one {$startItalicText}email{$closeItalicText}} other {{$interpolation} {$startTagSpan}emails{$closeTagSpan}}}':
-              '{VAR_PLURAL, plural, =0 {aucun {$startBoldText}email{$closeBoldText}!} =1 {un {$startItalicText}email{$closeItalicText}} other {{$interpolation} {$startTagSpan}emails{$closeTagSpan}}}',
+          '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}':
+              '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
           '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
         }
       });
@@ -599,8 +619,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     it('nested', () => {
       ɵi18nConfigureLocalize({
         translations: {
-          '{VAR_PLURAL, plural, =0 {zero} other {{$interpolation} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}}!}}':
-              '{VAR_PLURAL, plural, =0 {zero} other {{$interpolation} {VAR_SELECT, select, cat {chats} dog {chients} other {animaux}}!}}'
+          '{VAR_PLURAL, plural, =0 {zero} other {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}}!}}':
+              '{VAR_PLURAL, plural, =0 {zero} other {{INTERPOLATION} {VAR_SELECT, select, cat {chats} dog {chients} other {animaux}}!}}'
         }
       });
       const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural,
@@ -837,6 +857,40 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(fixture.debugElement.nativeElement.innerHTML).not.toContain('A');
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('C1');
     });
+
+    it('with named interpolations', () => {
+      @Component({
+        selector: 'comp',
+        template: `
+          <ng-container i18n>{
+            type,
+            select,
+              A {A - {{ typeA // i18n(ph="PH_A") }}}
+              B {B - {{ typeB // i18n(ph="PH_B") }}}
+              other {other - {{ typeC // i18n(ph="PH WITH SPACES") }}}
+          }</ng-container>
+        `,
+      })
+      class Comp {
+        type = 'A';
+        typeA = 'Type A';
+        typeB = 'Type B';
+        typeC = 'Type C';
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp]});
+
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('A - Type A');
+
+      fixture.componentInstance.type = 'C';  // trigger "other" case
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.nativeElement.innerHTML).not.toContain('A - Type A');
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('other - Type C');
+    });
   });
 
   describe('should support attributes', () => {
@@ -994,8 +1048,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       translations: {
         'start {$interpolation} middle {$interpolation_1} end':
             'début {$interpolation_1} milieu {$interpolation} fin',
-        '{VAR_PLURAL, plural, =0 {no {$startBoldText}emails{$closeBoldText}!} =1 {one {$startItalicText}email{$closeItalicText}} other {{$interpolation} emails}}':
-            '{VAR_PLURAL, plural, =0 {aucun {$startBoldText}email{$closeBoldText}!} =1 {un {$startItalicText}email{$closeItalicText}} other {{$interpolation} emails}}',
+        '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}':
+            '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}',
         ' trad: {$icu}': ' traduction: {$icu}'
       }
     });
