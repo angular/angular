@@ -5,6 +5,7 @@ import {InterfaceExportDoc} from 'dgeni-packages/typescript/api-doc-types/Interf
 import {TypeAliasExportDoc} from 'dgeni-packages/typescript/api-doc-types/TypeAliasExportDoc';
 import * as path from 'path';
 import {computeApiDocumentUrl} from '../common/compute-api-url';
+import {isDeprecatedDoc, isPrimaryModuleDoc} from '../common/decorators';
 import {CategorizedClassDoc} from '../common/dgeni-definitions';
 
 export interface ModuleInfo {
@@ -64,8 +65,11 @@ export class EntryPointDoc {
   /** Constants that belong to the entry-point. */
   constants: ConstExportDoc[] = [];
 
-  /** NgModule that defines the current entry-point. */
-  ngModule: CategorizedClassDoc | null = null;
+  /** List of NgModules which are exported in the current entry-point. */
+  exportedNgModules: CategorizedClassDoc[] = [];
+
+  /** NgModule that defines the current entry-point. Null if no module could be found. */
+  ngModule: CategorizedClassDoc|null = null;
 
   constructor(name: string) {
     this.name = name;
@@ -117,7 +121,12 @@ export class EntryPointGrouper implements Processor {
       } else if (doc.isService) {
         entryPoint.services.push(doc);
       } else if (doc.isNgModule) {
-        entryPoint.ngModule = doc;
+        entryPoint.exportedNgModules.push(doc);
+        // If the module is explicitly marked as primary module using the "@docs-primary-module"
+        // annotation, we set is as primary entry-point module.
+        if (isPrimaryModuleDoc(doc)) {
+          entryPoint.ngModule = doc;
+        }
       } else if (doc.docType === 'class') {
         entryPoint.classes.push(doc);
       } else if (doc.docType === 'interface') {
@@ -128,6 +137,25 @@ export class EntryPointGrouper implements Processor {
         entryPoint.functions.push(doc);
       } else if (doc.docType === 'const') {
         entryPoint.constants.push(doc);
+      }
+    });
+
+    // For each entry-point we determine a primary NgModule that defines the entry-point
+    // if no primary module has been explicitly declared (using "@docs-primary-module").
+    entryPoints.forEach(entryPoint => {
+      if (entryPoint.ngModule !== null) {
+        return;
+      }
+
+      // Usually the first module that is not deprecated is used, but in case there are
+      // only deprecated modules, the last deprecated module is used. We don't want to
+      // always skip deprecated modules as they could be still needed for documentation
+      // of a deprecated entry-point.
+      for (let ngModule of entryPoint.exportedNgModules) {
+        entryPoint.ngModule = ngModule;
+        if (!isDeprecatedDoc(ngModule)) {
+          break;
+        }
       }
     });
 

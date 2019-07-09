@@ -79,6 +79,7 @@ apiDocsPackage.config(function(parseTagsProcessor: any) {
   parseTagsProcessor.tagDefinitions = parseTagsProcessor.tagDefinitions.concat([
     {name: 'docs-private'},
     {name: 'docs-public'},
+    {name: 'docs-primary-module'},
     {name: 'breaking-change'},
   ]);
 });

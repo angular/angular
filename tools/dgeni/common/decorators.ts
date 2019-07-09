@@ -42,6 +42,12 @@ export function isDeprecatedDoc(doc: any) {
   return (doc.tags && doc.tags.tags || []).some((tag: any) => tag.tagName === 'deprecated');
 }
 
+/** Whether the given document is annotated with the "@docs-primary-module" jsdoc tag. */
+export function isPrimaryModuleDoc(doc: any) {
+  return (doc.tags && doc.tags.tags || [])
+      .some((tag: any) => tag.tagName === 'docs-primary-module');
+}
+
 export function getDirectiveSelectors(classDoc: CategorizedClassDoc) {
   if (!classDoc.directiveMetadata) {
     return;
