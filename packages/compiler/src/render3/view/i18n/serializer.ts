@@ -10,13 +10,25 @@ import * as i18n from '../../../i18n/i18n_ast';
 
 import {formatI18nPlaceholderName} from './util';
 
-const formatPh = (value: string): string => `{$${formatI18nPlaceholderName(value)}}`;
-
 /**
- * This visitor walks over i18n tree and generates its string representation,
- * including ICUs and placeholders in {$PLACEHOLDER} format.
+ * This visitor walks over i18n tree and generates its string representation, including ICUs and
+ * placeholders in `{$placeholder}` (for plain messages) or `{PLACEHOLDER}` (inside ICUs) format.
  */
 class SerializerVisitor implements i18n.Visitor {
+  /**
+   * Flag that indicates that we are processing elements of an ICU.
+   *
+   * This flag is needed due to the fact that placeholders in ICUs and in other messages are
+   * represented differently in Closure:
+   * - {$placeholder} in non-ICU case
+   * - {PLACEHOLDER} inside ICU
+   */
+  private insideIcu = false;
+
+  private formatPh(value: string): string {
+    return this.insideIcu ? `{${value}}` : `{$${formatI18nPlaceholderName(value)}}`;
+  }
+
   visitText(text: i18n.Text, context: any): any { return text.value; }
 
   visitContainer(container: i18n.Container, context: any): any {
@@ -24,20 +36,25 @@ class SerializerVisitor implements i18n.Visitor {
   }
 
   visitIcu(icu: i18n.Icu, context: any): any {
+    this.insideIcu = true;
     const strCases =
         Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
-    return `{${icu.expressionPlaceholder}, ${icu.type}, ${strCases.join(' ')}}`;
+    const result = `{${icu.expressionPlaceholder}, ${icu.type}, ${strCases.join(' ')}}`;
+    this.insideIcu = false;
+    return result;
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context: any): any {
     return ph.isVoid ?
-        formatPh(ph.startName) :
-        `${formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${formatPh(ph.closeName)}`;
+        this.formatPh(ph.startName) :
+        `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${this.formatPh(ph.closeName)}`;
   }
 
-  visitPlaceholder(ph: i18n.Placeholder, context: any): any { return formatPh(ph.name); }
+  visitPlaceholder(ph: i18n.Placeholder, context: any): any { return this.formatPh(ph.name); }
 
-  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any { return formatPh(ph.name); }
+  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
+    return this.formatPh(ph.name);
+  }
 }
 
 const serializerVisitor = new SerializerVisitor();

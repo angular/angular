@@ -439,8 +439,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     it('multiple', () => {
       ɵi18nConfigureLocalize({
         translations: {
-          '{VAR_PLURAL, plural, =0 {no {$startBoldText}emails{$closeBoldText}!} =1 {one {$startItalicText}email{$closeItalicText}} other {{$interpolation} {$startTagSpan}emails{$closeTagSpan}}}':
-              '{VAR_PLURAL, plural, =0 {aucun {$startBoldText}email{$closeBoldText}!} =1 {un {$startItalicText}email{$closeItalicText}} other {{$interpolation} {$startTagSpan}emails{$closeTagSpan}}}',
+          '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}':
+              '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
           '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
         }
       });
@@ -485,8 +485,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     it('inside HTML elements', () => {
       ɵi18nConfigureLocalize({
         translations: {
-          '{VAR_PLURAL, plural, =0 {no {$startBoldText}emails{$closeBoldText}!} =1 {one {$startItalicText}email{$closeItalicText}} other {{$interpolation} {$startTagSpan}emails{$closeTagSpan}}}':
-              '{VAR_PLURAL, plural, =0 {aucun {$startBoldText}email{$closeBoldText}!} =1 {un {$startItalicText}email{$closeItalicText}} other {{$interpolation} {$startTagSpan}emails{$closeTagSpan}}}',
+          '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}':
+              '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
           '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
         }
       });
@@ -568,8 +568,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     it('nested', () => {
       ɵi18nConfigureLocalize({
         translations: {
-          '{VAR_PLURAL, plural, =0 {zero} other {{$interpolation} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}}!}}':
-              '{VAR_PLURAL, plural, =0 {zero} other {{$interpolation} {VAR_SELECT, select, cat {chats} dog {chients} other {animaux}}!}}'
+          '{VAR_PLURAL, plural, =0 {zero} other {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}}!}}':
+              '{VAR_PLURAL, plural, =0 {zero} other {{INTERPOLATION} {VAR_SELECT, select, cat {chats} dog {chients} other {animaux}}!}}'
         }
       });
       const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural,
@@ -963,8 +963,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       translations: {
         'start {$interpolation} middle {$interpolation_1} end':
             'début {$interpolation_1} milieu {$interpolation} fin',
-        '{VAR_PLURAL, plural, =0 {no {$startBoldText}emails{$closeBoldText}!} =1 {one {$startItalicText}email{$closeItalicText}} other {{$interpolation} emails}}':
-            '{VAR_PLURAL, plural, =0 {aucun {$startBoldText}email{$closeBoldText}!} =1 {un {$startItalicText}email{$closeItalicText}} other {{$interpolation} emails}}',
+        '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}':
+            '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}',
         ' trad: {$icu}': ' traduction: {$icu}'
       }
     });

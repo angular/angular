@@ -996,17 +996,26 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // output ICU directly and keep ICU reference in context
     const message = icu.i18n !as i18n.Message;
+
+    // we always need post-processing function for ICUs, to make sure that:
+    // - all placeholders in a form of {PLACEHOLDER} are replaced with actual values (note:
+    // `goog.getMsg` does not process ICUs and uses the `{PLACEHOLDER}` format for placeholders
+    // inside ICUs)
+    // - all ICU vars (such as `VAR_SELECT` or `VAR_PLURAL`) are replaced with correct values
     const transformFn = (raw: o.ReadVarExpr) =>
-        instruction(null, R3.i18nPostprocess, [raw, mapLiteral(vars, true)]);
+        instruction(null, R3.i18nPostprocess, [raw, mapLiteral({...vars, ...placeholders}, true)]);
 
     // in case the whole i18n message is a single ICU - we do not need to
     // create a separate top-level translation, we can use the root ref instead
     // and make this ICU a top-level translation
+    // note: ICU placeholders are replaced with actual values in `i18nPostprocess` function
+    // separately, so we do not pass placeholders into `i18nTranslate` function.
     if (isSingleI18nIcu(i18n.meta)) {
-      this.i18nTranslate(message, placeholders, i18n.ref, transformFn);
+      this.i18nTranslate(message, /* placeholders */ {}, i18n.ref, transformFn);
     } else {
       // output ICU directly and keep ICU reference in context
-      const ref = this.i18nTranslate(message, placeholders, undefined, transformFn);
+      const ref =
+          this.i18nTranslate(message, /* placeholders */ {}, /* ref */ undefined, transformFn);
       i18n.appendIcu(icuFromI18nMessage(message).name, ref);
     }
 

@@ -51,6 +51,7 @@ const ROOT_TEMPLATE_ID = 0;
 const PP_MULTI_VALUE_PLACEHOLDERS_REGEXP = /\[(�.+?�?)\]/;
 const PP_PLACEHOLDERS_REGEXP = /\[(�.+?�?)\]|(�\/?\*\d+:\d+�)/g;
 const PP_ICU_VARS_REGEXP = /({\s*)(VAR_(PLURAL|SELECT)(_\d+)?)(\s*,)/g;
+const PP_ICU_PLACEHOLDERS_REGEXP = /{([A-Z0-9_]+)}/g;
 const PP_ICUS_REGEXP = /�I18N_EXP_(ICU(_\d+)?)�/g;
 const PP_CLOSE_TEMPLATE_REGEXP = /\/\*/;
 const PP_TEMPLATE_ID_REGEXP = /\d+\:(\d+)/;
@@ -547,7 +548,8 @@ function appendI18nNode(
  *
  * 1. Resolve all multi-value cases (like [�*1:1��#2:1�|�#4:1�|�5�])
  * 2. Replace all ICU vars (like "VAR_PLURAL")
- * 3. Replace all ICU references with corresponding values (like �ICU_EXP_ICU_1�)
+ * 3. Replace all placeholders used inside ICUs in a form of {PLACEHOLDER}
+ * 4. Replace all ICU references with corresponding values (like �ICU_EXP_ICU_1�)
  *    in case multiple ICUs have the same placeholder name
  *
  * @param message Raw translation string for post processing
@@ -625,7 +627,14 @@ export function ɵɵi18nPostprocess(
   });
 
   /**
-   * Step 3: replace all ICU references with corresponding values (like �ICU_EXP_ICU_1�) in case
+   * Step 3: replace all placeholders used inside ICUs in a form of {PLACEHOLDER}
+   */
+  result = result.replace(PP_ICU_PLACEHOLDERS_REGEXP, (match, key): string => {
+    return replacements.hasOwnProperty(key) ? replacements[key] as string : match;
+  });
+
+  /**
+   * Step 4: replace all ICU references with corresponding values (like �ICU_EXP_ICU_1�) in case
    * multiple ICUs have the same placeholder name
    */
   result = result.replace(PP_ICUS_REGEXP, (match, key): string => {

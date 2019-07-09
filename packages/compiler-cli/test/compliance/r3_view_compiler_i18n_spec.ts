@@ -2515,18 +2515,15 @@ describe('i18n support in the view compiler', () => {
         const $_c3$ = ["title", "icu and text"];
         var $I18N_5$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = goog.getMsg("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
-              "interpolation": "\uFFFD1\uFFFD"
-            });
+            const $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = goog.getMsg("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{INTERPOLATION} emails}}");
             $I18N_5$ = $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$;
         }
         else {
-            $I18N_5$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
-              "interpolation": "\uFFFD1\uFFFD"
-            });
+            $I18N_5$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{INTERPOLATION} emails}}");
         }
         $I18N_5$ = $r3$.ɵɵi18nPostprocess($I18N_5$, {
-          "VAR_SELECT": "\uFFFD0\uFFFD"
+          "VAR_SELECT": "\uFFFD0\uFFFD",
+          "INTERPOLATION": "\uFFFD1\uFFFD"
         });
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
@@ -2577,18 +2574,15 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_2949673783721159566$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
-              "interpolation": "\uFFFD1\uFFFD"
-            });
+            const $MSG_EXTERNAL_2949673783721159566$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{INTERPOLATION}}}");
             $I18N_0$ = $MSG_EXTERNAL_2949673783721159566$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
-              "interpolation": "\uFFFD1\uFFFD"
-            });
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{INTERPOLATION}}}");
         }
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
-          "VAR_SELECT": "\uFFFD0\uFFFD"
+          "VAR_SELECT": "\uFFFD0\uFFFD",
+          "INTERPOLATION": "\uFFFD1\uFFFD"
         });
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -2620,28 +2614,20 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         var $I18N_1$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male - {$startBoldText}male{$closeBoldText}} female {female {$startBoldText}female{$closeBoldText}} other {{$startTagDiv}{$startItalicText}other{$closeItalicText}{$closeTagDiv}}}", {
-              "startBoldText": "<b>",
-              "closeBoldText": "</b>",
-              "startItalicText": "<i>",
-              "closeItalicText": "</i>",
-              "startTagDiv": "<div class=\"other\">",
-              "closeTagDiv": "</div>"
-            });
+            const $MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male - {START_BOLD_TEXT}male{CLOSE_BOLD_TEXT}} female {female {START_BOLD_TEXT}female{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}{START_ITALIC_TEXT}other{CLOSE_ITALIC_TEXT}{CLOSE_TAG_DIV}}}");
             $I18N_1$ = $MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male - {$startBoldText}male{$closeBoldText}} female {female {$startBoldText}female{$closeBoldText}} other {{$startTagDiv}{$startItalicText}other{$closeItalicText}{$closeTagDiv}}}", {
-              "startBoldText": "<b>",
-              "closeBoldText": "</b>",
-              "startItalicText": "<i>",
-              "closeItalicText": "</i>",
-              "startTagDiv": "<div class=\"other\">",
-              "closeTagDiv": "</div>"
-            });
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male - {START_BOLD_TEXT}male{CLOSE_BOLD_TEXT}} female {female {START_BOLD_TEXT}female{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}{START_ITALIC_TEXT}other{CLOSE_ITALIC_TEXT}{CLOSE_TAG_DIV}}}");
         }
         $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
-          "VAR_SELECT": "\uFFFD0\uFFFD"
+          "VAR_SELECT": "\uFFFD0\uFFFD",
+          "START_BOLD_TEXT": "<b>",
+          "CLOSE_BOLD_TEXT": "</b>",
+          "START_ITALIC_TEXT": "<i>",
+          "CLOSE_ITALIC_TEXT": "</i>",
+          "START_TAG_DIV": "<div class=\"other\">",
+          "CLOSE_TAG_DIV": "</div>"
         });
         const $_c2$ = [1, "other"];
         var $I18N_0$;
@@ -2701,18 +2687,15 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
-              "interpolation": "\uFFFD1\uFFFD"
-            });
+            const $MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male of age: {INTERPOLATION}} female {female} other {other}}");
             $I18N_0$ = $MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
-              "interpolation": "\uFFFD1\uFFFD"
-            });
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male of age: {INTERPOLATION}} female {female} other {other}}");
         }
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
-          "VAR_SELECT": "\uFFFD0\uFFFD"
+          "VAR_SELECT": "\uFFFD0\uFFFD",
+          "INTERPOLATION": "\uFFFD1\uFFFD"
         });
         …
         consts: 2,
@@ -3054,36 +3037,29 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         var $I18N_1$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}", {
-              "interpolation": "\uFFFD1\uFFFD",
-              "interpolation_1": "\uFFFD2\uFFFD"
-            });
+            const $MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male {INTERPOLATION}} female {female {INTERPOLATION_1}} other {other}}");
             $I18N_1$ = $MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}", {
-              "interpolation": "\uFFFD1\uFFFD",
-              "interpolation_1": "\uFFFD2\uFFFD"
-            });
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male {INTERPOLATION}} female {female {INTERPOLATION_1}} other {other}}");
         }
         $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
-          "VAR_SELECT": "\uFFFD0\uFFFD"
+          "VAR_SELECT": "\uFFFD0\uFFFD",
+          "INTERPOLATION": "\uFFFD1\uFFFD",
+          "INTERPOLATION_1": "\uFFFD2\uFFFD"
         });
         const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
         var $I18N_3$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
-              "interpolation": "\uFFFD1:1\uFFFD"
-            });
+            const $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {INTERPOLATION}}}");
             $I18N_3$ = $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$;
         }
         else {
-            $I18N_3$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
-              "interpolation": "\uFFFD1:1\uFFFD"
-            });
+            $I18N_3$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {INTERPOLATION}}}");
         }
         $I18N_3$ = $r3$.ɵɵi18nPostprocess($I18N_3$, {
-          "VAR_SELECT": "\uFFFD0:1\uFFFD"
+          "VAR_SELECT": "\uFFFD0:1\uFFFD",
+          "INTERPOLATION": "\uFFFD1:1\uFFFD"
         });
         var $I18N_0$;
         if (ngI18nClosureMode) {
@@ -3152,22 +3128,17 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
-              "phA": "\uFFFD1\uFFFD",
-              "phB": "\uFFFD2\uFFFD",
-              "phC": "\uFFFD3\uFFFD"
-            });
+            const $MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_C}}}");
             $I18N_0$ = $MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
-              "phA": "\uFFFD1\uFFFD",
-              "phB": "\uFFFD2\uFFFD",
-              "phC": "\uFFFD3\uFFFD"
-            });
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_C}}}");
         }
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
-          "VAR_SELECT": "\uFFFD0\uFFFD"
+          "VAR_SELECT": "\uFFFD0\uFFFD",
+          "PH_A": "\uFFFD1\uFFFD",
+          "PH_B": "\uFFFD2\uFFFD",
+          "PH_C": "\uFFFD3\uFFFD"
         });
         …
         consts: 2,
