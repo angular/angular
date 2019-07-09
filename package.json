@@ -65,7 +65,7 @@
     "@angular/upgrade": "^8.0.1",
     "@bazel/bazel": "0.26.1",
     "@bazel/buildifier": "^0.25.1",
-    "@bazel/ibazel": "^0.9.0",
+    "@bazel/ibazel": "^0.10.3",
     "@bazel/jasmine": "0.31.1",
     "@bazel/karma": "0.31.1",
     "@bazel/typescript": "0.31.1",
