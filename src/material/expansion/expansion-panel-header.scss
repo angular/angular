@@ -23,7 +23,11 @@
     flex-direction: row-reverse;
 
     .mat-expansion-indicator {
-      padding: 0 16px 0 0;
+      margin: 0 16px 0 0;
+
+      [dir='rtl'] & {
+        margin: 0 0 0 16px;
+      }
     }
   }
 }
