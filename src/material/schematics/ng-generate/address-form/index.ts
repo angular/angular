@@ -35,11 +35,11 @@ export default function(options: Schema): Rule {
 function addFormModulesToModule(options: Schema) {
   return (host: Tree) => {
     const modulePath = findModuleFromOptions(host, options)!;
-    addModuleImportToModule(host, modulePath, 'MatInputModule', '@angular/material');
-    addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material');
-    addModuleImportToModule(host, modulePath, 'MatSelectModule', '@angular/material');
-    addModuleImportToModule(host, modulePath, 'MatRadioModule', '@angular/material');
-    addModuleImportToModule(host, modulePath, 'MatCardModule', '@angular/material');
+    addModuleImportToModule(host, modulePath, 'MatInputModule', '@angular/material/input');
+    addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material/button');
+    addModuleImportToModule(host, modulePath, 'MatSelectModule', '@angular/material/select');
+    addModuleImportToModule(host, modulePath, 'MatRadioModule', '@angular/material/radio');
+    addModuleImportToModule(host, modulePath, 'MatCardModule', '@angular/material/card');
     addModuleImportToModule(host, modulePath, 'ReactiveFormsModule', '@angular/forms');
     return host;
   };

@@ -43,10 +43,13 @@ describe('material-nav-schematic', () => {
     expect(moduleContent).toContain('MatListModule');
 
     expect(moduleContent).toContain(`import { LayoutModule } from '@angular/cdk/layout';`);
+    expect(moduleContent).toContain(`import { MatButtonModule } from '@angular/material/button';`);
+    expect(moduleContent).toContain(`import { MatIconModule } from '@angular/material/icon';`);
+    expect(moduleContent).toContain(`import { MatListModule } from '@angular/material/list';`);
     expect(moduleContent)
-        .toContain(
-            `import { MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, ` +
-            `MatListModule } from '@angular/material';`);
+      .toContain(`import { MatToolbarModule } from '@angular/material/toolbar';`);
+    expect(moduleContent)
+      .toContain(`import { MatSidenavModule } from '@angular/material/sidenav';`);
   });
 
   it('should throw if no name has been specified', async () => {

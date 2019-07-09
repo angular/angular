@@ -50,8 +50,10 @@ describe('material-table-schematic', () => {
     expect(moduleContent).toContain('MatPaginatorModule');
     expect(moduleContent).toContain('MatSortModule');
 
-    expect(moduleContent).toContain(
-        `import { MatTableModule, MatPaginatorModule, MatSortModule } from '@angular/material';`);
+    expect(moduleContent).toContain(`import { MatTableModule } from '@angular/material/table';`);
+    expect(moduleContent).toContain(`import { MatSortModule } from '@angular/material/sort';`);
+    expect(moduleContent)
+      .toContain(`import { MatPaginatorModule } from '@angular/material/paginator';`);
   });
 
   it('should throw if no name has been specified', async () => {

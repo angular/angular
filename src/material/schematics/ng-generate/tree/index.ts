@@ -35,9 +35,9 @@ export default function(options: Schema): Rule {
 function addTreeModulesToModule(options: Schema) {
   return (host: Tree) => {
     const modulePath = findModuleFromOptions(host, options)!;
-    addModuleImportToModule(host, modulePath, 'MatTreeModule', '@angular/material');
-    addModuleImportToModule(host, modulePath, 'MatIconModule', '@angular/material');
-    addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material');
+    addModuleImportToModule(host, modulePath, 'MatTreeModule', '@angular/material/tree');
+    addModuleImportToModule(host, modulePath, 'MatIconModule', '@angular/material/icon');
+    addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material/button');
     return host;
   };
 }

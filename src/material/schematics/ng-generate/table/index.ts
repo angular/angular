@@ -35,9 +35,9 @@ export default function(options: Schema): Rule {
 function addTableModulesToModule(options: Schema) {
   return (host: Tree) => {
     const modulePath = findModuleFromOptions(host, options)!;
-    addModuleImportToModule(host, modulePath, 'MatTableModule', '@angular/material');
-    addModuleImportToModule(host, modulePath, 'MatPaginatorModule', '@angular/material');
-    addModuleImportToModule(host, modulePath, 'MatSortModule', '@angular/material');
+    addModuleImportToModule(host, modulePath, 'MatTableModule', '@angular/material/table');
+    addModuleImportToModule(host, modulePath, 'MatPaginatorModule', '@angular/material/paginator');
+    addModuleImportToModule(host, modulePath, 'MatSortModule', '@angular/material/sort');
     return host;
   };
 }
