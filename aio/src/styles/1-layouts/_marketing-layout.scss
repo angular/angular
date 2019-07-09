@@ -246,12 +246,7 @@ section#intro {
 }
 
 .button.hero-cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 184px;
-  height: 40px;
-  padding: 0 24px;
+  padding: 2px 34px 0;
   @include font-size(18);
   font-weight: 600;
   @include line-height(40);
