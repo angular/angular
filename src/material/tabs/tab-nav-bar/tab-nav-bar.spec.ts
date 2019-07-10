@@ -131,15 +131,15 @@ describe('MatTabNavBar', () => {
         .toBe(true, 'Expected element to no longer be keyboard focusable if disabled.');
     });
 
-    it('should make disabled links unclickable', () => {
+    it('should mark disabled links', () => {
       const tabLinkElement = fixture.debugElement.query(By.css('a')).nativeElement;
 
-      expect(getComputedStyle(tabLinkElement).pointerEvents).not.toBe('none');
+      expect(tabLinkElement.classList).not.toContain('mat-tab-disabled');
 
       fixture.componentInstance.disabled = true;
       fixture.detectChanges();
 
-      expect(getComputedStyle(tabLinkElement).pointerEvents).toBe('none');
+      expect(tabLinkElement.classList).toContain('mat-tab-disabled');
     });
 
     it('should re-align the ink bar when the direction changes', () => {

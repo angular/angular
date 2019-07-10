@@ -178,13 +178,13 @@ describe('MatDatepicker', () => {
 
         const popup = document.querySelector('.cdk-overlay-pane')!;
         expect(popup).not.toBeNull();
-        expect(parseInt(getComputedStyle(popup).height as string)).not.toBe(0);
+        expect(popup.getBoundingClientRect().height).toBeGreaterThan(0);
 
         testComponent.datepicker.close();
         fixture.detectChanges();
         flush();
 
-        expect(parseInt(getComputedStyle(popup).height as string)).toBe(0);
+        expect(popup.getBoundingClientRect().height).toBe(0);
       }));
 
       it('should close the popup when pressing ESCAPE', fakeAsync(() => {
