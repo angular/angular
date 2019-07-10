@@ -1208,7 +1208,7 @@ function findDirectiveMatches(tView: TView, viewData: LView, tNode: TNode): Dire
             getOrCreateNodeInjectorForNode(
                 getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode,
                 viewData),
-            viewData, def.type);
+            tView, def.type);
 
         if (isComponentDef(def)) {
           if (tNode.flags & TNodeFlags.isComponent) throwMultipleComponentError(tNode);
