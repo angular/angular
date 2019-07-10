@@ -59,7 +59,7 @@ export function ɵɵelementContainerStart(
   }
 
   appendChild(native, tNode, lView);
-  createDirectivesAndLocals(tView, lView, localRefs);
+  createDirectivesAndLocals(tView, lView, tNode, localRefs);
   attachPatchData(native, lView);
 
   const currentQueries = lView[QUERIES];

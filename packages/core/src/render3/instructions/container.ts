@@ -75,7 +75,7 @@ export function ɵɵtemplate(
         -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null, null);
   }
 
-  createDirectivesAndLocals(tView, lView, localRefs, localRefExtractor);
+  createDirectivesAndLocals(tView, lView, tContainerNode, localRefs, localRefExtractor);
   addTContainerToQueries(lView, tContainerNode);
   attachPatchData(getNativeByTNode(tContainerNode, lView), lView);
   registerPostOrderHooks(tView, tContainerNode);
