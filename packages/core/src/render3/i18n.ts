@@ -403,7 +403,7 @@ function i18nStartFirstPass(
   const icuExpressions: TIcu[] = [];
 
   const templateTranslation = getTranslationForTemplate(message, subTemplateIndex);
-  const msgParts = templateTranslation.split(PH_REGEXP);
+  const msgParts = replaceNgsp(templateTranslation).split(PH_REGEXP);
   for (let i = 0; i < msgParts.length; i++) {
     let value = msgParts[i];
     if (i & 1) {
@@ -1294,6 +1294,18 @@ function parseNodes(
           nestedIcuNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove);
     }
   }
+}
+
+/**
+ * Angular Dart introduced &ngsp; as a placeholder for non-removable space, see:
+ * https://github.com/dart-lang/angular/blob/0bb611387d29d65b5af7f9d2515ab571fd3fbee4/_tests/test/compiler/preserve_whitespace_test.dart#L25-L32
+ * In Angular Dart &ngsp; is converted to the 0xE500 PUA (Private Use Areas) unicode character
+ * and later on replaced by a space. We are re-implementing the same idea here, since translations
+ * might contain this special character.
+ */
+const NGSP_UNICODE_REGEXP = /\uE500/g;
+function replaceNgsp(value: string): string {
+  return value.replace(NGSP_UNICODE_REGEXP, ' ');
 }
 
 let TRANSLATIONS: {[key: string]: string} = {};
