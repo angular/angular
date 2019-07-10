@@ -324,6 +324,31 @@ describe('i18n support in the view compiler', () => {
       verify(input, output);
     });
 
+    it('should not create translations for bound attributes', () => {
+      const input = `
+        <div
+          [title]="title" i18n-title
+          [attr.label]="label" i18n-attr.label>
+        </div>
+      `;
+
+      const output = `
+        const $_c0$ = [${AttributeMarker.Bindings}, "title", "label"];
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵelement(0, "div", $_c0$);
+          }
+          if (rf & 2) {
+            $r3$.ɵɵproperty("title", ctx.title);
+            $r3$.ɵɵattribute("label", ctx.label);
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
+
     it('should translate static attributes', () => {
       const input = `
         <div id="static" i18n-title="m|d" title="introduction"></div>
