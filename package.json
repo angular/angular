@@ -38,13 +38,13 @@
   "requiredAngularVersion": "^8.0.0 || ^9.0.0-0",
   "requiredMDCVersion": "^2.3.1",
   "dependencies": {
-    "@angular/animations": "^8.0.1",
-    "@angular/common": "^8.0.1",
-    "@angular/compiler": "^8.0.1",
-    "@angular/core": "^8.0.1",
-    "@angular/elements": "^8.0.1",
-    "@angular/forms": "^8.0.1",
-    "@angular/platform-browser": "^8.0.1",
+    "@angular/animations": "^8.1.0",
+    "@angular/common": "^8.1.0",
+    "@angular/compiler": "^8.1.0",
+    "@angular/core": "^8.1.0",
+    "@angular/elements": "^8.1.0",
+    "@angular/forms": "^8.1.0",
+    "@angular/platform-browser": "^8.1.0",
     "@webcomponents/custom-elements": "^1.1.0",
     "core-js": "^2.6.1",
     "material-components-web": "^2.3.1",
@@ -57,12 +57,12 @@
   "devDependencies": {
     "@angular-devkit/core": "^8.0.3",
     "@angular-devkit/schematics": "^8.0.3",
-    "@angular/bazel": "^8.0.1",
-    "@angular/compiler-cli": "^8.0.1",
-    "@angular/platform-browser-dynamic": "^8.0.1",
-    "@angular/platform-server": "^8.0.1",
-    "@angular/router": "^8.0.1",
-    "@angular/upgrade": "^8.0.1",
+    "@angular/bazel": "^8.1.0",
+    "@angular/compiler-cli": "^8.1.0",
+    "@angular/platform-browser-dynamic": "^8.1.0",
+    "@angular/platform-server": "^8.1.0",
+    "@angular/router": "^8.1.0",
+    "@angular/upgrade": "^8.1.0",
     "@bazel/bazel": "^0.27.0",
     "@bazel/hide-bazel-files": "0.32.2",
     "@bazel/buildifier": "^0.25.1",
@@ -150,5 +150,8 @@
     "tsutils": "^3.0.0",
     "typescript": "~3.4",
     "uglify-js": "^2.8.14"
+  },
+  "resolutions": {
+    "dgeni-packages/typescript": "~3.4"
   }
 }

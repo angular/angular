@@ -23,5 +23,6 @@ ts_library(
         "@npm//dgeni",
         "@npm//dgeni-packages",
         "@npm//highlight.js",
+        "@npm//typescript",
     ],
 )

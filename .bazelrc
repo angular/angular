@@ -63,7 +63,7 @@ build:remote --project_id=internal-200822
 
 # Setup the build strategy for various types of actions. Mixing "local" and "remote"
 # can cause unexpected results and we want to run everything remotely if possible.
-build:remote --spawn_strategy=remote
+build:remote --spawn_strategy=remote,local
 build:remote --strategy=Javac=remote
 build:remote --strategy=Closure=remote
 build:remote --strategy=Genrule=remote
@@ -102,32 +102,7 @@ build:remote --remote_accept_cached=true
 # in this config, as the user configuration should be able to overwrite flags from this file.
 try-import .bazelrc.user
 
-
-
- # This option is changed to true in Bazel 0.27 and exposes a possible
-# regression in Bazel 0.27.0.
-# Error observed is in npm_package target `//packages/common/locales:package`:
-# ```
-# ERROR: /home/circleci/ng/packages/common/locales/BUILD.bazel:13:1: Assembling
-# npm package packages/common/locales/package failed: No usable spawn strategy found
-# for spawn with mnemonic SkylarkAction.  Your --spawn_strategyor --strategy flags
-# are probably too strict. Visit https://github.com/bazelbuild/bazel/issues/7480 for
-# migration advises
-# ```
-# Suspect is https://github.com/bazelbuild/rules_nodejs/blob/master/internal/npm_package/npm_package.bzl#L75-L82:
-# ```
-# execution_requirements = {
-#     # Never schedule this action remotely because it's not computationally expensive.
-#     # It just copies files into a directory; it's not worth copying inputs and outputs to a remote worker.
-#     # Also don't run it in a sandbox, because it resolves an absolute path to the bazel-out directory
-#     # allowing the .pack and .publish runnables to work with no symlink_prefix
-#     # See https://github.com/bazelbuild/rules_nodejs/issues/187
-#     "local": "1",
-# },
-# ```
-build --incompatible_list_based_execution_strategy_selection=false
-test --incompatible_list_based_execution_strategy_selection=false
-run --incompatible_list_based_execution_strategy_selection=false 
+# TODO: check if we can enable these deprecations.
 build --incompatible_new_actions_api=false
 build --incompatible_depset_is_not_iterable=false
 build --incompatible_no_support_tools_in_action_inputs=false

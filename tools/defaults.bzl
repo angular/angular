@@ -9,7 +9,6 @@ load("//:packages.bzl", "ANGULAR_LIBRARY_UMDS", "VERSION_PLACEHOLDER_REPLACEMENT
 
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//src:bazel-tsconfig-test.json"
-_DEFAULT_TS_TYPINGS = "@npm//typescript:typescript__typings"
 
 # Whether Angular type checking should be enabled or not. Enabled by
 # default but will be overwritten when running snapshots tests with Ivy
@@ -36,7 +35,6 @@ def ts_library(tsconfig = None, deps = [], testonly = False, **kwargs):
         tsconfig = tsconfig,
         testonly = testonly,
         deps = local_deps,
-        node_modules = _DEFAULT_TS_TYPINGS,
         **kwargs
     )
 
@@ -64,7 +62,6 @@ def ng_module(deps = [], tsconfig = None, testonly = False, **kwargs):
         deps = local_deps,
         tsconfig = tsconfig,
         testonly = testonly,
-        node_modules = _DEFAULT_TS_TYPINGS,
         **kwargs
     )
 
@@ -127,8 +124,6 @@ def ts_web_test_suite(deps = [], srcs = [], **kwargs):
 # Bazel detects flaky tests and re-runs these a second time in case of a flake.
 def protractor_web_test_suite(flaky = True, **kwargs):
     _protractor_web_test_suite(
-        # TODO(josephperrott): Determine why we have to manually set this value.
-        protractor = "@npm//:node_modules/protractor/bin/protractor",
         flaky = flaky,
         **kwargs
     )

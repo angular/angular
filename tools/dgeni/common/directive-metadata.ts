@@ -7,7 +7,7 @@ import {
   PropertyAssignment,
   StringLiteral,
   SyntaxKind,
-} from 'dgeni-packages/node_modules/typescript';
+} from 'typescript';
 import {CategorizedClassDoc} from './dgeni-definitions';
 
 /**
