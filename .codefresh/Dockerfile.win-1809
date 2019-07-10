@@ -82,6 +82,9 @@ FROM baseimage
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
+# Install Bazel prereqs on Windows (https://docs.bazel.build/versions/master/install-windows.html)
+
+# Install MSYS2
 RUN Invoke-WebRequest -UseBasicParsing 'https://www.7-zip.org/a/7z1805-x64.exe' -OutFile 7z.exe; `
     Start-Process -FilePath 'C:\\7z.exe' -ArgumentList '/S', '/D=C:\\7zip0' -NoNewWindow -Wait; `
     Invoke-WebRequest -UseBasicParsing 'http://repo.msys2.org/distrib/x86_64/msys2-base-x86_64-20180531.tar.xz' -OutFile msys2.tar.xz; `
@@ -94,7 +97,10 @@ RUN Invoke-WebRequest -UseBasicParsing 'https://www.7-zip.org/a/7z1805-x64.exe' 
     [Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\msys64\usr\bin', [System.EnvironmentVariableTarget]::Machine); `
     [Environment]::SetEnvironmentVariable('BAZEL_SH', 'C:\msys64\usr\bin\bash.exe', [System.EnvironmentVariableTarget]::Machine)
 
-# Install VS Build Tools
+# Install MSYS2 packages
+RUN C:\msys64\usr\bin\bash.exe -l -c \"pacman --needed --noconfirm -S zip unzip patch diffutils git\"
+
+# Install VS Build Tools (required to build C++ targets)
 RUN Invoke-WebRequest -UseBasicParsing https://download.visualstudio.microsoft.com/download/pr/df649173-11e9-4af2-8eb7-0eb02ba8958a/cadb5bdac41e55bb8f6a6b7c45273370/vs_buildtools.exe -OutFile vs_BuildTools.exe; `
     # Installer won't detect DOTNET_SKIP_FIRST_TIME_EXPERIENCE if ENV is used, must use setx /M
     setx /M DOTNET_SKIP_FIRST_TIME_EXPERIENCE 1; `
@@ -112,7 +118,7 @@ RUN Invoke-WebRequest -UseBasicParsing https://download.visualstudio.microsoft.c
     Remove-Item -Force -Recurse \"${Env:ProgramData}\Package Cache\"; `
     [Environment]::SetEnvironmentVariable('BAZEL_VC', \"${Env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\BuildTools\VC\", [System.EnvironmentVariableTarget]::Machine)
 
-# Install Python
+# Install Python (required to build Python targets)
 RUN Invoke-WebRequest -UseBasicParsing https://www.python.org/ftp/python/3.5.1/python-3.5.1.exe -OutFile python-3.5.1.exe; `
     Start-Process python-3.5.1.exe -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait; `
     Remove-Item -Force python-3.5.1.exe
