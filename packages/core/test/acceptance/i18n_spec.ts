@@ -48,6 +48,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     expect(fixture.nativeElement.innerHTML).toBe('<div>Bonjour Angular</div>');
   });
 
+  it('should support &ngsp; in translatable sections', () => {
+    // note: the `` unicode symbol represents the `&ngsp;` in translations
+    ɵi18nConfigureLocalize({translations: {'text ||': 'texte ||'}});
+    const fixture = initWithTemplate(AppCompWithWhitespaces, `<div i18n>text |&ngsp;|</div>`);
+
+    expect(fixture.nativeElement.innerHTML).toEqual(`<div>texte | |</div>`);
+  });
+
   it('should support interpolations with complex expressions', () => {
     ɵi18nConfigureLocalize({
       translations:
@@ -1501,6 +1509,14 @@ class AppComp {
   name = `Angular`;
   visible = true;
   count = 0;
+}
+
+@Component({
+  selector: 'app-comp-with-whitespaces',
+  template: ``,
+  preserveWhitespaces: true,
+})
+class AppCompWithWhitespaces {
 }
 
 @Directive({
