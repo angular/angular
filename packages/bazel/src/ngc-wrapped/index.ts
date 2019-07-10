@@ -145,7 +145,7 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
 }
 
 export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, bazelOpts, files,
-                         inputs, expectedOuts, gatherDiagnostics, oldBazelHost}: {
+                         inputs, expectedOuts, gatherDiagnostics, bazelHost}: {
   allDepsCompiledWithBazel?: boolean,
   compilerOpts: ng.CompilerOptions,
   tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
@@ -153,7 +153,7 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   files: string[],
   expectedOuts: string[],
   gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics,
-  oldBazelHost?: CompilerHost,
+  bazelHost?: CompilerHost,
 }): {diagnostics: ng.Diagnostics, program: ng.Program} {
   let fileLoader: FileLoader;
 
@@ -246,12 +246,9 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
         moduleName, containingFile, compilerOptions, generatedFileModuleResolverHost);
   }
 
-  const bazelHost = new CompilerHost(
-      files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
-  if (oldBazelHost) {
-    // TODO(ayazhafiz): this kind of patching is hacky. Revisit this after the
-    // indexer consumer of this code is known to be working.
-    Object.assign(bazelHost, oldBazelHost);
+  if (!bazelHost) {
+    bazelHost = new CompilerHost(
+        files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
   }
 
   // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
