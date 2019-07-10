@@ -185,7 +185,7 @@ export function createRootComponentView(
       rootView[HEADER_OFFSET], tNode, rendererFactory, renderer, sanitizer);
 
   if (tView.firstTemplatePass) {
-    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), rootView, def.type);
+    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), tView, def.type);
     tNode.flags = TNodeFlags.isComponent;
     initNodeFlags(tNode, rootView.length, 1);
     queueComponentIndexForCheck(tNode);

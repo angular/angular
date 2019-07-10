@@ -72,6 +72,7 @@ function resolveProvider(
     }
   } else {
     const lView = getLView();
+    const tView = lView[TVIEW];
     let token: any = isTypeProvider(provider) ? provider : resolveForwardRef(provider.provide);
     let providerFactory: () => any = providerToFactory(provider);
 
@@ -86,7 +87,6 @@ function resolveProvider(
       const ngOnDestroy = prototype.ngOnDestroy;
 
       if (ngOnDestroy) {
-        const tView = lView[TVIEW];
         (tView.destroyHooks || (tView.destroyHooks = [])).push(tInjectables.length, ngOnDestroy);
       }
     }
@@ -101,7 +101,7 @@ function resolveProvider(
         diPublicInInjector(
             getOrCreateNodeInjectorForNode(
                 tNode as TElementNode | TContainerNode | TElementContainerNode, lView),
-            lView, token);
+            tView, token);
         tInjectables.push(token);
         tNode.directiveStart++;
         tNode.directiveEnd++;
@@ -151,7 +151,7 @@ function resolveProvider(
         diPublicInInjector(
             getOrCreateNodeInjectorForNode(
                 tNode as TElementNode | TContainerNode | TElementContainerNode, lView),
-            lView, token);
+            tView, token);
         const factory = multiFactory(
             isViewProvider ? multiViewProvidersFactoryResolver : multiProvidersFactoryResolver,
             lInjectablesBlueprint.length, isViewProvider, isComponent, providerFactory);

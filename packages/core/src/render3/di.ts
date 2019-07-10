@@ -230,8 +230,8 @@ export function getParentInjectorLocation(tNode: TNode, view: LView): RelativeIn
  * @param token The type or the injection token to be made public
  */
 export function diPublicInInjector(
-    injectorIndex: number, view: LView, token: InjectionToken<any>| Type<any>): void {
-  bloomAdd(injectorIndex, view[TVIEW], token);
+    injectorIndex: number, tView: TView, token: InjectionToken<any>| Type<any>): void {
+  bloomAdd(injectorIndex, tView, token);
 }
 
 /**
