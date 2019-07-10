@@ -204,12 +204,14 @@
   (jasmine as any).QueueRunner = (function(_super) {
     __extends(ZoneQueueRunner, _super);
     function ZoneQueueRunner(attrs: QueueRunnerAttrs) {
-      attrs.onComplete = (fn => () => {
-        // All functions are done, clear the test zone.
-        this.testProxyZone = null;
-        this.testProxyZoneSpec = null;
-        ambientZone.scheduleMicroTask('jasmine.onComplete', fn);
-      })(attrs.onComplete);
+      if (attrs.onComplete) {
+        attrs.onComplete = (fn => () => {
+          // All functions are done, clear the test zone.
+          this.testProxyZone = null;
+          this.testProxyZoneSpec = null;
+          ambientZone.scheduleMicroTask('jasmine.onComplete', fn);
+        })(attrs.onComplete);
+      }
 
       const nativeSetTimeout = _global[Zone.__symbol__('setTimeout')];
       const nativeClearTimeout = _global[Zone.__symbol__('clearTimeout')];
