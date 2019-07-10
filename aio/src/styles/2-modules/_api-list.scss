@@ -51,7 +51,7 @@ aio-api-list {
     }
   }
 
-  .form-select-menu:first-child {
+  aio-select:first-child .form-select-menu {
     margin-left: 0;
   }
 }
@@ -91,22 +91,7 @@ aio-api-list {
     padding: 4px 16px 4px 32px;
     transition: all .2s;
 
-    // PLACEHOLDER TEXT
-    // NOTE: Vendor-prefixed selectors must be on separate blocks, because one invalid/unknown
-    //       selector will invalidate the whole block.
-    &::placeholder {  // Chrome/Firefox/Safari
-      @include font-size(14);
-      color: $mediumgray;
-    }
-    &::-webkit-input-placeholder {  // QQ Browser
-      @include font-size(14);
-      color: $mediumgray;
-    }
-    &::-ms-input-placeholder {  // Edge
-      @include font-size(14);
-      color: $mediumgray;
-    }
-    &:-ms-input-placeholder {  // IE
+    @include placeholder {
       @include font-size(14);
       color: $mediumgray;
     }
