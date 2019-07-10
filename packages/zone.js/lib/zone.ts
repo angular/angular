@@ -1217,6 +1217,9 @@ const Zone: ZoneType = (function(global: any) {
       this.data = options;
       this.scheduleFn = scheduleFn;
       this.cancelFn = cancelFn;
+      if (!callback) {
+        throw new Error('callback is not defined');
+      }
       this.callback = callback;
       const self = this;
       // TODO: @JiaLiPassion options should have interface
