@@ -1,3 +1,19 @@
+<a name="8.2.0-next.1"></a>
+# [8.2.0-next.1](https://github.com/angular/angular/compare/8.2.0-next.0...8.2.0-next.1) (2019-07-10)
+
+
+### Bug Fixes
+
+* **bazel:** revert location of xi18n outputs to bazel-genfiles ([#31410](https://github.com/angular/angular/issues/31410)) ([1d3e227](https://github.com/angular/angular/commit/1d3e227))
+* **compiler:** give ASTWithSource its own visit method ([#31347](https://github.com/angular/angular/issues/31347)) ([6aaca21](https://github.com/angular/angular/commit/6aaca21))
+
+
+### Features
+
+* **core:** add automatic migration from Renderer to Renderer2 ([#30936](https://github.com/angular/angular/issues/30936)) ([c095597](https://github.com/angular/angular/commit/c095597))
+
+
+
 <a name="8.1.1"></a>
 ## [8.1.1](https://github.com/angular/angular/compare/8.1.0...8.1.1) (2019-07-10)
 
