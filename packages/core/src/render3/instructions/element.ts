@@ -85,7 +85,7 @@ export function ɵɵelementStart(
   }
 
   appendChild(native, tNode, lView);
-  createDirectivesAndLocals(tView, lView, localRefs);
+  createDirectivesAndLocals(tView, lView, tNode, localRefs);
 
   // any immediate children of a component or template container must be pre-emptively
   // monkey-patched with the component view data so that the element can be inspected

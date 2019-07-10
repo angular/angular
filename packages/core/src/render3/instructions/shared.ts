@@ -526,19 +526,18 @@ export function executeContentQueries(tView: TView, tNode: TNode, lView: LView) 
  * @param localRefExtractor mapping function that extracts local ref value from TNode
  */
 export function createDirectivesAndLocals(
-    tView: TView, lView: LView, localRefs: string[] | null | undefined,
+    tView: TView, lView: LView, tNode: TElementNode | TContainerNode | TElementContainerNode,
+    localRefs: string[] | null | undefined,
     localRefExtractor: LocalRefExtractor = getNativeByTNode) {
   if (!getBindingsEnabled()) return;
-  const previousOrParentTNode = getPreviousOrParentTNode();
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
     resolveDirectives(
-        tView, lView, findDirectiveMatches(tView, lView, previousOrParentTNode),
-        previousOrParentTNode, localRefs || null);
+        tView, lView, findDirectiveMatches(tView, lView, tNode), tNode, localRefs || null);
   }
-  instantiateAllDirectives(tView, lView, previousOrParentTNode);
-  invokeDirectivesHostBindings(tView, lView, previousOrParentTNode);
-  saveResolvedLocalsInData(lView, previousOrParentTNode, localRefExtractor);
+  instantiateAllDirectives(tView, lView, tNode);
+  invokeDirectivesHostBindings(tView, lView, tNode);
+  saveResolvedLocalsInData(lView, tNode, localRefExtractor);
   setActiveHostElement(null);
 }
 
@@ -1192,8 +1191,9 @@ function postProcessBaseDirective<T>(
 * Matches the current node against all available selectors.
 * If a component is matched (at most one), it is returned in first position in the array.
 */
-function findDirectiveMatches(tView: TView, viewData: LView, tNode: TNode): DirectiveDef<any>[]|
-    null {
+function findDirectiveMatches(
+    tView: TView, viewData: LView,
+    tNode: TElementNode | TContainerNode | TElementContainerNode): DirectiveDef<any>[]|null {
   ngDevMode && assertEqual(tView.firstTemplatePass, true, 'should run on first template pass only');
   const registry = tView.directiveRegistry;
   let matches: any[]|null = null;
@@ -1202,11 +1202,7 @@ function findDirectiveMatches(tView: TView, viewData: LView, tNode: TNode): Dire
       const def = registry[i] as ComponentDef<any>| DirectiveDef<any>;
       if (isNodeMatchingSelectorList(tNode, def.selectors !, /* isProjectionMode */ false)) {
         matches || (matches = ngDevMode ? new MatchesArray !() : []);
-        diPublicInInjector(
-            getOrCreateNodeInjectorForNode(
-                getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode,
-                viewData),
-            tView, def.type);
+        diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, viewData), tView, def.type);
 
         if (isComponentDef(def)) {
           if (tNode.flags & TNodeFlags.isComponent) throwMultipleComponentError(tNode);
