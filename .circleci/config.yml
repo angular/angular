@@ -116,6 +116,13 @@ var_16: &setup_bazel_remote_execution
     name: "Setup bazel RBE remote execution"
     command: ./scripts/circleci/bazel/setup-remote-execution.sh
 
+# Sets up the bazel binary globally. We don't want to access bazel through Yarn and NodeJS
+# because it could mean that the Bazel child process only has access to limited memory.
+var_17: &setup_bazel_binary
+  run:
+    name: "Setting up global Bazel binary"
+    command: ./scripts/circleci/setup_bazel_binary.sh
+
 # -----------------------------
 # Container version of CircleCI
 # -----------------------------
@@ -138,12 +145,13 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
+      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
       - *yarn_install
 
-      - run: yarn bazel build src/... --build_tag_filters=-docs-package
+      - run: bazel build src/... --build_tag_filters=-docs-package
 
   # --------------------------------------------------------------------------------------------
   # Job that runs ts-api-guardian against our API goldens in "tools/public_api_guard".
@@ -157,12 +165,13 @@ jobs:
     steps:
     - *checkout_code
     - *restore_cache
+    - *setup_bazel_binary
     - *setup_bazel_ci_config
     - *setup_bazel_remote_execution
     - *yarn_download
     - *yarn_install
 
-    - run: yarn bazel test tools/public_api_guard/...
+    - run: bazel test tools/public_api_guard/...
 
   # -----------------------------------------------------------------
   # Job that runs the e2e tests with Protractor and Chromium headless
@@ -175,12 +184,13 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
+      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
       - *yarn_install
 
-      - run: yarn bazel test src/... --test_tag_filters=e2e
+      - run: bazel test src/... --test_tag_filters=e2e
 
   # ------------------------------------------------------------------------------------------
   # Job that runs the unit tests on locally installed browsers (Chrome and Firefox headless).
@@ -194,12 +204,13 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
+      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
       - *yarn_install
 
-      - run: yarn bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e
+      - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e
 
   # ----------------------------------------------------------------------------
   # Job that runs the unit tests on Browserstack. The browsers that will be used
@@ -343,6 +354,7 @@ jobs:
       - *checkout_code
       - *restore_cache
       - *attach_release_output
+      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
@@ -355,7 +367,7 @@ jobs:
 
       # TODO(devversion): Ideally the "build_release_packages" job should build all packages with
       # Bazel, but for now we mix up the Gulp and bazel setup, so we need to build the package here.
-      - run: yarn bazel build src/material-examples:npm_package --config=release
+      - run: bazel build src/material-examples:npm_package --config=release
 
       - run: ./scripts/circleci/publish-snapshots.sh
 
@@ -392,6 +404,7 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
+      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
@@ -409,8 +422,8 @@ jobs:
       # Issue is tracked with FW-1004.
       - run: sed -i "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" tools/defaults.bzl
       # Run project tests with ngtsc and the Ivy Angular packages.
-      - run: yarn bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
-      - run: yarn bazel test src/... --build_tag_filters=-docs-package --define=compile=aot --test_tag_filters=-e2e
+      - run: bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
+      - run: bazel test src/... --build_tag_filters=-docs-package --define=compile=aot --test_tag_filters=-e2e
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against Ivy from angular/angular#master.
@@ -423,6 +436,7 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
+      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
@@ -435,8 +449,8 @@ jobs:
       # Issue is tracked with FW-1004.
       - run: sed -i "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" tools/defaults.bzl
       # Run project tests with ngtsc and the Ivy Angular packages.
-      - run: yarn bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
-      - run: yarn bazel test src/... --build_tag_filters=-docs-package --define=compile=aot --test_tag_filters=-e2e
+      - run: bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
+      - run: bazel test src/... --build_tag_filters=-docs-package --define=compile=aot --test_tag_filters=-e2e
 
 # ----------------------------------------------------------------------------------------
 # Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
