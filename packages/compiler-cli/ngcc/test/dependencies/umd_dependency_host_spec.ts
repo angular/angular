@@ -115,6 +115,16 @@ runInEachFileSystem(() => {
         expect(missing.size).toBe(0);
         expect(deepImports.size).toBe(0);
       });
+
+      it('should handle entry-point paths with no extension', () => {
+        const {dependencies, missing, deepImports} =
+            host.findDependencies(_('/external/imports/index'));
+        expect(dependencies.size).toBe(2);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
+        expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
+        expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+      });
     });
 
     function setupMockFileSystem(): void {
