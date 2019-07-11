@@ -5,11 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, isRoot, join, resolve} from '../../../src/ngtsc/file_system';
-import {PathMappings, isRelativePath} from '../utils';
-
-
+import {PathMappings, isRelativePath, resolveFileWithPostfixes} from '../utils';
 
 /**
  * This is a very cut-down implementation of the TypeScript module resolution strategy.
@@ -72,8 +69,8 @@ export class ModuleResolver {
    * If neither of these files exist then the method returns `null`.
    */
   private resolveAsRelativePath(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
-    const resolvedPath =
-        this.resolvePath(resolve(dirname(fromPath), moduleName), this.relativeExtensions);
+    const resolvedPath = resolveFileWithPostfixes(
+        this.fs, resolve(dirname(fromPath), moduleName), this.relativeExtensions);
     return resolvedPath && new ResolvedRelativeModule(resolvedPath);
   }
 
@@ -133,20 +130,6 @@ export class ModuleResolver {
     return null;
   }
 
-  /**
-   * Attempt to resolve a `path` to a file by appending the provided `postFixes`
-   * to the `path` and checking if the file exists on disk.
-   * @returns An absolute path to the first matching existing file, or `null` if none exist.
-   */
-  private resolvePath(path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
-    for (const postFix of postFixes) {
-      const testPath = absoluteFrom(path + postFix);
-      if (this.fs.exists(testPath)) {
-        return testPath;
-      }
-    }
-    return null;
-  }
 
   /**
    * Can we consider the given path as an entry-point to a package?
