@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../src/ngtsc/file_system';
 
 export function getOriginalSymbol(checker: ts.TypeChecker): (symbol: ts.Symbol) => ts.Symbol {
   return function(symbol: ts.Symbol) {
@@ -65,20 +64,4 @@ export type PathMappings = {
  */
 export function isRelativePath(path: string): boolean {
   return /^\/|^\.\.?($|\/)/.test(path);
-}
-
-/**
- * Attempt to resolve a `path` to a file by appending the provided `postFixes`
- * to the `path` and checking if the file exists on disk.
- * @returns An absolute path to the first matching existing file, or `null` if none exist.
- */
-export function resolveFileWithPostfixes(
-    fs: FileSystem, path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
-  for (const postFix of postFixes) {
-    const testPath = absoluteFrom(path + postFix);
-    if (fs.exists(testPath) && fs.stat(testPath).isFile()) {
-      return testPath;
-    }
-  }
-  return null;
 }
