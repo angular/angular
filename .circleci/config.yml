@@ -190,7 +190,7 @@ jobs:
       - *yarn_download
       - *yarn_install
 
-      - run: bazel test src/... --test_tag_filters=e2e
+      - run: bazel test src/... --build_tag_filters=e2e --test_tag_filters=e2e
 
   # ------------------------------------------------------------------------------------------
   # Job that runs the unit tests on locally installed browsers (Chrome and Firefox headless).
@@ -422,8 +422,8 @@ jobs:
       # Issue is tracked with FW-1004.
       - run: sed -i "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" tools/defaults.bzl
       # Run project tests with ngtsc and the Ivy Angular packages.
-      - run: bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
-      - run: bazel test src/... --build_tag_filters=-docs-package --define=compile=aot --test_tag_filters=-e2e
+      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=aot
+      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=aot
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against Ivy from angular/angular#master.
@@ -449,8 +449,8 @@ jobs:
       # Issue is tracked with FW-1004.
       - run: sed -i "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" tools/defaults.bzl
       # Run project tests with ngtsc and the Ivy Angular packages.
-      - run: bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
-      - run: bazel test src/... --build_tag_filters=-docs-package --define=compile=aot --test_tag_filters=-e2e
+      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=aot
+      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=aot
 
 # ----------------------------------------------------------------------------------------
 # Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
