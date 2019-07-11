@@ -10,7 +10,7 @@ import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem} from '../../../
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat, getEntryPointInfo} from '../../src/packages/entry_point';
+import {SUPPORTED_FORMAT_PROPERTIES, getEntryPointInfo} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
@@ -340,92 +340,6 @@ runInEachFileSystem(() => {
     });
   });
 
-  describe('getEntryPointFormat', () => {
-    let SOME_PACKAGE: AbsoluteFsPath;
-    let _: typeof absoluteFrom;
-    let fs: FileSystem;
-    let entryPoint: EntryPoint;
-
-    beforeEach(() => {
-      _ = absoluteFrom;
-      SOME_PACKAGE = _('/project/node_modules/some_package');
-      fs = getFileSystem();
-      loadTestFiles([{
-        name: _('/project/node_modules/some_package/valid_entry_point/package.json'),
-        contents: createPackageJson('valid_entry_point')
-      }]);
-      const config = new NgccConfiguration(fs, _('/project'));
-      entryPoint = getEntryPointInfo(
-          fs, config, new MockLogger(), SOME_PACKAGE,
-          _('/project/node_modules/some_package/valid_entry_point')) !;
-    });
-
-    it('should return `esm2015` format for `fesm2015` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'fesm2015')).toBe('esm2015'); });
-
-    it('should return `esm5` format for `fesm5` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'fesm5')).toBe('esm5'); });
-
-    it('should return `esm2015` format for `es2015` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'es2015')).toBe('esm2015'); });
-
-    it('should return `esm2015` format for `esm2015` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'esm2015')).toBe('esm2015'); });
-
-    it('should return `esm5` format for `esm5` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'esm5')).toBe('esm5'); });
-
-    it('should return `esm5` format for `module` property',
-       () => { expect(getEntryPointFormat(fs, entryPoint, 'module')).toBe('esm5'); });
-
-    it('should return `umd` for `main` if the file contains a UMD wrapper function', () => {
-      loadTestFiles([{
-        name: _(
-            '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
-        contents: `
-        (function (global, factory) {
-          typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
-          typeof define === 'function' && define.amd ? define('@angular/common', ['exports', '@angular/core'], factory) :
-          (global = global || self, factory((global.ng = global.ng || {}, global.ng.common = {}), global.ng.core));
-        }(this, function (exports, core) { 'use strict'; }));
-      `
-      }]);
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('umd');
-    });
-
-    it('should return `commonjs` for `main` if the file does not contain a UMD wrapper function', () => {
-      loadTestFiles([{
-        name: _(
-            '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
-        contents: `
-          const core = require('@angular/core);
-          module.exports = {};
-        `
-      }]);
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('commonjs');
-    });
-
-    it('should resolve the format path with suitable postfixes', () => {
-      loadTestFiles([{
-        name: _(
-            '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
-        contents: `
-        (function (global, factory) {
-          typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
-          typeof define === 'function' && define.amd ? define('@angular/common', ['exports', '@angular/core'], factory) :
-          (global = global || self, factory((global.ng = global.ng || {}, global.ng.common = {}), global.ng.core));
-        }(this, function (exports, core) { 'use strict'; }));
-      `
-      }]);
-
-      entryPoint.packageJson.main = './bundles/valid_entry_point/index';
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('umd');
-
-      entryPoint.packageJson.main = './bundles/valid_entry_point';
-      expect(getEntryPointFormat(fs, entryPoint, 'main')).toBe('umd');
-    });
-  });
-
   function createPackageJson(
       packageName: string, {excludes}: {excludes?: string[]} = {},
       typingsProp: string = 'typings'): string {
@@ -437,7 +351,7 @@ runInEachFileSystem(() => {
       es2015: `./es2015/${packageName}.js`,
       fesm5: `./fesm5/${packageName}.js`,
       esm5: `./esm5/${packageName}.js`,
-      main: `./bundles/${packageName}/index.js`,
+      main: `./bundles/${packageName}.umd.js`,
       module: './index.js',
     };
     if (excludes) {
