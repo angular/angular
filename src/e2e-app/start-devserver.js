@@ -1,5 +1,5 @@
 const protractor = require('protractor');
-const utils = require('@angular/bazel/protractor-utils');
+const utils = require('@angular/bazel/src/protractor/utils');
 const spawn = require('child_process').spawn;
 
 /**
