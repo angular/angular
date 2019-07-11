@@ -2,6 +2,10 @@
 # This allows us adding specific configuration flags for builds within CircleCI.
 # See more: https://docs.bazel.build/versions/master/user-manual.html#where-are-the-bazelrc-files
 
+# Print all enabled Bazel flags in CI mode. This makes it easier to debug and reproduce
+# Bazel issues that show up on CircleCI.
+common --announce_rc
+
 # Save downloaded repositories in a location that can be cached by CircleCI. This helps us
 # speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
 build --repository_cache=/home/circleci/bazel_repository_cache
