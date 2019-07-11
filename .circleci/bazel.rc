@@ -37,7 +37,5 @@ build --verbose_failures=true
 # > Example job: https://circleci.com/gh/angular/angular/385517
 # We expect that TypeScript compilations will parallelize wider than the number of local cores anyway
 # so we should saturate remote workers with TS compilations
-# TODO(jperott): if/when we enable remote cache on CI, we would expect
-# to have many fewer TS compilation actions, so local worker might make more sense
---strategy=TypeScriptCompile=remote
---strategy=AngularTemplateCompile=remote
+--strategy=TypeScriptCompile=standalone
+--strategy=AngularTemplateCompile=standalone
