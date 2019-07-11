@@ -3036,6 +3036,52 @@ describe('i18n support in the view compiler', () => {
       verify(input, output, {exceptions});
     });
 
+    it('nested with interpolations in "other" blocks', () => {
+      const input = `
+        <div i18n>{count, plural,
+          =0 {zero}
+          =2 {{{count}} {name, select,
+                cat {cats}
+                dog {dogs}
+                other {animals}} !}
+          other {other - {{count}}}
+        }</div>
+      `;
+
+      const output = String.raw `
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_6870293071705078389$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}} !} other {other - {INTERPOLATION}}}");
+            $I18N_0$ = $MSG_EXTERNAL_6870293071705078389$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}} !} other {other - {INTERPOLATION}}}");
+        }
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
+          "VAR_SELECT": "\uFFFD0\uFFFD",
+          "VAR_PLURAL": "\uFFFD1\uFFFD",
+          "INTERPOLATION": "\uFFFD2\uFFFD"
+        });
+        …
+        consts: 2,
+        vars: 3,
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp(ctx.name)(ctx.count)(ctx.count);
+            $r3$.ɵɵi18nApply(1);
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
+
     it('should handle icus in different contexts', () => {
       const input = `
         <div i18n>
