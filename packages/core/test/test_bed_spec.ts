@@ -229,7 +229,7 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello injected World !');
   });
 
-  it('allow to override a provider defined via ModuleWithProviders (using TestBed.overrideProvider)',
+  it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.overrideProvider)',
      () => {
        const serviceOverride = {
          get() { return 'override'; },
@@ -258,7 +258,7 @@ describe('TestBed', () => {
        expect(service.get()).toEqual('override');
      });
 
-  it('allow to override a provider defined via ModuleWithProviders (using TestBed.configureTestingModule)',
+  it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.configureTestingModule)',
      () => {
        const serviceOverride = {
          get() { return 'override'; },

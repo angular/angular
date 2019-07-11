@@ -361,7 +361,7 @@ export class R3TestBedCompiler {
     const injectorDef: any = (moduleType as any)[NG_INJECTOR_DEF];
     if (this.providerOverridesByToken.size > 0) {
       // Extract the list of providers from ModuleWithProviders, so we can define the final list of
-      // providers that we should look overrides for.
+      // providers that might have overrides.
       // Note: second `flatten` operation is needed to convert an array of providers
       // (e.g. `[[], []]`) into one flat list, also eliminating empty arrays.
       const providersFromModules = flatten(flatten(
