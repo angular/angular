@@ -30,7 +30,16 @@ export function _keyValueDiffersFactory() {
 }
 
 export function _localeFactory(locale?: string): string {
-  return locale || 'en-US';
+  if (locale) {
+    return locale;
+  }
+  // Use `goog.LOCALE` as default value for `LOCALE_ID` token for Closure Compiler.
+  // Note: default `goog.LOCALE` value is `en`, when Angular used `en-US`. In order to preserve
+  // backwards compatibility, we use Angular default value over Closure Compiler's one.
+  if (ngI18nClosureMode && typeof goog !== 'undefined' && goog.LOCALE !== 'en') {
+    return goog.LOCALE;
+  }
+  return 'en-US';
 }
 
 /**
