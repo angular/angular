@@ -30,7 +30,13 @@ export function _keyValueDiffersFactory() {
 }
 
 export function _localeFactory(locale?: string): string {
-  return locale || 'en-US';
+  if (locale) {
+    return locale;
+  }
+  if (ngI18nClosureMode) {
+    return goog.LOCALE;
+  }
+  return 'en-US';
 }
 
 /**
