@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
 import {parseStatementForUmdModule} from '../host/umd_host';
 import {Logger} from '../logging/logger';
+import {resolveFileWithPostfixes} from '../utils';
 import {NgccConfiguration, NgccEntryPointConfig} from './configuration';
 
 /**
@@ -167,8 +168,12 @@ function loadEntryPointPackage(
 }
 
 function isUmdModule(fs: FileSystem, sourceFilePath: AbsoluteFsPath): boolean {
+  const resolvedPath = resolveFileWithPostfixes(fs, sourceFilePath, ['', '.js', '/index.js']);
+  if (resolvedPath === null) {
+    return false;
+  }
   const sourceFile =
-      ts.createSourceFile(sourceFilePath, fs.readFile(sourceFilePath), ts.ScriptTarget.ES5);
+      ts.createSourceFile(sourceFilePath, fs.readFile(resolvedPath), ts.ScriptTarget.ES5);
   return sourceFile.statements.length > 0 &&
       parseStatementForUmdModule(sourceFile.statements[0]) !== null;
 }

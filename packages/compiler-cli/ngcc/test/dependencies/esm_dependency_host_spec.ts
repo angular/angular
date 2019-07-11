@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
-import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
+import {EsmDependencyHost, hasImportOrReexportStatements, isStringImportOrReexport} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 
 runInEachFileSystem(() => {
@@ -116,6 +116,16 @@ runInEachFileSystem(() => {
         expect(missing.size).toBe(0);
         expect(deepImports.size).toBe(0);
       });
+
+      it('should handle entry-point paths with no extension', () => {
+        const {dependencies, missing, deepImports} =
+            host.findDependencies(_('/external/imports/index'));
+        expect(dependencies.size).toBe(2);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
+        expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
+        expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
+      });
     });
 
     function setupMockFileSystem(): void {
@@ -210,24 +220,20 @@ runInEachFileSystem(() => {
 
     describe('isStringImportOrReexport', () => {
       it('should return true if the statement is an import', () => {
-        expect(host.isStringImportOrReexport(createStatement('import {X} from "some/x";')))
-            .toBe(true);
-        expect(host.isStringImportOrReexport(createStatement('import * as X from "some/x";')))
+        expect(isStringImportOrReexport(createStatement('import {X} from "some/x";'))).toBe(true);
+        expect(isStringImportOrReexport(createStatement('import * as X from "some/x";')))
             .toBe(true);
       });
 
       it('should return true if the statement is a re-export', () => {
-        expect(host.isStringImportOrReexport(createStatement('export {X} from "some/x";')))
-            .toBe(true);
-        expect(host.isStringImportOrReexport(createStatement('export * from "some/x";')))
-            .toBe(true);
+        expect(isStringImportOrReexport(createStatement('export {X} from "some/x";'))).toBe(true);
+        expect(isStringImportOrReexport(createStatement('export * from "some/x";'))).toBe(true);
       });
 
       it('should return false if the statement is not an import or a re-export', () => {
-        expect(host.isStringImportOrReexport(createStatement('class X {}'))).toBe(false);
-        expect(host.isStringImportOrReexport(createStatement('export function foo() {}')))
-            .toBe(false);
-        expect(host.isStringImportOrReexport(createStatement('export const X = 10;'))).toBe(false);
+        expect(isStringImportOrReexport(createStatement('class X {}'))).toBe(false);
+        expect(isStringImportOrReexport(createStatement('export function foo() {}'))).toBe(false);
+        expect(isStringImportOrReexport(createStatement('export const X = 10;'))).toBe(false);
       });
 
       function createStatement(source: string) {
@@ -239,28 +245,25 @@ runInEachFileSystem(() => {
 
     describe('hasImportOrReexportStatements', () => {
       it('should return true if there is an import statement', () => {
-        expect(host.hasImportOrReexportStatements('import {X} from "some/x";')).toBe(true);
-        expect(host.hasImportOrReexportStatements('import * as X from "some/x";')).toBe(true);
-        expect(host.hasImportOrReexportStatements(
-                   'blah blah\n\n  import {X} from "some/x";\nblah blah'))
+        expect(hasImportOrReexportStatements('import {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('import * as X from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('blah blah\n\n  import {X} from "some/x";\nblah blah'))
             .toBe(true);
-        expect(host.hasImportOrReexportStatements('\t\timport {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('\t\timport {X} from "some/x";')).toBe(true);
       });
       it('should return true if there is a re-export statement', () => {
-        expect(host.hasImportOrReexportStatements('export {X} from "some/x";')).toBe(true);
-        expect(host.hasImportOrReexportStatements(
-                   'blah blah\n\n  export {X} from "some/x";\nblah blah'))
+        expect(hasImportOrReexportStatements('export {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements('blah blah\n\n  export {X} from "some/x";\nblah blah'))
             .toBe(true);
-        expect(host.hasImportOrReexportStatements('\t\texport {X} from "some/x";')).toBe(true);
-        expect(host.hasImportOrReexportStatements(
+        expect(hasImportOrReexportStatements('\t\texport {X} from "some/x";')).toBe(true);
+        expect(hasImportOrReexportStatements(
                    'blah blah\n\n  export * from "@angular/core;\nblah blah'))
             .toBe(true);
       });
       it('should return false if there is no import nor re-export statement', () => {
-        expect(host.hasImportOrReexportStatements('blah blah')).toBe(false);
-        expect(host.hasImportOrReexportStatements('export function moo() {}')).toBe(false);
-        expect(
-            host.hasImportOrReexportStatements('Some text that happens to include the word import'))
+        expect(hasImportOrReexportStatements('blah blah')).toBe(false);
+        expect(hasImportOrReexportStatements('export function moo() {}')).toBe(false);
+        expect(hasImportOrReexportStatements('Some text that happens to include the word import'))
             .toBe(false);
       });
     });
