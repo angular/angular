@@ -7,8 +7,12 @@
  */
 
 import * as ts from 'typescript';
+
 import {CompilerHost} from '../transformers/api';
-import {ResourceLoader} from './annotations/src/api';
+
+import {ResourceLoader} from './annotations';
+import {AbsoluteFsPath, PathSegment, join} from './file_system';
+import {getRootDirs} from './util/src/typescript';
 
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.less|\.styl)$/;
 
@@ -19,9 +23,13 @@ export class HostResourceLoader implements ResourceLoader {
   private cache = new Map<string, string>();
   private fetching = new Map<string, Promise<void>>();
 
+  private rootDirs: AbsoluteFsPath[];
+
   canPreload = !!this.host.readResource;
 
-  constructor(private host: CompilerHost, private options: ts.CompilerOptions) {}
+  constructor(private host: CompilerHost, private options: ts.CompilerOptions) {
+    this.rootDirs = getRootDirs(host, options);
+  }
 
   /**
    * Resolve the url of a resource relative to the file that contains the reference to it.
@@ -111,19 +119,21 @@ export class HostResourceLoader implements ResourceLoader {
    * option from the tsconfig. First, normalize the file name.
    */
   private fallbackResolve(url: string, fromFile: string): string|null {
-    // Strip a leading '/' if one is present.
+    let candidateLocations: string[];
     if (url.startsWith('/')) {
-      url = url.substr(1);
-
-      // Do not take current file location into account if we process absolute path.
-      fromFile = '';
+      // This path is not really an absolute path, but instead the leading '/' means that it's
+      // rooted in the project rootDirs. So look for it according to the rootDirs.
+      candidateLocations = this.getRootedCandidateLocations(url);
+    } else {
+      // This path is a "relative" path and can be resolved as such. To make this easier on the
+      // downstream resolver, the './' prefix is added if missing to distinguish these paths from
+      // absolute node_modules paths.
+      if (!url.startsWith('.')) {
+        url = `./${url}`;
+      }
+      candidateLocations = this.getResolvedCandidateLocations(url, fromFile);
     }
-    // Turn absolute paths into relative paths.
-    if (!url.startsWith('.')) {
-      url = `./${url}`;
-    }
 
-    const candidateLocations = this.getCandidateLocations(url, fromFile);
     for (const candidate of candidateLocations) {
       if (this.host.fileExists(candidate)) {
         return candidate;
@@ -142,6 +152,11 @@ export class HostResourceLoader implements ResourceLoader {
     return null;
   }
 
+  private getRootedCandidateLocations(url: string): AbsoluteFsPath[] {
+    // The path already starts with '/', so add a '.' to make it relative.
+    const segment: PathSegment = ('.' + url) as PathSegment;
+    return this.rootDirs.map(rootDir => join(rootDir, segment));
+  }
 
   /**
    * TypeScript provides utilities to resolve module names, but not resource files (which aren't
@@ -150,7 +165,7 @@ export class HostResourceLoader implements ResourceLoader {
    * a list of file names that were considered, the loader can enumerate the possible locations
    * for the file by setting up a module resolution for it that will fail.
    */
-  private getCandidateLocations(url: string, fromFile: string): string[] {
+  private getResolvedCandidateLocations(url: string, fromFile: string): string[] {
     // `failedLookupLocations` is in the name of the type ts.ResolvedModuleWithFailedLookupLocations
     // but is marked @internal in TypeScript. See
     // https://github.com/Microsoft/TypeScript/issues/28770.
