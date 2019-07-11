@@ -16,7 +16,6 @@ ng_module(
         "//src/material/core",
         "@npm//@angular/common",
         "@npm//@angular/core",
-        "@npm//material-components-web",
     ],
 )
 

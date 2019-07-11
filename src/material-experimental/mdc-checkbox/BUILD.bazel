@@ -24,7 +24,7 @@ ng_module(
         "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",
-        "@npm//material-components-web",
+        "@npm//@material/checkbox",
     ],
 )
 

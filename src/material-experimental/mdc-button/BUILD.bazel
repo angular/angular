@@ -19,8 +19,6 @@ ng_module(
     deps = [
         "//src/cdk/platform",
         "//src/material/core",
-        "@npm//@angular/animations",
-        "@npm//material-components-web",
     ],
 )
 
