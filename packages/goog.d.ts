@@ -16,6 +16,7 @@ declare namespace goog {
    * as it is sometimes true.
    */
   export const DEBUG: boolean;
+  export const LOCALE: string;
   export const getMsg: (input: string, placeholders?: {[key: string]: string}) => string;
 }
 
