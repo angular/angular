@@ -65,7 +65,7 @@ To access the data in your dialog component, you have to use the MAT_DIALOG_DATA
 
 ```ts
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
   selector: 'your-dialog',

@@ -38,7 +38,7 @@ Afterwards you can access the injected data using the `MAT_BOTTOM_SHEET_DATA` in
 
 ```ts
 import {Component, Inject} from '@angular/core';
-import {MAT_BOTTOM_SHEET_DATA} from '@angular/material';
+import {MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
 
 @Component({
   selector: 'hobbit-sheet',
