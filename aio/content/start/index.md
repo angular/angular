@@ -548,5 +548,5 @@ To continue exploring Angular, choose either of the following options:
 컴포넌트 클래스와 템플릿이 상호작용하는 방법, 컴포넌트가 다른 컴포넌트와 상호작용하는 방법도 알아봤습니다.
 
 이제 Angular에 대해 더 알아보기 위해 다음 코스 중 하나를 선택해 보세요:
-* 제품 목록 화면에서 제품 이름을 클릭했을 때 표시되는 제품 상세정보 화면을 만들려면 ["라우팅"](start/routing "Getting Started: Routing") 문서를 참고하세요.
-* 로컬 개발환경에 대해서 알아보거나 Angular 앱을 Firebase나 리모트 서버에 배포하는 방법에 대해 알아보려면 쭉 건너뛰고 ["개발"](start/deployment "Getting Started: Deployment") 문서를 참고하세요.
+* 제품 목록 화면에서 제품 이름을 클릭했을 때 표시되는 제품 상세정보 화면을 만들려면 ["라우팅"](start/routing "시작하기: 라우팅") 문서를 참고하세요.
+* 로컬 개발환경에 대해서 알아보거나 Angular 앱을 Firebase나 리모트 서버에 배포하는 방법에 대해 알아보려면 쭉 건너뛰고 ["개발"](start/deployment "시작하기: 배포") 문서를 참고하세요.

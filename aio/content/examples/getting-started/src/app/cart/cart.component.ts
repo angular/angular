@@ -36,7 +36,7 @@ export class CartComponent {
 
   // #enddocregion props-services
   onSubmit(customerData) {
-    // Process checkout data here
+    // 주문 로직은 여기에 구현합니다.
     console.warn('Your order has been submitted', customerData);
 
     this.items = this.cartService.clearCart();

@@ -18,7 +18,7 @@ The router enables navigation from one view to the next as users perform applica
 * Click links on the page, and the browser navigates to a new page.
 * Click the browser's back and forward buttons, and the browser navigates backward and forward through the history of pages you've seen.
 -->
-[첫번째 Angular 앱](start "Getting Started: Your First App")을 끝낸 시점에 우리가 만든 온라인 쇼핑몰 애플리케이션에는 간단한 제품 목록만 존재합니다.
+[첫번째 Angular 앱](start "시작하기: 첫번째 앱 만들기")을 끝낸 시점에 우리가 만든 온라인 쇼핑몰 애플리케이션에는 간단한 제품 목록만 존재합니다.
 그래서 아직까지 앱의 상태를 관리하거나 네비게이션하는 기능은 없습니다.
 앱이 동작하는 URL은 하나뿐이고, 이 URL에서는 언제나 제품의 목록과 간단한 설명을 표시하는 "My Page" 페이지만 표시됩니다.
 
@@ -218,5 +218,5 @@ To continue exploring Angular, choose either of the following options:
 * 사용자가 제품 목록 화면에서 제품 이름을 클릭하면 새로운 화면으로 전환되면서 제품의 상세정보가 표시됩니다. 이 때 URL도 변경됩니다.
 
 이제 Angular에 대해 더 알아보기 위해 다음 코스 중 하나를 선택해 보세요:
-* 서비스를 활용하는 장바구니 기능을 추가하고 HTTP 통신을 통해 제품의 가격정보와 같은 외부 데이터를 받아오는 기능에 대해 알아보려면 ["데이터 다루기"](start/data "Getting Started: Managing Data") 문서를 참고하세요.
-* 로컬 개발환경에 대해서 알아보거나 Angular 앱을 Firebase나 리모트 서버에 배포하는 방법에 대해 알아보려면 쭉 건너뛰고 ["개발"](start/deployment "Getting Started: Deployment") 문서를 참고하세요.
+* 서비스를 활용하는 장바구니 기능을 추가하고 HTTP 통신을 통해 제품의 가격정보와 같은 외부 데이터를 받아오는 기능에 대해 알아보려면 ["데이터 다루기"](start/data "시작하기: 데이터 다루기") 문서를 참고하세요.
+* 로컬 개발환경에 대해서 알아보거나 Angular 앱을 Firebase나 리모트 서버에 배포하는 방법에 대해 알아보려면 쭉 건너뛰고 ["개발"](start/deployment "시작하기: 배포") 문서를 참고하세요.
