@@ -16,18 +16,19 @@ import {formatI18nPlaceholderName} from './util';
  */
 class SerializerVisitor implements i18n.Visitor {
   /**
-   * Flag that indicates that we are processing elements of an ICU.
+   * Keeps track of ICU nesting level, allowing to detect that we are processing elements of an ICU.
    *
-   * This flag is needed due to the fact that placeholders in ICUs and in other messages are
-   * represented differently in Closure:
+   * This is needed due to the fact that placeholders in ICUs and in other messages are represented
+   * differently in Closure:
    * - {$placeholder} in non-ICU case
    * - {PLACEHOLDER} inside ICU
    */
-  private insideIcu = false;
+  private icuNestingLevel = 0;
 
   private formatPh(value: string): string {
-    const formatted = formatI18nPlaceholderName(value, /* useCamelCase */ !this.insideIcu);
-    return this.insideIcu ? `{${formatted}}` : `{$${formatted}}`;
+    const isInsideIcu = this.icuNestingLevel > 0;
+    const formatted = formatI18nPlaceholderName(value, /* useCamelCase */ !isInsideIcu);
+    return isInsideIcu ? `{${formatted}}` : `{$${formatted}}`;
   }
 
   visitText(text: i18n.Text, context: any): any { return text.value; }
@@ -37,11 +38,11 @@ class SerializerVisitor implements i18n.Visitor {
   }
 
   visitIcu(icu: i18n.Icu, context: any): any {
-    this.insideIcu = true;
+    this.icuNestingLevel++;
     const strCases =
         Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
     const result = `{${icu.expressionPlaceholder}, ${icu.type}, ${strCases.join(' ')}}`;
-    this.insideIcu = false;
+    this.icuNestingLevel--;
     return result;
   }
 

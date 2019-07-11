@@ -639,6 +639,36 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
           .toEqual(`<div>4 animaux<!--nested ICU 0-->!<!--ICU 5--></div>`);
     });
 
+    it('nested with interpolations in "other" blocks', () => {
+      // Note: for some reason long string causing clang to reformat the entire file.
+      const key = '{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, ' +
+          'cat {cats} dog {dogs} other {animals}}!} other {other - {INTERPOLATION}}}';
+      const translation =
+          '{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, ' +
+          'cat {chats} dog {chients} other {animaux}}!} other {other - {INTERPOLATION}}}';
+      ɵi18nConfigureLocalize({translations: {[key]: translation}});
+
+      const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural,
+        =0 {zero}
+        =2 {{{count}} {name, select,
+                       cat {cats}
+                       dog {dogs}
+                       other {animals}
+                     }!}
+        other {other - {{count}}}
+      }</div>`);
+      expect(fixture.nativeElement.innerHTML).toEqual(`<div>zero<!--ICU 5--></div>`);
+
+      fixture.componentRef.instance.count = 2;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`<div>2 animaux<!--nested ICU 0-->!<!--ICU 5--></div>`);
+
+      fixture.componentRef.instance.count = 4;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual(`<div>other - 4<!--ICU 5--></div>`);
+    });
+
     it('should return the correct plural form for ICU expressions when using a specific locale',
        () => {
          registerLocaleData(localeRo);
