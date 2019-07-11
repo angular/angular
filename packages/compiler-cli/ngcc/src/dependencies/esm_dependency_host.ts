@@ -6,33 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
-import {DependencyHost, DependencyInfo} from './dependency_host';
-import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
+import {resolveFileWithPostfixes} from '../utils';
+import {DependencyHostBase} from './dependency_host';
+import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
 
 /**
  * Helper functions for computing dependencies.
  */
-export class EsmDependencyHost implements DependencyHost {
-  constructor(private fs: FileSystem, private moduleResolver: ModuleResolver) {}
-
-  /**
-   * Find all the dependencies for the entry-point at the given path.
-   *
-   * @param entryPointPath The absolute path to the JavaScript file that represents an entry-point.
-   * @returns Information about the dependencies of the entry-point, including those that were
-   * missing or deep imports into other entry-points.
-   */
-  findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo {
-    const dependencies = new Set<AbsoluteFsPath>();
-    const missing = new Set<AbsoluteFsPath|PathSegment>();
-    const deepImports = new Set<AbsoluteFsPath>();
-    const alreadySeen = new Set<AbsoluteFsPath>();
-    this.recursivelyFindDependencies(
-        entryPointPath, dependencies, missing, deepImports, alreadySeen);
-    return {dependencies, missing, deepImports};
-  }
-
+export class EsmDependencyHost extends DependencyHostBase {
   /**
    * Compute the dependencies of the given file.
    *
@@ -43,28 +25,33 @@ export class EsmDependencyHost implements DependencyHost {
    * @param deepImports A set that will have the import paths that exist but cannot be mapped to
    * entry-points, i.e. deep-imports.
    * @param alreadySeen A set that is used to track internal dependencies to prevent getting stuck
-   * in a
-   * circular dependency loop.
+   * in a circular dependency loop.
    */
-  private recursivelyFindDependencies(
+  protected recursivelyFindDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
-    const fromContents = this.fs.readFile(file);
-    if (!this.hasImportOrReexportStatements(fromContents)) {
+    const resolvedFile = resolveFileWithPostfixes(this.fs, file, ['', '.js', '/index.js']);
+    if (resolvedFile === null) {
+      return;
+    }
+    const fromContents = this.fs.readFile(resolvedFile);
+
+    if (!hasImportOrReexportStatements(fromContents)) {
+      // Avoid parsing the source file as there are no imports.
       return;
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
-    const sf =
-        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const sf = ts.createSourceFile(
+        resolvedFile, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
     sf.statements
         // filter out statements that are not imports or reexports
-        .filter(this.isStringImportOrReexport)
+        .filter(isStringImportOrReexport)
         // Grab the id of the module that is being imported
         .map(stmt => stmt.moduleSpecifier.text)
         // Resolve this module id into an absolute path
         .forEach(importPath => {
-          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
+          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, resolvedFile);
           if (resolvedModule) {
             if (resolvedModule instanceof ResolvedRelativeModule) {
               const internalDependency = resolvedModule.modulePath;
@@ -85,30 +72,31 @@ export class EsmDependencyHost implements DependencyHost {
           }
         });
   }
+}
 
-  /**
-   * Check whether the given statement is an import with a string literal module specifier.
-   * @param stmt the statement node to check.
-   * @returns true if the statement is an import with a string literal module specifier.
-   */
-  isStringImportOrReexport(stmt: ts.Statement): stmt is ts.ImportDeclaration&
-      {moduleSpecifier: ts.StringLiteral} {
-    return ts.isImportDeclaration(stmt) ||
-        ts.isExportDeclaration(stmt) && !!stmt.moduleSpecifier &&
-        ts.isStringLiteral(stmt.moduleSpecifier);
-  }
+/**
+ * Check whether a source file needs to be parsed for imports.
+ * This is a performance short-circuit, which saves us from creating
+ * a TypeScript AST unnecessarily.
+ *
+ * @param source The content of the source file to check.
+ *
+ * @returns false if there are definitely no import or re-export statements
+ * in this file, true otherwise.
+ */
+export function hasImportOrReexportStatements(source: string): boolean {
+  return /(import|export)\s.+from/.test(source);
+}
 
-  /**
-   * Check whether a source file needs to be parsed for imports.
-   * This is a performance short-circuit, which saves us from creating
-   * a TypeScript AST unnecessarily.
-   *
-   * @param source The content of the source file to check.
-   *
-   * @returns false if there are definitely no import or re-export statements
-   * in this file, true otherwise.
-   */
-  hasImportOrReexportStatements(source: string): boolean {
-    return /(import|export)\s.+from/.test(source);
-  }
+
+/**
+ * Check whether the given statement is an import with a string literal module specifier.
+ * @param stmt the statement node to check.
+ * @returns true if the statement is an import with a string literal module specifier.
+ */
+export function isStringImportOrReexport(stmt: ts.Statement): stmt is ts.ImportDeclaration&
+    {moduleSpecifier: ts.StringLiteral} {
+  return ts.isImportDeclaration(stmt) ||
+      ts.isExportDeclaration(stmt) && !!stmt.moduleSpecifier &&
+      ts.isStringLiteral(stmt.moduleSpecifier);
 }
