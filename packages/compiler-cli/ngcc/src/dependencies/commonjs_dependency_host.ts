@@ -6,34 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {isRequireCall} from '../host/commonjs_host';
-import {DependencyHost, DependencyInfo} from './dependency_host';
-import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
+import {resolveFileWithPostfixes} from '../utils';
+import {DependencyHostBase} from './dependency_host';
+import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
 
 /**
  * Helper functions for computing dependencies.
  */
-export class CommonJsDependencyHost implements DependencyHost {
-  constructor(private fs: FileSystem, private moduleResolver: ModuleResolver) {}
-
-  /**
-   * Find all the dependencies for the entry-point at the given path.
-   *
-   * @param entryPointPath The absolute path to the JavaScript file that represents an entry-point.
-   * @returns Information about the dependencies of the entry-point, including those that were
-   * missing or deep imports into other entry-points.
-   */
-  findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo {
-    const dependencies = new Set<AbsoluteFsPath>();
-    const missing = new Set<AbsoluteFsPath|PathSegment>();
-    const deepImports = new Set<AbsoluteFsPath>();
-    const alreadySeen = new Set<AbsoluteFsPath>();
-    this.recursivelyFindDependencies(
-        entryPointPath, dependencies, missing, deepImports, alreadySeen);
-    return {dependencies, missing, deepImports};
-  }
-
+export class CommonJsDependencyHost extends DependencyHostBase {
   /**
    * Compute the dependencies of the given file.
    *
@@ -44,21 +26,25 @@ export class CommonJsDependencyHost implements DependencyHost {
    * @param deepImports A set that will have the import paths that exist but cannot be mapped to
    * entry-points, i.e. deep-imports.
    * @param alreadySeen A set that is used to track internal dependencies to prevent getting stuck
-   * in a
-   * circular dependency loop.
+   * in a circular dependency loop.
    */
-  private recursivelyFindDependencies(
+  protected recursivelyFindDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<AbsoluteFsPath>, alreadySeen: Set<AbsoluteFsPath>): void {
-    const fromContents = this.fs.readFile(file);
+    const resolvedFile = resolveFileWithPostfixes(this.fs, file, ['', '.js', '/index.js']);
+    if (resolvedFile === null) {
+      return;
+    }
+    const fromContents = this.fs.readFile(resolvedFile);
+
     if (!this.hasRequireCalls(fromContents)) {
-      // Avoid parsing the source file as there are no require calls.
+      // Avoid parsing the source file as there are no imports.
       return;
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
-    const sf =
-        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const sf = ts.createSourceFile(
+        resolvedFile, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
 
     for (const statement of sf.statements) {
       const declarations =
@@ -66,7 +52,7 @@ export class CommonJsDependencyHost implements DependencyHost {
       for (const declaration of declarations) {
         if (declaration.initializer && isRequireCall(declaration.initializer)) {
           const importPath = declaration.initializer.arguments[0].text;
-          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
+          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, resolvedFile);
           if (resolvedModule) {
             if (resolvedModule instanceof ResolvedRelativeModule) {
               const internalDependency = resolvedModule.modulePath;
@@ -100,5 +86,5 @@ export class CommonJsDependencyHost implements DependencyHost {
    * @returns false if there are definitely no require calls
    * in this file, true otherwise.
    */
-  hasRequireCalls(source: string): boolean { return /require\(['"]/.test(source); }
+  private hasRequireCalls(source: string): boolean { return /require\(['"]/.test(source); }
 }
