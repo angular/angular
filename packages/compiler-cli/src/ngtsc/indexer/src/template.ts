@@ -74,8 +74,8 @@ class ExpressionVisitor extends RecursiveAstVisitor {
    * @param ast expression AST the identifier is in
    * @param kind identifier kind
    */
-  private visitIdentifier<Id extends ExpressionIdentifier>(
-      ast: AST&{name: string, receiver: AST}, kind: Id['kind']) {
+  private visitIdentifier(
+      ast: AST&{name: string, receiver: AST}, kind: ExpressionIdentifier['kind']) {
     // The definition of a non-top-level property such as `bar` in `{{foo.bar}}` is currently
     // impossible to determine by an indexer and unsupported by the indexing module.
     // The indexing module also does not currently support references to identifiers declared in the
@@ -100,7 +100,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
     const absoluteStart = this.absoluteOffset + identifierStart;
     const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
 
-    this.identifiers.push({ name: ast.name, span, kind, } as Id);
+    this.identifiers.push({ name: ast.name, span, kind, } as ExpressionIdentifier);
   }
 }
 
