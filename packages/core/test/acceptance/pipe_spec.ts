@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Inject, Injectable, InjectionToken, Input, NgModule, OnDestroy, Pipe, PipeTransform, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, Inject, Injectable, InjectionToken, Input, NgModule, OnDestroy, Pipe, PipeTransform, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -397,6 +397,108 @@ describe('pipe', () => {
 
       expect(fixture.nativeElement.textContent).toBe('MyComponent Title - Service Title');
     });
+
+    it('should inject the ChangeDetectorRef of the containing view when using pipe inside a component input',
+       () => {
+         let pipeChangeDetectorRef: ChangeDetectorRef|undefined;
+
+         @Component({
+           changeDetection: ChangeDetectionStrategy.OnPush,
+           selector: 'some-comp',
+           template: 'Inner value: "{{displayValue}}"',
+         })
+         class SomeComp {
+           @Input() value: any;
+           displayValue = 0;
+         }
+
+         @Component({
+           changeDetection: ChangeDetectionStrategy.OnPush,
+           template: `
+              <some-comp [value]="pipeValue | testPipe"></some-comp>
+              Outer value: "{{displayValue}}"
+            `,
+         })
+         class App {
+           @Input() something: any;
+           @ViewChild(SomeComp, {static: false}) comp !: SomeComp;
+           pipeValue = 10;
+           displayValue = 0;
+         }
+
+         @Pipe({name: 'testPipe'})
+         class TestPipe implements PipeTransform {
+           constructor(changeDetectorRef: ChangeDetectorRef) {
+             pipeChangeDetectorRef = changeDetectorRef;
+           }
+
+           transform() { return ''; }
+         }
+
+         TestBed.configureTestingModule({declarations: [App, SomeComp, TestPipe]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         fixture.componentInstance.displayValue = 1;
+         fixture.componentInstance.comp.displayValue = 1;
+         pipeChangeDetectorRef !.markForCheck();
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toContain('Outer value: "1"');
+         expect(fixture.nativeElement.textContent).toContain('Inner value: "0"');
+       });
+
+    it('should inject the ChangeDetectorRef of the containing view when using pipe inside a component input which has child nodes',
+       () => {
+         let pipeChangeDetectorRef: ChangeDetectorRef|undefined;
+
+         @Component({
+           changeDetection: ChangeDetectionStrategy.OnPush,
+           selector: 'some-comp',
+           template: 'Inner value: "{{displayValue}}" <ng-content></ng-content>',
+         })
+         class SomeComp {
+           @Input() value: any;
+           displayValue = 0;
+         }
+
+         @Component({
+           changeDetection: ChangeDetectionStrategy.OnPush,
+           template: `
+              <some-comp [value]="pipeValue | testPipe">
+                <div>Hello</div>
+              </some-comp>
+              Outer value: "{{displayValue}}"
+            `,
+         })
+         class App {
+           @Input() something: any;
+           @ViewChild(SomeComp, {static: false}) comp !: SomeComp;
+           pipeValue = 10;
+           displayValue = 0;
+         }
+
+         @Pipe({name: 'testPipe'})
+         class TestPipe implements PipeTransform {
+           constructor(changeDetectorRef: ChangeDetectorRef) {
+             pipeChangeDetectorRef = changeDetectorRef;
+           }
+
+           transform() { return ''; }
+         }
+
+         TestBed.configureTestingModule({declarations: [App, SomeComp, TestPipe]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         fixture.componentInstance.displayValue = 1;
+         fixture.componentInstance.comp.displayValue = 1;
+         pipeChangeDetectorRef !.markForCheck();
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toContain('Outer value: "1"');
+         expect(fixture.nativeElement.textContent).toContain('Inner value: "0"');
+       });
 
   });
 

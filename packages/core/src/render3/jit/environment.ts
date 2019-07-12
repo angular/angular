@@ -42,6 +42,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵgetInheritedFactory': r3.ɵɵgetInheritedFactory,
        'ɵɵinject': ɵɵinject,
        'ɵɵinjectAttribute': r3.ɵɵinjectAttribute,
+       'ɵɵinjectPipeChangeDetectorRef': r3.ɵɵinjectPipeChangeDetectorRef,
        'ɵɵtemplateRefExtractor': r3.ɵɵtemplateRefExtractor,
        'ɵɵNgOnChangesFeature': r3.ɵɵNgOnChangesFeature,
        'ɵɵProvidersFeature': r3.ɵɵProvidersFeature,

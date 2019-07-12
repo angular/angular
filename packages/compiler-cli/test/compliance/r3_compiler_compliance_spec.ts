@@ -2145,6 +2145,67 @@ describe('compiler compliance', () => {
 
         expectEmit(source, MyAppDefinition, 'Invalid MyApp definition');
       });
+
+      it('should generate the proper instruction when injecting ChangeDetectorRef into a pipe',
+         () => {
+
+           const files = {
+             app: {
+               'spec.ts': `
+                  import {Component, NgModule, Pipe, PipeTransform, ChangeDetectorRef, Optional} from '@angular/core';
+
+                  @Pipe({name: 'myPipe'})
+                  export class MyPipe implements PipeTransform {
+                    constructor(changeDetectorRef: ChangeDetectorRef) {}
+
+                    transform(value: any, ...args: any[]) { return value; }
+                  }
+
+                  @Pipe({name: 'myOtherPipe'})
+                  export class MyOtherPipe implements PipeTransform {
+                    constructor(@Optional() changeDetectorRef: ChangeDetectorRef) {}
+
+                    transform(value: any, ...args: any[]) { return value; }
+                  }
+
+                  @Component({
+                    selector: 'my-app',
+                    template: '{{name | myPipe }}<p>{{ name | myOtherPipe }}</p>'
+                  })
+                  export class MyApp {
+                    name = 'World';
+                  }
+
+                  @NgModule({declarations:[MyPipe, MyOtherPipe, MyApp]})
+                  export class MyModule {}
+                `
+             }
+           };
+
+           const MyPipeDefinition = `
+              MyPipe.ngPipeDef = $r3$.ɵɵdefinePipe({
+                name: "myPipe",
+                type: MyPipe,
+                factory: function MyPipe_Factory(t) { return new (t || MyPipe)($r3$.ɵɵinjectPipeChangeDetectorRef()); },
+                pure: true
+              });
+            `;
+
+           const MyOtherPipeDefinition = `
+              MyOtherPipe.ngPipeDef = $r3$.ɵɵdefinePipe({
+                name: "myOtherPipe",
+                type: MyOtherPipe,
+                factory: function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($r3$.ɵɵinjectPipeChangeDetectorRef(8)); },
+                pure: true
+              });`;
+
+           const result = compile(files, angularFiles);
+           const source = result.source;
+
+           expectEmit(source, MyPipeDefinition, 'Invalid pipe definition');
+           expectEmit(source, MyOtherPipeDefinition, 'Invalid alternate pipe definition');
+         });
+
     });
 
     it('local reference', () => {

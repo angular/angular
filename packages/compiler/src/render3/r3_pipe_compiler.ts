@@ -57,12 +57,14 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
   // e.g. `type: MyPipe`
   definitionMapValues.push({key: 'type', value: metadata.type, quoted: false});
 
-  const templateFactory = compileFactoryFunction({
-    name: metadata.name,
-    type: metadata.type,
-    deps: metadata.deps,
-    injectFn: R3.directiveInject,
-  });
+  const templateFactory = compileFactoryFunction(
+      {
+        name: metadata.name,
+        type: metadata.type,
+        deps: metadata.deps,
+        injectFn: R3.directiveInject,
+      },
+      true);
   definitionMapValues.push({key: 'factory', value: templateFactory.factory, quoted: false});
 
   // e.g. `pure: true`
