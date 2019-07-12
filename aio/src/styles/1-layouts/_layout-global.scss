@@ -5,6 +5,12 @@ html, body {
 body,
 .content {
     background-color: $white;
+
+    aio-doc-viewer & {
+      h1 {
+        max-width: 90%;
+      }
+    }
 }
 
 .clearfix {
