@@ -198,7 +198,7 @@ export {
   ɵɵpureFunctionV,
 } from './pure_function';
 
-export {ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound';
+export {ɵɵtemplateRefExtractor, ɵɵinjectPipeChangeDetectorRef} from './view_engine_compatibility_prebound';
 
 export {ɵɵresolveWindow, ɵɵresolveDocument, ɵɵresolveBody} from './util/misc_utils';
 

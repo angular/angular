@@ -33,6 +33,7 @@ export {
   RenderFlags as ɵRenderFlags,
   ɵɵdirectiveInject,
   ɵɵinjectAttribute,
+  ɵɵinjectPipeChangeDetectorRef,
   ɵɵgetFactoryOf,
   ɵɵgetInheritedFactory,
   ɵɵsetComponentScope,
