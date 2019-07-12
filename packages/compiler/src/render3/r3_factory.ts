@@ -97,6 +97,11 @@ export enum R3ResolvedDependencyType {
    * The token expression is a string representing the attribute name.
    */
   Attribute = 1,
+
+  /**
+   * Injecting the `ChangeDetectorRef` token. Needs special handling when injected into a pipe.
+   */
+  ChangeDetectorRef = 2,
 }
 
 /**
@@ -138,8 +143,8 @@ export interface R3DependencyMetadata {
 /**
  * Construct a factory function expression for the given `R3FactoryMetadata`.
  */
-export function compileFactoryFunction(meta: R3FactoryMetadata):
-    {factory: o.Expression, statements: o.Statement[]} {
+export function compileFactoryFunction(
+    meta: R3FactoryMetadata, isPipe = false): {factory: o.Expression, statements: o.Statement[]} {
   const t = o.variable('t');
   const statements: o.Statement[] = [];
 
@@ -155,7 +160,8 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
   if (meta.deps !== null) {
     // There is a constructor (either explicitly or implicitly defined).
     if (meta.deps !== 'invalid') {
-      ctorExpr = new o.InstantiateExpr(typeForCtor, injectDependencies(meta.deps, meta.injectFn));
+      ctorExpr =
+          new o.InstantiateExpr(typeForCtor, injectDependencies(meta.deps, meta.injectFn, isPipe));
     }
   } else {
     const baseFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
@@ -203,7 +209,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
   } else if (isDelegatedMetadata(meta)) {
     // This type is created with a delegated factory. If a type parameter is not specified, call
     // the factory instead.
-    const delegateArgs = injectDependencies(meta.delegateDeps, meta.injectFn);
+    const delegateArgs = injectDependencies(meta.delegateDeps, meta.injectFn, isPipe);
     // Either call `new delegate(...)` or `delegate(...)` depending on meta.useNewForDelegate.
     const factoryExpr = new (
         meta.delegateType === R3FactoryDelegateType.Class ?
@@ -232,30 +238,38 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
 }
 
 function injectDependencies(
-    deps: R3DependencyMetadata[], injectFn: o.ExternalReference): o.Expression[] {
-  return deps.map(dep => compileInjectDependency(dep, injectFn));
+    deps: R3DependencyMetadata[], injectFn: o.ExternalReference, isPipe: boolean): o.Expression[] {
+  return deps.map(dep => compileInjectDependency(dep, injectFn, isPipe));
 }
 
 function compileInjectDependency(
-    dep: R3DependencyMetadata, injectFn: o.ExternalReference): o.Expression {
+    dep: R3DependencyMetadata, injectFn: o.ExternalReference, isPipe: boolean): o.Expression {
   // Interpret the dependency according to its resolved type.
   switch (dep.resolved) {
-    case R3ResolvedDependencyType.Token: {
+    case R3ResolvedDependencyType.Token:
+    case R3ResolvedDependencyType.ChangeDetectorRef:
       // Build up the injection flags according to the metadata.
       const flags = InjectFlags.Default | (dep.self ? InjectFlags.Self : 0) |
           (dep.skipSelf ? InjectFlags.SkipSelf : 0) | (dep.host ? InjectFlags.Host : 0) |
           (dep.optional ? InjectFlags.Optional : 0);
 
-      // Build up the arguments to the injectFn call.
-      const injectArgs = [dep.token];
       // If this dependency is optional or otherwise has non-default flags, then additional
       // parameters describing how to inject the dependency must be passed to the inject function
       // that's being used.
-      if (flags !== InjectFlags.Default || dep.optional) {
-        injectArgs.push(o.literal(flags));
+      let flagsParam: o.LiteralExpr|null =
+          (flags !== InjectFlags.Default || dep.optional) ? o.literal(flags) : null;
+
+      // We have a separate instruction for injecting ChangeDetectorRef into a pipe.
+      if (isPipe && dep.resolved === R3ResolvedDependencyType.ChangeDetectorRef) {
+        return o.importExpr(R3.injectPipeChangeDetectorRef).callFn(flagsParam ? [flagsParam] : []);
+      }
+
+      // Build up the arguments to the injectFn call.
+      const injectArgs = [dep.token];
+      if (flagsParam) {
+        injectArgs.push(flagsParam);
       }
       return o.importExpr(injectFn).callFn(injectArgs);
-    }
     case R3ResolvedDependencyType.Attribute:
       // In the case of attributes, the attribute name in question is given as the token.
       return o.importExpr(R3.injectAttribute).callFn([dep.token]);
