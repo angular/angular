@@ -7,12 +7,14 @@
  */
 
 
+import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {InjectFlags} from '../di/interface/injector';
 import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 
 import {TNode} from './interfaces/node';
 import {LView} from './interfaces/view';
-import {createTemplateRef} from './view_engine_compatibility';
+import {createTemplateRef, injectChangeDetectorRef} from './view_engine_compatibility';
 
 
 
@@ -24,4 +26,19 @@ import {createTemplateRef} from './view_engine_compatibility';
  */
 export function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LView) {
   return createTemplateRef(ViewEngine_TemplateRef, ViewEngine_ElementRef, tNode, currentView);
+}
+
+
+/**
+ * Returns the appropriate `ChangeDetectorRef` for a pipe.
+ *
+ * @codeGenApi
+ */
+export function ɵɵinjectPipeChangeDetectorRef(flags = InjectFlags.Default): ChangeDetectorRef|null {
+  const value = injectChangeDetectorRef(true);
+  if (value == null && !(flags & InjectFlags.Optional)) {
+    throw new Error(`No provider for ChangeDetectorRef!`);
+  } else {
+    return value;
+  }
 }
