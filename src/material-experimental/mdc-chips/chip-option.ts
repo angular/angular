@@ -16,6 +16,7 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
+import {take} from 'rxjs/operators';
 import {MatChip} from './chip';
 
 
@@ -182,9 +183,21 @@ export class MatChipOption extends MatChip {
 
   /** Resets the state of the chip when it loses focus. */
   _blur(): void {
-    this._hasFocusInternal = false;
-    this._onBlur.next({chip: this});
+    // When animations are enabled, Angular may end up removing the chip from the DOM a little
+    // earlier than usual, causing it to be blurred and throwing off the logic in the chip list
+    // that moves focus not the next item. To work around the issue, we defer marking the chip
+    // as not focused until the next time the zone stabilizes.
+    this._ngZone.onStable
+      .asObservable()
+      .pipe(take(1))
+      .subscribe(() => {
+        this._ngZone.run(() => {
+          this._hasFocusInternal = false;
+          this._onBlur.next({chip: this});
+        });
+      });
   }
+
 
   /** Handles click events on the chip. */
   _click(event: MouseEvent) {

@@ -1,8 +1,10 @@
 @import '@material/chips/mixins';
+@import '../../material/core/style/noop-animation';
 @import '../mdc-helpers/mdc-helpers';
 
 @include mdc-chip-without-ripple($query: $mat-base-styles-query);
 @include mdc-chip-set-core-styles($query: $mat-base-styles-query);
+@include _noop-animation;
 
 
 // The MDC chip styles related to hover and focus states are intertwined with the MDC ripple styles.

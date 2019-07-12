@@ -57,7 +57,7 @@ const _MatChipSetMixinBase: HasTabIndexCtor & typeof MatChipSetBase =
   styleUrls: ['chips.css'],
   host: {
     'class': 'mat-mdc-chip-set mdc-chip-set',
-    'role': 'presentation',
+    '[attr.role]': 'role',
     // TODO: replace this binding with use of AriaDescriber
     '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[id]': '_uid',
@@ -69,6 +69,9 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
   HasTabIndex, OnDestroy {
   /** Subscription to remove changes in chips. */
   private _chipRemoveSubscription: Subscription | null;
+
+  /** Subscription to destroyed events in chips. */
+  private _chipDestroyedSubscription: Subscription | null;
 
   /** Subscription to chip interactions. */
   private _chipInteractionSubscription: Subscription | null;
@@ -123,12 +126,20 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
   /** Whether the chip list contains chips or not. */
   get empty(): boolean { return this._chips.length === 0; }
 
+  /** The ARIA role applied to the chip set. */
+  get role(): string | null { return this.empty ? null : 'presentation'; }
+
   /** Whether any of the chips inside of this chip-set has focus. */
   get focused(): boolean { return this._hasFocusedChip(); }
 
   /** Combined stream of all of the child chips' remove events. */
   get chipRemoveChanges(): Observable<MatChipEvent> {
     return merge(...this._chips.map(chip => chip.removed));
+  }
+
+  /** Combined stream of all of the child chips' remove events. */
+  get chipDestroyedChanges(): Observable<MatChipEvent> {
+    return merge(...this._chips.map(chip => chip.destroyed));
   }
 
   /** Combined stream of all of the child chips' interaction events. */
@@ -206,43 +217,37 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
   /** Subscribes to events on the child chips. */
   protected _subscribeToChipEvents() {
     this._listenToChipsRemove();
+    this._listenToChipsDestroyed();
     this._listenToChipsInteraction();
   }
 
   /** Subscribes to chip removal events. */
   private _listenToChipsRemove() {
     this._chipRemoveSubscription = this.chipRemoveChanges.subscribe((event: MatChipEvent) => {
-       this._handleChipRemove(event);
+       this._chipSetFoundation.handleChipRemoval(event.chip.id);
+    });
+  }
+
+  /** Subscribes to chip destroyed events. */
+  private _listenToChipsDestroyed() {
+    this._chipDestroyedSubscription = this.chipDestroyedChanges.subscribe((event: MatChipEvent) => {
+      const chip = event.chip;
+      const chipIndex: number = this._chips.toArray().indexOf(event.chip);
+
+      // In case the chip that will be removed is currently focused, we temporarily store
+      // the index in order to be able to determine an appropriate sibling chip that will
+      // receive focus.
+      if (this._isValidIndex(chipIndex) && chip._hasFocus) {
+        this._lastDestroyedChipIndex = chipIndex;
+      }
     });
   }
 
   /** Subscribes to chip interaction events. */
   private _listenToChipsInteraction() {
     this._chipInteractionSubscription = this.chipInteractionChanges.subscribe((id: string) => {
-      this._handleChipInteraction(id);
+      this._chipSetFoundation.handleChipInteraction(id);
     });
-  }
-
-  /**
-   * Called when one of the chips is about to be removed.
-   * If the removed chip has focus, stores its index so we can refocus.
-   */
-  protected _handleChipRemove(event: MatChipEvent) {
-    this._chipSetFoundation.handleChipRemoval(event.chip.id);
-    const chip = event.chip;
-    const chipIndex: number = this._chips.toArray().indexOf(event.chip);
-
-    // In case the chip that will be removed is currently focused, we temporarily store
-    // the index in order to be able to determine an appropriate sibling chip that will
-    // receive focus.
-    if (this._isValidIndex(chipIndex) && chip._hasFocus) {
-      this._lastDestroyedChipIndex = chipIndex;
-    }
-  }
-
-  /** Notifies the chip set foundation when the user interacts with a chip. */
-  protected _handleChipInteraction(id: string) {
-    this._chipSetFoundation.handleChipInteraction(id);
   }
 
   /** Unsubscribes from all chip events. */
@@ -255,6 +260,11 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
     if (this._chipInteractionSubscription) {
       this._chipInteractionSubscription.unsubscribe();
       this._chipInteractionSubscription = null;
+    }
+
+    if (this._chipDestroyedSubscription) {
+      this._chipDestroyedSubscription.unsubscribe();
+      this._chipDestroyedSubscription = null;
     }
   }
 
@@ -269,6 +279,21 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
    */
   protected _isValidIndex(index: number): boolean {
     return index >= 0 && index < this._chips.length;
+  }
+
+  /** Checks whether an event comes from inside a chip element. */
+  protected _originatesFromChip(event: Event): boolean {
+    let currentElement = event.target as HTMLElement | null;
+
+    while (currentElement && currentElement !== this._elementRef.nativeElement) {
+      if (currentElement.classList.contains('mdc-chip')) {
+        return true;
+      }
+
+      currentElement = currentElement.parentElement;
+    }
+
+    return false;
   }
 }
 

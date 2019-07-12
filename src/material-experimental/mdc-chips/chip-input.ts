@@ -171,4 +171,3 @@ export class MatChipInput implements MatChipTextControl, OnChanges {
     return Array.isArray(separators) ? separators.indexOf(keyCode) > -1 : separators.has(keyCode);
   }
 }
-

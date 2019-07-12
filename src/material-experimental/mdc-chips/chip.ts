@@ -8,6 +8,7 @@
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {
   AfterContentInit,
   AfterViewInit,
@@ -18,9 +19,11 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
+  Inject,
   Input,
   NgZone,
   OnDestroy,
+  Optional,
   Output,
   ViewEncapsulation
 } from '@angular/core';
@@ -29,12 +32,14 @@ import {
   CanColorCtor,
   CanDisableRipple,
   CanDisableRippleCtor,
+  MAT_RIPPLE_GLOBAL_OPTIONS,
   HasTabIndex,
   HasTabIndexCtor,
   mixinColor,
   mixinDisableRipple,
   mixinTabIndex,
   RippleConfig,
+  RippleGlobalOptions,
   RippleRenderer,
   RippleTarget,
 } from '@angular/material/core';
@@ -96,6 +101,9 @@ const _MatChipMixinBase:
     '[class.mat-mdc-chip-highlighted]': 'highlighted',
     '[class.mat-mdc-chip-with-avatar]': 'leadingIcon',
     '[class.mat-mdc-chip-with-trailing-icon]': 'trailingIcon || removeIcon',
+    '[class.mat-mdc-basic-chip]': '_isBasicChip()',
+    '[class.mat-mdc-standard-chip]': '!_isBasicChip()',
+    '[class._mat-animation-noopable]': '_animationsDisabled',
     '[id]': 'id',
     '[attr.disabled]': 'disabled || null',
     '[attr.aria-disabled]': 'disabled.toString()',
@@ -116,6 +124,9 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
   /** Whether the chip has focus. */
   protected _hasFocusInternal = false;
+
+    /** Whether animations for the chip are enabled. */
+  _animationsDisabled: boolean;
 
   get _hasFocus() {
     return this._hasFocusInternal;
@@ -194,22 +205,19 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   private _rippleRenderer: RippleRenderer;
 
   /**
-   * Implemented as part of RippleTarget. Configures ripple animation to match MDC Ripple.
+   * Ripple configuration for ripples that are launched on pointer down.
+   * Implemented as part of RippleTarget.
    * @docs-private
    */
-  rippleConfig: RippleConfig = {
-    animation: {
-      enterDuration: 225 /* MDCRippleFoundation.numbers.DEACTIVATION_TIMEOUT_MS */,
-      exitDuration: 150 /* MDCRippleFoundation.numbers.FG_DEACTIVATION_MS */,
-    }
-  };
+  rippleConfig: RippleConfig & RippleGlobalOptions;
 
   /**
    * Implemented as part of RippleTarget. Whether ripples are disabled on interaction.
    * @docs-private
    */
   get rippleDisabled(): boolean {
-    return this.disabled || this.disableRipple || this._isBasicChip();
+    return this.disabled || this.disableRipple || !!this.rippleConfig.disabled ||
+      this._isBasicChip();
   }
 
   /** The chip's leading icon. */
@@ -258,9 +266,14 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     public _changeDetectorRef: ChangeDetectorRef,
     readonly _elementRef: ElementRef,
     private _platform: Platform,
-    private _ngZone: NgZone) {
+    protected _ngZone: NgZone,
+    @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
+    private _globalRippleOptions: RippleGlobalOptions | null,
+    // @breaking-change 8.0.0 `animationMode` parameter to become required.
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(_elementRef);
     this._chipFoundation = new MDCChipFoundation(this._chipAdapter);
+    this._animationsDisabled = animationMode === 'NoopAnimations';
   }
 
   ngAfterContentInit() {
@@ -332,6 +345,14 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
   /** Initializes the ripple renderer. */
   private _initRipple() {
+    this.rippleConfig = this._globalRippleOptions || {};
+
+    // Configure ripple animation to match MDC Ripple.
+    this.rippleConfig.animation = {
+      enterDuration: 225  /*MDCRippleFoundation.numbers.DEACTIVATION_TIMEOUT_MS */,
+      exitDuration: 150 /* MDCRippleFoundation.numbers.FG_DEACTIVATION_MS */,
+    };
+
     this._rippleRenderer =
       new RippleRenderer(this, this._ngZone, this._elementRef, this._platform);
     this._rippleRenderer.setupTriggerEvents(this._elementRef.nativeElement);
