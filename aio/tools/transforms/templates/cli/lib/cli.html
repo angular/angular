@@ -20,7 +20,7 @@
   <tbody>
   {% for option in arguments %}
   <tr class="cli-option">
-    <td><code class="no-auto-link">&lt;<var>{$ option.name $}</var>&gt;</code></td>
+    <td><code class="cli-option-syntax no-auto-link">&lt;<var>{$ option.name $}</var>&gt;{% if option.enum.length > 0 %}={$ renderValues(option.enum) $}{% endif %}</code></td>
     <td>
       {$ option.description | marked $}
       {% if option.subcommands.length -%}
