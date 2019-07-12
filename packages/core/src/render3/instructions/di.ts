@@ -5,12 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ChangeDetectorRef} from '../../change_detection/change_detection';
 import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
 import {ɵɵinject} from '../../di/injector_compatibility';
 import {Type} from '../../interface/type';
 import {getOrCreateInjectable, injectAttributeImpl} from '../di';
 import {TContainerNode, TElementContainerNode, TElementNode} from '../interfaces/node';
 import {getLView, getPreviousOrParentTNode} from '../state';
+import {injectChangeDetectorRef} from '../view_engine_compatibility';
 
 /**
  * Returns the value associated to the given token from the injectors.
@@ -58,4 +60,18 @@ export function ɵɵdirectiveInject<T>(
  */
 export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
   return injectAttributeImpl(getPreviousOrParentTNode(), attrNameToInject);
+}
+
+/**
+ * Returns the appropriate `ChangeDetectorRef` for a pipe.
+ *
+ * @codeGenApi
+ */
+export function ɵɵinjectPipeChangeDetectorRef(flags = InjectFlags.Default): ChangeDetectorRef|null {
+  const value = injectChangeDetectorRef(true);
+  if (value == null && !(flags & InjectFlags.Optional)) {
+    throw new Error(`No provider for ChangeDetectorRef!`);
+  } else {
+    return value;
+  }
 }

@@ -70,6 +70,7 @@ export {
 
   ɵɵgetCurrentView,
   ɵɵinjectAttribute,
+  ɵɵinjectPipeChangeDetectorRef,
 
   ɵɵlistener,
   ɵɵload,

@@ -360,24 +360,24 @@ export function createContainerRef(
 
 
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
-export function injectChangeDetectorRef(): ViewEngine_ChangeDetectorRef {
-  return createViewRef(getPreviousOrParentTNode(), getLView(), null);
+export function injectChangeDetectorRef(isPipe = false): ViewEngine_ChangeDetectorRef {
+  return createViewRef(getPreviousOrParentTNode(), getLView(), isPipe);
 }
 
 /**
  * Creates a ViewRef and stores it on the injector as ChangeDetectorRef (public alias).
  *
  * @param hostTNode The node that is requesting a ChangeDetectorRef
+ * @param hostTNodeIsParent Whether the `hostTNode` is a parent node
  * @param hostView The view to which the node belongs
- * @param context The context for this change detector ref
  * @returns The ChangeDetectorRef to use
  */
-export function createViewRef(
-    hostTNode: TNode, hostView: LView, context: any): ViewEngine_ChangeDetectorRef {
-  if (isComponent(hostTNode)) {
+function createViewRef(
+    hostTNode: TNode, hostView: LView, isPipe: boolean): ViewEngine_ChangeDetectorRef {
+  if (isComponent(hostTNode) && !isPipe) {
     const componentIndex = hostTNode.directiveStart;
     const componentView = getComponentViewByIndex(hostTNode.index, hostView);
-    return new ViewRef(componentView, context, componentIndex);
+    return new ViewRef(componentView, null, componentIndex);
   } else if (
       hostTNode.type === TNodeType.Element || hostTNode.type === TNodeType.Container ||
       hostTNode.type === TNodeType.ElementContainer) {

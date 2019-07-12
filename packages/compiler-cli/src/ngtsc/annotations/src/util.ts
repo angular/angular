@@ -49,6 +49,14 @@ export function getConstructorDependencies(
     let token = valueReferenceToExpression(param.typeValueReference, defaultImportRecorder);
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
+    const typeValueReference = param.typeValueReference;
+
+    if (typeValueReference && !typeValueReference.local &&
+        typeValueReference.name === 'ChangeDetectorRef' &&
+        typeValueReference.moduleName === '@angular/core') {
+      resolved = R3ResolvedDependencyType.ChangeDetectorRef;
+    }
+
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
       const name = isCore || dec.import === null ? dec.name : dec.import !.name;
       if (name === 'Inject') {
