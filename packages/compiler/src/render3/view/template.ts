@@ -1253,11 +1253,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     if (inputs.length || outputs.length) {
-      const attrsStartIndex = attrExprs.length;
+      const attrsLengthBeforeInputs = attrExprs.length;
 
       for (let i = 0; i < inputs.length; i++) {
         const input = inputs[i];
-        if (input.type !== BindingType.Animation) {
+        // We don't want the animation and attribute bindings in the
+        // attributes array since they aren't used for directive matching.
+        if (input.type !== BindingType.Animation && input.type !== BindingType.Attribute) {
           addAttrExpr(input.name);
         }
       }
@@ -1273,8 +1275,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // values have been filtered (by not including the animation ones) and added
       // to the expressions. The marker is important because it tells the runtime
       // code that this is where attributes without values start...
-      if (attrExprs.length) {
-        attrExprs.splice(attrsStartIndex, 0, o.literal(core.AttributeMarker.Bindings));
+      if (attrExprs.length !== attrsLengthBeforeInputs) {
+        attrExprs.splice(attrsLengthBeforeInputs, 0, o.literal(core.AttributeMarker.Bindings));
       }
     }
 
