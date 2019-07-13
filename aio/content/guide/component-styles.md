@@ -98,6 +98,26 @@ if some ancestor element has the CSS class `theme-light`.
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css"></code-example>
 
+### ::slotted
+
+In order to style elements projected via content projection, the `::slotted()` pseudo-element can be used.
+Note that it is only possible to apply styles to the top-most projected element.
+
+<code-example format="">
+  &lt;hero-details>
+    &lt;h2>Mister Fantastic&lt;/h2> // Can be styled in the hero-details component
+    &lt;hero-team> // Can be styled in the hero-details component
+      &lt;h3>Team&lt;/h3> // CANNOT be styled in the hero-details component
+    &lt;/hero-team>
+  &lt;/hero-detail>
+
+</code-example>
+
+It is possible to use a compound selector (e.g. `span`, `.class`, `[attr]`) to limit
+the selection to specific projected elements. Use an asterisk (`*`) to match any projected element.
+
+<code-example path="component-styles/src/app/hero-details.component.css" region="slotted" header="src/app/hero-details.component.css"></code-example>
+
 ### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
 
 Component styles normally apply only to the HTML in the component's own template.

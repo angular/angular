@@ -22,6 +22,20 @@
 }
 /* #enddocregion hostcontext */
 
+/* #docregion slotted */
+::slotted(*) {
+  font-weight: bold;
+}
+
+::slotted(h2) {
+  font-weight: bold;
+}
+
+p ::slotted(.hero) {
+  font-weight: bold;
+}
+/* #enddocregion slotted */
+
 /* #docregion deep */
 :host /deep/ h3 {
   font-style: italic;

@@ -197,6 +197,59 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       });
     });
 
+    describe(('::slotted'), () => {
+      it('should handle standalone ::slotted(*)', () => {
+        expect(s('::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual('[a-host] > *:not([contenta]), [contenta] > *:not([contenta]) {}');
+      });
+
+      it('should handle standalone ::slotted(div.x)', () => {
+        expect(s('::slotted(div.x) {}', 'contenta', 'a-host'))
+            .toEqual('[a-host] > div.x:not([contenta]), [contenta] > div.x:not([contenta]) {}');
+      });
+
+      it('should handle nested ::slotted(*)', () => {
+        expect(s('p ::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual(
+                'p[contenta] [contenta] > *:not([contenta]), p[contenta] > *:not([contenta]) {}');
+      });
+
+      it('should handle white space around slotted selector', () => {
+        expect(s('::slotted( * ) {}', 'contenta', 'a-host'))
+            .toEqual('[a-host] > *:not([contenta]), [contenta] > *:not([contenta]) {}');
+      });
+
+      it('should handle white space in attribute selector', () => {
+        expect(s('::slotted([a="b c"]) {}', 'contenta', 'a-host'))
+            .toEqual(
+                '[a-host] > [a="b c"]:not([contenta]), [contenta] > [a="b c"]:not([contenta]) {}');
+      });
+
+      it('should fail with selectors after ::slotted', () => {
+        expect(s('::slotted(*) .x {}', 'contenta', 'a-host'))
+            .toEqual(
+                '[a-host] > --invalidslotted:not([contenta]), [contenta] > --invalidslotted:not([contenta]) {}');
+        expect(s('::slotted(*) .x, .y {}', 'contenta', 'a-host'))
+            .toEqual(
+                '[a-host] > --invalidslotted:not([contenta]), [contenta] > --invalidslotted:not([contenta]), .y[contenta] {}');
+      });
+
+      it('should fail with selectors inside ::slotted after first selector', () => {
+        expect(s('::slotted(* span) {}', 'contenta', 'a-host'))
+            .toEqual(
+                '[a-host] > --invalidslotted:not([contenta]), [contenta] > --invalidslotted:not([contenta]) {}');
+        expect(s('::slotted(* span), .y {}', 'contenta', 'a-host'))
+            .toEqual(
+                '[a-host] > --invalidslotted:not([contenta]), [contenta] > --invalidslotted:not([contenta]), .y[contenta] {}');
+      });
+
+      it('should fail with missing whitespace before ::slotted', () => {
+        expect(s('p::slotted(*) {}', 'contenta', 'a-host'))
+            .toEqual(
+                'p[contenta] [contenta] > --invalidslotted:not([contenta]), p[contenta] > --invalidslotted:not([contenta]) {}');
+      });
+    });
+
     it('should support polyfill-next-selector', () => {
       let css = s('polyfill-next-selector {content: \'x > y\'} z {}', 'contenta');
       expect(css).toEqual('x[contenta] > y[contenta]{}');
