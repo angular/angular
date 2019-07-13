@@ -202,6 +202,30 @@ describe('directives', () => {
       expect(fixture.debugElement.query(By.directive(TestDir))).toBeTruthy();
     });
 
+    it('should not match directives based on attribute bindings', () => {
+      const calls: string[] = [];
+
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        ngOnInit() { calls.push('MyDir.ngOnInit'); }
+      }
+
+      @Component({
+        selector: `my-comp`,
+        template: `<p [attr.dir]="direction"></p><p dir="rtl"></p>`,
+      })
+      class MyComp {
+        direction = 'auto';
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      // Expect only one directive to be instantiated.
+      expect(calls).toEqual(['MyDir.ngOnInit']);
+    });
+
   });
 
   describe('outputs', () => {

@@ -612,6 +612,41 @@ describe('compiler compliance: bindings', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    it('should exclude attribute bindings from the attributes array', () => {
+      const files: MockDirectory = {
+        app: {
+          'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-app',
+            template: \`<a
+              target="_blank"
+              [title]="1"
+              [attr.foo]="'one'"
+              (customEvent)="doThings()"
+              [attr.bar]="'two'"
+              [id]="2"
+              aria-label="link"
+              [attr.baz]="three"></a>\`
+          })
+          export class MyComponent {
+            doThings() {}
+          }
+
+          @NgModule({declarations: [MyComponent]})
+          export class MyModule {}`
+        }
+      };
+
+      const template = `
+        const $e0_attrs$ = ["target", "_blank", "aria-label", "link", ${AttributeMarker.Bindings}, "title", "id", "customEvent"];
+        …
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect attribute array');
+    });
+
   });
 
   describe('host bindings', () => {
