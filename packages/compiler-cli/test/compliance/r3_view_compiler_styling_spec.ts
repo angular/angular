@@ -520,7 +520,7 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const $_c0$ = [${AttributeMarker.Styles}, "opacity", "1", ${AttributeMarker.Bindings}, "style"];
+          const $_c0$ = [${AttributeMarker.Styles}, "opacity", "1"];
           const $_c1$ = ["width", "height"];
           …
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
@@ -741,7 +741,7 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const $e0_attrs$ = [${AttributeMarker.Classes}, "grape", ${AttributeMarker.Bindings}, "class"];
+          const $e0_attrs$ = [${AttributeMarker.Classes}, "grape"];
           const $e0_bindings$ = ["apple", "orange"];
           …
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
@@ -797,7 +797,7 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const $e0_attrs$ = [${AttributeMarker.Classes}, "foo", ${AttributeMarker.Styles}, "width", "100px", ${AttributeMarker.Bindings}, "class", "style"];
+          const $e0_attrs$ = [${AttributeMarker.Classes}, "foo", ${AttributeMarker.Styles}, "width", "100px"];
           …
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
               type: MyComponent,

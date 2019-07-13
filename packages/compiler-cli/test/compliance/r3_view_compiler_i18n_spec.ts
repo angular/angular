@@ -333,7 +333,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = `
-        const $_c0$ = [${AttributeMarker.Bindings}, "title", "label"];
+        const $_c0$ = [3, "title"];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {

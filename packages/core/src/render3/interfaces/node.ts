@@ -199,7 +199,7 @@ export const enum AttributeMarker {
    * ```
    * var _c1 = ['moo', 'car', AttributeMarker.I18n, 'foo', 'bar'];
    */
-  I18n,
+  I18n = 6,
 }
 
 /**
