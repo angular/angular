@@ -109,7 +109,9 @@ export class Meta {
   }
 
   private _setMetaElementAttributes(tag: MetaDefinition, el: HTMLMetaElement): HTMLMetaElement {
-    Object.keys(tag).forEach((prop: string) => this._dom.setAttribute(el, prop, tag[prop]));
+    Object.keys(tag).forEach(
+        (prop: string) =>
+            this._dom.setAttribute(el, (prop === 'httpEquiv') ? 'http-equiv' : prop, tag[prop]));
     return el;
   }
 
@@ -119,6 +121,8 @@ export class Meta {
   }
 
   private _containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {
-    return Object.keys(tag).every((key: string) => this._dom.getAttribute(elem, key) === tag[key]);
+    return Object.keys(tag).every(
+        (key: string) =>
+            this._dom.getAttribute(elem, (key === 'httpEquiv') ? 'http-equiv' : key) === tag[key]);
   }
 }
