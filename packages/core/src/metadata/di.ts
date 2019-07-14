@@ -349,11 +349,6 @@ export interface ViewChildDecorator {
    * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'
    * linenums="false"}
    *
-   * ### Example 3
-   *
-   * {@example core/di/ts/viewChild/view_child_example.ts region='Component'
-   * linenums="false"}
-   *
    * @Annotation
    */
   (selector: Type<any>|Function|string, opts: {read?: any, static: boolean}): any;
