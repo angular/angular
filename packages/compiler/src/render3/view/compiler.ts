@@ -644,7 +644,7 @@ function createHostBindingsFunction(
   const attributeBindings: o.Expression[][] = [];
   const syntheticHostBindings: o.Expression[][] = [];
 
-  (bindings || []).forEach((binding: ParsedProperty) => {
+  bindings && bindings.forEach((binding: ParsedProperty) => {
     const name = binding.name;
     const stylingInputWasSet =
         styleBuilder.registerInputBasedOnName(name, binding.expression, binding.sourceSpan);
@@ -677,18 +677,10 @@ function createHostBindingsFunction(
       if (sanitizerFn) {
         instructionParams.push(sanitizerFn);
       }
-      if (!isAttribute) {
-        if (!sanitizerFn) {
-          // append `null` in front of `nativeOnly` flag if no sanitizer fn defined
-          instructionParams.push(o.literal(null));
-        }
-        // host bindings must have nativeOnly prop set to true
-        instructionParams.push(o.literal(true));
-      }
 
       updateStatements.push(...bindingExpr.stmts);
 
-      if (instruction === R3.property) {
+      if (instruction === R3.hostProperty) {
         propertyBindings.push(instructionParams);
       } else if (instruction === R3.attribute) {
         attributeBindings.push(instructionParams);
@@ -701,7 +693,7 @@ function createHostBindingsFunction(
   });
 
   if (propertyBindings.length > 0) {
-    updateStatements.push(chainedInstruction(R3.property, propertyBindings).toStmt());
+    updateStatements.push(chainedInstruction(R3.hostProperty, propertyBindings).toStmt());
   }
 
   if (attributeBindings.length > 0) {
@@ -802,7 +794,7 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
       // compatibility instruction available for this purpose.
       instruction = R3.updateSyntheticHostBinding;
     } else {
-      instruction = R3.property;
+      instruction = R3.hostProperty;
     }
   }
 

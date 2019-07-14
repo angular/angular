@@ -642,7 +642,7 @@ describe('compiler compliance: bindings', () => {
               $r3$.ɵɵallocHostVars(1);
             }
             if (rf & 2) {
-              $r3$.ɵɵproperty("id", ctx.dirId, null, true);
+              $r3$.ɵɵhostProperty("id", ctx.dirId);
             }
           }
         });
@@ -689,7 +689,7 @@ describe('compiler compliance: bindings', () => {
               $r3$.ɵɵallocHostVars(3);
             }
             if (rf & 2) {
-              $r3$.ɵɵproperty("id", $r3$.ɵɵpureFunction1(1, $ff$, ctx.id), null, true);
+              $r3$.ɵɵhostProperty("id", $r3$.ɵɵpureFunction1(1, $ff$, ctx.id));
             }
           },
           consts: 0,
@@ -888,7 +888,7 @@ describe('compiler compliance: bindings', () => {
           hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
             …
             if (rf & 2) {
-              $r3$.ɵɵproperty("title", ctx.myTitle, null, true)("tabindex", 1, null, true)("id", ctx.myId, null, true);
+              $r3$.ɵɵhostProperty("title", ctx.myTitle)("tabindex", 1)("id", ctx.myId);
             }
           }
         `;
@@ -924,7 +924,7 @@ describe('compiler compliance: bindings', () => {
           hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
             …
             if (rf & 2) {
-              $r3$.ɵɵproperty("tabindex", 1, null, true)("title", ctx.myTitle, null, true)("id", ctx.myId, null, true);
+              $r3$.ɵɵhostProperty("tabindex", 1)("title", ctx.myTitle)("id", ctx.myId);
             }
           }
         `;
@@ -956,7 +956,7 @@ describe('compiler compliance: bindings', () => {
           hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
             …
             if (rf & 2) {
-              $r3$.ɵɵproperty("title", "my title", null, true)("id", "my-id", null, true);
+              $r3$.ɵɵhostProperty("title", "my title")("id", "my-id");
               $r3$.ɵɵattribute("tabindex", 1);
             }
           }
@@ -992,7 +992,7 @@ describe('compiler compliance: bindings', () => {
         hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
           …
           if (rf & 2) {
-            $r3$.ɵɵupdateSyntheticHostBinding("@expand", ctx.expandedState, null, true)("@fadeOut", true, null, true)("@shrink", ctx.isSmall, null, true);
+            $r3$.ɵɵupdateSyntheticHostBinding("@expand", ctx.expandedState)("@fadeOut", true)("@shrink", ctx.isSmall);
           }
         }
       `;
@@ -1095,7 +1095,7 @@ describe('compiler compliance: bindings', () => {
             hostBindings: function MyDirective_HostBindings(rf, ctx, elIndex) {
               …
               if (rf & 2) {
-                $r3$.ɵɵproperty("tabindex", 1, null, true);
+                $r3$.ɵɵhostProperty("tabindex", 1);
                 $r3$.ɵɵattribute("title", "my title")("id", "my-id");
               }
             }
