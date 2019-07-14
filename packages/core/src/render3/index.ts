@@ -82,6 +82,7 @@ export {
 
   ɵɵprojection,
   ɵɵprojectionDef,
+  ɵɵhostProperty,
   ɵɵproperty,
   ɵɵpropertyInterpolate,
   ɵɵpropertyInterpolate1,

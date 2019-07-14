@@ -1832,7 +1832,7 @@ runInEachFileSystem(os => {
           i0.ɵɵstyling(_c0);
         }
         if (rf & 2) {
-          i0.ɵɵproperty("prop", ctx.bar, null, true);
+          i0.ɵɵhostProperty("prop", ctx.bar);
           i0.ɵɵattribute("hello", ctx.foo);
           i0.ɵɵclassProp(0, ctx.someClass);
           i0.ɵɵstylingApply();
@@ -3323,7 +3323,7 @@ runInEachFileSystem(os => {
             i0.ɵɵallocHostVars(6);
           }
           if (rf & 2) {
-            i0.ɵɵproperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl, true)("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl, true)("action", ctx.propAction, i0.ɵɵsanitizeUrl, true)("profile", ctx.propProfile, i0.ɵɵsanitizeResourceUrl, true)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml, true)("title", ctx.propSafeTitle, null, true);
+            i0.ɵɵhostProperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.propAction, i0.ɵɵsanitizeUrl)("profile", ctx.propProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
           }
         }
       `;
@@ -3358,7 +3358,7 @@ runInEachFileSystem(os => {
             i0.ɵɵallocHostVars(6);
           }
           if (rf & 2) {
-            i0.ɵɵproperty("src", ctx.srcProp, null, true)("href", ctx.hrefProp, null, true)("title", ctx.titleProp, null, true);
+            i0.ɵɵhostProperty("src", ctx.srcProp)("href", ctx.hrefProp)("title", ctx.titleProp);
             i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr)("title", ctx.titleAttr);
           }
         }

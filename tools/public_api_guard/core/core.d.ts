@@ -877,6 +877,8 @@ export declare function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T> | nul
 
 export declare function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T;
 
+export declare function ɵɵhostProperty<T>(propName: string, value: T, sanitizer?: SanitizerFn | null): TsickleIssue1009;
+
 export declare function ɵɵi18n(index: number, message: string, subTemplateIndex?: number): void;
 
 export declare function ɵɵi18nApply(index: number): void;
@@ -956,7 +958,7 @@ export declare function ɵɵprojection(nodeIndex: number, selectorIndex?: number
 
 export declare function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void;
 
-export declare function ɵɵproperty<T>(propName: string, value: T, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): TsickleIssue1009;
+export declare function ɵɵproperty<T>(propName: string, value: T, sanitizer?: SanitizerFn | null): TsickleIssue1009;
 
 export declare function ɵɵpropertyInterpolate(propName: string, v0: any, sanitizer?: SanitizerFn): TsickleIssue1009;
 
@@ -1109,7 +1111,7 @@ export declare function ɵɵtextInterpolate8(prefix: string, v0: any, i0: string
 
 export declare function ɵɵtextInterpolateV(values: any[]): TsickleIssue1009;
 
-export declare function ɵɵupdateSyntheticHostBinding<T>(propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): TsickleIssue1009;
+export declare function ɵɵupdateSyntheticHostBinding<T>(propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null): TsickleIssue1009;
 
 export declare function ɵɵviewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): QueryList<T>;
 

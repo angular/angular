@@ -98,6 +98,7 @@ export {
   ɵɵcontentQuery,
   ɵɵloadContentQuery,
   ɵɵelementEnd,
+  ɵɵhostProperty,
   ɵɵproperty,
   ɵɵpropertyInterpolate,
   ɵɵpropertyInterpolate1,
