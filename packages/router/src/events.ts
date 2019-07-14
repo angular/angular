@@ -390,6 +390,23 @@ export class ActivationStart {
 /**
  * @description
  *
+ * Represents the start of the Deactivation phase of routing.
+ *
+ * @publicApi
+ */
+export class DeactivationStart {
+  constructor(
+      /** @docsNotRequired */
+      public snapshot: ActivatedRouteSnapshot) {}
+  toString(): string {
+    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    return `DeactivationStart(path: '${path}')`;
+  }
+}
+
+/**
+ * @description
+ *
  * Represents the start of end of the Resolve phase of routing. See note on
  * `ActivationStart` for use of this experimental API.
  *
@@ -402,6 +419,23 @@ export class ActivationEnd {
   toString(): string {
     const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
     return `ActivationEnd(path: '${path}')`;
+  }
+}
+
+/**
+ * @description
+ *
+ * Represents the end of the Deactivation phase of routing.
+ *
+ * @publicApi
+ */
+export class DeactivationEnd {
+  constructor(
+      /** @docsNotRequired */
+      public snapshot: ActivatedRouteSnapshot) {}
+  toString(): string {
+    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    return `DeactivationEnd(path: '${path}')`;
   }
 }
 
@@ -441,11 +475,13 @@ export class Scroll {
  * - `RouteConfigLoadEnd`,
  * - `RoutesRecognized`,
  * - `GuardsCheckStart`,
+ * - `DeactivationStart`,
  * - `ChildActivationStart`,
  * - `ActivationStart`,
  * - `GuardsCheckEnd`,
  * - `ResolveStart`,
  * - `ResolveEnd`,
+ * - `DeactivationEnd`
  * - `ActivationEnd`
  * - `ChildActivationEnd`
  * - `NavigationEnd`,
@@ -456,4 +492,5 @@ export class Scroll {
  * @publicApi
  */
 export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart |
-    ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
+    ChildActivationEnd | ActivationStart | ActivationEnd | Scroll | DeactivationStart |
+    DeactivationEnd;

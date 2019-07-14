@@ -10,7 +10,7 @@ import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {LoadedRouterConfig} from '../config';
-import {ActivationEnd, ChildActivationEnd, Event} from '../events';
+import {ActivationEnd, ChildActivationEnd, DeactivationEnd, Event} from '../events';
 import {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
 import {NavigationTransition} from '../router';
 import {ChildrenOutletContexts} from '../router_outlet_context';
@@ -51,13 +51,20 @@ export class ActivateRoutes {
     // Recurse on the routes active in the future state to de-activate deeper children
     futureNode.children.forEach(futureChild => {
       const childOutletName = futureChild.value.outlet;
-      this.deactivateRoutes(futureChild, children[childOutletName], contexts);
+      const currNode = children[childOutletName];
+      this.deactivateRoutes(futureChild, currNode, contexts);
+
+      if (currNode) {
+        this.forwardEvent(new DeactivationEnd(currNode.value.snapshot));
+      }
+
       delete children[childOutletName];
     });
 
     // De-activate the routes that will not be re-used
     forEach(children, (v: TreeNode<ActivatedRoute>, childName: string) => {
       this.deactivateRouteAndItsChildren(v, contexts);
+      this.forwardEvent(new DeactivationEnd(v.value.snapshot));
     });
   }
 

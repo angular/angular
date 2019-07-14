@@ -96,6 +96,20 @@ export declare type Data = {
     [name: string]: any;
 };
 
+export declare class DeactivationEnd {
+    snapshot: ActivatedRouteSnapshot;
+    constructor(
+    snapshot: ActivatedRouteSnapshot);
+    toString(): string;
+}
+
+export declare class DeactivationStart {
+    snapshot: ActivatedRouteSnapshot;
+    constructor(
+    snapshot: ActivatedRouteSnapshot);
+    toString(): string;
+}
+
 export declare class DefaultUrlSerializer implements UrlSerializer {
     parse(url: string): UrlTree;
     serialize(tree: UrlTree): string;
@@ -106,7 +120,7 @@ export declare type DeprecatedLoadChildren = string;
 
 export declare type DetachedRouteHandle = {};
 
-export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
+export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll | DeactivationStart | DeactivationEnd;
 
 export interface ExtraOptions {
     anchorScrolling?: 'disabled' | 'enabled';

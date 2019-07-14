@@ -10,7 +10,7 @@ import {Injector} from '@angular/core';
 import {MonoTypeOperatorFunction, Observable, defer, from, of } from 'rxjs';
 import {concatAll, concatMap, first, map, mergeMap} from 'rxjs/operators';
 
-import {ActivationStart, ChildActivationStart, Event} from '../events';
+import {ActivationStart, ChildActivationStart, DeactivationStart, Event} from '../events';
 import {CanActivateChildFn, CanActivateFn, CanDeactivateFn} from '../interfaces';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
@@ -32,7 +32,8 @@ export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event
       }
 
       return runCanDeactivateChecks(
-                 canDeactivateChecks, targetSnapshot !, currentSnapshot, moduleInjector)
+                 canDeactivateChecks, targetSnapshot !, currentSnapshot, moduleInjector,
+                 forwardEvent)
           .pipe(
               mergeMap(canDeactivate => {
                 return canDeactivate && isBoolean(canDeactivate) ?
@@ -47,11 +48,17 @@ export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event
 
 function runCanDeactivateChecks(
     checks: CanDeactivate[], futureRSS: RouterStateSnapshot, currRSS: RouterStateSnapshot,
-    moduleInjector: Injector) {
+    moduleInjector: Injector, forwardEvent?: (evt: Event) => void) {
   return from(checks).pipe(
-      mergeMap(
-          check =>
-              runCanDeactivate(check.component, check.route, currRSS, futureRSS, moduleInjector)),
+      concatMap((check: CanDeactivate) => {
+        return from([
+                 fireDeactivationStart(check.route, forwardEvent),
+                 runCanDeactivate(check.component, check.route, currRSS, futureRSS, moduleInjector),
+               ])
+            .pipe(concatAll(), first(result => {
+                    return result !== true;
+                  }, true as boolean | UrlTree));
+      }),
       first(result => { return result !== true; }, true as boolean | UrlTree));
 }
 
@@ -86,6 +93,19 @@ function fireActivationStart(
     forwardEvent?: (evt: Event) => void): Observable<boolean> {
   if (snapshot !== null && forwardEvent) {
     forwardEvent(new ActivationStart(snapshot));
+  }
+  return of (true);
+}
+
+/**
+   * This should fire off `DeactivationStart` events for each route being deactivated at this level.
+   * Always return `true` so checks continue to run.
+   */
+function fireDeactivationStart(
+    snapshot: ActivatedRouteSnapshot | null,
+    forwardEvent?: (evt: Event) => void): Observable<boolean> {
+  if (snapshot !== null && forwardEvent) {
+    forwardEvent(new DeactivationStart(snapshot));
   }
   return of (true);
 }
