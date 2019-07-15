@@ -249,7 +249,7 @@ class StackblitzBuilder {
       throw new Error(`Stackblitz config - unable to parse json file: ${configFileName}\n${e}`);
     }
 
-    var defaultIncludes = ['**/*.ts', '**/*.js', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png'];
+    var defaultIncludes = ['**/*.ts', '**/*.js', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png', '**/*.svg'];
     var boilerplateIncludes = ['src/environments/*.*', 'angular.json', 'src/polyfills.ts'];
     if (config.files) {
       if (config.files.length > 0) {
