@@ -33,7 +33,7 @@ yarn add angular/material2-builds angular/cdk-builds angular/animations-builds
 ```
 #### Alternative 2: Angular Devkit 6+
 
-Using the Angular CLI `ng add` command will update your Angular project with the correct dependencies, perform configuration changes and execute initialization code. 
+Using the Angular CLI `ng add` command will update your Angular project with the correct dependencies, perform configuration changes and execute initialization code.
 
 ```bash
 ng add @angular/material
@@ -72,7 +72,8 @@ export class PizzaPartyAppModule { }
 Import the NgModule for each component you want to use:
 
 ```ts
-import {MatButtonModule, MatCheckboxModule} from '@angular/material';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   ...
@@ -85,7 +86,8 @@ export class PizzaPartyAppModule { }
 Alternatively, you can create a separate NgModule that imports and then re-exports all of the Angular Material components that you will use in your application. By exporting them again, other modules can simply include your `CustomMaterialModule` wherever Material components are needed, and automatically get all of the exported Material modules. A good place for importing/exporting the application-wide Material modules is the [SharedModule](https://angular.io/guide/ngmodule-faq#sharedmodule).
 
 ```ts
-import {MatButtonModule, MatCheckboxModule} from '@angular/material';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   imports: [MatButtonModule, MatCheckboxModule],
