@@ -29,3 +29,8 @@ export function getPluralCase(value: any, locale: string): string {
       return 'other';
   }
 }
+
+/**
+ * The locale id that the application is using by default (for translations and ICU expressions).
+ */
+export const DEFAULT_LOCALE_ID = 'en-US';
