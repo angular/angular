@@ -36,6 +36,11 @@ export declare class NgForOfContext<T> {
   readonly odd: boolean;
 }
 
+export declare class NgIfContext<T> {
+  $implicit: T;
+  ngIf: T;
+}
+
 export declare class IndexPipe {
   transform<T>(value: T[], index: number): T;
 
@@ -48,9 +53,10 @@ export declare class NgForOf<T> {
   static ngDirectiveDef: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
 }
 
-export declare class NgIf {
-  ngIf: any;
+export declare class NgIf<T = any> {
+  ngIf: T;
   static ngTemplateGuard_ngIf: 'binding';
+  static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<T>;
   static ngDirectiveDef: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
 }
 
@@ -123,6 +129,31 @@ export declare class CommonModule {
     `);
 
       env.driveMain();
+    });
+
+    it('should constrain the template rendering context of NgIf', () => {
+      env.write('test.ts', `
+    import {CommonModule} from '@angular/common';
+    import {Component, Input, NgModule} from '@angular/core';
+
+    @Component({
+      selector: 'test',
+      template: '<div *ngIf="user; let u">{{u.does_not_exist}}</div>',
+    })
+    class TestCmp {
+      @Input() user: {name: string};
+    }
+
+    @NgModule({
+      declarations: [TestCmp],
+      imports: [CommonModule],
+    })
+    class Module {}
+    `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain('does_not_exist');
     });
 
     it('should check basic usage of NgFor', () => {

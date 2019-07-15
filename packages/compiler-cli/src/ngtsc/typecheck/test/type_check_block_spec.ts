@@ -129,6 +129,23 @@ describe('type check blocks', () => {
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('if (ctx.person !== null)');
     });
+
+    it('should combine two kinds of guards if provided', () => {
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'NgIf',
+        selector: '[ngIf]',
+        inputs: {'ngIf': 'ngIf'},
+        ngTemplateGuards: [{
+          inputName: 'ngIf',
+          type: 'binding',
+        }],
+        hasNgTemplateContextGuard: true
+      }];
+      const TEMPLATE = `<div *ngIf="person"></div>`;
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('if (NgIf.ngTemplateContextGuard(_t1, _t2) && ctx.person)');
+    });
   });
 
   describe('config', () => {

@@ -258,17 +258,18 @@ export declare class NgForOfContext<T> {
     constructor($implicit: T, ngForOf: NgIterable<T>, index: number, count: number);
 }
 
-export declare class NgIf {
+export declare class NgIf<T = any> {
     ngIf: any;
-    ngIfElse: TemplateRef<NgIfContext> | null;
-    ngIfThen: TemplateRef<NgIfContext> | null;
-    constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>);
+    ngIfElse: TemplateRef<NgIfContext<T>> | null;
+    ngIfThen: TemplateRef<NgIfContext<T>> | null;
+    constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>);
     static ngTemplateGuard_ngIf: 'binding';
+    static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<T>;
 }
 
-export declare class NgIfContext {
-    $implicit: any;
-    ngIf: any;
+export declare class NgIfContext<T> {
+    $implicit: T;
+    ngIf: T;
 }
 
 export declare class NgLocaleLocalization extends NgLocalization {
