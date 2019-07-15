@@ -1428,7 +1428,8 @@ describe('acceptance integration tests', () => {
             .createComponent(SomeComponent);
       })
           .toThrowError(
-              `Unexpected directive 'SomeComponent' imported by the module 'ModuleWithImportedComponent'. Please add a @NgModule annotation.`);
+              // The ViewEngine error has a typo, whereas the Ivy one fixes it.
+              /^Unexpected directive 'SomeComponent' imported by the module 'ModuleWithImportedComponent'\. Please add (a|an) @NgModule annotation\.$/);
     });
 
     it('should throw with descriptive error message when a pipe is passed to imports', () => {
@@ -1446,7 +1447,8 @@ describe('acceptance integration tests', () => {
             .createComponent(FixtureComponent);
       })
           .toThrowError(
-              `Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'. Please add a @NgModule annotation.`);
+              // The ViewEngine error has a typo, whereas the Ivy one fixes it.
+              /^Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'\. Please add (a|an) @NgModule annotation\.$/);
     });
 
     it('should throw with descriptive error message when a module is passed to declarations', () => {
@@ -1501,7 +1503,8 @@ describe('acceptance integration tests', () => {
                .createComponent(FixtureComponent);
          })
              .toThrowError(
-                 `Unexpected value 'SomeModule' imported by the module 'ModuleWithImportedModule'. Please add a @NgModule annotation.`);
+                 // The ViewEngine error has a typo, whereas the Ivy one fixes it.
+                 /^Unexpected value 'SomeModule' imported by the module 'ModuleWithImportedModule'\. Please add (a|an) @NgModule annotation\.$/);
        });
 
   });
