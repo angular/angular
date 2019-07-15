@@ -1,3 +1,36 @@
+# 8.1.0 "denim-antipode" (2019-07-15)
+
+### Highlights
+* The `MatNavTabBar` now support tab pagination, a long-requested feature.
+* `CdkDrag` now supports scrolling the viewport when an item is dragged near the edge. 
+
+
+### Bug Fixes
+
+* **card:** disable all animations when using NoopAnimationsModule ([#11538](https://github.com/angular/components/issues/11538)) ([11a4ff0](https://github.com/angular/components/commit/11a4ff0)), closes [#10590](https://github.com/angular/components/issues/10590)
+* **drag-drop:** fix drag start delay behavior to allow scrolling ([#16228](https://github.com/angular/components/issues/16228)) ([738f10c](https://github.com/angular/components/commit/738f10c)), closes [#16224](https://github.com/angular/components/issues/16224)
+* **drag-drop:** return up-to-date position if getFreeDragPosition is called while dragging ([#16464](https://github.com/angular/components/issues/16464)) ([1540391](https://github.com/angular/components/commit/1540391))
+* **expansion:** incorrect margin for "before" indicator when expanded ([#16420](https://github.com/angular/components/issues/16420)) ([98a231d](https://github.com/angular/components/commit/98a231d))
+* **menu:** keyboard controls not respecting DOM order when items are added at a later point ([#11720](https://github.com/angular/components/issues/11720)) ([49e8c59](https://github.com/angular/components/commit/49e8c59)), closes [#11652](https://github.com/angular/components/issues/11652)
+* **overlay:** incorrectly calculating position when page is scrolled horizontally and overlay is anchored to the right ([#16235](https://github.com/angular/components/issues/16235)) ([f61730a](https://github.com/angular/components/commit/f61730a)), closes [#16009](https://github.com/angular/components/issues/16009)
+* **overlay:** OverlayKeyboardDispatcher (used in dialog and overlay
+    and available in the CDK) now listens on bubbling/propagation phase
+    instead of capture phase. This means that overlay keydown handlers
+    are now called after any applicable handlers inside of an overlay,
+    and it respects any stopPropagation() calls from inside the overlay.
+
+### Features
+
+* **a11y:** allow for element to be used as message in AriaDescriber ([#16118](https://github.com/angular/components/issues/16118)) ([8c4f25f](https://github.com/angular/components/commit/8c4f25f)), closes [#16099](https://github.com/angular/components/issues/16099)
+* **common:** Add dev-mode sanity check for mismatched versions of cdk and material ([#15395](https://github.com/angular/components/issues/15395)) ([ffad004](https://github.com/angular/components/commit/ffad004))
+* **drag-drop:** add support for automatic scrolling ([#16382](https://github.com/angular/components/issues/16382)) ([207dba6](https://github.com/angular/components/commit/207dba6)), closes [#13588](https://github.com/angular/components/issues/13588)
+* **expansion:** allow expansion toggle indicator positioning ([#16257](https://github.com/angular/components/issues/16257)) ([c3eac17](https://github.com/angular/components/commit/c3eac17))
+* **radio:** add provider for default color input ([#15811](https://github.com/angular/components/issues/15811)) ([5c51301](https://github.com/angular/components/commit/5c51301))
+* **schematics:** add font-display query ([#16363](https://github.com/angular/components/issues/16363)) ([43a01e9](https://github.com/angular/components/commit/43a01e9))
+* **style:** allow palettes to specify a separate hue for colored text ([#15149](https://github.com/angular/components/issues/15149)) ([15038e3](https://github.com/angular/components/commit/15038e3)), closes [#15148](https://github.com/angular/components/issues/15148)
+* **tabs:** support pagination in nav bar ([#16055](https://github.com/angular/components/issues/16055)) ([aa22368](https://github.com/angular/components/commit/aa22368)), closes [#2177](https://github.com/angular/components/issues/2177)
+
+
 ## 8.0.2 "metal-mushroom" (2019-07-02)
 
 
