@@ -2,10 +2,12 @@ import { Component, ViewChild, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Logger } from 'app/shared/logger.service';
 import { MockLogger } from 'testing/logger.service';
+import { MockPrettyPrinter } from 'testing/pretty-printer.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CodeTabsComponent } from './code-tabs.component';
 import { CodeTabsModule } from './code-tabs.module';
+import { PrettyPrinter } from './pretty-printer.service';
 
 describe('CodeTabsComponent', () => {
   let fixture: ComponentFixture<HostComponent>;
@@ -19,6 +21,7 @@ describe('CodeTabsComponent', () => {
       schemas: [ NO_ERRORS_SCHEMA ],
       providers: [
        { provide: Logger, useClass: MockLogger },
+       { provide: PrettyPrinter, useClass: MockPrettyPrinter },
       ]
     });
 
