@@ -171,7 +171,7 @@ function verifySemanticsOfNgModuleDef(
     ngModuleDef = getNgModuleDef(moduleType) !;
     if (!ngModuleDef) {
       throw new Error(
-          `Unexpected value '${moduleType.name}' imported by the module '${importingModule.name}'. Please add a @NgModule annotation.`);
+          `Unexpected value '${moduleType.name}' imported by the module '${importingModule.name}'. Please add an @NgModule annotation.`);
     }
   } else {
     ngModuleDef = getNgModuleDef(moduleType, true);
@@ -186,7 +186,7 @@ function verifySemanticsOfNgModuleDef(
   const exports = maybeUnwrapFn(ngModuleDef.exports);
   declarations.forEach(verifyDeclarationsHaveDefinitions);
   const combinedDeclarations: Type<any>[] = [
-    ...declarations.map(resolveForwardRef),  //
+    ...declarations.map(resolveForwardRef),
     ...flatten(imports.map(computeCombinedExports)).map(resolveForwardRef),
   ];
   exports.forEach(verifyExportsAreDeclaredOrReExported);
@@ -283,12 +283,12 @@ function verifySemanticsOfNgModuleDef(
 
     if (getComponentDef(type) || getDirectiveDef(type)) {
       throw new Error(
-          `Unexpected directive '${type.name}' imported by the module '${importingModule.name}'. Please add a @NgModule annotation.`);
+          `Unexpected directive '${type.name}' imported by the module '${importingModule.name}'. Please add an @NgModule annotation.`);
     }
 
     if (getPipeDef(type)) {
       throw new Error(
-          `Unexpected pipe '${type.name}' imported by the module '${importingModule.name}'. Please add a @NgModule annotation.`);
+          `Unexpected pipe '${type.name}' imported by the module '${importingModule.name}'. Please add an @NgModule annotation.`);
     }
   }
 }
