@@ -82,7 +82,7 @@ class ExampleZipper {
 
     const exampleDirName = path.dirname(configFileName);
     const outputFileName = path.join(outputDirName, relativeDirName, exampleZipName + '.zip');
-    let defaultIncludes = ['**/*.ts', '**/*.js', '**/*.es6', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png'];
+    let defaultIncludes = ['**/*.ts', '**/*.js', '**/*.es6', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png', '**/*.svg'];
     let alwaysIncludes = [
       'bs-config.json',
       'e2e/protractor.conf.js',
