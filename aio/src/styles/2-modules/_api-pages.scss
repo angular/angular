@@ -4,36 +4,6 @@
   table {
     margin: 12px 0 24px;
 
-    th {
-        text-transform: none;
-        @include font-size(16);
-        font-weight: bold;
-    }
-
-    tr {
-        border-bottom: 1px solid $lightgray;
-    }
-
-    td {
-      vertical-align: middle;
-    }
-
-    // This is overriding a style here:
-    // https://github.com/angular/angular/blob/95993e1/aio/src/styles/2-modules/_table.scss#L58-L62
-    tbody > tr > td tr td:first-child {
-      @media screen and (max-width: 480px) {
-        background-color: inherit;
-      }
-    }
-
-    hr {
-      margin: 16px 0;
-    }
-
-    tr:last-child {
-      border-bottom: none;
-    }
-
     &.item-table {
       td {
         padding: 32px;
@@ -44,10 +14,6 @@
       td {
         padding: 16px 24px;
       }
-    }
-
-    .short-description {
-      margin-left: 0;
     }
 
     &.parameters-table {
@@ -80,6 +46,40 @@
         vertical-align: top;
       }
     }
+
+    th {
+      text-transform: none;
+      @include font-size(16);
+      font-weight: bold;
+    }
+
+    tr {
+      border-bottom: 1px solid $lightgray;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      vertical-align: middle;
+    }
+
+    // This is overriding a style here:
+    // https://github.com/angular/angular/blob/95993e1/aio/src/styles/2-modules/_table.scss#L58-L62
+    tbody > tr > td tr td:first-child {
+      @media screen and (max-width: 480px) {
+        background-color: inherit;
+      }
+    }
+
+    hr {
+      margin: 16px 0;
+    }
+
+    .short-description {
+      margin-left: 0;
+    }
   }
 
   .class-overview {
@@ -88,6 +88,10 @@
     code-example {
       clear: left;
     }
+  }
+
+  .member-name .pln {
+    font-weight: 700;
   }
 
   .short-description {
@@ -138,6 +142,7 @@
       .github-links {
         a {
           color: $mediumgray;
+
           .material-icons:hover {
             background: none;
             color: $blue;
@@ -228,7 +233,6 @@
     box-shadow: none;
     margin: 0;
   }
-
 
   .from-constructor,
   .read-only-property,
