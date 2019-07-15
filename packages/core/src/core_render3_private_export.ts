@@ -173,7 +173,6 @@ export {
   i18nConfigureLocalize as ɵi18nConfigureLocalize,
   ɵɵi18nLocalize,
   setLocaleId as ɵsetLocaleId,
-  DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID,
   setClassMetadata as ɵsetClassMetadata,
   ɵɵresolveWindow,
   ɵɵresolveDocument,
