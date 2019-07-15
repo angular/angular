@@ -40,6 +40,7 @@ describe('AnnouncementBarComponent', () => {
     it('should make a single request to the server', () => {
       component.ngOnInit();
       httpMock.expectOne('generated/announcements.json');
+      expect().nothing();  // Prevent jasmine from complaining about no expectations.
     });
 
     it('should set the announcement to the first "live" one in the list loaded from `announcements.json`', () => {
