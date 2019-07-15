@@ -36,6 +36,14 @@ ng serve
 In your browser, open http://localhost:4200/ to see the new app run.
 When you use the [ng serve](cli/serve) command to build an app and serve it locally, the server automatically rebuilds the app and reloads the page when you change any of the source files.
 
+<div class="alert is-helpful">
+
+   When you run `ng new my-first-project` a new folder, named `my-first-project`, will be created in the current working directory. Since you wont to be able to create files inside that folder, make sure you have sufficient rights in the current working directory before running the command.
+
+   If the current working directory is not the right place for your project, you can change to a more appropriate directory by running `cd <path-to-other-directory>` first.
+
+</div>
+
 ## Workspaces and project files
 
 The [ng new](cli/new) command creates an *Angular workspace* folder and generates a new app skeleton.
@@ -74,7 +82,7 @@ Command syntax is shown as follows:
 * Option names are prefixed with a double dash (--).
     Option aliases are prefixed with a single dash (-).
     Arguments are not prefixed.
-    For example: 
+    For example:
     <code-example format="." language="bash">
         ng build my-app -c production
     </code-example>
@@ -105,5 +113,5 @@ Schematic options are supplied to the command in the same format as immediate co
 
 ### Building with Bazel
 
-Optionally, you can configure the Angular CLI to use [Bazel](https://docs.bazel.build) as the build tool. For more information, see [Building with Bazel](guide/bazel). 
+Optionally, you can configure the Angular CLI to use [Bazel](https://docs.bazel.build) as the build tool. For more information, see [Building with Bazel](guide/bazel).
 
