@@ -343,6 +343,21 @@ class SomeComponent {
 
             expect(getLocaleId()).toEqual('ro');
           });
+
+      it('should wait for APP_INITIALIZER to set providers for `LOCALE_ID`', async() => {
+        let locale: string = '';
+
+        const promise = Promise.resolve().then(() => { locale = 'fr-FR'; });
+
+        const testModule = createModule({
+          providers: [
+            {provide: APP_INITIALIZER, useValue: () => promise, multi: true},
+            {provide: LOCALE_ID, useFactory: () => locale}
+          ]
+        });
+        const app = await defaultPlatform.bootstrapModule(testModule);
+        expect(app.injector.get(LOCALE_ID)).toEqual('fr-FR');
+      });
     });
 
     describe('bootstrapModuleFactory', () => {
