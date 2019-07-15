@@ -47,6 +47,7 @@ describe('DocumentService', () => {
       docService.currentDocument.subscribe();
 
       httpMock.expectOne(CONTENT_URL_PREFIX + 'initial/doc.json');
+      expect().nothing();  // Prevent jasmine from complaining about no expectations.
     });
 
     it('should emit a document each time the location changes', () => {
@@ -185,6 +186,7 @@ describe('DocumentService', () => {
       docService.currentDocument.subscribe();
 
       httpMock.expectOne(CONTENT_URL_PREFIX + 'index.json');
+      expect().nothing();  // Prevent jasmine from complaining about no expectations.
     });
 
     it('should map the "folder" locations to the correct document request', () => {
@@ -192,6 +194,7 @@ describe('DocumentService', () => {
       docService.currentDocument.subscribe();
 
       httpMock.expectOne(CONTENT_URL_PREFIX + 'guide.json');
+      expect().nothing();  // Prevent jasmine from complaining about no expectations.
     });
   });
 });
