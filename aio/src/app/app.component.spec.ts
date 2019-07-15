@@ -630,6 +630,11 @@ describe('AppComponent', () => {
       };
 
 
+      beforeEach(() => {
+        tocContainer = null;
+        toc = null;
+      });
+
       it('should show/hide `<aio-toc>` based on `hasFloatingToc`', () => {
         expect(tocContainer).toBeFalsy();
         expect(toc).toBeFalsy();

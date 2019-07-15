@@ -1,114 +1,104 @@
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { first } from 'rxjs/operators';
 
 import { CodeComponent } from './code.component';
 import { CodeModule } from './code.module';
 import { CopierService } from 'app/shared//copier.service';
 import { Logger } from 'app/shared/logger.service';
+import { MockPrettyPrinter } from 'testing/pretty-printer.service';
 import { PrettyPrinter } from './pretty-printer.service';
 
 const oneLineCode = 'const foo = "bar";';
 
-const smallMultiLineCode = `
-&lt;hero-details&gt;
+const smallMultiLineCode =
+`&lt;hero-details&gt;
   &lt;h2&gt;Bah Dah Bing&lt;/h2&gt;
   &lt;hero-team&gt;
     &lt;h3&gt;NYC Team&lt;/h3&gt;
   &lt;/hero-team&gt;
 &lt;/hero-details&gt;`;
 
-const bigMultiLineCode = smallMultiLineCode + smallMultiLineCode + smallMultiLineCode;
+const bigMultiLineCode = `${smallMultiLineCode}\n${smallMultiLineCode}\n${smallMultiLineCode}`;
 
 describe('CodeComponent', () => {
   let hostComponent: HostComponent;
   let fixture: ComponentFixture<HostComponent>;
-
-  // WARNING: Chance of cross-test pollution
-  // CodeComponent injects PrettyPrintService
-  // Once PrettyPrintService runs once _anywhere_, its ctor loads `prettify.js`
-  // which sets `window['prettyPrintOne']`
-  // That global survives these tests unless
-  // we take strict measures to wipe it out in the `afterAll`
-  // and make sure THAT runs after the tests by making component creation async
-  afterAll(() => {
-    delete (window as any)['prettyPrint'];
-    delete (window as any)['prettyPrintOne'];
-  });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ NoopAnimationsModule, CodeModule ],
       declarations: [ HostComponent ],
       providers: [
-        PrettyPrinter,
         CopierService,
-        {provide: Logger, useClass: TestLogger }
+        { provide: Logger, useClass: TestLogger },
+        { provide: PrettyPrinter, useClass: MockPrettyPrinter },
      ]
-    }).compileComponents();
-  });
+    });
 
-  // Must be async because
-  // CodeComponent creates PrettyPrintService which async loads `prettify.js`.
-  // If not async, `afterAll` finishes before tests do!
-  beforeEach(async(() => {
     fixture = TestBed.createComponent(HostComponent);
     hostComponent = fixture.componentInstance;
 
     fixture.detectChanges();
-  }));
+  });
 
   describe('pretty printing', () => {
-    const untilCodeFormatted = () => {
-      const emitter = hostComponent.codeComponent.codeFormatted;
-      return emitter.pipe(first()).toPromise();
-    };
-    const hasLineNumbers = async () => {
-      // presence of `<li>`s are a tell-tale for line numbers
-      await untilCodeFormatted();
-      return 0 < fixture.nativeElement.querySelectorAll('li').length;
-    };
+    const getFormattedCode = () => fixture.nativeElement.querySelector('code').innerHTML;
 
-    it('should format a one-line code sample', async () => {
+    it('should format a one-line code sample without linenums by default', () => {
       hostComponent.setCode(oneLineCode);
-      await untilCodeFormatted();
-
-      // 'pln' spans are a tell-tale for syntax highlighting
-      const spans = fixture.nativeElement.querySelectorAll('span.pln');
-      expect(spans.length).toBeGreaterThan(0, 'formatted spans');
+      expect(getFormattedCode()).toBe(
+          `Formatted code (language: auto, linenums: false): ${oneLineCode}`);
     });
 
-    it('should format a one-line code sample without linenums by default', async () => {
+    it('should add line numbers to one-line code sample when linenums is `true`', () => {
       hostComponent.setCode(oneLineCode);
-      expect(await hasLineNumbers()).toBe(false);
+      hostComponent.linenums = true;
+      fixture.detectChanges();
+
+      expect(getFormattedCode()).toBe(
+          `Formatted code (language: auto, linenums: true): ${oneLineCode}`);
     });
 
-    it('should add line numbers to one-line code sample when linenums set true', async () => {
+    it('should add line numbers to one-line code sample when linenums is `\'true\'`', () => {
+      hostComponent.setCode(oneLineCode);
       hostComponent.linenums = 'true';
       fixture.detectChanges();
 
-      expect(await hasLineNumbers()).toBe(true);
+      expect(getFormattedCode()).toBe(
+          `Formatted code (language: auto, linenums: true): ${oneLineCode}`);
     });
 
     it('should format a small multi-line code without linenums by default', async () => {
       hostComponent.setCode(smallMultiLineCode);
-      expect(await hasLineNumbers()).toBe(false);
+      expect(getFormattedCode()).toBe(
+          `Formatted code (language: auto, linenums: false): ${smallMultiLineCode}`);
     });
 
     it('should add line numbers to a big multi-line code by default', async () => {
       hostComponent.setCode(bigMultiLineCode);
-      expect(await hasLineNumbers()).toBe(true);
+      expect(getFormattedCode()).toBe(
+          `Formatted code (language: auto, linenums: true): ${bigMultiLineCode}`);
     });
 
-    it('should format big multi-line code without linenums when linenums set false', async () => {
+    it('should format big multi-line code without linenums when linenums is `false`', async () => {
+      hostComponent.setCode(bigMultiLineCode);
       hostComponent.linenums = false;
       fixture.detectChanges();
 
+      expect(getFormattedCode()).toBe(
+          `Formatted code (language: auto, linenums: false): ${bigMultiLineCode}`);
+    });
+
+    it('should format big multi-line code without linenums when linenums is `\'false\'`', async () => {
       hostComponent.setCode(bigMultiLineCode);
-      expect(await hasLineNumbers()).toBe(false);
+      hostComponent.linenums = 'false';
+      fixture.detectChanges();
+
+      expect(getFormattedCode()).toBe(
+          `Formatted code (language: auto, linenums: false): ${bigMultiLineCode}`);
     });
   });
 
@@ -117,9 +107,16 @@ describe('CodeComponent', () => {
       hostComponent.linenums = false;
       fixture.detectChanges();
 
-      hostComponent.setCode('  abc\n   let x = text.split(\'\\n\');\n  ghi\n\n  jkl\n');
+      hostComponent.setCode(`
+        abc
+          let x = text.split('\\n');
+        ghi
+
+        jkl
+      `);
       const codeContent = fixture.nativeElement.querySelector('code').textContent;
-      expect(codeContent).toEqual('abc\n let x = text.split(\'\\n\');\nghi\n\njkl');
+      expect(codeContent).toEqual(
+          'Formatted code (language: auto, linenums: false): abc\n  let x = text.split(\'\\n\');\nghi\n\njkl');
     });
 
     it('should trim whitespace from the code before rendering', () => {
