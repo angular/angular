@@ -14,11 +14,14 @@ import {Console} from './console';
 import {Injector, StaticProvider} from './di';
 import {Inject, Optional, SkipSelf} from './di/metadata';
 import {ErrorHandler} from './error_handler';
+import {DEFAULT_LOCALE_ID} from './i18n/localization';
 import {LOCALE_ID} from './i18n/tokens';
+import {ivyEnabled} from './ivy_switch';
 import {ComponentFactoryResolver} from './linker';
 import {Compiler} from './linker/compiler';
 import {NgModule} from './metadata';
 import {SCHEDULER} from './render3/component_ref';
+import {setLocaleId} from './render3/i18n';
 import {NgZone} from './zone';
 
 export function _iterableDiffersFactory() {
@@ -31,15 +34,21 @@ export function _keyValueDiffersFactory() {
 
 export function _localeFactory(locale?: string): string {
   if (locale) {
+    if (ivyEnabled) {
+      setLocaleId(locale);
+    }
     return locale;
   }
   // Use `goog.LOCALE` as default value for `LOCALE_ID` token for Closure Compiler.
   // Note: default `goog.LOCALE` value is `en`, when Angular used `en-US`. In order to preserve
   // backwards compatibility, we use Angular default value over Closure Compiler's one.
   if (ngI18nClosureMode && typeof goog !== 'undefined' && goog.LOCALE !== 'en') {
+    if (ivyEnabled) {
+      setLocaleId(goog.LOCALE);
+    }
     return goog.LOCALE;
   }
-  return 'en-US';
+  return DEFAULT_LOCALE_ID;
 }
 
 /**

@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, Directive, ElementRef, EventEmitter, Host, HostBinding, INJECTOR, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, forwardRef} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, Directive, ElementRef, EventEmitter, Host, HostBinding, INJECTOR, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, forwardRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
 import {ViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -1508,7 +1508,7 @@ describe('di', () => {
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
     // takes `LOCALE_ID` from module injector, since we skip Component level with @SkipSelf
-    expect(fixture.componentInstance.localeId).toBe('en-US');
+    expect(fixture.componentInstance.localeId).toBe(DEFAULT_LOCALE_ID);
   });
 
   it('should work when injecting dependency in Directives', () => {
