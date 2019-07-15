@@ -5,12 +5,10 @@ html, body {
 body,
 .content {
     background-color: $white;
+}
 
-    aio-doc-viewer & {
-      h1 {
-        max-width: 90%;
-      }
-    }
+.github-links + .content h1 {
+  max-width: 90%;
 }
 
 .clearfix {
