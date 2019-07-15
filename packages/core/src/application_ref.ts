@@ -8,13 +8,13 @@
 
 import {Observable, Observer, Subscription, merge} from 'rxjs';
 import {share} from 'rxjs/operators';
-
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {getCompilerFacade} from './compiler/compiler_facade';
 import {Console} from './console';
 import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
 import {ErrorHandler} from './error_handler';
+import {DEFAULT_LOCALE_ID} from './i18n/localization';
 import {LOCALE_ID} from './i18n/tokens';
 import {Type} from './interface/type';
 import {COMPILER_OPTIONS, CompilerFactory, CompilerOptions} from './linker/compiler';
@@ -26,7 +26,7 @@ import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
-import {DEFAULT_LOCALE_ID, setLocaleId} from './render3/i18n';
+import {setLocaleId} from './render3/i18n';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {isDevMode} from './util/is_dev_mode';

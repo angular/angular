@@ -7,14 +7,12 @@
  */
 
 import '../util/ng_i18n_closure_mode';
-
-import {getPluralCase} from '../i18n/localization';
+import {DEFAULT_LOCALE_ID, getPluralCase} from '../i18n/localization';
 import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
-
 import {attachPatchData} from './context_discovery';
 import {bind, setDelayProjection, ɵɵload} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
@@ -1358,7 +1356,6 @@ export function ɵɵi18nLocalize(input: string, placeholders?: {[key: string]: s
  * This is the ivy version of `LOCALE_ID` that was defined as an injection token for the view engine
  * but is now defined as a global value.
  */
-export const DEFAULT_LOCALE_ID = 'en-US';
 let LOCALE_ID = DEFAULT_LOCALE_ID;
 
 /**
