@@ -256,6 +256,9 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
       this._elementRef.nativeElement.style.setProperty(propertyName, value);
     },
     hasLeadingIcon: () => { return !!this.leadingIcon; },
+    setAttr: (name: string, value: string) => {
+      this._elementRef.nativeElement.setAttribute(name, value);
+    },
     // The 2 functions below are used by the MDC ripple, which we aren't using,
     // so they will never be called
     getRootBoundingClientRect: () => this._elementRef.nativeElement.getBoundingClientRect(),

@@ -81,7 +81,6 @@ export const rollupGlobals = {
   '@material/tab-indicator': 'mdc.tabIndicator',
   '@material/tab-scroller': 'mdc.tabScroller',
   '@material/text-field': 'mdc.textField',
-  '@material/toolbar': 'mdc.toolbar',
   '@material/top-app-bar': 'mdc.topAppBar',
 
   '@angular/animations': 'ng.animations',

@@ -31,7 +31,6 @@ require.config({
     '@material/tab-indicator': '/base/npm/node_modules/@material/tab-indicator/dist/mdc.tabIndicator',
     '@material/tab-scroller': '/base/npm/node_modules/@material/tab-scroller/dist/mdc.tabScroller',
     '@material/text-field': '/base/npm/node_modules/@material/textfield/dist/mdc.textField',
-    '@material/toolbar': '/base/npm/node_modules/@material/toolbar/dist/mdc.toolbar',
     '@material/top-app-bar': '/base/npm/node_modules/@material/top-app-bar/dist/mdc.topAppBar',
   }
 });

@@ -116,8 +116,6 @@ sass_library(
         "@npm//:node_modules/@material/theme/_functions.scss",
         "@npm//:node_modules/@material/theme/_mixins.scss",
         "@npm//:node_modules/@material/theme/_variables.scss",
-        "@npm//:node_modules/@material/toolbar/_mixins.scss",
-        "@npm//:node_modules/@material/toolbar/_variables.scss",
         "@npm//:node_modules/@material/top-app-bar/_mixins.scss",
         "@npm//:node_modules/@material/top-app-bar/_variables.scss",
         "@npm//:node_modules/@material/typography/_functions.scss",

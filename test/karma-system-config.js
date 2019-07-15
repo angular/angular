@@ -37,7 +37,6 @@ System.config({
     '@material/tab-indicator': 'node:@material/tab-indicator/dist/mdc.tabIndicator.js',
     '@material/tab-scroller': 'node:@material/tab-scroller/dist/mdc.tabScroller.js',
     '@material/text-field': 'node:@material/textfield/dist/mdc.textField.js',
-    '@material/toolbar': 'node:@material/toolbar/dist/mdc.toolbar.js',
     '@material/top-app-bar': 'node:@material/top-app-bar/dist/mdc.topAppBar.js',
 
     // Angular specific mappings.
