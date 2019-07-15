@@ -51,6 +51,14 @@ export declare class ActivationStart {
     toString(): string;
 }
 
+export declare abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
+    retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
+    shouldAttach(route: ActivatedRouteSnapshot): boolean;
+    shouldDetach(route: ActivatedRouteSnapshot): boolean;
+    shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
+    store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void;
+}
+
 export declare interface CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
