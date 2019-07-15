@@ -2,13 +2,12 @@ var testPackage = require('../../helpers/test-package');
 var Dgeni = require('dgeni');
 
 describe('renderExamples processor', () => {
-  var injector, processor, exampleMap, collectExamples, log;
+  var injector, processor, collectExamples, exampleMap, log;
 
   beforeEach(function() {
     const dgeni = new Dgeni([testPackage('examples-package', true)]);
     injector = dgeni.configureInjector();
 
-    exampleMap = injector.get('exampleMap');
     processor = injector.get('renderExamples');
     collectExamples = injector.get('collectExamples');
     exampleMap = injector.get('exampleMap');

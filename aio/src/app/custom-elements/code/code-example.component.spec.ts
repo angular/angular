@@ -5,6 +5,8 @@ import { CodeExampleComponent } from './code-example.component';
 import { CodeExampleModule } from './code-example.module';
 import { Logger } from 'app/shared/logger.service';
 import { MockLogger } from 'testing/logger.service';
+import { MockPrettyPrinter } from 'testing/pretty-printer.service';
+import { PrettyPrinter } from './pretty-printer.service';
 
 describe('CodeExampleComponent', () => {
   let hostComponent: HostComponent;
@@ -19,6 +21,7 @@ describe('CodeExampleComponent', () => {
       ],
       providers: [
         { provide: Logger, useClass: MockLogger },
+        { provide: PrettyPrinter, useClass: MockPrettyPrinter },
       ]
     });
 
