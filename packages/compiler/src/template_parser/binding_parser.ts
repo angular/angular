@@ -49,14 +49,24 @@ export class BindingParser {
 
   getUsedPipes(): CompilePipeSummary[] { return Array.from(this._usedPipes.values()); }
 
-  createBoundHostProperties(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
-      ParsedProperty[]|null {
+  createBoundHostProperties(
+      dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan,
+      absoluteOffset?: number): ParsedProperty[]|null {
+    if (!absoluteOffset) {
+      // TODO(ahafiz): Apparently some consumers of this method are not passing a valid a
+      // sourceSpan. Perfom this check until that is fixed.
+      absoluteOffset = sourceSpan ? sourceSpan.start.offset : 0;
+    }
+    // Typechecker can't deduce that `absoluteOffset` is a number in the conditional blocks below,
+    // so help it here.
+    const absOffset: number = absoluteOffset;
     if (dirMeta.hostProperties) {
       const boundProps: ParsedProperty[] = [];
       Object.keys(dirMeta.hostProperties).forEach(propName => {
         const expression = dirMeta.hostProperties[propName];
         if (typeof expression === 'string') {
-          this.parsePropertyBinding(propName, expression, true, sourceSpan, [], boundProps);
+          this.parsePropertyBinding(
+              propName, expression, true, sourceSpan, absOffset, [], boundProps);
         } else {
           this._reportError(
               `Value of the host property binding "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
@@ -69,9 +79,14 @@ export class BindingParser {
   }
 
   createDirectiveHostPropertyAsts(
-      dirMeta: CompileDirectiveSummary, elementSelector: string,
-      sourceSpan: ParseSourceSpan): BoundElementProperty[]|null {
-    const boundProps = this.createBoundHostProperties(dirMeta, sourceSpan);
+      dirMeta: CompileDirectiveSummary, elementSelector: string, sourceSpan: ParseSourceSpan,
+      absoluteOffset?: number): BoundElementProperty[]|null {
+    if (!absoluteOffset) {
+      // TODO(ahafiz): Apparently some consumers of this method are not passing a valid a
+      // sourceSpan. Perfom this check until that is fixed.
+      absoluteOffset = sourceSpan ? sourceSpan.start.offset : 0;
+    }
+    const boundProps = this.createBoundHostProperties(dirMeta, sourceSpan, absoluteOffset);
     return boundProps &&
         boundProps.map((prop) => this.createBoundElementProperty(elementSelector, prop));
   }
@@ -100,8 +115,8 @@ export class BindingParser {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
-      const ast =
-          this._exprParser.parseInterpolation(value, sourceInfo, this._interpolationConfig) !;
+      const ast = this._exprParser.parseInterpolation(
+          value, sourceInfo, sourceSpan.start.offset, this._interpolationConfig) !;
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
@@ -113,7 +128,7 @@ export class BindingParser {
 
   // Parse an inline template binding. ie `<tag *tplKey="<tplValue>">`
   parseInlineTemplateBinding(
-      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan,
+      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteOffset: number,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
       targetVars: ParsedVariable[]) {
     const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan);
@@ -127,7 +142,8 @@ export class BindingParser {
             binding.key, binding.expression, sourceSpan, targetMatchableAttrs, targetProps);
       } else {
         targetMatchableAttrs.push([binding.key, '']);
-        this.parseLiteralAttr(binding.key, null, sourceSpan, targetMatchableAttrs, targetProps);
+        this.parseLiteralAttr(
+            binding.key, null, sourceSpan, absoluteOffset, targetMatchableAttrs, targetProps);
       }
     }
   }
@@ -137,7 +153,8 @@ export class BindingParser {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
-      const bindingsResult = this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo);
+      const bindingsResult = this._exprParser.parseTemplateBindings(
+          tplKey, tplValue, sourceInfo, sourceSpan.start.offset);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
         if (binding.expression) {
@@ -154,7 +171,7 @@ export class BindingParser {
   }
 
   parseLiteralAttr(
-      name: string, value: string|null, sourceSpan: ParseSourceSpan,
+      name: string, value: string|null, sourceSpan: ParseSourceSpan, absoluteOffset: number,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[]) {
     if (isAnimationLabel(name)) {
       name = name.substring(1);
@@ -164,7 +181,8 @@ export class BindingParser {
                 ` Use property bindings (e.g. [@prop]="exp") or use an attribute without a value (e.g. @prop) instead.`,
             sourceSpan, ParseErrorLevel.ERROR);
       }
-      this._parseAnimation(name, value, sourceSpan, targetMatchableAttrs, targetProps);
+      this._parseAnimation(
+          name, value, sourceSpan, absoluteOffset, targetMatchableAttrs, targetProps);
     } else {
       targetProps.push(new ParsedProperty(
           name, this._exprParser.wrapLiteralPrimitive(value, ''), ParsedPropertyType.LITERAL_ATTR,
@@ -174,7 +192,7 @@ export class BindingParser {
 
   parsePropertyBinding(
       name: string, expression: string, isHost: boolean, sourceSpan: ParseSourceSpan,
-      targetMatchableAttrs: string[][], targetProps: ParsedProperty[]) {
+      absoluteOffset: number, targetMatchableAttrs: string[][], targetProps: ParsedProperty[]) {
     let isAnimationProp = false;
     if (name.startsWith(ANIMATE_PROP_PREFIX)) {
       isAnimationProp = true;
@@ -185,10 +203,11 @@ export class BindingParser {
     }
 
     if (isAnimationProp) {
-      this._parseAnimation(name, expression, sourceSpan, targetMatchableAttrs, targetProps);
+      this._parseAnimation(
+          name, expression, sourceSpan, absoluteOffset, targetMatchableAttrs, targetProps);
     } else {
       this._parsePropertyAst(
-          name, this._parseBinding(expression, isHost, sourceSpan), sourceSpan,
+          name, this._parseBinding(expression, isHost, sourceSpan, absoluteOffset), sourceSpan,
           targetMatchableAttrs, targetProps);
     }
   }
@@ -212,30 +231,33 @@ export class BindingParser {
   }
 
   private _parseAnimation(
-      name: string, expression: string|null, sourceSpan: ParseSourceSpan,
+      name: string, expression: string|null, sourceSpan: ParseSourceSpan, absoluteOffset: number,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[]) {
     // This will occur when a @trigger is not paired with an expression.
     // For animations it is valid to not have an expression since */void
     // states will be applied by angular when the element is attached/detached
-    const ast = this._parseBinding(expression || 'undefined', false, sourceSpan);
+    const ast = this._parseBinding(expression || 'undefined', false, sourceSpan, absoluteOffset);
     targetMatchableAttrs.push([name, ast.source !]);
     targetProps.push(new ParsedProperty(name, ast, ParsedPropertyType.ANIMATION, sourceSpan));
   }
 
-  private _parseBinding(value: string, isHostBinding: boolean, sourceSpan: ParseSourceSpan):
-      ASTWithSource {
+  private _parseBinding(
+      value: string, isHostBinding: boolean, sourceSpan: ParseSourceSpan,
+      absoluteOffset: number): ASTWithSource {
     const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown)').toString();
 
     try {
       const ast = isHostBinding ?
-          this._exprParser.parseSimpleBinding(value, sourceInfo, this._interpolationConfig) :
-          this._exprParser.parseBinding(value, sourceInfo, this._interpolationConfig);
+          this._exprParser.parseSimpleBinding(
+              value, sourceInfo, absoluteOffset, this._interpolationConfig) :
+          this._exprParser.parseBinding(
+              value, sourceInfo, absoluteOffset, this._interpolationConfig);
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
     }
   }
 
@@ -362,9 +384,11 @@ export class BindingParser {
 
   private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown').toString();
+    const absoluteOffset = (sourceSpan && sourceSpan.start) ? sourceSpan.start.offset : 0;
 
     try {
-      const ast = this._exprParser.parseAction(value, sourceInfo, this._interpolationConfig);
+      const ast = this._exprParser.parseAction(
+          value, sourceInfo, absoluteOffset, this._interpolationConfig);
       if (ast) {
         this._reportExpressionParserErrors(ast.errors, sourceSpan);
       }
