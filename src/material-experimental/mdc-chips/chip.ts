@@ -257,6 +257,12 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     },
     hasLeadingIcon: () => { return !!this.leadingIcon; },
     setAttr: (name: string, value: string) => {
+      // MDC is currently using this method to set aria-checked on choice and filter chips,
+      // which in the MDC templates have role="checkbox" and role="radio" respectively.
+      // We have role="option" on those chips instead, so we do not want aria-checked.
+      if (name === 'aria-checked') {
+        return;
+      }
       this._elementRef.nativeElement.setAttribute(name, value);
     },
     // The 2 functions below are used by the MDC ripple, which we aren't using,
