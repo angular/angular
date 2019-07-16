@@ -79,6 +79,9 @@ export class Validators {
    *
    * @usageNotes
    *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    * ### Validate against a minimum of 3
    *
    * ```typescript
@@ -110,6 +113,9 @@ export class Validators {
    *
    * @usageNotes
    *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    * ### Validate against a maximum of 15
    *
    * ```typescript
@@ -140,6 +146,9 @@ export class Validators {
    *
    * @usageNotes
    *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    * ### Validate that the field is non-empty
    *
    * ```typescript
@@ -163,6 +172,9 @@ export class Validators {
    *
    * @usageNotes
    *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    * ### Validate that the field value is true
    *
    * ```typescript
@@ -183,6 +195,9 @@ export class Validators {
    * Validator that requires the control's value pass an email validation test.
    *
    * @usageNotes
+   *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
    *
    * ### Validate that the field matches a valid email pattern
    *
@@ -210,6 +225,9 @@ export class Validators {
    * the HTML5 `minlength` attribute.
    *
    * @usageNotes
+   *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
    *
    * ### Validate that the field has a minimum of 3 characters
    *
@@ -246,6 +264,9 @@ export class Validators {
    *
    * @usageNotes
    *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    * ### Validate that the field has maximum of 5 characters
    *
    * ```typescript
@@ -275,12 +296,10 @@ export class Validators {
    * Validator that requires the control's value to match a regex pattern. This validator is also
    * provided by default if you use the HTML5 `pattern` attribute.
    *
-   * Note that if a Regexp is provided, the Regexp is used as is to test the values. On the other
-   * hand, if a string is passed, the `^` character is prepended and the `$` character is
-   * appended to the provided string (if not already present), and the resulting regular
-   * expression is used to test the values.
-   *
    * @usageNotes
+   *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
    *
    * ### Validate that the field only contains letters or spaces
    *
@@ -293,6 +312,11 @@ export class Validators {
    * ```html
    * <input pattern="[a-zA-Z ]*">
    * ```
+   *
+   * @param pattern A regular expression to be used as is to test the values, or a string.
+   * If a string is passed, the `^` character is prepended and the `$` character is
+   * appended to the provided string (if not already present), and the resulting regular
+   * expression is used to test the values.
    *
    * @returns A validator function that returns an error map with the
    * `pattern` property if the validation check fails, otherwise `null`.
@@ -328,6 +352,12 @@ export class Validators {
   /**
    * @description
    * Validator that performs no operation.
+   *
+   * @usageNotes
+   *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    */
   static nullValidator(control: AbstractControl): ValidationErrors|null { return null; }
 
@@ -338,6 +368,12 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * merged error maps of the validators if the validation check fails, otherwise `null`.
+   *
+   * @usageNotes
+   *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
    */
   static compose(validators: null): null;
   static compose(validators: (ValidatorFn|null|undefined)[]): ValidatorFn|null;
@@ -358,7 +394,13 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * merged error objects of the async validators if the validation check fails, otherwise `null`.
-  */
+   *
+   * @usageNotes
+   *
+   * NOTE: When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
+   */
   static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
     if (!validators) return null;
     const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
