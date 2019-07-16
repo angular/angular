@@ -75,8 +75,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   // TODO(issue/24571): remove '!'.
   private analyzedModules !: NgAnalyzedModules | null;
   private fileToComponent = new Map<string, StaticSymbol>();
-  // TODO(issue/24571): remove '!'.
-  private templateReferences !: string[] | null;
+  private templateReferences = new Set<string>();
   private collectedErrors = new Map<string, any[]>();
   private fileVersions = new Map<string, string>();
 
@@ -114,7 +113,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   getTemplateReferences(): string[] {
     this.ensureTemplateMap();
-    return this.templateReferences || [];
+    return Array.from(this.templateReferences.values());
   }
 
   getTemplateAt(fileName: string, position: number): TemplateSource|undefined {
@@ -220,7 +219,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (this.modulesOutOfDate) {
       this.analyzedModules = null;
       this._reflector = null;
-      this.templateReferences = null;
+      this.templateReferences.clear();
       this.fileToComponent.clear();
       this.ensureAnalyzedModules();
       this.modulesOutOfDate = false;
@@ -277,23 +276,19 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   private ensureTemplateMap() {
-    if (!this.templateReferences) {
-      const templateReference: string[] = [];
-      const ngModuleSummary = this.getAnalyzedModules();
-      const urlResolver = createOfflineCompileUrlResolver();
-      for (const module of ngModuleSummary.ngModules) {
-        for (const directive of module.declaredDirectives) {
-          const {metadata} = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference) !;
-          if (metadata.isComponent && metadata.template && metadata.template.templateUrl) {
-            const templateName = urlResolver.resolve(
-                this.reflector.componentModuleUrl(directive.reference),
-                metadata.template.templateUrl);
-            this.fileToComponent.set(templateName, directive.reference);
-            templateReference.push(templateName);
-          }
+    const ngModuleSummary = this.getAnalyzedModules();
+    const urlResolver = createOfflineCompileUrlResolver();
+    for (const module of ngModuleSummary.ngModules) {
+      for (const directive of module.declaredDirectives) {
+        const {metadata} = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference) !;
+        if (metadata.isComponent && metadata.template && metadata.template.templateUrl) {
+          const templateName = urlResolver.resolve(
+              this.reflector.componentModuleUrl(directive.reference),
+              metadata.template.templateUrl);
+          this.fileToComponent.set(templateName, directive.reference);
+          this.templateReferences.add(templateName);
         }
       }
-      this.templateReferences = templateReference;
     }
   }
 
