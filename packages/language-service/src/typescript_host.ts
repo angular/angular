@@ -69,18 +69,15 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private _reflectorHost !: ReflectorHost;
   // TODO(issue/24571): remove '!'.
   private _checker !: ts.TypeChecker | null;
-  private _typeCache: Symbol[] = [];
   private context: string|undefined;
   private lastProgram: ts.Program|undefined;
   private modulesOutOfDate: boolean = true;
   // TODO(issue/24571): remove '!'.
   private analyzedModules !: NgAnalyzedModules | null;
-  // TODO(issue/24571): remove '!'.
-  private fileToComponent !: Map<string, StaticSymbol>| null;
+  private fileToComponent = new Map<string, StaticSymbol>();
   // TODO(issue/24571): remove '!'.
   private templateReferences !: string[] | null;
-  // TODO(issue/24571): remove '!'.
-  private collectedErrors !: Map<string, any[]>| null;
+  private collectedErrors = new Map<string, any[]>();
   private fileVersions = new Map<string, string>();
 
   constructor(private host: ts.LanguageServiceHost, private tsService: ts.LanguageService) {}
@@ -132,7 +129,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     } else {
       this.ensureTemplateMap();
       // TODO: Cannocalize the file?
-      const componentType = this.fileToComponent !.get(fileName);
+      const componentType = this.fileToComponent.get(fileName);
       if (componentType) {
         return this.getSourceFromType(
             fileName, this.host.getScriptVersion(fileName), componentType);
@@ -168,7 +165,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   getTemplates(fileName: string): TemplateSources {
     this.ensureTemplateMap();
-    const componentType = this.fileToComponent !.get(fileName);
+    const componentType = this.fileToComponent.get(fileName);
     if (componentType) {
       const templateSource = this.getTemplateAt(fileName, 0);
       if (templateSource) {
@@ -224,7 +221,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       this.analyzedModules = null;
       this._reflector = null;
       this.templateReferences = null;
-      this.fileToComponent = null;
+      this.fileToComponent.clear();
       this.ensureAnalyzedModules();
       this.modulesOutOfDate = false;
     }
@@ -274,15 +271,13 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   private clearCaches() {
     this._checker = null;
-    this._typeCache = [];
     this._resolver = null;
-    this.collectedErrors = null;
+    this.collectedErrors.clear();
     this.modulesOutOfDate = true;
   }
 
   private ensureTemplateMap() {
-    if (!this.fileToComponent || !this.templateReferences) {
-      const fileToComponent = new Map<string, StaticSymbol>();
+    if (!this.templateReferences) {
       const templateReference: string[] = [];
       const ngModuleSummary = this.getAnalyzedModules();
       const urlResolver = createOfflineCompileUrlResolver();
@@ -293,12 +288,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
             const templateName = urlResolver.resolve(
                 this.reflector.componentModuleUrl(directive.reference),
                 metadata.template.templateUrl);
-            fileToComponent.set(templateName, directive.reference);
+            this.fileToComponent.set(templateName, directive.reference);
             templateReference.push(templateName);
           }
         }
       }
-      this.fileToComponent = fileToComponent;
       this.templateReferences = templateReference;
     }
   }
@@ -412,11 +406,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   private collectError(error: any, filePath: string|null) {
     if (filePath) {
-      let errorMap = this.collectedErrors;
-      if (!errorMap || !this.collectedErrors) {
-        errorMap = this.collectedErrors = new Map();
-      }
-      let errors = errorMap.get(filePath);
+      let errors = this.collectedErrors.get(filePath);
       if (!errors) {
         errors = [];
         this.collectedErrors.set(filePath, errors);
@@ -517,7 +507,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   private getCollectedErrors(defaultSpan: Span, sourceFile: ts.SourceFile): DeclarationError[] {
-    const errors = (this.collectedErrors && this.collectedErrors.get(sourceFile.fileName));
+    const errors = this.collectedErrors.get(sourceFile.fileName);
     return (errors && errors.map((e: any) => {
              const line = e.line || (e.position && e.position.line);
              const column = e.column || (e.position && e.position.column);
