@@ -338,6 +338,17 @@ export class ComponentDecoratorHandler implements
     const binder = new R3TargetBinder(matcher);
     const boundTemplate = binder.bind({template: template.nodes});
 
+    const ownModule = this.scopeRegistry.getModule(node);
+    let owningModule: ClassDeclaration|undefined = undefined;
+    let importedModules = new Set<ClassDeclaration>();
+    if (ownModule) {
+      const metadata = this.metaReader.getNgModuleMetadata(new Reference(ownModule));
+      if (metadata) {
+        owningModule = metadata.ref.node;
+        importedModules = new Set(metadata.imports.map(ref => ref.node));
+      }
+    }
+
     context.addComponent({
       declaration: node,
       selector,
@@ -346,6 +357,8 @@ export class ComponentDecoratorHandler implements
         isInline: template.isInline,
         file: template.file,
       },
+      owningModule,
+      importedModules,
     });
   }
 

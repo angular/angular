@@ -42,6 +42,12 @@ export interface ComponentInfo {
     /** Template file recorded by template parser */
     file: ParseSourceFile;
   };
+
+  /** NgModule owning the component, if any. */
+  owningModule?: ClassDeclaration;
+
+  /** NgModules imported by owningModule, if any. */
+  importedModules: Set<ClassDeclaration>;
 }
 
 /**

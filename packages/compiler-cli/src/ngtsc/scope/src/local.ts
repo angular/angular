@@ -173,6 +173,13 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
   }
 
   /**
+   * Returns the class declaration of the NgModule owning a component, if any.
+   */
+  getModule(declaration: ClassDeclaration): ClassDeclaration|undefined {
+    return this.declarationToModule.get(declaration);
+  }
+
+  /**
    * Implementation of `getScopeOfModule` which accepts a reference to a class and differentiates
    * between:
    *

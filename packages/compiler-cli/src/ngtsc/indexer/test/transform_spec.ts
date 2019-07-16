@@ -5,38 +5,30 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {BoundTarget, ParseSourceFile} from '@angular/compiler';
+import {ParseSourceFile} from '@angular/compiler';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {ClassDeclaration} from '../../reflection';
-import {ComponentMeta, IndexingContext} from '../src/context';
+import {IndexingContext} from '../src/context';
 import {getTemplateIdentifiers} from '../src/template';
 import {generateAnalysis} from '../src/transform';
 import * as util from './util';
-
-/**
- * Adds information about a component to a context.
- */
-function populateContext(
-    context: IndexingContext, component: ClassDeclaration, selector: string, template: string,
-    boundTemplate: BoundTarget<ComponentMeta>, isInline: boolean = false) {
-  context.addComponent({
-    declaration: component,
-    selector,
-    boundTemplate,
-    templateMeta: {
-      isInline,
-      file: new ParseSourceFile(template, util.getTestFilePath()),
-    },
-  });
-}
 
 runInEachFileSystem(() => {
   describe('generateAnalysis', () => {
     it('should emit component and template analysis information', () => {
       const context = new IndexingContext();
-      const decl = util.getComponentDeclaration('class C {}', 'C');
+      const decl = util.getClassDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
-      populateContext(context, decl, 'c-selector', template, util.getBoundTemplate(template));
+      context.addComponent({
+        declaration: decl,
+        selector: 'c-selector',
+        boundTemplate: util.getBoundTemplate(template),
+        templateMeta: {
+          isInline: false,
+          file: new ParseSourceFile(template, util.getTestFilePath()),
+        },
+        owningModule: undefined,
+        importedModules: new Set(),
+      });
       const analysis = generateAnalysis(context);
 
       expect(analysis.size).toBe(1);
@@ -51,17 +43,27 @@ runInEachFileSystem(() => {
           usedComponents: new Set(),
           isInline: false,
           file: new ParseSourceFile('<div>{{foo}}</div>', util.getTestFilePath()),
-        }
+        },
+        owningModule: undefined,
+        importedModules: new Set(),
       });
     });
 
     it('should give inline templates the component source file', () => {
       const context = new IndexingContext();
-      const decl = util.getComponentDeclaration('class C {}', 'C');
+      const decl = util.getClassDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
-      populateContext(
-          context, decl, 'c-selector', '<div>{{foo}}</div>', util.getBoundTemplate(template),
-          /* inline template */ true);
+      context.addComponent({
+        declaration: decl,
+        selector: 'c-selector',
+        boundTemplate: util.getBoundTemplate(template),
+        templateMeta: {
+          isInline: true,
+          file: new ParseSourceFile(decl.getText(), util.getTestFilePath()),
+        },
+        owningModule: undefined,
+        importedModules: new Set(),
+      });
       const analysis = generateAnalysis(context);
 
       expect(analysis.size).toBe(1);
@@ -74,9 +76,19 @@ runInEachFileSystem(() => {
 
     it('should give external templates their own source file', () => {
       const context = new IndexingContext();
-      const decl = util.getComponentDeclaration('class C {}', 'C');
+      const decl = util.getClassDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
-      populateContext(context, decl, 'c-selector', template, util.getBoundTemplate(template));
+      context.addComponent({
+        declaration: decl,
+        selector: 'c-selector',
+        boundTemplate: util.getBoundTemplate(template),
+        templateMeta: {
+          isInline: false,
+          file: new ParseSourceFile(template, util.getTestFilePath()),
+        },
+        owningModule: undefined,
+        importedModules: new Set(),
+      });
       const analysis = generateAnalysis(context);
 
       expect(analysis.size).toBe(1);
@@ -91,18 +103,38 @@ runInEachFileSystem(() => {
       const context = new IndexingContext();
 
       const templateA = '<b-selector></b-selector>';
-      const declA = util.getComponentDeclaration('class A {}', 'A');
+      const declA = util.getClassDeclaration('class A {}', 'A');
 
       const templateB = '<a-selector></a-selector>';
-      const declB = util.getComponentDeclaration('class B {}', 'B');
+      const declB = util.getClassDeclaration('class B {}', 'B');
 
       const boundA =
           util.getBoundTemplate(templateA, {}, [{selector: 'b-selector', declaration: declB}]);
       const boundB =
           util.getBoundTemplate(templateB, {}, [{selector: 'a-selector', declaration: declA}]);
 
-      populateContext(context, declA, 'a-selector', templateA, boundA);
-      populateContext(context, declB, 'b-selector', templateB, boundB);
+      context.addComponent({
+        declaration: declA,
+        selector: 'a-selector',
+        boundTemplate: boundA,
+        templateMeta: {
+          isInline: false,
+          file: new ParseSourceFile(templateA, util.getTestFilePath()),
+        },
+        owningModule: undefined,
+        importedModules: new Set(),
+      });
+      context.addComponent({
+        declaration: declB,
+        selector: 'b-selector',
+        boundTemplate: boundB,
+        templateMeta: {
+          isInline: false,
+          file: new ParseSourceFile(templateB, util.getTestFilePath()),
+        },
+        owningModule: undefined,
+        importedModules: new Set(),
+      });
 
       const analysis = generateAnalysis(context);
 
@@ -115,6 +147,34 @@ runInEachFileSystem(() => {
       const infoB = analysis.get(declB);
       expect(infoB).toBeDefined();
       expect(infoB !.template.usedComponents).toEqual(new Set([declA]));
+    });
+
+    it('should emit owning and imported NgModule', () => {
+      const context = new IndexingContext();
+      const decl = util.getClassDeclaration('class A {}', 'A');
+      const owner = util.getClassDeclaration('class Owner {}', 'Owner');
+      const imports = new Set([util.getClassDeclaration('class Import {}', 'Import')]);
+
+      context.addComponent({
+        declaration: decl,
+        selector: 'a-selector',
+        boundTemplate: util.getBoundTemplate(''),
+        templateMeta: {
+          isInline: false,
+          file: new ParseSourceFile('', util.getTestFilePath()),
+        },
+        owningModule: owner,
+        importedModules: imports,
+      });
+
+      const analysis = generateAnalysis(context);
+
+      expect(analysis.size).toBe(1);
+
+      const info = analysis.get(decl);
+      expect(info).toBeDefined();
+      expect(info !.owningModule).toEqual(owner);
+      expect(info !.importedModules).toEqual(imports);
     });
   });
 });

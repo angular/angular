@@ -79,4 +79,6 @@ export interface IndexedComponent {
     isInline: boolean,
     file: ParseSourceFile;
   };
+  owningModule?: ts.Declaration&{name: ts.Identifier};
+  importedModules: Set<ts.Declaration&{name: ts.Identifier}>;
 }

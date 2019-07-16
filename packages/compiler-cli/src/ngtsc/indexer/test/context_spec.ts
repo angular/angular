@@ -14,7 +14,9 @@ runInEachFileSystem(() => {
   describe('ComponentAnalysisContext', () => {
     it('should store and return information about components', () => {
       const context = new IndexingContext();
-      const declaration = util.getComponentDeclaration('class C {};', 'C');
+      const declaration = util.getClassDeclaration('class C {};', 'C');
+      const owningModule = util.getClassDeclaration('class Owner {};', 'Owner');
+      const importedModules = new Set([util.getClassDeclaration('class Import {};', 'Import')]);
       const boundTemplate = util.getBoundTemplate('<div></div>');
 
       context.addComponent({
@@ -24,6 +26,8 @@ runInEachFileSystem(() => {
           isInline: false,
           file: new ParseSourceFile('<div></div>', util.getTestFilePath()),
         },
+        owningModule,
+        importedModules,
       });
 
       expect(context.components).toEqual(new Set([
@@ -34,6 +38,8 @@ runInEachFileSystem(() => {
             isInline: false,
             file: new ParseSourceFile('<div></div>', util.getTestFilePath()),
           },
+          owningModule,
+          importedModules,
         },
       ]));
     });

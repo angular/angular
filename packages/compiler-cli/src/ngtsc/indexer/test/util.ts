@@ -20,10 +20,13 @@ export function getTestFilePath(): AbsoluteFsPath {
 }
 
 /**
- * Creates a class declaration from a component source code.
+ * Creates a class declaration from a source code.
  */
-export function getComponentDeclaration(componentStr: string, className: string): ClassDeclaration {
-  const program = makeProgram([{name: getTestFilePath(), contents: componentStr}]);
+export function getClassDeclaration(contents: string, className: string): ClassDeclaration {
+  const program = makeProgram([{
+    name: getTestFilePath(),
+    contents,
+  }]);
 
   return getDeclaration(
       program.program, getTestFilePath(), className,

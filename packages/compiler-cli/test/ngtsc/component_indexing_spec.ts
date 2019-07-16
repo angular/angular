@@ -180,6 +180,66 @@ runInEachFileSystem(() => {
         const [usedComp] = Array.from(testImportComp !.template.usedComponents);
         expect(indexed.get(usedComp)).toEqual(testComp);
       });
+
+      it('should generate information about owning and imported modules', () => {
+        env.write(testSourceFile, `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'a-selector',
+          template: '',
+        })
+        export class A {}
+
+        @NgModule({
+          declarations: [
+            A
+          ],
+          exports: [
+            A,
+          ],
+          bootstrap: [A]
+        })
+        export class AModule {}
+      `);
+        env.write('test_import.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {AModule} from './test';
+
+        @Component({
+          template: '<a-selector></a-selector>',
+        })
+        export class B {}
+
+        @NgModule({
+          imports: [
+            AModule,
+          ],
+          declarations: [
+            B,
+          ],
+          bootstrap: [B]
+        })
+        export class BModule {}
+      `);
+        const indexed = env.driveIndexer();
+        expect(indexed.size).toBe(2);
+
+        const indexedComps = Array.from(indexed.values());
+        const aComp = indexedComps.find(comp => comp.name === 'A');
+        const bComp = indexedComps.find(comp => comp.name === 'B');
+        expect(aComp).toBeDefined();
+        expect(bComp).toBeDefined();
+        expect(aComp !.owningModule).toBeDefined();
+        expect(bComp !.owningModule).toBeDefined();
+
+        expect(aComp !.owningModule !.name.text).toBe('AModule');
+        expect(aComp !.importedModules.size).toBe(0);
+        expect(bComp !.owningModule !.name.text).toBe('BModule');
+        expect(Array.from(bComp !.importedModules.values()).map(decl => decl.name.text)).toEqual([
+          'AModule'
+        ]);
+      });
     });
   });
 });
