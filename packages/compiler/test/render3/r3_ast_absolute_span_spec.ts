@@ -40,6 +40,8 @@ function humanizeExpressionLocation(templateAsts: t.Node[]): any[] {
 }
 
 describe('expression AST absolute source spans', () => {
+  // TODO(ayazhafiz): duplicate this test without `preserveWhitespaces` once whitespace rewriting is
+  // moved to post-R3AST generation.
   it('should provide absolute offsets with arbitrary whitespace', () => {
     expect(humanizeExpressionLocation(
                parse('<div>\n  \n{{foo}}</div>', {preserveWhitespaces: true}).nodes))

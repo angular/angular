@@ -53,7 +53,7 @@ export class BindingParser {
       dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan,
       absoluteOffset?: number): ParsedProperty[]|null {
     if (absoluteOffset === undefined) {
-      // TODO(ahafiz): Apparently some consumers of this method are not passing a valid a
+      // TODO(ayazhafiz): Apparently some consumers of this method are not passing a valid a
       // sourceSpan. Perfom this check until that is fixed.
       absoluteOffset = sourceSpan ? sourceSpan.start.offset : 0;
     }
@@ -82,7 +82,7 @@ export class BindingParser {
       dirMeta: CompileDirectiveSummary, elementSelector: string, sourceSpan: ParseSourceSpan,
       absoluteOffset?: number): BoundElementProperty[]|null {
     if (absoluteOffset === undefined) {
-      // TODO(ahafiz): Apparently some consumers of this method are not passing a valid a
+      // TODO(ayazhafiz): Apparently some consumers of this method are not passing a valid a
       // sourceSpan. Perfom this check until that is fixed.
       absoluteOffset = sourceSpan ? sourceSpan.start.offset : 0;
     }
