@@ -322,6 +322,7 @@ class ArrayConsole implements Console {
   warn(msg: string) { this.warnings.push(msg); }
 }
 
+
 (function() {
   let ngIf: CompileDirectiveSummary;
   let parse: (
