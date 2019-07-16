@@ -63,7 +63,7 @@ export async function promptForNewVersion(currentVersion: Version): Promise<Vers
     type: 'list',
     name: 'prereleaseLabel',
     message: 'Please select a pre-release label:',
-    choices: allowedPrereleaseChoices,
+    choices: allowedPrereleaseChoices!,
     when: ({isPrerelease, proposedVersion}) =>
       // Only prompt for selecting a pre-release label if the current release is a pre-release,
       // or the existing pre-release label should be changed.
@@ -75,7 +75,7 @@ export async function promptForNewVersion(currentVersion: Version): Promise<Vers
   // prompt answers.
   const newVersion = answers.proposedVersion === 'new-prerelease-label' ?
       currentVersion.clone() :
-      parseVersionName(answers.proposedVersion);
+      parseVersionName(answers.proposedVersion)!;
 
   if (answers.prereleaseLabel) {
     newVersion.prereleaseLabel = answers.prereleaseLabel;

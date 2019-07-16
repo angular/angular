@@ -46,6 +46,7 @@ export class BaseReleaseTask {
     }
 
     console.log(green(`  ✓   Switched to the "${italic(defaultPublishBranch)}" branch.`));
+    return defaultPublishBranch;
   }
 
   /** Verifies that the local branch is up to date with the given publish branch. */

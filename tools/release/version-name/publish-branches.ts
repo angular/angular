@@ -13,9 +13,9 @@ export function getAllowedPublishBranches(version: Version): string[] {
     // branch than "master". This can happen if major changes have been merged into "master"
     // and non-major changes are cherry-picked into a separate branch (e.g. 7.x)
     return ['master', `${version.major}.x`];
-  } else if (versionType === 'patch') {
-    return [`${version.major}.${version.minor}.x`];
   }
+
+  return [`${version.major}.${version.minor}.x`];
 }
 
 /** Determines the type of the specified Semver version. */

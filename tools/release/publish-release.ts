@@ -53,13 +53,15 @@ class PublishReleaseTask extends BaseReleaseTask {
     this.releaseOutputPath = join(projectDir, 'dist/releases');
 
     this.packageJson = JSON.parse(readFileSync(this.packageJsonPath, 'utf-8'));
-    this.currentVersion = parseVersionName(this.packageJson.version);
 
-    if (!this.currentVersion) {
+    const parsedVersion = parseVersionName(this.packageJson.version);
+    if (!parsedVersion) {
       console.error(red(`Cannot parse current version in ${italic('package.json')}. Please ` +
         `make sure "${this.packageJson.version}" is a valid Semver version.`));
       process.exit(1);
+      return;
     }
+    this.currentVersion = parsedVersion;
   }
 
   async run() {
@@ -108,6 +110,7 @@ class PublishReleaseTask extends BaseReleaseTask {
     if (!extractedReleaseNotes) {
       console.error(red(`  ✘   Could not find release notes in the changelog.`));
       process.exit(1);
+      return;
     }
 
     const {releaseNotes, releaseTitle} = extractedReleaseNotes;

@@ -37,7 +37,7 @@ export function checkReleaseBundle(bundlePath: string): string[] {
 export function checkTypeDefinitionFile(filePath: string): string[] {
   const baseDir = dirname(filePath);
   const fileContent = readFileSync(filePath, 'utf8');
-  const failures = [];
+  const failures: string[] = [];
 
   const sourceFile = ts.createSourceFile(filePath, fileContent, ts.ScriptTarget.Latest, true);
   const nodeQueue = [...sourceFile.getChildren()];

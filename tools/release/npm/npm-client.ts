@@ -41,6 +41,7 @@ export function npmPublish(packagePath: string, distTag: string): string | null 
   if (result.status !== 0) {
     return result.stderr.toString();
   }
+  return null;
 }
 
 /** Log out of npm. */
