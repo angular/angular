@@ -1541,7 +1541,7 @@ describe('compiler compliance', () => {
               if (rf & 2) {
                 var $tmp$;
                 $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDir = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDirs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && ((ctx.someDirs = $tmp$) && _t.notifyOnChanges());
               }
             },
             consts: 1,
@@ -1599,7 +1599,7 @@ describe('compiler compliance', () => {
               if (rf & 2) {
                 var $tmp$;
                 $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRef = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRefs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && ((ctx.myRefs = $tmp$) && _t.notifyOnChanges());
               }
             },
             …
@@ -1718,8 +1718,8 @@ describe('compiler compliance', () => {
                 var $tmp$;
                 $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRef = $tmp$.first);
                 $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDir = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRefs = $tmp$);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDirs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && ((ctx.myRefs = $tmp$) && _t.notifyOnChanges());
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && ((ctx.someDirs = $tmp$) && _t.notifyOnChanges());
               }
             },
             …
@@ -1781,7 +1781,7 @@ describe('compiler compliance', () => {
               if (rf & 2) {
               var $tmp$;
                 $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDir = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDirList = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && ((ctx.someDirList = $tmp$) && _t.notifyOnChanges());
               }
             },
             ngContentSelectors: _c0,
@@ -1841,7 +1841,7 @@ describe('compiler compliance', () => {
               if (rf & 2) {
               var $tmp$;
                 $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRef = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRefs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && ((ctx.myRefs = $tmp$) && _t.notifyOnChanges());
               }
             },
             …
@@ -1971,8 +1971,8 @@ describe('compiler compliance', () => {
               var $tmp$;
                 $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRef = $tmp$.first);
                 $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDir = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRefs = $tmp$);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDirs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && ((ctx.myRefs = $tmp$) && _t.notifyOnChanges());
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && ((ctx.someDirs = $tmp$) && _t.notifyOnChanges());
               }
             },
             …
@@ -3133,7 +3133,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             var $tmp$;
-            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.something = $tmp$);
+            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && ((ctx.something = $tmp$) && _t.notifyOnChanges());
           }
         }
       });
@@ -3221,7 +3221,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             var $tmp$;
-            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.something = $tmp$);
+            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && ((ctx.something = $tmp$) && _t.notifyOnChanges());
           }
         }
       });

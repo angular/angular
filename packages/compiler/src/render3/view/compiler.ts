@@ -486,15 +486,7 @@ function createContentQueriesFunction(
     const queryInstruction = query.static ? R3.staticContentQuery : R3.contentQuery;
 
     createStatements.push(o.importExpr(queryInstruction).callFn(args).toStmt());
-
-    // update, e.g. (r3.queryRefresh(tmp = r3.loadContentQuery()) && (ctx.someDir = tmp));
-    const temporary = tempAllocator();
-    const getQueryList = o.importExpr(R3.loadContentQuery).callFn([]);
-    const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
-    const updateDirective = o.variable(CONTEXT_NAME)
-                                .prop(query.propertyName)
-                                .set(query.first ? temporary.prop('first') : temporary);
-    updateStatements.push(refresh.and(updateDirective).toStmt());
+    updateStatements.push(createQueryUpdateStatement(query, R3.loadContentQuery, tempAllocator()));
   }
 
   const contentQueriesFnName = name ? `${name}_ContentQueries` : null;
@@ -560,15 +552,7 @@ function createViewQueriesFunction(
     const queryDefinition =
         o.importExpr(queryInstruction).callFn(prepareQueryParams(query, constantPool));
     createStatements.push(queryDefinition.toStmt());
-
-    // update, e.g. (r3.queryRefresh(tmp = r3.loadViewQuery()) && (ctx.someDir = tmp));
-    const temporary = tempAllocator();
-    const getQueryList = o.importExpr(R3.loadViewQuery).callFn([]);
-    const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
-    const updateDirective = o.variable(CONTEXT_NAME)
-                                .prop(query.propertyName)
-                                .set(query.first ? temporary.prop('first') : temporary);
-    updateStatements.push(refresh.and(updateDirective).toStmt());
+    updateStatements.push(createQueryUpdateStatement(query, R3.loadViewQuery, tempAllocator()));
   });
 
   const viewQueryFnName = name ? `${name}_Query` : null;
@@ -579,6 +563,21 @@ function createViewQueriesFunction(
         renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
       ],
       o.INFERRED_TYPE, null, viewQueryFnName);
+}
+
+function createQueryUpdateStatement(
+    query: R3QueryMetadata, queryLoadFnRef: o.ExternalReference,
+    temporary: o.ReadVarExpr): o.Statement {
+  // update, e.g. (r3.queryRefresh(tmp = r3.loadContentQuery()) && (ctx.someDir = tmp) &&
+  // tmp.notifyOnChanges());
+  const getQueryList = o.importExpr(queryLoadFnRef).callFn([]);
+  const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
+  const updateDirective = o.variable(CONTEXT_NAME)
+                              .prop(query.propertyName)
+                              .set(query.first ? temporary.prop('first') : temporary);
+  const notifyOnChanges = temporary.callMethod('notifyOnChanges', []);
+  const updateExpression = query.first ? updateDirective : updateDirective.and(notifyOnChanges);
+  return refresh.and(updateExpression).toStmt();
 }
 
 // Return a host binding function or null if one is not necessary.

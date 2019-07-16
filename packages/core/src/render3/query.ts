@@ -384,7 +384,6 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
   // if creation mode and static or update mode and not static
   if (queryList.dirty && creationMode === queryListImpl._static) {
     queryList.reset(queryListImpl._valuesTree || []);
-    queryList.notifyOnChanges();
     return true;
   }
   return false;

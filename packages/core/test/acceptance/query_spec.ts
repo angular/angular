@@ -953,6 +953,75 @@ describe('query logic', () => {
     });
   });
 
+  describe('non-regression', () => {
+
+    it('should assign QueryList instance on each and every result change', () => {
+      @Component({
+        selector: 'my-app',
+        template: `
+          <ng-template [ngIf]="show">
+            <span #foo></span>
+          </ng-template>          
+        `,
+      })
+      class TestComponent {
+        show: boolean = false;
+        @ViewChildren('foo') query: QueryList<any>|null = null;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent]});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.query !.length).toBe(0);
+
+      fixture.componentInstance.show = true;
+
+      // set QueryList instance to confirm that it is re-assigned when query becomes dirty
+      fixture.componentInstance.query = null;
+
+      fixture.detectChanges();
+      expect(fixture.componentInstance.query !.length).toBe(1);
+    });
+
+    it('should trigger notifyOnChanges after assigning QueryList instance', () => {
+      @Component({
+        selector: 'my-app',
+        template: `
+          <ng-template [ngIf]="show">
+            <span #foo></span>
+          </ng-template>          
+        `,
+      })
+      class TestComponent {
+        show: boolean = false;
+        @ViewChildren('foo') query: QueryList<any>|null = null;
+
+        ngAfterViewInit() {}
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent]});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.query !.length).toBe(0);
+
+      let notified = false;
+      // set QueryList instance to confirm that it is re-assigned when query becomes dirty
+      fixture.componentInstance.query !.changes.subscribe((queryList: QueryList<any>) => {
+        notified = true;
+        expect(fixture.componentInstance.query !.length).toBe(1);
+      });
+      fixture.componentInstance.query = null;
+
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.query !.length).toBe(1);
+      expect(notified).toBeTruthy();
+    });
+
+  });
+
 });
 
 function initWithTemplate(compType: Type<any>, template: string) {
