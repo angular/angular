@@ -17,6 +17,7 @@ import {ErrorHandler} from './error_handler';
 import {DEFAULT_LOCALE_ID} from './i18n/localization';
 import {LOCALE_ID} from './i18n/tokens';
 import {Type} from './interface/type';
+import {ivyEnabled} from './ivy_switch';
 import {COMPILER_OPTIONS, CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
@@ -264,8 +265,10 @@ export class PlatformRef {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
       // If the `LOCALE_ID` provider is defined at bootstrap we set the value for runtime i18n (ivy)
-      const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-      setLocaleId(localeId);
+      if (ivyEnabled) {
+        const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+        setLocaleId(localeId || DEFAULT_LOCALE_ID);
+      }
       moduleRef.onDestroy(() => remove(this._modules, moduleRef));
       ngZone !.runOutsideAngular(
           () => ngZone !.onError.subscribe(
