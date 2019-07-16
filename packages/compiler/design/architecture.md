@@ -249,7 +249,7 @@ The `TemplateCompiler` can produce a template function from a string without add
 
 To interpret the content of a template, the runtime needs to know what component and directives to apply to the element and what pipes are referenced by binding expressions. The list of candidate components, directives and pipes are determined by the `NgModule` in which the component is declared. Since the module and component are in separate source files, mapping which components, directives and pipes referenced is left to the runtime. Unfortunately, this leads to a tree-shaking problem. Since there no direct link between the component and types the component references then all components, directives and pipes declared in the module, and any module imported from the module, must be available at runtime or risk the template failing to be interpreted correctly. Including everything can lead to a very large program which contains many components the application doesn't actually use.
 
-The process of removing unused code is traditionally referred to as "tree-shaking". To determine what codes is necessary to include, a tree-shakers produces the transitive closure of all the code referenced by the bootstrap function. If the bootstrap code references a module then the tree-shaker will include everything imported or declared into the module.
+The process of removing unused code is traditionally referred to as "tree-shaking". To determine what codes is necessary to include, a tree-shaker produces the transitive closure of all the code referenced by the bootstrap function. If the bootstrap code references a module then the tree-shaker will include everything imported or declared into the module.
 
 This problem can be avoided if the component would contain a list of the components, directives, and pipes on which it depends allowing the module to be ignored altogether. The program then need only contain the types the initial component rendered depends on and on any types those dependencies require.
 
@@ -265,16 +265,16 @@ Reference inversion is an optional step of the compiler that can be used during 
 
 The process of reference inversion is to turn the list of selector targets produced by the template compiler to the list of types on which it depends. This mapping requires a selector scope which contains a mapping of CSS selectors declared in components, directives, and pipe names and their corresponding class. To produce this list for a module you do the following,
 
-1. Add all the type declared in the `declarations` field.
+1. Add all the types declared in the `declarations` field.
 2. For each module that is imported.
     - Add the exported components, directives, and pipes
-    - Repeat these sub-steps for with each exported module
+    - Repeat these sub-steps with each exported module
 
 For each type in the list produced above, parse the selector and convert them all into a selector matcher that, given a target, produces the type that matches the selector. This is referred to as the selector scope.
 
 Given a selector scope, a dependency list is formed by producing the set of types that are matched in selector scope from the selector target list produced by the template compiler.
 
-##### Finding a components module.
+##### Finding a component's module.
 
 A component's module can be found by using the TypeScript language service's `findReferences`. If one of the references is to a class declaration with an `@NgModule` annotation, process the class as described above to produce the selector scope. If the class is the declaration list of the `@NgModule` then use the scope produce for that module.
 
