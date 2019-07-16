@@ -434,7 +434,8 @@ describe('parser', () => {
 
     it('should support custom interpolation', () => {
       const parser = new Parser(new Lexer());
-      const ast = parser.parseInterpolation('{% a %}', null, {start: '{%', end: '%}'}) !.ast as any;
+      const ast =
+          parser.parseInterpolation('{% a %}', null, 0, {start: '{%', end: '%}'}) !.ast as any;
       expect(ast.strings).toEqual(['', '']);
       expect(ast.expressions.length).toEqual(1);
       expect(ast.expressions[0].name).toEqual('a');
@@ -492,7 +493,8 @@ describe('parser', () => {
 
   describe('wrapLiteralPrimitive', () => {
     it('should wrap a literal primitive', () => {
-      expect(unparse(validate(createParser().wrapLiteralPrimitive('foo', null)))).toEqual('"foo"');
+      expect(unparse(validate(createParser().wrapLiteralPrimitive('foo', null, 0))))
+          .toEqual('"foo"');
     });
   });
 
@@ -528,33 +530,35 @@ function createParser() {
   return new Parser(new Lexer());
 }
 
-function parseAction(text: string, location: any = null): ASTWithSource {
-  return createParser().parseAction(text, location);
+function parseAction(text: string, location: any = null, offset: number = 0): ASTWithSource {
+  return createParser().parseAction(text, location, offset);
 }
 
-function parseBinding(text: string, location: any = null): ASTWithSource {
-  return createParser().parseBinding(text, location);
+function parseBinding(text: string, location: any = null, offset: number = 0): ASTWithSource {
+  return createParser().parseBinding(text, location, offset);
 }
 
 function parseTemplateBindingsResult(
-    key: string, value: string, location: any = null): TemplateBindingParseResult {
-  return createParser().parseTemplateBindings(key, value, location);
+    key: string, value: string, location: any = null,
+    offset: number = 0): TemplateBindingParseResult {
+  return createParser().parseTemplateBindings(key, value, location, offset);
 }
 function parseTemplateBindings(
-    key: string, value: string, location: any = null): TemplateBinding[] {
+    key: string, value: string, location: any = null, offset: number = 0): TemplateBinding[] {
   return parseTemplateBindingsResult(key, value, location).templateBindings;
 }
 
-function parseInterpolation(text: string, location: any = null): ASTWithSource|null {
-  return createParser().parseInterpolation(text, location);
+function parseInterpolation(text: string, location: any = null, offset: number = 0): ASTWithSource|
+    null {
+  return createParser().parseInterpolation(text, location, offset);
 }
 
 function splitInterpolation(text: string, location: any = null): SplitInterpolation|null {
   return createParser().splitInterpolation(text, location);
 }
 
-function parseSimpleBinding(text: string, location: any = null): ASTWithSource {
-  return createParser().parseSimpleBinding(text, location);
+function parseSimpleBinding(text: string, location: any = null, offset: number = 0): ASTWithSource {
+  return createParser().parseSimpleBinding(text, location, offset);
 }
 
 function checkInterpolation(exp: string, expected?: string) {

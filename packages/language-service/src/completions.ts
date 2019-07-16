@@ -313,7 +313,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
           selectors.filter(s => s.attrs.some((attr, i) => i % 2 == 0 && attr == key))[0];
 
       const templateBindingResult =
-          this.info.expressionParser.parseTemplateBindings(key, this.attr.value, null);
+          this.info.expressionParser.parseTemplateBindings(key, this.attr.value, null, 0);
 
       // find the template binding that contains the position
       if (!this.attr.valueSpan) return;
