@@ -63,7 +63,7 @@ export declare const matMenuAnimations: {
 
 export declare class MatMenuContent implements OnDestroy {
     _attached: Subject<void>;
-    constructor(_template: TemplateRef<any>, _componentFactoryResolver: ComponentFactoryResolver, _appRef: ApplicationRef, _injector: Injector, _viewContainerRef: ViewContainerRef, _document: any);
+    constructor(_template: TemplateRef<any>, _componentFactoryResolver: ComponentFactoryResolver, _appRef: ApplicationRef, _injector: Injector, _viewContainerRef: ViewContainerRef, _document: any, _changeDetectorRef?: ChangeDetectorRef | undefined);
     attach(context?: any): void;
     detach(): void;
     ngOnDestroy(): void;

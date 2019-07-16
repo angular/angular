@@ -6,18 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Directive,
-  TemplateRef,
-  ComponentFactoryResolver,
-  ApplicationRef,
-  Injector,
-  ViewContainerRef,
-  Inject,
-  OnDestroy,
-} from '@angular/core';
-import {TemplatePortal, DomPortalOutlet} from '@angular/cdk/portal';
+import {DomPortalOutlet, TemplatePortal} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  ComponentFactoryResolver,
+  Directive,
+  Inject,
+  Injector,
+  OnDestroy,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core';
 import {Subject} from 'rxjs';
 
 /**
@@ -39,7 +40,8 @@ export class MatMenuContent implements OnDestroy {
     private _appRef: ApplicationRef,
     private _injector: Injector,
     private _viewContainerRef: ViewContainerRef,
-    @Inject(DOCUMENT) private _document: any) {}
+    @Inject(DOCUMENT) private _document: any,
+    private _changeDetectorRef?: ChangeDetectorRef) {}
 
   /**
    * Attaches the content with a particular context.
@@ -63,6 +65,17 @@ export class MatMenuContent implements OnDestroy {
     // own `OverlayRef` panel), we have to re-insert the host element every time, otherwise we
     // risk it staying attached to a pane that's no longer in the DOM.
     element.parentNode!.insertBefore(this._outlet.outletElement, element);
+
+    // When `MatMenuContent` is used in an `OnPush` component, the insertion of the menu
+    // content via `createEmbeddedView` does not cause the content to be seen as "dirty"
+    // by Angular. This causes the `@ContentChildren` for menu items within the menu to
+    // not be updated by Angular. By explicitly marking for check here, we tell Angular that
+    // it needs to check for new menu items and update the `@ContentChild` in `MatMenu`.
+    // @breaking-change 9.0.0 Make change detector ref required
+    if (this._changeDetectorRef) {
+      this._changeDetectorRef.markForCheck();
+    }
+
     this._portal.attach(this._outlet, context);
     this._attached.next();
   }
