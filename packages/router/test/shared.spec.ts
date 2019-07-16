@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {convertToParamMap, ParamMap} from '../src/shared';
+import {convertToParamMap, ParamMap, Params} from '../src/shared';
 
 describe('ParamsMap', () => {
   it('should returns whether a parameter is present', () => {
@@ -42,4 +42,14 @@ describe('ParamsMap', () => {
     const map = convertToParamMap({});
     expect(map.getAll('name')).toEqual([]);
   });
+
+  it('should not error when trying to call ParamMap.get function using an object created with Object.create() function',
+     () => {
+       const objectToMap: Params = Object.create(null);
+       objectToMap['single'] = 's';
+       objectToMap['multiple'] = ['m1', 'm2'];
+       const paramMaps: ParamMap = convertToParamMap(objectToMap);
+       expect(() => paramMaps.get('single')).not.toThrow();
+       expect(paramMaps.get('single')).toEqual('s');
+     });
 });

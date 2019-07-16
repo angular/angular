@@ -74,7 +74,7 @@ class ParamsAsMap implements ParamMap {
   }
 
   has(name: string): boolean {
-    return this.params.hasOwnProperty(name);
+    return Object.prototype.hasOwnProperty.call(this.params, name);
   }
 
   get(name: string): string|null {
