@@ -34,35 +34,35 @@ export class Parser {
   constructor(private _lexer: Lexer) {}
 
   parseAction(
-      input: string, location: any,
+      input: string, location: any, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(this._stripComments(input));
     const ast = new _ParseAST(
-                    input, location, tokens, sourceToLex.length, true, this.errors,
+                    input, location, absoluteOffset, tokens, sourceToLex.length, true, this.errors,
                     input.length - sourceToLex.length)
                     .parseChain();
-    return new ASTWithSource(ast, input, location, this.errors);
+    return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
   parseBinding(
-      input: string, location: any,
+      input: string, location: any, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
-    const ast = this._parseBindingAst(input, location, interpolationConfig);
-    return new ASTWithSource(ast, input, location, this.errors);
+    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
+    return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
   parseSimpleBinding(
-      input: string, location: string,
+      input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
-    const ast = this._parseBindingAst(input, location, interpolationConfig);
+    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
     const errors = SimpleExpressionChecker.check(ast);
     if (errors.length > 0) {
       this._reportError(
           `Host binding expression cannot contain ${errors.join(' ')}`, input, location);
     }
-    return new ASTWithSource(ast, input, location, this.errors);
+    return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
   private _reportError(message: string, input: string, errLocation: string, ctxLocation?: any) {
@@ -70,7 +70,8 @@ export class Parser {
   }
 
   private _parseBindingAst(
-      input: string, location: string, interpolationConfig: InterpolationConfig): AST {
+      input: string, location: string, absoluteOffset: number,
+      interpolationConfig: InterpolationConfig): AST {
     // Quotes expressions use 3rd-party expression language. We don't want to use
     // our lexer or parser for that, so we check for that ahead of time.
     const quote = this._parseQuote(input, location);
@@ -83,7 +84,7 @@ export class Parser {
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     return new _ParseAST(
-               input, location, tokens, sourceToLex.length, false, this.errors,
+               input, location, absoluteOffset, tokens, sourceToLex.length, false, this.errors,
                input.length - sourceToLex.length)
         .parseChain();
   }
@@ -98,15 +99,16 @@ export class Parser {
     return new Quote(new ParseSpan(0, input.length), prefix, uninterpretedExpression, location);
   }
 
-  parseTemplateBindings(tplKey: string, tplValue: string, location: any):
+  parseTemplateBindings(tplKey: string, tplValue: string, location: any, absoluteOffset: number):
       TemplateBindingParseResult {
     const tokens = this._lexer.tokenize(tplValue);
-    return new _ParseAST(tplValue, location, tokens, tplValue.length, false, this.errors, 0)
+    return new _ParseAST(
+               tplValue, location, absoluteOffset, tokens, tplValue.length, false, this.errors, 0)
         .parseTemplateBindings(tplKey);
   }
 
   parseInterpolation(
-      input: string, location: any,
+      input: string, location: any, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource|null {
     const split = this.splitInterpolation(input, location, interpolationConfig);
     if (split == null) return null;
@@ -118,8 +120,8 @@ export class Parser {
       const sourceToLex = this._stripComments(expressionText);
       const tokens = this._lexer.tokenize(sourceToLex);
       const ast = new _ParseAST(
-                      input, location, tokens, sourceToLex.length, false, this.errors,
-                      split.offsets[i] + (expressionText.length - sourceToLex.length))
+                      input, location, absoluteOffset, tokens, sourceToLex.length, false,
+                      this.errors, split.offsets[i] + (expressionText.length - sourceToLex.length))
                       .parseChain();
       expressions.push(ast);
     }
@@ -127,7 +129,7 @@ export class Parser {
     return new ASTWithSource(
         new Interpolation(
             new ParseSpan(0, input == null ? 0 : input.length), split.strings, expressions),
-        input, location, this.errors);
+        input, location, absoluteOffset, this.errors);
   }
 
   splitInterpolation(
@@ -166,10 +168,10 @@ export class Parser {
     return new SplitInterpolation(strings, expressions, offsets);
   }
 
-  wrapLiteralPrimitive(input: string|null, location: any): ASTWithSource {
+  wrapLiteralPrimitive(input: string|null, location: any, absoluteOffset: number): ASTWithSource {
     return new ASTWithSource(
         new LiteralPrimitive(new ParseSpan(0, input == null ? 0 : input.length), input), input,
-        location, this.errors);
+        location, absoluteOffset, this.errors);
   }
 
   private _stripComments(input: string): string {
@@ -228,9 +230,9 @@ export class _ParseAST {
   index: number = 0;
 
   constructor(
-      public input: string, public location: any, public tokens: Token[],
-      public inputLength: number, public parseAction: boolean, private errors: ParserError[],
-      private offset: number) {}
+      public input: string, public location: any, public absoluteOffset: number,
+      public tokens: Token[], public inputLength: number, public parseAction: boolean,
+      private errors: ParserError[], private offset: number) {}
 
   peek(offset: number): Token {
     const i = this.index + offset;
@@ -716,7 +718,8 @@ export class _ParseAST {
         const start = this.inputIndex;
         const ast = this.parsePipe();
         const source = this.input.substring(start - this.offset, this.inputIndex - this.offset);
-        expression = new ASTWithSource(ast, source, this.location, this.errors);
+        expression =
+            new ASTWithSource(ast, source, this.location, this.absoluteOffset, this.errors);
       }
 
       bindings.push(new TemplateBinding(this.span(start), key, isVar, name, expression));
