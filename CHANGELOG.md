@@ -1,3 +1,13 @@
+## 8.1.1 "vantablack-glowstick" (2019-07-16)
+
+
+### Bug Fixes
+
+* **form-field:** superfluous whitespace when compiled with bazel ([#13911](https://github.com/angular/components/issues/13911)) ([fdad49d](https://github.com/angular/components/commit/fdad49d))
+* **ng-update:** material update fails due to circular dependency ([#16538](https://github.com/angular/components/issues/16538)) ([5d731d3](https://github.com/angular/components/commit/5d731d3))
+
+
+
 # 8.1.0 "denim-antipode" (2019-07-15)
 
 ### Highlights
