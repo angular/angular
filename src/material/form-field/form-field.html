@@ -43,7 +43,7 @@
           <!-- @breaking-change 8.0.0 remove in favor of mat-label element an placeholder attr. -->
           <ng-container *ngSwitchCase="false">
             <ng-content select="mat-placeholder"></ng-content>
-            {{_control.placeholder}}
+            <span>{{_control.placeholder}}</span>
           </ng-container>
 
           <ng-content select="mat-label" *ngSwitchCase="true"></ng-content>

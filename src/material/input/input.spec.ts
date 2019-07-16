@@ -367,8 +367,7 @@ describe('MatInput without forms', () => {
 
     expect(inputEl.placeholder).toBe('Other placeholder');
     expect(labelEl).not.toBeNull();
-    expect(labelEl.nativeElement.textContent).toMatch('Other placeholder');
-    expect(labelEl.nativeElement.textContent).not.toMatch(/\*/g);
+    expect(labelEl.nativeElement.textContent).toBe('Other placeholder');
   }));
 
   it('supports placeholder element', fakeAsync(() => {
@@ -384,8 +383,7 @@ describe('MatInput without forms', () => {
 
     el = fixture.debugElement.query(By.css('label'));
     expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent).toMatch('Other placeholder');
-    expect(el.nativeElement.textContent).not.toMatch(/\*/g);
+    expect(el.nativeElement.textContent).toBe('Other placeholder');
   }));
 
   it('supports placeholder required star', fakeAsync(() => {
@@ -394,7 +392,7 @@ describe('MatInput without forms', () => {
 
     let el = fixture.debugElement.query(By.css('label'));
     expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent).toMatch(/hello +\*/g);
+    expect(el.nativeElement.textContent).toBe('hello *');
   }));
 
   it('should hide the required star if input is disabled', () => {
@@ -406,8 +404,7 @@ describe('MatInput without forms', () => {
     const el = fixture.debugElement.query(By.css('label'));
 
     expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent!.trim()).toMatch(/^hello$/);
-    expect(el.nativeElement.textContent).not.toMatch(/\*/g);
+    expect(el.nativeElement.textContent).toBe('hello');
   });
 
   it('should hide the required star from screen readers', fakeAsync(() => {
@@ -425,13 +422,12 @@ describe('MatInput without forms', () => {
 
     let el = fixture.debugElement.query(By.css('label'));
     expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent).toMatch(/hello +\*/g);
+    expect(el.nativeElement.textContent).toBe('hello *');
 
     fixture.componentInstance.hideRequiredMarker = true;
     fixture.detectChanges();
 
-    expect(el.nativeElement.textContent).toMatch(/hello/g);
-    expect(el.nativeElement.textContent).not.toMatch(/\*/g);
+    expect(el.nativeElement.textContent).toBe('hello');
   }));
 
   it('supports the disabled attribute as binding', fakeAsync(() => {
@@ -894,7 +890,7 @@ describe('MatInput without forms', () => {
 
     expect(container.classList).toContain('mat-form-field-hide-placeholder');
     expect(container.classList).not.toContain('mat-form-field-should-float');
-    expect(label.textContent.trim()).toBe('Label');
+    expect(label.textContent).toBe('Label');
     expect(input.getAttribute('placeholder')).toBe('Placeholder');
 
     input.value = 'Value';
