@@ -306,8 +306,8 @@ class TemplateParseVisitor implements html.Visitor {
         hasInlineTemplates = true;
         const parsedVariables: ParsedVariable[] = [];
         this._bindingParser.parseInlineTemplateBinding(
-            templateKey !, templateValue !, attr.sourceSpan, templateMatchableAttrs,
-            templateElementOrDirectiveProps, parsedVariables);
+            templateKey !, templateValue !, attr.sourceSpan, attr.sourceSpan.start.offset,
+            templateMatchableAttrs, templateElementOrDirectiveProps, parsedVariables);
         templateElementVars.push(...parsedVariables.map(v => t.VariableAst.fromParsedVariable(v)));
       }
 
@@ -416,6 +416,7 @@ class TemplateParseVisitor implements html.Visitor {
     const name = this._normalizeAttributeName(attr.name);
     const value = attr.value;
     const srcSpan = attr.sourceSpan;
+    const absoluteOffset = attr.valueSpan ? attr.valueSpan.start.offset : srcSpan.start.offset;
 
     const boundEvents: ParsedEvent[] = [];
     const bindParts = name.match(BIND_NAME_REGEXP);
@@ -425,7 +426,8 @@ class TemplateParseVisitor implements html.Visitor {
       hasBinding = true;
       if (bindParts[KW_BIND_IDX] != null) {
         this._bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, targetMatchableAttrs, targetProps);
+            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, targetMatchableAttrs,
+            targetProps);
 
       } else if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
@@ -446,27 +448,28 @@ class TemplateParseVisitor implements html.Visitor {
 
       } else if (bindParts[KW_BINDON_IDX]) {
         this._bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, targetMatchableAttrs, targetProps);
+            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, targetMatchableAttrs,
+            targetProps);
         this._parseAssignmentEvent(
             bindParts[IDENT_KW_IDX], value, srcSpan, attr.valueSpan || srcSpan,
             targetMatchableAttrs, boundEvents);
 
       } else if (bindParts[KW_AT_IDX]) {
         this._bindingParser.parseLiteralAttr(
-            name, value, srcSpan, targetMatchableAttrs, targetProps);
+            name, value, srcSpan, absoluteOffset, targetMatchableAttrs, targetProps);
 
       } else if (bindParts[IDENT_BANANA_BOX_IDX]) {
         this._bindingParser.parsePropertyBinding(
-            bindParts[IDENT_BANANA_BOX_IDX], value, false, srcSpan, targetMatchableAttrs,
-            targetProps);
+            bindParts[IDENT_BANANA_BOX_IDX], value, false, srcSpan, absoluteOffset,
+            targetMatchableAttrs, targetProps);
         this._parseAssignmentEvent(
             bindParts[IDENT_BANANA_BOX_IDX], value, srcSpan, attr.valueSpan || srcSpan,
             targetMatchableAttrs, boundEvents);
 
       } else if (bindParts[IDENT_PROPERTY_IDX]) {
         this._bindingParser.parsePropertyBinding(
-            bindParts[IDENT_PROPERTY_IDX], value, false, srcSpan, targetMatchableAttrs,
-            targetProps);
+            bindParts[IDENT_PROPERTY_IDX], value, false, srcSpan, absoluteOffset,
+            targetMatchableAttrs, targetProps);
 
       } else if (bindParts[IDENT_EVENT_IDX]) {
         this._bindingParser.parseEvent(
@@ -479,7 +482,8 @@ class TemplateParseVisitor implements html.Visitor {
     }
 
     if (!hasBinding) {
-      this._bindingParser.parseLiteralAttr(name, value, srcSpan, targetMatchableAttrs, targetProps);
+      this._bindingParser.parseLiteralAttr(
+          name, value, srcSpan, absoluteOffset, targetMatchableAttrs, targetProps);
     }
 
     targetEvents.push(...boundEvents.map(e => t.BoundEventAst.fromParsedEvent(e)));

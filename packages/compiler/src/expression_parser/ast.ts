@@ -203,11 +203,21 @@ export class FunctionCall extends AST {
   }
 }
 
+/**
+ * Records the absolute position of a text span in a source file, where `start` and `end` are the
+ * starting and ending byte offsets, respectively, of the text span in a source file.
+ */
+export class AbsoluteSourceSpan {
+  constructor(public start: number, public end: number) {}
+}
+
 export class ASTWithSource extends AST {
+  public sourceSpan: AbsoluteSourceSpan;
   constructor(
-      public ast: AST, public source: string|null, public location: string,
+      public ast: AST, public source: string|null, public location: string, absoluteOffset: number,
       public errors: ParserError[]) {
     super(new ParseSpan(0, source == null ? 0 : source.length));
+    this.sourceSpan = new AbsoluteSourceSpan(absoluteOffset, absoluteOffset + this.span.end);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     if (visitor.visitASTWithSource) {

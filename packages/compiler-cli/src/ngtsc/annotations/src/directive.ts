@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, ParseError, ParsedHostBindings, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
+import {ConstantPool, EMPTY_SOURCE_SPAN, Expression, ParseError, ParsedHostBindings, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -227,7 +227,7 @@ export function extractDirectiveMetadata(
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, viewQueries, selector,
     type: new WrappedNodeExpr(clazz.name),
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
-    typeSourceSpan: null !, usesInheritance, exportAs, providers
+    typeSourceSpan: EMPTY_SOURCE_SPAN, usesInheritance, exportAs, providers
   };
   return {decoratedElements, decorator: directive, metadata};
 }
@@ -503,7 +503,8 @@ export function extractHostBindings(
   const bindings = parseHostBindings(hostMetadata);
 
   // TODO: create and provide proper sourceSpan to make error message more descriptive (FW-995)
-  const errors = verifyHostBindings(bindings, /* sourceSpan */ null !);
+  // For now, pass an incorrect (empty) but valid sourceSpan.
+  const errors = verifyHostBindings(bindings, EMPTY_SOURCE_SPAN);
   if (errors.length > 0) {
     throw new FatalDiagnosticError(
         // TODO: provide more granular diagnostic and output specific host expression that triggered

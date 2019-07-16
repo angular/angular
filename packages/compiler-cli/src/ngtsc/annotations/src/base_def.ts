@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, R3BaseRefMetaData, WrappedNodeExpr, compileBaseDefFromMetadata, makeBindingParser} from '@angular/compiler';
+import {ConstantPool, EMPTY_SOURCE_SPAN, R3BaseRefMetaData, WrappedNodeExpr, compileBaseDefFromMetadata, makeBindingParser} from '@angular/compiler';
 
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, Decorator, ReflectionHost} from '../../reflection';
@@ -94,7 +94,7 @@ export class BaseDefDecoratorHandler implements
     const analysis: R3BaseRefMetaData = {
       name: node.name.text,
       type: new WrappedNodeExpr(node.name),
-      typeSourceSpan: null !
+      typeSourceSpan: EMPTY_SOURCE_SPAN,
     };
 
     if (metadata.inputs) {
