@@ -124,6 +124,7 @@
     "karma-parallel": "^0.3.0",
     "karma-sauce-launcher": "^2.0.2",
     "karma-sourcemap-loader": "^0.3.7",
+    "madge": "^3.4.4",
     "magic-string": "^0.22.4",
     "marked": "^0.6.2",
     "merge2": "^1.2.3",

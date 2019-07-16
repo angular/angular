@@ -312,6 +312,10 @@ jobs:
       - run: yarn gulp ci:build-release-packages
       - run: yarn check-release-output
 
+      # TODO(devversion): replace this with bazel tests that run Madge. This is
+      # cumbersome and doesn't guarantee no circular deps for other entry-points.
+      - run: yarn madge --circular dist/releases/cdk/schematics/index.js
+
       # Store the release output in the workspace storage. This means that other jobs
       # in the same workflow can attach the release output to their job.
       - persist_to_workspace:

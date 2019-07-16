@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {findInputsOnElementWithAttr, findInputsOnElementWithTag} from '../..';
+import {findInputsOnElementWithAttr, findInputsOnElementWithTag} from '../html-parsing/angular';
 import {ResolvedResource} from '../../update-tool/component-resource-collector';
 import {MigrationRule} from '../../update-tool/migration-rule';
 
