@@ -90,6 +90,8 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `min` property if the validation check fails, otherwise `null`.
    *
+   * @see `updateValueAndValidity()`
+   *
    */
   static min(min: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -121,6 +123,8 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `max` property if the validation check fails, otherwise `null`.
    *
+   * @see `updateValueAndValidity()`
+   *
    */
   static max(max: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -151,6 +155,8 @@ export class Validators {
    * @returns An error map with the `required` property
    * if the validation check fails, otherwise `null`.
    *
+   * @see `updateValueAndValidity()`
+   *
    */
   static required(control: AbstractControl): ValidationErrors|null {
     return isEmptyInputValue(control.value) ? {'required': true} : null;
@@ -173,6 +179,9 @@ export class Validators {
    *
    * @returns An error map that contains the `required` property
    * set to `true` if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static requiredTrue(control: AbstractControl): ValidationErrors|null {
     return control.value === true ? null : {'required': true};
@@ -194,6 +203,8 @@ export class Validators {
    *
    * @returns An error map with the `email` property
    * if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
    *
    */
   static email(control: AbstractControl): ValidationErrors|null {
@@ -225,6 +236,9 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * `minlength` if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static minLength(minLength: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -260,6 +274,9 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * `maxlength` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static maxLength(maxLength: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -275,11 +292,6 @@ export class Validators {
    * Validator that requires the control's value to match a regex pattern. This validator is also
    * provided by default if you use the HTML5 `pattern` attribute.
    *
-   * Note that if a Regexp is provided, the Regexp is used as is to test the values. On the other
-   * hand, if a string is passed, the `^` character is prepended and the `$` character is
-   * appended to the provided string (if not already present), and the resulting regular
-   * expression is used to test the values.
-   *
    * @usageNotes
    *
    * ### Validate that the field only contains letters or spaces
@@ -294,8 +306,16 @@ export class Validators {
    * <input pattern="[a-zA-Z ]*">
    * ```
    *
+   * @param pattern A regular expression to be used as is to test the values, or a string.
+   * If a string is passed, the `^` character is prepended and the `$` character is
+   * appended to the provided string (if not already present), and the resulting regular
+   * expression is used to test the values.
+   *
    * @returns A validator function that returns an error map with the
    * `pattern` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static pattern(pattern: string|RegExp): ValidatorFn {
     if (!pattern) return Validators.nullValidator;
@@ -328,6 +348,9 @@ export class Validators {
   /**
    * @description
    * Validator that performs no operation.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static nullValidator(control: AbstractControl): ValidationErrors|null { return null; }
 
@@ -338,6 +361,9 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * merged error maps of the validators if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static compose(validators: null): null;
   static compose(validators: (ValidatorFn|null|undefined)[]): ValidatorFn|null;
@@ -358,7 +384,10 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * merged error objects of the async validators if the validation check fails, otherwise `null`.
-  */
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
   static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
     if (!validators) return null;
     const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
