@@ -57,8 +57,8 @@ export class BindingParser {
       // sourceSpan. Perfom this check until that is fixed.
       absoluteOffset = sourceSpan ? sourceSpan.start.offset : 0;
     }
-    // Typechecker can't deduce that `absoluteOffset` is a number in the conditional blocks below,
-    // so help it here.
+    // TS typechecker can't guarantee that `absoluteOffset` will remain a number the `forEach` block
+    // below, so help it here.
     const absOffset: number = absoluteOffset;
     if (dirMeta.hostProperties) {
       const boundProps: ParsedProperty[] = [];
