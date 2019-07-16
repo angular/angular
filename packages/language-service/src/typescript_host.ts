@@ -704,15 +704,6 @@ function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|u
   }
 }
 
-function chainedMessage(chain: DiagnosticMessageChain, indent = ''): string {
-  return indent + chain.message + (chain.next ? chainedMessage(chain.next, indent + '  ') : '');
-}
-
-class DiagnosticMessageChainImpl implements DiagnosticMessageChain {
-  constructor(public message: string, public next?: DiagnosticMessageChain) {}
-  toString(): string { return chainedMessage(this); }
-}
-
 function convertChain(chain: FormattedMessageChain): DiagnosticMessageChain {
   return {message: chain.message, next: chain.next ? convertChain(chain.next) : undefined};
 }
