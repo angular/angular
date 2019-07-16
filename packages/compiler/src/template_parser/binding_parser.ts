@@ -52,7 +52,7 @@ export class BindingParser {
   createBoundHostProperties(
       dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan,
       absoluteOffset?: number): ParsedProperty[]|null {
-    if (!absoluteOffset) {
+    if (absoluteOffset === undefined) {
       // TODO(ahafiz): Apparently some consumers of this method are not passing a valid a
       // sourceSpan. Perfom this check until that is fixed.
       absoluteOffset = sourceSpan ? sourceSpan.start.offset : 0;
@@ -81,7 +81,7 @@ export class BindingParser {
   createDirectiveHostPropertyAsts(
       dirMeta: CompileDirectiveSummary, elementSelector: string, sourceSpan: ParseSourceSpan,
       absoluteOffset?: number): BoundElementProperty[]|null {
-    if (!absoluteOffset) {
+    if (absoluteOffset === undefined) {
       // TODO(ahafiz): Apparently some consumers of this method are not passing a valid a
       // sourceSpan. Perfom this check until that is fixed.
       absoluteOffset = sourceSpan ? sourceSpan.start.offset : 0;
