@@ -6,6 +6,10 @@
 @include mdc-chip-set-core-styles($query: $mat-base-styles-query);
 @include _noop-animation;
 
+.mat-mdc-chip {
+  // MDC uses a pointer cursor
+  cursor: default;
+}
 
 // The MDC chip styles related to hover and focus states are intertwined with the MDC ripple styles.
 // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
