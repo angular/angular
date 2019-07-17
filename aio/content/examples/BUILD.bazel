@@ -1,0 +1,5 @@
+exports_files([
+    "tsconfig-example.json",
+    "tsconfig-e2e.json",
+    "start-e2e-server.js",
+])

@@ -1,4 +1,5 @@
 package(default_visibility = [
+    "//aio:__subpackages__",
     "//modules/playground:__subpackages__",
     "//packages:__subpackages__",
 ])

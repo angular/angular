@@ -1,0 +1,30 @@
+load("//aio/tools:aio_example.bzl", "aio_example", "aio_example_e2e")
+
+aio_example(
+    name = "example",
+    srcs = glob(
+        ["src/**/*.ts"],
+        exclude = ["src/app/app.module.1.ts"],
+    ),
+    assets = glob([
+        "src/**/*.html",
+        "src/**/*.css",
+    ]),
+    entry_module = "angular/aio/content/examples/ajs-quick-reference/src/main",
+    server_assets = glob(["src/assets/**/*.png"]),
+    # Needed because the CLI project normally loads assets relatively to the "src" directory.
+    server_root_paths = ["angular/aio/content/examples/ajs-quick-reference/src"],
+    deps = [
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/router",
+    ],
+)
+
+aio_example_e2e(
+    name = "e2e_tests",
+    srcs = glob(["e2e/**/*.ts"]),
+    server = ":example_devserver",
+)

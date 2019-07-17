@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es2015"
+    ],
+    "types": [
+      "node",
+      "jasminewd2"
+    ]
+  }
+}
