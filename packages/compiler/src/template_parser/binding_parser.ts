@@ -116,7 +116,7 @@ export class BindingParser {
 
     try {
       const ast = this._exprParser.parseInterpolation(
-          value, sourceInfo, sourceSpan.start.offset, this._interpolationConfig) !;
+          value, sourceInfo, this._interpolationConfig, sourceSpan.start.offset) !;
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
@@ -249,9 +249,9 @@ export class BindingParser {
     try {
       const ast = isHostBinding ?
           this._exprParser.parseSimpleBinding(
-              value, sourceInfo, absoluteOffset, this._interpolationConfig) :
+              value, sourceInfo, this._interpolationConfig, absoluteOffset) :
           this._exprParser.parseBinding(
-              value, sourceInfo, absoluteOffset, this._interpolationConfig);
+              value, sourceInfo, this._interpolationConfig, absoluteOffset);
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
@@ -388,7 +388,7 @@ export class BindingParser {
 
     try {
       const ast = this._exprParser.parseAction(
-          value, sourceInfo, absoluteOffset, this._interpolationConfig);
+          value, sourceInfo, this._interpolationConfig, absoluteOffset);
       if (ast) {
         this._reportExpressionParserErrors(ast.errors, sourceSpan);
       }
