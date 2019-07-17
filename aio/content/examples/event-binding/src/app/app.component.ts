@@ -18,7 +18,7 @@ export class AppComponent {
   }
 
   deleteItem(item: Item) {
-    alert(`Delete the ${item}.`);
+    alert(`Delete the ${item.name}.`);
   }
 
   onClickMe(event?: KeyboardEvent) {
