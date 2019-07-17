@@ -182,11 +182,6 @@ runInEachFileSystem(() => {
 
     it('supports null', () => { expect(evaluate('const a = null;', 'a')).toEqual(null); });
 
-    it('negation works', () => {
-      expect(evaluate(`const x = 3;`, '!x')).toEqual(false);
-      expect(evaluate(`const x = 3;`, '!!x')).toEqual(true);
-    });
-
     it('resolves access from external variable declarations as dynamic value', () => {
       const value = evaluate('declare const window: any;', 'window.location');
       if (!(value instanceof DynamicValue)) {
