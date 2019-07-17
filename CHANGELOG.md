@@ -1,3 +1,15 @@
+<a name="8.1.2"></a>
+## [8.1.2](https://github.com/angular/angular/compare/8.1.0...8.1.2) (2019-07-17)
+
+
+### Bug Fixes
+
+* use the correct WTF array to iterate over ([#31208](https://github.com/angular/angular/issues/31208)) ([4aed480](https://github.com/angular/angular/commit/4aed480))
+* **compiler-cli:** Return original sourceFile instead of redirected sourceFile from getSourceFile ([#26036](https://github.com/angular/angular/issues/26036)) ([13dbb98](https://github.com/angular/angular/commit/13dbb98)), closes [#22524](https://github.com/angular/angular/issues/22524)
+* **core:** export provider interfaces that are part of the public API types ([#31377](https://github.com/angular/angular/issues/31377)) ([bebf089](https://github.com/angular/angular/commit/bebf089)), closes [/github.com/angular/angular/pull/31377#discussion_r299254408](https://github.com//github.com/angular/angular/pull/31377/issues/discussion_r299254408) [/github.com/angular/angular/blob/9e34670b2/packages/core/src/di/interface/provider.ts#L365-L366](https://github.com//github.com/angular/angular/blob/9e34670b2/packages/core/src/di/interface/provider.ts/issues/L365-L366) [/github.com/angular/angular/blob/9e34670b2/packages/core/src/di/interface/provider.ts#L283-L284](https://github.com//github.com/angular/angular/blob/9e34670b2/packages/core/src/di/interface/provider.ts/issues/L283-L284) [/github.com/angular/angular/blob/9e34670b2/packages/core/src/di/index.ts#L23](https://github.com//github.com/angular/angular/blob/9e34670b2/packages/core/src/di/index.ts/issues/L23)
+
+
+
 <a name="8.2.0-next.1"></a>
 # [8.2.0-next.1](https://github.com/angular/angular/compare/8.2.0-next.0...8.2.0-next.1) (2019-07-10)
 
