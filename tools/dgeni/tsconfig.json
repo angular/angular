@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
     "lib": ["es2015", "dom", "es2016.array.include"],
     "moduleResolution": "node",
     "strictNullChecks": true,

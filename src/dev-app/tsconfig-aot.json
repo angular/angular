@@ -6,8 +6,8 @@
     // Needed for Moment.js since it doesn't have a default export.
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noImplicitAny": true,
