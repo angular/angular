@@ -1,3 +1,16 @@
+<a name="8.2.0-next.2"></a>
+# [8.2.0-next.2](https://github.com/angular/angular/compare/8.2.0-next.1...8.2.0-next.2) (2019-07-17)
+
+
+### Bug Fixes
+
+* use the correct WTF array to iterate over ([#31208](https://github.com/angular/angular/issues/31208)) ([9204de9](https://github.com/angular/angular/commit/9204de9))
+* **bazel:** pass custom bazel compiler host rather than rewriting one ([#31496](https://github.com/angular/angular/issues/31496)) ([0c61a35](https://github.com/angular/angular/commit/0c61a35))
+* **compiler-cli:** Return original sourceFile instead of redirected sourceFile from getSourceFile ([#26036](https://github.com/angular/angular/issues/26036)) ([3166cff](https://github.com/angular/angular/commit/3166cff)), closes [#22524](https://github.com/angular/angular/issues/22524)
+* **language-service:** Eagarly initialize data members ([#31577](https://github.com/angular/angular/issues/31577)) ([0110de2](https://github.com/angular/angular/commit/0110de2))
+
+
+
 <a name="8.1.2"></a>
 ## [8.1.2](https://github.com/angular/angular/compare/8.1.0...8.1.2) (2019-07-17)
 
