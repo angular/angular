@@ -79,9 +79,6 @@ export class Validators {
    *
    * @usageNotes
    *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
-   *
    * ### Validate against a minimum of 3
    *
    * ```typescript
@@ -92,6 +89,8 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * `min` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
    *
    */
   static min(min: number): ValidatorFn {
@@ -113,9 +112,6 @@ export class Validators {
    *
    * @usageNotes
    *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
-   *
    * ### Validate against a maximum of 15
    *
    * ```typescript
@@ -126,6 +122,8 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * `max` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
    *
    */
   static max(max: number): ValidatorFn {
@@ -146,9 +144,6 @@ export class Validators {
    *
    * @usageNotes
    *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
-   *
    * ### Validate that the field is non-empty
    *
    * ```typescript
@@ -159,6 +154,8 @@ export class Validators {
    *
    * @returns An error map with the `required` property
    * if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
    *
    */
   static required(control: AbstractControl): ValidationErrors|null {
@@ -172,9 +169,6 @@ export class Validators {
    *
    * @usageNotes
    *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
-   *
    * ### Validate that the field value is true
    *
    * ```typescript
@@ -185,6 +179,9 @@ export class Validators {
    *
    * @returns An error map that contains the `required` property
    * set to `true` if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static requiredTrue(control: AbstractControl): ValidationErrors|null {
     return control.value === true ? null : {'required': true};
@@ -196,9 +193,6 @@ export class Validators {
    *
    * @usageNotes
    *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
-   *
    * ### Validate that the field matches a valid email pattern
    *
    * ```typescript
@@ -209,6 +203,8 @@ export class Validators {
    *
    * @returns An error map with the `email` property
    * if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
    *
    */
   static email(control: AbstractControl): ValidationErrors|null {
@@ -226,9 +222,6 @@ export class Validators {
    *
    * @usageNotes
    *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
-   *
    * ### Validate that the field has a minimum of 3 characters
    *
    * ```typescript
@@ -243,6 +236,9 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * `minlength` if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static minLength(minLength: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -264,9 +260,6 @@ export class Validators {
    *
    * @usageNotes
    *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
-   *
    * ### Validate that the field has maximum of 5 characters
    *
    * ```typescript
@@ -281,6 +274,9 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * `maxlength` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static maxLength(maxLength: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -297,9 +293,6 @@ export class Validators {
    * provided by default if you use the HTML5 `pattern` attribute.
    *
    * @usageNotes
-   *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
    *
    * ### Validate that the field only contains letters or spaces
    *
@@ -320,6 +313,9 @@ export class Validators {
    *
    * @returns A validator function that returns an error map with the
    * `pattern` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
    */
   static pattern(pattern: string|RegExp): ValidatorFn {
     if (!pattern) return Validators.nullValidator;
@@ -353,10 +349,7 @@ export class Validators {
    * @description
    * Validator that performs no operation.
    *
-   * @usageNotes
-   *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
+   * @see `updateValueAndValidity()`
    *
    */
   static nullValidator(control: AbstractControl): ValidationErrors|null { return null; }
@@ -369,10 +362,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error maps of the validators if the validation check fails, otherwise `null`.
    *
-   * @usageNotes
-   *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
+   * @see `updateValueAndValidity()`
    *
    */
   static compose(validators: null): null;
@@ -395,10 +385,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error objects of the async validators if the validation check fails, otherwise `null`.
    *
-   * @usageNotes
-   *
-   * NOTE: When you add or remove a validator at run time, you must call
-   * `updateValueAndValidity()` for the new validation to take effect.
+   * @see `updateValueAndValidity()`
    *
    */
   static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
