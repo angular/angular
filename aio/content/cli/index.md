@@ -38,7 +38,7 @@ When you use the [ng serve](cli/serve) command to build an app and serve it loca
 
 <div class="alert is-helpful">
 
-   When you run `ng new my-first-project` a new folder, named `my-first-project`, will be created in the current working directory. Since you wont to be able to create files inside that folder, make sure you have sufficient rights in the current working directory before running the command.
+   When you run `ng new my-first-project` a new folder, named `my-first-project`, will be created in the current working directory. Since you want to be able to create files inside that folder, make sure you have sufficient rights in the current working directory before running the command.
 
    If the current working directory is not the right place for your project, you can change to a more appropriate directory by running `cd <path-to-other-directory>` first.
 
