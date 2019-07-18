@@ -1855,6 +1855,65 @@ exports.ExternalModule = ExternalModule;
         });
       });
 
+      describe('getBaseClassIdentifier()', () => {
+        function getBaseClassIdentifier(source: string) {
+          const file = {
+            name: _('/synthesized_constructors.js'),
+            contents: source,
+          };
+
+          loadTestFiles([file]);
+          const {program, host: compilerHost} = makeTestBundleProgram(file.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const classNode =
+              getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+          return host.getBaseClassIdentifier(classNode);
+        }
+
+        it('should consider an IIFE with _super parameter as having a base class', () => {
+          const identifier = getBaseClassIdentifier(`
+          var BaseClass = /** @class */ (function () {
+            function BaseClass() {}
+            return BaseClass;
+          }());
+          var TestClass = /** @class */ (function (_super) {
+            __extends(TestClass, _super);
+            function TestClass() {}
+            return TestClass;
+          }(BaseClass));`);
+          expect(identifier !.text).toBe('BaseClass');
+        });
+
+        it('should consider an IIFE with a unique name generated for the _super parameter as having a base class',
+           () => {
+             const identifier = getBaseClassIdentifier(`
+          var BaseClass = /** @class */ (function () {
+            function BaseClass() {}
+            return BaseClass;
+          }());
+          var TestClass = /** @class */ (function (_super_1) {
+            __extends(TestClass, _super_1);
+            function TestClass() {}
+            return TestClass;
+          }(BaseClass));`);
+             expect(identifier !.text).toBe('BaseClass');
+           });
+
+        it('should not consider an IIFE without parameter as having a base class', () => {
+          const identifier = getBaseClassIdentifier(`
+          var BaseClass = /** @class */ (function () {
+            function BaseClass() {}
+            return BaseClass;
+          }());
+          var TestClass = /** @class */ (function () {
+            __extends(TestClass, _super);
+            function TestClass() {}
+            return TestClass;
+          }(BaseClass));`);
+          expect(identifier).toBe(null);
+        });
+      });
+
       describe('findClassSymbols()', () => {
         it('should return an array of all classes in the given source file', () => {
           loadTestFiles(DECORATED_FILES);

@@ -121,8 +121,29 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   }
 
   hasBaseClass(clazz: ClassDeclaration): boolean {
-    return ts.isClassDeclaration(clazz) && clazz.heritageClauses !== undefined &&
+    return (ts.isClassDeclaration(clazz) || ts.isClassExpression(clazz)) &&
+        clazz.heritageClauses !== undefined &&
         clazz.heritageClauses.some(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
+  }
+
+  getBaseClassIdentifier(clazz: ClassDeclaration): ts.Identifier|null {
+    if (!(ts.isClassDeclaration(clazz) || ts.isClassExpression(clazz)) ||
+        clazz.heritageClauses === undefined) {
+      return null;
+    }
+    const extendsClause =
+        clazz.heritageClauses.find(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
+    if (extendsClause === undefined) {
+      return null;
+    }
+    const extendsType = extendsClause.types[0];
+    if (extendsType === undefined) {
+      return null;
+    }
+    if (!ts.isIdentifier(extendsType.expression)) {
+      return null;
+    }
+    return extendsType.expression;
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {

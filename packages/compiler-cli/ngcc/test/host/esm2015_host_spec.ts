@@ -1680,6 +1680,52 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('getBaseClassIdentifier()', () => {
+      it('should not consider a class without extends clause as having a base class', () => {
+        const file = {
+          name: _('/base_class.js'),
+          contents: `class TestClass {}`,
+        };
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
+        expect(host.getBaseClassIdentifier(classNode)).toBe(null);
+      });
+
+      it('should consider a class with extends clause as having a base class', () => {
+        const file = {
+          name: _('/base_class.js'),
+          contents: `
+        class BaseClass {}
+        class TestClass extends BaseClass {}`,
+        };
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
+        const baseIdentifier = host.getBaseClassIdentifier(classNode) !;
+        expect(baseIdentifier.text).toEqual('BaseClass');
+      });
+
+      it('should consider an aliased class with extends clause as having a base class', () => {
+        const file = {
+          name: _('/base_class.js'),
+          contents: `
+        let TestClass_1;
+        class BaseClass {}
+        let TestClass = TestClass_1 = class TestClass extends BaseClass {}`,
+        };
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode =
+            getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+        const baseIdentifier = host.getBaseClassIdentifier(classNode) !;
+        expect(baseIdentifier.text).toEqual('BaseClass');
+      });
+    });
+
     describe('getGenericArityOfClass()', () => {
       it('should properly count type parameters', () => {
         loadTestFiles(ARITY_CLASSES);
