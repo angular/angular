@@ -7,7 +7,7 @@
  */
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-import {CompiledClass} from '../analysis/decoration_analyzer';
+import {CompiledClass} from '../analysis/types';
 import {getIifeBody} from '../host/esm5_host';
 import {EsmRenderingFormatter} from './esm_rendering_formatter';
 
