@@ -77,7 +77,8 @@ export enum AnnotationKind {
  * Describes an analyzed, indexed component and its template.
  */
 export interface IndexedComponent {
-  kind: AnnotationKind.Component, name: string;
+  kind: AnnotationKind.Component;
+  name: string;
   selector: string|null;
   file: ParseSourceFile;
   template: {
