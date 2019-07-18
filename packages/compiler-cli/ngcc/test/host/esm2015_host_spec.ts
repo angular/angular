@@ -1680,6 +1680,77 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('getBaseClassExpression()', () => {
+      it('should not consider a class without extends clause as having a base class', () => {
+        const file = {
+          name: _('/base_class.js'),
+          contents: `class TestClass {}`,
+        };
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
+        expect(host.getBaseClassExpression(classNode)).toBe(null);
+      });
+
+      it('should find the base class of a class with an `extends` clause', () => {
+        const file = {
+          name: _('/base_class.js'),
+          contents: `
+        class BaseClass {}
+        class TestClass extends BaseClass {}`,
+        };
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
+        const baseIdentifier = host.getBaseClassExpression(classNode) !;
+        if (!ts.isIdentifier(baseIdentifier)) {
+          throw new Error(`Expected ${baseIdentifier.getText()} to be an identifier.`);
+        }
+        expect(baseIdentifier.text).toEqual('BaseClass');
+      });
+
+      it('should find the base class of an aliased class with an `extends` clause', () => {
+        const file = {
+          name: _('/base_class.js'),
+          contents: `
+        let TestClass_1;
+        class BaseClass {}
+        let TestClass = TestClass_1 = class TestClass extends BaseClass {}`,
+        };
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode =
+            getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+        const baseIdentifier = host.getBaseClassExpression(classNode) !;
+        if (!ts.isIdentifier(baseIdentifier)) {
+          throw new Error(`Expected ${baseIdentifier.getText()} to be an identifier.`);
+        }
+        expect(baseIdentifier.text).toEqual('BaseClass');
+      });
+
+      it('should find the base class expression of a class with a dynamic `extends` expression',
+         () => {
+           const file = {
+             name: _('/base_class.js'),
+             contents: `
+        class BaseClass {}
+        function foo() { return BaseClass; }
+        class TestClass extends foo() {}`,
+           };
+           loadTestFiles([file]);
+           const {program} = makeTestBundleProgram(file.name);
+           const host =
+               new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+           const classNode =
+               getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
+           const baseExpression = host.getBaseClassExpression(classNode) !;
+           expect(baseExpression.getText()).toEqual('foo()');
+         });
+    });
+
     describe('getGenericArityOfClass()', () => {
       it('should properly count type parameters', () => {
         loadTestFiles(ARITY_CLASSES);

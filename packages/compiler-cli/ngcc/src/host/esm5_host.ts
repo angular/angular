@@ -56,6 +56,32 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     return iife.parameters.length === 1 && isSuperIdentifier(iife.parameters[0].name);
   }
 
+  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
+    const superBaseClassIdentifier = super.getBaseClassExpression(clazz);
+    if (superBaseClassIdentifier) {
+      return superBaseClassIdentifier;
+    }
+
+    const classDeclaration = this.getClassDeclaration(clazz);
+    if (!classDeclaration) return null;
+
+    const iifeBody = getIifeBody(classDeclaration);
+    if (!iifeBody) return null;
+
+    const iife = iifeBody.parent;
+    if (!iife || !ts.isFunctionExpression(iife)) return null;
+
+    if (iife.parameters.length !== 1 || !isSuperIdentifier(iife.parameters[0].name)) {
+      return null;
+    }
+
+    if (!ts.isCallExpression(iife.parent)) {
+      return null;
+    }
+
+    return iife.parent.arguments[0];
+  }
+
   /**
    * Find the declaration of a class given a node that we think represents the class.
    *
