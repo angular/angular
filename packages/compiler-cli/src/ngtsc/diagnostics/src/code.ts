@@ -56,6 +56,11 @@ export enum ErrorCode {
    * otherwise imported.
    */
   NGMODULE_INVALID_REEXPORT = 6004,
+
+  /**
+   * Raised when ngcc tries to inject a synthetic decorator over one that already exists.
+   */
+  NGCC_MIGRATION_DECORATOR_INJECTION_ERROR = 7001,
 }
 
 export function ngErrorCode(code: ErrorCode): number {
