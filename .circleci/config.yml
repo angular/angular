@@ -695,6 +695,12 @@ workflows:
       - legacy-unit-tests-saucelabs:
           requires:
             - setup
+      - test_saucelabs_bazel:
+          requires:
+            - setup
+          filters:
+            branches:
+              only: master
       - test_aio:
           requires:
             - setup
@@ -756,22 +762,6 @@ workflows:
       - test_zonejs:
           requires:
             - setup
-
-  saucelabs_tests:
-    jobs:
-      - setup
-      - test_saucelabs_bazel:
-          requires:
-            - setup
-    triggers:
-      - schedule:
-          # Runs the Saucelabs legacy tests every hour. We still want to run Saucelabs
-          # frequently as the caretaker needs up-to-date results when merging PRs or creating
-          # a new release. Also we primarily moved the Saucelabs job into a cronjob that doesn't
-          # run for PRs, in order to ensure that PRs are not affected by Saucelabs flakiness or
-          # incidents. This is still guaranteed (even if we run the job every hour).
-          cron: "0 * * * *"
-          filters: *publish_branches_filter
 
   aio_monitoring:
     jobs:
