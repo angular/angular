@@ -106,12 +106,12 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support not pass any arguments to `template` function', async(() => {
+      it('should pass $element to `template` function and not $attrs', async(() => {
            // Define `ng1Component`
            const ng1Component: angular.IComponent = {
              template: ($attrs: angular.IAttributes, $element: angular.IAugmentedJQuery) => {
                expect($attrs).toBeUndefined();
-               expect($element).toBeUndefined();
+               expect($element).toBeDefined();
 
                return 'Hello, Angular!';
              }
@@ -241,12 +241,12 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should support not pass any arguments to `templateUrl` function', async(() => {
+      it('should pass $element to `templateUrl` function and not $attrs', async(() => {
            // Define `ng1Component`
            const ng1Component: angular.IComponent = {
              templateUrl: ($attrs: angular.IAttributes, $element: angular.IAugmentedJQuery) => {
                expect($attrs).toBeUndefined();
-               expect($element).toBeUndefined();
+               expect($element).toBeDefined();
 
                return 'ng1.component.html';
              }
