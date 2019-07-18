@@ -151,7 +151,7 @@ function joinUrls(a: string, b: string): string {
 }
 
 function withOrderedKeys<T extends{[key: string]: any}>(unorderedObj: T): T {
-  const orderedObj = {} as T;
+  const orderedObj = {} as{[key: string]: any};
   Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
-  return orderedObj;
+  return orderedObj as T;
 }

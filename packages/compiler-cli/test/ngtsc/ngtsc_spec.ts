@@ -3144,7 +3144,7 @@ runInEachFileSystem(os => {
           const fileoverview = `
         /**
          * @fileoverview added by tsickle
-         * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
          */
       `;
           expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
@@ -3161,7 +3161,7 @@ runInEachFileSystem(os => {
           const fileoverview = `
         /**
          * @fileoverview added by tsickle
-         * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
          */
       `;
           expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
@@ -3193,7 +3193,7 @@ runInEachFileSystem(os => {
          * @fileoverview Some Comp overview
          * @modName {some_comp}
          *
-         * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
          */
       `;
           expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
@@ -3222,7 +3222,7 @@ runInEachFileSystem(os => {
          * @fileoverview Some Comp overview
          * @modName {some_comp}
          *
-         * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
          */
       `;
              expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();

@@ -60,7 +60,7 @@ describe('Collector', () => {
       version: METADATA_VERSION,
       metadata: {
         DeclaredClass: {__symbolic: 'class'},
-        declaredFn: {__symbolic: 'function'},
+        declaredFn: {__symbolic: 'function'} as any,
       }
     });
   });
@@ -433,8 +433,8 @@ describe('Collector', () => {
             }
           }
         },
-        complexFn: {__symbolic: 'function'},
-        declaredFn: {__symbolic: 'function'}
+        complexFn: {__symbolic: 'function'} as any,
+        declaredFn: {__symbolic: 'function'} as any,
       }
     });
   });

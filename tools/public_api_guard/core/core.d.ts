@@ -309,7 +309,7 @@ export interface DoCheck {
     ngDoCheck(): void;
 }
 
-export declare class ElementRef<T = any> {
+export declare class ElementRef<T extends any = any> {
     nativeElement: T;
     constructor(nativeElement: T);
 }
@@ -325,7 +325,7 @@ export declare class ErrorHandler {
     handleError(error: any): void;
 }
 
-export declare class EventEmitter<T> extends Subject<T> {
+export declare class EventEmitter<T extends any> extends Subject<T> {
     __isAsync: boolean;
     constructor(isAsync?: boolean);
     emit(value?: T): void;
@@ -1089,7 +1089,7 @@ export declare function ɵɵstylingApply(): void;
 
 export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplate<any> | null, consts: number, vars: number, tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null, localRefExtractor?: LocalRefExtractor): void;
 
-export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LView): ViewEngine_TemplateRef<{}> | null;
+export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LView): ViewEngine_TemplateRef<unknown> | null;
 
 export declare function ɵɵtext(index: number, value?: any): void;
 

@@ -21,7 +21,7 @@ import {of } from 'rxjs';
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: AbstractControl) => {
       let resolve: (result: any) => void = undefined !;
-      const promise = new Promise(res => { resolve = res; });
+      const promise = new Promise<ValidationErrors|null>(res => { resolve = res; });
       const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
       const res = c.value != expected ? {'async': true} : null;
 

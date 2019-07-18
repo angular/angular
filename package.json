@@ -105,10 +105,10 @@
     "source-map": "^0.6.1",
     "source-map-support": "0.5.9",
     "systemjs": "0.18.10",
-    "tsickle": "0.34.3",
+    "tsickle": "0.36.0",
     "tslib": "^1.9.0",
     "tslint": "5.7.0",
-    "typescript": "~3.4.2",
+    "typescript": "~3.5.3",
     "xhr2": "0.1.4",
     "yargs": "13.1.0",
     "zone.js": "^0.9.1"

@@ -238,7 +238,7 @@ export declare class CommonModule {
         `'does_not_exist' does not exist on type '{ name: string; }'`,
         `Expected 2 arguments, but got 3.`,
         `Argument of type '"test"' is not assignable to parameter of type 'number'`,
-        `Argument of type '{ name: string; }' is not assignable to parameter of type '{}[]'`,
+        `Argument of type '{ name: string; }' is not assignable to parameter of type 'unknown[]'`,
       ];
 
       for (const error of allErrors) {

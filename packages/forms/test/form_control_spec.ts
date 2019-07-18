@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 
 import {FormArray} from '@angular/forms/src/model';
 
@@ -17,7 +17,7 @@ import {FormArray} from '@angular/forms/src/model';
   function asyncValidator(expected: string, timeouts = {}): AsyncValidatorFn {
     return (c: AbstractControl) => {
       let resolve: (result: any) => void = undefined !;
-      const promise = new Promise(res => { resolve = res; });
+      const promise = new Promise<ValidationErrors|null>(res => { resolve = res; });
       const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
       const res = c.value != expected ? {'async': true} : null;
 
