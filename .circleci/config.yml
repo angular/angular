@@ -673,6 +673,10 @@ jobs:
         # Run zone.js tools tests
       - run: yarn --cwd packages/zone.js promisetest
       - run: yarn --cwd packages/zone.js promisefinallytest
+      - run: yarn bazel build //packages/zone.js:npm_package &&
+             cp dist/bin/packages/zone.js/npm_package/dist/zone-mix.js ./packages/zone.js/test/extra/ &&
+             cp dist/bin/packages/zone.js/npm_package/dist/zone-patch-electron.js ./packages/zone.js/test/extra/ &&
+             yarn --cwd packages/zone.js electrontest
 
 workflows:
   version: 2

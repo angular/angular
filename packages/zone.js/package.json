@@ -15,13 +15,16 @@
     "test": "test"
   },
   "devDependencies": {
+    "domino": "2.1.2",
     "mocha": "^3.1.2",
+    "mock-require": "3.0.3",
     "promises-aplus-tests": "^2.1.2",
     "typescript": "~3.4.2"
   },
   "scripts": {
     "promisetest": "tsc -p . && node ./promise-test.js",
-    "promisefinallytest": "tsc -p . && mocha promise.finally.spec.js"
+    "promisefinallytest": "tsc -p . && mocha promise.finally.spec.js",
+    "electrontest": "cd test/extra && node electron.js"
   },
   "repository": {
     "type": "git",
