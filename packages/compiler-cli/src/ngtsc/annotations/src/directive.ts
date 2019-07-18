@@ -504,7 +504,7 @@ export function extractHostBindings(
   const bindings = parseHostBindings(hostMetadata);
 
   // TODO: create and provide proper sourceSpan to make error message more descriptive (FW-995)
-  // For now, parse an empty but valid sourceSpan.
+  // For now, pass an incorrect but valid sourceSpan.
   const incorrectParseLocation = new ParseLocation(new ParseSourceFile('', ''), 0, 0, 0);
   const incorrectSpan = new ParseSourceSpan(incorrectParseLocation, incorrectParseLocation);
   const errors = verifyHostBindings(bindings, incorrectSpan);
