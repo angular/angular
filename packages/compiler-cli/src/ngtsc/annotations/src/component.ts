@@ -338,14 +338,20 @@ export class ComponentDecoratorHandler implements
     const binder = new R3TargetBinder(matcher);
     const boundTemplate = binder.bind({template: template.nodes});
 
-    const ownModule = this.scopeRegistry.getModule(node);
-    let owningModule: ClassDeclaration|undefined = undefined;
+    let exportingModule: ClassDeclaration|undefined = undefined;
     let importedModules = new Set<ClassDeclaration>();
-    if (ownModule) {
-      const metadata = this.metaReader.getNgModuleMetadata(new Reference(ownModule));
-      if (metadata) {
-        owningModule = metadata.ref.node;
-        importedModules = new Set(metadata.imports.map(ref => ref.node));
+    const owningModule = this.scopeRegistry.getModule(node);
+    if (owningModule) {
+      const moduleMeta = this.metaReader.getNgModuleMetadata(new Reference(owningModule));
+      if (moduleMeta) {
+        // If the component being indexed is an export of the NgModule that declares it, set the
+        // NgModule declaration as the exporting module of the component.
+        const selfIsExport = moduleMeta.exports.find(ref => ref.node === node);
+        if (selfIsExport) {
+          exportingModule = owningModule;
+        }
+        // Find all NgModule declarations imported by the NgModule that declares the component.
+        importedModules = new Set(moduleMeta.imports.map(ref => ref.node));
       }
     }
 
@@ -357,7 +363,7 @@ export class ComponentDecoratorHandler implements
         isInline: template.isInline,
         file: template.file,
       },
-      owningModule,
+      exportingModule,
       importedModules,
     });
   }

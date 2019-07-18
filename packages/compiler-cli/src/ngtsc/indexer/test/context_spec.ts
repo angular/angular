@@ -15,7 +15,7 @@ runInEachFileSystem(() => {
     it('should store and return information about components', () => {
       const context = new IndexingContext();
       const declaration = util.getClassDeclaration('class C {};', 'C');
-      const owningModule = util.getClassDeclaration('class Owner {};', 'Owner');
+      const exportingModule = util.getClassDeclaration('class Owner {};', 'Owner');
       const importedModules = new Set([util.getClassDeclaration('class Import {};', 'Import')]);
       const boundTemplate = util.getBoundTemplate('<div></div>');
 
@@ -26,7 +26,7 @@ runInEachFileSystem(() => {
           isInline: false,
           file: new ParseSourceFile('<div></div>', util.getTestFilePath()),
         },
-        owningModule,
+        exportingModule,
         importedModules,
       });
 
@@ -38,7 +38,7 @@ runInEachFileSystem(() => {
             isInline: false,
             file: new ParseSourceFile('<div></div>', util.getTestFilePath()),
           },
-          owningModule,
+          exportingModule,
           importedModules,
         },
       ]));

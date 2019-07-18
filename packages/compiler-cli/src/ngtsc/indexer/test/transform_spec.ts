@@ -26,7 +26,7 @@ runInEachFileSystem(() => {
           isInline: false,
           file: new ParseSourceFile(template, util.getTestFilePath()),
         },
-        owningModule: undefined,
+        exportingModule: undefined,
         importedModules: new Set(),
       });
       const analysis = generateAnalysis(context);
@@ -44,7 +44,7 @@ runInEachFileSystem(() => {
           isInline: false,
           file: new ParseSourceFile('<div>{{foo}}</div>', util.getTestFilePath()),
         },
-        owningModule: undefined,
+        exportingModule: undefined,
         importedModules: new Set(),
       });
     });
@@ -61,7 +61,7 @@ runInEachFileSystem(() => {
           isInline: true,
           file: new ParseSourceFile(decl.getText(), util.getTestFilePath()),
         },
-        owningModule: undefined,
+        exportingModule: undefined,
         importedModules: new Set(),
       });
       const analysis = generateAnalysis(context);
@@ -86,7 +86,7 @@ runInEachFileSystem(() => {
           isInline: false,
           file: new ParseSourceFile(template, util.getTestFilePath()),
         },
-        owningModule: undefined,
+        exportingModule: undefined,
         importedModules: new Set(),
       });
       const analysis = generateAnalysis(context);
@@ -121,7 +121,7 @@ runInEachFileSystem(() => {
           isInline: false,
           file: new ParseSourceFile(templateA, util.getTestFilePath()),
         },
-        owningModule: undefined,
+        exportingModule: undefined,
         importedModules: new Set(),
       });
       context.addComponent({
@@ -132,7 +132,7 @@ runInEachFileSystem(() => {
           isInline: false,
           file: new ParseSourceFile(templateB, util.getTestFilePath()),
         },
-        owningModule: undefined,
+        exportingModule: undefined,
         importedModules: new Set(),
       });
 
@@ -149,7 +149,7 @@ runInEachFileSystem(() => {
       expect(infoB !.template.usedComponents).toEqual(new Set([declA]));
     });
 
-    it('should emit owning and imported NgModule', () => {
+    it('should emit exporting and imported NgModule', () => {
       const context = new IndexingContext();
       const decl = util.getClassDeclaration('class A {}', 'A');
       const owner = util.getClassDeclaration('class Owner {}', 'Owner');
@@ -163,7 +163,7 @@ runInEachFileSystem(() => {
           isInline: false,
           file: new ParseSourceFile('', util.getTestFilePath()),
         },
-        owningModule: owner,
+        exportingModule: owner,
         importedModules: imports,
       });
 
@@ -173,7 +173,7 @@ runInEachFileSystem(() => {
 
       const info = analysis.get(decl);
       expect(info).toBeDefined();
-      expect(info !.owningModule).toEqual(owner);
+      expect(info !.exportingModule).toEqual(owner);
       expect(info !.importedModules).toEqual(imports);
     });
   });

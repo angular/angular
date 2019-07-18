@@ -181,7 +181,7 @@ runInEachFileSystem(() => {
         expect(indexed.get(usedComp)).toEqual(testComp);
       });
 
-      it('should generate information about owning and imported modules', () => {
+      it('should generate information about exporting and imported modules', () => {
         env.write(testSourceFile, `
         import {Component, NgModule} from '@angular/core';
 
@@ -230,12 +230,11 @@ runInEachFileSystem(() => {
         const bComp = indexedComps.find(comp => comp.name === 'B');
         expect(aComp).toBeDefined();
         expect(bComp).toBeDefined();
-        expect(aComp !.owningModule).toBeDefined();
-        expect(bComp !.owningModule).toBeDefined();
+        expect(aComp !.exportingModule).toBeDefined();
+        expect(bComp !.exportingModule).toBeUndefined();
 
-        expect(aComp !.owningModule !.name.text).toBe('AModule');
+        expect(aComp !.exportingModule !.name.text).toBe('AModule');
         expect(aComp !.importedModules.size).toBe(0);
-        expect(bComp !.owningModule !.name.text).toBe('BModule');
         expect(Array.from(bComp !.importedModules.values()).map(decl => decl.name.text)).toEqual([
           'AModule'
         ]);

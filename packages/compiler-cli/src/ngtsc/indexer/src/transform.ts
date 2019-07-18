@@ -22,7 +22,7 @@ export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, 
   const analysis = new Map<ts.Declaration, IndexedComponent>();
 
   context.components.forEach(
-      ({declaration, selector, boundTemplate, templateMeta, owningModule, importedModules}) => {
+      ({declaration, selector, boundTemplate, templateMeta, exportingModule, importedModules}) => {
         const name = declaration.name.getText();
 
         const usedComponents = new Set<ts.Declaration>();
@@ -55,7 +55,7 @@ export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, 
             isInline: templateMeta.isInline,
             file: templateFile,
           },
-          owningModule,
+          exportingModule,
           importedModules,
         });
       });

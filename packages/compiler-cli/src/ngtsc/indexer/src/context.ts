@@ -43,8 +43,8 @@ export interface ComponentInfo {
     file: ParseSourceFile;
   };
 
-  /** NgModule owning the component, if any. */
-  owningModule?: ClassDeclaration;
+  /** NgModule exporting the component, if any. */
+  exportingModule?: ClassDeclaration;
 
   /** NgModules imported by owningModule, if any. */
   importedModules: Set<ClassDeclaration>;
