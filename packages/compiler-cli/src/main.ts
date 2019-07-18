@@ -106,8 +106,8 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
            }) =>
                // tslint:disable-next-line:no-require-imports only depend on tsickle if requested
         require('tsickle').emitWithTsickle(
-            program, {...tsickleHost, options, host}, host, options, targetSourceFile, writeFile,
-            cancellationToken, emitOnlyDtsFiles, {
+            program, {...tsickleHost, options, host, moduleResolutionHost: host}, host, options,
+            targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, {
               beforeTs: customTransformers.before,
               afterTs: customTransformers.after,
             });

@@ -1,4 +1,4 @@
-export declare const MOCK_PLATFORM_LOCATION_CONFIG: InjectionToken<{}>;
+export declare const MOCK_PLATFORM_LOCATION_CONFIG: InjectionToken<MockPlatformLocationConfig>;
 
 export declare class MockLocationStrategy extends LocationStrategy {
     internalBaseHref: string;

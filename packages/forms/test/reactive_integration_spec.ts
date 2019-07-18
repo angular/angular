@@ -2426,7 +2426,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 function uniqLoginAsyncValidator(expectedValue: string, timeout: number = 0) {
   return (c: AbstractControl) => {
     let resolve: (result: any) => void;
-    const promise = new Promise(res => { resolve = res; });
+    const promise = new Promise<any>(res => { resolve = res; });
     const res = (c.value == expectedValue) ? null : {'uniqLogin': true};
     setTimeout(() => resolve(res), timeout);
     return promise;
