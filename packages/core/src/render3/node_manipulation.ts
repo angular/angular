@@ -84,8 +84,7 @@ function executeActionOnElementOrContainer(
     let lContainer: LContainer|undefined;
     let isComponent = false;
     // We are expecting an RNode, but in the case of a component or LContainer the `RNode` is
-    // wrapped
-    // in an array which needs to be unwrapped. We need to know if it is a component and if
+    // wrapped in an array which needs to be unwrapped. We need to know if it is a component and if
     // it has LContainer so that we can process all of those cases appropriately.
     if (isLContainer(lNodeToHandle)) {
       lContainer = lNodeToHandle;
@@ -97,14 +96,14 @@ function executeActionOnElementOrContainer(
     const rNode: RNode = unwrapRNode(lNodeToHandle);
     ngDevMode && assertDomNode(rNode);
 
-    if (action === WalkTNodeTreeAction.Create) {
+    if (action === WalkTNodeTreeAction.Create && parent !== null) {
       if (beforeNode == null) {
-        parent !== null && nativeAppendChild(renderer, parent, rNode);
+        nativeAppendChild(renderer, parent, rNode);
       } else {
-        parent !== null && nativeInsertBefore(renderer, parent, rNode, beforeNode || null);
+        nativeInsertBefore(renderer, parent, rNode, beforeNode || null);
       }
-    } else if (action === WalkTNodeTreeAction.Insert) {
-      parent !== null && nativeInsertBefore(renderer, parent, rNode, beforeNode || null);
+    } else if (action === WalkTNodeTreeAction.Insert && parent !== null) {
+      nativeInsertBefore(renderer, parent, rNode, beforeNode || null);
     } else if (action === WalkTNodeTreeAction.Detach) {
       nativeRemoveNode(renderer, rNode, isComponent);
     } else if (action === WalkTNodeTreeAction.Destroy) {
@@ -582,7 +581,7 @@ function nativeAppendChild(renderer: Renderer3, parent: RElement, child: RNode):
 
 function nativeAppendOrInsertBefore(
     renderer: Renderer3, parent: RElement, child: RNode, beforeNode: RNode | null) {
-  if (beforeNode != null) {
+  if (beforeNode !== null) {
     nativeInsertBefore(renderer, parent, child, beforeNode);
   } else {
     nativeAppendChild(renderer, parent, child);
@@ -803,11 +802,18 @@ function appendProjectedNode(
   }
 }
 
+/**
+ * Performs the operation of `action` on the node. Typically this involves inserting or removing
+ * nodes on the LView or projection boundary.
+ */
 function applyNodes(
     renderer: Renderer3, action: WalkTNodeTreeAction, tNode: TNode | null, lView: LView,
     renderParent: RElement | null, beforeNode: RNode | null | undefined, isProjection: boolean) {
   while (tNode != null) {
     ngDevMode && assertTNodeForLView(tNode, lView);
+    ngDevMode && assertNodeOfPossibleTypes(
+                     tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer,
+                     TNodeType.Projection, TNodeType.Projection, TNodeType.IcuContainer);
     const nativeNode = lView[tNode.index];
     const tNodeType = tNode.type;
     if (isProjection) {
@@ -820,9 +826,6 @@ function applyNodes(
       if (tNodeType === TNodeType.ElementContainer) {
         executeActionOnElementOrContainer(action, renderer, renderParent, nativeNode, beforeNode);
         applyNodes(renderer, action, tNode.child, lView, renderParent, beforeNode, false);
-      } else if (tNodeType === TNodeType.View) {
-        // TODO: Remove as this should never happen.
-        throw new Error('todo implemented');
       } else if (tNodeType === TNodeType.Projection) {
         applyProjection(
             renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
@@ -889,11 +892,17 @@ export function applyProjection(
   const componentNode = componentLView[T_HOST] as TElementNode;
   ngDevMode &&
       assertEqual(typeof tProjectionNode.projection, 'number', 'expecting projection index');
-  // ngDevMode && assertDataInRange(componentNode.projection !, tProjectionNode.projection);
   const nodeToProjectOrRNodes = componentNode.projection ![tProjectionNode.projection] !;
-  // ngDevMode && assertDefined(nodeToProjectOrRNodes, 'Projections must be defined');
   if (Array.isArray(nodeToProjectOrRNodes)) {
-    applyHostProjection(nodeToProjectOrRNodes, action, renderer, renderParent, beforeNode);
+    // This should not exist, it is a bit of a hack. When we bootstrap to level node and we
+    // need to support passing projectable nodes. Se we cheat and put them in the TNode
+    // of the Host TView. (Yes we put instance info at the T Level). We can get away with it
+    // because we know that that TView is not shared and therefore it will not be a problem.
+    // This should be refactored and cleaned up.
+    for (let i = 0; i < nodeToProjectOrRNodes.length; i++) {
+      const rNode = nodeToProjectOrRNodes[i];
+      executeActionOnElementOrContainer(action, renderer, renderParent, rNode, beforeNode);
+    }
   } else {
     let nodeToProject: TNode|null = nodeToProjectOrRNodes;
     const projectedComponentLView = componentLView[PARENT] as LView;
@@ -902,22 +911,32 @@ export function applyProjection(
   }
 }
 
-function applyHostProjection(
-    nodeToProject: RNode[], action: WalkTNodeTreeAction, renderer: Renderer3,
-    renderParent: RElement | null, beforeNode: RNode | null | undefined) {
-  for (let i = 0; i < nodeToProject.length; i++) {
-    const node = nodeToProject[i];
-    executeActionOnElementOrContainer(action, renderer, renderParent, node, beforeNode);
-  }
-}
 
-
+/**
+ * `applyContainer` performs an operation on the container and its views as specified by
+ * `action` (insert, detach, destroy)
+ *
+ * Inserting a Container is complicated by the fact that the container may have Views which
+ * themselves have containers or projections.
+ *
+ * @param renderer Renderer to use
+ * @param action action to perform (insert, detach, destroy)
+ * @param lContainer The LContainer which needs to be inserted, detached, destroyed.
+ * @param renderParent parent DOM element for insertion/removal.
+ * @param beforeNode Before which node the insertions should happen.
+ */
 function applyContainer(
     renderer: Renderer3, action: WalkTNodeTreeAction, lContainer: LContainer,
     renderParent: RElement | null, beforeNode: RNode | null | undefined) {
   ngDevMode && assertLContainer(lContainer);
   const anchor = lContainer[NATIVE];  // LContainer has its own before node.
   const native = unwrapRNode(lContainer);
+  // An LContainer can be created dynamically on any node by injecting ViewContainerRef.
+  // Asking for a ViewContainerRef on an element will result in a creation of a separate anchor node
+  // (comment in the DOM) that will be different from the LContainer's host node. In this particular
+  // case we need to execute action on 2 nodes:
+  // - container's host node (this is done in the executeActionOnElementOrContainer)
+  // - container's host node (this is done here)
   if (anchor !== native) {
     // This is very strange to me (Misko). I would expect that the native is same as anchor. I don't
     // see a reason why they should be different, but they are.
