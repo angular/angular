@@ -22,6 +22,8 @@ import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getValidConstructorDependencies, readBaseClass, unwrapExpression, unwrapForwardRef} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
+const EMPTY_PARSE_LOCATION = new ParseLocation(new ParseSourceFile('', ''), 0, 0, 0);
+const EMPTY_SOURCE_SPAN = new ParseSourceSpan(EMPTY_PARSE_LOCATION, EMPTY_PARSE_LOCATION);
 
 export interface DirectiveHandlerData {
   meta: R3DirectiveMetadata;
@@ -228,7 +230,7 @@ export function extractDirectiveMetadata(
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, viewQueries, selector,
     type: new WrappedNodeExpr(clazz.name),
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
-    typeSourceSpan: null !, usesInheritance, exportAs, providers
+    typeSourceSpan: EMPTY_SOURCE_SPAN, usesInheritance, exportAs, providers
   };
   return {decoratedElements, decorator: directive, metadata};
 }
@@ -504,10 +506,8 @@ export function extractHostBindings(
   const bindings = parseHostBindings(hostMetadata);
 
   // TODO: create and provide proper sourceSpan to make error message more descriptive (FW-995)
-  // For now, pass an incorrect but valid sourceSpan.
-  const incorrectParseLocation = new ParseLocation(new ParseSourceFile('', ''), 0, 0, 0);
-  const incorrectSpan = new ParseSourceSpan(incorrectParseLocation, incorrectParseLocation);
-  const errors = verifyHostBindings(bindings, incorrectSpan);
+  // For now, pass an incorrect (empty) but valid sourceSpan.
+  const errors = verifyHostBindings(bindings, EMPTY_SOURCE_SPAN);
   if (errors.length > 0) {
     throw new FatalDiagnosticError(
         // TODO: provide more granular diagnostic and output specific host expression that triggered
