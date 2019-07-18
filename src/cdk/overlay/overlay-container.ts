@@ -21,8 +21,11 @@ import {
 @Injectable({providedIn: 'root'})
 export class OverlayContainer implements OnDestroy {
   protected _containerElement: HTMLElement;
+  protected _document: Document;
 
-  constructor(@Inject(DOCUMENT) protected _document: any) {}
+  constructor(@Inject(DOCUMENT) document: any) {
+    this._document = document;
+  }
 
   ngOnDestroy() {
     if (this._containerElement && this._containerElement.parentNode) {
@@ -37,7 +40,10 @@ export class OverlayContainer implements OnDestroy {
    * @returns the container element
    */
   getContainerElement(): HTMLElement {
-    if (!this._containerElement) { this._createContainer(); }
+    if (!this._containerElement) {
+      this._createContainer();
+    }
+
     return this._containerElement;
   }
 
@@ -46,9 +52,16 @@ export class OverlayContainer implements OnDestroy {
    * with the 'cdk-overlay-container' class on the document body.
    */
   protected _createContainer(): void {
-    const container = this._document.createElement('div');
+    const containerClass = 'cdk-overlay-container';
+    const previousContainers = this._document.getElementsByClassName(containerClass);
 
-    container.classList.add('cdk-overlay-container');
+    // Remove any old containers. This can happen when transitioning from the server to the client.
+    for (let i = 0; i < previousContainers.length; i++) {
+      previousContainers[i].parentNode!.removeChild(previousContainers[i]);
+    }
+
+    const container = this._document.createElement('div');
+    container.classList.add(containerClass);
     this._document.body.appendChild(container);
     this._containerElement = container;
   }

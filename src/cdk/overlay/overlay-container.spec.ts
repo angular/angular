@@ -52,6 +52,16 @@ describe('OverlayContainer', () => {
     expect(containerElement.classList.contains('commander-shepard'))
         .toBe(false, 'Expected the overlay container not to have class "commander-shepard"');
   });
+
+  it('should ensure that there is only one overlay container on the page', () => {
+    const extraContainer = document.createElement('div');
+    extraContainer.classList.add('cdk-overlay-container');
+    document.body.appendChild(extraContainer);
+
+    overlayContainer.getContainerElement();
+
+    expect(document.querySelectorAll('.cdk-overlay-container').length).toBe(1);
+  });
 });
 
 /** Test-bed component that contains a TempatePortal and an ElementRef. */

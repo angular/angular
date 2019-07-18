@@ -196,8 +196,8 @@ export interface OverlayConnectionPosition {
 
 export declare class OverlayContainer implements OnDestroy {
     protected _containerElement: HTMLElement;
-    protected _document: any;
-    constructor(_document: any);
+    protected _document: Document;
+    constructor(document: any);
     protected _createContainer(): void;
     getContainerElement(): HTMLElement;
     ngOnDestroy(): void;

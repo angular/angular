@@ -47,6 +47,9 @@ describe('FullscreenOverlayContainer', () => {
             createElement: function() {
               return document.createElement.apply(document, arguments);
             },
+            getElementsByClassName: function() {
+              return document.getElementsByClassName.apply(document, arguments);
+            }
           };
 
           return fakeDocument;
