@@ -1,6 +1,10 @@
+<!--
 <h1 class="no-toc">Tour of Heroes App and Tutorial</h1>
+-->
+<h1 class="no-toc">히어로들의 여행 튜토리얼</h1>
 
 
+<!--
 <div class="callout is-helpful">
 <header>Getting Started Tutorial</header>
 
@@ -9,9 +13,18 @@ If you're new to Angular, see the [**Getting Started tutorial.**](start)
 The Getting Started tutorial covers the same major topics as this Tour of Heroes&mdash;components, template syntax, routing, services, and accessing data via HTTP&mdash;in a condensed format, following the most current best practices. 
 
 **This Tour of Heroes tutorial** is the conceptual basis for many examples in this documentation set. Reading this introduction page provides sufficient context for working with those examples. You do not need to do this tutorial to understand those other examples. The Tour of Heroes tutorial is maintained here for context and continuity. 
+-->
+<div class="callout is-helpful">
+<header>튜토리얼 시작하기</header>
+
+아직 Angular에 익숙하지 않다면 [**시작하기 튜토리얼**](start) 문서를 먼저 보는 것을 권장합니다.
+시작하기 튜토리얼은 히어로들의 여행 튜토리얼과 마찬가지로 컴포넌트와 템플릿 문법, 라우팅, 서비스, HTTP 통신으로 데이터를 다루는 것에 대해 다루지만, 이 문서보다는 조금 더 간단합니다.
+
+**히어로들의 여행 튜토리얼**은 Angular 앱을 개발할 때 활용할 수 있는 기초 기법들에 대해 다룹니다. 이 문서를 읽고 나면 Angular 앱 개발에 대한 대략적인 감을 잡을 수 있으며, 이 튜토리얼에서 학습한 내용을 바탕으로 Angular에 대한 지식을 늘려가는 데에도 도움이 될 것입니다.
 
 </div> 
 
+<!--
 This _Tour of Heroes_ tutorial provides an introduction to the fundamentals of Angular. 
 It shows you how to set up your local development environment and develop an app using the [Angular CLI tool](cli "CLI command reference"). 
 
@@ -19,6 +32,14 @@ In this _Tour of Heroes_ tutorial, you will build an app that helps a staffing a
 
 This app has many of the features you'd expect to find in a data-driven application.
 It acquires and displays a list of heroes, edits a selected hero's detail, and navigates among different views of heroic data.
+-->
+_히어로들의 여행_ 튜토리얼은 Angular의 기초에 대해 다룹니다.
+이 튜토리얼에서는 [Angular CLI](cli "CLI command reference")를 활용하는 로컬 개발환경을 기반으로 앱을 개발할 것입니다.
+
+_히어로들의 여행_ 튜토리얼에서는 히어로를 관리하는 앱을 만듭니다.
+
+이 앱을 개발하는 동안 데이터 기반의 애플리케이션에서 활용할만한 기능을 다양하게 알아봅니다.
+히어로들의 목록을 화면에 표시하는 것부터, 히어로를 선택해서 상세정보는 확인하거나 수정하고, 앱에 존재하는 여러 화면을 자유롭게 이동하는 것에 대해서도 다룹니다.
 
 <!--
 By the end of this tutorial you will be able to do the following:

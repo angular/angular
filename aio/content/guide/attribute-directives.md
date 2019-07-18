@@ -11,7 +11,7 @@ An **Attribute** directive changes the appearance or behavior of a DOM element.
 <!--
 Try the <live-example title="Attribute Directive example"></live-example>.
 -->
-이 문서에서 설명하는 예제는 <live-example title="Attribute Directive example"></live-example>에서 직접 확인하거나 다운 받을 수 있습니다.
+이 문서에서 설명하는 예제는 <live-example title="어트리뷰트 디렉티브 예제"></live-example>에서 직접 확인하거나 다운 받을 수 있습니다.
 
 <!--
 {@a directive-overview}

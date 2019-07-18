@@ -1716,7 +1716,10 @@ _스타일 프로퍼티_ 이름은 [대시 케이스](guide/glossary#dash-case)�
 {@a 이벤트-바인딩}
 
 
+<!--
 ## Event binding `(event)`
+-->
+## 이벤트 바인딩 `(event)`
 
 <!--
 Event binding allows you to listen for certain events such as
@@ -1729,9 +1732,8 @@ template statement on the right.
 The following event binding listens for the button's click events, calling
 the component's `onSave()` method whenever a click occurs:
 -->
-Event binding allows you to listen for certain events such as
-keystrokes, mouse movements, clicks, and touches. For an example
-demonstrating all of the points in this section, see the <live-example name="event-binding">event binding example</live-example>.
+이벤트 바인딩 문법을 사용하면 키 입력이나 마우스의 움직임, 클릭이나 터치 이벤트를 감지할 수 있습니다.
+이 섹션에서 설명하는 내용은 <live-example name="event-binding">이벤트 바인딩 예제</live-example> 에서 직접 확인할 수 있습니다.
 
 이벤트 바인딩은 **대상 이벤트** 이름을 괄호(`(`, `)`)로 감싸고 템플릿 실행문을 등호로 연결해서 작성합니다.
 예를 들어 버튼의 클릭 이벤트를 감지하고 있다가 사용자가 버튼을 클릭할 때 컴포넌트에 있는 `onSave()` 메소드를 실행하려면 다음과 같이 구현합니다.
@@ -1776,6 +1778,7 @@ Angular reports an “unknown directive” error.
 -->
 그리고 엘리먼트 이벤트나 커스텀 디렉티브에서 해당되는 이벤트 이름을 찾지 못하면 “unknown directive” 에러가 발생합니다.
 
+<!--
 ### *$event* and event handling statements
 -->
 ### *$event* 객체와 이벤트 처리 실행문
@@ -1909,9 +1912,7 @@ Deleting an item updates the model, and depending on your code, triggers
 other changes including queries and saving to a remote server.
 These changes propagate through the system and ultimately display in this and other views.
 -->
-Though [template expressions](guide/template-syntax#template-expressions) shouldn't have [side effects](guide/template-syntax#avoid-side-effects), template
-statements usually do. The `deleteItem()` method does have
-a side effect: it deletes an item.
+[템플릿 표현식](guide/template-syntax#template-expressions)은 실행되더라도 [사이드 이펙트](guide/template-syntax#avoid-side-effects)가 없지만, 템플릿 실행문은 사이드 이펙트를 유발할 수 있습니다. 예를 들어 `deleteItem()` 메소드를 실행하면 목록에서 항목이 하나 제거되는 것도 사이드 이펙트로 볼 수 있습니다.
 
 예제 코드로 보면, 아이템을 삭제하면 모델이 업데이트 되면서 서버에 새로운 목록을 요청하거나 삭제 요청을 보내는 등 다른 동작을 유발할 수 있습니다.
 이런 동작들은 뷰 데이터를 갱신하고 서버에 반영하면서 시스템을 자연스럽게 유지합니다.
@@ -3624,7 +3625,10 @@ You'll need this template operator when you turn on strict null checks. It's opt
 
 {@a built-in-template-functions}
 
+<!--
 ## Built-in template functions
+-->
+## 기본 템플릿 함수
 
 {@a any-type-cast-function}
 {@a any-타입-캐스팅-함수}
