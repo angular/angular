@@ -9,6 +9,7 @@
 import {BoundTarget, DirectiveMeta, ParseSourceFile} from '@angular/compiler';
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
+import {AnnotationKind} from './api';
 
 export interface ComponentMeta extends DirectiveMeta {
   ref: Reference<ClassDeclaration>;
@@ -22,6 +23,8 @@ export interface ComponentMeta extends DirectiveMeta {
  * An intermediate representation of a component.
  */
 export interface ComponentInfo {
+  kind: AnnotationKind.Component;
+
   /** Component TypeScript class declaration */
   declaration: ClassDeclaration;
 
@@ -45,16 +48,26 @@ export interface ComponentInfo {
 }
 
 /**
+ * Annotation intermediate representations that can be stored in an indexing context.
+ */
+export type AnnotationInfo = ComponentInfo;
+
+// Allow populating the context without having to specify the annotation kind.
+type OmitKind<T> = Pick<T, Exclude<keyof T, 'kind'>>;
+
+/**
  * A context for storing indexing infromation about components of a program.
  *
  * An `IndexingContext` collects component and template analysis information from
  * `DecoratorHandler`s and exposes them to be indexed.
  */
 export class IndexingContext {
-  readonly components = new Set<ComponentInfo>();
+  readonly registry = new Set<AnnotationInfo>();
 
   /**
    * Adds a component to the context.
    */
-  addComponent(info: ComponentInfo) { this.components.add(info); }
+  addComponent(info: OmitKind<ComponentInfo>) {
+    this.registry.add({...info, kind: AnnotationKind.Component});
+  }
 }

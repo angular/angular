@@ -233,9 +233,9 @@ runInEachFileSystem(() => {
       });
 
       it('should generate information about used directives', () => {
-        const declA = util.getComponentDeclaration('class A {}', 'A');
-        const declB = util.getComponentDeclaration('class B {}', 'B');
-        const declC = util.getComponentDeclaration('class C {}', 'C');
+        const declA = util.getClassDeclaration('class A {}', 'A');
+        const declB = util.getClassDeclaration('class B {}', 'B');
+        const declC = util.getClassDeclaration('class C {}', 'C');
         const template = '<a-selector b-selector></a-selector>';
         const boundTemplate = util.getBoundTemplate(template, {}, [
           {selector: 'a-selector', declaration: declA},

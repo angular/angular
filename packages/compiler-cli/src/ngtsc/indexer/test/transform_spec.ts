@@ -8,6 +8,7 @@
 import {BoundTarget, ParseSourceFile} from '@angular/compiler';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ClassDeclaration} from '../../reflection';
+import {AnnotationKind} from '../src/api';
 import {ComponentMeta, IndexingContext} from '../src/context';
 import {getTemplateIdentifiers} from '../src/template';
 import {generateAnalysis} from '../src/transform';
@@ -34,7 +35,7 @@ runInEachFileSystem(() => {
   describe('generateAnalysis', () => {
     it('should emit component and template analysis information', () => {
       const context = new IndexingContext();
-      const decl = util.getComponentDeclaration('class C {}', 'C');
+      const decl = util.getClassDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
       populateContext(context, decl, 'c-selector', template, util.getBoundTemplate(template));
       const analysis = generateAnalysis(context);
@@ -43,6 +44,7 @@ runInEachFileSystem(() => {
 
       const info = analysis.get(decl);
       expect(info).toEqual({
+        kind: AnnotationKind.Component,
         name: 'C',
         selector: 'c-selector',
         file: new ParseSourceFile('class C {}', util.getTestFilePath()),
@@ -57,7 +59,7 @@ runInEachFileSystem(() => {
 
     it('should give inline templates the component source file', () => {
       const context = new IndexingContext();
-      const decl = util.getComponentDeclaration('class C {}', 'C');
+      const decl = util.getClassDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
       populateContext(
           context, decl, 'c-selector', '<div>{{foo}}</div>', util.getBoundTemplate(template),
@@ -74,7 +76,7 @@ runInEachFileSystem(() => {
 
     it('should give external templates their own source file', () => {
       const context = new IndexingContext();
-      const decl = util.getComponentDeclaration('class C {}', 'C');
+      const decl = util.getClassDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
       populateContext(context, decl, 'c-selector', template, util.getBoundTemplate(template));
       const analysis = generateAnalysis(context);
@@ -91,10 +93,10 @@ runInEachFileSystem(() => {
       const context = new IndexingContext();
 
       const templateA = '<b-selector></b-selector>';
-      const declA = util.getComponentDeclaration('class A {}', 'A');
+      const declA = util.getClassDeclaration('class A {}', 'A');
 
       const templateB = '<a-selector></a-selector>';
-      const declB = util.getComponentDeclaration('class B {}', 'B');
+      const declB = util.getClassDeclaration('class B {}', 'B');
 
       const boundA =
           util.getBoundTemplate(templateA, {}, [{selector: 'b-selector', declaration: declB}]);

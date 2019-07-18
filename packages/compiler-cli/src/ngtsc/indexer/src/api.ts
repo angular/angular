@@ -67,10 +67,17 @@ export class AbsoluteSourceSpan {
 }
 
 /**
+ * Describes a kind of Angular annotation.
+ */
+export enum AnnotationKind {
+  Component,
+}
+
+/**
  * Describes an analyzed, indexed component and its template.
  */
 export interface IndexedComponent {
-  name: string;
+  kind: AnnotationKind.Component, name: string;
   selector: string|null;
   file: ParseSourceFile;
   template: {
@@ -80,3 +87,8 @@ export interface IndexedComponent {
     file: ParseSourceFile;
   };
 }
+
+/**
+ * Describes supported indexed annotations.
+ */
+export type IndexedAnnotation = IndexedComponent;

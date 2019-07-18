@@ -20,7 +20,7 @@ import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatInde
 import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from './file_system';
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
-import {IndexedComponent, IndexingContext} from './indexer';
+import {IndexedAnnotation, IndexedComponent, IndexingContext} from './indexer';
 import {generateAnalysis} from './indexer/src/transform';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
 import {PartialEvaluator} from './partial_evaluator';
@@ -431,7 +431,7 @@ export class NgtscProgram implements api.Program {
     return diagnostics;
   }
 
-  getIndexedComponents(): Map<ts.Declaration, IndexedComponent> {
+  getIndexedAnnotations(): Map<ts.Declaration, IndexedAnnotation> {
     const compilation = this.ensureAnalyzed();
     const context = new IndexingContext();
     compilation.index(context);

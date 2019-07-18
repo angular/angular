@@ -8,7 +8,7 @@
 
 import {ParseSourceFile} from '@angular/compiler';
 import * as ts from 'typescript';
-import {IndexedComponent} from './api';
+import {AnnotationKind, IndexedAnnotation} from './api';
 import {IndexingContext} from './context';
 import {getTemplateIdentifiers} from './template';
 
@@ -18,42 +18,48 @@ import {getTemplateIdentifiers} from './template';
  *
  * The context must be populated before `generateAnalysis` is called.
  */
-export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, IndexedComponent> {
-  const analysis = new Map<ts.Declaration, IndexedComponent>();
+export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, IndexedAnnotation> {
+  const analysis = new Map<ts.Declaration, IndexedAnnotation>();
 
-  context.components.forEach(({declaration, selector, boundTemplate, templateMeta}) => {
-    const name = declaration.name.getText();
+  context.registry.forEach(entry => {
+    switch (entry.kind) {
+      case AnnotationKind.Component:
+        const name = entry.declaration.name.getText();
 
-    const usedComponents = new Set<ts.Declaration>();
-    const usedDirs = boundTemplate.getUsedDirectives();
-    usedDirs.forEach(dir => {
-      if (dir.isComponent) {
-        usedComponents.add(dir.ref.node);
-      }
-    });
+        const usedComponents = new Set<ts.Declaration>();
+        const usedDirs = entry.boundTemplate.getUsedDirectives();
+        usedDirs.forEach(dir => {
+          if (dir.isComponent) {
+            usedComponents.add(dir.ref.node);
+          }
+        });
 
-    // Get source files for the component and the template. If the template is inline, its source
-    // file is the component's.
-    const componentFile = new ParseSourceFile(
-        declaration.getSourceFile().getFullText(), declaration.getSourceFile().fileName);
-    let templateFile: ParseSourceFile;
-    if (templateMeta.isInline) {
-      templateFile = componentFile;
-    } else {
-      templateFile = templateMeta.file;
+        // Get source files for the component and the template. If the template is inline, its
+        // source file is the component's.
+        const componentFile = new ParseSourceFile(
+            entry.declaration.getSourceFile().getFullText(),
+            entry.declaration.getSourceFile().fileName);
+        let templateFile: ParseSourceFile;
+        if (entry.templateMeta.isInline) {
+          templateFile = componentFile;
+        } else {
+          templateFile = entry.templateMeta.file;
+        }
+
+        analysis.set(entry.declaration, {
+          kind: AnnotationKind.Component,
+          name,
+          selector: entry.selector,
+          file: componentFile,
+          template: {
+            identifiers: getTemplateIdentifiers(entry.boundTemplate),
+            usedComponents,
+            isInline: entry.templateMeta.isInline,
+            file: templateFile,
+          },
+        });
+        break;
     }
-
-    analysis.set(declaration, {
-      name,
-      selector,
-      file: componentFile,
-      template: {
-        identifiers: getTemplateIdentifiers(boundTemplate),
-        usedComponents,
-        isInline: templateMeta.isInline,
-        file: templateFile,
-      },
-    });
   });
 
   return analysis;

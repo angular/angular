@@ -201,7 +201,7 @@ export class NgtscTestEnvironment {
     const {rootNames, options} = readNgcCommandLineAndConfiguration(['-p', this.basePath]);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
-    return (program as NgtscProgram).getIndexedComponents();
+    return (program as NgtscProgram).getIndexedAnnotations();
   }
 }
 

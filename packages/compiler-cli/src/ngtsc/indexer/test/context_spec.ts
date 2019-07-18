@@ -7,6 +7,7 @@
  */
 import {ParseSourceFile} from '@angular/compiler';
 import {runInEachFileSystem} from '../../file_system/testing';
+import {AnnotationKind} from '../src/api';
 import {IndexingContext} from '../src/context';
 import * as util from './util';
 
@@ -14,7 +15,7 @@ runInEachFileSystem(() => {
   describe('ComponentAnalysisContext', () => {
     it('should store and return information about components', () => {
       const context = new IndexingContext();
-      const declaration = util.getComponentDeclaration('class C {};', 'C');
+      const declaration = util.getClassDeclaration('class C {};', 'C');
       const boundTemplate = util.getBoundTemplate('<div></div>');
 
       context.addComponent({
@@ -26,8 +27,9 @@ runInEachFileSystem(() => {
         },
       });
 
-      expect(context.components).toEqual(new Set([
+      expect(context.registry).toEqual(new Set([
         {
+          kind: AnnotationKind.Component,
           declaration,
           selector: 'c-selector', boundTemplate,
           templateMeta: {
