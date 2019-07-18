@@ -9,7 +9,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
-import {CompiledClass} from '../analysis/decoration_analyzer';
+import {CompiledClass} from '../analysis/types';
 import {SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
 
