@@ -190,9 +190,21 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return false;
     }
 
-    return innerClassDeclaration.heritageClauses !== undefined &&
-        innerClassDeclaration.heritageClauses.some(
-            clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
+    return super.hasBaseClass(innerClassDeclaration);
+  }
+
+  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
+    // First try getting the base class from the "outer" declaration
+    const superBaseClassIdentifier = super.getBaseClassExpression(clazz);
+    if (superBaseClassIdentifier) {
+      return superBaseClassIdentifier;
+    }
+    // That didn't work so now try getting it from the "inner" declaration.
+    const innerClassDeclaration = getInnerClassDeclaration(clazz);
+    if (innerClassDeclaration === null) {
+      return null;
+    }
+    return super.getBaseClassExpression(innerClassDeclaration);
   }
 
   /**
