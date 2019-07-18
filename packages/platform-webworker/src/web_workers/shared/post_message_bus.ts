@@ -14,7 +14,7 @@ import {MessageBus, MessageBusSink, MessageBusSource} from './message_bus';
 
 // TODO(jteplitz602): Replace this with the definition in lib.webworker.d.ts(#3492)
 export interface PostMessageTarget {
-  postMessage: (message: any, transfer?: [ArrayBuffer]) => void;
+  postMessage: (message: any, transfer?: [Transferable]) => void;
 }
 
 export class PostMessageBusSink implements MessageBusSink {

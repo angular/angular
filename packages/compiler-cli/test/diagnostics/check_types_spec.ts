@@ -771,12 +771,6 @@ describe('ng type checker', () => {
           '<div>{{"hello" | aPipe}}</div>',
           `Argument of type '"hello"' is not assignable to parameter of type 'number'.`, '0:5');
     });
-    it('should report an index into a map expression', () => {
-      rejectOnlyWithFullTemplateTypeCheck(
-          '<div>{{ {a: 1}[name] }}</div>',
-          `Element implicitly has an 'any' type because type '{ a: number; }' has no index signature.`,
-          '0:5');
-    });
     it('should report an invalid property on an exportAs directive', () => {
       rejectOnlyWithFullTemplateTypeCheck(
           '<div aDir #aDir="aDir">{{aDir.fname}}</div>',

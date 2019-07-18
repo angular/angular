@@ -24,7 +24,7 @@ import {noop} from '../util/noop';
 // Note: We don't expose things like `Injector`, `ViewContainer`, ... here,
 // i.e. users have to ask for what they need. With that, we can build better analysis tools
 // and could do better codegen in the future.
-export class ElementRef<T = any> {
+export class ElementRef<T extends any = any> {
   /**
    * The underlying native element or `null` if direct access to native elements is not supported
    * (e.g. when the application runs in a web worker).

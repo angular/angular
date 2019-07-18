@@ -28,7 +28,7 @@ export class MockServiceWorkerContainer {
   mockRegistration: MockServiceWorkerRegistration|null = null;
   controller: MockServiceWorker|null = null;
   messages = new Subject<any>();
-  notificationClicks = new Subject();
+  notificationClicks = new Subject<{}>();
 
   addEventListener(event: 'controllerchange'|'message', handler: Function) {
     if (event === 'controllerchange') {

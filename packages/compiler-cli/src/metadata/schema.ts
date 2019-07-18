@@ -59,6 +59,7 @@ export interface MetadataMap { [name: string]: MemberMetadata[]; }
 export interface MemberMetadata {
   __symbolic: 'constructor'|'method'|'property';
   decorators?: (MetadataSymbolicExpression|MetadataError)[];
+  parameters?: (MetadataSymbolicExpression|MetadataError|null|undefined)[];
 }
 export function isMemberMetadata(value: any): value is MemberMetadata {
   if (value) {
