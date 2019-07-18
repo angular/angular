@@ -656,31 +656,31 @@ workflows:
       - setup
       - lint:
           requires:
-          - setup
+            - setup
       - test:
           requires:
-          - setup
+            - setup
       - test_ivy_aot:
           requires:
-          - setup
+            - setup
       - build-npm-packages:
           requires:
-          - setup
+            - setup
       - build-ivy-npm-packages:
           requires:
-          - setup
-      - test_aio:
-          requires:
-          - setup
-      - legacy-unit-tests-saucelabs:
-          requires:
-          - setup
-      - deploy_aio:
-          requires:
-            - test_aio
+            - setup
       - legacy-misc-tests:
           requires:
             - build-npm-packages
+      - legacy-unit-tests-saucelabs:
+          requires:
+            - setup
+      - test_aio:
+          requires:
+            - setup
+      - deploy_aio:
+          requires:
+            - test_aio
       - test_aio_local:
           requires:
             - build-npm-packages
