@@ -34,9 +34,8 @@ export class Parser {
   constructor(private _lexer: Lexer) {}
 
   parseAction(
-      input: string, location: any,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-      absoluteOffset: number = 0): ASTWithSource {
+      input: string, location: any, absoluteOffset: number,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(this._stripComments(input));
@@ -48,18 +47,16 @@ export class Parser {
   }
 
   parseBinding(
-      input: string, location: any,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-      absoluteOffset: number = 0): ASTWithSource {
-    const ast = this._parseBindingAst(input, location, interpolationConfig, absoluteOffset);
+      input: string, location: any, absoluteOffset: number,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
+    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
   parseSimpleBinding(
-      input: string, location: string,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-      absoluteOffset: number = 0): ASTWithSource {
-    const ast = this._parseBindingAst(input, location, interpolationConfig, absoluteOffset);
+      input: string, location: string, absoluteOffset: number,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
+    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
     const errors = SimpleExpressionChecker.check(ast);
     if (errors.length > 0) {
       this._reportError(
@@ -73,8 +70,8 @@ export class Parser {
   }
 
   private _parseBindingAst(
-      input: string, location: string, interpolationConfig: InterpolationConfig,
-      absoluteOffset: number = 0): AST {
+      input: string, location: string, absoluteOffset: number,
+      interpolationConfig: InterpolationConfig): AST {
     // Quotes expressions use 3rd-party expression language. We don't want to use
     // our lexer or parser for that, so we check for that ahead of time.
     const quote = this._parseQuote(input, location);
@@ -111,9 +108,8 @@ export class Parser {
   }
 
   parseInterpolation(
-      input: string, location: any,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-      absoluteOffset: number = 0): ASTWithSource|null {
+      input: string, location: any, absoluteOffset: number,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource|null {
     const split = this.splitInterpolation(input, location, interpolationConfig);
     if (split == null) return null;
 
@@ -172,8 +168,7 @@ export class Parser {
     return new SplitInterpolation(strings, expressions, offsets);
   }
 
-  wrapLiteralPrimitive(input: string|null, location: any, absoluteOffset: number = 0):
-      ASTWithSource {
+  wrapLiteralPrimitive(input: string|null, location: any, absoluteOffset: number): ASTWithSource {
     return new ASTWithSource(
         new LiteralPrimitive(new ParseSpan(0, input == null ? 0 : input.length), input), input,
         location, absoluteOffset, this.errors);

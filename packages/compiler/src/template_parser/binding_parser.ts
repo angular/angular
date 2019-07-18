@@ -103,13 +103,13 @@ export class BindingParser {
 
     try {
       const ast = this._exprParser.parseInterpolation(
-          value, sourceInfo, this._interpolationConfig, sourceSpan.start.offset) !;
+          value, sourceInfo, sourceSpan.start.offset, this._interpolationConfig) !;
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, sourceSpan.start.offset);
     }
   }
 
@@ -172,8 +172,8 @@ export class BindingParser {
           name, value, sourceSpan, absoluteOffset, targetMatchableAttrs, targetProps);
     } else {
       targetProps.push(new ParsedProperty(
-          name, this._exprParser.wrapLiteralPrimitive(value, ''), ParsedPropertyType.LITERAL_ATTR,
-          sourceSpan));
+          name, this._exprParser.wrapLiteralPrimitive(value, '', absoluteOffset),
+          ParsedPropertyType.LITERAL_ATTR, sourceSpan));
     }
   }
 
@@ -236,9 +236,9 @@ export class BindingParser {
     try {
       const ast = isHostBinding ?
           this._exprParser.parseSimpleBinding(
-              value, sourceInfo, this._interpolationConfig, absoluteOffset) :
+              value, sourceInfo, absoluteOffset, this._interpolationConfig) :
           this._exprParser.parseBinding(
-              value, sourceInfo, this._interpolationConfig, absoluteOffset);
+              value, sourceInfo, absoluteOffset, this._interpolationConfig);
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
@@ -375,19 +375,19 @@ export class BindingParser {
 
     try {
       const ast = this._exprParser.parseAction(
-          value, sourceInfo, this._interpolationConfig, absoluteOffset);
+          value, sourceInfo, absoluteOffset, this._interpolationConfig);
       if (ast) {
         this._reportExpressionParserErrors(ast.errors, sourceSpan);
       }
       if (!ast || ast.ast instanceof EmptyExpr) {
         this._reportError(`Empty expressions are not allowed`, sourceSpan);
-        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
       }
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
     }
   }
 
