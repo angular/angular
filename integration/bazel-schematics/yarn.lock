@@ -30,7 +30,7 @@
     rxjs "6.4.0"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "8.2.0-next.1"
+  version "0.0.0"
   dependencies:
     "@angular-devkit/architect" "^0.800.0-beta.15"
     "@angular-devkit/core" "^8.0.0-beta.15"
@@ -62,27 +62,27 @@
     universal-analytics "^0.4.20"
     uuid "^3.3.2"
 
-"@bazel/bazel-darwin_x64@0.27.0":
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.27.0.tgz#83a03c92d52ae60e48e86a1ee697e69e12ddbdf6"
-  integrity sha512-CyavIbRKRa/55aMyfEM9hjbt4TVISfv7HLeymHTGTLWzS8uQokQ8W9tR/pgc7YJn8F0x64dd7nQKxhbYHM1Qfg==
+"@bazel/bazel-darwin_x64@0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.26.1.tgz#1b5c69b635e5c2a8c3090fa5f6bcb45735f06045"
+  integrity sha512-9VjrR+ce+iS9xS1lgeAo1RAPXlxCvez/r3smN1lP4s4YNF0s5LAT0cevIl6Zz2nwyEha/6JvY3v6Euemy36F0w==
 
-"@bazel/bazel-linux_x64@0.27.0":
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.27.0.tgz#2358292aa4901f526ba9b90874256f63d6d6608c"
-  integrity sha512-hO04v7C6M3Jf+qNlLE+IticZZKkkS7Nv6+pXDnENgFWrqLV2H93un6kNQnk83B0hP2cEqRQ8rw5yrIcqXNNuSQ==
+"@bazel/bazel-linux_x64@0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.26.1.tgz#04dd194bdcd6b9d45bd865a9a60c280d0d600251"
+  integrity sha512-oZooDxI1C4p7o18zx2Uns2cK/NN2hgF2YSBKH0aVDPAAxQA85h+g124CWDEbsghOdRMSBM0Hd0SSeIqwZcqLSw==
 
-"@bazel/bazel-win32_x64@0.27.0":
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.27.0.tgz#0e5e498de5ccccc9a6cf481cd46904ee938ab6c2"
-  integrity sha512-7hIGNhdgaxRt9ceSOCs3eSTtCNi4GXz3nu6OjfgSp+QiqLbW/iAVWa8M8vD5aemZ1BSHek4/LISdWUTncLJk+w==
+"@bazel/bazel-win32_x64@0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.26.1.tgz#9351f07313173b1f98006da8131c94db7aa7c506"
+  integrity sha512-0FkOo8+bxw13X2m6ALhXX2241gG9ZXgcLu0E/IbCWy/TmOB5bR0Z73CslszWbXIldVYnANuhFmnkxIa745Du5Q==
 
 "@bazel/bazel@file:../../node_modules/@bazel/bazel":
-  version "0.27.0"
+  version "0.26.1"
   optionalDependencies:
-    "@bazel/bazel-darwin_x64" "0.27.0"
-    "@bazel/bazel-linux_x64" "0.27.0"
-    "@bazel/bazel-win32_x64" "0.27.0"
+    "@bazel/bazel-darwin_x64" "0.26.1"
+    "@bazel/bazel-linux_x64" "0.26.1"
+    "@bazel/bazel-win32_x64" "0.26.1"
 
 "@microsoft/api-extractor@^7.0.21":
   version "7.0.22"
