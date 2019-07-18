@@ -7,11 +7,12 @@
  */
 import * as ts from 'typescript';
 import {FileSystem} from '../../../src/ngtsc/file_system';
-import {CompiledFile, DecorationAnalyzer} from '../analysis/decoration_analyzer';
+import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
 import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
+import {CompiledFile} from '../analysis/types';
 import {CommonJsReflectionHost} from '../host/commonjs_host';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';

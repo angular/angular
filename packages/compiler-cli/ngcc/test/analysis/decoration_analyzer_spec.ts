@@ -12,8 +12,9 @@ import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/test
 import {Decorator} from '../../../src/ngtsc/reflection';
 import {DecoratorHandler, DetectResult} from '../../../src/ngtsc/transform';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
-import {CompiledClass, DecorationAnalyses, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
+import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
+import {CompiledClass, DecorationAnalyses} from '../../src/analysis/types';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';

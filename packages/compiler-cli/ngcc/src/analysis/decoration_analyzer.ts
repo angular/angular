@@ -7,7 +7,6 @@
  */
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
-
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {FileSystem, LogicalFileSystem, absoluteFrom, dirname, resolve} from '../../../src/ngtsc/file_system';
@@ -20,36 +19,7 @@ import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {isDefined} from '../utils';
-import {isWithinPackage} from './util';
-
-export interface AnalyzedFile {
-  sourceFile: ts.SourceFile;
-  analyzedClasses: AnalyzedClass[];
-}
-
-export interface AnalyzedClass {
-  name: string;
-  decorators: Decorator[]|null;
-  declaration: ClassDeclaration;
-  diagnostics?: ts.Diagnostic[];
-  matches: {handler: DecoratorHandler<any, any>; analysis: any;}[];
-}
-
-export interface CompiledClass extends AnalyzedClass { compilation: CompileResult[]; }
-
-export interface CompiledFile {
-  compiledClasses: CompiledClass[];
-  sourceFile: ts.SourceFile;
-  constantPool: ConstantPool;
-}
-
-export type DecorationAnalyses = Map<ts.SourceFile, CompiledFile>;
-export const DecorationAnalyses = Map;
-
-export interface MatchingHandler<A, M> {
-  handler: DecoratorHandler<A, M>;
-  detected: M;
-}
+import {AnalyzedClass, AnalyzedFile, CompiledClass, CompiledFile, DecorationAnalyses, MatchingHandler} from './types';
 
 /**
  * Simple class that resolves and loads files directly from the filesystem.
