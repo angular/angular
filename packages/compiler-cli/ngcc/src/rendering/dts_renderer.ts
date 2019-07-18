@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {FileSystem} from '../../../src/ngtsc/file_system';
 import {CompileResult} from '../../../src/ngtsc/transform';
 import {translateType, ImportManager} from '../../../src/ngtsc/translator';
-import {DecorationAnalyses} from '../analysis/decoration_analyzer';
+import {DecorationAnalyses} from '../analysis/types';
 import {ModuleWithProvidersInfo, ModuleWithProvidersAnalyses} from '../analysis/module_with_providers_analyzer';
 import {PrivateDeclarationsAnalyses, ExportInfo} from '../analysis/private_declarations_analyzer';
 import {IMPORT_PREFIX} from '../constants';

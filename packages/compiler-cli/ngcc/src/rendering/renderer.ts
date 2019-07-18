@@ -10,7 +10,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {NOOP_DEFAULT_IMPORT_RECORDER} from '../../../src/ngtsc/imports';
 import {translateStatement, ImportManager} from '../../../src/ngtsc/translator';
-import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
+import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/types';
 import {PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../constants';
