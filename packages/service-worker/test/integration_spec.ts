@@ -89,7 +89,7 @@ import {take} from 'rxjs/operators';
       scope.clients.getMock('default') !.queue.subscribe(msg => { mock.sendMessage(msg); });
 
       mock.messages.subscribe(msg => { scope.handleMessage(msg, 'default'); });
-      mock.notificationClicks.subscribe(msg => { scope.handleMessage(msg, 'default'); });
+      mock.notificationClicks.subscribe((msg: Object) => { scope.handleMessage(msg, 'default'); });
 
       mock.setupSw();
       reg = mock.mockRegistration !;

@@ -171,7 +171,10 @@ function createNgZone(): NgZone {
  */
 function spawnWebWorker(uri: string, instance: WebWorkerInstance): void {
   const webWorker: Worker = new Worker(uri);
-  const sink = new PostMessageBusSink(webWorker);
+  // webWorker is casted to any because the lib.d.ts signature changed in TS3.5 to require the
+  // transfer argument in postMessage method.
+  // this seems wrong but since all of this code is deprecated it shouldn't matter that much.
+  const sink = new PostMessageBusSink(webWorker as any);
   const source = new PostMessageBusSource(webWorker);
   const bus = new PostMessageBus(sink, source);
 
