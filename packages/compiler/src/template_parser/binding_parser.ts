@@ -49,16 +49,15 @@ export class BindingParser {
 
   getUsedPipes(): CompilePipeSummary[] { return Array.from(this._usedPipes.values()); }
 
-  createBoundHostProperties(
-      dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan,
-      absoluteOffset: number = sourceSpan.start.offset): ParsedProperty[]|null {
+  createBoundHostProperties(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
+      ParsedProperty[]|null {
     if (dirMeta.hostProperties) {
       const boundProps: ParsedProperty[] = [];
       Object.keys(dirMeta.hostProperties).forEach(propName => {
         const expression = dirMeta.hostProperties[propName];
         if (typeof expression === 'string') {
           this.parsePropertyBinding(
-              propName, expression, true, sourceSpan, absoluteOffset, [], boundProps);
+              propName, expression, true, sourceSpan, sourceSpan.start.offset, [], boundProps);
         } else {
           this._reportError(
               `Value of the host property binding "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
@@ -71,9 +70,9 @@ export class BindingParser {
   }
 
   createDirectiveHostPropertyAsts(
-      dirMeta: CompileDirectiveSummary, elementSelector: string, sourceSpan: ParseSourceSpan,
-      absoluteOffset: number = sourceSpan.start.offset): BoundElementProperty[]|null {
-    const boundProps = this.createBoundHostProperties(dirMeta, sourceSpan, absoluteOffset);
+      dirMeta: CompileDirectiveSummary, elementSelector: string,
+      sourceSpan: ParseSourceSpan): BoundElementProperty[]|null {
+    const boundProps = this.createBoundHostProperties(dirMeta, sourceSpan);
     return boundProps &&
         boundProps.map((prop) => this.createBoundElementProperty(elementSelector, prop));
   }
