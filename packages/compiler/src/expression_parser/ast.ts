@@ -203,6 +203,10 @@ export class FunctionCall extends AST {
   }
 }
 
+/**
+ * Records the absolute position of a text span in a source file, where `start` and `end` are the
+ * starting and ending byte offsets, respectively, of the text span in a source file.
+ */
 export class AbsoluteSourceSpan {
   constructor(public start: number, public end: number) {}
 }

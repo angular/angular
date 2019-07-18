@@ -51,22 +51,14 @@ export class BindingParser {
 
   createBoundHostProperties(
       dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan,
-      absoluteOffset?: number): ParsedProperty[]|null {
-    if (absoluteOffset === undefined) {
-      // TODO(ayazhafiz): Apparently some consumers of this method are not passing a valid a
-      // sourceSpan. Perfom this check until that is fixed.
-      absoluteOffset = sourceSpan ? sourceSpan.start.offset : 0;
-    }
-    // TS typechecker can't guarantee that `absoluteOffset` will remain a number the `forEach` block
-    // below, so help it here.
-    const absOffset: number = absoluteOffset;
+      absoluteOffset: number = sourceSpan.start.offset): ParsedProperty[]|null {
     if (dirMeta.hostProperties) {
       const boundProps: ParsedProperty[] = [];
       Object.keys(dirMeta.hostProperties).forEach(propName => {
         const expression = dirMeta.hostProperties[propName];
         if (typeof expression === 'string') {
           this.parsePropertyBinding(
-              propName, expression, true, sourceSpan, absOffset, [], boundProps);
+              propName, expression, true, sourceSpan, absoluteOffset, [], boundProps);
         } else {
           this._reportError(
               `Value of the host property binding "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
@@ -80,12 +72,7 @@ export class BindingParser {
 
   createDirectiveHostPropertyAsts(
       dirMeta: CompileDirectiveSummary, elementSelector: string, sourceSpan: ParseSourceSpan,
-      absoluteOffset?: number): BoundElementProperty[]|null {
-    if (absoluteOffset === undefined) {
-      // TODO(ayazhafiz): Apparently some consumers of this method are not passing a valid a
-      // sourceSpan. Perfom this check until that is fixed.
-      absoluteOffset = sourceSpan ? sourceSpan.start.offset : 0;
-    }
+      absoluteOffset: number = sourceSpan.start.offset): BoundElementProperty[]|null {
     const boundProps = this.createBoundHostProperties(dirMeta, sourceSpan, absoluteOffset);
     return boundProps &&
         boundProps.map((prop) => this.createBoundElementProperty(elementSelector, prop));
