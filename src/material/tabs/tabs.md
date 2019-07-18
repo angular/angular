@@ -122,9 +122,15 @@ duration can be configured globally using the `MAT_TABS_CONFIG` injection token.
 <!-- example(tab-group-animations) -->
 
 ### Accessibility
+`<mat-tab-group>` and `<mat-nav-tab-bar>` use different interaction patterns. The
+`<mat-tab-group>` component combines `tablist`, `tab`, and `tabpanel` into a single component with
+the appropriate keyboard shortcuts. The `<mat-nav-tab-bar>`, however, use a _navigation_ interaction
+pattern by using a `<nav>` element with anchor elements as the "tabs". The difference
+between these two patterns comes from the fact one updates the page URL while the other does not.
+
+#### Labels
 Tabs without text or labels should be given a meaningful label via `aria-label` or
 `aria-labelledby`. For `MatTabNav`, the `<nav>` element should have a label as well.
-
 
 #### Keyboard interaction
 
