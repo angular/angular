@@ -12,6 +12,7 @@ ts_library(
     deps = [
         "//packages/compiler-cli/ngcc",
         "//packages/compiler-cli/ngcc/test/helpers",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/imports",
