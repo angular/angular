@@ -808,17 +808,17 @@ function applyNodes(
     renderParent: RElement | null, beforeNode: RNode | null | undefined, isProjection: boolean) {
   while (tNode != null) {
     ngDevMode && assertTNodeForLView(tNode, lView);
-    const node = lView[tNode.index];
+    const nativeNode = lView[tNode.index];
     const tNodeType = tNode.type;
     if (isProjection) {
       if (action === WalkTNodeTreeAction.Create) {
-        node && attachPatchData(node, lView);
+        nativeNode && attachPatchData(nativeNode, lView);
         tNode.flags |= TNodeFlags.isProjected;
       }
     }
     if ((tNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached) {
       if (tNodeType === TNodeType.ElementContainer) {
-        executeActionOnElementOrContainer(action, renderer, renderParent, node, beforeNode);
+        executeActionOnElementOrContainer(action, renderer, renderParent, nativeNode, beforeNode);
         applyNodes(renderer, action, tNode.child, lView, renderParent, beforeNode, false);
       } else if (tNodeType === TNodeType.View) {
         // TODO: Remove as this should never happen.
@@ -829,7 +829,7 @@ function applyNodes(
       } else {
         ngDevMode && assertNodeOfPossibleTypes(
                          tNode, TNodeType.Element, TNodeType.Container, TNodeType.IcuContainer);
-        executeActionOnElementOrContainer(action, renderer, renderParent, node, beforeNode);
+        executeActionOnElementOrContainer(action, renderer, renderParent, nativeNode, beforeNode);
       }
     }
     tNode = isProjection ? tNode.projectionNext : tNode.next;
@@ -853,7 +853,7 @@ function applyNodes(
  * As you can see this is a very recursive problem. Yes recursion is not most efficient but the
  * code is complicated enough that trying to implemented with recursion becomes unmaintainable.
  *
- * @param renderer Render to use
+ * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
  * @param lView The LView which needs to be inserted, detached, destroyed.
  * @param renderParent parent DOM element for insertion/removal.
