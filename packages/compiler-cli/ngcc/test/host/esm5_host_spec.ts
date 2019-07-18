@@ -2022,6 +2022,95 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('getBaseClassExpression()', () => {
+      function getBaseClassIdentifier(source: string): ts.Identifier|null {
+        const file = {
+          name: _('/synthesized_constructors.js'),
+          contents: source,
+        };
+
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode =
+            getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+        const expression = host.getBaseClassExpression(classNode);
+        if (expression !== null && !ts.isIdentifier(expression)) {
+          throw new Error(
+              'Expected class to inherit via an identifier but got: ' + expression.getText());
+        }
+        return expression;
+      }
+
+      it('should find the base class of an IIFE with _super parameter', () => {
+        const identifier = getBaseClassIdentifier(`
+        var BaseClass = /** @class */ (function () {
+          function BaseClass() {}
+          return BaseClass;
+        }());
+        var TestClass = /** @class */ (function (_super) {
+          __extends(TestClass, _super);
+          function TestClass() {}
+          return TestClass;
+        }(BaseClass));`);
+        expect(identifier !.text).toBe('BaseClass');
+      });
+
+      it('should find the base class of an IIFE with a unique name generated for the _super parameter',
+         () => {
+           const identifier = getBaseClassIdentifier(`
+        var BaseClass = /** @class */ (function () {
+          function BaseClass() {}
+          return BaseClass;
+        }());
+        var TestClass = /** @class */ (function (_super_1) {
+          __extends(TestClass, _super_1);
+          function TestClass() {}
+          return TestClass;
+        }(BaseClass));`);
+           expect(identifier !.text).toBe('BaseClass');
+         });
+
+      it('should not find a base class for an IIFE without parameter', () => {
+        const identifier = getBaseClassIdentifier(`
+        var BaseClass = /** @class */ (function () {
+          function BaseClass() {}
+          return BaseClass;
+        }());
+        var TestClass = /** @class */ (function () {
+          __extends(TestClass, _super);
+          function TestClass() {}
+          return TestClass;
+        }(BaseClass));`);
+        expect(identifier).toBe(null);
+      });
+
+      it('should find a dynamic base class expression of an IIFE', () => {
+        const file = {
+          name: _('/synthesized_constructors.js'),
+          contents: `
+          var BaseClass = /** @class */ (function () {
+            function BaseClass() {}
+            return BaseClass;
+          }());
+          function foo() { return BaseClass; }
+          var TestClass = /** @class */ (function (_super) {
+            __extends(TestClass, _super);
+            function TestClass() {}
+            return TestClass;
+          }(foo()));`,
+        };
+
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode =
+            getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+        const expression = host.getBaseClassExpression(classNode) !;
+        expect(expression.getText()).toBe('foo()');
+      });
+    });
+
     describe('findClassSymbols()', () => {
       it('should return an array of all classes in the given source file', () => {
         loadTestFiles(DECORATED_FILES);
