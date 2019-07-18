@@ -1465,7 +1465,9 @@ class _ApplySourceSpanTransformer extends AstTransformer {
   private _clone(obj: any): any {
     const clone = Object.create(obj.constructor.prototype);
     for (let prop in obj) {
-      clone[prop] = obj[prop];
+      if (obj.hasOwnProperty(prop)) {
+        clone[prop] = obj[prop];
+      }
     }
     return clone;
   }
