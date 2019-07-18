@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, setFileSystem} from '../../src/helpers';
+import {InvalidFileSystem} from '../../src/invalid_file_system';
 import {AbsoluteFsPath} from '../../src/types';
 
 import {MockFileSystem} from './mock_file_system';
@@ -43,6 +44,7 @@ function runInEachFileSystemFn(callback: (os: string) => void) {
 function runInFileSystem(os: string, callback: (os: string) => void, error: boolean) {
   describe(`<<FileSystem: ${os}>>`, () => {
     beforeEach(() => initMockFileSystem(os));
+    afterEach(() => setFileSystem(new InvalidFileSystem()));
     callback(os);
     if (error) {
       afterAll(() => { throw new Error(`runInFileSystem limited to ${os}, cannot pass`); });
