@@ -14,7 +14,7 @@ import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles, loadTsLib} from '../../../test/helpers';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {MockLogger} from '../helpers/mock_logger';
-import {convertToDirectTsLibImport, makeTestBundleProgram} from '../helpers/utils';
+import {convertToDirectTsLibImport, convertToInlineTsLib, makeTestBundleProgram} from '../helpers/utils';
 
 import {expectTypeValueReferencesForParameters} from './util';
 
@@ -132,14 +132,16 @@ export { SomeDirective };
       ];
 
       const DIRECT_IMPORT_FILES = convertToDirectTsLibImport(NAMESPACED_IMPORT_FILES);
+      const INLINE_FILES = convertToInlineTsLib(NAMESPACED_IMPORT_FILES);
 
       FILES = {
         'namespaced': NAMESPACED_IMPORT_FILES,
         'direct import': DIRECT_IMPORT_FILES,
+        'inline': INLINE_FILES,
       };
     });
 
-    ['namespaced', 'direct import'].forEach(label => {
+    ['namespaced', 'direct import', 'inline'].forEach(label => {
       describe(`[${label}]`, () => {
         beforeEach(() => {
           const fs = getFileSystem();
@@ -165,28 +167,6 @@ export { SomeDirective };
             expect(decorator.args !.map(arg => arg.getText())).toEqual([
               '{ selector: \'[someDirective]\' }',
             ]);
-          });
-
-          it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-            const spy =
-                spyOn(Esm5ReflectionHost.prototype, 'getImportOfIdentifier')
-                    .and.callFake(
-                        (identifier: ts.Identifier) => identifier.getText() === 'Directive' ?
-                            {from: '@angular/core', name: 'Directive'} :
-                            {});
-
-            const {program} = makeTestBundleProgram(_('/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
-            const classNode = getDeclaration(
-                program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
-
-            const decorators = host.getDecoratorsOfDeclaration(classNode) !;
-
-            expect(decorators.length).toEqual(1);
-            expect(decorators[0].import).toEqual({from: '@angular/core', name: 'Directive'});
-
-            const identifiers = spy.calls.all().map(call => (call.args[0] as ts.Identifier).text);
-            expect(identifiers.some(identifier => identifier === 'Directive')).toBeTruthy();
           });
 
           it('should support decorators being used inside @angular/core', () => {
@@ -270,20 +250,6 @@ export { SomeDirective };
             expect(staticProperty.value !.getText()).toEqual(`'static'`);
           });
 
-          it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-            const spy =
-                spyOn(Esm5ReflectionHost.prototype, 'getImportOfIdentifier').and.returnValue({});
-
-            const {program} = makeTestBundleProgram(_('/some_directive.js'));
-            const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
-            const classNode = getDeclaration(
-                program, _('/some_directive.js'), 'SomeDirective', isNamedVariableDeclaration);
-
-            host.getMembersOfClass(classNode);
-            const identifiers = spy.calls.all().map(call => (call.args[0] as ts.Identifier).text);
-            expect(identifiers.some(identifier => identifier === 'Input')).toBeTruthy();
-          });
-
           it('should support decorators being used inside @angular/core', () => {
             const {program} =
                 makeTestBundleProgram(_('/node_modules/@angular/core/some_directive.js'));
@@ -319,12 +285,7 @@ export { SomeDirective };
           });
 
           describe('(returned parameters `decorators`)', () => {
-            it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-              const mockImportInfo = {} as Import;
-              const spy = spyOn(Esm5ReflectionHost.prototype, 'getImportOfIdentifier')
-                              .and.returnValue(mockImportInfo);
-
-
+            it('should have import information on decorators', () => {
               const {program} = makeTestBundleProgram(_('/some_directive.js'));
               const host =
                   new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
@@ -334,10 +295,7 @@ export { SomeDirective };
               const decorators = parameters ![2].decorators !;
 
               expect(decorators.length).toEqual(1);
-              expect(decorators[0].import).toBe(mockImportInfo);
-
-              const typeIdentifier = spy.calls.mostRecent().args[0] as ts.Identifier;
-              expect(typeIdentifier.text).toBe('Inject');
+              expect(decorators[0].import).toEqual({name: 'Inject', from: '@angular/core'});
             });
           });
         });

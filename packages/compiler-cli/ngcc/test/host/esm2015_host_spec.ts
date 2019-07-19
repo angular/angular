@@ -763,11 +763,7 @@ runInEachFileSystem(() => {
         expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
       });
 
-      it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-        const mockImportInfo = { from: '@angular/core' } as Import;
-        const spy = spyOn(Esm2015ReflectionHost.prototype, 'getImportOfIdentifier')
-                        .and.returnValue(mockImportInfo);
-
+      it('should have import information on decorators', () => {
         loadTestFiles([SOME_DIRECTIVE_FILE]);
         const {program} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
@@ -776,10 +772,7 @@ runInEachFileSystem(() => {
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toEqual(1);
-        expect(decorators[0].import).toBe(mockImportInfo);
-
-        const typeIdentifier = spy.calls.mostRecent().args[0] as ts.Identifier;
-        expect(typeIdentifier.text).toBe('Directive');
+        expect(decorators[0].import).toEqual({name: 'Directive', from: '@angular/core'});
       });
 
       describe('(returned decorators `args`)', () => {
@@ -839,11 +832,13 @@ runInEachFileSystem(() => {
         expect(input1.kind).toEqual(ClassMemberKind.Property);
         expect(input1.isStatic).toEqual(false);
         expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
+        expect(input1.decorators ![0].import).toEqual({name: 'Input', from: '@angular/core'});
 
         const input2 = members.find(member => member.name === 'input2') !;
         expect(input2.kind).toEqual(ClassMemberKind.Property);
         expect(input2.isStatic).toEqual(false);
-        expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
+        expect(input2.decorators !.map(d => d.name)).toEqual(['Input']);
+        expect(input2.decorators ![0].import).toEqual({name: 'Input', from: '@angular/core'});
       });
 
       it('should find non decorated properties on a class', () => {
@@ -989,35 +984,6 @@ runInEachFileSystem(() => {
 
         expect(decorators.length).toBe(1);
         expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Input'}));
-      });
-
-      it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-        let callCount = 0;
-        const spy =
-            spyOn(Esm2015ReflectionHost.prototype, 'getImportOfIdentifier').and.callFake(() => {
-              callCount++;
-              return {name: `name${callCount}`, from: '@angular/core'};
-            });
-
-        loadTestFiles([SOME_DIRECTIVE_FILE]);
-        const {program} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
-        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
-        const classNode = getDeclaration(
-            program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
-        const members = host.getMembersOfClass(classNode);
-
-        expect(spy).toHaveBeenCalled();
-        expect(spy.calls.allArgs().map(arg => arg[0].getText())).toEqual([
-          'Input',
-          'Input',
-          'HostBinding',
-          'Input',
-          'HostListener',
-        ]);
-
-        const member = members.find(member => member.name === 'input1') !;
-        expect(member.decorators !.length).toBe(1);
-        expect(member.decorators ![0].import).toEqual({name: 'name1', from: '@angular/core'});
       });
 
       describe('(returned prop decorators `args`)', () => {
@@ -1311,11 +1277,7 @@ runInEachFileSystem(() => {
           expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Inject'}));
         });
 
-        it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-          const mockImportInfo: Import = {name: 'mock', from: '@angular/core'};
-          const spy = spyOn(Esm2015ReflectionHost.prototype, 'getImportOfIdentifier')
-                          .and.returnValue(mockImportInfo);
-
+        it('should have import information on decorators', () => {
           loadTestFiles([SOME_DIRECTIVE_FILE]);
           const {program} = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
           const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
@@ -1325,10 +1287,7 @@ runInEachFileSystem(() => {
           const decorators = parameters[2].decorators !;
 
           expect(decorators.length).toEqual(1);
-          expect(decorators[0].import).toBe(mockImportInfo);
-
-          const typeIdentifier = spy.calls.mostRecent().args[0] as ts.Identifier;
-          expect(typeIdentifier.text).toBe('Inject');
+          expect(decorators[0].import).toEqual({name: 'Inject', from: '@angular/core'});
         });
       });
 
