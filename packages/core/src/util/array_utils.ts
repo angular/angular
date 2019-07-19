@@ -43,3 +43,21 @@ export function flatten(list: any[], dst?: any[]): any[] {
 export function deepForEach<T>(input: (T | any[])[], fn: (value: T) => void): void {
   input.forEach(value => Array.isArray(value) ? deepForEach(value, fn) : fn(value));
 }
+
+export function addToArray(arr: any[], index: number, value: any): void {
+  // perf: array.push is faster than array.splice!
+  if (index >= arr.length) {
+    arr.push(value);
+  } else {
+    arr.splice(index, 0, value);
+  }
+}
+
+export function removeFromArray(arr: any[], index: number): any {
+  // perf: array.pop is faster than array.splice!
+  if (index >= arr.length - 1) {
+    return arr.pop();
+  } else {
+    return arr.splice(index, 1)[0];
+  }
+}
