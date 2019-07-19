@@ -96,7 +96,8 @@
   // and h6 at 0.67em.
   .mat-h5, #{$selector} h5 {
     @include mat-typography-font-shorthand(
-      mat-font-size($config, body-1) * 0.83,
+       // calc is used here to support css variables
+      calc(#{mat-font-size($config, body-1)} * 0.83),
       mat-font-weight($config, body-1),
       mat-line-height($config, body-1),
       mat-font-family($config, body-1)
@@ -107,7 +108,8 @@
 
   .mat-h6, #{$selector} h6 {
     @include mat-typography-font-shorthand(
-      mat-font-size($config, body-1) * 0.67,
+       // calc is used here to support css variables
+      calc(#{mat-font-size($config, body-1)} * 0.67),
       mat-font-weight($config, body-1),
       mat-line-height($config, body-1),
       mat-font-family($config, body-1)
