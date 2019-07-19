@@ -49,6 +49,22 @@ describe('Zone', function() {
       const zoneC = zoneB.fork({name: 'C'});
       zoneC.run(function() {});
     });
+
+    it('should send correct currentZone in hook method when in nested zone with empty implementation',
+       function() {
+         const zone = Zone.current;
+         const zoneA = zone.fork({
+           name: 'A',
+           onInvoke: function(
+               parentDelegate, currentZone, targetZone, callback, applyThis, applyArgs, source) {
+             expect(currentZone.name).toEqual('A');
+             return parentDelegate.invoke(targetZone, callback, applyThis, applyArgs, source);
+           }
+         });
+         const zoneB = zoneA.fork({name: 'B'});
+         const zoneC = zoneB.fork({name: 'C'});
+         zoneC.run(function() {});
+       });
   });
 
   it('should allow zones to be run from within another zone', function() {
