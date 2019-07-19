@@ -15,8 +15,8 @@ import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Renderer2} from '../render/api';
+import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
-
 import {assertLContainer} from './assert';
 import {NodeInjector, getParentInjectorLocation} from './di';
 import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions/shared';
@@ -201,8 +201,8 @@ export function createContainerRef(
       }
 
       clear(): void {
-        while (this.length) {
-          this.remove(0);
+        while (this.length > 0) {
+          this.remove(this.length - 1);
         }
       }
 
@@ -259,7 +259,7 @@ export function createContainerRef(
         addRemoveViewFromContainer(lView, true, beforeNode);
 
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
-        this._lContainer[VIEW_REFS] !.splice(adjustedIdx, 0, viewRef);
+        addToArray(this._lContainer[VIEW_REFS] !, adjustedIdx, viewRef);
 
         return viewRef;
       }
@@ -284,14 +284,16 @@ export function createContainerRef(
         this.allocateContainerIfNeeded();
         const adjustedIdx = this._adjustIndex(index, -1);
         removeView(this._lContainer, adjustedIdx);
-        this._lContainer[VIEW_REFS] !.splice(adjustedIdx, 1);
+        removeFromArray(this._lContainer[VIEW_REFS] !, adjustedIdx);
       }
 
       detach(index?: number): viewEngine_ViewRef|null {
         this.allocateContainerIfNeeded();
         const adjustedIdx = this._adjustIndex(index, -1);
         const view = detachView(this._lContainer, adjustedIdx);
-        const wasDetached = view && this._lContainer[VIEW_REFS] !.splice(adjustedIdx, 1)[0] != null;
+
+        const wasDetached =
+            view && removeFromArray(this._lContainer[VIEW_REFS] !, adjustedIdx) != null;
         return wasDetached ? new ViewRef(view !, view ![CONTEXT], -1) : null;
       }
 
