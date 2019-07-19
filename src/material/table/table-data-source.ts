@@ -266,14 +266,14 @@ export class MatTableDataSource<T> extends DataSource<T> {
   }
 
   /**
-   * Returns a paged splice of the provided data array according to the provided MatPaginator's page
+   * Returns a paged slice of the provided data array according to the provided MatPaginator's page
    * index and length. If there is no paginator provided, returns the data array as provided.
    */
   _pageData(data: T[]): T[] {
     if (!this.paginator) { return data; }
 
     const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
-    return data.slice().splice(startIndex, this.paginator.pageSize);
+    return data.slice(startIndex, startIndex + this.paginator.pageSize);
   }
 
   /**
