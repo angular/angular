@@ -245,7 +245,7 @@ describe('Zone', function() {
             Zone.current.fork({name: 'test1'}).run(() => { testTarget.dispatchEvent('prop3'); });
           });
 
-          it('window onclick should be in zone',
+          it('window onmousedown should be in zone',
              ifEnvSupports(canPatchOnProperty(window, 'onmousedown'), function() {
                zone.run(function() { window.onmousedown = eventListenerSpy; });
 
@@ -254,6 +254,10 @@ describe('Zone', function() {
                expect(hookSpy).toHaveBeenCalled();
                expect(eventListenerSpy).toHaveBeenCalled();
                window.removeEventListener('mousedown', eventListenerSpy);
+               expect((window as any)[zoneSymbol('ON_PROPERTYmousedown')])
+                   .toEqual(eventListenerSpy);
+               window.onmousedown = null;
+               expect(!!(window as any)[zoneSymbol('ON_PROPERTYmousedown')]).toBeFalsy();
              }));
 
           it('window onresize should be patched',
@@ -264,9 +268,12 @@ describe('Zone', function() {
                innerResizeProp();
                expect(eventListenerSpy).toHaveBeenCalled();
                window.removeEventListener('resize', eventListenerSpy);
+               expect((window as any)[zoneSymbol('ON_PROPERTYresize')]).toEqual(eventListenerSpy);
+               window.onresize = null;
+               expect(!!(window as any)[zoneSymbol('ON_PROPERTYresize')]).toBeFalsy();
              }));
 
-          it('document onclick should be in zone',
+          it('document onmousedown should be in zone',
              ifEnvSupports(canPatchOnProperty(Document.prototype, 'onmousedown'), function() {
                zone.run(function() { document.onmousedown = eventListenerSpy; });
 
@@ -275,6 +282,10 @@ describe('Zone', function() {
                expect(hookSpy).toHaveBeenCalled();
                expect(eventListenerSpy).toHaveBeenCalled();
                document.removeEventListener('mousedown', eventListenerSpy);
+               expect((document as any)[zoneSymbol('ON_PROPERTYmousedown')])
+                   .toEqual(eventListenerSpy);
+               document.onmousedown = null;
+               expect(!!(document as any)[zoneSymbol('ON_PROPERTYmousedown')]).toBeFalsy();
              }));
 
           // TODO: JiaLiPassion, need to find out why the test bundle is not `use strict`.
@@ -342,7 +353,7 @@ describe('Zone', function() {
                 }
               }));
 
-          it('SVGElement onclick should be in zone',
+          it('SVGElement onmousedown should be in zone',
              ifEnvSupports(
                  canPatchOnProperty(SVGElement && SVGElement.prototype, 'onmousedown'), function() {
                    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1921,15 +1932,20 @@ describe('Zone', function() {
         const listener2 = function() { logs.push('listener2'); };
         const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
         const listener4 = function() { logs.push('listener4'); };
+        const listener5 = function() { logs.push('listener5'); };
 
         button.addEventListener('mouseover', listener1);
         button.addEventListener('mouseover', listener2);
         button.addEventListener('mouseover', listener3);
         button.addEventListener('click', listener4);
+        button.onmouseover = listener5;
+        expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toEqual(listener5);
 
         (button as any).removeAllListeners('mouseover');
-        const listeners = (button as any).eventListeners('mouseove');
+        const listeners = (button as any).eventListeners('mouseover');
         expect(listeners.length).toBe(0);
+        expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toBeNull();
+        expect(!!button.onmouseover).toBeFalsy();
 
         const mouseEvent = document.createEvent('Event');
         mouseEvent.initEvent('mouseover', true, true);
@@ -1957,7 +1973,7 @@ describe('Zone', function() {
            button.addEventListener('click', listener4, true);
 
            (button as any).removeAllListeners('mouseover');
-           const listeners = (button as any).eventListeners('mouseove');
+           const listeners = (button as any).eventListeners('mouseover');
            expect(listeners.length).toBe(0);
 
            const mouseEvent = document.createEvent('Event');
@@ -2007,15 +2023,20 @@ describe('Zone', function() {
         const listener2 = function() { logs.push('listener2'); };
         const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
         const listener4 = function() { logs.push('listener4'); };
+        const listener5 = function() { logs.push('listener5'); };
 
         button.addEventListener('mouseover', listener1);
         button.addEventListener('mouseover', listener2);
         button.addEventListener('mouseover', listener3);
         button.addEventListener('click', listener4);
+        button.onmouseover = listener5;
+        expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toEqual(listener5);
 
         (button as any).removeAllListeners();
         const listeners = (button as any).eventListeners('mouseover');
         expect(listeners.length).toBe(0);
+        expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toBeNull();
+        expect(!!button.onmouseover).toBeFalsy();
 
         const mouseEvent = document.createEvent('Event');
         mouseEvent.initEvent('mouseover', true, true);
