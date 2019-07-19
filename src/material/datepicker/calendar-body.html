@@ -40,11 +40,12 @@
       (click)="_cellClicked(item)"
       [style.width]="_cellWidth"
       [style.paddingTop]="_cellPadding"
+      role="button"
       [style.paddingBottom]="_cellPadding">
-    <div class="mat-calendar-body-cell-content"
-         [class.mat-calendar-body-selected]="selectedValue === item.value"
-         [class.mat-calendar-body-today]="todayValue === item.value">
-      {{item.displayValue}}
-    </div>
+      <div class="mat-calendar-body-cell-content"
+        [class.mat-calendar-body-selected]="selectedValue === item.value"
+        [class.mat-calendar-body-today]="todayValue === item.value">
+        {{item.displayValue}}
+      </div>
   </td>
 </tr>
