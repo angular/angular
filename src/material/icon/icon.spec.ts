@@ -215,6 +215,29 @@ describe('MatIcon', () => {
       tick();
     }));
 
+    it('should be able to set the viewBox when registering a single SVG icon', fakeAsync(() => {
+      iconRegistry.addSvgIcon('fluffy', trustUrl('cat.svg'), {viewBox: '0 0 27 27'});
+      iconRegistry.addSvgIcon('fido', trustUrl('dog.svg'), {viewBox: '0 0 43 43'});
+
+      let fixture = TestBed.createComponent(IconFromSvgName);
+      let svgElement: SVGElement;
+      const testComponent = fixture.componentInstance;
+      const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+
+      testComponent.iconName = 'fido';
+      fixture.detectChanges();
+      http.expectOne('dog.svg').flush(FAKE_SVGS.dog);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      expect(svgElement.getAttribute('viewBox')).toBe('0 0 43 43');
+
+      // Change the icon, and the SVG element should be replaced.
+      testComponent.iconName = 'fluffy';
+      fixture.detectChanges();
+      http.expectOne('cat.svg').flush(FAKE_SVGS.cat);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      expect(svgElement.getAttribute('viewBox')).toBe('0 0 27 27');
+    }));
+
     it('should throw an error when using an untrusted icon url', () => {
       iconRegistry.addSvgIcon('fluffy', 'farm-set-1.svg');
 
@@ -449,6 +472,22 @@ describe('MatIcon', () => {
       }).not.toThrow();
     });
 
+    it('should be able to configure the viewBox for the icon set', () => {
+      iconRegistry.addSvgIconSet(trustUrl('arrow-set.svg'), {viewBox: '0 0 43 43'});
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      const testComponent = fixture.componentInstance;
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+      let svgElement: any;
+
+      testComponent.iconName = 'left-arrow';
+      fixture.detectChanges();
+      http.expectOne('arrow-set.svg').flush(FAKE_SVGS.arrows);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
+
+      expect(svgElement.getAttribute('viewBox')).toBe('0 0 43 43');
+    });
+
     it('should remove the SVG element from the DOM when the binding is cleared', () => {
       iconRegistry.addSvgIconSet(trustUrl('arrow-set.svg'));
 
@@ -516,6 +555,26 @@ describe('MatIcon', () => {
       });
 
       tick();
+    }));
+
+    it('should be able to configure the icon viewBox', fakeAsync(() => {
+      iconRegistry.addSvgIconLiteral('fluffy', trustHtml(FAKE_SVGS.cat), {viewBox: '0 0 43 43'});
+      iconRegistry.addSvgIconLiteral('fido', trustHtml(FAKE_SVGS.dog), {viewBox: '0 0 27 27'});
+
+      let fixture = TestBed.createComponent(IconFromSvgName);
+      let svgElement: SVGElement;
+      const testComponent = fixture.componentInstance;
+      const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+
+      testComponent.iconName = 'fido';
+      fixture.detectChanges();
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      expect(svgElement.getAttribute('viewBox')).toBe('0 0 27 27');
+
+      testComponent.iconName = 'fluffy';
+      fixture.detectChanges();
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      expect(svgElement.getAttribute('viewBox')).toBe('0 0 43 43');
     }));
 
     it('should throw an error when using untrusted HTML', () => {
@@ -629,6 +688,21 @@ describe('MatIcon', () => {
       svgElement = verifyAndGetSingleSvgChild(matIconElement);
       verifyPathChildElement(svgElement, 'left');
       expect(svgElement.getAttribute('viewBox')).toBeFalsy();
+    });
+
+    it('should be able to configure the viewBox for the icon set', () => {
+      iconRegistry.addSvgIconSetLiteral(trustHtml(FAKE_SVGS.arrows), {viewBox: '0 0 43 43'});
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      const testComponent = fixture.componentInstance;
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+      let svgElement: any;
+
+      testComponent.iconName = 'left-arrow';
+      fixture.detectChanges();
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
+
+      expect(svgElement.getAttribute('viewBox')).toBe('0 0 43 43');
     });
 
     it('should add an extra string to the end of `style` tags inside SVG', fakeAsync(() => {

@@ -14,6 +14,10 @@ export declare const ICON_REGISTRY_PROVIDER: {
 
 export declare function ICON_REGISTRY_PROVIDER_FACTORY(parentRegistry: MatIconRegistry, httpClient: HttpClient, sanitizer: DomSanitizer, document?: any): MatIconRegistry;
 
+export interface IconOptions {
+    viewBox?: string;
+}
+
 export declare const MAT_ICON_LOCATION: InjectionToken<MatIconLocation>;
 
 export declare function MAT_ICON_LOCATION_FACTORY(): MatIconLocation;
@@ -40,14 +44,14 @@ export declare class MatIconModule {
 
 export declare class MatIconRegistry implements OnDestroy {
     constructor(_httpClient: HttpClient, _sanitizer: DomSanitizer, document: any);
-    addSvgIcon(iconName: string, url: SafeResourceUrl): this;
-    addSvgIconInNamespace(namespace: string, iconName: string, url: SafeResourceUrl): this;
-    addSvgIconLiteral(iconName: string, literal: SafeHtml): this;
-    addSvgIconLiteralInNamespace(namespace: string, iconName: string, literal: SafeHtml): this;
-    addSvgIconSet(url: SafeResourceUrl): this;
-    addSvgIconSetInNamespace(namespace: string, url: SafeResourceUrl): this;
-    addSvgIconSetLiteral(literal: SafeHtml): this;
-    addSvgIconSetLiteralInNamespace(namespace: string, literal: SafeHtml): this;
+    addSvgIcon(iconName: string, url: SafeResourceUrl, options?: IconOptions): this;
+    addSvgIconInNamespace(namespace: string, iconName: string, url: SafeResourceUrl, options?: IconOptions): this;
+    addSvgIconLiteral(iconName: string, literal: SafeHtml, options?: IconOptions): this;
+    addSvgIconLiteralInNamespace(namespace: string, iconName: string, literal: SafeHtml, options?: IconOptions): this;
+    addSvgIconSet(url: SafeResourceUrl, options?: IconOptions): this;
+    addSvgIconSetInNamespace(namespace: string, url: SafeResourceUrl, options?: IconOptions): this;
+    addSvgIconSetLiteral(literal: SafeHtml, options?: IconOptions): this;
+    addSvgIconSetLiteralInNamespace(namespace: string, literal: SafeHtml, options?: IconOptions): this;
     classNameForFontAlias(alias: string): string;
     getDefaultFontSetClass(): string;
     getNamedSvgIcon(name: string, namespace?: string): Observable<SVGElement>;
