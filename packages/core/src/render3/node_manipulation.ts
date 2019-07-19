@@ -7,8 +7,8 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
+import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertDomNode} from '../util/assert';
-
 import {assertLContainer, assertLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -209,7 +209,7 @@ export function insertView(lView: LView, lContainer: LContainer, index: number) 
   }
   if (index < containerLength - CONTAINER_HEADER_OFFSET) {
     lView[NEXT] = lContainer[indexInContainer];
-    lContainer.splice(CONTAINER_HEADER_OFFSET + index, 0, lView);
+    addToArray(lContainer, CONTAINER_HEADER_OFFSET + index, lView);
   } else {
     lContainer.push(lView);
     lView[NEXT] = null;
@@ -260,7 +260,7 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
 /**
  * Detaches a view from a container.
  *
- * This method splices the view from the container's array of active views. It also
+ * This method removes the view from the container's array of active views. It also
  * removes the view's elements from the DOM.
  *
  * @param lContainer The container from which to detach a view
@@ -283,7 +283,7 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
     if (removeIndex > 0) {
       lContainer[indexInContainer - 1][NEXT] = viewToDetach[NEXT] as LView;
     }
-    const removedLView = lContainer.splice(CONTAINER_HEADER_OFFSET + removeIndex, 1)[0];
+    const removedLView = removeFromArray(lContainer, CONTAINER_HEADER_OFFSET + removeIndex);
     addRemoveViewFromContainer(viewToDetach, false);
 
     // notify query that a view has been removed
