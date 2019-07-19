@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, ContentChild, ContentChildren, Directive, ElementRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, ElementRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, forwardRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -1028,6 +1028,65 @@ describe('query logic', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.instances.length).toBe(1);
+    });
+
+    it('should flatten multi-provider results', () => {
+
+      class MyClass {}
+
+      @Component({
+        selector: 'with-multi-provider',
+        template: '',
+        providers:
+            [{provide: MyClass, useExisting: forwardRef(() => WithMultiProvider), multi: true}]
+      })
+      class WithMultiProvider {
+      }
+
+      @Component({selector: 'test-cmpt', template: `<with-multi-provider></with-multi-provider>`})
+      class TestCmpt {
+        @ViewChildren(MyClass) queryResults !: QueryList<WithMultiProvider>;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestCmpt, WithMultiProvider]});
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.queryResults.length).toBe(1);
+      expect(fixture.componentInstance.queryResults.first).toBeAnInstanceOf(WithMultiProvider);
+    });
+
+    it('should flatten multi-provider results when crossing ng-template', () => {
+
+      class MyClass {}
+
+      @Component({
+        selector: 'with-multi-provider',
+        template: '',
+        providers:
+            [{provide: MyClass, useExisting: forwardRef(() => WithMultiProvider), multi: true}]
+      })
+      class WithMultiProvider {
+      }
+
+      @Component({
+        selector: 'test-cmpt',
+        template: `
+          <ng-template [ngIf]="true"><with-multi-provider></with-multi-provider></ng-template>
+          <with-multi-provider></with-multi-provider>
+        `
+      })
+      class TestCmpt {
+        @ViewChildren(MyClass) queryResults !: QueryList<WithMultiProvider>;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestCmpt, WithMultiProvider]});
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.queryResults.length).toBe(2);
+      expect(fixture.componentInstance.queryResults.first).toBeAnInstanceOf(WithMultiProvider);
+      expect(fixture.componentInstance.queryResults.last).toBeAnInstanceOf(WithMultiProvider);
     });
 
 

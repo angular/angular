@@ -412,11 +412,11 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
   const tQuery = getTQuery(lView[TVIEW], queryIndex);
   if (queryList.dirty && (isCreationMode() === tQuery.metadata.isStatic)) {
     if (tQuery.matches === null) {
-      queryList.reset([], false);
+      queryList.reset([]);
     } else {
       const result = tQuery.crossesNgTemplate ? collectQueryResults(lView, tQuery, queryIndex, []) :
                                                 materializeViewResults(lView, tQuery, queryIndex);
-      queryList.reset(result, false);
+      queryList.reset(result);
       queryList.notifyOnChanges();
     }
     return true;

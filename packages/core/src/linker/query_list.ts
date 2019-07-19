@@ -120,11 +120,9 @@ export class QueryList<T>/* implements Iterable<T> */ {
    * occurs.
    *
    * @param resultsTree The query results to store
-   * @param shouldFlatten A flag indicating if results are provided in a form of a tree to be
-   * flattened (default) or an already flattened array
    */
-  reset(resultsTree: Array<T|any[]>, shouldFlatten = true): void {
-    this._results = shouldFlatten ? flatten(resultsTree) : resultsTree as Array<T>;
+  reset(resultsTree: Array<T|any[]>): void {
+    this._results = flatten(resultsTree);
     (this as{dirty: boolean}).dirty = false;
     (this as{length: number}).length = this._results.length;
     (this as{last: T}).last = this._results[this.length - 1];
