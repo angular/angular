@@ -11,11 +11,29 @@ import {NgModule} from '@angular/core';
 import {GestureConfig, MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MatSlideToggle} from './slide-toggle';
+import {MatSlideToggleRequiredValidator} from './slide-toggle-required-validator';
 
+/** This module is used by both original and MDC-based slide-toggle implementations. */
+@NgModule({
+  exports: [MatSlideToggleRequiredValidator],
+  declarations: [MatSlideToggleRequiredValidator],
+})
+// tslint:disable-next-line:class-name
+export class _MatSlideToggleRequiredValidatorModule {
+}
 
 @NgModule({
-  imports: [MatRippleModule, MatCommonModule, ObserversModule],
-  exports: [MatSlideToggle, MatCommonModule],
+  imports: [
+    _MatSlideToggleRequiredValidatorModule,
+    MatRippleModule,
+    MatCommonModule,
+    ObserversModule,
+  ],
+  exports: [
+    _MatSlideToggleRequiredValidatorModule,
+    MatSlideToggle,
+    MatCommonModule
+  ],
   declarations: [MatSlideToggle],
   providers: [
     {provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}

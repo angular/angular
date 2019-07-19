@@ -1041,6 +1041,32 @@ describe('MatSlideToggle with forms', () => {
 
       expect(testComponent.isSubmitted).toBe(true);
     });
+
+    it('should have proper invalid state if unchecked', () => {
+      testComponent.isRequired = true;
+      fixture.detectChanges();
+
+      const slideToggleEl = fixture.nativeElement.querySelector('.mat-slide-toggle');
+
+      expect(slideToggleEl.classList).toContain('ng-invalid');
+      expect(slideToggleEl.classList).not.toContain('ng-valid');
+
+      // The required slide-toggle will be checked and the form control
+      // should become valid.
+      inputElement.click();
+      fixture.detectChanges();
+
+      expect(slideToggleEl.classList).not.toContain('ng-invalid');
+      expect(slideToggleEl.classList).toContain('ng-valid');
+
+      // The required slide-toggle will be unchecked and the form control
+      // should become invalid.
+      inputElement.click();
+      fixture.detectChanges();
+
+      expect(slideToggleEl.classList).toContain('ng-invalid');
+      expect(slideToggleEl.classList).not.toContain('ng-valid');
+    });
   });
 
   describe('with model and change event', () => {

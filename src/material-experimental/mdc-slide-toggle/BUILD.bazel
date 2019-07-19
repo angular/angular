@@ -15,6 +15,7 @@ ng_module(
     deps = [
         "//src/cdk/coercion",
         "//src/material/core",
+        "//src/material/slide-toggle",
         "@npm//@angular/animations",
         "@npm//@angular/common",
         "@npm//@angular/core",

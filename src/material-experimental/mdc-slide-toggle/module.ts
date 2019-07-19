@@ -9,11 +9,21 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
+import {_MatSlideToggleRequiredValidatorModule} from '@angular/material/slide-toggle';
 import {MatSlideToggle} from './slide-toggle';
 
 @NgModule({
-  imports: [MatCommonModule, MatRippleModule, CommonModule],
-  exports: [MatSlideToggle, MatCommonModule],
+  imports: [
+    _MatSlideToggleRequiredValidatorModule,
+    MatCommonModule,
+    MatRippleModule,
+    CommonModule
+  ],
+  exports: [
+    _MatSlideToggleRequiredValidatorModule,
+    MatSlideToggle,
+    MatCommonModule
+  ],
   declarations: [MatSlideToggle],
 })
 export class MatSlideToggleModule {

@@ -1,4 +1,9 @@
+export declare class _MatSlideToggleRequiredValidatorModule {
+}
+
 export declare const MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS: InjectionToken<MatSlideToggleDefaultOptions>;
+
+export declare const MAT_SLIDE_TOGGLE_REQUIRED_VALIDATOR: Provider;
 
 export declare const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any;
 
@@ -50,4 +55,7 @@ export interface MatSlideToggleDefaultOptions {
 }
 
 export declare class MatSlideToggleModule {
+}
+
+export declare class MatSlideToggleRequiredValidator extends CheckboxRequiredValidator {
 }
