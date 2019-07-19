@@ -195,30 +195,21 @@ class TQuery_ implements TQuery {
 
   private matchTNode(tView: TView, tNode: TNode): void {
     if (Array.isArray(this.metadata.predicate)) {
-      this.matchTNodeByLocalNames(tView, tNode, this.metadata.predicate as string[]);
+      const localNames = this.metadata.predicate as string[];
+      for (let i = 0; i < localNames.length; i++) {
+        this.matchTNodeWithReadOption(tView, tNode, getIdxOfMatchingSelector(tNode, localNames[i]));
+      }
     } else {
       const typePredicate = this.metadata.predicate as any;
       if (typePredicate === ViewEngine_TemplateRef) {
-        this.matchTNodeByTemplateRef(tView, tNode);
+        if (tNode.type === TNodeType.Container) {
+          this.matchTNodeWithReadOption(tView, tNode, -1);
+        }
       } else {
-        this.matchTNodeByType(tView, tNode, typePredicate);
+        this.matchTNodeWithReadOption(
+            tView, tNode, locateDirectiveOrProvider(tNode, tView, typePredicate, false, false));
       }
     }
-  }
-
-  private matchTNodeByLocalNames(tView: TView, tNode: TNode, localNames: string[]): void {
-    for (let i = 0; i < localNames.length; i++) {
-      this.matchTNodeWithReadOption(tView, tNode, getIdxOfMatchingSelector(tNode, localNames[i]));
-    }
-  }
-
-  private matchTNodeByTemplateRef(tView: TView, tNode: TNode): void {
-    this.matchTNodeWithReadOption(tView, tNode, tNode.type === TNodeType.Container ? -1 : null);
-  }
-
-  private matchTNodeByType(tView: TView, tNode: TNode, typePredicate: Type<any>): void {
-    this.matchTNodeWithReadOption(
-        tView, tNode, locateDirectiveOrProvider(tNode, tView, typePredicate, false, false));
   }
 
   private matchTNodeWithReadOption(tView: TView, tNode: TNode, nodeMatchIdx: number|null): void {
@@ -347,45 +338,37 @@ function materializeViewResults<T>(lView: LView, tQuery: TQuery, queryIndex: num
  * A helper function that collects (already materialized) query results from a tree of views,
  * starting with a provided LView.
  */
-function collectQueryResults<T>(
-    lView: LView, tQuery: TQuery, queryIndex: number, result: T[]): T[] {
-  ngDevMode &&
-      assertDefined(
-          tQuery.matches, 'Query results can only be collected for queries with existing matches.');
+function collectQueryResults<T>(lView: LView, queryIndex: number, result: T[]): T[] {
+  const tQuery = lView[TVIEW].queries !.getByIndex(queryIndex);
+  const tQueryMatches = tQuery.matches;
+  if (tQueryMatches !== null) {
+    const lViewResults = materializeViewResults<T>(lView, tQuery, queryIndex);
 
-  const tQueryMatches = tQuery.matches !;
-  const lViewResults = materializeViewResults<T>(lView, tQuery, queryIndex);
+    for (let i = 0; i < tQueryMatches.length; i += 2) {
+      const tNodeIdx = tQueryMatches[i];
+      if (tNodeIdx > 0) {
+        const viewResult = lViewResults[i / 2];
+        ngDevMode && assertDefined(viewResult, 'materialized query result should be defined');
+        result.push(viewResult as T);
+      } else {
+        const childQueryIndex = tQueryMatches[i + 1];
 
-  for (let i = 0; i < tQueryMatches.length; i += 2) {
-    const tNodeIdx = tQueryMatches[i];
-    if (tNodeIdx > 0) {
-      const viewResult = lViewResults[i / 2];
-      ngDevMode && assertDefined(viewResult, 'materialized query result should be defined');
-      result.push(viewResult as T);
-    } else {
-      const childQueryIndex = tQueryMatches[i + 1];
+        const declarationLContainer = lView[-tNodeIdx] as LContainer;
+        ngDevMode && assertLContainer(declarationLContainer);
 
-      const declarationLContainer = lView[-tNodeIdx] as LContainer;
-      ngDevMode && assertLContainer(declarationLContainer);
-
-      // collect matches for views inserted in this container
-      for (let i = CONTAINER_HEADER_OFFSET; i < declarationLContainer.length; i++) {
-        const embeddedLView = declarationLContainer[i];
-        if (embeddedLView[DECLARATION_LCONTAINER] === embeddedLView[PARENT]) {
-          const tquery = getTQuery(embeddedLView[TVIEW], childQueryIndex);
-          if (tquery.matches !== null) {
-            collectQueryResults(embeddedLView, tquery, childQueryIndex, result);
+        // collect matches for views inserted in this container
+        for (let i = CONTAINER_HEADER_OFFSET; i < declarationLContainer.length; i++) {
+          const embeddedLView = declarationLContainer[i];
+          if (embeddedLView[DECLARATION_LCONTAINER] === embeddedLView[PARENT]) {
+            collectQueryResults(embeddedLView, childQueryIndex, result);
           }
         }
-      }
 
-      // collect matches for views created from this declaration container and inserted into
-      // different containers
-      if (declarationLContainer[MOVED_VIEWS] !== null) {
-        for (let embeddedLView of declarationLContainer[MOVED_VIEWS] !) {
-          const tquery = getTQuery(embeddedLView[TVIEW], childQueryIndex);
-          if (tquery.matches !== null) {
-            collectQueryResults(embeddedLView, tquery, childQueryIndex, result);
+        // collect matches for views created from this declaration container and inserted into
+        // different containers
+        if (declarationLContainer[MOVED_VIEWS] !== null) {
+          for (let embeddedLView of declarationLContainer[MOVED_VIEWS] !) {
+            collectQueryResults(embeddedLView, childQueryIndex, result);
           }
         }
       }
@@ -414,7 +397,7 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
     if (tQuery.matches === null) {
       queryList.reset([]);
     } else {
-      const result = tQuery.crossesNgTemplate ? collectQueryResults(lView, tQuery, queryIndex, []) :
+      const result = tQuery.crossesNgTemplate ? collectQueryResults(lView, queryIndex, []) :
                                                 materializeViewResults(lView, tQuery, queryIndex);
       queryList.reset(result);
       queryList.notifyOnChanges();
