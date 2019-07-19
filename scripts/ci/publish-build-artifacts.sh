@@ -70,6 +70,7 @@ function publishRepo {
   fi
   echo `date` > $REPO_DIR/BUILD_INFO
   echo $SHA >> $REPO_DIR/BUILD_INFO
+  echo 'This file is used by the npm/yarn_install rule to detect APF' > $REPO_DIR/ANGULAR_PACKAGE
 
   (
     cd $REPO_DIR && \
