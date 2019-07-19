@@ -18,6 +18,7 @@ import {NG_ELEMENT_ID} from './fields';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
+import {isComponent, isComponentDef} from './interfaces/type_checks';
 import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
@@ -25,7 +26,6 @@ import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {stringifyForError} from './util/misc_utils';
 import {findComponentView} from './util/view_traversal_utils';
-import {isComponent, isComponentDef} from './util/view_utils';
 
 
 

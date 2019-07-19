@@ -11,16 +11,17 @@ import {LContainer} from '../interfaces/container';
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {StylingContext as OldStylingContext, StylingIndex as OldStylingIndex} from '../interfaces/styling';
-import {BINDING_INDEX, HEADER_OFFSET, HOST, LView, RENDERER, SANITIZER} from '../interfaces/view';
+import {isStylingContext as isOldStylingContext} from '../interfaces/type_checks';
+import {BINDING_INDEX, HEADER_OFFSET, HOST, LView, RENDERER} from '../interfaces/view';
 import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getActiveDirectiveSuperClassHeight, getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
-import {getTNode, isStylingContext as isOldStylingContext} from '../util/view_utils';
+import {getTNode} from '../util/view_utils';
 
 import {applyClasses, applyStyles, registerBinding, updateClassBinding, updateStyleBinding} from './bindings';
 import {TStylingContext} from './interfaces';
 import {activeStylingMapFeature, normalizeIntoStylingMap} from './map_based_bindings';
-import {getCurrentStyleSanitizer, setCurrentStyleSanitizer} from './state';
+import {setCurrentStyleSanitizer} from './state';
 import {attachStylingDebugObject} from './styling_debug';
 import {allocTStylingContext, getCurrentOrLViewSanitizer, hasValueChanged, updateContextDirectiveIndex} from './util';
 

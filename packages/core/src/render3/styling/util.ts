@@ -11,12 +11,13 @@ import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {getLContext} from '../context_discovery';
 import {LContainer} from '../interfaces/container';
 import {LContext} from '../interfaces/context';
-import {AttributeMarker, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
+import {TNode, TNodeFlags} from '../interfaces/node';
 import {PlayState, Player, PlayerContext, PlayerIndex} from '../interfaces/player';
 import {RElement} from '../interfaces/renderer';
 import {DirectiveRegistryValuesIndex, InitialStylingValues, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
+import {isStylingContext} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HOST, LView, RootContext} from '../interfaces/view';
-import {getTNode, isStylingContext} from '../util/view_utils';
+import {getTNode} from '../util/view_utils';
 
 import {CorePlayerHandler} from './core_player_handler';
 import {DEFAULT_TEMPLATE_DIRECTIVE_INDEX} from './shared';

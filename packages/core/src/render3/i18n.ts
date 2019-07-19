@@ -25,13 +25,14 @@ import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjecti
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
+import {isLContainer} from './interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {appendChild, appendProjectedNodes, createTextNode, nativeRemoveNode} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView} from './util/view_traversal_utils';
-import {getNativeByIndex, getNativeByTNode, getTNode, isLContainer} from './util/view_utils';
+import {getNativeByIndex, getNativeByTNode, getTNode} from './util/view_utils';
 
 
 const MARKER = `�`;

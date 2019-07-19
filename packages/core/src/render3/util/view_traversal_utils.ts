@@ -9,9 +9,11 @@
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
 import {TNodeType} from '../interfaces/node';
+import {isLContainer, isLView} from '../interfaces/type_checks';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, LView, LViewFlags, PARENT, RootContext, T_HOST} from '../interfaces/view';
 
-import {isLContainer, isLView, readPatchedLView} from './view_utils';
+import {readPatchedLView} from './view_utils';
+
 
 
 /**

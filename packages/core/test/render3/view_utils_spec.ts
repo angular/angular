@@ -7,8 +7,9 @@
  */
 
 import {createLContainer, createLView, createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
+import {isLContainer, isLView, isStylingContext} from '@angular/core/src/render3/interfaces/type_checks';
 import {createEmptyStylingContext} from '@angular/core/src/render3/styling/util';
-import {isLContainer, isLView, isStylingContext, unwrapLContainer, unwrapLView, unwrapRNode, unwrapStylingContext} from '@angular/core/src/render3/util/view_utils';
+import {unwrapLContainer, unwrapLView, unwrapRNode, unwrapStylingContext} from '@angular/core/src/render3/util/view_utils';
 
 describe('view_utils', () => {
   it('should verify unwrap methods', () => {

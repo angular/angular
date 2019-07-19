@@ -22,6 +22,7 @@ import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbedd
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
+import {isComponent, isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CONTEXT, LView, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
@@ -29,7 +30,7 @@ import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {findComponentView} from './util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer, isLView, isRootView, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
+import {getComponentViewByIndex, getNativeByTNode, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 import {ViewRef} from './view_ref';
 
 

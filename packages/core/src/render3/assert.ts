@@ -10,8 +10,8 @@ import {assertDefined, assertEqual, throwError} from '../util/assert';
 
 import {getComponentDef, getNgModuleDef} from './definition';
 import {TNode} from './interfaces/node';
+import {isLContainer, isLView} from './interfaces/type_checks';
 import {LView, TVIEW, TView} from './interfaces/view';
-import {isLContainer, isLView} from './util/view_utils';
 
 export function assertTNodeForLView(tNode: TNode, lView: LView) {
   tNode.hasOwnProperty('tView_') && assertEqual(

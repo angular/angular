@@ -16,9 +16,9 @@ import {ɵɵdirectiveInject} from './instructions/all';
 import {DirectiveDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNodeProviderIndexes} from './interfaces/node';
+import {isComponentDef} from './interfaces/type_checks';
 import {LView, TData, TVIEW, TView} from './interfaces/view';
 import {getLView, getPreviousOrParentTNode} from './state';
-import {isComponentDef} from './util/view_utils';
 
 
 
