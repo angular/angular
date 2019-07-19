@@ -1669,6 +1669,30 @@ runInEachFileSystem(() => {
         expect(definition.helper).toBe(TsHelperFn.Spread);
         expect(definition.parameters.length).toEqual(0);
       });
+
+      it('should recognize TypeScript __spread helper function implementation when suffixed',
+         () => {
+           const file: TestFile = {
+             name: _('/implementation.js'),
+             contents: `
+              var __spread$2 = (this && this.__spread$2) || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
+                return ar;
+              };`,
+           };
+           loadTestFiles([file]);
+           const {program} = makeTestBundleProgram(file.name);
+           const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+
+           const node =
+               getDeclaration(program, file.name, '__spread$2', ts.isVariableDeclaration) !;
+
+           const definition = host.getDefinitionOfFunction(node) !;
+           expect(definition.node).toBe(node);
+           expect(definition.body).toBeNull();
+           expect(definition.helper).toBe(TsHelperFn.Spread);
+           expect(definition.parameters.length).toEqual(0);
+         });
     });
 
     describe('getImportOfIdentifier()', () => {
