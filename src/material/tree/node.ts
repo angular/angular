@@ -16,13 +16,11 @@ import {
 import {
   AfterContentInit,
   Attribute,
-  ContentChildren,
   Directive,
   ElementRef,
   Input,
   IterableDiffers,
   OnDestroy,
-  QueryList,
 } from '@angular/core';
 import {
   CanDisable,
@@ -32,15 +30,10 @@ import {
   mixinDisabled,
   mixinTabIndex,
 } from '@angular/material/core';
-
-import {MatTreeNodeOutlet} from './outlet';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 const _MatTreeNodeMixinBase: HasTabIndexCtor & CanDisableCtor & typeof CdkTreeNode =
     mixinTabIndex(mixinDisabled(CdkTreeNode));
-
-const _MatNestedTreeNodeMixinBase:
-    HasTabIndexCtor & CanDisableCtor & typeof CdkNestedTreeNode =
-        mixinTabIndex(mixinDisabled(CdkNestedTreeNode));
 
 /**
  * Wrapper for the CdkTree node with Material design styles.
@@ -95,31 +88,36 @@ export class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
     '[attr.role]': 'role',
     'class': 'mat-nested-tree-node',
   },
-  inputs: ['disabled', 'tabIndex'],
   providers: [
     {provide: CdkNestedTreeNode, useExisting: MatNestedTreeNode},
     {provide: CdkTreeNode, useExisting: MatNestedTreeNode},
     {provide: CDK_TREE_NODE_OUTLET_NODE, useExisting: MatNestedTreeNode}
   ]
 })
-export class MatNestedTreeNode<T> extends _MatNestedTreeNodeMixinBase<T> implements
-    AfterContentInit, CanDisable, HasTabIndex, OnDestroy {
+export class MatNestedTreeNode<T> extends CdkNestedTreeNode<T> implements AfterContentInit,
+  OnDestroy {
   @Input('matNestedTreeNode') node: T;
 
-  /** The children node placeholder. */
-  @ContentChildren(MatTreeNodeOutlet, {
-    // We need to use `descendants: true`, because Ivy will no longer match
-    // indirect descendants if it's left as false.
-    descendants: true
-  })
-  nodeOutlet: QueryList<MatTreeNodeOutlet>;
+  /** Whether the node is disabled. */
+  @Input()
+  get disabled() { return this._disabled; }
+  set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
+  private _disabled = false;
+
+  /** Tabindex for the node. */
+  @Input()
+  get tabIndex(): number { return this.disabled ? -1 : this._tabIndex; }
+  set tabIndex(value: number) {
+    // If the specified tabIndex value is null or undefined, fall back to the default value.
+    this._tabIndex = value != null ? value : 0;
+  }
+  private _tabIndex: number;
 
   constructor(protected _elementRef: ElementRef<HTMLElement>,
               protected _tree: CdkTree<T>,
               protected _differs: IterableDiffers,
               @Attribute('tabindex') tabIndex: string) {
     super(_elementRef, _tree, _differs);
-
     this.tabIndex = Number(tabIndex) || 0;
   }
 

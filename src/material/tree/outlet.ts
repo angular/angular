@@ -18,7 +18,11 @@ import {
  * inside the outlet.
  */
 @Directive({
-  selector: '[matTreeNodeOutlet]'
+  selector: '[matTreeNodeOutlet]',
+  providers: [{
+    provide: CdkTreeNodeOutlet,
+    useExisting: MatTreeNodeOutlet
+  }]
 })
 export class MatTreeNodeOutlet implements CdkTreeNodeOutlet {
   constructor(

@@ -1,9 +1,10 @@
-export declare class MatNestedTreeNode<T> extends _MatNestedTreeNodeMixinBase<T> implements AfterContentInit, CanDisable, HasTabIndex, OnDestroy {
+export declare class MatNestedTreeNode<T> extends CdkNestedTreeNode<T> implements AfterContentInit, OnDestroy {
     protected _differs: IterableDiffers;
     protected _elementRef: ElementRef<HTMLElement>;
     protected _tree: CdkTree<T>;
+    disabled: any;
     node: T;
-    nodeOutlet: QueryList<MatTreeNodeOutlet>;
+    tabIndex: number;
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T>, _differs: IterableDiffers, tabIndex: string);
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
