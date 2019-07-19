@@ -1464,10 +1464,8 @@ class _ApplySourceSpanTransformer extends AstTransformer {
   constructor(private sourceSpan: ParseSourceSpan) { super(); }
   private _clone(obj: any): any {
     const clone = Object.create(obj.constructor.prototype);
-    for (let prop in obj) {
-      if (obj.hasOwnProperty(prop)) {
-        clone[prop] = obj[prop];
-      }
+    for (let prop of Object.keys(obj)) {
+      clone[prop] = obj[prop];
     }
     return clone;
   }
