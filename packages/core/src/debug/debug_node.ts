@@ -11,15 +11,18 @@ import {getViewComponent} from '../render3/global_utils_api';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {StylingIndex} from '../render3/interfaces/styling';
+import {isComponent, isLContainer} from '../render3/interfaces/type_checks';
 import {LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
 import {getProp, getValue, isClassBasedValue} from '../render3/styling/class_and_style_bindings';
 import {getStylingContextFromLView} from '../render3/styling/util';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, isPropMetadataString, renderStringify} from '../render3/util/misc_utils';
 import {findComponentView} from '../render3/util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNodeOrNull, isComponent, isLContainer} from '../render3/util/view_utils';
+import {getComponentViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
+
+
 
 /**
  * @publicApi

@@ -24,9 +24,10 @@ import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition'
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
+import {isContentQueryHost} from './interfaces/type_checks';
 import {CONTENT_QUERIES, HEADER_OFFSET, LView, QUERIES, TVIEW, TView} from './interfaces/view';
 import {getCurrentQueryIndex, getIsParent, getLView, getPreviousOrParentTNode, isCreationMode, setCurrentQueryIndex} from './state';
-import {isContentQueryHost, loadInternal} from './util/view_utils';
+import {loadInternal} from './util/view_utils';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;

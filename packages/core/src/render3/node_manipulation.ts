@@ -18,11 +18,12 @@ import {TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlag
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
+import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, getNativeByTNodeOrNull, isLContainer, isLView, isRootView, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
+import {getNativeByTNode, getNativeByTNodeOrNull, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
