@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, TsHelperFn, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
-import {getNameText, hasNameIdentifier} from '../utils';
+import {getNameText, hasNameIdentifier, stripDollarSuffix} from '../utils';
 
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
 
@@ -659,7 +659,9 @@ function reflectArrayElement(element: ts.Expression) {
  * helper.
  */
 function getTsHelperFn(node: ts.NamedDeclaration): TsHelperFn|null {
-  const name = node.name !== undefined && ts.isIdentifier(node.name) && node.name.text;
+  const name = node.name !== undefined && ts.isIdentifier(node.name) ?
+      stripDollarSuffix(node.name.text) :
+      null;
 
   if (name === '__spread') {
     return TsHelperFn.Spread;
