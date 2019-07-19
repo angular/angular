@@ -9,7 +9,6 @@
 import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {ɵɵinject} from '../di/injector_compatibility';
 import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
@@ -29,7 +28,7 @@ import {addToViewTree, assignTViewNodeToLView, createLView, createTView, element
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
-import {LView, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {LView, LViewFlags, TVIEW} from './interfaces/view';
 import {enterView, leaveView, namespaceHTMLInternal} from './state';
 import {defaultScheduler} from './util/misc_utils';
 import {getTNode} from './util/view_utils';
@@ -59,13 +58,6 @@ function toRefArray(map: {[key: string]: string}): {propName: string; templateNa
   }
   return array;
 }
-
-/**
- * Default {@link RootContext} for all components rendered with {@link renderComponent}.
- */
-export const ROOT_CONTEXT = new InjectionToken<RootContext>(
-    'ROOT_CONTEXT_TOKEN',
-    {providedIn: 'root', factory: () => createRootContext(ɵɵinject(SCHEDULER))});
 
 /**
  * A change detection scheduler token for {@link RootContext}. This token is the default value used
@@ -130,7 +122,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
   create(
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
       ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<T> {
-    const isInternalRootView = rootSelectorOrNode === undefined;
     ngModule = ngModule || this.ngModule;
 
     const rootViewInjector =
@@ -143,9 +134,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     // Ensure that the namespace for the root node is correct,
     // otherwise the browser might not render out the element properly.
     namespaceHTMLInternal();
-    const hostRNode = isInternalRootView ?
-        elementCreate(this.selector, rendererFactory.createRenderer(null, this.componentDef)) :
-        locateHostElement(rendererFactory, rootSelectorOrNode);
+    const hostRNode = rootSelectorOrNode ?
+        locateHostElement(rendererFactory, rootSelectorOrNode) :
+        elementCreate(this.selector, rendererFactory.createRenderer(null, this.componentDef));
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
@@ -157,10 +148,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const isIsolated = typeof rootSelectorOrNode === 'string' &&
         /^#root-ng-internal-isolated-\d+/.test(rootSelectorOrNode);
 
-    const rootContext: RootContext = (isInternalRootView || isIsolated) ?
-        createRootContext() :
-        rootViewInjector.get(ROOT_CONTEXT);
-
+    const rootContext = createRootContext();
     const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
 
     if (rootSelectorOrNode && hostRNode) {
@@ -214,7 +202,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         this.componentType, component,
         createElementRef(viewEngine_ElementRef, tElementNode, rootLView), rootLView, tElementNode);
 
-    if (isInternalRootView || isIsolated) {
+    if (!rootSelectorOrNode || isIsolated) {
       // The host element of the internal or isolated root view is attached to the component's host
       // view node.
       componentRef.hostView._tViewNode !.child = tElementNode;
