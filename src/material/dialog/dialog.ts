@@ -223,8 +223,8 @@ export class MatDialog implements OnDestroy {
     const injector = new PortalInjector(userInjector || this._injector, new WeakMap([
       [MatDialogConfig, config]
     ]));
-    const containerPortal =
-        new ComponentPortal(MatDialogContainer, config.viewContainerRef, injector);
+    const containerPortal = new ComponentPortal(MatDialogContainer,
+        config.viewContainerRef, injector, config.componentFactoryResolver);
     const containerRef = overlay.attach<MatDialogContainer>(containerPortal);
 
     return containerRef.instance;

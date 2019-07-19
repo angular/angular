@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewContainerRef} from '@angular/core';
+import {ViewContainerRef, ComponentFactoryResolver} from '@angular/core';
 import {Direction} from '@angular/cdk/bidi';
 import {ScrollStrategy} from '@angular/cdk/overlay';
 
@@ -113,6 +113,9 @@ export class MatDialogConfig<D = any> {
    * the `HashLocationStrategy`).
    */
   closeOnNavigation?: boolean = true;
+
+  /** Alternate `ComponentFactoryResolver` to use when resolving the associated component. */
+  componentFactoryResolver?: ComponentFactoryResolver;
 
   // TODO(jelbourn): add configuration for lifecycle hooks, ARIA labelling.
 }

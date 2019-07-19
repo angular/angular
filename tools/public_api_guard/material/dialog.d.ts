@@ -61,6 +61,7 @@ export declare class MatDialogConfig<D = any> {
     autoFocus?: boolean;
     backdropClass?: string;
     closeOnNavigation?: boolean;
+    componentFactoryResolver?: ComponentFactoryResolver;
     data?: D | null;
     direction?: Direction;
     disableClose?: boolean;
