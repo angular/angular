@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, NgModule, OnDestroy, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -251,6 +251,88 @@ describe('component', () => {
     // Assert like this, rather than `.not.toBe` so we get a better failure message.
     expect(componentInstance.renderer !== componentInstance.childInstance.renderer)
         .toBe(true, 'Expected renderers to be different.');
+  });
+
+  it('components should not share the same context when creating with a root element', () => {
+    const log: string[] = [];
+    @Component({
+      selector: 'comp-a',
+      template: '<div>{{ a }}</div>',
+    })
+    class CompA {
+      @Input() a: string = '';
+      ngDoCheck() { log.push('CompA:ngDoCheck'); }
+    }
+
+    @Component({
+      selector: 'comp-b',
+      template: '<div>{{ b }}</div>',
+    })
+    class CompB {
+      @Input() b: string = '';
+      ngDoCheck() { log.push('CompB:ngDoCheck'); }
+    }
+
+    @Component({template: `<span></span>`})
+    class MyCompA {
+      constructor(
+          private _componentFactoryResolver: ComponentFactoryResolver,
+          private _injector: Injector) {}
+
+      createComponent() {
+        const componentFactoryA = this._componentFactoryResolver.resolveComponentFactory(CompA);
+        const compRefA =
+            componentFactoryA.create(this._injector, [], document.createElement('div'));
+        return compRefA;
+      }
+    }
+
+    @Component({template: `<span></span>`})
+    class MyCompB {
+      constructor(private cfr: ComponentFactoryResolver, private injector: Injector) {}
+
+      createComponent() {
+        const componentFactoryB = this.cfr.resolveComponentFactory(CompB);
+        const compRefB = componentFactoryB.create(this.injector, [], document.createElement('div'));
+        return compRefB;
+      }
+    }
+
+    @NgModule({
+      declarations: [CompA],
+      entryComponents: [CompA],
+    })
+    class MyModuleA {
+    }
+
+    @NgModule({
+      declarations: [CompB],
+      entryComponents: [CompB],
+    })
+    class MyModuleB {
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [MyCompA, MyCompB],
+      imports: [MyModuleA, MyModuleB],
+    });
+    const fixtureA = TestBed.createComponent(MyCompA);
+    fixtureA.detectChanges();
+    const compA = fixtureA.componentInstance.createComponent();
+    compA.instance.a = 'a';
+    compA.changeDetectorRef.detectChanges();
+
+    expect(log).toEqual(['CompA:ngDoCheck']);
+
+    log.length = 0;  // reset the log
+
+    const fixtureB = TestBed.createComponent(MyCompB);
+    fixtureB.detectChanges();
+    const compB = fixtureB.componentInstance.createComponent();
+    compB.instance.b = 'b';
+    compB.changeDetectorRef.detectChanges();
+
+    expect(log).toEqual(['CompB:ngDoCheck']);
   });
 
 });
