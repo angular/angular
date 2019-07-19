@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {addToArray, removeFromArray} from '../util/array_utils';
 import {ElementData, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewState} from './types';
-import {RenderNodeAction, declaredViewContainer, isComponentView, renderNode, visitRootRenderNodes} from './util';
+import {RenderNodeAction, declaredViewContainer, renderNode, visitRootRenderNodes} from './util';
 
 export function attachEmbeddedView(
     parentView: ViewData, elementData: ElementData, viewIndex: number | undefined | null,
@@ -132,22 +133,4 @@ function renderAttachEmbeddedView(
 
 export function renderDetachView(view: ViewData) {
   visitRootRenderNodes(view, RenderNodeAction.RemoveChild, null, null, undefined);
-}
-
-function addToArray(arr: any[], index: number, value: any) {
-  // perf: array.push is faster than array.splice!
-  if (index >= arr.length) {
-    arr.push(value);
-  } else {
-    arr.splice(index, 0, value);
-  }
-}
-
-function removeFromArray(arr: any[], index: number) {
-  // perf: array.pop is faster than array.splice!
-  if (index >= arr.length - 1) {
-    arr.pop();
-  } else {
-    arr.splice(index, 1);
-  }
 }

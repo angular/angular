@@ -444,6 +444,9 @@
     "name": "addRemoveViewFromContainer"
   },
   {
+    "name": "addToArray"
+  },
+  {
     "name": "addToViewTree"
   },
   {
@@ -1204,6 +1207,9 @@
   },
   {
     "name": "registerPreOrderHooks"
+  },
+  {
+    "name": "removeFromArray"
   },
   {
     "name": "removeListeners"
