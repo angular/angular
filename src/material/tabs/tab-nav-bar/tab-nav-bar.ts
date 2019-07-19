@@ -168,7 +168,7 @@ const _MatTabLinkMixinBase:
   inputs: ['disabled', 'disableRipple', 'tabIndex'],
   host: {
     'class': 'mat-tab-link',
-    '[attr.aria-current]': 'active',
+    '[attr.aria-current]': 'active ? "page" : null',
     '[attr.aria-disabled]': 'disabled',
     '[attr.tabIndex]': 'tabIndex',
     '[class.mat-tab-disabled]': 'disabled',

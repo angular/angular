@@ -80,13 +80,13 @@ describe('MatTabNavBar', () => {
 
       tabLink1.nativeElement.click();
       fixture.detectChanges();
-      expect(tabLinkElements[0].getAttribute('aria-current')).toEqual('true');
-      expect(tabLinkElements[1].getAttribute('aria-current')).toEqual('false');
+      expect(tabLinkElements[0].getAttribute('aria-current')).toEqual('page');
+      expect(tabLinkElements[1].hasAttribute('aria-current')).toEqual(false);
 
       tabLink2.nativeElement.click();
       fixture.detectChanges();
-      expect(tabLinkElements[0].getAttribute('aria-current')).toEqual('false');
-      expect(tabLinkElements[1].getAttribute('aria-current')).toEqual('true');
+      expect(tabLinkElements[0].hasAttribute('aria-current')).toEqual(false);
+      expect(tabLinkElements[1].getAttribute('aria-current')).toEqual('page');
     });
 
     it('should add the disabled class if disabled', () => {
