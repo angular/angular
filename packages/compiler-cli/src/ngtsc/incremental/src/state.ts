@@ -21,22 +21,35 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
     ResourceDependencyRecorder {
   private constructor(
       private unchangedFiles: Set<ts.SourceFile>,
-      private metadata: Map<ts.SourceFile, FileMetadata>,
-      private modifiedResourceFiles: Set<string>|null) {}
+      private metadata: Map<ts.SourceFile, FileMetadata>) {}
 
   static reconcile(
       previousState: IncrementalState, oldProgram: ts.Program, newProgram: ts.Program,
       modifiedResourceFiles: Set<string>|null): IncrementalState {
     const unchangedFiles = new Set<ts.SourceFile>();
+    const changedFiles = new Set<ts.SourceFile>();
     const metadata = new Map<ts.SourceFile, FileMetadata>();
     const oldFiles = new Set<ts.SourceFile>(oldProgram.getSourceFiles());
     const newFiles = new Set<ts.SourceFile>(newProgram.getSourceFiles());
-
     // Compute the set of files that are unchanged (both in themselves and their dependencies).
     for (const newFile of newProgram.getSourceFiles()) {
-      if (oldFiles.has(newFile)) {
+      if (!oldFiles.has(newFile) ||
+          hasChangedResourceDependencies(modifiedResourceFiles, previousState.metadata, newFile)) {
+        // tracking `changedFiles` is an optimization to avoid calling
+        // `hasChangedResourceDependencies()`
+        // more times than is necessary.
+        changedFiles.add(newFile);
+        if (newFile.isDeclarationFile) {
+          // A typings file has changed so trigger a full rebuild of the Angular analyses
+          return IncrementalState.fresh();
+        }
+      } else {
         const oldDeps = previousState.getFileDependencies(newFile);
-        if (oldDeps.every(oldDep => newFiles.has(oldDep))) {
+        if (oldDeps.every(
+                oldDep =>
+                    (newFiles.has(oldDep) && !changedFiles.has(oldDep) &&
+                     !hasChangedResourceDependencies(
+                         modifiedResourceFiles, previousState.metadata, oldDep)))) {
           // The file and its dependencies are unchanged.
           unchangedFiles.add(newFile);
           // Copy over its metadata too
@@ -45,23 +58,17 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
             metadata.set(newFile, meta);
           }
         }
-      } else if (newFile.isDeclarationFile) {
-        // A typings file has changed so trigger a full rebuild of the Angular analyses
-        return IncrementalState.fresh();
       }
     }
 
-    return new IncrementalState(unchangedFiles, metadata, modifiedResourceFiles);
+    return new IncrementalState(unchangedFiles, metadata);
   }
 
   static fresh(): IncrementalState {
-    return new IncrementalState(
-        new Set<ts.SourceFile>(), new Map<ts.SourceFile, FileMetadata>(), null);
+    return new IncrementalState(new Set<ts.SourceFile>(), new Map<ts.SourceFile, FileMetadata>());
   }
 
-  safeToSkip(sf: ts.SourceFile): boolean|Promise<boolean> {
-    return this.unchangedFiles.has(sf) && !this.hasChangedResourceDependencies(sf);
-  }
+  safeToSkip(sf: ts.SourceFile): boolean|Promise<boolean> { return this.unchangedFiles.has(sf); }
 
   trackFileDependency(dep: ts.SourceFile, src: ts.SourceFile) {
     const metadata = this.ensureMetadata(src);
@@ -110,15 +117,6 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
     this.metadata.set(sf, metadata);
     return metadata;
   }
-
-  private hasChangedResourceDependencies(sf: ts.SourceFile): boolean {
-    if (this.modifiedResourceFiles === null || !this.metadata.has(sf)) {
-      return false;
-    }
-    const resourceDeps = this.metadata.get(sf) !.resourcePaths;
-    return Array.from(resourceDeps.keys())
-        .some(resourcePath => this.modifiedResourceFiles !.has(resourcePath));
-  }
 }
 
 /**
@@ -131,4 +129,18 @@ class FileMetadata {
   directiveMeta = new Map<ClassDeclaration, DirectiveMeta>();
   ngModuleMeta = new Map<ClassDeclaration, NgModuleMeta>();
   pipeMeta = new Map<ClassDeclaration, PipeMeta>();
+}
+
+/**
+ * Have any of the resource (e.g. template, styles, etc) changed for this source file?
+ */
+function hasChangedResourceDependencies(
+    modifiedResourceFiles: Set<string>| null, metadata: Map<ts.SourceFile, FileMetadata>,
+    sf: ts.SourceFile): boolean {
+  if (modifiedResourceFiles === null || !metadata.has(sf)) {
+    return false;
+  }
+  const resourceDeps = metadata.get(sf) !.resourcePaths;
+  return Array.from(resourceDeps.keys())
+      .some(resourcePath => modifiedResourceFiles !.has(resourcePath));
 }

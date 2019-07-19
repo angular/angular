@@ -180,6 +180,22 @@ runInEachFileSystem(() => {
       expect(written).toContain('/foo_module.js');
     });
 
+    it('should rebuild NgModules where their declared dependencies\' resources have changed',
+       () => {
+         setupFooBarProgram(env);
+
+         // Make a change to the template of FooComponent.
+         env.write('foo_component.html', 'changed');
+         env.driveMain();
+         const written = env.getFilesWrittenSinceLastFlush();
+         expect(written).not.toContain('/bar_directive.js');
+         expect(written).not.toContain('/bar_component.js');
+         expect(written).not.toContain('/bar_module.js');
+         expect(written).toContain('/foo_component.js');
+         expect(written).toContain('/foo_pipe.js');
+         expect(written).toContain('/foo_module.js');
+       });
+
     it('should rebuild components where their NgModule has changed', () => {
       setupFooBarProgram(env);
 
@@ -257,9 +273,10 @@ runInEachFileSystem(() => {
     import {Component} from '@angular/core';
     import {fooSelector} from './foo_selector';
 
-    @Component({selector: fooSelector, template: 'foo'})
+    @Component({selector: fooSelector, templateUrl: './foo_component.html'})
     export class FooCmp {}
   `);
+    env.write('foo_component.html', 'foo');
     env.write('foo_pipe.ts', `
     import {Pipe} from '@angular/core';
 
