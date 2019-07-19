@@ -82,3 +82,14 @@ export function resolveFileWithPostfixes(
   }
   return null;
 }
+
+/**
+ * An identifier may become repeated when bundling multiple source files into a single bundle, so
+ * bundlers have a strategy of suffixing non-unique identifiers with a suffix like $2. This function
+ * strips off such suffixes, so that ngcc deals with the canonical name of an identifier.
+ * @param value The value to strip any suffix of, if applicable.
+ * @returns The canonical representation of the value, without any suffix.
+ */
+export function stripDollarSuffix(value: string): string {
+  return value.replace(/\$\d+$/, '');
+}

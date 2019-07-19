@@ -12,7 +12,7 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
-import {findAll, getNameText, hasNameIdentifier, isDefined} from '../utils';
+import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
 
 import {ModuleWithProvidersFunction, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
@@ -894,8 +894,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return null;
     }
 
-    const name = helperCallFn.text;
-    if (name === '__metadata') {
+    const canonicalName = stripDollarSuffix(helperCallFn.text);
+    if (canonicalName === '__metadata') {
       // This is a `tslib.__metadata` call, reflect to arguments into a `ParameterTypes` object
       // if the metadata key is "design:paramtypes".
       const key = call.arguments[0];
@@ -914,7 +914,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       };
     }
 
-    if (name === '__param') {
+    if (canonicalName === '__param') {
       // This is a `tslib.__param` call that is reflected into a `ParameterDecorators` object.
       const indexArg = call.arguments[0];
       const index = indexArg && ts.isNumericLiteral(indexArg) ? parseInt(indexArg.text, 10) : NaN;
@@ -1612,10 +1612,10 @@ export function getPropertyValueFromSymbol(propSymbol: ts.Symbol): ts.Expression
  */
 function getCalleeName(call: ts.CallExpression): string|null {
   if (ts.isIdentifier(call.expression)) {
-    return call.expression.text;
+    return stripDollarSuffix(call.expression.text);
   }
   if (ts.isPropertyAccessExpression(call.expression)) {
-    return call.expression.name.text;
+    return stripDollarSuffix(call.expression.name.text);
   }
   return null;
 }

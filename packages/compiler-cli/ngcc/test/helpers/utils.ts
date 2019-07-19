@@ -82,14 +82,14 @@ export function convertToInlineTsLib(filesystem: TestFile[]) {
   return filesystem.map(file => {
     const contents = file.contents
                          .replace(`import * as tslib_1 from 'tslib';`, `
-var __decorate = null;
-var __metadata = null;
-var __read = null;
-var __values = null;
-var __param = null;
-var __extends = null;
-var __assign = null;
-`).replace(/tslib_1\./g, '');
+var __decorate$2 = null;
+var __metadata$2 = null;
+var __read$2 = null;
+var __values$2 = null;
+var __param$2 = null;
+var __extends$2 = null;
+var __assign$2 = null;
+`).replace(/tslib_1\.([_a-z]+)/gi, '$1$$2');
     return {...file, contents};
   });
 }
