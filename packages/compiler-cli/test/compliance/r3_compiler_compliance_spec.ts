@@ -2330,7 +2330,7 @@ describe('compiler compliance', () => {
         }
         if (rf & 2) {
           const $item$ = $i0$.ɵɵnextContext().$implicit;
-          const $foo$ = $i0$.ɵɵreference(2);
+          const $foo$ = $i0$.ɵ����reference(2);
           $r3$.ɵɵselect(1);
           $i0$.ɵɵtextInterpolate2(" ", $foo$, " - ", $item$, " ");
         }
