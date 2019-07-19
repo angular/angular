@@ -539,12 +539,14 @@ function expectFlatTreeToMatch(treeElement: Element, expectedPaddingIndent: numb
   }
 
   function checkLevel(node: Element, expectedNode: any[]) {
+    const rawLevel = (node as HTMLElement).style.paddingLeft;
 
-    const actualLevel = (node as HTMLElement).style.paddingLeft;
+    // Some browsers return 0, while others return 0px.
+    const actualLevel = rawLevel === '0' ? '0px' : rawLevel;
     if (expectedNode.length === 1) {
-      if (actualLevel !== ``) {
+      if (actualLevel !== `` && actualLevel !== '0px') {
         missedExpectations.push(
-          `Expected node level to be 0 but was ${actualLevel}`);
+          `Expected node level to be 0px but was ${actualLevel}`);
       }
     } else {
       const expectedLevel = `${(expectedNode.length - 1) * expectedPaddingIndent}px`;

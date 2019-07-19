@@ -37,7 +37,10 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
   @Input('cdkTreeNodePadding')
   get level(): number { return this._level; }
   set level(value: number) {
-    this._level = coerceNumberProperty(value);
+    // Set to null as the fallback value so that _setPadding can fall back to the node level if the
+    // consumer set the directive as `cdkTreeNodePadding=""`. We still want to take this value if
+    // they set 0 explicitly.
+    this._level = coerceNumberProperty(value, null)!;
     this._setPadding();
   }
   _level: number;
@@ -90,8 +93,8 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
     const nodeLevel = (this._treeNode.data && this._tree.treeControl.getLevel)
       ? this._tree.treeControl.getLevel(this._treeNode.data)
       : null;
-    const level = this._level || nodeLevel;
-    return level ? `${level * this._indent}${this.indentUnits}` : null;
+    const level = this._level == null ? nodeLevel : this._level;
+    return typeof level === 'number' ? `${level * this._indent}${this.indentUnits}` : null;
   }
 
   _setPadding(forceChange = false) {

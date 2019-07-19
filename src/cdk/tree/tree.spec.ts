@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
-import {Component, ViewChild, TrackByFunction, Type, EventEmitter} from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  TrackByFunction,
+  Type,
+  EventEmitter,
+  ViewChildren,
+  QueryList,
+} from '@angular/core';
 
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {Directionality, Direction} from '@angular/cdk/bidi';
@@ -17,7 +25,7 @@ import {BaseTreeControl} from './control/base-tree-control';
 import {TreeControl} from './control/tree-control';
 import {FlatTreeControl} from './control/flat-tree-control';
 import {NestedTreeControl} from './control/nested-tree-control';
-import {CdkTreeModule} from './index';
+import {CdkTreeModule, CdkTreeNodePadding} from './index';
 import {CdkTree, CdkTreeNode} from './tree';
 import {getTreeControlFunctionsMissingError} from './tree-errors';
 
@@ -132,6 +140,18 @@ describe('CdkTree', () => {
         const data = dataSource.data;
 
         expectFlatTreeToMatch(treeElement, 17, 'px',
+          [`${data[0].pizzaTopping} - ${data[0].pizzaCheese} + ${data[0].pizzaBase}`],
+          [`${data[1].pizzaTopping} - ${data[1].pizzaCheese} + ${data[1].pizzaBase}`],
+          [`${data[2].pizzaTopping} - ${data[2].pizzaCheese} + ${data[2].pizzaBase}`]);
+      });
+
+      it('should be able to set zero as the indent level', () => {
+        component.paddingNodes.forEach(node => node.level = 0);
+        fixture.detectChanges();
+
+        const data = dataSource.data;
+
+        expectFlatTreeToMatch(treeElement, 0, 'px',
           [`${data[0].pizzaTopping} - ${data[0].pizzaCheese} + ${data[0].pizzaBase}`],
           [`${data[1].pizzaTopping} - ${data[1].pizzaCheese} + ${data[1].pizzaBase}`],
           [`${data[2].pizzaTopping} - ${data[2].pizzaCheese} + ${data[2].pizzaBase}`]);
@@ -1046,7 +1066,10 @@ function expectFlatTreeToMatch(treeElement: Element,
   }
 
   function checkLevel(node: Element, expectedNode: any[]) {
-    const actualLevel = (node as HTMLElement).style.paddingLeft;
+    const rawLevel = (node as HTMLElement).style.paddingLeft;
+
+    // Some browsers return 0, while others return 0px.
+    const actualLevel = rawLevel === '0' ? '0px' : rawLevel;
     const expectedLevel = `${(expectedNode.length) * expectedPaddingIndent}${expectedPaddingUnits}`;
     if (actualLevel != expectedLevel) {
       missedExpectations.push(
@@ -1132,7 +1155,7 @@ class SimpleCdkTreeApp {
   indent: number | string = 28;
 
   @ViewChild(CdkTree, {static: false}) tree: CdkTree<TestData>;
-
+  @ViewChildren(CdkTreeNodePadding) paddingNodes: QueryList<CdkTreeNodePadding<TestData>>;
 }
 
 @Component({
