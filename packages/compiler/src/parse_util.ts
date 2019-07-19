@@ -109,6 +109,9 @@ export class ParseSourceSpan {
   }
 }
 
+export const EMPTY_PARSE_LOCATION = new ParseLocation(new ParseSourceFile('', ''), 0, 0, 0);
+export const EMPTY_SOURCE_SPAN = new ParseSourceSpan(EMPTY_PARSE_LOCATION, EMPTY_PARSE_LOCATION);
+
 export enum ParseErrorLevel {
   WARNING,
   ERROR,
