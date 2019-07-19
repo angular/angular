@@ -245,6 +245,11 @@ jobs:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
           destination: core/todo/bundle.br
 
+  # This job is currently a PoC for running tests on SauceLabs via bazel. It runs a subset of the
+  # tests in `legacy-unit-tests-saucelabs` (see
+  # [BUILD.bazel](https://github.com/angular/angular/blob/ef44f51d5/BUILD.bazel#L66-L92)).
+  #
+  # NOTE: This is currently limited to master builds only. See the `default_workflow` configuration.
   test_saucelabs_bazel:
     <<: *job_defaults
     # In order to avoid the bottleneck of having a slow host machine, we acquire a better
@@ -698,6 +703,10 @@ workflows:
       - test_saucelabs_bazel:
           requires:
             - setup
+          # This job is currently a PoC and a subset of `legacy-unit-tests-saucelabs`. Running on
+          # master only to avoid wasting resources.
+          #
+          # TODO: Run this job on all branches (including PRs) as soon as it is not a PoC.
           filters:
             branches:
               only: master
