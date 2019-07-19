@@ -10,8 +10,8 @@ import {Type} from '../../interface/type';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
+import {isComponentDef} from '../interfaces/type_checks';
 import {adjustActiveDirectiveSuperClassDepthPosition} from '../state';
-import {isComponentDef} from '../util/view_utils';
 
 import {ɵɵNgOnChangesFeature} from './ng_onchanges_feature';
 
