@@ -540,6 +540,13 @@ export function patchEventTarget(
               // remove globalZoneAwareCallback and remove the task cache from target
               (existingTask as any).allRemoved = true;
               target[symbolEventName] = null;
+              // in the target, we have an event listener which is added by on_property
+              // such as target.onclick = function() {}, so we need to clear this internal
+              // property too if all delegates all removed
+              if (typeof eventName === 'string') {
+                const onPropertySymbol = ZONE_SYMBOL_PREFIX + 'ON_PROPERTY' + eventName;
+                target[onPropertySymbol] = null;
+              }
             }
             existingTask.zone.cancelTask(existingTask);
             if (returnTarget) {
