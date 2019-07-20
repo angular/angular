@@ -11,7 +11,7 @@ Zone.__load_patch('electron', (global: any, Zone: ZoneType, api: _ZonePrivate) =
       return delegate && delegate.apply(self, api.bindArguments(args, source));
     });
   }
-  const {desktopCapturer, shell, CallbacksRegistry} = require('electron');
+  const {desktopCapturer, shell, CallbacksRegistry, ipcRenderer} = require('electron');
   // patch api in renderer process directly
   // desktopCapturer
   if (desktopCapturer) {
@@ -24,6 +24,9 @@ Zone.__load_patch('electron', (global: any, Zone: ZoneType, api: _ZonePrivate) =
 
   // patch api in main process through CallbackRegistry
   if (!CallbacksRegistry) {
+    if (ipcRenderer) {
+      patchArguments(ipcRenderer, 'on', 'ipcRenderer.on');
+    }
     return;
   }
 
