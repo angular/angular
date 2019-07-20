@@ -449,11 +449,10 @@ function selectorsFromGlobalMetadata(
 }
 
 function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression[] {
-  const parameters = [
-    getQueryPredicate(query, constantPool),
-    o.literal(query.descendants),
-    query.read || o.literal(null),
-  ];
+  const parameters = [getQueryPredicate(query, constantPool), o.literal(query.descendants)];
+  if (query.read) {
+    parameters.push(query.read);
+  }
   return parameters;
 }
 
@@ -480,12 +479,13 @@ function createContentQueriesFunction(
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   for (const query of queries) {
-    // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null);
-    const args = [o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any];
-
     const queryInstruction = query.static ? R3.staticContentQuery : R3.contentQuery;
 
-    createStatements.push(o.importExpr(queryInstruction).callFn(args).toStmt());
+    // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null);
+    createStatements.push(
+        o.importExpr(queryInstruction)
+            .callFn([o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any])
+            .toStmt());
 
     // update, e.g. (r3.queryRefresh(tmp = r3.loadContentQuery()) && (ctx.someDir = tmp));
     const temporary = tempAllocator();

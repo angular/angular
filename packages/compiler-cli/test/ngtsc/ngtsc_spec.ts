@@ -22,13 +22,13 @@ const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
 const varRegExp = (name: string): RegExp => new RegExp(`var \\w+ = \\[\"${name}\"\\];`);
 
 const viewQueryRegExp = (descend: boolean, ref?: string): RegExp => {
-  const maybeRef = ref ? `${ref}` : `null`;
-  return new RegExp(`i0\\.ɵɵviewQuery\\(\\w+, ${descend}, ${maybeRef}\\)`);
+  const maybeRef = ref ? `, ${ref}` : ``;
+  return new RegExp(`i0\\.ɵɵviewQuery\\(\\w+, ${descend}${maybeRef}\\)`);
 };
 
 const contentQueryRegExp = (predicate: string, descend: boolean, ref?: string): RegExp => {
-  const maybeRef = ref ? `${ref}` : `null`;
-  return new RegExp(`i0\\.ɵɵcontentQuery\\(dirIndex, ${predicate}, ${descend}, ${maybeRef}\\)`);
+  const maybeRef = ref ? `, ${ref}` : ``;
+  return new RegExp(`i0\\.ɵɵcontentQuery\\(dirIndex, ${predicate}, ${descend}${maybeRef}\\)`);
 };
 
 const setClassMetadataRegExp = (expectedType: string): RegExp =>
@@ -1654,7 +1654,7 @@ runInEachFileSystem(os => {
       // match `i0.ɵɵcontentQuery(dirIndex, _c1, true, TemplateRef)`
       expect(jsContents).toMatch(contentQueryRegExp('\\w+', true, 'TemplateRef'));
 
-      // match `i0.ɵɵviewQuery(_c2, true, null)`
+      // match `i0.ɵɵviewQuery(_c2, true)`
       // Note that while ViewQuery doesn't necessarily make sense on a directive, because it doesn't
       // have a view, we still need to handle it because a component could extend the directive.
       expect(jsContents).toMatch(viewQueryRegExp(true));
