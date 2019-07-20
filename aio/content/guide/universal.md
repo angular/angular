@@ -31,7 +31,7 @@ A Node Express web server compiles HTML pages with Universal based on client req
 
 To create the server-side app module, `app.server.module.ts`, run the following CLI command.
 
-<code-example format="." language="bash">
+<code-example language="bash">
 
 ng add @nguniversal/express-engine --clientProject angular.io-example
 
@@ -39,7 +39,7 @@ ng add @nguniversal/express-engine --clientProject angular.io-example
 
 The command creates the following folder structure.
 
-<code-example format="." language="none">
+<code-example language="none">
 src/
   index.html                 <i>app web page</i>
   main.ts                    <i>bootstrapper for client app</i>
@@ -62,7 +62,7 @@ The files marked with `*` are new and not in the original tutorial sample.
 
 To start rendering your app with Universal on your local system, use the following command.
 
-<code-example format="." language="bash">
+<code-example language="bash">
 npm run build:ssr && npm run serve:ssr
 </code-example>
 
@@ -205,7 +205,7 @@ the work is already done. We'll assume this is the case, but it's trivial to pro
 
 Start by creating an [HttpInterceptor](api/common/http/HttpInterceptor):
 
-<code-example format="." language="typescript">
+<code-example language="typescript">
 
 import {Injectable, Inject, Optional} from '@angular/core';
 import {HttpInterceptor, HttpHandler, HttpRequest, HttpHeaders} from '@angular/common/http';
@@ -235,7 +235,7 @@ export class UniversalInterceptor implements HttpInterceptor {
 
 Next, provide the interceptor in the providers for the server `AppModule` (app.server.module.ts):
 
-<code-example format="." language="typescript">
+<code-example language="typescript">
 
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {UniversalInterceptor} from './universal-interceptor';
