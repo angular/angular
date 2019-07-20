@@ -280,7 +280,7 @@ runInEachFileSystem(() => {
           expect(addDefinitionsSpy.calls.first().args[2])
               .toEqual(
                   `UndecoratedBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ viewQuery: function (rf, ctx) { if (rf & 1) {
-        ɵngcc0.ɵɵstaticViewQuery(_c0, true, null);
+        ɵngcc0.ɵɵstaticViewQuery(_c0, true);
     } if (rf & 2) {
         var _t;
         ɵngcc0.ɵɵqueryRefresh(_t = ɵngcc0.ɵɵloadViewQuery()) && (ctx.test = _t.first);

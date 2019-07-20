@@ -80,8 +80,8 @@ describe('query', () => {
         2, 0, [Child], [],
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            ɵɵviewQuery(Child, false, null);
-            ɵɵviewQuery(Child, true, null);
+            ɵɵviewQuery(Child, false);
+            ɵɵviewQuery(Child, true);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
@@ -258,9 +258,9 @@ describe('query', () => {
             },
             viewQuery: function(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(MyDirective, false, null);
-                ɵɵviewQuery(Service, false, null);
-                ɵɵviewQuery(Alias, false, null);
+                ɵɵviewQuery(MyDirective, false);
+                ɵɵviewQuery(Service, false);
+                ɵɵviewQuery(Alias, false);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -347,7 +347,7 @@ describe('query', () => {
             3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo'], false, null);
+                ɵɵviewQuery(['foo'], false);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -385,8 +385,8 @@ describe('query', () => {
             4, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo'], false, null);
-                ɵɵviewQuery(['bar'], false, null);
+                ɵɵviewQuery(['foo'], false);
+                ɵɵviewQuery(['bar'], false);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -434,7 +434,7 @@ describe('query', () => {
             5, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo', 'bar'], false, null);
+                ɵɵviewQuery(['foo', 'bar'], false);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -472,7 +472,7 @@ describe('query', () => {
             3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo'], false, null);
+                ɵɵviewQuery(['foo'], false);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -545,7 +545,7 @@ describe('query', () => {
             2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo'], true, null);
+                ɵɵviewQuery(['foo'], true);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -746,7 +746,7 @@ describe('query', () => {
             2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo'], false, null);
+                ɵɵviewQuery(['foo'], false);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -817,7 +817,7 @@ describe('query', () => {
             2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo'], true, null);
+                ɵɵviewQuery(['foo'], true);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -863,7 +863,7 @@ describe('query', () => {
             2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo'], true, null);
+                ɵɵviewQuery(['foo'], true);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -902,7 +902,7 @@ describe('query', () => {
                2, 0, [Child], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   ɵɵviewQuery(['foo'], true, null);
+                   ɵɵviewQuery(['foo'], true);
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
@@ -943,7 +943,7 @@ describe('query', () => {
             3, 0, [Child1, Child2], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo', 'bar'], true, null);
+                ɵɵviewQuery(['foo', 'bar'], true);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -983,8 +983,8 @@ describe('query', () => {
             3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo'], true, null);
-                ɵɵviewQuery(['bar'], true, null);
+                ɵɵviewQuery(['foo'], true);
+                ɵɵviewQuery(['bar'], true);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -1066,7 +1066,7 @@ describe('query', () => {
             3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo', 'bar'], false, null);
+                ɵɵviewQuery(['foo', 'bar'], false);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -1267,7 +1267,7 @@ describe('query', () => {
             1, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(TemplateRef as any, false, null);
+                ɵɵviewQuery(TemplateRef as any, false);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -1316,7 +1316,7 @@ describe('query', () => {
             6, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(TemplateRef as any, false, null);
+                ɵɵviewQuery(TemplateRef as any, false);
                 ɵɵviewQuery(TemplateRef as any, false, ElementRef);
               }
               if (rf & RenderFlags.Update) {
@@ -1358,7 +1358,7 @@ describe('query', () => {
           2, 0, [], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              ɵɵviewQuery(['foo'], false, null);
+              ɵɵviewQuery(['foo'], false);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -1440,7 +1440,7 @@ describe('query', () => {
         3, 0, [SomeDir], [],
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            ɵɵviewQuery(['foo'], true, null);
+            ɵɵviewQuery(['foo'], true);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
@@ -1476,7 +1476,7 @@ describe('query', () => {
         factory: () => withContentInstance = new WithContentDirective(),
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            ɵɵcontentQuery(dirIndex, ['foo'], true, null);
+            ɵɵcontentQuery(dirIndex, ['foo'], true);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
@@ -1600,7 +1600,7 @@ describe('query', () => {
           5, 0, [WithContentDirective], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              ɵɵviewQuery(['foo', 'bar'], true, null);
+              ɵɵviewQuery(['foo', 'bar'], true);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -1641,7 +1641,7 @@ describe('query', () => {
           5, 0, [WithContentDirective], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              ɵɵviewQuery(['bar'], true, null);
+              ɵɵviewQuery(['bar'], true);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -1667,7 +1667,7 @@ describe('query', () => {
             // @ContentChildren('foo, bar, baz', {descendants: true})
             // fooBars: QueryList<ElementRef>;
             if (rf & RenderFlags.Create) {
-              ɵɵcontentQuery(dirIndex, ['foo', 'bar', 'baz'], true, null);
+              ɵɵcontentQuery(dirIndex, ['foo', 'bar', 'baz'], true);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -1731,7 +1731,7 @@ describe('query', () => {
             // @ContentChildren('foo', {descendants: true})
             // fooBars: QueryList<ElementRef>;
             if (rf & RenderFlags.Create) {
-              ɵɵcontentQuery(dirIndex, ['foo'], false, null);
+              ɵɵcontentQuery(dirIndex, ['foo'], false);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -1787,7 +1787,7 @@ describe('query', () => {
             // @ContentChildren('foo', {descendants: true})
             // fooBars: QueryList<ElementRef>;
             if (rf & RenderFlags.Create) {
-              ɵɵcontentQuery(dirIndex, ['foo'], false, null);
+              ɵɵcontentQuery(dirIndex, ['foo'], false);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -1847,7 +1847,7 @@ describe('query', () => {
                // @ContentChildren('foo', {descendants: false})
                // foos: QueryList<ElementRef>;
                if (rf & RenderFlags.Create) {
-                 ɵɵcontentQuery(dirIndex, ['foo'], false, null);
+                 ɵɵcontentQuery(dirIndex, ['foo'], false);
                }
                if (rf & RenderFlags.Update) {
                  let tmp: any;
@@ -1868,7 +1868,7 @@ describe('query', () => {
                // @ContentChildren('foo', {descendants: true})
                // foos: QueryList<ElementRef>;
                if (rf & RenderFlags.Create) {
-                 ɵɵcontentQuery(dirIndex, ['foo'], true, null);
+                 ɵɵcontentQuery(dirIndex, ['foo'], true);
                }
                if (rf & RenderFlags.Update) {
                  let tmp: any;
@@ -1944,7 +1944,7 @@ describe('query', () => {
             // @ContentChildren(TextDirective, {descendants: true})
             // texts: QueryList<TextDirective>;
             if (rf & RenderFlags.Create) {
-              ɵɵcontentQuery(dirIndex, TextDirective, true, null);
+              ɵɵcontentQuery(dirIndex, TextDirective, true);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -2024,7 +2024,7 @@ describe('query', () => {
           viewQuery: function(rf: RenderFlags, ctx: ViewQueryComponent) {
             let tmp: any;
             if (rf & RenderFlags.Create) {
-              ɵɵviewQuery(TextDirective, true, null);
+              ɵɵviewQuery(TextDirective, true);
             }
             if (rf & RenderFlags.Update) {
               ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<TextDirective>>()) &&

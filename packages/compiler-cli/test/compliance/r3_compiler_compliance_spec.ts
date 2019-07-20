@@ -1530,8 +1530,8 @@ describe('compiler compliance', () => {
             factory: function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); },
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵviewQuery(SomeDirective, true, null);
-                $r3$.ɵɵviewQuery(SomeDirective, true, null);
+                $r3$.ɵɵviewQuery(SomeDirective, true);
+                $r3$.ɵɵviewQuery(SomeDirective, true);
               }
               if (rf & 2) {
                 var $tmp$;
@@ -1588,8 +1588,8 @@ describe('compiler compliance', () => {
             …
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵviewQuery($e0_attrs$, true, null);
-                $r3$.ɵɵviewQuery($e1_attrs$, true, null);
+                $r3$.ɵɵviewQuery($e0_attrs$, true);
+                $r3$.ɵɵviewQuery($e1_attrs$, true);
               }
               if (rf & 2) {
                 var $tmp$;
@@ -1641,8 +1641,8 @@ describe('compiler compliance', () => {
             factory: function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); },
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵstaticViewQuery(SomeDirective, true, null);
-                $r3$.ɵɵviewQuery($refs$, true, null);
+                $r3$.ɵɵstaticViewQuery(SomeDirective, true);
+                $r3$.ɵɵviewQuery($refs$, true);
               }
               if (rf & 2) {
                 var $tmp$;
@@ -1770,8 +1770,8 @@ describe('compiler compliance', () => {
             },
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, true, null);
-              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false, null);
+              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, true);
+              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false);
               }
               if (rf & 2) {
               var $tmp$;
@@ -1830,8 +1830,8 @@ describe('compiler compliance', () => {
             …
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-              $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true, null);
-              $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, false, null);
+              $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true);
+              $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, false);
               }
               if (rf & 2) {
               var $tmp$;
@@ -1892,8 +1892,8 @@ describe('compiler compliance', () => {
             },
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-              $r3$.ɵɵstaticContentQuery(dirIndex, SomeDirective, true, null);
-              $r3$.ɵɵcontentQuery(dirIndex, $ref0$, true, null);
+              $r3$.ɵɵstaticContentQuery(dirIndex, SomeDirective, true);
+              $r3$.ɵɵcontentQuery(dirIndex, $ref0$, true);
               }
               if (rf & 2) {
               var $tmp$;
@@ -3140,7 +3140,7 @@ describe('compiler compliance', () => {
       BaseClass.ngBaseDef = i0.ɵɵdefineBase({
         viewQuery: function (rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵviewQuery($e0_attrs$, true, null);
+            $r3$.ɵɵviewQuery($e0_attrs$, true);
           }
           if (rf & 2) {
             var $tmp$;
@@ -3185,7 +3185,7 @@ describe('compiler compliance', () => {
       BaseClass.ngBaseDef = i0.ɵɵdefineBase({
         viewQuery: function (rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵviewQuery(SomeDirective, true, null);
+            $r3$.ɵɵviewQuery(SomeDirective, true);
           }
           if (rf & 2) {
             var $tmp$;
@@ -3228,7 +3228,7 @@ describe('compiler compliance', () => {
       BaseClass.ngBaseDef = i0.ɵɵdefineBase({
         contentQueries: function (rf, ctx, dirIndex) {
           if (rf & 1) {
-            $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true, null);
+            $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true);
           }
           if (rf & 2) {
             var $tmp$;
@@ -3273,7 +3273,7 @@ describe('compiler compliance', () => {
       BaseClass.ngBaseDef = i0.ɵɵdefineBase({
         contentQueries: function (rf, ctx, dirIndex) {
           if (rf & 1) {
-            $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false, null);
+            $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false);
           }
           if (rf & 2) {
             var $tmp$;

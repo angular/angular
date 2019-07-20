@@ -439,7 +439,7 @@ describe('ViewContainerRef', () => {
           },
           viewQuery: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              ɵɵviewQuery(['foo'], true, null);
+              ɵɵviewQuery(['foo'], true);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;

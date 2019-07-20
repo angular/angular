@@ -752,7 +752,7 @@ export declare function ɵɵcontainerRefreshEnd(): void;
 
 export declare function ɵɵcontainerRefreshStart(index: number): void;
 
-export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read: any): void;
+export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read?: any): void;
 
 export declare const ɵɵdefaultStyleSanitizer: StyleSanitizeFn;
 
@@ -1053,9 +1053,9 @@ export declare function ɵɵsetNgModuleScope(type: any, scope: {
     exports?: Type<any>[] | (() => Type<any>[]);
 }): void;
 
-export declare function ɵɵstaticContentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read: any): void;
+export declare function ɵɵstaticContentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read?: any): void;
 
-export declare function ɵɵstaticViewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): void;
+export declare function ɵɵstaticViewQuery<T>(predicate: Type<any> | string[], descend: boolean, read?: any): void;
 
 export declare function ɵɵstyleMap(styles: {
     [styleName: string]: any;
@@ -1117,7 +1117,7 @@ export declare function ɵɵtextInterpolateV(values: any[]): TsickleIssue1009;
 
 export declare function ɵɵupdateSyntheticHostBinding<T>(propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null): TsickleIssue1009;
 
-export declare function ɵɵviewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): void;
+export declare function ɵɵviewQuery<T>(predicate: Type<any> | string[], descend: boolean, read?: any): void;
 
 export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
 
