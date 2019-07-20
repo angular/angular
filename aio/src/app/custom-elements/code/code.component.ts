@@ -6,12 +6,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { tap } from 'rxjs/operators';
 
 /**
- * If linenums is not set, this is the default maximum number of lines that
- * an example can display without line numbers.
- */
-const DEFAULT_LINE_NUMS_COUNT = 10;
-
-/**
  * Formatted Code Block
  *
  * Pretty renders a code block, used in the docs and API reference by the code-example and
@@ -170,9 +164,7 @@ export class CodeComponent implements OnChanges {
       typeof this.linenums === 'string' ? parseInt(this.linenums, 10) :
       this.linenums;
 
-    // if no linenums, enable line numbers if more than one line
-    return linenums == null || isNaN(linenums as number) ?
-        (code.match(/\n/g) || []).length > DEFAULT_LINE_NUMS_COUNT : linenums;
+    return (linenums != null) && !isNaN(linenums as number) && linenums;
   }
 }
 
