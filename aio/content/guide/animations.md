@@ -37,8 +37,7 @@ To get started with adding Angular animations to your project, import the animat
 
 Import `BrowserAnimationsModule`, which introduces the animation capabilities into your Angular root application module.
 
-<code-example path="animations/src/app/app.module.1.ts" header="src/app/app.module.ts" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/app.module.1.ts" header="src/app/app.module.ts" language="typescript"></code-example>
 
 <div class="alert is-helpful">
 
@@ -180,9 +179,7 @@ In this example, we'll name the trigger `openClose`, and attach it to the `butto
 
 Animations are defined in the metadata of the component that controls the HTML element to be animated. Put the code that defines your animations under the `animations:` property within the `@Component()` decorator.
 
-<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
-region="component" linenums="false">
-</code-example>
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript" region="component"></code-example>
 
 When you've defined an animation trigger for a component, you can attach it to an element in that component's template by wrapping the trigger name in brackets and preceding it with an `@` symbol. Then, you can bind the trigger to a template expression using standard Angular property binding syntax as shown below, where `triggerName` is the name of the trigger, and `expression` evaluates to a defined animation state.
 

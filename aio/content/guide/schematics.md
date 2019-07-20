@@ -17,13 +17,13 @@ Schematics that are included in the `@schematics/angular` collection are run by 
 The package contains named schematics that configure the options that are available to the CLI for `ng generate` sub-commands, such as `ng generate component` and `ng generate service`.
 The subcommands for `ng generate` are shorthand for the corresponding schematic. You can specify a particular schematic (or collection of schematics) to generate, using the long form:
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng generate my-schematic-collection:my-schematic-name
 </code-example>
 
 &mdash;or&mdash;
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng generate my-schematic-name --collection collection-name
 </code-example>
 
@@ -72,7 +72,7 @@ The documented sub-commands use the default Angular generation schematics, but y
 Angular Material, for example, supplies generation schematics for the UI components that it defines.
 The following command uses one of these schematics to render an Angular Material `<mat-table>` that is pre-configured with a datasource for sorting and pagination.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng generate @angular/material:table <component-name>
 </code-example>
 
@@ -80,7 +80,7 @@ ng generate @angular/material:table <component-name>
 
  The `ng update` command can be used to update your workspace's library dependencies. If you supply no options or use the help option, the command examines your workspace and suggests libraries to update.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng update
     We analyzed your package.json, there are some packages to update:
 
@@ -113,7 +113,7 @@ If you create a new version of your library that introduces potential breaking c
 
 For example, suppose you want to update the Angular Material library.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng update @angular/material
 </code-example>
 

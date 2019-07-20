@@ -21,8 +21,7 @@ One way to do this is to set the `styles` property in the component metadata.
 The `styles` property takes an array of strings that contain CSS code.
 Usually you give it one string, as in the following example:
 
-<code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts"></code-example>
 
 ## Style scope
 
@@ -71,8 +70,7 @@ Use the `:host` pseudo-class selector to target styles in the element that *host
 targeting elements *inside* the component's template).
 
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="host" header="src/app/hero-details.component.css" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="host" header="src/app/hero-details.component.css"></code-example>
 
 The `:host` selector is the only way to target the host element. You can't reach
 the host element from inside the component with other selectors because it's not part of the
@@ -83,8 +81,7 @@ including another selector inside parentheses after `:host`.
 
 The next example targets the host element again, but only when it also has the `active` CSS class.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" header="src/app/hero-details.component.css" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" header="src/app/hero-details.component.css"></code-example>
 
 ### :host-context
 
@@ -99,8 +96,7 @@ up to the document root. The `:host-context()` selector is useful when combined 
 The following example applies a `background-color` style to all `<h2>` elements *inside* the component, only
 if some ancestor element has the CSS class `theme-light`.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css"></code-example>
 
 ### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
 
@@ -115,9 +111,7 @@ can bleed into other components.
 The following example targets all `<h3>` elements, from the host element down
 through this component to all of its child elements in the DOM.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="deep" header="src/app/hero-details.component.css" linenums="false">
-
-</code-example>
+<code-example path="component-styles/src/app/hero-details.component.css" region="deep" header="src/app/hero-details.component.css"></code-example>
 
 The `/deep/` combinator also has the aliases `>>>`, and `::ng-deep`.
 
@@ -304,8 +298,7 @@ Choose from the following modes:
 
 To set the components encapsulation mode, use the `encapsulation` property in the component metadata:
 
-<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts" linenums="false">
-</code-example>
+<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts"></code-example>
 
 `ShadowDom` view encapsulation only works on browsers that have native support
 for shadow DOM (see [Shadow DOM v1](https://caniuse.com/#feat=shadowdomv1) on the

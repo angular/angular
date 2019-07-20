@@ -665,7 +665,7 @@ Examine the `src/app/app.component.ts` file which defines two nested _#docregion
 
 The inner, `class-skeleton` region appears twice, once to capture the code that opens the class definition and once to capture the code that closes the class definition.
 
-<code-example linenums="false">
+<code-example>
 // #docplaster
 ...
 // #docregion class, class-skeleton

@@ -17,7 +17,7 @@ import {UpgradeModule} from '@angular/upgrade/static';
  *
  * @usageNotes
  *
- * <code-example language="typescript" linenums="false">
+ * <code-example language="typescript">
  * @NgModule({
  *  imports: [
  *   RouterModule.forRoot(SOME_ROUTES),
