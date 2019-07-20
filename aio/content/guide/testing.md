@@ -2581,7 +2581,7 @@ Focus on the `overrideComponent` method.
 It takes two arguments: the component type to override (`HeroDetailComponent`) and an override metadata object.
 The [override metadata object](#metadata-override-object) is a generic defined as follows:
 
-<code-example format="." language="javascript">
+<code-example language="javascript">
   type MetadataOverride&lt;T&gt; = {
     add?: Partial&lt;T&gt;;
     remove?: Partial&lt;T&gt;;
@@ -2594,7 +2594,7 @@ This example resets the component's `providers` metadata.
 
 The type parameter, `T`, is the kind of metadata you'd pass to the `@Component` decorator:
 
-<code-example format="." language="javascript">
+<code-example language="javascript">
   selector?: string;
   template?: string;
   templateUrl?: string;
@@ -2924,7 +2924,7 @@ to get the basics before trying to absorb the full API.
 The module definition passed to `configureTestingModule`
 is a subset of the `@NgModule` metadata properties.
 
-<code-example format="." language="javascript">
+<code-example language="javascript">
   type TestModuleMetadata = {
     providers?: any[];
     declarations?: any[];
@@ -2939,7 +2939,7 @@ Each override method takes a `MetadataOverride<T>` where `T` is the kind of meta
 appropriate to the method, that is, the parameter of an `@NgModule`,
 `@Component`, `@Directive`, or `@Pipe`.
 
-<code-example format="." language="javascript">
+<code-example language="javascript">
   type MetadataOverride&lt;T&gt; = {
     add?: Partial&lt;T&gt;;
     remove?: Partial&lt;T&gt;;

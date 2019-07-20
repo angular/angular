@@ -59,7 +59,7 @@ When the `noImplicitAny` flag is `true`, you may get *implicit index errors* as 
 Most developers feel that *this particular error* is more annoying than helpful.
 You can suppress them with the following additional flag:
 
-<code-example format=".">
+<code-example>
 
   "suppressImplicitAnyIndexErrors": true
 
