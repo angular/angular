@@ -77,18 +77,14 @@ appropriate controls dynamically.
 via the `type` property.
 
 
-<code-example path="dynamic-form/src/app/question-textbox.ts" header="src/app/question-textbox.ts" linenums="false">
-
-</code-example>
+<code-example path="dynamic-form/src/app/question-textbox.ts" header="src/app/question-textbox.ts"></code-example>
 
 
 
 `DropdownQuestion` presents a list of choices in a select box.
 
 
-<code-example path="dynamic-form/src/app/question-dropdown.ts" header="src/app/question-dropdown.ts" linenums="false">
-
-</code-example>
+<code-example path="dynamic-form/src/app/question-dropdown.ts" header="src/app/question-dropdown.ts"></code-example>
 
 
 
@@ -97,9 +93,7 @@ In a nutshell, the form group consumes the metadata from the question model and
 allows you to specify default values and validation rules.
 
 
-<code-example path="dynamic-form/src/app/question-control.service.ts" header="src/app/question-control.service.ts" linenums="false">
-
-</code-example>
+<code-example path="dynamic-form/src/app/question-control.service.ts" header="src/app/question-control.service.ts"></code-example>
 
 {@a form-component}
 

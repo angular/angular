@@ -30,8 +30,7 @@ For details about `tsconfig.json`, see the official
 
 The [Setup](guide/setup-local) guide uses the following `tsconfig.json`:
 
-<code-example path="getting-started/tsconfig.0.json" header="tsconfig.json" linenums="false">
-</code-example>
+<code-example path="getting-started/tsconfig.0.json" header="tsconfig.json"></code-example>
 
 This file contains options and flags that are essential for Angular applications.
 
@@ -95,8 +94,7 @@ like `Promise` if the target is `es6`.
 
 By default, the target is `es2015`. If you are targeting `es5`, you still have newer type declarations due to the list of declaration files included:
 
-<code-example path="getting-started/tsconfig.0.json" header="tsconfig.json (lib excerpt)" linenums="false" region="lib">
-</code-example>
+<code-example path="getting-started/tsconfig.0.json" header="tsconfig.json (lib excerpt)" region="lib"></code-example>
 
 ### Installable typings files
 
@@ -116,4 +114,4 @@ For instance, to install typings for `jasmine` you run `npm install @types/jasmi
 
 ### *target*
 
-By default, the target is `es2015`, which is supported only in modern browsers. You can configure the target to `es5` to specifically support legacy browsers. [Differential loading](guide/deployment#differential-loading) is also provided by the Angular CLI to support modern, and legacy browsers with separate bundles. 
+By default, the target is `es2015`, which is supported only in modern browsers. You can configure the target to `es5` to specifically support legacy browsers. [Differential loading](guide/deployment#differential-loading) is also provided by the Angular CLI to support modern, and legacy browsers with separate bundles.

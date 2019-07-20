@@ -23,7 +23,7 @@ import {SwUpdate} from './update';
  * for example via a function call:
  *
  * {@example service-worker/registration-options/module.ts region="registration-options"
- *     header="app.module.ts" linenums="false"}
+ *     header="app.module.ts"}
  *
  * @publicApi
  */

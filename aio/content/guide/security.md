@@ -98,9 +98,7 @@ The following template binds the value of `htmlSnippet`, once by interpolating i
 content, and once by binding it to the `innerHTML` property of an element:
 
 
-<code-example path="security/src/app/inner-html-binding.component.html" header="src/app/inner-html-binding.component.html">
-
-</code-example>
+<code-example path="security/src/app/inner-html-binding.component.html" header="src/app/inner-html-binding.component.html"></code-example>
 
 
 
@@ -112,9 +110,7 @@ a value that an attacker might control into `innerHTML` normally causes an XSS
 vulnerability. For example, code contained in a `<script>` tag is executed:
 
 
-<code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" header="src/app/inner-html-binding.component.ts (class)" region="class">
-
-</code-example>
+<code-example path="security/src/app/inner-html-binding.component.ts" header="src/app/inner-html-binding.component.ts (class)" region="class"></code-example>
 
 
 
@@ -200,9 +196,7 @@ your intended use of the value. Imagine that the following template needs to bin
 `javascript:alert(...)` call:
 
 
-<code-example path="security/src/app/bypass-security.component.html" linenums="false" header="src/app/bypass-security.component.html (URL)" region="URL">
-
-</code-example>
+<code-example path="security/src/app/bypass-security.component.html" header="src/app/bypass-security.component.html (URL)" region="URL"></code-example>
 
 
 
@@ -211,9 +205,7 @@ in development mode, logs this action to the console. To prevent
 this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` call:
 
 
-<code-example path="security/src/app/bypass-security.component.ts" linenums="false" header="src/app/bypass-security.component.ts (trust-url)" region="trust-url">
-
-</code-example>
+<code-example path="security/src/app/bypass-security.component.ts" header="src/app/bypass-security.component.ts (trust-url)" region="trust-url"></code-example>
 
 
 
@@ -231,15 +223,11 @@ could execute. So call a method on the controller to construct a trusted video U
 Angular to allow binding into `<iframe src>`:
 
 
-<code-example path="security/src/app/bypass-security.component.html" linenums="false" header="src/app/bypass-security.component.html (iframe)" region="iframe">
-
-</code-example>
+<code-example path="security/src/app/bypass-security.component.html" header="src/app/bypass-security.component.html (iframe)" region="iframe"></code-example>
 
 
 
-<code-example path="security/src/app/bypass-security.component.ts" linenums="false" header="src/app/bypass-security.component.ts (trust-video-url)" region="trust-video-url">
-
-</code-example>
+<code-example path="security/src/app/bypass-security.component.ts" header="src/app/bypass-security.component.ts (trust-video-url)" region="trust-video-url"></code-example>
 
 
 

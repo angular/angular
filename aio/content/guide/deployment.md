@@ -175,7 +175,7 @@ modified to serve `index.html`:
 * [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
 [here](http://stackoverflow.com/a/26152011/2116927):
 
-  <code-example format='.' language="xml" linenums="false">
+  <code-example format='.' language="xml">
     &lt;system.webServer&gt;
       &lt;rewrite&gt;
         &lt;rules&gt;
@@ -436,7 +436,7 @@ When you create a production build using [`ng build --prod`](cli/build), the CLI
 
 The `index.html` file is also modified during the build process to include script tags that enable differential loading. See the sample output below from the `index.html` file produced during a build using `ng build`.
 
-<code-example language="html" format="." linenums="false">
+<code-example language="html" format=".">
 &lt;body>
   &lt;app-root>&lt;/app-root>
   &lt;script src="runtime-es2015.js" type="module">&lt;/script>
@@ -479,7 +479,7 @@ not IE 9-11 # For IE 9-11 support, remove 'not'.
 
 The `tsconfig.json` looks like this:
 
-<code-example language="json" format="." linenums="false">
+<code-example language="json" format=".">
 
 {
   "compileOnSave": false,
@@ -550,7 +550,7 @@ To maintain the benefits of differential loading, however, a better option is to
 
 To do this for `ng serve`, create a new file, `tsconfig-es5.app.json` next to `tsconfig.app.json` with the following content.
 
-<code-example language="json" format="." linenums="false">
+<code-example language="json" format=".">
 
 {
  "extends": "./tsconfig.app.json",
@@ -563,7 +563,7 @@ To do this for `ng serve`, create a new file, `tsconfig-es5.app.json` next to `t
 
 In `angular.json` add two new configuration sections under the `build` and `serve` targets to point to the new TypeScript configuration.
 
-<code-example language="json" format="." linenums="false">
+<code-example language="json" format=".">
 
 "build": {
   "builder": "@angular-devkit/build-angular:browser",
@@ -610,7 +610,7 @@ ng serve --configuration es5
 
 Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with the following content.
 
-<code-example language="json" format="." linenums="false">
+<code-example language="json" format=".">
 
 {
  "extends": "./tsconfig.spec.json",
@@ -621,7 +621,7 @@ Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with th
 
 </code-example>
 
-<code-example language="json" format="." linenums="false">
+<code-example language="json" format=".">
 
 "test": {
   "builder": "@angular-devkit/build-angular:karma",
@@ -649,7 +649,7 @@ ng test --configuration es5
 
 Create an [ES5 serve configuration](guide/deployment#configuring-serve-for-es5) as explained above, and configuration an ES5 configuration for the E2E target.
 
-<code-example language="json" format="." linenums="false">
+<code-example language="json" format=".">
 
 "test": {
   "builder": "@angular-devkit/build-angular:protractor",

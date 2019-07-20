@@ -33,8 +33,7 @@ Using the Angular CLI, create a service called `hero`.
 The command generates a skeleton `HeroService` class in `src/app/hero.service.ts` as follows:
 
 <code-example path="toh-pt4/src/app/hero.service.1.ts" region="new"
- header="src/app/hero.service.ts (new service)" linenums="false">
-</code-example>
+ header="src/app/hero.service.ts (new service)"></code-example>
 
 
 ### `@Injectable()` services

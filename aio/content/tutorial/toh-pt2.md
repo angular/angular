@@ -15,9 +15,7 @@ Create a file called `mock-heroes.ts` in the `src/app/` folder.
 Define a `HEROES` constant as an array of ten heroes and export it.
 The file should look like this.
 
-<code-example path="toh-pt2/src/app/mock-heroes.ts" linenums="false"
-header="src/app/mock-heroes.ts">
-</code-example>
+<code-example path="toh-pt2/src/app/mock-heroes.ts" header="src/app/mock-heroes.ts"></code-example>
 
 ## Displaying heroes
 
@@ -42,8 +40,7 @@ Open the `HeroesComponent` template file and make the following changes:
 
 Make it look like this:
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (heroes template)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (heroes template)"></code-example>
 
 That shows one hero. To list them all, add an `*ngFor` to the `<li>` to iterate through the list of heroes:
 
@@ -117,8 +114,7 @@ and update the hero detail.
 
 Add a click event binding to the `<li>` like this:
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (template excerpt)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (template excerpt)"></code-example>
 
 This is an example of Angular's [event binding](guide/template-syntax#event-binding) syntax.
 
@@ -138,8 +134,7 @@ There is no _selected hero_ when the application starts.
 Add the following `onSelect()` method, which assigns the clicked hero from the template
 to the component's `selectedHero`.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="on-select" header="src/app/heroes/heroes.component.ts (onSelect)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="on-select" header="src/app/heroes/heroes.component.ts (onSelect)"></code-example>
 
 ### Add a details section
 
@@ -147,8 +142,7 @@ Currently, you have a list in the component template. To click on a hero on the 
 and reveal details about that hero, you need a section for the details to render in the
 template. Add the following to `heroes.component.html` beneath the list section:
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (selected hero details)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (selected hero details)"></code-example>
 
 After the browser refreshes, the application is broken.
 
@@ -180,8 +174,7 @@ Don't forget the asterisk (*) in front of `ngIf`. It's a critical part of the sy
 
 </div>
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if" header="src/app/heroes/heroes.component.html (*ngIf)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if" header="src/app/heroes/heroes.component.html (*ngIf)"></code-example>
 
 After the browser refreshes, the list of names reappears.
 The details area is blank.
@@ -217,16 +210,13 @@ Just add `[class.some-css-class]="some-condition"` to the element you want to st
 
 Add the following `[class.selected]` binding to  the `<li>` in the `HeroesComponent` template:
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html (toggle the 'selected' CSS class)" linenums="false">
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html (toggle the 'selected' CSS class)"></code-example>
 
 When the current row hero is the same as the `selectedHero`, Angular adds the `selected` CSS class. When the two heroes are different, Angular removes the class.
 
 The finished `<li>` looks like this:
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="li" header="heroes.component.html (list item hero)" linenums="false">
-
-</code-example>
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="li" header="heroes.component.html (list item hero)"></code-example>
 
 {@a final-code-review}
 

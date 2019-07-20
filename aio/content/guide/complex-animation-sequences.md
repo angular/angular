@@ -38,7 +38,7 @@ The following example demonstrates how to use `query()` and `stagger()` function
 
 * Animate each element on screen for 0.5 seconds using a custom-defined easing curve, simultaneously fading it in and un-transforming it.
 
-<code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="page-animations" language="typescript" linenums="false"></code-example>
+<code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="page-animations" language="typescript"></code-example>
 
 ## Parallel animation using group() function
 
@@ -51,7 +51,7 @@ You've seen how to add a delay between each successive animation. But you may al
 
 In the following example, using groups on both `:enter` and `:leave` allow for two different timing configurations. They're applied to the same element in parallel, but run independently.
 
-<code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" header="src/app/hero-list-groups.component.ts (excerpt)" language="typescript" linenums="false"></code-example>
+<code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" header="src/app/hero-list-groups.component.ts (excerpt)" language="typescript"></code-example>
 
 ## Sequential vs. parallel animations
 
@@ -74,7 +74,7 @@ The HTML template contains a trigger called `filterAnimation`.
 
 The component file contains three transitions.
 
-<code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="filter-animations" language="typescript" linenums="false"></code-example>
+<code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="filter-animations" language="typescript"></code-example>
 
 The animation does the following:
 

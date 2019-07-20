@@ -332,9 +332,7 @@ export interface ComponentDecorator {
    * The following example creates a component with two data-bound properties,
    * specified by the `inputs` value.
    *
-   * <code-example path="core/ts/metadata/directives.ts" region="component-input"
-   * linenums="false">
-   * </code-example>
+   * <code-example path="core/ts/metadata/directives.ts" region="component-input"></code-example>
    *
    *
    * ### Setting component outputs
@@ -342,8 +340,7 @@ export interface ComponentDecorator {
    * The following example shows two event emitters that emit on an interval. One
    * emits an output every second, while the other emits every five seconds.
    *
-   * {@example core/ts/metadata/directives.ts region='component-output-interval
-   * linenums="false"}
+   * {@example core/ts/metadata/directives.ts region='component-output-interval'}
    *
    * ### Injecting a class with a view provider
    *

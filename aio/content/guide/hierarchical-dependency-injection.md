@@ -19,7 +19,7 @@ an NgModule, directive-level injectors follow the structure of the component hie
 
 The choices you make about where to configure providers lead to differences in the final bundle size, service _scope_, and service _lifetime_.
 
-When you specify providers in the `@Injectable()` decorator of the service itself (typically at the app root level), optimization tools such as those used by the CLI's production builds can perform *tree shaking*, which removes services that aren't used by your app. Tree shaking results in smaller bundle sizes. 
+When you specify providers in the `@Injectable()` decorator of the service itself (typically at the app root level), optimization tools such as those used by the CLI's production builds can perform *tree shaking*, which removes services that aren't used by your app. Tree shaking results in smaller bundle sizes.
 
 * Learn more about [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
 
@@ -29,12 +29,12 @@ You're likely to inject `UserService` in many places throughout the app and will
 <header>Platform injector</header>
 
 When you use `providedIn:'root'`, you are configuring the root injector for the _app_, which is the injector for `AppModule`.
-The actual root of the entire injector hierarchy is a _platform injector_ that is the parent of app-root injectors. 
+The actual root of the entire injector hierarchy is a _platform injector_ that is the parent of app-root injectors.
 This allows multiple apps to share a platform configuration. For example, a browser has only one URL bar, no matter how many apps you have running.
 
-The platform injector is used internally during bootstrap, to configure platform-specific dependencies. You can configure additional platform-specific providers at the platform level by supplying `extraProviders` using the `platformBrowser()` function. 
+The platform injector is used internally during bootstrap, to configure platform-specific dependencies. You can configure additional platform-specific providers at the platform level by supplying `extraProviders` using the `platformBrowser()` function.
 
-Learn more about dependency resolution through the injector hierarchy: 
+Learn more about dependency resolution through the injector hierarchy:
 [What you always wanted to know about Angular Dependency Injection tree](https://blog.angularindepth.com/angular-dependency-injection-and-tree-shakeable-tokens-4588a8f70d5d)
 
 
@@ -42,24 +42,24 @@ Learn more about dependency resolution through the injector hierarchy:
 
 *NgModule-level* providers can be specified with `@NgModule()` `providers` metadata option, or in the `@Injectable()` `providedIn` option (with some module other than the root `AppModule`).
 
-Use the `@NgModule()` `providers` option if a module is [lazy loaded](guide/lazy-loading-ngmodules). The module's own injector is configured with the provider when that module is loaded, and Angular can inject the corresponding services in any class it creates in that module. If you use the `@Injectable()` option `providedIn: MyLazyloadModule`, the provider could be shaken out at compile time, if it is not used anywhere else in the app. 
+Use the `@NgModule()` `providers` option if a module is [lazy loaded](guide/lazy-loading-ngmodules). The module's own injector is configured with the provider when that module is loaded, and Angular can inject the corresponding services in any class it creates in that module. If you use the `@Injectable()` option `providedIn: MyLazyloadModule`, the provider could be shaken out at compile time, if it is not used anywhere else in the app.
 
 * Learn more about [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
 
 For both root-level and module-level injectors, a service instance lives for the life of the app or module, and Angular injects this one service instance in every class that needs it.
 
-*Component-level* providers configure each component instance's own injector. 
-Angular can only inject the corresponding services in that component instance or one of its descendant component instances. 
-Angular can't inject the same service instance anywhere else. 
+*Component-level* providers configure each component instance's own injector.
+Angular can only inject the corresponding services in that component instance or one of its descendant component instances.
+Angular can't inject the same service instance anywhere else.
 
-A component-provided service may have a limited lifetime. 
-Each new instance of the component gets its own instance of the service. 
+A component-provided service may have a limited lifetime.
+Each new instance of the component gets its own instance of the service.
 When the component instance is destroyed, so is that service instance.
 
-In our sample app, `HeroComponent` is created when the application starts 
+In our sample app, `HeroComponent` is created when the application starts
 and is never destroyed,
-so the `HeroService` instance created for `HeroComponent` lives for the life of the app. 
-If you want to restrict `HeroService` access to `HeroComponent` and its nested 
+so the `HeroService` instance created for `HeroComponent` lives for the life of the app.
+If you want to restrict `HeroService` access to `HeroComponent` and its nested
 `HeroListComponent`, provide `HeroService` at the component level, in `HeroComponent` metadata.
 
 * See more [examples of component-level injection](#component-injectors) below.
@@ -67,32 +67,32 @@ If you want to restrict `HeroService` access to `HeroComponent` and its nested
 
 {@a register-providers-injectable}
 
-### @Injectable-level configuration 
+### @Injectable-level configuration
 
 The `@Injectable()` decorator identifies every service class. The `providedIn` metadata option for a service class configures a specific injector (typically `root`)
-to use the decorated class as a provider of the service. 
-When an injectable class provides its own service to the `root` injector, the service is available anywhere the class is imported. 
+to use the decorated class as a provider of the service.
+When an injectable class provides its own service to the `root` injector, the service is available anywhere the class is imported.
 
 The following example configures a provider for `HeroService` using the `@Injectable()` decorator on the class.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.0.ts"  header="src/app/heroes/heroes.service.ts" linenums="false"> </code-example> 
+<code-example path="dependency-injection/src/app/heroes/hero.service.0.ts"  header="src/app/heroes/heroes.service.ts"></code-example>
 
-This configuration tells Angular that the app's root injector is responsible for creating an 
+This configuration tells Angular that the app's root injector is responsible for creating an
 instance of `HeroService` by invoking its constructor,
-and for making that instance available across the application. 
+and for making that instance available across the application.
 
 Providing a service with the app's root injector is a typical case,
 and the CLI sets up this kind of a provider automatically for you
-when generating a new service. 
+when generating a new service.
 However, you might not always want to provide your service at the root level.
 You might, for instance, want users to explicitly opt-in to using the service.
 
-Instead of specifying the `root` injector, you can set `providedIn` to a specific NgModule. 
+Instead of specifying the `root` injector, you can set `providedIn` to a specific NgModule.
 
 For example, in the following excerpt, the `@Injectable()` decorator configures a provider
 that is available in any injector that includes the `HeroModule`.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.4.ts"  header="src/app/heroes/hero.service.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/heroes/hero.service.4.ts"  header="src/app/heroes/hero.service.ts"></code-example>
 
 This is generally no different from configuring the injector of the NgModule itself,
 except that the service is tree-shakable if the NgModule doesn't use it.
@@ -108,18 +108,16 @@ and leave it up to the app whether to provide the service.
 You can configure a provider at the module level using the `providers` metadata option for a non-root NgModule, in order to limit the scope of the provider to that module.
 This is the equivalent of specifying the non-root module in the `@Injectable()` metadata, except that the service provided via `providers` is not tree-shakable.
 
-You generally don't need to specify `AppModule` with `providedIn`, because the app's `root` injector is the `AppModule` injector. 
+You generally don't need to specify `AppModule` with `providedIn`, because the app's `root` injector is the `AppModule` injector.
 However, if you configure a app-wide provider in the `@NgModule()` metadata for `AppModule`,
-it overrides one configured for `root` in the `@Injectable()` metadata. 
-You can do this to configure a non-default provider of a service that is shared with multiple apps. 
+it overrides one configured for `root` in the `@Injectable()` metadata.
+You can do this to configure a non-default provider of a service that is shared with multiple apps.
 
 Here is an example of the case where the component router configuration includes
 a non-default [location strategy](guide/router#location-strategy) by listing its provider
 in the `providers` list of the `AppModule`.
 
-<code-example path="dependency-injection-in-action/src/app/app.module.ts" region="providers" header="src/app/app.module.ts (providers)" linenums="false">
-
-</code-example>
+<code-example path="dependency-injection-in-action/src/app/app.module.ts" region="providers" header="src/app/app.module.ts (providers)"></code-example>
 
 
 {@a register-providers-component}
@@ -130,19 +128,18 @@ Individual components within an NgModule have their own injectors.
 You can limit the scope of a provider to a component and its children
 by configuring the provider at the component level using the `@Component` metadata.
 
-The following example is a revised `HeroesComponent` that specifies `HeroService` in its `providers` array. `HeroService` can provide heroes to instances of this component, or to any child component instances. 
+The following example is a revised `HeroesComponent` that specifies `HeroService` in its `providers` array. `HeroService` can provide heroes to instances of this component, or to any child component instances.
 
-<code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" header="src/app/heroes/heroes.component.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" header="src/app/heroes/heroes.component.ts"></code-example>
 
 ### Element injectors
 
 An injector does not actually belong to a component, but rather to the component instance's anchor element in the DOM. A different component instance on a different DOM element uses a different injector.
 
 Components are a special type of directive, and the `providers` property of
-`@Component()` is inherited from `@Directive()`. 
+`@Component()` is inherited from `@Directive()`.
 Directives can also have dependencies, and you can configure providers
-in their `@Directive()` metadata. 
+in their `@Directive()` metadata.
 When you configure a provider for a component or directive using the `providers` property, that provider belongs to the injector for the anchor DOM element. Components and directives on the same element share an injector.
 
 <!--- TBD with examples
@@ -168,16 +165,16 @@ When a component requests a dependency, Angular tries to satisfy that dependency
 If the component's injector lacks the provider, it passes the request up to its parent component's injector.
 If that injector can't satisfy the request, it passes the request along to the next parent injector up the tree.
 The requests keep bubbling up until Angular finds an injector that can handle the request or runs out of ancestor injectors.
-If it runs out of ancestors, Angular throws an error. 
+If it runs out of ancestors, Angular throws an error.
 
-If you have registered a provider for the same DI token at different levels, the first one Angular encounters is the one it uses to provide the dependency. If, for example, a provider is registered locally in the component that needs a service, Angular doesn't look for another provider of the same service.  
+If you have registered a provider for the same DI token at different levels, the first one Angular encounters is the one it uses to provide the dependency. If, for example, a provider is registered locally in the component that needs a service, Angular doesn't look for another provider of the same service.
 
 
 <div class="alert is-helpful">
 
 You can cap the bubbling by adding the `@Host()` parameter decorator on the dependant-service parameter
-in a component's constructor. 
-The hunt for providers stops at the injector for the host element of the component. 
+in a component's constructor.
+The hunt for providers stops at the injector for the host element of the component.
 
 * See an [example](guide/dependency-injection-in-action#qualify-dependency-lookup) of using `@Host` together with `@Optional`, another parameter decorator that lets you handle the null case if no provider is found.
 
@@ -197,7 +194,7 @@ The guide sample offers some scenarios where you might want to do so.
 
 ### Scenario: service isolation
 
-Architectural reasons may lead you to restrict access to a service to the application domain where it belongs. 
+Architectural reasons may lead you to restrict access to a service to the application domain where it belongs.
 For example, the guide sample includes a `VillainsListComponent` that displays a list of villains.
 It gets those villains from a `VillainsService`.
 
@@ -207,9 +204,7 @@ that would make the `VillainsService` available everywhere in the application, i
 Instead, you can provide the `VillainsService` in the `providers` metadata of the `VillainsListComponent` like this:
 
 
-<code-example path="hierarchical-dependency-injection/src/app/villains-list.component.ts" linenums="false" header="src/app/villains-list.component.ts (metadata)" region="metadata">
-
-</code-example>
+<code-example path="hierarchical-dependency-injection/src/app/villains-list.component.ts" header="src/app/villains-list.component.ts (metadata)" region="metadata"></code-example>
 
 By providing `VillainsService` in the `VillainsListComponent` metadata and nowhere else,
 the service becomes available only in the `VillainsListComponent` and its sub-component tree.
@@ -273,9 +268,7 @@ Every component would share the same service instance, and each component would 
 To prevent this, we configure the component-level injector of `HeroTaxReturnComponent` to provide the service, using the  `providers` property in the component metadata.
 
 
-<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" linenums="false" header="src/app/hero-tax-return.component.ts (providers)" region="providers">
-
-</code-example>
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" header="src/app/hero-tax-return.component.ts (providers)" region="providers"></code-example>
 
 The `HeroTaxReturnComponent` has its own provider of the `HeroTaxReturnService`.
 Recall that every component _instance_ has its own injector.

@@ -10,7 +10,7 @@ Learn more in [The App Shell Model](https://developers.google.com/web/fundamenta
 ## Step 1: Prepare the application
 
 You can do this with the following CLI command:
-<code-example format="." language="bash" linenums="false">
+<code-example format="." language="bash">
 ng new my-app --routing
 </code-example>
 
@@ -20,7 +20,7 @@ For an existing application, you have to manually add the `RouterModule` and def
 
 Use the CLI to automatically create the app shell.
 
-<code-example format="." language="bash" linenums="false">
+<code-example format="." language="bash">
 ng generate app-shell --client-project my-app --universal-project server-app
 </code-example>
 
@@ -29,7 +29,7 @@ ng generate app-shell --client-project my-app --universal-project server-app
 
 After running this command you will notice that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
 
-<code-example format="." language="json" linenums="false">
+<code-example format="." language="json">
 "server": {
   "builder": "@angular-devkit/build-angular:server",
   "options": {
@@ -52,7 +52,7 @@ After running this command you will notice that the `angular.json` configuration
 
 Use the CLI to build the `app-shell` target.
 
-<code-example format="." language="bash" linenums="false">
+<code-example format="." language="bash">
 ng run my-app:app-shell
 </code-example>
 

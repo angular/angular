@@ -191,7 +191,7 @@ For our example builder, we expect the `options` value to be a `JsonObject` with
 
 We can provide the following schema for type validation of these values.
 
-<code-example format="." language="json" linenums="false">
+<code-example format="." language="json">
 
 {
   "$schema": "http://json-schema.org/schema",
@@ -222,7 +222,7 @@ To link our builder implementation with its schema and name, we need to create a
 
 Create a file named `builders.json` file that looks like this.
 
-<code-example format="." language="json" linenums="false">
+<code-example format="." language="json">
 
 {
   "builders": {
@@ -238,7 +238,7 @@ Create a file named `builders.json` file that looks like this.
 
 In the `package.json` file, add a `builders` key that tells the Architect tool where to find our builder definition file.
 
-<code-example format="." language="json" linenums="false">
+<code-example format="." language="json">
 
 {
   "name": "@example/command-runner",
@@ -257,7 +257,7 @@ The first part  of this is the package name (resolved using node resolution), an
 
 Using one of our `options` is very straightforward, we did this in the previous section when we accessed `options.command`.
 
-<code-example format="." language="typescript" linenums="false">
+<code-example format="." language="typescript">
     context.reportStatus(`Executing "${options.command}"...`);
     const child = childProcess.spawn(options.command, options.args, { stdio: 'pipe' });
 
@@ -274,7 +274,7 @@ The Architect tool uses the target definition to resolve input options for a giv
 The  `angular.json` file has a section for each project, and the "architect" section of each project configures targets for builders used by CLI commands such as 'build', 'test', and 'lint'.
 By default, for example, the `build` command runs the builder  `@angular-devkit/build-angular:browser` to perform the build task, and passes in default option values as specified for the `build` target in `angular.json`.
 
-<code-example format="." language="json" linenums="false">
+<code-example format="." language="json">
 {
   "myApp": {
     ...
@@ -361,7 +361,7 @@ npm install @example/command-runner
 
 If we create a new project with `ng new builder-test`, the generated `angular.json` file looks something like this, with only default builder configurations.
 
-<code-example format="." language="json" linenums="false">
+<code-example format="." language="json">
 
 {
   // ...
@@ -413,7 +413,7 @@ We need to update the `angular.json` file to add a target for this builder to th
 
 * The configurations key is optional, we'll leave it out for now.
 
-<code-example format="." language="json" linenums="false">
+<code-example format="." language="json">
 
 {
   "projects": {
@@ -495,7 +495,7 @@ Use integration testing for your builder, so that you can use the Architect sche
 Here’s an example of a test that runs the command builder.
 The test uses the builder to run the `ls` command, then validates that it ran successfully and listed the proper files.
 
-<code-example format="." language="typescript" linenums="false">
+<code-example format="." language="typescript">
 
 import { Architect, ArchitectHost } from '@angular-devkit/architect';
 import { TestingArchitectHost } from '@angular-devkit/architect/testing';

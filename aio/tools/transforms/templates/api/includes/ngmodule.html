@@ -3,7 +3,7 @@
 {% for ngModule in doc.ngModules %}
   <li>
     <a href="{$ ngModule.path $}">
-      <code-example language="ts" hideCopy="true" linenums="false" class="no-box">{$ ngModule.name | escape $}</code-example>
+      <code-example language="ts" hideCopy="true" class="no-box">{$ ngModule.name | escape $}</code-example>
     </a>
   </li>
   {% endfor %}

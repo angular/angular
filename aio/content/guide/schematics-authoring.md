@@ -32,7 +32,7 @@ The context also defines a *merge strategy* that determines how changes are merg
 When you create a new blank schematic with the [Schematics CLI](#cli), the generated entry function is a *rule factory*.
 A `RuleFactory`object defines a higher-order function that creates a `Rule`.
 
-<code-example language="TypeScript" linenums="false">
+<code-example language="TypeScript">
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 
 // You don't have to export the function as default.
@@ -49,7 +49,7 @@ You need a rule, for example, to define how a template in the schematic is to be
 
 Rules can make use of utilities provided with the `@schematics/angular` package. Look for helper functions for working with modules, dependencies, TypeScript, AST, JSON, Angular CLI workspaces and projects, and more.
 
-<code-example language="none" linenums="false">
+<code-example language="none">
 
 import {
   JsonAstObject,
@@ -78,7 +78,7 @@ You can see examples of schema files for the Angular CLI command schematics in [
 Schematics come with their own command-line tool.
 Using Node 6.9 or above, install the Schematics command line tool globally:
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 npm install -g @angular-devkit/schematics-cli
 </code-example>
 
@@ -94,7 +94,7 @@ See [Schematics for Libraries](guide/schematics-for-libraries).
 
 The following command creates a new schematic named `hello-world` in a new project folder of the same name.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 schematics blank --name=hello-world
 </code-example>
 
@@ -102,7 +102,7 @@ The `blank` schematic is provided by the Schematics CLI. The command creates a n
 
 Go to the collection folder, install your npm dependencies, and open your new collection in your favorite editor to see the generated files. For example, if you are using VSCode:
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 cd hello-world
 npm install
 npm run build
@@ -118,14 +118,14 @@ Each schematic name must be unique within the collection.
 Use the `schematics` command to run a named schematic.
 Provide the path to the project folder, the schematic name, and any mandatory options, in the following format.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 schematics &lt;path-to-schematics-project&gt;:&lt;schematics-name&gt; --&lt;required-option&gt;=&lt;value&gt;
 </code-example>
 
 The path can be absolute or relative to the current working directory where the command is executed.
 For example, to run the schematic we just generated (which has no required options), use the following command.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 schematics .:hello-world
 </code-example>
 
@@ -133,7 +133,7 @@ schematics .:hello-world
 
 To add a schematic to an existing collection, use the same command you use to start a new schematics project, but run the command inside the project folder.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 cd hello-world
 schematics blank --name=goodbye-world
 </code-example>
@@ -147,7 +147,7 @@ The top level of the root project folder for a collection contains configuration
 The `src/` folder contains subfolders for named schematics in the collection, and a schema, `collection.json`, which describes the collected schematics.
 Each schematic is created with a name, description, and factory function.
 
-<code-example language="none" linenums="false">
+<code-example language="none">
 {
   "$schema":
      "../node_modules/@angular-devkit/schematics/collection-schema.json",

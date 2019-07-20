@@ -15,8 +15,7 @@ The [AnimationOptions](https://angular.io/api/animations/AnimationOptions) inter
 
 To create a reusable animation, use the [`animation()`](https://angular.io/api/animations/animation) method to define an animation in a separate `.ts` file and declare this animation definition as a `const` export variable. You can then import and reuse this animation in any of your app components using the [`useAnimation()`](https://angular.io/api/animations/useAnimation) API.
 
-<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="reusable" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="reusable" language="typescript"></code-example>
 
 In the above code snippet, `transAnimation` is made reusable by declaring it as an export variable.
 
@@ -27,8 +26,7 @@ In the above code snippet, `transAnimation` is made reusable by declaring it as 
 
 You can import the reusable `transAnimation` variable in your component class and reuse it using the `useAnimation()` method as shown below.
 
-<code-example path="animations/src/app/open-close.component.3.ts" header="src/app/open-close.component.ts" region="reusable" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/open-close.component.3.ts" header="src/app/open-close.component.ts" region="reusable" language="typescript"></code-example>
 
 ## More on Angular animations
 

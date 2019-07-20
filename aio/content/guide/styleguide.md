@@ -3670,7 +3670,7 @@ Compare with the less preferred `host` metadata alternative.
 
 </div>
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts"></code-example>
 
 
 

@@ -88,7 +88,7 @@ describe('remark: renderMarkdown service', () => {
     '```';
     const output = renderMarkdown(content);
     expect(output).toEqual(
-    '<code-example linenums="false" language="ts">\n' +
+    '<code-example language="ts">\n' +
     '  class MyClass {\n' +
     '    method1() { ... }\n' +
     '  }\n' +

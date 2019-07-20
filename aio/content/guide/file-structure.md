@@ -4,7 +4,7 @@ You develop applications in the context of an Angular [workspace](guide/glossary
 
 The Angular CLI `ng new` command creates a workspace.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng new &lt;my-project&gt;
 </code-example>
 
@@ -111,7 +111,7 @@ An `e2e/` folder at the top level contains source files for a set of end-to-end 
 
 For a multi-project workspace, application-specific end-to-end tests are in the project root, under `projects/project-name/e2e/`.
 
-<code-example language="none" linenums="false">
+<code-example language="none">
   e2e/
      src/                 (end-to-end tests for my-app)
         app.e2e-spec.ts
@@ -131,13 +131,13 @@ A multi-project workspace is suitable for an enterprise that uses a single repos
 If you intend to have multiple projects in a workspace, you can skip the initial application generation when you create the workspace, and give the workspace a unique name.
 The following command creates a workspace with all of the workspace-wide configuration files, but no root-level application.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng new my-workspace --createApplication="false"
 </code-example>
 
 You can then generate apps and libraries with names that are unique within the workspace.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 cd my-workspace
 ng generate application my-first-app
 </code-example>
@@ -148,7 +148,7 @@ The first explicitly generated application goes into the `projects/` folder alon
 Newly generated libraries are also added under `projects/`.
 When you create projects this way, the file structure of the workspace is entirely consistent with the structure of the [workspace configuration file](guide/workspace-config), `angular.json`.
 
-<code-example language="none" linenums="false">
+<code-example language="none">
 my-workspace/
   ...             (workspace-wide config files)
   projects/       (generated applications and libraries)
