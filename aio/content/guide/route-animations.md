@@ -43,8 +43,7 @@ Use the `RouterModule.forRoot` method to define a set of routes. Also, import th
 
 The following configuration defines the possible routes for the application.
 
-<code-example path="animations/src/app/app.module.ts" linenums="false" header="src/app/app.module.ts" region="route-animation-data" language="typescript">
-</code-example>
+<code-example path="animations/src/app/app.module.ts" header="src/app/app.module.ts" region="route-animation-data" language="typescript"></code-example>
 
 The `home` and `about` paths are associated with the `HomeComponent` and `AboutComponent` views. The route configuration tells the Angular router to instantiate the `HomeComponent` and `AboutComponent` views when the navigation matches the corresponding path.
 
@@ -62,13 +61,11 @@ After configuring the routes, tell the Angular router where to render the views 
 
 The `<router-outlet>` container has an attribute directive that contains data about active routes and their states, based on the `data` property that we set in the route configuration.
 
-<code-example path="animations/src/app/app.component.html" header="src/app/app.component.html" region="route-animations-outlet">
-</code-example>
+<code-example path="animations/src/app/app.component.html" header="src/app/app.component.html" region="route-animations-outlet"></code-example>
 
 `AppComponent` defines a method that can detect when a view changes. The method assigns an animation state value to the animation trigger (`@routeAnimation`) based on the route configuration `data` property value.  Here's an example of an `AppComponent` method that detects when a route change happens.
 
-<code-example path="animations/src/app/app.component.ts" linenums="false" header="src/app/app.component.ts" region="prepare-router-outlet" language="typescript">
-</code-example>
+<code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="prepare-router-outlet" language="typescript"></code-example>
 
 Here, the `prepareRoute()` method takes the value of the output directive (established through `#outlet="outlet"`) and returns a string value representing the state of the animation based on the custom data of the current active route. You can use this data to control which transition to execute for each route.
 
@@ -79,8 +76,7 @@ Animations can be defined directly inside your components. For this example we a
 The following code snippet defines a reusable animation named `slideInAnimation`.
 
 
-<code-example path="animations/src/app/animations.ts" linenums="false" header="src/app/animations.ts" region="route-animations" language="typescript">
-</code-example>
+<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="route-animations" language="typescript"></code-example>
 
 The animation definition does several things:
 
@@ -97,15 +93,13 @@ A route change activates the animation trigger, and a transition matching the st
 
 Make the animation definition available in your application by adding the reusable animation (`slideInAnimation`) to the `animations` metadata of the `AppComponent`.
 
-<code-example path="animations/src/app/app.component.ts" linenums="false" header="src/app/app.component.ts" region="define" language="typescript">
-</code-example>
+<code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="define" language="typescript"></code-example>
 
 ### Styling the host and child components
 
 During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time. To prevent this, apply additional styling to the host view, and to the removed and inserted child views. The host view must use relative positioning, and the child views must use absolute positioning. Adding styling to the views animates the containers in place, without the DOM moving things around.
 
-<code-example path="animations/src/app/animations.ts" linenums="false" header="src/app/animations.ts" region="style-view" language="typescript">
-</code-example>
+<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="style-view" language="typescript"></code-example>
 
 ### Querying the view containers
 
@@ -113,8 +107,7 @@ Use the `query()` method to find and animate elements within the current host co
 
 Let's assume that we are routing from the *Home => About*.
 
-<code-example path="animations/src/app/animations.ts" linenums="false" header="src/app/animations.ts" region="query" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="query" language="typescript"></code-example>
 
 The animation code does the following after styling the views:
 

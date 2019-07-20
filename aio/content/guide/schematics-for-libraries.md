@@ -93,7 +93,7 @@ You can add a named schematic to your collection that lets your users use the `n
 
 We'll assume that your library defines a service, `my-service`, that requires some setup. You want your users to be able to generate it using the following CLI command.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng generate my-lib:my-service
 </code-example>
 
@@ -276,7 +276,7 @@ After you build your library and schematics, you can install the schematics coll
 
 From the root of your workspace, run the `ng build` command for your library.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
   ng build my-lib
 
@@ -284,7 +284,7 @@ From the root of your workspace, run the `ng build` command for your library.
 
 Then, you change into your library directory to build the schematic
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
   cd projects/my-lib
   npm run build
@@ -295,7 +295,7 @@ Then, you change into your library directory to build the schematic
 
 Your library and schematics are packaged and placed in the `dist/my-lib` folder at the root of your workspace. For running the schematic, you need to link the library into your `node_modules` folder. From the root of your workspace, run the `npm link` command with the path to your distributable library.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
 npm link dist/my-lib
 
@@ -305,7 +305,7 @@ npm link dist/my-lib
 
 Now that your library is installed, you can run the schematic using the `ng generate` command.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
 ng generate my-lib:my-service --name my-data
 
@@ -313,7 +313,7 @@ ng generate my-lib:my-service --name my-data
 
 In the console, you will see that the schematic was run and the `my-data.service.ts` file was created in your app folder.
 
-<code-example language="bash" linenums="false" hideCopy="true">
+<code-example language="bash" hideCopy="true">
 
 CREATE src/app/my-data.service.ts (208 bytes)
 

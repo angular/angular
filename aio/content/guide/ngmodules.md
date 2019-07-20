@@ -51,7 +51,8 @@ You then import these modules into the root module.
 The [Angular CLI](cli) generates the following basic `AppModule` when creating a new app.
 
 
-<code-example path="ngmodules/src/app/app.module.1.ts" header="src/app/app.module.ts (default AppModule)" linenums="false">	// @NgModule decorator with its metadata
+<code-example path="ngmodules/src/app/app.module.1.ts" header="src/app/app.module.ts (default AppModule)">
+// @NgModule decorator with its metadata
 </code-example>
 
 At the top are the import statements. The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`). For more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/bootstrapping).

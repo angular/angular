@@ -73,7 +73,7 @@ Generate the class `src/app/in-memory-data.service.ts` with the following comman
 
 Replace the default contents of `in-memory-data.service.ts` with the following:
 
-<code-example path="toh-pt6/src/app/in-memory-data.service.ts" region="init" header="src/app/in-memory-data.service.ts" linenums="false"></code-example>
+<code-example path="toh-pt6/src/app/in-memory-data.service.ts" region="init" header="src/app/in-memory-data.service.ts"></code-example>
 
 The `in-memory-data.service.ts` file replaces `mock-heroes.ts`, which is now safe to delete.
 
@@ -390,8 +390,7 @@ the URL, which includes a query string with the search term.
 Open the `DashboardComponent` template and
 add the hero search element, `<app-hero-search>`, to the bottom of the markup.
 
-<code-example path="toh-pt6/src/app/dashboard/dashboard.component.html" header="src/app/dashboard/dashboard.component.html" linenums="false">
-</code-example>
+<code-example path="toh-pt6/src/app/dashboard/dashboard.component.html" header="src/app/dashboard/dashboard.component.html"></code-example>
 
 This template looks a lot like the `*ngFor` repeater in the `HeroesComponent` template.
 

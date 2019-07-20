@@ -196,8 +196,7 @@ Listing dependencies as constructor parameters may be all you need to test appli
 For example, you can create a new `HeroListComponent` with a mock service that you can manipulate
 under test.
 
-<code-example path="dependency-injection/src/app/test.component.ts" region="spec" header="src/app/test.component.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/test.component.ts" region="spec" header="src/app/test.component.ts"></code-example>
 
 <div class="alert is-helpful">
 
@@ -259,8 +258,7 @@ In simple examples, the dependency value is an *instance*, and
 the class *type* serves as its own lookup key.
 Here you get a `HeroService` directly from the injector by supplying the `HeroService` type as the token:
 
-<code-example path="dependency-injection/src/app/injector.component.ts" region="get-hero-service" header="src/app/injector.component.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/injector.component.ts" region="get-hero-service" header="src/app/injector.component.ts"></code-example>
 
 The behavior is similar when you write a constructor that requires an injected class-based dependency.
 When you define a constructor parameter with the `HeroService` class type,
@@ -287,8 +285,7 @@ constructor parameter with `@Optional()`.
 <code-example path="dependency-injection/src/app/providers.component.ts" region="import-optional">
 </code-example>
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-10-ctor" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-10-ctor"></code-example>
 
 When using `@Optional()`, your code must be prepared for a null value. If you
 don't register a logger provider anywhere, the injector sets the

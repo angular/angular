@@ -21,7 +21,7 @@ Angular offers two ways to compile your application:
 1. **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime.
 1. **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
 
-JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands: 
+JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands:
 
 <code-example language="sh" class="code-shell">
   ng build
@@ -945,7 +945,7 @@ import { calculateValue } from './utilities';
 
 To correct this error, export a function from the module and refer to the function in a `useFactory` provider instead.
 
-<code-example linenums="false">
+<code-example>
 // CORRECTED
 import { calculateValue } from './utilities';
 
@@ -978,7 +978,7 @@ The compiler does not support references to variables assigned by [destructuring
 
 For example, you cannot write something like this:
 
-<code-example linenums="false">
+<code-example>
 // ERROR
 import { configuration } from './configuration';
 
@@ -994,7 +994,7 @@ const {foo, bar} = configuration;
 
 To correct this error, refer to non-destructured values.
 
-<code-example linenums="false">
+<code-example>
 // CORRECTED
 import { configuration } from './configuration';
   ...
@@ -1041,7 +1041,7 @@ you can finesse the problem in four steps:
 
 Here's an illustrative example.
 
-<code-example linenums="false">
+<code-example>
 // CORRECTED
 import { Inject } from '@angular/core';
 
@@ -1064,7 +1064,7 @@ uses the `@Inject(WINDOW)` to generate the injection code.
 
 Angular does something similar with the `DOCUMENT` token so you can inject the browser's `document` object (or an abstraction of it, depending upon the platform in which the application runs).
 
-<code-example linenums="false">
+<code-example>
 import { Inject }   from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 
@@ -1101,7 +1101,7 @@ that you referenced in metadata.
 
 The compiler can understand simple enum values but not complex values such as those derived from computed properties.
 
-<code-example linenums="false">
+<code-example>
 // ERROR
 enum Colors {
   Red = 1,
@@ -1311,7 +1311,7 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
 {@a tsconfig-extends}
 ## Configuration inheritance with extends
 Similar to TypeScript Compiler, Angular Compiler also supports `extends` in the `tsconfig.json` on `angularCompilerOptions`. A tsconfig file can inherit configurations from another file using the `extends` property.
- The `extends` is a top level property parallel to `compilerOptions` and `angularCompilerOptions`. 
+ The `extends` is a top level property parallel to `compilerOptions` and `angularCompilerOptions`.
  The configuration from the base file are loaded first, then overridden by those in the inheriting config file.
  Example:
 ```json
