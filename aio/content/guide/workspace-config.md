@@ -17,7 +17,7 @@ The following properties, at the top level of the file, configure the workspace.
 
 The initial app that you create with `ng new app_name` is listed under "projects":
 
-<code-example format="." language="json">
+<code-example language="json">
 
 "projects": {
   "app_name": {
@@ -45,7 +45,7 @@ When you create a library project with `ng generate library`, the library projec
 
 The following top-level configuration properties are available for each project, under `projects:<project_name>`.
 
-<code-example format="." language="json">
+<code-example language="json">
 
     "my-app": {
       "root": "",
@@ -118,7 +118,7 @@ Each target object specifies the `builder` for that target, which is the npm pac
 In addition, each target has an `options` section that configures default options for the target, and a `configurations` section that names and specifies alternative configurations for the target.
 See the example in [Build target](#build-target) below.
 
-<code-example format="." language="json">
+<code-example language="json">
 
       "architect": {
         "build": { },
@@ -206,7 +206,7 @@ The following sections provide more details of how these complex values are used
 Each `build` target configuration can include an `assets` array that lists files or folders you want to copy as-is when building your project.
 By default, the `src/assets/` folder and `src/favicon.ico` are copied over.
 
-<code-example format="." language="json">
+<code-example language="json">
 
 "assets": [
   "src/assets",
@@ -227,7 +227,7 @@ A asset specification object can have the following fields.
 
 For example, the default asset paths can be represented in more detail using the following objects.
 
-<code-example format="." language="json">
+<code-example language="json">
 
 "assets": [
   { "glob": "**/*", "input": "src/assets/", "output": "/assets/" },
@@ -239,7 +239,7 @@ For example, the default asset paths can be represented in more detail using the
 You can use this extended configuration to copy assets from outside your project.
 For example, the following configuration copies assets from a node package:
 
-<code-example format="." language="json">
+<code-example language="json">
 
 "assets": [
  { "glob": "**/*", "input": "./node_modules/some-package/images", "output": "/some-package/" },
@@ -251,7 +251,7 @@ The contents of `node_modules/some-package/images/` will be available in `dist/s
 
 The following example uses the `ignore` field to exclude certain files in the assets folder from being copied into the build:
 
-<code-example format="." language="json">
+<code-example language="json">
 
 "assets": [
  { "glob": "**/*", "input": "src/assets/", "ignore": ["**/*.svg"], "output": "/assets/" },
@@ -270,7 +270,7 @@ With a configuration object, you have the option of naming the bundle for the en
 The bundle is injected by default, but you can set `inject` to false to exclude the bundle from injection.
 For example, the following object values create and name a bundle that contains styles and scripts, and excludes it from injection:
 
-<code-example format="." language="json">
+<code-example language="json">
 
    "styles": [
      { "input": "src/external-module/styles.scss", "inject": false, "bundleName": "external-module" }
@@ -283,7 +283,7 @@ For example, the following object values create and name a bundle that contains 
 
 You can mix simple and complex file references for styles and scripts.
 
-<code-example format="." language="json">
+<code-example language="json">
 
 "styles": [
   "src/styles.css",
@@ -302,7 +302,7 @@ In Sass and Stylus you can make use of the `includePaths` functionality for both
 
 To add paths, use the `stylePreprocessorOptions` option:
 
-<code-example format="." language="json">
+<code-example language="json">
 
 "stylePreprocessorOptions": {
   "includePaths": [
@@ -335,7 +335,7 @@ You can supply an object as a configuration value for either of these to provide
 
 * The flag `--optimization="true"` applies to both scripts and styles. You can supply a value such as the following to apply optimization to one or the other:
 
-<code-example format="." language="json">
+<code-example language="json">
 
    "optimization": { "scripts": true, "styles": false }
 
@@ -346,7 +346,7 @@ You can configure the option to apply to one or the other.
 You can also choose to output hidden source maps, or resolve vendor package source maps.
 For example:
 
-<code-example format="." language="json">
+<code-example language="json">
 
    "sourceMaps": { "scripts": true, "styles": false, "hidden": true, "vendor": true }
 

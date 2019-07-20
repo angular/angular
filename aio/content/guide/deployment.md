@@ -152,7 +152,7 @@ The list is by no means exhaustive, but should provide you with a good starting 
 [rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html) to the `.htaccess` file as shown
   (https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/):
 
-  <code-example format=".">
+  <code-example>
     RewriteEngine On
     &#35 If an existing asset or directory is requested go to it as it is
     RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
@@ -207,7 +207,7 @@ and to
 * [Firebase hosting](https://firebase.google.com/docs/hosting/): add a
 [rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites).
 
-  <code-example format="." language="json">
+  <code-example language="json">
     "rewrites": [ {
       "source": "**",
       "destination": "/index.html"
@@ -436,7 +436,7 @@ When you create a production build using [`ng build --prod`](cli/build), the CLI
 
 The `index.html` file is also modified during the build process to include script tags that enable differential loading. See the sample output below from the `index.html` file produced during a build using `ng build`.
 
-<code-example language="html" format=".">
+<code-example language="html">
 &lt;body>
   &lt;app-root>&lt;/app-root>
   &lt;script src="runtime-es2015.js" type="module">&lt;/script>
@@ -479,7 +479,7 @@ not IE 9-11 # For IE 9-11 support, remove 'not'.
 
 The `tsconfig.json` looks like this:
 
-<code-example language="json" format=".">
+<code-example language="json">
 
 {
   "compileOnSave": false,
@@ -550,7 +550,7 @@ To maintain the benefits of differential loading, however, a better option is to
 
 To do this for `ng serve`, create a new file, `tsconfig-es5.app.json` next to `tsconfig.app.json` with the following content.
 
-<code-example language="json" format=".">
+<code-example language="json">
 
 {
  "extends": "./tsconfig.app.json",
@@ -563,7 +563,7 @@ To do this for `ng serve`, create a new file, `tsconfig-es5.app.json` next to `t
 
 In `angular.json` add two new configuration sections under the `build` and `serve` targets to point to the new TypeScript configuration.
 
-<code-example language="json" format=".">
+<code-example language="json">
 
 "build": {
   "builder": "@angular-devkit/build-angular:browser",
@@ -610,7 +610,7 @@ ng serve --configuration es5
 
 Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with the following content.
 
-<code-example language="json" format=".">
+<code-example language="json">
 
 {
  "extends": "./tsconfig.spec.json",
@@ -621,7 +621,7 @@ Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with th
 
 </code-example>
 
-<code-example language="json" format=".">
+<code-example language="json">
 
 "test": {
   "builder": "@angular-devkit/build-angular:karma",
@@ -649,7 +649,7 @@ ng test --configuration es5
 
 Create an [ES5 serve configuration](guide/deployment#configuring-serve-for-es5) as explained above, and configuration an ES5 configuration for the E2E target.
 
-<code-example language="json" format=".">
+<code-example language="json">
 
 "test": {
   "builder": "@angular-devkit/build-angular:protractor",

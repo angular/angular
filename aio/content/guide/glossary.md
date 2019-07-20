@@ -748,7 +748,7 @@ For more information, see [Schematics](guide/schematics) and [Integrating Librar
 Schematics come with their own command-line tool.
 Using Node 6.9 or above, install the Schematics CLI globally:
 
-<code-example format="." language="bash">
+<code-example language="bash">
 npm install -g @angular-devkit/schematics-cli
 </code-example>
 
