@@ -58,15 +58,13 @@ By default, interpolation uses as its delimiter the double curly braces, `{{` an
 
 In the following snippet, `{{ currentCustomer }}` is an example of interpolation.
 
-<code-example path="interpolation/src/app/app.component.html" region="interpolation-example1" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="interpolation/src/app/app.component.html" region="interpolation-example1" header="src/app/app.component.html"></code-example>
 
 The text between the braces is often the name of a component
 property. Angular replaces that name with the
 string value of the corresponding component property.
 
-<code-example path="interpolation/src/app/app.component.html" region="component-property" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="interpolation/src/app/app.component.html" region="component-property" header="src/app/app.component.html"></code-example>
 
 In the example above, Angular evaluates the `title` and `itemImageUrl` properties
 and fills in the blanks, first displaying some title text and then an image.
@@ -75,14 +73,12 @@ More generally, the text between the braces is a **template expression**
 that Angular first **evaluates** and then **converts to a string**.
 The following interpolation illustrates the point by adding two numbers:
 
-<code-example path="interpolation/src/app/app.component.html" region="convert-string" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="interpolation/src/app/app.component.html" region="convert-string" header="src/app/app.component.html"></code-example>
 
 The expression can invoke methods of the host component such as `getVal()` in
 the following example:
 
-<code-example path="interpolation/src/app/app.component.html" region="invoke-method" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="interpolation/src/app/app.component.html" region="invoke-method" header="src/app/app.component.html"></code-example>
 
 Angular evaluates all expressions in double curly braces,
 converts the expression results to strings, and links them with neighboring literal strings. Finally,
@@ -137,8 +133,7 @@ The *expression context* is typically the _component_ instance.
 In the following snippets, the `recommended` within double curly braces and the
 `itemImageUrl2` in quotes refer to properties of the `AppComponent`.
 
-<code-example path="interpolation/src/app/app.component.html" region="component-context" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="interpolation/src/app/app.component.html" region="component-context" header="src/app/app.component.html"></code-example>
 
 An expression may also refer to properties of the _template's_ context
 such as a template input variable,
@@ -146,11 +141,9 @@ such as a template input variable,
 `let customer`, or a template reference variable, `#customerInput`.
 <!-- link to guide/template-ref-variables -->
 
-<code-example path="interpolation/src/app/app.component.html" region="template-input-variable" header="src/app/app.component.html (template input variable)" linenums="false">
-</code-example>
+<code-example path="interpolation/src/app/app.component.html" region="template-input-variable" header="src/app/app.component.html (template input variable)"></code-example>
 
-<code-example path="interpolation/src/app/app.component.html" region="template-reference-variable" header="src/app/app.component.html (template reference variable)" linenums="false">
-</code-example>
+<code-example path="interpolation/src/app/app.component.html" region="template-reference-variable" header="src/app/app.component.html (template reference variable)"></code-example>
 
 The context for terms in an expression is a blend of the _template variables_,
 the directive's _context_ object (if it has one), and the component's _members_.
@@ -241,8 +234,7 @@ such as an element, component, or directive.
 You'll see template statements in the [event binding](guide/template-syntax#event-binding) section,
 appearing in quotes to the right of the `=`&nbsp;symbol as in `(event)="statement"`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
 
 A template statement *has a side effect*.
 That's the whole point of an event.
@@ -272,8 +264,7 @@ such as an event handling method of the component instance.
 The *statement context* is typically the component instance.
 The *deleteHero* in `(click)="deleteHero()"` is a method of the data-bound component.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
 
 The statement context may also refer to properties of the template's own context.
 In the following examples, the template `$event` object,
@@ -281,8 +272,7 @@ a [template input variable](guide/template-syntax#template-input-variable) (`let
 and a [template reference variable](guide/template-syntax#ref-vars) (`#heroForm`)
 are passed to an event handling method of the component.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" header="src/app/app.component.html"></code-example>
 
 Template context names take precedence over component context names.
 In `deleteHero(hero)` above, the `hero` is the template input variable,
@@ -419,8 +409,7 @@ you modify those elements by setting element attributes with string constants.
 
 With data-binding, you can control things like the state of a button:
 
-<code-example path="binding-syntax/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="binding-syntax/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
 
 Notice that the binding is to the `disabled` property of the button's DOM element,
 **not** the attribute. This applies to data-binding in general. Data-binding works with *properties* of DOM elements, components, and directives, not HTML *attributes*.
@@ -564,8 +553,7 @@ The following table summarizes:
     </td>
     <td>
       <code>src</code>, <code>hero</code>, and <code>ngClass</code> in the following:
-      <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1" linenums="false">
-      </code-example>
+      <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1"></code-example>
       <!-- For more information, see [Property Binding](guide/property-binding). -->
     </td>
   </tr>
@@ -580,8 +568,7 @@ The following table summarizes:
     </td>
     <td>
       <code>click</code>, <code>deleteRequest</code>, and <code>myClick</code> in the following:
-      <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1" linenums="false">
-      </code-example>
+      <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1"></code-example>
       <!-- KW--Why don't these links work in the table? -->
       <!-- <div>For more information, see [Event Binding](guide/event-binding).</div> -->
     </td>
@@ -594,8 +581,7 @@ The following table summarizes:
       Event and property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" linenums="false">
-      </code-example>
+      <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1"></code-example>
     </td>
   </tr>
   <tr>
@@ -607,8 +593,7 @@ The following table summarizes:
       (the&nbsp;exception)
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1" linenums="false">
-      </code-example>
+      <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1"></code-example>
     </td>
   </tr>
   <tr>
@@ -619,8 +604,7 @@ The following table summarizes:
       <code>class</code> property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" linenums="false">
-      </code-example>
+      <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1"></code-example>
     </td>
   </tr>
   <tr>
@@ -631,8 +615,7 @@ The following table summarizes:
       <code>style</code> property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" linenums="false">
-      </code-example>
+      <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1"></code-example>
     </td>
   </tr>
 </table>
@@ -670,14 +653,12 @@ The most common property binding sets an element property to a component
 property value. An example is
 binding the `src` property of an image element to a component's `itemImageUrl` property:
 
-<code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html"></code-example>
 
 Here's an example of binding to the `colSpan` property. Notice that it's not `colspan`,
 which is the attribute, spelled with a lowercase `s`.
 
-<code-example path="property-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html"></code-example>
 
 For more details, see the [MDN HTMLTableCellElment](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) documentation.
 
@@ -686,19 +667,16 @@ For more about `colSpan` and `colspan`, see (Attribute Binding)[guide/template-s
 
 Another example is disabling a button when the component says that it `isUnchanged`:
 
-<code-example path="property-binding/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
 
 Another is setting a property of a directive:
 
-<code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html"></code-example>
 
 Yet another is setting the model property of a custom component&mdash;a great way
 for parent and child components to communicate:
 
-<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
 
 ### Binding target
 
@@ -706,13 +684,11 @@ An element property between enclosing square brackets identifies
 the target property.
 The target property in the following code is the image element's `src` property.
 
-<code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html"></code-example>
 
 There's also the `bind-` prefix alternative:
 
-<code-example path="property-binding/src/app/app.component.html" region="bind-prefix" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="bind-prefix" header="src/app/app.component.html"></code-example>
 
 
 In most cases, the target name is the name of a property, even
@@ -723,8 +699,7 @@ Element properties may be the more common targets,
 but Angular looks first to see if the name is a property of a known directive,
 as it is in the following example:
 
-<code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html"></code-example>
 
 Technically, Angular is matching the name to a directive `@Input()`,
 one of the property names listed in the directive's `inputs` array
@@ -769,16 +744,13 @@ expects a number, an object if it expects an object, and so on.
 
 In the following example, the `childItem` property of the `ItemDetailComponent` expects a string, which is exactly what you're sending in the property binding:
 
-<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
 
 You can confirm this by looking in the `ItemDetailComponent` where the `@Input` type is set to a string:
-<code-example path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type" header="src/app/item-detail/item-detail.component.ts (setting the @Input() type" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type" header="src/app/item-detail/item-detail.component.ts (setting the @Input() type"></code-example>
 
 As you can see here, the `parentItem` in `AppComponent` is a string, which the `ItemDetailComponent` expects:
-<code-example path="property-binding/src/app/app.component.ts" region="parent-data-type" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.ts" region="parent-data-type" header="src/app/app.component.ts"></code-example>
 
 #### Passing in an object
 
@@ -787,24 +759,20 @@ the syntax and thinking are the same.
 
 In this scenario, `ListItemComponent` is nested within `AppComponent` and the `item` property expects an object.
 
-<code-example path="property-binding/src/app/app.component.html" region="pass-object" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="pass-object" header="src/app/app.component.html"></code-example>
 
 The `item` property is declared in the `ListItemComponent` with a type of `Item` and decorated with `@Input()`:
 
-<code-example path="property-binding/src/app/list-item/list-item.component.ts" region="item-input" header="src/app/list-item.component.ts" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/list-item/list-item.component.ts" region="item-input" header="src/app/list-item.component.ts"></code-example>
 
 In this sample app, an `Item` is an object that has two properties; an `id` and a `name`.
 
-<code-example path="property-binding/src/app/item.ts" region="item-class" header="src/app/item.ts" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/item.ts" region="item-class" header="src/app/item.ts"></code-example>
 
 While a list of items exists in another file, `mock-items.ts`, you can
 specify a different item in `app.component.ts` so that the new item will render:
 
-<code-example path="property-binding/src/app/app.component.ts" region="pass-object" header="src/app.component.ts" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.ts" region="pass-object" header="src/app.component.ts"></code-example>
 
 You just have to make sure, in this case, that you're supplying an object because that's the type of `item` and is what the nested component, `ListItemComponent`, expects.
 
@@ -818,8 +786,7 @@ The brackets, `[]`, tell Angular to evaluate the template expression.
 If you omit the brackets, Angular treats the string as a constant
 and *initializes the target property* with that string:
 
-<code-example path="property-binding/src/app/app.component.html" region="no-evaluation" header="src/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="no-evaluation" header="src/app.component.html"></code-example>
 
 
 Omitting the brackets will render the string
@@ -838,8 +805,7 @@ just as well for directive and component property initialization.
 The following example initializes the `prefix` property of the `StringInitComponent` to a fixed string,
 not a template expression. Angular sets it and forgets about it.
 
-<code-example path="property-binding/src/app/app.component.html" region="string-init" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="string-init" header="src/app/app.component.html"></code-example>
 
 The `[item]` binding, on the other hand, remains a live binding to the component's `currentItem` property.
 
@@ -848,8 +814,7 @@ The `[item]` binding, on the other hand, remains a live binding to the component
 You often have a choice between interpolation and property binding.
 The following binding pairs do the same thing:
 
-<code-example path="property-binding/src/app/app.component.html" region="property-binding-interpolation" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="property-binding-interpolation" header="src/app/app.component.html"></code-example>
 
 Interpolation is a convenient alternative to property binding in
 many cases. When rendering data values as strings, there is no
@@ -861,13 +826,11 @@ property to a non-string data value, you must use property binding*.
 
 Imagine the following malicious content.
 
-<code-example path="property-binding/src/app/app.component.ts" region="malicious-content" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.ts" region="malicious-content" header="src/app/app.component.ts"></code-example>
 
 In the component template, the content might be used with interpolation:
 
-<code-example path="property-binding/src/app/app.component.html" region="malicious-interpolated" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="malicious-interpolated" header="src/app/app.component.ts"></code-example>
 
 Fortunately, Angular data binding is on alert for dangerous HTML. In the above case,
 the HTML displays as is, and the Javascript does not execute. Angular **does not**
@@ -877,8 +840,7 @@ nor property binding.
 In the following example, however, Angular [sanitizes](guide/security#sanitization-and-security-contexts)
 the values before displaying them.
 
-<code-example path="property-binding/src/app/app.component.html" region="malicious-content" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="property-binding/src/app/app.component.html" region="malicious-content" header="src/app/app.component.html"></code-example>
 
 Interpolation handles the `<script>` tags differently than
 property binding but both approaches render the
@@ -920,8 +882,7 @@ or remove the attribute when the expression resolves to `null`.
 One of the primary use cases for attribute binding
 is to set ARIA attributes, as in this example:
 
-<code-example path="attribute-binding/src/app/app.component.html" region="attrib-binding-aria" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="attribute-binding/src/app/app.component.html" region="attrib-binding-aria" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
@@ -948,8 +909,7 @@ corresponding property. Interpolation and property binding can set only *propert
 
 Instead, you'd use property binding and write it like this:
 
-<code-example path="attribute-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="attribute-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html"></code-example>
 
 </div>
 
@@ -974,20 +934,17 @@ optionally followed by a dot (`.`) and the name of a CSS class: `[class.class-na
 You can replace that with a binding to a string of the desired class names; this is an all-or-nothing, replacement binding.
 
 
- <code-example path="attribute-binding/src/app/app.component.html" region="class-override" header="src/app/app.component.html" linenums="false">
-</code-example>
+ <code-example path="attribute-binding/src/app/app.component.html" region="class-override" header="src/app/app.component.html"></code-example>
 
 You can also add append a class to an element without overwriting the classes already on the element:
 
- <code-example path="attribute-binding/src/app/app.component.html" region="add-class" header="src/app/app.component.html" linenums="false">
-</code-example>
+ <code-example path="attribute-binding/src/app/app.component.html" region="add-class" header="src/app/app.component.html"></code-example>
 
 Finally, you can bind to a specific class name.
 Angular adds the class when the template expression evaluates to truthy.
 It removes the class when the expression is falsy.
 
-<code-example path="attribute-binding/src/app/app.component.html" region="is-special" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="attribute-binding/src/app/app.component.html" region="is-special" header="src/app/app.component.html"></code-example>
 
 While this technique is suitable for toggling a single class name,
 consider the [`NgClass`](guide/template-syntax#ngClass) directive when
@@ -1004,14 +961,12 @@ Style binding syntax resembles property binding.
 Instead of an element property between brackets, start with the prefix `style`,
 followed by a dot (`.`) and the name of a CSS style property: `[style.style-property]`.
 
-<code-example path="attribute-binding/src/app/app.component.html" region="style-binding" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="attribute-binding/src/app/app.component.html" region="style-binding" header="src/app/app.component.html"></code-example>
 
 Some style binding styles have a unit extension.
 The following example conditionally sets the font size in  “em” and “%” units .
 
-<code-example path="attribute-binding/src/app/app.component.html" region="style-binding-condition" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="attribute-binding/src/app/app.component.html" region="style-binding-condition" header="src/app/app.component.html"></code-example>
 
 **This technique is suitable for setting a single style, but consider
 the [`NgStyle`](guide/template-syntax#ngStyle) directive when setting several inline styles at the same time.**
@@ -1048,19 +1003,16 @@ the component's `onSave()` method whenever a click occurs:
 
 As above, the target is the button's click event.
 
-<code-example path="event-binding/src/app/app.component.html" region="event-binding-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="event-binding/src/app/app.component.html" region="event-binding-1" header="src/app/app.component.html"></code-example>
 
 Alternatively, use the `on-` prefix, known as the canonical form:
 
-<code-example path="event-binding/src/app/app.component.html" region="event-binding-2" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="event-binding/src/app/app.component.html" region="event-binding-2" header="src/app/app.component.html"></code-example>
 
 Element events may be the more common targets, but Angular looks first to see if the name matches an event property
 of a known directive, as it does in the following example:
 
-<code-example path="event-binding/src/app/app.component.html" region="custom-directive" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="event-binding/src/app/app.component.html" region="custom-directive" header="src/app/app.component.html"></code-example>
 
 If the name fails to match an element event or an output property of a known directive,
 Angular reports an “unknown directive” error.
@@ -1084,8 +1036,7 @@ with properties such as `target` and `target.value`.
 
 Consider this example:
 
-<code-example path="event-binding/src/app/app.component.html" region="event-binding-3" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="event-binding/src/app/app.component.html" region="event-binding-3" header="src/app/app.component.html"></code-example>
 
 This code sets the `<input>` `value` property by binding to the `name` property.
 To listen for changes to the value, the code binds to the `input`
@@ -1112,11 +1063,9 @@ Although the `ItemDetailComponent` has a delete button, it doesn't know how to d
 Here are the pertinent excerpts from that `ItemDetailComponent`:
 
 
-<code-example path="event-binding/src/app/item-detail/item-detail.component.html" linenums="false" header="src/app/item-detail/item-detail.component.html (template)" region="line-through">
-</code-example>
+<code-example path="event-binding/src/app/item-detail/item-detail.component.html" header="src/app/item-detail/item-detail.component.html (template)" region="line-through"></code-example>
 
-<code-example path="event-binding/src/app/item-detail/item-detail.component.ts" linenums="false" header="src/app/item-detail/item-detail.component.ts (deleteRequest)" region="deleteRequest">
-</code-example>
+<code-example path="event-binding/src/app/item-detail/item-detail.component.ts" header="src/app/item-detail/item-detail.component.ts (deleteRequest)" region="deleteRequest"></code-example>
 
 
 The component defines a `deleteRequest` property that returns an `EventEmitter`.
@@ -1126,8 +1075,7 @@ telling the `EventEmitter` to emit an `Item` object.
 Now imagine a hosting parent component that binds to the `deleteRequest` event
 of the `ItemDetailComponent`.
 
-<code-example path="event-binding/src/app/app.component.html" linenums="false" header="src/app/app.component.html (event-binding-to-component)" region="event-binding-to-component">
-</code-example>
+<code-example path="event-binding/src/app/app.component.html" header="src/app/app.component.html (event-binding-to-component)" region="event-binding-to-component"></code-example>
 
 When the `deleteRequest` event fires, Angular calls the parent component's
 `deleteItem()` method, passing the *item-to-delete* (emitted by `ItemDetail`)
@@ -1181,8 +1129,7 @@ property called `x` and a corresponding event named `xChange`.
 Here's a `SizerComponent` that fits this pattern.
 It has a `size` value property and a companion `sizeChange` event:
 
-<code-example path="two-way-binding/src/app/sizer/sizer.component.ts" header="src/app/sizer.component.ts" linenums="false">
-</code-example>
+<code-example path="two-way-binding/src/app/sizer/sizer.component.ts" header="src/app/sizer.component.ts"></code-example>
 
 The initial `size` is an input value from a property binding.
 Clicking the buttons increases or decreases the `size`, within
@@ -1191,13 +1138,11 @@ and then raises, or emits, the `sizeChange` event with the adjusted size.
 
 Here's an example in which the `AppComponent.fontSizePx` is two-way bound to the `SizerComponent`:
 
-<code-example path="two-way-binding/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-1)" region="two-way-1">
-</code-example>
+<code-example path="two-way-binding/src/app/app.component.html" header="src/app/app.component.html (two-way-1)" region="two-way-1"></code-example>
 
 The `AppComponent.fontSizePx` establishes the initial `SizerComponent.size` value.
 
-<code-example path="two-way-binding/src/app/app.component.ts" header="src/app/app.component.ts" region="font-size">
-</code-example>
+<code-example path="two-way-binding/src/app/app.component.ts" header="src/app/app.component.ts" region="font-size"></code-example>
 
 Clicking the buttons updates the `AppComponent.fontSizePx` via the two-way binding.
 The revised `AppComponent.fontSizePx` value flows through to the _style_ binding,
@@ -1206,8 +1151,7 @@ making the displayed text bigger or smaller.
 The two-way binding syntax is really just syntactic sugar for a _property_ binding and an _event_ binding.
 Angular desugars the `SizerComponent` binding into this:
 
-<code-example path="two-way-binding/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-2)" region="two-way-2">
-</code-example>
+<code-example path="two-way-binding/src/app/app.component.html" header="src/app/app.component.html (two-way-2)" region="two-way-2"></code-example>
 
 The `$event` variable contains the payload of the `SizerComponent.sizeChange` event.
 Angular assigns the `$event` value to the `AppComponent.fontSizePx` when the user clicks the buttons.
@@ -1261,8 +1205,7 @@ The most common attribute directives are as follows:
 
 Add or remove several CSS classes simultaneously with `ngClass`.
 
-<code-example path="built-in-directives/src/app/app.component.html" region="special-div" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="special-div" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
@@ -1275,13 +1218,11 @@ Consider a `setCurrentClasses()` component method that sets a component property
 `true`/`false` state of three other component properties. Each key of the object is a CSS class name; its value is `true` if the class should be added,
 `false` if it should be removed.
 
-<code-example path="built-in-directives/src/app/app.component.ts" region="setClasses" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.ts" region="setClasses" header="src/app/app.component.ts"></code-example>
 
 Adding an `ngClass` property binding to `currentClasses` sets the element's classes accordingly:
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgClass-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgClass-1" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
@@ -1302,8 +1243,7 @@ Use `NgStyle` to set many inline styles simultaneously and dynamically, based on
 
 For context, consider setting a *single* style value with [style binding](guide/template-syntax#style-binding), without `NgStyle`.
 
-<code-example path="built-in-directives/src/app/app.component.html" region="without-ng-style" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="without-ng-style" header="src/app/app.component.html"></code-example>
 
 However, to set *many* inline styles at the same time, use the `NgStyle` directive.
 
@@ -1311,13 +1251,11 @@ The following is a `setCurrentStyles()` method that sets a component
 property, `currentStyles`, with an object that defines three styles,
 based on the state of three other component properties:
 
-<code-example path="built-in-directives/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts"></code-example>
 
 Adding an `ngStyle` property binding to `currentStyles` sets the element's styles accordingly:
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
@@ -1335,8 +1273,7 @@ Remember to call `setCurrentStyles()`, both initially and when the dependent pro
 The `NgModel` directive allows you to display a data property and
 update that property when the user makes changes. Here's an example:
 
-<code-example path="built-in-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (NgModel example)" region="NgModel-1">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" header="src/app/app.component.html (NgModel example)" region="NgModel-1"></code-example>
 
 
 #### Import `FormsModule` to use `ngModel`
@@ -1347,20 +1284,17 @@ Learn more about the `FormsModule` and `ngModel` in [Forms](guide/forms#ngModel)
 
 Remember to import the `FormsModule` to make `[(ngModel)]` available as follows:
 
-<code-example path="built-in-directives/src/app/app.module.ts" linenums="false" header="src/app/app.module.ts (FormsModule import)" region="import-forms-module">
-</code-example>
+<code-example path="built-in-directives/src/app/app.module.ts" header="src/app/app.module.ts (FormsModule import)" region="import-forms-module"></code-example>
 
 
 You could achieve the same result with separate bindings to
 the `<input>` element's  `value` property and `input` event:
 
-<code-example path="built-in-directives/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html"></code-example>
 
 To streamline the syntax, the `ngModel` directive hides the details behind its own `ngModel` input and `ngModelChange` output properties:
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgModelChange" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgModelChange" header="src/app/app.component.html"></code-example>
 
 The `ngModel` data property sets the element's value property and the `ngModelChange` event property
 listens for changes to the element's value.
@@ -1388,15 +1322,13 @@ Separate `ngModel` bindings are an improvement over binding to the
 element's native properties, but you can streamline the binding with a
 single declaration using the `[(ngModel)]` syntax:
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgModel-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgModel-1" header="src/app/app.component.html"></code-example>
 
 This `[(ngModel)]` syntax can only _set_ a data-bound property.
 If you need to do something more, you can write the expanded form;
 for example, the following changes the `<input>` value to uppercase:
 
-<code-example path="built-in-directives/src/app/app.component.html" region="uppercase" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="uppercase" header="src/app/app.component.html"></code-example>
 
 Here are all variations in action, including the uppercase version:
 
@@ -1445,8 +1377,7 @@ You can add or remove an element from the DOM by applying an `NgIf` directive to
 a host element.
 Bind the directive to a condition expression like `isActive` in this example.
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-1" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
@@ -1469,8 +1400,7 @@ For comparison, the following example shows how to control
 the visibility of an element with a
 [class](guide/template-syntax#class-binding) or [style](guide/template-syntax#style-binding) binding.
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-3" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-3" header="src/app/app.component.html"></code-example>
 
 When you hide an element, that element and all of its descendants remain in the DOM.
 All components for those elements stay in memory and
@@ -1500,11 +1430,9 @@ The following shows `NgIf` guarding two `<div>`s.
 The `currentCustomer` name appears only when there is a `currentCustomer`.
 The `nullCustomer` will not be displayed as long as it is `null`.
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2" header="src/app/app.component.html"></code-example>
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2b" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2b" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
@@ -1523,13 +1451,11 @@ and then you tell Angular to use that block as a template for rendering each ite
 
 Here is an example of `NgFor` applied to a simple `<div>`:
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html"></code-example>
 
 You can also apply an `NgFor` to a component element, as in this example:
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-2" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-2" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-critical">
 
@@ -1573,8 +1499,7 @@ as well as within its descendants to access the item's properties.
 The following example references `item` first in an interpolation
 and then passes in a binding to the `item` property of the `<app-item-detail>` component.
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1-2" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1-2" header="src/app/app.component.html"></code-example>
 
 For more information about template input variables, see
 [Structural Directives](guide/structural-directives#template-input-variable).
@@ -1587,8 +1512,7 @@ You can capture the `index` in a template input variable and use it in the templ
 
 The next example captures the `index` in a variable named `i` and displays it with the item name.
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-3" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-3" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
@@ -1607,13 +1531,11 @@ Add a method to the component that returns the value `NgFor` should track.
 In this case, that value is the hero's `id`. If the `id` has already been rendered,
 Angular keeps track of it and doesn't re-query the server for the same `id`.
 
-<code-example path="built-in-directives/src/app/app.component.ts" region="trackByItems" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.ts" region="trackByItems" header="src/app/app.component.ts"></code-example>
 
 In the microsyntax expression, set `trackBy` to the `trackByItems()` method.
 
-<code-example path="built-in-directives/src/app/app.component.html" region="trackBy" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="trackBy" header="src/app/app.component.html"></code-example>
 
 Here is an illustration of the `trackBy` effect.
 "Reset items" creates new items with the same `item.id`s.
@@ -1646,8 +1568,7 @@ Angular puts only the selected element into the DOM.
 `NgSwitch` is actually a set of three, cooperating directives:
 `NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault` as in the following example.
 
- <code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch" header="src/app/app.component.html" linenums="false">
-</code-example>
+ <code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch" header="src/app/app.component.html"></code-example>
 
 <figure>
   <img src="generated/images/guide/built-in-directives/ngswitch.gif" alt="Animation of NgSwitch">
@@ -1678,8 +1599,7 @@ which is bound to the `currentItem` of the parent component.
 Switch directives work as well with native elements and web components too.
 For example, you could replace the `<app-best-item>` switch case with the following.
 
-<code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch-div" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch-div" header="src/app/app.component.html"></code-example>
 
 <hr/>
 
@@ -1702,14 +1622,12 @@ For a demonstration of the syntax and code snippets in this section, see the <li
 Use the hash symbol (#) to declare a reference variable.
 The following reference variable, `#phone`, declares a `phone` variable on an `<input>` element.
 
-<code-example path="template-reference-variables/src/app/app.component.html" region="ref-var" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-reference-variables/src/app/app.component.html" region="ref-var" header="src/app/app.component.html"></code-example>
 
 You can refer to a template reference variable anywhere in the component's template.
 Here, a `<button>` further down the template refers to the `phone` variable.
 
-<code-example path="template-reference-variables/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-reference-variables/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html"></code-example>
 
 <h3 class="no-toc">How a reference variable gets its value</h3>
 
@@ -1720,8 +1638,7 @@ The button's click handler passes the `<input>` value to the component's `callPh
 The `NgForm` directive can change that behavior and set the value to something else. In the following example, the template reference variable, `itemForm`, appears three times separated
 by HTML.
 
-<code-example path="template-reference-variables/src/app/app.component.html" region="ngForm" header="src/app/hero-form.component.html" linenums="false">
-</code-example>
+<code-example path="template-reference-variables/src/app/app.component.html" region="ngForm" header="src/app/hero-form.component.html"></code-example>
 
 The reference value of itemForm, without the ngForm attribute value, would be
 the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement).
@@ -1751,8 +1668,7 @@ You can use the `ref-` prefix alternative to `#`.
 This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 
 
-<code-example path="template-reference-variables/src/app/app.component.html" region="ref-fax" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-reference-variables/src/app/app.component.html" region="ref-fax" header="src/app/app.component.html"></code-example>
 
 
 <hr/>
@@ -1826,8 +1742,7 @@ To illustrate the use of `@Input()`, edit these parts of your app:
 To use the `@Input()` decorator in a child component class, first import
 `Input` and then decorate the property with `@Input()`:
 
-<code-example path="inputs-outputs/src/app/item-detail/item-detail.component.ts" region="use-input" header="src/app/item-detail/item-detail.component.ts" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/item-detail/item-detail.component.ts" region="use-input" header="src/app/item-detail/item-detail.component.ts"></code-example>
 
 
 In this case, `@Input()` decorates the property <code class="no-auto-link">item</code>, which has
@@ -1836,8 +1751,7 @@ a type of `string`, however, `@Input()` properties can have any type, such as
 
 Next, in the child component template, add the following:
 
-<code-example path="inputs-outputs/src/app/item-detail/item-detail.component.html" region="property-in-template" header="src/app/item-detail/item-detail.component.html" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/item-detail/item-detail.component.html" region="property-in-template" header="src/app/item-detail/item-detail.component.html"></code-example>
 
 
 
@@ -1850,13 +1764,11 @@ First, use the child's selector, here `<app-item-detail>`, as a directive within
 parent component template. Then, use [property binding](guide/template-syntax#property-binding)
 to bind the property in the child to the property of the parent.
 
-<code-example path="inputs-outputs/src/app/app.component.html" region="input-parent" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/app.component.html" region="input-parent" header="src/app/app.component.html"></code-example>
 
 Next, in the parent component class, `app.component.ts`, designate a value for `currentItem`:
 
-<code-example path="inputs-outputs/src/app/app.component.ts" region="parent-property" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/app.component.ts" region="parent-property" header="src/app/app.component.ts"></code-example>
 
 With `@Input()`, Angular passes the value for `currentItem` to the child so that `item` renders as `Television`.
 
@@ -1946,8 +1858,7 @@ The following example `@Output()` is called `newItemEvent` and its type is
 `EventEmitter`, which means it's an event.
 
 
-<code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output" header="src/app/item-output/item-output.component.ts" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output" header="src/app/item-output/item-output.component.ts"></code-example>
 
 The different parts of the above declaration are as follows:
 
@@ -1958,8 +1869,7 @@ The different parts of the above declaration are as follows:
 
 Next, create an `addNewItem()` method in the same component class:
 
-<code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output-class" header="src/app/item-output/item-output.component.ts" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output-class" header="src/app/item-output/item-output.component.ts"></code-example>
 
 The `addNewItem()` function uses the `@Output()`, `newItemEvent`,
 to raise an event in which it emits the value the user
@@ -1974,8 +1884,7 @@ The child's template has two controls. The first is an HTML `<input>` with a
 where the user types in an item name. Whatever the user types
 into the `<input>` gets stored in the `#newItem` variable.
 
-<code-example path="inputs-outputs/src/app/item-output/item-output.component.html" region="child-output" header="src/app/item-output/item-output.component.html" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.html" region="child-output" header="src/app/item-output/item-output.component.html"></code-example>
 
 The second element is a `<button>`
 with an [event binding](guide/template-syntax#event-binding). You know it's
@@ -1997,8 +1906,7 @@ any component in which you could nest the child.
 The `AppComponent` in this example features a list of `items`
 in an array and a method for adding more items to the array.
 
-<code-example path="inputs-outputs/src/app/app.component.ts" region="add-new-item" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/app.component.ts" region="add-new-item" header="src/app/app.component.ts"></code-example>
 
 The `addItem()` method takes an argument in the form of a string
 and then pushes, or adds, that string to the `items` array.
@@ -2010,8 +1918,7 @@ method to the child's event. Put the child selector, here `<app-item-output>`,
 within the parent component's
 template, `app.component.html`.
 
-<code-example path="inputs-outputs/src/app/app.component.html" region="output-parent" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/app.component.html" region="output-parent" header="src/app/app.component.html"></code-example>
 
 The event binding, `(newItemEvent)='addItem($event)'`, tells
 Angular to connect the event in the child, `newItemEvent`, to
@@ -2036,8 +1943,7 @@ The `*ngFor` iterates over the items in the `items` array. When you enter a valu
 
 You can use `@Input()` and `@Output()` on the same child component as in the following:
 
-<code-example path="inputs-outputs/src/app/app.component.html" region="together" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/app.component.html" region="together" header="src/app/app.component.html"></code-example>
 
 The target, `item`, which is an `@Input()` property in the child component class, receives its value from the parent's property, `currentItem`. When you click delete, the child component raises an event, `deleteRequest`, which is the argument for the parent's `crossOffItem()` method.
 
@@ -2063,15 +1969,13 @@ to declare inputs and outputs, you can identify
 members in the `inputs` and `outputs` arrays
 of the directive metadata, as in this example:
 
-<code-example path="inputs-outputs/src/app/in-the-metadata/in-the-metadata.component.ts" region="metadata" header="src/app/in-the-metadata/in-the-metadata.component.ts" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/in-the-metadata/in-the-metadata.component.ts" region="metadata" header="src/app/in-the-metadata/in-the-metadata.component.ts"></code-example>
 
 While declaring `inputs` and `outputs` in the `@Directive` and `@Component`
 metadata is possible, it is a better practice to use the `@Input()` and `@Output()`
 class decorators instead, as follows:
 
-<code-example path="inputs-outputs/src/app/input-output/input-output.component.ts" region="input-output" header="src/app/input-output/input-output.component.ts" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/input-output/input-output.component.ts" region="input-output" header="src/app/input-output/input-output.component.ts"></code-example>
 
 See the [Decorate input and output properties](guide/styleguide#decorate-input-and-output-properties) section of the
 [Style Guide](guide/styleguide) for details.
@@ -2104,16 +2008,14 @@ offer a solution.
 Alias inputs and outputs in the metadata using a colon-delimited (`:`) string with
 the directive property name on the left and the public alias on the right:
 
-<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias" header="src/app/aliasing/aliasing.component.ts" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias" header="src/app/aliasing/aliasing.component.ts"></code-example>
 
 
 ### Aliasing with the `@Input()`/`@Output()` decorator
 
 You can specify the alias for the property name by passing the alias name to the `@Input()`/`@Output()` decorator. The internal name remains as usual.
 
-<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias-input-output" header="src/app/aliasing/aliasing.component.ts" linenums="false">
-</code-example>
+<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias-input-output" header="src/app/aliasing/aliasing.component.ts"></code-example>
 
 
 <hr/>
@@ -2139,25 +2041,21 @@ For example, you might display a number as a currency, change text to uppercase,
 Pipes are simple functions that accept an input value and return a transformed value.
 They're easy to apply within template expressions, using the pipe operator (`|`):
 
-<code-example path="template-expression-operators/src/app/app.component.html" region="uppercase-pipe" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-expression-operators/src/app/app.component.html" region="uppercase-pipe" header="src/app/app.component.html"></code-example>
 
 The pipe operator passes the result of an expression on the left to a pipe function on the right.
 
 You can chain expressions through multiple pipes:
 
-<code-example path="template-expression-operators/src/app/app.component.html" region="pipe-chain" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-expression-operators/src/app/app.component.html" region="pipe-chain" header="src/app/app.component.html"></code-example>
 
 And you can also [apply parameters](guide/pipes#parameterizing-a-pipe) to a pipe:
 
-<code-example path="template-expression-operators/src/app/app.component.html" region="date-pipe" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-expression-operators/src/app/app.component.html" region="date-pipe" header="src/app/app.component.html"></code-example>
 
 The `json` pipe is particularly helpful for debugging bindings:
 
-<code-example path="template-expression-operators/src/app/app.component.html" region="json-pipe" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-expression-operators/src/app/app.component.html" region="json-pipe" header="src/app/app.component.html"></code-example>
 
 The generated output would look something like this:
 
@@ -2187,8 +2085,7 @@ A good practice is to use parentheses in the third operand too.
 The Angular safe navigation operator, `?`, guards against `null` and `undefined`
 values in property paths. Here, it protects against a view render failure if `item` is `null`.
 
-<code-example path="template-expression-operators/src/app/app.component.html" region="safe" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-expression-operators/src/app/app.component.html" region="safe" header="src/app/app.component.html"></code-example>
 
 If `item` is `null`, the view still renders but the displayed value is blank; you see only "The item name is:" with nothing after it.
 
@@ -2231,8 +2128,7 @@ an Angular template. For example, after you use [*ngIf](guide/template-syntax#ng
 to check that `item` is defined, you can assert that
 `item` properties are also defined.
 
-<code-example path="template-expression-operators/src/app/app.component.html" region="non-null" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="template-expression-operators/src/app/app.component.html" region="non-null" header="src/app/app.component.html"></code-example>
 
 When the Angular compiler turns your template into TypeScript code,
 it prevents TypeScript from reporting that `item` might be `null` or `undefined`.
@@ -2259,8 +2155,7 @@ Sometimes a binding expression triggers a type error during [AOT compilation](gu
 to fully specify the type. To silence the error, you can use the `$any()` cast function to cast
 the expression to [the `any` type](http://www.typescriptlang.org/docs/handbook/basic-types.html#any) as in the following example:
 
-<code-example path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-1" header="src/app/app.component.html"></code-example>
 
 When the Angular compiler turns this template into TypeScript code,
 it prevents TypeScript from reporting that `bestByDate` is not a member of the `item`
@@ -2269,8 +2164,7 @@ object when it runs type checking on the template.
 The `$any()` cast function also works with `this` to allow access to undeclared members of
 the component.
 
-<code-example path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-2" header="src/app/app.component.html" linenums="false">
-</code-example>
+<code-example path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-2" header="src/app/app.component.html"></code-example>
 
 The `$any()` cast function works anywhere in a binding expression where a method call is valid.
 
@@ -2287,13 +2181,11 @@ templates. This means that you will be able to dynamically generate interactive 
 
 Refer to the sample code snippet below for a syntax example:
 
-<code-example path="template-syntax/src/app/svg.component.ts" header="src/app/svg.component.ts">
-</code-example>
+<code-example path="template-syntax/src/app/svg.component.ts" header="src/app/svg.component.ts"></code-example>
 
 Add the below code to your `svg.component.svg` file:
 
-<code-example path="template-syntax/src/app/svg.component.svg" header="src/app/svg.component.svg">
-</code-example>
+<code-example path="template-syntax/src/app/svg.component.svg" header="src/app/svg.component.svg"></code-example>
 
 Here you can see the use of a `click()` event binding and the property binding syntax
 (`[attr.fill]="fillColor"`).

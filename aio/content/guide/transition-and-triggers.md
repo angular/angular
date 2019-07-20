@@ -22,13 +22,11 @@ Here's another code sample using the wildcard state together with our previous e
 
 This allows us to add new states without having to include separate transitions for each one.
 
-<code-example header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" region="trigger-wildcard1" language="typescript" linenums="false">
-</code-example>
+<code-example header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" region="trigger-wildcard1" language="typescript"></code-example>
 
 Use a double arrow syntax to specify state-to-state transitions in both directions.
 
-<code-example header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" region="trigger-wildcard2" language="typescript" linenums="false">
-</code-example>
+<code-example header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" region="trigger-wildcard2" language="typescript"></code-example>
 
 ### Using wildcard state with multiple transition states
 
@@ -39,9 +37,7 @@ In our two-state button example, the wildcard isn't that useful because there ar
 </figure>
 
 
-<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" linenums="false"
-region="trigger-transition" language="typescript">
-</code-example>
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="trigger-transition" language="typescript"></code-example>
 
 
 The `* => *` transition applies when any change between two states takes place.
@@ -54,9 +50,7 @@ To do this, list the more specific transitions *before* `* => *`.
 
 Use the wildcard `*` with a style to tell the animation to use whatever the current style value is, and animate with that. Wildcard is a fallback value that's used if the state being animated isn't declared within the trigger.
 
-<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" linenums="false"
-region="transition4" language="typescript">
-</code-example>
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="transition4" language="typescript"></code-example>
 
 ### Void state
 
@@ -88,8 +82,7 @@ Now we'll add a new behavior:
 * When you add a hero to the list of heroes, it appears to fly onto the page from the left.
 * When you remove a hero from the list, it appears to fly out to the right.
 
-<code-example path="animations/src/app/hero-list-enter-leave.component.ts" header="src/app/hero-list-enter-leave.component.ts" region="animationdef" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/hero-list-enter-leave.component.ts" header="src/app/hero-list-enter-leave.component.ts" region="animationdef" language="typescript"></code-example>
 
 In the above code, we applied the `void` state when the HTML element isn't attached to a view.
 
@@ -134,7 +127,7 @@ The `transition()` function takes additional selector values, `:increment` and `
 
 </div>
 
-<code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="increment" language="typescript" linenums="false"></code-example>
+<code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="increment" language="typescript"></code-example>
 
 ## Boolean values in transitions
 
@@ -188,8 +181,7 @@ However, selective child animations can still be run on a disabled parent in one
 
 To disable all animations for an Angular app, place the `@.disabled` host binding on the topmost Angular component.
 
-<code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="toggle-app-animations" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="toggle-app-animations" language="typescript"></code-example>
 
 <div class="alert is-helpful">
 
@@ -200,8 +192,7 @@ To disable all animations for an Angular app, place the `@.disabled` host bindin
 
 The animation `trigger()` function emits *callbacks* when it starts and when it finishes. In the example below we have a component that contains an `openClose` trigger.
 
-<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="events1" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="events1" language="typescript"></code-example>
 
 In the HTML template, the animation event is passed back via `$event`, as `@trigger.start` and `@trigger.done`, where `trigger` is the name of the trigger being used. In our example, the trigger `openClose` appears as follows.
 
@@ -216,8 +207,7 @@ An animation can influence an end user to *perceive* the operation as faster, ev
 
 Callbacks can serve as a debugging tool, for example in conjunction with `console.warn()` to view the application's progress in a browser's Developer JavaScript Console. The following code snippet creates console log output for our original example, a button with the two states of `open` and `closed`.
 
-<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="events" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="events" language="typescript"></code-example>
 
 {@a keyframes}
 
@@ -233,8 +223,7 @@ Angular's `keyframe()` function is similar to keyframes in CSS. Keyframes allow 
 
 The code for this color change might look like this.
 
-<code-example path="animations/src/app/status-slider.component.ts" header="src/app/status-slider.component.ts" region="keyframes" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/status-slider.component.ts" header="src/app/status-slider.component.ts" region="keyframes" language="typescript"></code-example>
 
 ### Offset
 
@@ -269,8 +258,7 @@ Here's an example of using keyframes to create a pulse effect:
 
 The code snippet for this animation might look like this.
 
-<code-example path="animations/src/app/open-close.component.1.ts" header="src/app/open-close.component.ts" region="trigger" language="typescript" linenums="false">
-</code-example>
+<code-example path="animations/src/app/open-close.component.1.ts" header="src/app/open-close.component.ts" region="trigger" language="typescript"></code-example>
 
 ### Animatable properties and units
 
@@ -292,7 +280,7 @@ In these cases, you can use a special wildcard `*` property value under `style()
 
 In this example, we have a trigger called `shrinkOut`, used when an HTML element leaves the page. The animation takes whatever height the element has before it leaves, and animates from that height to zero.
 
-<code-example path="animations/src/app/hero-list-auto.component.ts" header="src/app/hero-list-auto.component.ts" region="auto-calc" language="typescript" linenums="false"></code-example>
+<code-example path="animations/src/app/hero-list-auto.component.ts" header="src/app/hero-list-auto.component.ts" region="auto-calc" language="typescript"></code-example>
 
 ### Keyframes summary
 

@@ -106,19 +106,16 @@ To use a directive, component, or pipe in a module, you must do a few things:
 Those three steps look like the following. In the file where you create your directive, export it.
 The following example, named `ItemDirective` is the default directive structure that the CLI generates in its own file, `item.directive.ts`:
 
-<code-example path="bootstrapping/src/app/item.directive.ts" region="directive" header="src/app/item.directive.ts" linenums="false">
-</code-example>
+<code-example path="bootstrapping/src/app/item.directive.ts" region="directive" header="src/app/item.directive.ts"></code-example>
 
 The key point here is that you have to export it so you can import it elsewhere. Next, import it
 into the NgModule, in this example `app.module.ts`, with a JavaScript import statement:
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" header="src/app/app.module.ts" linenums="false">
-</code-example>
+<code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" header="src/app/app.module.ts"></code-example>
 
 And in the same file, add it to the `@NgModule` `declarations` array:
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="declarations" header="src/app/app.module.ts" linenums="false">
-</code-example>
+<code-example path="bootstrapping/src/app/app.module.ts" region="declarations" header="src/app/app.module.ts"></code-example>
 
 
 Now you could use your `ItemDirective` in a component. This example uses `AppModule`, but you'd do it the same way for a feature module. For more about directives, see [Attribute Directives](guide/attribute-directives) and [Structural Directives](guide/structural-directives). You'd also use the same technique for [pipes](guide/pipes) and components.

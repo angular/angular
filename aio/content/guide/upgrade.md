@@ -840,15 +840,15 @@ After this, the service is injectable anywhere in AngularJS code:
 
 ## Lazy Loading AngularJS
 
-When building applications, you want to ensure that only the required resources are loaded when necessary. Whether that be loading of assets or code, making sure everything that can be deferred until needed keeps your application running efficiently. This is especially true when running different frameworks in the same application. 
+When building applications, you want to ensure that only the required resources are loaded when necessary. Whether that be loading of assets or code, making sure everything that can be deferred until needed keeps your application running efficiently. This is especially true when running different frameworks in the same application.
 
 [Lazy loading](guide/glossary#lazy-loading) is a technique that defers the loading of required assets and code resources until they are actually used. This reduces startup time and increases efficiency, especially when running different frameworks in the same application.
 
 When migrating large applications from AngularJS to Angular using a hybrid approach, you want to migrate some of the most commonly used features first, and only use the less commonly used features if needed. Doing so helps you ensure that the application is still providing a seamless experience for your users while you are migrating.
 
-In most environments where both Angular and AngularJS are used to render the application, both frameworks are loaded in the initial bundle being sent to the client. This results in both increased bundle size and possible reduced performance. 
+In most environments where both Angular and AngularJS are used to render the application, both frameworks are loaded in the initial bundle being sent to the client. This results in both increased bundle size and possible reduced performance.
 
-Overall application performance is affected in cases where the user stays on Angular-rendered pages because the AngularJS framework and application are still loaded and running, even if they are never accessed. 
+Overall application performance is affected in cases where the user stays on Angular-rendered pages because the AngularJS framework and application are still loaded and running, even if they are never accessed.
 
 You can take steps to mitigate both bundle size and performance issues. By isolating your AngularJS app to a separate bundle, you can take advantage of [lazy loading](guide/glossary#lazy-loading) to load, bootstrap, and render the AngularJS application only when needed. This strategy reduces your initial bundle size, defers any potential impact from loading both frameworks until absolutely necessary, and keeps your application running as efficiently as possible.
 
@@ -908,7 +908,7 @@ When your application matches a route that needs AngularJS, the AngularJS app is
 
 ## Using the Unified Angular Location Service
 
-In AngularJS, the [$location service](https://docs.angularjs.org/api/ng/service/$location) handles all routing configuration and navigation, encoding and decoding of URLS, redirects, and interactions with browser APIs. Angular uses its own underlying `Location` service for all of these tasks. 
+In AngularJS, the [$location service](https://docs.angularjs.org/api/ng/service/$location) handles all routing configuration and navigation, encoding and decoding of URLS, redirects, and interactions with browser APIs. Angular uses its own underlying `Location` service for all of these tasks.
 
 When you migrate from AngularJS to Angular you will want to move as much responsibility as possible to Angular, so that you can take advantage of new APIs. To help with the transition, Angular provides the `LocationUpgradeModule`. This module enables a _unified_ location service that shifts responsibilities from the AngularJS `$location` service to the Angular `Location` service.
 
@@ -1455,8 +1455,7 @@ Re-open the `app.module.ts` file, import and add `HttpClientModule` to the `impo
 Now you're ready to upgrade the Phone service itself. Replace the ngResource-based
 service in `phone.service.ts` with a TypeScript class decorated as `@Injectable`:
 
-<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" region="classdef" header="app/core/phone/phone.service.ts (skeleton)" linenums="false">
-</code-example>
+<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" region="classdef" header="app/core/phone/phone.service.ts (skeleton)"></code-example>
 
 The `@Injectable` decorator will attach some dependency injection metadata
 to the class, letting Angular know about its dependencies. As described
@@ -1475,14 +1474,12 @@ and the other loads the details of a specified phone:
 The methods now return observables of type `PhoneData` and `PhoneData[]`. This is
 a type you don't have yet. Add a simple interface for it:
 
-<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" region="phonedata-interface" header="app/core/phone/phone.service.ts (interface)" linenums="false">
-</code-example>
+<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" region="phonedata-interface" header="app/core/phone/phone.service.ts (interface)"></code-example>
 
 `@angular/upgrade/static` has a `downgradeInjectable` method for the purpose of making
 Angular services available to AngularJS code. Use it to plug in the `Phone` service:
 
-<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" region="downgrade-injectable" header="app/core/phone/phone.service.ts (downgrade)" linenums="false">
-</code-example>
+<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" region="downgrade-injectable" header="app/core/phone/phone.service.ts (downgrade)"></code-example>
 
 Here's the full, final code for the service:
 
@@ -1551,15 +1548,13 @@ Now convert the template of this component into Angular syntax.
 The search controls replace the AngularJS `$ctrl` expressions
 with Angular's two-way `[(ngModel)]` binding syntax:
 
-<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="controls" header="app/phone-list/phone-list.template.html (search controls)" linenums="false">
-</code-example>
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="controls" header="app/phone-list/phone-list.template.html (search controls)"></code-example>
 
 Replace the list's `ng-repeat` with an `*ngFor` as
 [described in the Template Syntax page](guide/template-syntax#directives).
 Replace the image tag's `ng-src` with a binding to the native `src` property.
 
-<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (phones)" linenums="false">
-</code-example>
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (phones)"></code-example>
 
 #### No Angular _filter_ or _orderBy_ filters
 
@@ -1611,8 +1606,7 @@ Do that in a new file called `ajs-upgraded-providers.ts` and import it in `app.m
 <code-example path="upgrade-phonecat-2-hybrid/app/ajs-upgraded-providers.ts" header="app/ajs-upgraded-providers.ts">
 </code-example>
 
-<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="routeparams" header="app/app.module.ts ($routeParams)" linenums="false">
-</code-example>
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="routeparams" header="app/app.module.ts ($routeParams)"></code-example>
 
 Convert the phone detail component template into Angular syntax as follows:
 
@@ -1661,8 +1655,7 @@ It's easy to turn the filter function into an equivalent Pipe class.
 The implementation is the same as before, repackaged in the `transform` method.
 Rename the file to `checkmark.pipe.ts` to conform with Angular conventions:
 
-<code-example path="upgrade-phonecat-2-hybrid/app/core/checkmark/checkmark.pipe.ts" header="app/core/checkmark/checkmark.pipe.ts" linenums="false">
-</code-example>
+<code-example path="upgrade-phonecat-2-hybrid/app/core/checkmark/checkmark.pipe.ts" header="app/core/checkmark/checkmark.pipe.ts"></code-example>
 
 Now import and declare the newly created pipe and
 remove the filter &lt;script&gt; tag from `index.html`:
@@ -1726,8 +1719,7 @@ element on the host web page when the application launches.
 Add this `<phonecat-app>` element to the `index.html`.
 It replaces the old AngularJS `ng-view` directive:
 
-<code-example path="upgrade-phonecat-3-final/index.html" region="appcomponent" header="index.html (body)" linenums="false">
-</code-example>
+<code-example path="upgrade-phonecat-3-final/index.html" region="appcomponent" header="index.html (body)"></code-example>
 
 #### Create the _Routing Module_
 A router needs configuration whether it's the AngularJS or Angular or any other router.
@@ -1767,8 +1759,7 @@ You no longer have to hardcode the links to phone details in the phone list.
 You can generate data bindings for each phone's `id` to the `routerLink` directive
 and let that directive construct the appropriate URL to the `PhoneDetailComponent`:
 
-<code-example path="upgrade-phonecat-3-final/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (list with links)" linenums="false">
-</code-example>
+<code-example path="upgrade-phonecat-3-final/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (list with links)"></code-example>
 
 <div class="alert is-helpful">
 

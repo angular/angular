@@ -763,7 +763,7 @@ NgModules are delivered within scoped packages whose names begin with the Angula
 
 Import a scoped package in the same way that you import a normal package.
 
-<code-example path="architecture/src/app/app.component.ts" linenums="false" header="architecture/src/app/app.component.ts (import)" region="import">
+<code-example path="architecture/src/app/app.component.ts" header="architecture/src/app/app.component.ts (import)" region="import">
 
 </code-example>
 
