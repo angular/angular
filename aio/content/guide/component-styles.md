@@ -195,8 +195,6 @@ if some ancestor element has the CSS class `theme-light`.
 
 <!--
 Component styles normally apply only to the HTML in the component's own template.
--->
-컴포넌트 스타일은 보통 해당 컴포넌트의 템플릿에만 적용합니다.
 
 Applying the `::ng-deep` pseudo-class to any CSS rule completely disables view-encapsulation for
 that rule. Any style with `::ng-deep` applied becomes a global style. In order to scope the specified style
@@ -204,10 +202,14 @@ to the current component and all its descendants, be sure to include the `:host`
 `::ng-deep`. If the `::ng-deep` combinator is used without the `:host` pseudo-class selector, the style
 can bleed into other components.
 
-<!--
 The following example targets all `<h3>` elements, from the host element down
 through this component to all of its child elements in the DOM.
 -->
+컴포넌트 스타일은 보통 해당 컴포넌트의 템플릿에만 적용합니다.
+
+가상 클래스 `::ng-deep`가 적용된 CSS는 컴포넌트의 뷰 캡슐화 정책을 완전히 무시합니다. 그래서 `::ng-deep`이 적용된 규칙은 전역 스타일 규칙이 되기 때문에 해당 컴포넌트는 물론이고 이 컴포넌트의 자식 컴포넌트에 모두 적용됩니다.
+그리고 `:host` 셀렉터 앞에 `::ng-deep` 클래스를 사용하거나 `:host` 셀렉터를 사용하지 않으면 해당 CSS 규칙은 다른 컴포넌트에도 모두 적용되니 주의해야 합니다.
+
 아래 예제는 컴포넌트 뷰 안에 있는 모든 자식 컴포넌트의 `<h3>` 엘리먼트에 이탤릭 속성을 지정하는 예제 코드입니다.
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="deep" header="src/app/hero-details.component.css" linenums="false">

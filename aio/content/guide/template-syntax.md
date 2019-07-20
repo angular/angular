@@ -35,7 +35,7 @@ in the <live-example title="Template Syntax Live Code"></live-example>.
 -->
 
 템플릿 문법의 개념을 확실하게 이해하기 위해 많은 코드를 살펴볼 것이며,
-이 문서에서 설명하는 코드는 <live-example title="Template Syntax Live Code"></live-example> 에서 확인하거나 다운받을 수 있습니다.
+이 문서에서 설명하는 코드는 <live-example title="템플릿 문법 라이브 코딩"></live-example> 에서 확인하거나 다운받을 수 있습니다.
 
 {@a html}
 <!--
@@ -267,10 +267,19 @@ such as a template input variable,
 템플릿 표현식에서는 _템플릿 안에_ 선언된 템플릿 입력 변수도 참조할 수 있습니다.
 그래서 아래 코드에 선언된 `let customer`나 `#customerInput`도 템플릿 표현식에 사용할 수 있습니다.
 
+<!--
 <code-example path="interpolation/src/app/app.component.html" region="template-input-variable" header="src/app/app.component.html (template input variable)" linenums="false">
 </code-example>
+-->
+<code-example path="interpolation/src/app/app.component.html" region="template-input-variable" header="src/app/app.component.html (템플릿 입력 변수)" linenums="false">
+</code-example>
 
+
+<!--
 <code-example path="interpolation/src/app/app.component.html" region="template-reference-variable" header="src/app/app.component.html (template reference variable)" linenums="false">
+</code-example>
+-->
+<code-example path="interpolation/src/app/app.component.html" region="template-reference-variable" header="src/app/app.component.html (템플릿 참조 변수)" linenums="false">
 </code-example>
 
 <!--
@@ -3657,9 +3666,7 @@ object when it runs type checking on the template.
 The `$any()` cast function also works with `this` to allow access to undeclared members of
 the component.
 -->
-When the Angular compiler turns this template into TypeScript code,
-it prevents TypeScript from reporting that `bestByDate` is not a member of the `item`
-object when it runs type checking on the template.
+Angular 컴파일러가 이 템플릿 코드를 TypeScript 코드로 변환하고 나면 `item` 객체에 `bestByDate` 멤버가 없더라도 이제는 에러를 발생시키지 않고 그대로 실행됩니다.
 
 그리고 템플릿에서 `this`를 사용해서 컴포넌트 클래스에 직접 접근할 때도 `$any` 캐스트 함수를 사용할 수 있습니다.
 
