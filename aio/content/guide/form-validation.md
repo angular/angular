@@ -29,9 +29,7 @@ either a list of validation errors, which results in an INVALID status, or null,
 You can then inspect the control's state by exporting `ngModel` to a local template variable.
 The following example exports `NgModel` into a variable called `name`:
 
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-with-error-msg" header="template/hero-form-template.component.html (name)" linenums="false">
-
-</code-example>
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-with-error-msg" header="template/hero-form-template.component.html (name)"></code-example>
 
 
 Note the following:
@@ -92,8 +90,7 @@ built-in validators&mdash;this time, in function form. See below:
 
 {@a reactive-component-class}
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="form-group" header="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="form-group" header="reactive/hero-form-reactive.component.ts (validator functions)"></code-example>
 
 Note that:
 
@@ -106,8 +103,7 @@ for the template.
 
 If you look at the template for the name input again, it is fairly similar to the template-driven example.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg" header="reactive/hero-form-reactive.component.html (name with error msg)" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg" header="reactive/hero-form-reactive.component.html (name with error msg)"></code-example>
 
 Key takeaways:
 
@@ -125,8 +121,7 @@ Consider the `forbiddenNameValidator` function from previous
 [examples](guide/form-validation#reactive-component-class) in
 this guide. Here's what the definition of that function looks like:
 
-<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator" header="shared/forbidden-name.directive.ts (forbiddenNameValidator)" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator" header="shared/forbidden-name.directive.ts (forbiddenNameValidator)"></code-example>
 
 The function is actually a factory that takes a regular expression to detect a _specific_ forbidden name and returns a validator function.
 
@@ -148,8 +143,7 @@ at which point the form uses the last value emitted for validation.
 In reactive forms, custom validators are fairly simple to add. All you have to do is pass the function directly
 to the `FormControl`.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" header="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" header="reactive/hero-form-reactive.component.ts (validator functions)"></code-example>
 
 ### Adding to template-driven forms
 
@@ -161,8 +155,7 @@ The corresponding `ForbiddenValidatorDirective` serves as a wrapper around the `
 Angular recognizes the directive's role in the validation process because the directive registers itself
 with the `NG_VALIDATORS` provider, a provider with an extensible collection of validators.
 
-<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers" header="shared/forbidden-name.directive.ts (providers)" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers" header="shared/forbidden-name.directive.ts (providers)"></code-example>
 
 The directive class then implements the `Validator` interface, so that it can easily integrate
 with Angular forms. Here is the rest of the directive to help you get an idea of how it all
@@ -173,9 +166,7 @@ comes together:
 
 Once the `ForbiddenValidatorDirective` is ready, you can simply add its selector, `appForbiddenName`, to any input element to activate it. For example:
 
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-input" header="template/hero-form-template.component.html (forbidden-name-input)" linenums="false">
-
-</code-example>
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-input" header="template/hero-form-template.component.html (forbidden-name-input)"></code-example>
 
 
 <div class="alert is-helpful">
@@ -245,8 +236,7 @@ const heroForm = new FormGroup({
 
 The validator code is as follows:
 
-<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-validator" header="shared/identity-revealed.directive.ts" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-validator" header="shared/identity-revealed.directive.ts"></code-example>
 
 The identity validator implements the `ValidatorFn` interface. It takes an Angular control object as an argument and returns either null if the form is valid, or `ValidationErrors` otherwise.
 
@@ -255,8 +245,7 @@ First we retrieve the child controls by calling the `FormGroup`'s [get](api/form
 If the values do not match, the hero's identity remains secret, and we can safely return null. Otherwise, the hero's identity is revealed and we must mark the form as invalid by returning an error object.
 
 Next, to provide better user experience, we show an appropriate error message when the form is invalid.
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" header="reactive/hero-form-template.component.html" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" header="reactive/hero-form-template.component.html"></code-example>
 
 Note that we check if:
 - the `FormGroup` has the cross validation error returned by the `identityRevealed` validator,
@@ -265,16 +254,13 @@ Note that we check if:
 ### Adding to template driven forms
 First we must create a directive that will wrap the validator function. We provide it as the validator using the `NG_VALIDATORS` token. If you are not sure why, or you do not fully understand the syntax, revisit the previous [section](guide/form-validation#adding-to-template-driven-forms).
 
-<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-directive" header="shared/identity-revealed.directive.ts" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-directive" header="shared/identity-revealed.directive.ts"></code-example>
 
 Next, we have to add the directive to the html template. Since the validator must be registered at the highest level in the form, we put the directive on the `form` tag.
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" header="template/hero-form-template.component.html" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" header="template/hero-form-template.component.html"></code-example>
 
 To provide better user experience, we show an appropriate error message when the form is invalid.
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" header="template/hero-form-template.component.html" linenums="false">
-</code-example>
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" header="template/hero-form-template.component.html"></code-example>
 
 Note that we check if:
 - the form has the cross validation error returned by the `identityRevealed` validator,
@@ -313,7 +299,7 @@ To validate the potential alter ego, we need to consult a central database of al
 
 Let's start by creating the validator class.
 
-<code-example path="form-validation/src/app/shared/alter-ego.directive.ts" region="async-validator" linenums="false"></code-example>
+<code-example path="form-validation/src/app/shared/alter-ego.directive.ts" region="async-validator"></code-example>
 
 As you can see, the `UniqueAlterEgoValidator` class implements the `AsyncValidator` interface. In the constructor, we inject the `HeroesService` that has the following interface:
 

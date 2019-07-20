@@ -68,13 +68,11 @@ using the `Logger` token.
 Another class, `EvenBetterLogger`, might display the user name in the log message.
 This logger gets the user from an injected `UserService` instance.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="EvenBetterLogger"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="EvenBetterLogger"></code-example>
 
 The injector needs providers for both this new logging service and its dependent `UserService`. Configure this alternative logger with the `useClass` provider-definition key, like `BetterLogger`. The following array specifies both providers in the `providers` metadata option of the parent module or component.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-5"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-5"></code-example>
 
 {@a aliased-class-providers}
 
@@ -92,13 +90,11 @@ when a component asks for either the new or the old logger.
 
 If you try to alias `OldLogger` to `NewLogger` with `useClass`, you end up with two different `NewLogger` instances in your app.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6a" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6a"></code-example>
 
 To make sure there is only one instance of `NewLogger`, alias `OldLogger` with the `useExisting` option.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6b" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6b"></code-example>
 
 {@a value-provider}
 
@@ -110,13 +106,11 @@ configure the injector with the `useValue` option
 
 The following code defines a variable that creates such an object to play the logger role.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="silent-logger"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="silent-logger"></code-example>
 
 The following provider object uses the `useValue` key to associate the variable with the `Logger` token.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-7" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-7"></code-example>
 
 {@a non-class-dependencies}
 
@@ -130,8 +124,7 @@ like the title of the application or the address of a web API endpoint.
 These configuration objects aren't always instances of a class.
 They can be object literals, as shown in the following example.
 
-<code-example path="dependency-injection/src/app/app.config.ts" region="config" header="src/app/app.config.ts (excerpt)" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/app.config.ts" region="config" header="src/app/app.config.ts (excerpt)"></code-example>
 
 {@a interface-not-valid-token}
 
@@ -141,11 +134,9 @@ The `HERO_DI_CONFIG` constant conforms to the `AppConfig` interface.
 Unfortunately, you cannot use a TypeScript interface as a token.
 In TypeScript, an interface is a design-time artifact, and doesn't have a runtime representation (token) that the DI framework can use.
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9-interface"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9-interface"></code-example>
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-9-ctor-interface"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-9-ctor-interface"></code-example>
 
 <div class="alert is-helpful">
 
@@ -163,22 +154,19 @@ Another solution to choosing a provider token for non-class dependencies is
 to define and use an `InjectionToken` object.
 The following example shows how to define such a token.
 
-<code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts"></code-example>
 
 The type parameter, while optional, conveys the dependency's type to developers and tooling.
 The token description is another developer aid.
 
 Register the dependency provider using the `InjectionToken` object:
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9"  linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9"></code-example>
 
 Now you can inject the configuration object into any constructor that needs it, with
 the help of an `@Inject()` parameter decorator.
 
-<code-example path="dependency-injection/src/app/app.component.2.ts" region="ctor" header="src/app/app.component.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/app.component.2.ts" region="ctor" header="src/app/app.component.ts"></code-example>
 
 <div class="alert is-helpful">
 
@@ -215,22 +203,19 @@ who is authorized and who isn't.
 
 To resolve this, we give the `HeroService` constructor a boolean flag to control display of secret heroes.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.ts" region="internals" header="src/app/heroes/hero.service.ts (excerpt)" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/heroes/hero.service.ts" region="internals" header="src/app/heroes/hero.service.ts (excerpt)"></code-example>
 
 You can inject `Logger`, but you can't inject the  `isAuthorized` flag. Instead, you can use a factory provider to create a new logger instance for `HeroService`.
 
 A factory provider needs a factory function.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="factory" header="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="factory" header="src/app/heroes/hero.service.provider.ts (excerpt)"></code-example>
 
 Although `HeroService` has no access to `UserService`, the factory function does.
 You inject both `Logger` and `UserService` into the factory provider
 and let the injector pass them along to the factory function.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" header="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" header="src/app/heroes/hero.service.provider.ts (excerpt)"></code-example>
 
 * The `useFactory` field tells Angular that the provider is a factory function whose implementation is `heroServiceFactory`.
 
@@ -322,13 +307,13 @@ Thus, services in the NgModule `providers` array or at component level are not t
 
 The following example of non-tree-shakable providers in Angular configures a service provider for the injector of an NgModule.
 
-<code-example path="dependency-injection/src/app/tree-shaking/service-and-module.ts"  header="src/app/tree-shaking/service-and-modules.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service-and-module.ts"  header="src/app/tree-shaking/service-and-modules.ts"></code-example>
 
 You can then import this module into your application module
 to make the service available for injection in your app,
 as in the following example.
 
-<code-example path="dependency-injection/src/app/tree-shaking/app.module.ts"  header="src/app/tree-shaking/app.modules.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/app.module.ts"  header="src/app/tree-shaking/app.modules.ts"></code-example>
 
 When `ngc` runs, it compiles `AppModule` into a module factory, which contains definitions for all the providers declared in all the modules it includes. At runtime, this factory becomes an injector that instantiates these services.
 
@@ -340,11 +325,11 @@ You can make a provider tree-shakable by specifying it in the `@Injectable()` de
 
 The following example shows the tree-shakable equivalent to the `ServiceModule` example above.
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.ts"  header="src/app/tree-shaking/service.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts"  header="src/app/tree-shaking/service.ts"></code-example>
 
 The service can be instantiated by configuring a factory function, as in the following example.
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  header="src/app/tree-shaking/service.0.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  header="src/app/tree-shaking/service.0.ts"></code-example>
 
 <div class="alert is-helpful">
 

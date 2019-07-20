@@ -109,9 +109,7 @@ Using the Angular CLI command [`ng generate class`](cli/generate), generate a ne
 
 With this content:
 
-<code-example path="forms/src/app/hero.ts" header="src/app/hero.ts">
-
-</code-example>
+<code-example path="forms/src/app/hero.ts" header="src/app/hero.ts"></code-example>
 
 It's an anemic model with few requirements and no behavior. Perfect for the demo.
 
@@ -122,9 +120,7 @@ The `alterEgo` is optional, so the constructor lets you omit it; note the questi
 
 You can create a new hero like this:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.ts" linenums="false" region="SkyDog">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.ts" region="SkyDog"></code-example>
 
 ## Create a form component
 
@@ -142,9 +138,7 @@ Using the Angular CLI command [`ng generate component`](cli/generate), generate 
 
 With this content:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.ts" linenums="false" header="src/app/hero-form/hero-form.component.ts (v1)" region="v1">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.ts" header="src/app/hero-form/hero-form.component.ts (v1)" region="v1"></code-example>
 
 There’s nothing special about this component, nothing form-specific,
 nothing to distinguish it from any component you've written before.
@@ -176,9 +170,7 @@ Because template-driven forms are in their own module, you need to add the `Form
 
 Update it with the following:
 
-<code-example path="forms/src/app/app.module.ts" header="src/app/app.module.ts">
-
-</code-example>
+<code-example path="forms/src/app/app.module.ts" header="src/app/app.module.ts"></code-example>
 
 <div class="alert is-helpful">
 
@@ -204,9 +196,7 @@ Update it with the following:
 
 Replace the contents of its template with the following:
 
-<code-example path="forms/src/app/app.component.html" header="src/app/app.component.html">
-
-</code-example>
+<code-example path="forms/src/app/app.component.html" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
@@ -221,9 +211,7 @@ Replace the contents of its template with the following:
 
 Update the template file with the following contents:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" region="start" header="src/app/hero-form/hero-form.component.html">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" region="start" header="src/app/hero-form/hero-form.component.html"></code-example>
 
 The language is simply HTML5. You're presenting two of the `Hero` fields, `name` and `alterEgo`, and
 opening them up for user input in input boxes.
@@ -259,9 +247,7 @@ Bootstrap gives the form a little style.
 
 To add the stylesheet, open `styles.css` and add the following import line at the top:
 
-<code-example path="forms/src/styles.1.css" linenums="false" header="src/styles.css">
-
-</code-example>
+<code-example path="forms/src/styles.1.css" header="src/styles.css"></code-example>
 
 ## Add powers with _*ngFor_
 
@@ -274,9 +260,7 @@ a technique seen previously in the [Displaying Data](guide/displaying-data) page
 
 Add the following HTML *immediately below* the *Alter Ego* group:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (powers)" region="powers">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (powers)" region="powers"></code-example>
 
 This code repeats the `<option>` tag for each power in the list of powers.
 The `pow` template input variable is a different power in each iteration;
@@ -307,9 +291,7 @@ makes binding the form to the model easy.
 
 Find the `<input>` tag for *Name* and update it like this:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-1">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-1"></code-example>
 
 <div class="alert is-helpful">
 
@@ -325,9 +307,7 @@ You need one more addition to display the data. Declare
 a template variable for the form. Update the `<form>` tag with
 `#heroForm="ngForm"` as follows:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="template-variable">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="template-variable"></code-example>
 
 The variable `heroForm` is now a reference to the `NgForm` directive that governs the form as a whole.
 
@@ -391,9 +371,7 @@ Then you can confirm that two-way data binding works *for the entire hero model*
 
 After revision, the core of the form should look like this:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModel-2">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModel-2"></code-example>
 
 <div class="alert is-helpful">
 
@@ -493,9 +471,7 @@ You can leverage those class names to change the appearance of the control.
 Temporarily add a [template reference variable](guide/template-syntax#ref-vars) named `spy`
 to the _Name_ `<input>` tag and use it to display the input's CSS classes.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-2">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-2"></code-example>
 
 Now run the app and look at the _Name_ input box.
 Follow these steps *precisely*:
@@ -535,15 +511,11 @@ on the left of the input box:
 You achieve this effect by adding these class definitions to a new `forms.css` file
 that you add to the project as a sibling to `index.html`:
 
-<code-example path="forms/src/assets/forms.css" header="src/assets/forms.css">
-
-</code-example>
+<code-example path="forms/src/assets/forms.css" header="src/assets/forms.css"></code-example>
 
 Update the `<head>` of `index.html` to include this style sheet:
 
-<code-example path="forms/src/index.html" linenums="false" header="src/index.html (styles)" region="styles">
-
-</code-example>
+<code-example path="forms/src/index.html" header="src/index.html (styles)" region="styles"></code-example>
 
 ## Show and hide validation error messages
 
@@ -564,9 +536,7 @@ To achieve this effect, extend the `<input>` tag with the following:
 
 Here's an example of an error message added to the _name_ input box:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="name-with-error-msg">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="name-with-error-msg"></code-example>
 
 You need a template reference variable to access the input box's Angular control from within the template.
 Here you created a variable called `name` and gave it the value "ngModel".
@@ -583,9 +553,7 @@ Here you created a variable called `name` and gave it the value "ngModel".
 You control visibility of the name error message by binding properties of the `name`
 control to the message `<div>` element's `hidden` property.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (hidden-error-msg)" region="hidden-error-msg">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (hidden-error-msg)" region="hidden-error-msg"></code-example>
 
 In this example, you hide the message when the control is valid or pristine;
 "pristine" means the user hasn't changed the value since it was displayed in this form.
@@ -609,13 +577,9 @@ power to valid values.
 Now you'll add a new hero in this form.
 Place a *New Hero* button at the bottom of the form and bind its click event to a `newHero` component method.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-no-reset" header="src/app/hero-form/hero-form.component.html (New Hero button)">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-no-reset" header="src/app/hero-form/hero-form.component.html (New Hero button)"></code-example>
 
-</code-example>
-
-<code-example path="forms/src/app/hero-form/hero-form.component.ts" region="new-hero" header="src/app/hero-form/hero-form.component.ts (New Hero method)" linenums="false">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.ts" region="new-hero" header="src/app/hero-form/hero-form.component.ts (New Hero method)"></code-example>
 
 Run the application again, click the *New Hero* button, and the form clears.
 The *required* bars to the left of the input box are red, indicating invalid `name` and `power` properties.
@@ -634,9 +598,7 @@ Replacing the hero object *did not restore the pristine state* of the form contr
 You have to clear all of the flags imperatively, which you can do
 by calling the form's `reset()` method after calling the `newHero()` method.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-form-reset" header="src/app/hero-form/hero-form.component.html (Reset the form)">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-form-reset" header="src/app/hero-form/hero-form.component.html (Reset the form)"></code-example>
 
 Now clicking "New Hero" resets both the form and its control flags.
 
@@ -651,9 +613,7 @@ A "form submit" is useless at the moment.
 To make it useful, bind the form's `ngSubmit` event property
 to the hero form component's `onSubmit()` method:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (ngSubmit)" region="ngSubmit">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (ngSubmit)" region="ngSubmit"></code-example>
 
 You'd already defined a template reference variable,
 `#heroForm`, and initialized it with the value "ngForm".
@@ -664,9 +624,7 @@ You'll bind the form's overall validity via
 the `heroForm` variable to the button's `disabled` property
 using an event binding. Here's the code:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (submit-button)" region="submit-button">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (submit-button)" region="submit-button"></code-example>
 
 If you run the application now, you find that the button is enabled&mdash;although
 it doesn't do anything useful yet.
@@ -703,17 +661,13 @@ hide the data entry area and display something else.
 Wrap the form in a `<div>` and bind
 its `hidden` property to the `HeroFormComponent.submitted` property.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="edit-div">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="edit-div"></code-example>
 
 The main form is visible from the start because the
 `submitted` property is false until you submit the form,
 as this fragment from the `HeroFormComponent` shows:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.ts" linenums="false" header="src/app/hero-form/hero-form.component.ts (submitted)" region="submitted">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.ts" header="src/app/hero-form/hero-form.component.ts (submitted)" region="submitted"></code-example>
 
 When you click the *Submit* button, the `submitted` flag becomes true and the form disappears
 as planned.
@@ -721,9 +675,7 @@ as planned.
 Now the app needs to show something else while the form is in the submitted state.
 Add the following HTML below the `<div>` wrapper you just wrote:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="submitted">
-
-</code-example>
+<code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (excerpt)" region="submitted"></code-example>
 
 There's the hero again, displayed read-only with interpolation bindings.
 This `<div>` appears only while the component is in the submitted state.

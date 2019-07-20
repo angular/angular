@@ -349,7 +349,7 @@ the `onSelect()` method and `selectedHero` property are no longer used.
 It's nice to tidy up and you'll be grateful to yourself later.
 Here's the class after pruning away the dead code.
 
-<code-example path="toh-pt5/src/app/heroes/heroes.component.ts" region="class" header="src/app/heroes/heroes.component.ts (cleaned up)" linenums="false">
+<code-example path="toh-pt5/src/app/heroes/heroes.component.ts" region="class" header="src/app/heroes/heroes.component.ts (cleaned up)">
 </code-example>
 
 ## Routable `HeroDetailComponent`

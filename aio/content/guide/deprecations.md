@@ -507,7 +507,7 @@ public createAndAppendElement() {
 
 **After:**
 
-<code-example linenums=false>
+<code-example>
 
 public createAndAppendElement() {
   const el = __ngRendererCreateElement(this.renderer, this.element, 'span');

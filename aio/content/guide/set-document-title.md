@@ -43,7 +43,7 @@ for getting and setting the current HTML document title:
 You can inject the `Title` service into the root `AppComponent` and expose a bindable `setTitle` method that calls it:
 
 
-<code-example path="set-document-title/src/app/app.component.ts" region="class" header="src/app/app.component.ts (class)" linenums="false"></code-example>
+<code-example path="set-document-title/src/app/app.component.ts" region="class" header="src/app/app.component.ts (class)"></code-example>
 
 Bind that method to three anchor tags and voilà!
 

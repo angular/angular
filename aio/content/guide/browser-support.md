@@ -527,7 +527,7 @@ If you are not using the CLI, add your polyfill scripts directly to the host web
 
 For example:
 
-<code-example header="src/index.html" language="html" linenums="false">
+<code-example header="src/index.html" language="html">
   &lt;!-- pre-zone polyfills -->
   &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
   &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>
