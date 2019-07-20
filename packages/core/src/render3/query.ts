@@ -9,8 +9,6 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 
-import {assertNodeOfPossibleTypes} from '@angular/core/src/render3/node_assert';
-
 import {Type} from '../interface/type';
 import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
@@ -28,6 +26,7 @@ import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, LQuery, TQueries, TQuery, TQueryMetadata, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
+import {assertNodeOfPossibleTypes} from './node_assert';
 import {getCurrentQueryIndex, getLView, getPreviousOrParentTNode, isCreationMode, setCurrentQueryIndex} from './state';
 import {createContainerRef, createElementRef, createTemplateRef} from './view_engine_compatibility';
 

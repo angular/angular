@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {isContentQueryHost} from '@angular/core/src/render3/interfaces/type_checks';
 
 import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
@@ -13,6 +12,7 @@ import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
+import {isContentQueryHost} from '../interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
