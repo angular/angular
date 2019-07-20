@@ -12,7 +12,7 @@ A simple example might be a button that sends users to your company website, tha
 
 Use the Angular CLI to generate a new library skeleton with the following command:
 
-<code-example format="." language="bash">
+<code-example language="bash">
  ng generate library my-lib
 </code-example>
 
@@ -35,7 +35,7 @@ The workspace configuration file, `angular.json`, is updated with a project of t
 
 You can build, test, and lint the project with CLI commands:
 
-<code-example format="." language="bash">
+<code-example language="bash">
  ng build my-lib
  ng test my-lib
  ng lint my-lib
@@ -106,7 +106,7 @@ To learn more, see [Schematics Overview](guide/schematics) and [Schematics for
 Use the Angular CLI and the npm package manager to build and publish your library as an npm package.
 Libraries are built in [AoT mode](guide/aot-compiler) by default, so you do not need to specify the `-prod` flag when building for publication.
 
-<code-example format="." language="bash">
+<code-example language="bash">
 ng build my-lib
 cd dist/my-lib
 npm publish
@@ -158,7 +158,7 @@ You don't have to publish your library to the npm package manager in order to us
 To use your own library in an app:
 
 * Build the library. You cannot use a library before it is built.
- <code-example format="." language="bash">
+ <code-example language="bash">
  ng build my-lib
  </code-example>
 
@@ -190,6 +190,6 @@ Every time a file is changed a partial build is performed that emits the amended
 
 Incremental builds can be run as a backround process in your dev environment. To take advantage of this feature add the `--watch` flag to the build command:
 
-<code-example format="." language="bash">
+<code-example language="bash">
 ng build my-lib --watch
 </code-example>
