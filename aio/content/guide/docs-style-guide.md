@@ -428,7 +428,7 @@ You control the _code-example_ output by setting one or more of its attributes:
 
 * `region`- displays the source file fragment with that region name; regions are identified by _docregion_ markup in the source file, as explained [below](#region "Displaying a code fragment").
 
-* `linenums`- value may be `true`, `false`, or a `number`. When not specified, line numbers are automatically displayed when there are greater than 10 lines of code. The rarely used `number` option starts line numbering at the given value. `linenums=4` sets the starting line number to 4.
+* `linenums`- value may be `true`, `false`, or a `number`. When not specified, line numbers default to `false` (i.e. no line numbers are displayed). The rarely used `number` option starts line numbering at the given value. `linenums=4` sets the starting line number to 4.
 
 * `class`- code snippets can be styled with the CSS classes `no-box`, `code-shell`, and `avoid`.
 
@@ -465,8 +465,6 @@ A couple of observations:
 1. Omitting the `header` is fine when the source of the fragment is obvious. We just said that this is a fragment of the `app.module.ts` file which was displayed immediately above, in full, with a header.
 There's no need to repeat the header.
 
-1. The line numbers disappeared. By default, the doc viewer omits line numbers when there are fewer than 10 lines of code; it adds line numbers after that. You can turn line numbers on or off explicitly by setting the `linenums` attribute.
-
 #### Example of bad code
 
 Sometimes you want to display an example of bad code or bad design.
@@ -496,18 +494,18 @@ Code tabs display code much like _code examples_ do.  The added advantage is tha
 
 #### Code-tabs attributes
 
-* `linenums`: The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are enabled only when code for a tab pane has greater than 10 lines of code.
+* `linenums`: The value can be `true`, `false` or a number indicating the starting line number. If not specified, it defaults to `false`.
 
 #### Code-pane attributes
 
 * `path` - a file in the content/examples folder
 * `header` - seen in the header of a tab
-* `linenums` - overrides the `linenums` property at the `code-tabs` level for this particular pane. The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are enabled only when the number of lines of code are greater than 10.
+* `linenums` - overrides the `linenums` property at the `code-tabs` level for this particular pane. The value can be `true`, `false` or a number indicating the starting line number. If not specified, it defaults to `false`.
 
 The next example displays multiple code tabs, each with its own header.
 It demonstrates control over display of line numbers at both the `<code-tabs>` and `<code-pane>` levels.
 
-<code-tabs linenums="false">
+<code-tabs linenums="true">
   <code-pane
     header="app.component.html"
     path="docs-style-guide/src/app/app.component.html">
@@ -515,7 +513,7 @@ It demonstrates control over display of line numbers at both the `<code-tabs>` a
   <code-pane
     header="app.component.ts"
     path="docs-style-guide/src/app/app.component.ts"
-    linenums="true">
+    linenums="false">
   </code-pane>
   <code-pane
     header="app.component.css (heroes)"
@@ -530,11 +528,11 @@ It demonstrates control over display of line numbers at both the `<code-tabs>` a
 
 Here's the markup for that example.
 
-Note how the `linenums` attribute in the  `<code-tabs>` explicitly disables numbering for all panes.
-The `linenums` attribute in the second pane restores line numbering for _itself only_.
+Note how the `linenums` attribute in the `<code-tabs>` explicitly enables numbering for all panes.
+The `linenums` attribute in the second pane disables line numbering for _itself only_.
 
 ```html
-<code-tabs linenums="false">
+<code-tabs linenums="true">
   <code-pane
     header="app.component.html"
     path="docs-style-guide/src/app/app.component.html">
@@ -542,7 +540,7 @@ The `linenums` attribute in the second pane restores line numbering for _itself 
   <code-pane
     header="app.component.ts"
     path="docs-style-guide/src/app/app.component.ts"
-    linenums="true">
+    linenums="false">
   </code-pane>
   <code-pane
     header="app.component.css (heroes)"
