@@ -71,34 +71,52 @@ describe('CodeComponent', () => {
           `Formatted code (language: auto, linenums: true): ${oneLineCode}`);
     });
 
-    it('should format a small multi-line code without linenums by default', async () => {
+    it('should format a small multi-line code sample without linenums by default', () => {
       hostComponent.setCode(smallMultiLineCode);
       expect(getFormattedCode()).toBe(
           `Formatted code (language: auto, linenums: false): ${smallMultiLineCode}`);
     });
 
-    it('should add line numbers to a big multi-line code by default', async () => {
+    it('should add line numbers to a small multi-line code sample when linenums is `true`', () => {
+      hostComponent.setCode(smallMultiLineCode);
+      hostComponent.linenums = true;
+      fixture.detectChanges();
+
+      expect(getFormattedCode()).toBe(
+          `Formatted code (language: auto, linenums: true): ${smallMultiLineCode}`);
+    });
+
+    it('should add line numbers to  a small multi-line code sample when linenums is `\'true\'`', () => {
+      hostComponent.setCode(smallMultiLineCode);
+      hostComponent.linenums = 'true';
+      fixture.detectChanges();
+
+      expect(getFormattedCode()).toBe(
+          `Formatted code (language: auto, linenums: true): ${smallMultiLineCode}`);
+    });
+
+    it('should format a big multi-line code without linenums by default', () => {
       hostComponent.setCode(bigMultiLineCode);
+      expect(getFormattedCode()).toBe(
+          `Formatted code (language: auto, linenums: false): ${bigMultiLineCode}`);
+    });
+
+    it('should add line numbers to a big multi-line code sample when linenums is `true`', () => {
+      hostComponent.setCode(bigMultiLineCode);
+      hostComponent.linenums = true;
+      fixture.detectChanges();
+
       expect(getFormattedCode()).toBe(
           `Formatted code (language: auto, linenums: true): ${bigMultiLineCode}`);
     });
 
-    it('should format big multi-line code without linenums when linenums is `false`', async () => {
+    it('should add line numbers to  a big multi-line code sample when linenums is `\'true\'`', () => {
       hostComponent.setCode(bigMultiLineCode);
-      hostComponent.linenums = false;
+      hostComponent.linenums = 'true';
       fixture.detectChanges();
 
       expect(getFormattedCode()).toBe(
-          `Formatted code (language: auto, linenums: false): ${bigMultiLineCode}`);
-    });
-
-    it('should format big multi-line code without linenums when linenums is `\'false\'`', async () => {
-      hostComponent.setCode(bigMultiLineCode);
-      hostComponent.linenums = 'false';
-      fixture.detectChanges();
-
-      expect(getFormattedCode()).toBe(
-          `Formatted code (language: auto, linenums: false): ${bigMultiLineCode}`);
+          `Formatted code (language: auto, linenums: true): ${bigMultiLineCode}`);
     });
   });
 
