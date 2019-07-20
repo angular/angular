@@ -39,18 +39,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
-<<<<<<< HEAD
-=======
-    "name": "ClassAndStylePlayerBuilder"
-  },
-  {
-    "name": "CorePlayerHandler"
-  },
-  {
     "name": "DECLARATION_LCONTAINER"
   },
   {
->>>>>>> perf(ivy): match query results on the TView level
     "name": "DECLARATION_VIEW"
   },
   {
