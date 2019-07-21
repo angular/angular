@@ -21,7 +21,6 @@ import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markD
 class Todo {
   editing: boolean;
 
-  // TODO(issue/24571): remove '!'.
   private _title !: string;
   get title() { return this._title; }
   set title(value: string) { this._title = value.trim(); }

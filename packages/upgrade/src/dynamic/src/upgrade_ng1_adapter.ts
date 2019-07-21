@@ -22,7 +22,6 @@ const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 
 
 export class UpgradeNg1ComponentAdapterBuilder {
-  // TODO(issue/24571): remove '!'.
   type !: Type<any>;
   inputs: string[] = [];
   inputsRename: string[] = [];
@@ -32,7 +31,6 @@ export class UpgradeNg1ComponentAdapterBuilder {
   checkProperties: string[] = [];
   propertyMap: {[name: string]: string} = {};
   directive: IDirective|null = null;
-  // TODO(issue/24571): remove '!'.
   template !: string;
 
   constructor(public name: string) {

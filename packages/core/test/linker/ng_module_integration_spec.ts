@@ -78,7 +78,6 @@ class SomeComp {
 
 @Directive({selector: '[someDir]'})
 class SomeDirective {
-  // TODO(issue/24571): remove '!'.
   @HostBinding('title') @Input()
   someDir !: string;
 }

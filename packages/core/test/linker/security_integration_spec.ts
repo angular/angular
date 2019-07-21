@@ -206,7 +206,6 @@ function declareTests(config?: {useJit: boolean}) {
       it('should escape unsafe properties if they are used in host bindings', () => {
         @Directive({selector: '[dirHref]'})
         class HrefDirective {
-          // TODO(issue/24571): remove '!'.
           @HostBinding('href') @Input()
           dirHref !: string;
         }
@@ -222,7 +221,6 @@ function declareTests(config?: {useJit: boolean}) {
       it('should escape unsafe attributes if they are used in host bindings', () => {
         @Directive({selector: '[dirHref]'})
         class HrefDirective {
-          // TODO(issue/24571): remove '!'.
           @HostBinding('attr.href') @Input()
           dirHref !: string;
         }

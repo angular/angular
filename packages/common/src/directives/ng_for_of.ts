@@ -165,11 +165,9 @@ export class NgForOf<T> implements DoCheck {
 
   get ngForTrackBy(): TrackByFunction<T> { return this._trackByFn; }
 
-  // TODO(issue/24571): remove '!'.
   private _ngForOf !: NgIterable<T>;
   private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T>|null = null;
-  // TODO(issue/24571): remove '!'.
   private _trackByFn !: TrackByFunction<T>;
 
   constructor(

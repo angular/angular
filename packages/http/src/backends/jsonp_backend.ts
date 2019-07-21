@@ -27,9 +27,7 @@ const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
  * @publicApi
  */
 export class JSONPConnection implements Connection {
-  // TODO(issue/24571): remove '!'.
   private _id !: string;
-  // TODO(issue/24571): remove '!'.
   private _script !: Element;
   private _responseData: any;
   private _finished: boolean = false;
@@ -37,7 +35,6 @@ export class JSONPConnection implements Connection {
   /**
    * The {@link ReadyState} of this request.
    */
-  // TODO(issue/24571): remove '!'.
   readyState !: ReadyState;
 
   /**

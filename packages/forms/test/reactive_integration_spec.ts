@@ -2470,7 +2470,6 @@ function sortedClassList(el: HTMLElement) {
 
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 class FormControlComp {
-  // TODO(issue/24571): remove '!'.
   control !: FormControl;
 }
 
@@ -2482,11 +2481,8 @@ class FormControlComp {
     </form>`
 })
 class FormGroupComp {
-  // TODO(issue/24571): remove '!'.
   control !: FormControl;
-  // TODO(issue/24571): remove '!'.
   form !: FormGroup;
-  // TODO(issue/24571): remove '!'.
   event !: Event;
 }
 
@@ -2502,7 +2498,6 @@ class FormGroupComp {
     </form>`
 })
 class NestedFormGroupComp {
-  // TODO(issue/24571): remove '!'.
   form !: FormGroup;
 }
 
@@ -2518,9 +2513,7 @@ class NestedFormGroupComp {
      </form>`
 })
 class FormArrayComp {
-  // TODO(issue/24571): remove '!'.
   form !: FormGroup;
-  // TODO(issue/24571): remove '!'.
   cityArray !: FormArray;
 }
 
@@ -2537,9 +2530,7 @@ class FormArrayComp {
      </div>`
 })
 class FormArrayNestedGroup {
-  // TODO(issue/24571): remove '!'.
   form !: FormGroup;
-  // TODO(issue/24571): remove '!'.
   cityArray !: FormArray;
 }
 
@@ -2552,11 +2543,8 @@ class FormArrayNestedGroup {
    </form>`
 })
 class FormGroupNgModel {
-  // TODO(issue/24571): remove '!'.
   form !: FormGroup;
-  // TODO(issue/24571): remove '!'.
   login !: string;
-  // TODO(issue/24571): remove '!'.
   password !: string;
 }
 
@@ -2568,13 +2556,9 @@ class FormGroupNgModel {
   `
 })
 class FormControlNgModel {
-  // TODO(issue/24571): remove '!'.
   control !: FormControl;
-  // TODO(issue/24571): remove '!'.
   login !: string;
-  // TODO(issue/24571): remove '!'.
   passwordControl !: FormControl;
-  // TODO(issue/24571): remove '!'.
   password !: string;
 }
 
@@ -2589,7 +2573,6 @@ class FormControlNgModel {
    </div>`
 })
 class LoginIsEmptyWrapper {
-  // TODO(issue/24571): remove '!'.
   form !: FormGroup;
 }
 
@@ -2604,15 +2587,10 @@ class LoginIsEmptyWrapper {
    </div>`
 })
 class ValidationBindingsForm {
-  // TODO(issue/24571): remove '!'.
   form !: FormGroup;
-  // TODO(issue/24571): remove '!'.
   required !: boolean;
-  // TODO(issue/24571): remove '!'.
   minLen !: number;
-  // TODO(issue/24571): remove '!'.
   maxLen !: number;
-  // TODO(issue/24571): remove '!'.
   pattern !: string;
 }
 
@@ -2621,7 +2599,6 @@ class ValidationBindingsForm {
   template: `<input type="checkbox" [formControl]="control">`
 })
 class FormControlCheckboxRequiredValidator {
-  // TODO(issue/24571): remove '!'.
   control !: FormControl;
 }
 
@@ -2633,6 +2610,5 @@ class FormControlCheckboxRequiredValidator {
   </div>`
 })
 class UniqLoginWrapper {
-  // TODO(issue/24571): remove '!'.
   form !: FormGroup;
 }

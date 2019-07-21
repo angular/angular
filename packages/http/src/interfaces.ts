@@ -29,9 +29,7 @@ export abstract class ConnectionBackend { abstract createConnection(request: any
  * @publicApi
  */
 export abstract class Connection {
-  // TODO(issue/24571): remove '!'.
   readyState !: ReadyState;
-  // TODO(issue/24571): remove '!'.
   request !: Request;
   response: any;  // TODO: generic of <Response>;
 }

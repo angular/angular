@@ -32,7 +32,6 @@ const KEY_CONTEXT = {};
 class FixupExpression extends o.Expression {
   private original: o.Expression;
 
-  // TODO(issue/24571): remove '!'.
   shared !: boolean;
 
   constructor(public resolved: o.Expression) {

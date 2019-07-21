@@ -22,10 +22,8 @@ export class CssKeyframesPlayer implements AnimationPlayer {
   private _onDestroyFns: Function[] = [];
 
   private _started = false;
-  // TODO(issue/24571): remove '!'.
   private _styler !: ElementAnimationStyleHandler;
 
-  // TODO(issue/24571): remove '!'.
   public parentPlayer !: AnimationPlayer;
   public readonly totalTime: number;
   public readonly easing: string;

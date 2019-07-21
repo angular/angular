@@ -26,9 +26,7 @@ export abstract class NgStyleImpl {
 
 @Injectable()
 export class NgStyleR2Impl implements NgStyleImpl {
-  // TODO(issue/24571): remove '!'.
   private _ngStyle !: {[key: string]: string};
-  // TODO(issue/24571): remove '!'.
   private _differ !: KeyValueDiffer<string, string|number>;
 
   constructor(

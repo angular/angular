@@ -256,16 +256,12 @@ export class ActivatedRouteSnapshot {
   /** @internal */
   _resolve: ResolveData;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
   _resolvedData !: Data;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
   _routerState !: RouterStateSnapshot;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
   _paramMap !: ParamMap;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
   _queryParamMap !: ParamMap;
 
   /** @internal */

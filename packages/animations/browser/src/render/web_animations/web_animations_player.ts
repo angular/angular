@@ -22,10 +22,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _finished = false;
   private _started = false;
   private _destroyed = false;
-  // TODO(issue/24571): remove '!'.
   private _finalKeyframe !: {[key: string]: string | number};
 
-  // TODO(issue/24571): remove '!'.
   public readonly domPlayer !: DOMAnimation;
   public time = 0;
 

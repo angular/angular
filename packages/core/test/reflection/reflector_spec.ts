@@ -349,19 +349,15 @@ class TestObj {
         class C {}
 
         class Parent {
-          // TODO(issue/24571): remove '!'.
           @PropDecorator('a')
           a !: A;
-          // TODO(issue/24571): remove '!'.
           @PropDecorator('b1')
           b !: B;
         }
 
         class Child extends Parent {
-          // TODO(issue/24571): remove '!'.
           @PropDecorator('b2')
           b !: B;
-          // TODO(issue/24571): remove '!'.
           @PropDecorator('c')
           c !: C;
         }

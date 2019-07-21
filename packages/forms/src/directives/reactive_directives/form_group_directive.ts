@@ -59,7 +59,6 @@ export class FormGroupDirective extends ControlContainer implements Form,
    */
   public readonly submitted: boolean = false;
 
-  // TODO(issue/24571): remove '!'.
   private _oldForm !: FormGroup;
 
   /**

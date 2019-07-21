@@ -49,13 +49,9 @@ export class StaticReflector implements CompileReflector {
   private staticCache = new Map<StaticSymbol, string[]>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private resolvedExternalReferences = new Map<string, StaticSymbol>();
-  // TODO(issue/24571): remove '!'.
   private injectionToken !: StaticSymbol;
-  // TODO(issue/24571): remove '!'.
   private opaqueToken !: StaticSymbol;
-  // TODO(issue/24571): remove '!'.
   ROUTES !: StaticSymbol;
-  // TODO(issue/24571): remove '!'.
   private ANALYZE_FOR_ENTRY_COMPONENTS !: StaticSymbol;
   private annotationForParentClassWithSummaryKind =
       new Map<CompileSummaryKind, MetadataFactory<any>[]>();

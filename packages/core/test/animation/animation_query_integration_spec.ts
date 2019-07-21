@@ -1047,7 +1047,6 @@ import {HostListener} from '../../src/metadata/directives';
             ])]
         })
         class Cmp {
-          // TODO(issue/24571): remove '!'.
           public items !: any[];
         }
 
@@ -1128,7 +1127,6 @@ import {HostListener} from '../../src/metadata/directives';
         })
         class Cmp {
              public exp: any;
-             // TODO(issue/24571): remove '!'.
              public items !: any[];
            }
 
@@ -1349,7 +1347,6 @@ import {HostListener} from '../../src/metadata/directives';
         })
         class Cmp {
           public exp: any;
-          // TODO(issue/24571): remove '!'.
           public items !: any[];
         }
 
@@ -1402,7 +1399,6 @@ import {HostListener} from '../../src/metadata/directives';
         })
         class Cmp {
           public exp: any;
-          // TODO(issue/24571): remove '!'.
           public items !: any[];
         }
 
@@ -1465,7 +1461,6 @@ import {HostListener} from '../../src/metadata/directives';
         class Cmp {
           public exp1: any;
           public exp2: any;
-          // TODO(issue/24571): remove '!'.
           public items !: any[];
         }
 
@@ -1535,7 +1530,6 @@ import {HostListener} from '../../src/metadata/directives';
            })
            class Cmp {
              public exp: any;
-             // TODO(issue/24571): remove '!'.
              public items !: any[];
            }
 
@@ -1590,7 +1584,6 @@ import {HostListener} from '../../src/metadata/directives';
           })
           class Cmp {
              public exp: any;
-             // TODO(issue/24571): remove '!'.
              public items !: any[];
            }
 
@@ -2475,7 +2468,6 @@ import {HostListener} from '../../src/metadata/directives';
           `
            })
            class Cmp {
-             // TODO(issue/24571): remove '!'.
              public exp !: boolean;
            }
 
@@ -2655,7 +2647,6 @@ import {HostListener} from '../../src/metadata/directives';
           `
            })
            class Cmp {
-             // TODO(issue/24571): remove '!'.
              public exp !: boolean;
              public log: string[] = [];
              callback(event: any) {

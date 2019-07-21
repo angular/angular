@@ -479,9 +479,7 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Input('inputAttrA') inputA !: string;
-             // TODO(issue/24571): remove '!'.
              @Input() inputB !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -556,9 +554,7 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Input('inputAttrA') inputA !: string;
-             // TODO(issue/24571): remove '!'.
              @Input() inputB !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -633,13 +629,9 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Input('inputAttrA') inputA !: string;
-             // TODO(issue/24571): remove '!'.
              @Output('inputAttrAChange') inputAChange !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
              @Input() inputB !: string;
-             // TODO(issue/24571): remove '!'.
              @Output() inputBChange !: EventEmitter<any>;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -712,9 +704,7 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Output('outputAttrA') outputA !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
              @Output() outputB !: EventEmitter<any>;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -796,16 +786,12 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Input() fullName !: string;
              @Input('dataA') modelA: any;
              @Input('dataB') modelB: any;
-             // TODO(issue/24571): remove '!'.
              @Output('dataBChange') modelBChange !: EventEmitter<any>;
              @Input() modelC: any;
-             // TODO(issue/24571): remove '!'.
              @Output() modelCChange !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
              @Output() event !: EventEmitter<any>;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -879,17 +865,11 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Input('inputAttrA') inputA !: string;
-             // TODO(issue/24571): remove '!'.
              @Output('inputAttrAChange') inputAChange !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
              @Input() inputB !: string;
-             // TODO(issue/24571): remove '!'.
              @Output() inputBChange !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
              @Output('outputAttrA') outputA !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
              @Output() outputB !: EventEmitter<any>;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -980,11 +960,8 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: '[ng1]'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Input() inputA !: string;
-             // TODO(issue/24571): remove '!'.
              @Output() inputAChange !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
              @Output() outputA !: EventEmitter<any>;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -1345,7 +1322,7 @@ withEachNg1Version(() => {
              scope: true,
              controllerAs: 'vm',
              controller: class {
-               hasElement: string;  // TODO(issue/24571): remove '!'.
+               hasElement: string;
                isClass !: string;
                scope: string;
 
@@ -1421,7 +1398,6 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1A'})
            class Ng1ComponentAFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Input() title !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -1431,7 +1407,6 @@ withEachNg1Version(() => {
 
            @Directive({selector: 'ng1B'})
            class Ng1ComponentBFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Input() title !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -1489,7 +1464,6 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Input() title !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -1539,7 +1513,6 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
              @Input() title !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
@@ -3368,7 +3341,6 @@ withEachNg1Version(() => {
            @Component(
                {selector: 'ng2', template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>'})
            class Ng2Component {
-             // TODO(issue/24571): remove '!'.
              @Input() show !: boolean;
            }
 
@@ -3469,7 +3441,6 @@ withEachNg1Version(() => {
            @Component(
                {selector: 'ng2', template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>'})
            class Ng2Component {
-             // TODO(issue/24571): remove '!'.
              @Input() show !: boolean;
            }
 
@@ -3958,7 +3929,6 @@ withEachNg1Version(() => {
 
          // Define `ng1Component`
          class Ng1ControllerX {
-           // TODO(issue/24571): remove '!'.
            ng1XInputA !: string;
            ng1XInputB: any;
            ng1XInputC: any;
@@ -3987,15 +3957,11 @@ withEachNg1Version(() => {
          // Define `Ng1ComponentFacade`
          @Directive({selector: 'ng1X'})
          class Ng1ComponentXFacade extends UpgradeComponent {
-           // TODO(issue/24571): remove '!'.
            @Input() ng1XInputA !: string;
            @Input() ng1XInputB: any;
            @Input() ng1XInputC: any;
-           // TODO(issue/24571): remove '!'.
            @Output() ng1XInputCChange !: EventEmitter<any>;
-           // TODO(issue/24571): remove '!'.
            @Output() ng1XOutputA !: EventEmitter<any>;
-           // TODO(issue/24571): remove '!'.
            @Output() ng1XOutputB !: EventEmitter<any>;
 
            constructor(elementRef: ElementRef, injector: Injector) {

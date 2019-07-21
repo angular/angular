@@ -17,7 +17,6 @@ import {EventDispatcher} from '../ui/event_dispatcher';
 
 @Injectable()
 export class MessageBasedRenderer2 {
-  // TODO(issue/24571): remove '!'.
   private _eventDispatcher !: EventDispatcher;
 
   constructor(

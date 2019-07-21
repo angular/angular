@@ -505,7 +505,6 @@ export class ApplicationRef {
    *
    * @see  [Usage notes](#is-stable-examples) for examples and caveats when using this API.
    */
-  // TODO(issue/24571): remove '!'.
   public readonly isStable !: Observable<boolean>;
 
   /** @internal */

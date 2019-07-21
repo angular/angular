@@ -168,9 +168,7 @@ class TextDirective {
 
 @Component({selector: 'needs-content-children', template: ''})
 class NeedsContentChildren implements AfterContentInit {
-  // TODO(issue/24571): remove '!'.
   @ContentChildren(TextDirective) textDirChildren !: QueryList<TextDirective>;
-  // TODO(issue/24571): remove '!'.
   numberOfChildrenAfterContentInit !: number;
 
   ngAfterContentInit() { this.numberOfChildrenAfterContentInit = this.textDirChildren.length; }
@@ -178,9 +176,7 @@ class NeedsContentChildren implements AfterContentInit {
 
 @Component({selector: 'needs-view-children', template: '<div text></div>'})
 class NeedsViewChildren implements AfterViewInit {
-  // TODO(issue/24571): remove '!'.
   @ViewChildren(TextDirective) textDirChildren !: QueryList<TextDirective>;
-  // TODO(issue/24571): remove '!'.
   numberOfChildrenAfterViewInit !: number;
 
   ngAfterViewInit() { this.numberOfChildrenAfterViewInit = this.textDirChildren.length; }

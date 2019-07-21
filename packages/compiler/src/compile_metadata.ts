@@ -533,7 +533,6 @@ export interface CompileNgModuleSummary extends CompileTypeSummary {
 }
 
 export class CompileShallowModuleMetadata {
-  // TODO(issue/24571): remove '!'.
   type !: CompileTypeMetadata;
 
   rawExports: any;

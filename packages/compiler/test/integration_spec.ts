@@ -20,7 +20,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       it('should support dotted selectors', async(() => {
            @Directive({selector: '[dot.name]'})
            class MyDir {
-             // TODO(issue/24571): remove '!'.
              @Input('dot.name') value !: string;
            }
 

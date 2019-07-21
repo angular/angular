@@ -173,11 +173,8 @@ class _WriteVisitor implements i18n.Visitor {
 // TODO(vicb): add error management (structure)
 // Extract messages as xml nodes from the xliff file
 class XliffParser implements ml.Visitor {
-  // TODO(issue/24571): remove '!'.
   private _unitMlString !: string | null;
-  // TODO(issue/24571): remove '!'.
   private _errors !: I18nError[];
-  // TODO(issue/24571): remove '!'.
   private _msgIdToHtml !: {[msgId: string]: string};
   private _locale: string|null = null;
 
@@ -264,7 +261,6 @@ class XliffParser implements ml.Visitor {
 
 // Convert ml nodes (xliff syntax) to i18n nodes
 class XmlToI18n implements ml.Visitor {
-  // TODO(issue/24571): remove '!'.
   private _errors !: I18nError[];
 
   convert(message: string, url: string) {

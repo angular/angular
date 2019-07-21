@@ -104,7 +104,6 @@ if (browserDetection.supportsCustomElements) {
 })
 class TestComponent {
   @Input() fooFoo: string = 'foo';
-  // TODO(issue/24571): remove '!'.
   @Input('barbar') barBar !: string;
 
   @Output() bazBaz = new EventEmitter<boolean>();

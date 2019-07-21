@@ -83,7 +83,6 @@ export function getPipesTable(
 
 class TypeScriptSymbolQuery implements SymbolQuery {
   private typeCache = new Map<BuiltinType, Symbol>();
-  // TODO(issue/24571): remove '!'.
   private pipesCache !: SymbolTable;
 
   constructor(
@@ -283,9 +282,7 @@ class TypeWrapper implements Symbol {
 
 class SymbolWrapper implements Symbol {
   private symbol: ts.Symbol;
-  // TODO(issue/24571): remove '!'.
   private _tsType !: ts.Type;
-  // TODO(issue/24571): remove '!'.
   private _members !: SymbolTable;
 
   public readonly nullable: boolean = false;
@@ -531,7 +528,6 @@ class PipesTable implements SymbolTable {
 const INDEX_PATTERN = /[\\/]([^\\/]+)[\\/]\1\.d\.ts$/;
 
 class PipeSymbol implements Symbol {
-  // TODO(issue/24571): remove '!'.
   private _tsType !: ts.Type;
   public readonly kind: DeclarationKind = 'pipe';
   public readonly language: string = 'typescript';

@@ -56,26 +56,18 @@ export class DummyResourceLoader extends ResourceLoader {
  * @publicApi
  */
 export class TypeScriptServiceHost implements LanguageServiceHost {
-  // TODO(issue/24571): remove '!'.
   private _resolver !: CompileMetadataResolver | null;
   private _staticSymbolCache = new StaticSymbolCache();
-  // TODO(issue/24571): remove '!'.
   private _summaryResolver !: AotSummaryResolver;
-  // TODO(issue/24571): remove '!'.
   private _staticSymbolResolver !: StaticSymbolResolver;
-  // TODO(issue/24571): remove '!'.
   private _reflector !: StaticReflector | null;
-  // TODO(issue/24571): remove '!'.
   private _reflectorHost !: ReflectorHost;
-  // TODO(issue/24571): remove '!'.
   private _checker !: ts.TypeChecker | null;
   private context: string|undefined;
   private lastProgram: ts.Program|undefined;
   private modulesOutOfDate: boolean = true;
-  // TODO(issue/24571): remove '!'.
   private analyzedModules !: NgAnalyzedModules | null;
   private fileToComponent = new Map<string, StaticSymbol>();
-  // TODO(issue/24571): remove '!'.
   private templateReferences !: string[] | null;
   private collectedErrors = new Map<string, any[]>();
   private fileVersions = new Map<string, string>();

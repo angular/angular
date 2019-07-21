@@ -103,7 +103,6 @@ export class SwitchView {
  */
 @Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
-  // TODO(issue/24571): remove '!'.
   private _defaultViews !: SwitchView[];
   private _defaultUsed = false;
   private _caseCount = 0;

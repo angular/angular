@@ -358,7 +358,6 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   condition: boolean = true;
-  // TODO(issue/24571): remove '!'.
   items !: any[];
   arrExpr: string[] = ['foo'];
   setExpr: Set<string> = new Set<string>();

@@ -402,14 +402,12 @@ class SomeComponent {
 
       @Component({template: '<ng-container #vc></ng-container>'})
       class ContainerComp {
-        // TODO(issue/24571): remove '!'.
         @ViewChild('vc', {read: ViewContainerRef, static: false})
         vc !: ViewContainerRef;
       }
 
       @Component({template: '<ng-template #t>Dynamic content</ng-template>'})
       class EmbeddedViewComp {
-        // TODO(issue/24571): remove '!'.
         @ViewChild(TemplateRef, {static: true})
         tplRef !: TemplateRef<Object>;
       }

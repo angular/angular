@@ -72,14 +72,12 @@ export class Response extends Body {
    * Denotes how many of the response body's bytes have been loaded, for example if the response is
    * the result of a progress event.
    */
-  // TODO(issue/24571): remove '!'.
   bytesLoaded !: number;
   /**
    * Non-standard property
    *
    * Denotes how many bytes are expected in the final response body.
    */
-  // TODO(issue/24571): remove '!'.
   totalBytes !: number;
   /**
    * Headers object based on the `Headers` class in the [Fetch

@@ -30,7 +30,6 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    *
    * @internal
    */
-  // TODO(issue/24571): remove '!'.
   _parent !: ControlContainer;
 
   /**
@@ -39,7 +38,6 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    *
    * @internal
    */
-  // TODO(issue/24571): remove '!'.
   _validators !: any[];
 
   /**
@@ -48,7 +46,6 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    *
    * @internal
    */
-  // TODO(issue/24571): remove '!'.
   _asyncValidators !: any[];
 
   /**

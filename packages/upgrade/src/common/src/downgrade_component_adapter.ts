@@ -22,12 +22,9 @@ export class DowngradeComponentAdapter {
   private inputChangeCount: number = 0;
   private inputChanges: SimpleChanges = {};
   private componentScope: IScope;
-  // TODO(issue/24571): remove '!'.
   private componentRef !: ComponentRef<any>;
   private component: any;
-  // TODO(issue/24571): remove '!'.
   private changeDetector !: ChangeDetectorRef;
-  // TODO(issue/24571): remove '!'.
   private viewChangeDetector !: ChangeDetectorRef;
 
   constructor(

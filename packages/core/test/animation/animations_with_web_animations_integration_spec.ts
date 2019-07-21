@@ -138,7 +138,6 @@ import {ivyEnabled} from '@angular/private/testing';
             [transition('* => *', [style({height: '!'}), animate(1000, style({height: '*'}))])])]
       })
       class Cmp {
-        // TODO(issue/24571): remove '!'.
         public exp !: number;
         public items = [0, 1, 2, 3, 4];
       }
@@ -359,7 +358,6 @@ import {ivyEnabled} from '@angular/private/testing';
         ]
       })
       class Cmp {
-        // TODO(issue/24571): remove '!'.
         public exp !: string;
       }
 
@@ -413,7 +411,6 @@ import {ivyEnabled} from '@angular/private/testing';
            ]
          })
          class Cmp {
-           // TODO(issue/24571): remove '!'.
            public exp !: string;
            public items: any[] = [];
          }

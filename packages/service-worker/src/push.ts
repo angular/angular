@@ -55,7 +55,6 @@ export class SwPush {
    */
   get isEnabled(): boolean { return this.sw.isEnabled; }
 
-  // TODO(issue/24571): remove '!'.
   private pushManager !: Observable<PushManager>;
   private subscriptionChanges = new Subject<PushSubscription|null>();
 

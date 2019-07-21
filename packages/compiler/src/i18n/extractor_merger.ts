@@ -55,44 +55,31 @@ enum _VisitorMode {
  * @internal
  */
 class _Visitor implements html.Visitor {
-  // TODO(issue/24571): remove '!'.
   private _depth !: number;
 
   // <el i18n>...</el>
-  // TODO(issue/24571): remove '!'.
   private _inI18nNode !: boolean;
-  // TODO(issue/24571): remove '!'.
   private _inImplicitNode !: boolean;
 
   // <!--i18n-->...<!--/i18n-->
-  // TODO(issue/24571): remove '!'.
   private _inI18nBlock !: boolean;
-  // TODO(issue/24571): remove '!'.
   private _blockMeaningAndDesc !: string;
-  // TODO(issue/24571): remove '!'.
   private _blockChildren !: html.Node[];
-  // TODO(issue/24571): remove '!'.
   private _blockStartDepth !: number;
 
   // {<icu message>}
-  // TODO(issue/24571): remove '!'.
   private _inIcu !: boolean;
 
   // set to void 0 when not in a section
   private _msgCountAtSectionStart: number|undefined;
-  // TODO(issue/24571): remove '!'.
   private _errors !: I18nError[];
-  // TODO(issue/24571): remove '!'.
   private _mode !: _VisitorMode;
 
   // _VisitorMode.Extract only
-  // TODO(issue/24571): remove '!'.
   private _messages !: i18n.Message[];
 
   // _VisitorMode.Merge only
-  // TODO(issue/24571): remove '!'.
   private _translations !: TranslationBundle;
-  // TODO(issue/24571): remove '!'.
   private _createI18nMessage !: (
       msg: html.Node[], meaning: string, description: string, id: string) => i18n.Message;
 

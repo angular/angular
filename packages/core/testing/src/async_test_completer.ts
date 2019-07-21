@@ -10,9 +10,7 @@
  * Injectable completer that allows signaling completion of an asynchronous test. Used internally.
  */
 export class AsyncTestCompleter {
-  // TODO(issue/24571): remove '!'.
   private _resolve !: (result: any) => void;
-  // TODO(issue/24571): remove '!'.
   private _reject !: (err: any) => void;
   private _promise: Promise<any> = new Promise((res, rej) => {
     this._resolve = res;

@@ -1355,9 +1355,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            @Component({template: '<ng-template #vc>{{name}}</ng-template>'})
            class Comp {
              name = 'Tom';
-             // TODO(issue/24571): remove '!'.
              @ViewChild('vc', {read: ViewContainerRef, static: true}) vc !: ViewContainerRef;
-             // TODO(issue/24571): remove '!'.
              @ViewChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
            }
 
@@ -1398,7 +1396,6 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
               `<span [i]="log('start')"></span><inner-cmp [outerTpl]="tpl"><ng-template><span [i]="log('tpl')"></span></ng-template></inner-cmp>`
         })
         class OuterComp {
-          // TODO(issue/24571): remove '!'.
           @ContentChild(TemplateRef, {static: true})
           tpl !: TemplateRef<any>;
 
@@ -1412,11 +1409,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
               `<span [i]="log('start')"></span>><ng-container [ngTemplateOutlet]="outerTpl"></ng-container><ng-container [ngTemplateOutlet]="tpl"></ng-container>`
         })
         class InnerComp {
-          // TODO(issue/24571): remove '!'.
           @ContentChild(TemplateRef, {static: true})
           tpl !: TemplateRef<any>;
 
-          // TODO(issue/24571): remove '!'.
           @Input()
           outerTpl !: TemplateRef<any>;
 
@@ -1585,7 +1580,6 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           class MyChild {
             private thrown = LifetimeMethods.None;
 
-            // TODO(issue/24571): remove '!'.
             @Input() inp !: boolean;
             @Output() outp = new EventEmitter<any>();
 
@@ -1862,15 +1856,12 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
     AfterViewInit, AfterViewChecked, OnDestroy {
   @Input() a: any;
   @Input() b: any;
-  // TODO(issue/24571): remove '!'.
   changes !: SimpleChanges;
   event: any;
   eventEmitter: EventEmitter<string> = new EventEmitter<string>();
 
-  // TODO(issue/24571): remove '!'.
   @Input('testDirective') name !: string;
 
-  // TODO(issue/24571): remove '!'.
   @Input() throwOn !: string;
 
   constructor(public log: DirectiveLog) {}
@@ -1947,7 +1938,6 @@ class OnDestroyDirective implements OnDestroy {
 
 @Directive({selector: '[orderCheck0]'})
 class OrderCheckDirective0 {
-  // TODO(issue/24571): remove '!'.
   private _name !: string;
 
   @Input('orderCheck0')
@@ -1961,7 +1951,6 @@ class OrderCheckDirective0 {
 
 @Directive({selector: '[orderCheck1]'})
 class OrderCheckDirective1 {
-  // TODO(issue/24571): remove '!'.
   private _name !: string;
 
   @Input('orderCheck1')
@@ -1975,7 +1964,6 @@ class OrderCheckDirective1 {
 
 @Directive({selector: '[orderCheck2]'})
 class OrderCheckDirective2 {
-  // TODO(issue/24571): remove '!'.
   private _name !: string;
 
   @Input('orderCheck2')
@@ -2000,12 +1988,9 @@ class TestLocals {
 
 @Component({selector: 'root', template: 'empty'})
 class Person {
-  // TODO(issue/24571): remove '!'.
   age !: number;
-  // TODO(issue/24571): remove '!'.
   name !: string;
   address: Address|null = null;
-  // TODO(issue/24571): remove '!'.
   phones !: number[];
 
   init(name: string, address: Address|null = null) {
@@ -2060,14 +2045,12 @@ class TestData {
 
 @Component({selector: 'root', template: 'empty'})
 class TestDataWithGetter {
-  // TODO(issue/24571): remove '!'.
   public fn !: Function;
 
   get a() { return this.fn(); }
 }
 
 class Holder<T> {
-  // TODO(issue/24571): remove '!'.
   value !: T;
 }
 

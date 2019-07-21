@@ -65,7 +65,6 @@ export class Container implements Node {
 }
 
 export class Icu implements Node {
-  // TODO(issue/24571): remove '!'.
   public expressionPlaceholder !: string;
   constructor(
       public expression: string, public type: string, public cases: {[k: string]: Node},

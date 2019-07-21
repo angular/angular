@@ -108,7 +108,6 @@ const summaryResolver = new AotSummaryResolver(
 
 export class DiagnosticContext {
   // tslint:disable
-  // TODO(issue/24571): remove '!'.
   _analyzedModules !: NgAnalyzedModules;
   _staticSymbolResolver: StaticSymbolResolver|undefined;
   _reflector: StaticReflector|undefined;

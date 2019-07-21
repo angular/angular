@@ -168,7 +168,6 @@ describe('di', () => {
     describe('flags', () => {
 
       class DirB {
-        // TODO(issue/24571): remove '!'.
         value !: string;
 
         static ngDirectiveDef = ɵɵdefineDirective({

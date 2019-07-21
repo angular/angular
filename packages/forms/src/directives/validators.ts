@@ -158,9 +158,7 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   host: {'[attr.required]': 'required ? "" : null'}
 })
 export class RequiredValidator implements Validator {
-  // TODO(issue/24571): remove '!'.
   private _required !: boolean;
-  // TODO(issue/24571): remove '!'.
   private _onChange !: () => void;
 
   /**
@@ -268,9 +266,7 @@ export const EMAIL_VALIDATOR: any = {
   providers: [EMAIL_VALIDATOR]
 })
 export class EmailValidator implements Validator {
-  // TODO(issue/24571): remove '!'.
   private _enabled !: boolean;
-  // TODO(issue/24571): remove '!'.
   private _onChange !: () => void;
 
   /**
@@ -359,16 +355,13 @@ export const MIN_LENGTH_VALIDATOR: any = {
 })
 export class MinLengthValidator implements Validator,
     OnChanges {
-  // TODO(issue/24571): remove '!'.
   private _validator !: ValidatorFn;
-  // TODO(issue/24571): remove '!'.
   private _onChange !: () => void;
 
   /**
    * @description
    * Tracks changes to the the minimum length bound to this directive.
    */
-  // TODO(issue/24571): remove '!'.
   @Input() minlength !: string;
 
   /**
@@ -445,16 +438,13 @@ export const MAX_LENGTH_VALIDATOR: any = {
 })
 export class MaxLengthValidator implements Validator,
     OnChanges {
-  // TODO(issue/24571): remove '!'.
   private _validator !: ValidatorFn;
-  // TODO(issue/24571): remove '!'.
   private _onChange !: () => void;
 
   /**
    * @description
    * Tracks changes to the the maximum length bound to this directive.
    */
-  // TODO(issue/24571): remove '!'.
   @Input() maxlength !: string;
 
   /**
@@ -534,16 +524,13 @@ export const PATTERN_VALIDATOR: any = {
 })
 export class PatternValidator implements Validator,
     OnChanges {
-  // TODO(issue/24571): remove '!'.
   private _validator !: ValidatorFn;
-  // TODO(issue/24571): remove '!'.
   private _onChange !: () => void;
 
   /**
    * @description
    * Tracks changes to the pattern bound to this directive.
    */
-  // TODO(issue/24571): remove '!'.
   @Input() pattern !: string | RegExp;
 
   /**

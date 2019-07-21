@@ -72,9 +72,7 @@ describe('Integration', () => {
         `
          })
          class ComponentWithRouterLink {
-           // TODO(issue/24571): remove '!'.
            @ViewChild(TemplateRef, {static: true}) templateRef !: TemplateRef<any>;
-           // TODO(issue/24571): remove '!'.
            @ViewChild('container', {read: ViewContainerRef, static: true})
            container !: ViewContainerRef;
 

@@ -77,7 +77,6 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
    * Tracks the name of the `FormGroup` bound to the directive. The name corresponds
    * to a key in the parent `FormGroup` or `FormArray`.
    */
-  // TODO(issue/24571): remove '!'.
   @Input('formGroupName') name !: string;
 
   constructor(
@@ -143,7 +142,6 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * Tracks the name of the `FormArray` bound to the directive. The name corresponds
    * to a key in the parent `FormGroup` or `FormArray`.
    */
-  // TODO(issue/24571): remove '!'.
   @Input('formArrayName') name !: string;
 
   constructor(

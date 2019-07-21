@@ -83,11 +83,8 @@ export class ParsedCssResult {
 
 export class CssParser {
   private _errors: CssParseError[] = [];
-  // TODO(issue/24571): remove '!'.
   private _file !: ParseSourceFile;
-  // TODO(issue/24571): remove '!'.
   private _scanner !: CssScanner;
-  // TODO(issue/24571): remove '!'.
   private _lastToken !: CssToken;
 
   /**

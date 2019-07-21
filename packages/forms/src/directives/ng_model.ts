@@ -150,14 +150,12 @@ export class NgModel extends NgControl implements OnChanges,
    * Tracks the name bound to the directive. The parent form
    * uses this name as a key to retrieve this control's value.
    */
-  // TODO(issue/24571): remove '!'.
   @Input() name !: string;
 
   /**
    * @description
    * Tracks whether the control is disabled.
    */
-  // TODO(issue/24571): remove '!'.
   @Input('disabled') isDisabled !: boolean;
 
   /**
@@ -181,7 +179,6 @@ export class NgModel extends NgControl implements OnChanges,
    * Defaults to 'change'. Possible values: `'change'` | `'blur'` | `'submit'`.
    *
    */
-  // TODO(issue/24571): remove '!'.
   @Input('ngModelOptions')
   options !: {name?: string, standalone?: boolean, updateOn?: FormHooks};
 
