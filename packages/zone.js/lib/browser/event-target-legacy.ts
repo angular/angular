@@ -39,6 +39,18 @@ export function eventTargetLegacyPatch(_global: any, api: _ZonePrivate) {
   const FUNCTION_WRAPPER = '[object FunctionWrapper]';
   const BROWSER_TOOLS = 'function __BROWSERTOOLS_CONSOLE_SAFEFUNC() { [native code] }';
 
+  const pointerEventsMap: {[key: string]: string} = {
+    'MSPointerCancel': 'pointercancel',
+    'MSPointerDown': 'pointerdown',
+    'MSPointerEnter': 'pointerenter',
+    'MSPointerHover': 'pointerhover',
+    'MSPointerLeave': 'pointerleave',
+    'MSPointerMove': 'pointermove',
+    'MSPointerOut': 'pointerout',
+    'MSPointerOver': 'pointerover',
+    'MSPointerUp': 'pointerup'
+  };
+
   //  predefine all __zone_symbol__ + eventName + true/false string
   for (let i = 0; i < eventNames.length; i++) {
     const eventName = eventNames[i];
@@ -100,7 +112,13 @@ export function eventTargetLegacyPatch(_global: any, api: _ZonePrivate) {
   }
   // vh is validateHandler to check event handler
   // is valid or not(for security check)
-  api.patchEventTarget(_global, apiTypes, {vh: checkIEAndCrossContext});
+  api.patchEventTarget(_global, apiTypes, {
+    vh: checkIEAndCrossContext,
+    transferEventName: (eventName: string) => {
+      const pointerEventName = pointerEventsMap[eventName];
+      return pointerEventName || eventName;
+    }
+  });
   (Zone as any)[api.symbol('patchEventTarget')] = !!_global[EVENT_TARGET];
   return true;
 }
