@@ -368,8 +368,8 @@ export function injectChangeDetectorRef(isPipe = false): ViewEngine_ChangeDetect
  * Creates a ViewRef and stores it on the injector as ChangeDetectorRef (public alias).
  *
  * @param hostTNode The node that is requesting a ChangeDetectorRef
- * @param hostTNodeIsParent Whether the `hostTNode` is a parent node
  * @param hostView The view to which the node belongs
+ * @param isPipe Whether the view is being injected into a pipe.
  * @returns The ChangeDetectorRef to use
  */
 function createViewRef(

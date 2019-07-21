@@ -49,13 +49,6 @@ export function getConstructorDependencies(
     let token = valueReferenceToExpression(param.typeValueReference, defaultImportRecorder);
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
-    const typeValueReference = param.typeValueReference;
-
-    if (typeValueReference && !typeValueReference.local &&
-        typeValueReference.name === 'ChangeDetectorRef' &&
-        typeValueReference.moduleName === '@angular/core') {
-      resolved = R3ResolvedDependencyType.ChangeDetectorRef;
-    }
 
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
       const name = isCore || dec.import === null ? dec.name : dec.import !.name;
@@ -87,6 +80,11 @@ export function getConstructorDependencies(
             ErrorCode.DECORATOR_UNEXPECTED, dec.node, `Unexpected decorator ${name} on parameter.`);
       }
     });
+
+    if (token instanceof ExternalExpr && token.value.name === 'ChangeDetectorRef' &&
+        token.value.moduleName === '@angular/core') {
+      resolved = R3ResolvedDependencyType.ChangeDetectorRef;
+    }
     if (token === null) {
       errors.push({
         index: idx,
