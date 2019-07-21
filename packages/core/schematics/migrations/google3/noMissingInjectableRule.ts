@@ -15,7 +15,7 @@ import {MissingInjectableTransform} from '../missing-injectable/transform';
 
 
 /**
- * TSLint rule that flags classes which are declared as providers in NgModule's but
+ * TSLint rule that flags classes which are declared as providers in NgModules but
  * aren't decorated with any Angular decorator.
  */
 export class Rule extends Rules.TypedRule {

@@ -16,7 +16,7 @@ import * as ts from 'typescript';
 export interface UpdateRecorder {
   addNewImport(start: number, importText: string): void;
   updateExistingImport(namedBindings: ts.NamedImports, newNamedBindings: string): void;
-  addClassDecorator(node: ts.ClassDeclaration, text: string): void;
-  replaceDecorator(node: ts.Decorator, newText: string): void;
+  addClassDecorator(node: ts.ClassDeclaration, text: string, moduleName: string): void;
+  replaceDecorator(node: ts.Decorator, newText: string, moduleName: string): void;
   commitUpdate(): void;
 }

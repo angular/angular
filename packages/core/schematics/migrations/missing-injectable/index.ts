@@ -17,14 +17,14 @@ import {NgModuleCollector} from './module_collector';
 import {MissingInjectableTransform} from './transform';
 import {UpdateRecorder} from './update_recorder';
 
-/** Entry point for the V8 undecorated-base-class schematic. */
+/** Entry point for the V9 "missing @Injectable" schematic. */
 export default function(): Rule {
   return (tree: Tree, ctx: SchematicContext) => {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const failures: string[] = [];
 
-    ctx.logger.info('------ Missing injectable migration ------');
+    ctx.logger.info('------ Missing @Injectable migration ------');
     if (!buildPaths.length && !testPaths.length) {
       throw new SchematicsException(
           'Could not find any tsconfig file. Cannot add the "@Injectable" decorator to providers ' +

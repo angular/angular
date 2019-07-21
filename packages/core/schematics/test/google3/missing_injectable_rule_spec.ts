@@ -52,14 +52,15 @@ describe('Google3 missing injectable tslint rule', () => {
       export class A {}
 
       @NgModule({providers: [A]})
-      export class A {}
+      export class AppModule {}
     `);
 
     const linter = runTSLint(false);
     const failures = linter.getResult().failures;
 
     expect(failures.length).toBe(2);
-    expect(failures[0].getFailure()).toMatch(/Class needs to be decorated with: @Injectable\(\)/);
+    expect(failures[0].getFailure())
+        .toMatch(/Class needs to be decorated with "@Injectable\(\)".*provided by "AppModule"/);
     expect(failures[0].getStartPosition().getLineAndCharacter()).toEqual({line: 3, character: 6});
     expect(failures[1].getFailure()).toMatch(/Import needs to be updated to import.*Injectable/);
     expect(failures[1].getStartPosition().getLineAndCharacter()).toEqual({line: 1, character: 13});

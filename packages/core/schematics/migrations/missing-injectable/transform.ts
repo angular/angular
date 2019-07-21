@@ -57,14 +57,14 @@ export class MissingInjectableTransform {
       }];
     }
 
-    return this._visitProviderResolvedValue(evaluatedExpr);
+    return this._visitProviderResolvedValue(evaluatedExpr, module);
   }
 
   /**
    * Migrates a given provider class if it is not decorated with
    * any Angular decorator.
    */
-  migrateProviderClass(node: ts.ClassDeclaration) {
+  migrateProviderClass(node: ts.ClassDeclaration, module: ResolvedNgModule) {
     if (this.visitedProviderClasses.has(node)) {
       return;
     }
@@ -93,9 +93,9 @@ export class MissingInjectableTransform {
     const existingInjectDecorator =
         ngDecorators !== null ? ngDecorators.find(d => d.name === 'Inject') : null;
     if (existingInjectDecorator) {
-      updateRecorder.replaceDecorator(existingInjectDecorator.node, newDecoratorText);
+      updateRecorder.replaceDecorator(existingInjectDecorator.node, newDecoratorText, module.name);
     } else {
-      updateRecorder.addClassDecorator(node, newDecoratorText);
+      updateRecorder.addClassDecorator(node, newDecoratorText, module.name);
     }
   }
 
@@ -104,23 +104,24 @@ export class MissingInjectableTransform {
    * arrays and we need to recursively walk through the providers to be able to
    * migrate all referenced provider classes. e.g. "providers: [[A, [B]]]".
    */
-  private _visitProviderResolvedValue(value: ResolvedValue): AnalysisFailure[] {
+  private _visitProviderResolvedValue(value: ResolvedValue, module: ResolvedNgModule):
+      AnalysisFailure[] {
     if (value instanceof Reference && ts.isClassDeclaration(value.node)) {
-      this.migrateProviderClass(value.node);
+      this.migrateProviderClass(value.node, module);
     } else if (value instanceof Map) {
       if (!value.has('provide') || value.has('useValue') || value.has('useFactory')) {
         return [];
       }
       if (value.has('useExisting')) {
-        return this._visitProviderResolvedValue(value.get('useExisting') !);
+        return this._visitProviderResolvedValue(value.get('useExisting') !, module);
       } else if (value.has('useClass')) {
-        return this._visitProviderResolvedValue(value.get('useClass') !);
+        return this._visitProviderResolvedValue(value.get('useClass') !, module);
       } else {
-        return this._visitProviderResolvedValue(value.get('provide') !);
+        return this._visitProviderResolvedValue(value.get('provide') !, module);
       }
     } else if (Array.isArray(value)) {
-      return value.reduce(
-          (res, v) => res.concat(this._visitProviderResolvedValue(v)), [] as AnalysisFailure[]);
+      return value.reduce((res, v) => res.concat(this._visitProviderResolvedValue(v, module)), [
+      ] as AnalysisFailure[]);
     } else if (value instanceof DynamicValue) {
       return [{node: value.node, message: `Provider is not statically analyzable.`}];
     }
