@@ -768,7 +768,7 @@ You'll use it [later](#goback) to navigate back to the view that navigated here.
 <!--
 ### Extract the _id_ route parameter
 -->
-### 라우팅 변수 _id_ 추축하기
+### 라우팅 변수 _id_ 추출하기
 
 <!--
 In the `ngOnInit()` [lifecycle hook](guide/lifecycle-hooks#oninit)
