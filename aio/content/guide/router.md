@@ -2275,7 +2275,6 @@ In a feature module you use the static **`forChild`** method.
 `AppRoutingModule`에서는 애플리케이션 계층에 필요한 라우팅 규칙과 서비스 프로바이더를 등록하기 위해 **`RouterModule.forRoot()`** 메소드를 사용했습니다.
 하지만 기능 모듈에서는 **`forChild`** 메소드를 사용해야 합니다.
 
-<<<<<<< HEAD
 <div class="alert is-helpful">
 
 
