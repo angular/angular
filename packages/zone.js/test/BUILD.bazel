@@ -1,6 +1,5 @@
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle")
-load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
+load("//packages/zone.js/test:karma_test.bzl", "karma_test")
 
 package(default_visibility = ["//:__pkg__"])
 
@@ -184,187 +183,90 @@ jasmine_node_test(
     ],
 )
 
-ts_library(
-    name = "test_browser_lib",
-    testonly = True,
-    srcs = glob(["browser/*.ts"]) + [
-        "extra/cordova.spec.ts",
-        "mocha-patch.spec.ts",
-        "jasmine-patch.spec.ts",
-        "common_tests.ts",
-        "browser_entry_point.ts",
-    ],
-    deps = [
-        ":common_spec_env",
-        ":common_spec_srcs",
-        ":common_spec_util",
-        ":error_spec_srcs",
-        "//packages/zone.js/lib",
-        "@npm//@types/shelljs",
-        "@npm//@types/systemjs",
-        "@npm//rxjs",
-        "@npm//shelljs",
-        "@npm//systemjs",
-    ],
-)
-
-ts_library(
-    name = "browser_env_setup",
-    testonly = True,
-    srcs = [
-        "browser-env-setup.ts",
-        "browser_symbol_setup.ts",
-    ],
-    deps = [
-        ":common_spec_env",
-    ],
-)
-
-rollup_bundle(
-    name = "browser_test_env_setup_rollup",
-    testonly = True,
-    entry_point = ":browser-env-setup.ts",
-    deps = [
-        ":browser_env_setup",
-    ],
-)
-
-filegroup(
-    name = "browser_test_env_setup_rollup.es5",
-    testonly = True,
-    srcs = [":browser_test_env_setup_rollup"],
-    output_group = "umd",
-)
-
-rollup_bundle(
-    name = "browser_test_rollup",
-    testonly = True,
-    entry_point = ":browser_entry_point.ts",
-    globals = {
-        "electron": "electron",
-    },
-    deps = [
-        ":test_browser_lib",
-    ],
-)
-
-filegroup(
-    name = "browser_test_rollup.es5",
-    testonly = True,
-    srcs = [":browser_test_rollup"],
-    output_group = "umd",
-)
-
-genrule(
-    name = "browser_test_trim_map",
-    testonly = True,
-    srcs = [
-        ":browser_test_rollup.es5",
-    ],
-    outs = [
-        "browser_test_rollup_trim_map.js",
-    ],
-    cmd = " && ".join([
-        "cp $(@D)/browser_test_rollup.umd.js $@",
-    ]),
-)
-
-genrule(
-    name = "browser_test_env_setup_trim_map",
-    testonly = True,
-    srcs = [
-        ":browser_test_env_setup_rollup.es5",
-    ],
-    outs = [
-        "browser_test_env_setup_rollup_trim_map.js",
-    ],
-    cmd = " && ".join([
-        "cp $(@D)/browser_test_env_setup_rollup.umd.js $@",
-    ]),
-)
-
-_karma_test_required_dist_files = [
-    "//packages/zone.js/dist:task-tracking-dist-dev-test",
-    "//packages/zone.js/dist:wtf-dist-dev-test",
-    "//packages/zone.js/dist:webapis-notification-dist-dev-test",
-    "//packages/zone.js/dist:webapis-media-query-dist-dev-test",
-    "//packages/zone.js/dist:zone-patch-canvas-dist-dev-test",
-    "//packages/zone.js/dist:zone-patch-fetch-dist-dev-test",
-    "//packages/zone.js/dist:zone-patch-resize-observer-dist-dev-test",
-    "//packages/zone.js/dist:zone-patch-user-media-dist-dev-test",
-    ":browser_test_trim_map",
+env_srcs = [
+    "browser-env-setup.ts",
+    "browser_symbol_setup.ts",
 ]
 
-karma_web_test_suite(
-    name = "karma_jasmine_test",
-    srcs = [
-        "fake_entry.js",
-    ],
-    bootstrap = [
-        ":browser_test_env_setup_trim_map",
-        "//packages/zone.js/dist:zone-testing-bundle-dist-dev-test",
-    ] + _karma_test_required_dist_files,
-    static_files = [
-        ":assets/sample.json",
-        ":assets/worker.js",
-        ":assets/import.html",
-    ],
-    tags = ["zone_karma_test"],
-    runtime_deps = [
-        "@npm//karma-browserstack-launcher",
-    ],
-)
+env_deps = [
+    ":common_spec_env",
+    ":common_spec_srcs",
+    ":common_spec_util",
+    ":error_spec_srcs",
+    "//packages/zone.js/lib",
+    "@npm//@types/shelljs",
+    "@npm//@types/systemjs",
+    "@npm//rxjs",
+    "@npm//shelljs",
+    "@npm//systemjs",
+]
 
-karma_web_test_suite(
-    name = "karma_jasmine_evergreen_test",
-    srcs = [
-        "fake_entry.js",
-    ],
-    bootstrap = [
-        ":browser_test_env_setup_trim_map",
+env_entry_point = ":browser-env-setup.ts"
+
+test_srcs = glob(
+    ["browser/*.ts"],
+    exclude = ["browser/shadydom.spec.ts"],
+) + [
+    "extra/cordova.spec.ts",
+    "mocha-patch.spec.ts",
+    "jasmine-patch.spec.ts",
+    "common_tests.ts",
+    "browser_entry_point.ts",
+]
+
+test_deps = [
+    ":common_spec_env",
+    ":common_spec_srcs",
+    ":common_spec_util",
+    ":error_spec_srcs",
+    "//packages/zone.js/lib",
+    "@npm//@types/shelljs",
+    "@npm//@types/systemjs",
+    "@npm//rxjs",
+    "@npm//shelljs",
+    "@npm//systemjs",
+]
+
+test_entry_point = ":browser_entry_point.ts"
+
+karma_tests = {
+    "browser_test": ["//packages/zone.js/dist:zone-testing-bundle-dist-dev-test"],
+    "browser_green_test": [
         "//packages/zone.js/dist:zone-evergreen-dist-dev-test",
         "//packages/zone.js/dist:zone-testing-dist-dev-test",
-    ] + _karma_test_required_dist_files,
-    data = [
-        "//:browser-providers.conf.js",
-        "//tools:jasmine-seed-generator.js",
     ],
-    static_files = [
-        ":assets/sample.json",
-        ":assets/worker.js",
-        ":assets/import.html",
-    ],
-    tags = ["zone_karma_test"],
-    runtime_deps = [
-        "@npm//karma-browserstack-launcher",
-    ],
+}
+
+karma_test(
+    name = "browser_test",
+    bootstraps = karma_tests,
+    ci = True,
+    env_deps = env_deps,
+    env_entry_point = env_entry_point,
+    env_srcs = env_srcs,
+    test_deps = test_deps,
+    test_entry_point = test_entry_point,
+    test_srcs = test_srcs,
 )
 
-karma_web_test_suite(
-    name = "karma_jasmine_test_ci",
-    srcs = [
-        "fake_entry.js",
+karma_test(
+    name = "browser_shadydom",
+    bootstraps = {"browser_shadydom": [
+        "//packages/zone.js/dist:zone-testing-bundle-dist-dev-test",
+        "//packages/zone.js/dist:webapis-shadydom-dist-dev-test",
+    ]},
+    ci = False,
+    env_deps = [
+        "//packages/zone.js/lib",
     ],
-    bootstrap = [
-        ":saucelabs.js",
-        ":browser_test_env_setup_trim_map",
-        "//packages/zone.js/dist:zone-testing-bundle-dist-test",
-    ] + _karma_test_required_dist_files,
-    config_file = "//:karma-js.conf.js",
-    configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
-    data = [
-        "//:browser-providers.conf.js",
-        "//tools:jasmine-seed-generator.js",
+    env_entry_point = ":browser_shadydom_setup.ts",
+    env_srcs = ["browser_shadydom_setup.ts"],
+    test_deps = [
+        "//packages/zone.js/lib",
     ],
-    static_files = [
-        ":assets/sample.json",
-        ":assets/worker.js",
-        ":assets/import.html",
-    ],
-    tags = ["zone_karma_test"],
-    # Visible to //:test_web_all target
-    visibility = ["//:__pkg__"],
-    runtime_deps = [
-        "@npm//karma-browserstack-launcher",
+    test_entry_point = ":browser_shadydom_entry_point.ts",
+    test_srcs = [
+        "browser/shadydom.spec.ts",
+        "browser_shadydom_entry_point.ts",
     ],
 )
