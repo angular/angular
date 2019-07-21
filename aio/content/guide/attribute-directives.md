@@ -457,17 +457,17 @@ This is disagreeable. The word, `appHighlight`, is a terrible property name and 
 <!--
 ### Bind to an _@Input_ alias
 -->
-### _@Input_ 에 별칭 사용하기
+### _@Input_ 에 다른 이름 지정하기
 
 <!--
 Fortunately you can name the directive property whatever you want _and_ **_alias it_** for binding purposes.
 -->
-다행히도, 입력 프로퍼티 이름은 그대로 두고 이 프로퍼티에 **_별칭_**을 지정할 수 있습니다.
+다행히도, 입력 프로퍼티 이름은 그대로 두고 이 프로퍼티에 **_다른 이름_**을 지정할 수 있습니다.
 
 <!--
 Restore the original property name and specify the selector as the alias in the argument to `@Input`.
 -->
-이 별칭은 `@Input` 데코레이터 안에 문자열로 지정합니다.
+새로운 이름은 `@Input` 데코레이터 안에 문자열로 지정합니다.
 
 <code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" header="src/app/highlight.directive.ts (color property with alias)" region="color"></code-example>
 
@@ -661,14 +661,14 @@ In this demo, the `highlightColor` property is an ***input*** property of
 the `HighlightDirective`. You've seen it applied without an alias:
 -->
 이번 예제에서 `highlightColor` 프로퍼티는 `HighlightDirective`의 ***입력*** 프로퍼티입니다.
-입력 프로퍼티에 별칭을 지정하지 않는 경우라몀ㄴ 다음과 같이 사용했습니다:
+입력 프로퍼티 이름을 별도로 지정하지 않는 경우라면 다음과 같이 사용했습니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" header="src/app/highlight.directive.ts (color)" region="color"></code-example>
 
 <!--
 You've seen it with an alias:
 -->
-그리고 별칭을 지정하는 경우는 다음과 같이 사용했습니다:
+그리고 다른 이름을 지정하는 경우는 다음과 같이 사용했습니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" header="src/app/highlight.directive.ts (color)" region="color"></code-example>
 
@@ -748,4 +748,4 @@ Now apply that reasoning to the following example:
   not a property of the template's component. There are trust issues.
   Therefore, the directive property must carry the `@Input` decorator.
 -->
-* 등호 왼쪽에 사용된 `appHighlight` 프로퍼티는 `HighlightDirective`에 _별칭으로 지정된_ 프로퍼티를 가리키며, 이 템플릿의 컴포넌트 클래스에 있는 프로퍼티는 아닙니다. 그래서 이 프로퍼티를 바인딩하려면 `@Input` 데코레이터를 꼭 사용해야 합니다.
+* 등호 왼쪽에 사용된 `appHighlight` 프로퍼티는 `HighlightDirective`에 _다른 이름으로 지정된_ 프로퍼티를 가리키며, 이 템플릿의 컴포넌트 클래스에 있는 프로퍼티는 아닙니다. 그래서 이 프로퍼티를 바인딩하려면 `@Input` 데코레이터를 꼭 사용해야 합니다.
