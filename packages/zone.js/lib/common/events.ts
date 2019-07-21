@@ -69,6 +69,8 @@ export interface PatchEventTargetOptions {
   supportPassive?: boolean;
   // get string from eventName (in nodejs, eventName maybe Symbol)
   eventNameToString?: (eventName: any) => string;
+  // transfer eventName
+  transferEventName?: (eventName: string) => string;
 }
 
 export function patchEventTarget(
@@ -332,7 +334,10 @@ export function patchEventTarget(
         returnTarget = false, prepend = false) {
       return function() {
         const target = this || _global;
-        const eventName = arguments[0];
+        let eventName = arguments[0];
+        if (patchOptions && patchOptions.transferEventName) {
+          eventName = patchOptions.transferEventName(eventName);
+        }
         let delegate = arguments[1];
         if (!delegate) {
           return nativeListener.apply(this, arguments);
@@ -498,7 +503,10 @@ export function patchEventTarget(
 
     proto[REMOVE_EVENT_LISTENER] = function() {
       const target = this || _global;
-      const eventName = arguments[0];
+      let eventName = arguments[0];
+      if (patchOptions && patchOptions.transferEventName) {
+        eventName = patchOptions.transferEventName(eventName);
+      }
       const options = arguments[2];
 
       let capture;
@@ -558,7 +566,10 @@ export function patchEventTarget(
 
     proto[LISTENERS_EVENT_LISTENER] = function() {
       const target = this || _global;
-      const eventName = arguments[0];
+      let eventName = arguments[0];
+      if (patchOptions && patchOptions.transferEventName) {
+        eventName = patchOptions.transferEventName(eventName);
+      }
 
       const listeners: any[] = [];
       const tasks =
@@ -575,7 +586,7 @@ export function patchEventTarget(
     proto[REMOVE_ALL_LISTENERS_EVENT_LISTENER] = function() {
       const target = this || _global;
 
-      const eventName = arguments[0];
+      let eventName = arguments[0];
       if (!eventName) {
         const keys = Object.keys(target);
         for (let i = 0; i < keys.length; i++) {
@@ -593,6 +604,9 @@ export function patchEventTarget(
         // remove removeListener listener finally
         this[REMOVE_ALL_LISTENERS_EVENT_LISTENER].call(this, 'removeListener');
       } else {
+        if (patchOptions && patchOptions.transferEventName) {
+          eventName = patchOptions.transferEventName(eventName);
+        }
         const symbolEventNames = zoneSymbolEventNames[eventName];
         if (symbolEventNames) {
           const symbolEventName = symbolEventNames[FALSE_STR];
