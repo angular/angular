@@ -700,4 +700,57 @@ describe('bluebird promise', () => {
 
     zone.runGuarded(() => { return Promise.resolve().then(() => { throw new Error('test'); }); });
   });
+
+  it('should not trigger unhandledrejection if zone.onHandleError return false', (done: DoneFn) => {
+    const listener = function() { fail('should not be here'); };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('unhandledrejection', listener);
+    } else if (typeof process !== 'undefined') {
+      process.on('unhandledRejection', listener);
+    }
+
+    const zone = Zone.current.fork({
+      name: 'testErrorHandling',
+      onHandleError: function() {
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            window.removeEventListener('unhandledrejection', listener);
+          } else if (typeof process !== 'undefined') {
+            process.removeListener('unhandledRejection', listener);
+          }
+          done();
+        }, 500);
+        return false;
+      }
+    });
+
+    zone.runGuarded(() => { return Promise.resolve().then(() => { throw new Error('test'); }); });
+  });
+
+  it('should trigger unhandledrejection if zone.onHandleError return true', (done: DoneFn) => {
+    const listener = function(event: any) {
+      if (typeof window !== 'undefined') {
+        expect(event.detail.reason.message).toEqual('test');
+      } else if (typeof process !== 'undefined') {
+        expect(event.message).toEqual('test');
+      }
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('unhandledrejection', listener);
+      } else if (typeof process !== 'undefined') {
+        process.removeListener('unhandledRejection', listener);
+      }
+      done();
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('unhandledrejection', listener);
+    } else if (typeof process !== 'undefined') {
+      process.on('unhandledRejection', listener);
+    }
+
+    const zone =
+        Zone.current.fork({name: 'testErrorHandling', onHandleError: function() { return true; }});
+
+    zone.runGuarded(() => { return Promise.resolve().then(() => { throw new Error('test'); }); });
+  });
 });

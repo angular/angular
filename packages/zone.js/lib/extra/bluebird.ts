@@ -41,10 +41,40 @@ Zone.__load_patch('bluebird', (global: any, Zone: ZoneType, api: _ZonePrivate) =
           });
     });
 
+    if (typeof window !== 'undefined') {
+      window.addEventListener('unhandledrejection', function(event: any) {
+        const error = event.detail && event.detail.reason;
+        if (error && error.isHandledByZone) {
+          event.preventDefault();
+          if (typeof event.stopImmediatePropagation === 'function') {
+            event.stopImmediatePropagation();
+          }
+        }
+      });
+    } else if (typeof process !== 'undefined') {
+      process.on('unhandledRejection', (reason: any, p: any) => {
+        if (reason && reason.isHandledByZone) {
+          const listeners = process.listeners('unhandledRejection');
+          if (listeners) {
+            // remove unhandledRejection listeners so the callback
+            // will not be triggered.
+            process.removeAllListeners('unhandledRejection');
+            process.nextTick(() => {
+              listeners.forEach(listener => process.on('unhandledRejection', listener));
+            });
+          }
+        }
+      });
+    }
+
     Bluebird.onPossiblyUnhandledRejection(function(e: any, promise: any) {
       try {
-        Zone.current.runGuarded(() => { throw e; });
+        Zone.current.runGuarded(() => {
+          e.isHandledByZone = true;
+          throw e;
+        });
       } catch (err) {
+        err.isHandledByZone = false;
         api.onUnhandledError(err);
       }
     });
