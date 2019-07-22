@@ -2,13 +2,15 @@
 
 Angular makes use of observables as an interface to handle a variety of common asynchronous operations. For example:
 
-* The `EventEmitter` class extends `Observable`.
+* The `EventEmitter` class lets you use observables with the Angular `@Output` decorator.
 * The HTTP module uses observables to handle AJAX requests and responses.
 * The Router and Forms modules use observables to listen for and respond to user-input events.
 
 ## Event emitter
 
-Angular provides an `EventEmitter` class that is used when publishing values from a component through the `@Output()` decorator. `EventEmitter` extends `Observable`, adding an `emit()` method so it can send arbitrary values. When you call `emit()`, it passes the emitted value to the `next()` method of any subscribed observer.
+Angular provides an `EventEmitter` class that is used when publishing values from a component through the `@Output()` decorator.
+`EventEmitter` extends [RxJS `Subject`](https://rxjs.dev/api/index/class/Subject), adding an `emit()` method so it can send arbitrary values.
+When you call `emit()`, it passes the emitted value to the `next()` method of any subscribed observer.
 
 A good example of usage can be found on the [EventEmitter](https://angular.io/api/core/EventEmitter) documentation. Here is the example component that listens for open and close events:
 

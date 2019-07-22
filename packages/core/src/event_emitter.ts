@@ -11,11 +11,15 @@
 import {Subject, Subscription} from 'rxjs';
 
 /**
- * Use in directives and components to emit custom events synchronously
- * or asynchronously, and register handlers for those events by subscribing
- * to an instance.
+ * Use in components with the `@Output` directive to emit custom events
+ * synchronously or asynchronously, and register handlers for those events
+ * by subscribing to an instance.
  *
  * @usageNotes
+ *
+ * Extends
+ * [RxJS `Subject`](https://rxjs.dev/api/index/class/Subject)
+ * for Angular by adding the `emit()` method.
  *
  * In the following example, a component defines two output properties
  * that create event emitters. When the title is clicked, the emitter
@@ -54,6 +58,7 @@ import {Subject, Subscription} from 'rxjs';
  * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
  * ```
  *
+ * @see [Observables: Event emitter](guide/observables-in-angular#event-emitter)
  * @publicApi
  */
 export class EventEmitter<T extends any> extends Subject<T> {
