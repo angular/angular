@@ -311,17 +311,13 @@ export function readBaseClass(
     return reflector.hasBaseClass(node) ? 'dynamic' : null;
   }
 
-  if (node.heritageClauses !== undefined) {
-    for (const clause of node.heritageClauses) {
-      if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
-        // The class has a base class. Figure out whether it's resolvable or not.
-        const baseClass = evaluator.evaluate(clause.types[0].expression);
-        if (baseClass instanceof Reference && isNamedClassDeclaration(baseClass.node)) {
-          return baseClass as Reference<ClassDeclaration>;
-        } else {
-          return 'dynamic';
-        }
-      }
+  const baseExpression = reflector.getBaseClassExpression(node);
+  if (baseExpression !== null) {
+    const baseClass = evaluator.evaluate(baseExpression);
+    if (baseClass instanceof Reference && isNamedClassDeclaration(baseClass.node)) {
+      return baseClass as Reference<ClassDeclaration>;
+    } else {
+      return 'dynamic';
     }
   }
 
