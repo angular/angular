@@ -246,7 +246,20 @@ runInEachFileSystem(() => {
         const refs = getTemplateIdentifiers(boundTemplate);
         const [ref] = Array.from(refs);
         const usedDirectives = (ref as ElementIdentifier).usedDirectives;
-        expect(usedDirectives).toEqual(new Set([declA, declB, declC]));
+        expect(usedDirectives).toEqual(new Set([
+          {
+            node: declA,
+            selector: 'a-selector',
+          },
+          {
+            node: declB,
+            selector: '[b-selector]',
+          },
+          {
+            node: declC,
+            selector: ':not(never-selector)',
+          }
+        ]));
       });
     });
   });

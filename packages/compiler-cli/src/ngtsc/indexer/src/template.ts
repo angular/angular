@@ -157,7 +157,12 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       span: new AbsoluteSourceSpan(start, start + name.length),
       kind: IdentifierKind.Element,
       attributes: new Set(attributes),
-      usedDirectives: new Set(usedDirectives.map(dir => dir.ref.node)),
+      usedDirectives: new Set(usedDirectives.map(dir => {
+        return {
+          node: dir.ref.node,
+          selector: dir.selector,
+        };
+      })),
     };
     this.identifiers.add(elId);
 
