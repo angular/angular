@@ -353,8 +353,8 @@ _EXTRA_NODE_OPTIONS_FLAGS = [
     "--node_options=--expose-gc",
     # Show ~full stack traces, instead of cutting off after 10 items.
     "--node_options=--stack-trace-limit=100",
-    # Give 2 GB RAM to node to make bigger google3 modules to compile, we should be able to drop this after Ivy/ngtsc is the default in g3
-    "--node_options=--max-old-space-size=2048",
+    # Give 4 GB RAM to node to allow bigger google3 modules to compile.
+    "--node_options=--max-old-space-size=4096",
 ]
 
 def ngc_compile_action(
