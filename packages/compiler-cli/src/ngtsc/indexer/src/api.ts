@@ -8,6 +8,7 @@
 
 import {ParseSourceFile} from '@angular/compiler';
 import * as ts from 'typescript';
+import {ClassDeclaration} from '../../reflection';
 
 /**
  * Describes the kind of identifier found in a template.
@@ -40,7 +41,7 @@ export interface AttributeIdentifier extends TemplateIdentifier { kind: Identifi
 
 /** A reference to a directive node and its selector. */
 interface DirectiveReference {
-  node: ts.Declaration;
+  node: ClassDeclaration;
   selector: string;
 }
 /**
