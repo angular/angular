@@ -42,6 +42,11 @@ def compile_strategy(ctx):
     if "compile" in ctx.var:
         strategy = ctx.var["compile"]
 
+    # Enable Angular targets extracted by Kythe Angular indexer to be compiled with the Ivy compiler architecture.
+    # TODO(ayazhafiz): remove once Ivy has landed as the default in g3.
+    if ctx.var.get("GROK_ELLIPSIS_BUILD", None) != None:
+        strategy = "aot"
+
     if strategy not in ["legacy", "aot"]:
         fail("Unknown --define=compile value '%s'" % strategy)
 
