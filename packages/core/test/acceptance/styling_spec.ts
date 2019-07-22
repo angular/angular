@@ -8,7 +8,7 @@
 import {Component, Directive, ElementRef, Input} from '@angular/core';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
-import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
+import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
@@ -554,4 +554,54 @@ describe('styling', () => {
             expect(capturedMyClassBindingCount).toEqual(1);
             expect(capturedMyClassBindingValue !).toEqual('foo');
           });
+
+  describe('NgClass', () => {
+
+    // We had a bug where NgClass would not allocate sufficient slots for host bindings,
+    // so it would overwrite information about other directives nearby. This test checks
+    // that TestDir's injector is not overwritten by NgClass, so TestDir should still
+    // be found by DI when ChildDir is instantiated.
+    it('should not overwrite other directive info when using NgClass', () => {
+      @Directive({selector: '[test-dir]'})
+      class TestDir {
+      }
+
+      @Directive({selector: '[child-dir]'})
+      class ChildDir {
+        constructor(public parent: TestDir) {}
+      }
+
+      @Component({
+        selector: 'app',
+        template: `
+          <div class="my-class" [ngClass]="classMap" test-dir>
+            <div *ngIf="showing" child-dir>Hello</div>
+          </div>
+        `
+      })
+      class AppComponent {
+        classMap = {'with-button': true};
+        showing = false;
+      }
+
+      TestBed.configureTestingModule({declarations: [AppComponent, TestDir, ChildDir]});
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      const testDirDiv = fixture.debugElement.nativeElement.querySelector('div');
+      expect(testDirDiv.classList).toContain('with-button');
+      expect(fixture.debugElement.nativeElement.textContent).not.toContain('Hello');
+
+      fixture.componentInstance.classMap = {'with-button': false};
+      fixture.componentInstance.showing = true;
+      fixture.detectChanges();
+
+      const childDir = fixture.debugElement.query(By.directive(ChildDir)).injector.get(ChildDir);
+      expect(childDir.parent).toBeAnInstanceOf(TestDir);
+      expect(testDirDiv.classList).not.toContain('with-button');
+      expect(fixture.debugElement.nativeElement.textContent).toContain('Hello');
+
+    });
+
+
+  });
 });

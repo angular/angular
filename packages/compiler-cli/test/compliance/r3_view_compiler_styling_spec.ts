@@ -1278,6 +1278,8 @@ describe('compiler compliance: styling', () => {
            }
          };
 
+         // NOTE: IF YOU ARE CHANGING THIS COMPILER SPEC, YOU MAY NEED TO CHANGE THE DIRECTIVE
+         // DEF THAT'S HARD-CODED IN `ng_class.ts`.
          const template = `
           function ClassDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
