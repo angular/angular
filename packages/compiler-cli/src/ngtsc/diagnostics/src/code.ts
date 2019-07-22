@@ -67,6 +67,11 @@ export enum ErrorCode {
    */
   NGCC_MIGRATION_EXTERNAL_BASE_CLASS = 7002,
 
+  /**
+   * Raised when ngcc tries to migrate a class that is extended from a dynamic base class
+   * expression.
+   */
+  NGCC_MIGRATION_DYNAMIC_BASE_CLASS = 7003,
 }
 
 export function ngErrorCode(code: ErrorCode): number {

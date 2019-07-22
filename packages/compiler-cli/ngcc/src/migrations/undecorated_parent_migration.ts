@@ -7,10 +7,10 @@
  */
 import * as ts from 'typescript';
 import {ErrorCode, makeDiagnostic} from '../../../src/ngtsc/diagnostics';
-import {Reference} from '../../../src/ngtsc/imports';
-import {ClassDeclaration, Decorator, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 import {isRelativePath} from '../utils';
 import {Migration, MigrationHost} from './migration';
+import {createDirectiveDecorator, hasConstructor, hasDirectiveDecorator, isClassDeclaration} from './utils';
 
 /**
  * Ensure that the parents of directives and components that have no constructor are also decorated
@@ -59,15 +59,20 @@ export class UndecoratedParentMigration implements Migration {
     }
 
     // Only interested in `clazz` if it inherits from a base class.
-    const baseClassId = host.reflectionHost.getBaseClassIdentifier(clazz);
-    if (baseClassId === null) {
+    const baseClassExpr = host.reflectionHost.getBaseClassExpression(clazz);
+    if (baseClassExpr === null) {
       return null;
     }
 
-    const baseClazz = host.reflectionHost.getDeclarationOfIdentifier(baseClassId) !.node;
+    if (!ts.isIdentifier(baseClassExpr)) {
+      return makeDiagnostic(
+          ErrorCode.NGCC_MIGRATION_EXTERNAL_BASE_CLASS, baseClassExpr,
+          `${clazz.name.text} class has a dynamic base class ${baseClassExpr.getText()}, so it is not possible to migrate.`);
+      return null;
+    }
 
-    if (!isNamedClassDeclaration(baseClazz) && !isNamedFunctionDeclaration(baseClazz) &&
-        !isNamedVariableDeclaration(baseClazz)) {
+    const baseClazz = host.reflectionHost.getDeclarationOfIdentifier(baseClassExpr) !.node;
+    if (!isClassDeclaration(baseClazz)) {
       return null;
     }
 
@@ -76,10 +81,10 @@ export class UndecoratedParentMigration implements Migration {
       return null;
     }
 
-    const importInfo = host.reflectionHost.getImportOfIdentifier(baseClassId);
+    const importInfo = host.reflectionHost.getImportOfIdentifier(baseClassExpr);
     if (importInfo !== null && !isRelativePath(importInfo.from)) {
       return makeDiagnostic(
-          ErrorCode.NGCC_MIGRATION_EXTERNAL_BASE_CLASS, baseClassId,
+          ErrorCode.NGCC_MIGRATION_EXTERNAL_BASE_CLASS, baseClassExpr,
           'The base class was imported from an external entry-point so we cannot add a directive to it.');
     }
 
@@ -87,42 +92,4 @@ export class UndecoratedParentMigration implements Migration {
 
     return null;
   }
-}
-
-function hasDirectiveDecorator(host: MigrationHost, clazz: ClassDeclaration): boolean {
-  return host.metadata.getDirectiveMetadata(new Reference(clazz)) !== null;
-}
-
-function hasConstructor(host: MigrationHost, clazz: ClassDeclaration): boolean {
-  return host.reflectionHost.getConstructorParameters(clazz) !== null;
-}
-
-function createDirectiveDecorator(clazz: ClassDeclaration): Decorator {
-  const selectorArg = ts.createObjectLiteral([
-    // TODO: At the moment ngtsc does not accept a directive with no selector
-    ts.createPropertyAssignment('selector', ts.createStringLiteral('NGCC_DUMMY')),
-  ]);
-  const decoratorType = ts.createIdentifier('Directive');
-  const decoratorNode = ts.createObjectLiteral([
-    ts.createPropertyAssignment('type', decoratorType),
-    ts.createPropertyAssignment('args', ts.createArrayLiteral([selectorArg])),
-  ]);
-
-  setParentPointers(clazz.getSourceFile(), decoratorNode);
-
-  return {
-    name: 'Directive',
-    identifier: decoratorType,
-    import: {name: 'Directive', from: '@angular/core'},
-    node: decoratorNode,
-    args: [selectorArg],
-  };
-}
-
-/**
- * Ensure that a tree of AST nodes have their parents wired up.
- */
-function setParentPointers(parent: ts.Node, child: ts.Node): void {
-  child.parent = parent;
-  ts.forEachChild(child, grandchild => setParentPointers(child, grandchild));
 }
