@@ -31,10 +31,10 @@ describe('Chip Remove', () => {
   }));
 
   describe('basic behavior', () => {
-    it('should apply the `mat-chip-remove` CSS class', () => {
+    it('should apply the `mat-mdc-chip-remove` CSS class', () => {
       let buttonElement = chipNativeElement.querySelector('button')!;
 
-      expect(buttonElement.classList).toContain('mat-chip-remove');
+      expect(buttonElement.classList).toContain('mat-mdc-chip-remove');
     });
 
     it('should start MDC exit animation on click', () => {

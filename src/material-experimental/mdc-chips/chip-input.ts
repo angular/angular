@@ -34,7 +34,7 @@ let nextUniqueId = 0;
   selector: 'input[matChipInputFor]',
   exportAs: 'matChipInput, matChipInputFor',
   host: {
-    'class': 'mat-chip-input mat-input-element',
+    'class': 'mat-mdc-chip-input mat-input-element',
     '(keydown)': '_keydown($event)',
     '(blur)': '_blur()',
     '(focus)': '_focus()',

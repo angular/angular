@@ -93,7 +93,8 @@ const _MatChipRemoveMixinBase:
   selector: '[matChipRemove]',
   inputs: ['disabled', 'tabIndex'],
   host: {
-    'class': 'mat-chip-remove mat-mdc-chip-trailing-icon mdc-chip__icon mdc-chip__icon--trailing',
+    'class':
+      'mat-mdc-chip-remove mat-mdc-chip-trailing-icon mdc-chip__icon mdc-chip__icon--trailing',
     '[tabIndex]': 'tabIndex',
     'role': 'button',
     '(click)': 'interaction.next($event)',
