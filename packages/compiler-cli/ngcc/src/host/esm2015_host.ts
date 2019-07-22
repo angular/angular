@@ -193,9 +193,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return super.hasBaseClass(innerClassDeclaration);
   }
 
-  getBaseClassIdentifier(clazz: ClassDeclaration): ts.Identifier|null {
+  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
     // First try getting the base class from the "outer" declaration
-    const superBaseClassIdentifier = super.getBaseClassIdentifier(clazz);
+    const superBaseClassIdentifier = super.getBaseClassExpression(clazz);
     if (superBaseClassIdentifier) {
       return superBaseClassIdentifier;
     }
@@ -204,7 +204,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (innerClassDeclaration === null) {
       return null;
     }
-    return super.getBaseClassIdentifier(innerClassDeclaration);
+    return super.getBaseClassExpression(innerClassDeclaration);
   }
 
   /**

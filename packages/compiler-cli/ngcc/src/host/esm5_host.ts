@@ -56,8 +56,8 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     return iife.parameters.length === 1 && isSuperIdentifier(iife.parameters[0].name);
   }
 
-  getBaseClassIdentifier(clazz: ClassDeclaration): ts.Identifier|null {
-    const superBaseClassIdentifier = super.getBaseClassIdentifier(clazz);
+  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
+    const superBaseClassIdentifier = super.getBaseClassExpression(clazz);
     if (superBaseClassIdentifier) {
       return superBaseClassIdentifier;
     }
@@ -79,9 +79,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       return null;
     }
 
-    const baseClassExpression = iife.parent.arguments[0];
-
-    return ts.isIdentifier(baseClassExpression) ? baseClassExpression : null;
+    return iife.parent.arguments[0];
   }
 
   /**

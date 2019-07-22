@@ -506,10 +506,14 @@ export interface ReflectionHost {
   hasBaseClass(clazz: ClassDeclaration): boolean;
 
   /**
-   * Get the base class (if any) of the given `clazz`.
+   * Get an expression representing the base class (if any) of the given `clazz`.
+   *
+   * This expression is most commonly an Identifier, but is possible to inherit from a more dynamic
+   * expression.
+   *
    * @param clazz the class whose base we want to get.
    */
-  getBaseClassIdentifier(clazz: ClassDeclaration): ts.Identifier|null;
+  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null;
 
   /**
    * Get the number of generic type parameters of a given class.

@@ -2022,8 +2022,8 @@ runInEachFileSystem(() => {
       });
     });
 
-    describe('getBaseClassIdentifier()', () => {
-      function getBaseClassIdentifier(source: string) {
+    describe('getBaseClassExpression()', () => {
+      function getBaseClassIdentifier(source: string): ts.Identifier|null {
         const file = {
           name: _('/synthesized_constructors.js'),
           contents: source,
@@ -2034,10 +2034,15 @@ runInEachFileSystem(() => {
         const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode =
             getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
-        return host.getBaseClassIdentifier(classNode);
+        const expression = host.getBaseClassExpression(classNode);
+        if (expression !== null && !ts.isIdentifier(expression)) {
+          throw new Error(
+              'Expected class to inherit via an identifier but got: ' + expression.getText());
+        }
+        return expression;
       }
 
-      it('should consider an IIFE with _super parameter as having a base class', () => {
+      it('should find the base class of an IIFE with _super parameter', () => {
         const identifier = getBaseClassIdentifier(`
         var BaseClass = /** @class */ (function () {
           function BaseClass() {}
@@ -2051,7 +2056,7 @@ runInEachFileSystem(() => {
         expect(identifier !.text).toBe('BaseClass');
       });
 
-      it('should consider an IIFE with a unique name generated for the _super parameter as having a base class',
+      it('should find the base class of an IIFE with a unique name generated for the _super parameter',
          () => {
            const identifier = getBaseClassIdentifier(`
         var BaseClass = /** @class */ (function () {
@@ -2066,7 +2071,7 @@ runInEachFileSystem(() => {
            expect(identifier !.text).toBe('BaseClass');
          });
 
-      it('should not consider an IIFE without parameter as having a base class', () => {
+      it('should not find a base class for an IIFE without parameter', () => {
         const identifier = getBaseClassIdentifier(`
         var BaseClass = /** @class */ (function () {
           function BaseClass() {}
@@ -2078,6 +2083,31 @@ runInEachFileSystem(() => {
           return TestClass;
         }(BaseClass));`);
         expect(identifier).toBe(null);
+      });
+
+      it('should find a dynamic base class expression of an IIFE', () => {
+        const file = {
+          name: _('/synthesized_constructors.js'),
+          contents: `
+          var BaseClass = /** @class */ (function () {
+            function BaseClass() {}
+            return BaseClass;
+          }());
+          function foo() { return BaseClass; }
+          var TestClass = /** @class */ (function (_super) {
+            __extends(TestClass, _super);
+            function TestClass() {}
+            return TestClass;
+          }(foo()));`,
+        };
+
+        loadTestFiles([file]);
+        const {program} = makeTestBundleProgram(file.name);
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode =
+            getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+        const expression = host.getBaseClassExpression(classNode) !;
+        expect(expression.getText()).toBe('foo()');
       });
     });
 
