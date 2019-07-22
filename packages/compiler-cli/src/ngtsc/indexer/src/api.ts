@@ -38,6 +38,11 @@ export interface MethodIdentifier extends TemplateIdentifier { kind: IdentifierK
 /** Describes an element attribute in a template. */
 export interface AttributeIdentifier extends TemplateIdentifier { kind: IdentifierKind.Attribute; }
 
+/** A reference to a directive node and its selector. */
+interface DirectiveReference {
+  node: ts.Declaration;
+  selector: string;
+}
 /**
  * Describes an indexed element in a template. The name of an `ElementIdentifier` is the entire
  * element tag, which can be parsed by an indexer to determine where used directives should be
@@ -50,7 +55,7 @@ export interface ElementIdentifier extends TemplateIdentifier {
   attributes: Set<AttributeIdentifier>;
 
   /** Directives applied to an element. */
-  usedDirectives: Set<ts.Declaration>;
+  usedDirectives: Set<DirectiveReference>;
 }
 
 /**
