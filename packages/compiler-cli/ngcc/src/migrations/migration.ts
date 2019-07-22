@@ -30,11 +30,11 @@ export interface Migration {
 
 export interface MigrationHost {
   /** Provides access to the decorator information associated with classes. */
-  metadata: MetadataReader;
+  readonly metadata: MetadataReader;
   /** Provides access to navigate the AST in a format-agnostic manner. */
-  reflectionHost: NgccReflectionHost;
+  readonly reflectionHost: NgccReflectionHost;
   /** Enables expressions to be statically evaluated in the context of the program. */
-  evaluator: PartialEvaluator;
+  readonly evaluator: PartialEvaluator;
   /**
    * Associate a new synthesized decorator, which did not appear in the original source, with a
    * given class.

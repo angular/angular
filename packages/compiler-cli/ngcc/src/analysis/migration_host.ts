@@ -22,8 +22,8 @@ import {analyzeDecorators} from './util';
  */
 export class DefaultMigrationHost implements MigrationHost {
   constructor(
-      public reflectionHost: NgccReflectionHost, public metadata: MetadataReader,
-      public evaluator: PartialEvaluator, private handlers: DecoratorHandler<any, any>[],
+      readonly reflectionHost: NgccReflectionHost, readonly metadata: MetadataReader,
+      readonly evaluator: PartialEvaluator, private handlers: DecoratorHandler<any, any>[],
       private analyzedFiles: AnalyzedFile[]) {}
 
   injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator): void {
