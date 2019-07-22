@@ -25,7 +25,7 @@ def js_size_tracking_test(
         "@npm//source-map",
         "@npm//chalk",
     ]
-    entry_point = ":index.ts"
+    entry_point = "//tools/size-tracking:index.ts"
 
     nodejs_test(
         name = name,
