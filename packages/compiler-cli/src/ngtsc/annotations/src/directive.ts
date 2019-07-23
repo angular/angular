@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, EMPTY_SOURCE_SPAN, Expression, Identifiers, ParseError, ParsedHostBindings, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
+import {ConstantPool, Expression, Identifiers, ParseError, ParsedHostBindings, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -21,7 +21,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFl
 import {getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
+import {createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const FIELD_DECORATORS = [
@@ -320,7 +320,7 @@ export function extractDirectiveMetadata(
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, viewQueries, selector,
     fullInheritance: !!(flags & HandlerFlags.FULL_INHERITANCE), type, internalType,
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
-    typeSourceSpan: EMPTY_SOURCE_SPAN, usesInheritance, exportAs, providers
+    typeSourceSpan: createSourceSpan(clazz.name), usesInheritance, exportAs, providers
   };
   return {decorator: directive, metadata};
 }
@@ -580,52 +580,59 @@ type StringMap<T> = {
   [key: string]: T;
 };
 
-export function extractHostBindings(
-    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string | undefined,
-    metadata?: Map<string, ts.Expression>): ParsedHostBindings {
-  let hostMetadata: StringMap<string|Expression> = {};
-  if (metadata && metadata.has('host')) {
-    const expr = metadata.get('host') !;
-    const hostMetaMap = evaluator.evaluate(expr);
-    if (!(hostMetaMap instanceof Map)) {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `Decorator host metadata must be an object`);
-    }
-    hostMetaMap.forEach((value, key) => {
-      // Resolve Enum references to their declared value.
-      if (value instanceof EnumValue) {
-        value = value.resolved;
-      }
-
-      if (typeof key !== 'string') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `Decorator host metadata must be a string -> string object, but found unparseable key`);
-      }
-
-      if (typeof value == 'string') {
-        hostMetadata[key] = value;
-      } else if (value instanceof DynamicValue) {
-        hostMetadata[key] = new WrappedNodeExpr(value.node as ts.Expression);
-      } else {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `Decorator host metadata must be a string -> string object, but found unparseable value`);
-      }
-    });
+function evaluateHostExpressionBindings(
+    hostExpr: ts.Expression, evaluator: PartialEvaluator): ParsedHostBindings {
+  const hostMetaMap = evaluator.evaluate(hostExpr);
+  if (!(hostMetaMap instanceof Map)) {
+    throw new FatalDiagnosticError(
+        ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr, `Decorator host metadata must be an object`);
   }
+  const hostMetadata: StringMap<string|Expression> = {};
+  hostMetaMap.forEach((value, key) => {
+    // Resolve Enum references to their declared value.
+    if (value instanceof EnumValue) {
+      value = value.resolved;
+    }
+
+    if (typeof key !== 'string') {
+      throw new FatalDiagnosticError(
+          ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr,
+          `Decorator host metadata must be a string -> string object, but found unparseable key`);
+    }
+
+    if (typeof value == 'string') {
+      hostMetadata[key] = value;
+    } else if (value instanceof DynamicValue) {
+      hostMetadata[key] = new WrappedNodeExpr(value.node as ts.Expression);
+    } else {
+      throw new FatalDiagnosticError(
+          ErrorCode.VALUE_HAS_WRONG_TYPE, hostExpr,
+          `Decorator host metadata must be a string -> string object, but found unparseable value`);
+    }
+  });
 
   const bindings = parseHostBindings(hostMetadata);
 
-  // TODO: create and provide proper sourceSpan to make error message more descriptive (FW-995)
-  // For now, pass an incorrect (empty) but valid sourceSpan.
-  const errors = verifyHostBindings(bindings, EMPTY_SOURCE_SPAN);
+  const errors = verifyHostBindings(bindings, createSourceSpan(hostExpr));
   if (errors.length > 0) {
     throw new FatalDiagnosticError(
-        // TODO: provide more granular diagnostic and output specific host expression that triggered
-        // an error instead of the whole host object
-        ErrorCode.HOST_BINDING_PARSE_ERROR, metadata !.get('host') !,
+        // TODO: provide more granular diagnostic and output specific host expression that
+        // triggered an error instead of the whole host object.
+        ErrorCode.HOST_BINDING_PARSE_ERROR, hostExpr,
         errors.map((error: ParseError) => error.msg).join('\n'));
+  }
+
+  return bindings;
+}
+
+export function extractHostBindings(
+    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string | undefined,
+    metadata?: Map<string, ts.Expression>): ParsedHostBindings {
+  let bindings: ParsedHostBindings;
+  if (metadata && metadata.has('host')) {
+    bindings = evaluateHostExpressionBindings(metadata.get('host') !, evaluator);
+  } else {
+    bindings = parseHostBindings({});
   }
 
   filterToMembersWithDecorator(members, 'HostBinding', coreModule).forEach(({member, decorators}) => {

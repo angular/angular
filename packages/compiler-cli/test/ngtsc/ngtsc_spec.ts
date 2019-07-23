@@ -37,6 +37,10 @@ const setClassMetadataRegExp = (expectedType: string): RegExp =>
 
 const testFiles = loadStandardTestFiles();
 
+function getDiagnosticSourceCode(diag: ts.Diagnostic): string {
+  return diag.file !.text.substr(diag.start !, diag.length !);
+}
+
 runInEachFileSystem(os => {
   describe('ngtsc behavioral tests', () => {
     let env !: NgtscTestEnvironment;
@@ -2895,6 +2899,27 @@ runInEachFileSystem(os => {
       expect(trim(errors[0].messageText as string))
           .toContain(
               `Unexpected global target 'UnknownTarget' defined for 'click' event. Supported list of global targets: window,document,body.`);
+    });
+
+    it('should provide error location for invalid host properties', () => {
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '...',
+          host: {
+            '(click)': 'act() | pipe',
+          }
+        })
+        class FooCmp {}
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(getDiagnosticSourceCode(errors[0])).toBe(`{
+            '(click)': 'act() | pipe',
+          }`);
+      expect(errors[0].messageText).toContain('/test.ts@7:17');
     });
 
     it('should throw in case pipes are used in host listeners', () => {
