@@ -764,7 +764,7 @@ export class _ParseAST {
         const ast = this.parsePipe();
         const source = this.input.substring(start - this.offset, this.inputIndex - this.offset);
         expression =
-            new ASTWithSource(ast, source, this.location, this.absoluteOffset, this.errors);
+            new ASTWithSource(ast, source, this.location, this.absoluteOffset + start, this.errors);
       }
 
       bindings.push(new TemplateBinding(
