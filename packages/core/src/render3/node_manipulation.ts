@@ -70,32 +70,38 @@ const enum WalkTNodeTreeAction {
 function executeActionOnElementOrContainer(
     action: WalkTNodeTreeAction, renderer: Renderer3, parent: RElement | null,
     lNodeToHandle: RNode | LContainer | LView, beforeNode?: RNode | null) {
-  ngDevMode && assertDefined(lNodeToHandle, '\'lNodeToHandle\' is undefined');
-  let lContainer: LContainer|undefined;
-  let isComponent = false;
-  // We are expecting an RNode, but in the case of a component or LContainer the `RNode` is wrapped
-  // in an array which needs to be unwrapped. We need to know if it is a component and if
-  // it has LContainer so that we can process all of those cases appropriately.
-  if (isLContainer(lNodeToHandle)) {
-    lContainer = lNodeToHandle;
-  } else if (isLView(lNodeToHandle)) {
-    isComponent = true;
-    ngDevMode && assertDefined(lNodeToHandle[HOST], 'HOST must be defined for a component LView');
-    lNodeToHandle = lNodeToHandle[HOST] !;
-  }
-  const rNode: RNode = unwrapRNode(lNodeToHandle);
-  ngDevMode && assertDomNode(rNode);
+  // If this slot was allocated for a text node dynamically created by i18n, the text node itself
+  // won't be created until i18nApply() in the update block, so this node should be skipped.
+  // For more info, see "ICU expressions should work inside an ngTemplateOutlet inside an ngFor"
+  // in `i18n_spec.ts`.
+  if (lNodeToHandle != null) {
+    let lContainer: LContainer|undefined;
+    let isComponent = false;
+    // We are expecting an RNode, but in the case of a component or LContainer the `RNode` is
+    // wrapped
+    // in an array which needs to be unwrapped. We need to know if it is a component and if
+    // it has LContainer so that we can process all of those cases appropriately.
+    if (isLContainer(lNodeToHandle)) {
+      lContainer = lNodeToHandle;
+    } else if (isLView(lNodeToHandle)) {
+      isComponent = true;
+      ngDevMode && assertDefined(lNodeToHandle[HOST], 'HOST must be defined for a component LView');
+      lNodeToHandle = lNodeToHandle[HOST] !;
+    }
+    const rNode: RNode = unwrapRNode(lNodeToHandle);
+    ngDevMode && assertDomNode(rNode);
 
-  if (action === WalkTNodeTreeAction.Insert) {
-    nativeInsertBefore(renderer, parent !, rNode, beforeNode || null);
-  } else if (action === WalkTNodeTreeAction.Detach) {
-    nativeRemoveNode(renderer, rNode, isComponent);
-  } else if (action === WalkTNodeTreeAction.Destroy) {
-    ngDevMode && ngDevMode.rendererDestroyNode++;
-    (renderer as ProceduralRenderer3).destroyNode !(rNode);
-  }
-  if (lContainer != null) {
-    executeActionOnContainer(renderer, action, lContainer, parent, beforeNode);
+    if (action === WalkTNodeTreeAction.Insert) {
+      nativeInsertBefore(renderer, parent !, rNode, beforeNode || null);
+    } else if (action === WalkTNodeTreeAction.Detach) {
+      nativeRemoveNode(renderer, rNode, isComponent);
+    } else if (action === WalkTNodeTreeAction.Destroy) {
+      ngDevMode && ngDevMode.rendererDestroyNode++;
+      (renderer as ProceduralRenderer3).destroyNode !(rNode);
+    }
+    if (lContainer != null) {
+      executeActionOnContainer(renderer, action, lContainer, parent, beforeNode);
+    }
   }
 }
 
