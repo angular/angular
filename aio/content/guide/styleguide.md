@@ -1080,6 +1080,10 @@ For example, the prefix `toh` represents **T**our **o**f **H**eroes and the pref
 
 
 **Do** use consistent names for all pipes, named after their feature.
+The pipe class name should use [UpperCamelCase](guide/glossary#case-types)
+(the general convention for class names),
+and the corresponding `name` string should use *lowerCamelCase*.
+The `name` string cannot use hyphens ("dash-case" or "kebab-case").
 
 
 </div>
