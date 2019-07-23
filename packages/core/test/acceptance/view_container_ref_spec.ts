@@ -114,6 +114,41 @@ describe('ViewContainerRef', () => {
         expect(testParent.childNodes[1].textContent).toBe('hello');
       }
     });
+
+    it('should support attribute selectors in dynamically created components', () => {
+      @Component({selector: '[hello]', template: 'Hello'})
+      class HelloComp {
+      }
+
+      @NgModule({entryComponents: [HelloComp], declarations: [HelloComp]})
+      class HelloCompModule {
+      }
+
+      @Component({
+        template: `
+          <ng-container #container></ng-container>
+        `
+      })
+      class TestComp {
+        @ViewChild('container', {read: ViewContainerRef, static: false}) vcRef !: ViewContainerRef;
+
+        constructor(public cfr: ComponentFactoryResolver) {}
+
+        createComponent() {
+          const factory = this.cfr.resolveComponentFactory(HelloComp);
+          this.vcRef.createComponent(factory);
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp], imports: [HelloCompModule]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+      expect(fixture.debugElement.nativeElement.innerHTML).not.toContain('Hello');
+
+      fixture.componentInstance.createComponent();
+      fixture.detectChanges();
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('Hello');
+    });
   });
 
   describe('insert', () => {
