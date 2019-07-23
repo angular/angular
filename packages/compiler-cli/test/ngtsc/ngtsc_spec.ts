@@ -2897,6 +2897,25 @@ runInEachFileSystem(os => {
               `Unexpected global target 'UnknownTarget' defined for 'click' event. Supported list of global targets: window,document,body.`);
     });
 
+    it('should provide error location for invalid host properties', () => {
+      const compSrc = `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '...',
+          host: {
+            '(click)': 'act() | pipe',
+          }
+        })
+        class FooCmp {}`;
+
+      env.write(`test.ts`, compSrc);
+      const errors = env.driveDiagnostics();
+      expect(errors[0].start).toBe(143);
+      expect(trim(errors[0].messageText as string)).toContain('/test.ts@7:17');
+    });
+
     it('should throw in case pipes are used in host listeners', () => {
       env.write(`test.ts`, `
         import {Component} from '@angular/core';
