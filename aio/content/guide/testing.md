@@ -946,6 +946,8 @@ Rather than wonder when the test fixture will or won't perform change detection,
 the samples in this guide _always call_ `detectChanges()` _explicitly_.
 There is no harm in calling `detectChanges()` more often than is strictly necessary.
 
+However, if you're testing things that are set in `ngOnInit` and you use Auto Detect (or if you have `fixture.detectChanges()` in `beforeEach()`), changes will **not** be detected in the test.
+
 </div>
 
 <hr>
