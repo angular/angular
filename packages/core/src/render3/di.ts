@@ -632,8 +632,7 @@ export class NodeInjector implements Injector {
  */
 export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
   const typeAny = type as any;
-  const def = getComponentDef<T>(typeAny) || getDirectiveDef<T>(typeAny) ||
-      getPipeDef<T>(typeAny) || getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
+  const def = getPipeDef<T>(typeAny) || getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
   if (!def || def.factory === undefined) {
     return null;
   }

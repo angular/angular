@@ -251,7 +251,6 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     providersResolver: null,
     consts: componentDefinition.consts,
     vars: componentDefinition.vars,
-    factory: componentDefinition.factory,
     template: componentDefinition.template || null !,
     ngContentSelectors: componentDefinition.ngContentSelectors,
     hostBindings: componentDefinition.hostBindings || null,
