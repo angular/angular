@@ -1625,6 +1625,40 @@ describe('ViewContainerRef', () => {
                    '<child-with-selector><p class="a"><header vcref="">blah</header><span>bar</span></p><p class="b"></p></child-with-selector>');
          });
 
+      it('should create embedded view when ViewContainerRef is inside projection', () => {
+        @Component({
+          selector: 'content-comp',
+          template: '<ng-content></ng-content>',
+        })
+        class ContentComp {
+        }
+
+        @Component({
+          selector: 'my-comp',
+          template: `
+          <content-comp>
+            <div #target></div>
+          </content-comp>
+
+          <ng-template #source>My Content</ng-template>
+        `
+        })
+        class MyComp {
+          @ViewChild('source', {static: true})
+          source !: TemplateRef<{}>;
+
+          @ViewChild('target', {read: ViewContainerRef, static: true})
+          target !: ViewContainerRef;
+
+          ngOnInit() { this.target.createEmbeddedView(this.source); }
+        }
+
+        TestBed.configureTestingModule({declarations: [MyComp, ContentComp]});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+        expect(fixture.debugElement.nativeElement.innerHTML).toContain('My Content');
+      });
+
       it('should not project the ViewContainerRef content, when the host does not match a selector',
          () => {
            @Component({
