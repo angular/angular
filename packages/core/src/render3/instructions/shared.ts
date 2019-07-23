@@ -99,6 +99,13 @@ export function refreshDescendantViews(lView: LView) {
     refreshContentQueries(tView, lView);
   }
 
+  // We must materialize query results before child components are processed
+  // in case a child component has projected a container. The LContainer needs
+  // to exist so the embedded views are properly attached by the container.
+  if (!creationMode || tView.staticViewQueries) {
+    executeViewQueryFn(RenderFlags.Update, tView, lView[CONTEXT]);
+  }
+
   refreshChildComponents(tView.components);
 }
 
@@ -1752,10 +1759,6 @@ export function checkView<T>(hostView: LView, component: T) {
     creationMode && executeViewQueryFn(RenderFlags.Create, hostTView, component);
     executeTemplate(hostView, templateFn, getRenderFlags(hostView), component);
     refreshDescendantViews(hostView);
-    // Only check view queries again in creation mode if there are static view queries
-    if (!creationMode || hostTView.staticViewQueries) {
-      executeViewQueryFn(RenderFlags.Update, hostTView, component);
-    }
     safeToRunHooks = true;
   } finally {
     leaveView(oldView, safeToRunHooks);
