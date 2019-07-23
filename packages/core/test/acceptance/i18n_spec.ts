@@ -921,6 +921,38 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(fixture.debugElement.nativeElement.innerHTML).not.toContain('A - Type A');
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('other - Type C');
     });
+
+    it('should work inside an ngTemplateOutlet inside an ngFor', () => {
+      @Component({
+        selector: 'app',
+        template: `
+          <ng-template #myTemp i18n let-type>{
+            type,
+            select,
+            A {A }
+            B {B }
+            other {other - {{ typeC // i18n(ph="PH WITH SPACES") }}} 
+          }  
+          </ng-template>
+
+          <div *ngFor="let type of types">
+            <ng-container *ngTemplateOutlet="myTemp; context: {$implicit: type}">
+            </ng-container>
+          </div>
+        `
+      })
+      class AppComponent {
+        types = ['A', 'B', 'C'];
+      }
+
+      TestBed.configureTestingModule({declarations: [AppComponent]});
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('A');
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('B');
+    });
   });
 
   describe('should support attributes', () => {
