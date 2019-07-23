@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, LiteralExpr, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
@@ -474,4 +474,18 @@ export function wrapTypeReference(reflector: ReflectionHost, clazz: ClassDeclara
       new WrappedNodeExpr(dtsClass.name) :
       value;
   return {value, type};
+}
+
+/** Creates a ParseSourceSpan for a TypeScript node. */
+export function createSourceSpan(node: ts.Node): ParseSourceSpan {
+  const sf = node.getSourceFile();
+  const [startOffset, endOffset] = [node.getStart(), node.getEnd()];
+  const {line: startLine, character: startCol} = sf.getLineAndCharacterOfPosition(startOffset);
+  const {line: endLine, character: endCol} = sf.getLineAndCharacterOfPosition(endOffset);
+  const parseSf = new ParseSourceFile(sf.getFullText(), sf.fileName);
+
+  // +1 because values are zero-indexed.
+  return new ParseSourceSpan(
+      new ParseLocation(parseSf, startOffset, startLine + 1, startCol + 1),
+      new ParseLocation(parseSf, endOffset, endLine + 1, endCol + 1));
 }
