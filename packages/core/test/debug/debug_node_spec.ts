@@ -517,6 +517,99 @@ class TestCmptWithPropBindings {
       expect(debugNodes[1].injector.get(TextDirective).text).toBe('second');
     });
 
+    it('DebugElement.query should work with dynamically created elements', () => {
+      @Directive({
+        selector: '[dir]',
+      })
+      class MyDir {
+        @Input('dir') dir: number|undefined;
+
+        constructor(renderer: Renderer2, element: ElementRef) {
+          const div = renderer.createElement('div');
+          div.classList.add('myclass');
+          renderer.appendChild(element.nativeElement, div);
+        }
+      }
+
+      @Component({
+        selector: 'app-test',
+        template: '<div dir></div>',
+      })
+      class MyComponent {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
+      const fixture = TestBed.createComponent(MyComponent);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy();
+    });
+
+    it('DebugElement.query should work with dynamically created descendant elements', () => {
+      @Directive({
+        selector: '[dir]',
+      })
+      class MyDir {
+        @Input('dir') dir: number|undefined;
+
+        constructor(renderer: Renderer2, element: ElementRef) {
+          const outerDiv = renderer.createElement('div');
+          const innerDiv = renderer.createElement('div');
+          const div = renderer.createElement('div');
+
+          div.classList.add('myclass');
+
+          renderer.appendChild(innerDiv, div);
+          renderer.appendChild(outerDiv, innerDiv);
+          renderer.appendChild(element.nativeElement, outerDiv);
+        }
+      }
+
+      @Component({
+        selector: 'app-test',
+        template: '<div dir></div>',
+      })
+      class MyComponent {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
+      const fixture = TestBed.createComponent(MyComponent);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy();
+    });
+
+    it('DebugElement.queryAll should pick up both elements inserted via the view and through Renderer2',
+       () => {
+         @Directive({
+           selector: '[dir]',
+         })
+         class MyDir {
+           @Input('dir') dir: number|undefined;
+
+           constructor(renderer: Renderer2, element: ElementRef) {
+             const div = renderer.createElement('div');
+             div.classList.add('myclass');
+             renderer.appendChild(element.nativeElement, div);
+           }
+         }
+
+         @Component({
+           selector: 'app-test',
+           template: '<div dir></div><span class="myclass"></span>',
+         })
+         class MyComponent {
+         }
+
+         TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
+         const fixture = TestBed.createComponent(MyComponent);
+         fixture.detectChanges();
+
+         const results = fixture.debugElement.queryAll(By.css('.myclass'));
+
+         expect(results.map(r => r.nativeElement.nodeName.toLowerCase())).toEqual(['div', 'span']);
+       });
+
     it('should list providerTokens', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
