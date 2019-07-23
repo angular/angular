@@ -631,6 +631,12 @@
             "rev": true,
             "title": "Loiane Training (Português)",
             "url": "https://loiane.training/course/angular/"
+          },
+          "web-dev-angular": {
+            "desc": "Build performant and progressive Angular applications.",
+            "rev": true,
+            "title": "web.dev/angular",
+            "url": "https://web.dev/angular"
           }
         }
       },

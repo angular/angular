@@ -217,3 +217,6 @@ You may also be interested in the following:
 * [Routing and Navigation](guide/router).
 * [Providers](guide/providers).
 * [Types of Feature Modules](guide/module-types).
+* [Route-level code-splitting in Angular](https://web.dev/route-level-code-splitting-in-angular/)
+* [Route preloading strategies in Angular](https://web.dev/route-preloading-in-angular/)
+
