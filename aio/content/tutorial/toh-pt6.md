@@ -317,7 +317,7 @@ Each hero in the heroes list should have a delete button.
 Add the following button element to the `HeroesComponent` template, after the hero
 name in the repeated `<li>` element.
 
-<code-example path="toh-pt6/src/app/heroes/heroes.component.html" header="src/app/hero.service.ts" region="delete"></code-example>
+<code-example path="toh-pt6/src/app/heroes/heroes.component.html" header="src/app/heroes/heroes.component.html" region="delete"></code-example>
 
 The HTML for the list of heroes should look like this:
 
