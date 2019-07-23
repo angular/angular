@@ -121,7 +121,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       private componentDef: ComponentDef<any>, private ngModule?: viewEngine_NgModuleRef<any>) {
     super();
     this.componentType = componentDef.type;
-    this.selector = componentDef.selectors[0][0] as string;
+
+    // default to 'div' in case this component has an attribute selector
+    this.selector = componentDef.selectors[0][0] as string || 'div';
     this.ngContentSelectors =
         componentDef.ngContentSelectors ? componentDef.ngContentSelectors : [];
     this.isBoundToModule = !!ngModule;
