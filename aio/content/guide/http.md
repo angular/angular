@@ -1003,7 +1003,7 @@ This _no-op_ interceptor simply calls `next.handle()` with the original request 
 The `next` object represents the next interceptor in the chain of interceptors. 
 The final `next` in the chain is the `HttpClient` backend handler that sends the request to the server and receives the server's response.
 -->
-`next` 객체는 체이팅되는 인터셉터 중 다음으로 실행될 인터셉터를 의미합니다.
+`next` 객체는 체이닝되는 인터셉터 중 다음으로 실행될 인터셉터를 의미합니다.
 그리고 인터셉터 체인 중 마지막 인터셉터가 받는 `next` 객체는 `HttpClient` 백엔드 핸들러이며, 이 핸들러가 실제로 HTTP 요청을 보내고 서버의 응답을 첫번째로 받는 핸들러입니다.
 
 <!--
