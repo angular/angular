@@ -153,6 +153,9 @@
     "name": "_stateStorage"
   },
   {
+    "name": "addInjectableDef"
+  },
+  {
     "name": "addToViewTree"
   },
   {

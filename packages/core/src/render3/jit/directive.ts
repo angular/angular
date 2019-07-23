@@ -9,7 +9,6 @@
 import {R3DirectiveMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
 import {R3BaseMetadataFacade, R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
-import {compileInjectable} from '../../di/jit/injectable';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Query} from '../../metadata/di';
@@ -97,12 +96,6 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
   });
-
-
-  // Add ngInjectableDef so components are reachable through the module injector by default
-  // This is mostly to support injecting components in tests. In real application code,
-  // components should be retrieved through the node injector, so this isn't a problem.
-  compileInjectable(type);
 }
 
 function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
@@ -137,11 +130,6 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
   });
-
-  // Add ngInjectableDef so directives are reachable through the module injector by default
-  // This is mostly to support injecting directives in tests. In real application code,
-  // directives should be retrieved through the node injector, so this isn't a problem.
-  compileInjectable(type);
 }
 
 export function extendsDirectlyFromObject(type: Type<any>): boolean {

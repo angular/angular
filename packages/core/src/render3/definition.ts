@@ -300,15 +300,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     def.pipeDefs = pipeTypes ?
         () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
         null;
-
-    // Add ngInjectableDef so components are reachable through the module injector by default
-    // (unless it has already been set by the @Injectable decorator). This is mostly to
-    // support injecting components in tests. In real application code, components should
-    // be retrieved through the node injector, so this isn't a problem.
-    if (!type.hasOwnProperty(NG_INJECTABLE_DEF)) {
-      (type as any)[NG_INJECTABLE_DEF] =
-          ɵɵdefineInjectable<T>({token: type, factory: componentDefinition.factory as() => T});
-    }
+    addInjectableDef(componentDefinition.type, componentDefinition.factory);
   }) as never;
 
   return def as never;
@@ -737,6 +729,7 @@ export function ɵɵdefinePipe<T>(pipeDef: {
   /** Whether the pipe is pure. */
   pure?: boolean
 }): never {
+  addInjectableDef(pipeDef.type, pipeDef.factory);
   return (<PipeDef<T>>{
     name: pipeDef.name,
     factory: pipeDef.factory,
@@ -779,4 +772,13 @@ export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleD
 
 export function getNgLocaleIdDef(type: any): string|null {
   return (type as any)[NG_LOCALE_ID_DEF] || null;
+}
+
+/** Adds an ngInjectableDef to a type. */
+function addInjectableDef<T>(type: Type<T>, factory: () => T) {
+  if (!type.hasOwnProperty(NG_INJECTABLE_DEF)) {
+    // Use defineProperty so we don't accidentally set it somewhere up the prototype chain.
+    Object.defineProperty(
+        type, NG_INJECTABLE_DEF, {value: ɵɵdefineInjectable<T>({token: type, factory})});
+  }
 }
