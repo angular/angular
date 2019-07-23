@@ -113,12 +113,22 @@ export class BindingParser {
     }
   }
 
-  // Parse an inline template binding. ie `<tag *tplKey="<tplValue>">`
+  /**
+   * Parses an inline template binding, e.g.
+   *    <tag *tplKey="<tplValue>">
+   * @param tplKey template binding name
+   * @param tplValue template binding value
+   * @param sourceSpan span of template binding relative to entire the template
+   * @param absoluteValueOffset start of the tplValue relative to the entire template
+   * @param targetMatchableAttrs potential attributes to match in the template
+   * @param targetProps target property bindings in the template
+   * @param targetVars target variables in the template
+   */
   parseInlineTemplateBinding(
-      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteOffset: number,
+      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteValueOffset: number,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
       targetVars: ParsedVariable[]) {
-    const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan, absoluteOffset);
+    const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan, absoluteValueOffset);
 
     for (let i = 0; i < bindings.length; i++) {
       const binding = bindings[i];
@@ -131,20 +141,28 @@ export class BindingParser {
       } else {
         targetMatchableAttrs.push([binding.key, '']);
         this.parseLiteralAttr(
-            binding.key, null, sourceSpan, absoluteOffset, undefined, targetMatchableAttrs,
+            binding.key, null, sourceSpan, absoluteValueOffset, undefined, targetMatchableAttrs,
             targetProps);
       }
     }
   }
 
+  /**
+   * Parses the bindings in an inline template binding, e.g.
+   *    <tag *tplKey="let value1 = prop; let value2 = localVar">
+   * @param tplKey template binding name
+   * @param tplValue template binding value
+   * @param sourceSpan span of template binding relative to entire the template
+   * @param absoluteValueOffset start of the tplValue relative to the entire template
+   */
   private _parseTemplateBindings(
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan,
-      absoluteOffset: number): TemplateBinding[] {
+      absoluteValueOffset: number): TemplateBinding[] {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
       const bindingsResult =
-          this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo, absoluteOffset);
+          this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo, absoluteValueOffset);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
         if (binding.expression) {
