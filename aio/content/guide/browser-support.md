@@ -53,7 +53,7 @@ Angular supports most recent browsers. This includes the following specific vers
       IE
     </td>
     <td>
-      11, 10, 9
+      11, 10, 9 ("compatibility view" mode not supported)
     </td>
   </tr>
  <tr>
@@ -183,7 +183,7 @@ These are the polyfills required to run an Angular application on each supported
 
     <td>
       Chrome, Firefox, Edge, <br>
-      Safari, Android, IE10+
+      Safari, Android, IE 10+
     </td>
 
     <td>
@@ -197,7 +197,7 @@ These are the polyfills required to run an Angular application on each supported
   <tr style="vertical-align: top">
 
     <td>
-      IE9
+      IE 9
     </td>
 
     <td>
@@ -275,7 +275,7 @@ Some features of Angular may require additional polyfills.
     </td>
 
     <td>
-      All but Chrome, Firefox, Edge, IE11 and Safari 10
+      All but Chrome, Firefox, Edge, IE 11 and Safari 10
     </td>
 
   </tr>
@@ -294,7 +294,7 @@ Some features of Angular may require additional polyfills.
     </td>
 
     <td>
-      IE10, IE11
+      IE 10, IE 11
     </td>
 
   </tr>
