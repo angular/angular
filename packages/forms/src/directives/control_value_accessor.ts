@@ -20,7 +20,7 @@ import {InjectionToken} from '@angular/core';
  *
  * @publicApi
  */
-export interface ControlValueAccessor {
+export interface ControlValueAccessor<T = any> {
   /**
    * @description
    * Writes a new value to the element.
@@ -39,9 +39,9 @@ export interface ControlValueAccessor {
    * }
    * ```
    *
-   * @param obj The new value for the element
+   * @param value The new value for the element
    */
-  writeValue(obj: any): void;
+  writeValue(value: T): void;
 
   /**
    * @description
@@ -60,7 +60,7 @@ export interface ControlValueAccessor {
    * The following example stores the provided function as an internal method.
    *
    * ```ts
-   * registerOnChange(fn: (_: any) => void): void {
+   * registerOnChange(fn: (value: any) => void): void {
    *   this._onChange = fn;
    * }
    * ```
@@ -76,7 +76,7 @@ export interface ControlValueAccessor {
    *
    * @param fn The callback function to register
    */
-  registerOnChange(fn: any): void;
+  registerOnChange(fn: (value: T) => void): void;
 
   /**
    * @description
@@ -93,7 +93,7 @@ export interface ControlValueAccessor {
    * The following example stores the provided function as an internal method.
    *
    * ```ts
-   * registerOnTouched(fn: any): void {
+   * registerOnTouched(fn: () => void): void {
    *   this._onTouched = fn;
    * }
    * ```
@@ -109,7 +109,7 @@ export interface ControlValueAccessor {
    *
    * @param fn The callback function to register
    */
-  registerOnTouched(fn: any): void;
+  registerOnTouched(fn: () => void): void;
 
   /**
    * @description

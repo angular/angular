@@ -176,7 +176,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
    *
    * @param fn The callback function
    */
-  registerOnChange(fn: (_: any) => {}): void {
+  registerOnChange(fn: (_: any) => void): void {
     this._fn = fn;
     this.onChange = () => {
       fn(this.value);
@@ -199,7 +199,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
    *
    * @param fn The callback function
    */
-  registerOnTouched(fn: () => {}): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 

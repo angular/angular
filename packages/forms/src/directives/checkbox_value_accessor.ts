@@ -75,7 +75,7 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
    *
    * @param fn The callback function
    */
-  registerOnChange(fn: (_: any) => {}): void {
+  registerOnChange(fn: (_: any) => void): void {
     this.onChange = fn;
   }
 
@@ -85,7 +85,7 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
    *
    * @param fn The callback function
    */
-  registerOnTouched(fn: () => {}): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
