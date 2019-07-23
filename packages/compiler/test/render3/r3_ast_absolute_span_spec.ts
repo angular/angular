@@ -322,4 +322,20 @@ describe('expression AST absolute source spans', () => {
       'a:b', new AbsoluteSourceSpan(13, 16)
     ]);
   });
+
+  describe('absolute offsets for template expressions', () => {
+    it('should work for simple cases', () => {
+      expect(
+          humanizeExpressionSource(parse('<div *ngFor="let item of items">{{item}}</div>').nodes))
+          .toContain(['items', new AbsoluteSourceSpan(25, 30)]);
+    });
+
+    it('should work with multiple bindings',
+       () => {expect(humanizeExpressionSource(
+                         parse('<div *ngFor="let a of As; let b of Bs"></div>').nodes))
+                  .toEqual(jasmine.arrayContaining([
+                    ['As', new AbsoluteSourceSpan(22, 24)],
+                    ['Bs', new AbsoluteSourceSpan(35, 37)]
+                  ]))});
+  });
 });

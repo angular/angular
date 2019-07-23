@@ -61,7 +61,9 @@ export class BindingParser {
               boundProps);
         } else {
           this._reportError(
-              `Value of the host property binding "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
+              `Value of the host property binding "${
+                  propName}" needs to be a string representing an expression but got "${
+                  expression}" (${typeof expression})`,
               sourceSpan);
         }
       });
@@ -89,7 +91,9 @@ export class BindingParser {
           this.parseEvent(propName, expression, sourceSpan, sourceSpan, [], targetEvents);
         } else {
           this._reportError(
-              `Value of the host listener "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
+              `Value of the host listener "${
+                  propName}" needs to be a string representing an expression but got "${
+                  expression}" (${typeof expression})`,
               sourceSpan);
         }
       });
@@ -115,10 +119,10 @@ export class BindingParser {
 
   // Parse an inline template binding. ie `<tag *tplKey="<tplValue>">`
   parseInlineTemplateBinding(
-      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteOffset: number,
+      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteValueOffset: number,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
       targetVars: ParsedVariable[]) {
-    const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan, absoluteOffset);
+    const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan, absoluteValueOffset);
 
     for (let i = 0; i < bindings.length; i++) {
       const binding = bindings[i];
@@ -131,7 +135,7 @@ export class BindingParser {
       } else {
         targetMatchableAttrs.push([binding.key, '']);
         this.parseLiteralAttr(
-            binding.key, null, sourceSpan, absoluteOffset, undefined, targetMatchableAttrs,
+            binding.key, null, sourceSpan, absoluteValueOffset, undefined, targetMatchableAttrs,
             targetProps);
       }
     }
@@ -139,12 +143,12 @@ export class BindingParser {
 
   private _parseTemplateBindings(
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan,
-      absoluteOffset: number): TemplateBinding[] {
+      absoluteValueOffset: number): TemplateBinding[] {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
       const bindingsResult =
-          this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo, absoluteOffset);
+          this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo, absoluteValueOffset);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
         if (binding.expression) {
@@ -357,13 +361,15 @@ export class BindingParser {
 
         default:
           this._reportError(
-              `The provided animation output phase value "${phase}" for "@${eventName}" is not supported (use start or done)`,
+              `The provided animation output phase value "${phase}" for "@${
+                  eventName}" is not supported (use start or done)`,
               sourceSpan);
           break;
       }
     } else {
       this._reportError(
-          `The animation trigger output event (@${eventName}) is missing its phase value name (start or done are currently supported)`,
+          `The animation trigger output event (@${
+              eventName}) is missing its phase value name (start or done are currently supported)`,
           sourceSpan);
     }
   }
