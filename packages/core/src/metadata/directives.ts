@@ -589,6 +589,8 @@ export interface PipeDecorator {
    * to a template. To make it a member of an NgModule,
    * list it in the `declarations` field of the `NgModule` metadata.
    *
+   * @see [Style Guide: Pipe Names](guide/styleguide#02-09)
+   *
    */
   (obj: Pipe): TypeDecorator;
 
@@ -606,7 +608,8 @@ export interface PipeDecorator {
 export interface Pipe {
   /**
    * The pipe name to use in template bindings.
-   *
+   * Typically uses [lowerCamelCase](guide/glossary#case-types)
+   * because the name cannot contain hyphens.
    */
   name: string;
 
