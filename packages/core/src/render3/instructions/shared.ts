@@ -103,7 +103,7 @@ export function refreshDescendantViews(lView: LView) {
     executeViewQueryFn(RenderFlags.Update, tView, lView[CONTEXT]);
   }
 
-  refreshChildComponents(tView.components);
+  refreshChildComponents(lView, tView.components);
 }
 
 
@@ -179,10 +179,10 @@ function refreshContentQueries(tView: TView, lView: LView): void {
 }
 
 /** Refreshes child components in the current view. */
-function refreshChildComponents(components: number[] | null): void {
+function refreshChildComponents(hostLView: LView, components: number[] | null): void {
   if (components != null) {
     for (let i = 0; i < components.length; i++) {
-      componentRefresh(components[i]);
+      componentRefresh(hostLView, components[i]);
     }
   }
 }
@@ -418,7 +418,7 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       // ngFor loop, all the views will be created together before update mode runs and turns
       // off firstTemplatePass. If we don't set it here, instances will perform directive
       // matching, etc again and again.
-      viewToRender[TVIEW].firstTemplatePass = false;
+      tView.firstTemplatePass = false;
 
       refreshDescendantViews(viewToRender);
       safeToRunHooks = true;
@@ -1519,18 +1519,18 @@ function refreshDynamicEmbeddedViews(lView: LView) {
  *
  * @param adjustedElementIndex  Element index in LView[] (adjusted for HEADER_OFFSET)
  */
-export function componentRefresh(adjustedElementIndex: number): void {
-  const lView = getLView();
-  ngDevMode && assertDataInRange(lView, adjustedElementIndex);
-  const hostView = getComponentViewByIndex(adjustedElementIndex, lView);
-  ngDevMode && assertNodeType(lView[TVIEW].data[adjustedElementIndex] as TNode, TNodeType.Element);
+export function componentRefresh(hostLView: LView, adjustedElementIndex: number): void {
+  ngDevMode && assertDataInRange(hostLView, adjustedElementIndex);
+  const componentView = getComponentViewByIndex(adjustedElementIndex, hostLView);
+  ngDevMode &&
+      assertNodeType(hostLView[TVIEW].data[adjustedElementIndex] as TNode, TNodeType.Element);
 
   // Only components in creation mode, attached CheckAlways
   // components or attached, dirty OnPush components should be checked
-  if ((viewAttachedToChangeDetector(hostView) || isCreationMode(lView)) &&
-      hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
-    syncViewWithBlueprint(hostView);
-    checkView(hostView, hostView[CONTEXT]);
+  if ((viewAttachedToChangeDetector(componentView) || isCreationMode(hostLView)) &&
+      componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
+    syncViewWithBlueprint(componentView);
+    checkView(componentView, componentView[CONTEXT]);
   }
 }
 
