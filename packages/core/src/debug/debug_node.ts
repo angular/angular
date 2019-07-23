@@ -455,9 +455,21 @@ function _queryNodeChildrenR3(
             componentView[TVIEW].firstChild !, componentView, predicate, matches, elementsOnly,
             rootNativeNode);
       }
-    } else if (tNode.child) {
-      // Otherwise, its children have to be processed.
-      _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
+    } else {
+      if (tNode.child) {
+        // Otherwise, its children have to be processed.
+        _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
+      }
+
+      // We also have to query the DOM directly in order to catch elements inserted through
+      // Renderer2. Note that this is __not__ optimal, because we're walking similar trees multiple
+      // times. ViewEngine could do it more efficiently, because all the insertions go through
+      // Renderer2, however that's not the case in Ivy. This approach is being used because:
+      // 1. Matching the ViewEngine behavior would mean potentially introducing a depedency
+      //    from `Renderer2` to Ivy which could bring Ivy code into ViewEngine.
+      // 2. We would have to make `Renderer3` "know" about debug nodes.
+      // 3. It allows us to capture nodes that were inserted directly via the DOM.
+      nativeNode && _queryNativeNodeDescendants(nativeNode, predicate, matches, elementsOnly);
     }
     // In all cases, if a dynamic container exists for this node, each view inside it has to be
     // processed.
@@ -545,10 +557,46 @@ function _addQueryMatchR3(
     // Type of the "predicate and "matches" array are set based on the value of
     // the "elementsOnly" parameter. TypeScript is not able to properly infer these
     // types with generics, so we manually cast the parameters accordingly.
-    if (elementsOnly && debugNode instanceof DebugElement__POST_R3__ && predicate(debugNode)) {
+    if (elementsOnly && debugNode instanceof DebugElement__POST_R3__ && predicate(debugNode) &&
+        matches.indexOf(debugNode) === -1) {
       matches.push(debugNode);
-    } else if (!elementsOnly && (predicate as Predicate<DebugNode>)(debugNode)) {
+    } else if (
+        !elementsOnly && (predicate as Predicate<DebugNode>)(debugNode) &&
+        (matches as DebugNode[]).indexOf(debugNode) === -1) {
       (matches as DebugNode[]).push(debugNode);
+    }
+  }
+}
+
+/**
+ * Match all the descendants of a DOM node against a predicate.
+ *
+ * @param nativeNode the current native node
+ * @param predicate the predicate to match
+ * @param matches the list of positive matches
+ * @param elementsOnly whether only elements should be searched
+ */
+function _queryNativeNodeDescendants(
+    parentNode: any, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
+    matches: DebugElement[] | DebugNode[], elementsOnly: boolean) {
+  const nodes = parentNode.childNodes;
+  const length = nodes.length;
+
+  for (let i = 0; i < length; i++) {
+    const node = nodes[i];
+    const debugNode = getDebugNode(node);
+
+    if (debugNode) {
+      if (elementsOnly && debugNode instanceof DebugElement__POST_R3__ && predicate(debugNode) &&
+          matches.indexOf(debugNode) === -1) {
+        matches.push(debugNode);
+      } else if (
+          !elementsOnly && (predicate as Predicate<DebugNode>)(debugNode) &&
+          (matches as DebugNode[]).indexOf(debugNode) === -1) {
+        (matches as DebugNode[]).push(debugNode);
+      }
+
+      _queryNativeNodeDescendants(node, predicate, matches, elementsOnly);
     }
   }
 }
