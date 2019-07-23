@@ -210,12 +210,7 @@ export function createContainerRef(
         return this._lContainer[VIEW_REFS] !== null && this._lContainer[VIEW_REFS] ![index] || null;
       }
 
-      get length(): number {
-        // Note that if there are no views, the container
-        // length will be smaller than the header offset.
-        const viewAmount = this._lContainer.length - CONTAINER_HEADER_OFFSET;
-        return viewAmount > 0 ? viewAmount : 0;
-      }
+      get length(): number { return this._lContainer.length - CONTAINER_HEADER_OFFSET; }
 
       createEmbeddedView<C>(templateRef: ViewEngine_TemplateRef<C>, context?: C, index?: number):
           viewEngine_EmbeddedViewRef<C> {
