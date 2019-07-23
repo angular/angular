@@ -75,6 +75,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
       }
       return def;
     },
+    set: (defValue: any) => def = defValue
   });
 }
 

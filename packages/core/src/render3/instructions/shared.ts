@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Injector} from '../../di';
-import {getInjectableDef} from '../../di/interface/defs';
 import {ErrorHandler} from '../../error_handler';
-import {Type} from '../../interface/type';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/security';
@@ -1021,7 +1019,7 @@ export function instantiateRootComponent<T>(
   if (tView.firstTemplatePass) {
     if (def.providersResolver) def.providersResolver(def);
     generateExpandoInstructionBlock(tView, rootTNode, 1);
-    baseResolveDirective(tView, viewData, def, getInjectableDef<T>(def.type) !.factory);
+    baseResolveDirective(tView, viewData, def, def.factory);
   }
   const directive =
       getNodeInjectable(tView.data, viewData, viewData.length - 1, rootTNode as TElementNode);
@@ -1065,7 +1063,7 @@ export function resolveDirectives(
       const def = directives[i] as DirectiveDef<any>;
 
       const directiveDefIdx = tView.data.length;
-      baseResolveDirective(tView, lView, def, getInjectableDef<any>(def.type) !.factory);
+      baseResolveDirective(tView, lView, def, def.factory);
 
       saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
 

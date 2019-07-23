@@ -632,7 +632,9 @@ export class NodeInjector implements Injector {
  */
 export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
   const typeAny = type as any;
-  const def = getPipeDef<T>(typeAny) || getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
+  // TODO(misko): We should not have to read `getInjectorDef` but to fix that it would require that
+  // `defineInjector` would have access to the type.
+  const def = getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
   if (!def || def.factory === undefined) {
     return null;
   }

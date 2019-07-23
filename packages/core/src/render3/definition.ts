@@ -251,6 +251,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     providersResolver: null,
     consts: componentDefinition.consts,
     vars: componentDefinition.vars,
+    factory: componentDefinition.factory,
     template: componentDefinition.template || null !,
     ngContentSelectors: componentDefinition.ngContentSelectors,
     hostBindings: componentDefinition.hostBindings || null,
@@ -300,14 +301,8 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
         () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
         null;
 
-    // Add ngInjectableDef so components are reachable through the module injector by default
-    // (unless it has already been set by the @Injectable decorator). This is mostly to
-    // support injecting components in tests. In real application code, components should
-    // be retrieved through the node injector, so this isn't a problem.
-    if (!type.hasOwnProperty(NG_INJECTABLE_DEF)) {
-      (type as any)[NG_INJECTABLE_DEF] =
-          ɵɵdefineInjectable<T>({token: type, factory: componentDefinition.factory as() => T});
-    }
+    (type as any)[NG_INJECTABLE_DEF] =
+        ɵɵdefineInjectable<T>({token: type, factory: componentDefinition.factory as() => T});
   }) as never;
 
   return def as never;
@@ -736,9 +731,14 @@ export function ɵɵdefinePipe<T>(pipeDef: {
   /** Whether the pipe is pure. */
   pure?: boolean
 }): never {
+  // Why did we miss this?
+  const type = pipeDef.type;
+  const factory = pipeDef.factory;
+  (type as any)[NG_INJECTABLE_DEF] =
+      ɵɵdefineInjectable<T>({token: type, factory: factory as() => T});
   return (<PipeDef<T>>{
     name: pipeDef.name,
-    factory: pipeDef.factory,
+    factory: factory,
     pure: pipeDef.pure !== false,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
   }) as never;

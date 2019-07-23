@@ -174,6 +174,11 @@ export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
    */
   readonly exportAs: string[]|null;
 
+  /**
+   * Factory function used to create a new directive instance.
+   */
+  factory: FactoryFn<T>;
+
   /* The following are lifecycle hooks for this component */
   onChanges: (() => void)|null;
   onInit: (() => void)|null;
