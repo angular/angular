@@ -109,6 +109,12 @@
             "title": "ngrx",
             "url": "https://ngrx.io/"
           },
+          "ngxs": {
+            "desc": "NGXS is a state management pattern + library for Angular. NGXS is modeled after the CQRS pattern popularly implemented in libraries like Redux and NgRx but reduces boilerplate by using modern TypeScript features such as classes and decorators.",
+            "rev": true,
+            "title": "NGXS",
+            "url": "https://ngxs.io/"
+          },
           "ab": {
             "desc": "The official library for Firebase and Angular",
             "logo": "",
