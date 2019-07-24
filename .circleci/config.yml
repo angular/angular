@@ -643,6 +643,10 @@ jobs:
             # It needs to be hardcoded here, because env variables interpolation is not supported.
             - "/tmp/material2"
       - run:
+          # Run yarn install to fetch the Bazel binaries as used in the Material repo.
+          name: Installing Material dependencies.
+          command: yarn --cwd ${MATERIAL_REPO_TMP_DIR} install --frozen-lockfile --non-interactive
+      - run:
           name: "Setup Bazel RBE remote execution in Material repo"
           command: |
             ./.circleci/setup-rbe.sh "${MATERIAL_REPO_TMP_DIR}/.bazelrc.user"
