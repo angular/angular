@@ -17,7 +17,10 @@ export enum IdentifierKind {
   Property,
   Method,
   Element,
+  Template,
   Attribute,
+  Reference,
+  Variable,
 }
 
 /**
@@ -30,11 +33,20 @@ export interface TemplateIdentifier {
   kind: IdentifierKind;
 }
 
+/** Describes a template expression, which may have a template reference or variable target. */
+interface ExpressionIdentifier extends TemplateIdentifier {
+  /**
+   * ReferenceIdentifier or VariableIdentifier in the template that this identifier targets, if
+   * any. If the target is `null`, it points to a declaration on the component class.
+   * */
+  target: ReferenceIdentifier|VariableIdentifier|null;
+}
+
 /** Describes a property accessed in a template. */
-export interface PropertyIdentifier extends TemplateIdentifier { kind: IdentifierKind.Property; }
+export interface PropertyIdentifier extends ExpressionIdentifier { kind: IdentifierKind.Property; }
 
 /** Describes a method accessed in a template. */
-export interface MethodIdentifier extends TemplateIdentifier { kind: IdentifierKind.Method; }
+export interface MethodIdentifier extends ExpressionIdentifier { kind: IdentifierKind.Method; }
 
 /** Describes an element attribute in a template. */
 export interface AttributeIdentifier extends TemplateIdentifier { kind: IdentifierKind.Attribute; }
@@ -44,26 +56,54 @@ interface DirectiveReference {
   node: ClassDeclaration;
   selector: string;
 }
+/** A base interface for element and template identifiers. */
+interface BaseElementOrTemplateIdentifier extends TemplateIdentifier {
+  /** Attributes on an element or template. */
+  attributes: Set<AttributeIdentifier>;
+
+  /** Directives applied to an element or template. */
+  usedDirectives: Set<DirectiveReference>;
+}
 /**
  * Describes an indexed element in a template. The name of an `ElementIdentifier` is the entire
  * element tag, which can be parsed by an indexer to determine where used directives should be
  * referenced.
  */
-export interface ElementIdentifier extends TemplateIdentifier {
+export interface ElementIdentifier extends BaseElementOrTemplateIdentifier {
   kind: IdentifierKind.Element;
-
-  /** Attributes on an element. */
-  attributes: Set<AttributeIdentifier>;
-
-  /** Directives applied to an element. */
-  usedDirectives: Set<DirectiveReference>;
 }
+
+/** Describes an indexed template node in a component template file. */
+export interface TemplateNodeIdentifier extends BaseElementOrTemplateIdentifier {
+  kind: IdentifierKind.Template;
+}
+
+/** Describes a reference in a template like "foo" in `<div #foo></div>`. */
+export interface ReferenceIdentifier extends TemplateIdentifier {
+  kind: IdentifierKind.Reference;
+
+  /** The target of this reference. If the target is not known, this is `null`. */
+  target: {
+    /** The template AST node that the reference targets. */
+    node: ElementIdentifier | TemplateIdentifier;
+
+    /**
+     * The directive on `node` that the reference targets. If no directive is targeted, this is
+     * `null`.
+     */
+    directive: ClassDeclaration | null;
+  }|null;
+}
+
+/** Describes a template variable like "foo" in `<div *ngFor="let foo of foos"></div>`. */
+export interface VariableIdentifier extends TemplateIdentifier { kind: IdentifierKind.Variable; }
 
 /**
  * Identifiers recorded at the top level of the template, without any context about the HTML nodes
  * they were discovered in.
  */
-export type TopLevelIdentifier = PropertyIdentifier | MethodIdentifier | ElementIdentifier;
+export type TopLevelIdentifier = PropertyIdentifier | MethodIdentifier | ElementIdentifier |
+    TemplateNodeIdentifier | ReferenceIdentifier | VariableIdentifier;
 
 /**
  * Describes the absolute byte offsets of a text anchor in a source code.
