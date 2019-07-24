@@ -211,13 +211,13 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(template.references);
   }
   visitBoundAttribute(attribute: TmplAstBoundAttribute) {
-    // A BoundAttribute's value (parent AST) may record spans subexpressions (children ASTs) that
-    // extend past the recorded span of the parent. The most common example of this is with
-    // `*ngFor`. We can't rely on expression AST `AbsoluteOffset`s yet either, because right now
-    // those is only available for ASTWithSource and not any of their children expressions.
+    // A BoundAttribute's value (the parent AST) may have subexpressions (children ASTs) that have
+    // recorded spans extending past the recorded span of the parent. The most common example of
+    // this is with `*ngFor`.
+    // To resolve this, use the information on the BoundAttribute Template AST, which is always
+    // correct, to determine locations of identifiers in the expression.
     //
-    // As a fallback, use the information on the BoundAttribute Template AST, which is always
-    // absolute, to determine locations of identifiers in the expression.
+    // TODO(ayazhafiz): Remove this when https://github.com/angular/angular/pull/31813 lands.
     const attributeSrc = attribute.sourceSpan.toString();
     const attributeAbsolutePosition = attribute.sourceSpan.start.offset;
 

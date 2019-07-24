@@ -68,7 +68,7 @@ runInEachFileSystem(() => {
           span: new AbsoluteSourceSpan(24, 27),
         },
       ] as TopLevelIdentifier[]));
-    })
+    });
 
     describe('generates identifiers for PropertyReads', () => {
       it('should discover component properties', () => {
