@@ -688,7 +688,11 @@ export class DebugRenderer2 implements Renderer2 {
   constructor(private delegate: Renderer2) { this.data = this.delegate.data; }
 
   destroyNode(node: any) {
-    removeDebugNodeFromIndex(getDebugNode(node) !);
+    const debugNode = getDebugNode(node) !;
+    removeDebugNodeFromIndex(debugNode);
+    if (debugNode instanceof DebugNode__PRE_R3__) {
+      debugNode.listeners.length = 0;
+    }
     if (this.delegate.destroyNode) {
       this.delegate.destroyNode(node);
     }
