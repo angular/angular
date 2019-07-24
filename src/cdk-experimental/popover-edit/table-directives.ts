@@ -82,25 +82,24 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
   }
 
   private _listenForTableEvents(): void {
-    const element = this.elementRef.nativeElement!;
-
+    const element = this.elementRef.nativeElement;
     const toClosest = (selector: string) =>
         map((event: UIEvent) => closest(event.target, selector));
 
     this.ngZone.runOutsideAngular(() => {
       // Track mouse movement over the table to hide/show hover content.
       fromEvent<MouseEvent>(element, 'mouseover').pipe(
-          takeUntil(this.destroyed),
           toClosest(ROW_SELECTOR),
+          takeUntil(this.destroyed),
           ).subscribe(this.editEventDispatcher.hovering);
       fromEvent<MouseEvent>(element, 'mouseleave').pipe(
-          takeUntil(this.destroyed),
           mapTo(null),
+          takeUntil(this.destroyed),
           ).subscribe(this.editEventDispatcher.hovering);
       fromEvent<MouseEvent>(element, 'mousemove').pipe(
-          takeUntil(this.destroyed),
           throttleTime(MOUSE_MOVE_THROTTLE_TIME_MS),
           toClosest(ROW_SELECTOR),
+          takeUntil(this.destroyed),
           ).subscribe(this.editEventDispatcher.mouseMove);
 
       // Track focus within the table to hide/show/make focusable hover content.
@@ -135,9 +134,9 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
           ).subscribe(this.editEventDispatcher.allRows);
 
       fromEvent<KeyboardEvent>(element, 'keyup').pipe(
-          takeUntil(this.destroyed),
           filter(event => event.key === 'Enter'),
           toClosest(CELL_SELECTOR),
+          takeUntil(this.destroyed),
           ).subscribe(this.editEventDispatcher.editing);
 
       // Keydown must be used here or else key autorepeat does not work properly on some platforms.
@@ -216,6 +215,11 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroyed.next();
     this.destroyed.complete();
+
+    if (this.focusTrap) {
+      this.focusTrap.destroy();
+      this.focusTrap = undefined;
+    }
 
     if (this.overlayRef) {
       this.overlayRef.dispose();
