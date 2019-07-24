@@ -425,6 +425,8 @@ export declare class TitleCasePipe implements PipeTransform {
     transform(value: string): string;
 }
 
+export declare function toDate(value: string | number | Date): Date;
+
 export declare enum TranslationWidth {
     Narrow = 0,
     Abbreviated = 1,

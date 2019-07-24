@@ -641,16 +641,26 @@ function convertTimezoneToLocal(date: Date, timezone: string, reverse: boolean):
 }
 
 /**
- * Converts a value to date.
+ * @ngModule CommonModule
+ * @description
  *
- * Supported input formats:
+ * Converts a value to a `Date` object.
+ *
+ * @param value The value to convert from. Supported input formats:
  * - `Date`
  * - number: timestamp
  * - string: numeric (e.g. "1234"), ISO and date strings in a format supported by
  *   [Date.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse).
  *   Note: ISO strings without time return a date without timeoffset.
  *
+ * @returns the Date object.
+ *
  * Throws if unable to convert to a date.
+ *
+ * @see `formatDate()`
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
+ *
+ * @publicApi
  */
 export function toDate(value: string | number | Date): Date {
   if (isDate(value)) {
