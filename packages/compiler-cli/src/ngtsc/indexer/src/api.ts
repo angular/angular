@@ -9,6 +9,7 @@
 import {ParseSourceFile} from '@angular/compiler';
 import * as ts from 'typescript';
 import {ClassDeclaration} from '../../reflection';
+export {ClassDeclaration} from '../../reflection';
 
 /**
  * Describes the kind of identifier found in a template.
