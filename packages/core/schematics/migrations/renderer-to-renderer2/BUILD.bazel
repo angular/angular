@@ -6,7 +6,7 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = [
         "//packages/core/schematics:__pkg__",
-        "//packages/core/schematics/migrations/renderer-to-renderer2/google3:__pkg__",
+        "//packages/core/schematics/migrations/google3:__pkg__",
         "//packages/core/schematics/test:__pkg__",
     ],
     deps = [

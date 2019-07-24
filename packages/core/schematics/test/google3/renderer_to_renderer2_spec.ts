@@ -12,8 +12,8 @@ import * as shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 
 describe('Google3 Renderer to Renderer2 TSLint rule', () => {
-  const rulesDirectory = dirname(
-      require.resolve('../../migrations/renderer-to-renderer2/google3/rendererToRenderer2Rule'));
+  const rulesDirectory =
+      dirname(require.resolve('../../migrations/google3/rendererToRenderer2Rule'));
 
   let tmpDir: string;
 

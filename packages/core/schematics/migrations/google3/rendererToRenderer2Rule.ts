@@ -9,9 +9,9 @@
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 
-import {HelperFunction, getHelper} from '../helpers';
-import {migrateExpression, replaceImport} from '../migration';
-import {findCoreImport, findRendererReferences} from '../util';
+import {HelperFunction, getHelper} from '../renderer-to-renderer2/helpers';
+import {migrateExpression, replaceImport} from '../renderer-to-renderer2/migration';
+import {findCoreImport, findRendererReferences} from '../renderer-to-renderer2/util';
 
 /**
  * TSLint rule that migrates from `Renderer` to `Renderer2`. More information on how it works:
