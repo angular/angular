@@ -30,3 +30,8 @@ export function findParentClassDeclaration(node: ts.Node): ts.ClassDeclaration|n
   }
   return node;
 }
+
+/** Checks whether the given class declaration has an explicit constructor or not. */
+export function hasExplicitConstructor(node: ts.ClassDeclaration): boolean {
+  return node.members.some(ts.isConstructorDeclaration);
+}
