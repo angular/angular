@@ -46,6 +46,30 @@ runInEachFileSystem(() => {
       });
     });
 
+    it('should resist collisions', () => {
+      const template = '<div [bar]="bar ? bar : bar"></div>';
+      const refs = getTemplateIdentifiers(bind(template));
+
+      const refArr = Array.from(refs);
+      expect(refArr).toEqual(jasmine.arrayContaining([
+        {
+          name: 'bar',
+          kind: IdentifierKind.Property,
+          span: new AbsoluteSourceSpan(12, 15),
+        },
+        {
+          name: 'bar',
+          kind: IdentifierKind.Property,
+          span: new AbsoluteSourceSpan(18, 21),
+        },
+        {
+          name: 'bar',
+          kind: IdentifierKind.Property,
+          span: new AbsoluteSourceSpan(24, 27),
+        },
+      ] as TopLevelIdentifier[]));
+    })
+
     describe('generates identifiers for PropertyReads', () => {
       it('should discover component properties', () => {
         const template = '{{foo}}';

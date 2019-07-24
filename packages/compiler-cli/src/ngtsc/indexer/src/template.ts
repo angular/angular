@@ -119,7 +119,8 @@ class ExpressionVisitor extends RecursiveAstVisitor {
       kind,
     } as ExpressionIdentifier;
 
-    // Conditionally define so that undefined targets aren't included unnecessarily.
+    // Conditionally define so that undefined targets aren't included unnecessarily. This makes
+    // testing less verbose.
     if (target) {
       identifier.target = target;
     }
