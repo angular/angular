@@ -25,12 +25,13 @@ def rules_angular_dev_dependencies():
     """
 
     # Needed for Remote Execution
+    # https://github.com/bazelbuild/bazel-toolchains/releases
     _maybe(
         http_archive,
         name = "bazel_toolchains",
-        sha256 = "4598bf5a8b4f5ced82c782899438a7ba695165d47b3bf783ce774e89a8c6e617",
-        strip_prefix = "bazel-toolchains-0.27.0",
-        url = "https://github.com/bazelbuild/bazel-toolchains/archive/0.27.0.tar.gz",
+        sha256 = "dcb58e7e5f0b4da54c6c5f8ebc65e63fcfb37414466010cf82ceff912162296e",
+        strip_prefix = "bazel-toolchains-0.28.2",
+        url = "https://github.com/bazelbuild/bazel-toolchains/archive/0.28.2.tar.gz",
     )
 
     #############################################
