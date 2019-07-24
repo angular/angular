@@ -216,20 +216,38 @@ export function createLView<T>(
     host: RElement | null, tHostNode: TViewNode | TElementNode | null,
     rendererFactory?: RendererFactory3 | null, renderer?: Renderer3 | null,
     sanitizer?: Sanitizer | null, injector?: Injector | null): LView {
-  const lView = ngDevMode ? cloneToLView(tView.blueprint) : tView.blueprint.slice() as LView;
-  lView[HOST] = host;
-  lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
-  resetPreOrderHookFlags(lView);
-  lView[PARENT] = lView[DECLARATION_VIEW] = parentLView;
-  lView[CONTEXT] = context;
-  lView[RENDERER_FACTORY] = (rendererFactory || parentLView && parentLView[RENDERER_FACTORY]) !;
+  // const lView = ngDevMode ? cloneToLView(tView.blueprint) : tView.blueprint.slice() as LView;
+  const blueprint = tView.blueprint;
+  const lView: LView = [
+    host,                                                                               // HOST = 0
+    tView,                                                                              // TVIEW = 1
+    flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass,  // FLAGS = 2
+    parentLView,                                                          // PARENT = 3
+    null,                                                                 // NEXT = 4;
+    null,                                                                 // QUERIES = 5;
+    tHostNode,                                                            // T_HOST = 6
+    blueprint[BINDING_INDEX],                                             // BINDING_INDEX = 7
+    null,                                                                 // CLEANUP = 8
+    context,                                                              // CONTEXT = 9
+    injector || parentLView && parentLView[INJECTOR] || null,             // INJECTOR = 10
+    (rendererFactory || parentLView && parentLView[RENDERER_FACTORY]) !,  // RENDERER_FACTORY = 11
+    (renderer || parentLView && parentLView[RENDERER]) !,                 // RENDERER = 12
+    sanitizer || parentLView && parentLView[SANITIZER] || null !,         // SANITIZER = 13
+    null,                                                                 // CHILD_HEAD = 14
+    null,                                                                 // CHILD_TAIL = 15,
+    parentLView,                                                          // DECLARATION_VIEW = 16
+    null,  // DECLARATION_LCONTAINER = 17,
+    0,     // PREORDER_HOOK_FLAGS = 18
+  ];
+
+  for (let i = HEADER_OFFSET; i < blueprint.length; i++) {
+    lView.push(blueprint[i]);
+  }
+
   ngDevMode && assertDefined(lView[RENDERER_FACTORY], 'RendererFactory is required');
-  lView[RENDERER] = (renderer || parentLView && parentLView[RENDERER]) !;
   ngDevMode && assertDefined(lView[RENDERER], 'Renderer is required');
-  lView[SANITIZER] = sanitizer || parentLView && parentLView[SANITIZER] || null !;
-  lView[INJECTOR as any] = injector || parentLView && parentLView[INJECTOR] || null;
-  lView[T_HOST] = tHostNode;
   ngDevMode && attachLViewDebug(lView);
+
   return lView;
 }
 
@@ -1563,7 +1581,7 @@ export function componentRefresh(hostLView: LView, adjustedElementIndex: number)
 function syncViewWithBlueprint(componentView: LView) {
   const componentTView = componentView[TVIEW];
   for (let i = componentView.length; i < componentTView.blueprint.length; i++) {
-    componentView[i] = componentTView.blueprint[i];
+    componentView.push(componentTView.blueprint[i]);
   }
 }
 
