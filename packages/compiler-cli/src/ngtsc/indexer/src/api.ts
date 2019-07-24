@@ -33,9 +33,9 @@ export interface TemplateIdentifier {
 
   /**
    * ReferenceIdentifier or VariableIdentifier in the template that this identifier targets, if
-   * any.
+   * any. If the target is `null`, it points to a declaration on the component class.
    * */
-  target?: ReferenceIdentifier|VariableIdentifier;
+  target: ReferenceIdentifier|VariableIdentifier|null;
 }
 
 /** Describes a property accessed in a template. */
