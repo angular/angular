@@ -598,6 +598,11 @@
           "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
         },
         {
+          "url": "guide/angular-compiler-options",
+          "title": "Compiler Options",
+          "tooltip": "Configuration options for the AOT compiler."
+        },
+        {
           "url": "guide/build",
           "title": "Building & Serving",
           "tooltip": "Building and serving Angular apps."
