@@ -1,3 +1,4 @@
+@import '../../cdk/a11y/a11y';
 @import '../../material/core/style/variables';
 @import '../../material/core/style/elevation';
 @import '../../material/core/theming/palette';
@@ -80,6 +81,13 @@
     color: mat-color($foreground, text);
     display: block;
     padding: 16px 24px;
+
+    @include cdk-high-contrast {
+      // Note that normally we use 1px for high contrast outline, however here we use 3,
+      // because the popover is rendered on top of a table which already has some borders
+      // and doesn't have a backdrop. The thicker outline makes it easier to differentiate.
+      outline: solid 3px;
+    }
   }
 
   .mat-edit-lens {
