@@ -113,7 +113,7 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
     this._hideToggle = coerceBooleanProperty(value);
   }
 
-  /** Whether the toggle indicator should be hidden. */
+  /** The position of the expansion indicator. */
   @Input()
   get togglePosition(): MatAccordionTogglePosition {
     return this._togglePosition || (this.accordion && this.accordion.togglePosition);
