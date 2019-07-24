@@ -8,7 +8,7 @@
 
 
 import {CommonModule, NgIfContext} from '@angular/common';
-import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, Output, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -925,6 +925,41 @@ class TestCmptWithPropBindings {
       fixture.componentInstance.renderer.setAttribute(div.nativeElement, 'foo', 'bar');
 
       expect(div.attributes.foo).toBe('bar');
+    });
+
+    it('should clear event listeners when node is destroyed', () => {
+      let calls = 0;
+      @Component({
+        selector: 'cancel-button',
+        template: '',
+      })
+      class CancelButton {
+        @Output() cancel = new EventEmitter<void>();
+      }
+
+      @Component({
+        template: '<cancel-button *ngIf="visible" (cancel)="cancel()"></cancel-button>',
+      })
+      class App {
+        visible = true;
+        cancel() { calls++; }
+      }
+
+      TestBed.configureTestingModule({declarations: [App, CancelButton]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const button = fixture.debugElement.query(By.directive(CancelButton));
+      button.triggerEventHandler('cancel', {});
+
+      expect(calls).toBe(1, 'Expected calls to be 1 after one event.');
+
+      fixture.componentInstance.visible = false;
+      fixture.detectChanges();
+
+      button.triggerEventHandler('cancel', {});
+
+      expect(calls).toBe(1, 'Expected calls to stay 1 after destroying the node.');
     });
 
   });
