@@ -63,7 +63,11 @@ export function refreshDescendantViews(lView: LView) {
   const tView = lView[TVIEW];
   const creationMode = isCreationMode(lView);
 
-  // This needs to be set before children are processed to support recursive components
+  // This needs to be set before children are processed to support recursive components.
+  // This must be set to false immediately after the first creation run because in an
+  // ngFor loop, all the views will be created together before update mode runs and turns
+  // off firstTemplatePass. If we don't set it here, instances will perform directive
+  // matching, etc again and again.
   tView.firstTemplatePass = false;
 
   // Resetting the bindingIndex of the current LView as the next steps may trigger change detection.
@@ -431,13 +435,6 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       oldView = enterView(viewToRender, viewToRender[T_HOST]);
       resetPreOrderHookFlags(viewToRender);
       executeTemplate(viewToRender, tView.template !, getRenderFlags(viewToRender), context);
-
-      // This must be set to false immediately after the first creation run because in an
-      // ngFor loop, all the views will be created together before update mode runs and turns
-      // off firstTemplatePass. If we don't set it here, instances will perform directive
-      // matching, etc again and again.
-      tView.firstTemplatePass = false;
-
       refreshDescendantViews(viewToRender);
       safeToRunHooks = true;
     } finally {
