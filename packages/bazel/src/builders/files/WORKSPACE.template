@@ -15,8 +15,8 @@ workspace(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-RULES_NODEJS_VERSION = "0.32.2"
-RULES_NODEJS_SHA256 = "6d4edbf28ff6720aedf5f97f9b9a7679401bf7fca9d14a0fff80f644a99992b4"
+RULES_NODEJS_VERSION = "0.34.0"
+RULES_NODEJS_SHA256 = "7c4a690268be97c96f04d505224ec4cb1ae53c2c2b68be495c9bd2634296a5cd"
 http_archive(
     name = "build_bazel_rules_nodejs",
     sha256 = RULES_NODEJS_SHA256,
@@ -63,14 +63,15 @@ node_repositories(
 
 yarn_install(
     name = "npm",
-    # TODO(gregmagolan): fix rules_nodejs so that if @bazel/hide-bazel-files is detected then this is forced true
-    always_hide_bazel_files = True,
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
 )
 
 load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
 install_bazel_dependencies()
+
+load("@npm_bazel_protractor//:package.bzl", "npm_bazel_protractor_dependencies")
+npm_bazel_protractor_dependencies()
 
 load("@npm_bazel_karma//:package.bzl", "rules_karma_dependencies")
 rules_karma_dependencies()

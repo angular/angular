@@ -11,9 +11,28 @@ const shx = require('shelljs');
 const os = require('os');
 const {runCommand, setupTestDirectory} = require('./test_helpers');
 
+// Nodejs toolchains were included in nodejs rules 0.33.0 so the
+// repository name for the nodejs toolchain now depends on the platform
+// being run on. The following function returns the nodejs repository
+// name of the runtime platform platform. These come from
+// https://github.com/bazelbuild/rules_nodejs/blob/2a0be492c5d506665798f04673ab1a646c883626/internal/node/node_repositories.bzl#L598.
+function nodejs_repository() {
+  switch (os.platform()) {
+    case 'darwin':
+      return 'nodejs_darwin_amd64';
+    case 'linux':
+      return 'nodejs_linux_amd64';
+    case 'win32':
+      return 'nodejs_windows_amd64';
+    default:
+      throw 'Platform not supported';
+  }
+}
+
 const ngcBin = require.resolve('./ngc_bin');
 const xi18nBin = require.resolve('./ng_xi18n');
-const nodeBin = require.resolve(`nodejs/bin/node${(os.platform() === 'win32' ? '.cmd' : '')}`);
+const nodeBin =
+    require.resolve(`${nodejs_repository()}/bin/node${(os.platform() === 'win32' ? '.cmd' : '')}`);
 const jasmineBin = require.resolve('npm/node_modules/jasmine/bin/jasmine.js');
 
 // Prepare the test directory before building the integration test output. This ensures that
