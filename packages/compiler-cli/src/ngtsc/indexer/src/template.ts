@@ -155,7 +155,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       if (target) {
         const targetIdentifier = this.targetToIdentifier.get(target);
         if (!targetIdentifier) {
-          throw new Error(`Target ${target.name} was not given an identifier.`)
+          throw new Error(`Target ${target.name} was not given an identifier.`);
         }
         identifier.target = targetIdentifier;
       }

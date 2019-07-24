@@ -142,21 +142,15 @@ runInEachFileSystem(() => {
       });
 
       it('should discover properties in template expressions', () => {
-        const template = '<div *ngFor="let foo of foos; let i = index"></div>';
+        const template = '<div *ngFor="let foo of foos"></div>';
         const refs = getTemplateIdentifiers(bind(template));
 
         const refArr = Array.from(refs);
-        expect(refArr).toContain(
-            {
-              name: 'foos',
-              kind: IdentifierKind.Property,
-              span: new AbsoluteSourceSpan(24, 28),
-            },
-            {
-              name: 'index',
-              kind: IdentifierKind.Property,
-              span: new AbsoluteSourceSpan(38, 43),
-            });
+        expect(refArr).toContain({
+          name: 'foos',
+          kind: IdentifierKind.Property,
+          span: new AbsoluteSourceSpan(24, 28),
+        });
       });
     });
 
