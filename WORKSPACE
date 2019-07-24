@@ -21,8 +21,8 @@ http_archive(
     patch_args = ["-p1"],
     # Patch https://github.com/bazelbuild/rules_nodejs/pull/903
     patches = ["//tools:rollup_bundle_commonjs_ignoreGlobal.patch"],
-    sha256 = "6d4edbf28ff6720aedf5f97f9b9a7679401bf7fca9d14a0fff80f644a99992b4",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.32.2/rules_nodejs-0.32.2.tar.gz"],
+    sha256 = "7c4a690268be97c96f04d505224ec4cb1ae53c2c2b68be495c9bd2634296a5cd",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.34.0/rules_nodejs-0.34.0.tar.gz"],
 )
 
 # Check the bazel version and download npm dependencies
@@ -53,7 +53,8 @@ Try running `yarn bazel` instead.
 #   - 0.32.0 yarn_install and npm_install no longer puts build files under symlinked node_modules
 #   - 0.32.1 remove override of @bazel/tsetse & exclude typescript lib declarations in node_module_library transitive_declarations
 #   - 0.32.2 resolves bug in @bazel/hide-bazel-files postinstall step
-check_rules_nodejs_version(minimum_version_string = "0.32.2")
+#   - 0.34.0 introduces protractor rule
+check_rules_nodejs_version(minimum_version_string = "0.34.0")
 
 # Setup the Node.js toolchain
 node_repositories(
@@ -90,6 +91,11 @@ install_bazel_dependencies()
 load("//packages/bazel:package.bzl", "rules_angular_dev_dependencies")
 
 rules_angular_dev_dependencies()
+
+# Load protractor dependencies
+load("@npm_bazel_protractor//:package.bzl", "npm_bazel_protractor_dependencies")
+
+npm_bazel_protractor_dependencies()
 
 # Load karma dependencies
 load("@npm_bazel_karma//:package.bzl", "rules_karma_dependencies")
