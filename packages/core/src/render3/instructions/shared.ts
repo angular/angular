@@ -1509,19 +1509,20 @@ export function createLContainer(
  * by executing an associated template function.
  */
 function refreshDynamicEmbeddedViews(lView: LView) {
-  for (let current = lView[CHILD_HEAD]; current !== null; current = current[NEXT]) {
-    // Note: current can be an LView or an LContainer instance, but here we are only interested
-    // in LContainer. We can tell it's an LContainer because its length is less than the LView
-    // header.
-    if (current[ACTIVE_INDEX] === -1 && isLContainer(current)) {
-      for (let i = CONTAINER_HEADER_OFFSET; i < current.length; i++) {
-        const dynamicViewData = current[i];
+  let viewOrContainer = lView[CHILD_HEAD];
+  while (viewOrContainer !== null) {
+    // Note: viewOrContainer can be an LView or an LContainer instance, but here we are only
+    // interested in LContainer
+    if (isLContainer(viewOrContainer) && viewOrContainer[ACTIVE_INDEX] === -1) {
+      for (let i = CONTAINER_HEADER_OFFSET; i < viewOrContainer.length; i++) {
+        const embeddedLView = viewOrContainer[i];
         // The directives and pipes are not needed here as an existing view is only being
         // refreshed.
-        ngDevMode && assertDefined(dynamicViewData[TVIEW], 'TView must be allocated');
-        renderEmbeddedTemplate(dynamicViewData, dynamicViewData[TVIEW], dynamicViewData[CONTEXT] !);
+        ngDevMode && assertDefined(embeddedLView[TVIEW], 'TView must be allocated');
+        renderEmbeddedTemplate(embeddedLView, embeddedLView[TVIEW], embeddedLView[CONTEXT] !);
       }
     }
+    viewOrContainer = viewOrContainer[NEXT];
   }
 }
 
