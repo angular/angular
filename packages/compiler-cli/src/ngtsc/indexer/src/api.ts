@@ -18,6 +18,8 @@ export enum IdentifierKind {
   Method,
   Element,
   Attribute,
+  Reference,
+  Variable,
 }
 
 /**
@@ -28,6 +30,12 @@ export interface TemplateIdentifier {
   name: string;
   span: AbsoluteSourceSpan;
   kind: IdentifierKind;
+
+  /**
+   * ReferenceIdentifier or VariableIdentifier in the template that this identifier targets, if
+   * any.
+   * */
+  target?: ReferenceIdentifier|VariableIdentifier;
 }
 
 /** Describes a property accessed in a template. */
@@ -59,11 +67,18 @@ export interface ElementIdentifier extends TemplateIdentifier {
   usedDirectives: Set<DirectiveReference>;
 }
 
+/** Describes a reference in a template like "foo" in `<div #foo></div>`. */
+export interface ReferenceIdentifier extends TemplateIdentifier { kind: IdentifierKind.Reference; }
+
+/** Describes a template variable like "foo" in `<div *ngFor="let foo of foos"></div>`. */
+export interface VariableIdentifier extends TemplateIdentifier { kind: IdentifierKind.Variable; }
+
 /**
  * Identifiers recorded at the top level of the template, without any context about the HTML nodes
  * they were discovered in.
  */
-export type TopLevelIdentifier = PropertyIdentifier | MethodIdentifier | ElementIdentifier;
+export type TopLevelIdentifier = PropertyIdentifier | MethodIdentifier | ElementIdentifier |
+    ReferenceIdentifier | VariableIdentifier;
 
 /**
  * Describes the absolute byte offsets of a text anchor in a source code.
