@@ -7,7 +7,7 @@ ts_config(
     name = "tsconfig",
     src = "tsconfig.json",
     deps = [
-        "//tools:tsconfig-test",
+        "//packages:tsconfig-test",
     ],
 )
 
