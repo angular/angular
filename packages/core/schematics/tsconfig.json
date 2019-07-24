@@ -7,6 +7,7 @@
     "types": [],
     "baseUrl": ".",
     "paths": {
+      "@angular/core": ["../"],
       "@angular/compiler": ["../../compiler"],
       "@angular/compiler/*": ["../../compiler/*"],
       "@angular/compiler-cli": ["../../compiler-cli"],

@@ -15,5 +15,6 @@ npm_package(
         "//packages/core/schematics/migrations/renderer-to-renderer2",
         "//packages/core/schematics/migrations/static-queries",
         "//packages/core/schematics/migrations/template-var-assignment",
+        "//packages/core/schematics/migrations/undecorated-classes-with-di",
     ],
 )
