@@ -168,6 +168,7 @@ class DefaultDomRenderer2 implements Renderer2 {
   nextSibling(node: any): any { return node.nextSibling; }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
+    // let newValue = value
     let newValue =
         this._policyAdapter.maybeCreateTrustedValueForAttribute(el, name, value, namespace);
     if (namespace) {
@@ -229,6 +230,7 @@ class DefaultDomRenderer2 implements Renderer2 {
   setProperty(el: any, name: string, value: any): void {
     NG_DEV_MODE && checkNoSyntheticProp(name, 'property');
     let newValue = this._policyAdapter.maybeCreateTrustedValueForAttribute(el, name, value);
+    // let newValue = value
     el[name] = newValue;
   }
 

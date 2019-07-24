@@ -64,10 +64,22 @@ export class TrustedTypePolicyAdapterImpl extends TrustedTypePolicyAdapter {
     if (typeof TrustedTypes !== 'undefined' && Boolean(TrustedTypes.createPolicy)) {
       this._policy = TrustedTypes.createPolicy(
           this._name, {
-            createURL: (s: string) => s,
-            createScriptURL: (s: string) => s,
-            createScript: (s: string) => s,
-            createHTML: (s: string) => s
+            createURL: (s: string) => {
+              console.log('Angular policy', s);
+              return s;
+            },
+            createScriptURL: (s: string) => {
+              console.log('Angular policy', s);
+              return s;
+            },
+            createScript: (s: string) => {
+              console.log('Angular policy', s);
+              return s;
+            },
+            createHTML: (s: string) => {
+              console.log('Angular policy', s);
+              return s;
+            }
           },
           false);
     }
