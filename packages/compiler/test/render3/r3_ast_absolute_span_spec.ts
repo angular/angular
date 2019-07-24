@@ -330,12 +330,10 @@ describe('expression AST absolute source spans', () => {
           .toContain(['items', new AbsoluteSourceSpan(25, 30)]);
     });
 
-    it('should work with multiple bindings',
-       () => {expect(humanizeExpressionSource(
-                         parse('<div *ngFor="let a of As; let b of Bs"></div>').nodes))
-                  .toEqual(jasmine.arrayContaining([
-                    ['As', new AbsoluteSourceSpan(22, 24)],
-                    ['Bs', new AbsoluteSourceSpan(35, 37)]
-                  ]))});
+    it('should work with multiple bindings', () => {
+      expect(humanizeExpressionSource(parse('<div *ngFor="let a of As; let b of Bs"></div>').nodes))
+          .toEqual(jasmine.arrayContaining(
+              [['As', new AbsoluteSourceSpan(22, 24)], ['Bs', new AbsoluteSourceSpan(35, 37)]]));
+    });
   });
 });

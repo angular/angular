@@ -151,8 +151,12 @@ class HtmlAstToIvyAst implements html.Visitor {
         const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
 
         const parsedVariables: ParsedVariable[] = [];
-        const absoluteValueOffset = attribute.valueSpan ? attribute.valueSpan.start.offset :
-                                                          attribute.sourceSpan.start.offset;
+        const absoluteValueOffset = attribute.valueSpan ?
+            attribute.valueSpan.start.offset :
+            // If there is no value span the attribute does not have a value, like `attr` in
+            //`<div attr></div>`. In this case, point to one beyond the attribute name.
+            attribute.sourceSpan.start.offset + attribute.name.length;
+
         this.bindingParser.parseInlineTemplateBinding(
             templateKey, templateValue, attribute.sourceSpan, absoluteValueOffset, [],
             templateParsedProperties, parsedVariables);
