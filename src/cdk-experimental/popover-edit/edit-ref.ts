@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, OnDestroy, Self} from '@angular/core';
+import {Injectable, OnDestroy, Self, NgZone} from '@angular/core';
 import {ControlContainer} from '@angular/forms';
 import {Observable, Subject} from 'rxjs';
 import {take} from 'rxjs/operators';
@@ -41,7 +41,8 @@ export class EditRef<FormValue> implements OnDestroy {
 
   constructor(
       @Self() private readonly _form: ControlContainer,
-      private readonly _editEventDispatcher: EditEventDispatcher) {
+      private readonly _editEventDispatcher: EditEventDispatcher,
+      private readonly _ngZone: NgZone) {
     this._editEventDispatcher.setActiveEditRef(this);
   }
 
@@ -51,11 +52,10 @@ export class EditRef<FormValue> implements OnDestroy {
    * applicable.
    */
   init(previousFormValue: FormValue|undefined): void {
-    // Wait for either the first value to be set, then override it with
-    // the previously entered value, if any.
-    this._form.valueChanges!.pipe(take(1)).subscribe(() => {
+    // Wait for the zone to stabilize before caching the initial value.
+    // This ensures that all form controls have been initialized.
+    this._ngZone.onStable.pipe(take(1)).subscribe(() => {
       this.updateRevertValue();
-
       if (previousFormValue) {
         this.reset(previousFormValue);
       }
