@@ -308,6 +308,26 @@ runInEachFileSystem(() => {
       ] as TopLevelIdentifier[]));
     });
 
+    it('should discover forward references', () => {
+      const template = `{{foo}}<div #foo></div>`;
+      const refs = getTemplateIdentifiers(bind(template));
+      const referenceIdentifier: ReferenceIdentifier = {
+        name: 'foo',
+        kind: IdentifierKind.Reference,
+        span: new AbsoluteSourceSpan(13, 16)
+      };
+
+      const refArr = Array.from(refs);
+      expect(refArr).toEqual(jasmine.arrayContaining([
+        referenceIdentifier, {
+          name: 'foo',
+          kind: IdentifierKind.Property,
+          span: new AbsoluteSourceSpan(2, 5),
+          target: referenceIdentifier,
+        }
+      ] as TopLevelIdentifier[]));
+    });
+
     it('should discover references to references', () => {
       const template = `<div #foo (ngSubmit)="do(foo)"></div>`;
       const refs = getTemplateIdentifiers(bind(template));

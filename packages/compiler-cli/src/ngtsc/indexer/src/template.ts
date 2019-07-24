@@ -19,7 +19,9 @@ interface HTMLNode extends TmplAstNode {
 }
 
 type ExpressionIdentifier = PropertyIdentifier | MethodIdentifier;
-type TargetMap = Map<TmplAstReference|TmplAstVariable, ReferenceIdentifier|VariableIdentifier>;
+type ExpressionToIdentifierMap = Map<AST, ExpressionIdentifier>;
+type TargetToIdentifierMap =
+    Map<TmplAstReference|TmplAstVariable, ReferenceIdentifier|VariableIdentifier>;
 
 /**
  * Visits the AST of an Angular template syntax expression, finding interesting
@@ -36,7 +38,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
   private constructor(
       private readonly expressionStr: string, private readonly absoluteOffset: number,
       private readonly boundTemplate: BoundTarget<ComponentMeta>,
-      private readonly targetMap: TargetMap) {
+      private readonly expressionToIdentifier: ExpressionToIdentifierMap) {
     super();
   }
 
@@ -53,8 +55,9 @@ class ExpressionVisitor extends RecursiveAstVisitor {
    */
   static getIdentifiers(
       ast: AST, source: string, absoluteOffset: number, boundTemplate: BoundTarget<ComponentMeta>,
-      targetMap: TargetMap): TopLevelIdentifier[] {
-    const visitor = new ExpressionVisitor(source, absoluteOffset, boundTemplate, targetMap);
+      expressionToIdentifier: ExpressionToIdentifierMap): TopLevelIdentifier[] {
+    const visitor =
+        new ExpressionVisitor(source, absoluteOffset, boundTemplate, expressionToIdentifier);
     visitor.visit(ast);
     return visitor.identifiers;
   }
@@ -92,12 +95,6 @@ class ExpressionVisitor extends RecursiveAstVisitor {
       return;
     }
 
-    let target: ReferenceIdentifier|VariableIdentifier|undefined = undefined;
-    const nodeTarget = this.boundTemplate.getExpressionTarget(ast);
-    if (nodeTarget !== null) {
-      target = this.targetMap.get(nodeTarget);
-    }
-
     // Get the location of the identifier of real interest.
     // The compiler's expression parser records the location of some expressions in a manner not
     // useful to the indexer. For example, a `MethodCall` `foo(a, b)` will record the span of the
@@ -119,12 +116,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
       kind,
     } as ExpressionIdentifier;
 
-    // Conditionally define so that undefined targets aren't included unnecessarily. This makes
-    // testing less verbose.
-    if (target) {
-      identifier.target = target;
-    }
-
+    this.expressionToIdentifier.set(ast, identifier);
     this.identifiers.push(identifier);
   }
 }
@@ -138,8 +130,10 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   readonly identifiers = new Set<TopLevelIdentifier>();
 
   // Map of targets in a template to their identifiers.
-  private readonly targetMap =
-      new Map<TmplAstReference|TmplAstReference, ReferenceIdentifier|VariableIdentifier>();
+  private readonly targetToIdentifier: TargetToIdentifierMap = new Map();
+  // Map of expressions to to their identifiers, populated during template traversal and then
+  // updated with references to expression target identifiers using `targetToIdentifier`.
+  private readonly expressiontoIdentifier: ExpressionToIdentifierMap = new Map();
 
   /**
    * Creates a template visitor for a bound template target. The bound target can be used when
@@ -148,6 +142,26 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
    * @param boundTemplate bound template target
    */
   constructor(private boundTemplate: BoundTarget<ComponentMeta>) { super(); }
+
+  /**
+   * Processes an entire template's nodes and returns the identifiers discovered in it.
+   */
+  processTemplate(template: TmplAstNode[]): Set<TopLevelIdentifier> {
+    this.visitAll(template);
+    // Update expression identifiers with references to their targets' identifiers, which are known
+    // after the entire template has been processed.
+    for (const [expression, identifier] of Array.from(this.expressiontoIdentifier.entries())) {
+      const target = this.boundTemplate.getExpressionTarget(expression);
+      if (target) {
+        const targetIdentifier = this.targetToIdentifier.get(target);
+        if (!targetIdentifier) {
+          throw new Error(`Target ${target.name} was not given an identifier.`)
+        }
+        identifier.target = targetIdentifier;
+      }
+    }
+    return this.identifiers;
+  }
 
   /**
    * Visits a node in the template.
@@ -229,7 +243,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
 
     const identifiers = ExpressionVisitor.getIdentifiers(
         attribute.value, expressionSrc, expressionAbsolutePosition, this.boundTemplate,
-        this.targetMap);
+        this.expressiontoIdentifier);
     identifiers.forEach(id => this.identifiers.add(id));
   }
   visitBoundEvent(attribute: TmplAstBoundEvent) { this.visitExpression(attribute.handler); }
@@ -243,7 +257,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       kind: IdentifierKind.Reference,
     };
 
-    this.targetMap.set(reference, referenceIdentifer);
+    this.targetToIdentifier.set(reference, referenceIdentifer);
     this.identifiers.add(referenceIdentifer);
   }
   visitVariable(variable: TmplAstVariable) {
@@ -255,7 +269,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       kind: IdentifierKind.Variable,
     };
 
-    this.targetMap.set(variable, variableIdentifier);
+    this.targetToIdentifier.set(variable, variableIdentifier);
     this.identifiers.add(variableIdentifier);
   }
 
@@ -279,7 +293,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     if (ast instanceof ASTWithSource && ast.source !== null) {
       const absoluteOffset = ast.sourceSpan.start;
       const identifiers = ExpressionVisitor.getIdentifiers(
-          ast, ast.source, absoluteOffset, this.boundTemplate, this.targetMap);
+          ast, ast.source, absoluteOffset, this.boundTemplate, this.expressiontoIdentifier);
       identifiers.forEach(id => this.identifiers.add(id));
     }
   }
@@ -294,8 +308,8 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
 export function getTemplateIdentifiers(boundTemplate: BoundTarget<ComponentMeta>):
     Set<TopLevelIdentifier> {
   const visitor = new TemplateVisitor(boundTemplate);
-  if (boundTemplate.target.template !== undefined) {
-    visitor.visitAll(boundTemplate.target.template);
+  if (!boundTemplate.target.template) {
+    return new Set();
   }
-  return visitor.identifiers;
+  return visitor.processTemplate(boundTemplate.target.template);
 }
