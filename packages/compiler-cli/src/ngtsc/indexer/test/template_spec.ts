@@ -342,6 +342,18 @@ runInEachFileSystem(() => {
       }] as TopLevelIdentifier[]));
     });
 
+    it('should discover variables with let- syntax', () => {
+      const template = '<ng-template let-var="classVar">';
+      const refs = getTemplateIdentifiers(bind(template));
+
+      const refArray = Array.from(refs);
+      expect(refArray).toEqual(jasmine.arrayContaining([{
+        name: 'var',
+        kind: IdentifierKind.Variable,
+        span: new AbsoluteSourceSpan(17, 20),
+      }] as TopLevelIdentifier[]));
+    });
+
     it('should discover nested variables', () => {
       const template = '<div><span *ngFor="let foo of foos"></span></div>';
       const refs = getTemplateIdentifiers(bind(template));
