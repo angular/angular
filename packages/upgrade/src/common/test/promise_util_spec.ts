@@ -85,4 +85,36 @@ describe('SyncPromise', () => {
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith('foo');
   });
+
+  describe('.all()', () => {
+    it('should return a `SyncPromise` instance',
+       () => { expect(SyncPromise.all([])).toEqual(jasmine.any(SyncPromise)); });
+
+    it('should resolve immediately if the provided values are not thenable', () => {
+      const spy = jasmine.createSpy('spy');
+
+      const promise = SyncPromise.all(['foo', 1, {then: false}, []]);
+      promise.then(spy);
+
+      expect(spy).toHaveBeenCalledWith(['foo', 1, {then: false}, []]);
+    });
+
+    it('should wait for any thenables to resolve', async() => {
+      const spy = jasmine.createSpy('spy');
+
+      const v1 = 'foo';
+      const v2 = new SyncPromise<string>();
+      const v3 = Promise.resolve('baz');
+      const promise = SyncPromise.all([v1, v2, v3]);
+
+      promise.then(spy);
+      expect(spy).not.toHaveBeenCalled();
+
+      v2.resolve('bar');
+      expect(spy).not.toHaveBeenCalled();
+
+      await v3;
+      expect(spy).toHaveBeenCalledWith(['foo', 'bar', 'baz']);
+    });
+  });
 });
