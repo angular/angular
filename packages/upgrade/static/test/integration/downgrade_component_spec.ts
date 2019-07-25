@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, ElementRef, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, Output, SimpleChanges, destroyPlatform} from '@angular/core';
+import {ChangeDetectionStrategy, Compiler, Component, Directive, ElementRef, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, Output, SimpleChanges, destroyPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -733,6 +733,35 @@ withEachNg1Version(() => {
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
            expect(multiTrim(document.body.textContent)).toBe('parent(child)');
+         });
+       }));
+
+    it('should be compiled synchronously, if possible', async(() => {
+         @Component({selector: 'ng2A', template: '<ng-content></ng-content>'})
+         class Ng2ComponentA {
+         }
+
+         @Component({selector: 'ng2B', template: '{{ \'Ng2 template\' }}'})
+         class Ng2ComponentB {
+         }
+
+         @NgModule({
+           declarations: [Ng2ComponentA, Ng2ComponentB],
+           entryComponents: [Ng2ComponentA, Ng2ComponentB],
+           imports: [BrowserModule, UpgradeModule],
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module = angular.module_('ng1', [])
+                               .directive('ng2A', downgradeComponent({component: Ng2ComponentA}))
+                               .directive('ng2B', downgradeComponent({component: Ng2ComponentB}));
+
+         const element = html('<ng2-a><ng2-b></ng2-b></ng2-a>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+           expect(element.textContent).toBe('Ng2 template');
          });
        }));
 
