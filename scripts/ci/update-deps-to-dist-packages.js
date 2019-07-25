@@ -1,6 +1,11 @@
 /**
  * This script updates a package.json file by replacing all dependencies and devDependencies
  * such that all packages from the @angular scope point to the packages-dist directory.
+ *
+ * Please be aware that updating of versions might introduce compatibility issues. For instance,
+ * if a peer dependency of Angular, e.g. "typescript" changes, the package.json that is updated
+ * by this script will not have updated the "typescript" dependency to satisfy the peer dependency
+ * requirement. As a result, incompatibility errors might occur.
  */
 'use strict';
 
@@ -8,7 +13,7 @@ const {yellow, green} = require('chalk');
 const {existsSync, writeFileSync} = require('fs');
 const {resolve} = require('path');
 
-const [, , packageJsonPath, distPackagesRoot] = process.argv;
+const [, , packageJsonPath, packagesDistRoot] = process.argv;
 
 const packageJson = require(packageJsonPath);
 
@@ -21,14 +26,14 @@ function updateDeps(dependencies) {
       continue;
     }
 
-    // Within the package-dist directory there's no scope name
+    // Within the packages-dist directory there's no scope name
     const packageNameWithoutScope = packageName.replace('@angular/', '');
-    const packagePath = resolve(distPackagesRoot, packageNameWithoutScope);
+    const packagePath = resolve(packagesDistRoot, packageNameWithoutScope);
 
-    // Check whether the package exists in dist-packages. Not all packages
+    // Check whether the package exists in packages-dist. Not all packages
     // in the @angular scope are published from the main Angular repo.
     if (existsSync(packagePath)) {
-      // Update the dependency to point to the dist-packages location.
+      // Update the dependency to point to the packages-dist location.
       dependencies[packageName] = `file:${packagePath}`;
       updated.push(packageName);
     } else {
@@ -38,7 +43,7 @@ function updateDeps(dependencies) {
 }
 
 
-// Update dependencies from @angular scope to those in the dist-packages folder
+// Update dependencies from @angular scope to those in the packages-dist folder
 updateDeps(packageJson.dependencies);
 updateDeps(packageJson.devDependencies);
 
@@ -47,12 +52,12 @@ writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
 // Log all packages that were updated
 if (updated.length > 0) {
-  console.log(green(`Updated ${packageJsonPath} to packages in ${distPackagesRoot}:`));
+  console.log(green(`Updated ${packageJsonPath} to packages in ${packagesDistRoot}:`));
   console.log(`  ${updated.join('\n  ')}\n`);
 }
 
 // Log the packages that were skipped, as they were not present in the packages-dist directory
 if (skipped.length > 0) {
-  console.log(yellow(`Did not update packages that were not present in ${distPackagesRoot}:`));
+  console.log(yellow(`Did not update packages that were not present in ${packagesDistRoot}:`));
   console.log(`  ${skipped.join('\n  ')}\n`);
 }
