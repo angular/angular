@@ -413,8 +413,6 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
     // Will become true if the `try` block executes with no errors.
     let safeToRunHooks = false;
     try {
-      setPreviousOrParentTNode(null !, true);
-
       oldView = enterView(viewToRender, viewToRender[T_HOST]);
       resetPreOrderHookFlags(viewToRender);
       executeTemplate(viewToRender, tView.template !, getRenderFlags(viewToRender), context);
