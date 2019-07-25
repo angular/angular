@@ -11,12 +11,9 @@ import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from
 import {IAnnotatedFunction, IAttributes, IAugmentedJQuery, ICompileService, IDirective, IInjectorService, INgModelController, IParseService, IScope} from './angular1';
 import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
-import {LazyModuleRef, UpgradeAppType, controllerKey, getDowngradedModuleCount, getTypeName, getUpgradeAppType, isFunction, validateInjectionKey} from './util';
+import {SyncPromise, Thenable, isThenable} from './promise_util';
+import {LazyModuleRef, UpgradeAppType, controllerKey, getDowngradedModuleCount, getTypeName, getUpgradeAppType, validateInjectionKey} from './util';
 
-
-interface Thenable<T> {
-  then(callback: (value: T) => any): any;
-}
 
 /**
  * @description
@@ -218,42 +215,26 @@ export function downgradeComponent(info: {
 
 /**
  * Synchronous promise-like object to wrap parent injectors,
- * to preserve the synchronous nature of Angular 1's $compile.
+ * to preserve the synchronous nature of AngularJS's `$compile`.
  */
-class ParentInjectorPromise {
-  // TODO(issue/24571): remove '!'.
-  private injector !: Injector;
+class ParentInjectorPromise extends SyncPromise<Injector> {
   private injectorKey: string = controllerKey(INJECTOR_KEY);
-  private callbacks: ((injector: Injector) => any)[] = [];
 
   constructor(private element: IAugmentedJQuery) {
+    super();
+
     // Store the promise on the element.
     element.data !(this.injectorKey, this);
   }
 
-  then(callback: (injector: Injector) => any) {
-    if (this.injector) {
-      callback(this.injector);
-    } else {
-      this.callbacks.push(callback);
-    }
-  }
-
-  resolve(injector: Injector) {
-    this.injector = injector;
-
+  resolve(injector: Injector): void {
     // Store the real injector on the element.
     this.element.data !(this.injectorKey, injector);
 
     // Release the element to prevent memory leaks.
     this.element = null !;
 
-    // Run the queued callbacks.
-    this.callbacks.forEach(callback => callback(injector));
-    this.callbacks.length = 0;
+    // Resolve the promise.
+    super.resolve(injector);
   }
-}
-
-function isThenable<T>(obj: object): obj is Thenable<T> {
-  return isFunction((obj as any).then);
 }
