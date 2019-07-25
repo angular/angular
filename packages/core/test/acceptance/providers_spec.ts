@@ -9,6 +9,7 @@
 import {Component, Directive, Inject, Injectable, InjectionToken, Injector, NgModule, Optional, forwardRef} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
 describe('providers', () => {
@@ -319,26 +320,53 @@ describe('providers', () => {
       expect(fixture.componentInstance.myService.dep.value).toBe('one');
     });
 
-    it('should support forward refs in useClass', () => {
+    it('should support forward refs in useClass when impl version is also provided', () => {
+
       @Injectable({providedIn: 'root', useClass: forwardRef(() => SomeProviderImpl)})
-      class SomeProvider {
+      abstract class SomeProvider {
       }
 
       @Injectable()
-      class SomeProviderImpl {
+      class SomeProviderImpl extends SomeProvider {
       }
 
-      @Component({template: '', providers: [SomeProvider]})
+      @Component({selector: 'my-app', template: ''})
       class App {
         constructor(public foo: SomeProvider) {}
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
+      TestBed.configureTestingModule(
+          {declarations: [App], providers: [{provide: SomeProvider, useClass: SomeProviderImpl}]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.foo).toBeTruthy();
+      expect(fixture.componentInstance.foo).toBeAnInstanceOf(SomeProviderImpl);
     });
+
+
+    onlyInIvy('VE bug (see FW-1454)')
+        .it('should support forward refs in useClass when token is provided', () => {
+
+          @Injectable({providedIn: 'root', useClass: forwardRef(() => SomeProviderImpl)})
+          abstract class SomeProvider {
+          }
+
+          @Injectable()
+          class SomeProviderImpl extends SomeProvider {
+          }
+
+          @Component({selector: 'my-app', template: ''})
+          class App {
+            constructor(public foo: SomeProvider) {}
+          }
+
+          TestBed.configureTestingModule(
+              {declarations: [App], providers: [{provide: SomeProvider, useClass: SomeProvider}]});
+          const fixture = TestBed.createComponent(App);
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.foo).toBeAnInstanceOf(SomeProviderImpl);
+        });
 
   });
 

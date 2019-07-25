@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
@@ -13,7 +14,6 @@ import {getInjectableDef, getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual} from '../util/assert';
-import {isForwardRef, resolveForwardRef} from '../util/forward_ref';
 
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
@@ -633,10 +633,15 @@ export class NodeInjector implements Injector {
  * @codeGenApi
  */
 export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
-  if (isForwardRef(type)) {
-    return () => resolveForwardRef(type as any);
-  }
   const typeAny = type as any;
+
+  if (isForwardRef(type)) {
+    return (() => {
+      const factory = ɵɵgetFactoryOf<T>(resolveForwardRef(typeAny));
+      return factory ? factory() : null;
+    }) as any;
+  }
+
   const def = getComponentDef<T>(typeAny) || getDirectiveDef<T>(typeAny) ||
       getPipeDef<T>(typeAny) || getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
   if (!def || def.factory === undefined) {
