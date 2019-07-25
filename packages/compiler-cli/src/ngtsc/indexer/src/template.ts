@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
-import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
+import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
 import {ComponentMeta} from './context';
 
 /**
@@ -128,11 +128,15 @@ class ExpressionVisitor extends RecursiveAstVisitor {
  * identifiers of interest, deferring to an `ExpressionVisitor` as needed.
  */
 class TemplateVisitor extends TmplAstRecursiveVisitor {
-  // identifiers of interest found in the template
+  // Identifiers of interest found in the template.
   readonly identifiers = new Set<TopLevelIdentifier>();
 
   // Map of targets in a template to their identifiers.
   private readonly targetIdentifierCache: TargetIdentifierMap = new Map();
+
+  // Map of elements and templates to their identifiers.
+  private readonly elementAndTemplateIdentifierCache =
+      new Map<TmplAstElement|TmplAstTemplate, ElementIdentifier|TemplateNodeIdentifier>();
 
   /**
    * Creates a template visitor for a bound template target. The bound target can be used when
@@ -157,47 +161,22 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
    * @param element
    */
   visitElement(element: TmplAstElement) {
-    // Record the element's attributes, which an indexer can later traverse to see if any of them
-    // specify a used directive on the element.
-    const attributes = element.attributes.map(({name, sourceSpan}): AttributeIdentifier => {
-      return {
-        name,
-        span: new AbsoluteSourceSpan(sourceSpan.start.offset, sourceSpan.end.offset),
-        kind: IdentifierKind.Attribute,
-      };
-    });
-    const usedDirectives = this.boundTemplate.getDirectivesOfNode(element) || [];
-    const {name, sourceSpan} = element;
-    // An element's source span can be of the form `<element>`, `<element />`, or
-    // `<element></element>`. Only the selector is interesting to the indexer, so the source is
-    // searched for the first occurrence of the element (selector) name.
-    const start = this.getStartLocation(name, sourceSpan);
-    const elId: ElementIdentifier = {
-      name,
-      span: new AbsoluteSourceSpan(start, start + name.length),
-      kind: IdentifierKind.Element,
-      attributes: new Set(attributes),
-      usedDirectives: new Set(usedDirectives.map(dir => {
-        return {
-          node: dir.ref.node,
-          selector: dir.selector,
-        };
-      })),
-    };
-    this.identifiers.add(elId);
+    const elementIdentifier = this.elementOrTemplateToIdentifier(element);
 
-    // Must visit references first so that the target map is populated.
+    this.identifiers.add(elementIdentifier);
+
     this.visitAll(element.references);
-
     this.visitAll(element.inputs);
     this.visitAll(element.attributes);
     this.visitAll(element.children);
     this.visitAll(element.outputs);
   }
   visitTemplate(template: TmplAstTemplate) {
-    // Must visit variables first so that the target map is populated.
-    this.visitAll(template.variables);
+    const templateIdentifier = this.elementOrTemplateToIdentifier(template);
 
+    this.identifiers.add(templateIdentifier);
+
+    this.visitAll(template.variables);
     this.visitAll(template.attributes);
     this.visitAll(template.templateAttrs);
     this.visitAll(template.children);
@@ -238,6 +217,59 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.identifiers.add(variableIdentifier);
   }
 
+  /** Creates an identifier for a template element or template node. */
+  private elementOrTemplateToIdentifier(node: TmplAstElement|TmplAstTemplate): ElementIdentifier
+      |TemplateNodeIdentifier {
+    // If this node has already been seen, return the cached result.
+    if (this.elementAndTemplateIdentifierCache.has(node)) {
+      return this.elementAndTemplateIdentifierCache.get(node) !;
+    }
+
+    let name: string;
+    let kind: IdentifierKind.Element|IdentifierKind.Template;
+    if (node instanceof TmplAstTemplate) {
+      name = node.tagName;
+      kind = IdentifierKind.Template;
+    } else {
+      name = node.name;
+      kind = IdentifierKind.Element;
+    }
+    const {sourceSpan} = node;
+    // An element's or template's source span can be of the form `<element>`, `<element />`, or
+    // `<element></element>`. Only the selector is interesting to the indexer, so the source is
+    // searched for the first occurrence of the element (selector) name.
+    const start = this.getStartLocation(name, sourceSpan);
+    const absoluteSpan = new AbsoluteSourceSpan(start, start + name.length);
+
+    // Record the nodes's attributes, which an indexer can later traverse to see if any of them
+    // specify a used directive on the node.
+    const attributes = node.attributes.map(({name, sourceSpan}): AttributeIdentifier => {
+      return {
+        name,
+        span: new AbsoluteSourceSpan(sourceSpan.start.offset, sourceSpan.end.offset),
+        kind: IdentifierKind.Attribute,
+      };
+    });
+    const usedDirectives = this.boundTemplate.getDirectivesOfNode(node) || [];
+
+    const identifier = {
+      name,
+      span: absoluteSpan, kind,
+      attributes: new Set(attributes),
+      usedDirectives: new Set(usedDirectives.map(dir => {
+        return {
+          node: dir.ref.node,
+          selector: dir.selector,
+        };
+      })),
+      // cast b/c pre-TypeScript 3.5 unions aren't well discriminated
+    } as ElementIdentifier |
+        TemplateNodeIdentifier;
+
+    this.elementAndTemplateIdentifierCache.set(node, identifier);
+    return identifier;
+  }
+
   /** Creates an identifier for a template reference or template variable target. */
   private targetToIdentifier(node: TmplAstReference|TmplAstVariable): TargetIdentifier {
     // If this node has already been seen, return the cached result.
@@ -247,11 +279,40 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
 
     const {name, sourceSpan} = node;
     const start = this.getStartLocation(name, sourceSpan);
-    const identifier = {
-      name,
-      span: new AbsoluteSourceSpan(start, start + name.length),
-      kind: node instanceof TmplAstReference ? IdentifierKind.Reference : IdentifierKind.Variable,
-    } as TargetIdentifier;  // cast b/c pre-TypeScript 3.5 unions aren't well discriminated
+    const span = new AbsoluteSourceSpan(start, start + name.length);
+    let identifier: ReferenceIdentifier|VariableIdentifier;
+    if (node instanceof TmplAstReference) {
+      // If the node is a reference, we care about its target. The target can be an element, a
+      // template, a directive applied on a template or element (in which case the directive field
+      // is non-null), or nothing at all.
+      const refTarget = this.boundTemplate.getReferenceTarget(node);
+      let target = null;
+      if (refTarget) {
+        if (refTarget instanceof TmplAstElement || refTarget instanceof TmplAstTemplate) {
+          target = {
+            node: this.elementOrTemplateToIdentifier(refTarget),
+            directive: null,
+          };
+        } else {
+          target = {
+            node: this.elementOrTemplateToIdentifier(refTarget.node),
+            directive: refTarget.directive.ref.node,
+          };
+        }
+      }
+
+      identifier = {
+        name,
+        span,
+        kind: IdentifierKind.Reference, target,
+      };
+    } else {
+      identifier = {
+        name,
+        span,
+        kind: IdentifierKind.Variable,
+      };
+    }
 
     this.targetIdentifierCache.set(node, identifier);
     return identifier;

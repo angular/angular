@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, ReferenceIdentifier, TopLevelIdentifier, VariableIdentifier} from '..';
+import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from '..';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {getTemplateIdentifiers} from '../src/template';
 import * as util from './util';
@@ -279,39 +279,63 @@ runInEachFileSystem(() => {
     it('should discover references', () => {
       const template = '<div #foo>';
       const refs = getTemplateIdentifiers(bind(template));
+      const elementReference: ElementIdentifier = {
+        name: 'div',
+        kind: IdentifierKind.Element,
+        span: new AbsoluteSourceSpan(1, 4),
+        attributes: new Set(),
+        usedDirectives: new Set(),
+      };
 
       const refArray = Array.from(refs);
       expect(refArray).toEqual(jasmine.arrayContaining([{
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
+        target: {node: elementReference, directive: null},
       }] as TopLevelIdentifier[]));
     });
 
     it('should discover nested references', () => {
       const template = '<div><span #foo></span></div>';
       const refs = getTemplateIdentifiers(bind(template));
+      const elementReference: ElementIdentifier = {
+        name: 'span',
+        kind: IdentifierKind.Element,
+        span: new AbsoluteSourceSpan(6, 10),
+        attributes: new Set(),
+        usedDirectives: new Set(),
+      };
 
       const refArray = Array.from(refs);
       expect(refArray).toEqual(jasmine.arrayContaining([{
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(12, 15),
+        target: {node: elementReference, directive: null},
       }] as TopLevelIdentifier[]));
     });
 
     it('should discover references to references', () => {
       const template = `<div #foo>{{foo.className}}</div>`;
       const refs = getTemplateIdentifiers(bind(template));
+      const elementIdentifier: ElementIdentifier = {
+        name: 'div',
+        kind: IdentifierKind.Element,
+        span: new AbsoluteSourceSpan(1, 4),
+        attributes: new Set(),
+        usedDirectives: new Set(),
+      };
       const referenceIdentifier: ReferenceIdentifier = {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
+        target: {node: elementIdentifier, directive: null},
       };
 
       const refArr = Array.from(refs);
       expect(refArr).toEqual(jasmine.arrayContaining([
-        referenceIdentifier, {
+        elementIdentifier, referenceIdentifier, {
           name: 'foo',
           kind: IdentifierKind.Property,
           span: new AbsoluteSourceSpan(12, 15),
@@ -323,15 +347,23 @@ runInEachFileSystem(() => {
     it('should discover forward references', () => {
       const template = `{{foo}}<div #foo></div>`;
       const refs = getTemplateIdentifiers(bind(template));
+      const elementIdentifier: ElementIdentifier = {
+        name: 'div',
+        kind: IdentifierKind.Element,
+        span: new AbsoluteSourceSpan(8, 11),
+        attributes: new Set(),
+        usedDirectives: new Set(),
+      };
       const referenceIdentifier: ReferenceIdentifier = {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(13, 16),
+        target: {node: elementIdentifier, directive: null},
       };
 
       const refArr = Array.from(refs);
       expect(refArr).toEqual(jasmine.arrayContaining([
-        referenceIdentifier, {
+        elementIdentifier, referenceIdentifier, {
           name: 'foo',
           kind: IdentifierKind.Property,
           span: new AbsoluteSourceSpan(2, 5),
@@ -340,18 +372,47 @@ runInEachFileSystem(() => {
       ] as TopLevelIdentifier[]));
     });
 
+    it('should generate information directive targets', () => {
+      const declB = util.getComponentDeclaration('class B {}', 'B');
+      const template = '<div #foo b-selector>';
+      const boundTemplate = util.getBoundTemplate(template, {}, [
+        {selector: '[b-selector]', declaration: declB},
+      ]);
+
+      const refs = getTemplateIdentifiers(boundTemplate);
+      const refArr = Array.from(refs);
+      let fooRef = refArr.find(id => id.name === 'foo');
+      expect(fooRef).toBeDefined();
+      expect(fooRef !.kind).toBe(IdentifierKind.Reference);
+
+      fooRef = fooRef as ReferenceIdentifier;
+      expect(fooRef.target).toBeDefined();
+      expect(fooRef.target !.node.kind).toBe(IdentifierKind.Element);
+      expect(fooRef.target !.node.name).toBe('div');
+      expect(fooRef.target !.node.span).toEqual(new AbsoluteSourceSpan(1, 4));
+      expect(fooRef.target !.directive).toEqual(declB);
+    });
+
     it('should discover references to references', () => {
       const template = `<div #foo (ngSubmit)="do(foo)"></div>`;
       const refs = getTemplateIdentifiers(bind(template));
+      const elementIdentifier: ElementIdentifier = {
+        name: 'div',
+        kind: IdentifierKind.Element,
+        span: new AbsoluteSourceSpan(1, 4),
+        attributes: new Set(),
+        usedDirectives: new Set(),
+      };
       const referenceIdentifier: ReferenceIdentifier = {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
+        target: {node: elementIdentifier, directive: null},
       };
 
       const refArr = Array.from(refs);
       expect(refArr).toEqual(jasmine.arrayContaining([
-        referenceIdentifier, {
+        elementIdentifier, referenceIdentifier, {
           name: 'foo',
           kind: IdentifierKind.Property,
           span: new AbsoluteSourceSpan(25, 28),
@@ -575,6 +636,90 @@ runInEachFileSystem(() => {
           node: declA,
           selector: 'a-selector',
         },
+        {
+          node: declB,
+          selector: '[b-selector]',
+        },
+        {
+          node: declC,
+          selector: ':not(never-selector)',
+        }
+      ]));
+    });
+  });
+
+  describe('generates identifiers for templates', () => {
+    it('should record templates as TemplateNodeIdentifiers', () => {
+      const template = '<ng-template>';
+      const refs = getTemplateIdentifiers(bind(template));
+      expect(refs.size).toBe(1);
+
+      const [ref] = Array.from(refs);
+      expect(ref.kind).toBe(IdentifierKind.Template);
+    });
+
+    it('should record template names as their tag name', () => {
+      const template = '<ng-template>';
+      const refs = getTemplateIdentifiers(bind(template));
+      expect(refs.size).toBe(1);
+
+      const [ref] = Array.from(refs);
+      expect(ref as TemplateNodeIdentifier).toEqual({
+        name: 'ng-template',
+        kind: IdentifierKind.Template,
+        span: new AbsoluteSourceSpan(1, 12),
+        attributes: new Set(),
+        usedDirectives: new Set(),
+      });
+    });
+
+    it('should discover nested templates', () => {
+      const template = '<div><ng-template></ng-template></div>';
+      const refs = getTemplateIdentifiers(bind(template));
+
+      const refArr = Array.from(refs);
+      expect(refArr).toContain({
+        name: 'ng-template',
+        kind: IdentifierKind.Template,
+        span: new AbsoluteSourceSpan(6, 17),
+        attributes: new Set(),
+        usedDirectives: new Set(),
+      });
+    });
+
+    it('should generate information about attributes', () => {
+      const template = '<ng-template attrA attrB="val">';
+      const refs = getTemplateIdentifiers(bind(template));
+
+      const [ref] = Array.from(refs);
+      const attrs = (ref as TemplateNodeIdentifier).attributes;
+      expect(attrs).toEqual(new Set<AttributeIdentifier>([
+        {
+          name: 'attrA',
+          kind: IdentifierKind.Attribute,
+          span: new AbsoluteSourceSpan(13, 18),
+        },
+        {
+          name: 'attrB',
+          kind: IdentifierKind.Attribute,
+          span: new AbsoluteSourceSpan(19, 30),
+        }
+      ]));
+    });
+
+    it('should generate information about used directives', () => {
+      const declB = util.getComponentDeclaration('class B {}', 'B');
+      const declC = util.getComponentDeclaration('class C {}', 'C');
+      const template = '<ng-template b-selector>';
+      const boundTemplate = util.getBoundTemplate(template, {}, [
+        {selector: '[b-selector]', declaration: declB},
+        {selector: ':not(never-selector)', declaration: declC},
+      ]);
+
+      const refs = getTemplateIdentifiers(boundTemplate);
+      const [ref] = Array.from(refs);
+      const usedDirectives = (ref as ElementIdentifier).usedDirectives;
+      expect(usedDirectives).toEqual(new Set([
         {
           node: declB,
           selector: '[b-selector]',
