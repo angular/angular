@@ -197,7 +197,7 @@ export function downgradeComponent(info: {
             };
 
         if (isThenable(finalParentInjector) || isThenable(finalModuleInjector)) {
-          Promise.all([finalParentInjector, finalModuleInjector])
+          ParentInjectorPromise.all([finalParentInjector, finalModuleInjector])
               .then(([pInjector, mInjector]) => downgradeFn(pInjector, mInjector));
         } else {
           downgradeFn(finalParentInjector, finalModuleInjector);
