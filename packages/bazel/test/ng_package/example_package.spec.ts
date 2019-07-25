@@ -92,7 +92,7 @@ function runPackageGoldTest(testPackage: TestPackage) {
   process.chdir(packagePath);
 
   // Gold file content from source control. We expect that the output of the package matches this.
-  const expected = fs.readFileSync(goldenFilePath, 'utf-8');
+  const expected = readFileContents(goldenFilePath);
 
   // Actual file content generated from the rule.
   const actual = getCurrentPackageContent();
