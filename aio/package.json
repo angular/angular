@@ -77,6 +77,7 @@
     "post~~build": "yarn build-404-page",
     "~~light-server": "light-server --bind=localhost --historyindex=/index.html --no-reload"
   },
+  "//engines-comment": "Keep this in sync with ../package.json",
   "engines": {
     "node": ">=10.9.0 <11.0.0",
     "yarn": ">=1.12.1 <=1.16.0"
