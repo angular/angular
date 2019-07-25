@@ -196,12 +196,8 @@ export function downgradeComponent(info: {
               wrapCallback(() => doDowngrade(pInjector, mInjector))();
             };
 
-        if (isThenable(finalParentInjector) || isThenable(finalModuleInjector)) {
-          ParentInjectorPromise.all([finalParentInjector, finalModuleInjector])
-              .then(([pInjector, mInjector]) => downgradeFn(pInjector, mInjector));
-        } else {
-          downgradeFn(finalParentInjector, finalModuleInjector);
-        }
+        ParentInjectorPromise.all([finalParentInjector, finalModuleInjector])
+            .then(([pInjector, mInjector]) => downgradeFn(pInjector, mInjector));
 
         ranAsync = true;
       }
