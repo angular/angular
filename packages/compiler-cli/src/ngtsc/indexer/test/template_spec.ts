@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from '..';
+import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, ValueIdentifier, VariableIdentifier} from '..';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {getTemplateIdentifiers} from '../src/template';
 import * as util from './util';
@@ -319,6 +319,7 @@ runInEachFileSystem(() => {
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
         target: {node: elementReference, directive: null},
+        value: null,
       }] as TopLevelIdentifier[]));
     });
 
@@ -339,6 +340,7 @@ runInEachFileSystem(() => {
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(12, 15),
         target: {node: elementReference, directive: null},
+        value: null,
       }] as TopLevelIdentifier[]));
     });
 
@@ -357,6 +359,7 @@ runInEachFileSystem(() => {
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
         target: {node: elementIdentifier, directive: null},
+        value: null,
       };
 
       const refArr = Array.from(refs);
@@ -385,6 +388,7 @@ runInEachFileSystem(() => {
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(13, 16),
         target: {node: elementIdentifier, directive: null},
+        value: null,
       };
 
       const refArr = Array.from(refs);
@@ -419,6 +423,27 @@ runInEachFileSystem(() => {
       expect(fooRef.target !.directive).toEqual(declB);
     });
 
+    it('should generate information reference values', () => {
+      const declB = util.getComponentDeclaration('class B {}', 'B');
+      const template = '<div #foo="b-sel" b-selector>';
+      const boundTemplate = util.getBoundTemplate(template, {}, [
+        {selector: '[b-selector]', declaration: declB, exportAs: ['b-sel']},
+      ]);
+
+      const refs = getTemplateIdentifiers(boundTemplate);
+      const refArr = Array.from(refs);
+      let fooRef = refArr.find(id => id.name === 'foo');
+      expect(fooRef).toBeDefined();
+      expect(fooRef !.kind).toBe(IdentifierKind.Reference);
+
+      fooRef = fooRef as ReferenceIdentifier;
+      expect(fooRef.value).toEqual({
+        name: 'b-sel',
+        kind: IdentifierKind.Value,
+        span: new AbsoluteSourceSpan(11, 16),
+      });
+    });
+
     it('should discover references to references', () => {
       const template = `<div #foo (ngSubmit)="do(foo)"></div>`;
       const refs = getTemplateIdentifiers(bind(template));
@@ -434,6 +459,7 @@ runInEachFileSystem(() => {
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
         target: {node: elementIdentifier, directive: null},
+        value: null,
       };
 
       const refArr = Array.from(refs);

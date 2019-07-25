@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
-import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
+import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, ValueIdentifier, VariableIdentifier} from './api';
 import {ComponentMeta} from './context';
 
 /**
@@ -277,7 +277,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       return this.targetIdentifierCache.get(node) !;
     }
 
-    const {name, sourceSpan} = node;
+    const {name, value, sourceSpan} = node;
     const start = this.getStartLocation(name, sourceSpan);
     const span = new AbsoluteSourceSpan(start, start + name.length);
     let identifier: ReferenceIdentifier|VariableIdentifier;
@@ -301,10 +301,24 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
         }
       }
 
+      // Record an identifier for the value of the template reference, which can be used by an
+      // indexer implementation to reference the target directive. This is null for empty values.
+      let valueId: ValueIdentifier|null = null;
+      if (value) {
+        const valueStart = this.getStartLocation(value, sourceSpan);
+        const valueSpan = new AbsoluteSourceSpan(valueStart, valueStart + value.length);
+        valueId = {
+          name: value,
+          span: valueSpan,
+          kind: IdentifierKind.Value,
+        };
+      }
+
       identifier = {
         name,
         span,
         kind: IdentifierKind.Reference, target,
+        value: valueId,
       };
     } else {
       identifier = {
