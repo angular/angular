@@ -132,6 +132,9 @@ export interface ContentChildrenDecorator {
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
    *
+   * Does not retrieve elements or directives that are in other components' templates,
+   * since a component's template is always a black box to its ancestors.
+   *
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
@@ -193,6 +196,9 @@ export interface ContentChildDecorator {
    * the property will be updated.
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
+   *
+   * Does not retrieve elements or directives that are in other components' templates,
+   * since a component's template is always a black box to its ancestors.
    *
    * **Metadata Properties**:
    *
