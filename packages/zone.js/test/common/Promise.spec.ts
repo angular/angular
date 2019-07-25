@@ -518,4 +518,98 @@ describe(
           testPromiseSubClass(done);
         } : function() { testPromiseSubClass(); });
       });
+
+      describe('Promise.allSettled', () => {
+        const yes = function makeFulfilledResult(value: any) {
+          return {status: 'fulfilled', value: value};
+        };
+        const no = function makeRejectedResult(reason: any) {
+          return {status: 'rejected', reason: reason};
+        };
+        const a = {};
+        const b = {};
+        const c = {};
+        const allSettled = (Promise as any).allSettled;
+        it('no promise values', (done: DoneFn) => {
+          allSettled([a, b, c]).then((results: any[]) => {
+            expect(results).toEqual([yes(a), yes(b), yes(c)]);
+            done();
+          });
+        });
+        it('all fulfilled', (done: DoneFn) => {
+          allSettled([
+            Promise.resolve(a), Promise.resolve(b), Promise.resolve(c)
+          ]).then((results: any[]) => {
+            expect(results).toEqual([yes(a), yes(b), yes(c)]);
+            done();
+          });
+        });
+        it('all rejected', (done: DoneFn) => {
+          allSettled([
+            Promise.reject(a), Promise.reject(b), Promise.reject(c)
+          ]).then((results: any[]) => {
+            expect(results).toEqual([no(a), no(b), no(c)]);
+            done();
+          });
+        });
+        it('mixed', (done: DoneFn) => {
+          allSettled([a, Promise.resolve(b), Promise.reject(c)]).then((results: any[]) => {
+            expect(results).toEqual([yes(a), yes(b), no(c)]);
+            done();
+          });
+        });
+        it('mixed should in zone', (done: DoneFn) => {
+          const zone = Zone.current.fork({name: 'settled'});
+          const bPromise = Promise.resolve(b);
+          const cPromise = Promise.reject(c);
+          zone.run(() => {
+            allSettled([a, bPromise, cPromise]).then((results: any[]) => {
+              expect(results).toEqual([yes(a), yes(b), no(c)]);
+              expect(Zone.current.name).toEqual(zone.name);
+              done();
+            });
+          });
+        });
+        it('poisoned .then', (done: DoneFn) => {
+          const promise = new Promise(function() {});
+          promise.then = function() { throw new EvalError(); };
+          allSettled([promise]).then(
+              () => { fail('should not reach here'); },
+              (reason: any) => {
+                expect(reason instanceof EvalError).toBe(true);
+                done();
+              });
+        });
+        const Subclass = (function() {
+          try {
+            // eslint-disable-next-line no-new-func
+            return Function(
+                'class Subclass extends Promise { constructor(...args) { super(...args); this.thenArgs = []; } then(...args) { Subclass.thenArgs.push(args); this.thenArgs.push(args); return super.then(...args); } } Subclass.thenArgs = []; return Subclass;')();
+          } catch (e) { /**/
+          }
+
+          return false;
+        }());
+
+        describe('inheritance', () => {
+          it('preserves correct subclass', () => {
+            const promise = allSettled.call(Subclass, [1]);
+            expect(promise instanceof Subclass).toBe(true);
+            expect(promise.constructor).toEqual(Subclass);
+          });
+
+          it('invoke the subclass', () => {
+            Subclass.thenArgs.length = 0;
+
+            const original = Subclass.resolve();
+            expect(Subclass.thenArgs.length).toBe(0);
+            expect(original.thenArgs.length).toBe(0);
+
+            allSettled.call(Subclass, [original]);
+
+            expect(original.thenArgs.length).toBe(1);
+            expect(Subclass.thenArgs.length).toBe(1);
+          });
+        });
+      });
     }));

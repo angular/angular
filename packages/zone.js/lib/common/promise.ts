@@ -286,7 +286,20 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
       return promise;
     }
 
-    static all<R>(values: any): Promise<R> {
+    static all<R>(values: any): Promise<R> { return ZoneAwarePromise.allWithCallback(values); }
+
+    static allSettled<R>(values: any): Promise<R> {
+      const P = this && this.prototype instanceof ZoneAwarePromise ? this : ZoneAwarePromise;
+      return P.allWithCallback(values, {
+        thenCallback: (value: any) => ({status: 'fulfilled', value}),
+        errorCallback: (err: any) => ({status: 'rejected', reason: err})
+      });
+    }
+
+    static allWithCallback<R>(values: any, callback?: {
+      thenCallback: (value: any) => any,
+      errorCallback: (err: any) => any
+    }): Promise<R> {
       let resolve: (v: any) => void;
       let reject: (v: any) => void;
       let promise = new this<R>((res, rej) => {
@@ -305,13 +318,29 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
         }
 
         const curValueIndex = valueIndex;
-        value.then((value: any) => {
-          resolvedValues[curValueIndex] = value;
-          unresolvedCount--;
-          if (unresolvedCount === 0) {
-            resolve !(resolvedValues);
-          }
-        }, reject !);
+        try {
+          value.then(
+              (value: any) => {
+                resolvedValues[curValueIndex] = callback ? callback.thenCallback(value) : value;
+                unresolvedCount--;
+                if (unresolvedCount === 0) {
+                  resolve !(resolvedValues);
+                }
+              },
+              (err: any) => {
+                if (!callback) {
+                  reject !(err);
+                } else {
+                  resolvedValues[curValueIndex] = callback.errorCallback(err);
+                  unresolvedCount--;
+                  if (unresolvedCount === 0) {
+                    resolve !(resolvedValues);
+                  }
+                }
+              });
+        } catch (thenErr) {
+          reject !(thenErr);
+        }
 
         unresolvedCount++;
         valueIndex++;
