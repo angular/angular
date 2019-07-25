@@ -22,6 +22,27 @@ export class SyncPromise<T> {
   private resolved = false;
   private callbacks: ((value: T) => unknown)[] = [];
 
+  static all<T>(valuesOrPromises: (T|Thenable<T>)[]): SyncPromise<T[]> {
+    const aggrPromise = new SyncPromise<T[]>();
+
+    let resolvedCount = 0;
+    const results: T[] = [];
+    const resolve = (idx: number, value: T) => {
+      results[idx] = value;
+      if (++resolvedCount === valuesOrPromises.length) aggrPromise.resolve(results);
+    };
+
+    valuesOrPromises.forEach((p, idx) => {
+      if (isThenable(p)) {
+        p.then(v => resolve(idx, v));
+      } else {
+        resolve(idx, p);
+      }
+    });
+
+    return aggrPromise;
+  }
+
   resolve(value: T): void {
     // Do nothing, if already resolved.
     if (this.resolved) return;
