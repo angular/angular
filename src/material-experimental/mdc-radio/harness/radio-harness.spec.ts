@@ -4,13 +4,14 @@ import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatRadioModule} from '@angular/material/radio';
-import {MatRadioButtonHarness} from './radio-harness';
+import {MatRadioButtonHarness, MatRadioGroupHarness} from './radio-harness';
 
 let fixture: ComponentFixture<MultipleRadioButtonsHarnessTest>;
 let loader: HarnessLoader;
 let radioButtonHarness: typeof MatRadioButtonHarness;
+let radioGroupHarness: typeof MatRadioGroupHarness;
 
-describe('MatRadioButtonHarness', () => {
+describe('standard radio harnesses', () => {
   describe('non-MDC-based', () => {
     beforeEach(async () => {
       await TestBed
@@ -24,9 +25,11 @@ describe('MatRadioButtonHarness', () => {
       fixture.detectChanges();
       loader = TestbedHarnessEnvironment.loader(fixture);
       radioButtonHarness = MatRadioButtonHarness;
+      radioGroupHarness = MatRadioGroupHarness;
     });
 
-    runTests();
+    describe('MatRadioButtonHarness', () => runRadioButtonTests());
+    describe('MatRadioGroupHarness', () => runRadioGroupTests());
   });
 
   describe(
@@ -36,11 +39,119 @@ describe('MatRadioButtonHarness', () => {
       });
 });
 
+/** Shared tests to run on both the original and MDC-based radio-group's. */
+function runRadioGroupTests() {
+  it('should load all radio-group harnesses', async () => {
+    const groups = await loader.getAllHarnesses(radioGroupHarness);
+    expect(groups.length).toBe(3);
+  });
+
+  it('should load radio-group with exact id', async () => {
+    const groups = await loader.getAllHarnesses(radioGroupHarness.with({id: 'my-group-2'}));
+    expect(groups.length).toBe(1);
+  });
+
+  it('should load radio-group by name', async () => {
+    let groups = await loader.getAllHarnesses(radioGroupHarness.with({name: 'my-group-2-name'}));
+    expect(groups.length).toBe(1);
+    expect(await groups[0].getId()).toBe('my-group-2');
+
+    groups = await loader.getAllHarnesses(radioGroupHarness.with({name: 'my-group-1-name'}));
+    expect(groups.length).toBe(1);
+    expect(await groups[0].getId()).toBe('my-group-1');
+  });
+
+  it('should throw when finding radio-group with specific name that has mismatched ' +
+         'radio-button names',
+     async () => {
+       fixture.componentInstance.thirdGroupButtonName = 'other-name';
+       fixture.detectChanges();
+
+       let errorMessage: string|null = null;
+       try {
+         await loader.getAllHarnesses(radioGroupHarness.with({name: 'third-group-name'}));
+       } catch (e) {
+         errorMessage = e.toString();
+       }
+
+       expect(errorMessage)
+           .toMatch(
+               /locator found a radio-group with name "third-group-name".*have mismatching names/);
+     });
+
+  it('should get name of radio-group', async () => {
+    const groups = await loader.getAllHarnesses(radioGroupHarness);
+    expect(groups.length).toBe(3);
+    expect(await groups[0].getName()).toBe('my-group-1-name');
+    expect(await groups[1].getName()).toBe('my-group-2-name');
+    expect(await groups[2].getName()).toBe('third-group-name');
+
+    fixture.componentInstance.secondGroupId = 'new-group';
+    fixture.detectChanges();
+
+    expect(await groups[1].getName()).toBe('new-group-name');
+
+    fixture.componentInstance.thirdGroupButtonName = 'other-button-name';
+    fixture.detectChanges();
+
+    let errorMessage: string|null = null;
+    try {
+      await groups[2].getName();
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+
+    expect(errorMessage).toMatch(/Radio buttons in radio-group have mismatching names./);
+  });
+
+  it('should get id of radio-group', async () => {
+    const groups = await loader.getAllHarnesses(radioGroupHarness);
+    expect(groups.length).toBe(3);
+    expect(await groups[0].getId()).toBe('my-group-1');
+    expect(await groups[1].getId()).toBe('my-group-2');
+    expect(await groups[2].getId()).toBe('');
+
+    fixture.componentInstance.secondGroupId = 'new-group-name';
+    fixture.detectChanges();
+
+    expect(await groups[1].getId()).toBe('new-group-name');
+  });
+
+  it('should get selected value of radio-group', async () => {
+    const [firstGroup, secondGroup] = await loader.getAllHarnesses(radioGroupHarness);
+    expect(await firstGroup.getSelectedValue()).toBe('opt2');
+    expect(await secondGroup.getSelectedValue()).toBe(null);
+  });
+
+  it('should get radio-button harnesses of radio-group', async () => {
+    const groups = await loader.getAllHarnesses(radioGroupHarness);
+    expect(groups.length).toBe(3);
+
+    expect((await groups[0].getRadioButtons()).length).toBe(3);
+    expect((await groups[1].getRadioButtons()).length).toBe(1);
+    expect((await groups[2].getRadioButtons()).length).toBe(2);
+  });
+
+  it('should get selected radio-button harnesses of radio-group', async () => {
+    const groups = await loader.getAllHarnesses(radioGroupHarness);
+    expect(groups.length).toBe(3);
+
+    const groupOneSelected = await groups[0].getSelectedRadioButton();
+    const groupTwoSelected = await groups[1].getSelectedRadioButton();
+    const groupThreeSelected = await groups[2].getSelectedRadioButton();
+
+    expect(groupOneSelected).not.toBeNull();
+    expect(groupTwoSelected).toBeNull();
+    expect(groupThreeSelected).toBeNull();
+    expect(await groupOneSelected!.getId()).toBe('opt2-group-one');
+  });
+}
+
 /** Shared tests to run on both the original and MDC-based radio-button's. */
-function runTests() {
+function runRadioButtonTests() {
   it('should load all radio-button harnesses', async () => {
     const radios = await loader.getAllHarnesses(radioButtonHarness);
-    expect(radios.length).toBe(4);
+    expect(radios.length).toBe(9);
   });
 
   it('should load radio-button with exact label', async () => {
@@ -83,6 +194,13 @@ function runTests() {
     expect(await firstRadio.getLabelText()).toBe('Option #1');
     expect(await secondRadio.getLabelText()).toBe('Option #2');
     expect(await thirdRadio.getLabelText()).toBe('Option #3');
+  });
+
+  it('should get value', async () => {
+    const [firstRadio, secondRadio, thirdRadio] = await loader.getAllHarnesses(radioButtonHarness);
+    expect(await firstRadio.getValue()).toBe('opt1');
+    expect(await secondRadio.getValue()).toBe('opt2');
+    expect(await thirdRadio.getValue()).toBe('opt3');
   });
 
   it('should get disabled state', async () => {
@@ -141,6 +259,7 @@ function runTests() {
     expect(await radioButton.isRequired()).toBe(true);
   });
 }
+
 function getActiveElementTagName() {
   return document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
 }
@@ -157,12 +276,32 @@ function getActiveElementTagName() {
       Option #{{i + 1}}
     </mat-radio-button>
 
-    <mat-radio-button id="required-radio" required name="acceptsTerms">
-      Accept terms of conditions
-    </mat-radio-button>
+    <mat-radio-group id="my-group-1" name="my-group-1-name">
+      <mat-radio-button *ngFor="let value of values"
+                        [checked]="value === 'opt2'"
+                        [value]="value"
+                        [id]="value + '-group-one'">
+        {{value}}
+      </mat-radio-button>
+    </mat-radio-group>
+
+
+    <mat-radio-group [id]="secondGroupId" [name]="secondGroupId + '-name'">
+      <mat-radio-button id="required-radio" required [value]="true">
+        Accept terms of conditions
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <mat-radio-group [name]="thirdGroupName">
+      <mat-radio-button [value]="true">First</mat-radio-button>
+      <mat-radio-button [value]="false" [name]="thirdGroupButtonName"></mat-radio-button>
+    </mat-radio-group>
   `
 })
 class MultipleRadioButtonsHarnessTest {
   values = ['opt1', 'opt2', 'opt3'];
   disableAll = false;
+  secondGroupId = 'my-group-2';
+  thirdGroupName: string = 'third-group-name';
+  thirdGroupButtonName: string|undefined = undefined;
 }

@@ -8,7 +8,139 @@
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk-experimental/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {RadioButtonHarnessFilters} from './radio-harness-filters';
+import {RadioButtonHarnessFilters, RadioGroupHarnessFilters} from './radio-harness-filters';
+
+/**
+ * Harness for interacting with a standard mat-radio-group in tests.
+ * @dynamic
+ */
+export class MatRadioGroupHarness extends ComponentHarness {
+  static hostSelector = 'mat-radio-group';
+
+  /**
+   * Gets a `HarnessPredicate` that can be used to search for a radio-group with
+   * specific attributes.
+   * @param options Options for narrowing the search:
+   *   - `id` finds a radio-group with specific id.
+   *   - `name` finds a radio-group with specific name.
+   * @return a `HarnessPredicate` configured with the given options.
+   */
+  static with(options: RadioGroupHarnessFilters = {}): HarnessPredicate<MatRadioGroupHarness> {
+    return new HarnessPredicate(MatRadioGroupHarness)
+        .addOption('id', options.id, async (harness, id) => (await harness.getId()) === id)
+        .addOption('name', options.name, this._checkRadioGroupName);
+  }
+
+  private _radioButtons = this.locatorForAll(MatRadioButtonHarness);
+
+  /** Gets the name of the radio-group. */
+  async getName(): Promise<string|null> {
+    const hostName = await this._getGroupNameFromHost();
+    // It's not possible to always determine the "name" of a radio-group by reading
+    // the attribute. This is because the radio-group does not set the "name" as an
+    // element attribute if the "name" value is set through a binding.
+    if (hostName !== null) {
+      return hostName;
+    }
+    // In case we couldn't determine the "name" of a radio-group by reading the
+    // "name" attribute, we try to determine the "name" of the group by going
+    // through all radio buttons.
+    const radioNames = await this._getNamesFromRadioButtons();
+    if (!radioNames.length) {
+      return null;
+    }
+    if (!this._checkRadioNamesInGroupEqual(radioNames)) {
+      throw Error('Radio buttons in radio-group have mismatching names.');
+    }
+    return radioNames[0]!;
+  }
+
+  /** Gets the id of the radio-group. */
+  async getId(): Promise<string|null> {
+    return (await this.host()).getAttribute('id');
+  }
+
+  /** Gets the selected radio-button in a radio-group. */
+  async getSelectedRadioButton(): Promise<MatRadioButtonHarness|null> {
+    for (let radioButton of await this.getRadioButtons()) {
+      if (await radioButton.isChecked()) {
+        return radioButton;
+      }
+    }
+    return null;
+  }
+
+  /** Gets the selected value of the radio-group. */
+  async getSelectedValue(): Promise<string|null> {
+    const selectedRadio = await this.getSelectedRadioButton();
+    if (!selectedRadio) {
+      return null;
+    }
+    return selectedRadio.getValue();
+  }
+
+  /** Gets all radio buttons which are part of the radio-group. */
+  async getRadioButtons(): Promise<MatRadioButtonHarness[]> {
+    return (await this._radioButtons());
+  }
+
+  private async _getGroupNameFromHost() {
+    return (await this.host()).getAttribute('name');
+  }
+
+  private async _getNamesFromRadioButtons(): Promise<string[]> {
+    const groupNames: string[] = [];
+    for (let radio of await this.getRadioButtons()) {
+      const radioName = await radio.getName();
+      if (radioName !== null) {
+        groupNames.push(radioName);
+      }
+    }
+    return groupNames;
+  }
+
+  /** Checks if the specified radio names are all equal. */
+  private _checkRadioNamesInGroupEqual(radioNames: string[]): boolean {
+    let groupName: string|null = null;
+    for (let radioName of radioNames) {
+      if (groupName === null) {
+        groupName = radioName;
+      } else if (groupName !== radioName) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Checks if a radio-group harness has the given name. Throws if a radio-group with
+   * matching name could be found but has mismatching radio-button names.
+   */
+  private static async _checkRadioGroupName(harness: MatRadioGroupHarness, name: string) {
+    // Check if there is a radio-group which has the "name" attribute set
+    // to the expected group name. It's not possible to always determine
+    // the "name" of a radio-group by reading the attribute. This is because
+    // the radio-group does not set the "name" as an element attribute if the
+    // "name" value is set through a binding.
+    if (await harness._getGroupNameFromHost() === name) {
+      return true;
+    }
+    // Check if there is a group with radio-buttons that all have the same
+    // expected name. This implies that the group has the given name. It's
+    // not possible to always determine the name of a radio-group through
+    // the attribute because there is
+    const radioNames = await harness._getNamesFromRadioButtons();
+    if (radioNames.indexOf(name) === -1) {
+      return false;
+    }
+    if (!harness._checkRadioNamesInGroupEqual(radioNames)) {
+      throw Error(
+          `The locator found a radio-group with name "${name}", but some ` +
+          `radio-button's within the group have mismatching names, which is invalid.`);
+    }
+    return true;
+  }
+}
 
 /**
  * Harness for interacting with a standard mat-radio-button in tests.
@@ -23,6 +155,7 @@ export class MatRadioButtonHarness extends ComponentHarness {
    * @param options Options for narrowing the search:
    *   - `label` finds a radio-button with specific label text.
    *   - `name` finds a radio-button with specific name.
+   *   - `id` finds a radio-button with specific id.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: RadioButtonHarnessFilters = {}): HarnessPredicate<MatRadioButtonHarness> {
@@ -65,6 +198,17 @@ export class MatRadioButtonHarness extends ComponentHarness {
   /** Gets a promise for the radio-button's id. */
   async getId(): Promise<string|null> {
     return (await this.host()).getAttribute('id');
+  }
+
+  /**
+   * Gets the value of the radio-button. The radio-button value will be
+   * converted to a string.
+   *
+   * Note that this means that radio-button's with objects as value will
+   * intentionally have the `[object Object]` as return value.
+   */
+  async getValue(): Promise<string|null> {
+    return (await this._input()).getAttribute('value');
   }
 
   /** Gets a promise for the radio-button's label text. */

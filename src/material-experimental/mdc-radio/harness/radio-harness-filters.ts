@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export type RadioGroupHarnessFilters = {
+  id?: string;
+  name?: string;
+};
+
 export type RadioButtonHarnessFilters = {
   label?: string|RegExp,
   id?: string;
