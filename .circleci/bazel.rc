@@ -7,10 +7,7 @@
 build --repository_cache=/home/circleci/bazel_repository_cache
 
 # Don't be spammy in the logs
-# TODO(gmagolan): Hide progress again once build performance improves
-# Presently, CircleCI can timeout during bazel test ... with the following
-# error: Too long with no output (exceeded 10m0s)
-# build --noshow_progress
+build --noshow_progress
 
 # Print all the options that apply to the build.
 # This helps us diagnose which options override others
