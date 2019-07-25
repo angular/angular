@@ -27,6 +27,7 @@ var_2: &browsers_docker_image circleci/node:10.16-browsers
 # **NOTE 2 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
 var_3: &cache_key v3-angular-node-10.16-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_3_win: &cache_key_win v4-angular-win-node-12.0-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
 
 # Initializes the CI environment by setting up common environment variables.
 var_4: &init_environment
@@ -48,6 +49,12 @@ var_4: &init_environment
       git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
       git config --global gc.auto 0 || true
 
+var_4_win: &init_environment_win
+  run:
+    # Install Bazel pre-requisites that aren't in the preconfigured CircleCI Windows VM.
+    name: Setup windows node environment
+    command: ./.circleci/windows-env.ps1
+
 
 var_5: &setup_bazel_remote_execution
   run:
@@ -65,6 +72,24 @@ var_6: &job_defaults
   working_directory: ~/ng
   docker:
   - image: *default_docker_image
+var_6_win: &job_defaults_win
+  working_directory: ~/ng
+  resource_class: windows.medium
+  # CircleCI windows VMs do have the GitBash shell available:
+  # https://github.com/CircleCI-Public/windows-preview-docs#shells
+  # But in this specific case we really should not use it because Bazel must not be ran from
+  # GitBash. These issues discuss why:
+  # https://github.com/bazelbuild/bazel/issues/5751
+  # https://github.com/bazelbuild/bazel/issues/5724#issuecomment-410194038
+  # https://github.com/bazelbuild/bazel/issues/6339#issuecomment-441600879
+  shell: powershell.exe -ExecutionPolicy Bypass
+  machine:
+    # Preview image that includes the following:
+    # - Visual Studio 2019 build tools
+    # - Node 12
+    # - yarn 1.17
+    # - Python 3 3.7.4
+    image: windows-server-2019-vs2019:201908-02
 
 # After checkout, rebase on top of target branch.
 var_7: &post_checkout
@@ -80,6 +105,17 @@ var_7: &post_checkout
       else
         echo "This build is not over a PR, nothing to do."
       fi
+var_7_win: &post_checkout_win
+  run:
+    name: Rebase PR on target branch
+    command: >
+      if (Test-Path env:CIRCLE_PR_NUMBER) {
+        git config user.name "angular-ci"
+        git config user.email "angular-ci"
+        node tools\rebase-pr.js angular/angular-cli $env:CIRCLE_PR_NUMBER
+      } else {
+        echo "This build is not over a PR, nothing to do."
+      }
 
 var_8: &yarn_install
   run:
@@ -95,7 +131,12 @@ var_8: &yarn_install
 var_9: &setup_circleci_bazel_config
   run:
     name: Setting up CircleCI bazel configuration
-    command: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+    command: sudo cp .circleci/bazel.linux.rc /etc/bazel.bazelrc
+
+var_9_win: &setup_circleci_bazel_config_win
+  run:
+    name: Setting up CircleCI bazel configuration
+    command: copy .circleci\bazel.windows.rc $env:ProgramData\bazel.bazelrc
 
 var_10: &restore_cache
   restore_cache:
@@ -103,6 +144,12 @@ var_10: &restore_cache
       - *cache_key
       # This fallback should be the cache_key without variables.
       - v3-angular-node-10.16-
+var_10_win: &restore_cache_win
+  restore_cache:
+    keys:
+      - *cache_key_win
+      # This fallback should be the cache_key without variables.
+      - v4-angular-win-node-12.0-
 
 # Branch filter that can be specified for jobs that should only run on publish branches
 # (e.g. master or the patch branch)
@@ -670,6 +717,55 @@ jobs:
              cp dist/bin/packages/zone.js/npm_package/dist/zone-patch-electron.js ./packages/zone.js/test/extra/ &&
              yarn --cwd packages/zone.js electrontest
 
+  # Windows jobs
+  # Docs: https://circleci.com/docs/2.0/hello-world-windows/
+  # Skipping workspace for now because it fails to extract on windows.
+  # TODO: when CircleCI fixes it, split this single job into install/test ones.
+  # Notes:
+  # - windows needs its own cache key because binaries in node_modules are different.
+  # - windows might need its own workspace for the same reason.
+  test_win:
+    <<: *job_defaults_win
+    steps:
+      - checkout
+      - *init_environment_win
+      - *post_checkout_win
+      # TODO: windows cache restoration is currently failing. Re-enable when it's fixed.
+      # Example failure: https://circleci.com/gh/angular/angular/423738
+      # - *restore_cache_win
+      - *setup_circleci_bazel_config_win
+      - run: yarn install --frozen-lockfile --non-interactive
+      # Install @bazel/bazel globally and use that for the first run.
+      # Workaround for https://github.com/bazelbuild/rules_nodejs/issues/894
+      - run: yarn global add @bazel/bazel@$env:BAZEL_VERSION
+      - run: bazel info
+      # Ran into a command parsing problem where `-browser:chromium-local` was converted to
+      # `-browser: chromium-local` (a space was added) in https://circleci.com/gh/angular/angular/357511.
+      # Probably a powershell command parsing thing. This way there's no problem.
+      - run:
+          command: yarn circleci-win-ve
+          no_output_timeout: 45m
+      # - save_cache:
+      #     key: *cache_key_win
+      #     paths:
+      #       - "node_modules"
+      #       - "C:/Users/circleci/bazel_repository_cache"
+  test_ivy_aot_win:
+    <<: *job_defaults_win
+    steps:
+      - checkout
+      - *init_environment_win
+      - *post_checkout_win
+      # - *restore_cache_win
+      - *setup_circleci_bazel_config_win
+      - run: yarn install --frozen-lockfile --non-interactive
+      - run: yarn global add @bazel/bazel@$env:BAZEL_VERSION
+      - run: bazel info
+      - run:
+          command: yarn circleci-win-ivy
+          no_output_timeout: 45m
+
+
 workflows:
   version: 2
   default_workflow:
@@ -767,6 +863,25 @@ workflows:
       - test_zonejs:
           requires:
             - setup
+      # Windows jobs very slow so we run it on non-PRs only for now.
+      # TODO: remove the filter when CircleCI makes Windows FS faster.
+      # The Windows jobs are only run after their non-windows counterparts finish successfully.
+      # This isn't strictly necessary as there is no artifact dependency, but helps economize
+      # CI resources by not attempting to build when we know should fail.
+      - test_win:
+          requires:
+            - test
+          filters:
+            branches:
+              ignore:
+                - /pull\/.*/
+      - test_ivy_aot_win:
+          requires:
+            - test_ivy_aot
+          filters:
+            branches:
+              ignore:
+                - /pull\/.*/
 
   aio_monitoring:
     jobs:

@@ -79,8 +79,8 @@
   },
   "//engines-comment": "Keep this in sync with ../package.json",
   "engines": {
-    "node": ">=10.9.0 <11.0.0",
-    "yarn": ">=1.12.1 <=1.16.0"
+    "node": ">=10.9.0 <13.0.0",
+    "yarn": ">=1.12.1 <=1.18.0"
   },
   "private": true,
   "dependencies": {
