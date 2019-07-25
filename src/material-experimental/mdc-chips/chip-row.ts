@@ -70,9 +70,13 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
     super.ngAfterContentInit();
 
     if (this.removeIcon) {
-      // removeIcon has tabIndex 0 for regular chips, but should only be focusable by
-      // the GridFocusKeyManager for row chips.
-      this.removeIcon.tabIndex = -1;
+      // Defer setting the value in order to avoid the "Expression
+      // has changed after it was checked" errors from Angular.
+      setTimeout(() => {
+        // removeIcon has tabIndex 0 for regular chips, but should only be focusable by
+        // the GridFocusKeyManager for row chips.
+        this.removeIcon.tabIndex = -1;
+      });
     }
   }
 
