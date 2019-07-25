@@ -30,7 +30,10 @@ export interface TemplateIdentifier {
   name: string;
   span: AbsoluteSourceSpan;
   kind: IdentifierKind;
+}
 
+/** Describes a template expression, which may have a template reference or variable target. */
+interface ExpressionIdentifier extends TemplateIdentifier {
   /**
    * ReferenceIdentifier or VariableIdentifier in the template that this identifier targets, if
    * any. If the target is `null`, it points to a declaration on the component class.
@@ -39,10 +42,10 @@ export interface TemplateIdentifier {
 }
 
 /** Describes a property accessed in a template. */
-export interface PropertyIdentifier extends TemplateIdentifier { kind: IdentifierKind.Property; }
+export interface PropertyIdentifier extends ExpressionIdentifier { kind: IdentifierKind.Property; }
 
 /** Describes a method accessed in a template. */
-export interface MethodIdentifier extends TemplateIdentifier { kind: IdentifierKind.Method; }
+export interface MethodIdentifier extends ExpressionIdentifier { kind: IdentifierKind.Method; }
 
 /** Describes an element attribute in a template. */
 export interface AttributeIdentifier extends TemplateIdentifier { kind: IdentifierKind.Attribute; }

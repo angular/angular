@@ -164,7 +164,6 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
         name,
         span: new AbsoluteSourceSpan(sourceSpan.start.offset, sourceSpan.end.offset),
         kind: IdentifierKind.Attribute,
-        target: null,
       };
     });
     const usedDirectives = this.boundTemplate.getDirectivesOfNode(element) || [];
@@ -177,7 +176,6 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       name,
       span: new AbsoluteSourceSpan(start, start + name.length),
       kind: IdentifierKind.Element,
-      target: null,
       attributes: new Set(attributes),
       usedDirectives: new Set(usedDirectives.map(dir => {
         return {
@@ -253,7 +251,6 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       name,
       span: new AbsoluteSourceSpan(start, start + name.length),
       kind: node instanceof TmplAstReference ? IdentifierKind.Reference : IdentifierKind.Variable,
-      target: null,
     } as TargetIdentifier;  // cast b/c pre-TypeScript 3.5 unions aren't well discriminated
 
     this.targetIdentifierCache.set(node, identifier);

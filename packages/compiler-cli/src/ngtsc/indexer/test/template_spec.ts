@@ -285,7 +285,6 @@ runInEachFileSystem(() => {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
-        target: null,
       }] as TopLevelIdentifier[]));
     });
 
@@ -298,7 +297,6 @@ runInEachFileSystem(() => {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(12, 15),
-        target: null,
       }] as TopLevelIdentifier[]));
     });
 
@@ -309,7 +307,6 @@ runInEachFileSystem(() => {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
-        target: null,
       };
 
       const refArr = Array.from(refs);
@@ -330,7 +327,6 @@ runInEachFileSystem(() => {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(13, 16),
-        target: null,
       };
 
       const refArr = Array.from(refs);
@@ -351,7 +347,6 @@ runInEachFileSystem(() => {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
-        target: null,
       };
 
       const refArr = Array.from(refs);
@@ -376,7 +371,6 @@ runInEachFileSystem(() => {
         name: 'foo',
         kind: IdentifierKind.Variable,
         span: new AbsoluteSourceSpan(17, 20),
-        target: null,
       }] as TopLevelIdentifier[]));
     });
 
@@ -389,7 +383,6 @@ runInEachFileSystem(() => {
         name: 'var',
         kind: IdentifierKind.Variable,
         span: new AbsoluteSourceSpan(17, 20),
-        target: null,
       }] as TopLevelIdentifier[]));
     });
 
@@ -402,7 +395,6 @@ runInEachFileSystem(() => {
         name: 'foo',
         kind: IdentifierKind.Variable,
         span: new AbsoluteSourceSpan(23, 26),
-        target: null,
       }] as TopLevelIdentifier[]));
     });
 
@@ -413,13 +405,11 @@ runInEachFileSystem(() => {
         name: 'foo',
         kind: IdentifierKind.Variable,
         span: new AbsoluteSourceSpan(17, 20),
-        target: null,
       };
       const iIdentifier: VariableIdentifier = {
         name: 'i',
         kind: IdentifierKind.Variable,
         span: new AbsoluteSourceSpan(34, 35),
-        target: null,
       };
 
       const refArr = Array.from(refs);
@@ -448,7 +438,6 @@ runInEachFileSystem(() => {
         name: 'foo',
         kind: IdentifierKind.Variable,
         span: new AbsoluteSourceSpan(17, 20),
-        target: null,
       };
 
       const refArr = Array.from(refs);
@@ -483,7 +472,6 @@ runInEachFileSystem(() => {
         name: 'test-selector',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 14),
-        target: null,
         attributes: new Set(),
         usedDirectives: new Set(),
       });
@@ -499,7 +487,6 @@ runInEachFileSystem(() => {
         name: 'img',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 4),
-        target: null,
         attributes: new Set(),
         usedDirectives: new Set(),
       });
@@ -515,7 +502,6 @@ runInEachFileSystem(() => {
         name: 'test-selector',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 14),
-        target: null,
         attributes: new Set(),
         usedDirectives: new Set(),
       });
@@ -531,7 +517,6 @@ runInEachFileSystem(() => {
         name: 'test-selector',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 14),
-        target: null,
         attributes: new Set(),
         usedDirectives: new Set(),
       });
@@ -546,7 +531,6 @@ runInEachFileSystem(() => {
         name: 'span',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(6, 10),
-        target: null,
         attributes: new Set(),
         usedDirectives: new Set(),
       });
@@ -563,13 +547,11 @@ runInEachFileSystem(() => {
           name: 'attrA',
           kind: IdentifierKind.Attribute,
           span: new AbsoluteSourceSpan(5, 10),
-          target: null,
         },
         {
           name: 'attrB',
           kind: IdentifierKind.Attribute,
           span: new AbsoluteSourceSpan(11, 22),
-          target: null,
         }
       ]));
     });
