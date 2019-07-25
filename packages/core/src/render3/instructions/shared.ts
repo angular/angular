@@ -642,11 +642,14 @@ export function createTView(
 }
 
 function createViewBlueprint(bindingStartIndex: number, initialViewLength: number): LView {
-  const blueprint = new (ngDevMode ? LViewBlueprint ! : Array)(initialViewLength)
-                        .fill(null, 0, bindingStartIndex)
-                        .fill(NO_CHANGE, bindingStartIndex) as LView;
+  const blueprint = ngDevMode ? new LViewBlueprint !() : [];
+
+  for (let i = 0; i < initialViewLength; i++) {
+    blueprint.push(i < bindingStartIndex ? null : NO_CHANGE);
+  }
   blueprint[BINDING_INDEX] = bindingStartIndex;
-  return blueprint;
+
+  return blueprint as LView;
 }
 
 export function createError(text: string, token: any) {
@@ -1562,7 +1565,7 @@ export function componentRefresh(hostLView: LView, adjustedElementIndex: number)
 function syncViewWithBlueprint(componentView: LView) {
   const componentTView = componentView[TVIEW];
   for (let i = componentView.length; i < componentTView.blueprint.length; i++) {
-    componentView[i] = componentTView.blueprint[i];
+    componentView.push(componentTView.blueprint[i]);
   }
 }
 
