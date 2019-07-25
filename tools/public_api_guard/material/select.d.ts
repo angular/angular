@@ -61,6 +61,7 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
     sortComparator: (a: MatOption, b: MatOption, options: MatOption[]) => number;
     trigger: ElementRef;
     readonly triggerValue: string;
+    typeaheadDebounceInterval: number;
     value: any;
     readonly valueChange: EventEmitter<any>;
     constructor(_viewportRuler: ViewportRuler, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, _defaultErrorStateMatcher: ErrorStateMatcher, elementRef: ElementRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _parentFormField: MatFormField, ngControl: NgControl, tabIndex: string, scrollStrategyFactory: any,

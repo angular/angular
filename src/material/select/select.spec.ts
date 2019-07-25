@@ -71,8 +71,8 @@ import {
 } from './select-errors';
 
 
-/** The debounce interval when typing letters to select an option. */
-const LETTER_KEY_DEBOUNCE_INTERVAL = 200;
+/** Default debounce interval when typing letters to select an option. */
+const DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL = 200;
 
 describe('MatSelect', () => {
   let overlayContainer: OverlayContainer;
@@ -469,18 +469,40 @@ describe('MatSelect', () => {
           expect(formControl.value).toBeFalsy('Expected no initial value.');
 
           dispatchEvent(select, createKeyboardEvent('keydown', 80, undefined, 'p'));
-          tick(200);
+          tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
 
           expect(options[1].selected).toBe(true, 'Expected second option to be selected.');
           expect(formControl.value).toBe(options[1].value,
             'Expected value from second option to have been set on the model.');
 
           dispatchEvent(select, createKeyboardEvent('keydown', 69, undefined, 'e'));
-          tick(200);
+          tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
 
           expect(options[5].selected).toBe(true, 'Expected sixth option to be selected.');
           expect(formControl.value).toBe(options[5].value,
             'Expected value from sixth option to have been set on the model.');
+        }));
+
+        it('should be able to customize the typeahead debounce interval', fakeAsync(() => {
+          const formControl = fixture.componentInstance.control;
+          const options = fixture.componentInstance.options.toArray();
+
+          fixture.componentInstance.typeaheadDebounceInterval = 1337;
+          fixture.detectChanges();
+
+          expect(formControl.value).toBeFalsy('Expected no initial value.');
+
+          dispatchEvent(select, createKeyboardEvent('keydown', 80, undefined, 'p'));
+          tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
+
+          expect(formControl.value).toBeFalsy('Expected no value after a bit of time has passed.');
+
+          tick(1337);
+
+          expect(options[1].selected)
+            .toBe(true, 'Expected second option to be selected after all the time has passed.');
+          expect(formControl.value).toBe(options[1].value,
+            'Expected value from second option to have been set on the model.');
         }));
 
         it('should open the panel when pressing a vertical arrow key on a closed multiple select',
@@ -1969,7 +1991,7 @@ describe('MatSelect', () => {
           // Press the letter 'o' 15 times since all the options are named 'Option <index>'
           dispatchEvent(host, createKeyboardEvent('keydown', 79, undefined, 'o'));
           fixture.detectChanges();
-          tick(LETTER_KEY_DEBOUNCE_INTERVAL);
+          tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
         }
         flush();
 
@@ -4275,7 +4297,8 @@ describe('MatSelect', () => {
     <mat-form-field>
       <mat-select placeholder="Food" [formControl]="control" [required]="isRequired"
         [tabIndex]="tabIndexOverride" [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby"
-        [panelClass]="panelClass" [disableRipple]="disableRipple">
+        [panelClass]="panelClass" [disableRipple]="disableRipple"
+        [typeaheadDebounceInterval]="typeaheadDebounceInterval">
         <mat-option *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
           {{ food.viewValue }}
         </mat-option>
@@ -4304,6 +4327,7 @@ class BasicSelect {
   ariaLabelledby: string;
   panelClass = ['custom-one', 'custom-two'];
   disableRipple: boolean;
+  typeaheadDebounceInterval: number;
 
   @ViewChild(MatSelect, {static: true}) select: MatSelect;
   @ViewChildren(MatOption) options: QueryList<MatOption>;

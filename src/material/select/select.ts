@@ -426,6 +426,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Object used to control when error messages are shown. */
   @Input() errorStateMatcher: ErrorStateMatcher;
 
+  /** Time to wait in milliseconds after the last keystroke before moving focus to an item. */
+  @Input() typeaheadDebounceInterval: number;
+
   /**
    * Function used to sort the values in a select in multiple mode.
    * Follows the same logic as `Array.prototype.sort`.
@@ -569,6 +572,10 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     // the parent form field know to run change detection when the disabled state changes.
     if (changes['disabled']) {
       this.stateChanges.next();
+    }
+
+    if (changes['typeaheadDebounceInterval'] && this._keyManager) {
+      this._keyManager.withTypeAhead(this.typeaheadDebounceInterval);
     }
   }
 
@@ -897,7 +904,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
   private _initKeyManager() {
     this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options)
-      .withTypeAhead()
+      .withTypeAhead(this.typeaheadDebounceInterval)
       .withVerticalOrientation()
       .withHorizontalOrientation(this._isRtl() ? 'rtl' : 'ltr')
       .withAllowedModifierKeys(['shiftKey']);
