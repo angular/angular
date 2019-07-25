@@ -89,7 +89,7 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
     if (this.ignoreSubmitUnlessValid && !this.editRef.isValid()) { return; }
 
     this.editRef.updateRevertValue();
-    this.editRef.closeAfterEnterKeypress();
+    this.editRef.close();
   }
 
   /** Called on Escape keyup. Closes the edit. */
@@ -128,21 +128,9 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
   // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
   // can move this back into `host`.
   // tslint:disable:no-host-decorator-in-concrete
-  @HostListener('keydown')
-  _handleKeydown() {
-    this.editRef.trackEnterPressForClose(true);
-  }
-
-  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
-  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
-  // can move this back into `host`.
-  // tslint:disable:no-host-decorator-in-concrete
-  @HostListener('keyup', ['$event'])
-  _handleKeyup(event: KeyboardEvent) {
-    // TODO(crisbeto): should use cdk/keycodes once the tests are reworked to use cdk/testing.
-    if (event.key === 'Enter') {
-      this.editRef.trackEnterPressForClose(false);
-    } else if (event.key === 'Escape') {
+  @HostListener('keydown', ['$event'])
+  _handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
       this.close();
     }
   }
@@ -204,6 +192,8 @@ export class CdkEditClose<FormValue> {
   // tslint:disable:no-host-decorator-in-concrete
   @HostListener('click')
   closeEdit(): void {
-    this.editRef.closeAfterEnterKeypress();
+    // Note that we use `click` here, rather than a keyboard event, because some screen readers
+    // will emit a fake click event instead of an enter keyboard event on buttons.
+    this.editRef.close();
   }
 }

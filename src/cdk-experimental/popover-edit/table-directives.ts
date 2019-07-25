@@ -133,7 +133,7 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
           share(),
           ).subscribe(this.editEventDispatcher.allRows);
 
-      fromEvent<KeyboardEvent>(element, 'keyup').pipe(
+      fromEvent<KeyboardEvent>(element, 'keydown').pipe(
           filter(event => event.key === 'Enter'),
           toClosest(CELL_SELECTOR),
           takeUntil(this.destroyed),
@@ -276,7 +276,14 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
         this.template!,
         this.viewContainerRef,
         {$implicit: this.context}));
-    this.focusTrap!.focusInitialElement();
+
+    // We have to defer trapping focus, because doing so too early can cause the form inside
+    // the overlay to be submitted immediately if it was opened on an Enter keydown event.
+    this.services.ngZone.runOutsideAngular(() => {
+      setTimeout(() => {
+        this.focusTrap!.focusInitialElement();
+      });
+    });
 
     // Update the size of the popup initially and on subsequent changes to
     // scroll position and viewport size.

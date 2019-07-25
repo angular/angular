@@ -117,7 +117,7 @@ abstract class BaseTestComponent {
   openLens(rowIndex = 0, cellIndex = 1) {
     this.focusEditCell(rowIndex, cellIndex);
     this.getEditCell(rowIndex, cellIndex)
-        .dispatchEvent(new KeyboardEvent('keyup', {bubbles: true, key: 'Enter'}));
+        .dispatchEvent(new KeyboardEvent('keydown', {bubbles: true, key: 'Enter'}));
     flush();
   }
 
@@ -691,7 +691,7 @@ matPopoverEditTabOut`, fakeAsync(() => {
           component.openLens();
 
           component.getInput()!.dispatchEvent(
-              new KeyboardEvent('keyup', {bubbles: true, key: 'Escape'}));
+              new KeyboardEvent('keydown', {bubbles: true, key: 'Escape'}));
 
           expect(component.lensIsOpen()).toBe(false);
           clearLeftoverTimers();

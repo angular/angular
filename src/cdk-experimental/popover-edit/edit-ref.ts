@@ -30,15 +30,6 @@ export class EditRef<FormValue> implements OnDestroy {
   /** The value to set the form back to on revert. */
   private _revertFormValue: FormValue;
 
-  /**
-   * The flags are used to track whether a keyboard enter press is in progress at the same time
-   * as other events that would cause the edit lens to close. We must track this so that the
-   * Enter keyup event does not fire after we close as it would cause the edit to immediately
-   * reopen.
-   */
-  private _enterPressed = false;
-  private _closePending = false;
-
   constructor(
       @Self() private readonly _form: ControlContainer,
       private readonly _editEventDispatcher: EditEventDispatcher,
@@ -86,34 +77,6 @@ export class EditRef<FormValue> implements OnDestroy {
   /** Notifies the active edit that the user has moved focus out of the lens. */
   blur(): void {
     this._blurredSubject.next();
-  }
-
-  /**
-   * Closes the edit if the enter key is not down.
-   * Otherwise, sets _closePending to true so that the edit will close on the
-   * next enter keyup.
-   */
-  closeAfterEnterKeypress(): void {
-    // If the enter key is currently pressed, delay closing the popup so that
-    // the keyUp event does not cause it to immediately reopen.
-    if (this._enterPressed) {
-      this._closePending = true;
-    } else {
-      this.close();
-    }
-  }
-
-  /**
-   * Called on Enter keyup/keydown.
-   * Closes the edit if pending. Otherwise just updates _enterPressed.
-   */
-  trackEnterPressForClose(pressed: boolean): void {
-    if (this._closePending) {
-      this.close();
-      return;
-    }
-
-    this._enterPressed = pressed;
   }
 
   /**
