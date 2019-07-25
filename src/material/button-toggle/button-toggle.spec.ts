@@ -845,6 +845,20 @@ describe('MatButtonToggle without forms', () => {
     expect(fixture.componentInstance.toggles.toArray()[1].checked).toBe(false);
     expect(fixture.componentInstance.toggles.toArray()[2].checked).toBe(true);
   });
+
+  it('should not throw if initial value is set during creation', () => {
+    const fixture = TestBed.createComponent(ButtonTogglesInsideButtonToggleGroupMultiple);
+
+    // In Ivy static inputs are set during creation. We simulate this by not calling
+    // `fixture.detectChanges` immediately, but getting a hold of the instance via the
+    // DebugElement and setting the value ourselves.
+    expect(() => {
+      const toggle = fixture.debugElement.query(By.css('mat-button-toggle')).componentInstance;
+      toggle.checked = true;
+      fixture.detectChanges();
+    }).not.toThrow();
+  });
+
 });
 
 @Component({

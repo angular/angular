@@ -183,7 +183,7 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
 
   /** Selected button toggles in the group. */
   get selected() {
-    const selected = this._selectionModel.selected;
+    const selected = this._selectionModel ? this._selectionModel.selected : [];
     return this.multiple ? selected : (selected[0] || null);
   }
 
@@ -276,10 +276,14 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
       (this.selected as MatButtonToggle).checked = false;
     }
 
-    if (select) {
-      this._selectionModel.select(toggle);
+    if (this._selectionModel) {
+      if (select) {
+        this._selectionModel.select(toggle);
+      } else {
+        this._selectionModel.deselect(toggle);
+      }
     } else {
-      this._selectionModel.deselect(toggle);
+      deferEvents = true;
     }
 
     // We need to defer in some cases in order to avoid "changed after checked errors", however
@@ -294,7 +298,7 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
 
   /** Checks whether a button toggle is selected. */
   _isSelected(toggle: MatButtonToggle) {
-    return this._selectionModel.isSelected(toggle);
+    return this._selectionModel && this._selectionModel.isSelected(toggle);
   }
 
   /** Determines whether a button toggle should be checked on init. */
