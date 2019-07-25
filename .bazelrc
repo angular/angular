@@ -62,7 +62,7 @@ test --test_output=errors
 # Settings for CircleCI        #
 ################################
 
-# Bazel flags for CircleCI are in /.circleci/bazel.rc
+# Bazel flags for CircleCI are in /.circleci/bazel.linux.rc and /.circleci/bazel.windows.rc
 
 ################################
 # Temporary Settings for Ivy   #

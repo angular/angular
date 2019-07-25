@@ -1,0 +1,11 @@
+# These options are enabled when running on CI
+# We do this by copying this file to $env:ProgramData\bazel.bazelrc at the start of the build.
+# See documentation in /docs/BAZEL.md
+
+# Import config items common to both Linux and Windows setups.
+# https://docs.bazel.build/versions/master/guide.html#bazelrc-syntax-and-semantics
+import %workspace%/.circleci/bazel.common.rc
+
+# Save downloaded repositories in a location that can be cached by CircleCI. This helps us
+# speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
+build --repository_cache=C:/Users/circleci/bazel_repository_cache
