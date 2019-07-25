@@ -1,14 +1,17 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
-load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite", "ts_library")
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
 
 ng_module(
     name = "mdc-slide-toggle",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "harness/**",
+        ],
     ),
     assets = [":slide_toggle_scss"] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-slide-toggle",
@@ -21,6 +24,18 @@ ng_module(
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//@material/switch",
+    ],
+)
+
+ts_library(
+    name = "harness",
+    srcs = glob(
+        ["harness/**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    deps = [
+        "//src/cdk-experimental/testing",
+        "//src/cdk/coercion",
     ],
 )
 
@@ -53,9 +68,13 @@ ng_test_library(
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
+        ":harness",
         ":mdc-slide-toggle",
+        "//src/cdk-experimental/testing",
+        "//src/cdk-experimental/testing/testbed",
         "//src/cdk/bidi",
         "//src/cdk/testing",
+        "//src/material/slide-toggle",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
     ],
