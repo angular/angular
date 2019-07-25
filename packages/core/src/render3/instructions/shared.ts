@@ -83,7 +83,9 @@ export function refreshDescendantViews(lView: LView) {
     refreshDynamicEmbeddedViews(lView);
 
     // Content query results must be refreshed before content hooks are called.
-    refreshContentQueries(tView, lView);
+    if (tView.contentQueries !== null) {
+      refreshContentQueries(tView, lView);
+    }
 
     resetPreOrderHookFlags(lView);
     executeHooks(
