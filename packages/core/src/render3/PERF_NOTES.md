@@ -22,6 +22,21 @@ Great reads:
 
  See benchmark [here](https://jsperf.com/mono-vs-megamorphic-property-access).
 
+## Packed vs. holey Array
+
+V8 represents arrays internally in a different way depending on:
+- type of elements in the array;
+- presence of holes (indexes that were never assigned).
+
+Generally speaking packed arrays (a set of continuous, initialized indexes) perform better as compared to arrays with holes. To assure that arrays are packed follow those guidelines:
+* create array literals with known values whenever possible (ex. `a = [0];` is better than `a = []; a.push[0];`;
+* don't use `Array` constructor with the size value (ex. `new Array(5)`) - this will create a `HOLEY_ELEMENTS` array (even if this array is filled in later on!);
+* don't delete elements from an array (ex. `delete a[0]`) - this will create a hole;
+* don't write past the array length as this will create holes;
+
+Great reads:
+- [Elements kinds in V8](https://v8.dev/blog/elements-kinds)
+
 ## Exporting top level variables
 
 Exporting top level variables should be avoided where possible where performance
