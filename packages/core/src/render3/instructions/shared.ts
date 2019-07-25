@@ -107,7 +107,10 @@ export function refreshDescendantViews(lView: LView) {
     executeViewQueryFn(RenderFlags.Update, tView, lView[CONTEXT]);
   }
 
-  refreshChildComponents(lView, tView.components);
+  const components = tView.components;
+  if (components !== null) {
+    refreshChildComponents(lView, components);
+  }
 }
 
 
@@ -183,11 +186,9 @@ function refreshContentQueries(tView: TView, lView: LView): void {
 }
 
 /** Refreshes child components in the current view. */
-function refreshChildComponents(hostLView: LView, components: number[] | null): void {
-  if (components != null) {
-    for (let i = 0; i < components.length; i++) {
-      componentRefresh(hostLView, components[i]);
-    }
+function refreshChildComponents(hostLView: LView, components: number[]): void {
+  for (let i = 0; i < components.length; i++) {
+    componentRefresh(hostLView, components[i]);
   }
 }
 
