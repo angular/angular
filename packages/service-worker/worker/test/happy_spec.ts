@@ -1269,6 +1269,22 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         brokenLazyServer.assertNoOtherRequests();
       });
 
+      it('recovers from degraded `EXISTING_CLIENTS_ONLY` mode as soon as there is a valid update',
+         async() => {
+           await driver.initialized;
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+
+           // Install a broken version.
+           scope.updateServerState(brokenServer);
+           await driver.checkForUpdate();
+           expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
+
+           // Install a good version.
+           scope.updateServerState(serverUpdate);
+           await driver.checkForUpdate();
+           expect(driver.state).toBe(DriverReadyState.NORMAL);
+         });
+
       it('ignores invalid `only-if-cached` requests ', async() => {
         const requestFoo = (cache: RequestCache | 'only-if-cached', mode: RequestMode) =>
             makeRequest(scope, '/foo.txt', undefined, {cache, mode});
