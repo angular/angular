@@ -321,10 +321,15 @@ interface ZoneType {
   __symbol__(name: string): string;
 }
 
-/** @internal */
+/**
+ * Patch Function to allow user define their own monkey patch module.
+ */
 type _PatchFn = (global: Window, Zone: ZoneType, api: _ZonePrivate) => void;
 
-/** @internal */
+/**
+ * _ZonePrivate interface to provide helper method to help user implement
+ * their own monkey patch module.
+ */
 interface _ZonePrivate {
   currentZoneFrame: () => _ZoneFrame;
   symbol: (name: string) => string;
@@ -366,7 +371,9 @@ interface _ZonePrivate {
   } | undefined;
 }
 
-/** @internal */
+/**
+ * _ZoneFrame represents zone stack frame information
+ */
 interface _ZoneFrame {
   parent: _ZoneFrame|null;
   zone: Zone;
@@ -703,6 +710,7 @@ const Zone: ZoneType = (function(global: any) {
   }
 
   class Zone implements AmbientZone {
+    // tslint:disable-next-line:require-internal-with-underscore
     static __symbol__: (name: string) => string = __symbol__;
 
     static assertZonePatched() {
@@ -728,6 +736,7 @@ const Zone: ZoneType = (function(global: any) {
 
     static get currentTask(): Task|null { return _currentTask; }
 
+    // tslint:disable-next-line:require-internal-with-underscore
     static __load_patch(name: string, fn: _PatchFn): void {
       if (patches.hasOwnProperty(name)) {
         if (checkDuplicate) {
@@ -1184,6 +1193,7 @@ const Zone: ZoneType = (function(global: any) {
       }
     }
 
+    // tslint:disable-next-line:require-internal-with-underscore
     _updateTaskCount(type: TaskType, count: number) {
       const counts = this._taskCounts;
       const prev = counts[type];
@@ -1211,9 +1221,12 @@ const Zone: ZoneType = (function(global: any) {
     public data: TaskData|undefined;
     public scheduleFn: ((task: Task) => void)|undefined;
     public cancelFn: ((task: Task) => void)|undefined;
+    // tslint:disable-next-line:require-internal-with-underscore
     _zone: Zone|null = null;
     public runCount: number = 0;
+    // tslint:disable-next-line:require-internal-with-underscore
     _zoneDelegates: ZoneDelegate[]|null = null;
+    // tslint:disable-next-line:require-internal-with-underscore
     _state: TaskState = 'notScheduled';
 
     constructor(
@@ -1261,6 +1274,7 @@ const Zone: ZoneType = (function(global: any) {
 
     public cancelScheduleRequest() { this._transitionTo(notScheduled, scheduling); }
 
+    // tslint:disable-next-line:require-internal-with-underscore
     _transitionTo(toState: TaskState, fromState1: TaskState, fromState2?: TaskState) {
       if (this._state === fromState1 || this._state === fromState2) {
         this._state = toState;
