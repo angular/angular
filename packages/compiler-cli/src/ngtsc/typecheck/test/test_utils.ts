@@ -77,14 +77,16 @@ export function angularCoreDts(): TestFile {
   };
 }
 
-export const NGFOR_DECLARATION: TestDeclaration = {
-  type: 'directive',
-  file: 'ngfor.d.ts',
-  selector: '[ngForOf]',
-  name: 'NgForOf',
-  inputs: {ngForOf: 'ngForOf'},
-  hasNgTemplateContextGuard: true,
-};
+export function ngForDeclaration(): TestDeclaration {
+  return {
+    type: 'directive',
+    file: absoluteFrom('/ngfor.d.ts'),
+    selector: '[ngForOf]',
+    name: 'NgForOf',
+    inputs: {ngForOf: 'ngForOf'},
+    hasNgTemplateContextGuard: true,
+  };
+}
 
 export function ngForDts(): TestFile {
   return {
@@ -124,10 +126,10 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
 export type TestDirective =
     Partial<Pick<TypeCheckableDirectiveMeta, Exclude<keyof TypeCheckableDirectiveMeta, 'ref'>>>&
-    {selector: string, name: string, file?: string, type: 'directive'};
+    {selector: string, name: string, file?: AbsoluteFsPath, type: 'directive'};
 export type TestPipe = {
   name: string,
-  file?: string,
+  file?: AbsoluteFsPath,
   pipeName: string,
   type: 'pipe',
 };
@@ -185,7 +187,7 @@ export function typecheck(
     ...additionalSources,
   ];
   const {program, host, options} = makeProgram(files, {strictNullChecks: true}, undefined, false);
-  const sf = program.getSourceFile('main.ts') !;
+  const sf = program.getSourceFile(absoluteFrom('/main.ts')) !;
   const checker = program.getTypeChecker();
   const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
   const emitter = new ReferenceEmitter([
