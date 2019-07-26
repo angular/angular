@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {Diagnostic} from '../src/diagnostics';
 
-import {NGFOR_DECLARATION, TestDeclaration, ngForDts, typecheck} from './test_utils';
+import {TestDeclaration, ngForDeclaration, ngForDts, typecheck} from './test_utils';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
@@ -46,7 +46,7 @@ runInEachFileSystem(() => {
           
           render(input: string): string { return input; }
         }`,
-          [NGFOR_DECLARATION], [ngForDts()]);
+          [ngForDeclaration()], [ngForDts()]);
 
       expect(messages).toEqual([
         `synthetic.html(61, 64): Argument of type 'number' is not assignable to parameter of type 'string'.`,
@@ -61,7 +61,7 @@ runInEachFileSystem(() => {
           
           render(input: string): string { return input; }
         }`,
-          [NGFOR_DECLARATION], [ngForDts()]);
+          [ngForDeclaration()], [ngForDts()]);
 
       expect(messages).toEqual([]);
     });
@@ -127,7 +127,7 @@ runInEachFileSystem(() => {
             name: string;
           }[];
         }`,
-          [NGFOR_DECLARATION], [ngForDts()]);
+          [ngForDeclaration()], [ngForDts()]);
 
       expect(messages).toEqual([
         `synthetic.html(39, 52): Property 'namme' does not exist on type '{ name: string; }'. Did you mean 'name'?`,
