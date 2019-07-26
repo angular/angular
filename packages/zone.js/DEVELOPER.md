@@ -98,7 +98,8 @@ $ yarn gulp changelog:zonejs
 To make a `dry-run`, run the following commands.
 ```
 $ VERSION=<version>
-$ yarn bazel --output_base=$(mktemp -d) run //packages/zone.js:npm_package.pack --workspace_status_command="echo BUILD_SCM_VERSION $VERSION"
+$ TMP=$(mktemp -d)
+$ ./node_modules/.bin/bazel --output_base=$TMP run //packages/zone.js:npm_package.pack --workspace_status_command="echo BUILD_SCM_VERSION $VERSION"
 ```
 
 If everything looks fine, replace `.pack` with `.publish` to push to the npm registry.
