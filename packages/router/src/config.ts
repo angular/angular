@@ -58,7 +58,7 @@ export type UrlMatchResult = {
  *   return url.length === 1 && url[0].path.endsWith('.html') ? ({consumed: url}) : null;
  * }
  *
- * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
+ * export const routes = [{ matcher: htmlFiles as UrlMatcher, component: AnyComponent }];
  * ```
  *
  * @publicApi
