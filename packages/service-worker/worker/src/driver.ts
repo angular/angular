@@ -194,7 +194,6 @@ export class Driver implements Debuggable, UpdateSource {
     // returning causes the request to fall back on the network. This is preferred over
     // `respondWith(fetch(req))` because the latter still shows in DevTools that the
     // request was handled by the SW.
-    // TODO: try to handle DriverReadyState.EXISTING_CLIENTS_ONLY here.
     if (this.state === DriverReadyState.SAFE_MODE) {
       // Even though the worker is in safe mode, idle tasks still need to happen so
       // things like update checks, etc. can take place.
@@ -438,7 +437,7 @@ export class Driver implements Debuggable, UpdateSource {
     } catch (err) {
       if (err.isCritical) {
         // Something went wrong with the activation of this version.
-        await this.versionFailed(appVersion, err, this.latestHash === appVersion.manifestHash);
+        await this.versionFailed(appVersion, err);
 
         event.waitUntil(this.idle.trigger());
         return this.safeFetch(event.request);
@@ -575,7 +574,7 @@ export class Driver implements Debuggable, UpdateSource {
         // Attempt to schedule or initialize this version. If this operation is
         // successful, then initialization either succeeded or was scheduled. If
         // it fails, then full initialization was attempted and failed.
-        await this.scheduleInitialization(this.versions.get(hash) !, this.latestHash === hash);
+        await this.scheduleInitialization(this.versions.get(hash) !);
       } catch (err) {
         this.debugger.log(err, `initialize: schedule init of ${hash}`);
         return false;
@@ -723,13 +722,13 @@ export class Driver implements Debuggable, UpdateSource {
    * when the SW is not busy and has connectivity. This returns a Promise which must be
    * awaited, as under some conditions the AppVersion might be initialized immediately.
    */
-  private async scheduleInitialization(appVersion: AppVersion, latest: boolean): Promise<void> {
+  private async scheduleInitialization(appVersion: AppVersion): Promise<void> {
     const initialize = async() => {
       try {
         await appVersion.initializeFully();
       } catch (err) {
         this.debugger.log(err, `initializeFully for ${appVersion.manifestHash}`);
-        await this.versionFailed(appVersion, err, latest);
+        await this.versionFailed(appVersion, err);
       }
     };
     // TODO: better logic for detecting localhost.
@@ -739,7 +738,7 @@ export class Driver implements Debuggable, UpdateSource {
     this.idle.schedule(`initialization(${appVersion.manifestHash})`, initialize);
   }
 
-  private async versionFailed(appVersion: AppVersion, err: Error, latest: boolean): Promise<void> {
+  private async versionFailed(appVersion: AppVersion, err: Error): Promise<void> {
     // This particular AppVersion is broken. First, find the manifest hash.
     const broken =
         Array.from(this.versions.entries()).find(([hash, version]) => version === appVersion);
@@ -753,7 +752,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     // The action taken depends on whether the broken manifest is the active (latest) or not.
     // If so, the SW cannot accept new clients, but can continue to service old ones.
-    if (this.latestHash === brokenHash || latest) {
+    if (this.latestHash === brokenHash) {
       // The latest manifest is broken. This means that new clients are at the mercy of the
       // network, but caches continue to be valid for previous versions. This is
       // unfortunate but unavoidable.
