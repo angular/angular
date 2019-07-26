@@ -25,11 +25,29 @@ test --incompatible_strict_action_env
 
 build --incompatible_bzl_disallow_load_after_statement=false
 
+# Specifies desired output mode for running tests.
+# Valid values are
+#   'summary' to output only test status summary
+#   'errors' to also print test logs for failed tests
+#   'all' to print logs for all tests
+#   'streamed' to output logs for all tests in real time
+#     (this will force tests to be executed locally one at a time regardless of --test_strategy value).
 test --test_output=errors
 
 # Use the Angular 6 compiler
 build --define=compile=legacy
 
-# Turn on managed directories feature in Bazel
-# This allows us to avoid installing a second copy of node_modules
+# Turn on the "Managed Directories" feature.
+# This allows Bazel to share the same node_modules directory with other tools
+# NB: this option was introduced in Bazel 0.26
+# See https://docs.bazel.build/versions/master/command-line-reference.html#flag--experimental_allow_incremental_repository_updates
 common --experimental_allow_incremental_repository_updates
+
+# Support for debugging NodeJS tests
+# Add the Bazel option `--config=debug` to enable this
+test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
+
+# Turn off legacy external runfiles
+# This prevents accidentally depending on this feature, which Bazel will remove.
+run --nolegacy_external_runfiles
+test --nolegacy_external_runfiles
