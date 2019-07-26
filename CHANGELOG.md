@@ -1,3 +1,41 @@
+<a name="8.2.0-rc.0"></a>
+# [8.2.0-rc.0](https://github.com/angular/angular/compare/8.2.0-next.2...8.2.0-rc.0) (2019-07-26)
+
+
+### Bug Fixes
+
+* **bazel:** increase memory limit of ngc under bazel from 2 to 4 GB ([#31784](https://github.com/angular/angular/issues/31784)) ([5a8eb92](https://github.com/angular/angular/commit/5a8eb92))
+* **core:** allow Z variations of CSS transforms in sanitizer ([#29264](https://github.com/angular/angular/issues/29264)) ([78e7fdd](https://github.com/angular/angular/commit/78e7fdd))
+* **elements:** handle falsy initial value ([#31604](https://github.com/angular/angular/issues/31604)) ([7151eae](https://github.com/angular/angular/commit/7151eae)), closes [angular/angular#30834](https://github.com/angular/angular/issues/30834)
+* **platform-browser:** debug element query predicates not compatible with strictFunctionTypes ([#30993](https://github.com/angular/angular/issues/30993)) ([10a1e19](https://github.com/angular/angular/commit/10a1e19))
+
+
+### Features
+
+* **bazel:** compile targets used for indexing by Kythe with Ivy ([#31786](https://github.com/angular/angular/issues/31786)) ([82055b2](https://github.com/angular/angular/commit/82055b2))
+* **upgrade:** support $element in upgraded component template/templateUrl functions ([#31637](https://github.com/angular/angular/issues/31637)) ([29e1c53](https://github.com/angular/angular/commit/29e1c53))
+
+
+### Performance Improvements
+
+* **compiler:** avoid copying from prototype while cloning an object ([#31638](https://github.com/angular/angular/issues/31638)) ([24ca582](https://github.com/angular/angular/commit/24ca582)), closes [#31627](https://github.com/angular/angular/issues/31627)
+
+
+
+<a name="8.1.3"></a>
+## [8.1.3](https://github.com/angular/angular/compare/8.1.2...8.1.3) (2019-07-26)
+
+
+### Bug Fixes
+
+* **elements:** handle falsy initial value ([#31604](https://github.com/angular/angular/issues/31604)) ([434b796](https://github.com/angular/angular/commit/434b796)), closes [angular/angular#30834](https://github.com/angular/angular/issues/30834)
+
+
+### Performance Improvements
+
+* **compiler:** avoid copying from prototype while cloning an object ([#31638](https://github.com/angular/angular/issues/31638)) ([1f3daa0](https://github.com/angular/angular/commit/1f3daa0)), closes [#31627](https://github.com/angular/angular/issues/31627)
+
+
 <a name="8.2.0-next.2"></a>
 # [8.2.0-next.2](https://github.com/angular/angular/compare/8.2.0-next.1...8.2.0-next.2) (2019-07-17)
 
