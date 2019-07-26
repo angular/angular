@@ -124,6 +124,32 @@ runInEachFileSystem(() => {
         });
       });
 
+      it('should discover variables in bound attributes', () => {
+        const template = '<div #div [value]="div.innerText"></div>';
+        const refs = getTemplateIdentifiers(bind(template));
+        const elementReference: ElementIdentifier = {
+          name: 'div',
+          kind: IdentifierKind.Element,
+          span: new AbsoluteSourceSpan(1, 4),
+          attributes: new Set(),
+          usedDirectives: new Set(),
+        };
+        const reference: ReferenceIdentifier = {
+          name: 'div',
+          kind: IdentifierKind.Reference,
+          span: new AbsoluteSourceSpan(6, 9),
+          target: {node: elementReference, directive: null},
+        };
+
+        const refArr = Array.from(refs);
+        expect(refArr).toContain({
+          name: 'div',
+          kind: IdentifierKind.Property,
+          span: new AbsoluteSourceSpan(19, 22),
+          target: reference,
+        });
+      });
+
       it('should discover properties in template expressions', () => {
         const template = '<div [bar]="bar ? bar1 : bar2"></div>';
         const refs = getTemplateIdentifiers(bind(template));
