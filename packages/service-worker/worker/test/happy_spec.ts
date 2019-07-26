@@ -433,15 +433,9 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
     });
 
     it('handles empty client ID', async() => {
-      const navRequest = (url: string, clientId: string | null) =>
-          makeRequest(scope, url, clientId, {
-            headers: {Accept: 'text/plain, text/html, text/css'},
-            mode: 'navigate',
-          });
-
       // Initialize the SW.
-      expect(await navRequest('/foo/file1', '')).toEqual('this is foo');
-      expect(await navRequest('/bar/file2', null)).toEqual('this is foo');
+      expect(await makeNavigationRequest(scope, '/foo/file1', '')).toEqual('this is foo');
+      expect(await makeNavigationRequest(scope, '/bar/file2', null)).toEqual('this is foo');
       await driver.initialized;
 
       // Update to a new version.
@@ -449,8 +443,8 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
       expect(await driver.checkForUpdate()).toEqual(true);
 
       // Correctly handle navigation requests, even if `clientId` is null/empty.
-      expect(await navRequest('/foo/file1', '')).toEqual('this is foo v2');
-      expect(await navRequest('/bar/file2', null)).toEqual('this is foo v2');
+      expect(await makeNavigationRequest(scope, '/foo/file1', '')).toEqual('this is foo v2');
+      expect(await makeNavigationRequest(scope, '/bar/file2', null)).toEqual('this is foo v2');
     });
 
     it('checks for updates on restart', async() => {
@@ -480,9 +474,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
       await driver.initialized;
       server.clearRequests();
 
-      expect(await makeRequest(scope, '/foo.txt', 'default', {
-        mode: 'navigate',
-      })).toEqual('this is foo');
+      expect(await makeNavigationRequest(scope, '/foo.txt')).toEqual('this is foo');
 
       scope.advance(12000);
       await driver.idle.empty;
@@ -495,13 +487,9 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
       await driver.initialized;
       server.clearRequests();
 
-      expect(await makeRequest(scope, '/foo.txt', 'default', {
-        mode: 'navigate',
-      })).toEqual('this is foo');
+      expect(await makeNavigationRequest(scope, '/foo.txt')).toEqual('this is foo');
 
-      expect(await makeRequest(scope, '/foo.txt', 'default', {
-        mode: 'navigate',
-      })).toEqual('this is foo');
+      expect(await makeNavigationRequest(scope, '/foo.txt')).toEqual('this is foo');
 
       scope.advance(12000);
       await driver.idle.empty;
@@ -540,12 +528,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
       expect(await driver.checkForUpdate()).toEqual(true);
       serverUpdate.clearRequests();
 
-      expect(await makeRequest(scope, '/file1', 'default', {
-        headers: {
-          'Accept': 'text/plain, text/html, text/css',
-        },
-        mode: 'navigate',
-      })).toEqual('this is foo v2');
+      expect(await makeNavigationRequest(scope, '/file1')).toEqual('this is foo v2');
 
       expect(client.messages).toEqual([
         {
@@ -715,7 +698,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
       await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'anything'}});
       server.assertNoRequestFor('/foo.txt');
 
-      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': null}});
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': null !}});
       server.assertNoRequestFor('/foo.txt');
 
       await makeRequest(scope, '/foo.txt', undefined, {headers: {'NGSW-bypass': 'upperCASE'}});
@@ -1012,10 +995,8 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
     });
 
     describe('routing', () => {
-      const navRequest = (url: string, init = {}) => makeRequest(scope, url, undefined, {
-        headers: {Accept: 'text/plain, text/html, text/css'},
-        mode: 'navigate', ...init,
-      });
+      const navRequest = (url: string, init = {}) =>
+          makeNavigationRequest(scope, url, undefined, init);
 
       beforeEach(async() => {
         expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
@@ -1278,13 +1259,25 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 })();
 
 async function makeRequest(
-    scope: SwTestHarness, url: string, clientId: string | null = 'default',
-    init?: Object): Promise<string|null> {
-  const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId);
-  await done;
-  const res = await resPromise;
-  if (res !== undefined && res.ok) {
-    return res.text();
-  }
-  return null;
-}
+    scope: SwTestHarness, url: string, clientId: string | null = 'default', init?: Object):
+    Promise<string|null> {
+      const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId);
+      await done;
+      const res = await resPromise;
+      if (res !== undefined && res.ok) {
+        return res.text();
+      }
+      return null;
+    }
+
+function makeNavigationRequest(
+    scope: SwTestHarness, url: string, clientId?: string | null, init: Object = {}):
+    Promise<string|null> {
+      return makeRequest(scope, url, clientId, {
+        headers: {
+          Accept: 'text/plain, text/html, text/css',
+          ...(init as any).headers,
+        },
+        mode: 'navigate', ...init,
+      });
+    }
