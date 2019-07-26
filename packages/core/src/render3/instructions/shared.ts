@@ -63,19 +63,11 @@ export function refreshDescendantViews(lView: LView) {
   const tView = lView[TVIEW];
   const creationMode = isCreationMode(lView);
 
-  // This needs to be set before children are processed to support recursive components.
-  // This must be set to false immediately after the first creation run because in an
-  // ngFor loop, all the views will be created together before update mode runs and turns
-  // off firstTemplatePass. If we don't set it here, instances will perform directive
-  // matching, etc again and again.
-  tView.firstTemplatePass = false;
-
-  // Resetting the bindingIndex of the current LView as the next steps may trigger change detection.
-  lView[BINDING_INDEX] = tView.bindingStartIndex;
-
-  // If this is a creation pass, we should not call lifecycle hooks or evaluate bindings.
-  // This will be done in the update pass.
   if (!creationMode) {
+    // Resetting the bindingIndex of the current LView as the next steps may trigger change
+    // detection.
+    lView[BINDING_INDEX] = tView.bindingStartIndex;
+
     const checkNoChangesMode = getCheckNoChangesMode();
 
     executePreOrderHooks(lView, tView, checkNoChangesMode, undefined);
@@ -93,14 +85,22 @@ export function refreshDescendantViews(lView: LView) {
         InitPhaseState.AfterContentInitHooksToBeRun, undefined);
 
     setHostBindings(tView, lView);
+  } else {
+    // This needs to be set before children are processed to support recursive components.
+    // This must be set to false immediately after the first creation run because in an
+    // ngFor loop, all the views will be created together before update mode runs and turns
+    // off firstTemplatePass. If we don't set it here, instances will perform directive
+    // matching, etc again and again.
+    tView.firstTemplatePass = false;
+
+    // We resolve content queries specifically marked as `static` in creation mode. Dynamic
+    // content queries are resolved during change detection (i.e. update mode), after embedded
+    // views are refreshed (see block above).
+    if (tView.staticContentQueries) {
+      refreshContentQueries(tView, lView);
+    }
   }
 
-  // We resolve content queries specifically marked as `static` in creation mode. Dynamic
-  // content queries are resolved during change detection (i.e. update mode), after embedded
-  // views are refreshed (see block above).
-  if (creationMode && tView.staticContentQueries) {
-    refreshContentQueries(tView, lView);
-  }
 
   // We must materialize query results before child components are processed
   // in case a child component has projected a container. The LContainer needs
