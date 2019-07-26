@@ -802,8 +802,15 @@ export class Driver implements Debuggable, UpdateSource {
     // Future new clients will use this hash as the latest version.
     this.latestHash = hash;
 
+    // If we are in `EXISTING_CLIENTS_ONLY` mode (meaning we didn't have a clean copy of the last
+    // latest version), we can now recover to `NORMAL` mode and start accepting new clients.
+    if (this.state === DriverReadyState.EXISTING_CLIENTS_ONLY) {
+      this.state = DriverReadyState.NORMAL;
+      this.stateMessage = '(nominal)';
+    }
+
     await this.sync();
-    await this.notifyClientsAboutUpdate();
+    await this.notifyClientsAboutUpdate(newVersion);
   }
 
   async checkForUpdate(): Promise<boolean> {
@@ -959,19 +966,19 @@ export class Driver implements Debuggable, UpdateSource {
 
   async lookupResourceWithoutHash(url: string): Promise<CacheState|null> {
     await this.initialized;
-    const version = this.versions.get(this.latestHash !) !;
-    return version.lookupResourceWithoutHash(url);
+    const version = this.versions.get(this.latestHash !);
+    return version ? version.lookupResourceWithoutHash(url) : null;
   }
 
   async previouslyCachedResources(): Promise<string[]> {
     await this.initialized;
-    const version = this.versions.get(this.latestHash !) !;
-    return version.previouslyCachedResources();
+    const version = this.versions.get(this.latestHash !);
+    return version ? version.previouslyCachedResources() : [];
   }
 
-  recentCacheStatus(url: string): Promise<UpdateCacheStatus> {
-    const version = this.versions.get(this.latestHash !) !;
-    return version.recentCacheStatus(url);
+  async recentCacheStatus(url: string): Promise<UpdateCacheStatus> {
+    const version = this.versions.get(this.latestHash !);
+    return version ? version.recentCacheStatus(url) : UpdateCacheStatus.NOT_CACHED;
   }
 
   private mergeHashWithAppData(manifest: Manifest, hash: string): {hash: string, appData: Object} {
@@ -981,11 +988,10 @@ export class Driver implements Debuggable, UpdateSource {
     };
   }
 
-  async notifyClientsAboutUpdate(): Promise<void> {
+  async notifyClientsAboutUpdate(next: AppVersion): Promise<void> {
     await this.initialized;
 
     const clients = await this.scope.clients.matchAll();
-    const next = this.versions.get(this.latestHash !) !;
 
     await clients.reduce(async(previous, client) => {
       await previous;
