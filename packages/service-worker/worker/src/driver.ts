@@ -742,11 +742,16 @@ export class Driver implements Debuggable, UpdateSource {
     // This particular AppVersion is broken. First, find the manifest hash.
     const broken =
         Array.from(this.versions.entries()).find(([hash, version]) => version === appVersion);
+
     if (broken === undefined) {
       // This version is no longer in use anyway, so nobody cares.
       return;
     }
+
     const brokenHash = broken[0];
+    const affectedClients = Array.from(this.clientVersionMap.entries())
+                                .filter(([clientId, hash]) => hash === brokenHash)
+                                .map(([clientId]) => clientId);
 
     // TODO: notify affected apps.
 
@@ -759,17 +764,12 @@ export class Driver implements Debuggable, UpdateSource {
       this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
       this.stateMessage = `Degraded due to: ${errorToString(err)}`;
 
-      // Cancel the binding for these clients.
-      Array.from(this.clientVersionMap.keys())
-          .forEach(clientId => this.clientVersionMap.delete(clientId));
+      // Cancel the binding for the affected clients.
+      affectedClients.forEach(clientId => this.clientVersionMap.delete(clientId));
     } else {
-      // The current version is viable, but this older version isn't. The only
+      // The latest version is viable, but this older version isn't. The only
       // possible remedy is to stop serving the older version and go to the network.
-      // Figure out which clients are affected and put them on the latest.
-      const affectedClients =
-          Array.from(this.clientVersionMap.keys())
-              .filter(clientId => this.clientVersionMap.get(clientId) ! === brokenHash);
-      // Push the affected clients onto the latest version.
+      // Put the affected clients on the latest version.
       affectedClients.forEach(clientId => this.clientVersionMap.set(clientId, this.latestHash !));
     }
 
