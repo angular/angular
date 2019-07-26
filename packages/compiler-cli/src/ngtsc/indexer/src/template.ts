@@ -201,7 +201,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
 
     const identifiers = ExpressionVisitor.getIdentifiers(
         attribute.value, expressionSrc, expressionAbsolutePosition, this.boundTemplate,
-        this.targetToIdentifier);
+        this.targetToIdentifier.bind(this));
     identifiers.forEach(id => this.identifiers.add(id));
   }
   visitBoundEvent(attribute: TmplAstBoundEvent) { this.visitExpression(attribute.handler); }
