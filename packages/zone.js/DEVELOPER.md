@@ -80,10 +80,24 @@ yarn webdriver-sauce-test
 Releasing
 ---------
 
+- create a new tag in `angular` repo.
+
+```
+$ TAG=<TAG>
+$ git tag $TAG
+```
+
+- create a PR to update `changelog` of zone.js
+
+```
+$ yarn gulp changelog:zonejs
+```
+
+- deploy to npm
+
 To make a `dry-run`, run the following commands.
 ```
 $ VERSION=<version>
-$ git tag 'zone.js-$VERSION'
 $ yarn bazel --output_base=$(mktemp -d) run //packages/zone.js:npm_package.pack --workspace_status_command="echo BUILD_SCM_VERSION $VERSION"
 ```
 
