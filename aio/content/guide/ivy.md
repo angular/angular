@@ -1,38 +1,23 @@
-# Opting into Angular Ivy
+# Opting out of Angular Ivy
 
-Ivy is the code name for Angular's [next-generation compilation and rendering pipeline](https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7). Starting with Angular version 8, you can choose to opt in to start using a preview version of Ivy and help in its continuing development and tuning.
+Ivy is the code name for Angular's [next-generation compilation and rendering pipeline](https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7). 
+Starting with Angular version 9, Ivy is the default compiler.
+The previous rendering and compilation pipeline, View Engine, is deprecated in version 9, and will be removed at a later date.
+You can choose to opt out of Ivy and continue using View Engine while making the transition.
 
-<div class="alert is-helpful">
-
-   To preview Ivy, use `@angular/core@next` version of Angular (8.1.x), rather than `@angular/core@latest` (8.0.x), as it contains all the latest bug fixes and improvements.
-
-</div>
-
-
-## Using Ivy in a new project
-
-To start a new project with Ivy enabled, use the `--enable-ivy` flag with the [`ng new`](cli/new) command:
-
-```sh
-ng new shiny-ivy-app --enable-ivy
-```
-
-The new project is automatically configured for Ivy. Specifically, the enableIvy option is set to `true` in the project's `tsconfig.app.json` file.
-
-
-## Using Ivy in an existing project
-
-To update an existing project to use Ivy, set the `enableIvy` option in the `angularCompilerOptions` in your project's `tsconfig.app.json`.
+To opt out of Ivy and continue using View Engine for an existing project, set the `enableIvy` option in the `angularCompilerOptions` in your project's `tsconfig.json` to `false`.
 ```json
 {
   "compilerOptions": { ... },
   "angularCompilerOptions": {
-    "enableIvy": true
+    "enableIvy": false
   }
 }
 ```
 
-AOT compilation with Ivy is faster and should be used by default. In the `angular.json` workspace configuration file, set the default build options for your project to always use AOT compilation.
+AOT compilation with Ivy is faster than with View Engine, and can be used for development. 
+If you opt out of Ivy, AOT compilation will be slower, and should not be used for development in large projects. 
+When Ivy is disabled for a large project, make sure that the `aot` build option in that project configuration is not set.
 
 ```json
 {
@@ -51,5 +36,4 @@ AOT compilation with Ivy is faster and should be used by default. In the `angula
 }
 ```
 
-To stop using the Ivy compiler, set `enableIvy` to `false` in `tsconfig.app.json`, or remove it completely. Also remove `"aot": true` from your default build options if you didn't have it there before.
  

@@ -579,7 +579,7 @@
         {
           "url": "guide/ivy",
           "title": "Angular Ivy",
-          "tooltip": "Opting into Angular Ivy with Angular CLI."
+          "tooltip": "Opting out of Angular Ivy with Angular CLI."
         },
         {
           "url": "guide/web-worker",
