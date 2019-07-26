@@ -167,8 +167,8 @@ let activeDirectiveSuperClassHeight = 0;
  */
 export function setActiveHostElement(elementIndex: number | null = null) {
   if (_selectedIndex !== elementIndex) {
-    setSelectedIndex(elementIndex == null ? -1 : elementIndex);
-    activeDirectiveId = elementIndex == null ? 0 : MIN_DIRECTIVE_ID;
+    setSelectedIndex(elementIndex === null ? -1 : elementIndex);
+    activeDirectiveId = elementIndex === null ? 0 : MIN_DIRECTIVE_ID;
     activeDirectiveSuperClassDepthPosition = 0;
     activeDirectiveSuperClassHeight = 0;
   }

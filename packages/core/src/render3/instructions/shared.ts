@@ -120,7 +120,7 @@ export function refreshDescendantViews(lView: LView) {
 export function setHostBindings(tView: TView, viewData: LView): void {
   const selectedIndex = getSelectedIndex();
   try {
-    if (tView.expandoInstructions) {
+    if (tView.expandoInstructions !== null) {
       let bindingRootIndex = viewData[BINDING_INDEX] = tView.expandoStartIndex;
       setBindingRoot(bindingRootIndex);
       let currentDirectiveIndex = -1;

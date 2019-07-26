@@ -185,18 +185,23 @@ export function executeHooks(
     checkNoChangesMode: boolean, initPhaseState: InitPhaseState,
     currentNodeIndex: number | null | undefined): void {
   if (checkNoChangesMode) return;
-  const hooksToCall = (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhaseState ?
-      firstPassHooks :
-      checkHooks;
-  if (hooksToCall) {
-    callHooks(currentView, hooksToCall, initPhaseState, currentNodeIndex);
+
+  if (checkHooks !== null || firstPassHooks !== null) {
+    const hooksToCall = (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhaseState ?
+        firstPassHooks :
+        checkHooks;
+    if (hooksToCall !== null) {
+      callHooks(currentView, hooksToCall, initPhaseState, currentNodeIndex);
+    }
   }
+
   // The init phase state must be always checked here as it may have been recursively updated
-  if (currentNodeIndex == null &&
-      (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhaseState &&
+  let flags = currentView[FLAGS];
+  if (currentNodeIndex == null && (flags & LViewFlags.InitPhaseStateMask) === initPhaseState &&
       initPhaseState !== InitPhaseState.InitPhaseCompleted) {
-    currentView[FLAGS] &= LViewFlags.IndexWithinInitPhaseReset;
-    currentView[FLAGS] += LViewFlags.InitPhaseStateIncrementer;
+    flags &= LViewFlags.IndexWithinInitPhaseReset;
+    flags += LViewFlags.InitPhaseStateIncrementer;
+    currentView[FLAGS] = flags;
   }
 }
 
