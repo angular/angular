@@ -68,7 +68,8 @@ grep "_MatMenuBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ inputs: {" node_modules/
 if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it handle namespace imported decorators in UMD?
-grep "type: core.Injectable," node_modules/@angular/cdk/bundles/cdk-a11y.umd.js
+grep "type: core.Injectable" node_modules/@angular/common/bundles/common.umd.js # using `__decorate` syntax
+grep "type: core.Injectable," node_modules/@angular/cdk/bundles/cdk-a11y.umd.js # using static properties
 
 # Can it be safely run again (as a noop)?
 # And check that it logged skipping compilation as expected
