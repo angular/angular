@@ -81,7 +81,7 @@ export class DependencyResolver {
 
     let sortedEntryPointNodes: string[];
     if (target) {
-      if (target.compiledByAngular) {
+      if (target.compiledByAngular && graph.hasNode(target.path)) {
         sortedEntryPointNodes = graph.dependenciesOf(target.path);
         sortedEntryPointNodes.push(target.path);
       } else {
