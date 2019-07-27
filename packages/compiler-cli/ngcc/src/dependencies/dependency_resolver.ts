@@ -12,6 +12,8 @@ import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
 import {DependencyHost, DependencyInfo} from './dependency_host';
 
+const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
+
 /**
  * Holds information about entry points that are removed because
  * they have dependencies that are missing (directly or transitively).
@@ -128,10 +130,12 @@ export class DependencyResolver {
     angularEntryPoints.forEach(entryPoint => {
       const {dependencies, missing, deepImports} = this.getEntryPointDependencies(entryPoint);
 
-      if (missing.size > 0) {
+      const missingDependencies = Array.from(missing).filter(dep => !builtinNodeJsModules.has(dep));
+
+      if (missingDependencies.length > 0) {
         // This entry point has dependencies that are missing
         // so remove it from the graph.
-        removeNodes(entryPoint, Array.from(missing));
+        removeNodes(entryPoint, missingDependencies);
       } else {
         dependencies.forEach(dependencyPath => {
           if (!graph.hasNode(entryPoint.path)) {
