@@ -551,7 +551,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * information is computed either from static properties if present, or using `tslib.__decorate`
    * helper calls otherwise. The computed result is cached per class.
    *
-   * @param classSymbol
+   * @param classSymbol the class for which decorators should be acquired.
+   * @returns all information of the decorators on the class.
    */
   protected acquireDecoratorInfo(classSymbol: ClassSymbol): DecoratorInfo {
     if (this.decoratorCache.has(classSymbol.valueDeclaration)) {
@@ -1575,7 +1576,7 @@ export function isClassDecorateCall(call: ts.CallExpression, className: string):
  * __decorate([], SomeDirective.prototype, "member", void 0);
  * ```
  *
- * @param call the call expression that is tested to represent a class decorator call.
+ * @param call the call expression that is tested to represent a member decorator call.
  * @param className the name of the class that the call needs to correspond with.
  */
 export function isMemberDecorateCall(call: ts.CallExpression, className: string):
