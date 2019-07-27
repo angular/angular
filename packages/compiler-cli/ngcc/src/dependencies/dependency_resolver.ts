@@ -7,7 +7,7 @@
  */
 
 import {DepGraph} from 'dependency-graph';
-import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, PathSegment, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
 import {DependencyHost, DependencyInfo} from './dependency_host';
@@ -128,10 +128,12 @@ export class DependencyResolver {
     angularEntryPoints.forEach(entryPoint => {
       const {dependencies, missing, deepImports} = this.getEntryPointDependencies(entryPoint);
 
-      if (missing.size > 0) {
+      const missingDependencies = computeMissingDependencies(missing);
+
+      if (missingDependencies.length > 0) {
         // This entry point has dependencies that are missing
         // so remove it from the graph.
-        removeNodes(entryPoint, Array.from(missing));
+        removeNodes(entryPoint, missingDependencies);
       } else {
         dependencies.forEach(dependencyPath => {
           if (!graph.hasNode(entryPoint.path)) {
@@ -190,4 +192,15 @@ export class DependencyResolver {
 
 interface DependencyGraph extends DependencyDiagnostics {
   graph: DepGraph<EntryPoint>;
+}
+
+const ignoredImports = new Set<string>(require('module').builtinModules);
+
+/**
+ * For a given set of missing imports found during the dependency analysis, determine which of
+ * those are to be considered as missing dependency. Currently, only imports of builtin NodeJS
+ * modules are not considered a missing dependency, all other imports are.
+ */
+function computeMissingDependencies(missing: Set<AbsoluteFsPath|PathSegment>): string[] {
+  return Array.from(missing).filter(dep => !ignoredImports.has(dep));
 }
