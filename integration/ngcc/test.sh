@@ -67,8 +67,15 @@ if [[ $? != 0 ]]; then exit 1; fi
 grep "_MatMenuBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ inputs: {" node_modules/@angular/material/esm5/menu.es5.js
 if [[ $? != 0 ]]; then exit 1; fi
 
-# Did it handle namespace imported decorators in UMD?
+# Did it handle namespace imported decorators in UMD using `__decorate` syntax?
+grep "type: core.Injectable" node_modules/@angular/common/bundles/common.umd.js
+# (and ensure the @angular/common package is indeed using `__decorate` syntax)
+grep "JsonPipe = __decorate(" node_modules/@angular/common/bundles/common.umd.js.__ivy_ngcc_bak
+
+# Did it handle namespace imported decorators in UMD using static properties?
 grep "type: core.Injectable," node_modules/@angular/cdk/bundles/cdk-a11y.umd.js
+# (and ensure the @angular/cdk/a11y package is indeed using static properties)
+grep "FocusMonitor.decorators =" node_modules/@angular/cdk/bundles/cdk-a11y.umd.js.__ivy_ngcc_bak
 
 # Can it be safely run again (as a noop)?
 # And check that it logged skipping compilation as expected
