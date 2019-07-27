@@ -179,6 +179,17 @@ runInEachFileSystem(() => {
         expect(sorted.entryPoints).toEqual([fifth]);
       });
 
+      it('should not process the provided target if its marked as ignored', () => {
+        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
+          [_('/first/index.js')]: {resolved: [], missing: ['/missing']},
+        }));
+        const entryPoints = [first];
+        let sorted: SortedEntryPointsInfo;
+
+        sorted = resolver.sortEntryPointsByDependency(entryPoints, first);
+        expect(sorted.entryPoints).toEqual([]);
+      });
+
       it('should use the appropriate DependencyHost for each entry-point', () => {
         const esm5Host = new EsmDependencyHost(fs, moduleResolver);
         const esm2015Host = new EsmDependencyHost(fs, moduleResolver);
