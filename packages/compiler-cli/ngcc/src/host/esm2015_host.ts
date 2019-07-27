@@ -957,7 +957,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     return {
       name: decoratorIdentifier.text,
-      identifier: decoratorIdentifier,
+      identifier: decoratorExpression,
       import: this.getImportOfIdentifier(decoratorIdentifier),
       node: call,
       args: Array.from(call.arguments),
