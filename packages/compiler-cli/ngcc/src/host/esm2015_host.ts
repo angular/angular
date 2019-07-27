@@ -889,14 +889,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
     const call = expression;
 
-    const helperCallFn =
-        ts.isPropertyAccessExpression(call.expression) ? call.expression.name : call.expression;
-    if (!ts.isIdentifier(helperCallFn)) {
-      return null;
-    }
-
-    const canonicalName = stripDollarSuffix(helperCallFn.text);
-    if (canonicalName === '__metadata') {
+    const helperName = getCalleeName(call);
+    if (helperName === '__metadata') {
       // This is a `tslib.__metadata` call, reflect to arguments into a `ParameterTypes` object
       // if the metadata key is "design:paramtypes".
       const key = call.arguments[0];
@@ -915,7 +909,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       };
     }
 
-    if (canonicalName === '__param') {
+    if (helperName === '__param') {
       // This is a `tslib.__param` call that is reflected into a `ParameterDecorators` object.
       const indexArg = call.arguments[0];
       const index = indexArg && ts.isNumericLiteral(indexArg) ? parseInt(indexArg.text, 10) : NaN;
