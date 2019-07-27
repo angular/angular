@@ -165,6 +165,7 @@ export { SomeDirective };
 
             const decorator = decorators[0];
             expect(decorator.name).toEqual('Directive');
+            expect(decorator.identifier.getText()).toEqual('Directive');
             expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
             expect(decorator.args !.map(arg => arg.getText())).toEqual([
               '{ selector: \'[someDirective]\' }',
@@ -185,6 +186,7 @@ export { SomeDirective };
 
             const decorator = decorators[0];
             expect(decorator.name).toEqual('Directive');
+            expect(decorator.identifier.getText()).toEqual('Directive');
             expect(decorator.import).toEqual({name: 'Directive', from: './directives'});
             expect(decorator.args !.map(arg => arg.getText())).toEqual([
               '{ selector: \'[someDirective]\' }',
