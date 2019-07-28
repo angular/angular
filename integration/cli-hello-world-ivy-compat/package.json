@@ -40,7 +40,7 @@
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~3.1.1",
     "karma-chrome-launcher": "~2.2.0",
-    "karma-coverage-istanbul-reporter": "~2.0.1",
+    "karma-coverage-istanbul-reporter": "~2.1.0",
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "file:../../node_modules/protractor",
