@@ -246,8 +246,12 @@ Angular 서비스 워커는 사실 웹 브라우저에서 실행되는 간단한
 
 서비스 워커가 업데이트되더라도 이 과정은 애플리케이션에 영향을 주지 않습니다. 그래서 업데이트하기 이전에 캐싱한 리소스는 서비스 워커를 업데이트한 이후에도 여전히 유효합니다. 하지만 서비스 워커의 버그를 수정하거나 기능이 추가된 경우라면 이전에 있던 캐시를 폐기하고 새로 받아와야 하는 경우도 있습니다. 이 경우에는 앱 전체가 새로 실행될 수 있습니다.
 
+<!--
 ### Bypassing the service worker
+-->
+### 서비스 워커 생략하기
 
+<!--
 In some cases, you may want to bypass the service worker entirely and let the browser handle the
 request instead. An example is when you rely on a feature that is currently not supported in service
 workers (e.g.
@@ -255,6 +259,12 @@ workers (e.g.
 
 To bypass the service worker you can set `ngsw-bypass` as a request header, or as a query parameter.
 (The value of the header or query parameter is ignored and can be empty or omitted.)
+-->
+때로는 서비스 워커를 생략하고 앱에서 발생하는 HTTP 요청을 모두 브라우저에게 위임해야 할 때도 있습니다.
+[파일 업로드 진행상황 확인하기](https://github.com/w3c/ServiceWorker/issues/1141)와 같이 서비스 워커가 아직 지원하지 않는 기능을 사용하는 경우가 그렇습니다.
+
+서비스 워커를 생략하려면 HTTP 요청을 보낼 때 헤더나 쿼리 인자에 `ngsw-bypass` 필드를 추가하면 됩니다.
+그러면 서비스 워커는 이 HTTP 요청을 무시하고 그대로 통과시킵니다.
 
 <!--
 ## Debugging the Angular service worker

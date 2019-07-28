@@ -634,8 +634,10 @@
             },
             {
               "url": "guide/app-shell",
-              "title": "App Shell",
-              "tooltip": "Enabling the App Shell in a CLI project."
+              "!title": "App Shell",
+              "title": "앱 기본 틀",
+              "!tooltip": "Enabling the App Shell in a CLI project.",
+              "tooltip": "애플리케이션 기본 틀 생성하기"
             },
             {
               "url": "guide/service-worker-communications",

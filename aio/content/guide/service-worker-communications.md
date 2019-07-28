@@ -94,14 +94,17 @@ script will never be registered with the browser.
 
 You can avoid that by waiting for the app to stabilize first, before starting to poll for updates
 (as shown in the example above).
+
+Note that this is true for any kind of polling done by your application.
+Check the {@link ApplicationRef#isStable isStable} documentation for more information. 
 -->
 서비스 워커가 애플리케이션 초기 렌더링에 영향을 주지 않으려면 `ServiceWorkerModule`은 애플리케이션이 안정화된 이후에 로드되고 실행되어야 합니다.
 왜냐하면 `interval()`과 같은 함수를 사용해서 업데이트가 있는지 지속적으로 폴링하면 애플리케이션이 안정화되지 않기 때문에 서비스 워커 스크립트도 브라우저에 등록되지 않습니다.
 
 그래서 업데이트를 폴링하는 로직은 반드시 애플리케이션이 안정화된 이후에 시작되어야 합니다.
 
-Note that this is true for any kind of polling done by your application.
-Check the {@link ApplicationRef#isStable isStable} documentation for more information. 
+애플리케이션에서 사용하는 폴링 로직은 모두 이런 방식으로 작성되어야 합니다.
+더 자세한 내용은 {@link ApplicationRef#isStable isStable} 문서를 참고하세요.
 
 </div>
 
