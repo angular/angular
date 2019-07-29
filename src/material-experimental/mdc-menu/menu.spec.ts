@@ -20,6 +20,7 @@ import {OverlayContainer, Overlay} from '@angular/cdk/overlay';
 import {ESCAPE, LEFT_ARROW, RIGHT_ARROW, DOWN_ARROW, TAB, HOME, END} from '@angular/cdk/keycodes';
 import {MatMenu, MatMenuModule, MatMenuItem} from './index';
 import {MatRipple} from '@angular/material/core';
+import {MockNgZone} from '@angular/cdk/private/testing';
 import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
@@ -28,7 +29,6 @@ import {
   createMouseEvent,
   dispatchFakeEvent,
   patchElementFocus,
-  MockNgZone,
 } from '@angular/cdk/testing';
 import {Subject} from 'rxjs';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';

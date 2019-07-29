@@ -8,11 +8,11 @@ import {
   SPACE,
   TAB,
 } from '@angular/cdk/keycodes';
+import {MockNgZone} from '@angular/cdk/private/testing';
 import {
   createKeyboardEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
-  MockNgZone,
 } from '@angular/cdk/testing';
 import {
   Component,

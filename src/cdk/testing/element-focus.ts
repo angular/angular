@@ -8,16 +8,6 @@
 
 import {dispatchFakeEvent} from './dispatch-events';
 
-/**
- * Patches an elements focus and blur methods to emit events consistently and predictably.
- * This is necessary, because some browsers, like IE11, will call the focus handlers asynchronously,
- * while others won't fire them at all if the browser window is not focused.
- */
-export function patchElementFocus(element: HTMLElement) {
-  element.focus = () => dispatchFakeEvent(element, 'focus');
-  element.blur = () => dispatchFakeEvent(element, 'blur');
-}
-
 function triggerFocusChange(element: HTMLElement, event: 'focus' | 'blur') {
   let eventFired = false;
   const handler = () => eventFired = true;
@@ -29,10 +19,23 @@ function triggerFocusChange(element: HTMLElement, event: 'focus' | 'blur') {
   }
 }
 
+/**
+ * Patches an elements focus and blur methods to emit events consistently and predictably.
+ * This is necessary, because some browsers, like IE11, will call the focus handlers asynchronously,
+ * while others won't fire them at all if the browser window is not focused.
+ * @docs-private
+ */
+export function patchElementFocus(element: HTMLElement) {
+  element.focus = () => dispatchFakeEvent(element, 'focus');
+  element.blur = () => dispatchFakeEvent(element, 'blur');
+}
+
+/** @docs-private */
 export function triggerFocus(element: HTMLElement) {
   triggerFocusChange(element, 'focus');
 }
 
+/** @docs-private */
 export function triggerBlur(element: HTMLElement) {
   triggerFocusChange(element, 'blur');
 }

@@ -12,13 +12,13 @@ import {
   HOME,
   END,
 } from '@angular/cdk/keycodes';
+import {MockNgZone} from '@angular/cdk/private/testing';
 import {
   createKeyboardEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
   typeInElement,
-  MockNgZone,
 } from '@angular/cdk/testing';
 import {
   Component,

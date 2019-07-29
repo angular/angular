@@ -1,6 +1,6 @@
 import {NgModule, NgZone, Component} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
-import {MockNgZone} from '@angular/cdk/testing';
+import {MockNgZone} from '@angular/cdk/private/testing';
 import {PortalModule, ComponentPortal} from '@angular/cdk/portal';
 import {OverlayModule, Overlay, OverlayConfig, OverlayRef, OverlayContainer} from '../index';
 

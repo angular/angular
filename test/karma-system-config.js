@@ -75,6 +75,7 @@ System.config({
     '@angular/cdk/coercion': 'dist/packages/cdk/coercion/index.js',
     '@angular/cdk/collections': 'dist/packages/cdk/collections/index.js',
     '@angular/cdk/drag-drop': 'dist/packages/cdk/drag-drop/index.js',
+    '@angular/cdk/private/testing': 'dist/packages/cdk/private/testing/index.js',
     '@angular/cdk/keycodes': 'dist/packages/cdk/keycodes/index.js',
     '@angular/cdk/layout': 'dist/packages/cdk/layout/index.js',
     '@angular/cdk/observers': 'dist/packages/cdk/observers/index.js',

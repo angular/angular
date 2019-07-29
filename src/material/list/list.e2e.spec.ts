@@ -1,5 +1,5 @@
 import {browser} from 'protractor';
-import {expectToExist} from '@angular/cdk/testing/e2e';
+import {expectToExist} from '@angular/cdk/private/testing/e2e';
 
 describe('list', () => {
   beforeEach(async () => await browser.get('/list'));

@@ -63,6 +63,7 @@ ng_test_library(
         "//src/cdk/keycodes",
         "//src/cdk/overlay",
         "//src/cdk/platform",
+        "//src/cdk/private/testing",
         "//src/cdk/scrolling",
         "//src/cdk/testing",
         "//src/material/core",

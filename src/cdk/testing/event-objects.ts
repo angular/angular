@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/** Creates a browser MouseEvent with the specified options. */
+/**
+ * Creates a browser MouseEvent with the specified options.
+ * @docs-private
+ */
 export function createMouseEvent(type: string, x = 0, y = 0, button = 0) {
   const event = document.createEvent('MouseEvent');
 
@@ -33,7 +36,10 @@ export function createMouseEvent(type: string, x = 0, y = 0, button = 0) {
   return event;
 }
 
-/** Creates a browser TouchEvent with the specified pointer coordinates. */
+/**
+ * Creates a browser TouchEvent with the specified pointer coordinates.
+ * @docs-private
+ */
 export function createTouchEvent(type: string, pageX = 0, pageY = 0) {
   // In favor of creating events that work for most of the browsers, the event is created
   // as a basic UI Event. The necessary details for the event will be set manually.
@@ -53,7 +59,10 @@ export function createTouchEvent(type: string, pageX = 0, pageY = 0) {
   return event;
 }
 
-/** Dispatches a keydown event from an element. */
+/**
+ * Dispatches a keydown event from an element.
+ * @docs-private
+ */
 export function createKeyboardEvent(type: string, keyCode: number, target?: Element, key?: string) {
   let event = document.createEvent('KeyboardEvent') as any;
   let originalPreventDefault = event.preventDefault;
@@ -82,7 +91,10 @@ export function createKeyboardEvent(type: string, keyCode: number, target?: Elem
   return event;
 }
 
-/** Creates a fake event object with any desired event type. */
+/**
+ * Creates a fake event object with any desired event type.
+ * @docs-private
+ */
 export function createFakeEvent(type: string, canBubble = false, cancelable = true) {
   const event = document.createEvent('Event');
   event.initEvent(type, canBubble, cancelable);

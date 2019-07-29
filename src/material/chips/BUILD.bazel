@@ -59,6 +59,7 @@ ng_test_library(
         "//src/cdk/bidi",
         "//src/cdk/keycodes",
         "//src/cdk/platform",
+        "//src/cdk/private/testing",
         "//src/cdk/testing",
         "//src/material/core",
         "//src/material/form-field",
