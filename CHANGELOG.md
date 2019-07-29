@@ -1,3 +1,18 @@
+## 8.1.2 "bologna-bayou" (2019-07-29)
+
+
+### Bug Fixes
+
+* **bottom-sheet:** not moving focus to container if autoFocus is disabled and focus was moved while animating ([#16418](https://github.com/angular/components/issues/16418)) ([0720a41](https://github.com/angular/components/commit/0720a41)), closes [#16297](https://github.com/angular/components/issues/16297) [#16221](https://github.com/angular/components/issues/16221)
+* **button-toggle:** error when check value is set via static attribute in Ivy ([#16587](https://github.com/angular/components/issues/16587)) ([3c92c08](https://github.com/angular/components/commit/3c92c08)), closes [#16471](https://github.com/angular/components/issues/16471)
+* **overlay:** clear duplicate overlay container coming in from the server ([#11940](https://github.com/angular/components/issues/11940)) ([ba508a6](https://github.com/angular/components/commit/ba508a6)), closes [#11817](https://github.com/angular/components/issues/11817)
+* **slide-toggle:** invalid required validator in template-driven forms ([#16547](https://github.com/angular/components/issues/16547)) ([dc0c271](https://github.com/angular/components/commit/dc0c271))
+* **tabs:** only use aria-current on active links ([#16562](https://github.com/angular/components/issues/16562)) ([b0937dc](https://github.com/angular/components/commit/b0937dc)), closes [#16557](https://github.com/angular/components/issues/16557)
+* **tree:** unable to set zero as the padding of a tree node ([#16345](https://github.com/angular/components/issues/16345)) ([bf66d81](https://github.com/angular/components/commit/bf66d81)), closes [#16338](https://github.com/angular/components/issues/16338)
+* **typography:** use `calc` to allow css variables ([#16475](https://github.com/angular/components/issues/16475)) ([6013036](https://github.com/angular/components/commit/6013036))
+
+
+
 ## 8.1.1 "vantablack-glowstick" (2019-07-16)
 
 
