@@ -100,7 +100,7 @@ genrule(
         ],
         cmd = " && ".join([
             "mkdir -p $(@D)",
-            "cp $(@D)/" + b[0].replace("-", "_") + "_rollup.es5umd.js $(@D)/" + b[0] + ".js",
+            "sed '$$d' $(@D)/" + b[0].replace("-", "_") + "_rollup.es5umd.js > $(@D)/" + b[0] + ".js",
             "cp $(@D)/" + b[0].replace("-", "_") + "_rollup.min.es5umd.js $(@D)/" + b[0] + ".min.js",
         ]),
     )
@@ -174,7 +174,7 @@ genrule(
         ],
         cmd = " && ".join([
             "mkdir -p $(@D)",
-            "cp $(@D)/" + b.replace("-", "_") + "_rollup.umd.js $(@D)/" + b + ".js",
+            "sed '$$d' $(@D)/" + b.replace("-", "_") + "_rollup.umd.js > $(@D)/" + b + ".js",
             "cp $(@D)/" + b.replace("-", "_") + "_rollup.min.umd.js $(@D)/" + b + ".min.js",
         ]),
     )
