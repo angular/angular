@@ -128,7 +128,7 @@ The third argument, `easing`, controls how the animation [accelerates and decele
 
 <div class="alert is-helpful">
 
-**Note:** See the Angular Material Design website's topic on [Natural easing curves](https://material.io/design/motion/speed.html#easing) for general information on easing curves.
+**Note:** See the Material Design website's topic on [Natural easing curves](https://material.io/design/motion/speed.html#easing) for general information on easing curves.
 </div>
 
 This example provides a state transition from `open` to `closed` with a one second transition between states.
