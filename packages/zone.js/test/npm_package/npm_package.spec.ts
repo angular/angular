@@ -49,11 +49,16 @@ describe('Zone.js npm_package', () => {
     describe('es5', () => {
       it('zone.js(es5) should not contain es6 spread code',
          () => { expect(shx.cat('zone.js')).not.toContain('let value of values'); });
+
+      it('zone.js(es5) should not contain source map comment',
+         () => { expect(shx.cat('zone.js')).not.toContain('sourceMappingURL'); });
     });
 
     describe('es2015', () => {
       it('zone-evergreen.js(es2015) should contain es6 code',
          () => { expect(shx.cat('zone-evergreen.js')).toContain('let value of values'); });
+      it('zone.js(es5) should not contain source map comment',
+         () => { expect(shx.cat('zone-evergreen.js')).not.toContain('sourceMappingURL'); });
     });
 
     describe('dist file list', () => {
