@@ -270,5 +270,5 @@ function parseParseSpanComment(commentText: string): ParseSpan|null {
     return null;
   }
 
-  return {start: +match[1], end: +match[2]};
+  return new ParseSpan(+match[1], +match[2]);
 }

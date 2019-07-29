@@ -1372,16 +1372,19 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
     const slotPseudoLocal = `PIPE:${slot}`;
     // Allocate one slot for the result plus one slot per pipe argument
     const pureFunctionSlot = this.allocatePureFunctionSlots(2 + pipe.args.length);
-    const target = new PropertyRead(pipe.span, new ImplicitReceiver(pipe.span), slotPseudoLocal);
+    const target = new PropertyRead(
+        pipe.span, pipe.sourceSpan, new ImplicitReceiver(pipe.span, pipe.sourceSpan),
+        slotPseudoLocal);
     const {identifier, isVarLength} = pipeBindingCallInfo(pipe.args);
     this.definePipe(pipe.name, slotPseudoLocal, slot, o.importExpr(identifier));
     const args: AST[] = [pipe.exp, ...pipe.args];
-    const convertedArgs: AST[] =
-        isVarLength ? this.visitAll([new LiteralArray(pipe.span, args)]) : this.visitAll(args);
+    const convertedArgs: AST[] = isVarLength ?
+        this.visitAll([new LiteralArray(pipe.span, pipe.sourceSpan, args)]) :
+        this.visitAll(args);
 
-    const pipeBindExpr = new FunctionCall(pipe.span, target, [
-      new LiteralPrimitive(pipe.span, slot),
-      new LiteralPrimitive(pipe.span, pureFunctionSlot),
+    const pipeBindExpr = new FunctionCall(pipe.span, pipe.sourceSpan, target, [
+      new LiteralPrimitive(pipe.span, pipe.sourceSpan, slot),
+      new LiteralPrimitive(pipe.span, pipe.sourceSpan, pureFunctionSlot),
       ...convertedArgs,
     ]);
     this._pipeBindExprs.push(pipeBindExpr);
@@ -1397,19 +1400,20 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
   }
 
   visitLiteralArray(array: LiteralArray, context: any): AST {
-    return new BuiltinFunctionCall(array.span, this.visitAll(array.expressions), values => {
-      // If the literal has calculated (non-literal) elements transform it into
-      // calls to literal factories that compose the literal and will cache intermediate
-      // values. Otherwise, just return an literal array that contains the values.
-      const literal = o.literalArr(values);
-      return values.every(a => a.isConstant()) ?
-          this.constantPool.getConstLiteral(literal, true) :
-          getLiteralFactory(this.constantPool, literal, this.allocatePureFunctionSlots);
-    });
+    return new BuiltinFunctionCall(
+        array.span, array.sourceSpan, this.visitAll(array.expressions), values => {
+          // If the literal has calculated (non-literal) elements transform it into
+          // calls to literal factories that compose the literal and will cache intermediate
+          // values. Otherwise, just return an literal array that contains the values.
+          const literal = o.literalArr(values);
+          return values.every(a => a.isConstant()) ?
+              this.constantPool.getConstLiteral(literal, true) :
+              getLiteralFactory(this.constantPool, literal, this.allocatePureFunctionSlots);
+        });
   }
 
   visitLiteralMap(map: LiteralMap, context: any): AST {
-    return new BuiltinFunctionCall(map.span, this.visitAll(map.values), values => {
+    return new BuiltinFunctionCall(map.span, map.sourceSpan, this.visitAll(map.values), values => {
       // If the literal has calculated (non-literal) elements  transform it into
       // calls to literal factories that compose the literal and will cache intermediate
       // values. Otherwise, just return an literal array that contains the values.
