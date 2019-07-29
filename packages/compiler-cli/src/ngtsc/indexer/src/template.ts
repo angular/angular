@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
-import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
+import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AbsoluteSourceSpan, AttributeIdentifier, ConsumedBindingIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
 import {ComponentMeta} from './context';
 
 /**
@@ -183,6 +183,8 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(template.references);
   }
   visitBoundAttribute(attribute: TmplAstBoundAttribute) {
+    this.visitConsumedBinding(attribute);
+
     // A BoundAttribute's value (the parent AST) may have subexpressions (children ASTs) that have
     // recorded spans extending past the recorded span of the parent. The most common example of
     // this is with `*ngFor`.
@@ -204,7 +206,10 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
         this.targetToIdentifier.bind(this));
     identifiers.forEach(id => this.identifiers.add(id));
   }
-  visitBoundEvent(attribute: TmplAstBoundEvent) { this.visitExpression(attribute.handler); }
+  visitBoundEvent(attribute: TmplAstBoundEvent) {
+    this.visitConsumedBinding(attribute);
+    this.visitExpression(attribute.handler);
+  }
   visitBoundText(text: TmplAstBoundText) { this.visitExpression(text.value); }
   visitReference(reference: TmplAstReference) {
     const referenceIdentifer = this.targetToIdentifier(reference);
@@ -223,6 +228,11 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     // If this node has already been seen, return the cached result.
     if (this.elementAndTemplateIdentifierCache.has(node)) {
       return this.elementAndTemplateIdentifierCache.get(node) !;
+    }
+
+    // Visit any consumed bindings on the node's attributes.
+    for (const attribute of node.attributes) {
+      this.visitConsumedBinding(attribute);
     }
 
     let name: string;
@@ -343,6 +353,30 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
           ast, ast.source, absoluteOffset, this.boundTemplate, targetToIdentifier);
       identifiers.forEach(id => this.identifiers.add(id));
     }
+  }
+
+  /**
+   * Visits a binding on an attribute consumed by a directive, if any. Attributes that may be
+   * consumed are bound attributes, bound events, or text attributes.
+   */
+  private visitConsumedBinding(attribute: TmplAstBoundAttribute|TmplAstBoundEvent|
+                               TmplAstTextAttribute) {
+    const consumer = this.boundTemplate.getConsumerOfBinding(attribute);
+    // Attributes not consumed by a directive are not currently interesting to the indexing API.
+    if (!consumer || consumer instanceof TmplAstElement || consumer instanceof TmplAstTemplate) {
+      return;
+    }
+
+    const {name, sourceSpan} = attribute;
+    const start = this.getStartLocation(name, sourceSpan);
+    const span = new AbsoluteSourceSpan(start, start + name.length);
+    const consumedBinding: ConsumedBindingIdentifier = {
+      name,
+      span,
+      kind: IdentifierKind.ConsumedBinding,
+      consumer: consumer.ref.node,
+    };
+    this.identifiers.add(consumedBinding);
   }
 }
 

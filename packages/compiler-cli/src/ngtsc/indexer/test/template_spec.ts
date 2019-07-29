@@ -757,4 +757,76 @@ runInEachFileSystem(() => {
       ]));
     });
   });
+
+  describe('generates identifiers for consumed bindings', () => {
+    it('should discover consumed bindings for bound attributes', () => {
+      const declConsumer = util.getComponentDeclaration('class Consumer {}', 'Consumer');
+      const template = '<consumer [bound]="value"></consumer>';
+      const boundTemplate = util.getBoundTemplate(template, {}, [
+        {
+          selector: 'consumer',
+          declaration: declConsumer,
+          inputs: {
+            'bound': 'boundValue',
+          }
+        },
+      ]);
+      const refs = getTemplateIdentifiers(boundTemplate);
+
+      const refArray = Array.from(refs);
+      expect(refArray).toContain({
+        name: 'bound',
+        kind: IdentifierKind.ConsumedBinding,
+        span: new AbsoluteSourceSpan(11, 16),
+        consumer: declConsumer,
+      });
+    });
+
+    it('should discover consumed bindings for bound events', () => {
+      const declConsumer = util.getComponentDeclaration('class Consumer {}', 'Consumer');
+      const template = '<consumer (bound)="value"></consumer>';
+      const boundTemplate = util.getBoundTemplate(template, {}, [
+        {
+          selector: 'consumer',
+          declaration: declConsumer,
+          inputs: {
+            'bound': 'boundValue',
+          }
+        },
+      ]);
+      const refs = getTemplateIdentifiers(boundTemplate);
+
+      const refArray = Array.from(refs);
+      expect(refArray).toContain({
+        name: 'bound',
+        kind: IdentifierKind.ConsumedBinding,
+        span: new AbsoluteSourceSpan(11, 16),
+        consumer: declConsumer,
+      });
+    });
+
+    it('should discover consumed bindings for text attributes', () => {
+      const declConsumer = util.getComponentDeclaration('class Consumer {}', 'Consumer');
+      const template = '<consumer bound="{{value}}"></consumer>';
+      const boundTemplate = util.getBoundTemplate(template, {}, [
+        {
+          selector: 'consumer',
+          declaration: declConsumer,
+          inputs: {
+            'bound': 'boundValue',
+          }
+        },
+      ]);
+      const refs = getTemplateIdentifiers(boundTemplate);
+      debugger;
+
+      const refArray = Array.from(refs);
+      expect(refArray).toContain({
+        name: 'bound',
+        kind: IdentifierKind.ConsumedBinding,
+        span: new AbsoluteSourceSpan(10, 15),
+        consumer: declConsumer,
+      });
+    });
+  });
 });

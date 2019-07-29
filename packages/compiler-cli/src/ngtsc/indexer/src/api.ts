@@ -21,6 +21,7 @@ export enum IdentifierKind {
   Attribute,
   Reference,
   Variable,
+  ConsumedBinding,
 }
 
 /**
@@ -99,11 +100,31 @@ export interface ReferenceIdentifier extends TemplateIdentifier {
 export interface VariableIdentifier extends TemplateIdentifier { kind: IdentifierKind.Variable; }
 
 /**
+ * Describes a bound attribute, bound event, or text attribute that is consumed as a binding to a
+ * directive. For example, in a template code like
+ *   <used-component [bound]="value"></used-component>
+ * `bound` is consumed by `boundValue` in
+ *   @Component({
+ *     selector: 'used-component',
+ *     template: './uc.html',
+ *   })
+ *   class UsedComponent {
+ *     @Input('bound') boundValue: BoundValue;
+ *   }
+ */
+export interface ConsumedBindingIdentifier extends TemplateIdentifier {
+  kind: IdentifierKind.ConsumedBinding;
+
+  /** Directive consuming the binding. */
+  consumer: ClassDeclaration;
+}
+
+/**
  * Identifiers recorded at the top level of the template, without any context about the HTML nodes
  * they were discovered in.
  */
 export type TopLevelIdentifier = PropertyIdentifier | MethodIdentifier | ElementIdentifier |
-    TemplateNodeIdentifier | ReferenceIdentifier | VariableIdentifier;
+    TemplateNodeIdentifier | ReferenceIdentifier | VariableIdentifier | ConsumedBindingIdentifier;
 
 /**
  * Describes the absolute byte offsets of a text anchor in a source code.
