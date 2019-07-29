@@ -415,9 +415,12 @@ class ExpressionVisitor extends NullTemplateVisitor {
              valueRelativePosition > binding.span.start + (binding.key.length - key.length)) ||
             !binding.key) {
           const span = new ParseSpan(0, this.attr.value.length);
+          const offset = ast.sourceSpan.start.offset;
           this.attributeValueCompletions(
               binding.expression ? binding.expression.ast :
-                                   new PropertyRead(span, new ImplicitReceiver(span), ''),
+                                   new PropertyRead(
+                                       span, span.toAbsolute(offset),
+                                       new ImplicitReceiver(span, span.toAbsolute(offset)), ''),
               valueRelativePosition);
         } else {
           keyCompletions();
