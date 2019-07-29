@@ -657,6 +657,11 @@ describe('MatRadio', () => {
       expect(radioInstance.required).toBe(true);
     });
 
+    it('should add value attribute to the underlying input element', () => {
+      expect(fruitRadioNativeInputs[0].getAttribute('value')).toBe('banana');
+      expect(fruitRadioNativeInputs[1].getAttribute('value')).toBe('raspberry');
+    });
+
     it('should add aria-label attribute to the underlying input element if defined', () => {
       expect(fruitRadioNativeInputs[0].getAttribute('aria-label')).toBe('Banana');
     });
