@@ -112,15 +112,17 @@ runInEachFileSystem(() => {
 
       const DIRECT_IMPORT_FILES = convertToDirectTsLibImport(NAMESPACED_IMPORT_FILES);
       const INLINE_FILES = convertToInlineTsLib(NAMESPACED_IMPORT_FILES);
+      const INLINE_SUFFIXED_FILES = convertToInlineTsLib(NAMESPACED_IMPORT_FILES, '$2');
 
       FILES = {
         'namespaced': NAMESPACED_IMPORT_FILES,
         'direct import': DIRECT_IMPORT_FILES,
         'inline': INLINE_FILES,
+        'inline suffixed': INLINE_SUFFIXED_FILES,
       };
     });
 
-    ['namespaced', 'direct import', 'inline'].forEach(label => {
+    ['namespaced', 'direct import', 'inline', 'inline suffixed'].forEach(label => {
       describe(`[${label}]`, () => {
         beforeEach(() => {
           const fs = getFileSystem();
