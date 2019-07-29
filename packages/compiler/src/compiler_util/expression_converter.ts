@@ -286,18 +286,20 @@ class _BuiltinAstConverter extends cdAst.AstTransformer {
   visitPipe(ast: cdAst.BindingPipe, context: any): any {
     const args = [ast.exp, ...ast.args].map(ast => ast.visit(this, context));
     return new BuiltinFunctionCall(
-        ast.span, args, this._converterFactory.createPipeConverter(ast.name, args.length));
+        ast.span, ast.sourceSpan, args,
+        this._converterFactory.createPipeConverter(ast.name, args.length));
   }
   visitLiteralArray(ast: cdAst.LiteralArray, context: any): any {
     const args = ast.expressions.map(ast => ast.visit(this, context));
     return new BuiltinFunctionCall(
-        ast.span, args, this._converterFactory.createLiteralArrayConverter(ast.expressions.length));
+        ast.span, ast.sourceSpan, args,
+        this._converterFactory.createLiteralArrayConverter(ast.expressions.length));
   }
   visitLiteralMap(ast: cdAst.LiteralMap, context: any): any {
     const args = ast.values.map(ast => ast.visit(this, context));
 
     return new BuiltinFunctionCall(
-        ast.span, args, this._converterFactory.createLiteralMapConverter(ast.keys));
+        ast.span, ast.sourceSpan, args, this._converterFactory.createLiteralMapConverter(ast.keys));
   }
 }
 
@@ -642,13 +644,14 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     // leftMostNode with its unguarded version in the call to `this.visit()`.
     if (leftMostSafe instanceof cdAst.SafeMethodCall) {
       this._nodeMap.set(
-          leftMostSafe,
-          new cdAst.MethodCall(
-              leftMostSafe.span, leftMostSafe.receiver, leftMostSafe.name, leftMostSafe.args));
+          leftMostSafe, new cdAst.MethodCall(
+                            leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.receiver,
+                            leftMostSafe.name, leftMostSafe.args));
     } else {
       this._nodeMap.set(
-          leftMostSafe,
-          new cdAst.PropertyRead(leftMostSafe.span, leftMostSafe.receiver, leftMostSafe.name));
+          leftMostSafe, new cdAst.PropertyRead(
+                            leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.receiver,
+                            leftMostSafe.name));
     }
 
     // Recursively convert the node now without the guarded member access.
@@ -812,7 +815,9 @@ function convertStmtIntoExpression(stmt: o.Statement): o.Expression|null {
 }
 
 export class BuiltinFunctionCall extends cdAst.FunctionCall {
-  constructor(span: cdAst.ParseSpan, public args: cdAst.AST[], public converter: BuiltinConverter) {
-    super(span, null, args);
+  constructor(
+      span: cdAst.ParseSpan, sourceSpan: cdAst.AbsoluteSourceSpan, public args: cdAst.AST[],
+      public converter: BuiltinConverter) {
+    super(span, sourceSpan, null, args);
   }
 }
