@@ -61,9 +61,7 @@ export class BindingParser {
               boundProps);
         } else {
           this._reportError(
-              `Value of the host property binding "${
-                  propName}" needs to be a string representing an expression but got "${
-                  expression}" (${typeof expression})`,
+              `Value of the host property binding "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
               sourceSpan);
         }
       });
@@ -91,9 +89,7 @@ export class BindingParser {
           this.parseEvent(propName, expression, sourceSpan, sourceSpan, [], targetEvents);
         } else {
           this._reportError(
-              `Value of the host listener "${
-                  propName}" needs to be a string representing an expression but got "${
-                  expression}" (${typeof expression})`,
+              `Value of the host listener "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
               sourceSpan);
         }
       });
@@ -361,15 +357,13 @@ export class BindingParser {
 
         default:
           this._reportError(
-              `The provided animation output phase value "${phase}" for "@${
-                  eventName}" is not supported (use start or done)`,
+              `The provided animation output phase value "${phase}" for "@${eventName}" is not supported (use start or done)`,
               sourceSpan);
           break;
       }
     } else {
       this._reportError(
-          `The animation trigger output event (@${
-              eventName}) is missing its phase value name (start or done are currently supported)`,
+          `The animation trigger output event (@${eventName}) is missing its phase value name (start or done are currently supported)`,
           sourceSpan);
     }
   }
