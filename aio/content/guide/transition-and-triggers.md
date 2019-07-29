@@ -2,7 +2,7 @@
 
 You learned the basics of Angular animations in the [introduction](guide/animations) page.
 
-In this guide, we go into greater depth on special transition states such as `*` (wildcard) and `void`, and show how these special states are used for elements entering and leaving a view. The chapter also explores on multiple animation triggers, animation callbacks and sequence-based animation using keyframes.
+In this guide, we go into greater depth on special transition states such as `*` (wildcard) and `void`, and show how these special states are used for elements entering and leaving a view. The chapter also explores multiple animation triggers, animation callbacks and sequence-based animation using keyframes.
 
 ## Predefined states and wildcard matching
 
