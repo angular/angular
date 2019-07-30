@@ -818,7 +818,6 @@ runInEachFileSystem(() => {
         },
       ]);
       const refs = getTemplateIdentifiers(boundTemplate);
-      debugger;
 
       const refArray = Array.from(refs);
       expect(refArray).toContain({
