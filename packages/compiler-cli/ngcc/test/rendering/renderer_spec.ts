@@ -98,6 +98,7 @@ runInEachFileSystem(() => {
     let _: typeof absoluteFrom;
     let INPUT_PROGRAM: TestFile;
     let COMPONENT_PROGRAM: TestFile;
+    let NGMODULE_PROGRAM: TestFile;
     let INPUT_PROGRAM_MAP: SourceMapConverter;
     let RENDERED_CONTENTS: string;
     let OUTPUT_PROGRAM_MAP: SourceMapConverter;
@@ -116,6 +117,12 @@ runInEachFileSystem(() => {
         name: _('/node_modules/test-package/src/component.js'),
         contents:
             `import { Component } from '@angular/core';\nexport class A {}\nA.decorators = [\n    { type: Component, args: [{ selector: 'a', template: '{{ person!.name }}' }] }\n];\n`
+      };
+
+      NGMODULE_PROGRAM = {
+        name: _('/node_modules/test-package/src/ngmodule.js'),
+        contents:
+            `import { NgModule } from '@angular/core';\nexport class A {}\nA.decorators = [\n    { type: NgModule, args: [{}] }\n];\n`
       };
 
       INPUT_PROGRAM_MAP = fromObject({
@@ -253,6 +260,25 @@ runInEachFileSystem(() => {
              expect(values[0][0].getText())
                  .toEqual(`{ type: Directive, args: [{ selector: '[a]' }] }`);
            });
+
+        it('should render static fields before any additional statements', () => {
+          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
+          renderer.renderProgram(
+              decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+          const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
+          const definitions: string = addDefinitionsSpy.calls.first().args[2];
+          const ngModuleDef = definitions.indexOf('ngModuleDef');
+          expect(ngModuleDef).not.toEqual(-1, 'ngModuleDef should exist');
+          const ngInjectorDef = definitions.indexOf('ngInjectorDef');
+          expect(ngInjectorDef).not.toEqual(-1, 'ngInjectorDef should exist');
+          const setClassMetadata = definitions.indexOf('setClassMetadata');
+          expect(setClassMetadata).not.toEqual(-1, 'setClassMetadata call should exist');
+          expect(setClassMetadata)
+              .toBeGreaterThan(ngModuleDef, 'setClassMetadata should follow ngModuleDef');
+          expect(setClassMetadata)
+              .toBeGreaterThan(ngInjectorDef, 'setClassMetadata should follow ngInjectorDef');
+        });
 
         it('should render classes without decorators if handler matches', () => {
           const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
