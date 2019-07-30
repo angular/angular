@@ -350,6 +350,12 @@ describe(
                       'Uncaught (in promise): ' + error +
                       (error !.stack ? '\n' + error !.stack : ''));
               expect((promiseError as any)['rejection']).toBe(error);
+              expect(promiseError !.message)
+                  .toBe(
+                      'Uncaught (in promise): ' + error +
+                      (error !.stack ? '\n' + error !.stack : ''));
+              // TODO: @JiaLiPassion, add test cases for not wrap uncaught error
+              // expect(promiseError).toBe(error);
               expect((promiseError as any)['zone']).toBe(zone);
               expect((promiseError as any)['task']).toBe(task);
               done();
@@ -388,6 +394,39 @@ describe(
             });
           });
         });
+
+        xit('should print original information when throw a not error object with a message property',
+            (done) => {
+              let promiseError: Error|null = null;
+              let zone: Zone|null = null;
+              let task: Task|null = null;
+              let rejectObj: TestRejection;
+              queueZone
+                  .fork({
+                    name: 'promise-error',
+                    onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone,
+                                    error: any): boolean => {
+                      promiseError = error;
+                      delegate.handleError(target, error);
+                      return false;
+                    }
+                  })
+                  .run(() => {
+                    zone = Zone.current;
+                    task = Zone.currentTask;
+                    rejectObj = new TestRejection();
+                    rejectObj.prop1 = 'value1';
+                    rejectObj.prop2 = 'value2';
+                    (rejectObj as any).message = 'rejectMessage';
+                    Promise.reject(rejectObj);
+                    expect(promiseError).toBe(null);
+                  });
+              setTimeout((): any => null);
+              setTimeout(() => {
+                expect(promiseError).toEqual(rejectObj as any);
+                done();
+              });
+            });
 
         describe('Promise.race', () => {
           it('should reject the value', () => {
