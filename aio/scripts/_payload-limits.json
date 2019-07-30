@@ -29,7 +29,7 @@
         "runtime-es5": 2932,
         "runtime-es2015": 2938,
         "main-es5": 560811,
-        "main-es2015": 572938,
+        "main-es2015": 499846,
         "polyfills-es5": 129161,
         "polyfills-es2015": 53295
       }
