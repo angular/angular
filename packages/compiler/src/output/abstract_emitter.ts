@@ -361,6 +361,19 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
 
+  visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
+    ctx.print(ast, '$localize `' + ast.messageParts[0]);
+    for (let i = 1; i < ast.messageParts.length; i++) {
+      ctx.print(ast, '${');
+      ast.expressions[i - 1].visitExpression(this, ctx);
+      // Add the placeholder name annotation to support runtime inlining
+      ctx.print(ast, `}:${ast.placeHolderNames[i - 1]}:`);
+      ctx.print(ast, ast.messageParts[i]);
+    }
+    ctx.print(ast, '`');
+    return null;
+  }
+
   abstract visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any;
 
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: EmitterVisitorContext): any {

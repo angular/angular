@@ -271,6 +271,7 @@ class KeyVisitor implements o.ExpressionVisitor {
   visitReadPropExpr = invalid;
   visitReadKeyExpr = invalid;
   visitCommaExpr = invalid;
+  visitLocalizedString = invalid;
 }
 
 function invalid<T>(this: o.ExpressionVisitor, arg: o.Expression | o.Statement): never {
