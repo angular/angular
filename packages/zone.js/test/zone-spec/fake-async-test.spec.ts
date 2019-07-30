@@ -84,7 +84,9 @@ describe('FakeAsyncTestZoneSpec', () => {
        () => {
          fakeAsyncTestZone.run(() => {
            Promise.resolve(null).then((_) => { throw new Error('async'); });
-           expect(() => { testZoneSpec.flushMicrotasks(); }).toThrowError(/async/);
+           expect(() => {
+             testZoneSpec.flushMicrotasks();
+           }).toThrowError(/Uncaught \(in promise\): Error: async/);
          });
        });
 
@@ -1169,7 +1171,7 @@ const {fakeAsync, tick, discardPeriodicTasks, flush, flushMicrotasks} = fakeAsyn
             resolvedPromise.then((_) => { throw new Error('async'); });
             flushMicrotasks();
           })();
-        }).toThrowError(/async/);
+        }).toThrowError(/Uncaught \(in promise\): Error: async/);
       });
 
       it('should complain if a test throws an exception', () => {
