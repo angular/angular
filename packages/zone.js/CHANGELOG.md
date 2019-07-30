@@ -1,3 +1,14 @@
+<a name="0.10.1"></a>
+# [0.10.1](https://github.com/angular/angular/compare/zone.js-0.10.0...zone.js-0.10.1) (2019-07-30)
+
+
+### Bug Fixes
+
+* **zone.js:** don't rely on global node typings outside of node/ directory ([#31783](https://github.com/angular/angular/issues/31783)) ([5c9a896](https://github.com/angular/angular/commit/5c9a896))
+* **zone.js:** should expose some other internal intefaces ([#31866](https://github.com/angular/angular/issues/31866)) ([f5c605b](https://github.com/angular/angular/commit/f5c605b))
+
+
+
 <a name="0.10.0"></a>
 # [0.10.0](https://github.com/angular/angular/compare/7b3bcc2...174770e) (2019-07-26)
 
