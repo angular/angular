@@ -1281,7 +1281,7 @@ export function query(
  *  }
  * ```
  *
- * Here is the animation trigger code:
+ * Here is the animation trigger code:0000111100001111*
  *
  * ```typescript
  * trigger('listAnimation', [
