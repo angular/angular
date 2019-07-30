@@ -11,50 +11,86 @@ When you are ready to deploy your Angular application to a remote server, you ha
 {@a dev-deploy}
 {@a copy-files}
 
+<!--
 ## Simple deployment options
+-->
+## 간단한 배포 옵션
 
+<!--
 Before fully deploying your application, you can test the process, build configuration, and deployed behavior by using one of these interim techniques
+-->
+Angular가 제공하는 배포 도구를 활용하면 애플리케이션을 배포가 이루어지는 각 단계가 제대로 동작하는지, 빌드 설정은 올바른지, 배포 동작은 제대로 수행되는지 확인할 수 있습니다.
 
+<!--
 ### Building and serving from disk
+-->
+### 로컬 환경에서 빌드하고 실행해보기
 
+<!--
 During development, you typically use the `ng serve` command to build, watch, and serve the application from local memory, using [webpack-dev-server](https://webpack.js.org/guides/development/#webpack-dev-server).
 When you are ready to deploy, however, you must use the `ng build` command to build the app and deploy the build artifacts elsewhere.
 
 Both `ng build` and `ng serve` clear the output folder before they build the project, but only the `ng build` command writes the generated build artifacts to the output folder.
+-->
+앱을 개발하는 단계에서는 보통 `ng serve` 명령을 실행해서 코드가 변경되는 것을 감지하는 모드로 앱을 빌드하는데, 이렇게 빌드한 애플리케이션은 로컬 메모리에서 실행되는 [webpack-dev-server](https://webpack.js.org/guides/development/#webpack-dev-server)로 띄워볼 수 있습니다.
+하지만 제대로 배포하려면 이 명령 대신 `ng build` 명령을 실행해서 애플리케이션 빌드 결과물을 로컬 환경에 파일로 생성해야 합니다.
+
+`ng serve` 명령과 `ng build` 명령은 모두 프로젝트를 빌드하기 전에 빌드 결과물이 생성될 폴더를 깨끗하게 비웁니다. 이 때 `ng serve` 명령이 대상 폴더에 빌드 결과물을 생성하지 않는 것과 다르게, `ng build` 명령을 실행하면 대상 폴더에 빌드 결과물을 실제로 생성합니다.
 
 <div class="alert is-helpful">
 
+<!--
 The output folder is  `dist/project-name/` by default.
 To output to a different folder, change the `outputPath` in `angular.json`.
+-->
+따로 수정하지 않았다면 빌드 결과물이 생성되는 위치는 `dist/프로젝트-이름` 폴더입니다.
+이 위치를 변경하려면 `angular.json` 파일에 지정된 `outputPath` 옵션을 변경하면 됩니다.
 
 </div>
 
+<!--
 As you near the end of the development process, serving the contents of your output folder from a local web server can give you a better idea of how your application will behave when it is deployed to a remote server.
 You will need two terminals to get the live-reload experience.
 
 * On the first terminal, run the [`ng build` command](cli/build) in *watch* mode to compile the application to the `dist` folder.
+-->
+개발 단계를 마무리할 때쯤 되었을 때 `ng build` 명령을 실행해서 애플리케이션을 빌드해보면, 빌드 결과물이 실제로 로컬 환경에 생성되기 때문에 리모트 서버에 이 파일들을 어떻게 둬야 하는지 생각해 볼 수 있습니다.
+이 과정은 다음과 같은 방법으로 확인할 수도 있습니다.
+
+* 터미널에서 [`ng build` 명령](cli/build)을 실행하면서 *워치* 모드를 활성화할 수 있습니다. 이렇게 실행하면 애플리케이션 코드가 변경될 때마다 `dist` 폴더의 내용물도 다시 생성됩니다. `ng serve` 명령이 실행되는 동작과 비슷합니다.
 
   <code-example language="none" class="code-shell">
    ng build --watch
   </code-example>
 
+<!--
   Like the `ng serve` command, this regenerates output files when source files change.
 
 * On the second terminal, install a web server (such as [lite-server](https://github.com/johnpapa/lite-server)), and run it against the output folder. For example:
+-->
+* 아니면 [lite-server](https://github.com/johnpapa/lite-server)와 같은 웹 서버를 실행해서 빌드 결과물이 위치한 폴더를 직접 띄워볼 수도 있습니다. 보통 이렇게 실행합니다:
 
   <code-example language="none" class="code-shell">
    lite-server --baseDir="dist"
   </code-example>
-
+<!--
    The server will automatically reload your browser when new files are output.
+-->
+   이 방법도 이전과 마찬가지로 빌드 결과물 파일이 변경되면 브라우저에도 새로운 파일의 내용이 반영됩니다.
 
 <div class="alert is-critical">
 
+<!--
 This method is for development and testing only, and is not a supported or secure way of deploying an application.
+-->
+위에서 설명한 방법은 애플리케이션을 개발하거나 테스트하는 용도로만 사용하세요. 이 방법은 애플리케이션을 온전히 배포하는 방법은 아닙니다.
 
 </div>
 
+<!--
 ### Basic deployment to a remote server
+-->
+### 리모트 서버에 배포하기
 
 <!--
 For the simplest deployment, create a production build and copy the output directory to a web server.
