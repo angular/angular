@@ -12,8 +12,15 @@ import {createI18nMessageFactory} from '../../../i18n/i18n_parser';
 import * as html from '../../../ml_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../../../ml_parser/parser';
+import * as o from '../../../output/output_ast';
 
-import {I18N_ATTR, I18N_ATTR_PREFIX, I18nMeta, hasI18nAttrs, icuFromI18nMessage, metaFromI18nMessage, parseI18nMeta} from './util';
+import {I18N_ATTR, I18N_ATTR_PREFIX, hasI18nAttrs, icuFromI18nMessage} from './util';
+
+export type I18nMeta = {
+  id?: string,
+  description?: string,
+  meaning?: string
+};
 
 function setI18nRefs(html: html.Node & {i18n?: i18n.AST}, i18n: i18n.Node) {
   html.i18n = i18n;
@@ -128,4 +135,58 @@ export function processI18nMeta(
           new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
           htmlAstWithErrors.rootNodes),
       htmlAstWithErrors.errors);
+}
+
+export function metaFromI18nMessage(message: i18n.Message, id: string | null = null): I18nMeta {
+  return {
+    id: typeof id === 'string' ? id : message.id || '',
+    meaning: message.meaning || '',
+    description: message.description || ''
+  };
+}
+
+/** I18n separators for metadata **/
+const I18N_MEANING_SEPARATOR = '|';
+const I18N_ID_SEPARATOR = '@@';
+
+/**
+ * Parses i18n metas like:
+ *  - "@@id",
+ *  - "description[@@id]",
+ *  - "meaning|description[@@id]"
+ * and returns an object with parsed output.
+ *
+ * @param meta String that represents i18n meta
+ * @returns Object with id, meaning and description fields
+ */
+export function parseI18nMeta(meta?: string): I18nMeta {
+  let id: string|undefined;
+  let meaning: string|undefined;
+  let description: string|undefined;
+
+  if (meta) {
+    const idIndex = meta.indexOf(I18N_ID_SEPARATOR);
+    const descIndex = meta.indexOf(I18N_MEANING_SEPARATOR);
+    let meaningAndDesc: string;
+    [meaningAndDesc, id] =
+        (idIndex > -1) ? [meta.slice(0, idIndex), meta.slice(idIndex + 2)] : [meta, ''];
+    [meaning, description] = (descIndex > -1) ?
+        [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
+        ['', meaningAndDesc];
+  }
+
+  return {id, meaning, description};
+}
+
+// Converts i18n meta information for a message (id, description, meaning)
+// to a JsDoc statement formatted as expected by the Closure compiler.
+export function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
+  const tags: o.JSDocTag[] = [];
+  if (meta.description) {
+    tags.push({tagName: o.JSDocTagName.Desc, text: meta.description});
+  }
+  if (meta.meaning) {
+    tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
+  }
+  return tags.length == 0 ? null : new o.JSDocCommentStmt(tags);
 }

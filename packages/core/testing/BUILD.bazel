@@ -13,6 +13,7 @@ ng_module(
         "//packages:types",
         "//packages/compiler",
         "//packages/core",
+        "//packages/localize",
         "@npm//@types/jasmine",
         "@npm//zone.js",
     ],

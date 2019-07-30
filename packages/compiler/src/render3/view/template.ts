@@ -33,9 +33,10 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
 import {I18nContext} from './i18n/context';
+import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
+import {createLocalizeStatements} from './i18n/localize_utils';
 import {I18nMetaVisitor} from './i18n/meta';
-import {getSerializedI18nContent} from './i18n/serializer';
-import {I18N_ICU_MAPPING_PREFIX, TRANSLATION_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, formatI18nPlaceholderName, getTranslationConstPrefix, getTranslationDeclStmts, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, metaFromI18nMessage, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
+import {I18N_ICU_MAPPING_PREFIX, TRANSLATION_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, chainedInstruction, getAttrsForDirectiveMatching, getInterpolationArgsLength, invalid, trimTrailingNulls, unsupported} from './util';
 
@@ -187,27 +188,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         });
   }
 
-  registerContextVariables(variable: t.Variable) {
-    const scopedName = this._bindingScope.freshReferenceName();
-    const retrievalLevel = this.level;
-    const lhs = o.variable(variable.name + scopedName);
-    this._bindingScope.set(
-        retrievalLevel, variable.name, lhs, DeclarationPriority.CONTEXT,
-        (scope: BindingScope, relativeLevel: number) => {
-          let rhs: o.Expression;
-          if (scope.bindingLevel === retrievalLevel) {
-            // e.g. ctx
-            rhs = o.variable(CONTEXT_NAME);
-          } else {
-            const sharedCtxVar = scope.getSharedContextName(retrievalLevel);
-            // e.g. ctx_r0   OR  x(2);
-            rhs = sharedCtxVar ? sharedCtxVar : generateNextContextExpr(relativeLevel);
-          }
-          // e.g. const $item$ = x(2).$implicit;
-          return [lhs.set(rhs.prop(variable.value || IMPLICIT_REFERENCE)).toConstDecl()];
-        });
-  }
-
   buildTemplateFunction(
       nodes: t.Node[], variables: t.Variable[], ngContentSelectorsOffset: number = 0,
       i18n?: i18n.AST): o.FunctionExpr {
@@ -317,38 +297,47 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // LocalResolver
   notifyImplicitReceiverUse(): void { this._bindingScope.notifyImplicitReceiverUse(); }
 
-  i18nTranslate(
+  private i18nTranslate(
       message: i18n.Message, params: {[name: string]: o.Expression} = {}, ref?: o.ReadVarExpr,
       transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.ReadVarExpr {
     const _ref = ref || o.variable(this.constantPool.uniqueName(TRANSLATION_PREFIX));
     // Closure Compiler requires const names to start with `MSG_` but disallows any other const to
     // start with `MSG_`. We define a variable starting with `MSG_` just for the `goog.getMsg` call
     const closureVar = this.i18nGenerateClosureVar(message.id);
-    const formattedParams = this.i18nFormatPlaceholderNames(params, /* useCamelCase */ true);
-    const meta = metaFromI18nMessage(message);
-    const content = getSerializedI18nContent(message);
-    const statements =
-        getTranslationDeclStmts(_ref, closureVar, content, meta, formattedParams, transformFn);
+    const statements = getTranslationDeclStmts(message, _ref, closureVar, params, transformFn);
     this.constantPool.statements.push(...statements);
     return _ref;
   }
 
-  i18nFormatPlaceholderNames(params: {[name: string]: o.Expression} = {}, useCamelCase: boolean) {
-    const _params: {[key: string]: o.Expression} = {};
-    if (params && Object.keys(params).length) {
-      Object.keys(params).forEach(
-          key => _params[formatI18nPlaceholderName(key, useCamelCase)] = params[key]);
-    }
-    return _params;
+  private registerContextVariables(variable: t.Variable) {
+    const scopedName = this._bindingScope.freshReferenceName();
+    const retrievalLevel = this.level;
+    const lhs = o.variable(variable.name + scopedName);
+    this._bindingScope.set(
+        retrievalLevel, variable.name, lhs, DeclarationPriority.CONTEXT,
+        (scope: BindingScope, relativeLevel: number) => {
+          let rhs: o.Expression;
+          if (scope.bindingLevel === retrievalLevel) {
+            // e.g. ctx
+            rhs = o.variable(CONTEXT_NAME);
+          } else {
+            const sharedCtxVar = scope.getSharedContextName(retrievalLevel);
+            // e.g. ctx_r0   OR  x(2);
+            rhs = sharedCtxVar ? sharedCtxVar : generateNextContextExpr(relativeLevel);
+          }
+          // e.g. const $item$ = x(2).$implicit;
+          return [lhs.set(rhs.prop(variable.value || IMPLICIT_REFERENCE)).toConstDecl()];
+        });
   }
 
-  i18nAppendBindings(expressions: AST[]) {
+  private i18nAppendBindings(expressions: AST[]) {
     if (expressions.length > 0) {
       expressions.forEach(expression => this.i18n !.appendBinding(expression));
     }
   }
 
-  i18nBindProps(props: {[key: string]: t.Text | t.BoundText}): {[key: string]: o.Expression} {
+  private i18nBindProps(props: {[key: string]: t.Text | t.BoundText}):
+      {[key: string]: o.Expression} {
     const bound: {[key: string]: o.Expression} = {};
     Object.keys(props).forEach(key => {
       const prop = props[key];
@@ -369,7 +358,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return bound;
   }
 
-  i18nGenerateClosureVar(messageId: string): o.ReadVarExpr {
+  private i18nGenerateClosureVar(messageId: string): o.ReadVarExpr {
     let name: string;
     const suffix = this.fileBasedI18nSuffix.toUpperCase();
     if (this.i18nUseExternalIds) {
@@ -383,7 +372,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return o.variable(name);
   }
 
-  i18nUpdateRef(context: I18nContext): void {
+  private i18nUpdateRef(context: I18nContext): void {
     const {icus, meta, isRoot, isResolved, isEmitted} = context;
     if (isRoot && isResolved && !isEmitted && !isSingleI18nIcu(meta)) {
       context.isEmitted = true;
@@ -428,7 +417,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-  i18nStart(span: ParseSourceSpan|null = null, meta: i18n.AST, selfClosing?: boolean): void {
+  private i18nStart(span: ParseSourceSpan|null = null, meta: i18n.AST, selfClosing?: boolean):
+      void {
     const index = this.allocateDataSlot();
     if (this.i18nContext) {
       this.i18n = this.i18nContext.forkChildContext(index, this.templateIndex !, meta);
@@ -448,7 +438,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.creationInstruction(span, selfClosing ? R3.i18n : R3.i18nStart, params);
   }
 
-  i18nEnd(span: ParseSourceSpan|null = null, selfClosing?: boolean): void {
+  private i18nEnd(span: ParseSourceSpan|null = null, selfClosing?: boolean): void {
     if (!this.i18n) {
       throw new Error('i18nEnd is executed with no i18n context present');
     }
@@ -474,6 +464,34 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.creationInstruction(span, R3.i18nEnd);
     }
     this.i18n = null;  // reset local i18n context
+  }
+
+  private getNamespaceInstruction(namespaceKey: string|null) {
+    switch (namespaceKey) {
+      case 'math':
+        return R3.namespaceMathML;
+      case 'svg':
+        return R3.namespaceSVG;
+      default:
+        return R3.namespaceHTML;
+    }
+  }
+
+  private addNamespaceInstruction(nsInstruction: o.ExternalReference, element: t.Element) {
+    this._namespace = nsInstruction;
+    this.creationInstruction(element.sourceSpan, nsInstruction);
+  }
+
+  /**
+   * Adds an update instruction for an interpolated property or attribute, such as
+   * `prop="{{value}}"` or `attr.title="{{value}}"`
+   */
+  private interpolatedUpdateInstruction(
+      instruction: o.ExternalReference, elementIndex: number, attrName: string,
+      input: t.BoundAttribute, value: any, params: any[]) {
+    this.updateInstruction(
+        elementIndex, input.sourceSpan, instruction,
+        () => [o.literal(attrName), ...this.getUpdateInstructionArguments(value), ...params]);
   }
 
   visitContent(ngContent: t.Content) {
@@ -503,23 +521,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (this.i18n) {
       this.i18n.appendProjection(ngContent.i18n !, slot);
     }
-  }
-
-
-  getNamespaceInstruction(namespaceKey: string|null) {
-    switch (namespaceKey) {
-      case 'math':
-        return R3.namespaceMathML;
-      case 'svg':
-        return R3.namespaceSVG;
-      default:
-        return R3.namespaceHTML;
-    }
-  }
-
-  addNamespaceInstruction(nsInstruction: o.ExternalReference, element: t.Element) {
-    this._namespace = nsInstruction;
-    this.creationInstruction(element.sourceSpan, nsInstruction);
   }
 
   visitElement(element: t.Element) {
@@ -844,17 +845,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-  /**
-   * Adds an update instruction for an interpolated property or attribute, such as
-   * `prop="{{value}}"` or `attr.title="{{value}}"`
-   */
-  interpolatedUpdateInstruction(
-      instruction: o.ExternalReference, elementIndex: number, attrName: string,
-      input: t.BoundAttribute, value: any, params: any[]) {
-    this.updateInstruction(
-        elementIndex, input.sourceSpan, instruction,
-        () => [o.literal(attrName), ...this.getUpdateInstructionArguments(value), ...params]);
-  }
 
   visitTemplate(template: t.Template) {
     const NG_TEMPLATE_TAG_NAME = 'ng-template';
@@ -1007,7 +997,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // - all ICU vars (such as `VAR_SELECT` or `VAR_PLURAL`) are replaced with correct values
     const transformFn = (raw: o.ReadVarExpr) => {
       const params = {...vars, ...placeholders};
-      const formatted = this.i18nFormatPlaceholderNames(params, /* useCamelCase */ false);
+      const formatted = i18nFormatPlaceholderNames(params, /* useCamelCase */ false);
       return instruction(null, R3.i18nPostprocess, [raw, mapLiteral(formatted, true)]);
     };
 
@@ -2003,4 +1993,53 @@ interface ChainableBindingInstruction {
   sourceSpan: ParseSourceSpan|null;
   value: () => o.Expression;
   params?: any[];
+}
+
+/** Name of the global variable that is used to determine if we use Closure translations or not */
+const NG_I18N_CLOSURE_MODE = 'ngI18nClosureMode';
+
+/**
+ * Generate statements that define a given translation message.
+ *
+ * ```
+ * var I18N_1;
+ * if (ngI18nClosureMode) {
+ *     var MSG_EXTERNAL_XXX = goog.getMsg(
+ *          "Some message with {$interpolation}!",
+ *          { "interpolation": "\uFFFD0\uFFFD" }
+ *     );
+ *     I18N_1 = MSG_EXTERNAL_XXX;
+ * }
+ * else {
+ *     I18N_1 = $localize`Some message with ${'\uFFFD0\uFFFD'}!`;
+ * }
+ * ```
+ *
+ * @param message The original i18n AST message node
+ * @param variable The variable that will be assigned the translation, e.g. `I18N_1`.
+ * @param closureVar The variable for Closure `goog.getMsg` calls, e.g. `MSG_EXTERNAL_XXX`.
+ * @param params Object mapping placeholder names to their values (e.g.
+ * `{ "interpolation": "\uFFFD0\uFFFD" }`).
+ * @param transformFn Optional transformation function that will be applied to the translation (e.g.
+ * post-processing).
+ * @returns An array of statements that defined a given translation.
+ */
+export function getTranslationDeclStmts(
+    message: i18n.Message, variable: o.ReadVarExpr, closureVar: o.ReadVarExpr,
+    params: {[name: string]: o.Expression} = {},
+    transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Statement[] {
+  const formattedParams = i18nFormatPlaceholderNames(params, /* useCamelCase */ true);
+  const statements: o.Statement[] = [
+    declareI18nVariable(variable),
+    o.ifStmt(
+        o.variable(NG_I18N_CLOSURE_MODE),
+        createGoogleGetMsgStatements(variable, message, closureVar, formattedParams),
+        createLocalizeStatements(variable, message, formattedParams)),
+  ];
+
+  if (transformFn) {
+    statements.push(new o.ExpressionStatement(variable.set(transformFn(variable))));
+  }
+
+  return statements;
 }

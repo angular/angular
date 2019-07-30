@@ -14,6 +14,7 @@ ng_module(
         "//packages:types",
         "//packages/common",
         "//packages/core",
+        "//packages/localize",
         "//packages/platform-browser",
         "@npm//rxjs",
     ],

@@ -5,8 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import '@angular/core/test/bundling/util/src/reflect_metadata';
+// Make the `$localize()` global function available to the compiled templates, and the direct calls
+// below. This would normally be done inside the application `polyfills.ts` file.
+import '@angular/localize';
 /**
  * TODO(ocombe): replace this with the real runtime i18n service configuration
  * For now we define inline translations that are added with the function `ɵi18nConfigureLocalize`,
@@ -16,31 +18,26 @@ import '@angular/core/test/bundling/util/src/reflect_metadata';
  */
 import './translations';
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent, ɵɵi18nLocalize as localize} from '@angular/core';
+import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
 
 class Todo {
   editing: boolean;
 
-  // TODO(issue/24571): remove '!'.
-  private _title !: string;
   get title() { return this._title; }
   set title(value: string) { this._title = value.trim(); }
 
-  constructor(title: string, public completed: boolean = false) {
-    this.editing = false;
-    this.title = title;
-  }
+  constructor(private _title: string, public completed: boolean = false) { this.editing = false; }
 }
 
 @Injectable({providedIn: 'root'})
 class TodoStore {
   todos: Array<Todo> = [
-    new Todo(localize('Demonstrate Components')),
-    new Todo(localize('Demonstrate Structural Directives'), true),
+    new Todo($localize `Demonstrate Components`),
+    new Todo($localize `Demonstrate Structural Directives`, true),
     // Using a placeholder
-    new Todo(localize('Demonstrate {$value}', {value: 'NgModules'})),
-    new Todo(localize('Demonstrate zoneless change detection')),
-    new Todo(localize('Demonstrate internationalization')),
+    new Todo($localize `Demonstrate ${'NgModules'}:value:`),
+    new Todo($localize `Demonstrate zoneless change detection`),
+    new Todo($localize `Demonstrate internationalization`),
   ];
 
   private getWithCompleted(completed: boolean) {

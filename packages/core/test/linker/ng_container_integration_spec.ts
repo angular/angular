@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-
+import '@angular/localize';
 import {AfterContentInit, AfterViewInit, Component, ContentChildren, Directive, Input, QueryList, ViewChildren, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isCommentNode} from '@angular/platform-browser/testing/src/browser_util';

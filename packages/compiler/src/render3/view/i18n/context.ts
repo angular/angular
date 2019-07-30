@@ -10,7 +10,7 @@ import {AST} from '../../../expression_parser/ast';
 import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
 
-import {assembleBoundTextPlaceholders, findIndex, getSeqNumberGenerator, updatePlaceholderMap, wrapI18nPlaceholder} from './util';
+import {assembleBoundTextPlaceholders, getSeqNumberGenerator, updatePlaceholderMap, wrapI18nPlaceholder} from './util';
 
 enum TagType {
   ELEMENT,
@@ -142,7 +142,7 @@ export class I18nContext {
         return;
       }
       // try to find matching template...
-      const tmplIdx = findIndex(phs, findTemplateFn(context.id, context.templateIndex));
+      const tmplIdx = phs.findIndex(findTemplateFn(context.id, context.templateIndex));
       if (tmplIdx >= 0) {
         // ... if found - replace it with nested template content
         const isCloseTag = key.startsWith('CLOSE');

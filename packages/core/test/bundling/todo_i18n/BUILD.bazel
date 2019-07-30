@@ -17,6 +17,7 @@ ng_module(
         "//packages/common",
         "//packages/core",
         "//packages/core/test/bundling/util:reflect_metadata",
+        "//packages/localize",
     ],
 )
 
@@ -47,6 +48,7 @@ ts_library(
         "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
+        "//packages/localize",
         "//packages/private/testing",
     ],
 )
