@@ -76,7 +76,8 @@ export function ɵɵtemplate(
     resolveDirectives(tView, lView, tContainerNode, localRefs || null);
 
     const embeddedTView = tContainerNode.tViews = createTView(
-        -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null, null);
+        -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null,
+        tView.schemas);
     if (tView.queries !== null) {
       tView.queries.template(tView, tContainerNode);
       embeddedTView.queries = tView.queries.embeddedTView(tContainerNode);
