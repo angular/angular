@@ -15,51 +15,55 @@ import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 
-describe('completions', () => {
-  let host: ts.LanguageServiceHost;
-  let service: ts.LanguageService;
-  let ngHost: TypeScriptServiceHost;
-
-  beforeEach(() => {
-    host = new MockTypescriptHost(['/app/main.ts'], toh);
-    service = ts.createLanguageService(host);
+describe('TypeScriptServiceHost', () => {
+  it('should be able to create a typescript host', () => {
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts'], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    expect(() => new TypeScriptServiceHost(tsLSHost, tsLS)).not.toThrow();
   });
 
-  it('should be able to create a typescript host',
-     () => { expect(() => new TypeScriptServiceHost(host, service)).not.toThrow(); });
+  it('should be able to analyze modules', () => {
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts'], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    expect(ngLSHost.getAnalyzedModules()).toBeDefined();
+  });
 
-  beforeEach(() => { ngHost = new TypeScriptServiceHost(host, service); });
-
-  it('should be able to analyze modules',
-     () => { expect(ngHost.getAnalyzedModules()).toBeDefined(); });
-
-  it('should be able to analyze modules in without a tsconfig.json file', () => {
-    host = new MockTypescriptHost(['foo.ts'], toh);
-    service = ts.createLanguageService(host);
-    ngHost = new TypeScriptServiceHost(host, service);
-    expect(ngHost.getAnalyzedModules()).toBeDefined();
+  it('should be able to analyze modules without a tsconfig.json file', () => {
+    const tsLSHost = new MockTypescriptHost(['foo.ts'], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    expect(ngLSHost.getAnalyzedModules()).toBeDefined();
   });
 
   it('should not throw if there is no script names', () => {
-    host = new MockTypescriptHost([], toh);
-    service = ts.createLanguageService(host);
-    ngHost = new TypeScriptServiceHost(host, service);
-    expect(() => ngHost.getAnalyzedModules()).not.toThrow();
+    const tsLSHost = new MockTypescriptHost([], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    expect(() => ngLSHost.getAnalyzedModules()).not.toThrow();
   });
 
   it('should clear the caches if program changes', () => {
     // First create a TypescriptHost with empty script names
-    host = new MockTypescriptHost([], toh);
-    service = ts.createLanguageService(host);
-    ngHost = new TypeScriptServiceHost(host, service);
-    expect(ngHost.getAnalyzedModules().ngModules).toEqual([]);
+    const tsLSHost = new MockTypescriptHost([], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    expect(ngLSHost.getAnalyzedModules().ngModules).toEqual([]);
     // Now add a script, this would change the program
     const fileName = '/app/main.ts';
-    const content = (host as MockTypescriptHost).getFileContent(fileName) !;
-    (host as MockTypescriptHost).addScript(fileName, content);
+    const content = (tsLSHost as MockTypescriptHost).getFileContent(fileName) !;
+    (tsLSHost as MockTypescriptHost).addScript(fileName, content);
     // If the caches are not cleared, we would get back an empty array.
     // But if the caches are cleared then the analyzed modules will be non-empty.
-    expect(ngHost.getAnalyzedModules().ngModules.length).not.toEqual(0);
+    expect(ngLSHost.getAnalyzedModules().ngModules.length).not.toEqual(0);
   });
 
+  it('should throw if getSourceFile is called on non-TS file', () => {
+    const tsLSHost = new MockTypescriptHost([], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    expect(() => {
+      ngLSHost.getSourceFile('/src/test.ng');
+    }).toThrowError('Non-TS source file requested: /src/test.ng');
+  });
 });
