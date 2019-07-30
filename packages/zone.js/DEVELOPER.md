@@ -90,6 +90,7 @@ $ git tag $TAG
 - create a PR to update `changelog` of zone.js
 
 ```
+$ export PREVIOUS_ZONE_TAG=<PREVIOUS ZONE RELEASE TAG>
 $ yarn gulp changelog:zonejs
 ```
 
