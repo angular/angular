@@ -165,14 +165,12 @@ export function renderDefinitions(
       translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER);
   const print = (stmt: Statement) =>
       printer.printNode(ts.EmitHint.Unspecified, translate(stmt), sourceFile);
-  const definitions = compiledClass.compilation
-                          .map(
-                              c => [createAssignmentStatement(name, c.name, c.initializer)]
-                                       .concat(c.statements)
-                                       .map(print)
-                                       .join('\n'))
-                          .join('\n');
-  return definitions;
+  const statements: Statement[] =
+      compiledClass.compilation.map(c => createAssignmentStatement(name, c.name, c.initializer));
+  for (const c of compiledClass.compilation) {
+    statements.push(...c.statements);
+  }
+  return statements.map(print).join('\n');
 }
 
 /**
