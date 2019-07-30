@@ -1,0 +1,12 @@
+{
+  "name": "@angular/localize/run_time",
+  "typings": "./index.d.ts",
+  "main": "../bundles/localize-run_time.umd.js",
+  "module": "../fesm5/run_time.js",
+  "es2015": "../fesm2015/run_time.js",
+  "esm5": "../esm5/run_time/run_time.js",
+  "esm2015": "../esm2015/run_time/run_time.js",
+  "fesm5": "../fesm5/run_time.js",
+  "fesm2015": "../fesm2015/run_time.js",
+  "sideEffects": false
+}
