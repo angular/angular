@@ -119,7 +119,7 @@
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "// 3": "when updating @bazel/bazel version you also need to update the RBE settings in .bazelrc (see https://github.com/angular/angular/pull/27935)",
   "devDependencies": {
-    "@angular/cli": "^8.0.0-beta.15",
+    "@angular/cli": "^8.2.0-rc.0",
     "@bazel/bazel": "0.28.1",
     "@bazel/buildifier": "^0.26.0",
     "@bazel/ibazel": "~0.9.0",
