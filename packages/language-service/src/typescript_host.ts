@@ -117,22 +117,29 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return this.templateReferences || [];
   }
 
+  /**
+   * Get the Angular template in the file, if any. If TS file is provided then
+   * return the inline template, otherwise return the external template.
+   * @param fileName Either TS or HTML file
+   * @param position Only used if file is TS
+   */
   getTemplateAt(fileName: string, position: number): TemplateSource|undefined {
-    let sourceFile = this.getSourceFile(fileName);
-    if (sourceFile) {
-      this.context = sourceFile.fileName;
-      let node = this.findNode(sourceFile, position);
-      if (node) {
-        return this.getSourceFromNode(
-            fileName, this.host.getScriptVersion(sourceFile.fileName), node);
+    if (fileName.endsWith('.ts')) {
+      const sourceFile = this.getSourceFile(fileName);
+      if (sourceFile) {
+        this.context = sourceFile.fileName;
+        const node = this.findNode(sourceFile, position);
+        if (node) {
+          return this.getSourceFromNode(
+              fileName, this.host.getScriptVersion(sourceFile.fileName), node);
+        }
       }
     } else {
       this.ensureTemplateMap();
-      // TODO: Cannocalize the file?
-      const componentType = this.fileToComponent.get(fileName);
-      if (componentType) {
+      const componentSymbol = this.fileToComponent.get(fileName);
+      if (componentSymbol) {
         return this.getSourceFromType(
-            fileName, this.host.getScriptVersion(fileName), componentType);
+            fileName, this.host.getScriptVersion(fileName), componentSymbol);
       }
     }
     return undefined;
@@ -164,14 +171,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   getTemplates(fileName: string): TemplateSources {
-    this.ensureTemplateMap();
-    const componentType = this.fileToComponent.get(fileName);
-    if (componentType) {
-      const templateSource = this.getTemplateAt(fileName, 0);
-      if (templateSource) {
-        return [templateSource];
-      }
-    } else {
+    if (fileName.endsWith('.ts')) {
       let version = this.host.getScriptVersion(fileName);
       let result: TemplateSource[] = [];
 
@@ -191,10 +191,22 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         ts.forEachChild(sourceFile, visit);
       }
       return result.length ? result : undefined;
+    } else {
+      this.ensureTemplateMap();
+      const componentSymbol = this.fileToComponent.get(fileName);
+      if (componentSymbol) {
+        const templateSource = this.getTemplateAt(fileName, 0);
+        if (templateSource) {
+          return [templateSource];
+        }
+      }
     }
   }
 
   getDeclarations(fileName: string): Declarations {
+    if (!fileName.endsWith('.ts')) {
+      return [];
+    }
     const result: Declarations = [];
     const sourceFile = this.getSourceFile(fileName);
     if (sourceFile) {
@@ -212,6 +224,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   getSourceFile(fileName: string): ts.SourceFile|undefined {
+    if (!fileName.endsWith('.ts')) {
+      throw new Error(`Non-TS source file requested: ${fileName}`);
+    }
     return this.tsService.getProgram() !.getSourceFile(fileName);
   }
 
@@ -383,7 +398,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       // The host's getCurrentDirectory() is not reliable as it is always "" in
       // tsserver. We don't need the exact base directory, just one that contains
       // a source file.
-      const source = this.tsService.getProgram() !.getSourceFile(this.context);
+      const source = this.getSourceFile(this.context);
       if (!source) {
         throw new Error('Internal error: no context could be determined');
       }
