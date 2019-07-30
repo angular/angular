@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Component, NO_ERRORS_SCHEMA, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('NgModule', () => {
@@ -70,6 +71,65 @@ describe('NgModule', () => {
       expect(() => {
         TestBed.createComponent(TestCmp);
         TestBed.createComponent(TestCmp2);
+      }).not.toThrow();
+    });
+  });
+
+  describe('schemas', () => {
+    it('should throw on unknown props if NO_ERRORS_SCHEMA is absent', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `
+          <ng-container *ngIf="condition">
+            <div [unknown-prop]="true"></div>
+          </ng-container>
+        `,
+      })
+      class MyComp {
+        condition = true;
+      }
+
+      @NgModule({
+        imports: [CommonModule],
+        declarations: [MyComp],
+      })
+      class MyModule {
+      }
+
+      TestBed.configureTestingModule({imports: [MyModule]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).toThrowError(/Can't bind to 'unknown-prop' since it isn't a known property of 'div'/);
+    });
+
+    it('should not throw on unknown props if NO_ERRORS_SCHEMA is present', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `
+          <ng-container *ngIf="condition">
+            <div [unknown-prop]="true"></div>
+          </ng-container>
+        `,
+      })
+      class MyComp {
+        condition = true;
+      }
+
+      @NgModule({
+        imports: [CommonModule],
+        schemas: [NO_ERRORS_SCHEMA],
+        declarations: [MyComp],
+      })
+      class MyModule {
+      }
+
+      TestBed.configureTestingModule({imports: [MyModule]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
       }).not.toThrow();
     });
   });
