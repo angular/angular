@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import '@angular/localize';
 import {registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
 import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize, Pipe, PipeTransform} from '@angular/core';
@@ -1130,6 +1130,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     TestBed.configureTestingModule({declarations: [ClsDir, MyApp]});
     ɵi18nConfigureLocalize({
       translations: {
+        // Not that this translation switches the order of the expressions!
         'start {$interpolation} middle {$interpolation_1} end':
             'début {$interpolation_1} milieu {$interpolation} fin',
         '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}':

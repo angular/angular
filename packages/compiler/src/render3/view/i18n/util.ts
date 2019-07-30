@@ -5,30 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import * as i18n from '../../../i18n/i18n_ast';
 import {toPublicName} from '../../../i18n/serializers/xmb';
 import * as html from '../../../ml_parser/ast';
-import {mapLiteral} from '../../../output/map_util';
 import * as o from '../../../output/output_ast';
-import {Identifiers as R3} from '../../r3_identifiers';
-
 
 /* Closure variables holding messages must be named `MSG_[A-Z0-9]+` */
 const CLOSURE_TRANSLATION_PREFIX = 'MSG_';
 
 /* Prefix for non-`goog.getMsg` i18n-related vars */
 export const TRANSLATION_PREFIX = 'I18N_';
-
-/** Closure uses `goog.getMsg(message)` to lookup translations */
-const GOOG_GET_MSG = 'goog.getMsg';
-
-/** Name of the global variable that is used to determine if we use Closure translations or not */
-const NG_I18N_CLOSURE_MODE = 'ngI18nClosureMode';
-
-/** I18n separators for metadata **/
-const I18N_MEANING_SEPARATOR = '|';
-const I18N_ID_SEPARATOR = '@@';
 
 /** Name of the i18n attributes **/
 export const I18N_ATTR = 'i18n';
@@ -42,55 +28,6 @@ export const I18N_ICU_MAPPING_PREFIX = 'I18N_EXP_';
 
 /** Placeholder wrapper for i18n expressions **/
 export const I18N_PLACEHOLDER_SYMBOL = '�';
-
-export type I18nMeta = {
-  id?: string,
-  description?: string,
-  meaning?: string
-};
-
-function i18nTranslationToDeclStmt(
-    variable: o.ReadVarExpr, closureVar: o.ReadVarExpr, message: string, meta: I18nMeta,
-    params?: {[name: string]: o.Expression}): o.Statement[] {
-  const statements: o.Statement[] = [];
-  // var I18N_X;
-  statements.push(
-      new o.DeclareVarStmt(variable.name !, undefined, o.INFERRED_TYPE, null, variable.sourceSpan));
-
-  const args = [o.literal(message) as o.Expression];
-  if (params && Object.keys(params).length) {
-    args.push(mapLiteral(params, true));
-  }
-
-  // Closure JSDoc comments
-  const docStatements = i18nMetaToDocStmt(meta);
-  const thenStatements: o.Statement[] = docStatements ? [docStatements] : [];
-  const googFnCall = o.variable(GOOG_GET_MSG).callFn(args);
-  // const MSG_... = goog.getMsg(..);
-  thenStatements.push(closureVar.set(googFnCall).toConstDecl());
-  // I18N_X = MSG_...;
-  thenStatements.push(new o.ExpressionStatement(variable.set(closureVar)));
-  const localizeFnCall = o.importExpr(R3.i18nLocalize).callFn(args);
-  // I18N_X = i18nLocalize(...);
-  const elseStatements = [new o.ExpressionStatement(variable.set(localizeFnCall))];
-  // if(ngI18nClosureMode) { ... } else { ... }
-  statements.push(o.ifStmt(o.variable(NG_I18N_CLOSURE_MODE), thenStatements, elseStatements));
-
-  return statements;
-}
-
-// Converts i18n meta information for a message (id, description, meaning)
-// to a JsDoc statement formatted as expected by the Closure compiler.
-function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
-  const tags: o.JSDocTag[] = [];
-  if (meta.description) {
-    tags.push({tagName: o.JSDocTagName.Desc, text: meta.description});
-  }
-  if (meta.meaning) {
-    tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
-  }
-  return tags.length == 0 ? null : new o.JSDocCommentStmt(tags);
-}
 
 export function isI18nAttribute(name: string): boolean {
   return name === I18N_ATTR || name.startsWith(I18N_ATTR_PREFIX);
@@ -106,14 +43,6 @@ export function isSingleI18nIcu(meta?: i18n.AST): boolean {
 
 export function hasI18nAttrs(element: html.Element): boolean {
   return element.attrs.some((attr: html.Attribute) => isI18nAttribute(attr.name));
-}
-
-export function metaFromI18nMessage(message: i18n.Message, id: string | null = null): I18nMeta {
-  return {
-    id: typeof id === 'string' ? id : message.id || '',
-    meaning: message.meaning || '',
-    description: message.description || ''
-  };
 }
 
 export function icuFromI18nMessage(message: i18n.Message) {
@@ -143,8 +72,8 @@ export function getSeqNumberGenerator(startsAt: number = 0): () => number {
 }
 
 export function placeholdersToParams(placeholders: Map<string, string[]>):
-    {[name: string]: o.Expression} {
-  const params: {[name: string]: o.Expression} = {};
+    {[name: string]: o.LiteralExpr} {
+  const params: {[name: string]: o.LiteralExpr} = {};
   placeholders.forEach((values: string[], key: string) => {
     params[key] = o.literal(values.length > 1 ? `[${values.join('|')}]` : values[0]);
   });
@@ -175,42 +104,24 @@ export function assembleBoundTextPlaceholders(
   return placeholders;
 }
 
-export function findIndex(items: any[], callback: (item: any) => boolean): number {
-  for (let i = 0; i < items.length; i++) {
-    if (callback(items[i])) {
-      return i;
-    }
-  }
-  return -1;
-}
-
 /**
- * Parses i18n metas like:
- *  - "@@id",
- *  - "description[@@id]",
- *  - "meaning|description[@@id]"
- * and returns an object with parsed output.
+ * Format the placeholder names in a map of placeholders to expressions.
  *
- * @param meta String that represents i18n meta
- * @returns Object with id, meaning and description fields
+ * The placeholder names are converted from "internal" format (e.g. `START_TAG_DIV_1`) to "external"
+ * format (e.g. `startTagDiv_1`).
+ *
+ * @param params A map of placeholder names to expressions.
+ * @param useCamelCase whether to camelCase the placeholder name when formatting.
+ * @returns A new map of formatted placeholder names to expressions.
  */
-export function parseI18nMeta(meta?: string): I18nMeta {
-  let id: string|undefined;
-  let meaning: string|undefined;
-  let description: string|undefined;
-
-  if (meta) {
-    const idIndex = meta.indexOf(I18N_ID_SEPARATOR);
-    const descIndex = meta.indexOf(I18N_MEANING_SEPARATOR);
-    let meaningAndDesc: string;
-    [meaningAndDesc, id] =
-        (idIndex > -1) ? [meta.slice(0, idIndex), meta.slice(idIndex + 2)] : [meta, ''];
-    [meaning, description] = (descIndex > -1) ?
-        [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
-        ['', meaningAndDesc];
+export function i18nFormatPlaceholderNames(
+    params: {[name: string]: o.Expression} = {}, useCamelCase: boolean) {
+  const _params: {[key: string]: o.Expression} = {};
+  if (params && Object.keys(params).length) {
+    Object.keys(params).forEach(
+        key => _params[formatI18nPlaceholderName(key, useCamelCase)] = params[key]);
   }
-
-  return {id, meaning, description};
+  return _params;
 }
 
 /**
@@ -254,27 +165,10 @@ export function getTranslationConstPrefix(extra: string): string {
 }
 
 /**
- * Generates translation declaration statements.
- *
- * @param variable Translation value reference
- * @param closureVar Variable for Closure `goog.getMsg` calls
- * @param message Text message to be translated
- * @param meta Object that contains meta information (id, meaning and description)
- * @param params Object with placeholders key-value pairs
- * @param transformFn Optional transformation (post processing) function reference
- * @returns Array of Statements that represent a given translation
+ * Generate AST to declare a variable. E.g. `var I18N_1;`.
+ * @param variable the name of the variable to declare.
  */
-export function getTranslationDeclStmts(
-    variable: o.ReadVarExpr, closureVar: o.ReadVarExpr, message: string, meta: I18nMeta,
-    params: {[name: string]: o.Expression} = {},
-    transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Statement[] {
-  const statements: o.Statement[] = [];
-
-  statements.push(...i18nTranslationToDeclStmt(variable, closureVar, message, meta, params));
-
-  if (transformFn) {
-    statements.push(new o.ExpressionStatement(variable.set(transformFn(variable))));
-  }
-
-  return statements;
+export function declareI18nVariable(variable: o.ReadVarExpr): o.Statement {
+  return new o.DeclareVarStmt(
+      variable.name !, undefined, o.INFERRED_TYPE, null, variable.sourceSpan);
 }
