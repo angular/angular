@@ -1,3 +1,18 @@
+<a name="8.1.3"></a>
+## [8.1.3](https://github.com/angular/angular/compare/8.1.2...8.1.3) (2019-07-30)
+
+
+### Bug Fixes
+
+* **elements:** handle falsy initial value ([#31604](https://github.com/angular/angular/issues/31604)) ([434b796](https://github.com/angular/angular/commit/434b796)), closes [angular/angular#30834](https://github.com/angular/angular/issues/30834)
+
+
+### Performance Improvements
+
+* **compiler:** avoid copying from prototype while cloning an object ([#31638](https://github.com/angular/angular/issues/31638)) ([1f3daa0](https://github.com/angular/angular/commit/1f3daa0)), closes [#31627](https://github.com/angular/angular/issues/31627)
+
+
+
 <a name="8.1.2"></a>
 ## [8.1.2](https://github.com/angular/angular/compare/8.1.0...8.1.2) (2019-07-17)
 
