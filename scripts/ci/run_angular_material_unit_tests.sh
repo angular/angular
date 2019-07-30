@@ -25,6 +25,9 @@ node ${angular_dir}/scripts/ci/update-deps-to-dist-packages.js ${MATERIAL_REPO_T
 # repository automatically picks up the blocklist and disables the specified tests.
 cp ${angular_dir}/tools/material-ci/test-blocklist.ts ${MATERIAL_REPO_TMP_DIR}/test/
 
+# Ensure that the `@angular/localize` package is there. (It wasn't before v9.)
+yarn --cwd ${MATERIAL_REPO_TMP_DIR} add ${angular_dir}/dist/packages-dist-ivy-aot/localize
+
 # Create a symlink for the Bazel binary installed through NPM, as running through Yarn introduces OOM errors.
 ./scripts/circleci/setup_bazel_binary.sh
 

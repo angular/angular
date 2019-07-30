@@ -51,6 +51,8 @@ System.config({
     '@angular/router': {main: 'index.js', defaultExtension: 'js'},
     '@angular/http/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/http': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/localize/run_time': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/localize': {main: 'index.js', defaultExtension: 'js'},
     '@angular/upgrade/static/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/upgrade/static': {main: 'index.js', defaultExtension: 'js'},
     '@angular/upgrade': {main: 'index.js', defaultExtension: 'js'},

@@ -7,6 +7,7 @@
  */
 
 import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, TypeofExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import {LocalizedString} from '@angular/compiler/src/output/output_ast';
 import * as ts from 'typescript';
 
 import {error} from './util';
@@ -534,6 +535,10 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   }
 
   visitLiteralExpr(expr: LiteralExpr) { return this.record(expr, createLiteral(expr.value)); }
+
+  visitLocalizedString(expr: LocalizedString, context: any) {
+    throw new Error('localized strings are not supported in pre-ivy mode.');
+  }
 
   visitExternalExpr(expr: ExternalExpr) {
     return this.record(expr, this._visitIdentifier(expr.value));

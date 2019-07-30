@@ -480,6 +480,26 @@ export class LiteralExpr extends Expression {
 }
 
 
+export class LocalizedString extends Expression {
+  constructor(
+      public messageParts: string[], public placeHolderNames: string[],
+      public expressions: Expression[], sourceSpan?: ParseSourceSpan|null) {
+    super(STRING_TYPE, sourceSpan);
+  }
+
+  isEquivalent(e: Expression): boolean {
+    // return e instanceof LocalizedString && this.message === e.message;
+    return false;
+  }
+
+  isConstant() { return false; }
+
+  visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitLocalizedString(this, context);
+  }
+}
+
+
 export class ExternalExpr extends Expression {
   constructor(
       public value: ExternalReference, type?: Type|null, public typeParams: Type[]|null = null,
@@ -749,6 +769,7 @@ export interface ExpressionVisitor {
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any;
   visitInstantiateExpr(ast: InstantiateExpr, context: any): any;
   visitLiteralExpr(ast: LiteralExpr, context: any): any;
+  visitLocalizedString(ast: LocalizedString, context: any): any;
   visitExternalExpr(ast: ExternalExpr, context: any): any;
   visitConditionalExpr(ast: ConditionalExpr, context: any): any;
   visitNotExpr(ast: NotExpr, context: any): any;
@@ -1074,6 +1095,14 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
 
   visitLiteralExpr(ast: LiteralExpr, context: any): any { return this.transformExpr(ast, context); }
 
+  visitLocalizedString(ast: LocalizedString, context: any): any {
+    return this.transformExpr(
+        new LocalizedString(
+            ast.messageParts, ast.placeHolderNames,
+            this.visitAllExpressions(ast.expressions, context), ast.sourceSpan),
+        context);
+  }
+
   visitExternalExpr(ast: ExternalExpr, context: any): any {
     return this.transformExpr(ast, context);
   }
@@ -1289,6 +1318,9 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     return this.visitExpression(ast, context);
   }
   visitLiteralExpr(ast: LiteralExpr, context: any): any {
+    return this.visitExpression(ast, context);
+  }
+  visitLocalizedString(ast: LocalizedString, context: any): any {
     return this.visitExpression(ast, context);
   }
   visitExternalExpr(ast: ExternalExpr, context: any): any {
@@ -1549,6 +1581,12 @@ export function ifStmt(condition: Expression, thenClause: Statement[], elseClaus
 export function literal(
     value: any, type?: Type | null, sourceSpan?: ParseSourceSpan | null): LiteralExpr {
   return new LiteralExpr(value, type, sourceSpan);
+}
+
+export function localizedString(
+    messageParts: string[], placeholderNames: string[], expressions: Expression[],
+    sourceSpan?: ParseSourceSpan | null): LocalizedString {
+  return new LocalizedString(messageParts, placeholderNames, expressions, sourceSpan);
 }
 
 export function isNull(exp: Expression): boolean {
