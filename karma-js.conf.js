@@ -64,7 +64,6 @@ module.exports = function(config) {
         included: false,
         watched: false,
       },
-      {pattern: 'packages/common/i18n/**', included: false, watched: false, served: true},
     ],
 
     exclude: [
