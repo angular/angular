@@ -1,0 +1,19 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ts_library(
+    name = "run_time",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    module_name = "@angular/localize/run_time",
+    deps = [
+        "//packages/localize",
+        "@npm//@types/node",
+    ],
+)
