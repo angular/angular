@@ -14,7 +14,7 @@ load(
     "ROLLUP_ATTRS",
     "ROLLUP_DEPS_ASPECTS",
     "run_rollup",
-    "run_terser",
+    # "run_terser",
     "write_rollup_config",
 )
 load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
@@ -25,7 +25,8 @@ load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "f
 # have the path hardcoded in them.
 _ROLLUP_OUTPUTS = {
     "build_umd": "%{name}.umd.js",
-    "build_umd_min": "%{name}.umd.min.js",
+    # min bundle is not used at the moment. Disable to speed up build
+    # "build_umd_min": "%{name}.umd.min.js",
 }
 
 DEPS_ASPECTS = [esm5_outputs_aspect]
@@ -41,8 +42,15 @@ def _ls_rollup_bundle(ctx):
         output_format = "amd",
     )
     run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_umd)
-    source_map = run_terser(ctx, ctx.outputs.build_umd, ctx.outputs.build_umd_min)
-    return DefaultInfo(files = depset([ctx.outputs.build_umd, ctx.outputs.build_umd_min, source_map]))
+
+    # source_map = run_terser(ctx, ctx.outputs.build_umd, ctx.outputs.build_umd_min)
+    return DefaultInfo(
+        files = depset([
+            ctx.outputs.build_umd,
+            # ctx.outputs.build_umd_min,
+            # source_map,
+        ]),
+    )
 
 ls_rollup_bundle = rule(
     implementation = _ls_rollup_bundle,
