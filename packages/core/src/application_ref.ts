@@ -24,7 +24,6 @@ import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/
 import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
-import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
 import {setLocaleId} from './render3/i18n';
@@ -485,7 +484,6 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
 @Injectable()
 export class ApplicationRef {
   /** @internal */
-  static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
   private _views: InternalViewRef[] = [];
   private _runningTick: boolean = false;
@@ -635,7 +633,6 @@ export class ApplicationRef {
       throw new Error('ApplicationRef.tick is called recursively');
     }
 
-    const scope = ApplicationRef._tickScope();
     try {
       this._runningTick = true;
       for (let view of this._views) {
@@ -651,7 +648,6 @@ export class ApplicationRef {
       this._zone.runOutsideAngular(() => this._exceptionHandler.handleError(e));
     } finally {
       this._runningTick = false;
-      wtfLeave(scope);
     }
   }
 

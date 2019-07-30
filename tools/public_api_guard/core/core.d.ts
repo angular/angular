@@ -1514,20 +1514,3 @@ export declare class WrappedValue {
     static unwrap(value: any): any;
     static wrap(value: any): WrappedValue;
 }
-
-/** @deprecated */
-export declare const wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn;
-
-/** @deprecated */
-export declare const wtfEndTimeRange: (range: any) => void;
-
-/** @deprecated */
-export declare const wtfLeave: <T>(scope: any, returnValue?: T) => T;
-
-/** @deprecated */
-export interface WtfScopeFn {
-    (arg0?: any, arg1?: any): any;
-}
-
-/** @deprecated */
-export declare const wtfStartTimeRange: (rangeType: string, action: string) => any;
