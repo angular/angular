@@ -192,6 +192,13 @@ function getTargetedEntryPoints(
   const finder = new TargetedEntryPointFinder(
       fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
   const entryPointInfo = finder.findEntryPoints();
+  const invalidTarget = entryPointInfo.invalidEntryPoints.find(
+      i => i.entryPoint.path === absoluteTargetEntryPointPath);
+  if (invalidTarget !== undefined) {
+    throw new Error(
+        `The target entry-point "${invalidTarget.entryPoint.name}" has missing dependencies:\n` +
+        invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`));
+  }
   if (entryPointInfo.entryPoints.length === 0) {
     markNonAngularPackageAsProcessed(fs, absoluteTargetEntryPointPath, propertiesToConsider);
   }
