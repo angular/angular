@@ -98,6 +98,14 @@ runInEachFileSystem(() => {
         // was not processed.
         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
       });
+
+      it('should report an error if a dependency of the target does not exist', () => {
+        expect(() => {
+          mainNgcc({basePath: '/node_modules', targetEntryPointPath: 'invalid-package'});
+        })
+            .toThrowError(
+                'The target entry-point "invalid-package" has missing dependencies:\n - @angular/missing\n');
+      });
     });
 
     describe('early skipping of target entry-point', () => {
@@ -535,6 +543,30 @@ runInEachFileSystem(() => {
           name: _('/dist/local-package/index.d.ts'),
           contents: `export declare class AppComponent {};`
         },
+      ]);
+
+      // An Angular package that has a missing dependency
+      loadTestFiles([
+        {
+          name: _('/node_modules/invalid-package/package.json'),
+          contents: '{"name": "invalid-package", "es2015": "./index.js", "typings": "./index.d.ts"}'
+        },
+        {
+          name: _('/node_modules/invalid-package/index.js'),
+          contents: `
+          import {AppModule} from "@angular/missing";
+          import {Component} from '@angular/core';
+          export class AppComponent {};
+          AppComponent.decorators = [
+            { type: Component, args: [{selector: 'app', template: '<h2>Hello</h2>'}] }
+          ];
+          `
+        },
+        {
+          name: _('/node_modules/invalid-package/index.d.ts'),
+          contents: `export declare class AppComponent {}`
+        },
+        {name: _('/node_modules/invalid-package/index.metadata.json'), contents: 'DUMMY DATA'},
       ]);
     }
   });
