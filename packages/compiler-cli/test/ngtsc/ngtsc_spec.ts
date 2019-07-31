@@ -2853,6 +2853,21 @@ runInEachFileSystem(os => {
          expect(jsContents).toContain('directives: function () { return [CmpB]; }');
        });
 
+    it('should wrap setClassMetadata in an iife', () => {
+      env.write('test.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable({providedIn: 'root'})
+        export class Service {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js').replace(/\s+/g, ' ');
+      expect(jsContents)
+          .toContain(
+              `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`);
+    });
+
     it('should emit setClassMetadata calls for all types', () => {
       env.write('test.ts', `
       import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
