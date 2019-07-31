@@ -24,7 +24,7 @@ const angularFiles = setup({
 
 const htmlParser = new HtmlParser();
 
-// TODO: update translation extraction RegExp to support i18nLocalize calls once #28689 lands.
+// TODO: update translation extraction RegExp to support `$localize` tags.
 const EXTRACT_GENERATED_TRANSLATIONS_REGEXP =
     /const\s*(.*?)\s*=\s*goog\.getMsg\("(.*?)",?\s*(.*?)\)/g;
 
