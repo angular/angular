@@ -10,7 +10,7 @@ import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/misc_utils';
 
-import {BypassType, allowSanitizationBypass} from './bypass';
+import {BypassType, allowSanitizationBypassAndThrow, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
 import {Sanitizer, SecurityContext} from './security';
 import {StyleSanitizeFn, StyleSanitizeMode, _sanitizeStyle as _sanitizeStyle} from './style_sanitizer';
@@ -38,8 +38,8 @@ export function ɵɵsanitizeHtml(unsafeHtml: any): string {
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '';
   }
-  if (allowSanitizationBypass(unsafeHtml, BypassType.Html)) {
-    return unsafeHtml.toString();
+  if (allowSanitizationBypassAndThrow(unsafeHtml, BypassType.Html)) {
+    return unwrapSafeValue(unsafeHtml);
   }
   return _sanitizeHtml(document, renderStringify(unsafeHtml));
 }
@@ -64,8 +64,8 @@ export function ɵɵsanitizeStyle(unsafeStyle: any): string {
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.STYLE, unsafeStyle) || '';
   }
-  if (allowSanitizationBypass(unsafeStyle, BypassType.Style)) {
-    return unsafeStyle.toString();
+  if (allowSanitizationBypassAndThrow(unsafeStyle, BypassType.Style)) {
+    return unwrapSafeValue(unsafeStyle);
   }
   return _sanitizeStyle(renderStringify(unsafeStyle));
 }
@@ -91,8 +91,8 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.URL, unsafeUrl) || '';
   }
-  if (allowSanitizationBypass(unsafeUrl, BypassType.Url)) {
-    return unsafeUrl.toString();
+  if (allowSanitizationBypassAndThrow(unsafeUrl, BypassType.Url)) {
+    return unwrapSafeValue(unsafeUrl);
   }
   return _sanitizeUrl(renderStringify(unsafeUrl));
 }
@@ -113,8 +113,8 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): string {
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
   }
-  if (allowSanitizationBypass(unsafeResourceUrl, BypassType.ResourceUrl)) {
-    return unsafeResourceUrl.toString();
+  if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
+    return unwrapSafeValue(unsafeResourceUrl);
   }
   throw new Error('unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
 }
@@ -136,8 +136,8 @@ export function ɵɵsanitizeScript(unsafeScript: any): string {
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
   }
-  if (allowSanitizationBypass(unsafeScript, BypassType.Script)) {
-    return unsafeScript.toString();
+  if (allowSanitizationBypassAndThrow(unsafeScript, BypassType.Script)) {
+    return unwrapSafeValue(unsafeScript);
   }
   throw new Error('unsafe value used in a script context');
 }

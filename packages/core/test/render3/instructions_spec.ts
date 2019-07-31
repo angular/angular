@@ -11,7 +11,7 @@ import {NgForOfContext} from '@angular/common';
 import {ɵɵdefineComponent} from '../../src/render3/definition';
 import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
-import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
+import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, unwrapSafeValue} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
@@ -161,32 +161,12 @@ describe('instructions', () => {
       expect(t.html).toEqual('<div></div>');
 
       t.update(() => {
+        ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
         ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('url("http://server2")'));
         ɵɵstylingApply();
       });
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server2")');
-    });
-
-    it('should not re-apply the style value even if it is a newly bypassed again', () => {
-      const sanitizerInterceptor = new MockSanitizerInterceptor();
-      const t = createTemplateFixtureWithSanitizer(() => createDiv(), 1, sanitizerInterceptor);
-
-      t.update(() => {
-        ɵɵstyleSanitizer(sanitizerInterceptor.getStyleSanitizer());
-        ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('apple'));
-        ɵɵstylingApply();
-      });
-
-      expect(sanitizerInterceptor.lastValue !).toEqual('apple');
-      sanitizerInterceptor.lastValue = null;
-
-      t.update(() => {
-        ɵɵstyleSanitizer(sanitizerInterceptor.getStyleSanitizer());
-        ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('apple'));
-        ɵɵstylingApply();
-      });
-      expect(sanitizerInterceptor.lastValue).toEqual(null);
     });
   });
 
@@ -498,8 +478,8 @@ class LocalMockSanitizer implements Sanitizer {
   constructor(private _interceptor: (value: string|null|any) => string) {}
 
   sanitize(context: SecurityContext, value: LocalSanitizedValue|string|null|any): string|null {
-    if (value instanceof String) {
-      return value.toString() + '-ivy';
+    if (getSanitizationBypassType(value) != null) {
+      return unwrapSafeValue(value) + '-ivy';
     }
 
     if (value instanceof LocalSanitizedValue) {
