@@ -1,3 +1,13 @@
+<a name="8.2.0"></a>
+# [8.2.0](https://github.com/angular/angular/compare/8.2.0-rc.0...8.2.0) (2019-07-31)
+
+
+### Bug Fixes
+
+* **core:** DebugElement.listeners not cleared on destroy ([#31820](https://github.com/angular/angular/issues/31820)) ([46b160e](https://github.com/angular/angular/commit/46b160e))
+
+
+
 <a name="8.2.0-rc.0"></a>
 # [8.2.0-rc.0](https://github.com/angular/angular/compare/8.2.0-next.2...8.2.0-rc.0) (2019-07-26)
 
