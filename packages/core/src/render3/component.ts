@@ -10,7 +10,7 @@
 // correctly implementing its interfaces for backwards compatibility.
 import {Type} from '../core';
 import {Injector} from '../di/injector';
-import {Sanitizer} from '../sanitization/security';
+import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDataInRange} from '../util/assert';
 
 import {assertComponentType} from './assert';

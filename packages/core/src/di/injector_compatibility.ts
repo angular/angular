@@ -111,7 +111,7 @@ export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>): T;
 export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags): T|null;
 export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|
     null {
-  return (_injectImplementation || injectInjectorOnly)(token, flags);
+  return (_injectImplementation || injectInjectorOnly)(resolveForwardRef(token), flags);
 }
 
 /**
@@ -201,7 +201,7 @@ export class NullInjector implements Injector {
       // Intentionally left behind: With dev tools open the debugger will stop here. There is no
       // reason why correctly written application should cause this exception.
       // TODO(misko): uncomment the next line once `ngDevMode` works with closure.
-      // if(ngDevMode) debugger;
+      // if (ngDevMode) debugger;
       const error = new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
       error.name = 'NullInjectorError';
       throw error;
