@@ -42,7 +42,7 @@ export default [
   ['dd/MM/y', 'd. MMM y', 'd. MMMM y', 'EEEE \'den\' d. MMMM y'],
   ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'], ['{1} {0}', u, '{1} \'kl\'. {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr.', 'dansk krone', {
+  ['#.##0,###', '#.##0 %', '#.##0,00 ¤', '#E0'], 'kr.', 'dansk krone', {
     'AUD': ['AU$', '$'],
     'DKK': ['kr.'],
     'ISK': [u, 'kr.'],
