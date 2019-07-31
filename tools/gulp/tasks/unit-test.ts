@@ -19,6 +19,7 @@ task(':test:build', sequenceTask(
   'material:build-no-bundles',
   'cdk-experimental:build-no-bundles',
   'material-experimental:build-no-bundles',
+  'youtube-player:build-no-bundles',
   'material-moment-adapter:build-no-bundles'
 ));
 

@@ -32,6 +32,7 @@ task('build-aot:release-packages', sequenceTask(
   [
     'cdk:build-release',
     'material:build-release',
+    'youtube-player:build-release',
     'cdk-experimental:build-release',
     'material-experimental:build-release',
     'material-moment-adapter:build-release',

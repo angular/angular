@@ -57,6 +57,9 @@
 /src/material/core/typography/**                   @crisbeto
 /src/material/core/util/**                         @jelbourn
 
+# Miscellaneous components
+/src/youtube-player/**                             @nathantate
+
 # CDK
 /src/cdk/*                                         @jelbourn
 /src/cdk/a11y/**                                   @jelbourn @devversion

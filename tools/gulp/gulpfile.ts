@@ -7,7 +7,8 @@ import {
   examplesPackage,
   materialExperimentalPackage,
   materialPackage,
-  momentAdapterPackage
+  momentAdapterPackage,
+  youTubePlayerPackage
 } from './packages';
 
 createPackageBuildTasks(cdkPackage);
@@ -16,6 +17,7 @@ createPackageBuildTasks(materialPackage);
 createPackageBuildTasks(materialExperimentalPackage);
 createPackageBuildTasks(examplesPackage, ['build-examples-module']);
 createPackageBuildTasks(momentAdapterPackage);
+createPackageBuildTasks(youTubePlayerPackage);
 
 import './tasks/aot';
 import './tasks/breaking-changes';

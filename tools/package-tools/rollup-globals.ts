@@ -30,6 +30,10 @@ const cdkExperimentalSecondaryEntryPoints =
 const materialExperimentalSecondaryEntryPoints =
     getSubdirectoryNames(join(buildConfig.packagesDir, 'material-experimental'));
 
+/** List of potential secondary entry points for the youtube-player package. */
+const youTubePlayerSecondaryEntryPoints =
+    getSubdirectoryNames(join(buildConfig.packagesDir, 'youtube-player'));
+
 /** Object with all cdk entry points in the format of Rollup globals. */
 const rollupCdkEntryPoints = generateRollupEntryPoints('cdk', cdkSecondaryEntryPoints);
 
@@ -39,6 +43,10 @@ const rollupMatEntryPoints = generateRollupEntryPoints('material', matSecondaryE
 /** Object with all material-experimental entry points in the format of Rollup globals. */
 const rollupMaterialExperimentalEntryPoints =
     generateRollupEntryPoints('material-experimental', materialExperimentalSecondaryEntryPoints);
+
+/** Object with all youtube-player entry points in the format of Rollup globals. */
+const rollupYouTubePlayerEntryPoints =
+    generateRollupEntryPoints('youtube-player', youTubePlayerSecondaryEntryPoints);
 
 /** Object with all cdk-experimental entry points in the format of Rollup globals. */
 const rollupCdkExperimentalEntryPoints =
@@ -106,11 +114,15 @@ export const rollupGlobals = {
   '@angular/material-experimental': 'ng.materialExperimental',
   '@angular/material-moment-adapter': 'ng.materialMomentAdapter',
 
+  // Miscellaneous components
+  '@angular/youtube-player': 'ng.youtubePlayer',
+
   // Include secondary entry-points of the cdk and material packages
   ...rollupCdkEntryPoints,
   ...rollupMatEntryPoints,
   ...rollupCdkExperimentalEntryPoints,
   ...rollupMaterialExperimentalEntryPoints,
+  ...rollupYouTubePlayerEntryPoints,
 
   '@angular/cdk/private/testing': 'ng.cdk.private.testing',
   '@angular/cdk/private/testing/e2e': 'ng.cdk.private.testing.e2e',

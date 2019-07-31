@@ -121,6 +121,7 @@ ROLLUP_GLOBALS = {
     "@angular/cdk-experimental": "ng.cdkExperimental",
     "@angular/material": "ng.material",
     "@angular/material-experimental": "ng.materialExperimental",
+    "@angular/youtube-player": "ng.youtubePlayer",
 }
 
 # Rollup globals for cdk subpackages in the form of, e.g., {"@angular/cdk/table": "ng.cdk.table"}

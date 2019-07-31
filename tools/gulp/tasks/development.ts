@@ -15,6 +15,7 @@ import {
   materialPackage,
   momentAdapterPackage,
   examplesPackage,
+  youTubePlayerPackage,
 } from '../packages';
 import {watchFilesAndReload} from '../util/watch-files-reload';
 
@@ -64,6 +65,7 @@ task('build:devapp', sequenceTask(
   'material:build-no-bundles',
   'cdk-experimental:build-no-bundles',
   'material-experimental:build-no-bundles',
+  'youtube-player:build-no-bundles',
   'material-moment-adapter:build-no-bundles',
   'build-examples-module',
   // The examples module needs to be manually built before building examples package because
@@ -95,6 +97,8 @@ task('stage-deploy:devapp', ['build:devapp'], () => {
     join(deployOutputDir, 'dist/packages/material'));
   copyFiles(materialExperimentalPackage.outputDir, '**/*.+(js|map)',
     join(deployOutputDir, 'dist/packages/material-experimental'));
+  copyFiles(youTubePlayerPackage.outputDir, '**/*.+(js|map)',
+    join(deployOutputDir, 'dist/packages/youtube-player'));
   copyFiles(cdkExperimentalPackage.outputDir, '**/*.+(js|map)',
     join(deployOutputDir, 'dist/packages/cdk-experimental'));
   copyFiles(materialPackage.outputDir, '**/prebuilt/*.+(css|map)',
@@ -163,6 +167,10 @@ task(':watch:devapp', () => {
   // Material experimental package watchers
   watchFilesAndReload(join(materialExperimentalPackage.sourceDir, '**/*'),
     ['material-experimental:build-no-bundles']);
+
+  // Youtube player package watchers
+  watchFilesAndReload(join(youTubePlayerPackage.sourceDir, '**/*'),
+    ['youtube-player:build-no-bundles']);
 
   // CDK experimental package watchers
   watchFilesAndReload(join(cdkExperimentalPackage.sourceDir, '**/*'),

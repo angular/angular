@@ -1,0 +1,11 @@
+// Configuration for IDEs only.
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "baseUrl": ".",
+    "paths": {},
+    "types": ["jasmine", "youtube"]
+  },
+  "include": ["*.ts"]
+}

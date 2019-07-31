@@ -1,0 +1,31 @@
+{
+  "name": "@angular/youtube-player",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular YouTube Player",
+  "main": "./bundles/youtube-player.umd.js",
+  "module": "./esm5/youtube-player.es5.js",
+  "es2015": "./esm2015/youtube-player.js",
+  "typings": "./youtube-player.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/components.git"
+  },
+  "keywords": [
+    "angular",
+    "components",
+    "youtube"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/components/issues"
+  },
+  "homepage": "https://github.com/angular/components/tree/master/src/youtube-player#readme",
+  "dependencies": {
+    "@types/youtube": "^0.0.38"
+  },
+  "peerDependencies": {
+    "@angular/core": "0.0.0-NG",
+    "@angular/common": "0.0.0-NG"
+  },
+  "sideEffects": false
+}

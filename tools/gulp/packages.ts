@@ -2,6 +2,7 @@ import {BuildPackage} from 'material2-build-tools';
 
 export const cdkPackage = new BuildPackage('cdk');
 export const materialPackage = new BuildPackage('material', [cdkPackage]);
+export const youTubePlayerPackage = new BuildPackage('youtube-player');
 export const cdkExperimentalPackage = new BuildPackage('cdk-experimental', [cdkPackage]);
 export const materialExperimentalPackage = new BuildPackage('material-experimental',
     [cdkPackage, cdkExperimentalPackage, materialPackage]);
@@ -32,6 +33,7 @@ materialPackage.hasSchematics = true;
 export const allBuildPackages = [
   cdkPackage,
   materialPackage,
+  youTubePlayerPackage,
   cdkExperimentalPackage,
   materialExperimentalPackage,
   momentAdapterPackage,
