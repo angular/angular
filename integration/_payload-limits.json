@@ -20,9 +20,12 @@
   "cli-hello-world-ivy-compat": {
     "master": {
       "uncompressed": {
-        "runtime": 1440,
-        "main": 147528,
-        "polyfills": 43567
+        "runtime-es2015": 1440,
+        "main-es2015": 130220,
+        "polyfills-es2015": 43567,
+        "runtime-es2015": 37637,
+        "main-es2015": 146017,
+        "polyfills-es2015": 113527
       }
     }
   },
