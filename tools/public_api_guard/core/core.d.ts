@@ -827,11 +827,12 @@ export declare function ɵɵdefineInjector(options: {
 export declare function ɵɵdefineNgModule<T>(def: {
     type: T;
     bootstrap?: Type<any>[] | (() => Type<any>[]);
-    declarations?: Type<any>[] | (() => Type<any>[]);
-    imports?: Type<any>[] | (() => Type<any>[]);
-    exports?: Type<any>[] | (() => Type<any>[]);
     schemas?: SchemaMetadata[] | null;
     id?: string | null;
+}, jitDef?: {
+    declarations?: Type<any>[] | (() => Type<any>[]);
+    exports?: Type<any>[] | (() => Type<any>[]);
+    imports?: Type<any>[] | (() => Type<any>[]);
 }): never;
 
 export declare function ɵɵdefinePipe<T>(pipeDef: {
@@ -1040,12 +1041,6 @@ export declare function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string
 export declare function ɵɵselect(index: number): void;
 
 export declare function ɵɵsetComponentScope(type: ComponentType<any>, directives: Type<any>[], pipes: Type<any>[]): void;
-
-export declare function ɵɵsetNgModuleScope(type: any, scope: {
-    declarations?: Type<any>[] | (() => Type<any>[]);
-    imports?: Type<any>[] | (() => Type<any>[]);
-    exports?: Type<any>[] | (() => Type<any>[]);
-}): void;
 
 export declare function ɵɵstaticContentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read?: any): void;
 

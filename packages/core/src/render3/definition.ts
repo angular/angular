@@ -338,73 +338,45 @@ export function extractPipeDef(type: Type<any>): PipeDef<any> {
 /**
  * @codeGenApi
  */
-export function ɵɵdefineNgModule<T>(def: {
-  /** Token representing the module. Used by DI. */
-  type: T;
+export function ɵɵdefineNgModule<T>(
+    def: {
+      /** Token representing the module. Used by DI. */
+      type: T;
 
-  /** List of components to bootstrap. */
-  bootstrap?: Type<any>[] | (() => Type<any>[]);
+      /** List of components to bootstrap. */
+      bootstrap?: Type<any>[] | (() => Type<any>[]);
 
-  /** List of components, directives, and pipes declared by this module. */
-  declarations?: Type<any>[] | (() => Type<any>[]);
 
-  /** List of modules or `ModuleWithProviders` imported by this module. */
-  imports?: Type<any>[] | (() => Type<any>[]);
+      /** The set of schemas that declare elements to be allowed in the NgModule. */
+      schemas?: SchemaMetadata[] | null;
 
-  /**
-   * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
-   * module.
-   */
-  exports?: Type<any>[] | (() => Type<any>[]);
+      /** Unique ID for the module that is used with `getModuleFactory`. */
+      id?: string | null;
+    },
+    jitDef?: {
+      /** List of components, directives, and pipes declared by this module. */
+      declarations?: Type<any>[] | (() => Type<any>[]);
 
-  /** The set of schemas that declare elements to be allowed in the NgModule. */
-  schemas?: SchemaMetadata[] | null;
+      /**
+       * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
+       * module.
+       */
+      exports?: Type<any>[] | (() => Type<any>[]);
 
-  /** Unique ID for the module that is used with `getModuleFactory`. */
-  id?: string | null;
-}): never {
+      /** List of modules or `ModuleWithProviders` imported by this module. */
+      imports?: Type<any>[] | (() => Type<any>[]);
+    }): never {
   const res: NgModuleDef<T> = {
     type: def.type,
     bootstrap: def.bootstrap || EMPTY_ARRAY,
-    declarations: def.declarations || EMPTY_ARRAY,
-    imports: def.imports || EMPTY_ARRAY,
-    exports: def.exports || EMPTY_ARRAY,
+    declarations: jitDef && jitDef.declarations || EMPTY_ARRAY,
+    imports: jitDef && jitDef.imports || EMPTY_ARRAY,
+    exports: jitDef && jitDef.exports || EMPTY_ARRAY,
     transitiveCompileScopes: null,
     schemas: def.schemas || null,
     id: def.id || null,
   };
   return res as never;
-}
-
-/**
- * Adds the module metadata that is necessary to compute the module's transitive scope to an
- * existing module definition.
- *
- * Scope metadata of modules is not used in production builds, so calls to this function can be
- * marked pure to tree-shake it from the bundle, allowing for all referenced declarations
- * to become eligible for tree-shaking as well.
- *
- * @codeGenApi
- */
-export function ɵɵsetNgModuleScope(type: any, scope: {
-  /** List of components, directives, and pipes declared by this module. */
-  declarations?: Type<any>[] | (() => Type<any>[]);
-
-  /** List of modules or `ModuleWithProviders` imported by this module. */
-  imports?: Type<any>[] | (() => Type<any>[]);
-
-  /**
-   * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
-   * module.
-   */
-  exports?: Type<any>[] | (() => Type<any>[]);
-}): void {
-  return noSideEffects(() => {
-    const ngModuleDef = getNgModuleDef(type, true);
-    ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
-    ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
-    ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
-  }) as never;
 }
 
 /**

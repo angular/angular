@@ -257,16 +257,25 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
 
   visitExternalExpr(ast: ExternalExpr, context: Context): ts.PropertyAccessExpression
       |ts.Identifier {
-    if (ast.value.moduleName === null || ast.value.name === null) {
+    if (ast.value.name === null) {
       throw new Error(`Import unknown module or symbol ${ast.value}`);
     }
-    const {moduleImport, symbol} =
-        this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
-    if (moduleImport === null) {
-      return ts.createIdentifier(symbol);
+    // If a moduleName is specified, this is a normal import. If there's no module name, it's a
+    // reference to a global/ambient symbol.
+    if (ast.value.moduleName !== null) {
+      // This is a normal import. Find the imported module.
+      const {moduleImport, symbol} =
+          this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
+      if (moduleImport === null) {
+        // The symbol was ambient after all.
+        return ts.createIdentifier(symbol);
+      } else {
+        return ts.createPropertyAccess(
+            ts.createIdentifier(moduleImport), ts.createIdentifier(symbol));
+      }
     } else {
-      return ts.createPropertyAccess(
-          ts.createIdentifier(moduleImport), ts.createIdentifier(symbol));
+      // The symbol is ambient, so just reference it.
+      return ts.createIdentifier(ast.value.name);
     }
   }
 

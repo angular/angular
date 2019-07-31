@@ -14,7 +14,7 @@ import {OutputContext} from '../util';
 
 import {R3DependencyMetadata, compileFactoryFunction} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
-import {R3Reference, convertMetaToOutput, mapToMapExpression} from './util';
+import {R3Reference, convertMetaToOutput, jitOnlyGuardedExpression, mapToMapExpression} from './util';
 
 export interface R3NgModuleDef {
   expression: o.Expression;
@@ -52,11 +52,9 @@ export interface R3NgModuleMetadata {
   exports: R3Reference[];
 
   /**
-   * Whether to emit the selector scope values (declarations, imports, exports) inline into the
-   * module definition, or to generate additional statements which patch them on. Inline emission
-   * does not allow components to be tree-shaken, but is useful for JIT mode.
+   * Whether to guard the JIT metadata being registered for the module with a compile-time constant.
    */
-  emitInline: boolean;
+  guardJitDefinition: boolean;
 
   /**
    * Whether to generate closure wrappers for bootstrap, declarations, imports, and exports.
@@ -84,50 +82,45 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     exports,
     schemas,
     containsForwardDecls,
-    emitInline,
-    id
+    id,
+    guardJitDefinition,
   } = meta;
 
   const additionalStatements: o.Statement[] = [];
-  const definitionMap = {
-    type: moduleType
-  } as{
+  const definitionMap: {
     type: o.Expression,
-    bootstrap: o.Expression,
-    declarations: o.Expression,
-    imports: o.Expression,
-    exports: o.Expression,
-    schemas: o.LiteralArrayExpr,
-    id: o.Expression
-  };
+    bootstrap?: o.Expression,
+    schemas?: o.LiteralArrayExpr,
+    id?: o.Expression
+  } = {type: moduleType};
 
   // Only generate the keys in the metadata if the arrays have values.
   if (bootstrap.length) {
     definitionMap.bootstrap = refsToArray(bootstrap, containsForwardDecls);
   }
 
-  // If requested to emit scope information inline, pass the declarations, imports and exports to
-  // the `ɵɵdefineNgModule` call. The JIT compilation uses this.
-  if (emitInline) {
-    if (declarations.length) {
-      definitionMap.declarations = refsToArray(declarations, containsForwardDecls);
+  // Some fields of ngModuleDef are only required if this AOT-compiled module needs to support JIT
+  // down the road. Since AOT compiled code is published to NPM, these fields are included in a
+  // separate argument to defineNgModule which is guarded by a compile-time constant.
+  let jitMap: {
+    declarations?: o.Expression,
+    imports?: o.Expression,
+    exports?: o.Expression,
+  }|null = null;
+
+  if (declarations.length > 0 || imports.length > 0 || exports.length > 0) {
+    jitMap = {};
+
+    if (declarations.length > 0) {
+      jitMap.declarations = refsToArray(declarations, containsForwardDecls);
     }
 
-    if (imports.length) {
-      definitionMap.imports = refsToArray(imports, containsForwardDecls);
+    if (imports.length > 0) {
+      jitMap.imports = refsToArray(imports, containsForwardDecls);
     }
 
-    if (exports.length) {
-      definitionMap.exports = refsToArray(exports, containsForwardDecls);
-    }
-  }
-
-  // If not emitting inline, the scope information is not passed into `ɵɵdefineNgModule` as it would
-  // prevent tree-shaking of the declarations, imports and exports references.
-  else {
-    const setNgModuleScopeCall = generateSetNgModuleScopeCall(meta);
-    if (setNgModuleScopeCall !== null) {
-      additionalStatements.push(setNgModuleScopeCall);
+    if (exports.length > 0) {
+      jitMap.exports = refsToArray(exports, containsForwardDecls);
     }
   }
 
@@ -139,7 +132,18 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     definitionMap.id = id;
   }
 
-  const expression = o.importExpr(R3.defineNgModule).callFn([mapToMapExpression(definitionMap)]);
+  const defineNgModuleArgs: o.Expression[] = [
+    mapToMapExpression(definitionMap),
+  ];
+
+  // If this module includes JIT-specific information, add that to the `defineNgModule` call using
+  // a guarded expression which the optimizer can remove later if requested.
+  if (jitMap !== null) {
+    const jitDefMap = mapToMapExpression(jitMap);
+    defineNgModuleArgs.push(guardJitDefinition ? jitOnlyGuardedExpression(jitDefMap) : jitDefMap);
+  }
+
+  const expression = o.importExpr(R3.defineNgModule).callFn(defineNgModuleArgs);
   const type = new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
     new o.ExpressionType(moduleType), tupleTypeOf(declarations), tupleTypeOf(imports),
     tupleTypeOf(exports)
@@ -147,46 +151,6 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
 
 
   return {expression, type, additionalStatements};
-}
-
-/**
- * Generates a function call to `ɵɵsetNgModuleScope` with all necessary information so that the
- * transitive module scope can be computed during runtime in JIT mode. This call is marked pure
- * such that the references to declarations, imports and exports may be elided causing these
- * symbols to become tree-shakeable.
- */
-function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|null {
-  const {type: moduleType, declarations, imports, exports, containsForwardDecls} = meta;
-
-  const scopeMap = {} as{
-    declarations: o.Expression,
-    imports: o.Expression,
-    exports: o.Expression,
-  };
-
-  if (declarations.length) {
-    scopeMap.declarations = refsToArray(declarations, containsForwardDecls);
-  }
-
-  if (imports.length) {
-    scopeMap.imports = refsToArray(imports, containsForwardDecls);
-  }
-
-  if (exports.length) {
-    scopeMap.exports = refsToArray(exports, containsForwardDecls);
-  }
-
-  if (Object.keys(scopeMap).length === 0) {
-    return null;
-  }
-
-  const fnCall = new o.InvokeFunctionExpr(
-      /* fn */ o.importExpr(R3.setNgModuleScope),
-      /* args */[moduleType, mapToMapExpression(scopeMap)],
-      /* type */ undefined,
-      /* sourceSpan */ undefined,
-      /* pure */ true);
-  return fnCall.toStmt();
 }
 
 export interface R3InjectorDef {

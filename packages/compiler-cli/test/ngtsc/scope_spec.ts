@@ -43,10 +43,9 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
           expect(jsContents)
               .toContain(
-                  '/*@__PURE__*/ i0.ɵɵsetNgModuleScope(TestModule, { imports: [OtherModule] });');
+                  'i0.ɵɵdefineNgModule({ type: TestModule }, (typeof ngJitMode === "undefined" || ngJitMode) && { imports: [OtherModule] });');
 
           const dtsContents = env.getContents('test.d.ts');
           expect(dtsContents)
@@ -104,10 +103,9 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
           expect(jsContents)
               .toContain(
-                  '/*@__PURE__*/ i0.ɵɵsetNgModuleScope(TestModule, { exports: [OtherModule] });');
+                  'i0.ɵɵdefineNgModule({ type: TestModule }, (typeof ngJitMode === "undefined" || ngJitMode) && { exports: [OtherModule] });');
 
           const dtsContents = env.getContents('test.d.ts');
           expect(dtsContents)

@@ -342,11 +342,14 @@ function declareTests(config?: {useJit: boolean}) {
                 }
 
                 class Module {
-                  static ɵmod = defineNgModule({
-                    type: Module,
-                    id: 'test',
-                    imports: [ChildModule],
-                  });
+                  static ɵmod = defineNgModule(
+                      {
+                        type: Module,
+                        id: 'test',
+                      },
+                      {
+                        imports: [ChildModule],
+                      });
                 }
 
                 createModuleFactory(ChildModule);

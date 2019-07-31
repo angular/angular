@@ -89,7 +89,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       declarations: facade.declarations.map(wrapReference),
       imports: facade.imports.map(wrapReference),
       exports: facade.exports.map(wrapReference),
-      emitInline: true,
+      guardJitDefinition: false,
       containsForwardDecls: false,
       schemas: facade.schemas ? facade.schemas.map(wrapReference) : null,
       id: facade.id ? new WrappedNodeExpr(facade.id) : null,

@@ -497,10 +497,8 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents)
-          .toContain('i0.ɵɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp] });');
-      expect(jsContents)
           .toContain(
-              '/*@__PURE__*/ i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestCmp] });');
+              'i0.ɵɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp] }, (typeof ngJitMode === "undefined" || ngJitMode) && { declarations: [TestCmp] });');
       expect(jsContents)
           .toContain(
               'i0.ɵɵdefineInjector({ factory: ' +
@@ -516,7 +514,7 @@ runInEachFileSystem(os => {
       expect(dtsContents).not.toContain('__decorate');
     });
 
-    it('should not emit a ɵɵsetNgModuleScope call when no scope metadata is present', () => {
+    it('should not emit the JIT definition parameter when no scope metadata is present', () => {
       env.write('test.ts', `
         import {NgModule} from '@angular/core';
 
@@ -528,7 +526,6 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
-      expect(jsContents).not.toContain('ɵɵsetNgModuleScope(TestModule,');
     });
 
     it('should emit the id when the module\'s id is a string', () => {
@@ -647,7 +644,9 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
+      expect(jsContents)
+          .toContain(
+              'i0.ɵɵdefineNgModule({ type: TestModule }, (typeof ngJitMode === "undefined" || ngJitMode) && { declarations: [TestCmp], imports: [OtherModule] });');
       expect(jsContents)
           .toContain(
               `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
@@ -687,7 +686,9 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
+      expect(jsContents)
+          .toContain(
+              'i0.ɵɵdefineNgModule({ type: TestModule }, (typeof ngJitMode === "undefined" || ngJitMode) && { declarations: [TestCmp], imports: [OtherModule] });');
       expect(jsContents)
           .toContain(
               `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
@@ -731,7 +732,9 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
+      expect(jsContents)
+          .toContain(
+              'i0.ɵɵdefineNgModule({ type: TestModule }, (typeof ngJitMode === "undefined" || ngJitMode) && { declarations: [TestCmp], imports: [OtherModule] });');
       expect(jsContents)
           .toContain(
               `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +

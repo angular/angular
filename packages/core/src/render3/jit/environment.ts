@@ -156,7 +156,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵresolveDocument': r3.ɵɵresolveDocument,
        'ɵɵresolveBody': r3.ɵɵresolveBody,
        'ɵɵsetComponentScope': r3.ɵɵsetComponentScope,
-       'ɵɵsetNgModuleScope': r3.ɵɵsetNgModuleScope,
 
        'ɵɵsanitizeHtml': sanitization.ɵɵsanitizeHtml,
        'ɵɵsanitizeStyle': sanitization.ɵɵsanitizeStyle,

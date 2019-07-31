@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {LifecycleHooksFeature, renderComponent, whenRendered} from './component';
-import {ɵɵdefineBase, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe, ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './definition';
+import {ɵɵdefineBase, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe, ɵɵsetComponentScope} from './definition';
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
@@ -226,7 +226,6 @@ export {
   getRenderedText,
   renderComponent,
   ɵɵsetComponentScope,
-  ɵɵsetNgModuleScope,
   whenRendered,
 };
 

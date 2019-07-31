@@ -204,7 +204,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       imports,
       containsForwardDecls,
       id,
-      emitInline: false,
+      guardJitDefinition: true,
       // TODO: to be implemented as a part of FW-1004.
       schemas: [],
     };
