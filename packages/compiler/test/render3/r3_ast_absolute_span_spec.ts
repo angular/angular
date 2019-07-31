@@ -23,6 +23,10 @@ class ExpressionLocationHumanizer extends e.RecursiveAstVisitor implements t.Vis
     this.result.push([unparse(ast), ast.sourceSpan]);
     super.visitBinary(ast, null);
   }
+  visitChain(ast: e.Chain) {
+    this.result.push([unparse(ast), ast.sourceSpan]);
+    super.visitChain(ast, null);
+  }
   visitConditional(ast: e.Conditional) {
     this.result.push([unparse(ast), ast.sourceSpan]);
     super.visitConditional(ast, null);
@@ -81,9 +85,12 @@ class ExpressionLocationHumanizer extends e.RecursiveAstVisitor implements t.Vis
   }
   visitSafePropertyRead(ast: e.SafePropertyRead) {
     this.result.push([unparse(ast), ast.sourceSpan]);
+    super.visitSafePropertyRead(ast, null);
   }
 
-  visitTemplate(ast: t.Template) { t.visitAll(this, ast.children); }
+  visitTemplate(ast: t.Template) {
+    t.visitAll(this, ast.children);
+  }
   visitElement(ast: t.Element) {
     t.visitAll(this, ast.children);
     t.visitAll(this, ast.inputs);
@@ -91,11 +98,19 @@ class ExpressionLocationHumanizer extends e.RecursiveAstVisitor implements t.Vis
   }
   visitReference(ast: t.Reference) {}
   visitVariable(ast: t.Variable) {}
-  visitEvent(ast: t.BoundEvent) { ast.handler.visit(this); }
+  visitEvent(ast: t.BoundEvent) {
+    ast.handler.visit(this);
+  }
   visitTextAttribute(ast: t.TextAttribute) {}
-  visitBoundAttribute(ast: t.BoundAttribute) { ast.value.visit(this); }
-  visitBoundEvent(ast: t.BoundEvent) { ast.handler.visit(this); }
-  visitBoundText(ast: t.BoundText) { ast.value.visit(this); }
+  visitBoundAttribute(ast: t.BoundAttribute) {
+    ast.value.visit(this);
+  }
+  visitBoundEvent(ast: t.BoundEvent) {
+    ast.handler.visit(this);
+  }
+  visitBoundText(ast: t.BoundText) {
+    ast.value.visit(this);
+  }
   visitContent(ast: t.Content) {}
   visitText(ast: t.Text) {}
   visitIcu(ast: t.Icu) {}
@@ -149,6 +164,12 @@ describe('expression AST absolute source spans', () => {
   it('should provide absolute offsets of a conditional', () => {
     expect(humanizeExpressionLocation(parse('<div>{{bool ? 1 : 0}}<div>').nodes)).toContain([
       'bool ? 1 : 0', new AbsoluteSourceSpan(7, 19)
+    ]);
+  });
+
+  it('should provide absolute offsets of a chain', () => {
+    expect(humanizeExpressionLocation(parse('<div (click)="a(); b();"><div>').nodes)).toContain([
+      'a(); b();', new AbsoluteSourceSpan(14, 23)
     ]);
   });
 
