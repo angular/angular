@@ -279,7 +279,7 @@ function voidElementAttributeCompletions(info: TemplateInfo, path: AstPath<HtmlA
 
 class ExpressionVisitor extends NullTemplateVisitor {
   private getExpressionScope: () => SymbolTable;
-  result: Completions;
+  result: Completion[]|undefined;
 
   constructor(
       private info: TemplateInfo, private position: number, private attr?: Attribute,

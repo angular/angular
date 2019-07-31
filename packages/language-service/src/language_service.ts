@@ -13,7 +13,7 @@ import {getTemplateCompletions} from './completions';
 import {getDefinition} from './definitions';
 import {getDeclarationDiagnostics} from './diagnostics';
 import {getHover} from './hover';
-import {Completions, Definition, Diagnostic, DiagnosticKind, Diagnostics, Hover, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
+import {Completion, Diagnostic, DiagnosticKind, Diagnostics, Hover, LanguageService, LanguageServiceHost, Location, Span, TemplateSource} from './types';
 import {offsetSpan, spanOf} from './utils';
 
 
@@ -34,14 +34,14 @@ class LanguageServiceImpl implements LanguageService {
 
   getTemplateReferences(): string[] { return this.host.getTemplateReferences(); }
 
-  getDiagnostics(fileName: string): Diagnostics|undefined {
-    let results: Diagnostics = [];
-    let templates = this.host.getTemplates(fileName);
+  getDiagnostics(fileName: string): Diagnostic[] {
+    const results: Diagnostic[] = [];
+    const templates = this.host.getTemplates(fileName);
     if (templates && templates.length) {
       results.push(...this.getTemplateDiagnostics(fileName, templates));
     }
 
-    let declarations = this.host.getDeclarations(fileName);
+    const declarations = this.host.getDeclarations(fileName);
     if (declarations && declarations.length) {
       const summary = this.host.getAnalyzedModules();
       results.push(...getDeclarationDiagnostics(declarations, summary));
@@ -58,14 +58,14 @@ class LanguageServiceImpl implements LanguageService {
     return [];
   }
 
-  getCompletionsAt(fileName: string, position: number): Completions {
+  getCompletionsAt(fileName: string, position: number): Completion[]|undefined {
     let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getTemplateCompletions(templateInfo);
     }
   }
 
-  getDefinitionAt(fileName: string, position: number): Definition {
+  getDefinitionAt(fileName: string, position: number): Location[]|undefined {
     let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getDefinition(templateInfo);
@@ -112,25 +112,20 @@ class LanguageServiceImpl implements LanguageService {
   }
 }
 
-function uniqueBySpan < T extends {
-  span: Span;
-}
-> (elements: T[] | undefined): T[]|undefined {
-  if (elements) {
-    const result: T[] = [];
-    const map = new Map<number, Set<number>>();
-    for (const element of elements) {
-      let span = element.span;
-      let set = map.get(span.start);
-      if (!set) {
-        set = new Set();
-        map.set(span.start, set);
-      }
-      if (!set.has(span.end)) {
-        set.add(span.end);
-        result.push(element);
-      }
+function uniqueBySpan<T extends{span: Span}>(elements: T[]): T[] {
+  const result: T[] = [];
+  const map = new Map<number, Set<number>>();
+  for (const element of elements) {
+    const {span} = element;
+    let set = map.get(span.start);
+    if (!set) {
+      set = new Set();
+      map.set(span.start, set);
     }
-    return result;
+    if (!set.has(span.end)) {
+      set.add(span.end);
+      result.push(element);
+    }
   }
+  return result;
 }

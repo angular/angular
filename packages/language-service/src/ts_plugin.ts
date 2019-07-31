@@ -9,6 +9,7 @@
 import * as ts from 'typescript'; // used as value, passed in by tsserver at runtime
 import * as tss from 'typescript/lib/tsserverlibrary'; // used as type only
 
+import {ngLocationToTsDefinitionInfo} from './definitions';
 import {createLanguageService} from './language_service';
 import {Completion, Diagnostic, DiagnosticMessageChain, Location} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
@@ -23,7 +24,7 @@ export function getExternalFiles(project: tss.server.Project): string[]|undefine
   }
 }
 
-function completionToEntry(c: Completion): ts.CompletionEntry {
+function completionToEntry(c: Completion): tss.CompletionEntry {
   return {
     // TODO: remove any and fix type error.
     kind: c.kind as any,
@@ -44,15 +45,15 @@ function diagnosticChainToDiagnosticChain(chain: DiagnosticMessageChain):
 }
 
 function diagnosticMessageToDiagnosticMessageText(message: string | DiagnosticMessageChain): string|
-    ts.DiagnosticMessageChain {
+    tss.DiagnosticMessageChain {
   if (typeof message === 'string') {
     return message;
   }
   return diagnosticChainToDiagnosticChain(message);
 }
 
-function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
-  const result = {
+function diagnosticToDiagnostic(d: Diagnostic, file: tss.SourceFile | undefined): tss.Diagnostic {
+  return {
     file,
     start: d.span.start,
     length: d.span.end - d.span.start,
@@ -61,154 +62,131 @@ function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnost
     code: 0,
     source: 'ng'
   };
-  return result;
 }
 
-export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
-  const oldLS: ts.LanguageService = info.languageService;
-  const proxy: ts.LanguageService = Object.assign({}, oldLS);
-  const logger = info.project.projectService.logger;
-
-  function tryOperation<T>(attempting: string, callback: () => T): T|null {
-    try {
-      return callback();
-    } catch (e) {
-      logger.info(`Failed to ${attempting}: ${e.toString()}`);
-      logger.info(`Stack trace: ${e.stack}`);
-      return null;
-    }
-  }
-
-  const serviceHost = new TypeScriptServiceHost(info.languageServiceHost, oldLS);
-  const ls = createLanguageService(serviceHost);
-  projectHostMap.set(info.project, serviceHost);
+export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
+  const {project, languageService: tsLS, languageServiceHost: tsLSHost, config} = info;
+  // This plugin could operate under two different modes:
+  // 1. TS + Angular
+  //    Plugin augments TS language service to provide additional Angular
+  //    information. This only works with inline templates and is meant to be
+  //    used as a local plugin (configured via tsconfig.json)
+  // 2. Angular only
+  //    Plugin only provides information on Angular templates, no TS info at all.
+  //    This effectively disables native TS features and is meant for internal
+  //    use only.
+  const angularOnly = config ? config.angularOnly === true : false;
+  const proxy: tss.LanguageService = Object.assign({}, tsLS);
+  const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+  const ngLS = createLanguageService(ngLSHost);
+  projectHostMap.set(project, ngLSHost);
 
   proxy.getCompletionsAtPosition = function(
-      fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions|undefined) {
-    let base = oldLS.getCompletionsAtPosition(fileName, position, options) || {
+      fileName: string, position: number, options: tss.GetCompletionsAtPositionOptions|undefined) {
+    if (!angularOnly) {
+      const results = tsLS.getCompletionsAtPosition(fileName, position, options);
+      if (results && results.entries.length) {
+        // If TS could answer the query, then return results immediately.
+        return results;
+      }
+    }
+    const results = ngLS.getCompletionsAt(fileName, position);
+    if (!results || !results.length) {
+      return;
+    }
+    return {
       isGlobalCompletion: false,
       isMemberCompletion: false,
       isNewIdentifierLocation: false,
-      entries: []
+      entries: results.map(completionToEntry),
     };
-    tryOperation('get completions', () => {
-      const results = ls.getCompletionsAt(fileName, position);
-      if (results && results.length) {
-        if (base === undefined) {
-          base = {
-            isGlobalCompletion: false,
-            isMemberCompletion: false,
-            isNewIdentifierLocation: false,
-            entries: []
-          };
-        }
-        for (const entry of results) {
-          base.entries.push(completionToEntry(entry));
-        }
-      }
-    });
-    return base;
   };
 
-  proxy.getQuickInfoAtPosition = function(fileName: string, position: number): ts.QuickInfo |
+  proxy.getQuickInfoAtPosition = function(fileName: string, position: number): tss.QuickInfo |
       undefined {
-        const base = oldLS.getQuickInfoAtPosition(fileName, position);
-        const ours = ls.getHoverAt(fileName, position);
-        if (!ours) {
-          return base;
+        if (!angularOnly) {
+          const result = tsLS.getQuickInfoAtPosition(fileName, position);
+          if (result) {
+            // If TS could answer the query, then return results immediately.
+            return result;
+          }
         }
-        const result: ts.QuickInfo = {
+        const result = ngLS.getHoverAt(fileName, position);
+        if (!result) {
+          return;
+        }
+        return {
+          // TODO(kyliau): Provide more useful info for kind and kindModifiers
           kind: ts.ScriptElementKind.unknown,
           kindModifiers: ts.ScriptElementKindModifier.none,
           textSpan: {
-            start: ours.span.start,
-            length: ours.span.end - ours.span.start,
+            start: result.span.start,
+            length: result.span.end - result.span.start,
           },
-          displayParts: ours.text.map(part => {
+          displayParts: result.text.map((part) => {
             return {
               text: part.text,
               kind: part.language || 'angular',
             };
           }),
-          documentation: [],
         };
-        if (base && base.tags) {
-          result.tags = base.tags;
-        }
-        return result;
       };
 
-  proxy.getSemanticDiagnostics = function(fileName: string) {
-    let result = oldLS.getSemanticDiagnostics(fileName);
-    const base = result || [];
-    tryOperation('get diagnostics', () => {
-      logger.info(`Computing Angular semantic diagnostics...`);
-      const ours = ls.getDiagnostics(fileName);
-      if (ours && ours.length) {
-        const file = oldLS.getProgram() !.getSourceFile(fileName);
-        if (file) {
-          base.push.apply(base, ours.map(d => diagnosticToDiagnostic(d, file)));
-        }
-      }
-    });
-
-    return base;
+  proxy.getSemanticDiagnostics = function(fileName: string): tss.Diagnostic[] {
+    const results: tss.Diagnostic[] = [];
+    if (!angularOnly) {
+      const tsResults = tsLS.getSemanticDiagnostics(fileName);
+      results.push(...tsResults);
+    }
+    // For semantic diagnostics we need to combine both TS + Angular results
+    const ngResults = ngLS.getDiagnostics(fileName);
+    if (!ngResults.length) {
+      return results;
+    }
+    const sourceFile = fileName.endsWith('.ts') ? ngLSHost.getSourceFile(fileName) : undefined;
+    results.push(...ngResults.map(d => diagnosticToDiagnostic(d, sourceFile)));
+    return results;
   };
 
   proxy.getDefinitionAtPosition = function(fileName: string, position: number):
-                                      ReadonlyArray<ts.DefinitionInfo>|
+                                      ReadonlyArray<tss.DefinitionInfo>|
       undefined {
-        const base = oldLS.getDefinitionAtPosition(fileName, position);
-        if (base && base.length) {
-          return base;
+        if (!angularOnly) {
+          const results = tsLS.getDefinitionAtPosition(fileName, position);
+          if (results) {
+            // If TS could answer the query, then return results immediately.
+            return results;
+          }
         }
-        const ours = ls.getDefinitionAt(fileName, position);
-        if (ours && ours.length) {
-          return ours.map((loc: Location) => {
-            return {
-              fileName: loc.fileName,
-              textSpan: {
-                start: loc.span.start,
-                length: loc.span.end - loc.span.start,
-              },
-              name: '',
-              kind: ts.ScriptElementKind.unknown,
-              containerName: loc.fileName,
-              containerKind: ts.ScriptElementKind.unknown,
-            };
-          });
+        const results = ngLS.getDefinitionAt(fileName, position);
+        if (!results) {
+          return;
         }
+        return results.map(ngLocationToTsDefinitionInfo);
       };
 
   proxy.getDefinitionAndBoundSpan = function(fileName: string, position: number):
-                                        ts.DefinitionInfoAndBoundSpan |
+                                        tss.DefinitionInfoAndBoundSpan |
       undefined {
-        const base = oldLS.getDefinitionAndBoundSpan(fileName, position);
-        if (base && base.definitions && base.definitions.length) {
-          return base;
+        if (!angularOnly) {
+          const result = tsLS.getDefinitionAndBoundSpan(fileName, position);
+          if (result) {
+            // If TS could answer the query, then return results immediately.
+            return result;
+          }
         }
-        const ours = ls.getDefinitionAt(fileName, position);
-        if (ours && ours.length) {
-          return {
-            definitions: ours.map((loc: Location) => {
-              return {
-                fileName: loc.fileName,
-                textSpan: {
-                  start: loc.span.start,
-                  length: loc.span.end - loc.span.start,
-                },
-                name: '',
-                kind: ts.ScriptElementKind.unknown,
-                containerName: loc.fileName,
-                containerKind: ts.ScriptElementKind.unknown,
-              };
-            }),
-            textSpan: {
-              start: ours[0].span.start,
-              length: ours[0].span.end - ours[0].span.start,
-            },
-          };
+        const results = ngLS.getDefinitionAt(fileName, position);
+        if (!results || !results.length) {
+          return;
         }
+        const {span} = results[0];
+        return {
+          definitions: results.map(ngLocationToTsDefinitionInfo),
+          textSpan: {
+            start: span.start,
+            length: span.end - span.start,
+          },
+        };
       };
 
   return proxy;
