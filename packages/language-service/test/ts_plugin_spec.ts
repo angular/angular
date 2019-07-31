@@ -7,21 +7,16 @@
  */
 
 import 'reflect-metadata';
-
 import * as ts from 'typescript';
-
 import {create} from '../src/ts_plugin';
-
 import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 describe('plugin', () => {
-  let documentRegistry = ts.createDocumentRegistry();
-  let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
-  let service = ts.createLanguageService(mockHost, documentRegistry);
-  let program = service.getProgram();
-
-  const mockProject = {projectService: {logger: {info: function() {}}}};
+  const mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
+  const service = ts.createLanguageService(mockHost);
+  const program = service.getProgram();
+  const plugin = createPlugin(service, mockHost);
 
   it('should not report errors on tour of heroes', () => {
     expectNoDiagnostics(service.getCompilerOptionsDiagnostics());
@@ -29,15 +24,6 @@ describe('plugin', () => {
       expectNoDiagnostics(service.getSyntacticDiagnostics(source.fileName));
       expectNoDiagnostics(service.getSemanticDiagnostics(source.fileName));
     }
-  });
-
-
-  let plugin = create({
-    languageService: service,
-    project: mockProject as any,
-    languageServiceHost: mockHost,
-    serverHost: {} as any,
-    config: {},
   });
 
   it('should not report template errors on tour of heroes', () => {
@@ -197,7 +183,53 @@ describe('plugin', () => {
             'implicit', 'The template context does not defined a member called \'unknown\'');
       });
     });
+
+    describe(`with config 'angularOnly = true`, () => {
+      const ngLS = createPlugin(service, mockHost, {angularOnly: true});
+      it('should not report template errors on TOH', () => {
+        const sourceFiles = ngLS.getProgram() !.getSourceFiles();
+        expect(sourceFiles.length).toBeGreaterThan(0);
+        for (const {fileName} of sourceFiles) {
+          // Ignore all 'cases.ts' files as they intentionally contain errors.
+          if (!fileName.endsWith('cases.ts')) {
+            expectNoDiagnostics(ngLS.getSemanticDiagnostics(fileName));
+          }
+        }
+      });
+
+      it('should be able to get entity completions', () => {
+        const fileName = 'app/app.component.ts';
+        const marker = 'entity-amp';
+        const position = getMarkerLocation(fileName, marker);
+        const results = ngLS.getCompletionsAtPosition(fileName, position, {} /* options */);
+        expect(results).toBeTruthy();
+        expectEntries(marker, results !, ...['&amp;', '&gt;', '&lt;', '&iota;']);
+      });
+
+      it('should report template diagnostics', () => {
+        // TODO(kyliau): Rename these to end with '-error.ts'
+        const fileName = 'app/expression-cases.ts';
+        const diagnostics = ngLS.getSemanticDiagnostics(fileName);
+        expect(diagnostics.map(d => d.messageText)).toEqual([
+          `Identifier 'foo' is not defined. The component declaration, template variable declarations, and element references do not contain such a member`,
+          `Identifier 'nam' is not defined. 'Person' does not contain such a member`,
+          `Identifier 'myField' refers to a private member of the component`,
+          `Expected a numeric type`,
+        ]);
+      });
+    });
   });
+
+  function createPlugin(tsLS: ts.LanguageService, tsLSHost: ts.LanguageServiceHost, config = {}) {
+    const project = {projectService: {logger: {info() {}}}};
+    return create({
+      languageService: tsLS,
+      languageServiceHost: tsLSHost,
+      project: project as any,
+      serverHost: {} as any,
+      config: {...config},
+    });
+  }
 
   function getMarkerLocation(fileName: string, locationMarker: string): number {
     const location = mockHost.getMarkerLocations(fileName) ![locationMarker];
