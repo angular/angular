@@ -17,6 +17,7 @@ ng_module(
         "//packages/core/src/interface",
         "//packages/core/src/reflection",
         "//packages/core/src/util",
+        "//packages/localize",
         "@npm//rxjs",
         "@npm//zone.js",
     ],
