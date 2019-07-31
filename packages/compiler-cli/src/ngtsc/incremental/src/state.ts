@@ -12,13 +12,14 @@ import {Reference} from '../../imports';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
 import {DependencyTracker} from '../../partial_evaluator';
 import {ClassDeclaration} from '../../reflection';
+import {ComponentScopeReader, ComponentScopeRegistry, LocalModuleScope} from '../../scope';
 import {ResourceDependencyRecorder} from '../../util/src/resource_recorder';
 
 /**
  * Accumulates state between compilations.
  */
 export class IncrementalState implements DependencyTracker, MetadataReader, MetadataRegistry,
-    ResourceDependencyRecorder {
+    ResourceDependencyRecorder, ComponentScopeRegistry, ComponentScopeReader {
   private constructor(
       private unchangedFiles: Set<ts.SourceFile>,
       private metadata: Map<ts.SourceFile, FileMetadata>,
@@ -69,32 +70,56 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
   }
 
   getFileDependencies(file: ts.SourceFile): ts.SourceFile[] {
-    const meta = this.metadata.get(file);
-    return meta ? Array.from(meta.fileDependencies) : [];
+    if (!this.metadata.has(file)) {
+      return [];
+    }
+    const meta = this.metadata.get(file) !;
+    return Array.from(meta.fileDependencies);
   }
 
   getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta|null {
-    const metadata = this.metadata.get(ref.node.getSourceFile()) || null;
-    return metadata && metadata.ngModuleMeta.get(ref.node) || null;
+    if (!this.metadata.has(ref.node.getSourceFile())) {
+      return null;
+    }
+    const metadata = this.metadata.get(ref.node.getSourceFile()) !;
+    if (!metadata.ngModuleMeta.has(ref.node)) {
+      return null;
+    }
+    return metadata.ngModuleMeta.get(ref.node) !;
   }
+
   registerNgModuleMetadata(meta: NgModuleMeta): void {
     const metadata = this.ensureMetadata(meta.ref.node.getSourceFile());
     metadata.ngModuleMeta.set(meta.ref.node, meta);
   }
 
   getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
-    const metadata = this.metadata.get(ref.node.getSourceFile()) || null;
-    return metadata && metadata.directiveMeta.get(ref.node) || null;
+    if (!this.metadata.has(ref.node.getSourceFile())) {
+      return null;
+    }
+    const metadata = this.metadata.get(ref.node.getSourceFile()) !;
+    if (!metadata.directiveMeta.has(ref.node)) {
+      return null;
+    }
+    return metadata.directiveMeta.get(ref.node) !;
   }
+
   registerDirectiveMetadata(meta: DirectiveMeta): void {
     const metadata = this.ensureMetadata(meta.ref.node.getSourceFile());
     metadata.directiveMeta.set(meta.ref.node, meta);
   }
 
   getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta|null {
-    const metadata = this.metadata.get(ref.node.getSourceFile()) || null;
-    return metadata && metadata.pipeMeta.get(ref.node) || null;
+    if (!this.metadata.has(ref.node.getSourceFile())) {
+      return null;
+    }
+    const metadata = this.metadata.get(ref.node.getSourceFile()) !;
+    if (!metadata.pipeMeta.has(ref.node)) {
+      return null;
+    }
+    return metadata.pipeMeta.get(ref.node) !;
   }
+
   registerPipeMetadata(meta: PipeMeta): void {
     const metadata = this.ensureMetadata(meta.ref.node.getSourceFile());
     metadata.pipeMeta.set(meta.ref.node, meta);
@@ -103,6 +128,40 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
   recordResourceDependency(file: ts.SourceFile, resourcePath: string): void {
     const metadata = this.ensureMetadata(file);
     metadata.resourcePaths.add(resourcePath);
+  }
+
+  registerComponentScope(clazz: ClassDeclaration, scope: LocalModuleScope): void {
+    const metadata = this.ensureMetadata(clazz.getSourceFile());
+    metadata.componentScope.set(clazz, scope);
+  }
+
+  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null {
+    if (!this.metadata.has(clazz.getSourceFile())) {
+      return null;
+    }
+    const metadata = this.metadata.get(clazz.getSourceFile()) !;
+    if (!metadata.componentScope.has(clazz)) {
+      return null;
+    }
+    return metadata.componentScope.get(clazz) !;
+  }
+
+  setComponentAsRequiringRemoteScoping(clazz: ClassDeclaration): void {
+    const metadata = this.ensureMetadata(clazz.getSourceFile());
+    metadata.remoteScoping.add(clazz);
+  }
+
+  getRequiresRemoteScope(clazz: ClassDeclaration): boolean|null {
+    // TODO: https://angular-team.atlassian.net/browse/FW-1501
+    // Handle the incremental build case where a component requires remote scoping.
+    // This means that if the the component's template changes, it requires the module to be
+    // re-emitted.
+    // Also, we need to make sure the cycle detector works well across rebuilds.
+    if (!this.metadata.has(clazz.getSourceFile())) {
+      return null;
+    }
+    const metadata = this.metadata.get(clazz.getSourceFile()) !;
+    return metadata.remoteScoping.has(clazz);
   }
 
   private ensureMetadata(sf: ts.SourceFile): FileMetadata {
@@ -131,4 +190,6 @@ class FileMetadata {
   directiveMeta = new Map<ClassDeclaration, DirectiveMeta>();
   ngModuleMeta = new Map<ClassDeclaration, NgModuleMeta>();
   pipeMeta = new Map<ClassDeclaration, PipeMeta>();
+  componentScope = new Map<ClassDeclaration, LocalModuleScope>();
+  remoteScoping = new Set<ClassDeclaration>();
 }
