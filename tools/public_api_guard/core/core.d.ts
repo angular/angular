@@ -888,11 +888,6 @@ export declare function ɵɵi18nEnd(): void;
 
 export declare function ɵɵi18nExp<T>(value: T): TsickleIssue1009;
 
-/** @deprecated */
-export declare function ɵɵi18nLocalize(input: string, placeholders?: {
-    [key: string]: string;
-}): string;
-
 export declare function ɵɵi18nPostprocess(message: string, replacements?: {
     [key: string]: (string | string[]);
 }): string;
