@@ -8,10 +8,10 @@
 
 import {BoundTarget, DirectiveMeta, ParseSourceFile} from '@angular/compiler';
 import {Reference} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {NamedDeclaration} from './api';
 
 export interface ComponentMeta extends DirectiveMeta {
-  ref: Reference<ClassDeclaration>;
+  ref: Reference<NamedDeclaration>;
   /**
    * Unparsed selector of the directive.
    */
@@ -23,7 +23,7 @@ export interface ComponentMeta extends DirectiveMeta {
  */
 export interface ComponentInfo {
   /** Component TypeScript class declaration */
-  declaration: ClassDeclaration;
+  declaration: NamedDeclaration;
 
   /** Component template selector if it exists, otherwise null. */
   selector: string|null;

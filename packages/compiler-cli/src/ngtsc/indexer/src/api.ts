@@ -8,8 +8,11 @@
 
 import {ParseSourceFile} from '@angular/compiler';
 import * as ts from 'typescript';
-import {ClassDeclaration} from '../../reflection';
-export {ClassDeclaration} from '../../reflection';
+
+/**
+ * A TypeScript declaration that is guaranteed to have a name.
+ */
+export type NamedDeclaration = ts.Declaration & {name: ts.Identifier};
 
 /**
  * Describes the kind of identifier found in a template.
@@ -54,7 +57,7 @@ export interface AttributeIdentifier extends TemplateIdentifier { kind: Identifi
 
 /** A reference to a directive node and its selector. */
 interface DirectiveReference {
-  node: ClassDeclaration;
+  node: NamedDeclaration;
   selector: string;
 }
 /** A base interface for element and template identifiers. */
