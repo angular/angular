@@ -27,21 +27,32 @@ $_mat-button-ripple-opacity: 0.1;
   }
 }
 
+// Applies the background color for a ripple. If the value provided is not a Sass color,
+// we assume that we've been given a CSS variable. Since we can't perform alpha-blending
+// on a CSS variable, we instead add the opacity directly to the ripple element.
+@mixin _mat-button-ripple-background($palette, $hue, $opacity) {
+  $background-color: mat-color($palette, $hue, $opacity);
+  background-color: $background-color;
+  @if (type-of($background-color) != color) {
+    opacity: $opacity;
+  }
+}
+
 @mixin _mat-button-ripple-color($theme, $hue, $opacity: $_mat-button-ripple-opacity) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
 
   &.mat-primary .mat-ripple-element {
-    background-color: mat-color($primary, $hue, $opacity);
+    @include _mat-button-ripple-background($primary, $hue, $opacity);
   }
 
   &.mat-accent .mat-ripple-element {
-    background-color: mat-color($accent, $hue, $opacity);
+    @include _mat-button-ripple-background($accent, $hue, $opacity);
   }
 
   &.mat-warn .mat-ripple-element {
-    background-color: mat-color($warn, $hue, $opacity);
+    @include _mat-button-ripple-background($warn, $hue, $opacity);
   }
 }
 
