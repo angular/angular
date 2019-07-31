@@ -12,7 +12,7 @@ import {RendererFactory2} from '../../src/render/api';
 import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
 import {ɵɵdefineComponent} from '../../src/render3/index';
 import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {Sanitizer} from '../../src/sanitization/security';
+import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 describe('ComponentFactory', () => {
   const cfr = injectComponentFactoryResolver();

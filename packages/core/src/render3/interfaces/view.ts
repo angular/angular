@@ -10,7 +10,7 @@ import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata';
-import {Sanitizer} from '../../sanitization/security';
+import {Sanitizer} from '../../sanitization/sanitizer';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
