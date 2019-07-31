@@ -49,12 +49,20 @@ export function flattenStyles(
 
 function decoratePreventDefault(eventHandler: Function): Function {
   return (event: any) => {
+    // Ivy uses `Function` as a special token that allows us to unwrap the function
+    // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`.
+    if (event === Function) {
+      return eventHandler;
+    }
+
     const allowDefaultBehavior = eventHandler(event);
     if (allowDefaultBehavior === false) {
       // TODO(tbosch): move preventDefault into event plugins...
       event.preventDefault();
       event.returnValue = false;
     }
+
+    return undefined;
   };
 }
 
