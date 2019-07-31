@@ -10,7 +10,7 @@ import 'reflect-metadata';
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {Completions} from '../src/types';
+import {Completion} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
@@ -228,7 +228,8 @@ export class MyComponent {
 });
 
 
-function expectEntries(locationMarker: string, completions: Completions, ...names: string[]) {
+function expectEntries(
+    locationMarker: string, completions: Completion[] | undefined, ...names: string[]) {
   let entries: {[name: string]: boolean} = {};
   if (!completions) {
     throw new Error(
