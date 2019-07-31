@@ -139,10 +139,10 @@ runInEachFileSystem(() => {
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`)).replace(/\s+/g, ' ');
       expect(jsContents)
           .toContain(
-              '/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(FooDirective, ' +
+              '/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(FooDirective, ' +
               '[{ type: Directive, args: [{ selector: \'[foo]\' }] }], ' +
               'function () { return []; }, ' +
-              '{ bar: [{ type: Input }] });');
+              '{ bar: [{ type: Input }] }); })();');
     });
 
     it('should not add `const` in ES5 generated code', () => {
