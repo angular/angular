@@ -5,6 +5,7 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {SafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {ProceduralRenderer3, RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 
@@ -110,7 +111,7 @@ export function updateClassBinding(
  */
 export function updateStyleBinding(
     context: TStylingContext, data: LStylingData, element: RElement, prop: string | null,
-    bindingIndex: number, value: String | string | number | null | undefined | StylingMapArray,
+    bindingIndex: number, value: string | number | SafeValue | null | undefined | StylingMapArray,
     sanitizer: StyleSanitizeFn | null, deferRegistration: boolean, forceUpdate: boolean): boolean {
   const isMapBased = !prop;
   const state = getStylingState(element, stateIsPersisted(context));
@@ -149,7 +150,7 @@ export function updateStyleBinding(
 function updateBindingData(
     context: TStylingContext, data: LStylingData, counterIndex: number, prop: string | null,
     bindingIndex: number,
-    value: string | String | number | boolean | null | undefined | StylingMapArray,
+    value: string | SafeValue | number | boolean | null | undefined | StylingMapArray,
     deferRegistration: boolean, forceUpdate: boolean, sanitizationRequired: boolean): boolean {
   if (!isContextLocked(context)) {
     if (deferRegistration) {

@@ -1057,7 +1057,7 @@ export declare function ɵɵstyleMap(styles: {
     [styleName: string]: any;
 } | NO_CHANGE | null): void;
 
-export declare function ɵɵstyleProp(prop: string, value: string | number | String | null, suffix?: string | null): void;
+export declare function ɵɵstyleProp(prop: string, value: string | number | SafeValue | null, suffix?: string | null): void;
 
 export declare function ɵɵstylePropInterpolate1(prop: string, prefix: string, v0: any, suffix: string, valueSuffix?: string | null): TsickleIssue1009;
 
@@ -1314,6 +1314,7 @@ export declare abstract class RootRenderer {
 
 export declare abstract class Sanitizer {
     abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
+    static ngInjectableDef: never;
 }
 
 export interface SchemaMetadata {

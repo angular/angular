@@ -35,7 +35,7 @@ import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, Render
 import {HEADER_OFFSET, LView, LViewFlags, TVIEW, T_HOST} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
-import {Sanitizer} from '../../src/sanitization/security';
+import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 import {getRendererFactory2} from './imported_renderer2';
 

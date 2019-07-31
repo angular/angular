@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {AfterContentInit, Component, ComponentFactoryResolver, ComponentRef, ContentChildren, Directive, DoCheck, HostBinding, HostListener, Injectable, Input, NgModule, OnChanges, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
-import {bypassSanitizationTrustHtml, bypassSanitizationTrustUrl} from '@angular/core/src/sanitization/bypass';
+import {bypassSanitizationTrustHtml, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '@angular/core/src/sanitization/bypass';
 import {TestBed} from '@angular/core/testing';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
@@ -1021,10 +1021,11 @@ describe('host bindings', () => {
   });
 
   describe('sanitization', () => {
+    function identity(value: any) { return value; }
     function verify(
-        tag: string, prop: string, value: any, expectedSanitizedValue: any, bypassFn: any,
-        isAttribute: boolean = true) {
-      it('should sanitize potentially unsafe properties and attributes', () => {
+        tag: string, prop: string, value: any, expectedSanitizedValue: any, bypassFn: Function,
+        isAttribute: boolean = true, throws: boolean = false) {
+      it(`should sanitize <${tag} ${prop}> ${isAttribute ? 'properties' : 'attributes'}`, () => {
         @Directive({
           selector: '[unsafeUrlHostBindingDir]',
           host: {
@@ -1051,17 +1052,29 @@ describe('host bindings', () => {
         expect(current()).toEqual(expectedSanitizedValue);
 
         fixture.componentInstance.unsafeDir.value = bypassFn(value);
-        fixture.detectChanges();
-        expect(current()).toEqual(expectedSanitizedValue);
+        if (throws) {
+          expect(() => fixture.detectChanges()).toThrowError(/Required a safe URL, got a \w+/);
+        } else {
+          fixture.detectChanges();
+          expect(current()).toEqual(bypassFn == identity ? expectedSanitizedValue : value);
+        }
       });
     }
 
     verify(
         'a', 'href', 'javascript:alert(1)', 'unsafe:javascript:alert(1)',
         bypassSanitizationTrustUrl);
+    verify('a', 'href', 'javascript:alert(1.1)', 'unsafe:javascript:alert(1.1)', identity);
+    verify(
+        'a', 'href', 'javascript:alert(1.2)', 'unsafe:javascript:alert(1.2)',
+        bypassSanitizationTrustStyle, true, true);
     verify(
         'blockquote', 'cite', 'javascript:alert(2)', 'unsafe:javascript:alert(2)',
         bypassSanitizationTrustUrl);
+    verify('blockquote', 'cite', 'javascript:alert(2.1)', 'unsafe:javascript:alert(2.1)', identity);
+    verify(
+        'blockquote', 'cite', 'javascript:alert(2.2)', 'unsafe:javascript:alert(2.2)',
+        bypassSanitizationTrustHtml, true, true);
     verify(
         'b', 'innerHTML', '<img src="javascript:alert(3)">',
         '<img src="unsafe:javascript:alert(3)">', bypassSanitizationTrustHtml,

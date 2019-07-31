@@ -5,6 +5,7 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {SafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {setInputsForProperty} from '../instructions/shared';
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../interfaces/node';
@@ -96,12 +97,12 @@ export function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void {
  * @codeGenApi
  */
 export function ɵɵstyleProp(
-    prop: string, value: string | number | String | null, suffix?: string | null): void {
+    prop: string, value: string | number | SafeValue | null, suffix?: string | null): void {
   stylePropInternal(getSelectedIndex(), prop, value, suffix);
 }
 
 export function stylePropInternal(
-    elementIndex: number, prop: string, value: string | number | String | null,
+    elementIndex: number, prop: string, value: string | number | SafeValue | null,
     suffix?: string | null | undefined) {
   const lView = getLView();
 
@@ -161,8 +162,8 @@ export function ɵɵclassProp(className: string, value: boolean | null): void {
  */
 function _stylingProp(
     elementIndex: number, bindingIndex: number, prop: string,
-    value: boolean | number | String | string | null | undefined | NO_CHANGE, isClassBased: boolean,
-    defer: boolean): boolean {
+    value: boolean | number | SafeValue | string | null | undefined | NO_CHANGE,
+    isClassBased: boolean, defer: boolean): boolean {
   const lView = getLView();
   const tNode = getTNode(elementIndex, lView);
   const native = getNativeByTNode(tNode, lView) as RElement;
@@ -176,8 +177,8 @@ function _stylingProp(
     } else {
       const sanitizer = getCurrentStyleSanitizer();
       updated = updateStyleBinding(
-          getStylesContext(tNode), lView, native, prop, bindingIndex, value as string | null,
-          sanitizer, defer, false);
+          getStylesContext(tNode), lView, native, prop, bindingIndex,
+          value as string | SafeValue | null, sanitizer, defer, false);
     }
   }
 
@@ -508,8 +509,8 @@ function getContext(tNode: TNode, isClassBased: boolean) {
 }
 
 function resolveStylePropValue(
-    value: string | number | String | null | NO_CHANGE, suffix: string | null | undefined): string|
-    null|undefined|NO_CHANGE {
+    value: string | number | SafeValue | null | NO_CHANGE,
+    suffix: string | null | undefined): string|SafeValue|null|undefined|NO_CHANGE {
   if (value === NO_CHANGE) return value;
 
   let resolvedValue: string|null = null;
@@ -519,7 +520,7 @@ function resolveStylePropValue(
       // sanitization entirely (b/c a new string is created)
       resolvedValue = renderStringify(value) + suffix;
     } else {
-      // sanitization happens by dealing with a String value
+      // sanitization happens by dealing with a string value
       // this means that the string value will be passed through
       // into the style rendering later (which is where the value
       // will be sanitized before it is applied)

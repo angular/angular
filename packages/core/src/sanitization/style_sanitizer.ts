@@ -7,6 +7,7 @@
  */
 
 import {isDevMode} from '../util/is_dev_mode';
+import {SafeValue} from './bypass';
 import {_sanitizeUrl} from './url_sanitizer';
 
 
@@ -135,5 +136,5 @@ export const enum StyleSanitizeMode {
  * If a value is provided then the sanitized version of that will be returned.
  */
 export interface StyleSanitizeFn {
-  (prop: string, value: string|null, mode?: StyleSanitizeMode): any;
+  (prop: string, value: string|SafeValue|null, mode?: StyleSanitizeMode): any;
 }

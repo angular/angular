@@ -15,7 +15,7 @@ import {Type} from '../interface/type';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
-import {Sanitizer} from '../sanitization/security';
+import {Sanitizer} from '../sanitization/sanitizer';
 import {isDevMode} from '../util/is_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
 

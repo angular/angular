@@ -9,7 +9,7 @@ import {Injector} from '../../di';
 import {ErrorHandler} from '../../error_handler';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
-import {Sanitizer} from '../../sanitization/security';
+import {Sanitizer} from '../../sanitization/sanitizer';
 import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertNotEqual, assertNotSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';

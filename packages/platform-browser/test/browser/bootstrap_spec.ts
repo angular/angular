@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, StaticProvider, Type, VERSION, createPlatformFactory} from '@angular/core';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Injector, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, Sanitizer, StaticProvider, Type, VERSION, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -188,6 +188,19 @@ function bootstrap(
                async.done();
              });
            }));
+
+    it('should retrieve sanitizer', inject([Injector], (injector: Injector) => {
+         const sanitizer: Sanitizer|null = injector.get(Sanitizer, null);
+         if (ivyEnabled) {
+           // In Ivy we don't want to have sanitizer in DI. We use DI only to overwrite the
+           // sanitizer, but not for default one. The default one is pulled in by the Ivy
+           // instructions as needed.
+           expect(sanitizer).toBe(null);
+         } else {
+           // In VE we always need to have Sanitizer available.
+           expect(sanitizer).not.toBe(null);
+         }
+       }));
 
     it('should throw if no element is found',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
