@@ -84,12 +84,11 @@ export class CompilerImpl implements Compiler {
     return meta && meta.id || undefined;
   }
 }
-
 /**
  * A set of providers that provide `JitCompiler` and its dependencies to use for
  * template compilation.
  */
-export const COMPILER_PROVIDERS = <StaticProvider[]>[
+const COMPILER_PROVIDERS__PRE_R3__ = <StaticProvider[]>[
   {provide: CompileReflector, useValue: new JitReflector()},
   {provide: ResourceLoader, useValue: _NO_RESOURCE_LOADER},
   {provide: JitSummaryResolver, deps: []},
@@ -156,6 +155,9 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
   { provide: NgModuleResolver, deps: [CompileReflector]},
 ];
 
+export const COMPILER_PROVIDERS__POST_R3__ =
+    <StaticProvider[]>[{provide: Compiler, useFactory: () => new Compiler()}];
+export const COMPILER_PROVIDERS = COMPILER_PROVIDERS__PRE_R3__;
 /**
  * @publicApi
  */
