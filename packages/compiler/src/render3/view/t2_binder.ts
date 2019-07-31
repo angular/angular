@@ -269,20 +269,23 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     });
 
     // Associate attributes/bindings on the node with directives or with the node itself.
-    const processAttribute = (attribute: BoundAttribute | BoundEvent | TextAttribute) => {
-      let dir = directives.find(dir => dir.inputs.hasOwnProperty(attribute.name));
-      if (dir !== undefined) {
-        this.bindings.set(attribute, dir);
-      } else {
-        this.bindings.set(attribute, node);
-      }
-    };
-    node.attributes.forEach(processAttribute);
-    node.inputs.forEach(processAttribute);
-    node.outputs.forEach(processAttribute);
+    type BoundNode = BoundAttribute | BoundEvent | TextAttribute;
+    const setAttributeBinding =
+        (attribute: BoundNode, ioType: keyof Pick<DirectiveMeta, 'inputs'|'outputs'>) => {
+          const dir = directives.find(dir => dir[ioType].hasOwnProperty(attribute.name));
+          const binding = dir !== undefined ? dir : node;
+          this.bindings.set(attribute, binding);
+        };
+
+    // Node inputs (bound attributes) and text attributes can be bound to an
+    // input on a directive.
+    node.inputs.forEach(input => setAttributeBinding(input, 'inputs'));
+    node.attributes.forEach(attr => setAttributeBinding(attr, 'inputs'));
     if (node instanceof Template) {
-      node.templateAttrs.forEach(processAttribute);
+      node.templateAttrs.forEach(attr => setAttributeBinding(attr, 'inputs'));
     }
+    // Node outputs (bound events) can be bound to an output on a directive.
+    node.outputs.forEach(output => setAttributeBinding(output, 'outputs'));
 
     // Recurse into the node's children.
     node.children.forEach(child => child.visit(this));
