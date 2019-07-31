@@ -31,6 +31,20 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     outputs: {},
     isComponent: false,
   });
+  matcher.addSelectables(CssSelector.parse('[hasOutput]'), {
+    name: 'HasOutput',
+    exportAs: null,
+    inputs: {},
+    outputs: {'outputBinding': 'outputBinding'},
+    isComponent: false,
+  });
+  matcher.addSelectables(CssSelector.parse('[hasInput]'), {
+    name: 'HasInput',
+    exportAs: null,
+    inputs: {'inputBinding': 'inputBinding'},
+    outputs: {},
+    isComponent: false,
+  });
   return matcher;
 }
 
@@ -97,5 +111,51 @@ describe('t2 binding', () => {
     expect(elDirectives).not.toBeNull();
     expect(elDirectives.length).toBe(1);
     expect(elDirectives[0].name).toBe('Dir');
+  });
+
+  describe('matching inputs to consuming directives', () => {
+    it('should work for bound attributes', () => {
+      const template = parseTemplate('<div hasInput [inputBinding]="myValue"></div>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      const el = template.nodes[0] as a.Element;
+      const attr = el.inputs[0];
+      const consumer = res.getConsumerOfBinding(attr) as DirectiveMeta;
+      expect(consumer.name).toBe('HasInput');
+    });
+
+    it('should work for text attributes on elements', () => {
+      const template = parseTemplate('<div hasInput inputBinding="{{myValue}}"></div>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      const el = template.nodes[0] as a.Element;
+      const attr = el.inputs[0];
+      const consumer = res.getConsumerOfBinding(attr) as DirectiveMeta;
+      expect(consumer.name).toBe('HasInput');
+    });
+
+    it('should work for text attributes on templates', () => {
+      const template =
+          parseTemplate('<ng-template hasInput inputBinding="{{myValue}}"></ng-template>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      const el = template.nodes[0] as a.Element;
+      const attr = el.inputs[0];
+      const consumer = res.getConsumerOfBinding(attr) as DirectiveMeta;
+      expect(consumer.name).toBe('HasInput');
+    });
+  });
+
+  describe('matching outputs to consuming directives', () => {
+    it('should work for bound events', () => {
+      const template =
+          parseTemplate('<div hasOutput (outputBinding)="myHandler($event)"></div>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      const el = template.nodes[0] as a.Element;
+      const attr = el.outputs[0];
+      const consumer = res.getConsumerOfBinding(attr) as DirectiveMeta;
+      expect(consumer.name).toBe('HasOutput');
+    });
   });
 });
