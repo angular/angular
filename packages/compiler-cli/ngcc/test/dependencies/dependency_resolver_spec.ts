@@ -179,7 +179,7 @@ runInEachFileSystem(() => {
         expect(sorted.entryPoints).toEqual([fifth]);
       });
 
-      it('should not process the provided target if its marked as ignored', () => {
+      it('should not process the provided target if it has missing dependencies', () => {
         spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
           [_('/first/index.js')]: {resolved: [], missing: ['/missing']},
         }));
@@ -188,6 +188,8 @@ runInEachFileSystem(() => {
 
         sorted = resolver.sortEntryPointsByDependency(entryPoints, first);
         expect(sorted.entryPoints).toEqual([]);
+        expect(sorted.invalidEntryPoints[0].entryPoint).toEqual(first);
+        expect(sorted.invalidEntryPoints[0].missingDependencies).toEqual(['/missing']);
       });
 
       it('should not consider builtin NodeJS modules as missing dependency', () => {
