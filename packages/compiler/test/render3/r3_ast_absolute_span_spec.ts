@@ -7,253 +7,313 @@
  */
 
 import {AbsoluteSourceSpan} from '@angular/compiler';
-import * as e from '../../src/expression_parser/ast';
-import * as t from '../../src/render3/r3_ast';
-import {unparse} from '../expression_parser/utils/unparser';
+import {humanizeExpressionSource} from './util/expression';
 import {parseR3 as parse} from './view/util';
-
-class ExpressionLocationHumanizer extends e.RecursiveAstVisitor implements t.Visitor {
-  result: Array<[string, AbsoluteSourceSpan]> = [];
-
-  visitASTWithSource(ast: e.ASTWithSource) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    this.visitAll([ast.ast], null);
-  }
-  visitBinary(ast: e.Binary) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitBinary(ast, null);
-  }
-  visitChain(ast: e.Chain) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitChain(ast, null);
-  }
-  visitConditional(ast: e.Conditional) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitConditional(ast, null);
-  }
-  visitFunctionCall(ast: e.FunctionCall) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitFunctionCall(ast, null);
-  }
-  visitInterpolation(ast: e.Interpolation) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitInterpolation(ast, null);
-  }
-  visitKeyedRead(ast: e.KeyedRead) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitKeyedRead(ast, null);
-  }
-  visitKeyedWrite(ast: e.KeyedWrite) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitKeyedWrite(ast, null);
-  }
-  visitLiteralPrimitive(ast: e.LiteralPrimitive) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitLiteralPrimitive(ast, null);
-  }
-  visitLiteralArray(ast: e.LiteralArray) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitLiteralArray(ast, null);
-  }
-  visitMethodCall(ast: e.MethodCall) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitMethodCall(ast, null);
-  }
-  visitNonNullAssert(ast: e.NonNullAssert) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitNonNullAssert(ast, null);
-  }
-  visitPipe(ast: e.BindingPipe) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitPipe(ast, null);
-  }
-  visitPrefixNot(ast: e.PrefixNot) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitPrefixNot(ast, null);
-  }
-  visitPropertyRead(ast: e.PropertyRead) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitPropertyRead(ast, null);
-  }
-  visitPropertyWrite(ast: e.PropertyWrite) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitPropertyWrite(ast, null);
-  }
-  visitSafeMethodCall(ast: e.SafeMethodCall) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitSafeMethodCall(ast, null);
-  }
-  visitSafePropertyRead(ast: e.SafePropertyRead) {
-    this.result.push([unparse(ast), ast.sourceSpan]);
-    super.visitSafePropertyRead(ast, null);
-  }
-
-  visitTemplate(ast: t.Template) {
-    t.visitAll(this, ast.children);
-  }
-  visitElement(ast: t.Element) {
-    t.visitAll(this, ast.children);
-    t.visitAll(this, ast.inputs);
-    t.visitAll(this, ast.outputs);
-  }
-  visitReference(ast: t.Reference) {}
-  visitVariable(ast: t.Variable) {}
-  visitEvent(ast: t.BoundEvent) {
-    ast.handler.visit(this);
-  }
-  visitTextAttribute(ast: t.TextAttribute) {}
-  visitBoundAttribute(ast: t.BoundAttribute) {
-    ast.value.visit(this);
-  }
-  visitBoundEvent(ast: t.BoundEvent) {
-    ast.handler.visit(this);
-  }
-  visitBoundText(ast: t.BoundText) {
-    ast.value.visit(this);
-  }
-  visitContent(ast: t.Content) {}
-  visitText(ast: t.Text) {}
-  visitIcu(ast: t.Icu) {}
-}
-
-function humanizeExpressionLocation(templateAsts: t.Node[]): any[] {
-  const humanizer = new ExpressionLocationHumanizer();
-  t.visitAll(humanizer, templateAsts);
-  return humanizer.result;
-}
 
 describe('expression AST absolute source spans', () => {
   // TODO(ayazhafiz): duplicate this test without `preserveWhitespaces` once whitespace rewriting is
   // moved to post-R3AST generation.
   it('should provide absolute offsets with arbitrary whitespace', () => {
-    expect(humanizeExpressionLocation(
+    expect(humanizeExpressionSource(
                parse('<div>\n  \n{{foo}}</div>', {preserveWhitespaces: true}).nodes))
         .toContain(['\n  \n{{ foo }}', new AbsoluteSourceSpan(5, 16)]);
   });
 
   it('should provide absolute offsets of an expression in a bound text', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{foo}}</div>').nodes)).toContain([
+    expect(humanizeExpressionSource(parse('<div>{{foo}}</div>').nodes)).toContain([
       '{{ foo }}', new AbsoluteSourceSpan(5, 12)
     ]);
   });
 
   it('should provide absolute offsets of an expression in a bound event', () => {
-    expect(humanizeExpressionLocation(parse('<div (click)="foo();bar();"></div>').nodes))
-        .toContain(['foo(); bar();', new AbsoluteSourceSpan(14, 26)]);
+    expect(humanizeExpressionSource(parse('<div (click)="foo();bar();"></div>').nodes)).toContain([
+      'foo(); bar();', new AbsoluteSourceSpan(14, 26)
+    ]);
 
-    expect(humanizeExpressionLocation(parse('<div on-click="foo();bar();"></div>').nodes))
-        .toContain(['foo(); bar();', new AbsoluteSourceSpan(15, 27)]);
+    expect(humanizeExpressionSource(parse('<div on-click="foo();bar();"></div>').nodes)).toContain([
+      'foo(); bar();', new AbsoluteSourceSpan(15, 27)
+    ]);
   });
 
   it('should provide absolute offsets of an expression in a bound attribute', () => {
-    expect(
-        humanizeExpressionLocation(parse('<input [disabled]="condition ? true : false" />').nodes))
+    expect(humanizeExpressionSource(parse('<input [disabled]="condition ? true : false" />').nodes))
         .toContain(['condition ? true : false', new AbsoluteSourceSpan(19, 43)]);
 
-    expect(humanizeExpressionLocation(
-               parse('<input bind-disabled="condition ? true : false" />').nodes))
+    expect(
+        humanizeExpressionSource(parse('<input bind-disabled="condition ? true : false" />').nodes))
         .toContain(['condition ? true : false', new AbsoluteSourceSpan(22, 46)]);
   });
 
-  it('should provide absolute offsets of a binary expression', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{1 + 2}}<div>').nodes)).toContain([
-      '1 + 2', new AbsoluteSourceSpan(7, 12)
+  describe('binary expression', () => {
+    it('should provide absolute offsets of a binary expression', () => {
+      expect(humanizeExpressionSource(parse('<div>{{1 + 2}}<div>').nodes)).toContain([
+        '1 + 2', new AbsoluteSourceSpan(7, 12)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a binary expression', () => {
+      expect(humanizeExpressionSource(parse('<div>{{1 + 2}}<div>').nodes))
+          .toEqual(jasmine.arrayContaining([
+            // TODO(ayazhafiz): The expression parser includes an extra whitespace on a expressions
+            // with trailing whitespace in a binary expression. Look into fixing this.
+            ['1', new AbsoluteSourceSpan(7, 9)],
+            ['2', new AbsoluteSourceSpan(11, 12)],
+          ]));
+    });
+  });
+
+  describe('conditional', () => {
+    it('should provide absolute offsets of a conditional', () => {
+      expect(humanizeExpressionSource(parse('<div>{{bool ? 1 : 0}}<div>').nodes)).toContain([
+        'bool ? 1 : 0', new AbsoluteSourceSpan(7, 19)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a conditional', () => {
+      expect(humanizeExpressionSource(parse('<div>{{bool ? 1 : 0}}<div>').nodes))
+          .toEqual(jasmine.arrayContaining([
+            // TODO(ayazhafiz): The expression parser includes an extra whitespace on a expressions
+            // with trailing whitespace in a conditional expression. Look into fixing this.
+            ['bool', new AbsoluteSourceSpan(7, 12)],
+            ['1', new AbsoluteSourceSpan(14, 16)],
+            ['0', new AbsoluteSourceSpan(18, 19)],
+          ]));
+    });
+  });
+
+  describe('chain', () => {
+    it('should provide absolute offsets of a chain', () => {
+      expect(humanizeExpressionSource(parse('<div (click)="a(); b();"><div>').nodes)).toContain([
+        'a(); b();', new AbsoluteSourceSpan(14, 23)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a chain', () => {
+      expect(humanizeExpressionSource(parse('<div (click)="a(); b();"><div>').nodes))
+          .toEqual(jasmine.arrayContaining([
+            ['a()', new AbsoluteSourceSpan(14, 17)],
+            ['b()', new AbsoluteSourceSpan(19, 22)],
+          ]));
+    });
+  });
+
+  describe('function call', () => {
+    it('should provide absolute offsets of a function call', () => {
+      expect(humanizeExpressionSource(parse('<div>{{fn()()}}<div>').nodes)).toContain([
+        'fn()()', new AbsoluteSourceSpan(7, 13)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a function call', () => {
+      expect(humanizeExpressionSource(parse('<div>{{fn()(param)}}<div>').nodes)).toContain([
+        'param', new AbsoluteSourceSpan(12, 17)
+      ]);
+    });
+  });
+
+  it('should provide absolute offsets of an implicit receiver', () => {
+    expect(humanizeExpressionSource(parse('<div>{{a.b}}<div>').nodes)).toContain([
+      '', new AbsoluteSourceSpan(7, 7)
     ]);
   });
 
-  it('should provide absolute offsets of a conditional', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{bool ? 1 : 0}}<div>').nodes)).toContain([
-      'bool ? 1 : 0', new AbsoluteSourceSpan(7, 19)
-    ]);
+  describe('interpolation', () => {
+    it('should provide absolute offsets of an interpolation', () => {
+      expect(humanizeExpressionSource(parse('<div>{{1 + foo.length}}<div>').nodes)).toContain([
+        '{{ 1 + foo.length }}', new AbsoluteSourceSpan(5, 23)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in an interpolation', () => {
+      expect(humanizeExpressionSource(parse('<div>{{1 + 2}}<div>').nodes))
+          .toEqual(jasmine.arrayContaining([
+            // TODO(ayazhafiz): The expression parser includes an extra whitespace on a expressions
+            // with trailing whitespace in a conditional expression. Look into fixing this.
+            ['1', new AbsoluteSourceSpan(7, 9)],
+            ['2', new AbsoluteSourceSpan(11, 12)],
+          ]));
+    });
   });
 
-  it('should provide absolute offsets of a chain', () => {
-    expect(humanizeExpressionLocation(parse('<div (click)="a(); b();"><div>').nodes)).toContain([
-      'a(); b();', new AbsoluteSourceSpan(14, 23)
-    ]);
+  describe('keyed read', () => {
+    it('should provide absolute offsets of a keyed read', () => {
+      expect(humanizeExpressionSource(parse('<div>{{obj[key]}}<div>').nodes)).toContain([
+        'obj[key]', new AbsoluteSourceSpan(7, 15)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a keyed read', () => {
+      expect(humanizeExpressionSource(parse('<div>{{obj[key]}}<div>').nodes)).toContain([
+        'key', new AbsoluteSourceSpan(11, 14)
+      ]);
+    });
   });
 
-  it('should provide absolute offsets of a function call', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{fn()()}}<div>').nodes)).toContain([
-      'fn()()', new AbsoluteSourceSpan(7, 13)
-    ]);
-  });
+  describe('keyed write', () => {
+    it('should provide absolute offsets of a keyed write', () => {
+      expect(humanizeExpressionSource(parse('<div>{{obj[key] = 0}}<div>').nodes)).toContain([
+        'obj[key] = 0', new AbsoluteSourceSpan(7, 19)
+      ]);
+    });
 
-  it('should provide absolute offsets of an interpolation', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{1 + foo.length}}<div>').nodes)).toContain([
-      '{{ 1 + foo.length }}', new AbsoluteSourceSpan(5, 23)
-    ]);
-  });
-
-  it('should provide absolute offsets of a keyed read', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{obj[key]}}<div>').nodes)).toContain([
-      'obj[key]', new AbsoluteSourceSpan(7, 15)
-    ]);
-  });
-
-  it('should provide absolute offsets of a keyed write', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{obj[key] = 0}}<div>').nodes)).toContain([
-      'obj[key] = 0', new AbsoluteSourceSpan(7, 19)
-    ]);
+    it('should provide absolute offsets of expressions in a keyed write', () => {
+      expect(humanizeExpressionSource(parse('<div>{{obj[key] = 0}}<div>').nodes))
+          .toEqual(jasmine.arrayContaining([
+            ['key', new AbsoluteSourceSpan(11, 14)],
+            ['0', new AbsoluteSourceSpan(18, 19)],
+          ]));
+    });
   });
 
   it('should provide absolute offsets of a literal primitive', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{100}}<div>').nodes)).toContain([
+    expect(humanizeExpressionSource(parse('<div>{{100}}<div>').nodes)).toContain([
       '100', new AbsoluteSourceSpan(7, 10)
     ]);
   });
 
-  it('should provide absolute offsets of a literal array', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{[0, 1, 2]}}<div>').nodes)).toContain([
-      '[0, 1, 2]', new AbsoluteSourceSpan(7, 16)
-    ]);
+  describe('literal array', () => {
+    it('should provide absolute offsets of a literal array', () => {
+      expect(humanizeExpressionSource(parse('<div>{{[0, 1, 2]}}<div>').nodes)).toContain([
+        '[0, 1, 2]', new AbsoluteSourceSpan(7, 16)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a literal array', () => {
+      expect(humanizeExpressionSource(parse('<div>{{[0, 1, 2]}}<div>').nodes))
+          .toEqual(jasmine.arrayContaining([
+            ['0', new AbsoluteSourceSpan(8, 9)],
+            ['1', new AbsoluteSourceSpan(11, 12)],
+            ['2', new AbsoluteSourceSpan(14, 15)],
+          ]));
+    });
   });
 
-  it('should provide absolute offsets of a method call', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{method()}}</div>').nodes)).toContain([
-      'method()', new AbsoluteSourceSpan(7, 15)
-    ]);
+  describe('literal map', () => {
+    it('should provide absolute offsets of a literal map', () => {
+      expect(humanizeExpressionSource(parse('<div>{{ {a: 0} }}<div>').nodes)).toContain([
+        // TODO(ayazhafiz): The expression parser includes an extra whitespace on a expressions
+        // with trailing whitespace in a literal map. Look into fixing this.
+        '{a: 0}', new AbsoluteSourceSpan(8, 15)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a literal map', () => {
+      expect(humanizeExpressionSource(parse('<div>{{ {a: 0} }}<div>').nodes))
+          .toEqual(jasmine.arrayContaining([
+            ['0', new AbsoluteSourceSpan(12, 13)],
+          ]));
+    });
   });
 
-  it('should provide absolute offsets of a non-null assert', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{prop!}}</div>').nodes)).toContain([
-      'prop!', new AbsoluteSourceSpan(7, 12)
-    ]);
+  describe('method call', () => {
+    it('should provide absolute offsets of a method call', () => {
+      expect(humanizeExpressionSource(parse('<div>{{method()}}</div>').nodes)).toContain([
+        'method()', new AbsoluteSourceSpan(7, 15)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a method call', () => {
+      expect(humanizeExpressionSource(parse('<div>{{method(param)}}<div>').nodes)).toContain([
+        'param', new AbsoluteSourceSpan(14, 19)
+      ]);
+    });
   });
 
-  it('should provide absolute offsets of a pipe', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{prop | pipe}}<div>').nodes)).toContain([
-      '(prop | pipe)', new AbsoluteSourceSpan(7, 18)
-    ]);
+  describe('non-null assert', () => {
+    it('should provide absolute offsets of a non-null assert', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop!}}</div>').nodes)).toContain([
+        'prop!', new AbsoluteSourceSpan(7, 12)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a non-null assert', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop!}}<div>').nodes)).toContain([
+        'prop', new AbsoluteSourceSpan(7, 11)
+      ]);
+    });
+  });
+
+  describe('pipe', () => {
+    it('should provide absolute offsets of a pipe', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop | pipe}}<div>').nodes)).toContain([
+        '(prop | pipe)', new AbsoluteSourceSpan(7, 18)
+      ]);
+    });
+
+    it('should provide absolute offsets expressions in a pipe', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop | pipe}}<div>').nodes)).toContain([
+        // TODO(ayazhafiz): The expression parser includes an extra whitespace on a expressions
+        // with trailing whitespace in a pipe. Look into fixing this.
+        'prop', new AbsoluteSourceSpan(7, 12)
+      ]);
+    });
   });
 
   it('should provide absolute offsets of a property read', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{prop}}</div>').nodes)).toContain([
+    expect(humanizeExpressionSource(parse('<div>{{prop}}</div>').nodes)).toContain([
       'prop', new AbsoluteSourceSpan(7, 11)
     ]);
   });
 
-  it('should provide absolute offsets of a property write', () => {
-    expect(humanizeExpressionLocation(parse('<div (click)="prop = 0"></div>').nodes)).toContain([
-      'prop = 0', new AbsoluteSourceSpan(14, 22)
-    ]);
+  describe('property write', () => {
+    it('should provide absolute offsets of a property write', () => {
+      expect(humanizeExpressionSource(parse('<div (click)="prop = 0"></div>').nodes)).toContain([
+        'prop = 0', new AbsoluteSourceSpan(14, 22)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a property write', () => {
+      expect(humanizeExpressionSource(parse('<div (click)="prop = 0"></div>').nodes)).toContain([
+        '0', new AbsoluteSourceSpan(21, 22)
+      ]);
+    });
   });
 
-  it('should provide absolute offsets of a "not" prefix', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{!prop}}</div>').nodes)).toContain([
-      '!prop', new AbsoluteSourceSpan(7, 12)
-    ]);
+  describe('"not" prefix', () => {
+    it('should provide absolute offsets of a "not" prefix', () => {
+      expect(humanizeExpressionSource(parse('<div>{{!prop}}</div>').nodes)).toContain([
+        '!prop', new AbsoluteSourceSpan(7, 12)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a "not" prefix', () => {
+      expect(humanizeExpressionSource(parse('<div>{{!prop}}<div>').nodes)).toContain([
+        'prop', new AbsoluteSourceSpan(8, 12)
+      ]);
+    });
   });
 
-  it('should provide absolute offsets of a safe method call', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{prop?.safe()}}<div>').nodes)).toContain([
-      'prop?.safe()', new AbsoluteSourceSpan(7, 19)
-    ]);
+  describe('safe method call', () => {
+    it('should provide absolute offsets of a safe method call', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop?.safe()}}<div>').nodes)).toContain([
+        'prop?.safe()', new AbsoluteSourceSpan(7, 19)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in safe method call', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop?.safe()}}<div>').nodes)).toContain([
+        'prop', new AbsoluteSourceSpan(7, 11)
+      ]);
+    });
   });
 
-  it('should provide absolute offsets of a safe property read', () => {
-    expect(humanizeExpressionLocation(parse('<div>{{prop?.safe}}<div>').nodes)).toContain([
-      'prop?.safe', new AbsoluteSourceSpan(7, 17)
+  describe('safe property read', () => {
+    it('should provide absolute offsets of a safe property read', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop?.safe}}<div>').nodes)).toContain([
+        'prop?.safe', new AbsoluteSourceSpan(7, 17)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in safe property read', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop?.safe}}<div>').nodes)).toContain([
+        'prop', new AbsoluteSourceSpan(7, 11)
+      ]);
+    });
+  });
+
+  it('should provide absolute offsets of a quote', () => {
+    expect(humanizeExpressionSource(parse('<div [prop]="a:b"></div>').nodes)).toContain([
+      'a:b', new AbsoluteSourceSpan(13, 16)
     ]);
   });
 });

@@ -25,7 +25,12 @@ export class ParseSpan {
 }
 
 export class AST {
-  constructor(public span: ParseSpan, public sourceSpan: AbsoluteSourceSpan) {}
+  constructor(
+      public span: ParseSpan,
+      /**
+       * Absolute location of the expression AST in a source code file.
+       */
+      public sourceSpan: Readonly<AbsoluteSourceSpan>) {}
   visit(visitor: AstVisitor, context: any = null): any { return null; }
   toString(): string { return 'AST'; }
 }
