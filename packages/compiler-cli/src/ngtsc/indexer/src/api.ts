@@ -52,7 +52,11 @@ export interface MethodIdentifier extends ExpressionIdentifier { kind: Identifie
 /** Describes an element attribute in a template. */
 export interface AttributeIdentifier extends TemplateIdentifier { kind: IdentifierKind.Attribute; }
 
-/** Describes a value of a template reference. */
+/**
+ * Describes a text value of an attribute-like identifier. A template code
+ *   <div #ref="value"></div>
+ * has a value identifier for the text "value".
+ */
 export interface ValueIdentifier extends TemplateIdentifier { kind: IdentifierKind.Value; }
 
 /** A reference to a directive node and its selector. */
@@ -98,7 +102,11 @@ export interface ReferenceIdentifier extends TemplateIdentifier {
     directive: ClassDeclaration | null;
   }|null;
 
-  /** The value of the reference. If the value is empty, this is `null`. */
+  /**
+   * The text value of the reference, e.g. `value` in
+   *   <div #ref="value"></div>
+   * If the value is empty, this is `null`.
+   */
   value: ValueIdentifier|null;
 }
 
