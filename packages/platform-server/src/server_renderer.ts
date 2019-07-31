@@ -182,6 +182,12 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   private decoratePreventDefault(eventHandler: Function): Function {
     return (event: any) => {
+      // Ivy uses `Function` as a special token that allows us to unwrap the function
+      // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`.
+      if (event === Function) {
+        return eventHandler;
+      }
+
       // Run the event handler inside the ngZone because event handlers are not patched
       // by Zone on the server. This is required only for tests.
       const allowDefaultBehavior = this.ngZone.runGuarded(() => eventHandler(event));
@@ -189,6 +195,8 @@ class DefaultServerRenderer2 implements Renderer2 {
         event.preventDefault();
         event.returnValue = false;
       }
+
+      return undefined;
     };
   }
 }
