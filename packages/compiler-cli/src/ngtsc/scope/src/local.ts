@@ -11,11 +11,12 @@ import * as ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic} from '../../diagnostics';
 import {AliasGenerator, Reexport, Reference, ReferenceEmitter} from '../../imports';
-import {DirectiveMeta, LocalMetadataRegistry, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
+import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
 
 import {ExportScope, ScopeData} from './api';
+import {ComponentScopeReader, ComponentScopeRegistry, NoopComponentScopeRegistry} from './component_scope';
 import {DtsModuleScopeResolver} from './dependency';
 
 export interface LocalNgModuleData {
@@ -58,7 +59,7 @@ export interface CompilationScope extends ScopeData {
  * The `LocalModuleScopeRegistry` is also capable of producing `ts.Diagnostic` errors when Angular
  * semantics are violated.
  */
-export class LocalModuleScopeRegistry implements MetadataRegistry {
+export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScopeReader {
   /**
    * Tracks whether the registry has been asked to produce scopes for a module or component. Once
    * this is true, the registry cannot accept registrations of new directives/pipes/modules as it
@@ -102,7 +103,8 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
 
   constructor(
       private localReader: MetadataReader, private dependencyScopeReader: DtsModuleScopeResolver,
-      private refEmitter: ReferenceEmitter, private aliasGenerator: AliasGenerator|null) {}
+      private refEmitter: ReferenceEmitter, private aliasGenerator: AliasGenerator|null,
+      private componentScopeRegistry: ComponentScopeRegistry = new NoopComponentScopeRegistry()) {}
 
   /**
    * Add an NgModule's data to the registry.
@@ -120,10 +122,13 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
   registerPipeMetadata(pipe: PipeMeta): void {}
 
   getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null {
-    if (!this.declarationToModule.has(clazz)) {
-      return null;
+    const scope = !this.declarationToModule.has(clazz) ?
+        null :
+        this.getScopeOfModule(this.declarationToModule.get(clazz) !);
+    if (scope !== null) {
+      this.componentScopeRegistry.registerComponentScope(clazz, scope);
     }
-    return this.getScopeOfModule(this.declarationToModule.get(clazz) !);
+    return scope;
   }
 
   /**
@@ -383,6 +388,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
    */
   setComponentAsRequiringRemoteScoping(node: ClassDeclaration): void {
     this.remoteScoping.add(node);
+    this.componentScopeRegistry.setComponentAsRequiringRemoteScoping(node);
   }
 
   /**

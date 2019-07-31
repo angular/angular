@@ -75,7 +75,7 @@ export class DecorationAnalyzer {
     new BaseDefDecoratorHandler(this.reflectionHost, this.evaluator, this.isCore),
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
-        this.scopeRegistry, this.isCore, this.resourceManager, this.rootDirs,
+        this.scopeRegistry, this.scopeRegistry, this.isCore, this.resourceManager, this.rootDirs,
         /* defaultPreserveWhitespaces */ false,
         /* i18nUseExternalIds */ true, this.moduleResolver, this.cycleAnalyzer, this.refEmitter,
         NOOP_DEFAULT_IMPORT_RECORDER),
