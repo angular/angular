@@ -8,11 +8,12 @@
 
 
 import {CommonModule, NgIfContext} from '@angular/common';
-import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, Output, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, OnInit, Output, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {ivyEnabled} from '@angular/private/testing';
 
 @Injectable()
 class Logger {
@@ -653,7 +654,6 @@ class TestCmptWithPropBindings {
 
       fixture.debugElement.children[1].triggerEventHandler('myevent', <Event>{});
       expect(fixture.componentInstance.customed).toBe(true);
-
     });
 
     it('should include classes in properties.className', () => {
@@ -681,6 +681,61 @@ class TestCmptWithPropBindings {
 
       const button = fixture.debugElement.query(By.css('button'));
       expect(button.properties).toEqual({disabled: true, tabIndex: 1337, title: 'hello'});
+    });
+
+    it('should trigger events registered via Renderer2', () => {
+      @Component({template: ''})
+      class TestComponent implements OnInit {
+        count = 0;
+        eventObj: any;
+        constructor(private renderer: Renderer2, private elementRef: ElementRef) {}
+
+        ngOnInit() {
+          this.renderer.listen(this.elementRef.nativeElement, 'click', (event: any) => {
+            this.count++;
+            this.eventObj = event;
+          });
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent]});
+      const fixture = TestBed.createComponent(TestComponent);
+
+      // Ivy depends on `eventListeners` to pick up events that haven't been registered through
+      // Angular templates. At the time of writing Zone.js doesn't add `eventListeners` in Node
+      // environments so we have to skip the test.
+      if (!ivyEnabled || typeof fixture.debugElement.nativeElement.eventListeners === 'function') {
+        const event = {value: true};
+        fixture.detectChanges();
+        fixture.debugElement.triggerEventHandler('click', event);
+        expect(fixture.componentInstance.count).toBe(1);
+        expect(fixture.componentInstance.eventObj).toBe(event);
+      }
+    });
+
+    it('should be able to trigger an event with a null value', () => {
+      let value = undefined;
+
+      @Component({template: '<button (click)="handleClick($event)"></button>'})
+      class TestComponent {
+        handleClick(_event: any) {
+          value = _event;
+
+          // Returning `false` is what causes the renderer to call `event.preventDefault`.
+          return false;
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent]});
+      const fixture = TestBed.createComponent(TestComponent);
+      const button = fixture.debugElement.query(By.css('button'));
+
+      expect(() => {
+        button.triggerEventHandler('click', null);
+        fixture.detectChanges();
+      }).not.toThrow();
+
+      expect(value).toBeNull();
     });
 
     describe('componentInstance on DebugNode', () => {
