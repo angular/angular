@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, ReturnStatement, Statement, WrappedNodeExpr, literalMap} from '@angular/compiler';
+import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NONE_TYPE, ReturnStatement, Statement, WrappedNodeExpr, literalMap} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder} from '../../imports';
@@ -74,11 +74,15 @@ export function generateSetClassMetadataCall(
         new WrappedNodeExpr(metaDecorators),
         metaCtorParameters,
         new WrappedNodeExpr(metaPropDecorators),
-      ],
+      ]);
+  const iifeFn = new FunctionExpr([], [fnCall.toStmt()], NONE_TYPE);
+  const iife = new InvokeFunctionExpr(
+      /* fn */ iifeFn,
+      /* args */[],
       /* type */ undefined,
       /* sourceSpan */ undefined,
       /* pure */ true);
-  return fnCall.toStmt();
+  return iife.toStmt();
 }
 
 /**

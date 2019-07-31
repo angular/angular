@@ -194,10 +194,10 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
     } if (rf & 2) {
         ɵngcc0.ɵɵtextInterpolate(ctx.person.name);
     } }, encapsulation: 2 });
-/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(A, [{
         type: Component,
         args: [{ selector: 'a', template: '{{ person!.name }}' }]
-    }], null, null);`);
+    }], null, null); })();`);
       });
 
 
@@ -231,10 +231,10 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
              expect(addDefinitionsSpy.calls.first().args[2])
                  .toEqual(`A.ɵfac = function A_Factory(t) { return new (t || A)(); };
 A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
-/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(A, [{
         type: Directive,
         args: [{ selector: '[a]' }]
-    }], null, { foo: [] });`);
+    }], null, { foo: [] }); })();`);
            });
 
         it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',
@@ -388,7 +388,7 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
           expect(addDefinitionsSpy.calls.first().args[2])
-              .toContain(`/*@__PURE__*/ ɵngcc0.setClassMetadata(`);
+              .toContain(`/*@__PURE__*/ (function () { ɵngcc0.setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([
             {specifier: './r3_symbols', qualifier: 'ɵngcc0'}
@@ -408,7 +408,7 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
           expect(addDefinitionsSpy.calls.first().args[2])
-              .toContain(`/*@__PURE__*/ setClassMetadata(`);
+              .toContain(`/*@__PURE__*/ (function () { setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([]);
         });
