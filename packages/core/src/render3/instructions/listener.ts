@@ -235,7 +235,13 @@ function wrapListener(
     wrapWithPreventDefault: boolean): EventListener {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
-  return function wrapListenerIn_markDirtyAndPreventDefault(e: Event) {
+  return function wrapListenerIn_markDirtyAndPreventDefault(e: any) {
+    // Ivy uses `Function` as a special token that allows us to unwrap the function
+    // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`.
+    if (e === Function) {
+      return listenerFn;
+    }
+
     // In order to be backwards compatible with View Engine, events on component host nodes
     // must also mark the component view itself dirty (i.e. the view that it owns).
     const startView =

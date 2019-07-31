@@ -377,11 +377,28 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   }
 
   triggerEventHandler(eventName: string, eventObj: any): void {
-    this.listeners.forEach((listener) => {
+    const node = this.nativeNode as any;
+    const invokedListeners: Function[] = [];
+
+    this.listeners.forEach(listener => {
       if (listener.name === eventName) {
-        listener.callback(eventObj);
+        const callback = listener.callback;
+        callback(eventObj);
+        invokedListeners.push(callback);
       }
     });
+
+    // We need to check whether `eventListeners` exists, because it's something
+    // that Zone.js only adds to `EventTarget` in browser environments.
+    if (typeof node.eventListeners === 'function') {
+      // Note that in Ivy we wrap event listeners with a call to `event.preventDefault` in some
+      // cases. We use `Function` as a special token that gives us access to the actual event
+      // listener.
+      node.eventListeners(eventName).forEach((listener: Function) => {
+        const unwrappedListener = listener(Function);
+        return invokedListeners.indexOf(unwrappedListener) === -1 && unwrappedListener(eventObj);
+      });
+    }
   }
 }
 
