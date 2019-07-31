@@ -18,7 +18,7 @@ import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards}
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {LocalModuleScopeRegistry} from '../../scope';
+import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TypeCheckContext} from '../../typecheck';
 import {NoopResourceDependencyRecorder, ResourceDependencyRecorder} from '../../util/src/resource_recorder';
@@ -47,8 +47,8 @@ export class ComponentDecoratorHandler implements
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private metaReader: MetadataReader,
-      private scopeRegistry: LocalModuleScopeRegistry, private isCore: boolean,
-      private resourceLoader: ResourceLoader, private rootDirs: string[],
+      private scopeReader: ComponentScopeReader, private scopeRegistry: LocalModuleScopeRegistry,
+      private isCore: boolean, private resourceLoader: ResourceLoader, private rootDirs: string[],
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
       private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
@@ -327,7 +327,7 @@ export class ComponentDecoratorHandler implements
       preserveWhitespaces: true,
       leadingTriviaChars: [],
     });
-    const scope = this.scopeRegistry.getScopeForComponent(node);
+    const scope = this.scopeReader.getScopeForComponent(node);
     const selector = analysis.meta.selector;
     const matcher = new SelectorMatcher<DirectiveMeta>();
     if (scope !== null) {
@@ -353,7 +353,7 @@ export class ComponentDecoratorHandler implements
     if (!ts.isClassDeclaration(node)) {
       return;
     }
-    const scope = this.scopeRegistry.getScopeForComponent(node);
+    const scope = this.scopeReader.getScopeForComponent(node);
     const matcher = new SelectorMatcher<DirectiveMeta>();
     if (scope !== null) {
       for (const meta of scope.compilation.directives) {
@@ -377,7 +377,7 @@ export class ComponentDecoratorHandler implements
     const context = node.getSourceFile();
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
-    const scope = this.scopeRegistry.getScopeForComponent(node);
+    const scope = this.scopeReader.getScopeForComponent(node);
     let metadata = analysis.meta;
     if (scope !== null) {
       // Replace the empty components and directives from the analyze() step with a fully expanded

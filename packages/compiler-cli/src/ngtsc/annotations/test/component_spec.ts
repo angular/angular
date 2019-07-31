@@ -60,7 +60,7 @@ runInEachFileSystem(() => {
       const refEmitter = new ReferenceEmitter([]);
 
       const handler = new ComponentDecoratorHandler(
-          reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, false,
+          reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, scopeRegistry, false,
           new NoopResourceLoader(), [''], false, true, moduleResolver, cycleAnalyzer, refEmitter,
           NOOP_DEFAULT_IMPORT_RECORDER);
       const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);

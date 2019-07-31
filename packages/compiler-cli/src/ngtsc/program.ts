@@ -28,7 +28,7 @@ import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
 import {NgModuleRouteAnalyzer, entryPointKeyFor} from './routing';
-import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from './scope';
+import {CompoundComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from './scope';
 import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, TypeCheckShimGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
@@ -476,7 +476,8 @@ export class NgtscProgram implements api.Program {
     const localMetaReader = new CompoundMetadataReader([localMetaRegistry, this.incrementalState]);
     const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, aliasGenerator);
     const scopeRegistry = new LocalModuleScopeRegistry(
-        localMetaReader, depScopeReader, this.refEmitter, aliasGenerator);
+        localMetaReader, depScopeReader, this.refEmitter, aliasGenerator, this.incrementalState);
+    const scopeReader = new CompoundComponentScopeReader([scopeRegistry, this.incrementalState]);
     const metaRegistry =
         new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry, this.incrementalState]);
 
@@ -502,10 +503,11 @@ export class NgtscProgram implements api.Program {
     const handlers = [
       new BaseDefDecoratorHandler(this.reflector, evaluator, this.isCore),
       new ComponentDecoratorHandler(
-          this.reflector, evaluator, metaRegistry, this.metaReader !, scopeRegistry, this.isCore,
-          this.resourceManager, this.rootDirs, this.options.preserveWhitespaces || false,
-          this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer,
-          this.refEmitter, this.defaultImportTracker, this.incrementalState),
+          this.reflector, evaluator, metaRegistry, this.metaReader !, scopeReader, scopeRegistry,
+          this.isCore, this.resourceManager, this.rootDirs,
+          this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
+          this.moduleResolver, this.cycleAnalyzer, this.refEmitter, this.defaultImportTracker,
+          this.incrementalState),
       new DirectiveDecoratorHandler(
           this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
       new InjectableDecoratorHandler(

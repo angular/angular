@@ -195,6 +195,25 @@ runInEachFileSystem(() => {
       expect(written).toContain('/foo_module.js');
     });
 
+    it('should rebuild only a Component (but with the correct CompilationScope) if its template has changed',
+       () => {
+         setupFooBarProgram(env);
+
+         // Make a change to the template of BarComponent.
+         env.write('bar_component.html', '<div bar>changed</div>');
+
+         env.driveMain();
+         const written = env.getFilesWrittenSinceLastFlush();
+         expect(written).not.toContain('/bar_directive.js');
+         expect(written).toContain('/bar_component.js');
+         expect(written).not.toContain('/bar_module.js');
+         expect(written).not.toContain('/foo_component.js');
+         expect(written).not.toContain('/foo_pipe.js');
+         expect(written).not.toContain('/foo_module.js');
+         // Ensure that the used directives are included in the component's generated template.
+         expect(env.getContents('/built/bar_component.js')).toMatch(/directives:\s*\[.+\.BarDir\]/);
+       });
+
     it('should rebuild everything if a typings file changes', () => {
       setupFooBarProgram(env);
 
@@ -280,9 +299,10 @@ runInEachFileSystem(() => {
     env.write('bar_component.ts', `
     import {Component} from '@angular/core';
 
-    @Component({selector: 'bar', template: 'bar'})
+    @Component({selector: 'bar', templateUrl: './bar_component.html'})
     export class BarCmp {}
   `);
+    env.write('bar_component.html', '<div bar></div>');
     env.write('bar_directive.ts', `
     import {Directive} from '@angular/core';
 

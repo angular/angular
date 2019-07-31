@@ -7,5 +7,6 @@
  */
 
 export {ExportScope, ScopeData} from './src/api';
+export {ComponentScopeReader, ComponentScopeRegistry, CompoundComponentScopeReader} from './src/component_scope';
 export {DtsModuleScopeResolver, MetadataDtsModuleScopeResolver} from './src/dependency';
 export {LocalModuleScope, LocalModuleScopeRegistry, LocalNgModuleData} from './src/local';
