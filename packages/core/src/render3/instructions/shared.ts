@@ -369,16 +369,11 @@ export function allocExpando(view: LView, numSlotsToAlloc: number) {
 //////////////////////////
 
 /**
- * Used for creating the LViewNode of a dynamic embedded view,
- * either through ViewContainerRef.createEmbeddedView() or TemplateRef.createEmbeddedView().
- * Such lViewNode will then be renderer with renderEmbeddedTemplate() (see below).
+ * Used for creating the LView of a dynamic embedded view, either through
+ * ViewContainerRef.createEmbeddedView() or TemplateRef.createEmbeddedView().
  */
 export function createEmbeddedViewAndNode<T>(
     tView: TView, context: T, declarationView: LView, injectorIndex: number): LView {
-  const _isParent = getIsParent();
-  const _previousOrParentTNode = getPreviousOrParentTNode();
-  setPreviousOrParentTNode(null !, true);
-
   const lView = createLView(declarationView, tView, context, LViewFlags.CheckAlways, null, null);
   lView[DECLARATION_VIEW] = declarationView;
 
@@ -388,7 +383,6 @@ export function createEmbeddedViewAndNode<T>(
     tView.node !.injectorIndex = injectorIndex;
   }
 
-  setPreviousOrParentTNode(_previousOrParentTNode, _isParent);
   return lView;
 }
 
