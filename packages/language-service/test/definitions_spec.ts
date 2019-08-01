@@ -9,159 +9,319 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {Span} from '../src/types';
+import {LanguageService} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
-
-import {MockTypescriptHost,} from './test_utils';
+import {MockTypescriptHost} from './test_utils';
 
 describe('definitions', () => {
-  let documentRegistry = ts.createDocumentRegistry();
-  let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
-  let service = ts.createLanguageService(mockHost, documentRegistry);
-  let ngHost = new TypeScriptServiceHost(mockHost, service);
-  let ngService = createLanguageService(ngHost);
+  let mockHost: MockTypescriptHost;
+  let service: ts.LanguageService;
+  let ngHost: TypeScriptServiceHost;
+  let ngService: LanguageService;
+
+  beforeEach(() => {
+    // Create a new mockHost every time to reset any files that are overridden.
+    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
+    service = ts.createLanguageService(mockHost);
+    ngHost = new TypeScriptServiceHost(mockHost, service);
+    ngService = createLanguageService(ngHost);
+  });
 
   it('should be able to find field in an interpolation', () => {
-    localReference(
-        ` @Component({template: '{{«name»}}'}) export class MyComponent { «ᐱnameᐱ: string;» }`);
+    const fileName = addCode(`
+      @Component({
+        template: '{{«name»}}'
+      })
+      export class MyComponent {
+        «ᐱnameᐱ: string;»
+      }`);
+
+    const marker = getReferenceMarkerFor(fileName, 'name');
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    expect(textSpan).toEqual(marker);
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+    const def = definitions ![0];
+
+    expect(def.fileName).toBe(fileName);
+    expect(def.name).toBe('name');
+    expect(def.kind).toBe('property');
+    expect(def.textSpan).toEqual(getDefinitionMarkerFor(fileName, 'name'));
   });
 
   it('should be able to find a field in a attribute reference', () => {
-    localReference(
-        ` @Component({template: '<input [(ngModel)]="«name»">'}) export class MyComponent { «ᐱnameᐱ: string;» }`);
+    const fileName = addCode(`
+      @Component({
+        template: '<input [(ngModel)]="«name»">'
+      })
+      export class MyComponent {
+        «ᐱnameᐱ: string;»
+      }`);
+
+    const marker = getReferenceMarkerFor(fileName, 'name');
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    expect(textSpan).toEqual(marker);
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+    const def = definitions ![0];
+
+    expect(def.fileName).toBe(fileName);
+    expect(def.name).toBe('name');
+    expect(def.kind).toBe('property');
+    expect(def.textSpan).toEqual(getDefinitionMarkerFor(fileName, 'name'));
   });
 
   it('should be able to find a method from a call', () => {
-    localReference(
-        ` @Component({template: '<div (click)="«myClick»();"></div>'}) export class MyComponent { «ᐱmyClickᐱ() { }»}`);
+    const fileName = addCode(`
+      @Component({
+        template: '<div (click)="~{start-my}«myClick»()~{end-my};"></div>'
+      })
+      export class MyComponent {
+        «ᐱmyClickᐱ() { }»
+      }`);
+
+    const marker = getReferenceMarkerFor(fileName, 'myClick');
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    expect(textSpan).toEqual(getLocationMarkerFor(fileName, 'my'));
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+    const def = definitions ![0];
+
+    expect(def.fileName).toBe(fileName);
+    expect(def.name).toBe('myClick');
+    expect(def.kind).toBe('method');
+    expect(def.textSpan).toEqual(getDefinitionMarkerFor(fileName, 'myClick'));
   });
 
   it('should be able to find a field reference in an *ngIf', () => {
-    localReference(
-        ` @Component({template: '<div *ngIf="«include»"></div>'}) export class MyComponent { «ᐱincludeᐱ = true;»}`);
+    const fileName = addCode(`
+      @Component({
+        template: '<div *ngIf="«include»"></div>'
+      })
+      export class MyComponent {
+        «ᐱincludeᐱ = true;»
+      }`);
+
+    const marker = getReferenceMarkerFor(fileName, 'include');
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    expect(textSpan).toEqual(marker);
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+    const def = definitions ![0];
+
+    expect(def.fileName).toBe(fileName);
+    expect(def.name).toBe('include');
+    expect(def.kind).toBe('property');
+    expect(def.textSpan).toEqual(getDefinitionMarkerFor(fileName, 'include'));
   });
 
   it('should be able to find a reference to a component', () => {
-    reference(
-        'parsing-cases.ts',
-        ` @Component({template: '<«test-comp»></test-comp>'}) export class MyComponent { }`);
+    const fileName = addCode(`
+      @Component({
+        template: '~{start-my}<«test-comp»></test-comp>~{end-my}'
+      })
+      export class MyComponent { }`);
+
+    // Get the marker for «test-comp» in the code added above.
+    const marker = getReferenceMarkerFor(fileName, 'test-comp');
+
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    // Get the marker for bounded text in the code added above.
+    const boundedText = getLocationMarkerFor(fileName, 'my');
+    expect(textSpan).toEqual(boundedText);
+
+    // There should be exactly 1 definition
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+    const def = definitions ![0];
+
+    const refFileName = '/app/parsing-cases.ts';
+    expect(def.fileName).toBe(refFileName);
+    expect(def.name).toBe('TestComponent');
+    expect(def.kind).toBe('component');
+    expect(def.textSpan).toEqual(getLocationMarkerFor(refFileName, 'test-comp'));
   });
 
   it('should be able to find an event provider', () => {
-    reference(
-        '/app/parsing-cases.ts', 'test',
-        ` @Component({template: '<test-comp («test»)="myHandler()"></div>'}) export class MyComponent { myHandler() {} }`);
+    const fileName = addCode(`
+      @Component({
+        template: '<test-comp ~{start-my}(«test»)="myHandler()"~{end-my}></div>'
+      })
+      export class MyComponent { myHandler() {} }`);
+
+    // Get the marker for «test» in the code added above.
+    const marker = getReferenceMarkerFor(fileName, 'test');
+
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    // Get the marker for bounded text in the code added above
+    const boundedText = getLocationMarkerFor(fileName, 'my');
+    expect(textSpan).toEqual(boundedText);
+
+    // There should be exactly 1 definition
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+    const def = definitions ![0];
+
+    const refFileName = '/app/parsing-cases.ts';
+    expect(def.fileName).toBe(refFileName);
+    expect(def.name).toBe('testEvent');
+    expect(def.kind).toBe('event');
+    expect(def.textSpan).toEqual(getDefinitionMarkerFor(refFileName, 'test'));
   });
 
   it('should be able to find an input provider', () => {
-    reference(
-        '/app/parsing-cases.ts', 'tcName',
-        ` @Component({template: '<test-comp [«tcName»]="name"></div>'}) export class MyComponent { name = 'my name'; }`);
+    // '/app/parsing-cases.ts', 'tcName',
+    const fileName = addCode(`
+      @Component({
+        template: '<test-comp ~{start-my}[«tcName»]="name"~{end-my}></div>'
+      })
+      export class MyComponent {
+        name = 'my name';
+      }`);
+
+    // Get the marker for «test» in the code added above.
+    const marker = getReferenceMarkerFor(fileName, 'tcName');
+
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    // Get the marker for bounded text in the code added above
+    const boundedText = getLocationMarkerFor(fileName, 'my');
+    expect(textSpan).toEqual(boundedText);
+
+    // There should be exactly 1 definition
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+    const def = definitions ![0];
+
+    const refFileName = '/app/parsing-cases.ts';
+    expect(def.fileName).toBe(refFileName);
+    expect(def.name).toBe('name');
+    expect(def.kind).toBe('property');
+    expect(def.textSpan).toEqual(getDefinitionMarkerFor(refFileName, 'tcName'));
   });
 
   it('should be able to find a pipe', () => {
-    reference(
-        'common.d.ts',
-        ` @Component({template: '<div *ngIf="input | «async»"></div>'}) export class MyComponent { input: EventEmitter; }`);
+    const fileName = addCode(`
+      @Component({
+        template: '<div *ngIf="~{start-my}input | «async»~{end-my}"></div>'
+      })
+      export class MyComponent {
+        input: EventEmitter;
+      }`);
+
+    // Get the marker for «test» in the code added above.
+    const marker = getReferenceMarkerFor(fileName, 'async');
+
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    // Get the marker for bounded text in the code added above
+    const boundedText = getLocationMarkerFor(fileName, 'my');
+    expect(textSpan).toEqual(boundedText);
+
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(4);
+
+    const refFileName = '/node_modules/@angular/common/common.d.ts';
+    for (const def of definitions !) {
+      expect(def.fileName).toBe(refFileName);
+      expect(def.name).toBe('async');
+      expect(def.kind).toBe('pipe');
+      // Not asserting the textSpan of definition because it's external file
+    }
   });
 
-  function localReference(code: string) {
-    addCode(code, fileName => {
-      const refResult = mockHost.getReferenceMarkers(fileName) !;
-      for (const name in refResult.references) {
-        const references = refResult.references[name];
-        const definitions = refResult.definitions[name];
-        expect(definitions).toBeDefined();  // If this fails the test data is wrong.
-        for (const reference of references) {
-          const definition = ngService.getDefinitionAt(fileName, reference.start);
-          if (definition) {
-            definition.forEach(d => expect(d.fileName).toEqual(fileName));
-            const match = matchingSpan(definition.map(d => d.span), definitions);
-            if (!match) {
-              throw new Error(
-                  `Expected one of ${stringifySpans(definition.map(d => d.span))} to match one of ${stringifySpans(definitions)}`);
-            }
-          } else {
-            throw new Error('Expected a definition');
-          }
-        }
-      }
-    });
-  }
-
-  function reference(referencedFile: string, code: string): void;
-  function reference(referencedFile: string, span: Span, code: string): void;
-  function reference(referencedFile: string, definition: string, code: string): void;
-  function reference(referencedFile: string, p1?: any, p2?: any): void {
-    const code: string = p2 ? p2 : p1;
-    const definition: string = p2 ? p1 : undefined;
-    let span: Span = p2 && p1.start != null ? p1 : undefined;
-    if (definition && !span) {
-      const referencedFileMarkers = mockHost.getReferenceMarkers(referencedFile) !;
-      expect(referencedFileMarkers).toBeDefined();  // If this fails the test data is wrong.
-      const spans = referencedFileMarkers.definitions[definition];
-      expect(spans).toBeDefined();  // If this fails the test data is wrong.
-      span = spans[0];
-    }
-    addCode(code, fileName => {
-      const refResult = mockHost.getReferenceMarkers(fileName) !;
-      let tests = 0;
-      for (const name in refResult.references) {
-        const references = refResult.references[name];
-        expect(reference).toBeDefined();  // If this fails the test data is wrong.
-        for (const reference of references) {
-          tests++;
-          const definition = ngService.getDefinitionAt(fileName, reference.start);
-          if (definition) {
-            definition.forEach(d => {
-              if (d.fileName.indexOf(referencedFile) < 0) {
-                throw new Error(
-                    `Expected reference to file ${referencedFile}, received ${d.fileName}`);
-              }
-              if (span) {
-                expect(d.span).toEqual(span);
-              }
-            });
-          } else {
-            throw new Error('Expected a definition');
-          }
-        }
-      }
-      if (!tests) {
-        throw new Error('Expected at least one reference (test data error)');
-      }
-    });
-  }
-
-  function addCode(code: string, cb: (fileName: string, content?: string) => void) {
+  /**
+   * Append a snippet of code to `app.component.ts` and return the file name.
+   * There must not be any name collision with existing code.
+   * @param code Snippet of code
+   */
+  function addCode(code: string) {
     const fileName = '/app/app.component.ts';
     const originalContent = mockHost.getFileContent(fileName);
     const newContent = originalContent + code;
-    mockHost.override(fileName, originalContent + code);
-    try {
-      cb(fileName, newContent);
-    } finally {
-      mockHost.override(fileName, undefined !);
-    }
+    mockHost.override(fileName, newContent);
+    return fileName;
+  }
+
+  /**
+   * Returns the definition marker ᐱselectorᐱ for the specified 'selector'.
+   * Asserts that marker exists.
+   * @param fileName name of the file
+   * @param selector name of the marker
+   */
+  function getDefinitionMarkerFor(fileName: string, selector: string): ts.TextSpan {
+    const markers = mockHost.getReferenceMarkers(fileName);
+    expect(markers).toBeDefined();
+    expect(Object.keys(markers !.definitions)).toContain(selector);
+    expect(markers !.definitions[selector].length).toBe(1);
+    const marker = markers !.definitions[selector][0];
+    expect(marker.start).toBeLessThanOrEqual(marker.end);
+    return {
+      start: marker.start,
+      length: marker.end - marker.start,
+    };
+  }
+
+  /**
+   * Returns the reference marker «selector» for the specified 'selector'.
+   * Asserts that marker exists.
+   * @param fileName name of the file
+   * @param selector name of the marker
+   */
+  function getReferenceMarkerFor(fileName: string, selector: string): ts.TextSpan {
+    const markers = mockHost.getReferenceMarkers(fileName);
+    expect(markers).toBeDefined();
+    expect(Object.keys(markers !.references)).toContain(selector);
+    expect(markers !.references[selector].length).toBe(1);
+    const marker = markers !.references[selector][0];
+    expect(marker.start).toBeLessThanOrEqual(marker.end);
+    return {
+      start: marker.start,
+      length: marker.end - marker.start,
+    };
+  }
+
+  /**
+   * Returns the location marker ~{selector} for the specified 'selector'.
+   * Asserts that marker exists.
+   * @param fileName name of the file
+   * @param selector name of the marker
+   */
+  function getLocationMarkerFor(fileName: string, selector: string): ts.TextSpan {
+    const markers = mockHost.getMarkerLocations(fileName);
+    expect(markers).toBeDefined();
+    const start = markers ![`start-${selector}`];
+    expect(start).toBeDefined();
+    const end = markers ![`end-${selector}`];
+    expect(end).toBeDefined();
+    expect(start).toBeLessThanOrEqual(end);
+    return {
+      start: start,
+      length: end - start,
+    };
   }
 });
-
-function matchingSpan(aSpans: Span[], bSpans: Span[]): Span|undefined {
-  for (const a of aSpans) {
-    for (const b of bSpans) {
-      if (a.start == b.start && a.end == b.end) {
-        return a;
-      }
-    }
-  }
-}
-
-function stringifySpan(span: Span) {
-  return span ? `(${span.start}-${span.end})` : '<undefined>';
-}
-
-function stringifySpans(spans: Span[]) {
-  return spans ? `[${spans.map(stringifySpan).join(', ')}]` : '<empty>';
-}

@@ -9,9 +9,8 @@
 import * as ts from 'typescript'; // used as value, passed in by tsserver at runtime
 import * as tss from 'typescript/lib/tsserverlibrary'; // used as type only
 
-import {ngLocationToTsDefinitionInfo} from './definitions';
 import {createLanguageService} from './language_service';
-import {Completion, Diagnostic, DiagnosticMessageChain, Location} from './types';
+import {Completion, Diagnostic, DiagnosticMessageChain} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
 const projectHostMap = new WeakMap<tss.server.Project, TypeScriptServiceHost>();
@@ -76,13 +75,13 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
   //    This effectively disables native TS features and is meant for internal
   //    use only.
   const angularOnly = config ? config.angularOnly === true : false;
-  const proxy: tss.LanguageService = Object.assign({}, tsLS);
   const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
   const ngLS = createLanguageService(ngLSHost);
   projectHostMap.set(project, ngLSHost);
 
-  proxy.getCompletionsAtPosition = function(
-      fileName: string, position: number, options: tss.GetCompletionsAtPositionOptions|undefined) {
+  function getCompletionsAtPosition(
+      fileName: string, position: number,
+      options: tss.GetCompletionsAtPositionOptions | undefined) {
     if (!angularOnly) {
       const results = tsLS.getCompletionsAtPosition(fileName, position, options);
       if (results && results.entries.length) {
@@ -100,39 +99,20 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
       isNewIdentifierLocation: false,
       entries: results.map(completionToEntry),
     };
-  };
+  }
 
-  proxy.getQuickInfoAtPosition = function(fileName: string, position: number): tss.QuickInfo |
-      undefined {
-        if (!angularOnly) {
-          const result = tsLS.getQuickInfoAtPosition(fileName, position);
-          if (result) {
-            // If TS could answer the query, then return results immediately.
-            return result;
-          }
-        }
-        const result = ngLS.getHoverAt(fileName, position);
-        if (!result) {
-          return;
-        }
-        return {
-          // TODO(kyliau): Provide more useful info for kind and kindModifiers
-          kind: ts.ScriptElementKind.unknown,
-          kindModifiers: ts.ScriptElementKindModifier.none,
-          textSpan: {
-            start: result.span.start,
-            length: result.span.end - result.span.start,
-          },
-          displayParts: result.text.map((part) => {
-            return {
-              text: part.text,
-              kind: part.language || 'angular',
-            };
-          }),
-        };
-      };
+  function getQuickInfoAtPosition(fileName: string, position: number): tss.QuickInfo|undefined {
+    if (!angularOnly) {
+      const result = tsLS.getQuickInfoAtPosition(fileName, position);
+      if (result) {
+        // If TS could answer the query, then return results immediately.
+        return result;
+      }
+    }
+    return ngLS.getHoverAt(fileName, position);
+  }
 
-  proxy.getSemanticDiagnostics = function(fileName: string): tss.Diagnostic[] {
+  function getSemanticDiagnostics(fileName: string): tss.Diagnostic[] {
     const results: tss.Diagnostic[] = [];
     if (!angularOnly) {
       const tsResults = tsLS.getSemanticDiagnostics(fileName);
@@ -146,48 +126,43 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     const sourceFile = fileName.endsWith('.ts') ? ngLSHost.getSourceFile(fileName) : undefined;
     results.push(...ngResults.map(d => diagnosticToDiagnostic(d, sourceFile)));
     return results;
-  };
+  }
 
-  proxy.getDefinitionAtPosition = function(fileName: string, position: number):
-                                      ReadonlyArray<tss.DefinitionInfo>|
-      undefined {
-        if (!angularOnly) {
-          const results = tsLS.getDefinitionAtPosition(fileName, position);
-          if (results) {
-            // If TS could answer the query, then return results immediately.
-            return results;
-          }
-        }
-        const results = ngLS.getDefinitionAt(fileName, position);
-        if (!results) {
-          return;
-        }
-        return results.map(ngLocationToTsDefinitionInfo);
-      };
+  function getDefinitionAtPosition(
+      fileName: string, position: number): ReadonlyArray<tss.DefinitionInfo>|undefined {
+    if (!angularOnly) {
+      const results = tsLS.getDefinitionAtPosition(fileName, position);
+      if (results) {
+        // If TS could answer the query, then return results immediately.
+        return results;
+      }
+    }
+    const result = ngLS.getDefinitionAt(fileName, position);
+    if (!result || !result.definitions || !result.definitions.length) {
+      return;
+    }
+    return result.definitions;
+  }
 
-  proxy.getDefinitionAndBoundSpan = function(fileName: string, position: number):
-                                        tss.DefinitionInfoAndBoundSpan |
-      undefined {
-        if (!angularOnly) {
-          const result = tsLS.getDefinitionAndBoundSpan(fileName, position);
-          if (result) {
-            // If TS could answer the query, then return results immediately.
-            return result;
-          }
-        }
-        const results = ngLS.getDefinitionAt(fileName, position);
-        if (!results || !results.length) {
-          return;
-        }
-        const {span} = results[0];
-        return {
-          definitions: results.map(ngLocationToTsDefinitionInfo),
-          textSpan: {
-            start: span.start,
-            length: span.end - span.start,
-          },
-        };
-      };
+  function getDefinitionAndBoundSpan(
+      fileName: string, position: number): tss.DefinitionInfoAndBoundSpan|undefined {
+    if (!angularOnly) {
+      const result = tsLS.getDefinitionAndBoundSpan(fileName, position);
+      if (result) {
+        // If TS could answer the query, then return results immediately.
+        return result;
+      }
+    }
+    return ngLS.getDefinitionAt(fileName, position);
+  }
 
+  const proxy: tss.LanguageService = Object.assign(
+      // First clone the original TS language service
+      {}, tsLS,
+      // Then override the methods supported by Angular language service
+      {
+          getCompletionsAtPosition, getQuickInfoAtPosition, getSemanticDiagnostics,
+          getDefinitionAtPosition, getDefinitionAndBoundSpan,
+      });
   return proxy;
 }

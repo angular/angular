@@ -8,9 +8,9 @@
 
 import {CompileMetadataResolver, CompilePipeSummary} from '@angular/compiler';
 import {DiagnosticTemplateInfo, getTemplateExpressionDiagnostics} from '@angular/compiler-cli/src/language_services';
-
+import * as tss from 'typescript/lib/tsserverlibrary';
 import {getTemplateCompletions} from './completions';
-import {getDefinition} from './definitions';
+import {getDefinitionAndBoundSpan} from './definitions';
 import {getDeclarationDiagnostics} from './diagnostics';
 import {getHover} from './hover';
 import {Completion, Diagnostic, DiagnosticKind, Diagnostics, Hover, LanguageService, LanguageServiceHost, Location, Span, TemplateSource} from './types';
@@ -29,8 +29,6 @@ export function createLanguageService(host: LanguageServiceHost): LanguageServic
 
 class LanguageServiceImpl implements LanguageService {
   constructor(private host: LanguageServiceHost) {}
-
-  private get metadataResolver(): CompileMetadataResolver { return this.host.resolver; }
 
   getTemplateReferences(): string[] { return this.host.getTemplateReferences(); }
 
@@ -65,14 +63,14 @@ class LanguageServiceImpl implements LanguageService {
     }
   }
 
-  getDefinitionAt(fileName: string, position: number): Location[]|undefined {
+  getDefinitionAt(fileName: string, position: number): tss.DefinitionInfoAndBoundSpan|undefined {
     let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
-      return getDefinition(templateInfo);
+      return getDefinitionAndBoundSpan(templateInfo);
     }
   }
 
-  getHoverAt(fileName: string, position: number): Hover|undefined {
+  getHoverAt(fileName: string, position: number): tss.QuickInfo|undefined {
     let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getHover(templateInfo);

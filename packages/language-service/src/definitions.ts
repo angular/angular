@@ -6,28 +6,50 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as tss from 'typescript/lib/tsserverlibrary';
-
+import * as ts from 'typescript'; // used as value and is provided at runtime
 import {TemplateInfo} from './common';
 import {locateSymbol} from './locate_symbol';
-import {Location} from './types';
+import {Span} from './types';
 
-export function getDefinition(info: TemplateInfo): Location[]|undefined {
-  const result = locateSymbol(info);
-  return result && result.symbol.definition;
+/**
+ * Convert Angular Span to TypeScript TextSpan. Angular Span has 'start' and
+ * 'end' whereas TS TextSpan has 'start' and 'length'.
+ * @param span Angular Span
+ */
+function ngSpanToTsTextSpan(span: Span): ts.TextSpan {
+  return {
+    start: span.start,
+    length: span.end - span.start,
+  };
 }
 
-export function ngLocationToTsDefinitionInfo(loc: Location): tss.DefinitionInfo {
+export function getDefinitionAndBoundSpan(info: TemplateInfo): ts.DefinitionInfoAndBoundSpan|
+    undefined {
+  const symbolInfo = locateSymbol(info);
+  if (!symbolInfo) {
+    return;
+  }
+  const textSpan = ngSpanToTsTextSpan(symbolInfo.span);
+  const {symbol} = symbolInfo;
+  const {container, definition: locations} = symbol;
+  if (!locations || !locations.length) {
+    // symbol.definition is really the locations of the symbol. There could be
+    // more than one. No meaningful info could be provided without any location.
+    return {textSpan};
+  }
+  const containerKind = container ? container.kind : ts.ScriptElementKind.unknown;
+  const containerName = container ? container.name : '';
+  const definitions = locations.map((location) => {
+    return {
+      kind: symbol.kind as ts.ScriptElementKind,
+      name: symbol.name,
+      containerKind: containerKind as ts.ScriptElementKind,
+      containerName: containerName,
+      textSpan: ngSpanToTsTextSpan(location.span),
+      fileName: location.fileName,
+    };
+  });
   return {
-    fileName: loc.fileName,
-    textSpan: {
-      start: loc.span.start,
-      length: loc.span.end - loc.span.start,
-    },
-    // TODO(kyliau): Provide more useful info for name, kind and containerKind
-    name: '',  // should be name of symbol but we don't have enough information here.
-    kind: tss.ScriptElementKind.unknown,
-    containerName: loc.fileName,
-    containerKind: tss.ScriptElementKind.unknown,
+      definitions, textSpan,
   };
 }

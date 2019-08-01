@@ -5,7 +5,7 @@
   "request_seq": 2,
   "success": true,
   "body": {
-    "kind": "",
+    "kind": "property",
     "kindModifiers": "",
     "start": {
       "line": 5,
@@ -15,7 +15,7 @@
       "line": 5,
       "offset": 30
     },
-    "displayString": "property name of AppComponent",
+    "displayString": "(property) AppComponent.name",
     "documentation": "",
     "tags": []
   }

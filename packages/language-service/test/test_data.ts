@@ -139,11 +139,11 @@ export class ForUsingComponent {
 @Component({template: '<div #div> <test-comp #test1> {{~{test-comp-content}}} {{test1.~{test-comp-after-test}name}} {{div.~{test-comp-after-div}.innerText}} </test-comp> </div> <test-comp #test2></test-comp>'})
 export class References {}
 
-@Component({selector: 'test-comp', template: '<div>Testing: {{name}}</div>'})
+~{start-test-comp}@Component({selector: 'test-comp', template: '<div>Testing: {{name}}</div>'})
 export class TestComponent {
   «@Input('ᐱtcNameᐱ') name = 'test';»
   «@Output('ᐱtestᐱ') testEvent = new EventEmitter();»
-}
+}~{end-test-comp}
 
 @Component({templateUrl: 'test.ng'})
 export class TemplateReference {

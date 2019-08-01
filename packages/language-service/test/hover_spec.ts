@@ -28,43 +28,43 @@ describe('hover', () => {
   it('should be able to find field in an interpolation', () => {
     hover(
         ` @Component({template: '{{«name»}}'}) export class MyComponent { name: string; }`,
-        'property name of MyComponent');
+        '(property) MyComponent.name');
   });
 
   it('should be able to find a field in a attribute reference', () => {
     hover(
         ` @Component({template: '<input [(ngModel)]="«name»">'}) export class MyComponent { name: string; }`,
-        'property name of MyComponent');
+        '(property) MyComponent.name');
   });
 
   it('should be able to find a method from a call', () => {
     hover(
         ` @Component({template: '<div (click)="«ᐱmyClickᐱ()»;"></div>'}) export class MyComponent { myClick() { }}`,
-        'method myClick of MyComponent');
+        '(method) MyComponent.myClick');
   });
 
   it('should be able to find a field reference in an *ngIf', () => {
     hover(
         ` @Component({template: '<div *ngIf="«include»"></div>'}) export class MyComponent { include = true;}`,
-        'property include of MyComponent');
+        '(property) MyComponent.include');
   });
 
   it('should be able to find a reference to a component', () => {
     hover(
         ` @Component({template: '«<ᐱtestᐱ-comp></test-comp>»'}) export class MyComponent { }`,
-        'component TestComponent');
+        '(component) TestComponent');
   });
 
   it('should be able to find an event provider', () => {
     hover(
         ` @Component({template: '<test-comp «(ᐱtestᐱ)="myHandler()"»></div>'}) export class MyComponent { myHandler() {} }`,
-        'event testEvent of TestComponent');
+        '(event) TestComponent.testEvent');
   });
 
   it('should be able to find an input provider', () => {
     hover(
         ` @Component({template: '<test-comp «[ᐱtcNameᐱ]="name"»></div>'}) export class MyComponent { name = 'my name'; }`,
-        'property name of TestComponent');
+        '(property) TestComponent.name');
   });
 
   it('should be able to ignore a reference declaration', () => {
@@ -87,10 +87,13 @@ describe('hover', () => {
                             []).concat(markers.definitions[referenceName] || []);
         for (const reference of references) {
           tests++;
-          const hover = ngService.getHoverAt(fileName, reference.start);
-          if (!hover) throw new Error(`Expected a hover at location ${reference.start}`);
-          expect(hover.span).toEqual(reference);
-          expect(toText(hover)).toEqual(hoverText);
+          const quickInfo = ngService.getHoverAt(fileName, reference.start);
+          if (!quickInfo) throw new Error(`Expected a hover at location ${reference.start}`);
+          expect(quickInfo.textSpan).toEqual({
+            start: reference.start,
+            length: reference.end - reference.start,
+          });
+          expect(toText(quickInfo)).toEqual(hoverText);
         }
       }
       expect(tests).toBeGreaterThan(0);  // If this fails the test is wrong.
@@ -109,5 +112,8 @@ describe('hover', () => {
     }
   }
 
-  function toText(hover: Hover): string { return hover.text.map(h => h.text).join(''); }
+  function toText(quickInfo: ts.QuickInfo): string {
+    const displayParts = quickInfo.displayParts || [];
+    return displayParts.map(p => p.text).join('');
+  }
 });
