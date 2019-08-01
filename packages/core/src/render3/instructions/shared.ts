@@ -1030,7 +1030,7 @@ export function resolveDirectives(
     localRefs: string[] | null): void {
   // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in
   // tsickle.
-  ngDevMode && assertEqual(tView.firstTemplatePass, true, 'should run on first template pass only');
+  ngDevMode && assertFirstTemplatePass(tView);
 
   if (!getBindingsEnabled()) return;
 
@@ -1061,6 +1061,10 @@ export function resolveDirectives(
       baseResolveDirective(tView, lView, def, def.factory);
 
       saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
+
+      if (def.contentQueries) {
+        tNode.flags |= TNodeFlags.hasContentQuery;
+      }
 
       // Init hooks are queued now so ngOnInit is called in host components before
       // any projected components.
@@ -1169,10 +1173,6 @@ function postProcessDirective<T>(
   ngDevMode && assertDefined(previousOrParentTNode, 'previousOrParentTNode');
   if (previousOrParentTNode && previousOrParentTNode.attrs) {
     setInputsFromAttrs(directiveDefIdx, directive, def, previousOrParentTNode);
-  }
-
-  if (viewData[TVIEW].firstTemplatePass && def.contentQueries) {
-    previousOrParentTNode.flags |= TNodeFlags.hasContentQuery;
   }
 
   if (isComponentDef(def)) {
