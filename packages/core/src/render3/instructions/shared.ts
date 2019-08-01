@@ -14,7 +14,7 @@ import {Sanitizer} from '../../sanitization/security';
 import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertNotEqual, assertNotSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
-import {assertLView, assertPreviousIsParent} from '../assert';
+import {assertFirstTemplatePass, assertLView, assertPreviousIsParent} from '../assert';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
@@ -1207,7 +1207,7 @@ function postProcessBaseDirective<T>(
 function findDirectiveMatches(
     tView: TView, viewData: LView,
     tNode: TElementNode | TContainerNode | TElementContainerNode): DirectiveDef<any>[]|null {
-  ngDevMode && assertEqual(tView.firstTemplatePass, true, 'should run on first template pass only');
+  ngDevMode && assertFirstTemplatePass(tView);
   const registry = tView.directiveRegistry;
   let matches: any[]|null = null;
   if (registry) {
@@ -1219,8 +1219,7 @@ function findDirectiveMatches(
 
         if (isComponentDef(def)) {
           if (tNode.flags & TNodeFlags.isComponent) throwMultipleComponentError(tNode);
-          tNode.flags = TNodeFlags.isComponent;
-
+          markAsComponentHost(tView, tNode);
           // The component is always stored first with directives after.
           matches.unshift(def);
         } else {
@@ -1232,13 +1231,16 @@ function findDirectiveMatches(
   return matches;
 }
 
-/** Stores index of component's host element so it will be queued for view refresh during CD. */
-export function queueComponentIndexForCheck(previousOrParentTNode: TNode): void {
-  const tView = getLView()[TVIEW];
-  ngDevMode &&
-      assertEqual(tView.firstTemplatePass, true, 'Should only be called in first template pass.');
+/**
+ * Marks a given TNode as a component's host. This consists of:
+ * - setting appropriate TNode flags;
+ * - storing index of component's host element so it will be queued for view refresh during CD.
+*/
+export function markAsComponentHost(tView: TView, hostTNode: TNode): void {
+  ngDevMode && assertFirstTemplatePass(tView);
+  hostTNode.flags = TNodeFlags.isComponent;
   (tView.components || (tView.components = ngDevMode ? new TViewComponents !() : [
-   ])).push(previousOrParentTNode.index);
+   ])).push(hostTNode.index);
 }
 
 
@@ -1306,10 +1308,8 @@ function baseResolveDirective<T>(
   viewData.push(nodeInjectorFactory);
 }
 
-function addComponentLogic<T>(
-    lView: LView, previousOrParentTNode: TNode, def: ComponentDef<T>): void {
-  const native = getNativeByTNode(previousOrParentTNode, lView);
-
+function addComponentLogic<T>(lView: LView, hostTNode: TNode, def: ComponentDef<T>): void {
+  const native = getNativeByTNode(hostTNode, lView);
   const tView = getOrCreateTView(def);
 
   // Only component views should be added to the view tree directly. Embedded views are
@@ -1318,18 +1318,14 @@ function addComponentLogic<T>(
   const componentView = addToViewTree(
       lView, createLView(
                  lView, tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
-                 lView[previousOrParentTNode.index], previousOrParentTNode as TElementNode,
-                 rendererFactory, rendererFactory.createRenderer(native as RElement, def)));
+                 lView[hostTNode.index], hostTNode as TElementNode, rendererFactory,
+                 rendererFactory.createRenderer(native as RElement, def)));
 
-  componentView[T_HOST] = previousOrParentTNode as TElementNode;
+  componentView[T_HOST] = hostTNode as TElementNode;
 
   // Component view will always be created before any injected LContainers,
   // so this is a regular element, wrap it with the component view
-  lView[previousOrParentTNode.index] = componentView;
-
-  if (lView[TVIEW].firstTemplatePass) {
-    queueComponentIndexForCheck(previousOrParentTNode);
-  }
+  lView[hostTNode.index] = componentView;
 }
 
 export function elementAttributeInternal(

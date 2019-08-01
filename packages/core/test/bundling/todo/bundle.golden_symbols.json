@@ -1119,6 +1119,9 @@
     "name": "makeParamDecorator"
   },
   {
+    "name": "markAsComponentHost"
+  },
+  {
     "name": "markContextToPersistState"
   },
   {
@@ -1177,9 +1180,6 @@
   },
   {
     "name": "postProcessDirective"
-  },
-  {
-    "name": "queueComponentIndexForCheck"
   },
   {
     "name": "readPatchedData"
