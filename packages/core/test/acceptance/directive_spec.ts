@@ -226,6 +226,39 @@ describe('directives', () => {
       expect(calls).toEqual(['MyDir.ngOnInit']);
     });
 
+    it('should match directives when the node has "class", "style" and a binding', () => {
+      const logs: string[] = [];
+
+      @Directive({selector: '[test]'})
+      class MyDir {
+        constructor() { logs.push('MyDir.contructor'); }
+
+        @Input('test')
+        myInput = '';
+
+        @Input('disabled')
+        myInput2 = '';
+      }
+
+      @Component({
+        // Note that below we're checking the case where the `test` attribute is after
+        // one `class`, one `attribute` and one other binding.
+        template: `
+          <div class="a" style="font-size: 10px;" [disabled]="true" [test]="test"></div>
+        `
+      })
+      class MyComp {
+        test = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(logs).toEqual(['MyDir.contructor']);
+    });
+
   });
 
   describe('outputs', () => {
