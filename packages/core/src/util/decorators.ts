@@ -136,10 +136,8 @@ export const makeParamDecorator__PRE_R3__ = function makeParamDecorator(
  *
  * For this purpose we no longer need the decorator to cary over complex metadata info.
  * In most cases just the unique identify of the decorator instance is needed, and for @Inject we
- * need
- * the decorator instance to have a special "token" property that holds a reference to the DI token
- * for
- * the injectable to be injected in place of the parameter that it decorates.
+ * need the decorator instance to have a special "token" property that holds a reference to the DI
+ * token for the injectable to be injected in place of the parameter that it decorates.
  *
  * @param name
  * @param token optional param used only by @Inject
