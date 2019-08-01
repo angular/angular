@@ -8,33 +8,31 @@
 import {ParseSourceSpan, ParseSpan, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ClassDeclaration} from '../../reflection';
-import {getSourceFile, getTokenAtPosition} from '../../util/src/typescript';
+import {getTokenAtPosition} from '../../util/src/typescript';
 
-/**
- * FIXME: Taken from packages/compiler-cli/src/transformers/api.ts to prevent circular dep,
- *  modified to account for new span notation.
- */
-export interface DiagnosticMessageChain {
-  messageText: string;
-  position?: Position;
-  next?: DiagnosticMessageChain;
-}
-
-export interface Diagnostic {
-  messageText: string;
-  span?: ParseSourceSpan;
-  position?: Position;
-  chain?: DiagnosticMessageChain;
-  category: ts.DiagnosticCategory;
-  code: number;
-  source: 'angular';
-}
+import {ExternalTemplateSourceMapping, TemplateSourceMapping} from './api';
 
 export interface SourceLocation {
-  sourceReference: string;
+  id: string;
   start: number;
   end: number;
+}
+
+/**
+ * Adapter interface which allows the template type-checking diagnostics code to interpret offsets
+ * in a TCB and map them back to original locations in the template.
+ */
+export interface TcbSourceResolver {
+  /**
+   * For the given template id, retrieve the original source mapping which describes how the offsets
+   * in the template should be interpreted.
+   */
+  getSourceMapping(id: string): TemplateSourceMapping;
+
+  /**
+   * Convert a location extracted from a TCB into a `ParseSourceSpan` if possible.
+   */
+  sourceLocationToSpan(location: SourceLocation): ParseSourceSpan|null;
 }
 
 /**
@@ -95,15 +93,8 @@ function isAbsoluteSpan(span: AbsoluteSpan | ParseSourceSpan): span is AbsoluteS
  * Adds a synthetic comment to the function declaration that contains the source location
  * of the class declaration.
  */
-export function addSourceReferenceName(
-    tcb: ts.FunctionDeclaration, source: ClassDeclaration): void {
-  const commentText = getSourceReferenceName(source);
-  ts.addSyntheticLeadingComment(tcb, ts.SyntaxKind.MultiLineCommentTrivia, commentText, true);
-}
-
-export function getSourceReferenceName(source: ClassDeclaration): string {
-  const fileName = getSourceFile(source).fileName;
-  return `${fileName}#${source.name.text}`;
+export function addSourceId(tcb: ts.FunctionDeclaration, id: string): void {
+  ts.addSyntheticLeadingComment(tcb, ts.SyntaxKind.MultiLineCommentTrivia, id, true);
 }
 
 /**
@@ -132,8 +123,7 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
  * file from being reported as type-check errors.
  */
 export function translateDiagnostic(
-    diagnostic: ts.Diagnostic, resolveParseSource: (sourceLocation: SourceLocation) =>
-                                   ParseSourceSpan | null): Diagnostic|null {
+    diagnostic: ts.Diagnostic, resolver: TcbSourceResolver): ts.Diagnostic|null {
   if (diagnostic.file === undefined || diagnostic.start === undefined) {
     return null;
   }
@@ -146,7 +136,7 @@ export function translateDiagnostic(
   }
 
   // Now use the external resolver to obtain the full `ParseSourceFile` of the template.
-  const span = resolveParseSource(sourceLocation);
+  const span = resolver.sourceLocationToSpan(sourceLocation);
   if (span === null) {
     return null;
   }
@@ -158,11 +148,59 @@ export function translateDiagnostic(
     messageText = diagnostic.messageText.messageText;
   }
 
-  return {
-    source: 'angular',
-    code: diagnostic.code,
-    category: diagnostic.category, messageText, span,
-  };
+  const mapping = resolver.getSourceMapping(sourceLocation.id);
+  if (mapping.type === 'direct') {
+    // For direct mappings, the error is shown inline as ngtsc was able to pinpoint a string
+    // constant within the `@Component` decorator for the template. This allows us to map the error
+    // directly into the bytes of the source file.
+    return {
+      source: 'ngtsc',
+      file: mapping.node.getSourceFile(),
+      start: span.start.offset,
+      length: span.end.offset - span.start.offset,
+      code: diagnostic.code, messageText,
+      category: diagnostic.category,
+    };
+  } else if (mapping.type === 'indirect' || mapping.type === 'external') {
+    // For indirect mappings (template was declared inline, but ngtsc couldn't map it directly
+    // to a string constant in the decorator), the component's file name is given with a suffix
+    // indicating it's not the TS file being displayed, but a template.
+    // For external temoplates, the HTML filename is used.
+    const componentSf = mapping.componentClass.getSourceFile();
+    const componentName = mapping.componentClass.name.text;
+    // TODO(alxhub): remove cast when TS in g3 supports this narrowing.
+    const fileName = mapping.type === 'indirect' ?
+        `${componentSf.fileName} (${componentName} template)` :
+        (mapping as ExternalTemplateSourceMapping).templateUrl;
+    // TODO(alxhub): investigate creating a fake `ts.SourceFile` here instead of invoking the TS
+    // parser against the template (HTML is just really syntactically invalid TypeScript code ;).
+    // Also investigate caching the file to avoid running the parser multiple times.
+    const sf = ts.createSourceFile(
+        fileName, mapping.template, ts.ScriptTarget.Latest, false, ts.ScriptKind.JSX);
+
+    return {
+      source: 'ngtsc',
+      file: sf,
+      start: span.start.offset,
+      length: span.end.offset - span.start.offset,
+      messageText: diagnostic.messageText,
+      category: diagnostic.category,
+      code: diagnostic.code,
+      // Show a secondary message indicating the component whose template contains the error.
+      relatedInformation: [{
+        category: ts.DiagnosticCategory.Message,
+        code: 0,
+        file: componentSf,
+        // mapping.node represents either the 'template' or 'templateUrl' expression. getStart()
+        // and getEnd() are used because they don't include surrounding whitespace.
+        start: mapping.node.getStart(),
+        length: mapping.node.getEnd() - mapping.node.getStart(),
+        messageText: `Error occurs in the template of component ${componentName}.`,
+      }],
+    };
+  } else {
+    throw new Error(`Unexpected source mapping type: ${(mapping as {type: string}).type}`);
+  }
 }
 
 function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLocation|null {
@@ -201,7 +239,7 @@ function toSourceLocation(
     }
   }
 
-  const sourceReference =
+  const id =
       ts.forEachLeadingCommentRange(sourceFile.text, tcb.getFullStart(), (pos, end, kind) => {
         if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
           return null;
@@ -209,12 +247,12 @@ function toSourceLocation(
         const commentText = sourceFile.text.substring(pos, end);
         return commentText.substring(2, commentText.length - 2);
       }) || null;
-  if (sourceReference === null) {
+  if (id === null) {
     return null;
   }
 
   return {
-    sourceReference,
+    id,
     start: parseSpan.start,
     end: parseSpan.end,
   };
