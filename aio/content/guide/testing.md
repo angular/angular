@@ -6,14 +6,14 @@ This guide offers tips and techniques for unit and integration testing Angular a
 The guide presents tests of a sample application created with the [Angular CLI](cli). This sample application is much like the one created in the [_Tour of Heroes_ tutorial](tutorial).
 The sample application and all tests in this guide are available for inspection and experimentation:
 
-- <live-example embedded-style>Sample app</live-example>
-- <live-example stackblitz="specs">Tests</live-example>
+- <live-example embedded-style noDownload>Sample app</live-example>
+- <live-example stackblitz="specs" noDownload>Tests</live-example>
 
 <hr>
 
 ## Setup
 
-The Angular CLI downloads and install everything you need to test an Angular application with the [Jasmine test framework](https://jasmine.github.io/).
+The Angular CLI downloads and installs everything you need to test an Angular application with the [Jasmine test framework](https://jasmine.github.io/).
 
 The project you create with the CLI is immediately ready to test.
 Just run the [`ng test`](cli/test) CLI command:
