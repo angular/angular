@@ -193,7 +193,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       component = createRootComponent(
           componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
 
-      addToViewTree(rootLView, componentView);
       refreshDescendantViews(rootLView);
       safeToRunHooks = true;
     } finally {
