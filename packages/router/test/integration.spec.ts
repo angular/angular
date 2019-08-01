@@ -2049,6 +2049,36 @@ describe('Integration', () => {
              .toEqual({foo: 'bar', navigationId: history.length});
        })));
 
+    it('should support history state on non-a tags',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'team/:id',
+           component: TeamCmp,
+           children: [
+             {path: 'link', component: ButtonLinkWithState},
+             {path: 'simple', component: SimpleCmp}
+           ]
+         }]);
+
+         router.navigateByUrl('/team/22/link');
+         advance(fixture);
+
+         const native = fixture.nativeElement.querySelector('button');
+         native.click();
+         advance(fixture);
+
+         expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
+
+         // Check the history entry
+         const history = (location as any)._history;
+
+         expect(history[history.length - 1].state.foo).toBe('bar');
+         expect(history[history.length - 1].state)
+             .toEqual({foo: 'bar', navigationId: history.length});
+       })));
+
     it('should set href on area elements', fakeAsync(() => {
          @Component({
            selector: 'someRoot',
@@ -4923,6 +4953,13 @@ class LinkWithQueryParamsAndFragment {
 class LinkWithState {
 }
 
+@Component({
+  selector: 'link-cmp',
+  template: `<button [routerLink]="['../simple']" [state]="{foo: 'bar'}">button</button>`,
+})
+class ButtonLinkWithState {
+}
+
 @Component({selector: 'simple-cmp', template: `simple`})
 class SimpleCmp {
 }
@@ -5123,6 +5160,7 @@ class LazyComponent {
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
     LinkWithState,
+    ButtonLinkWithState,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
@@ -5153,6 +5191,7 @@ class LazyComponent {
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
     LinkWithState,
+    ButtonLinkWithState,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
@@ -5185,6 +5224,7 @@ class LazyComponent {
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
     LinkWithState,
+    ButtonLinkWithState,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,

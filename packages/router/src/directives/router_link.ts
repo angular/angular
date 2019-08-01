@@ -163,6 +163,7 @@ export class RouterLink {
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
+      state: this.state,
     };
     this.router.navigateByUrl(this.urlTree, extras);
     return true;
