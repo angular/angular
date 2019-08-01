@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as tss from 'typescript/lib/tsserverlibrary'
+import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {TemplateInfo} from './common';
 import {locateSymbol} from './locate_symbol';
