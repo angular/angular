@@ -198,7 +198,8 @@ function findAttrIndexInNode(
       } else if (
           maybeAttrName === AttributeMarker.Bindings || maybeAttrName === AttributeMarker.I18n) {
         bindingsMode = true;
-      } else if (maybeAttrName === AttributeMarker.Classes) {
+      } else if (
+          maybeAttrName === AttributeMarker.Classes || maybeAttrName === AttributeMarker.Styles) {
         let value = attrs[++i];
         // We should skip classes here because we have a separate mechanism for
         // matching classes in projection mode.
