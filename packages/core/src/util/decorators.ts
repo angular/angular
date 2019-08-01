@@ -90,7 +90,7 @@ function makeMetadataCtor(props?: (...args: any[]) => any): any {
   };
 }
 
-export function makeParamDecorator(
+export const makeParamDecorator__PRE_R3__ = function makeParamDecorator(
     name: string, props?: (...args: any[]) => any, parentClass?: any): any {
   const metaCtor = makeMetadataCtor(props);
   function ParamDecoratorFactory(
@@ -127,7 +127,44 @@ export function makeParamDecorator(
   ParamDecoratorFactory.prototype.ngMetadataName = name;
   (<any>ParamDecoratorFactory).annotationCls = ParamDecoratorFactory;
   return ParamDecoratorFactory;
-}
+};
+
+/**
+ * Minimal version needed for Ivy that supports Option(), Self, Inject(token), and friends.
+ * This version is needed because param decorators don't tree-shake away in production mode, since
+ * the decorator instances are used as a token that we use to configure runtime DI.
+ *
+ * For this purpose we no longer need the decorator to cary over complex metadata info.
+ * In most cases just the unique identify of the decorator instance is needed, and for @Inject we
+ * need
+ * the decorator instance to have a special "token" property that holds a reference to the DI token
+ * for
+ * the injectable to be injected in place of the parameter that it decorates.
+ *
+ * @param name
+ * @param token optional param used only by @Inject
+ */
+export const makeParamDecorator__POST_R3__ = function makeParamDecorator(
+    name: string, enableTokenSupport?: any):
+    any {
+      return function ParamDecoratorFactory(
+          this: unknown | typeof ParamDecoratorFactory, token: any): any {
+        if (this instanceof ParamDecoratorFactory) {
+          if (enableTokenSupport) {
+            this.token = token;
+          }
+          return this;
+        }
+        if (enableTokenSupport) {
+          ParamDecorator.annotation = new (<any>ParamDecoratorFactory)(token);
+        }
+        return ParamDecorator;
+
+        function ParamDecorator() {}
+      }
+    }
+
+export const makeParamDecorator = makeParamDecorator__PRE_R3__;
 
 export function makePropDecorator(
     name: string, props?: (...args: any[]) => any, parentClass?: any,

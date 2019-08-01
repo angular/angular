@@ -308,5 +308,6 @@ export {
 export {createInjector as ɵcreateInjector} from './di/r3_injector';
 
 export {INJECTOR_IMPL__POST_R3__ as ɵINJECTOR_IMPL__POST_R3__} from './di/injector';
+export {makeParamDecorator__POST_R3__ as ɵmakeParamDecorator__POST_R3__} from './util/decorators';
 
 // clang-format on
