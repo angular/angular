@@ -516,6 +516,9 @@
     "name": "locateHostElement"
   },
   {
+    "name": "markAsComponentHost"
+  },
+  {
     "name": "matchTemplateAttribute"
   },
   {
@@ -544,9 +547,6 @@
   },
   {
     "name": "postProcessDirective"
-  },
-  {
-    "name": "queueComponentIndexForCheck"
   },
   {
     "name": "readPatchedData"

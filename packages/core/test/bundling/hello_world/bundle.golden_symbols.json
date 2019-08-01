@@ -387,6 +387,9 @@
     "name": "locateHostElement"
   },
   {
+    "name": "markAsComponentHost"
+  },
+  {
     "name": "namespaceHTMLInternal"
   },
   {
@@ -409,9 +412,6 @@
   },
   {
     "name": "postProcessBaseDirective"
-  },
-  {
-    "name": "queueComponentIndexForCheck"
   },
   {
     "name": "readPatchedData"
