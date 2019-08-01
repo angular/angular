@@ -23,9 +23,9 @@
         "runtime-es2015": 1440,
         "main-es2015": 130220,
         "polyfills-es2015": 43567,
-        "runtime-es2015": 37637,
-        "main-es2015": 146017,
-        "polyfills-es2015": 113527
+        "runtime-es5": 37637,
+        "main-es5": 146017,
+        "polyfills-es5": 113527
       }
     }
   },
