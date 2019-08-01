@@ -80,17 +80,19 @@ yarn webdriver-sauce-test
 Releasing
 ---------
 
-- create a new tag in `angular` repo.
+For example, the current version is `0.9.1`, and we want to release a new version `0.10.0`.
+
+- create a new tag in `angular` repo. The `tag` must be `zone.js-<version>`, so in this example we need to create the tag `zone.js-0.10.0`.
 
 ```
-$ TAG=<TAG>
+$ TAG=zone.js-0.10.0
 $ git tag $TAG
 ```
 
-- create a PR to update `changelog` of zone.js
+- Create PR to update `changelog` of zone.js, we need to define the previous tag which will be the current version.
 
 ```
-$ export PREVIOUS_ZONE_TAG=<PREVIOUS ZONE RELEASE TAG>
+$ export PREVIOUS_ZONE_TAG=zone.js-0.9.1
 $ yarn gulp changelog:zonejs
 ```
 
