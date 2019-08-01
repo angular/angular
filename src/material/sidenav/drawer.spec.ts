@@ -6,6 +6,7 @@ import {
   TestBed,
   discardPeriodicTasks,
   flush,
+  inject,
 } from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -13,7 +14,7 @@ import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-b
 import {MatDrawer, MatSidenavModule, MatDrawerContainer} from './index';
 import {Direction} from '@angular/cdk/bidi';
 import {A11yModule} from '@angular/cdk/a11y';
-import {PlatformModule} from '@angular/cdk/platform';
+import {PlatformModule, Platform} from '@angular/cdk/platform';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
 import {CdkScrollable} from '@angular/cdk/scrolling';
@@ -41,19 +42,17 @@ describe('MatDrawer', () => {
   describe('methods', () => {
     it('should be able to open', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicTestApp);
-
       fixture.detectChanges();
 
       const testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      const drawer = fixture.debugElement.query(By.directive(MatDrawer));
-      const drawerBackdropElement = fixture.debugElement.query(By.css('.mat-drawer-backdrop'));
+      const container = fixture.debugElement.query(By.css('mat-drawer-container')).nativeElement;
 
-      drawerBackdropElement.nativeElement.style.transition = 'none';
       fixture.debugElement.query(By.css('.open')).nativeElement.click();
       fixture.detectChanges();
 
       expect(testComponent.openCount).toBe(0);
       expect(testComponent.openStartCount).toBe(0);
+      expect(container.classList).not.toContain('mat-drawer-opened');
 
       tick();
       expect(testComponent.openStartCount).toBe(1);
@@ -61,20 +60,16 @@ describe('MatDrawer', () => {
 
       expect(testComponent.openCount).toBe(1);
       expect(testComponent.openStartCount).toBe(1);
-      expect(getComputedStyle(drawer.nativeElement).visibility).toBe('visible');
-      expect(getComputedStyle(drawerBackdropElement.nativeElement).visibility).toBe('visible');
+      expect(container.classList).toContain('mat-drawer-opened');
     }));
 
     it('should be able to close', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicTestApp);
-
       fixture.detectChanges();
 
       const testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      const drawer = fixture.debugElement.query(By.directive(MatDrawer));
-      const drawerBackdropElement = fixture.debugElement.query(By.css('.mat-drawer-backdrop'));
+      const container = fixture.debugElement.query(By.css('mat-drawer-container')).nativeElement;
 
-      drawerBackdropElement.nativeElement.style.transition = 'none';
       fixture.debugElement.query(By.css('.open')).nativeElement.click();
       fixture.detectChanges();
       flush();
@@ -85,6 +80,7 @@ describe('MatDrawer', () => {
 
       expect(testComponent.closeCount).toBe(0);
       expect(testComponent.closeStartCount).toBe(0);
+      expect(container.classList).toContain('mat-drawer-opened');
 
       flush();
       expect(testComponent.closeStartCount).toBe(1);
@@ -92,8 +88,7 @@ describe('MatDrawer', () => {
 
       expect(testComponent.closeCount).toBe(1);
       expect(testComponent.closeStartCount).toBe(1);
-      expect(getComputedStyle(drawer.nativeElement).visibility).toBe('hidden');
-      expect(getComputedStyle(drawerBackdropElement.nativeElement).visibility).toBe('hidden');
+      expect(container.classList).not.toContain('mat-drawer-opened');
     }));
 
     it('should resolve the open method promise with the new state of the drawer', fakeAsync(() => {
@@ -642,7 +637,7 @@ describe('MatDrawerContainer', () => {
     expect(parseInt(contentElement.style.marginRight)).toBe(margin);
   }));
 
-  it('should not animate when the sidenav is open on load ', fakeAsync(() => {
+  it('should not animate when the sidenav is open on load', fakeAsync(() => {
     TestBed
       .resetTestingModule()
       .configureTestingModule({
@@ -662,7 +657,7 @@ describe('MatDrawerContainer', () => {
   }));
 
   it('should recalculate the margin if a drawer changes size while open in autosize mode',
-    fakeAsync(() => {
+    fakeAsync(inject([Platform], (platform: Platform) => {
       const fixture = TestBed.createComponent(AutosizeDrawer);
 
       fixture.detectChanges();
@@ -671,19 +666,31 @@ describe('MatDrawerContainer', () => {
       tick();
       fixture.detectChanges();
 
+      // IE and Edge are flaky in when they update the styles.
+      // For them we fall back to checking whether the proper method was called.
+      const isFlaky = platform.EDGE || platform.TRIDENT;
       const contentEl = fixture.debugElement.nativeElement.querySelector('.mat-drawer-content');
       const initialMargin = parseInt(contentEl.style.marginLeft);
 
-      expect(initialMargin).toBeGreaterThan(0);
+      if (isFlaky) {
+        spyOn(fixture.componentInstance.drawerContainer, 'updateContentMargins');
+      } else {
+        expect(initialMargin).toBeGreaterThan(0);
+      }
 
       fixture.componentInstance.fillerWidth = 200;
       fixture.detectChanges();
       tick(10);
       fixture.detectChanges();
 
-      expect(parseInt(contentEl.style.marginLeft)).toBeGreaterThan(initialMargin);
+      if (isFlaky) {
+        expect(fixture.componentInstance.drawerContainer.updateContentMargins).toHaveBeenCalled();
+      } else {
+        expect(parseInt(contentEl.style.marginLeft)).toBeGreaterThan(initialMargin);
+      }
+
       discardPeriodicTasks();
-    }));
+    })));
 
   it('should not set a style property if it would be zero', fakeAsync(() => {
       const fixture = TestBed.createComponent(AutosizeDrawer);
@@ -945,15 +952,16 @@ class DrawerContainerStateChangesTestApp {
 
 @Component({
   template: `
-    <mat-drawer-container autosize>
+    <mat-drawer-container autosize style="min-height: 200px;">
       <mat-drawer mode="push" [position]="drawer1Position">
         Text
-        <div [style.width.px]="fillerWidth"></div>
+        <div [style.width.px]="fillerWidth" style="height: 200px; background: red;"></div>
       </mat-drawer>
     </mat-drawer-container>`,
 })
 class AutosizeDrawer {
   @ViewChild(MatDrawer, {static: false}) drawer: MatDrawer;
+  @ViewChild(MatDrawerContainer, {static: false}) drawerContainer: MatDrawerContainer;
   fillerWidth = 0;
 }
 
