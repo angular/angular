@@ -7,14 +7,13 @@
  */
 import {Injector} from '../../di';
 import {ErrorHandler} from '../../error_handler';
-import {Type} from '../../interface/type';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/security';
 import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertNotEqual, assertNotSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
-import {assertFirstTemplatePass, assertLView, assertPreviousIsParent} from '../assert';
+import {assertFirstTemplatePass, assertLView} from '../assert';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
@@ -26,10 +25,10 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
+import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, namespaceHTMLInternal, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, namespaceHTMLInternal, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap} from '../styling_next/bindings';
 import {NO_CHANGE} from '../tokens';
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../util/attrs_utils';
@@ -1092,7 +1091,7 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TNode) {
       addComponentLogic(lView, tNode, def as ComponentDef<any>);
     }
     const directive = getNodeInjectable(tView.data, lView !, i, tNode as TElementNode);
-    postProcessDirective(lView, directive, def, i);
+    postProcessDirective(lView, tNode, directive, def, i);
   }
 }
 
@@ -1167,16 +1166,15 @@ export function generateExpandoInstructionBlock(
  * Process a directive on the current node after its creation.
  */
 function postProcessDirective<T>(
-    viewData: LView, directive: T, def: DirectiveDef<T>, directiveDefIdx: number): void {
-  const previousOrParentTNode = getPreviousOrParentTNode();
-  postProcessBaseDirective(viewData, previousOrParentTNode, directive);
-  ngDevMode && assertDefined(previousOrParentTNode, 'previousOrParentTNode');
-  if (previousOrParentTNode && previousOrParentTNode.attrs) {
-    setInputsFromAttrs(directiveDefIdx, directive, def, previousOrParentTNode);
+    lView: LView, hostTNode: TNode, directive: T, def: DirectiveDef<T>,
+    directiveDefIdx: number): void {
+  postProcessBaseDirective(lView, hostTNode, directive);
+  if (hostTNode.attrs !== null) {
+    setInputsFromAttrs(directiveDefIdx, directive, def, hostTNode);
   }
 
   if (isComponentDef(def)) {
-    const componentView = getComponentViewByIndex(previousOrParentTNode.index, viewData);
+    const componentView = getComponentViewByIndex(hostTNode.index, lView);
     componentView[CONTEXT] = directive;
   }
 }
@@ -1184,16 +1182,12 @@ function postProcessDirective<T>(
 /**
  * A lighter version of postProcessDirective() that is used for the root component.
  */
-function postProcessBaseDirective<T>(
-    lView: LView, previousOrParentTNode: TNode, directive: T): void {
-  const native = getNativeByTNode(previousOrParentTNode, lView);
-
+function postProcessBaseDirective<T>(lView: LView, hostTNode: TNode, directive: T): void {
   ngDevMode && assertEqual(
                    lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
                    'directives should be created before any bindings');
-  ngDevMode && assertPreviousIsParent(getIsParent());
-
   attachPatchData(directive, lView);
+  const native = getNativeByTNode(hostTNode, lView);
   if (native) {
     attachPatchData(native, lView);
   }
@@ -1208,6 +1202,8 @@ function findDirectiveMatches(
     tView: TView, viewData: LView,
     tNode: TElementNode | TContainerNode | TElementContainerNode): DirectiveDef<any>[]|null {
   ngDevMode && assertFirstTemplatePass(tView);
+  ngDevMode && assertNodeOfPossibleTypes(
+                   tNode, TNodeType.Element, TNodeType.ElementContainer, TNodeType.Container);
   const registry = tView.directiveRegistry;
   let matches: any[]|null = null;
   if (registry) {
