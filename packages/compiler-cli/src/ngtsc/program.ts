@@ -175,7 +175,7 @@ export class NgtscProgram implements api.Program {
   }
 
   getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken|
-                         undefined): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+                         undefined): ReadonlyArray<ts.Diagnostic> {
     return this.constructionDiagnostics;
   }
 
@@ -197,8 +197,8 @@ export class NgtscProgram implements api.Program {
   }
 
   getNgSemanticDiagnostics(
-      fileName?: string|undefined, cancellationToken?: ts.CancellationToken|
-                                   undefined): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+      fileName?: string|undefined,
+      cancellationToken?: ts.CancellationToken|undefined): ReadonlyArray<ts.Diagnostic> {
     const compilation = this.ensureAnalyzed();
     const diagnostics = [...compilation.diagnostics, ...this.getTemplateDiagnostics()];
     if (this.entryPoint !== null && this.exportReferenceGraph !== null) {
@@ -381,7 +381,7 @@ export class NgtscProgram implements api.Program {
     return ((opts && opts.mergeEmitResultsCallback) || mergeEmitResults)(emitResults);
   }
 
-  private getTemplateDiagnostics(): ReadonlyArray<api.Diagnostic|ts.Diagnostic> {
+  private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
     // Skip template type-checking if it's disabled.
     if (this.options.ivyTemplateTypeCheck === false &&
         this.options.fullTemplateTypeCheck !== true) {

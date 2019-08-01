@@ -186,8 +186,9 @@ export class NgtscTestEnvironment {
   /**
    * Run the compiler to completion, and return any `ts.Diagnostic` errors that may have occurred.
    */
-  driveDiagnostics(): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
-    return mainDiagnosticsForTest(['-p', this.basePath]);
+  driveDiagnostics(): ReadonlyArray<ts.Diagnostic> {
+    // ngtsc only produces ts.Diagnostic messages.
+    return mainDiagnosticsForTest(['-p', this.basePath]) as ts.Diagnostic[];
   }
 
   driveRoutes(entryPoint?: string): LazyRoute[] {
