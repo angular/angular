@@ -6,7 +6,7 @@
 <!--
 When you are ready to deploy your Angular application to a remote server, you have various options for deployment.
 -->
-이 문서는 Angular 애플리케이션을 리모트 서버에 배포하는 방법에 대해 자세하게 안내합시다.
+이 문서는 Angular 애플리케이션을 리모트 서버에 배포하는 방법에 대해 자세하게 안내합니다.
 
 {@a dev-deploy}
 {@a copy-files}

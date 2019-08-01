@@ -1,7 +1,7 @@
 <!--
 # Angular Versioning and Releases 
 -->
-# Angular의 버전 정책과 릴리즈
+# Angular의 버전 정책과 릴리즈 정책
 
 <!--
 We recognize that you need stability from the Angular framework. Stability ensures that reusable components and libraries, tutorials, tools, and learned practices don't become obsolete unexpectedly. Stability is essential for the ecosystem around Angular to thrive.
@@ -38,6 +38,7 @@ The practices described in this document apply to Angular 2.0 and later. If you 
 -->
 ## Angular의 버전 정책
 
+<!--
 Angular version numbers indicate the level of changes that are introduced by the release. This use of [semantic versioning](https://semver.org/ "Semantic Versioning Specification") helps you understand the potential impact of updating to a new version. 
 
 Angular version numbers have three parts: `major.minor.patch`. For example, version 7.2.11 indicates major version 7, minor version 2, and patch level 11. 
@@ -51,11 +52,27 @@ The version number is incremented based on the level of change included in the r
 
 
 * **Patch releases** are low risk, bug fix releases. No developer assistance is expected during update.
+-->
+Angular는 [시맨틱 버저닝(semantic versioning)](https://semver.org/ "Semantic Versioning Specification") 정책을 사용하기 때문에 Angular가 릴리즈된 버전을 보면 해당 릴리즈에 변경된 양이 어느 정도되는지 짐작할 수 있습니다.
+
+Angular의 버전은 `메이저.마이너.패치` 3단계로 구분할 수 있습니다. 예를 들어 7.2.11 라는 릴리즈 버전이 있다면, 이 릴리즈의 메이저 버전은 7이고 마이너 버전은 2이며, 패치 레벨은 11입니다.
+
+그리고 Angular의 버전은 Angular 코드가 얼마나 많이 변경되었는지에 따라 연관된 숫자가 증가하는 방식으로 매겨집니다.
+
+* 완전히 새로운 기능이 도입되면 **메이저 릴리즈** 버전이 올라갑니다. 새로운 메이저 버전을 도입하려면 개발자의 노력이 조금 필요할 수 있습니다. 업데이트 스크립트를 실행해야 할 수도 있고 코드를 리팩토링해야 할 수도 있으며, 테스트를 추가로 실행해봐야 할 수도 있습니다. 어쩌면 새로운 API가 추가되었을 수도 있습니다.
+
+* 비교적 작은 변화가 있으면 **마이너 릴리즈** 버전이 올라갑니다. 마이너 버전이 올라가는 경우에는 하위호환성을 보장되기 때문에 메이저 릴리즈만큼 개발자가 신경써야 할 것은 없지만, 새로운 API나 기능을 활용해서 애플리케이션 로직을 개선하는 것이 나은 경우도 있습니다. 마이너 버전이 올라갈 때 관련된 의존성 패키지 버전도 함께 올라갈 수 있지만, 이 의존성 패키지는 버전을 올리지 않더라도 애플리케이션 실행에는 문제가 없습니다.
+
+* 큰 변동 없이 버그가 수정되면 **패치 릴리즈** 버전이 올라갑니다. 이 경우에는 새로운 버전으로 업데이트하더라도 신경쓸 것은 거의 없습니다.
 
 
 {@a updating}
+<!--
 ### Supported update paths
+-->
+### 업데이트를 진행하는 방법
 
+<!--
 In alignment with the versioning scheme described above, we commit to support the following update paths:
 
 * If you are updating within the **same major version,** then you can skip any intermediate versions and update directly to the targeted version. For example, you can update directly from 7.0.0 to 7.2.11.
@@ -65,23 +82,43 @@ In alignment with the versioning scheme described above, we commit to support th
 
 
 See [Keeping Up-to-Date](guide/updating "Updating your projects") for more information about updating your Angular projects to the most recent version. 
+-->
+Angular의 버전은 위에서 설명한 정책으로 올라갑니다. 그래서 다음과 같이 업데이트 하는 경우를 생각해 볼 수 있습니다:
+
+* **메이저 버전이 같다면** 중간에 있는 릴리즈를 생략하고 원하는 버전으로 바로 업데이트해도 됩니다. 7.0.0에서 7.2.11로 버전을 올리는 것은 아무 문제가 없습니다.
+
+* **메이저 버전이 변경되는 경우에는** 중간에 있는 메이저 버전을 **건너뛰지 않는 것을 권장합니다.** 이 경우에는 메이저 버전을 하나씩 올리면서 애플리케이션을 충분히 테스트해야 합니다. 예를 들어 6.x.x 버전에서 8.x.x 버전으로 올리고 싶다면, 8.x.x 버전으로 바로 올리지 말고 7.x.x 버전을 먼저 올려보는 것을 권장합니다. 7.x.x 버전으로 올린 후에 문제가 없다면 그 다음에 8.x.x 버전으로 올리는 것이 좋습니다.
+
+Angular 프로젝트를 최신버전으로 유지하는 것에 대해 자세하게 알아보려면 [최신 버전 적용하기](guide/updating "Updating your projects") 문서를 참고하세요.
 
 
 {@a previews}
+<!--
 ### Preview releases
+-->
+### 시험판 릴리즈
 
+<!--
 We let you preview what's coming by providing Beta releases and Release Candidates (`rc`) for each major and minor release: 
+-->
+메이저 버전과 마이너 버전이 릴리즈되기 전에는 베타 버전이나 배포 준비 버전(Release Candidates, `rc`)이 제공됩니다.
 
 <!-- 
 * **Next:** The release that is under active development. The next release is indicated by a release tag appended with the  `next` identifier, such as  `8.1.0-next.0`. For the next version of the documentation, see [next.angular.io](https://next.angular.io). 
 -->
 
+<!--
 * **Beta:** A release that is under active development and testing. A Beta release is indicated by a release tag appended with the  `beta` identifier, such as  `8.0.0-beta.0`. 
 
 * **Release candidate:** A release that is feature complete and in final testing. A release candidate is indicated by a release tag appended with the `rc` identifier, such as version `8.1.0-rc`.
 
 The next version of the documentation is available at [next.angular.io](https://next.angular.io). This includes any documentation for Beta or Release Candidate features and APIs. 
+-->
+* **베타 버전:** 아직 개발중이거나 테스트중인 릴리즈 버전을 의미합니다. 베타 릴리즈는 목표로 하는 버전 뒤에 `beta`라는 문자열이 더 붙어서 `8.0.0-beta.0`과 같이 표기합니다.
 
+* **배포 준비 버전:** 해당 버전에 추가하려는 기능이 모두 개발되어 최종 테스트 단계에 있는 릴리즈 버전을 의미합니다. 배포 준비 버전은 목표로 하는 버전 뒤에 `rc`라는 문자열이 붙어서 `8.1.0-rc`와 같이 표기합니다.
+
+앞으로 릴리즈될 다음 버전에 대한 내용은 [next.angular.io](https://next.angular.io)에서 확인할 수 있습니다. 이 문서에는 베타 버전이나 배포 준비 버전에 대한 내용도 포함되어 있습니다.
 
 {@a frequency}
 <!--
