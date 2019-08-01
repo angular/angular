@@ -15,9 +15,8 @@ import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy,
 import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
+import {TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
 import {TypeCheckContext} from '../src/context';
-import {Diagnostic} from '../src/diagnostics';
 import {Environment} from '../src/environment';
 import {generateTypeCheckBlock} from '../src/type_check_block';
 
@@ -151,7 +150,7 @@ export function tcb(
   const binder = new R3TargetBinder(matcher);
   const boundTarget = binder.bind({template: nodes});
 
-  const meta: TypeCheckBlockMetadata = {boundTarget, pipes};
+  const meta: TypeCheckBlockMetadata = {boundTarget, pipes, id: 'tcb'};
 
   config = config || {
     applyTemplateContextGuards: true,
@@ -175,7 +174,7 @@ export function tcb(
 
 export function typecheck(
     template: string, source: string, declarations: TestDeclaration[] = [],
-    additionalSources: {name: AbsoluteFsPath; contents: string}[] = []): Diagnostic[] {
+    additionalSources: {name: AbsoluteFsPath; contents: string}[] = []): ts.Diagnostic[] {
   const typeCheckFilePath = absoluteFrom('/_typecheck_.ts');
   const files = [
     typescriptLibDts(),
@@ -219,7 +218,16 @@ export function typecheck(
   const boundTarget = binder.bind({template: nodes});
   const clazz = new Reference(getClass(sf, 'TestComponent'));
 
-  ctx.addTemplate(clazz, boundTarget, pipes, templateFile);
+  const sourceMapping: TemplateSourceMapping = {
+    type: 'external',
+    template,
+    templateUrl,
+    componentClass: clazz.node,
+    // Use the class's name for error mappings.
+    node: clazz.node.name,
+  };
+
+  ctx.addTemplate(clazz, boundTarget, pipes, sourceMapping, templateFile);
   return ctx.calculateTemplateDiagnostics(program, host, options).diagnostics;
 }
 

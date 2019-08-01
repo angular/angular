@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Diagnostic} from '@angular/compiler-cli';
 import * as ts from 'typescript';
 
+import {absoluteFrom as _} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
@@ -171,8 +171,10 @@ export declare class CommonModule {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toContain('does_not_exist');
-      expect(formatSpan(diags[0])).toEqual('/test.ts: 6:51, 6:70');
+      expect(diags[0].messageText)
+          .toEqual(`Property 'does_not_exist' does not exist on type '{ name: string; }'.`);
+      expect(diags[0].start).toBe(199);
+      expect(diags[0].length).toBe(19);
     });
 
     it('should accept an NgFor iteration over an any-typed value', () => {
@@ -272,8 +274,9 @@ export declare class CommonModule {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toContain('does_not_exist');
-      expect(formatSpan(diags[0])).toEqual('/test.ts: 6:51, 6:70');
+      expect(diags[0].messageText).toEqual(`Property 'does_not_exist' does not exist on type 'T'.`);
+      expect(diags[0].start).toBe(206);
+      expect(diags[0].length).toBe(19);
     });
 
     it('should property type-check a microsyntax variable with the same name as the expression',
@@ -333,52 +336,88 @@ export declare class CommonModule {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-
-      // Error from the binding to [fromBase].
       expect(diags[0].messageText)
           .toBe(`Type 'number' is not assignable to type 'string | undefined'.`);
-      expect(formatSpan(diags[0])).toEqual('/test.ts: 19:28, 19:42');
-
-      // Error from the binding to [fromChild].
+      expect(diags[0].start).toEqual(386);
+      expect(diags[0].length).toEqual(14);
       expect(diags[1].messageText)
           .toBe(`Type 'number' is not assignable to type 'boolean | undefined'.`);
-      expect(formatSpan(diags[1])).toEqual('/test.ts: 19:43, 19:58');
+      expect(diags[1].start).toEqual(401);
+      expect(diags[1].length).toEqual(15);
     });
 
-    it('should report diagnostics for external template files', () => {
-      env.write('test.ts', `
-    import {Component, NgModule} from '@angular/core';
+    describe('error locations', () => {
+      it('should be correct for direct templates', () => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+      
+          @Component({
+            selector: 'test',
+            template: \`<p>
+              {{user.does_not_exist}}
+            </p>\`,
+          })
+          export class TestCmp {
+            user: {name: string}[];
+          }`);
 
-    @Component({
-      selector: 'test',
-      templateUrl: './template.html',
-    })
-    export class TestCmp {
-      user: {name: string}[];
-    }
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].file !.fileName).toBe(_('/test.ts'));
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
+      });
 
-    @NgModule({
-      declarations: [TestCmp],
-    })
-    export class Module {}
-    `);
-      env.write('template.html', `<div>
-      <span>{{user.does_not_exist}}</span>
-    </div>`);
+      it('should be correct for indirect templates', () => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+      
+          const TEMPLATE = \`<p>
+            {{user.does_not_exist}}
+          </p>\`;
 
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toContain('does_not_exist');
-      expect(formatSpan(diags[0])).toEqual('/template.html: 1:14, 1:33');
+          @Component({
+            selector: 'test',
+            template: TEMPLATE,
+          })
+          export class TestCmp {
+            user: {name: string}[];
+          }`);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].file !.fileName).toBe(_('/test.ts') + ' (TestCmp template)');
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation ![0])).toBe('TEMPLATE');
+      });
+
+      it('should be correct for external templates', () => {
+        env.write('template.html', `<p>
+          {{user.does_not_exist}}
+        </p>`);
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+      
+
+          @Component({
+            selector: 'test',
+            templateUrl: './template.html',
+          })
+          export class TestCmp {
+            user: {name: string}[];
+          }`);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].file !.fileName).toBe(_('/template.html'));
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation ![0]))
+            .toBe(`'./template.html'`);
+      });
     });
   });
 });
 
-function formatSpan(diagnostic: ts.Diagnostic | Diagnostic): string {
-  if (diagnostic.source !== 'angular') {
-    return '<unexpected non-angular span>';
-  }
-  const span = (diagnostic as Diagnostic).span !;
-  const fileName = span.start.file.url.replace(/^C:\//, '/');
-  return `${fileName}: ${span.start.line}:${span.start.col}, ${span.end.line}:${span.end.col}`;
+function getSourceCodeForDiagnostic(diag: ts.Diagnostic): string {
+  const text = diag.file !.text;
+  return text.substr(diag.start !, diag.length !);
 }
