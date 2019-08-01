@@ -144,8 +144,6 @@ export function renderComponent<T>(
     component = createRootComponent(
         componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
-    addToViewTree(rootView, componentView);
-
     refreshDescendantViews(rootView);  // creation mode pass
     rootView[FLAGS] &= ~LViewFlags.CreationMode;
     resetPreOrderHookFlags(rootView);
@@ -187,6 +185,8 @@ export function createRootComponentView(
     markAsComponentHost(tView, tNode);
     initNodeFlags(tNode, rootView.length, 1);
   }
+
+  addToViewTree(rootView, componentView);
 
   // Store component view at node index, with node as the HOST
   return rootView[HEADER_OFFSET] = componentView;
