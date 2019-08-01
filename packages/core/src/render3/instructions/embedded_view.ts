@@ -11,7 +11,7 @@ import {assertLContainerOrUndefined} from '../assert';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {RenderFlags} from '../interfaces/definition';
 import {TContainerNode, TNodeType} from '../interfaces/node';
-import {FLAGS, LView, LViewFlags, PARENT, QUERIES, TVIEW, TView, T_HOST} from '../interfaces/view';
+import {FLAGS, LView, LViewFlags, PARENT, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
 import {enterView, getIsParent, getLView, getPreviousOrParentTNode, isCreationMode, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
