@@ -149,7 +149,7 @@ export const makeParamDecorator__POST_R3__ = function makeParamDecorator(
           this: unknown | typeof ParamDecoratorFactory, token: any): any {
         if (this instanceof ParamDecoratorFactory) {
           if (enableTokenSupport) {
-            this.token = token;
+            (this as any).token = token;
           }
           return this;
         }
