@@ -1,5 +1,5 @@
 <a name="0.10.1"></a>
-# [0.10.1](https://github.com/angular/angular/compare/zone.js-0.10.0...zone.js-0.10.1) (2019-07-30)
+## [0.10.1](https://github.com/angular/angular/compare/zone.js-0.10.0...zone.js-0.10.1) (2019-08-02)
 
 
 ### Bug Fixes
