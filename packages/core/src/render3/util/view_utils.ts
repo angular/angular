@@ -135,6 +135,7 @@ export function load<T>(view: LView | TData, index: number): T {
 
 export function getComponentViewByIndex(nodeIndex: number, hostView: LView): LView {
   // Could be an LView or an LContainer. If LContainer, unwrap to find LView.
+  ngDevMode && assertDataInRange(hostView, nodeIndex);
   const slotValue = hostView[nodeIndex];
   const lView = isLView(slotValue) ? slotValue : slotValue[HOST];
   return lView;
