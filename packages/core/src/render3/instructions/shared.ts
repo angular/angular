@@ -197,26 +197,19 @@ function refreshChildComponents(hostLView: LView, components: number[]): void {
 /**
  * Creates a native element from a tag name, using a renderer.
  * @param name the tag name
- * @param overriddenRenderer Optional A renderer to override the default one
+ * @param renderer A renderer to use
  * @returns the element created
  */
-export function elementCreate(name: string, overriddenRenderer?: Renderer3): RElement {
-  let native: RElement;
-  const rendererToUse = overriddenRenderer || getLView()[RENDERER];
-
-  const namespace = getNamespace();
-
-  if (isProceduralRenderer(rendererToUse)) {
-    native = rendererToUse.createElement(name, namespace);
+export function elementCreate(
+    name: string, renderer: Renderer3, namespace: string | null): RElement {
+  if (isProceduralRenderer(renderer)) {
+    return renderer.createElement(name, namespace);
   } else {
-    if (namespace === null) {
-      native = rendererToUse.createElement(name);
-    } else {
-      native = rendererToUse.createElementNS(namespace, name);
-    }
+    return namespace === null ? renderer.createElement(name) :
+                                renderer.createElementNS(namespace, name);
   }
-  return native;
 }
+
 export function createLView<T>(
     parentLView: LView | null, tView: TView, context: T | null, flags: LViewFlags,
     host: RElement | null, tHostNode: TViewNode | TElementNode | null,
