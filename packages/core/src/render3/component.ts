@@ -17,17 +17,17 @@ import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addToViewTree, createLView, createTView, getOrCreateTNode, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshDescendantViews} from './instructions/shared';
+import {CLEAN_PROMISE, addToViewTree, createLView, createTView, getOrCreateTNode, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, FLAGS, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setActiveHostElement} from './state';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, stringifyForError} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
-import {readPatchedLView, resetPreOrderHookFlags} from './util/view_utils';
+import {readPatchedLView} from './util/view_utils';
 
 
 
@@ -128,15 +128,14 @@ export function renderComponent<T>(
   const rootContext = createRootContext(opts.scheduler, opts.playerHandler);
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
+  const rootTView = createTView(-1, null, 1, 0, null, null, null, null);
   const rootView: LView = createLView(
-      null, createTView(-1, null, 1, 0, null, null, null, null), rootContext, rootFlags, null, null,
-      rendererFactory, renderer, undefined, opts.injector || null);
+      null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, undefined,
+      opts.injector || null);
 
   const oldView = enterView(rootView, null);
   let component: T;
 
-  // Will become true if the `try` block executes with no errors.
-  let safeToRunHooks = false;
   try {
     if (rendererFactory.begin) rendererFactory.begin();
     const componentView = createRootComponentView(
@@ -144,13 +143,13 @@ export function renderComponent<T>(
     component = createRootComponent(
         componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
-    refreshDescendantViews(rootView);  // creation mode pass
-    rootView[FLAGS] &= ~LViewFlags.CreationMode;
-    resetPreOrderHookFlags(rootView);
-    refreshDescendantViews(rootView);  // update mode pass
-    safeToRunHooks = true;
+    // create mode pass
+    renderView(rootView, rootTView, null);
+    // update mode pass
+    refreshView(rootView, rootTView, null, null);
+
   } finally {
-    leaveView(oldView, safeToRunHooks);
+    leaveView(oldView);
     if (rendererFactory.end) rendererFactory.end();
   }
 

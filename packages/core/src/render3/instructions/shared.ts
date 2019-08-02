@@ -26,7 +26,7 @@ import {RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRend
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
-import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
+import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, leaveView, namespaceHTMLInternal, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap} from '../styling_next/bindings';
@@ -51,69 +51,6 @@ export const enum BindingDirection {
   Input,
   Output,
 }
-
-/**
- * Refreshes the view, executing the following steps in that order:
- * triggers init hooks, refreshes dynamic embedded views, triggers content hooks, sets host
- * bindings, refreshes child components.
- * Note: view hooks are triggered later when leaving the view.
- */
-export function refreshDescendantViews(lView: LView) {
-  const tView = lView[TVIEW];
-  const creationMode = isCreationMode(lView);
-
-  if (!creationMode) {
-    // Resetting the bindingIndex of the current LView as the next steps may trigger change
-    // detection.
-    lView[BINDING_INDEX] = tView.bindingStartIndex;
-
-    const checkNoChangesMode = getCheckNoChangesMode();
-
-    executePreOrderHooks(lView, tView, checkNoChangesMode, undefined);
-
-    refreshDynamicEmbeddedViews(lView);
-
-    // Content query results must be refreshed before content hooks are called.
-    if (tView.contentQueries !== null) {
-      refreshContentQueries(tView, lView);
-    }
-
-    resetPreOrderHookFlags(lView);
-    executeHooks(
-        lView, tView.contentHooks, tView.contentCheckHooks, checkNoChangesMode,
-        InitPhaseState.AfterContentInitHooksToBeRun, undefined);
-
-    setHostBindings(tView, lView);
-  } else {
-    // This needs to be set before children are processed to support recursive components.
-    // This must be set to false immediately after the first creation run because in an
-    // ngFor loop, all the views will be created together before update mode runs and turns
-    // off firstTemplatePass. If we don't set it here, instances will perform directive
-    // matching, etc again and again.
-    tView.firstTemplatePass = false;
-
-    // We resolve content queries specifically marked as `static` in creation mode. Dynamic
-    // content queries are resolved during change detection (i.e. update mode), after embedded
-    // views are refreshed (see block above).
-    if (tView.staticContentQueries) {
-      refreshContentQueries(tView, lView);
-    }
-  }
-
-
-  // We must materialize query results before child components are processed
-  // in case a child component has projected a container. The LContainer needs
-  // to exist so the embedded views are properly attached by the container.
-  if (!creationMode || tView.staticViewQueries) {
-    executeViewQueryFn(RenderFlags.Update, tView, lView[CONTEXT]);
-  }
-
-  const components = tView.components;
-  if (components !== null) {
-    refreshChildComponents(lView, components);
-  }
-}
-
 
 /** Sets the host bindings for the current view. */
 export function setHostBindings(tView: TView, viewData: LView): void {
@@ -186,13 +123,19 @@ function refreshContentQueries(tView: TView, lView: LView): void {
   }
 }
 
-/** Refreshes child components in the current view. */
+/** Refreshes child components in the current view (update mode). */
 function refreshChildComponents(hostLView: LView, components: number[]): void {
   for (let i = 0; i < components.length; i++) {
-    componentRefresh(hostLView, components[i]);
+    refreshComponent(hostLView, components[i]);
   }
 }
 
+/** Renders child components in the current view (creation mode). */
+function renderChildComponents(hostLView: LView, components: number[]): void {
+  for (let i = 0; i < components.length; i++) {
+    renderComponent(hostLView, components[i]);
+  }
+}
 
 /**
  * Creates a native element from a tag name, using a renderer.
@@ -380,70 +323,145 @@ export function createEmbeddedViewAndNode<T>(
 }
 
 /**
- * Used for rendering views in a LContainer (embedded views or root component views for dynamically
- * created components).
- *
- * Dynamically created views must store/retrieve their TViews differently from component views
- * because their template functions are nested in the template functions of their hosts, creating
- * closures. If their host template happens to be an embedded template in a loop (e.g. ngFor
- * inside
- * an ngFor), the nesting would mean we'd have multiple instances of the template function, so we
- * can't store TViews in the template function itself (as we do for comps). Instead, we store the
- * TView for dynamically created views on their host TNode, which only has one instance.
+ * Processes a view in the creation mode. This includes a number of steps in a specific order:
+ * - creating view query functions (if any);
+ * - executing a template function in the creation mode;
+ * - updating static queries (if any);
+ * - creating child components defined in a given view.
  */
-export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, context: T) {
-  const _isParent = getIsParent();
-  const _previousOrParentTNode = getPreviousOrParentTNode();
-  let oldView: LView;
-  // Will become true if the `try` block executes with no errors.
-  let safeToRunHooks = false;
+export function renderView<T>(lView: LView, tView: TView, context: T): void {
+  ngDevMode && assertEqual(isCreationMode(lView), true, 'Should be run in creation mode');
+  const oldView = enterView(lView, lView[T_HOST]);
   try {
-    oldView = enterView(viewToRender, viewToRender[T_HOST]);
-    resetPreOrderHookFlags(viewToRender);
+    const viewQuery = tView.viewQuery;
+    if (viewQuery !== null) {
+      executeViewQueryFn(RenderFlags.Create, viewQuery, context);
+    }
+
+    // Execute a template associated with this view, if it exists. A template function might not be
+    // defined for the root component views.
     const templateFn = tView.template;
     if (templateFn !== null) {
-      executeTemplate(viewToRender, templateFn, getRenderFlags(viewToRender), context);
+      executeTemplate(lView, templateFn, RenderFlags.Create, context);
     }
-    refreshDescendantViews(viewToRender);
-    safeToRunHooks = true;
+
+    // This needs to be set before children are processed to support recursive components.
+    // This must be set to false immediately after the first creation run because in an
+    // ngFor loop, all the views will be created together before update mode runs and turns
+    // off firstTemplatePass. If we don't set it here, instances will perform directive
+    // matching, etc again and again.
+    if (tView.firstTemplatePass) {
+      tView.firstTemplatePass = false;
+    }
+
+    // We resolve content queries specifically marked as `static` in creation mode. Dynamic
+    // content queries are resolved during change detection (i.e. update mode), after embedded
+    // views are refreshed (see block above).
+    if (tView.staticContentQueries) {
+      refreshContentQueries(tView, lView);
+    }
+
+    // We must materialize query results before child components are processed
+    // in case a child component has projected a container. The LContainer needs
+    // to exist so the embedded views are properly attached by the container.
+    if (tView.staticViewQueries) {
+      executeViewQueryFn(RenderFlags.Update, tView.viewQuery !, context);
+    }
+
+    // Render child component views.
+    const components = tView.components;
+    if (components !== null) {
+      renderChildComponents(lView, components);
+    }
+
   } finally {
-    leaveView(oldView !, safeToRunHooks);
-    setPreviousOrParentTNode(_previousOrParentTNode, _isParent);
+    lView[FLAGS] &= ~LViewFlags.CreationMode;
+    leaveView(oldView);
+  }
+}
+
+/**
+ * Processes a view in update mode. This includes a number of steps in a specific order:
+ * - executing a template function in update mode;
+ * - executing hooks;
+ * - refreshing queries;
+ * - setting host bindings;
+ * - refreshing child (embedded and component) views.
+ */
+export function refreshView<T>(
+    lView: LView, tView: TView, templateFn: ComponentTemplate<{}>| null, context: T) {
+  ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
+  let oldView = enterView(lView, lView[T_HOST]);
+  try {
+    resetPreOrderHookFlags(lView);
+
+    if (templateFn !== null) {
+      executeTemplate(lView, templateFn, RenderFlags.Update, context);
+    }
+
+    // Resetting the bindingIndex of the current LView as the next steps may trigger change
+    // detection.
+    lView[BINDING_INDEX] = tView.bindingStartIndex;
+
+    const checkNoChangesMode = getCheckNoChangesMode();
+
+    executePreOrderHooks(lView, tView, checkNoChangesMode, undefined);
+
+    refreshDynamicEmbeddedViews(lView);
+
+    // Content query results must be refreshed before content hooks are called.
+    if (tView.contentQueries !== null) {
+      refreshContentQueries(tView, lView);
+    }
+
+    resetPreOrderHookFlags(lView);
+    executeHooks(
+        lView, tView.contentHooks, tView.contentCheckHooks, checkNoChangesMode,
+        InitPhaseState.AfterContentInitHooksToBeRun, undefined);
+
+    setHostBindings(tView, lView);
+
+    const viewQuery = tView.viewQuery;
+    if (viewQuery !== null) {
+      executeViewQueryFn(RenderFlags.Update, viewQuery, context);
+    }
+
+    // Refresh child component views.
+    const components = tView.components;
+    if (components !== null) {
+      refreshChildComponents(lView, components);
+    }
+
+    resetPreOrderHookFlags(lView);
+    executeHooks(
+        lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode,
+        InitPhaseState.AfterViewInitHooksToBeRun, undefined);
+
+  } finally {
+    lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
+    lView[BINDING_INDEX] = tView.bindingStartIndex;
+    leaveView(oldView);
   }
 }
 
 export function renderComponentOrTemplate<T>(
-    hostView: LView, context: T, templateFn?: ComponentTemplate<T>) {
+    hostView: LView, templateFn: ComponentTemplate<{}>| null, context: T) {
   const rendererFactory = hostView[RENDERER_FACTORY];
-  const oldView = enterView(hostView, hostView[T_HOST]);
   const normalExecutionPath = !getCheckNoChangesMode();
   const creationModeIsActive = isCreationMode(hostView);
-
-  // Will become true if the `try` block executes with no errors.
-  let safeToRunHooks = false;
   try {
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.begin) {
       rendererFactory.begin();
     }
-
+    const tView = hostView[TVIEW];
     if (creationModeIsActive) {
-      // creation mode pass
-      templateFn && executeTemplate(hostView, templateFn, RenderFlags.Create, context);
-
-      refreshDescendantViews(hostView);
-      hostView[FLAGS] &= ~LViewFlags.CreationMode;
+      renderView(hostView, tView, context);
     }
-
-    // update mode pass
-    resetPreOrderHookFlags(hostView);
-    templateFn && executeTemplate(hostView, templateFn, RenderFlags.Update, context);
-    refreshDescendantViews(hostView);
-    safeToRunHooks = true;
+    refreshView(hostView, tView, templateFn, context);
   } finally {
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.end) {
       rendererFactory.end();
     }
-    leaveView(oldView, safeToRunHooks);
   }
 }
 
@@ -462,15 +480,6 @@ function executeTemplate<T>(
   } finally {
     setSelectedIndex(prevSelectedIndex);
   }
-}
-
-/**
- * This function returns the default configuration of rendering flags depending on when the
- * template is in creation mode or update mode. Update block and create block are
- * always run separately.
- */
-function getRenderFlags(view: LView): RenderFlags {
-  return isCreationMode(view) ? RenderFlags.Create : RenderFlags.Update;
 }
 
 //////////////////////////
@@ -1469,8 +1478,7 @@ export function createLContainer(
 
 /**
  * Goes over dynamic embedded views (ones created through ViewContainerRef APIs) and refreshes
- * them
- * by executing an associated template function.
+ * them by executing an associated template function.
  */
 function refreshDynamicEmbeddedViews(lView: LView) {
   let viewOrContainer = lView[CHILD_HEAD];
@@ -1480,10 +1488,9 @@ function refreshDynamicEmbeddedViews(lView: LView) {
     if (isLContainer(viewOrContainer) && viewOrContainer[ACTIVE_INDEX] === -1) {
       for (let i = CONTAINER_HEADER_OFFSET; i < viewOrContainer.length; i++) {
         const embeddedLView = viewOrContainer[i];
-        // The directives and pipes are not needed here as an existing view is only being
-        // refreshed.
-        ngDevMode && assertDefined(embeddedLView[TVIEW], 'TView must be allocated');
-        renderEmbeddedTemplate(embeddedLView, embeddedLView[TVIEW], embeddedLView[CONTEXT] !);
+        const embeddedTView = embeddedLView[TVIEW];
+        ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
+        refreshView(embeddedLView, embeddedTView, embeddedTView.template, embeddedLView[CONTEXT] !);
       }
     }
     viewOrContainer = viewOrContainer[NEXT];
@@ -1497,21 +1504,24 @@ function refreshDynamicEmbeddedViews(lView: LView) {
 /**
  * Refreshes components by entering the component view and processing its bindings, queries, etc.
  *
- * @param adjustedElementIndex  Element index in LView[] (adjusted for HEADER_OFFSET)
+ * @param componentHostIdx  Element index in LView[] (adjusted for HEADER_OFFSET)
  */
-export function componentRefresh(hostLView: LView, adjustedElementIndex: number): void {
-  ngDevMode && assertDataInRange(hostLView, adjustedElementIndex);
-  const componentView = getComponentViewByIndex(adjustedElementIndex, hostLView);
-  ngDevMode &&
-      assertNodeType(hostLView[TVIEW].data[adjustedElementIndex] as TNode, TNodeType.Element);
-
-  // Only components in creation mode, attached CheckAlways
-  // components or attached, dirty OnPush components should be checked
-  if ((viewAttachedToChangeDetector(componentView) || isCreationMode(hostLView)) &&
+function refreshComponent(hostLView: LView, componentHostIdx: number): void {
+  ngDevMode && assertEqual(isCreationMode(hostLView), false, 'Should be run in update mode');
+  const componentView = getComponentViewByIndex(componentHostIdx, hostLView);
+  // Only attached components that are CheckAlways or OnPush and dirty should be refreshed
+  if (viewAttachedToChangeDetector(componentView) &&
       componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
-    syncViewWithBlueprint(componentView);
-    checkView(componentView, componentView[CONTEXT]);
+    const tView = componentView[TVIEW];
+    refreshView(componentView, tView, tView.template, componentView[CONTEXT]);
   }
+}
+
+function renderComponent(hostLView: LView, componentHostIdx: number) {
+  ngDevMode && assertEqual(isCreationMode(hostLView), true, 'Should be run in creation mode');
+  const componentView = getComponentViewByIndex(componentHostIdx, hostLView);
+  syncViewWithBlueprint(componentView);
+  renderView(componentView, componentView[TVIEW], componentView[CONTEXT]);
 }
 
 /**
@@ -1647,7 +1657,9 @@ export function scheduleTick(rootContext: RootContext, flags: RootContextFlags) 
 export function tickRootContext(rootContext: RootContext) {
   for (let i = 0; i < rootContext.components.length; i++) {
     const rootComponent = rootContext.components[i];
-    renderComponentOrTemplate(readPatchedLView(rootComponent) !, rootComponent);
+    const lView = readPatchedLView(rootComponent) !;
+    const tView = lView[TVIEW];
+    renderComponentOrTemplate(lView, tView.template, rootComponent);
   }
 }
 
@@ -1655,12 +1667,9 @@ export function detectChangesInternal<T>(view: LView, context: T) {
   const rendererFactory = view[RENDERER_FACTORY];
 
   if (rendererFactory.begin) rendererFactory.begin();
-
   try {
-    if (isCreationMode(view)) {
-      checkView(view, context);  // creation mode pass
-    }
-    checkView(view, context);  // update mode pass
+    const tView = view[TVIEW];
+    refreshView(view, tView, tView.template, context);
   } catch (error) {
     handleError(view, error);
     throw error;
@@ -1717,33 +1726,11 @@ export function checkNoChangesInRootView(lView: LView): void {
   }
 }
 
-/** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck.
- */
-export function checkView<T>(hostView: LView, component: T) {
-  const hostTView = hostView[TVIEW];
-  const oldView = enterView(hostView, hostView[T_HOST]);
-  const templateFn = hostTView.template !;
-  const creationMode = isCreationMode(hostView);
-
-  // Will become true if the `try` block executes with no errors.
-  let safeToRunHooks = false;
-  try {
-    resetPreOrderHookFlags(hostView);
-    creationMode && executeViewQueryFn(RenderFlags.Create, hostTView, component);
-    executeTemplate(hostView, templateFn, getRenderFlags(hostView), component);
-    refreshDescendantViews(hostView);
-    safeToRunHooks = true;
-  } finally {
-    leaveView(oldView, safeToRunHooks);
-  }
-}
-
-function executeViewQueryFn<T>(flags: RenderFlags, tView: TView, component: T): void {
-  const viewQuery = tView.viewQuery;
-  if (viewQuery !== null) {
-    setCurrentQueryIndex(0);
-    viewQuery(flags, component);
-  }
+function executeViewQueryFn<T>(
+    flags: RenderFlags, viewQueryFn: ViewQueriesFunction<{}>, component: T): void {
+  ngDevMode && assertDefined(viewQueryFn, 'View queries function to execute must be defined.');
+  setCurrentQueryIndex(0);
+  viewQueryFn(flags, component);
 }
 
 

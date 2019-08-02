@@ -11,12 +11,14 @@ import {assertLContainerOrUndefined} from '../assert';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {RenderFlags} from '../interfaces/definition';
 import {TContainerNode, TNodeType} from '../interfaces/node';
-import {FLAGS, LView, LViewFlags, PARENT, TVIEW, TView, T_HOST} from '../interfaces/view';
+import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
 import {enterView, getIsParent, getLView, getPreviousOrParentTNode, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
-import {isCreationMode, resetPreOrderHookFlags} from '../util/view_utils';
-import {assignTViewNodeToLView, createLView, createTView, refreshDescendantViews} from './shared';
+import {isCreationMode} from '../util/view_utils';
+
+import {assignTViewNodeToLView, createLView, createTView, refreshView, renderView} from './shared';
+
 
 /**
  * Marks the start of an embedded view.
@@ -126,19 +128,17 @@ function scanForView(lContainer: LContainer, startIdx: number, viewBlockId: numb
  */
 export function ɵɵembeddedViewEnd(): void {
   const lView = getLView();
+  const tView = lView[TVIEW];
   const viewHost = lView[T_HOST];
+  const context = lView[CONTEXT];
 
   if (isCreationMode(lView)) {
-    refreshDescendantViews(lView);  // creation mode pass
-    lView[FLAGS] &= ~LViewFlags.CreationMode;
+    renderView(lView, tView, context);  // creation mode pass
   }
-  resetPreOrderHookFlags(lView);
-  refreshDescendantViews(lView);  // update mode pass
+  refreshView(lView, tView, tView.template, context);  // update mode pass
+
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);
-  // It's always safe to run hooks here, as `leaveView` is not called during the 'finally' block
-  // of a try-catch-finally statement, so it can never be reached while unwinding the stack due to
-  // an error being thrown.
-  leaveView(lContainer[PARENT] !, /* safeToRunHooks */ true);
+  leaveView(lContainer[PARENT] !);
   setPreviousOrParentTNode(viewHost !, false);
 }

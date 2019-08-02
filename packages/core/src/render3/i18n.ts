@@ -705,7 +705,7 @@ function createDynamicNodeAtIndex(
 
   // We are creating a dynamic node, the previous tNode might not be pointing at this node.
   // We will link ourselves into the tree later with `appendI18nNode`.
-  if (previousOrParentTNode.next === tNode) {
+  if (previousOrParentTNode && previousOrParentTNode.next === tNode) {
     previousOrParentTNode.next = null;
   }
 

@@ -61,6 +61,22 @@ describe('ViewContainerRef', () => {
          expect(fixture.componentInstance.foo).toBeAnInstanceOf(TemplateRef);
        });
 
+    it('should construct proper TNode / DOM tree when embedded views are created in a directive constructor',
+       () => {
+         @Component({
+           selector: 'view-insertion-test-cmpt',
+           template:
+               `<div>before<ng-template constructorDir><span>|middle|</span></ng-template>after</div>`
+         })
+         class ViewInsertionTestCmpt {
+         }
+
+         TestBed.configureTestingModule({declarations: [ViewInsertionTestCmpt, ConstructorDir]});
+
+         const fixture = TestBed.createComponent(ViewInsertionTestCmpt);
+         expect(fixture.nativeElement).toHaveText('before|middle|after');
+       });
+
     it('should use comment node of host ng-container as insertion marker', () => {
       @Component({template: 'hello'})
       class HelloComp {
