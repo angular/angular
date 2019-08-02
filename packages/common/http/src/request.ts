@@ -241,6 +241,11 @@ export class HttpRequest<T> {
     if (this.body === null) {
       return null;
     }
+    // If Content-Type was explicitly set to JSON, also stringify a simple string.
+    // A simple string value is also valid JSON according to RFC 8259 and ECMA-404.
+    if (typeof this.body === 'string' && this.headers.get('Content-Type') === 'application/json') {
+      return JSON.stringify(this.body);
+    }
     // Check whether the body is already in a serialized form. If so,
     // it can just be returned directly.
     if (isArrayBuffer(this.body) || isBlob(this.body) || isFormData(this.body) ||

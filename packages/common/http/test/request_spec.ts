@@ -118,9 +118,14 @@ const TEST_STRING = `I'm a body!`;
         const body = new ArrayBuffer(4);
         expect(baseReq.clone({body}).serializeBody()).toBe(body);
       });
-      it('passes strings through', () => {
+      it('passes strings through, if Content-Type not explicitly set', () => {
         const body = 'hello world';
         expect(baseReq.clone({body}).serializeBody()).toBe(body);
+      });
+      it('serializes strings as json, if Content-Type is explicitly set', () => {
+        const body = 'hello world';
+        const headers = new HttpHeaders({'Content-Type': 'application/json'});
+        expect(baseReq.clone({body, headers}).serializeBody()).toBe(JSON.stringify(body));
       });
       it('serializes arrays as json', () => {
         expect(baseReq.clone({body: ['a', 'b']}).serializeBody()).toBe('["a","b"]');
