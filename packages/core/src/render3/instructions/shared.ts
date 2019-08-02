@@ -387,7 +387,8 @@ export function createEmbeddedViewAndNode<T>(
 }
 
 /**
- * Used for rendering embedded views (e.g. dynamically created views)
+ * Used for rendering views in a LContainer (embedded views or root component views for dynamically
+ * created components).
  *
  * Dynamically created views must store/retrieve their TViews differently from component views
  * because their template functions are nested in the template functions of their hosts, creating
@@ -401,22 +402,20 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
   const _isParent = getIsParent();
   const _previousOrParentTNode = getPreviousOrParentTNode();
   let oldView: LView;
-  if (viewToRender[FLAGS] & LViewFlags.IsRoot) {
-    // This is a root view inside the view tree
-    tickRootContext(getRootContext(viewToRender));
-  } else {
-    // Will become true if the `try` block executes with no errors.
-    let safeToRunHooks = false;
-    try {
-      oldView = enterView(viewToRender, viewToRender[T_HOST]);
-      resetPreOrderHookFlags(viewToRender);
-      executeTemplate(viewToRender, tView.template !, getRenderFlags(viewToRender), context);
-      refreshDescendantViews(viewToRender);
-      safeToRunHooks = true;
-    } finally {
-      leaveView(oldView !, safeToRunHooks);
-      setPreviousOrParentTNode(_previousOrParentTNode, _isParent);
+  // Will become true if the `try` block executes with no errors.
+  let safeToRunHooks = false;
+  try {
+    oldView = enterView(viewToRender, viewToRender[T_HOST]);
+    resetPreOrderHookFlags(viewToRender);
+    const templateFn = tView.template;
+    if (templateFn !== null) {
+      executeTemplate(viewToRender, templateFn, getRenderFlags(viewToRender), context);
     }
+    refreshDescendantViews(viewToRender);
+    safeToRunHooks = true;
+  } finally {
+    leaveView(oldView !, safeToRunHooks);
+    setPreviousOrParentTNode(_previousOrParentTNode, _isParent);
   }
 }
 

@@ -900,12 +900,6 @@
     "name": "getRenderer"
   },
   {
-    "name": "getRootContext"
-  },
-  {
-    "name": "getRootView"
-  },
-  {
     "name": "getSelectedIndex"
   },
   {
