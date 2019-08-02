@@ -166,16 +166,18 @@ function filterQueryClassMemberNodes(
   //  (1) queries used in the "ngOnInit" lifecycle hook are static.
   //  (2) inputs with setters can access queries statically.
   return classDecl.members
-      .filter(m => {
-        if (ts.isMethodDeclaration(m) && m.body && hasPropertyNameText(m.name) &&
-            STATIC_QUERY_LIFECYCLE_HOOKS[query.type].indexOf(m.name.text) !== -1) {
-          return true;
-        } else if (
-            knownInputNames && ts.isSetAccessor(m) && m.body && hasPropertyNameText(m.name) &&
-            knownInputNames.indexOf(m.name.text) !== -1) {
-          return true;
-        }
-        return false;
-      })
-      .map((member: ts.SetAccessorDeclaration | ts.MethodDeclaration) => member.body !);
+      .filter(
+          (m):
+              m is(ts.SetAccessorDeclaration | ts.MethodDeclaration) => {
+                if (ts.isMethodDeclaration(m) && m.body && hasPropertyNameText(m.name) &&
+                    STATIC_QUERY_LIFECYCLE_HOOKS[query.type].indexOf(m.name.text) !== -1) {
+                  return true;
+                } else if (
+                    knownInputNames && ts.isSetAccessor(m) && m.body &&
+                    hasPropertyNameText(m.name) && knownInputNames.indexOf(m.name.text) !== -1) {
+                  return true;
+                }
+                return false;
+              })
+      .map(member => member.body !);
 }
