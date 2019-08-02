@@ -158,6 +158,11 @@ export function readPatchedLView(target: any): LView|null {
   return null;
 }
 
+/** Checks whether a given view is in creation mode */
+export function isCreationMode(view: LView): boolean {
+  return (view[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
+}
+
 /**
  * Returns a boolean for whether the view is attached to the change detection tree.
  *

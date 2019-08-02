@@ -28,13 +28,13 @@ import {isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootVie
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, namespaceHTMLInternal, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, leaveView, namespaceHTMLInternal, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap} from '../styling_next/bindings';
 import {NO_CHANGE} from '../tokens';
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
-import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
+import {getLViewParent} from '../util/view_traversal_utils';
+import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNodeInitialData, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLView, cloneToTViewData} from './lview_debug';
 import {selectInternal} from './select';

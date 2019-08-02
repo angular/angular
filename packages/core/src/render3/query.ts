@@ -27,7 +27,8 @@ import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, u
 import {LQueries, LQuery, TQueries, TQuery, TQueryMetadata, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
-import {getCurrentQueryIndex, getLView, getPreviousOrParentTNode, isCreationMode, setCurrentQueryIndex} from './state';
+import {getCurrentQueryIndex, getLView, getPreviousOrParentTNode, setCurrentQueryIndex} from './state';
+import {isCreationMode} from './util/view_utils';
 import {createContainerRef, createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
@@ -392,7 +393,7 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
   setCurrentQueryIndex(queryIndex + 1);
 
   const tQuery = getTQuery(lView[TVIEW], queryIndex);
-  if (queryList.dirty && (isCreationMode() === tQuery.metadata.isStatic)) {
+  if (queryList.dirty && (isCreationMode(lView) === tQuery.metadata.isStatic)) {
     if (tQuery.matches === null) {
       queryList.reset([]);
     } else {
