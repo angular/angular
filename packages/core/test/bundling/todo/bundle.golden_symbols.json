@@ -510,16 +510,10 @@
     "name": "checkNoChangesMode"
   },
   {
-    "name": "checkView"
-  },
-  {
     "name": "cleanUpView"
   },
   {
     "name": "collectNativeNodes"
-  },
-  {
-    "name": "componentRefresh"
   },
   {
     "name": "concatString"
@@ -891,9 +885,6 @@
     "name": "getPropValuesStartPosition"
   },
   {
-    "name": "getRenderFlags"
-  },
-  {
     "name": "getRenderParent"
   },
   {
@@ -1185,13 +1176,16 @@
     "name": "refreshChildComponents"
   },
   {
+    "name": "refreshComponent"
+  },
+  {
     "name": "refreshContentQueries"
   },
   {
-    "name": "refreshDescendantViews"
+    "name": "refreshDynamicEmbeddedViews"
   },
   {
-    "name": "refreshDynamicEmbeddedViews"
+    "name": "refreshView"
   },
   {
     "name": "registerBinding"
@@ -1215,6 +1209,12 @@
     "name": "removeView"
   },
   {
+    "name": "renderChildComponents"
+  },
+  {
+    "name": "renderComponent"
+  },
+  {
     "name": "renderComponent"
   },
   {
@@ -1224,9 +1224,6 @@
     "name": "renderDetachView"
   },
   {
-    "name": "renderEmbeddedTemplate"
-  },
-  {
     "name": "renderInitialStyling"
   },
   {
@@ -1234,6 +1231,9 @@
   },
   {
     "name": "renderStylingMap"
+  },
+  {
+    "name": "renderView"
   },
   {
     "name": "resetAllStylingState"

@@ -10,13 +10,10 @@ import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDefined} from '../util/assert';
 
 import {assertLViewOrUndefined} from './assert';
-import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
-import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW} from './interfaces/view';
 import {resetAllStylingState, resetStylingState} from './styling_next/state';
-import {isCreationMode, resetPreOrderHookFlags} from './util/view_utils';
-
 
 
 /**
@@ -461,27 +458,9 @@ export function resetComponentState() {
  * Used in lieu of enterView to make it clear when we are exiting a child view. This makes
  * the direction of traversal (up or down the view tree) a bit clearer.
  *
- * @param newView New state to become active
- * @param safeToRunHooks Whether the runtime is in a state where running lifecycle hooks is valid.
- * This is not always the case (for example, the application may have crashed and `leaveView` is
- * being executed while unwinding the call stack).
+ * @param newView New LView to become active
  */
-export function leaveView(newView: LView, safeToRunHooks: boolean): void {
-  const tView = lView[TVIEW];
-  if (isCreationMode(lView)) {
-    lView[FLAGS] &= ~LViewFlags.CreationMode;
-  } else {
-    try {
-      resetPreOrderHookFlags(lView);
-      safeToRunHooks && executeHooks(
-                            lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode,
-                            InitPhaseState.AfterViewInitHooksToBeRun, undefined);
-    } finally {
-      // Views are clean and in update mode after being checked, so these bits are cleared
-      lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
-      lView[BINDING_INDEX] = tView.bindingStartIndex;
-    }
-  }
+export function leaveView(newView: LView): void {
   enterView(newView, null);
 }
 

@@ -174,12 +174,6 @@
     "name": "checkNoChangesMode"
   },
   {
-    "name": "checkView"
-  },
-  {
-    "name": "componentRefresh"
-  },
-  {
     "name": "createLView"
   },
   {
@@ -321,9 +315,6 @@
     "name": "getPreviousOrParentTNode"
   },
   {
-    "name": "getRenderFlags"
-  },
-  {
     "name": "getRenderParent"
   },
   {
@@ -355,9 +346,6 @@
   },
   {
     "name": "isComponentDef"
-  },
-  {
-    "name": "isCreationMode"
   },
   {
     "name": "isFactory"
@@ -411,22 +399,31 @@
     "name": "refreshChildComponents"
   },
   {
-    "name": "refreshContentQueries"
+    "name": "refreshComponent"
   },
   {
-    "name": "refreshDescendantViews"
+    "name": "refreshContentQueries"
   },
   {
     "name": "refreshDynamicEmbeddedViews"
   },
   {
+    "name": "refreshView"
+  },
+  {
+    "name": "renderChildComponents"
+  },
+  {
     "name": "renderComponent"
   },
   {
-    "name": "renderEmbeddedTemplate"
+    "name": "renderComponent"
   },
   {
     "name": "renderStringify"
+  },
+  {
+    "name": "renderView"
   },
   {
     "name": "resetAllStylingState"

@@ -19,7 +19,7 @@ import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 import {assertLContainer} from './assert';
 import {NodeInjector, getParentInjectorLocation} from './di';
-import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions/shared';
+import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderView} from './instructions/shared';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
@@ -121,7 +121,8 @@ export function createTemplateRef<T>(
           lView[QUERIES] = declarationViewLQueries.createEmbeddedView(embeddedTView);
         }
 
-        renderEmbeddedTemplate(lView, embeddedTView, context);
+        renderView(lView, embeddedTView, context);
+
         const viewRef = new ViewRef(lView, context, -1);
         viewRef._tViewNode = lView[T_HOST] as TViewNode;
         return viewRef;

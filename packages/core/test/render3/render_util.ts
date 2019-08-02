@@ -277,7 +277,7 @@ export function renderTemplate<T>(
         hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,
         providedRendererFactory, renderer, sanitizer);
   }
-  renderComponentOrTemplate(componentView, context, templateFn);
+  renderComponentOrTemplate(componentView, templateFn, context);
   return componentView;
 }
 
