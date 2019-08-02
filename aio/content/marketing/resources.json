@@ -259,6 +259,12 @@
       "UI Components": {
         "order": 4,
         "resources": {
+           "AngularUIToolkit": {
+            "desc": "Angular UI Toolkit: 115 professionally maintained UI components ranging from a robust grid to charts and more. Try for free & build Angular apps faster.",
+            "rev": true,
+            "title": "Angular UI Toolkit",
+            "url": "https://www.angular-ui-tools.com"
+          },
           "IgniteUIforAngular": {
             "desc": "Ignite UI for Angular is a dependency-free Angular toolkit for building modern web apps.",
             "rev": true,
