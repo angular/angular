@@ -214,14 +214,17 @@ Each budget entry is a JSON object with the following properties:
 
   <tr>
     <td>type</td>
-    <td>The type of budget. One of:
+    <td>
 
-        * bundle - The size of a specific bundle.
-        * initial - The initial size of the app.
-        * allScript - The size of all scripts.
-        * all - The size of the entire app.
-        * anyScript - The size of any one script.
-        * any - The size of any file.
+    The type of budget. One of:
+
+* `bundle` - The size of a specific bundle.
+* `initial` - The initial size of the app.
+* `allScript` - The size of all scripts.
+* `all` - The size of the entire app.
+* `anyComponentStyle` - This size of any one component stylesheet.
+* `anyScript` - The size of any one script.
+* `any` - The size of any file.
 
     </td>
   </tr>
