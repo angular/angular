@@ -405,12 +405,6 @@
     "name": "getRenderParent"
   },
   {
-    "name": "getRootContext"
-  },
-  {
-    "name": "getRootView"
-  },
-  {
     "name": "getSelectedIndex"
   },
   {
@@ -549,12 +543,6 @@
     "name": "postProcessDirective"
   },
   {
-    "name": "readPatchedData"
-  },
-  {
-    "name": "readPatchedLView"
-  },
-  {
     "name": "refreshChildComponents"
   },
   {
@@ -577,9 +565,6 @@
   },
   {
     "name": "renderComponent"
-  },
-  {
-    "name": "renderComponentOrTemplate"
   },
   {
     "name": "renderEmbeddedTemplate"
@@ -685,9 +670,6 @@
   },
   {
     "name": "throwMultipleComponentError"
-  },
-  {
-    "name": "tickRootContext"
   },
   {
     "name": "unwrapRNode"
