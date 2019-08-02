@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
     "noImplicitReturns": true,
-    "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
+    "strict": true,
     "lib": ["es2015"],
     "types": [],
     "baseUrl": ".",
