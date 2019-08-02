@@ -24,7 +24,7 @@ import {assertComponentType} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
-import {addToViewTree, assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, refreshDescendantViews} from './instructions/shared';
+import {assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, renderView} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
@@ -161,9 +161,10 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     }
 
     // Create the root view. Uses empty TView and ContentTemplate.
+    const rootTView = createTView(-1, null, 1, 0, null, null, null, null);
     const rootLView = createLView(
-        null, createTView(-1, null, 1, 0, null, null, null, null), rootContext, rootFlags, null,
-        null, rendererFactory, renderer, sanitizer, rootViewInjector);
+        null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, sanitizer,
+        rootViewInjector);
 
     // rootView is the parent when bootstrapping
     const oldLView = enterView(rootLView, null);
@@ -171,8 +172,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     let component: T;
     let tElementNode: TElementNode;
 
-    // Will become true if the `try` block executes with no errors.
-    let safeToRunHooks = false;
     try {
       const componentView = createRootComponentView(
           hostRNode, this.componentDef, rootLView, rendererFactory, renderer);
@@ -193,10 +192,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       component = createRootComponent(
           componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
 
-      refreshDescendantViews(rootLView);
-      safeToRunHooks = true;
+      renderView(rootLView, rootTView, null);
     } finally {
-      leaveView(oldLView, safeToRunHooks);
+      leaveView(oldLView);
     }
 
     const componentRef = new ComponentRef(
