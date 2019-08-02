@@ -348,7 +348,7 @@ For example:
 
 <code-example language="json">
 
-   "sourceMaps": { "scripts": true, "styles": false, "hidden": true, "vendor": true }
+   "sourceMap": { "scripts": true, "styles": false, "hidden": true, "vendor": true }
 
 </code-example>
 
