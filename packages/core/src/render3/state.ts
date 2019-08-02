@@ -15,7 +15,7 @@ import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
 import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
 import {resetAllStylingState, resetStylingState} from './styling_next/state';
-import {resetPreOrderHookFlags} from './util/view_utils';
+import {isCreationMode, resetPreOrderHookFlags} from './util/view_utils';
 
 
 
@@ -332,12 +332,6 @@ export function setIsNotParent(): void {
 }
 export function setIsParent(): void {
   isParent = true;
-}
-
-
-/** Checks whether a given view is in creation mode */
-export function isCreationMode(view: LView = lView): boolean {
-  return (view[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
 }
 
 /**

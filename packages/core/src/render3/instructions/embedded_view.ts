@@ -14,8 +14,8 @@ import {TContainerNode, TNodeType} from '../interfaces/node';
 import {FLAGS, LView, LViewFlags, PARENT, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
-import {enterView, getIsParent, getLView, getPreviousOrParentTNode, isCreationMode, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
-import {resetPreOrderHookFlags} from '../util/view_utils';
+import {enterView, getIsParent, getLView, getPreviousOrParentTNode, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
+import {isCreationMode, resetPreOrderHookFlags} from '../util/view_utils';
 import {assignTViewNodeToLView, createLView, createTView, refreshDescendantViews} from './shared';
 
 /**
