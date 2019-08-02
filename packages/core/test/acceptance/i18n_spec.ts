@@ -606,10 +606,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
               '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
         }
       });
-      const fixture = initWithTemplate(AppComp, `
-        <ng-template i18n tplRef>
-          {count, select, 10 {ten} 20 {twenty} other {other}}
-        </ng-template>
+      const fixture = initWithTemplate(
+          AppComp, `
+        <ng-template i18n tplRef>` +
+              `{count, select, 10 {ten} 20 {twenty} other {other}}` +
+              `</ng-template>
       `);
 
       const element = fixture.nativeElement;
@@ -931,8 +932,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
             select,
             A {A }
             B {B }
-            other {other - {{ typeC // i18n(ph="PH WITH SPACES") }}} 
-          }  
+            other {other - {{ typeC // i18n(ph="PH WITH SPACES") }}}
+          }
           </ng-template>
 
           <div *ngFor="let type of types">
@@ -1112,14 +1113,15 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
             'début {$interpolation_1} milieu {$interpolation} fin',
         '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}':
             '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}',
-        ' trad: {$icu}': ' traduction: {$icu}'
+        ' trad: {$icu} ': ' traduction: {$icu} '
       }
     });
     const fixture = TestBed.createComponent(MyApp);
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML)
         .toEqual(
-            `<div test="" title="début 2 milieu 1 fin" class="foo"> traduction: un <i>email</i><!--ICU 20--></div><div test="" class="foo"></div>`);
+            `<div test="" title="début 2 milieu 1 fin" class="foo"> traduction: un <i>email</i><!--ICU 20--> ` +
+            `</div><div test="" class="foo"></div>`);
 
     directiveInstances.forEach(instance => instance.klass = 'bar');
     fixture.componentRef.instance.exp1 = 2;
@@ -1127,7 +1129,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML)
         .toEqual(
-            `<div test="" title="début 3 milieu 2 fin" class="bar"> traduction: 2 emails<!--ICU 20--></div><div test="" class="bar"></div>`);
+            `<div test="" title="début 3 milieu 2 fin" class="bar"> traduction: 2 emails<!--ICU 20--> ` +
+            `</div><div test="" class="bar"></div>`);
   });
 
   it('should handle i18n attribute with directive inputs', () => {
