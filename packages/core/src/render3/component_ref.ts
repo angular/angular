@@ -138,7 +138,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     namespaceHTMLInternal();
     const hostRNode = rootSelectorOrNode ?
         locateHostElement(rendererFactory, rootSelectorOrNode) :
-        elementCreate(this.selector, rendererFactory.createRenderer(null, this.componentDef));
+        elementCreate(this.selector, rendererFactory.createRenderer(null, this.componentDef), null);
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;

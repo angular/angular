@@ -16,7 +16,7 @@ import {isContentQueryHost} from '../interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
-import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {registerInitialStylingOnTNode} from '../styling_next/instructions';
 import {StylingMapArray, TStylingContext} from '../styling_next/interfaces';
 import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../styling_next/util';
@@ -52,8 +52,8 @@ export function ɵɵelementStart(
 
   ngDevMode && ngDevMode.rendererCreateElement++;
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
-  const native = lView[index + HEADER_OFFSET] = elementCreate(name);
   const renderer = lView[RENDERER];
+  const native = lView[index + HEADER_OFFSET] = elementCreate(name, renderer, getNamespace());
   const tNode =
       getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs || null);
 
