@@ -262,7 +262,7 @@ export class FunctionCall extends AST {
  * starting and ending byte offsets, respectively, of the text span in a source file.
  */
 export class AbsoluteSourceSpan {
-  constructor(public start: number, public end: number) {}
+  constructor(public readonly start: number, public readonly end: number) {}
 }
 
 export class ASTWithSource extends AST {

@@ -225,10 +225,6 @@ export class Parser {
   }
 }
 
-/** Serializes a expression start and input index. See _ParseAst#sourceSpanCache. */
-function serialStartAndInput(start: number, input: number): string {
-  return `${start}@${input}`;
-}
 export class _ParseAST {
   private rparensExpected = 0;
   private rbracketsExpected = 0;
@@ -238,10 +234,7 @@ export class _ParseAST {
   // prevent creating superfluous source spans in `sourceSpan`.
   // A serial of the expression start and input index is used for mapping because both are stateful
   // and may change for subsequent expressions visited by the parser.
-  //
-  // Use an object rather than a map for performance reasons, and because conviniences of a map like
-  // iterables aren't needed.
-  private sourceSpanCache: {[serialStartAndInput: string]: Readonly<AbsoluteSourceSpan>} = {};
+  private sourceSpanCache = new Map<string, AbsoluteSourceSpan>();
 
   index: number = 0;
 
@@ -264,12 +257,12 @@ export class _ParseAST {
 
   span(start: number) { return new ParseSpan(start, this.inputIndex); }
 
-  sourceSpan(start: number): Readonly<AbsoluteSourceSpan> {
-    const serial = serialStartAndInput(start, this.inputIndex);
-    if (!this.sourceSpanCache[serial]) {
-      this.sourceSpanCache[serial] = this.span(start).toAbsolute(this.absoluteOffset);
+  sourceSpan(start: number): AbsoluteSourceSpan {
+    const serial = `${start}@${this.inputIndex}`;
+    if (!this.sourceSpanCache.has(serial)) {
+      this.sourceSpanCache.set(serial, this.span(start).toAbsolute(this.absoluteOffset));
     }
-    return this.sourceSpanCache[serial];
+    return this.sourceSpanCache.get(serial) !;
   }
 
   advance() { this.index++; }
