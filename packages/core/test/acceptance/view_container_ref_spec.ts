@@ -11,7 +11,7 @@ import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, Eleme
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed, TestComponentRenderer} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
+import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
@@ -927,7 +927,7 @@ describe('ViewContainerRef', () => {
           {provide: String, useValue: 'root_module'},
           // We need to provide the following tokens because otherwise view engine
           // will throw when creating a component factory in debug mode.
-          {provide: Sanitizer, useValue: TestBed.get(Sanitizer)},
+          {provide: Sanitizer, useValue: TestBed.get(DomSanitizer)},
           {provide: ErrorHandler, useValue: TestBed.get(ErrorHandler)},
           {provide: RendererFactory2, useValue: TestBed.get(RendererFactory2)},
         ]
