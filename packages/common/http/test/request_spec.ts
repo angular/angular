@@ -110,8 +110,16 @@ const TEST_STRING = `I'm a body!`;
         const req = baseReq.clone({body: {data: 'test data'}});
         expect(req.detectContentTypeHeader()).toBe('application/json');
       });
+      it('handles boolean value true as json', () => {
+        const req = baseReq.clone({body: {data: true}});
+        expect(req.detectContentTypeHeader()).toBe('application/json');
+      });
+      it('handles boolean value false as json', () => {
+        const req = baseReq.clone({body: {data: false}});
+        expect(req.detectContentTypeHeader()).toBe('application/json');
+      });
     });
-    describe('body serialization', () => {
+    describe('default body serialization', () => {
       const baseReq = new HttpRequest('POST', '/test', null);
       it('handles a null body', () => { expect(baseReq.serializeBody()).toBeNull(); });
       it('passes ArrayBuffers through', () => {
@@ -137,6 +145,35 @@ const TEST_STRING = `I'm a body!`;
         expect(withParams.serializeBody()).toEqual('first=value&second=other');
         expect(withParams.detectContentTypeHeader())
             .toEqual('application/x-www-form-urlencoded;charset=UTF-8');
+      });
+    });
+    describe('body serialization with Content-Type explicitly set to "application/json"', () => {
+      const headers = new HttpHeaders({'Content-Type': 'application/json'});
+      const baseReq = new HttpRequest('POST', '/test', null, {headers});
+      it('handles a JSON null body', () => { expect(baseReq.serializeBody()).toBe('null'); });
+      it('serializes pure JSON strings', () => {
+        const body = 'purestring';
+        expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+      });
+      it('serializes pure JSON boolean true', () => {
+        const body = true;
+        expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+      });
+      it('serializes pure JSON boolean false', () => {
+        const body = false;
+        expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+      });
+      it('serializes objects to JSON strings', () => {
+        const body = {'somekey': 123, 'someotherkey': 'val'};
+        expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+      });
+      it('serializes arrays to JSON strings', () => {
+        const body = [123, 'someval'];
+        expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+      });
+      it('serializes numbers to JSON strings', () => {
+        const body = 123;
+        expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
       });
     });
     describe('parameter handling', () => {

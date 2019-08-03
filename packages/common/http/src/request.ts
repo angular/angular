@@ -237,6 +237,18 @@ export class HttpRequest<T> {
    * transmission to the server.
    */
   serializeBody(): ArrayBuffer|Blob|FormData|string|null {
+    // If Content-Type header was explicitly set to 'application/json' or
+    // it has been detected as a content type before, just return the stringified
+    // result, if it has not already been stringified.
+    if (this.headers.get('Content-Type') === 'application/json') {
+      if (typeof this.body === 'string' && /(^(\[|\{|\"|\d))|(true|false|null)/.test(this.body)) {
+        // body has already been serialized to JSON
+        return this.body;
+      } else {
+        return JSON.stringify(this.body);
+      }
+    }
+
     // If no body is present, no need to serialize it.
     if (this.body === null) {
       return null;
