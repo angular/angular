@@ -29,12 +29,10 @@ class NgPackagesInstaller {
    * Create a new installer for a project in the specified directory.
    *
    * @param {string} projectDir - the path to the directory containing the project.
-   * @param {object} options - a hash of options for the install
-   *                           * `debug` (`boolean`) - whether to display debug messages.
-   *                           * `force` (`boolean`) - whether to force a local installation
-   *                                                   even if there is a local marker file.
-   *                           * `ignorePackages` (`string[]`) - a collection of names of packages
-   *                                                   that should not be copied over.
+   * @param {object} options - a hash of options for the install:
+   *     * `debug` (`boolean`) - whether to display debug messages.
+   *     * `force` (`boolean`) - whether to force a local installation even if there is a local marker file.
+   *     * `ignorePackages` (`string[]`) - a collection of names of packages that should not be copied over.
    */
   constructor(projectDir, options = {}) {
     this.debug = options.debug;
@@ -184,32 +182,31 @@ class NgPackagesInstaller {
 
   /**
    * A hash of Angular package configs.
-   * (Detected as directories in '/packages/' that contain a top-level 'package.json' file.)
+   * (Detected as directories in '/dist/packages-dist/' that contain a top-level 'package.json' file.)
    */
   _getDistPackages() {
     const packageConfigs = Object.create(null);
+    const distDir = ANGULAR_DIST_PACKAGES;
 
-    [ANGULAR_DIST_PACKAGES].forEach(distDir => {
-      this._log(`Angular distributable directory: ${distDir}.`);
-      shelljs
-        .find(distDir)
-        .map(filePath => filePath.slice(distDir.length + 1))
-        .filter(filePath => PACKAGE_JSON_REGEX.test(filePath))
-        .forEach(packagePath => {
-          const packageName = `@angular/${packagePath.slice(0, -PACKAGE_JSON.length -1)}`;
-          if (this.ignorePackages.indexOf(packageName) === -1) {
-            const packageConfig = require(path.resolve(distDir, packagePath));
-            packageConfigs[packageName] = {
-              parentDir: distDir,
-              packageJsonPath: path.resolve(distDir, packagePath),
-              config: packageConfig
-            };
-          } else {
-            this._log('Ignoring package', packageName);
-          }
-        });
+    this._log(`Angular distributable directory: ${distDir}.`);
 
-    });
+    shelljs
+      .find(distDir)
+      .map(filePath => filePath.slice(distDir.length + 1))
+      .filter(filePath => PACKAGE_JSON_REGEX.test(filePath))
+      .forEach(packagePath => {
+        const packageName = `@angular/${packagePath.slice(0, -PACKAGE_JSON.length -1)}`;
+        if (this.ignorePackages.indexOf(packageName) === -1) {
+          const packageConfig = require(path.resolve(distDir, packagePath));
+          packageConfigs[packageName] = {
+            parentDir: distDir,
+            packageJsonPath: path.resolve(distDir, packagePath),
+            config: packageConfig
+          };
+        } else {
+          this._log('Ignoring package', packageName);
+        }
+      });
 
     this._log('Found the following Angular distributables:', Object.keys(packageConfigs).map(key => `\n - ${key}`));
     return packageConfigs;
@@ -287,6 +284,11 @@ class NgPackagesInstaller {
 function main() {
   shelljs.set('-e');
 
+  const createInstaller = argv => {
+    const {projectDir, ...options} = argv;
+    return new NgPackagesInstaller(projectDir, options);
+  };
+
   yargs
     .usage('$0 <cmd> [args]')
 
@@ -295,16 +297,13 @@ function main() {
     .option('ignore-packages', { describe: 'List of Angular packages that should not be used in local mode.', default: [], array: true })
 
     .command('overwrite <projectDir> [--force] [--debug] [--ignore-packages package1 package2]', 'Install dependencies from the locally built Angular distributables.', () => {}, argv => {
-      const installer = new NgPackagesInstaller(argv.projectDir, argv);
-      installer.installLocalDependencies();
+      createInstaller(argv).installLocalDependencies();
     })
     .command('restore <projectDir> [--debug]', 'Install dependencies from the npm registry.', () => {}, argv => {
-      const installer = new NgPackagesInstaller(argv.projectDir, argv);
-      installer.restoreNpmDependencies();
+      createInstaller(argv).restoreNpmDependencies();
     })
     .command('check <projectDir> [--debug]', 'Check that dependencies came from npm. Otherwise display a warning message.', () => {}, argv => {
-      const installer = new NgPackagesInstaller(argv.projectDir, argv);
-      installer.checkDependencies();
+      createInstaller(argv).checkDependencies();
     })
     .demandCommand(1, 'Please supply a command from the list above.')
     .strict()
