@@ -241,7 +241,8 @@ export class HttpRequest<T> {
     // it has been detected as a content type before, just return the stringified
     // result, if it has not already been stringified.
     if (this.headers.get('Content-Type') === 'application/json') {
-      if (typeof this.body === 'string' && /(^(\[|\{|\"|\d))|(true|false|null)/.test(this.body)) {
+      if (typeof this.body === 'string' &&
+          /(^(\[|\{|\"|\d))|(true|false|null)/.test(this.body.trim())) {
         // body has already been serialized to JSON
         return this.body;
       } else {

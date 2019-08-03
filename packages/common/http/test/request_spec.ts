@@ -152,28 +152,49 @@ const TEST_STRING = `I'm a body!`;
       const baseReq = new HttpRequest('POST', '/test', null, {headers});
       it('handles a JSON null body', () => { expect(baseReq.serializeBody()).toBe('null'); });
       it('serializes pure JSON strings', () => {
-        const body = 'purestring';
+        let body = 'purestring';
         expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+        // skip if already provided serialized
+        expect(baseReq.clone({body: JSON.stringify(body)}).serializeBody())
+            .toBe(JSON.stringify(body));
+        // skip also if provided with serialized string and beginning whitespaces
+        body = '  \"purestring\"';
+        expect(baseReq.clone({body}).serializeBody()).toBe(body);
       });
       it('serializes pure JSON boolean true', () => {
         const body = true;
         expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+        // skip if already provided serialized
+        expect(baseReq.clone({body: JSON.stringify(body)}).serializeBody())
+            .toBe(JSON.stringify(body));
       });
       it('serializes pure JSON boolean false', () => {
         const body = false;
         expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+        // skip if already provided serialized
+        expect(baseReq.clone({body: JSON.stringify(body)}).serializeBody())
+            .toBe(JSON.stringify(body));
       });
       it('serializes objects to JSON strings', () => {
         const body = {'somekey': 123, 'someotherkey': 'val'};
         expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+        // skip if already provided serialized
+        expect(baseReq.clone({body: JSON.stringify(body)}).serializeBody())
+            .toBe(JSON.stringify(body));
       });
       it('serializes arrays to JSON strings', () => {
         const body = [123, 'someval'];
         expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+        // skip if already provided serialized
+        expect(baseReq.clone({body: JSON.stringify(body)}).serializeBody())
+            .toBe(JSON.stringify(body));
       });
       it('serializes numbers to JSON strings', () => {
         const body = 123;
         expect(baseReq.clone({body}).serializeBody()).toBe(JSON.stringify(body));
+        // skip if already provided serialized
+        expect(baseReq.clone({body: JSON.stringify(body)}).serializeBody())
+            .toBe(JSON.stringify(body));
       });
     });
     describe('parameter handling', () => {
