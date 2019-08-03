@@ -3415,14 +3415,57 @@ describe('i18n support in the template compiler', () => {
   });
 
   describe('errors', () => {
+    const verifyNestedSectionsError = (errorThrown: any, expectedErrorText: string) => {
+      expect(errorThrown.ngParseErrors.length).toBe(1);
+      const msg = errorThrown.ngParseErrors[0].toString();
+      expect(msg).toContain(
+          'Could not mark an element as translatable inside of a translatable section');
+      expect(msg).toContain(expectedErrorText);
+      expect(msg).toMatch(/app\/spec\.ts\@\d+\:\d+/);
+    };
+
     it('should throw on nested i18n sections', () => {
       const files = getAppFilesWithTemplate(`
-        <div i18n><div i18n>Some content</div></div>
+        <div i18n>
+          <div i18n>Some content</div>
+        </div>
       `);
-      expect(() => compile(files, angularFiles))
-          .toThrowError(
-              'Could not mark an element as translatable inside of a translatable section');
+      try {
+        compile(files, angularFiles);
+      } catch (error) {
+        verifyNestedSectionsError(error, '[ERROR ->]<div i18n>Some content</div>');
+      }
     });
 
+    it('should throw on nested i18n sections with tags in between', () => {
+      const files = getAppFilesWithTemplate(`
+        <div i18n>
+          <div>
+            <div i18n>Some content</div>
+          </div>
+        </div>
+      `);
+      try {
+        compile(files, angularFiles);
+      } catch (error) {
+        verifyNestedSectionsError(error, '[ERROR ->]<div i18n>Some content</div>');
+      }
+    });
+
+    it('should throw on nested i18n sections represented with <ng-container>s', () => {
+      const files = getAppFilesWithTemplate(`
+        <ng-container i18n>
+          <div>
+            <ng-container i18n>Some content</ng-container>
+          </div>
+        </ng-container>
+      `);
+      try {
+        compile(files, angularFiles);
+      } catch (error) {
+        verifyNestedSectionsError(
+            error, '[ERROR ->]<ng-container i18n>Some content</ng-container>');
+      }
+    });
   });
 });
