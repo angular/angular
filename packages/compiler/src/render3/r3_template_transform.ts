@@ -80,11 +80,21 @@ class HtmlAstToIvyAst implements html.Visitor {
   errors: ParseError[] = [];
   styles: string[] = [];
   styleUrls: string[] = [];
+  private inI18nBlock: boolean = false;
 
   constructor(private bindingParser: BindingParser) {}
 
   // HTML visitor
   visitElement(element: html.Element): t.Node|null {
+    const isI18nRootElement = isI18nRootNode(element.i18n);
+    if (isI18nRootElement) {
+      if (this.inI18nBlock) {
+        this.reportError(
+            'Cannot mark an element as translatable inside of a translatable section. Please remove the nested i18n marker.',
+            element.sourceSpan);
+      }
+      this.inI18nBlock = true;
+    }
     const preparsedElement = preparseElement(element);
     if (preparsedElement.type === PreparsedElementType.SCRIPT) {
       return null;
@@ -209,7 +219,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       // For <ng-template>s with structural directives on them, avoid passing i18n information to
       // the wrapping template to prevent unnecessary i18n instructions from being generated. The
       // necessary i18n meta information will be extracted from child elements.
-      const i18n = isTemplateElement && isI18nRootNode(element.i18n) ? undefined : element.i18n;
+      const i18n = isTemplateElement && isI18nRootElement ? undefined : element.i18n;
 
       // TODO(pk): test for this case
       parsedElement = new t.Template(
@@ -217,6 +227,9 @@ class HtmlAstToIvyAst implements html.Visitor {
           hoistedAttrs.outputs, templateAttrs, [parsedElement], [/* no references */],
           templateVariables, element.sourceSpan, element.startSourceSpan, element.endSourceSpan,
           i18n);
+    }
+    if (isI18nRootElement) {
+      this.inI18nBlock = false;
     }
     return parsedElement;
   }
