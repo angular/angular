@@ -196,7 +196,11 @@ export function downgradeComponent(info: {
               wrapCallback(() => doDowngrade(pInjector, mInjector))();
             };
 
-        ParentInjectorPromise.all([finalParentInjector, finalModuleInjector])
+        // NOTE:
+        // Not using `ParentInjectorPromise.all()` (which is inherited from `SyncPromise`), because
+        // Closure Compiler (or some related tool) complains:
+        // `TypeError: ...$src$downgrade_component_ParentInjectorPromise.all is not a function`
+        SyncPromise.all([finalParentInjector, finalModuleInjector])
             .then(([pInjector, mInjector]) => downgradeFn(pInjector, mInjector));
 
         ranAsync = true;
