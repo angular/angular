@@ -97,7 +97,7 @@
     "@types/lunr": "^2.3.2",
     "@webcomponents/custom-elements": "^1.2.0",
     "rxjs": "^6.5.2",
-    "zone.js": "^0.9.1"
+    "zone.js": "^0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "0.801.0-beta.2",

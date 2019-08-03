@@ -41,7 +41,7 @@
     "systemjs": "0.19.39",
     "web-animations-js": "^2.3.1",
     "tslib": "^1.9.0",
-    "zone.js": "~0.9.1"
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "0.800.0",
