@@ -535,10 +535,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const isI18nRootElement: boolean =
         isI18nRootNode(element.i18n) && !isSingleI18nIcu(element.i18n);
 
-    if (isI18nRootElement && this.i18n) {
-      throw new Error(`Could not mark an element as translatable inside of a translatable section`);
-    }
-
     const i18nAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
     const outputAttrs: t.TextAttribute[] = [];
     let ngProjectAsAttr: t.TextAttribute|undefined;
