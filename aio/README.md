@@ -14,10 +14,12 @@ Here are the most important tasks you might need to use:
 
 * `yarn` - install all the dependencies.
 * `yarn setup` - install all the dependencies, boilerplate, stackblitz, zips and run dgeni on the docs.
-* `yarn setup-local` - same as `setup`, but use the locally built Angular packages for aio and docs examples boilerplate.
+* `yarn setup-local` - same as `setup`, but build the Angular packages from the source code and use these locally built versions (instead of the ones fetched from npm) for aio and docs examples boilerplate.
 
 * `yarn build` - create a production build of the application (after installing dependencies, boilerplate, etc).
 * `yarn build-local` - same as `build`, but use `setup-local` instead of `setup`.
+* `yarn build-with-ivy` - same as `build-local`, but in addition also turns on `ivy` mode in aio.
+                          (Note: To turn on `ivy` mode in examples, see `yarn boilerplate:add` below.)
 
 * `yarn start` - run a development web server that watches the files; then builds the doc-viewer and reloads the page, as necessary.
 * `yarn serve-and-sync` - run both the `docs-watch` and `start` in the same console.
@@ -31,7 +33,10 @@ Here are the most important tasks you might need to use:
 * `yarn docs-lint` - check that the doc gen code follows our style rules.
 * `yarn docs-test` - run the unit tests for the doc generation code.
 
-* `yarn boilerplate:add` - generate all the boilerplate code for the examples, so that they can be run locally. Add the option `--local` to use your local version of Angular contained in the "dist" folder.
+* `yarn boilerplate:add` - generate all the boilerplate code for the examples, so that they can be run locally.
+  - Add the option `--local` to use your local version of Angular contained in the "dist" folder.
+  - Add the option `--ivy` to turn on `ivy` mode.
+
 * `yarn boilerplate:remove` - remove all the boilerplate code that was added via `yarn boilerplate:add`.
 * `yarn generate-stackblitz` - generate the stackblitz files that are used by the `live-example` tags in the docs.
 * `yarn generate-zips` - generate the zip files from the examples. Zip available via the `live-example` tags in the docs.

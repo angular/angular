@@ -46,6 +46,8 @@ if (argv.ivy) {
  *    Must be used in conjunction with --setup as this is when the packages are copied.
  *    e.g. --setup --local
  *
+ *  --ivy to turn on `ivy` mode
+ *
  *  --shard to shard the specs into groups to allow you to run them in parallel
  *    e.g. --shard=0/2 // the even specs: 0, 2, 4, etc
  *    e.g. --shard=1/2 // the odd specs: 1, 3, 5, etc

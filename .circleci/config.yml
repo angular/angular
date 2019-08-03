@@ -321,7 +321,7 @@ jobs:
       - *attach_workspace
       - *init_environment
         # Build aio (with local Angular packages)
-      - run: yarn --cwd aio build-local --progress=false
+      - run: yarn --cwd aio build-local-ci
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
@@ -340,7 +340,7 @@ jobs:
       - *attach_workspace
       - *init_environment
         # Build aio with Ivy (using local Angular packages)
-      - run: yarn --cwd aio build-with-ivy --progress=false
+      - run: yarn --cwd aio build-with-ivy-ci
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
