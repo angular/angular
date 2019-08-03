@@ -4,7 +4,7 @@
       "uncompressed": {
         "runtime": 1497,
         "main": 166799,
-        "polyfills": 43626
+        "polyfills": 45399
       }
     }
   },
@@ -12,8 +12,8 @@
     "master": {
       "uncompressed": {
         "runtime": 1440,
-        "main": 13517,
-        "polyfills": 43567
+        "main": 13498,
+        "polyfills": 45340
       }
     }
   },
@@ -21,8 +21,8 @@
     "master": {
       "uncompressed": {
         "runtime": 1440,
-        "main": 136380,
-        "polyfills": 43567
+        "main": 136390,
+        "polyfills": 45340
       }
     }
   },

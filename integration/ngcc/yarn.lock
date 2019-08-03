@@ -3640,4 +3640,4 @@ yeast@0.1.2:
   integrity sha1-AI4G2AlDIMNy28L47XagymyKxBk=
 
 "zone.js@file:../../node_modules/zone.js":
-  version "0.9.1"
+  version "0.10.2"
