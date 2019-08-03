@@ -38,9 +38,9 @@ class NgPackagesInstaller {
    *     * `ignorePackages` (`string[]`) - a collection of names of packages that should not be copied over.
    */
   constructor(projectDir, options = {}) {
-    this.debug = options.debug;
-    this.force = options.force;
-    this.buildPackages = options.buildPackages;
+    this.debug = this._parseBooleanArg(options.debug);
+    this.force = this._parseBooleanArg(options.force);
+    this.buildPackages = this._parseBooleanArg(options.buildPackages);
     this.ignorePackages = options.ignorePackages || [];
     this.projectDir = path.resolve(projectDir);
     this.localMarkerPath = path.resolve(this.projectDir, LOCAL_MARKER_PATH);
@@ -261,6 +261,21 @@ class NgPackagesInstaller {
       const message = messages.join(' ');
       console.info(`${header}${message.split('\n').join(`\n${indent}`)}`);
     }
+  }
+
+  /**
+   * Extract the value for a boolean cli argument/option. When passing an option multiple times, `yargs` parses it as an
+   * array of boolean values. In that case, we only care about the last occurrence.
+   *
+   * This can be useful, for example, when one has a base command with the option turned on and another command
+   * (building on top of the first one) turning the option off:
+   * ```
+   * "base-command": "my-script --foo --bar",
+   * "no-bar-command": "yarn base-command --no-bar",
+   * ```
+   */
+  _parseBooleanArg(value) {
+    return Array.isArray(value) ? value.pop() : value;
   }
 
   /**
