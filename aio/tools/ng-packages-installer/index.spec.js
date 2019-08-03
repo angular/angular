@@ -275,12 +275,14 @@ describe('NgPackagesInstaller', () => {
 
     it('should print a warning, when on Windows', () => {
       buildDistPackagesOnPlatform('win32');
+      const warning = console.warn.calls.argsFor(0)[0];
 
       expect(shelljs.exec).not.toHaveBeenCalled();
-      expect(console.warn.calls.argsFor(0)[0]).toContain(
-          'Building the local Angular packages is currently not supported on Windows.');
-      expect(console.warn.calls.argsFor(0)[0]).toContain('Windows Subsystem for Linux');
-      expect(console.warn.calls.argsFor(0)[0]).toContain('Linux docker container or VM');
+      expect(warning).toContain(
+          'Automatically building the local Angular packages is currently not supported on Windows.');
+      expect(warning).toContain('Git Bash for Windows');
+      expect(warning).toContain('Windows Subsystem for Linux');
+      expect(warning).toContain('Linux docker container or VM');
     });
   });
 

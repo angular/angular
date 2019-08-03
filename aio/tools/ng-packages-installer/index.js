@@ -177,9 +177,10 @@ class NgPackagesInstaller {
       shelljs.exec(ANGULAR_DIST_PACKAGES_BUILD_CMD);
     } else {
       this._warn([
-        'Building the local Angular packages is currently not supported on Windows.',
+        'Automatically building the local Angular packages is currently not supported on Windows.',
         `Please, ensure '${ANGULAR_DIST_PACKAGES}' exists and is up-to-date (e.g. by running ` +
-          `'${ANGULAR_DIST_PACKAGES_BUILD_CMD}' in Windows Subsystem for Linux or a Linux docker container or VM).`,
+          `'${ANGULAR_DIST_PACKAGES_BUILD_CMD}' in Git Bash for Windows, Windows Subsystem for Linux or a Linux ` +
+          'docker container or VM).',
         '',
         'Proceeding anyway...',
       ].join('\n'));
