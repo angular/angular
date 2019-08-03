@@ -17,7 +17,7 @@
   },
   "peerDependencies": {
     "rxjs": "^6.4.0",
-    "zone.js": "~0.9.1"
+    "zone.js": "~0.10.2"
   },
   "repository": {
     "type": "git",
