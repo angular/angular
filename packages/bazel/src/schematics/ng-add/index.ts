@@ -8,14 +8,32 @@
  * @fileoverview Schematics for ng-new project that builds with Bazel.
  */
 
-import {JsonAstObject, parseJsonAst} from '@angular-devkit/core';
-import {Rule, SchematicContext, SchematicsException, Tree, apply, applyTemplates, chain, mergeWith, url} from '@angular-devkit/schematics';
+import {JsonAstObject, parseJsonAst, normalize, JsonObject} from '@angular-devkit/core';
+import {
+  Rule,
+  SchematicContext,
+  SchematicsException,
+  Tree,
+  apply,
+  applyTemplates,
+  chain,
+  mergeWith,
+  url,
+  template
+} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {getWorkspace, getWorkspacePath} from '@schematics/angular/utility/config';
-import {findPropertyInAstObject, insertPropertyInAstObjectInOrder} from '@schematics/angular/utility/json-utils';
+import {
+  findPropertyInAstObject,
+  insertPropertyInAstObjectInOrder
+} from '@schematics/angular/utility/json-utils';
 import {validateProjectName} from '@schematics/angular/utility/validation';
 
-import {isJsonAstObject, removeKeyValueInAstObject, replacePropertyInAstObject} from '../utility/json-utils';
+import {
+  isJsonAstObject,
+  removeKeyValueInAstObject,
+  replacePropertyInAstObject
+} from '../utility/json-utils';
 import {findE2eArchitect} from '../utility/workspace-utils';
 
 import {Schema} from './schema';
@@ -79,9 +97,9 @@ function addDevDependenciesToPackageJson(options: Schema) {
  * Append additional Javascript / Typescript files needed to compile an Angular
  * project under Bazel.
  */
-function addFilesRequiredByBazel(options: Schema) {
+function addWorkspaceFiles(options: Schema) {
   return (host: Tree) => {
-    return mergeWith(apply(url('./files'), [
+    return mergeWith(apply(url('./files/workspace-files'), [
       applyTemplates({}),
     ]));
   };
@@ -252,7 +270,7 @@ function upgradeRxjs() {
     const value = rxjs.value as string;  // value can be version or range
     const match = value.match(/(\d)+\.(\d)+.(\d)+$/);
     if (match) {
-      const [_, major, minor] = match;
+      const[_, major, minor] = match;
       if (major < '6' || (major === '6' && minor < '4')) {
         const recorder = host.beginUpdate(packageJson);
         replacePropertyInAstObject(recorder, deps, 'rxjs', '~6.4.0');
@@ -292,8 +310,10 @@ function addPostinstallToGenerateNgSummaries() {
     const scripts = findPropertyInAstObject(jsonAst, 'scripts') as JsonAstObject;
     const recorder = host.beginUpdate(packageJson);
     if (scripts) {
-      insertPropertyInAstObjectInOrder(
-          recorder, scripts, 'postinstall', 'ngc -p ./angular-metadata.tsconfig.json', 4);
+      const currentPostinstall = scripts.value.postinstall;
+      const newPostInstall = currentPostinstall ? `${currentPostinstall} && ` : '' +
+              'ngc -p ./angular-metadata.tsconfig.json';
+      insertPropertyInAstObjectInOrder(recorder, scripts, 'postinstall', newPostInstall, 4);
     } else {
       insertPropertyInAstObjectInOrder(
           recorder, jsonAst, 'scripts', {
@@ -317,6 +337,77 @@ function installNodeModules(options: Schema): Rule {
   };
 }
 
+function updateApps(options: Schema) {
+  return (host: Tree, context: SchematicContext) => {
+    return mergeWith(
+        apply(
+            url('./files/app-files'), getProjectsAsArray(options, host)
+                                          .filter(
+                                              p => p.projectConfig.projectType === 'application' &&
+                                                  !p.projectName.endsWith('-e2e'))
+                                          .map(p => templateForProject(options, p))));
+  };
+}
+
+function updateE2e(options: Schema) {
+  return (host: Tree, context: SchematicContext) => {
+    return mergeWith(
+        apply(
+            url('./files/e2e-files'), getProjectsAsArray(options, host)
+                                          .filter(
+                                              p => p.projectConfig.projectType === 'application' &&
+                                                  p.projectName.endsWith('-e2e'))
+                                          .map(p => templateForProject(options, p))));
+  };
+}
+
+function updateLibs(options: Schema) {
+  return (host: Tree, context: SchematicContext) => {
+    return mergeWith(
+        apply(
+            url('./files/lib-files'), getProjectsAsArray(options, host)
+                                          .filter(p => p.projectConfig.projectType === 'library')
+                                          .map(p => templateForProject(options, p))));
+  };
+}
+
+function getProjectsAsArray(options: Schema, host: Tree) {
+  const workspacePath = getWorkspacePath(host);
+  if (!workspacePath) {
+    throw new Error('Could not find angular.json');
+  }
+  const workspaceContent = host.read(workspacePath);
+  if (!workspaceContent) {
+    throw new Error('Failed to read angular.json content');
+  }
+  const workspaceJsonAst = parseJsonAst(workspaceContent.toString()) as JsonAstObject;
+  const projects = findPropertyInAstObject(workspaceJsonAst, 'projects');
+  if (!projects) {
+    throw new SchematicsException('Expect projects in angular.json to be an Object');
+  }
+  return Object.keys(projects).map(
+      projectName =>
+          ({projectName, projectConfig: (projects.value as JsonObject)[projectName] as JsonObject}))
+}
+
+function templateForProject(options: Schema, projectConfig: JsonObject) {
+  return template({
+    tmpl: '',
+    skipInstall: true, ...options,
+    projectRoot: projectConfig.root,
+    offsetFromRoot: offsetFromRoot(projectConfig.root as string)
+  })
+}
+
+function offsetFromRoot(fullPathToSourceDir: string): string {
+  const parts = normalize(fullPathToSourceDir).split('/');
+  let offset = '';
+  for (let i = 0; i < parts.length; ++i) {
+    offset += '../';
+  }
+  return offset;
+}
+
 export default function(options: Schema): Rule {
   return (host: Tree) => {
     options.name = options.name || getWorkspace(host).defaultProject;
@@ -326,11 +417,14 @@ export default function(options: Schema): Rule {
     validateProjectName(options.name);
 
     return chain([
-      addFilesRequiredByBazel(options),
+      addWorkspaceFiles(options),
       addDevDependenciesToPackageJson(options),
       addPostinstallToGenerateNgSummaries(),
       backupAngularJson(),
       updateAngularJsonToUseBazelBuilder(options),
+      updateApps(options),
+      updateLibs(options),
+      updateE2e(options),
       updateGitignore(),
       upgradeRxjs(),
       installNodeModules(options),
