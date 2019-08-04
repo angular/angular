@@ -406,6 +406,41 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('diagnostics', () => {
+      it('should fail with formatted diagnostics when an error diagnostic is produced', () => {
+        loadTestFiles([
+          {
+            name: _('/node_modules/fatal-error/package.json'),
+            contents: '{"name": "fatal-error", "es2015": "./index.js", "typings": "./index.d.ts"}',
+          },
+          {name: _('/node_modules/fatal-error/index.metadata.json'), contents: 'DUMMY DATA'},
+          {
+            name: _('/node_modules/fatal-error/index.js'),
+            contents: `
+              import {Component} from '@angular/core';
+              export class FatalError {}
+              FatalError.decorators = [
+                {type: Component, args: [{selector: 'fatal-error'}]}
+              ];
+            `,
+          },
+          {
+            name: _('/node_modules/fatal-error/index.d.ts'),
+            contents: `
+              export declare class FatalError {}
+            `,
+          },
+        ]);
+        expect(() => mainNgcc({
+                 basePath: '/node_modules',
+                 targetEntryPointPath: 'fatal-error',
+                 propertiesToConsider: ['es2015']
+               }))
+            .toThrowError(
+                /^Failed to compile entry-point fatal-error due to compilation errors:\nnode_modules\/fatal-error\/index\.js\(5,17\): error TS-992001: component is missing a template\r?\n$/);
+      });
+    });
+
     describe('logger', () => {
       it('should log info message to the console by default', () => {
         const consoleInfoSpy = spyOn(console, 'info');

@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+
+import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath, absoluteFromSourceFile, relative} from '../../../src/ngtsc/file_system';
 import {ClassSymbol, Decorator} from '../../../src/ngtsc/reflection';
 import {DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
+
 import {AnalyzedClass, MatchingHandler} from './types';
 
 export function isWithinPackage(packagePath: AbsoluteFsPath, sourceFile: ts.SourceFile): boolean {
@@ -59,11 +62,19 @@ export function analyzeDecorators(
   const matches: {handler: DecoratorHandler<any, any>, analysis: any}[] = [];
   const allDiagnostics: ts.Diagnostic[] = [];
   for (const {handler, detected} of detections) {
-    const {analysis, diagnostics} = handler.analyze(declaration, detected.metadata);
-    if (diagnostics !== undefined) {
-      allDiagnostics.push(...diagnostics);
+    try {
+      const {analysis, diagnostics} = handler.analyze(declaration, detected.metadata);
+      if (diagnostics !== undefined) {
+        allDiagnostics.push(...diagnostics);
+      }
+      matches.push({handler, analysis});
+    } catch (e) {
+      if (isFatalDiagnosticError(e)) {
+        allDiagnostics.push(e.toDiagnostic());
+      } else {
+        throw e;
+      }
     }
-    matches.push({handler, analysis});
   }
   return {
     name: symbol.name,

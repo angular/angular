@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import * as ts from 'typescript';
+
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
@@ -26,7 +28,6 @@ import {PathMappings} from './utils';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
-
 
 /**
  * The options to configure the ngcc compiler.
@@ -171,8 +172,17 @@ export function mainNgcc(
 
       logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 
-      const transformedFiles = transformer.transform(bundle);
-      fileWriter.writeBundle(bundle, transformedFiles, formatPropertiesToMarkAsProcessed);
+      const result = transformer.transform(bundle);
+      if (result.success) {
+        if (result.diagnostics.length > 0) {
+          logger.warn(ts.formatDiagnostics(result.diagnostics, bundle.src.host));
+        }
+        fileWriter.writeBundle(bundle, result.transformedFiles, formatPropertiesToMarkAsProcessed);
+      } else {
+        const errors = ts.formatDiagnostics(result.diagnostics, bundle.src.host);
+        throw new Error(
+            `Failed to compile entry-point ${entryPoint.name} due to compilation errors:\n${errors}`);
+      }
 
       onTaskCompleted(task, TaskProcessingOutcome.Processed);
     };

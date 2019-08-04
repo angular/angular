@@ -130,7 +130,13 @@ export class DecorationAnalyzer {
 
   protected analyzeClass(symbol: ClassSymbol): AnalyzedClass|null {
     const decorators = this.reflectionHost.getDecoratorsOfSymbol(symbol);
-    return analyzeDecorators(symbol, decorators, this.handlers);
+    const analyzedClass = analyzeDecorators(symbol, decorators, this.handlers);
+    if (analyzedClass !== null && analyzedClass.diagnostics !== undefined) {
+      for (const diagnostic of analyzedClass.diagnostics) {
+        this.diagnosticHandler(diagnostic);
+      }
+    }
+    return analyzedClass;
   }
 
   protected migrateFile(migrationHost: MigrationHost, analyzedFile: AnalyzedFile): void {
