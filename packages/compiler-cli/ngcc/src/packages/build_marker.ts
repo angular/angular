@@ -38,17 +38,25 @@ export function hasBeenProcessed(
 }
 
 /**
- * Write a build marker for the given entry-point and format property, to indicate that it has
+ * Write a build marker for the given entry-point and format properties, to indicate that they have
  * been compiled by this version of ngcc.
  *
- * @param entryPoint the entry-point to write a marker.
- * @param format the property in the package.json of the format for which we are writing the marker.
+ * @param fs The current file-system being used.
+ * @param packageJson The parsed contents of the `package.json` file for the entry-point.
+ * @param packageJsonPath The absolute path to the `package.json` file.
+ * @param properties The properties in the `package.json` of the formats for which we are writing
+ *                   the marker.
  */
 export function markAsProcessed(
     fs: FileSystem, packageJson: EntryPointPackageJson, packageJsonPath: AbsoluteFsPath,
-    format: EntryPointJsonProperty) {
-  if (!packageJson.__processed_by_ivy_ngcc__) packageJson.__processed_by_ivy_ngcc__ = {};
-  packageJson.__processed_by_ivy_ngcc__[format] = NGCC_VERSION;
+    properties: EntryPointJsonProperty[]) {
+  const processed =
+      packageJson.__processed_by_ivy_ngcc__ || (packageJson.__processed_by_ivy_ngcc__ = {});
+
+  for (const prop of properties) {
+    processed[prop] = NGCC_VERSION;
+  }
+
   // Just in case this package.json was synthesized due to a custom configuration
   // we will ensure that the path to the containing folder exists before we write the file.
   fs.ensureDir(dirname(packageJsonPath));

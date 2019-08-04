@@ -86,6 +86,12 @@ runInEachFileSystem(() => {
         // `test-package` has no Angular but is marked as processed.
         expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
+          esm2015: '0.0.0-PLACEHOLDER',
+          esm5: '0.0.0-PLACEHOLDER',
+          fesm2015: '0.0.0-PLACEHOLDER',
+          fesm5: '0.0.0-PLACEHOLDER',
+          main: '0.0.0-PLACEHOLDER',
+          module: '0.0.0-PLACEHOLDER',
         });
 
         // * `core` is a dependency of `test-package`, but it is not processed, since test-package
@@ -164,9 +170,7 @@ runInEachFileSystem(() => {
       const basePath = _('/node_modules');
       const targetPackageJsonPath = join(basePath, packagePath, 'package.json');
       const targetPackage = loadPackage(packagePath);
-      markAsProcessed(fs, targetPackage, targetPackageJsonPath, 'typings');
-      properties.forEach(
-          property => markAsProcessed(fs, targetPackage, targetPackageJsonPath, property));
+      markAsProcessed(fs, targetPackage, targetPackageJsonPath, ['typings', ...properties]);
     }
 
 
