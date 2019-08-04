@@ -147,10 +147,11 @@ export function mainNgcc(
       // Either this format was just compiled or its underlying format was compiled because of a
       // previous property.
       if (compiledFormats.has(formatPath)) {
-        markAsProcessed(fileSystem, entryPointPackageJson, entryPointPackageJsonPath, property);
-        if (processDts) {
-          markAsProcessed(fileSystem, entryPointPackageJson, entryPointPackageJsonPath, 'typings');
-        }
+        const propsToMarkAsProcessed = [property];
+        if (processDts) propsToMarkAsProcessed.push('typings');
+
+        markAsProcessed(
+            fileSystem, entryPointPackageJson, entryPointPackageJsonPath, propsToMarkAsProcessed);
       }
     }
 
@@ -193,7 +194,7 @@ function getTargetedEntryPoints(
       fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
   const entryPointInfo = finder.findEntryPoints();
   if (entryPointInfo.entryPoints.length === 0) {
-    markNonAngularPackageAsProcessed(fs, absoluteTargetEntryPointPath, propertiesToConsider);
+    markNonAngularPackageAsProcessed(fs, absoluteTargetEntryPointPath);
   }
   return entryPointInfo;
 }
@@ -242,14 +243,13 @@ function hasProcessedTargetEntryPoint(
  * So mark all formats in this entry-point as processed so that clients of ngcc can avoid
  * triggering ngcc for this entry-point in the future.
  */
-function markNonAngularPackageAsProcessed(
-    fs: FileSystem, path: AbsoluteFsPath, propertiesToConsider: string[]) {
+function markNonAngularPackageAsProcessed(fs: FileSystem, path: AbsoluteFsPath) {
   const packageJsonPath = resolve(path, 'package.json');
   const packageJson = JSON.parse(fs.readFile(packageJsonPath));
-  propertiesToConsider.forEach(formatProperty => {
-    if (packageJson[formatProperty])
-      markAsProcessed(fs, packageJson, packageJsonPath, formatProperty as EntryPointJsonProperty);
-  });
+
+  // Note: We are marking all supported properties as processed, even if they don't exist in the
+  //       `package.json` file. While this is redundant, it is also harmless.
+  markAsProcessed(fs, packageJson, packageJsonPath, SUPPORTED_FORMAT_PROPERTIES);
 }
 
 function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryPoint[]): void {
