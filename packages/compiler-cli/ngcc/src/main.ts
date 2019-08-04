@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
+
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
 import {DependencyResolver, InvalidEntryPoint, SortedEntryPointsInfo} from './dependencies/dependency_resolver';
 import {EsmDependencyHost} from './dependencies/esm_dependency_host';
@@ -17,13 +18,14 @@ import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
-import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
+
 
 /**
  * The options to configure the ngcc compiler.
@@ -68,8 +70,6 @@ export interface NgccOptions {
   fileSystem?: FileSystem;
 }
 
-const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015', 'umd', 'commonjs'];
-
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).
  *
@@ -110,14 +110,14 @@ export function mainNgcc(
 
     const hasProcessedDts = hasBeenProcessed(entryPointPackageJson, 'typings');
 
-    for (let i = 0; i < propertiesToConsider.length; i++) {
-      const property = propertiesToConsider[i] as EntryPointJsonProperty;
+    for (const property of propertiesToConsider as EntryPointJsonProperty[]) {
       const formatPath = entryPointPackageJson[property];
       const format = getEntryPointFormat(fileSystem, entryPoint, property);
 
       // No format then this property is not supposed to be compiled.
-      if (!formatPath || !format || SUPPORTED_FORMATS.indexOf(format) === -1) continue;
+      if (!formatPath || !format) continue;
 
+      // The `formatPath` which the property maps to is already processed - nothing to do.
       if (hasBeenProcessed(entryPointPackageJson, property)) {
         compiledFormats.add(formatPath);
         logger.debug(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
