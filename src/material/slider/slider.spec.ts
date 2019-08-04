@@ -215,6 +215,13 @@ describe('MatSlider', () => {
       expect(sliderInstance.value).toBe(100);
     });
 
+    it('should prevent the default action of the `selectstart` event', () => {
+      const event = dispatchFakeEvent(sliderNativeElement, 'selectstart');
+      fixture.detectChanges();
+
+      expect(event.defaultPrevented).toBe(true);
+    });
+
   });
 
   describe('disabled slider', () => {

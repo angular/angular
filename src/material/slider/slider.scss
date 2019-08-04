@@ -35,6 +35,11 @@ $mat-slider-focus-ring-size: 30px !default;
   padding: $mat-slider-padding;
   outline: none;
   vertical-align: middle;
+
+  &:not(.mat-slider-disabled):active,
+  &.mat-slider-sliding:not(.mat-slider-disabled) {
+    @include cursor-grabbing;
+  }
 }
 
 .mat-slider-wrapper {
@@ -102,13 +107,8 @@ $mat-slider-focus-ring-size: 30px !default;
 }
 
 %_mat-slider-cursor {
-  .mat-slider:not(.mat-slider-disabled) & {
+  .mat-slider:not(.mat-slider-disabled):not(.mat-slider-sliding) & {
     @include cursor-grab;
-  }
-
-  .mat-slider:not(.mat-slider-disabled) &:active,
-  .mat-slider-sliding:not(.mat-slider-disabled) & {
-    @include cursor-grabbing;
   }
 }
 
