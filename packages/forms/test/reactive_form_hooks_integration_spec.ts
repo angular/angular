@@ -8,24 +8,24 @@
 
 import {Component, Input, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {AbstractControlOptions, AsyncValidatorFn, ControlValueAccessor, FormControl, FormGroup, FormHooks, FormsModule, NG_FORM_HOOKS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, ValidatorFn} from '@angular/forms';
+import {AbstractControlOptions, AsyncValidatorFn, ControlValueAccessor, FormControl, FormGroup, FormsHook, FormsModule, NG_FORMS_HOOK, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, ValidatorFn} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 
 {
-  describe('reactive forms FormHooks integration tests', () => {
+  describe('reactive forms FormsHook integration tests', () => {
 
     function initTest<T>(
-        formHooks: FormHooks, component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
+        formsHook: FormsHook, component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
       TestBed.configureTestingModule({
         declarations: [component, ...directives],
         imports: [FormsModule, ReactiveFormsModule],
-        providers: [{provide: NG_FORM_HOOKS, useValue: formHooks}]
+        providers: [{provide: NG_FORMS_HOOK, useValue: formsHook}]
       });
       return TestBed.createComponent(component);
     }
 
-    describe('FormHooks', () => {
-      let hooks: FormHooks;
+    describe('FormsHook', () => {
+      let hooks: FormsHook;
 
       beforeEach(() => {
         hooks = {
@@ -135,8 +135,8 @@ import {By} from '@angular/platform-browser';
          });
     });
 
-    describe('FormHooks for postfix', () => {
-      let hooks: FormHooks;
+    describe('FormsHook for postfix', () => {
+      let hooks: FormsHook;
 
       beforeEach(() => {
         hooks = {

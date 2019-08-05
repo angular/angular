@@ -13,11 +13,11 @@ import {NgControl} from './ng_control';
 /**
  * @description
  * `InjectionToken` to provide to register hooks on reactive forms.
- * Provide a FormHooks instance with this token.
+ * Provide a FormsHook instance with this token.
  * @ngModule ReactiveFormsModule
  * @publicApi
  */
-export const NG_FORM_HOOKS = new InjectionToken('NgFormHooks');
+export const NG_FORMS_HOOK = new InjectionToken('NgFormsHook');
 
 /**
  * @description
@@ -31,7 +31,7 @@ export const NG_FORM_HOOKS = new InjectionToken('NgFormHooks');
  *
  * ```ts
  * @Injectable()
- * class MyFormHooks implements FormHooks {
+ * class MyFormsHook implements FormsHook {
  *   ...
  * }
  * ```
@@ -50,7 +50,7 @@ export const NG_FORM_HOOKS = new InjectionToken('NgFormHooks');
  * @ngModule ReactiveFormsModule
  * @publicApi
  */
-export interface FormHooks {
+export interface FormsHook {
   /**
    * @description
    * Hook called when connection between FormControl and NgControl is established.

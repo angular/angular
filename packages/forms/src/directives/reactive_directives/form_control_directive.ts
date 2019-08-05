@@ -11,7 +11,7 @@ import {Directive, EventEmitter, Inject, InjectionToken, Input, OnChanges, Optio
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
-import {FormHooks, NG_FORM_HOOKS} from '../form_hooks';
+import {FormsHook, NG_FORMS_HOOK} from '../form_hooks';
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
 import {_ngModelWarning, cleanUpControl, composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
@@ -169,7 +169,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[],
               @Optional() @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING) private _ngModelWarningConfig: string|null,
-              @Optional() @Inject(NG_FORM_HOOKS) private formHooks?: FormHooks) {
+              @Optional() @Inject(NG_FORMS_HOOK) private formsHook?: FormsHook) {
                 super();
                 this._rawValidators = validators || [];
                 this._rawAsyncValidators = asyncValidators || [];
@@ -186,9 +186,9 @@ export class FormControlDirective extends NgControl implements OnChanges {
               ngOnChanges(changes: SimpleChanges): void {
                 if (this._isControlChanged(changes)) {
                   if (changes.form.previousValue) {
-                    cleanUpControl(changes.form.previousValue, this, this.formHooks);
+                    cleanUpControl(changes.form.previousValue, this, this.formsHook);
                   }
-                  setUpControl(this.form, this, this.formHooks);
+                  setUpControl(this.form, this, this.formsHook);
                   if (this.control.disabled && this.valueAccessor !.setDisabledState) {
                     this.valueAccessor !.setDisabledState !(true);
                   }

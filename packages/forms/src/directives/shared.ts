@@ -16,7 +16,7 @@ import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
 import {DefaultValueAccessor} from './default_value_accessor';
-import {FormHooks} from './form_hooks';
+import {FormsHook} from './form_hooks';
 import {NgControl} from './ng_control';
 import {normalizeAsyncValidator, normalizeValidator} from './normalize_validator';
 import {NumberValueAccessor} from './number_value_accessor';
@@ -33,7 +33,7 @@ export function controlPath(name: string, parent: ControlContainer): string[] {
   return [...parent.path !, name];
 }
 
-export function setUpControl(control: FormControl, dir: NgControl, formHooks?: FormHooks): void {
+export function setUpControl(control: FormControl, dir: NgControl, formsHook?: FormsHook): void {
   if (!control) _throwError(dir, 'Cannot find control with');
   if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
 
@@ -51,8 +51,8 @@ export function setUpControl(control: FormControl, dir: NgControl, formHooks?: F
         (isDisabled: boolean) => { dir.valueAccessor !.setDisabledState !(isDisabled); });
   }
 
-  if (formHooks && formHooks.setUpControl) {
-    formHooks.setUpControl(control, dir);
+  if (formsHook && formsHook.setUpControl) {
+    formsHook.setUpControl(control, dir);
   }
 
   // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
@@ -67,7 +67,7 @@ export function setUpControl(control: FormControl, dir: NgControl, formHooks?: F
   });
 }
 
-export function cleanUpControl(control: FormControl, dir: NgControl, formHooks?: FormHooks) {
+export function cleanUpControl(control: FormControl, dir: NgControl, formsHook?: FormsHook) {
   dir.valueAccessor !.registerOnChange(() => _noControlError(dir));
   dir.valueAccessor !.registerOnTouched(() => _noControlError(dir));
 
@@ -83,8 +83,8 @@ export function cleanUpControl(control: FormControl, dir: NgControl, formHooks?:
     }
   });
 
-  if (formHooks && formHooks.cleanUpControl) {
-    formHooks.cleanUpControl(control, dir);
+  if (formsHook && formsHook.cleanUpControl) {
+    formsHook.cleanUpControl(control, dir);
   }
 
   if (control) control._clearChangeFns();
