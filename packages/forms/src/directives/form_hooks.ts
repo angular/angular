@@ -11,8 +11,11 @@ import {FormControl} from '../model';
 import {NgControl} from './ng_control';
 
 /**
- * Token to provide to use register hooks to reactive forms. provide a FormHooks instance with this
- * token.
+ * @description
+ * `InjectionToken` to provide to register hooks on reactive forms.
+ * Provide a FormHooks instance with this token.
+ * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 export const NG_FORM_HOOKS = new InjectionToken('NgFormHooks');
 
