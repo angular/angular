@@ -16,6 +16,7 @@ import {cleanUpControl, composeAsyncValidators, composeValidators, removeDir, se
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
+import {FormHooks, NG_FORM_HOOKS} from "../form_hooks";
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,
@@ -31,7 +32,7 @@ export const formDirectiveProvider: any = {
  * `FormGroup` instance to match any child `FormControl`, `FormGroup`,
  * and `FormArray` instances to child `FormControlName`, `FormGroupName`,
  * and `FormArrayName` directives.
- * 
+ *
  * @see [Reactive Forms Guide](guide/reactive-forms)
  * @see `AbstractControl`
  *
@@ -82,7 +83,8 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[],
+      @Optional() @Inject(NG_FORM_HOOKS) private formHooks?: FormHooks) {
     super();
   }
 
@@ -129,7 +131,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
    */
   addControl(dir: FormControlName): FormControl {
     const ctrl: any = this.form.get(dir.path);
-    setUpControl(ctrl, dir);
+    setUpControl(ctrl, dir, this.formHooks);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
     return ctrl;
@@ -251,8 +253,8 @@ export class FormGroupDirective extends ControlContainer implements Form,
     this.directives.forEach(dir => {
       const newCtrl: any = this.form.get(dir.path);
       if (dir.control !== newCtrl) {
-        cleanUpControl(dir.control, dir);
-        if (newCtrl) setUpControl(newCtrl, dir);
+        cleanUpControl(dir.control, dir, this.formHooks);
+        if (newCtrl) setUpControl(newCtrl, dir, this.formHooks);
         (dir as{control: FormControl}).control = newCtrl;
       }
     });

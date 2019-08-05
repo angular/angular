@@ -13,8 +13,9 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
-import {_ngModelWarning, composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
+import {_ngModelWarning, composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl, cleanUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
+import {FormHooks, NG_FORM_HOOKS} from '../form_hooks';
 
 
 /**
@@ -31,7 +32,7 @@ export const formControlBinding: any = {
 /**
  * @description
  * * Syncs a standalone `FormControl` instance to a form control element.
- * 
+ *
  * @see [Reactive Forms Guide](guide/reactive-forms)
  * @see `FormControl`
  * @see `AbstractControl`
@@ -39,7 +40,7 @@ export const formControlBinding: any = {
  * @usageNotes
  *
  * ### Registering a single form control
- * 
+ *
  * The following examples shows how to register a standalone control and set its value.
  *
  * {@example forms/ts/simpleFormControl/simple_form_control_example.ts region='Component'}
@@ -167,7 +168,8 @@ export class FormControlDirective extends NgControl implements OnChanges {
               @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<AsyncValidator|AsyncValidatorFn>,
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[],
-              @Optional() @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING) private _ngModelWarningConfig: string|null) {
+              @Optional() @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING) private _ngModelWarningConfig: string|null,
+              @Optional() @Inject(NG_FORM_HOOKS) private formHooks?: FormHooks) {
                 super();
                 this._rawValidators = validators || [];
                 this._rawAsyncValidators = asyncValidators || [];
@@ -183,7 +185,10 @@ export class FormControlDirective extends NgControl implements OnChanges {
                */
               ngOnChanges(changes: SimpleChanges): void {
                 if (this._isControlChanged(changes)) {
-                  setUpControl(this.form, this);
+                  if (changes.form.previousValue) {
+                    cleanUpControl(changes.form.previousValue, this, this.formHooks);
+                  }
+                  setUpControl(this.form, this, this.formHooks);
                   if (this.control.disabled && this.valueAccessor !.setDisabledState) {
                     this.valueAccessor !.setDisabledState !(true);
                   }

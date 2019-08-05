@@ -26,13 +26,14 @@ import {ReactiveErrors} from './reactive_errors';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+import {FormHooks} from './form_hooks';
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {
   return [...parent.path !, name];
 }
 
-export function setUpControl(control: FormControl, dir: NgControl): void {
+export function setUpControl(control: FormControl, dir: NgControl, formHooks?: FormHooks): void {
   if (!control) _throwError(dir, 'Cannot find control with');
   if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
 
@@ -50,6 +51,10 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
         (isDisabled: boolean) => { dir.valueAccessor !.setDisabledState !(isDisabled); });
   }
 
+  if (formHooks && formHooks.setUpControl) {
+    formHooks.setUpControl(control, dir);
+  }
+
   // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
   dir._rawValidators.forEach((validator: Validator | ValidatorFn) => {
     if ((<Validator>validator).registerOnValidatorChange)
@@ -62,7 +67,7 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   });
 }
 
-export function cleanUpControl(control: FormControl, dir: NgControl) {
+export function cleanUpControl(control: FormControl, dir: NgControl, formHooks?: FormHooks) {
   dir.valueAccessor !.registerOnChange(() => _noControlError(dir));
   dir.valueAccessor !.registerOnTouched(() => _noControlError(dir));
 
@@ -77,6 +82,10 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
       validator.registerOnValidatorChange(null);
     }
   });
+
+  if (formHooks && formHooks.cleanUpControl) {
+    formHooks.cleanUpControl(control, dir);
+  }
 
   if (control) control._clearChangeFns();
 }
