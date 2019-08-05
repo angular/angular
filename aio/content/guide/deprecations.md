@@ -1,26 +1,45 @@
+<!--
 # Deprecated APIs and Features
+-->
+# 지원이 중단된 기능
 
+<!--
 Angular strives to balance innovation and stability.
 Sometimes, APIs and features become obsolete and need to be removed or replaced so that Angular can stay current with new best practices, changing dependencies, or changes in the (web) platform itself.
 
 To make these transitions as easy as possible, we deprecate APIs and features for a period of time before removing them. This gives you time to update your apps to the latest APIs and best practices.
 
 This guide contains a summary of all Angular APIs and features that are currently deprecated.
+-->
+Angular는 혁신과 안정성 사이에서 균형을 추구합니다.
+그래서 특정 API나 기능이 더이상 필요없다면 이 기능을 제거하거나 다른 기능으로 대체하면서 누구나 Angular를 최선의 방식으로 활용할 수 있도록 관리하고 있습니다. 가끔은 의존성 패키지가 변경되거나 플랫폼과 관련된 기능이 변경되기도 합니다.
 
+이런 변화를 자연스럽게 도입할 수 있도록 지원이 중단되는 기능이나 API는 Angular에서 바로 제거되지 않고 약간 시간 여유를 둔 이후에 제거됩니다. 지원이 중단되는 것으로 결정된 기능이 있다면 이 기간을 이용해서 더 나은 방식으로 변경하는 것이 좋습니다.
+
+이 문서는 Angular가 제공하던 기능이나 API 중에서 지금은 지원이 중단된 기능에 대해 안내합니다.
 
 <div class="alert is-helpful">
 
-
+<!--
 Features and APIs that were deprecated in v6 or earlier are candidates for removal in version 9 or any later major version. For information about Angular's deprecation and removal practices, see [Angular Release Practices](guide/releases#deprecation-practices "Angular Release Practices: Deprecation practices").
 
 For step-by-step instructions on how to update to the latest Angular release, use the interactive update guide at [update.angular.io](https://update.angular.io).
+-->
+Angular v6 버전까지 지원이 중단되기로 계획되었던 기능들은 Angular 9 버전부터 완전히 제거됩니다. 자세한 내용은 [Angular의 릴리즈 정책](guide/releases#deprecation-practices "Angular의 릴리즈 정책: 지원이 중단되는 기능") 문서를 참고하세요.
+
+그리고 지원이 중단되는 기능을 단계별로 수정하는 방법에 대해 알아보려면 [update.angular.io](https://update.angular.io) 가이드를 참고하세요.
 
 </div>
 
-
+<!--
 ## Index
+-->
+## 목차
 
+<!--
 To help you future-proof your apps, the following table lists all deprecated APIs and features, organized by the release in which they are candidates for removal. Each item is linked to the section later in this guide that describes the deprecation reason and replacement options.
+-->
+이 문서에서 설명하는 기능이나 API는 모두 지원이 중단됩니다. 각각의 링크를 클릭해서 해당 기능이 왜 없어지는지, 어떻게 변경되는지 확인해 보세요.
 
 <!--
 deprecation -> removal cheat sheet
@@ -31,10 +50,37 @@ v7 - v10
 v8 - v11
 -->
 
-
+<!--
 | Area | API or Feature | May be removed in |
 | ---- | -------------- | ----------------- |
-| `@angular/common` | [Pipes using Intl API](#i18n-pipes) | <!--v8--> v9 |
+| `@angular/common` | [Pipes using Intl API](#i18n-pipes) | &lt;!--v8--&gt; v9 |
+| `@angular/common` | [`ReflectiveInjector`](#reflectiveinjector) | &lt;!--v8--&gt; v9 |
+| `@angular/core` | [`CollectionChangeRecord`](#core) | &lt;!--v7--&gt; v9 |
+| `@angular/core` | [`DefaultIterableDiffer`](#core) | &lt;!--v7--&gt; v9 |
+| `@angular/core` | [`ReflectiveKey`](#core) | &lt;!--v8--&gt; v9 |
+| `@angular/core` | [`RenderComponentType`](#core) | &lt;!--v7--&gt; v9 |
+| `@angular/core` | [`Renderer`](#core) | &lt;!--v7--&gt; v9 |
+| `@angular/core` | [`RootRenderer`](#core) | &lt;!--v7--&gt; v9 |
+| `@angular/core` | [`ViewEncapsulation.Native`](#core) | v9 |
+| `@angular/forms` | [`ngForm` element selector](#ngform) | v9 |
+| `@angular/forms` | [`NgFormSelectorWarning`](#forms) | v9 |
+| `@angular/forms` | [`ngModel` with reactive forms](#ngmodel-reactive) | v9 |
+| `@angular/router` | [`preserveQueryParams`](#router) | &lt;!--v7--&gt; v9 |
+| `@angular/upgrade` | [`@angular/upgrade`](#upgrade) | &lt;!--v8--&gt; v9 |
+| `@angular/upgrade` | [`getAngularLib`](#upgrade-static) | &lt;!--v8--&gt; v9 |
+| `@angular/upgrade` | [`setAngularLib`](#upgrade-static) | &lt;!--v8--&gt; v9 |
+| template syntax | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector) | &lt;!--v7--&gt; unspecified |
+| template syntax | [`<template`>](#template-tag) | &lt;!--v7--&gt; v9 |
+| service worker | [`versionedFiles` setting](#sw-versionedfiles)| v9 |
+| polyfills | [reflect-metadata](#reflect-metadata) | &lt;!--v8--&gt; v9 |
+| `@angular/core` | [`defineInjectable`](#core) | v11 |
+| `@angular/router` | [`loadChildren` string syntax](#loadChildren) | v11 |
+| `@angular/router` | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
+-->
+
+| 용도 | 중단되는 기능 | 반영되는 버전 |
+| ---- | -------------- | ----------------- |
+| `@angular/common` | [다국어 API를 사용하는 파이프](#i18n-pipes) | <!--v8--> v9 |
 | `@angular/common` | [`ReflectiveInjector`](#reflectiveinjector) | <!--v8--> v9 |
 | `@angular/core` | [`CollectionChangeRecord`](#core) | <!--v7--> v9 |
 | `@angular/core` | [`DefaultIterableDiffer`](#core) | <!--v7--> v9 |
@@ -43,32 +89,41 @@ v8 - v11
 | `@angular/core` | [`Renderer`](#core) | <!--v7--> v9 |
 | `@angular/core` | [`RootRenderer`](#core) | <!--v7--> v9 |
 | `@angular/core` | [`ViewEncapsulation.Native`](#core) | v9 |
-| `@angular/forms` | [`ngForm` element selector](#ngform) | v9 |
+| `@angular/forms` | [`ngForm` 엘리먼트 셀렉터](#ngform) | v9 |
 | `@angular/forms` | [`NgFormSelectorWarning`](#forms) | v9 |
-| `@angular/forms` | [`ngModel` with reactive forms](#ngmodel-reactive) | v9 |
+| `@angular/forms` | [반응형 폼에 사용하는 `ngModel`](#ngmodel-reactive) | v9 |
 | `@angular/router` | [`preserveQueryParams`](#router) | <!--v7--> v9 |
 | `@angular/upgrade` | [`@angular/upgrade`](#upgrade) | <!--v8--> v9 |
 | `@angular/upgrade` | [`getAngularLib`](#upgrade-static) | <!--v8--> v9 |
 | `@angular/upgrade` | [`setAngularLib`](#upgrade-static) | <!--v8--> v9 |
-| template syntax | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector) | <!--v7--> unspecified |
-| template syntax | [`<template`>](#template-tag) | <!--v7--> v9 |
-| service worker | [`versionedFiles` setting](#sw-versionedfiles)| v9 |
-| polyfills | [reflect-metadata](#reflect-metadata) | <!--v8--> v9 |
+| 템플릿 문법 | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector) | <!--v7--> 확정되지 않음 |
+| 템플릿 문법 | [`<template`>](#template-tag) | <!--v7--> v9 |
+| 서비스 워커 | [`versionedFiles` 옵션](#sw-versionedfiles)| v9 |
+| 폴리필 | [reflect-metadata](#reflect-metadata) | <!--v8--> v9 |
 | `@angular/core` | [`defineInjectable`](#core) | v11 |
-| `@angular/router` | [`loadChildren` string syntax](#loadChildren) | v11 |
-| `@angular/router` | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
+| `@angular/router` | [`loadChildren` 라우팅 규칙](#loadChildren) | v11 |
+| `@angular/router` | [`ActivatedRoute` params와 `queryParams` 프로퍼티](#activatedroute-props) | 확정되지 않음 |
 
 
 
-
+{@a deprecated-apis}
+<!--
 ## Deprecated APIs
+-->
+## 지원이 중단된 API
 
+<!--
 This section contains a complete list all of the currently-deprecated APIs, with details to help you plan your migration to a replacement.
+-->
+이 섹션에서는 지금까지 지원이 중단된 API에 대해 소개하고, 이 API를 사용하고 있다면 어떻게 수정하면 되는지 안내합니다.
 
 
 <div class="alert is-helpful">
 
+<!--
 Tip: In the [API reference section](api) of this doc site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [**Status: deprecated**](api?status=deprecated).
+-->
+팁: [API 스펙](api) 문서에서 지원이 중단된 API는 ~~취소선~~으로 표시됩니다. 그리고 해당 문서에서 지원이 중단된 기능만 보려면 [**Status: deprecated**](api?status=deprecated)를 선택하면 됩니다.
 
 </div>
 
@@ -78,6 +133,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 ### @angular/common
 
 
+<!--
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) | [`CommonModule`](api/common/CommonModule#pipes) | v5 | See [Pipes](#i18n-pipes) |
@@ -85,11 +141,19 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
  | [`DeprecatedDatePipe`](api/common/DeprecatedDatePipe) | [`DatePipe`](api/common/DatePipe) | v5  | See [Pipes](#i18n-pipes) |
  | [`DeprecatedDecimalPipe`](api/common/DeprecatedDecimalPipe) | [`DecimalPipe`](api/common/DecimalPipe) | v5  | See [Pipes](#i18n-pipes) |
  | [`DeprecatedPercentPipe`](api/common/DeprecatedPercentPipe) | [`PercentPipe`](api/common/PercentPipe) | v5 | See [Pipes](#i18n-pipes) |
-
+-->
+| API | 대체 기능 | 지원 중단 발표 | 참고 |
+| --- | ----------- | --------------------- | ----- |
+| [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) | [`CommonModule`](api/common/CommonModule#pipes) | v5 | [Pipes](#i18n-pipes) 참고 |
+ | [`DeprecatedCurrencyPipe`](api/common/DeprecatedCurrencyPipe) | [`CurrencyPipe`](api/common/CurrencyPipe) | v5  | [Pipes](#i18n-pipes) 참고 |
+ | [`DeprecatedDatePipe`](api/common/DeprecatedDatePipe) | [`DatePipe`](api/common/DatePipe) | v5  | [Pipes](#i18n-pipes) 참고 |
+ | [`DeprecatedDecimalPipe`](api/common/DeprecatedDecimalPipe) | [`DecimalPipe`](api/common/DecimalPipe) | v5  | [Pipes](#i18n-pipes) 참고 |
+ | [`DeprecatedPercentPipe`](api/common/DeprecatedPercentPipe) | [`PercentPipe`](api/common/PercentPipe) | v5 | [Pipes](#i18n-pipes) 참고 |
 
 {@a core}
 ### @angular/core
 
+<!--
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`CollectionChangeRecord`](api/core/CollectionChangeRecord) | [`IterableChangeRecord`](api/core/IterableChangeRecord) | v4 | none |
@@ -106,58 +170,108 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfEndTimeRange`](api/core/wtfEndTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
 | [`wtfLeave`](api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
-
+-->
+| API | 대체 기능 | 지원 중단 발표 | 참고 |
+| --- | ----------- | --------------------- | ----- |
+| [`CollectionChangeRecord`](api/core/CollectionChangeRecord) | [`IterableChangeRecord`](api/core/IterableChangeRecord) | v4 | 없음 |
+| [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | 해당 없음 | v4 | 퍼블릭 API 아님 |
+| [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | 빌드해서 생성된 코드에만 사용되기 때문에 이 API를 직접 사용하는 코드는 없음 |
+| [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create)  | v5 | [`ReflectiveInjector`](#reflectiveinjector) 참고 |
+| [`ReflectiveKey`](api/core/ReflectiveKey) | 없음 | v5 | 없음 |
+| [`RenderComponentType`](api/core/RenderComponentType) | [`RendererType2`](api/core/RendererType2), [`Renderer2`](api/core/Renderer2) | v4 | 없음 |
+| [`Renderer`](api/core/Renderer) | [`Renderer2`](api/core/Renderer2) | v4 | 없음 |
+| [`RootRenderer`](api/core/RootRenderer) | [`RendererFactory2`](api/core/RendererFactory2) | v4 | 없음 |
+| [`ViewEncapsulation.Native`](api/core/ViewEncapsulation#Native) | [`ViewEncapsulation.ShadowDom`](api/core/ViewEncapsulation#ShadowDom) | v6 | 렌더러의 기본 캡슐화 정책을 사용하세요. [view.ts](https://github.com/angular/angular/blob/3e992e18ebf51d6036818f26c3d77b52d3ec48eb/packages/core/src/metadata/view.ts#L32) 참고 |
+| [`WtfScopeFn`](api/core/WtfScopeFn) | 없음 | v8 | [Web Tracing Framework](#wtf) 참고 |
+| [`wtfCreateScope`](api/core/wtfCreateScope) | 없음 | v8 | [Web Tracing Framework](#wtf) 참고 |
+| [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | 없음 | v8 | [Web Tracing Framework](#wtf) 참고 |
+| [`wtfEndTimeRange`](api/core/wtfEndTimeRange) | 없음 | v8 | [Web Tracing Framework](#wtf) 참고 |
+| [`wtfLeave`](api/core/wtfLeave) | 없음 | v8 | [Web Tracing Framework](#wtf) 참고 |
 
 {@a forms}
 ### @angular/forms
 
+<!--
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) | n/a | v6 | See [ngForm](#ngform). |
+-->
+| API | 대체 기능 | 지원 중단 발표 | 참고 |
+| --- | ----------- | --------------------- | ----- |
+| [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) | 해당 없음 | v6 | [ngForm](#ngform) 참고 |
 
 {@a router}
 ### @angular/router
 
+<!--
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`preserveQueryParams`](api/router/NavigationExtras#preserveQueryParams) | [`queryParamsHandling`](api/router/NavigationExtras#queryParamsHandling) | v4 | none |
+-->
+| API | 대체 기능 | 지원 중단 발표 | 참고 |
+| --- | ----------- | --------------------- | ----- |
+| [`preserveQueryParams`](api/router/NavigationExtras#preserveQueryParams) | [`queryParamsHandling`](api/router/NavigationExtras#queryParamsHandling) | v4 | 없음 |
 
 {@a platform-webworker}
 ### @angular/platform-webworker
 
+<!--
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [All entry points](api/platform-webworker) | none | v8 | See [platform-webworker](#webworker-apps). |
+-->
+| API | 대체 기능 | 지원 중단 발표 | 참고 |
+| --- | ----------- | --------------------- | ----- |
+| [모든 API](api/platform-webworker) | 없음 | v8 | [platform-webworker](#webworker-apps) 참고 |
 
 {@a platform-webworker-dynamic}
 ### @angular/platform-webworker-dynamic
 
+<!--
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [All entry points](api/platform-webworker-dynamic) | none | v8 | See [platform-webworker](#webworker-apps). |
+-->
+| API | 대체 긱능 | 지원 중단 발표 | 참고 |
+| --- | ----------- | --------------------- | ----- |
+| [모든 API](api/platform-webworker-dynamic) | 없음 | v8 | [platform-webworker](#webworker-apps) 참고 |
 
 {@a upgrade}
 ### @angular/upgrade
 
+<!--
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [All entry points](api/upgrade) | [`@angular/upgrade/static`](api/upgrade/static) | v5 | See [Upgrading from AngularJS](guide/upgrade). |
+-->
+| API | 대체 기능 | 지원 중단 발표 | 참고 |
+| --- | ----------- | --------------------- | ----- |
+| [모든 API](api/upgrade) | [`@angular/upgrade/static`](api/upgrade/static) | v5 | [Upgrading from AngularJS](guide/upgrade) 참고 |
 
 {@a upgrade-static}
 ### @angular/upgrade/static
 
+<!--
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`getAngularLib`](api/upgrade/static/getAngularLib) | [`getAngularJSGlobal`](api/upgrade/static/getAngularJSGlobal) | v5 | See [Upgrading from AngularJS](guide/upgrade). |
 [`setAngularLib`](api/upgrade/static/setAngularLib) | [`setAngularJSGlobal`](api/upgrade/static/setAngularJSGlobal) | v5 | See [Upgrading from AngularJS](guide/upgrade). |
-
-
+-->
+| API | 대체 기능 | 지원 중단 발표 | 참고 |
+| --- | ----------- | --------------------- | ----- |
+| [`getAngularLib`](api/upgrade/static/getAngularLib) | [`getAngularJSGlobal`](api/upgrade/static/getAngularJSGlobal) | v5 | [AngularJS 앱 업그레이드하기](guide/upgrade) 참고 |
+[`setAngularLib`](api/upgrade/static/setAngularLib) | [`setAngularJSGlobal`](api/upgrade/static/setAngularJSGlobal) | v5 | [AngularJS 앱 업그레이드하기](guide/upgrade) 참고 |
 
 {@a deprecated-features}
+<!--
 ## Deprecated features
+-->
+## 지원이 중단된 기능
 
+<!--
 This section lists all of the currently-deprecated features, which includes template syntax, configuration options, and any other deprecations not listed in the [Deprecated APIs](#deprecated-apis) section above. It also includes deprecated API usage scenarios or API combinations, to augment the information above.
-
+-->
+이 섹션에서는 [지원이 중단된 API](#deprecated-apis)에 다루지 않았던 템플릿 문법, 환경설정 옵션 등 지금까지 지원이 중단된 기능에 대해 안내합니다. 그리고 이 섹션에서는 좀 더 복잡한 시나리오에 사용하는 API나 여러 API를 조합해서 사용하는 API 중 이제는 지원이 중단된 API에 대해서도 설명합니다.
 
 
 {@a wtf}

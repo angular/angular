@@ -678,7 +678,7 @@
             {
               "url": "guide/upgrade",
               "title!": "Upgrading Instructions",
-              "title": "AngularJS 앱 업그레이드 하기",
+              "title": "AngularJS 앱 업그레이드하기",
               "tooltip!": "Incrementally upgrade an AngularJS application to Angular.",
               "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요."
             },
@@ -780,7 +780,7 @@
     },
     {
       "title!": "Dev Workflow",
-      "title": "개발 과정",
+      "title": "개발 단계",
       "tooltip!": "Build, testing, and deployment information.",
       "tooltip": "빌드, 테스트, 배포 과정에 대해 설명합니다.",
       "children": [
