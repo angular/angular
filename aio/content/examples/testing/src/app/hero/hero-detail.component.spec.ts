@@ -206,6 +206,7 @@ function heroModuleSetup() {
       nameInput.value = 'quick BROWN  fOx';
 
       // dispatch a DOM event so that Angular learns of input value change.
+      // use newEvent utility function (not provided by Angular) for better browser compatibility
       nameInput.dispatchEvent(newEvent('input'));
 
       // Tell Angular to update the display binding through the title pipe
