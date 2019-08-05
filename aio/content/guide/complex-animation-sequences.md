@@ -30,7 +30,7 @@ The Filter/Stagger tab in the live example shows a list of heroes with an introd
 
 The following example demonstrates how to use `query()` and `stagger()` functions on the entry of an animated element.
 
-* Use `query()` to look for any element entering or leaving the page. The query specifies elements meeting certain CSS class criteria.
+* Use `query()` to look for an element entering the page that meets certain criteria.
 
 * For each of these elements, use `style()` to set the same initial style for the element. Make it invisible and use `transform` to move it out of position so that it can slide into place.
 
