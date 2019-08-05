@@ -163,6 +163,23 @@ runInEachFileSystem(() => {
              ]);
            });
       });
+
+      it('should skip all processing if the first matching `propertyToConsider` is marked as processed',
+         () => {
+           const logger = new MockLogger();
+           markPropertiesAsProcessed('@angular/common/http/testing', ['esm2015']);
+           mainNgcc({
+             basePath: '/node_modules',
+             targetEntryPointPath: '@angular/common/http/testing',
+             // Simulate a property that does not exist on the package.json and will be ignored.
+             propertiesToConsider: ['missing', 'esm2015', 'esm5'],
+             compileAllFormats: false, logger,
+           });
+
+           expect(logger.logs.debug).toContain([
+             'The target entry-point has already been processed'
+           ]);
+         });
     });
 
 
@@ -214,6 +231,33 @@ runInEachFileSystem(() => {
              typings: '0.0.0-PLACEHOLDER',
            });
          });
+
+      it('should mark all matching properties as processed in order not to compile them on a subsequent run',
+         () => {
+           const logger = new MockLogger();
+           const logs = logger.logs.debug;
+
+           // `fesm2015` and `es2015` map to the same file: `./fesm2015/common.js`
+           mainNgcc({
+             basePath: '/node_modules/@angular/common',
+             propertiesToConsider: ['fesm2015'], logger,
+           });
+
+           expect(logs).not.toContain(['Skipping @angular/common : es2015 (already compiled).']);
+           expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toEqual({
+             es2015: '0.0.0-PLACEHOLDER',
+             fesm2015: '0.0.0-PLACEHOLDER',
+             typings: '0.0.0-PLACEHOLDER',
+           });
+
+           // Now, compiling `es2015` should be a no-op.
+           mainNgcc({
+             basePath: '/node_modules/@angular/common',
+             propertiesToConsider: ['es2015'], logger,
+           });
+
+           expect(logs).toContain(['Skipping @angular/common : es2015 (already compiled).']);
+         });
     });
 
     describe('with compileAllFormats set to false', () => {
@@ -260,6 +304,7 @@ runInEachFileSystem(() => {
 
            });
            expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+             fesm5: '0.0.0-PLACEHOLDER',
              module: '0.0.0-PLACEHOLDER',
              typings: '0.0.0-PLACEHOLDER',
            });
@@ -272,6 +317,7 @@ runInEachFileSystem(() => {
            });
            expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
              esm5: '0.0.0-PLACEHOLDER',
+             fesm5: '0.0.0-PLACEHOLDER',
              module: '0.0.0-PLACEHOLDER',
              typings: '0.0.0-PLACEHOLDER',
            });
@@ -346,6 +392,7 @@ runInEachFileSystem(() => {
         });
         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
+          fesm2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
         expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
@@ -403,6 +450,7 @@ runInEachFileSystem(() => {
         });
         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
+          fesm2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
       });
@@ -429,6 +477,7 @@ runInEachFileSystem(() => {
         // We process core but not core/testing.
         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
+          fesm2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
         expect(loadPackage('@angular/core/testing').__processed_by_ivy_ngcc__).toBeUndefined();
@@ -436,6 +485,7 @@ runInEachFileSystem(() => {
         expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toBeUndefined();
         expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
+          fesm2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
       });
