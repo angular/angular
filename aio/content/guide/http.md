@@ -89,7 +89,7 @@ That's why it is a best practice to separate presentation of data from data acce
 encapsulating data access in a separate service and delegating to that service in
 the component, even in simple cases like this one.
 
-### Type-checking the response
+### Typed response objects
 
 The subscribe callback above requires bracket notation to extract the data values.
 
@@ -98,20 +98,28 @@ The subscribe callback above requires bracket notation to extract the data value
   region="v1_callback">
 </code-example>
 
-You can't write `data.heroesUrl` because TypeScript correctly complains that the `data` object from the service does not have a `heroesUrl` property.
+You can't access the `heroesUrl` property with `data.heroesUrl` because TypeScript correctly complains that the response `data` object from the service does not have a `heroesUrl` property.
+By default, the `HttpClient.get()` method parses the JSON server response into the anonymous `Object` type. It doesn't know what properties the object has.
 
-The `HttpClient.get()` method parsed the JSON server response into the anonymous `Object` type. It doesn't know what the shape of that object is.
+However, you can structure your `HttpClient` request to include the type of the response object, to make consuming the output easier and more obvious.
+Specifying the response type acts as a type assertion during the compile time.
 
-You can tell `HttpClient` the type of the response to make consuming the output easier and more obvious.
+<div class="alert is-important">
 
-First, define an interface with the correct shape:
+Specifying the response object type tells the Typescript compiler about the response type,
+but it does *not* type cast the response from the server.
+If you need to access the response object properties, you have to explicitly convert the response object to the required type.
+
+</div>
+
+To specify the response object type, you first define an interface with the correct shape:
 
 <code-example
   path="http/src/app/config/config.service.ts"
   region="config-interface">
 </code-example>
 
-Then, specify that interface as the `HttpClient.get()` call's type parameter in the service:
+Then, specify that interface as the `HttpClient.get()` call's type parameter in the service.
 
 <code-example
   path="http/src/app/config/config.service.ts"
@@ -120,13 +128,20 @@ Then, specify that interface as the `HttpClient.get()` call's type parameter in 
 </code-example>
 
 The callback in the updated component method receives a typed data object, which is
-easier and safer to consume:
+easier and safer to consume.
 
 <code-example
   path="http/src/app/config/config.component.ts"
   region="v2"
   header="app/config/config.component.ts (showConfig v.2)">
 </code-example>
+
+<div class="alert is-important">
+
+ When you pass an interface or a class as a type parameter to `HttpClient.get` method, use the RxJS `map` operator to read the response data.
+ Angular only performs `JSON.parse` of the response; it doesn't instantiate an object of the type parameter.
+
+</div>
 
 ### Reading the full response
 
