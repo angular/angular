@@ -9,6 +9,8 @@
 .mat-mdc-chip {
   // MDC uses a pointer cursor
   cursor: default;
+  // Needed to prevent mat-ripple from escaping the chip
+  overflow: hidden;
 }
 
 // The MDC chip styles related to hover and focus states are intertwined with the MDC ripple styles.
