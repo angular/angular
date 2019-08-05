@@ -58,7 +58,7 @@ export interface EntryPointPackageJson extends PackageJsonFormatProperties {
   __processed_by_ivy_ngcc__?: {[key: string]: string};
 }
 
-export type EntryPointJsonProperty = keyof(PackageJsonFormatProperties);
+export type EntryPointJsonProperty = Exclude<keyof PackageJsonFormatProperties, 'types'|'typings'>;
 // We need to keep the elements of this const and the `EntryPointJsonProperty` type in sync.
 export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
     ['fesm2015', 'fesm5', 'es2015', 'esm2015', 'esm5', 'main', 'module'];
@@ -122,7 +122,8 @@ export function getEntryPointInfo(
  * @returns An entry-point format or `undefined` if none match the given property.
  */
 export function getEntryPointFormat(
-    fs: FileSystem, entryPoint: EntryPoint, property: string): EntryPointFormat|undefined {
+    fs: FileSystem, entryPoint: EntryPoint, property: EntryPointJsonProperty): EntryPointFormat|
+    undefined {
   switch (property) {
     case 'fesm2015':
       return 'esm2015';

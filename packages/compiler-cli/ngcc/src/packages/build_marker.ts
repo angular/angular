@@ -23,7 +23,7 @@ export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
  * @throws Error if the entry-point has already been processed with a different ngcc version.
  */
 export function hasBeenProcessed(
-    packageJson: EntryPointPackageJson, format: EntryPointJsonProperty): boolean {
+    packageJson: EntryPointPackageJson, format: EntryPointJsonProperty | 'typings'): boolean {
   if (!packageJson.__processed_by_ivy_ngcc__) {
     return false;
   }
@@ -49,7 +49,7 @@ export function hasBeenProcessed(
  */
 export function markAsProcessed(
     fs: FileSystem, packageJson: EntryPointPackageJson, packageJsonPath: AbsoluteFsPath,
-    properties: EntryPointJsonProperty[]) {
+    properties: (EntryPointJsonProperty | 'typings')[]) {
   const processed =
       packageJson.__processed_by_ivy_ngcc__ || (packageJson.__processed_by_ivy_ngcc__ = {});
 

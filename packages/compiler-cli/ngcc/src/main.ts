@@ -82,6 +82,8 @@ export function mainNgcc(
     {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
      compileAllFormats = true, createNewEntryPointFormats = false,
      logger = new ConsoleLogger(LogLevel.info), pathMappings}: NgccOptions): void {
+  const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
+
   const fileSystem = getFileSystem();
   const transformer = new Transformer(fileSystem, logger);
   const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
@@ -99,7 +101,7 @@ export function mainNgcc(
   const fileWriter = getFileWriter(fileSystem, createNewEntryPointFormats);
   const entryPoints = getEntryPoints(
       fileSystem, config, logger, resolver, absBasePath, targetEntryPointPath, pathMappings,
-      propertiesToConsider, compileAllFormats);
+      supportedPropertiesToConsider, compileAllFormats);
   for (const entryPoint of entryPoints) {
     // Are we compiling the Angular core?
     const isCore = entryPoint.name === '@angular/core';
@@ -111,7 +113,7 @@ export function mainNgcc(
 
     let processDts = !hasBeenProcessed(entryPointPackageJson, 'typings');
 
-    for (const property of propertiesToConsider as EntryPointJsonProperty[]) {
+    for (const property of supportedPropertiesToConsider) {
       // If we only need one format processed and we already have one, exit the loop.
       if (!compileAllFormats && (compiledFormats.size > 0)) break;
 
@@ -139,7 +141,8 @@ export function mainNgcc(
         fileWriter.writeBundle(entryPoint, bundle, transformedFiles);
         compiledFormats.add(formatPath);
 
-        const propsToMarkAsProcessed = pathToPropsMap.get(formatPath) !;
+        const propsToMarkAsProcessed: (EntryPointJsonProperty | 'typings')[] =
+            pathToPropsMap.get(formatPath) !;
         if (processDts) {
           propsToMarkAsProcessed.push('typings');
           processDts = false;
@@ -152,9 +155,31 @@ export function mainNgcc(
 
     if (compiledFormats.size === 0) {
       throw new Error(
-          `Failed to compile any formats for entry-point at (${entryPoint.path}). Tried ${propertiesToConsider}.`);
+          `Failed to compile any formats for entry-point at (${entryPoint.path}). Tried ${supportedPropertiesToConsider}.`);
     }
   }
+}
+
+function ensureSupportedProperties(properties: string[]): EntryPointJsonProperty[] {
+  // Short-circuit the case where `properties` has fallen back to the default value:
+  // `SUPPORTED_FORMAT_PROPERTIES`
+  if (properties === SUPPORTED_FORMAT_PROPERTIES) return SUPPORTED_FORMAT_PROPERTIES;
+
+  const supportedProperties: EntryPointJsonProperty[] = [];
+
+  for (const prop of properties as EntryPointJsonProperty[]) {
+    if (SUPPORTED_FORMAT_PROPERTIES.indexOf(prop) !== -1) {
+      supportedProperties.push(prop);
+    }
+  }
+
+  if (supportedProperties.length === 0) {
+    throw new Error(
+        `No supported format property to consider among [${properties.join(', ')}]. ` +
+        `Supported properties: ${SUPPORTED_FORMAT_PROPERTIES.join(', ')}`);
+  }
+
+  return supportedProperties;
 }
 
 function getFileWriter(fs: FileSystem, createNewEntryPointFormats: boolean): FileWriter {
