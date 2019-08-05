@@ -200,6 +200,17 @@ runInEachFileSystem(() => {
 
 
     describe('with propertiesToConsider', () => {
+      it('should complain if none of the properties in the `propertiesToConsider` list is supported',
+         () => {
+           const propertiesToConsider = ['es1337', 'fesm42'];
+           const errorMessage =
+               'No supported format property to consider among [es1337, fesm42]. Supported ' +
+               'properties: fesm2015, fesm5, es2015, esm2015, esm5, main, module';
+
+           expect(() => mainNgcc({basePath: '/node_modules', propertiesToConsider}))
+               .toThrowError(errorMessage);
+         });
+
       it('should only compile the entry-point formats given in the `propertiesToConsider` list',
          () => {
            mainNgcc({
