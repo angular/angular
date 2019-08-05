@@ -18,7 +18,7 @@ import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
@@ -107,6 +107,7 @@ export function mainNgcc(
     const compiledFormats = new Set<string>();
     const entryPointPackageJson = entryPoint.packageJson;
     const entryPointPackageJsonPath = fileSystem.resolve(entryPoint.path, 'package.json');
+    const pathToPropsMap = getFormatPathToPropertiesMap(entryPointPackageJson);
 
     let processDts = !hasBeenProcessed(entryPointPackageJson, 'typings');
 
@@ -128,34 +129,29 @@ export function mainNgcc(
       }
 
 
-      // We don't break if this if statement fails because we still want to mark
-      // the property as processed even if its underlying format has been built already.
       if (!compiledFormats.has(formatPath)) {
         const bundle = makeEntryPointBundle(
             fileSystem, entryPoint, formatPath, isCore, property, format, processDts, pathMappings,
             true);
+
         if (bundle) {
           logger.info(`Compiling ${entryPoint.name} : ${property} as ${format}`);
           const transformedFiles = transformer.transform(bundle);
           fileWriter.writeBundle(entryPoint, bundle, transformedFiles);
           compiledFormats.add(formatPath);
+
+          const propsToMarkAsProcessed = pathToPropsMap.get(formatPath) !;
+          if (processDts) {
+            propsToMarkAsProcessed.push('typings');
+            processDts = false;
+          }
+
+          markAsProcessed(
+              fileSystem, entryPointPackageJson, entryPointPackageJsonPath, propsToMarkAsProcessed);
         } else {
           logger.warn(
               `Skipping ${entryPoint.name} : ${format} (no valid entry point file for this format).`);
         }
-      }
-
-      // Either this format was just compiled or its underlying format was compiled because of a
-      // previous property.
-      if (compiledFormats.has(formatPath)) {
-        const propsToMarkAsProcessed = [property];
-        if (processDts) {
-          propsToMarkAsProcessed.push('typings');
-          processDts = false;
-        }
-
-        markAsProcessed(
-            fileSystem, entryPointPackageJson, entryPointPackageJsonPath, propsToMarkAsProcessed);
       }
     }
 
@@ -263,4 +259,21 @@ function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryP
         `It is missing required dependencies:\n` +
             invalidEntryPoint.missingDependencies.map(dep => ` - ${dep}`).join('\n'));
   });
+}
+
+function getFormatPathToPropertiesMap(packageJson: EntryPointPackageJson):
+    Map<string, EntryPointJsonProperty[]> {
+  const map = new Map<string, EntryPointJsonProperty[]>();
+
+  for (const prop of SUPPORTED_FORMAT_PROPERTIES) {
+    const formatPath = packageJson[prop];
+    if (formatPath) {
+      if (!map.has(formatPath)) {
+        map.set(formatPath, []);
+      }
+      map.get(formatPath) !.push(prop);
+    }
+  }
+
+  return map;
 }
