@@ -9,7 +9,7 @@
 import {DepGraph} from 'dependency-graph';
 import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
-import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
+import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from '../packages/entry_point';
 import {DependencyHost, DependencyInfo} from './dependency_host';
 
 const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
@@ -177,16 +177,16 @@ export class DependencyResolver {
 
   private getEntryPointFormatInfo(entryPoint: EntryPoint):
       {format: EntryPointFormat, path: AbsoluteFsPath} {
-    const properties = Object.keys(entryPoint.packageJson);
-    for (let i = 0; i < properties.length; i++) {
-      const property = properties[i] as EntryPointJsonProperty;
-      const format = getEntryPointFormat(this.fs, entryPoint, property);
+    for (const property of SUPPORTED_FORMAT_PROPERTIES) {
+      const formatPath = entryPoint.packageJson[property];
+      if (formatPath === undefined) continue;
 
-      if (format === 'esm2015' || format === 'esm5' || format === 'umd' || format === 'commonjs') {
-        const formatPath = entryPoint.packageJson[property] !;
-        return {format, path: resolve(entryPoint.path, formatPath)};
-      }
+      const format = getEntryPointFormat(this.fs, entryPoint, property);
+      if (format === undefined) continue;
+
+      return {format, path: resolve(entryPoint.path, formatPath)};
     }
+
     throw new Error(
         `There is no appropriate source code format in '${entryPoint.path}' entry-point.`);
   }
