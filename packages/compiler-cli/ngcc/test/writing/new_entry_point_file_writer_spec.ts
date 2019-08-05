@@ -357,6 +357,6 @@ runInEachFileSystem(() => {
       format: EntryPointFormat): EntryPointBundle {
     return makeEntryPointBundle(
         fs, entryPoint, entryPoint.packageJson[formatProperty] !, false, formatProperty, format,
-        true) !;
+        true);
   }
 });
