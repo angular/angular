@@ -134,24 +134,19 @@ export function mainNgcc(
             fileSystem, entryPoint, formatPath, isCore, property, format, processDts, pathMappings,
             true);
 
-        if (bundle) {
-          logger.info(`Compiling ${entryPoint.name} : ${property} as ${format}`);
-          const transformedFiles = transformer.transform(bundle);
-          fileWriter.writeBundle(entryPoint, bundle, transformedFiles);
-          compiledFormats.add(formatPath);
+        logger.info(`Compiling ${entryPoint.name} : ${property} as ${format}`);
+        const transformedFiles = transformer.transform(bundle);
+        fileWriter.writeBundle(entryPoint, bundle, transformedFiles);
+        compiledFormats.add(formatPath);
 
-          const propsToMarkAsProcessed = pathToPropsMap.get(formatPath) !;
-          if (processDts) {
-            propsToMarkAsProcessed.push('typings');
-            processDts = false;
-          }
-
-          markAsProcessed(
-              fileSystem, entryPointPackageJson, entryPointPackageJsonPath, propsToMarkAsProcessed);
-        } else {
-          logger.warn(
-              `Skipping ${entryPoint.name} : ${format} (no valid entry point file for this format).`);
+        const propsToMarkAsProcessed = pathToPropsMap.get(formatPath) !;
+        if (processDts) {
+          propsToMarkAsProcessed.push('typings');
+          processDts = false;
         }
+
+        markAsProcessed(
+            fileSystem, entryPointPackageJson, entryPointPackageJsonPath, propsToMarkAsProcessed);
       }
     }
 
