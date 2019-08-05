@@ -950,7 +950,7 @@ function validateAgainstUnknownProperties(
   }
 }
 
-function matchingSchemas(hostView: LView, tagName: string | null): boolean {
+export function matchingSchemas(hostView: LView, tagName: string | null): boolean {
   const schemas = hostView[TVIEW].schemas;
 
   if (schemas !== null) {

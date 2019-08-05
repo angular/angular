@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, NO_ERRORS_SCHEMA, NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, NO_ERRORS_SCHEMA, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('NgModule', () => {
@@ -132,6 +132,68 @@ describe('NgModule', () => {
         fixture.detectChanges();
       }).not.toThrow();
     });
-  });
 
+    it('should not throw unknown element error with CUSTOM_ELEMENTS_SCHEMA', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `<custom-el></custom-el>`,
+      })
+      class MyComp {
+      }
+
+      @NgModule({
+        imports: [CommonModule],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        declarations: [MyComp],
+      })
+      class MyModule {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [MyModule],
+      });
+
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
+    it('should throw unknown element error without CUSTOM_ELEMENTS_SCHEMA', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `<custom-el></custom-el>`,
+      })
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [MyComp],
+      });
+
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).toThrow();
+    });
+
+    it('should throw unknown element error over unknown property without CUSTOM_ELEMENTS_SCHEMA',
+       () => {
+         @Component({
+           selector: 'my-comp',
+           template: `<custom-el [unknown-prop]="true"></custom-el>`,
+         })
+         class MyComp {
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [MyComp],
+         });
+
+         expect(() => {
+           const fixture = TestBed.createComponent(MyComp);
+           fixture.detectChanges();
+         }).toThrowError(/CUSTOM_ELEMENTS_SCHEMA/);
+       });
+  });
 });

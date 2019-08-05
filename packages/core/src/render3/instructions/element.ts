@@ -23,7 +23,7 @@ import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../styling_n
 import {setUpAttributes} from '../util/attrs_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
-import {createDirectivesAndLocals, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, renderInitialStyling, resolveDirectives, setInputsForProperty} from './shared';
+import {createDirectivesAndLocals, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, matchingSchemas, renderInitialStyling, resolveDirectives, setInputsForProperty} from './shared';
 
 
 
@@ -46,12 +46,17 @@ export function ɵɵelementStart(
     index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
   const lView = getLView();
   const tView = lView[TVIEW];
-  ngDevMode && assertEqual(
-                   lView[BINDING_INDEX], tView.bindingStartIndex,
-                   'elements should be created before any bindings ');
 
-  ngDevMode && ngDevMode.rendererCreateElement++;
-  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  if (ngDevMode) {
+    assertEqual(
+        lView[BINDING_INDEX], tView.bindingStartIndex,
+        'elements should be created before any bindings ');
+    ngDevMode.rendererCreateElement++;
+    assertDataInRange(lView, index + HEADER_OFFSET);
+    if (!matchingSchemas(lView, name)) {
+      throw createUnknownElementError(name);
+    }
+  }
   const native = lView[index + HEADER_OFFSET] = elementCreate(name);
   const renderer = lView[RENDERER];
   const tNode =
@@ -100,6 +105,24 @@ export function ɵɵelementStart(
 
   createDirectivesAndLocals(tView, lView, tNode);
   executeContentQueries(tView, tNode, lView);
+}
+
+/**
+ * Creates an error that should be thrown when encountering an unknown element.
+ * @param elementName Name of the invalid element.
+ */
+function createUnknownElementError(elementName: string): Error {
+  let errorMsg = `'${elementName}' is not a known element:\n`;
+  errorMsg +=
+      `1. If '${elementName}' is an Angular component, then verify that it is part of this module.\n`;
+  if (elementName.indexOf('-') > -1) {
+    errorMsg +=
+        `2. If '${elementName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+  } else {
+    errorMsg +=
+        `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+  }
+  return new Error(errorMsg);
 }
 
 /**
