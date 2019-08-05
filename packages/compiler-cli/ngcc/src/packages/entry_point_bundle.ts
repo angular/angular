@@ -44,7 +44,7 @@ export interface EntryPointBundle {
 export function makeEntryPointBundle(
     fs: FileSystem, entryPoint: EntryPoint, formatPath: string, isCore: boolean,
     formatProperty: EntryPointJsonProperty, format: EntryPointFormat, transformDts: boolean,
-    pathMappings?: PathMappings, mirrorDtsFromSrc: boolean = false): EntryPointBundle|null {
+    pathMappings?: PathMappings, mirrorDtsFromSrc: boolean = false): EntryPointBundle {
   // Create the TS program and necessary helpers.
   const options: ts.CompilerOptions = {
     allowJs: true,

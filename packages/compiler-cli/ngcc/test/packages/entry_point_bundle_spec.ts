@@ -145,7 +145,7 @@ runInEachFileSystem(() => {
            compiledByAngular: true,
          };
          const esm5bundle =
-             makeEntryPointBundle(fs, entryPoint, './index.js', false, 'esm5', 'esm5', true) !;
+             makeEntryPointBundle(fs, entryPoint, './index.js', false, 'esm5', 'esm5', true);
 
          expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
              .toEqual(jasmine.arrayWithExactContents([
@@ -193,7 +193,7 @@ runInEachFileSystem(() => {
          };
          const esm5bundle = makeEntryPointBundle(
              fs, entryPoint, './index.js', false, 'esm5', 'esm5', /* transformDts */ true,
-             /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true) !;
+             /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
          expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
              .toContain(absoluteFrom('/node_modules/test/internal.js'));
          expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
@@ -214,7 +214,7 @@ runInEachFileSystem(() => {
          };
          const esm5bundle = makeEntryPointBundle(
              fs, entryPoint, './index.js', false, 'esm5', 'esm5', /* transformDts */ true,
-             /* pathMappings */ undefined, /* mirrorDtsFromSrc */ false) !;
+             /* pathMappings */ undefined, /* mirrorDtsFromSrc */ false);
          expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
              .toContain(absoluteFrom('/node_modules/test/internal.js'));
          expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
