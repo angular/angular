@@ -1,12 +1,20 @@
-import {InjectionToken} from "@angular/core";
-import { FormControl } from "../model";
-import { NgControl } from "./ng_control";
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {InjectionToken} from '@angular/core';
+import {FormControl} from '../model';
+import {NgControl} from './ng_control';
 
 /**
- * Token to provide to use register hooks to reactive forms. provide a FormHooks instance with this token.
+ * Token to provide to use register hooks to reactive forms. provide a FormHooks instance with this
+ * token.
  */
-export const NG_FORM_HOOKS =
-  new InjectionToken('NgFormHooks');
+export const NG_FORM_HOOKS = new InjectionToken('NgFormHooks');
 
 /**
  * @description

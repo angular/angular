@@ -10,13 +10,13 @@ import {Directive, EventEmitter, Inject, Input, OnChanges, Optional, Output, Sel
 import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
+import {FormHooks, NG_FORM_HOOKS} from '../form_hooks';
 import {Form} from '../form_interface';
 import {ReactiveErrors} from '../reactive_errors';
 import {cleanUpControl, composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from '../shared';
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
-import {FormHooks, NG_FORM_HOOKS} from "../form_hooks";
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,

@@ -11,11 +11,11 @@ import {Directive, EventEmitter, Inject, InjectionToken, Input, OnChanges, Optio
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
+import {FormHooks, NG_FORM_HOOKS} from '../form_hooks';
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
-import {_ngModelWarning, composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl, cleanUpControl} from '../shared';
+import {_ngModelWarning, cleanUpControl, composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
-import {FormHooks, NG_FORM_HOOKS} from '../form_hooks';
 
 
 /**

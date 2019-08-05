@@ -16,6 +16,7 @@ import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
 import {DefaultValueAccessor} from './default_value_accessor';
+import {FormHooks} from './form_hooks';
 import {NgControl} from './ng_control';
 import {normalizeAsyncValidator, normalizeValidator} from './normalize_validator';
 import {NumberValueAccessor} from './number_value_accessor';
@@ -26,7 +27,6 @@ import {ReactiveErrors} from './reactive_errors';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
-import {FormHooks} from './form_hooks';
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {

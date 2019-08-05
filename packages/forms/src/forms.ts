@@ -25,6 +25,7 @@ export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor
 export {ControlContainer} from './directives/control_container';
 export {ControlValueAccessor, NG_VALUE_ACCESSOR} from './directives/control_value_accessor';
 export {COMPOSITION_BUFFER_MODE, DefaultValueAccessor} from './directives/default_value_accessor';
+export {FormHooks, NG_FORM_HOOKS} from './directives/form_hooks';
 export {Form} from './directives/form_interface';
 export {NgControl} from './directives/ng_control';
 export {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_status';
@@ -44,7 +45,6 @@ export {FormGroupName} from './directives/reactive_directives/form_group_name';
 export {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
 export {SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 export {ɵNgSelectMultipleOption} from './directives/select_multiple_control_value_accessor';
-export {NG_FORM_HOOKS, FormHooks} from './directives/form_hooks';
 export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 export {FormBuilder} from './form_builder';
 export {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup} from './model';
