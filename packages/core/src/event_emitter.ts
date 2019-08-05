@@ -18,7 +18,7 @@ import {Subject, Subscription} from 'rxjs';
  * @usageNotes
  *
  * Extends
- * [RxJS `Subject`](https://rxjs-dev.firebaseapp.com/api/index/class/Subject)
+ * [RxJS `Subject`](https://rxjs.dev/api/index/class/Subject)
  * for Angular by adding the `emit()` method.
  *
  * In the following example, a component defines two output properties
