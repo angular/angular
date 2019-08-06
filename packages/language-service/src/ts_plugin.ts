@@ -18,6 +18,7 @@ const projectHostMap = new WeakMap<tss.server.Project, TypeScriptServiceHost>();
 export function getExternalFiles(project: tss.server.Project): string[]|undefined {
   const host = projectHostMap.get(project);
   if (host) {
+    host.getAnalyzedModules();
     const externalFiles = host.getTemplateReferences();
     return externalFiles;
   }

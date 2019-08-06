@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
+import {AotSummaryResolver, CompileMetadataResolver, CompileNgModuleMetadata, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
 import {getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as ts from 'typescript';
@@ -14,9 +14,7 @@ import * as ts from 'typescript';
 import {AstResult, TemplateInfo} from './common';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
-import {Declaration, DeclarationError, Declarations, Diagnostic, DiagnosticKind, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, Symbol, SymbolQuery, TemplateSource, TemplateSources} from './types';
-
-
+import {Declaration, DeclarationError, Declarations, Diagnostic, DiagnosticKind, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, SymbolQuery, TemplateSource} from './types';
 
 /**
  * Create a `LanguageServiceHost`
@@ -54,38 +52,46 @@ export class DummyResourceLoader extends ResourceLoader {
  * @publicApi
  */
 export class TypeScriptServiceHost implements LanguageServiceHost {
-  // TODO(issue/24571): remove '!'.
-  private _resolver !: CompileMetadataResolver | null;
-  private _staticSymbolCache = new StaticSymbolCache();
-  // TODO(issue/24571): remove '!'.
-  private _summaryResolver !: AotSummaryResolver;
-  // TODO(issue/24571): remove '!'.
-  private _staticSymbolResolver !: StaticSymbolResolver;
-  // TODO(issue/24571): remove '!'.
-  private _reflector !: StaticReflector | null;
-  // TODO(issue/24571): remove '!'.
-  private _reflectorHost !: ReflectorHost;
-  // TODO(issue/24571): remove '!'.
-  private _checker !: ts.TypeChecker | null;
-  private lastProgram: ts.Program|undefined;
-  private modulesOutOfDate: boolean = true;
-  // TODO(issue/24571): remove '!'.
-  private analyzedModules !: NgAnalyzedModules | null;
-  private fileToComponent = new Map<string, StaticSymbol>();
-  // TODO(issue/24571): remove '!'.
-  private templateReferences !: string[] | null;
-  private collectedErrors = new Map<string, any[]>();
-  private fileVersions = new Map<string, string>();
+  private readonly summaryResolver: AotSummaryResolver;
+  private readonly reflectorHost: ReflectorHost;
+  private readonly staticSymbolResolver: StaticSymbolResolver;
 
-  constructor(private host: ts.LanguageServiceHost, private tsService: ts.LanguageService) {}
+  private readonly staticSymbolCache = new StaticSymbolCache();
+  private readonly fileToComponent = new Map<string, StaticSymbol>();
+  private readonly collectedErrors = new Map<string, any[]>();
+  private readonly fileVersions = new Map<string, string>();
 
-  /**
-   * Angular LanguageServiceHost implementation
-   */
-  get resolver(): CompileMetadataResolver {
-    this.validate();
-    let result = this._resolver;
-    if (!result) {
+  private lastProgram: ts.Program|undefined = undefined;
+  private templateReferences: string[] = [];
+  private analyzedModules: NgAnalyzedModules = {
+    files: [],
+    ngModuleByPipeOrDirective: new Map(),
+    ngModules: [],
+  };
+
+  // Data members below are prefixed with '_' because they have corresponding
+  // getters. These properties get invalidated when caches are cleared.
+  private _resolver: CompileMetadataResolver|null = null;
+  private _reflector: StaticReflector|null = null;
+
+  constructor(
+      private readonly host: ts.LanguageServiceHost, private readonly tsLS: ts.LanguageService) {
+    this.summaryResolver = new AotSummaryResolver(
+        {
+          loadSummary(filePath: string) { return null; },
+          isSourceFile(sourceFilePath: string) { return true; },
+          toSummaryFileName(sourceFilePath: string) { return sourceFilePath; },
+          fromSummaryFileName(filePath: string): string{return filePath;},
+        },
+        this.staticSymbolCache);
+    this.reflectorHost = new ReflectorHost(() => tsLS.getProgram() !, host);
+    this.staticSymbolResolver = new StaticSymbolResolver(
+        this.reflectorHost, this.staticSymbolCache, this.summaryResolver,
+        (e, filePath) => this.collectError(e, filePath !));
+  }
+
+  private get resolver(): CompileMetadataResolver {
+    if (!this._resolver) {
       const moduleResolver = new NgModuleResolver(this.reflector);
       const directiveResolver = new DirectiveResolver(this.reflector);
       const pipeResolver = new PipeResolver(this.reflector);
@@ -95,24 +101,23 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const htmlParser = new DummyHtmlParser();
       // This tracks the CompileConfig in codegen.ts. Currently these options
       // are hard-coded.
-      const config =
-          new CompilerConfig({defaultEncapsulation: ViewEncapsulation.Emulated, useJit: false});
+      const config = new CompilerConfig({
+        defaultEncapsulation: ViewEncapsulation.Emulated,
+        useJit: false,
+      });
       const directiveNormalizer =
           new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
 
-      result = this._resolver = new CompileMetadataResolver(
+      this._resolver = new CompileMetadataResolver(
           config, htmlParser, moduleResolver, directiveResolver, pipeResolver,
           new JitSummaryResolver(), elementSchemaRegistry, directiveNormalizer, new Console(),
-          this._staticSymbolCache, this.reflector,
+          this.staticSymbolCache, this.reflector,
           (error, type) => this.collectError(error, type && type.filePath));
     }
-    return result;
+    return this._resolver;
   }
 
-  getTemplateReferences(): string[] {
-    this.ensureTemplateMap();
-    return this.templateReferences || [];
-  }
+  getTemplateReferences(): string[] { return [...this.templateReferences]; }
 
   /**
    * Get the Angular template in the file, if any. If TS file is provided then
@@ -126,54 +131,64 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       if (sourceFile) {
         const node = this.findNode(sourceFile, position);
         if (node) {
-          return this.getSourceFromNode(
-              fileName, this.host.getScriptVersion(sourceFile.fileName), node);
+          return this.getSourceFromNode(fileName, node);
         }
       }
     } else {
-      this.ensureTemplateMap();
       const componentSymbol = this.fileToComponent.get(fileName);
       if (componentSymbol) {
-        return this.getSourceFromType(
-            fileName, this.host.getScriptVersion(fileName), componentSymbol);
+        return this.getSourceFromType(fileName, componentSymbol);
       }
     }
     return undefined;
   }
 
+  /**
+   * Checks whether the program has changed and returns all analyzed modules.
+   * If program has changed, invalidate all caches and update fileToComponent
+   * and templateReferences.
+   * In addition to returning information about NgModules, this method plays the
+   * same role as 'synchronizeHostData' in tsserver.
+   */
   getAnalyzedModules(): NgAnalyzedModules {
-    this.updateAnalyzedModules();
-    return this.ensureAnalyzedModules();
-  }
-
-  private ensureAnalyzedModules(): NgAnalyzedModules {
-    let analyzedModules = this.analyzedModules;
-    if (!analyzedModules) {
-      if (this.host.getScriptFileNames().length === 0) {
-        analyzedModules = {
-          files: [],
-          ngModuleByPipeOrDirective: new Map(),
-          ngModules: [],
-        };
-      } else {
-        const analyzeHost = {isSourceFile(filePath: string) { return true; }};
-        const programFiles = this.program !.getSourceFiles().map(sf => sf.fileName);
-        analyzedModules =
-            analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
-      }
-      this.analyzedModules = analyzedModules;
+    if (this.upToDate()) {
+      return this.analyzedModules;
     }
-    return analyzedModules;
+
+    // Invalidate caches
+    this.templateReferences = [];
+    this.fileToComponent.clear();
+    this.collectedErrors.clear();
+
+    const analyzeHost = {isSourceFile(filePath: string) { return true; }};
+    const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
+    this.analyzedModules =
+        analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
+
+    // update template references and fileToComponent
+    const urlResolver = createOfflineCompileUrlResolver();
+    for (const ngModule of this.analyzedModules.ngModules) {
+      for (const directive of ngModule.declaredDirectives) {
+        const {metadata} = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference) !;
+        if (metadata.isComponent && metadata.template && metadata.template.templateUrl) {
+          const templateName = urlResolver.resolve(
+              this.reflector.componentModuleUrl(directive.reference),
+              metadata.template.templateUrl);
+          this.fileToComponent.set(templateName, directive.reference);
+          this.templateReferences.push(templateName);
+        }
+      }
+    }
+
+    return this.analyzedModules;
   }
 
   getTemplates(fileName: string): TemplateSource[] {
     const results: TemplateSource[] = [];
     if (fileName.endsWith('.ts')) {
-      let version = this.host.getScriptVersion(fileName);
-
-      // Find each template string in the file
-      let visit = (child: ts.Node) => {
-        let templateSource = this.getSourceFromNode(fileName, version, child);
+      // Find every template string in the file
+      const visit = (child: ts.Node) => {
+        const templateSource = this.getSourceFromNode(fileName, child);
         if (templateSource) {
           results.push(templateSource);
         } else {
@@ -181,12 +196,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         }
       };
 
-      let sourceFile = this.getSourceFile(fileName);
+      const sourceFile = this.getSourceFile(fileName);
       if (sourceFile) {
         ts.forEachChild(sourceFile, visit);
       }
     } else {
-      this.ensureTemplateMap();
       const componentSymbol = this.fileToComponent.get(fileName);
       if (componentSymbol) {
         const templateSource = this.getTemplateAt(fileName, 0);
@@ -222,116 +236,91 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!fileName.endsWith('.ts')) {
       throw new Error(`Non-TS source file requested: ${fileName}`);
     }
-    return this.tsService.getProgram() !.getSourceFile(fileName);
+    return this.program.getSourceFile(fileName);
   }
 
-  updateAnalyzedModules() {
-    this.validate();
-    if (this.modulesOutOfDate) {
-      this.analyzedModules = null;
-      this._reflector = null;
-      this.templateReferences = null;
-      this.fileToComponent.clear();
-      this.ensureAnalyzedModules();
-      this.modulesOutOfDate = false;
+  private get program() {
+    const program = this.tsLS.getProgram();
+    if (!program) {
+      // Program is very very unlikely to be undefined.
+      throw new Error('No program in language service!');
     }
+    return program;
   }
 
-  private get program() { return this.tsService.getProgram(); }
-
-  private get checker() {
-    let checker = this._checker;
-    if (!checker) {
-      checker = this._checker = this.program !.getTypeChecker();
-    }
-    return checker;
-  }
-
-  private validate() {
+  /**
+   * Checks whether the program has changed, and invalidate caches if it has.
+   * Returns true if modules are up-to-date, false otherwise.
+   * This should only be called by getAnalyzedModules().
+   */
+  private upToDate() {
     const program = this.program;
-    if (this.lastProgram !== program) {
-      // Invalidate file that have changed in the static symbol resolver
-      const invalidateFile = (fileName: string) =>
-          this._staticSymbolResolver.invalidateFile(fileName);
-      this.clearCaches();
-      const seen = new Set<string>();
-      for (let sourceFile of this.program !.getSourceFiles()) {
-        const fileName = sourceFile.fileName;
-        seen.add(fileName);
-        const version = this.host.getScriptVersion(fileName);
-        const lastVersion = this.fileVersions.get(fileName);
-        if (version != lastVersion) {
-          this.fileVersions.set(fileName, version);
-          if (this._staticSymbolResolver) {
-            invalidateFile(fileName);
-          }
-        }
-      }
-
-      // Remove file versions that are no longer in the file and invalidate them.
-      const missing = Array.from(this.fileVersions.keys()).filter(f => !seen.has(f));
-      missing.forEach(f => this.fileVersions.delete(f));
-      if (this._staticSymbolResolver) {
-        missing.forEach(invalidateFile);
-      }
-
-      this.lastProgram = program;
+    if (this.lastProgram === program) {
+      return true;
     }
-  }
 
-  private clearCaches() {
-    this._checker = null;
     this._resolver = null;
-    this.collectedErrors.clear();
-    this.modulesOutOfDate = true;
-  }
+    this._reflector = null;
 
-  private ensureTemplateMap() {
-    if (!this.templateReferences) {
-      const templateReference: string[] = [];
-      const ngModuleSummary = this.getAnalyzedModules();
-      const urlResolver = createOfflineCompileUrlResolver();
-      for (const module of ngModuleSummary.ngModules) {
-        for (const directive of module.declaredDirectives) {
-          const {metadata} = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference) !;
-          if (metadata.isComponent && metadata.template && metadata.template.templateUrl) {
-            const templateName = urlResolver.resolve(
-                this.reflector.componentModuleUrl(directive.reference),
-                metadata.template.templateUrl);
-            this.fileToComponent.set(templateName, directive.reference);
-            templateReference.push(templateName);
-          }
-        }
+    // Invalidate file that have changed in the static symbol resolver
+    const seen = new Set<string>();
+    for (const sourceFile of program.getSourceFiles()) {
+      const fileName = sourceFile.fileName;
+      seen.add(fileName);
+      const version = this.host.getScriptVersion(fileName);
+      const lastVersion = this.fileVersions.get(fileName);
+      if (version !== lastVersion) {
+        this.fileVersions.set(fileName, version);
+        this.staticSymbolResolver.invalidateFile(fileName);
       }
-      this.templateReferences = templateReference;
     }
+
+    // Remove file versions that are no longer in the file and invalidate them.
+    const missing = Array.from(this.fileVersions.keys()).filter(f => !seen.has(f));
+    missing.forEach(f => {
+      this.fileVersions.delete(f);
+      this.staticSymbolResolver.invalidateFile(f);
+    });
+
+    this.lastProgram = program;
+
+    return false;
   }
 
+  /**
+   * Return the template source given the Class declaration node for the template.
+   * @param fileName Name of the file that contains the template. Could be TS or HTML.
+   * @param source Source text of the template.
+   * @param span Source span of the template.
+   * @param classSymbol Angular symbol for the class declaration.
+   * @param declaration TypeScript symbol for the class declaration.
+   * @param node If file is TS this is the template node, otherwise it's the class declaration node.
+   * @param sourceFile Source file of the class declaration.
+   */
   private getSourceFromDeclaration(
-      fileName: string, version: string, source: string, span: Span, type: StaticSymbol,
+      fileName: string, source: string, span: Span, classSymbol: StaticSymbol,
       declaration: ts.ClassDeclaration, node: ts.Node, sourceFile: ts.SourceFile): TemplateSource
       |undefined {
     let queryCache: SymbolQuery|undefined = undefined;
-    const t = this;
+    const self = this;
+    const program = this.program;
+    const typeChecker = program.getTypeChecker();
     if (declaration) {
       return {
-        version,
+        version: this.host.getScriptVersion(fileName),
         source,
         span,
-        type,
+        type: classSymbol,
         get members() {
-          return getClassMembersFromDeclaration(t.program !, t.checker, sourceFile, declaration);
+          return getClassMembersFromDeclaration(program, typeChecker, sourceFile, declaration);
         },
         get query() {
           if (!queryCache) {
-            let pipes: CompilePipeSummary[] = [];
-            const templateInfo = t.getTemplateAstAtPosition(fileName, node.getStart());
-            if (templateInfo) {
-              pipes = templateInfo.pipes;
-            }
+            const templateInfo = self.getTemplateAst(this, fileName);
+            const pipes = templateInfo && templateInfo.pipes || [];
             queryCache = getSymbolQuery(
-                t.program !, t.checker, sourceFile,
-                () => getPipesTable(sourceFile, t.program !, t.checker, pipes));
+                program, typeChecker, sourceFile,
+                () => getPipesTable(sourceFile, program, typeChecker, pipes));
           }
           return queryCache;
         }
@@ -339,49 +328,47 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
   }
 
-  private getSourceFromNode(fileName: string, version: string, node: ts.Node): TemplateSource
-      |undefined {
-    let result: TemplateSource|undefined = undefined;
-    const t = this;
+  /**
+   * Return the TemplateSource for the inline template.
+   * @param fileName TS file that contains the template
+   * @param node Potential template node
+   */
+  private getSourceFromNode(fileName: string, node: ts.Node): TemplateSource|undefined {
     switch (node.kind) {
       case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
       case ts.SyntaxKind.StringLiteral:
-        let [declaration, decorator] = this.getTemplateClassDeclFromNode(node);
+        const [declaration] = this.getTemplateClassDeclFromNode(node);
         if (declaration && declaration.name) {
           const sourceFile = this.getSourceFile(fileName);
           if (sourceFile) {
             return this.getSourceFromDeclaration(
-                fileName, version, this.stringOf(node) || '', shrink(spanOf(node)),
+                fileName, this.stringOf(node) || '', shrink(spanOf(node)),
                 this.reflector.getStaticSymbol(sourceFile.fileName, declaration.name.text),
                 declaration, node, sourceFile);
           }
         }
         break;
     }
-    return result;
+    return;
   }
 
-  private getSourceFromType(fileName: string, version: string, type: StaticSymbol): TemplateSource
-      |undefined {
-    let result: TemplateSource|undefined = undefined;
-    const declaration = this.getTemplateClassFromStaticSymbol(type);
+  /**
+   * Return the TemplateSource for the template associated with the classSymbol.
+   * @param fileName Template file (HTML)
+   * @param classSymbol
+   */
+  private getSourceFromType(fileName: string, classSymbol: StaticSymbol): TemplateSource|undefined {
+    const declaration = this.getTemplateClassFromStaticSymbol(classSymbol);
     if (declaration) {
       const snapshot = this.host.getScriptSnapshot(fileName);
       if (snapshot) {
         const source = snapshot.getText(0, snapshot.getLength());
-        result = this.getSourceFromDeclaration(
-            fileName, version, source, {start: 0, end: source.length}, type, declaration,
-            declaration, declaration.getSourceFile());
+        return this.getSourceFromDeclaration(
+            fileName, source, {start: 0, end: source.length}, classSymbol, declaration, declaration,
+            declaration.getSourceFile());
       }
     }
-    return result;
-  }
-
-  private get reflectorHost(): ReflectorHost {
-    if (!this._reflectorHost) {
-      this._reflectorHost = new ReflectorHost(() => this.tsService.getProgram() !, this.host);
-    }
-    return this._reflectorHost;
+    return;
   }
 
   private collectError(error: any, filePath: string|null) {
@@ -395,49 +382,30 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
   }
 
-  private get staticSymbolResolver(): StaticSymbolResolver {
-    let result = this._staticSymbolResolver;
-    if (!result) {
-      this._summaryResolver = new AotSummaryResolver(
-          {
-            loadSummary(filePath: string) { return null; },
-            isSourceFile(sourceFilePath: string) { return true; },
-            toSummaryFileName(sourceFilePath: string) { return sourceFilePath; },
-            fromSummaryFileName(filePath: string): string{return filePath;},
-          },
-          this._staticSymbolCache);
-      result = this._staticSymbolResolver = new StaticSymbolResolver(
-          this.reflectorHost as any, this._staticSymbolCache, this._summaryResolver,
-          (e, filePath) => this.collectError(e, filePath !));
-    }
-    return result;
-  }
-
   private get reflector(): StaticReflector {
     let result = this._reflector;
     if (!result) {
       const ssr = this.staticSymbolResolver;
       result = this._reflector = new StaticReflector(
-          this._summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath !));
+          this.summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath !));
     }
     return result;
   }
 
   private getTemplateClassFromStaticSymbol(type: StaticSymbol): ts.ClassDeclaration|undefined {
     const source = this.getSourceFile(type.filePath);
-    if (source) {
-      const declarationNode = ts.forEachChild(source, child => {
-        if (child.kind === ts.SyntaxKind.ClassDeclaration) {
-          const classDeclaration = child as ts.ClassDeclaration;
-          if (classDeclaration.name != null && classDeclaration.name.text === type.name) {
-            return classDeclaration;
-          }
-        }
-      });
-      return declarationNode as ts.ClassDeclaration;
+    if (!source) {
+      return;
     }
-
-    return undefined;
+    const declarationNode = ts.forEachChild(source, child => {
+      if (child.kind === ts.SyntaxKind.ClassDeclaration) {
+        const classDeclaration = child as ts.ClassDeclaration;
+        if (classDeclaration.name && classDeclaration.name.text === type.name) {
+          return classDeclaration;
+        }
+      }
+    });
+    return declarationNode as ts.ClassDeclaration;
   }
 
   private static missingTemplate: [ts.ClassDeclaration | undefined, ts.Expression|undefined] =
@@ -509,7 +477,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           if (classDeclaration.name) {
             const call = decorator.expression as ts.CallExpression;
             const target = call.expression;
-            const type = this.checker.getTypeAtLocation(target);
+            const type = this.program.getTypeChecker().getTypeAtLocation(target);
             if (type) {
               const staticSymbol =
                   this.reflector.getStaticSymbol(sourceFile.fileName, classDeclaration.name.text);
@@ -598,12 +566,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
             config, this.resolver.getReflector(), expressionParser, new DomElementSchemaRegistry(),
             htmlParser, null !, []);
         const htmlResult = htmlParser.parse(template.source, '', {tokenizeExpansionForms: true});
-        const analyzedModules = this.getAnalyzedModules();
         let errors: Diagnostic[]|undefined = undefined;
-        let ngModule = analyzedModules.ngModuleByPipeOrDirective.get(template.type);
+        let ngModule = this.analyzedModules.ngModuleByPipeOrDirective.get(template.type);
         if (!ngModule) {
           // Reported by the the declaration diagnostics.
-          ngModule = findSuitableDefaultModule(analyzedModules);
+          ngModule = findSuitableDefaultModule(this.analyzedModules);
         }
         if (ngModule) {
           const directives =
