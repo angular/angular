@@ -15,18 +15,25 @@ import {DateAdapter, MAT_DATE_LOCALE} from '@angular/material/core';
 // TODO(mmalerba): See if we can clean this up at some point.
 import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
-import {default as _rollupMoment, Moment} from 'moment';
+import {default as _rollupMoment, Moment, MomentFormatSpecification, MomentInput} from 'moment';
 
 const moment = _rollupMoment || _moment;
 
 /** Configurable options for {@see MomentDateAdapter}. */
 export interface MatMomentDateAdapterOptions {
+
+  /**
+   * When enabled, the dates have to match the format exactly.
+   * See https://momentjs.com/guides/#/parsing/strict-mode/.
+   */
+  strict?: boolean;
+
   /**
    * Turns the use of utc dates on or off.
    * Changing this will change how Angular Material components like DatePicker output dates.
    * {@default false}
    */
-  useUtc: boolean;
+  useUtc?: boolean;
 }
 
 /** InjectionToken for moment date adapter to configure options. */
@@ -241,7 +248,15 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
   }
 
   /** Creates a Moment instance while respecting the current UTC settings. */
-  private _createMoment(...args: any[]): Moment {
-    return (this._options && this._options.useUtc) ? moment.utc(...args) : moment(...args);
+  private _createMoment(
+    date: MomentInput,
+    format?: MomentFormatSpecification,
+    locale?: string,
+  ): Moment {
+    const {strict, useUtc}: MatMomentDateAdapterOptions = this._options || {};
+
+    return useUtc
+      ? moment.utc(date, format, locale, strict)
+      : moment(date, format, locale, strict);
   }
 }

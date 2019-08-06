@@ -463,4 +463,39 @@ describe('MomentDateAdapter with MAT_MOMENT_DATE_ADAPTER_OPTIONS override', () =
     });
   });
 
+  describe('strict mode', () => {
+
+    beforeEach(async(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [MomentDateModule],
+        providers: [
+          {
+            provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+            useValue: {
+              strict: true,
+            },
+          },
+        ]
+      }).compileComponents();
+    }));
+
+    beforeEach(inject([DateAdapter], (d: MomentDateAdapter) => {
+      adapter = d;
+    }));
+
+    it('should detect valid strings according to given format', () => {
+      expect(adapter.parse('1/2/2017', 'D/M/YYYY')!.format('l'))
+        .toEqual(moment([2017,  FEB,  1]).format('l'));
+      expect(adapter.parse('February 1, 2017', 'MMMM D, YYYY')!.format('l'))
+        .toEqual(moment([2017,  FEB,  1]).format('l'));
+    });
+
+    it('should detect invalid strings according to given format', () => {
+      expect(adapter.parse('2017-01-01', 'MM/DD/YYYY')!.isValid()).toBe(false);
+      expect(adapter.parse('1/2/2017', 'MM/DD/YYYY')!.isValid()).toBe(false);
+      expect(adapter.parse('Jan 5, 2017', 'MMMM D, YYYY')!.isValid()).toBe(false);
+    });
+
+  });
 });

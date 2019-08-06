@@ -252,7 +252,22 @@ By default the `MomentDateAdapter` will creates dates in your time zone specific
 @NgModule({
   imports: [MatDatepickerModule, MatMomentDateModule],
   providers: [
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } }
+    {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}}
+  ]
+})
+```
+
+By default the `MomentDateAdapter` will parse dates in a
+[forgiving way](https://momentjs.com/guides/#/parsing/forgiving-mode/). This may result in dates
+being parsed incorrectly. You can change the default behaviour to
+[parse dates strictly](https://momentjs.com/guides/#/parsing/strict-mode/) by providing
+the `MAT_MOMENT_DATE_ADAPTER_OPTIONS` and setting it to `strict: true`.
+
+```ts
+@NgModule({
+  imports: [MatDatepickerModule, MatMomentDateModule],
+  providers: [
+    {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {strict: true}}
   ]
 })
 ```
