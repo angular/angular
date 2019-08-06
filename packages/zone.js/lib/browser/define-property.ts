@@ -11,14 +11,19 @@
  * things like redefining `createdCallback` on an element.
  */
 
-const zoneSymbol = Zone.__symbol__;
-const _defineProperty = (Object as any)[zoneSymbol('defineProperty')] = Object.defineProperty;
-const _getOwnPropertyDescriptor = (Object as any)[zoneSymbol('getOwnPropertyDescriptor')] =
-    Object.getOwnPropertyDescriptor;
-const _create = Object.create;
-const unconfigurablesKey = zoneSymbol('unconfigurables');
+let zoneSymbol: any;
+let _defineProperty: any;
+let _getOwnPropertyDescriptor: any;
+let _create: any;
+let unconfigurablesKey: any;
 
 export function propertyPatch() {
+  zoneSymbol = Zone.__symbol__;
+  _defineProperty = (Object as any)[zoneSymbol('defineProperty')] = Object.defineProperty;
+  _getOwnPropertyDescriptor = (Object as any)[zoneSymbol('getOwnPropertyDescriptor')] =
+      Object.getOwnPropertyDescriptor;
+  _create = Object.create;
+  unconfigurablesKey = zoneSymbol('unconfigurables');
   Object.defineProperty = function(obj: any, prop: string, desc: any) {
     if (isUnconfigurable(obj, prop)) {
       throw new TypeError('Cannot assign to read only property \'' + prop + '\' of ' + obj);
