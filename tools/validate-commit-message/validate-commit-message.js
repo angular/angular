@@ -21,16 +21,31 @@ const FIXUP_PREFIX_RE = /^fixup! /i;
 const SQUASH_PREFIX_RE = /^squash! /i;
 const REVERT_PREFIX_RE = /^revert:? /i;
 
-module.exports = (commitHeader, disallowSquash) => {
+module.exports = (commitHeader, disallowSquash, nonFixupCommitHeaders) => {
   if (REVERT_PREFIX_RE.test(commitHeader)) {
     return true;
   }
 
-  const {header, type, scope, isSquash} = parseCommitHeader(commitHeader);
+  const {header, type, scope, isFixup, isSquash} = parseCommitHeader(commitHeader);
 
   if (isSquash && disallowSquash) {
     error('The commit must be manually squashed into the target commit', commitHeader);
     return false;
+  }
+
+  // If it is a fixup commit and `nonFixupCommitHeaders` is not empty, we only care to check whether
+  // there is a corresponding non-fixup commit (i.e. a commit whose header is identical to this
+  // commit's header after stripping the `fixup! ` prefix).
+  if (isFixup && nonFixupCommitHeaders) {
+    if (!nonFixupCommitHeaders.includes(header)) {
+      error(
+          'Unable to find match for fixup commit among prior commits: ' +
+              (nonFixupCommitHeaders.map(x => `\n      ${x}`).join('') || '-'),
+          commitHeader);
+      return false;
+    }
+
+    return true;
   }
 
   if (header.length > config.maxLength) {
@@ -61,6 +76,7 @@ module.exports = (commitHeader, disallowSquash) => {
   return true;
 };
 
+module.exports.FIXUP_PREFIX_RE = FIXUP_PREFIX_RE;
 module.exports.config = config;
 
 // Helpers
