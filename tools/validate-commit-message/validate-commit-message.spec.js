@@ -177,5 +177,58 @@ describe('validate-commit-message.js', () => {
         });
       });
     });
+
+    describe('(fixup)', () => {
+
+      describe('without `nonFixupCommitHeaders`', () => {
+
+        it('should strip the `fixup! ` prefix and validate the rest', () => {
+          const errorMessageFor = header =>
+              `INVALID COMMIT MSG: ${header}\n => ERROR: The commit message header does not match the format of ` +
+              '\'<type>(<scope>): <subject>\' or \'Revert: "<type>(<scope>): <subject>"\'';
+
+          // Valid messages.
+          expect(validateMessage('fixup! feat(core): add feature')).toBe(VALID);
+          expect(validateMessage('fixup! fix: a bug')).toBe(VALID);
+
+          // Invalid messages.
+          expect(validateMessage('fixup! fix a typo')).toBe(INVALID);
+          expect(validateMessage('fixup! fixup! fix: a bug')).toBe(INVALID);
+          expect(errors).toEqual([
+            errorMessageFor('fixup! fix a typo'),
+            errorMessageFor('fixup! fixup! fix: a bug'),
+          ]);
+        });
+      });
+
+      describe('with `nonFixupCommitHeaders`', () => {
+
+        it('should check that the fixup commit matches a non-fixup one', () => {
+          const msg = 'fixup! foo';
+
+          expect(validateMessage(msg, false, ['foo', 'bar', 'baz'])).toBe(VALID);
+          expect(validateMessage(msg, false, ['bar', 'baz', 'foo'])).toBe(VALID);
+          expect(validateMessage(msg, false, ['baz', 'foo', 'bar'])).toBe(VALID);
+
+          expect(validateMessage(msg, false, ['qux', 'quux', 'quuux'])).toBe(INVALID);
+          expect(errors).toEqual([
+            `INVALID COMMIT MSG: ${msg}\n` +
+                ' => ERROR: Unable to find match for fixup commit among prior commits: \n' +
+                '      qux\n' +
+                '      quux\n' +
+                '      quuux',
+          ]);
+        });
+
+        it('should fail if `nonFixupCommitHeaders` is empty', () => {
+          expect(validateMessage('refactor(router): make reactive', false, [])).toBe(VALID);
+          expect(validateMessage('fixup! foo', false, [])).toBe(INVALID);
+          expect(errors).toEqual([
+            'INVALID COMMIT MSG: fixup! foo\n' +
+                ' => ERROR: Unable to find match for fixup commit among prior commits: -',
+          ]);
+        });
+      });
+    });
   });
 });

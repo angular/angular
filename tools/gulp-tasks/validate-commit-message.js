@@ -46,8 +46,13 @@ module.exports = (gulp) => () => {
     }
 
     const disallowSquashCommits = true;
-    const someCommitsInvalid =
-        !commitsByLine.every(m => validateCommitMessage(m, disallowSquashCommits));
+    const isNonFixup = m => !validateCommitMessage.FIXUP_PREFIX_RE.test(m);
+    const someCommitsInvalid = !commitsByLine.every((m, i) => {
+      // `priorNonFixupCommits` is only needed if the current commit is a fixup commit.
+      const priorNonFixupCommits =
+          isNonFixup(m) ? undefined : commitsByLine.slice(0, i).filter(isNonFixup);
+      return validateCommitMessage(m, disallowSquashCommits, priorNonFixupCommits);
+    });
 
     if (someCommitsInvalid) {
       throw new Error(
