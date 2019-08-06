@@ -6,15 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticSymbol} from '@angular/compiler';
-import {CompilerHost} from '@angular/compiler-cli';
-import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, isSource, settings, setup, toMockFileArray} from '@angular/compiler/test/aot/test_util';
 import {ReflectorHost} from '@angular/language-service/src/reflector_host';
 import * as ts from 'typescript';
 
 import {BuiltinType, Symbol, SymbolQuery, SymbolTable} from '../../src/diagnostics/symbols';
 import {getSymbolQuery, toSymbolTableFactory} from '../../src/diagnostics/typescript_symbols';
-import {CompilerOptions} from '../../src/transformers/api';
 import {Directory} from '../mocks';
 
 import {DiagnosticContext, MockLanguageServiceHost} from './mocks';
@@ -42,10 +38,7 @@ describe('symbol query', () => {
     program = service.getProgram() !;
     checker = program.getTypeChecker();
     sourceFile = program.getSourceFile('/quickstart/app/app.component.ts') !;
-    const options: CompilerOptions = Object.create(host.getCompilationSettings());
-    options.genDir = '/dist';
-    options.basePath = '/quickstart';
-    const symbolResolverHost = new ReflectorHost(() => program, host, options);
+    const symbolResolverHost = new ReflectorHost(() => program, host);
     context = new DiagnosticContext(service, program, checker, symbolResolverHost);
     query = getSymbolQuery(program, checker, sourceFile, emptyPipes);
   });

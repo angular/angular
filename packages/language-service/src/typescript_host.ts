@@ -7,10 +7,8 @@
  */
 
 import {AotSummaryResolver, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
-import {CompilerOptions, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
+import {getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {AstResult, TemplateInfo} from './common';
@@ -69,7 +67,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private _reflectorHost !: ReflectorHost;
   // TODO(issue/24571): remove '!'.
   private _checker !: ts.TypeChecker | null;
-  private context: string|undefined;
   private lastProgram: ts.Program|undefined;
   private modulesOutOfDate: boolean = true;
   // TODO(issue/24571): remove '!'.
@@ -127,7 +124,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (fileName.endsWith('.ts')) {
       const sourceFile = this.getSourceFile(fileName);
       if (sourceFile) {
-        this.context = sourceFile.fileName;
         const node = this.findNode(sourceFile, position);
         if (node) {
           return this.getSourceFromNode(
@@ -187,7 +183,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
       let sourceFile = this.getSourceFile(fileName);
       if (sourceFile) {
-        this.context = (sourceFile as any).path || sourceFile.fileName;
         ts.forEachChild(sourceFile, visit);
       }
       return result.length ? result : undefined;
@@ -383,40 +378,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   private get reflectorHost(): ReflectorHost {
-    let result = this._reflectorHost;
-    if (!result) {
-      if (!this.context) {
-        // Make up a context by finding the first script and using that as the base dir.
-        const scriptFileNames = this.host.getScriptFileNames();
-        if (0 === scriptFileNames.length) {
-          throw new Error('Internal error: no script file names found');
-        }
-        this.context = scriptFileNames[0];
-      }
-
-      // Use the file context's directory as the base directory.
-      // The host's getCurrentDirectory() is not reliable as it is always "" in
-      // tsserver. We don't need the exact base directory, just one that contains
-      // a source file.
-      const source = this.getSourceFile(this.context);
-      if (!source) {
-        throw new Error('Internal error: no context could be determined');
-      }
-
-      const tsConfigPath = findTsConfig(source.fileName);
-      const basePath = path.dirname(tsConfigPath || this.context);
-      const options: CompilerOptions = {basePath, genDir: basePath};
-      const compilerOptions = this.host.getCompilationSettings();
-      if (compilerOptions && compilerOptions.baseUrl) {
-        options.baseUrl = compilerOptions.baseUrl;
-      }
-      if (compilerOptions && compilerOptions.paths) {
-        options.paths = compilerOptions.paths;
-      }
-      result = this._reflectorHost =
-          new ReflectorHost(() => this.tsService.getProgram() !, this.host, options);
+    if (!this._reflectorHost) {
+      this._reflectorHost = new ReflectorHost(() => this.tsService.getProgram() !, this.host);
     }
-    return result;
+    return this._reflectorHost;
   }
 
   private collectError(error: any, filePath: string|null) {
@@ -680,17 +645,6 @@ function findSuitableDefaultModule(modules: NgAnalyzedModules): CompileNgModuleM
     }
   }
   return result;
-}
-
-function findTsConfig(fileName: string): string|undefined {
-  let dir = path.dirname(fileName);
-  while (fs.existsSync(dir)) {
-    const candidate = path.join(dir, 'tsconfig.json');
-    if (fs.existsSync(candidate)) return candidate;
-    const parentDir = path.dirname(dir);
-    if (parentDir === dir) break;
-    dir = parentDir;
-  }
 }
 
 function spanOf(node: ts.Node): Span {
