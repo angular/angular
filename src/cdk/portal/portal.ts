@@ -169,11 +169,6 @@ export interface PortalOutlet {
   hasAttached(): boolean;
 }
 
-/**
- * @deprecated Use `PortalOutlet` instead.
- * @breaking-change 9.0.0
- */
-export type PortalHost = PortalOutlet;
 
 /**
  * Partial implementation of PortalOutlet that handles attaching
@@ -259,9 +254,3 @@ export abstract class BasePortalOutlet implements PortalOutlet {
     }
   }
 }
-
-/**
- * @deprecated Use `BasePortalOutlet` instead.
- * @breaking-change 9.0.0
- */
-export abstract class BasePortalHost extends BasePortalOutlet {}

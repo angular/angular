@@ -2,5 +2,8 @@ package(default_visibility = ["//visibility:public"])
 
 load(":generate-guard-tests.bzl", "generate_test_targets")
 
+# TODO(devversion): All entry-points except the CDK portal are currently validated. This is
+# because aliases are not supported by ts-api-guardian. Re-add once we found a solution for that.
+
 # Generate the API guard test targets for each golden file in the current package.
 generate_test_targets(glob(["**/*.d.ts"]))
