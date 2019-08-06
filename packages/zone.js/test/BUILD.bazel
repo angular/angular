@@ -235,6 +235,11 @@ karma_tests = {
         "//packages/zone.js/dist:zone-evergreen-dist-dev-test",
         "//packages/zone.js/dist:zone-testing-dist-dev-test",
     ],
+    "browser_legacy_test": [
+        "//packages/zone.js/dist:zone-legacy-dist-dev-test",
+        "//packages/zone.js/dist:zone-evergreen-dist-dev-test",
+        "//packages/zone.js/dist:zone-testing-dist-dev-test",
+    ],
 }
 
 karma_test(
