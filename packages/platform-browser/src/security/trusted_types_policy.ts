@@ -65,19 +65,19 @@ export class TrustedTypePolicyAdapterImpl extends TrustedTypePolicyAdapter {
       this._policy = TrustedTypes.createPolicy(
           this._name, {
             createURL: (s: string) => {
-              console.log('Angular policy', s);
+              console.log('Angular createURL', s);
               return s;
             },
             createScriptURL: (s: string) => {
-              console.log('Angular policy', s);
+              console.log('Angular createScriptURL', s);
               return s;
             },
             createScript: (s: string) => {
-              console.log('Angular policy', s);
+              console.log('Angular createScript', s);
               return s;
             },
             createHTML: (s: string) => {
-              console.log('Angular policy', s);
+              console.log('Angular createHTML', s);
               return s;
             }
           },

@@ -16,6 +16,7 @@ ng_module(
     deps = [
         "//packages/core",
         "//packages/platform-browser",
+        "@npm//@types/trusted-types",
         "@npm//rxjs",
     ],
 )

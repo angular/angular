@@ -7,6 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
+import {dangerouslyTurnToTrustedScriptURL} from './trusted_types_policy';
 
 let _nextRequestId = 0;
 export const JSONP_HOME = '__ng_jsonp__';
@@ -26,7 +27,7 @@ export class BrowserJsonp {
   // Construct a <script> element with the specified URL
   build(url: string): any {
     const node = document.createElement('script');
-    node.src = url;
+    node.src = dangerouslyTurnToTrustedScriptURL(url) as string;
     return node;
   }
 

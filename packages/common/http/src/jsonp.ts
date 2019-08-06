@@ -13,6 +13,8 @@ import {Observable, Observer} from 'rxjs';
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpRequest} from './request';
 import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse} from './response';
+import {dangerouslyTurnToTrustedScriptURL} from './trusted_types_policy';
+
 
 // Every request made through JSONP needs a callback name that's unique across the
 // whole page. Each request is assigned an id and the callback name is constructed
@@ -80,7 +82,7 @@ export class JsonpClientBackend implements HttpBackend {
 
       // Construct the <script> tag and point it at the URL.
       const node = this.document.createElement('script');
-      node.src = url;
+      node.src = dangerouslyTurnToTrustedScriptURL(url);
 
       // A JSONP request requires waiting for multiple callbacks. These variables
       // are closed over and track state across those callbacks.

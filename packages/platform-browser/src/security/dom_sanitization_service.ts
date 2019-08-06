@@ -10,7 +10,6 @@ import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl} from '@angular/core';
 import {TrustedTypePolicyAdapter} from './trusted_types_policy';
 
-
 export {SecurityContext};
 
 
