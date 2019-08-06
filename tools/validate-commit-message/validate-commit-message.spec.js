@@ -58,7 +58,7 @@ describe('validate-commit-message.js', () => {
 
       expect(validateMessage(msg)).toBe(INVALID);
       expect(errors).toEqual([
-        `INVALID COMMIT MSG: "${msg}"\n => ERROR: The commit message is longer than 120 characters`
+        `INVALID COMMIT MSG: ${msg}\n => ERROR: The commit message header is longer than 120 characters`
       ]);
     });
 
@@ -67,7 +67,7 @@ describe('validate-commit-message.js', () => {
 
       expect(validateMessage(msg)).toBe(INVALID);
       expect(errors).toEqual([
-        `INVALID COMMIT MSG: "${msg}"\n => ERROR: The commit message does not match the format of '<type>(<scope>): <subject>' OR 'Revert: "type(<scope>): <subject>"'`,
+        `INVALID COMMIT MSG: ${msg}\n => ERROR: The commit message header does not match the format of '<type>(<scope>): <subject>' or 'Revert: "<type>(<scope>): <subject>"'`,
       ]);
     });
 
@@ -76,13 +76,13 @@ describe('validate-commit-message.js', () => {
 
       expect(validateMessage(msg)).toBe(INVALID);
       expect(errors).toEqual([
-        `INVALID COMMIT MSG: "${msg}"\n => ERROR: weird is not an allowed type.\n => TYPES: ${TYPES}`,
+        `INVALID COMMIT MSG: ${msg}\n => ERROR: 'weird' is not an allowed type.\n => TYPES: ${TYPES}`,
       ]);
     });
 
     it('should fail when scope is invalid', () => {
       const errorMessageFor = (scope, header) =>
-          `INVALID COMMIT MSG: "${header}"\n => ERROR: "${scope}" is not an allowed scope.\n => SCOPES: ${SCOPES}`;
+          `INVALID COMMIT MSG: ${header}\n => ERROR: '${scope}' is not an allowed scope.\n => SCOPES: ${SCOPES}`;
 
       expect(validateMessage('fix(Compiler): something')).toBe(INVALID);
       expect(validateMessage('feat(bah): something')).toBe(INVALID);
@@ -112,7 +112,7 @@ describe('validate-commit-message.js', () => {
 
       expect(validateMessage(msg)).toBe(INVALID);
       expect(errors).toEqual([
-        `INVALID COMMIT MSG: "${msg}"\n => ERROR: WIP is not an allowed type.\n => TYPES: ${TYPES}`,
+        `INVALID COMMIT MSG: ${msg}\n => ERROR: 'WIP' is not an allowed type.\n => TYPES: ${TYPES}`,
       ]);
     });
 
@@ -131,7 +131,7 @@ describe('validate-commit-message.js', () => {
 
         expect(validateMessage(msg)).toBe(INVALID);
         expect(errors).toEqual([
-          `INVALID COMMIT MSG: "${msg}"\n => ERROR: revert is not an allowed type.\n => TYPES: ${TYPES}`,
+          `INVALID COMMIT MSG: ${msg}\n => ERROR: 'revert' is not an allowed type.\n => TYPES: ${TYPES}`,
         ]);
       });
 
