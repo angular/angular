@@ -58,7 +58,7 @@ import {Subject, Subscription} from 'rxjs';
  * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
  * ```
  *
- * @see [Observables: Event emitter](guide/observables-in-angular#event-emitter)
+ * @see [Observables in Angular](guide/observables-in-angular)
  * @publicApi
  */
 export class EventEmitter<T extends any> extends Subject<T> {
