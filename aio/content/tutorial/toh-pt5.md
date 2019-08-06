@@ -91,8 +91,6 @@ configures it with the `routes` in one step by calling
 
 Next, `AppRoutingModule` exports `RouterModule` so it will be available throughout the app.
 
-Open the `AppComponent` template and replace the `<app-heroes>` element with a `<router-outlet>` element.
-
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (exports array)" region="export-routermodule">
 </code-example>
 
