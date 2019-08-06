@@ -95,7 +95,7 @@ function runTests() {
   it('should focus and blur a button', async () => {
     const button = await loader.getHarness(buttonHarness.with({text: 'Basic button'}));
     expect(getActiveElementId()).not.toBe('basic');
-    await button.foucs();
+    await button.focus();
     expect(getActiveElementId()).toBe('basic');
     await button.blur();
     expect(getActiveElementId()).not.toBe('basic');

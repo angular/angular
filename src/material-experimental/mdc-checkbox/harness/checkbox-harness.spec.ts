@@ -128,13 +128,13 @@ function runTests() {
   it('should focus checkbox', async () => {
     const checkbox = await loader.getHarness(checkboxHarness.with({label: 'First'}));
     expect(getActiveElementTagName()).not.toBe('input');
-    await checkbox.foucs();
+    await checkbox.focus();
     expect(getActiveElementTagName()).toBe('input');
   });
 
   it('should blur checkbox', async () => {
     const checkbox = await loader.getHarness(checkboxHarness.with({label: 'First'}));
-    await checkbox.foucs();
+    await checkbox.focus();
     expect(getActiveElementTagName()).toBe('input');
     await checkbox.blur();
     expect(getActiveElementTagName()).not.toBe('input');

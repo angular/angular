@@ -79,7 +79,7 @@ export class MatSlideToggleHarness extends ComponentHarness {
   }
 
   /** Focuses the slide-toggle and returns a void promise that indicates action completion. */
-  async foucs(): Promise<void> {
+  async focus(): Promise<void> {
     return (await this._input()).focus();
   }
 

@@ -89,7 +89,7 @@ export class MatCheckboxHarness extends ComponentHarness {
   }
 
   /** Focuses the checkbox and returns a void promise that indicates when the action is complete. */
-  async foucs(): Promise<void> {
+  async focus(): Promise<void> {
     return (await this._input()).focus();
   }
 
