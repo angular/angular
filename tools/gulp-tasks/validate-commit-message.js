@@ -45,7 +45,9 @@ module.exports = (gulp) => () => {
       console.log(`There are zero new commits between ${baseBranch} and HEAD`);
     }
 
-    const someCommitsInvalid = !commitsByLine.every(validateCommitMessage);
+    const disallowSquashCommits = true;
+    const someCommitsInvalid =
+        !commitsByLine.every(m => validateCommitMessage(m, disallowSquashCommits));
 
     if (someCommitsInvalid) {
       throw new Error(

@@ -144,5 +144,38 @@ describe('validate-commit-message.js', () => {
         expect(errors).toEqual([]);
       });
     });
+
+    describe('(squash)', () => {
+
+      it('should strip the `squash! ` prefix and validate the rest', () => {
+        const errorMessageFor = header =>
+            `INVALID COMMIT MSG: ${header}\n => ERROR: The commit message header does not match the format of ` +
+            '\'<type>(<scope>): <subject>\' or \'Revert: "<type>(<scope>): <subject>"\'';
+
+        // Valid messages.
+        expect(validateMessage('squash! feat(core): add feature')).toBe(VALID);
+        expect(validateMessage('squash! fix: a bug', false)).toBe(VALID);
+
+        // Invalid messages.
+        expect(validateMessage('squash! fix a typo', false)).toBe(INVALID);
+        expect(validateMessage('squash! squash! fix: a bug')).toBe(INVALID);
+        expect(errors).toEqual([
+          errorMessageFor('squash! fix a typo'),
+          errorMessageFor('squash! squash! fix: a bug'),
+        ]);
+      });
+
+      describe('with `disallowSquash`', () => {
+
+        it('should fail', () => {
+          expect(validateMessage('fix: something', true)).toBe(VALID);
+          expect(validateMessage('squash! fix: something', true)).toBe(INVALID);
+          expect(errors).toEqual([
+            'INVALID COMMIT MSG: squash! fix: something\n' +
+                ' => ERROR: The commit must be manually squashed into the target commit',
+          ]);
+        });
+      });
+    });
   });
 });
