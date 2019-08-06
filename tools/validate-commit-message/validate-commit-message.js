@@ -16,55 +16,62 @@
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const configPath = path.resolve(__dirname, './commit-message.json');
-const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-const PATTERN = /^(\w+)(?:\(([^)]+)\))?\: (.+)$/;
-const FIXUP_SQUASH = /^(fixup|squash)\! /i;
-const REVERT = /^revert:? /i;
+const config = require('./commit-message.json');
+const FIXUP_SQUASH_PREFIX_RE = /^(?:fixup|squash)! /i;
+const REVERT_PREFIX_RE = /^revert:? /i;
 
-module.exports = function(commitSubject) {
-  const subject = commitSubject.replace(FIXUP_SQUASH, '');
-
-  if (subject.match(REVERT)) {
+module.exports = commitHeader => {
+  if (REVERT_PREFIX_RE.test(commitHeader)) {
     return true;
   }
 
-  if (subject.length > config['maxLength']) {
-    error(`The commit message is longer than ${config['maxLength']} characters`, commitSubject);
+  const {header, type, scope} = parseCommitHeader(commitHeader);
+
+  if (header.length > config.maxLength) {
+    error(`The commit message header is longer than ${config.maxLength} characters`, commitHeader);
     return false;
   }
 
-  const match = PATTERN.exec(subject);
-  if (!match) {
+  if (!type) {
+    const format = '<type>(<scope>): <subject>';
     error(
-        `The commit message does not match the format of '<type>(<scope>): <subject>' OR 'Revert: "type(<scope>): <subject>"'`,
-        commitSubject);
+        `The commit message header does not match the format of '${format}' or 'Revert: "${format}"'`,
+        commitHeader);
     return false;
   }
 
-  const type = match[1];
-  if (config['types'].indexOf(type) === -1) {
-    error(
-        `${type} is not an allowed type.\n => TYPES: ${config['types'].join(', ')}`, commitSubject);
+  if (!config.types.includes(type)) {
+    error(`'${type}' is not an allowed type.\n => TYPES: ${config.types.join(', ')}`, commitHeader);
     return false;
   }
 
-  const scope = match[2];
-
-  if (scope && !config['scopes'].includes(scope)) {
+  if (scope && !config.scopes.includes(scope)) {
     error(
-        `"${scope}" is not an allowed scope.\n => SCOPES: ${config['scopes'].join(', ')}`,
-        commitSubject);
+        `'${scope}' is not an allowed scope.\n => SCOPES: ${config.scopes.join(', ')}`,
+        commitHeader);
     return false;
   }
 
   return true;
 };
 
-function error(errorMessage, commitMessage) {
-  console.error(`INVALID COMMIT MSG: "${commitMessage}"\n => ERROR: ${errorMessage}`);
+module.exports.config = config;
+
+// Helpers
+function error(errorMessage, commitHeader) {
+  console.error(`INVALID COMMIT MSG: ${commitHeader}\n => ERROR: ${errorMessage}`);
 }
 
-module.exports.config = config;
+function parseCommitHeader(header) {
+  const isFixupOrSquash = FIXUP_SQUASH_PREFIX_RE.test(header);
+  header = header.replace(FIXUP_SQUASH_PREFIX_RE, '');
+
+  const match = /^(\w+)(?:\(([^)]+)\))?\: (.+)$/.exec(header) || [];
+
+  return {
+    header,
+    type: match[1],
+    scope: match[2],
+    subject: match[3], isFixupOrSquash,
+  };
+}
