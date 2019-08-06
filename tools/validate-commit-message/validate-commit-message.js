@@ -17,15 +17,21 @@
 'use strict';
 
 const config = require('./commit-message.json');
-const FIXUP_SQUASH_PREFIX_RE = /^(?:fixup|squash)! /i;
+const FIXUP_PREFIX_RE = /^fixup! /i;
+const SQUASH_PREFIX_RE = /^squash! /i;
 const REVERT_PREFIX_RE = /^revert:? /i;
 
-module.exports = commitHeader => {
+module.exports = (commitHeader, disallowSquash) => {
   if (REVERT_PREFIX_RE.test(commitHeader)) {
     return true;
   }
 
-  const {header, type, scope} = parseCommitHeader(commitHeader);
+  const {header, type, scope, isSquash} = parseCommitHeader(commitHeader);
+
+  if (isSquash && disallowSquash) {
+    error('The commit must be manually squashed into the target commit', commitHeader);
+    return false;
+  }
 
   if (header.length > config.maxLength) {
     error(`The commit message header is longer than ${config.maxLength} characters`, commitHeader);
@@ -63,8 +69,9 @@ function error(errorMessage, commitHeader) {
 }
 
 function parseCommitHeader(header) {
-  const isFixupOrSquash = FIXUP_SQUASH_PREFIX_RE.test(header);
-  header = header.replace(FIXUP_SQUASH_PREFIX_RE, '');
+  const isFixup = FIXUP_PREFIX_RE.test(header);
+  const isSquash = SQUASH_PREFIX_RE.test(header);
+  header = header.replace(FIXUP_PREFIX_RE, '').replace(SQUASH_PREFIX_RE, '');
 
   const match = /^(\w+)(?:\(([^)]+)\))?\: (.+)$/.exec(header) || [];
 
@@ -72,6 +79,6 @@ function parseCommitHeader(header) {
     header,
     type: match[1],
     scope: match[2],
-    subject: match[3], isFixupOrSquash,
+    subject: match[3], isFixup, isSquash,
   };
 }
