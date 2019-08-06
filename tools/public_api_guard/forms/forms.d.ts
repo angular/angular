@@ -244,7 +244,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     /** @deprecated */ update: EventEmitter<any>;
     readonly validator: ValidatorFn | null;
     viewModel: any;
-    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
+    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null, formsHook?: FormsHook | undefined);
     ngOnChanges(changes: SimpleChanges): void;
     viewToModelUpdate(newValue: any): void;
 }
@@ -304,7 +304,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     ngSubmit: EventEmitter<any>;
     readonly path: string[];
     readonly submitted: boolean;
-    constructor(_validators: any[], _asyncValidators: any[]);
+    constructor(_validators: any[], _asyncValidators: any[], formsHook?: FormsHook | undefined);
     addControl(dir: FormControlName): FormControl;
     addFormArray(dir: FormArrayName): void;
     addFormGroup(dir: FormGroupName): void;
@@ -324,6 +324,11 @@ export declare class FormGroupDirective extends ControlContainer implements Form
 export declare class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
     name: string;
     constructor(parent: ControlContainer, validators: any[], asyncValidators: any[]);
+}
+
+export interface FormsHook {
+    cleanUpControl?(control: FormControl, dir: NgControl): void;
+    setUpControl?(control: FormControl, dir: NgControl): void;
 }
 
 export declare class FormsModule {
@@ -346,6 +351,8 @@ export declare class MinLengthValidator implements Validator, OnChanges {
 }
 
 export declare const NG_ASYNC_VALIDATORS: InjectionToken<(Function | Validator)[]>;
+
+export declare const NG_FORMS_HOOK: InjectionToken<unknown>;
 
 export declare const NG_VALIDATORS: InjectionToken<(Function | Validator)[]>;
 
