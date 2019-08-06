@@ -108,3 +108,9 @@ export class DomPortalOutlet extends BasePortalOutlet {
     return (componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
   }
 }
+
+/**
+ * @deprecated Use `DomPortalOutlet` instead.
+ * @breaking-change 9.0.0
+ */
+export class DomPortalHost extends DomPortalOutlet {}
