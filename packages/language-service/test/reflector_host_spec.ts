@@ -20,13 +20,13 @@ describe('reflector_host_spec', () => {
     const originalJoin = path.join;
     const originalPosixJoin = path.posix.join;
     let mockHost =
-        new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh, 'app/node_modules', {
+        new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh, 'node_modules', {
           ...path,
           join: (...args: string[]) => originalJoin.apply(path, args),
           posix:
               {...path.posix, join: (...args: string[]) => originalPosixJoin.apply(path, args)}
         });
-    const reflectorHost = new ReflectorHost(() => undefined as any, mockHost, {basePath: '\\app'});
+    const reflectorHost = new ReflectorHost(() => undefined as any, mockHost);
 
     if (process.platform !== 'win32') {
       // If we call this in Windows it will cause a 'Maximum call stack size exceeded error'
