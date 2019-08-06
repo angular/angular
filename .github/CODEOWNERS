@@ -94,6 +94,7 @@
 /src/material-experimental/mdc-chips/**            @mmalerba
 /src/material-experimental/mdc-helpers/**          @mmalerba
 /src/material-experimental/mdc-menu/**             @crisbeto
+/src/material-experimental/mdc-progress-spinner/** @andrewseguin
 /src/material-experimental/mdc-progress-bar/**     @andrewseguin
 # Note to implementer: please repossess
 /src/material-experimental/mdc-radio/**            @mmalerba
