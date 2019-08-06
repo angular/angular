@@ -7,7 +7,7 @@
  */
 
 import {StaticSymbolResolverHost} from '@angular/compiler';
-import {CompilerOptions, MetadataCollector, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
+import {MetadataCollector, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -51,9 +51,7 @@ export class ReflectorHost implements StaticSymbolResolverHost {
   private hostAdapter: ReflectorModuleModuleResolutionHost;
   private metadataReaderCache = createMetadataReaderCache();
 
-  constructor(
-      getProgram: () => ts.Program, serviceHost: ts.LanguageServiceHost,
-      private options: CompilerOptions) {
+  constructor(getProgram: () => ts.Program, private readonly serviceHost: ts.LanguageServiceHost) {
     this.hostAdapter = new ReflectorModuleModuleResolutionHost(serviceHost, getProgram);
   }
 
@@ -63,14 +61,25 @@ export class ReflectorHost implements StaticSymbolResolverHost {
 
   moduleNameToFileName(moduleName: string, containingFile?: string): string|null {
     if (!containingFile) {
-      if (moduleName.indexOf('.') === 0) {
+      if (moduleName.startsWith('.')) {
         throw new Error('Resolution of relative paths requires a containing file.');
       }
+      // serviceHost.getCurrentDirectory() returns the directory where tsconfig.json
+      // is located. This is not the same as process.cwd() because the language
+      // service host sets the "project root path" as its current directory.
+      const currentDirectory = this.serviceHost.getCurrentDirectory();
+      if (!currentDirectory) {
+        // If current directory is empty then the file must belong to an inferred
+        // project (no tsconfig.json), in which case it's not possible to resolve
+        // the module without the caller explicitly providing a containing file.
+        throw new Error(`Could not resolve '${moduleName}' without a containing file.`);
+      }
       // Any containing file gives the same result for absolute imports
-      containingFile = path.join(this.options.basePath !, 'index.ts').replace(/\\/g, '/');
+      containingFile = path.join(currentDirectory, 'index.ts');
     }
+    const compilerOptions = this.serviceHost.getCompilationSettings();
     const resolved =
-        ts.resolveModuleName(moduleName, containingFile !, this.options, this.hostAdapter)
+        ts.resolveModuleName(moduleName, containingFile, compilerOptions, this.hostAdapter)
             .resolvedModule;
     return resolved ? resolved.resolvedFileName : null;
   }
