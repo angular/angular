@@ -29,20 +29,22 @@ export function createLanguageService(host: TypeScriptServiceHost): LanguageServ
 class LanguageServiceImpl implements LanguageService {
   constructor(private readonly host: TypeScriptServiceHost) {}
 
-  getTemplateReferences(): string[] { return this.host.getTemplateReferences(); }
+  getTemplateReferences(): string[] {
+    this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
+    return this.host.getTemplateReferences();
+  }
 
   getDiagnostics(fileName: string): tss.Diagnostic[] {
+    const analyzedModules = this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const results: Diagnostic[] = [];
     const templates = this.host.getTemplates(fileName);
     for (const template of templates) {
       const ast = this.host.getTemplateAst(template, fileName);
       results.push(...getTemplateDiagnostics(template, ast));
     }
-
     const declarations = this.host.getDeclarations(fileName);
     if (declarations && declarations.length) {
-      const summary = this.host.getAnalyzedModules();
-      results.push(...getDeclarationDiagnostics(declarations, summary));
+      results.push(...getDeclarationDiagnostics(declarations, analyzedModules));
     }
     if (!results.length) {
       return [];
@@ -52,7 +54,8 @@ class LanguageServiceImpl implements LanguageService {
   }
 
   getPipesAt(fileName: string, position: number): CompilePipeSummary[] {
-    let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
+    this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
+    const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return templateInfo.pipes;
     }
@@ -60,21 +63,24 @@ class LanguageServiceImpl implements LanguageService {
   }
 
   getCompletionsAt(fileName: string, position: number): Completion[]|undefined {
-    let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
+    this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
+    const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getTemplateCompletions(templateInfo);
     }
   }
 
   getDefinitionAt(fileName: string, position: number): tss.DefinitionInfoAndBoundSpan|undefined {
-    let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
+    this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
+    const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getDefinitionAndBoundSpan(templateInfo);
     }
   }
 
   getHoverAt(fileName: string, position: number): tss.QuickInfo|undefined {
-    let templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
+    this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
+    const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getHover(templateInfo);
     }

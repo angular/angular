@@ -175,11 +175,6 @@ export type Declarations = Declaration[];
  */
 export interface LanguageServiceHost {
   /**
-   * The resolver to use to find compiler metadata.
-   */
-  readonly resolver: CompileMetadataResolver;
-
-  /**
    * Returns the template information for templates in `fileName` at the given location. If
    * `fileName` refers to a template file then the `position` should be ignored. If the `position`
    * is not in a template literal string then this method should return `undefined`.
