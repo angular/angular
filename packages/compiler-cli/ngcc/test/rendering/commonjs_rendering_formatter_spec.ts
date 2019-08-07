@@ -149,8 +149,7 @@ exports.D = D;
       loadTestFiles([file]);
       const fs = getFileSystem();
       const logger = new MockLogger();
-      const bundle =
-          makeTestEntryPointBundle('test-package', 'module', 'commonjs', false, [file.name]);
+      const bundle = makeTestEntryPointBundle('test-package', 'commonjs', false, [file.name]);
       const typeChecker = bundle.src.program.getTypeChecker();
       const host = new CommonJsReflectionHost(logger, false, bundle.src.program, bundle.src.host);
       const referencesRegistry = new NgccReferencesRegistry(host);

@@ -161,7 +161,7 @@ runInEachFileSystem(() => {
     loadFakeCore(getFileSystem());
     const errors: ts.Diagnostic[] = [];
     const rootFiles = getRootFiles(testFiles);
-    const bundle = makeTestEntryPointBundle('test-package', 'es2015', 'esm2015', false, rootFiles);
+    const bundle = makeTestEntryPointBundle('test-package', 'esm2015', false, rootFiles);
     const program = bundle.src.program;
 
     const reflectionHost =

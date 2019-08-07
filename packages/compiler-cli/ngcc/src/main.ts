@@ -166,13 +166,12 @@ export function mainNgcc(
       }
 
       const bundle = makeEntryPointBundle(
-          fileSystem, entryPoint, formatPath, isCore, formatProperty, format, processDts,
-          pathMappings, true);
+          fileSystem, entryPoint, formatPath, isCore, format, processDts, pathMappings, true);
 
       logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 
       const transformedFiles = transformer.transform(bundle);
-      fileWriter.writeBundle(entryPoint, bundle, transformedFiles);
+      fileWriter.writeBundle(entryPoint, bundle, transformedFiles, formatProperty);
 
       onTaskCompleted(task, TaskProcessingOutcome.Processed);
     };
