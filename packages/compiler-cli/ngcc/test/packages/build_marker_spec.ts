@@ -134,6 +134,19 @@ runInEachFileSystem(() => {
         markAsProcessed(fs, pkg, COMMON_PACKAGE_PATH, ['fesm2015', 'fesm5', 'esm2015', 'esm5']);
         expect(writeFileSpy).toHaveBeenCalledTimes(1);
       });
+
+      it(`should keep backup of existing 'prepublishOnly' script`, () => {
+        const COMMON_PACKAGE_PATH = _('/node_modules/@angular/common/package.json');
+        const fs = getFileSystem();
+        const prepublishOnly = 'existing script';
+        let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
+        pkg.scripts = {prepublishOnly};
+
+        markAsProcessed(fs, pkg, COMMON_PACKAGE_PATH, ['fesm2015']);
+        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
+        expect(pkg.scripts.prepublishOnly).toContain('This is not allowed');
+        expect(pkg.scripts.prepublishOnly__ivy_ngcc_bak).toBe(prepublishOnly);
+      });
     });
 
     describe('hasBeenProcessed', () => {
