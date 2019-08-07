@@ -91,17 +91,6 @@ export function setUpAttributes(native: RElement, attrs: TAttributes): number {
   return i;
 }
 
-
-export function attrsStylingIndexOf(attrs: TAttributes, startIndex: number): number {
-  for (let i = startIndex; i < attrs.length; i++) {
-    const val = attrs[i];
-    if (val === AttributeMarker.Classes || val === AttributeMarker.Styles) {
-      return i;
-    }
-  }
-  return -1;
-}
-
 /**
  * Test whether the given value is a marker that indicates that the following
  * attribute values in a `TAttributes` array are only the names of attributes,
