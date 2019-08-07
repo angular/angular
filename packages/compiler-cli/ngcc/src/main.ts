@@ -102,58 +102,67 @@ export function mainNgcc(
   const entryPoints = getEntryPoints(
       fileSystem, config, logger, resolver, absBasePath, targetEntryPointPath, pathMappings,
       supportedPropertiesToConsider, compileAllFormats);
+
   for (const entryPoint of entryPoints) {
     // Are we compiling the Angular core?
     const isCore = entryPoint.name === '@angular/core';
 
-    const compiledFormats = new Set<string>();
     const entryPointPackageJson = entryPoint.packageJson;
     const entryPointPackageJsonPath = fileSystem.resolve(entryPoint.path, 'package.json');
-    const pathToPropsMap = getFormatPathToPropertiesMap(entryPointPackageJson);
+    const {propertiesToProcess, propertyToPropertiesToMarkAsProcessed} =
+        getPropertiesToProcessAndMarkAsProcessed(
+            entryPointPackageJson, supportedPropertiesToConsider);
 
+    let hasAnyProcessedFormat = false;
     let processDts = !hasBeenProcessed(entryPointPackageJson, 'typings');
 
-    for (const property of supportedPropertiesToConsider) {
+    for (const property of propertiesToProcess) {
       // If we only need one format processed and we already have one, exit the loop.
-      if (!compileAllFormats && (compiledFormats.size > 0)) break;
+      if (!compileAllFormats && hasAnyProcessedFormat) break;
 
       const formatPath = entryPointPackageJson[property];
       const format = getEntryPointFormat(fileSystem, entryPoint, property);
 
-      // No format then this property is not supposed to be compiled.
-      if (!formatPath || !format) continue;
+      // All properties listed in `propertiesToProcess` are guaranteed to point to a format-path
+      // (i.e. they exist in `entryPointPackageJson`). Furthermore, they are also guaranteed to be
+      // among `SUPPORTED_FORMAT_PROPERTIES`.
+      // Based on the above, `formatPath` should always be defined and `getEntryPointFormat()`
+      // should always return a format here (and not `undefined`).
+      if (!formatPath || !format) {
+        // This should never happen.
+        throw new Error(
+            `Invariant violated: No format-path or format for ${entryPoint.path} : ${property} ` +
+            `(formatPath: ${formatPath} | format: ${format})`);
+      }
 
       // The `formatPath` which the property maps to is already processed - nothing to do.
       if (hasBeenProcessed(entryPointPackageJson, property)) {
-        compiledFormats.add(formatPath);
+        hasAnyProcessedFormat = true;
         logger.debug(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
         continue;
       }
 
+      const bundle = makeEntryPointBundle(
+          fileSystem, entryPoint, formatPath, isCore, property, format, processDts, pathMappings,
+          true);
 
-      if (!compiledFormats.has(formatPath)) {
-        const bundle = makeEntryPointBundle(
-            fileSystem, entryPoint, formatPath, isCore, property, format, processDts, pathMappings,
-            true);
+      logger.info(`Compiling ${entryPoint.name} : ${property} as ${format}`);
+      const transformedFiles = transformer.transform(bundle);
+      fileWriter.writeBundle(entryPoint, bundle, transformedFiles);
+      hasAnyProcessedFormat = true;
 
-        logger.info(`Compiling ${entryPoint.name} : ${property} as ${format}`);
-        const transformedFiles = transformer.transform(bundle);
-        fileWriter.writeBundle(entryPoint, bundle, transformedFiles);
-        compiledFormats.add(formatPath);
-
-        const propsToMarkAsProcessed: (EntryPointJsonProperty | 'typings')[] =
-            pathToPropsMap.get(formatPath) !;
-        if (processDts) {
-          propsToMarkAsProcessed.push('typings');
-          processDts = false;
-        }
-
-        markAsProcessed(
-            fileSystem, entryPointPackageJson, entryPointPackageJsonPath, propsToMarkAsProcessed);
+      const propsToMarkAsProcessed: (EntryPointJsonProperty | 'typings')[] =
+          propertyToPropertiesToMarkAsProcessed.get(property) !;
+      if (processDts) {
+        propsToMarkAsProcessed.push('typings');
+        processDts = false;
       }
+
+      markAsProcessed(
+          fileSystem, entryPointPackageJson, entryPointPackageJsonPath, propsToMarkAsProcessed);
     }
 
-    if (compiledFormats.size === 0) {
+    if (!hasAnyProcessedFormat) {
       throw new Error(
           `Failed to compile any formats for entry-point at (${entryPoint.path}). Tried ${supportedPropertiesToConsider}.`);
     }
@@ -288,19 +297,59 @@ function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryP
   });
 }
 
-function getFormatPathToPropertiesMap(packageJson: EntryPointPackageJson):
-    Map<string, EntryPointJsonProperty[]> {
-  const map = new Map<string, EntryPointJsonProperty[]>();
+/**
+ * This function computes and returns the following:
+ * - `propertiesToProcess`: An (ordered) list of properties that exist and need to be processed,
+ *   based on the specified `propertiesToConsider`, the properties in `package.json` and their
+ *   corresponding format-paths. NOTE: Only one property per format-path needs to be processed.
+ * - `propertyToPropertiesToMarkAsProcessed`: A mapping from each property in `propertiesToProcess`
+ *   to the list of other properties in `package.json` that need to be marked as processed as soon
+ *   as of the former being processed.
+ */
+function getPropertiesToProcessAndMarkAsProcessed(
+    packageJson: EntryPointPackageJson, propertiesToConsider: EntryPointJsonProperty[]): {
+  propertiesToProcess: EntryPointJsonProperty[];
+  propertyToPropertiesToMarkAsProcessed: Map<EntryPointJsonProperty, EntryPointJsonProperty[]>;
+} {
+  const formatPathsToConsider = new Set<string>();
 
-  for (const prop of SUPPORTED_FORMAT_PROPERTIES) {
-    const formatPath = packageJson[prop];
-    if (formatPath) {
-      if (!map.has(formatPath)) {
-        map.set(formatPath, []);
-      }
-      map.get(formatPath) !.push(prop);
-    }
+  const propertiesToProcess: EntryPointJsonProperty[] = [];
+  for (const prop of propertiesToConsider) {
+    // Ignore properties that are not in `package.json`.
+    if (!packageJson.hasOwnProperty(prop)) continue;
+
+    const formatPath = packageJson[prop] !;
+
+    // Ignore properties that map to the same format-path as a preceding property.
+    if (formatPathsToConsider.has(formatPath)) continue;
+
+    // Process this property, because it is the first one to map to this format-path.
+    formatPathsToConsider.add(formatPath);
+    propertiesToProcess.push(prop);
   }
 
-  return map;
+  const formatPathToProperties: {[formatPath: string]: EntryPointJsonProperty[]} = {};
+  for (const prop of SUPPORTED_FORMAT_PROPERTIES) {
+    // Ignore properties that are not in `package.json`.
+    if (!packageJson.hasOwnProperty(prop)) continue;
+
+    const formatPath = packageJson[prop] !;
+
+    // Ignore properties that do not map to a format-path that will be considered.
+    if (!formatPathsToConsider.has(formatPath)) continue;
+
+    // Add this property to the map.
+    const list = formatPathToProperties[formatPath] || (formatPathToProperties[formatPath] = []);
+    list.push(prop);
+  }
+
+  const propertyToPropertiesToMarkAsProcessed =
+      new Map<EntryPointJsonProperty, EntryPointJsonProperty[]>();
+  for (const prop of propertiesToConsider) {
+    const formatPath = packageJson[prop] !;
+    const propertiesToMarkAsProcessed = formatPathToProperties[formatPath];
+    propertyToPropertiesToMarkAsProcessed.set(prop, propertiesToMarkAsProcessed);
+  }
+
+  return {propertiesToProcess, propertyToPropertiesToMarkAsProcessed};
 }
