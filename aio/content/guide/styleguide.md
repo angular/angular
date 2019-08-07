@@ -927,7 +927,7 @@ As always, strive for consistency.
 <div class="s-rule do">
 
 **Do** use a custom prefix for a component selector.
-For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
+For example, the prefix `toh` represents **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
 
 </div>
 
