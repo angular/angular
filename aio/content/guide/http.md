@@ -40,7 +40,7 @@ into an application class as shown in the following `ConfigService` example.
   header="app/config/config.service.ts (excerpt)">
 </code-example>
 
-## Getting JSON data
+## Requesting data from server
 
 Applications often request JSON data from the server.
 For example, the app might need a configuration file on the server, `config.json`,
@@ -73,51 +73,54 @@ the component **subscribes** to the method's return value.
 The subscription callback copies the data fields into the component's `config` object,
 which is data-bound in the component template for display.
 
-### Why write a service
+<div class="alert is-helpful">
+**Why write a service?**
 
 This example is so simple that it is tempting to write the `Http.get()` inside the
 component itself and skip the service.
-
-However, data access rarely stays this simple.
-You typically post-process the data, add error handling, and maybe some retry logic to
+In practice, however, data access rarely stays this simple.
+You typically need to post-process the data, add error handling, and maybe some retry logic to
 cope with intermittent connectivity.
 
 The component quickly becomes cluttered with data access minutia.
 The component becomes harder to understand, harder to test, and the data access logic can't be re-used or standardized.
 
-That's why it is a best practice to separate presentation of data from data access by
+That's why it's a best practice to separate presentation of data from data access by
 encapsulating data access in a separate service and delegating to that service in
 the component, even in simple cases like this one.
+</div>
 
-### Type-checking the response
+### Requesting a typed response
 
-The subscribe callback above requires bracket notation to extract the data values.
+Notice that in the above example, the `subscribe` callback uses bracket notation to extract the data values.
+You can't write `data.heroesUrl` because TypeScript correctly complains that the data object from the service does not have a `heroesUrl` property.
+The `HttpClient.get()` method parsed the JSON server response into the anonymous Object type,
+and Angular doesn't know what properties that object has.
 
-<code-example
-  path="http/src/app/config/config.component.ts"
-  region="v1_callback">
-</code-example>
+You can structure your `HttpClient` request to declare the type of the response object, to make consuming the output easier and more obvious.
+Specifying the response type acts as a type assertion during the compile time.
 
-You can't write `data.heroesUrl` because TypeScript correctly complains that the `data` object from the service does not have a `heroesUrl` property.
-
-The `HttpClient.get()` method parsed the JSON server response into the anonymous `Object` type. It doesn't know what the shape of that object is.
-
-You can tell `HttpClient` the type of the response to make consuming the output easier and more obvious.
-
-First, define an interface with the correct shape:
+To specify the response object type, first define an interface with the required properties.
+(Use an interface rather than a class; a response cannot be automatically converted to an instance of a class.)
 
 <code-example
   path="http/src/app/config/config.service.ts"
   region="config-interface">
 </code-example>
 
-Then, specify that interface as the `HttpClient.get()` call's type parameter in the service:
+Next, specify that interface as the `HttpClient.get()` call's type parameter in the service.
 
 <code-example
   path="http/src/app/config/config.service.ts"
   region="getConfig_2"
   header="app/config/config.service.ts (getConfig v.2)">
 </code-example>
+
+<div class="alert is-helpful">
+
+ When you pass an interface as a type parameter to the `HttpClient.get()` method, use the RxJS `map` operator to transform the response data  as needed by the UI. You can then pass the transformed data to the [async pipe](api/common/AsyncPipe).
+
+</div>
 
 The callback in the updated component method receives a typed data object, which is
 easier and safer to consume:
@@ -127,6 +130,24 @@ easier and safer to consume:
   region="v2"
   header="app/config/config.component.ts (showConfig v.2)">
 </code-example>
+
+<div class="alert is-important">
+
+Specifying the response type is a declaration to TypeScript that it should expect your response to be of the given type.
+This is a build-time check and doesn't guarantee that the server will actually respond with an object of this type. It is up to the server to ensure that the type specified by the server API is returned.
+
+</div>
+
+To access properties that are defined in an interface, you must explicitly convert the Object you get from the JSON to the required response type.
+For example, the following `subscribe` callback receives `data` as an Object, and then type-casts it in order to access the properties.
+
+<code-example>
+   .subscribe(data => this.config = {
+    heroesUrl: (data as any).heroesUrl,
+    textfile:  (data as any).textfile,
+   });
+</code-example>
+
 
 ### Reading the full response
 
@@ -151,6 +172,67 @@ The component's `showConfigResponse()` method displays the response headers as w
 </code-example>
 
 As you can see, the response object has a `body` property of the correct type.
+
+### Making a JSONP request
+
+Apps can use the the `HttpClient` to make [JSONP](https://en.wikipedia.org/wiki/JSONP) requests across domains when the server doesn't support [CORS protocol](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+
+JSONP treats the API we need to access as a JavaScript file.
+The browser doesn't check cross domain when executing JavaScript files, so by using the Angular JSONP, an app can access APIs without facing the cross-domain issue.
+
+Make a JSONP request by passing a callback function that tells the server to wrap the response in that function.
+
+<div alert="is-important>
+
+Use JSONP requests only with APIs that support JSONP, as the server needs to respond with the JSONP callback method.
+
+JSONP requests only work for GET requests. They don't work for PUT/POST/DELETE and so on.
+
+</div>
+
+Angular JSONP requests return an `Observable`.
+Follow the pattern for subscribing to observables and use the RxJS `map` operator to transform the response before using the [async pipe](api/common/AsyncPipe) to manage the results.
+
+In Angular, use JSONP by including `HttpClientJsonpModule` in the `NgModule` imports.
+In the following example, the `searchHeroes()` method uses a JSONP request to query for heroes whose names contain the search term.
+
+```ts
+/* GET heroes whose name contains search term */
+searchHeroes(term: string): Observable {
+  term = term.trim();
+
+  let heroesURL = `${this.heroesURL}?${term}`;
+  return this.http.jsonp(heroesUrl, 'callback').pipe(
+      catchError(this.handleError('searchHeroes', []) // then handle the error
+    );
+};
+```
+
+This request passes the `heroesURL` as the first parameter and the callback function name as the second parameter.
+The response is wrapped in the callback function, which takes the observables returned by the JSONP method and pipes them through to the error handler.
+
+### Requesting non-JSON data
+
+Not all APIs return JSON data.
+In this next example, a `DownloaderService` method reads a text file from the server and logs the file contents, before returning those contents to the caller as an `Observable<string>`.
+
+<code-example
+  path="http/src/app/downloader/downloader.service.ts"
+  region="getTextFile"
+  header="app/downloader/downloader.service.ts (getTextFile)" linenums="false">
+</code-example>
+
+`HttpClient.get()` returns a string rather than the default JSON because of the `responseType` option.
+
+The RxJS `tap` operator (as in "wiretap") lets the code inspect both success and error values passing through the observable without disturbing them.
+
+A `download()` method in the `DownloaderComponent` initiates the request by subscribing to the service method.
+
+<code-example
+  path="http/src/app/downloader/downloader.component.ts"
+  region="download"
+  header="app/downloader/downloader.component.ts (download)" linenums="false">
+</code-example>
 
 ## Error handling
 
@@ -204,7 +286,7 @@ and _pipe them through_ to the error handler.
   header="app/config/config.service.ts (getConfig v.3 with error handler)">
 </code-example>
 
-### `retry()`
+### Retrying
 
 Sometimes the error is transient and will go away automatically if you try again.
 For example, network interruptions are common in mobile scenarios, and trying again
@@ -242,29 +324,34 @@ If you're following along with these code snippets, note that you must import th
   header="app/config/config.service.ts (RxJS imports)">
 </code-example>
 
-## Requesting non-JSON data
+## HTTP headers
 
-Not all APIs return JSON data. In this next example,
-a `DownloaderService` method reads a text file from the server
-and logs the file contents, before returning those contents to the caller
-as an `Observable<string>`.
+Many servers require extra headers for save operations.
+For example, they may require a "Content-Type" header to explicitly declare the MIME type of the request body; or the server may require an authorization token.
+
+### Adding headers
+
+The `HeroesService` defines such headers in an `httpOptions` object that will be passed
+to every `HttpClient` save method.
 
 <code-example
-  path="http/src/app/downloader/downloader.service.ts"
-  region="getTextFile"
-  header="app/downloader/downloader.service.ts (getTextFile)">
+  path="http/src/app/heroes/heroes.service.ts"
+  region="http-options"
+  header="app/heroes/heroes.service.ts (httpOptions)">
 </code-example>
 
-`HttpClient.get()` returns a string rather than the default JSON because of the `responseType` option.
+### Updating headers
 
-The RxJS `tap` operator (as in "wiretap") lets the code inspect good and error values passing through the observable without disturbing them.
+You can't directly modify the existing headers within the previous options
+object because instances of the `HttpHeaders` class are immutable.
 
-A `download()` method in the `DownloaderComponent` initiates the request by subscribing to the service method.
+Use the `set()` method instead, to return a clone of the current instance with the new changes applied.
+
+Here's how you might update the authorization header (after the old token expired) before making the next request.
 
 <code-example
-  path="http/src/app/downloader/downloader.component.ts"
-  region="download"
-  header="app/downloader/downloader.component.ts (download)">
+  path="http/src/app/heroes/heroes.service.ts"
+   region="update-headers" linenums="false">
 </code-example>
 
 ## Sending data to the server
@@ -275,22 +362,6 @@ The sample app for this guide includes a simplified version of the "Tour of Hero
 that fetches heroes and enables users to add, delete, and update them.
 
 The following sections excerpt methods of the sample's `HeroesService`.
-
-### Adding headers
-
-Many servers require extra headers for save operations.
-For example, they may require a "Content-Type" header to explicitly declare
-the MIME type of the request body.
-Or perhaps the server requires an authorization token.
-
-The `HeroesService` defines such headers in an `httpOptions` object that will be passed
-to every `HttpClient` save method.
-
-<code-example
-  path="http/src/app/heroes/heroes.service.ts"
-  region="http-options"
-  header="app/heroes/heroes.service.ts (httpOptions)">
-</code-example>
 
 ### Making a POST request
 
@@ -413,118 +484,8 @@ in order to initiate the request.
 
 We have discussed the basic HTTP functionality in `@angular/common/http`, but sometimes you need to do more than make simple requests and get data back.
 
-### Configuring the request
-
-Other aspects of an outgoing request can be configured via the options object
-passed as the last argument to the `HttpClient` method.
-
-You [saw earlier](#adding-headers) that the `HeroesService` sets the default headers by
-passing an options object (`httpOptions`) to its save methods.
-You can do more.
-
-#### Update headers
-
-You can't directly modify the existing headers within the previous options
-object because instances of the `HttpHeaders` class are immutable.
-
-Use the `set()` method instead.
-It returns a clone of the current instance with the new changes applied.
-
-Here's how you might update the authorization header (after the old token expired)
-before making the next request.
-
-<code-example
-  path="http/src/app/heroes/heroes.service.ts"
-  region="update-headers">
-</code-example>
-
-#### URL Parameters
-
-Adding URL search parameters works a similar way.
-Here is a `searchHeroes` method that queries for heroes whose names contain the search term.
-
-<code-example
-  path="http/src/app/heroes/heroes.service.ts"
-  region="searchHeroes">
-</code-example>
-
-If there is a search term, the code constructs an options object with an HTML URL-encoded search parameter. If the term were "foo", the GET request URL would be `api/heroes/?name=foo`.
-
-The `HttpParams` are immutable so you'll have to use the `set()` method to update the options.
-
-### Debouncing requests
-
-The sample includes an _npm package search_ feature.
-
-When the user enters a name in a search-box, the `PackageSearchComponent` sends
-a search request for a package with that name to the NPM web API.
-
-Here's a pertinent excerpt from the template:
-
-<code-example
-  path="http/src/app/package-search/package-search.component.html"
-  region="search"
-  header="app/package-search/package-search.component.html (search)">
-</code-example>
-
-The `(keyup)` event binding sends every keystroke to the component's `search()` method.
-
-Sending a request for every keystroke could be expensive.
-It's better to wait until the user stops typing and then send a request.
-That's easy to implement with RxJS operators, as shown in this excerpt.
-
-<code-example
-  path="http/src/app/package-search/package-search.component.ts"
-  region="debounce"
-  header="app/package-search/package-search.component.ts (excerpt)">
-</code-example>
-
-The `searchText$` is the sequence of search-box values coming from the user.
-It's defined as an RxJS `Subject`, which means it is a multicasting `Observable`
-that can also produce values for itself by calling `next(value)`,
-as happens in the `search()` method.
-
-Rather than forward every `searchText` value directly to the injected `PackageSearchService`,
-the code in `ngOnInit()` _pipes_ search values through three operators:
-
-1. `debounceTime(500)` - wait for the user to stop typing (1/2 second in this case).
-1. `distinctUntilChanged()` - wait until the search text changes.
-1. `switchMap()` - send the search request to the service.
-
-The code sets `packages$` to this re-composed `Observable` of search results.
-The template subscribes to `packages$` with the [AsyncPipe](api/common/AsyncPipe)
-and displays search results as they arrive.
-
-A search value reaches the service only if it's a new value and the user has stopped typing.
-
-<div class="alert is-helpful">
-
-The `withRefresh` option is explained [below](#cache-refresh).
-
-</div>
-
-#### _switchMap()_
-
-The `switchMap()` operator has three important characteristics.
-
-1. It takes a function argument that returns an `Observable`.
-`PackageSearchService.search` returns an `Observable`, as other data service methods do.
-
-2. If a previous search request is still _in-flight_ (as when the connection is poor),
-it cancels that request and sends a new one.
-
-3. It returns service responses in their original request order, even if the
-server returns them out of order.
-
-
-<div class="alert is-helpful">
-
-If you think you'll reuse this debouncing logic,
-consider moving it to a utility function or into the `PackageSearchService` itself.
-
-</div>
-
-### Intercepting requests and responses
+{@a intercepting-requests-and-responses }
+### HTTP interceptors
 
 _HTTP Interception_ is a major feature of `@angular/common/http`.
 With interception, you declare _interceptors_ that inspect and transform HTTP requests from your application to the server.
@@ -845,6 +806,117 @@ the cached response first (and immediately), followed later
 by the response from the server.
 Subscribers see a sequence of _two_ responses.
 
+### Configuring the request
+
+Other aspects of an outgoing request can be configured via the options object
+passed as the last argument to the `HttpClient` method.
+
+In [Adding headers](#adding-headers), the `HeroesService` set the default headers by
+passing an options object (`httpOptions`) to its save methods.
+You can do more.
+
+#### URL query strings
+
+In this section, you will see how to use the `HttpParams` class to add URL query strings in your `HttpRequest`.
+
+The following `searchHeroes` method queries for heroes whose names contain the search term.
+Start by importing `HttpParams` class.
+
+<code-example hideCopy language="typescript">
+import {HttpParams} from "@angular/common/http";
+</code-example>
+
+<code-example
+  path="http/src/app/heroes/heroes.service.ts"
+  region="searchHeroes" linenums="false">
+</code-example>
+
+If there is a search term, the code constructs an options object with an HTML URL-encoded search parameter.
+If the term were "foo", the GET request URL would be `api/heroes?name=foo`.
+
+The `HttpParams` are immutable so you'll have to save the returned value of the `.set()` method in order  to update the options.
+
+#### Use `fromString` to create HttpParams
+
+You can also create HTTP parameters directly from a query string by using the `fromString` variable:
+
+<code-example hideCopy language="typescript">
+const params = new HttpParams({fromString: 'name=foo'});
+</code-example>
+
+### Debouncing requests
+
+The sample includes an _npm package search_ feature.
+
+When the user enters a name in a search-box, the `PackageSearchComponent` sends
+a search request for a package with that name to the NPM web API.
+
+Here's a pertinent excerpt from the template:
+
+<code-example
+  path="http/src/app/package-search/package-search.component.html"
+  region="search"
+  header="app/package-search/package-search.component.html (search)">
+</code-example>
+
+The `keyup` event binding sends every keystroke to the component's `search()` method.
+
+Sending a request for every keystroke could be expensive.
+It's better to wait until the user stops typing and then send a request.
+That's easy to implement with RxJS operators, as shown in this excerpt.
+
+<code-example
+  path="http/src/app/package-search/package-search.component.ts"
+  region="debounce"
+  header="app/package-search/package-search.component.ts (excerpt)">
+</code-example>
+
+The `searchText$` is the sequence of search-box values coming from the user.
+It's defined as an RxJS `Subject`, which means it is a multicasting `Observable`
+that can also emit values for itself by calling `next(value)`,
+as happens in the `search()` method.
+
+Rather than forward every `searchText` value directly to the injected `PackageSearchService`,
+the code in `ngOnInit()` _pipes_ search values through three operators:
+
+1. `debounceTime(500)` - wait for the user to stop typing (1/2 second in this case).
+
+2. `distinctUntilChanged()` - wait until the search text changes.
+
+3. `switchMap()` - send the search request to the service.
+
+The code sets `packages$` to this re-composed `Observable` of search results.
+The template subscribes to `packages$` with the [AsyncPipe](api/common/AsyncPipe)
+and displays search results as they arrive.
+
+A search value reaches the service only if it's a new value and the user has stopped typing.
+
+<div class="alert is-helpful">
+
+The `withRefresh` option is explained [below](#cache-refresh).
+
+</div>
+
+#### _switchMap()_
+
+The `switchMap()` operator has three important characteristics.
+
+1. It takes a function argument that returns an `Observable`.
+`PackageSearchService.search` returns an `Observable`, as other data service methods do.
+
+1. If a previous search request is still _in-flight_ (as when the network connection is poor),
+it cancels that request and sends a new one.
+
+1. It returns service responses in their original request order, even if the
+server returns them out of order.
+
+<div class="alert is-helpful">
+
+If you think you'll reuse this debouncing logic,
+consider moving it to a utility function or into the `PackageSearchService` itself.
+
+</div>
+
 ### Listening to progress events
 
 Sometimes applications transfer large amounts of data and those transfers can take a long time.
@@ -895,22 +967,26 @@ by returning an observable of simulated events.
 
 </div>
 
-## Security: XSRF Protection
+## Security: XSRF protection
 
-[Cross-Site Request Forgery (XSRF)](https://en.wikipedia.org/wiki/Cross-site_request_forgery) is an attack technique by which the attacker can trick an authenticated user into unknowingly executing actions on your website. `HttpClient` supports a [common mechanism](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-Header_Token) used to prevent XSRF attacks. When performing HTTP requests, an interceptor reads a token from a cookie, by default `XSRF-TOKEN`, and sets it as an HTTP header, `X-XSRF-TOKEN`. Since only code that runs on your domain could read the cookie, the backend can be certain that the HTTP request came from your client application and not an attacker.
+[Cross-Site Request Forgery (XSRF)](https://en.wikipedia.org/wiki/Cross-site_request_forgery) is an attack technique by which the attacker can trick an authenticated user into unknowingly executing actions on your website.
+`HttpClient` supports a [common mechanism](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-Header_Token) used to prevent XSRF attacks.
+When performing HTTP requests, an interceptor reads a token from a cookie, by default `XSRF-TOKEN`, and sets it as an HTTP header, `X-XSRF-TOKEN`.
+Since only code that runs on your domain could read the cookie, the backend can be certain that the HTTP request came from your client application and not an attacker.
 
-By default, an interceptor sends this header on all mutating requests (POST, etc.)
-to relative URLs but not on GET/HEAD requests or
-on requests with an absolute URL.
+By default, an interceptor sends this header on all mutating requests (such as POST)
+to relative URLs, but not on GET/HEAD requests or on requests with an absolute URL.
 
-To take advantage of this, your server needs to set a token in a JavaScript readable session cookie called `XSRF-TOKEN` on either the page load or the first GET request. On subsequent requests the server can verify that the cookie matches the `X-XSRF-TOKEN` HTTP header, and therefore be sure that only code running on your domain could have sent the request. The token must be unique for each user and must be verifiable by the server; this prevents the client from making up its own tokens. Set the token to a digest of your site's authentication
-cookie with a salt for added security.
+To take advantage of this, your server needs to set a token in a JavaScript readable session cookie called `XSRF-TOKEN` on either the page load or the first GET request.
+On subsequent requests the server can verify that the cookie matches the `X-XSRF-TOKEN` HTTP header, and therefore be sure that only code running on your domain could have sent the request.
+The token must be unique for each user and must be verifiable by the server; this prevents the client from making up its own tokens.
+Set the token to a digest of your site's authentication cookie with a salt for added security.
 
 In order to prevent collisions in environments where multiple Angular apps share the same domain or subdomain, give each application a unique cookie name.
 
 <div class="alert is-important">
 
-*Note that `HttpClient` supports only the client half of the XSRF protection scheme.*
+*`HttpClient` supports only the client half of the XSRF protection scheme.*
 Your backend service must be configured to set the cookie for your page, and to verify that
 the header is present on all eligible requests.
 If not, Angular's default protection will be ineffective.
@@ -929,19 +1005,13 @@ use `HttpClientXsrfModule.withOptions()` to override the defaults.
 
 ## Testing HTTP requests
 
-Like any external dependency, the HTTP backend needs to be mocked
-so your tests can simulate interaction with a remote server.
-The `@angular/common/http/testing` library makes
-setting up such mocking straightforward.
+As for any external dependency, you must mock the HTTP backend so your tests can simulate interaction with a remote server.
+The `@angular/common/http/testing` library makes it straightforward to set up such mocking .
 
-### Mocking philosophy
-
-Angular's HTTP testing library is designed for a pattern of testing wherein
-the app executes code and makes requests first.
-
-Then a test expects that certain requests have or have not been made,
+Angular's HTTP testing library is designed for a pattern of testing in which the app executes code and makes requests first.
+The test then expects that certain requests have or have not been made,
 performs assertions against those requests,
-and finally provide responses by "flushing" each expected request.
+and finally provides responses by "flushing" each expected request.
 
 At the end, tests may verify that the app has made no unexpected requests.
 
