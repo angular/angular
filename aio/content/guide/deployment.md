@@ -635,7 +635,7 @@ for the missing files. Look at where it _tried_ to find those files and adjust t
 <!--
 ## Differential Loading
 -->
-## 증분 로딩(Differential Loading)
+## 선택적 로딩(Differential Loading)
 
 <!--
 When building web applications, making sure your application is compatible with the majority of browsers is a goal. Even as JavaScript continues to evolve, with new features being introduced, not all browsers are updated with support for these new features at the same pace. This is where compilation and [polyfills](guide/browser-support#polyfills) come in. The code you write in development using TypeScript is compiled and bundled into a format that is compatible with most browsers, commonly known as ES5. Polyfills are used bridge the gap, providing functionality that simply doesn't exist in some legacy browsers. 
@@ -646,15 +646,15 @@ Differential loading is a strategy where the CLI builds two separate bundles as 
 -->
 애플리케이션은 결국 더 많은 브라우저에서 정상적으로 실행되는지가 가장 중요합니다. 하지만 JavaScript 자체도 새로운 기능을 도입하면서 끊임없이 진보하기 때문에 모든 브라우저들이 JavaScript 표준에 있는 기능을 같은 수준으로 지원하지는 않습니다. 그래서 해결책으로 컴파일이라는 과정과 [폴리필(polyfills)](guide/browser-support#polyfills)이라는 개념이 등장했습니다. 이제는 개발자가 TypeScript로 작성한 코드가 컴파일 단계를 거쳐 브라우저에서 원활하게 실행되는 ES5 코드로 변환됩니다. 그리고 이 과정에서 JavaScript 문법으로 새로 추가되어 브라우저가 아직 지원하지 않는 기능은 폴리필을 활용해서 지원하기도 합니다.
 
-브라우저 호환성을 신경쓰다보면 번들 결과물의 크기가 점점 커질 수 있습니다. 최근에 나온 브라우저들은 보통 ES2015나 이후 버전을 지원하지만 그렇지 못한 브라우저를 사용하는 사용자가 있을 수 있고, 이런 사용자들을 위해 개발자가 작성한 코드 이외에 폴리필을 추가로 넣어야 하기 때문입니다. 하지만 최신 JavaScript 문법을 지원하는 브라우저를 사용하는 사용자는 이 증가분이 필요없습니다. 그래서 증분 로딩이 등장했습니다.
+브라우저 호환성을 신경쓰다보면 번들 결과물의 크기가 점점 커질 수 있습니다. 최근에 나온 브라우저들은 보통 ES2015나 이후 버전을 지원하지만 그렇지 못한 브라우저를 사용하는 사용자가 있을 수 있고, 이런 사용자들을 위해 개발자가 작성한 코드 이외에 폴리필을 추가로 넣어야 하기 때문입니다. 하지만 최신 JavaScript 문법을 지원하는 브라우저를 사용하는 사용자는 이 증가분이 필요없습니다. 그래서 선택적 로딩이 등장했습니다.
 
-증분 로딩은 Angular CLI로 애플리케이션을 빌드할 때 이 애플리케이션의 빌드 결과물을 두 벌로 생성하는 방식입니다. 첫번째 세트에는 최신 JavaScript 문법을 지원하는 코드가 들어갑니다. 이 결과물에는 폴리필이 최소한으로 들어가기 때문에 번들 결과물의 크기도 상대적으로 작습니다. 그리고 두번째 세트에는 조금 더 낮은 JavaScript 버전으로 빌드된 코드와 오래된 브라우저에서 지원하지 않는 문법을 실행하기 위한 폴리필이 모두 포함되는데, 따라서 번들 결과물의 크기는 상대적으로 좀 더 큽니다. 증분 로딩 방식을 사용하면 애플리케이션이 동작하는 브라우저를 더 확보할 수 있으면서도, 브라우저에 꼭 필요한 코드만 로딩할 수 있습니다.
+선택적 로딩은 Angular CLI로 애플리케이션을 빌드할 때 이 애플리케이션의 빌드 결과물을 두 벌로 생성하는 방식입니다. 첫번째 세트에는 최신 JavaScript 문법을 지원하는 코드가 들어갑니다. 이 결과물에는 폴리필이 최소한으로 들어가기 때문에 번들 결과물의 크기도 상대적으로 작습니다. 그리고 두번째 세트에는 조금 더 낮은 JavaScript 버전으로 빌드된 코드와 오래된 브라우저에서 지원하지 않는 문법을 실행하기 위한 폴리필이 모두 포함되는데, 따라서 번들 결과물의 크기는 상대적으로 좀 더 큽니다. 선택적 로딩 방식을 사용하면 애플리케이션이 동작하는 브라우저를 더 확보할 수 있으면서도, 브라우저에 꼭 필요한 코드만 로딩할 수 있습니다.
 
 
 <!--
 ### Differential builds
 -->
-### 증분 빌드(Differential builds)
+### 선택적 빌드(Differential builds)
 
 <!--
 The Angular CLI handles differential loading for you as part of the _build_ process for deployment. The Angular CLI will produce the necessary bundles used for differential loading, based on your browser support requirements and compilation target. 
@@ -664,7 +664,7 @@ The Angular CLI uses two configurations for differential loading:
 - Browserslist - The `browserslist` configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
 - tsconfig.json - The `target` in the TypeScript `compilerOptions` determines the ECMAScript target version that the code is compiled to. Modern browsers support ES2015 natively, while ES5 is more commonly used to support legacy browsers.
 -->
-Angular는 CLI를 사용해서 애플리케이션을 배포용으로 _빌드_ 하는 단계에 증분 로딩을 지원합니다. Angular CLI는 빌드하는 프로젝트에 지정된 브라우저 지원 정책이나 컴파일 대상을 분석한 후에 빌드 결과물을 증분 로딩할 수 있게 생성합니다.
+Angular는 CLI를 사용해서 애플리케이션을 배포용으로 _빌드_ 하는 단계에 선택적 로딩을 지원합니다. Angular CLI는 빌드하는 프로젝트에 지정된 브라우저 지원 정책이나 컴파일 대상을 분석한 후에 빌드 결과물을 선택적 로딩할 수 있게 생성합니다.
 
 이 때 두 가지 환경설정 파일이 활용됩니다:
 
@@ -676,7 +676,7 @@ Angular는 CLI를 사용해서 애플리케이션을 배포용으로 _빌드_ �
 <!--
 **Note:** Differential loading is currently only supported when using `es2015` as a compilation `target`. When used with targets higher than `es2015`, a warning is emitted during build time.
 -->
-**참고:** 증분 로딩은 아직 컴파일 옵션 중 `target` 옵션을 `es2015`로 설정했을 때만 동작합니다. `es2015` 이후 버전을 지정했다면 빌드할 때 에러가 발생합니다.
+**참고:** 선택적 로딩은 아직 컴파일 옵션 중 `target` 옵션을 `es2015`로 설정했을 때만 동작합니다. `es2015` 이후 버전을 지정했다면 빌드할 때 에러가 발생합니다.
 
 </div>
 
@@ -685,9 +685,9 @@ The CLI queries the Browserslist configuration, and checks the `target` to deter
 
 The `index.html` file is also modified during the build process to include script tags that enable differential loading. See the sample output below from the `index.html` file produced during a build using `ng build`.
 -->
-Angular CLI는 Browserlist 설정파일과 `target` 컴파일 옵션을 분석해서 어떤 폴리필이 필요한지 판단합니다. 이 상태에서 [`ng build`](cli/build) 명령을 실행하면 증분 로딩이 활성화되지만 빌드 결과물은 원래 코드와 비슷하고 소스맵도 제공하기 때문에 디버깅하기 쉬운 상태로 생성됩니다. 그리고 [`ng build --prod`](cli/build) 명령을 실행해서 애플리케이션을 운영용으로 빌드하면 이 때는 조금 다른 형태로 빌드 결과물이 생성됩니다.
+Angular CLI는 Browserlist 설정파일과 `target` 컴파일 옵션을 분석해서 어떤 폴리필이 필요한지 판단합니다. 이 상태에서 [`ng build`](cli/build) 명령을 실행하면 선택적 로딩이 활성화되지만 빌드 결과물은 원래 코드와 비슷하고 소스맵도 제공하기 때문에 디버깅하기 쉬운 상태로 생성됩니다. 그리고 [`ng build --prod`](cli/build) 명령을 실행해서 애플리케이션을 운영용으로 빌드하면 이 때는 조금 다른 형태로 빌드 결과물이 생성됩니다.
 
-`index.html` 파일은 증분 로딩을 지원하기 위해 `<script>` 태그 부분이 조금 수정됩니다. 아래 코드를 확인해 보세요.
+`index.html` 파일은 선택적 로딩을 지원하기 위해 `<script>` 태그 부분이 조금 수정됩니다. 아래 코드를 확인해 보세요.
 
 ```html
 <!-- ... -->
@@ -724,12 +724,12 @@ Each script tag has a `type="module"` or `nomodule` attribute. Browsers with nat
 <!--
 See the [configuration table](#configuration-table) below for the configurations for enabling differential loading.
 -->
-증분 로딩이 활성화되는 조건은 아래에 있는 [비교 표](#configuration-table)를 참고하세요.
+선택적 로딩이 활성화되는 조건은 아래에 있는 [비교 표](#configuration-table)를 참고하세요.
 
 <!--
 ### Configuring differential loading
 -->
-### 증분 로딩 활성화하기
+### 선택적 로딩 활성화하기
 
 <!--
 Differential loading for creating builds is already supported with version 8 and later of the Angular CLI. For each application project in your workspace, you can configure how builds are produced based on the mentioned `browserslist` and `tsconfig.json` files in your application project.
@@ -738,7 +738,7 @@ Look at the default configuration for a newly created Angular application:
 
 The `browserslist` looks like this:
 -->
-증분 로딩 설정은 Angular CLI 8 버전부터 이미 지원하고 있습니다. 워크스페이스에 있는 애플리케이션 프로젝트를 보면 `browserlist` 파일과 `tsconfig.json` 파일이 존재하는 것을 확인할 수 있습니다.
+선택적 로딩 설정은 Angular CLI 8 버전부터 이미 지원하고 있습니다. 워크스페이스에 있는 애플리케이션 프로젝트를 보면 `browserlist` 파일과 `tsconfig.json` 파일이 존재하는 것을 확인할 수 있습니다.
 
 파일의 내용은 조금씩 달라질 수 있기 때문에 최신 Angular 애플리케이션에 생성된 파일을 기준으로 합시다.
 
@@ -786,7 +786,7 @@ The `tsconfig.json` looks like this:
 <!--
 By default, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015. As a result, this produces two builds, and differential loading is enabled. If you ignore browsers without ES2015 support, a single build is produced. To see the build result for differential loading based on different configurations, refer to the table below. 
 -->
-기본적으로 IE 9-11과 같이 오래된 브라우저는 지원하지 않고 컴파일 결과물도 ES2015 문법으로 생성합니다. 이 상태로 애플리케이션을 빌드하면 증분 로딩을 지원하기 때문에 브라우저 빌드 결과물이 두 벌로 생성됩니다. 나중에 ES2015 문법을 지원하지 않는 브라우저를 지원 브라우저 목록에서 제외하면 빌드 결과물은 한 벌만 생성될 것입니다. 빌드 환경설정에 따라 빌드 결과물이 어떻게 생성되는지 확인하려면 아래 표를 참고하세요.
+기본적으로 IE 9-11과 같이 오래된 브라우저는 지원하지 않고 컴파일 결과물도 ES2015 문법으로 생성합니다. 이 상태로 애플리케이션을 빌드하면 선택적 로딩을 지원하기 때문에 브라우저 빌드 결과물이 두 벌로 생성됩니다. 나중에 ES2015 문법을 지원하지 않는 브라우저를 지원 브라우저 목록에서 제외하면 빌드 결과물은 한 벌만 생성될 것입니다. 빌드 환경설정에 따라 빌드 결과물이 어떻게 생성되는지 확인하려면 아래 표를 참고하세요.
 
 <div class="alert is-important">
 
@@ -814,12 +814,12 @@ When the ES5 Browserslist result is `disabled`, then ES5 browser support is not 
 | 지원하지 않음 | es5     | 1벌 |
 | 지원  | es5     | 1벌 + 폴리필 |
 | 지원하지 않음 | es2015  | 1벌 |
-| 지원  | es2015  | 증분 빌드 (2벌 + 폴리필)
+| 지원  | es2015  | 선택적 빌드 (2벌 + 폴리필)
 
 <!--
 ### Opting out of differential loading
 -->
-### 증분 로딩 비활성화하기
+### 선택적 로딩 비활성화하기
 
 <!--
 Differential loading can be explicitly disabled if it causes unexpected issues or you need to target ES5 specifically for legacy browser support. 
@@ -829,7 +829,7 @@ To explicitly disable differential loading:
 - Enable the `dead` or `IE` browsers in the `browserslist` config file by removing the `not` keyword in front of them.
 - Set the `target` in the `compilerOptions` to `es5`.
 -->
-예상하지 못한 이슈가 있거나 오래된 브라우저를 확실하게 지원하기 위해 ES5 문법으로 빌드한다면 증분 로딩을 명시적으로 비활성화할 수 있습니다.
+예상하지 못한 이슈가 있거나 오래된 브라우저를 확실하게 지원하기 위해 ES5 문법으로 빌드한다면 선택적 로딩을 명시적으로 비활성화할 수 있습니다.
 
 이렇게 설정하면 됩니다:
 
