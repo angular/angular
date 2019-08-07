@@ -26,7 +26,7 @@ function setup(file: {name: AbsoluteFsPath, contents: string}) {
   loadTestFiles([file]);
   const fs = getFileSystem();
   const logger = new MockLogger();
-  const bundle = makeTestEntryPointBundle('test-package', 'module', 'esm5', false, [file.name]);
+  const bundle = makeTestEntryPointBundle('test-package', 'esm5', false, [file.name]);
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm5ReflectionHost(logger, false, typeChecker);
   const referencesRegistry = new NgccReferencesRegistry(host);
