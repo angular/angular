@@ -58,7 +58,7 @@ export function ɵɵelementStart(
       getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs || null);
 
   if (attrs != null) {
-    const lastAttrIndex = setUpAttributes(native, attrs);
+    const lastAttrIndex = setUpAttributes(renderer, native, attrs);
     if (tView.firstTemplatePass) {
       registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
     }
@@ -209,7 +209,7 @@ export function ɵɵelementHostAttrs(attrs: TAttributes) {
   // errors...
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
-    const lastAttrIndex = setUpAttributes(native, attrs);
+    const lastAttrIndex = setUpAttributes(lView[RENDERER], native, attrs);
     if (tView.firstTemplatePass) {
       const stylingNeedsToBeRendered = registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
 
