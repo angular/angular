@@ -171,7 +171,7 @@ export function mainNgcc(
       logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 
       const transformedFiles = transformer.transform(bundle);
-      fileWriter.writeBundle(entryPoint, bundle, transformedFiles, formatProperty);
+      fileWriter.writeBundle(bundle, transformedFiles, formatProperty);
 
       onTaskCompleted(task, TaskProcessingOutcome.Processed);
     };
