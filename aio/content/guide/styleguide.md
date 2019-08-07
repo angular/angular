@@ -1670,7 +1670,7 @@ keep the **F**lattest structure you can, and
 
 
 
-**Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
+**Why?** LIFT provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
 To confirm your intuition about a particular structure, ask:
 _can I quickly open and start work in all of the related files for this feature_?
 
