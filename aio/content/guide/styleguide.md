@@ -1690,7 +1690,7 @@ _can I quickly open and start work in all of the related files for this feature_
 
 
 
-**Do** make locating code intuitive, simple and fast.
+**Do** make locating code intuitive, simple, and fast.
 
 
 </div>
