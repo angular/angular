@@ -96,8 +96,7 @@ runInEachFileSystem(() => {
         loadTestFiles(testFiles);
         loadFakeCore(getFileSystem());
         const rootFiles = getRootFiles(testFiles);
-        const bundle =
-            makeTestEntryPointBundle('test-package', 'es2015', 'esm2015', false, rootFiles);
+        const bundle = makeTestEntryPointBundle('test-package', 'esm2015', false, rootFiles);
         program = bundle.src.program;
 
         const reflectionHost =
