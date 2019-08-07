@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FileSystem, absoluteFrom, dirname} from '../../../src/ngtsc/file_system';
-import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
+import {EntryPointJsonProperty} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';
 import {FileWriter} from './file_writer';
@@ -20,7 +20,7 @@ export class InPlaceFileWriter implements FileWriter {
   constructor(protected fs: FileSystem) {}
 
   writeBundle(
-      _entryPoint: EntryPoint, _bundle: EntryPointBundle, transformedFiles: FileToWrite[],
+      _bundle: EntryPointBundle, transformedFiles: FileToWrite[],
       _formatProperty?: EntryPointJsonProperty) {
     transformedFiles.forEach(file => this.writeFileAndBackup(file));
   }

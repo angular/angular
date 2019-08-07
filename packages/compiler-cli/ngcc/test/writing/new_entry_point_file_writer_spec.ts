@@ -96,7 +96,7 @@ runInEachFileSystem(() => {
 
       it('should write the modified files to a new folder', () => {
         fileWriter.writeBundle(
-            entryPoint, esm5bundle,
+            esm5bundle,
             [
               {
                 path: _('/node_modules/test/esm5.js'),
@@ -115,7 +115,7 @@ runInEachFileSystem(() => {
 
       it('should also copy unmodified files in the program', () => {
         fileWriter.writeBundle(
-            entryPoint, esm2015bundle,
+            esm2015bundle,
             [
               {
                 path: _('/node_modules/test/es2015/foo.js'),
@@ -135,7 +135,7 @@ runInEachFileSystem(() => {
 
       it('should update the package.json properties', () => {
         fileWriter.writeBundle(
-            entryPoint, esm5bundle,
+            esm5bundle,
             [
               {
                 path: _('/node_modules/test/esm5.js'),
@@ -148,7 +148,7 @@ runInEachFileSystem(() => {
         }));
 
         fileWriter.writeBundle(
-            entryPoint, esm2015bundle,
+            esm2015bundle,
             [
               {
                 path: _('/node_modules/test/es2015/foo.js'),
@@ -164,7 +164,7 @@ runInEachFileSystem(() => {
 
       it('should overwrite and backup typings files', () => {
         fileWriter.writeBundle(
-            entryPoint, esm2015bundle,
+            esm2015bundle,
             [
               {
                 path: _('/node_modules/test/index.d.ts'),
@@ -200,7 +200,7 @@ runInEachFileSystem(() => {
 
       it('should write the modified file to a new folder', () => {
         fileWriter.writeBundle(
-            entryPoint, esm5bundle,
+            esm5bundle,
             [
               {
                 path: _('/node_modules/test/a/esm5.js'),
@@ -215,7 +215,7 @@ runInEachFileSystem(() => {
 
       it('should also copy unmodified files in the program', () => {
         fileWriter.writeBundle(
-            entryPoint, esm2015bundle,
+            esm2015bundle,
             [
               {
                 path: _('/node_modules/test/a/es2015/foo.js'),
@@ -235,7 +235,7 @@ runInEachFileSystem(() => {
 
       it('should update the package.json properties', () => {
         fileWriter.writeBundle(
-            entryPoint, esm5bundle,
+            esm5bundle,
             [
               {
                 path: _('/node_modules/test/a/esm5.js'),
@@ -248,7 +248,7 @@ runInEachFileSystem(() => {
         }));
 
         fileWriter.writeBundle(
-            entryPoint, esm2015bundle,
+            esm2015bundle,
             [
               {
                 path: _('/node_modules/test/a/es2015/foo.js'),
@@ -264,7 +264,7 @@ runInEachFileSystem(() => {
 
       it('should overwrite and backup typings files', () => {
         fileWriter.writeBundle(
-            entryPoint, esm2015bundle,
+            esm2015bundle,
             [
               {
                 path: _('/node_modules/test/a/index.d.ts'),
@@ -293,7 +293,7 @@ runInEachFileSystem(() => {
 
       it('should write the modified file to a new folder', () => {
         fileWriter.writeBundle(
-            entryPoint, esm5bundle,
+            esm5bundle,
             [
               {
                 path: _('/node_modules/test/lib/esm5.js'),
@@ -309,7 +309,7 @@ runInEachFileSystem(() => {
 
       it('should also copy unmodified files in the program', () => {
         fileWriter.writeBundle(
-            entryPoint, esm2015bundle,
+            esm2015bundle,
             [
               {
                 path: _('/node_modules/test/lib/es2015/foo.js'),
@@ -330,7 +330,7 @@ runInEachFileSystem(() => {
       it('should not copy typings files within the package (i.e. from a different entry-point)',
          () => {
            fileWriter.writeBundle(
-               entryPoint, esm2015bundle,
+               esm2015bundle,
                [
                  {
                    path: _('/node_modules/test/lib/es2015/foo.js'),
@@ -343,7 +343,7 @@ runInEachFileSystem(() => {
 
       it('should not copy files outside of the package', () => {
         fileWriter.writeBundle(
-            entryPoint, esm2015bundle,
+            esm2015bundle,
             [
               {
                 path: _('/node_modules/test/lib/es2015/foo.js'),
@@ -357,7 +357,7 @@ runInEachFileSystem(() => {
 
       it('should update the package.json properties', () => {
         fileWriter.writeBundle(
-            entryPoint, esm5bundle,
+            esm5bundle,
             [
               {
                 path: _('/node_modules/test/lib/esm5.js'),
@@ -370,7 +370,7 @@ runInEachFileSystem(() => {
         }));
 
         fileWriter.writeBundle(
-            entryPoint, esm2015bundle,
+            esm2015bundle,
             [
               {
                 path: _('/node_modules/test/lib/es2015/foo.js'),
@@ -386,7 +386,7 @@ runInEachFileSystem(() => {
 
       it('should overwrite and backup typings files', () => {
         fileWriter.writeBundle(
-            entryPoint, esm2015bundle,
+            esm2015bundle,
             [
               {
                 path: _('/node_modules/test/typings/index.d.ts'),
