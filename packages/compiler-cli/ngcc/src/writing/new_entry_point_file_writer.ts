@@ -26,9 +26,10 @@ const NGCC_DIRECTORY = '__ivy_ngcc__';
  */
 export class NewEntryPointFileWriter extends InPlaceFileWriter {
   writeBundle(
-      entryPoint: EntryPoint, bundle: EntryPointBundle, transformedFiles: FileToWrite[],
+      bundle: EntryPointBundle, transformedFiles: FileToWrite[],
       formatProperty: EntryPointJsonProperty) {
     // The new folder is at the root of the overall package
+    const entryPoint = bundle.entryPoint;
     const ngccFolder = join(entryPoint.package, NGCC_DIRECTORY);
     this.copyBundle(bundle, entryPoint.package, ngccFolder);
     transformedFiles.forEach(file => this.writeFile(file, entryPoint.package, ngccFolder));
