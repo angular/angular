@@ -7,9 +7,7 @@
  */
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
-import {ProceduralRenderer3, RElement, isProceduralRenderer} from '../interfaces/renderer';
-import {RENDERER} from '../interfaces/view';
-import {getLView} from '../state';
+import {ProceduralRenderer3, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
 
 
 /**
@@ -34,13 +32,12 @@ import {getLView} from '../state';
  * Note that this instruction does not support assigning style and class values to
  * an element. See `elementStart` and `elementHostAttrs` to learn how styling values
  * are applied to an element.
- *
+ * @param renderer The renderer to be used
  * @param native The element that the attributes will be assigned to
  * @param attrs The attribute array of values that will be assigned to the element
  * @returns the index value that was last accessed in the attributes array
  */
-export function setUpAttributes(native: RElement, attrs: TAttributes): number {
-  const renderer = getLView()[RENDERER];
+export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TAttributes): number {
   const isProc = isProceduralRenderer(renderer);
 
   let i = 0;
