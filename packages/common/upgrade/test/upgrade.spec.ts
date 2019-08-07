@@ -628,6 +628,7 @@ describe('$location.onChange()', () => {
 
   let $location: $locationShim;
   let upgradeModule: UpgradeModule;
+  let mock$rootScope: $rootScopeMock;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -640,6 +641,7 @@ describe('$location.onChange()', () => {
 
     upgradeModule = TestBed.get(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
+    mock$rootScope = upgradeModule.$injector.get('$rootScope');
   });
 
   beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
@@ -674,15 +676,42 @@ describe('$location.onChange()', () => {
 
     $location.onChange(changeListener);
 
-    // Mock out setting browserUrl
-    ($location as any).browserUrl = (url: string, replace: boolean, state: unknown) => {};
-
     const newState = {foo: 'bar'};
-    ($location as any).setBrowserUrlWithFallback('/newUrl', false, newState);
+    $location.state(newState);
+    $location.path('/newUrl');
+    mock$rootScope.runWatchers();
+
     expect(onChangeVals.url).toBe('/newUrl');
-    expect(onChangeVals.state).toBe(newState);
-    expect(onChangeVals.oldUrl).toBe('/');
+    expect(onChangeVals.state).toEqual(newState);
+    expect(onChangeVals.oldUrl).toBe('http://host.com');
     expect(onChangeVals.oldState).toBe(null);
+  });
+
+  it('should call changeListeners after $locationChangeSuccess', () => {
+
+    let changeListenerCalled = false;
+    let locationChangeSuccessEmitted = false;
+
+    function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
+      changeListenerCalled = true;
+    }
+
+    $location.onChange(changeListener);
+
+    mock$rootScope.$on('$locationChangeSuccess', () => {
+      // Ensure that the changeListener hasn't been called yet
+      expect(changeListenerCalled).toBe(false);
+      locationChangeSuccessEmitted = true;
+    });
+
+    // Update state and run watchers
+    const stateValue = {foo: 'bar'};
+    $location.state(stateValue);
+    mock$rootScope.runWatchers();
+
+    // Ensure that change listeners are called and location events are emitted
+    expect(changeListenerCalled).toBe(true);
+    expect(locationChangeSuccessEmitted).toBe(true);
   });
 
   it('should call forward errors to error handler', () => {
@@ -696,10 +725,8 @@ describe('$location.onChange()', () => {
 
     $location.onChange(changeListener, errorHandler);
 
-    // Mock out setting browserUrl
-    ($location as any).browserUrl = (url: string, replace: boolean, state: unknown) => {};
-
-    ($location as any).setBrowserUrlWithFallback('/newUrl');
+    $location.url('/newUrl');
+    mock$rootScope.runWatchers();
     expect(error.message).toBe('Handle error');
   });
 
