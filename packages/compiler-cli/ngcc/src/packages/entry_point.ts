@@ -55,7 +55,8 @@ export interface PackageJsonFormatProperties {
  */
 export interface EntryPointPackageJson extends PackageJsonFormatProperties {
   name: string;
-  __processed_by_ivy_ngcc__?: {[key: string]: string};
+  scripts?: Record<string, string>;
+  __processed_by_ivy_ngcc__?: Record<string, string>;
 }
 
 export type EntryPointJsonProperty = keyof(PackageJsonFormatProperties);

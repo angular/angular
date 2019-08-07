@@ -57,6 +57,10 @@ export function markAsProcessed(
     processed[prop] = NGCC_VERSION;
   }
 
+  const scripts = packageJson.scripts || (packageJson.scripts = {});
+  scripts.prepublishOnly =
+      `echo ERROR: Publishing of NGCC'd libraries is not allowed. >&2 && exit 1`;
+
   // Just in case this package.json was synthesized due to a custom configuration
   // we will ensure that the path to the containing folder exists before we write the file.
   fs.ensureDir(dirname(packageJsonPath));

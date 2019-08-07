@@ -84,6 +84,7 @@ runInEachFileSystem(() => {
         const fs = getFileSystem();
         let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
         expect(pkg.__processed_by_ivy_ngcc__).toBeUndefined();
+        expect(pkg.scripts).toBeUndefined();
 
         markAsProcessed(fs, pkg, COMMON_PACKAGE_PATH, ['fesm2015', 'fesm5']);
         pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
@@ -91,6 +92,7 @@ runInEachFileSystem(() => {
         expect(pkg.__processed_by_ivy_ngcc__.fesm5).toBe('0.0.0-PLACEHOLDER');
         expect(pkg.__processed_by_ivy_ngcc__.esm2015).toBeUndefined();
         expect(pkg.__processed_by_ivy_ngcc__.esm5).toBeUndefined();
+        expect(pkg.scripts.prepublishOnly).toBeDefined();
 
         markAsProcessed(fs, pkg, COMMON_PACKAGE_PATH, ['esm2015', 'esm5']);
         pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
@@ -98,6 +100,7 @@ runInEachFileSystem(() => {
         expect(pkg.__processed_by_ivy_ngcc__.fesm5).toBe('0.0.0-PLACEHOLDER');
         expect(pkg.__processed_by_ivy_ngcc__.esm2015).toBe('0.0.0-PLACEHOLDER');
         expect(pkg.__processed_by_ivy_ngcc__.esm5).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.scripts.prepublishOnly).toBeDefined();
       });
 
       it('should update the packageJson object in-place', () => {
@@ -105,18 +108,21 @@ runInEachFileSystem(() => {
         const fs = getFileSystem();
         const pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
         expect(pkg.__processed_by_ivy_ngcc__).toBeUndefined();
+        expect(pkg.scripts).toBeUndefined();
 
         markAsProcessed(fs, pkg, COMMON_PACKAGE_PATH, ['fesm2015', 'fesm5']);
         expect(pkg.__processed_by_ivy_ngcc__.fesm2015).toBe('0.0.0-PLACEHOLDER');
         expect(pkg.__processed_by_ivy_ngcc__.fesm5).toBe('0.0.0-PLACEHOLDER');
         expect(pkg.__processed_by_ivy_ngcc__.esm2015).toBeUndefined();
         expect(pkg.__processed_by_ivy_ngcc__.esm5).toBeUndefined();
+        expect(pkg.scripts.prepublishOnly).toBeDefined();
 
         markAsProcessed(fs, pkg, COMMON_PACKAGE_PATH, ['esm2015', 'esm5']);
         expect(pkg.__processed_by_ivy_ngcc__.fesm2015).toBe('0.0.0-PLACEHOLDER');
         expect(pkg.__processed_by_ivy_ngcc__.fesm5).toBe('0.0.0-PLACEHOLDER');
         expect(pkg.__processed_by_ivy_ngcc__.esm2015).toBe('0.0.0-PLACEHOLDER');
         expect(pkg.__processed_by_ivy_ngcc__.esm5).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.scripts.prepublishOnly).toBeDefined();
       });
 
       it('should one perform one write operation for all updated properties', () => {
