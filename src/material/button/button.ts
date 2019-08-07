@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor} from '@angular/cdk/a11y';
+import {FocusMonitor, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -78,7 +78,7 @@ const _MatButtonMixinBase: CanDisableRippleCtor & CanDisableCtor & CanColorCtor 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatButton extends _MatButtonMixinBase
-    implements OnDestroy, CanDisable, CanColor, CanDisableRipple {
+    implements OnDestroy, CanDisable, CanColor, CanDisableRipple, FocusableOption {
 
   /** Whether the button is round. */
   readonly isRoundButton: boolean = this._hasHostAttributes('mat-fab', 'mat-mini-fab');
@@ -114,8 +114,10 @@ export class MatButton extends _MatButtonMixinBase
   }
 
   /** Focuses the button. */
-  focus(): void {
-    this._getHostElement().focus();
+  focus(_origin?: FocusOrigin, options?: FocusOptions): void {
+    // Note that we aren't using `_origin`, but we need to keep it because some internal consumers
+    // use `MatButton` in a `FocusKeyManager` and we need it to match `FocusableOption`.
+    this._getHostElement().focus(options);
   }
 
   _getHostElement() {

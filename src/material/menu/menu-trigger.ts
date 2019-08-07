@@ -263,11 +263,11 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
    * Focuses the menu trigger.
    * @param origin Source of the menu trigger's focus.
    */
-  focus(origin: FocusOrigin = 'program') {
+  focus(origin: FocusOrigin = 'program', options?: FocusOptions) {
     if (this._focusMonitor) {
-      this._focusMonitor.focusVia(this._element, origin);
+      this._focusMonitor.focusVia(this._element, origin, options);
     } else {
-      this._element.nativeElement.focus();
+      this._element.nativeElement.focus(options);
     }
   }
 

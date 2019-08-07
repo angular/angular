@@ -26,7 +26,7 @@ export declare class MatRadioButton extends _MatRadioButtonMixinBase implements 
     _markForCheck(): void;
     _onInputChange(event: Event): void;
     _onInputClick(event: Event): void;
-    focus(): void;
+    focus(options?: FocusOptions): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;

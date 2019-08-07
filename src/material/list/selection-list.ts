@@ -320,8 +320,8 @@ export class MatListOption extends _MatListOptionMixinBase
   providers: [MAT_SELECTION_LIST_VALUE_ACCESSOR],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption,
-    CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
+export class MatSelectionList extends _MatSelectionListMixinBase implements CanDisableRipple,
+  AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
 
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager<MatListOption>;
@@ -429,8 +429,8 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   }
 
   /** Focuses the selection list. */
-  focus() {
-    this._element.nativeElement.focus();
+  focus(options?: FocusOptions) {
+    this._element.nativeElement.focus(options);
   }
 
   /** Selects all of the options. */

@@ -277,8 +277,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   }
 
   /** Focuses the slide-toggle. */
-  focus(): void {
-    this._focusMonitor.focusVia(this._inputElement, 'keyboard');
+  focus(options?: FocusOptions): void {
+    this._focusMonitor.focusVia(this._inputElement, 'keyboard', options);
   }
 
   /** Toggles the checked state of the slide-toggle. */

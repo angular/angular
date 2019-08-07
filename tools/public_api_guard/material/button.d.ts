@@ -4,7 +4,7 @@ export declare class MatAnchor extends MatButton {
     _haltDisabledEvents(event: Event): void;
 }
 
-export declare class MatButton extends _MatButtonMixinBase implements OnDestroy, CanDisable, CanColor, CanDisableRipple {
+export declare class MatButton extends _MatButtonMixinBase implements OnDestroy, CanDisable, CanColor, CanDisableRipple, FocusableOption {
     _animationMode: string;
     readonly isIconButton: boolean;
     readonly isRoundButton: boolean;
@@ -13,7 +13,7 @@ export declare class MatButton extends _MatButtonMixinBase implements OnDestroy,
     _getHostElement(): any;
     _hasHostAttributes(...attributes: string[]): boolean;
     _isRippleDisabled(): boolean;
-    focus(): void;
+    focus(_origin?: FocusOrigin, options?: FocusOptions): void;
     ngOnDestroy(): void;
 }
 

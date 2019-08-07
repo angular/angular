@@ -523,8 +523,8 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   }
 
   /** Focuses the button. */
-  focus(): void {
-    this._buttonElement.nativeElement.focus();
+  focus(options?: FocusOptions): void {
+    this._buttonElement.nativeElement.focus(options);
   }
 
   /** Checks the button toggle due to an interaction with the underlying native button. */

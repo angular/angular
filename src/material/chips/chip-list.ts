@@ -460,7 +460,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
    * Focuses the first non-disabled chip in this chip list, or the associated input when there
    * are no eligible chips.
    */
-  focus(): void {
+  focus(options?: FocusOptions): void {
     if (this.disabled) {
       return;
     }
@@ -473,15 +473,15 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       this._keyManager.setFirstItemActive();
       this.stateChanges.next();
     } else {
-      this._focusInput();
+      this._focusInput(options);
       this.stateChanges.next();
     }
   }
 
   /** Attempt to focus an input if we have one. */
-  _focusInput() {
+  _focusInput(options?: FocusOptions) {
     if (this._chipInput) {
-      this._chipInput.focus();
+      this._chipInput.focus(options);
     }
   }
 

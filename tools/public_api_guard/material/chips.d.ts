@@ -66,7 +66,7 @@ export declare class MatChipInput implements MatChipTextControl, OnChanges {
     _focus(): void;
     _keydown(event?: KeyboardEvent): void;
     _onInput(): void;
-    focus(): void;
+    focus(options?: FocusOptions): void;
     ngOnChanges(): void;
 }
 
@@ -120,13 +120,13 @@ export declare class MatChipList extends _MatChipListMixinBase implements MatFor
     ngControl: NgControl);
     _allowFocusEscape(): void;
     _blur(): void;
-    _focusInput(): void;
+    _focusInput(options?: FocusOptions): void;
     _keydown(event: KeyboardEvent): void;
     _markAsTouched(): void;
     _setSelectionByValue(value: any, isUserInput?: boolean): void;
     protected _updateFocusForDestroyedChips(): void;
     protected _updateTabIndex(): void;
-    focus(): void;
+    focus(options?: FocusOptions): void;
     ngAfterContentInit(): void;
     ngDoCheck(): void;
     ngOnDestroy(): void;

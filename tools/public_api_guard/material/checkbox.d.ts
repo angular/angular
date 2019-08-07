@@ -7,7 +7,7 @@ export declare const MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR: any;
 
 export declare const MAT_CHECKBOX_REQUIRED_VALIDATOR: Provider;
 
-export declare class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor, AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple {
+export declare class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor, AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple, FocusableOption {
     _animationMode?: string | undefined;
     _inputElement: ElementRef<HTMLInputElement>;
     _onTouched: () => any;
@@ -31,7 +31,7 @@ export declare class MatCheckbox extends _MatCheckboxMixinBase implements Contro
     _onInputClick(event: Event): void;
     _onInteractionEvent(event: Event): void;
     _onLabelTextChange(): void;
-    focus(): void;
+    focus(origin?: FocusOrigin, options?: FocusOptions): void;
     ngAfterViewChecked(): void;
     ngOnDestroy(): void;
     registerOnChange(fn: (value: any) => void): void;

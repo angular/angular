@@ -156,8 +156,8 @@ export class MatChipInput implements MatChipTextControl, OnChanges {
   }
 
   /** Focuses the input. */
-  focus(): void {
-    this._inputElement.focus();
+  focus(options?: FocusOptions): void {
+    this._inputElement.focus(options);
   }
 
   /** Checks whether a keycode is one of the configured separators. */

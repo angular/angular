@@ -41,7 +41,7 @@ export declare class MatInput extends _MatInputMixinBase implements MatFormField
     protected _isTextarea(): boolean;
     _onInput(): void;
     protected _validateType(): void;
-    focus(): void;
+    focus(options?: FocusOptions): void;
     ngDoCheck(): void;
     ngOnChanges(): void;
     ngOnDestroy(): void;

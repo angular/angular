@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor} from '@angular/cdk/a11y';
+import {FocusMonitor, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   Attribute,
@@ -127,7 +127,8 @@ const _MatCheckboxMixinBase:
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor,
-    AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple {
+    AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple,
+    FocusableOption {
 
   /**
    * Attached to the aria-label attribute of the host element. In most cases, aria-labelledby will
@@ -401,8 +402,8 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   }
 
   /** Focuses the checkbox. */
-  focus(): void {
-    this._focusMonitor.focusVia(this._inputElement, 'keyboard');
+  focus(origin: FocusOrigin = 'keyboard', options?: FocusOptions): void {
+    this._focusMonitor.focusVia(this._inputElement, origin, options);
   }
 
   _onInteractionEvent(event: Event) {

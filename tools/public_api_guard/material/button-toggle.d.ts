@@ -20,7 +20,7 @@ export declare class MatButtonToggle extends _MatButtonToggleMixinBase implement
     constructor(toggleGroup: MatButtonToggleGroup, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, _focusMonitor: FocusMonitor, defaultTabIndex: string, defaultOptions?: MatButtonToggleDefaultOptions);
     _markForCheck(): void;
     _onButtonClick(): void;
-    focus(): void;
+    focus(options?: FocusOptions): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
 }

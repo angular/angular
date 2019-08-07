@@ -89,7 +89,7 @@ export declare class MatExpansionPanelHeader implements OnDestroy, FocusableOpti
     _keydown(event: KeyboardEvent): void;
     _showToggle(): boolean;
     _toggle(): void;
-    focus(origin?: FocusOrigin): void;
+    focus(origin?: FocusOrigin, options?: FocusOptions): void;
     ngOnDestroy(): void;
 }
 

@@ -1049,8 +1049,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   }
 
   /** Focuses the select element. */
-  focus(): void {
-    this._elementRef.nativeElement.focus();
+  focus(options?: FocusOptions): void {
+    this._elementRef.nativeElement.focus(options);
   }
 
   /** Gets the index of the provided option in the option list. */

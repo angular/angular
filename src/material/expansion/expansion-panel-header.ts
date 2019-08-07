@@ -203,8 +203,8 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
    * @param origin Origin of the action that triggered the focus.
    * @docs-private
    */
-  focus(origin: FocusOrigin = 'program') {
-    this._focusMonitor.focusVia(this._element, origin);
+  focus(origin: FocusOrigin = 'program', options?: FocusOptions) {
+    this._focusMonitor.focusVia(this._element, origin, options);
   }
 
   ngOnDestroy() {

@@ -24,6 +24,7 @@ import {
   QueryList,
   ViewEncapsulation,
 } from '@angular/core';
+import {FocusOptions, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
 import {Subject} from 'rxjs';
 import {MatOptgroup} from './optgroup';
 
@@ -84,7 +85,7 @@ export const MAT_OPTION_PARENT_COMPONENT =
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatOption implements AfterViewChecked, OnDestroy {
+export class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
   private _selected = false;
   private _active = false;
   private _disabled = false;
@@ -161,11 +162,13 @@ export class MatOption implements AfterViewChecked, OnDestroy {
   }
 
   /** Sets focus onto this option. */
-  focus(): void {
+  focus(_origin?: FocusOrigin, options?: FocusOptions): void {
+    // Note that we aren't using `_origin`, but we need to keep it because some internal consumers
+    // use `MatOption` in a `FocusKeyManager` and we need it to match `FocusableOption`.
     const element = this._getHostElement();
 
     if (typeof element.focus === 'function') {
-      element.focus();
+      element.focus(options);
     }
   }
 

@@ -226,7 +226,7 @@ export declare class MatOptgroup extends _MatOptgroupMixinBase implements CanDis
     label: string;
 }
 
-export declare class MatOption implements AfterViewChecked, OnDestroy {
+export declare class MatOption implements FocusableOption, AfterViewChecked, OnDestroy {
     readonly _stateChanges: Subject<void>;
     readonly active: boolean;
     readonly disableRipple: boolean | undefined;
@@ -245,7 +245,7 @@ export declare class MatOption implements AfterViewChecked, OnDestroy {
     _handleKeydown(event: KeyboardEvent): void;
     _selectViaInteraction(): void;
     deselect(): void;
-    focus(): void;
+    focus(_origin?: FocusOrigin, options?: FocusOptions): void;
     getLabel(): string;
     ngAfterViewChecked(): void;
     ngOnDestroy(): void;
