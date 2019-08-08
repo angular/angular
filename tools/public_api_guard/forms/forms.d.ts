@@ -330,14 +330,14 @@ export declare class FormsModule {
 }
 
 export declare class MaxLengthValidator implements Validator, OnChanges {
-    maxlength: string;
+    maxlength: string | number;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
 export declare class MinLengthValidator implements Validator, OnChanges {
-    minlength: string;
+    minlength: string | number;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
