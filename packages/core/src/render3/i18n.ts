@@ -12,7 +12,6 @@ import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
-import {global} from '../util/global';
 import {attachPatchData} from './context_discovery';
 import {bind, setDelayProjection} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
@@ -1315,88 +1314,6 @@ function parseNodes(
 const NGSP_UNICODE_REGEXP = /\uE500/g;
 function replaceNgsp(value: string): string {
   return value.replace(NGSP_UNICODE_REGEXP, ' ');
-}
-
-export interface I18nLocalizeOptions { translations: {[key: string]: string}; }
-
-/**
- * Provide translations for `$localize`.
- *
- * @deprecated this method is temporary & should not be used as it will be removed soon
- */
-export function i18nConfigureLocalize(options: I18nLocalizeOptions = {
-  translations: {}
-}) {
-  type TranslationInfo = {messageParts: TemplateStringsArray, placeholderNames: string[]};
-  type MessageInfo = {translationKey: string, replacements: {[placeholderName: string]: any}};
-  const PLACEHOLDER_MARKER = ':';
-  const TRANSLATIONS: {[key: string]: TranslationInfo} = {};
-
-  Object.keys(options.translations).forEach(key => {
-    TRANSLATIONS[key] = splitMessage(options.translations[key]);
-  });
-
-  if (ngDevMode) {
-    if (global.$localize === undefined) {
-      throw new Error(
-          'The global function `$localize` is missing. Please add `import \'@angular/localize\';` to your polyfills.ts file.');
-    }
-  }
-  $localize.translate = function(messageParts: TemplateStringsArray, expressions: readonly any[]):
-      [TemplateStringsArray, readonly any[]] {
-        const message = parseMessage(messageParts, expressions);
-        const translation = TRANSLATIONS[message.translationKey];
-        const result: [TemplateStringsArray, readonly any[]] =
-            (translation === undefined ? [messageParts, expressions] : [
-              translation.messageParts,
-              translation.placeholderNames.map(placeholder => message.replacements[placeholder])
-            ]);
-        return result;
-      };
-
-  function splitMessage(message: string): TranslationInfo {
-    const parts = message.split(/{\$([^}]*)}/);
-    const messageParts = [parts[0]];
-    const placeholderNames: string[] = [];
-    for (let i = 1; i < parts.length - 1; i += 2) {
-      placeholderNames.push(parts[i]);
-      messageParts.push(parts[i + 1]);
-    }
-    const rawMessageParts =
-        messageParts.map(part => part.charAt(0) === PLACEHOLDER_MARKER ? '\\' + part : part);
-    return {messageParts: makeTemplateObject(messageParts, rawMessageParts), placeholderNames};
-  }
-
-  function parseMessage(
-      messageParts: TemplateStringsArray, expressions: readonly any[]): MessageInfo {
-    const PLACEHOLDER_NAME_MARKER = ':';
-    const replacements: {[placeholderName: string]: any} = {};
-    let translationKey = messageParts[0];
-    for (let i = 1; i < messageParts.length; i++) {
-      const messagePart = messageParts[i];
-      const expression = expressions[i - 1];
-      // There is a problem with synthesized template literals in TS where the raw version
-      // cannot be found, since there is no original source code to read it from.
-      // In that case we just fall back on the non-raw version.
-      // This should be OK because synthesized nodes (from the template compiler) will always have
-      // placeholder names provided.
-      if ((messageParts.raw[i] || messagePart).charAt(0) === PLACEHOLDER_NAME_MARKER) {
-        const endOfPlaceholderName = messagePart.indexOf(PLACEHOLDER_NAME_MARKER, 1);
-        const placeholderName = messagePart.substring(1, endOfPlaceholderName);
-        translationKey += `{$${placeholderName}}${messagePart.substring(endOfPlaceholderName + 1)}`;
-        replacements[placeholderName] = expression;
-      } else {
-        translationKey += messagePart;
-        replacements[`ph_${i}`] = expression;
-      }
-    }
-    return {translationKey, replacements};
-  }
-
-  function makeTemplateObject(cooked: string[], raw: string[]): TemplateStringsArray {
-    Object.defineProperty(cooked, 'raw', {value: raw});
-    return cooked as any;
-  }
 }
 
 /**

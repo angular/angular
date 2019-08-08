@@ -5,9 +5,13 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "http_server")
 
 ng_module(
     name = "hello_world_i18n",
-    srcs = ["index.ts"],
+    srcs = [
+        "index.ts",
+        "translations.ts",
+    ],
     deps = [
         "//packages/core",
+        "//packages/localize/run_time",
     ],
 )
 
