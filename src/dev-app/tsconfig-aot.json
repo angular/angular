@@ -28,6 +28,7 @@
       "@angular/cdk-experimental/*": ["../../dist/releases/cdk-experimental/*"],
       "@angular/cdk-experimental": ["../../dist/releases/cdk-experimental"],
       "@angular/material-moment-adapter": ["../../dist/releases/material-moment-adapter"],
+      "@angular/google-maps/*": ["../../dist/releases/google-maps/*"],
       "@angular/material-examples": ["../../dist/releases/material-examples"]
     }
   },

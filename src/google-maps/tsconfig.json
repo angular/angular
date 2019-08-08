@@ -1,0 +1,18 @@
+// Configuration for IDEs only.
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "baseUrl": ".",
+    "paths": {
+      "@angular/google-maps": ["./*"]
+    },
+    "types": [
+      "jasmine",
+      "googlemaps"
+    ]
+  },
+  "include": [
+    "./**/*.ts"
+  ]
+}

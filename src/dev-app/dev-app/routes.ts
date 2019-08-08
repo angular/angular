@@ -40,6 +40,7 @@ export const DEV_APP_ROUTES: Routes = [
     loadChildren: 'focus-origin/focus-origin-demo-module#FocusOriginDemoModule'
   },
   {path: 'gestures', loadChildren: 'gestures/gestures-demo-module#GesturesDemoModule'},
+  {path: 'google-map', loadChildren: 'google-map/google-map-demo-module#GoogleMapDemoModule'},
   {path: 'grid-list', loadChildren: 'grid-list/grid-list-demo-module#GridListDemoModule'},
   {path: 'icon', loadChildren: 'icon/icon-demo-module#IconDemoModule'},
   {path: 'input', loadChildren: 'input/input-demo-module#InputDemoModule'},

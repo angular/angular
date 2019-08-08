@@ -137,6 +137,7 @@ const packageDirs: string[] = [
   'material-experimental',
   'youtube-player',
   'cdk-experimental',
+  'google-maps',
 ];
 
 /**

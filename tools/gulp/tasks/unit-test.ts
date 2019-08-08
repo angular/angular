@@ -20,7 +20,8 @@ task(':test:build', sequenceTask(
   'cdk-experimental:build-no-bundles',
   'material-experimental:build-no-bundles',
   'youtube-player:build-no-bundles',
-  'material-moment-adapter:build-no-bundles'
+  'material-moment-adapter:build-no-bundles',
+  'google-maps:build-no-bundles',
 ));
 
 /**

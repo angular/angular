@@ -14,6 +14,7 @@ import {
   cdkExperimentalPackage,
   materialPackage,
   momentAdapterPackage,
+  googleMapsPackage,
   examplesPackage,
   youTubePlayerPackage,
 } from '../packages';
@@ -67,6 +68,7 @@ task('build:devapp', sequenceTask(
   'material-experimental:build-no-bundles',
   'youtube-player:build-no-bundles',
   'material-moment-adapter:build-no-bundles',
+  'google-maps:build-no-bundles',
   'build-examples-module',
   // The examples module needs to be manually built before building examples package because
   // when using the `no-bundles` task, the package-specific pre-build tasks won't be executed.
@@ -107,6 +109,9 @@ task('stage-deploy:devapp', ['build:devapp'], () => {
     join(deployOutputDir, 'dist/packages/material-examples'));
   copyFiles(momentAdapterPackage.outputDir, '**/*.+(js|map)',
     join(deployOutputDir, 'dist/packages/material-moment-adapter'));
+  copyFiles(
+      googleMapsPackage.outputDir, '**/*.+(js|map)',
+      join(deployOutputDir, 'dist/packages/google-maps'));
 });
 
 /**
@@ -175,6 +180,10 @@ task(':watch:devapp', () => {
   // CDK experimental package watchers
   watchFilesAndReload(join(cdkExperimentalPackage.sourceDir, '**/*'),
     ['cdk-experimental:build-no-bundles']);
+
+  // Google Maps package watchers
+  watchFilesAndReload(join(googleMapsPackage.sourceDir, '**/*'),
+    ['google-maps:build-no-bundles']);
 
   // Example package watchers.
   watchFilesAndReload(join(examplesPackage.sourceDir, '**/*'),

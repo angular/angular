@@ -1,0 +1,31 @@
+{
+  "name": "@angular/google-maps",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular Google Maps",
+  "main": "./bundles/google-maps.umd.js",
+  "module": "./esm5/google-maps.es5.js",
+  "es2015": "./esm2015/google-maps.js",
+  "typings": "./google-maps.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/components.git"
+  },
+  "keywords": [
+    "angular",
+    "components",
+    "google-maps"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/components/issues"
+  },
+  "homepage": "https://github.com/angular/components/tree/master/src/google-maps#readme",
+  "dependencies": {
+    "@types/googlemaps": "^3.37.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "0.0.0-NG",
+    "@angular/common": "0.0.0-NG"
+  },
+  "sideEffects": false
+}

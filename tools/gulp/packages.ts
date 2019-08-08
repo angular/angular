@@ -3,6 +3,7 @@ import {BuildPackage} from 'material2-build-tools';
 export const cdkPackage = new BuildPackage('cdk');
 export const materialPackage = new BuildPackage('material', [cdkPackage]);
 export const youTubePlayerPackage = new BuildPackage('youtube-player');
+export const googleMapsPackage = new BuildPackage('google-maps');
 export const cdkExperimentalPackage = new BuildPackage('cdk-experimental', [cdkPackage]);
 export const materialExperimentalPackage = new BuildPackage('material-experimental',
     [cdkPackage, cdkExperimentalPackage, materialPackage]);
@@ -12,7 +13,8 @@ export const examplesPackage = new BuildPackage('material-examples', [
   cdkExperimentalPackage,
   materialPackage,
   materialExperimentalPackage,
-  momentAdapterPackage
+  momentAdapterPackage,
+  googleMapsPackage,
 ]);
 
 // The material package re-exports its secondary entry-points at the root so that all of the
@@ -37,5 +39,6 @@ export const allBuildPackages = [
   cdkExperimentalPackage,
   materialExperimentalPackage,
   momentAdapterPackage,
+  googleMapsPackage,
   examplesPackage
 ];

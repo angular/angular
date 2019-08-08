@@ -5,6 +5,7 @@ import {
   cdkExperimentalPackage,
   cdkPackage,
   examplesPackage,
+  googleMapsPackage,
   materialExperimentalPackage,
   materialPackage,
   momentAdapterPackage,
@@ -18,6 +19,7 @@ createPackageBuildTasks(materialExperimentalPackage);
 createPackageBuildTasks(examplesPackage, ['build-examples-module']);
 createPackageBuildTasks(momentAdapterPackage);
 createPackageBuildTasks(youTubePlayerPackage);
+createPackageBuildTasks(googleMapsPackage);
 
 import './tasks/aot';
 import './tasks/breaking-changes';

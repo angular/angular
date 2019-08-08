@@ -22,6 +22,10 @@ const cdkSecondaryEntryPoints = getSubdirectoryNames(join(buildConfig.packagesDi
 /** List of potential secondary entry-points for the material package. */
 const matSecondaryEntryPoints = getSubdirectoryNames(join(buildConfig.packagesDir, 'material'));
 
+/** List of potential secondary entry-points for the google-maps package. */
+const googleMapsSecondaryEntryPoints =
+    getSubdirectoryNames(join(buildConfig.packagesDir, 'google-maps'));
+
 /** List of potential secondary entry-points for the cdk-experimental package. */
 const cdkExperimentalSecondaryEntryPoints =
     getSubdirectoryNames(join(buildConfig.packagesDir, 'cdk-experimental'));
@@ -39,6 +43,10 @@ const rollupCdkEntryPoints = generateRollupEntryPoints('cdk', cdkSecondaryEntryP
 
 /** Object with all material entry points in the format of Rollup globals. */
 const rollupMatEntryPoints = generateRollupEntryPoints('material', matSecondaryEntryPoints);
+
+/** Object with all google-maps entry points in the format of Rollup globals. */
+const rollupGoogleMapsEntryPoints =
+    generateRollupEntryPoints('google-maps', googleMapsSecondaryEntryPoints);
 
 /** Object with all material-experimental entry points in the format of Rollup globals. */
 const rollupMaterialExperimentalEntryPoints =
@@ -115,6 +123,7 @@ export const rollupGlobals = {
   '@angular/material-moment-adapter': 'ng.materialMomentAdapter',
 
   // Miscellaneous components
+  '@angular/google-maps': 'ng.googleMaps',
   '@angular/youtube-player': 'ng.youtubePlayer',
 
   // Include secondary entry-points of the cdk and material packages
@@ -123,6 +132,7 @@ export const rollupGlobals = {
   ...rollupCdkExperimentalEntryPoints,
   ...rollupMaterialExperimentalEntryPoints,
   ...rollupYouTubePlayerEntryPoints,
+  ...rollupGoogleMapsEntryPoints,
 
   '@angular/cdk/private/testing': 'ng.cdk.private.testing',
   '@angular/cdk/private/testing/e2e': 'ng.cdk.private.testing.e2e',

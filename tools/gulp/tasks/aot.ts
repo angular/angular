@@ -36,6 +36,7 @@ task('build-aot:release-packages', sequenceTask(
     'cdk-experimental:build-release',
     'material-experimental:build-release',
     'material-moment-adapter:build-release',
+    'google-maps:build-release',
     'material-examples:build-release',
   ],
 ));

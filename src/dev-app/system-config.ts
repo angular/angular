@@ -153,6 +153,9 @@ System.config({
         'dist/packages/material-experimental/mdc-helpers/index.js',
     '@angular/material-experimental/popover-edit':
         'dist/packages/material-experimental/popover-edit/index.js',
+
+    '@angular/google-maps/google-map':
+        'dist/packages/google-maps/google-map/index.js',
   },
   packages: {
     // Set the default extension for the root package, because otherwise the dev-app can't

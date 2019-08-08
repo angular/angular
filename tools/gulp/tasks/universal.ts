@@ -42,6 +42,7 @@ task(
           'cdk-experimental:build-release',
           'material-experimental:build-release',
           'youtube-player:build-release',
+          'google-maps:build-release',
         ],
         ['universal:copy-release', 'universal:copy-files'],
         ['universal:build-app-ts', 'universal:build-app-scss'],
@@ -68,4 +69,5 @@ task('universal:copy-release', () => {
   copySync(join(releasesDir, 'cdk-experimental'), join(outDir, 'cdk-experimental'));
   copySync(join(releasesDir, 'material-experimental'), join(outDir, 'material-experimental'));
   copySync(join(releasesDir, 'youtube-player'), join(outDir, 'youtube-player'));
+  copySync(join(releasesDir, 'google-maps'), join(outDir, 'google-maps'));
 });

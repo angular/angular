@@ -5,5 +5,6 @@ export const releasePackages = [
   'youtube-player',
   'cdk-experimental',
   'material-experimental',
-  'material-moment-adapter'
+  'material-moment-adapter',
+  'google-maps',
 ];

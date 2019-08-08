@@ -1,0 +1,34 @@
+// TypeScript config file that is used to compile the Google Maps package through Gulp. As the
+// long term goal is to switch to Bazel, and we already want to run tests with Bazel, we need to
+// ensure the TypeScript build options are the same for Gulp and Bazel. We achieve this by
+// extending the generic Bazel build tsconfig which will be used for each entry-point.
+{
+  "extends": "../bazel-tsconfig-build.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "../../dist/packages/google-maps",
+    "rootDir": ".",
+    "rootDirs": [
+      ".",
+      "../../dist/packages/google-maps"
+    ],
+    "paths": {
+      "@angular/google-maps/*": ["../../dist/packages/google-maps/*"]
+    },
+    "types": [
+      "googlemaps"
+    ]
+  },
+  "files": [
+    "public-api.ts",
+    "typings.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/google-maps",
+    "skipTemplateCodegen": true,
+    "fullTemplateTypeCheck": true
+  }
+}
