@@ -2,7 +2,7 @@
 
 <p align="center">
   <i>Angular is a development platform for building mobile and desktop web applications
-    </br> using Typescript/JavaScript and other languages.</i>
+    </br> using TypeScript/JavaScript and other languages.</i>
   </br>
   </br>
   <a href="https://www.angular.io"><strong>www.angular.io</strong></a>
