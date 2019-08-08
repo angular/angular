@@ -27,13 +27,13 @@ const NGCC_DIRECTORY = '__ivy_ngcc__';
 export class NewEntryPointFileWriter extends InPlaceFileWriter {
   writeBundle(
       bundle: EntryPointBundle, transformedFiles: FileToWrite[],
-      formatProperty: EntryPointJsonProperty) {
+      formatProperties: EntryPointJsonProperty[]) {
     // The new folder is at the root of the overall package
     const entryPoint = bundle.entryPoint;
     const ngccFolder = join(entryPoint.package, NGCC_DIRECTORY);
     this.copyBundle(bundle, entryPoint.package, ngccFolder);
     transformedFiles.forEach(file => this.writeFile(file, entryPoint.package, ngccFolder));
-    this.updatePackageJson(entryPoint, formatProperty, ngccFolder);
+    this.updatePackageJson(entryPoint, formatProperties, ngccFolder);
   }
 
   protected copyBundle(
@@ -63,12 +63,18 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
   }
 
   protected updatePackageJson(
-      entryPoint: EntryPoint, formatProperty: EntryPointJsonProperty, ngccFolder: AbsoluteFsPath) {
-    const formatPath = join(entryPoint.path, entryPoint.packageJson[formatProperty] !);
-    const newFormatPath = join(ngccFolder, relative(entryPoint.package, formatPath));
-    const newFormatProperty = formatProperty + '_ivy_ngcc';
-    (entryPoint.packageJson as any)[newFormatProperty] = relative(entryPoint.path, newFormatPath);
+      entryPoint: EntryPoint, formatProperties: EntryPointJsonProperty[],
+      ngccFolder: AbsoluteFsPath) {
+    const packageJson = entryPoint.packageJson;
+
+    for (const formatProperty of formatProperties) {
+      const formatPath = join(entryPoint.path, packageJson[formatProperty] !);
+      const newFormatPath = join(ngccFolder, relative(entryPoint.package, formatPath));
+      const newFormatProperty = formatProperty + '_ivy_ngcc';
+      (packageJson as any)[newFormatProperty] = relative(entryPoint.path, newFormatPath);
+    }
+
     this.fs.writeFile(
-        join(entryPoint.path, 'package.json'), JSON.stringify(entryPoint.packageJson));
+        join(entryPoint.path, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
   }
 }

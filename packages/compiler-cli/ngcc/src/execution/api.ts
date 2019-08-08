@@ -30,13 +30,6 @@ export type ExecuteFn = (analyzeFn: AnalyzeFn, createCompileFn: CreateCompileFn)
 /** Represents metadata related to the processing of an entry-point. */
 export interface EntryPointProcessingMetadata {
   /**
-   * A mapping from a format property (i.e. an `EntryPointJsonProperty`) to the list of format
-   * properties that point to the same format-path and as a result need to be marked as processed,
-   * once the former is processed.
-   */
-  propertyToPropertiesToMarkAsProcessed: Map<EntryPointJsonProperty, EntryPointJsonProperty[]>;
-
-  /**
    * Whether the typings for the entry-point have been successfully processed (or were already
    * processed).
    */
@@ -59,6 +52,13 @@ export interface Task {
    * is the program entry-point).
    */
   formatProperty: EntryPointJsonProperty;
+
+  /**
+   * The list of all format properties (including `task.formatProperty`) that should be marked as
+   * processed once the taksk has been completed, because they point to the format-path that will be
+   * processed as part of the task.
+   */
+  formatPropertiesToMarkAsProcessed: EntryPointJsonProperty[];
 
   /** Whether to also process typings for this entry-point as part of the task. */
   processDts: boolean;

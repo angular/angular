@@ -382,6 +382,28 @@ runInEachFileSystem(() => {
             .toMatch(ANGULAR_CORE_IMPORT_REGEX);
         expect(fs.exists(_(`/node_modules/@angular/common/common.d.ts.__ivy_ngcc_bak`))).toBe(true);
       });
+
+      it('should update `package.json` for all matching format properties', () => {
+        mainNgcc({
+          basePath: '/node_modules/@angular/core',
+          createNewEntryPointFormats: true,
+          propertiesToConsider: ['fesm2015', 'fesm5'],
+        });
+
+        const pkg: any = loadPackage('@angular/core');
+
+        // `es2015` is an alias of `fesm2015`.
+        expect(pkg.fesm2015).toEqual('./fesm2015/core.js');
+        expect(pkg.es2015).toEqual('./fesm2015/core.js');
+        expect(pkg.fesm2015_ivy_ngcc).toEqual('__ivy_ngcc__/fesm2015/core.js');
+        expect(pkg.es2015_ivy_ngcc).toEqual('__ivy_ngcc__/fesm2015/core.js');
+
+        // `module` is an alias of `fesm5`.
+        expect(pkg.fesm5).toEqual('./fesm5/core.js');
+        expect(pkg.module).toEqual('./fesm5/core.js');
+        expect(pkg.fesm5_ivy_ngcc).toEqual('__ivy_ngcc__/fesm5/core.js');
+        expect(pkg.module_ivy_ngcc).toEqual('__ivy_ngcc__/fesm5/core.js');
+      });
     });
 
     describe('logger', () => {

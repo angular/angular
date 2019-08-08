@@ -16,5 +16,5 @@ import {FileToWrite} from '../rendering/utils';
 export interface FileWriter {
   writeBundle(
       bundle: EntryPointBundle, transformedFiles: FileToWrite[],
-      formatProperty: EntryPointJsonProperty): void;
+      formatProperties: EntryPointJsonProperty[]): void;
 }

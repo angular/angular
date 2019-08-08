@@ -117,14 +117,15 @@ export function mainNgcc(
       let processDts = !hasProcessedTypings;
 
       for (const formatProperty of propertiesToProcess) {
-        tasks.push({entryPoint, formatProperty, processDts});
+        const formatPropertiesToMarkAsProcessed =
+            propertyToPropertiesToMarkAsProcessed.get(formatProperty) !;
+        tasks.push({entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts});
 
         // Only process typings for the first property (if not already processed).
         processDts = false;
       }
 
       processingMetadataPerEntryPoint.set(entryPoint.path, {
-        propertyToPropertiesToMarkAsProcessed,
         hasProcessedTypings,
         hasAnyProcessedFormat: false,
       });
@@ -139,7 +140,7 @@ export function mainNgcc(
     const transformer = new Transformer(fileSystem, logger);
 
     return (task: Task) => {
-      const {entryPoint, formatProperty, processDts} = task;
+      const {entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts} = task;
 
       const isCore = entryPoint.name === '@angular/core';  // Are we compiling the Angular core?
       const packageJson = entryPoint.packageJson;
@@ -171,7 +172,7 @@ export function mainNgcc(
       logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 
       const transformedFiles = transformer.transform(bundle);
-      fileWriter.writeBundle(bundle, transformedFiles, formatProperty);
+      fileWriter.writeBundle(bundle, transformedFiles, formatPropertiesToMarkAsProcessed);
 
       onTaskCompleted(task, TaskProcessingOutcome.Processed);
     };
@@ -180,14 +181,15 @@ export function mainNgcc(
   // The function for actually planning and getting the work done.
   const executeFn: ExecuteFn = (analyzeFn: AnalyzeFn, createCompileFn: CreateCompileFn) => {
     const {processingMetadataPerEntryPoint, tasks} = analyzeFn();
-    const compile = createCompileFn(({entryPoint, formatProperty, processDts}, outcome) => {
+    const compile = createCompileFn((task, outcome) => {
+      const {entryPoint, formatPropertiesToMarkAsProcessed, processDts} = task;
       const processingMeta = processingMetadataPerEntryPoint.get(entryPoint.path) !;
       processingMeta.hasAnyProcessedFormat = true;
 
       if (outcome === TaskProcessingOutcome.Processed) {
         const packageJsonPath = fileSystem.resolve(entryPoint.path, 'package.json');
         const propsToMarkAsProcessed: (EntryPointJsonProperty | 'typings')[] =
-            processingMeta.propertyToPropertiesToMarkAsProcessed.get(formatProperty) !;
+            [...formatPropertiesToMarkAsProcessed];
 
         if (processDts) {
           processingMeta.hasProcessedTypings = true;
