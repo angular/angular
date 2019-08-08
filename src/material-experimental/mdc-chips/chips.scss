@@ -11,6 +11,8 @@
   cursor: default;
   // Needed to prevent mat-ripple from escaping the chip
   overflow: hidden;
+  // Required for the ripple to clip properly in Safari.
+  transform: translateZ(0);
 }
 
 // The MDC chip styles related to hover and focus states are intertwined with the MDC ripple styles.
