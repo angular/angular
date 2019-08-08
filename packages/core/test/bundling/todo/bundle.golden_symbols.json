@@ -114,9 +114,6 @@
     "name": "MAP_BASED_ENTRY_PROP_NAME"
   },
   {
-    "name": "MIN_DIRECTIVE_ID"
-  },
-  {
     "name": "MONKEY_PATCH_KEY_NAME"
   },
   {
@@ -402,13 +399,22 @@
     "name": "_devMode"
   },
   {
+    "name": "_elementExitFn"
+  },
+  {
     "name": "_global"
+  },
+  {
+    "name": "_lastDirectiveIndex"
   },
   {
     "name": "_renderCompCount"
   },
   {
     "name": "_selectedIndex"
+  },
+  {
+    "name": "_selectedIndexFlags"
   },
   {
     "name": "_stateStorage"
@@ -463,6 +469,9 @@
   },
   {
     "name": "appendChild"
+  },
+  {
+    "name": "applyAndReset"
   },
   {
     "name": "applyStyling"
@@ -648,6 +657,9 @@
     "name": "executeContentQueries"
   },
   {
+    "name": "executeElementExitFn"
+  },
+  {
     "name": "executeHooks"
   },
   {
@@ -807,6 +819,9 @@
     "name": "getLViewParent"
   },
   {
+    "name": "getLastDirectiveIndex"
+  },
+  {
     "name": "getMapProp"
   },
   {
@@ -925,6 +940,9 @@
   },
   {
     "name": "handleError"
+  },
+  {
+    "name": "hasActiveElementFlag"
   },
   {
     "name": "hasClassInput"
@@ -1116,6 +1134,9 @@
     "name": "markDirtyIfOnPush"
   },
   {
+    "name": "markStylingStateAsDirty"
+  },
+  {
     "name": "markViewDirty"
   },
   {
@@ -1236,6 +1257,9 @@
     "name": "renderView"
   },
   {
+    "name": "resetActiveElementFlags"
+  },
+  {
     "name": "resetAllStylingState"
   },
   {
@@ -1272,6 +1296,9 @@
     "name": "selectInternal"
   },
   {
+    "name": "setActiveElementFlag"
+  },
+  {
     "name": "setActiveHostElement"
   },
   {
@@ -1297,6 +1324,9 @@
   },
   {
     "name": "setDirectiveStylingInput"
+  },
+  {
+    "name": "setElementExitFn"
   },
   {
     "name": "setGuardMask"
@@ -1350,6 +1380,9 @@
     "name": "storeCleanupFn"
   },
   {
+    "name": "storeLastDirectiveIndex"
+  },
+  {
     "name": "storeStylingState"
   },
   {
@@ -1357,6 +1390,9 @@
   },
   {
     "name": "stringifyForError"
+  },
+  {
+    "name": "stylingApplyInternal"
   },
   {
     "name": "stylingMapToString"
@@ -1378,6 +1414,9 @@
   },
   {
     "name": "trackMovedView"
+  },
+  {
+    "name": "unsetActiveElementFlag"
   },
   {
     "name": "unwrapRNode"
@@ -1462,9 +1501,6 @@
   },
   {
     "name": "ɵɵstyling"
-  },
-  {
-    "name": "ɵɵstylingApply"
   },
   {
     "name": "ɵɵtemplate"

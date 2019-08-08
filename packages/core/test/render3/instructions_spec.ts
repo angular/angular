@@ -9,7 +9,7 @@
 import {NgForOfContext} from '@angular/common';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
+import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer, ɵɵstyling, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, unwrapSafeValue} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
@@ -156,7 +156,6 @@ describe('instructions', () => {
       t.update(() => {
         ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
         ɵɵstyleProp('background-image', 'url("http://server")');
-        ɵɵstylingApply();
       });
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
@@ -164,7 +163,6 @@ describe('instructions', () => {
       t.update(() => {
         ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
         ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('url("http://server2")'));
-        ɵɵstylingApply();
       });
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server2")');
@@ -180,10 +178,7 @@ describe('instructions', () => {
 
     it('should add style', () => {
       const fixture = new TemplateFixture(createDivWithStyle, () => {}, 1);
-      fixture.update(() => {
-        ɵɵstyleMap({'background-color': 'red'});
-        ɵɵstylingApply();
-      });
+      fixture.update(() => { ɵɵstyleMap({'background-color': 'red'}); });
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
 
@@ -205,7 +200,6 @@ describe('instructions', () => {
           'filter': 'filter',
           'width': 'width'
         });
-        ɵɵstylingApply();
       });
 
       const props = detectedValues.sort();
@@ -224,10 +218,7 @@ describe('instructions', () => {
 
     it('should add class', () => {
       const fixture = new TemplateFixture(createDivWithStyling, () => {}, 1);
-      fixture.update(() => {
-        ɵɵclassMap('multiple classes');
-        ɵɵstylingApply();
-      });
+      fixture.update(() => { ɵɵclassMap('multiple classes'); });
       expect(fixture.html).toEqual('<div class="classes multiple"></div>');
     });
   });

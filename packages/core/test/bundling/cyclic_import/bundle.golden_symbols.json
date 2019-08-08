@@ -159,6 +159,9 @@
     "name": "_currentNamespace"
   },
   {
+    "name": "_elementExitFn"
+  },
+  {
     "name": "_global"
   },
   {
@@ -166,6 +169,9 @@
   },
   {
     "name": "_selectedIndex"
+  },
+  {
+    "name": "_selectedIndexFlags"
   },
   {
     "name": "_stateStorage"
@@ -256,6 +262,9 @@
   },
   {
     "name": "executeContentQueries"
+  },
+  {
+    "name": "executeElementExitFn"
   },
   {
     "name": "executeHooks"
@@ -400,6 +409,9 @@
   },
   {
     "name": "getStylingMapArray"
+  },
+  {
+    "name": "hasActiveElementFlag"
   },
   {
     "name": "hasClassInput"
@@ -576,6 +588,9 @@
     "name": "renderView"
   },
   {
+    "name": "resetActiveElementFlags"
+  },
+  {
     "name": "resetAllStylingState"
   },
   {
@@ -667,6 +682,9 @@
   },
   {
     "name": "throwMultipleComponentError"
+  },
+  {
+    "name": "unsetActiveElementFlag"
   },
   {
     "name": "unwrapRNode"

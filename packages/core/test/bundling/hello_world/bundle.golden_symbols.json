@@ -138,6 +138,9 @@
     "name": "__window"
   },
   {
+    "name": "_elementExitFn"
+  },
+  {
     "name": "_global"
   },
   {
@@ -145,6 +148,9 @@
   },
   {
     "name": "_selectedIndex"
+  },
+  {
+    "name": "_selectedIndexFlags"
   },
   {
     "name": "_stateStorage"
@@ -211,6 +217,9 @@
   },
   {
     "name": "enterView"
+  },
+  {
+    "name": "executeElementExitFn"
   },
   {
     "name": "executeHooks"
@@ -321,6 +330,9 @@
     "name": "getSelectedIndex"
   },
   {
+    "name": "hasActiveElementFlag"
+  },
+  {
     "name": "hasParentInjector"
   },
   {
@@ -426,6 +438,9 @@
     "name": "renderView"
   },
   {
+    "name": "resetActiveElementFlags"
+  },
+  {
     "name": "resetAllStylingState"
   },
   {
@@ -481,6 +496,9 @@
   },
   {
     "name": "syncViewWithBlueprint"
+  },
+  {
+    "name": "unsetActiveElementFlag"
   },
   {
     "name": "unwrapRNode"

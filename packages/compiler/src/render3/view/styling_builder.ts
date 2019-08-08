@@ -68,7 +68,6 @@ interface BoundStylingEntry {
  *   classMap(...)
  *   styleProp(...)
  *   classProp(...)
- *   stylingApply(...)
  * }
  *
  * The creation/update methods within the builder class produce these instructions.
@@ -421,15 +420,6 @@ export class StylingBuilder {
     return [];
   }
 
-  private _buildApplyFn(): StylingInstruction {
-    return {
-      sourceSpan: this._lastStylingInput ? this._lastStylingInput.sourceSpan : null,
-      reference: R3.stylingApply,
-      allocateBindingSlots: 0,
-      params: () => { return []; }
-    };
-  }
-
   private _buildSanitizerFn(): StylingInstruction {
     return {
       sourceSpan: this._firstStylingInput ? this._firstStylingInput.sourceSpan : null,
@@ -459,7 +449,6 @@ export class StylingBuilder {
       }
       instructions.push(...this._buildStyleInputs(valueConverter));
       instructions.push(...this._buildClassInputs(valueConverter));
-      instructions.push(this._buildApplyFn());
     }
     return instructions;
   }

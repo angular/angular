@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, Input, ɵRenderFlags, ɵɵallocHostVars, ɵɵclassMap, ɵɵdefineDirective, ɵɵstyling, ɵɵstylingApply} from '@angular/core';
+import {Directive, DoCheck, Input, ɵRenderFlags, ɵɵallocHostVars, ɵɵclassMap, ɵɵdefineDirective, ɵɵstyling} from '@angular/core';
 
 import {NgClassImpl, NgClassImplProvider} from './ng_class_impl';
 
@@ -40,7 +40,6 @@ export const ngClassDirectiveDef__POST_R3__ = ɵɵdefineDirective({
     }
     if (rf & ɵRenderFlags.Update) {
       ɵɵclassMap(ctx.getValue());
-      ɵɵstylingApply();
     }
   }
 });

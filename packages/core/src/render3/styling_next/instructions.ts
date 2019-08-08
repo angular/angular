@@ -11,7 +11,7 @@ import {setInputsForProperty} from '../instructions/shared';
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {BINDING_INDEX, LView, RENDERER, TVIEW} from '../interfaces/view';
-import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getActiveDirectiveSuperClassHeight, getCurrentStyleSanitizer, getLView, getPreviousOrParentTNode, getSelectedIndex, setCurrentStyleSanitizer} from '../state';
+import {ActiveElementFlags, getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getActiveDirectiveSuperClassHeight, getCurrentStyleSanitizer, getLView, getPreviousOrParentTNode, getSelectedIndex, setActiveElementFlag, setCurrentStyleSanitizer, setElementExitFn} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
@@ -19,6 +19,7 @@ import {getNativeByTNode, getTNode} from '../util/view_utils';
 import {flushStyling, updateClassBinding, updateStyleBinding} from './bindings';
 import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from './interfaces';
 import {activateStylingMapFeature, addItemToStylingMap, normalizeIntoStylingMap, stylingMapToString} from './map_based_bindings';
+import {getLastDirectiveIndex, resetStylingState, storeLastDirectiveIndex} from './state';
 import {attachStylingDebugObject} from './styling_debug';
 import {allocTStylingContext, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, hasClassInput, hasStyleInput, hasValueChanged, isContextLocked, isStylingContext, updateLastDirectiveIndex as _updateLastDirectiveIndex} from './util';
 
@@ -180,7 +181,12 @@ function _stylingProp(
           getStylesContext(tNode), lView, native, prop, bindingIndex,
           value as string | SafeValue | null, sanitizer, defer, false);
     }
+
+    setElementExitFn(applyAndReset);
   }
+
+  storeLastDirectiveIndex(getActiveDirectiveStylingIndex());
+  markStylingStateAsDirty();
 
   return updated;
 }
@@ -315,7 +321,12 @@ function _stylingMap(
           context, lView, native, null, bindingIndex, stylingMapArr, sanitizer, defer,
           valueHasChanged);
     }
+
+    setElementExitFn(applyAndReset);
   }
+
+  storeLastDirectiveIndex(getActiveDirectiveStylingIndex());
+  markStylingStateAsDirty();
 
   return valueHasChanged;
 }
@@ -349,6 +360,7 @@ function updateDirectiveInputValue(
       setInputsForProperty(lView, inputs, value);
     }
     lView[bindingIndex] = newValue;
+    setElementExitFn(applyAndReset);
   }
 }
 
@@ -389,17 +401,27 @@ function normalizeStylingDirectiveInputValue(
  * @codeGenApi
  */
 export function ɵɵstylingApply() {
+  stylingApplyInternal();
+}
+
+function stylingApplyInternal() {
   const elementIndex = getSelectedIndex();
   const lView = getLView();
   const tNode = getTNode(elementIndex, lView);
   const renderer = getRenderer(tNode, lView);
   const native = getNativeByTNode(tNode, lView) as RElement;
-  const directiveIndex = getActiveDirectiveStylingIndex();
+  const directiveIndex = getLastDirectiveIndex();
   const sanitizer = getCurrentStyleSanitizer();
   flushStyling(
       renderer, lView, getClassesContext(tNode), getStylesContext(tNode), native, directiveIndex,
       sanitizer);
   setCurrentStyleSanitizer(null);
+}
+
+
+function applyAndReset() {
+  stylingApplyInternal();
+  resetStylingState();
 }
 
 function getRenderer(tNode: TNode, lView: LView) {
@@ -544,4 +566,8 @@ function resolveStylePropValue(
  */
 function deferStylingUpdate(): boolean {
   return getActiveDirectiveSuperClassHeight() > 0;
+}
+
+function markStylingStateAsDirty() {
+  setActiveElementFlag(ActiveElementFlags.ResetStylesOnExit);
 }

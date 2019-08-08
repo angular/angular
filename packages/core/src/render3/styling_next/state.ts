@@ -84,6 +84,7 @@ export function getStylingState(element: any, readFromMap?: boolean): StylingSta
 export function resetStylingState() {
   _stylingState = null;
   _stylingElement = null;
+  _lastDirectiveIndex = -1;
 }
 
 export function storeStylingState(element: any, state: StylingState) {
@@ -98,4 +99,13 @@ export function deleteStylingStateFromStorage(element: any) {
 export function resetAllStylingState() {
   resetStylingState();
   _stateStorage.clear();
+}
+
+let _lastDirectiveIndex: number = -1;
+export function storeLastDirectiveIndex(index: number) {
+  _lastDirectiveIndex = index;
+}
+
+export function getLastDirectiveIndex() {
+  return _lastDirectiveIndex;
 }

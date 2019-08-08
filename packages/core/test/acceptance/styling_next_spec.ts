@@ -939,10 +939,10 @@ describe('new styling integration', () => {
 
             @Component({
               template: `
-            <div class="a" [style.width.px]="w" one></div>
-            <div class="b" [style.height.px]="h" one two></div>
-            <div class="c" [style.color]="c" two></div>
-          `
+                <div class="a" [style.width.px]="w" one></div>
+                <div class="b" [style.height.px]="h" one two></div>
+                <div class="c" [style.color]="c" two></div>
+              `
             })
             class Cmp {
               w = 100;

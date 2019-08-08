@@ -173,7 +173,8 @@ import {LView} from '../interfaces/view';
  * Each time a new binding is encountered it is registered into the
  * context. The context then is continually updated until the first
  * styling apply call has been called (this is triggered by the
- * `stylingApply()` instruction for the active element).
+ * `stylingApply()` instruction for the active element---which is
+ * automatically called once an element exits during change detection).
  *
  * # How Styles/Classes are Rendered
  * Each time a styling instruction (e.g. `[class.name]`, `[style.prop]`,

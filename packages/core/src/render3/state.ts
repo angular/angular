@@ -129,9 +129,7 @@ export function getLView(): LView {
  * The reason why this value is `1` instead of `0` is because the `0`
  * value is reserved for the template.
  */
-const MIN_DIRECTIVE_ID = 1;
-
-let activeDirectiveId = MIN_DIRECTIVE_ID;
+let activeDirectiveId = 0;
 
 /**
  * Position depth (with respect from leaf to root) in a directive sub-class inheritance chain.
@@ -156,6 +154,52 @@ let activeDirectiveSuperClassDepthPosition = 0;
 let activeDirectiveSuperClassHeight = 0;
 
 /**
+ * Flags used for an active element during change detection.
+ *
+ * These flags are used to signal whether to run any sub routine code when
+ * an element is being processed in change detection.
+ *
+ * Note that these flags are reset each time an element changes (whether it
+ * happens when `select()` is run or when change detection exits out of a template
+ * function or when all host bindings are processed for an element).
+ */
+export const enum ActiveElementFlags {
+  Initial = 0b00,
+  RunExitFn = 0b01,
+  ResetStylesOnExit = 0b10,
+}
+
+let _selectedIndexFlags = 0;
+
+/**
+ * Clears all active element flags.
+ */
+export function resetActiveElementFlags() {
+  _selectedIndexFlags = ActiveElementFlags.Initial;
+}
+
+/**
+ * Determines whether or not a flag is currently set for the active element.
+ */
+export function hasActiveElementFlag(flag: ActiveElementFlags) {
+  return _selectedIndexFlags & flag;
+}
+
+/**
+ * Sets a flag is for the active element.
+ */
+export function setActiveElementFlag(flag: ActiveElementFlags) {
+  _selectedIndexFlags |= flag;
+}
+
+/**
+ * Unsets a flag is for the active element.
+ */
+export function unsetActiveElementFlag(flag: ActiveElementFlags) {
+  _selectedIndexFlags &= ~flag;
+}
+
+/**
  * Sets the active directive host element and resets the directive id value
  * (when the provided elementIndex value has changed).
  *
@@ -164,11 +208,45 @@ let activeDirectiveSuperClassHeight = 0;
  */
 export function setActiveHostElement(elementIndex: number | null = null) {
   if (_selectedIndex !== elementIndex) {
+    if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
+      executeElementExitFn();
+    }
     setSelectedIndex(elementIndex === null ? -1 : elementIndex);
-    activeDirectiveId = elementIndex === null ? 0 : MIN_DIRECTIVE_ID;
+    activeDirectiveId = 0;
     activeDirectiveSuperClassDepthPosition = 0;
     activeDirectiveSuperClassHeight = 0;
+    if (hasActiveElementFlag(ActiveElementFlags.ResetStylesOnExit)) {
+      resetStylingState();
+    }
+    resetActiveElementFlags();
   }
+}
+
+let _elementExitFn: Function|null = null;
+export function executeElementExitFn() {
+  if (_selectedIndex !== null && _elementExitFn) {
+    _elementExitFn();
+    _elementExitFn = null;
+    unsetActiveElementFlag(ActiveElementFlags.RunExitFn);
+  }
+}
+
+/**
+ * Queues a function to be run once the element is "exited" in CD.
+ *
+ * Change detection will focus on an element either when the `select()`
+ * instruction is called or when the template or host bindings instruction
+ * code is invoked. The element is then "exited" when the next element is
+ * selected or when change detection for the template or host bindings is
+ * complete. When this occurs (the element change operation) then an exit
+ * function will be invoked if it has been set. This function can be used
+ * to assign that exit function.
+ *
+ * @param fn
+ */
+export function setElementExitFn(fn: Function): void {
+  setActiveElementFlag(ActiveElementFlags.RunExitFn);
+  _elementExitFn = fn;
 }
 
 /**
@@ -211,6 +289,11 @@ export function getActiveDirectiveId() {
  * different set of directives).
  */
 export function incrementActiveDirectiveId() {
+  // Each directive gets a uniqueId value that is the same for both
+  // create and update calls when the hostBindings function is called. The
+  // directive uniqueId is not set anywhere--it is just incremented between
+  // each hostBindings call and is useful for helping instruction code
+  // uniquely determine which directive is currently active when executed.
   activeDirectiveId += 1 + activeDirectiveSuperClassHeight;
 
   // because we are dealing with a new directive this
@@ -481,13 +564,12 @@ export function getSelectedIndex() {
  *
  * Used with {@link property} instruction (and more in the future) to identify the index in the
  * current `LView` to act on.
+ *
+ * (Note that if an "exit function" was set earlier (via `setElementExitFn()`) then that will be
+ * run if and when the provided `index` value is different from the current selected index value.)
  */
 export function setSelectedIndex(index: number) {
   _selectedIndex = index;
-
-  // we have now jumped to another element
-  // therefore the state is stale
-  resetStylingState();
 }
 
 

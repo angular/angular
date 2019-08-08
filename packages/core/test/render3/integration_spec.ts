@@ -636,9 +636,6 @@ describe('element discovery', () => {
                ɵɵstyling();
                ɵɵelementEnd();
              }
-             if (rf & RenderFlags.Update) {
-               ɵɵstylingApply();
-             }
            }
          });
        }

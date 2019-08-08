@@ -8,7 +8,9 @@
 import {assertGreaterThan, assertLessThan} from '../../util/assert';
 import {executePreOrderHooks} from '../hooks';
 import {HEADER_OFFSET, LView, TVIEW} from '../interfaces/view';
-import {getCheckNoChangesMode, getLView, setSelectedIndex} from '../state';
+import {ActiveElementFlags, executeElementExitFn, getCheckNoChangesMode, getLView, hasActiveElementFlag, resetActiveElementFlags, setSelectedIndex} from '../state';
+import {resetStylingState} from '../styling_next/state';
+
 
 
 /**
@@ -43,6 +45,10 @@ export function ɵɵselect(index: number): void {
 
 
 export function selectInternal(lView: LView, index: number) {
+  if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
+    executeElementExitFn();
+  }
+
   // Flush the initial hooks for elements in the view that have been added up to this point.
   executePreOrderHooks(lView, lView[TVIEW], getCheckNoChangesMode(), index);
 
@@ -51,4 +57,10 @@ export function selectInternal(lView: LView, index: number) {
   // state. If we run `setSelectedIndex` *before* we run the hooks, in some cases the selected index
   // will be altered by the time we leave the `ɵɵselect` instruction.
   setSelectedIndex(index);
+
+  if (hasActiveElementFlag(ActiveElementFlags.ResetStylesOnExit)) {
+    resetStylingState();
+  }
+
+  resetActiveElementFlags();
 }
