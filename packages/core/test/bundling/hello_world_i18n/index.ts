@@ -5,15 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {Component, NgModule, ɵi18nConfigureLocalize, ɵrenderComponent as renderComponent} from '@angular/core';
-
-const translations = {
-  'Hello World!': 'Bonjour Monde!',
-  'Hello Title!': 'Bonjour Titre!',
-};
-
-ɵi18nConfigureLocalize({translations});
+import './translations';
+import {Component, NgModule, ɵrenderComponent as renderComponent} from '@angular/core';
 
 @Component({
   selector: 'hello-world',

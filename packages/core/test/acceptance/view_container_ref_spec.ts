@@ -7,10 +7,11 @@
  */
 
 import {CommonModule, DOCUMENT} from '@angular/common';
-import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed, TestComponentRenderer} from '@angular/core/testing';
+import {loadTranslations} from '@angular/localize/run_time';
 import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -35,7 +36,7 @@ describe('ViewContainerRef', () => {
   }
 
   beforeEach(() => {
-    ɵi18nConfigureLocalize({translations: TRANSLATIONS});
+    loadTranslations(TRANSLATIONS);
     TestBed.configureTestingModule({
       declarations: [
         StructDir, ViewContainerRefComp, ViewContainerRefApp, DestroyCasesComp, ConstructorDir,

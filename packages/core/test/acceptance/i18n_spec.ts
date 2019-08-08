@@ -8,9 +8,10 @@
 import '@angular/localize';
 import {registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize, Pipe, PipeTransform} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
+import {loadTranslations} from '@angular/localize/run_time';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
@@ -24,14 +25,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   afterEach(() => { setDelayProjection(false); });
 
   it('should translate text', () => {
-    ɵi18nConfigureLocalize({translations: {'text': 'texte'}});
+    loadTranslations({'text': 'texte'});
     const fixture = initWithTemplate(AppComp, `<div i18n>text</div>`);
     expect(fixture.nativeElement.innerHTML).toEqual(`<div>texte</div>`);
   });
 
   it('should support interpolations', () => {
-    ɵi18nConfigureLocalize(
-        {translations: {'Hello {$interpolation}!': 'Bonjour {$interpolation}!'}});
+    loadTranslations({'Hello {$interpolation}!': 'Bonjour {$interpolation}!'});
     const fixture = initWithTemplate(AppComp, `<div i18n>Hello {{name}}!</div>`);
     expect(fixture.nativeElement.innerHTML).toEqual(`<div>Bonjour Angular!</div>`);
     fixture.componentRef.instance.name = `John`;
@@ -40,11 +40,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support named interpolations', () => {
-    ɵi18nConfigureLocalize({
-      translations: {
-        ' Hello {$userName}! Emails: {$amountOfEmailsReceived} ':
-            ' Bonjour {$userName}! Emails: {$amountOfEmailsReceived} '
-      }
+    loadTranslations({
+      ' Hello {$userName}! Emails: {$amountOfEmailsReceived} ':
+          ' Bonjour {$userName}! Emails: {$amountOfEmailsReceived} '
     });
     const fixture = initWithTemplate(AppComp, `
       <div i18n>
@@ -60,7 +58,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support interpolations with custom interpolation config', () => {
-    ɵi18nConfigureLocalize({translations: {'Hello {$interpolation}': 'Bonjour {$interpolation}'}});
+    loadTranslations({'Hello {$interpolation}': 'Bonjour {$interpolation}'});
     const interpolation = ['{%', '%}'] as[string, string];
     TestBed.overrideComponent(AppComp, {set: {interpolation}});
     const fixture = initWithTemplate(AppComp, `<div i18n>Hello {% name %}</div>`);
@@ -70,17 +68,15 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support &ngsp; in translatable sections', () => {
     // note: the `` unicode symbol represents the `&ngsp;` in translations
-    ɵi18nConfigureLocalize({translations: {'text ||': 'texte ||'}});
+    loadTranslations({'text ||': 'texte ||'});
     const fixture = initWithTemplate(AppCompWithWhitespaces, `<div i18n>text |&ngsp;|</div>`);
 
     expect(fixture.nativeElement.innerHTML).toEqual(`<div>texte | |</div>`);
   });
 
   it('should support interpolations with complex expressions', () => {
-    ɵi18nConfigureLocalize({
-      translations:
-          {'{$interpolation} - {$interpolation_1}': '{$interpolation} - {$interpolation_1} (fr)'}
-    });
+    loadTranslations(
+        {'{$interpolation} - {$interpolation_1}': '{$interpolation} - {$interpolation_1} (fr)'});
     const fixture =
         initWithTemplate(AppComp, `<div i18n>{{ name | uppercase }} - {{ obj?.a?.b }}</div>`);
     expect(fixture.nativeElement.innerHTML).toEqual(`<div>ANGULAR -  (fr)</div>`);
@@ -90,11 +86,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support elements', () => {
-    ɵi18nConfigureLocalize({
-      translations: {
-        'Hello {$startTagSpan}world{$closeTagSpan} and {$startTagDiv}universe{$closeTagDiv}!':
-            'Bonjour {$startTagSpan}monde{$closeTagSpan} et {$startTagDiv}univers{$closeTagDiv}!'
-      }
+    loadTranslations({
+      'Hello {$startTagSpan}world{$closeTagSpan} and {$startTagDiv}universe{$closeTagDiv}!':
+          'Bonjour {$startTagSpan}monde{$closeTagSpan} et {$startTagDiv}univers{$closeTagDiv}!'
     });
     const fixture = initWithTemplate(
         AppComp, `<div i18n>Hello <span>world</span> and <div>universe</div>!</div>`);
@@ -103,11 +97,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support removing elements', () => {
-    ɵi18nConfigureLocalize({
-      translations: {
-        'Hello {$startBoldText}my{$closeBoldText}{$startTagSpan}world{$closeTagSpan}':
-            'Bonjour {$startTagSpan}monde{$closeTagSpan}'
-      }
+    loadTranslations({
+      'Hello {$startBoldText}my{$closeBoldText}{$startTagSpan}world{$closeTagSpan}':
+          'Bonjour {$startTagSpan}monde{$closeTagSpan}'
     });
     const fixture =
         initWithTemplate(AppComp, `<div i18n>Hello <b>my</b><span>world</span></div><div>!</div>`);
@@ -116,11 +108,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support moving elements', () => {
-    ɵi18nConfigureLocalize({
-      translations: {
-        'Hello {$startTagSpan}world{$closeTagSpan} and {$startTagDiv}universe{$closeTagDiv}!':
-            'Bonjour {$startTagDiv}univers{$closeTagDiv} et {$startTagSpan}monde{$closeTagSpan}!'
-      }
+    loadTranslations({
+      'Hello {$startTagSpan}world{$closeTagSpan} and {$startTagDiv}universe{$closeTagDiv}!':
+          'Bonjour {$startTagDiv}univers{$closeTagDiv} et {$startTagSpan}monde{$closeTagSpan}!'
     });
     const fixture = initWithTemplate(
         AppComp, `<div i18n>Hello <span>world</span> and <div>universe</div>!</div>`);
@@ -129,11 +119,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support template directives', () => {
-    ɵi18nConfigureLocalize({
-      translations: {
-        'Content: {$startTagDiv}before{$startTagSpan}middle{$closeTagSpan}after{$closeTagDiv}!':
-            'Contenu: {$startTagDiv}avant{$startTagSpan}milieu{$closeTagSpan}après{$closeTagDiv}!'
-      }
+    loadTranslations({
+      'Content: {$startTagDiv}before{$startTagSpan}middle{$closeTagSpan}after{$closeTagDiv}!':
+          'Contenu: {$startTagDiv}avant{$startTagSpan}milieu{$closeTagSpan}après{$closeTagDiv}!'
     });
     const fixture = initWithTemplate(
         AppComp,
@@ -151,14 +139,12 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support multiple i18n blocks', () => {
-    ɵi18nConfigureLocalize({
-      translations: {
-        'trad {$interpolation}': 'traduction {$interpolation}',
-        'start {$interpolation} middle {$interpolation_1} end':
-            'start {$interpolation_1} middle {$interpolation} end',
-        '{$startTagC}trad{$closeTagC}{$startTagD}{$closeTagD}{$startTagE}{$closeTagE}':
-            '{$startTagE}{$closeTagE}{$startTagC}traduction{$closeTagC}'
-      }
+    loadTranslations({
+      'trad {$interpolation}': 'traduction {$interpolation}',
+      'start {$interpolation} middle {$interpolation_1} end':
+          'start {$interpolation_1} middle {$interpolation} end',
+      '{$startTagC}trad{$closeTagC}{$startTagD}{$closeTagD}{$startTagE}{$closeTagE}':
+          '{$startTagE}{$closeTagE}{$startTagC}traduction{$closeTagC}'
     });
     const fixture = initWithTemplate(AppComp, `
       <div>
@@ -176,12 +162,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support multiple sibling i18n blocks', () => {
-    ɵi18nConfigureLocalize({
-      translations: {
-        'Section 1': 'Section un',
-        'Section 2': 'Section deux',
-        'Section 3': 'Section trois',
-      }
+    loadTranslations({
+      'Section 1': 'Section un',
+      'Section 2': 'Section deux',
+      'Section 3': 'Section trois',
     });
     const fixture = initWithTemplate(AppComp, `
       <div>
@@ -194,12 +178,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support multiple sibling i18n blocks inside of a template directive', () => {
-    ɵi18nConfigureLocalize({
-      translations: {
-        'Section 1': 'Section un',
-        'Section 2': 'Section deux',
-        'Section 3': 'Section trois',
-      }
+    loadTranslations({
+      'Section 1': 'Section un',
+      'Section 2': 'Section deux',
+      'Section 3': 'Section trois',
     });
     const fixture = initWithTemplate(AppComp, `
       <ul *ngFor="let item of [1,2,3]">
@@ -215,10 +197,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should properly escape quotes in content', () => {
-    ɵi18nConfigureLocalize({
-      translations: {
-        '\'Single quotes\' and "Double quotes"': '\'Guillemets simples\' et "Guillemets doubles"'
-      }
+    loadTranslations({
+      '\'Single quotes\' and "Double quotes"': '\'Guillemets simples\' et "Guillemets doubles"'
     });
     const fixture =
         initWithTemplate(AppComp, `<div i18n>'Single quotes' and "Double quotes"</div>`);
@@ -228,7 +208,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should correctly bind to context in nested template', () => {
-    ɵi18nConfigureLocalize({translations: {'Item {$interpolation}': 'Article {$interpolation}'}});
+    loadTranslations({'Item {$interpolation}': 'Article {$interpolation}'});
     const fixture = initWithTemplate(AppComp, `
           <div *ngFor='let id of items'>
             <div i18n>Item {{ id }}</div>
@@ -248,13 +228,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should handle i18n attribute with directives', () => {
-    ɵi18nConfigureLocalize({translations: {'Hello {$interpolation}': 'Bonjour {$interpolation}'}});
+    loadTranslations({'Hello {$interpolation}': 'Bonjour {$interpolation}'});
     const fixture = initWithTemplate(AppComp, `<div *ngIf="visible" i18n>Hello {{ name }}</div>`);
     expect(fixture.nativeElement.firstChild).toHaveText('Bonjour Angular');
   });
 
   it('should work correctly with event listeners', () => {
-    ɵi18nConfigureLocalize({translations: {'Hello {$interpolation}': 'Bonjour {$interpolation}'}});
+    loadTranslations({'Hello {$interpolation}': 'Bonjour {$interpolation}'});
 
     @Component(
         {selector: 'app-comp', template: `<div i18n (click)="onClick()">Hello {{ name }}</div>`})
@@ -281,14 +261,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   describe('ng-container and ng-template support', () => {
     it('should support ng-container', () => {
-      ɵi18nConfigureLocalize({translations: {'text': 'texte'}});
+      loadTranslations({'text': 'texte'});
       const fixture = initWithTemplate(AppComp, `<ng-container i18n>text</ng-container>`);
       expect(fixture.nativeElement.innerHTML).toEqual(`texte<!--ng-container-->`);
     });
 
     it('should handle single translation message within ng-template', () => {
-      ɵi18nConfigureLocalize(
-          {translations: {'Hello {$interpolation}': 'Bonjour {$interpolation}'}});
+      loadTranslations({'Hello {$interpolation}': 'Bonjour {$interpolation}'});
       const fixture =
           initWithTemplate(AppComp, `<ng-template i18n tplRef>Hello {{ name }}</ng-template>`);
 
@@ -297,11 +276,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should be able to act as child elements inside i18n block (plain text content)', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{$startTagNgTemplate} Hello {$closeTagNgTemplate}{$startTagNgContainer} Bye {$closeTagNgContainer}':
-              '{$startTagNgTemplate} Bonjour {$closeTagNgTemplate}{$startTagNgContainer} Au revoir {$closeTagNgContainer}'
-        }
+      loadTranslations({
+
+        '{$startTagNgTemplate} Hello {$closeTagNgTemplate}{$startTagNgContainer} Bye {$closeTagNgContainer}':
+            '{$startTagNgTemplate} Bonjour {$closeTagNgTemplate}{$startTagNgContainer} Au revoir {$closeTagNgContainer}'
       });
       const fixture = initWithTemplate(AppComp, `
         <div i18n>
@@ -319,11 +297,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should be able to act as child elements inside i18n block (text + tags)', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{$startTagNgTemplate}{$startTagSpan}Hello{$closeTagSpan}{$closeTagNgTemplate}{$startTagNgContainer}{$startTagSpan}Hello{$closeTagSpan}{$closeTagNgContainer}':
-              '{$startTagNgTemplate}{$startTagSpan}Bonjour{$closeTagSpan}{$closeTagNgTemplate}{$startTagNgContainer}{$startTagSpan}Bonjour{$closeTagSpan}{$closeTagNgContainer}'
-        }
+      loadTranslations({
+
+        '{$startTagNgTemplate}{$startTagSpan}Hello{$closeTagSpan}{$closeTagNgTemplate}{$startTagNgContainer}{$startTagSpan}Hello{$closeTagSpan}{$closeTagNgContainer}':
+            '{$startTagNgTemplate}{$startTagSpan}Bonjour{$closeTagSpan}{$closeTagNgTemplate}{$startTagNgContainer}{$startTagSpan}Bonjour{$closeTagSpan}{$closeTagNgContainer}'
       });
       const fixture = initWithTemplate(AppComp, `
         <div i18n>
@@ -349,11 +326,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const key = '{$startTagNgTemplate}Hello {$interpolation}{$closeTagNgTemplate}' +
           '{$startTagNgContainer}Bye {$interpolation}{$closeTagNgContainer}';
 
-      ɵi18nConfigureLocalize({
-        translations: {
-          [key]:
-              '{$startTagNgTemplate}Hej {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Vi ses {$interpolation}{$closeTagNgContainer}'
-        }
+      loadTranslations({
+
+        [key]:
+            '{$startTagNgTemplate}Hej {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Vi ses {$interpolation}{$closeTagNgContainer}'
       });
       const fixture = initWithTemplate(AppComp, `
         <div i18n>
@@ -367,11 +343,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should be able to handle deep nested levels with templates', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{$startTagSpan} Hello - 1 {$closeTagSpan}{$startTagSpan_1} Hello - 2 {$startTagSpan_1} Hello - 3 {$startTagSpan_1} Hello - 4 {$closeTagSpan}{$closeTagSpan}{$closeTagSpan}{$startTagSpan} Hello - 5 {$closeTagSpan}':
-              '{$startTagSpan} Bonjour - 1 {$closeTagSpan}{$startTagSpan_1} Bonjour - 2 {$startTagSpan_1} Bonjour - 3 {$startTagSpan_1} Bonjour - 4 {$closeTagSpan}{$closeTagSpan}{$closeTagSpan}{$startTagSpan} Bonjour - 5 {$closeTagSpan}'
-        }
+      loadTranslations({
+
+        '{$startTagSpan} Hello - 1 {$closeTagSpan}{$startTagSpan_1} Hello - 2 {$startTagSpan_1} Hello - 3 {$startTagSpan_1} Hello - 4 {$closeTagSpan}{$closeTagSpan}{$closeTagSpan}{$startTagSpan} Hello - 5 {$closeTagSpan}':
+            '{$startTagSpan} Bonjour - 1 {$closeTagSpan}{$startTagSpan_1} Bonjour - 2 {$startTagSpan_1} Bonjour - 3 {$startTagSpan_1} Bonjour - 4 {$closeTagSpan}{$closeTagSpan}{$closeTagSpan}{$startTagSpan} Bonjour - 5 {$closeTagSpan}'
       });
       const fixture = initWithTemplate(AppComp, `
         <div i18n>
@@ -401,11 +376,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should handle self-closing tags as content', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{$startTagSpan}My logo{$tagImg}{$closeTagSpan}':
-              '{$startTagSpan}Mon logo{$tagImg}{$closeTagSpan}'
-        }
+      loadTranslations({
+
+        '{$startTagSpan}My logo{$tagImg}{$closeTagSpan}':
+            '{$startTagSpan}Mon logo{$tagImg}{$closeTagSpan}'
       });
       const content = `My logo<img src="logo.png" title="Logo">`;
       const fixture = initWithTemplate(AppComp, `
@@ -460,11 +434,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   describe('should support ICU expressions', () => {
     it('with no root node', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}':
-              '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
-        }
+      loadTranslations({
+
+        '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}':
+            '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
       });
       const fixture =
           initWithTemplate(AppComp, `{count, select, 10 {ten} 20 {twenty} other {other}}`);
@@ -474,11 +447,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('with no i18n tag', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}':
-              '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
-        }
+      loadTranslations({
+
+        '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}':
+            '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
       });
       const fixture = initWithTemplate(
           AppComp, `<div>{count, select, 10 {ten} 20 {twenty} other {other}}</div>`);
@@ -488,12 +460,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('multiple', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}':
-              '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
-          '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
-        }
+      loadTranslations({
+
+        '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}':
+            '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
+        '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
       });
       const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural,
         =0 {no <b>emails</b>!}
@@ -519,11 +490,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('with custom interpolation config', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{VAR_SELECT, select, 10 {ten} other {{$interpolation}}}':
-              '{VAR_SELECT, select, 10 {dix} other {{$interpolation}}}'
-        }
+      loadTranslations({
+
+        '{VAR_SELECT, select, 10 {ten} other {{$interpolation}}}':
+            '{VAR_SELECT, select, 10 {dix} other {{$interpolation}}}'
       });
       const interpolation = ['{%', '%}'] as[string, string];
       TestBed.overrideComponent(AppComp, {set: {interpolation}});
@@ -534,12 +504,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('inside HTML elements', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}':
-              '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
-          '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
-        }
+      loadTranslations({
+
+        '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}':
+            '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
+        '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
       });
       const fixture = initWithTemplate(AppComp, `<div i18n><span>{count, plural,
         =0 {no <b>emails</b>!}
@@ -567,10 +536,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('inside template directives', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
-        }
+      loadTranslations({
+
+        '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
       });
       const fixture = initWithTemplate(AppComp, `<div i18n><span *ngIf="visible">{name, select,
         other {({{name}})}
@@ -588,10 +556,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('inside ng-container', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
-        }
+      loadTranslations({
+
+        '{VAR_SELECT, select, other {(name)}}': '{VAR_SELECT, select, other {({$interpolation})}}'
       });
       const fixture = initWithTemplate(AppComp, `<ng-container i18n>{name, select,
         other {({{name}})}
@@ -600,11 +567,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('inside <ng-template>', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}':
-              '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
-        }
+      loadTranslations({
+
+        '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}':
+            '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
       });
       const fixture = initWithTemplate(
           AppComp, `
@@ -618,11 +584,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('nested', () => {
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{VAR_PLURAL, plural, =0 {zero} other {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}}!}}':
-              '{VAR_PLURAL, plural, =0 {zero} other {{INTERPOLATION} {VAR_SELECT, select, cat {chats} dog {chients} other {animaux}}!}}'
-        }
+      loadTranslations({
+
+        '{VAR_PLURAL, plural, =0 {zero} other {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}}!}}':
+            '{VAR_PLURAL, plural, =0 {zero} other {{INTERPOLATION} {VAR_SELECT, select, cat {chats} dog {chients} other {animaux}}!}}'
       });
       const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural,
         =0 {zero}
@@ -647,7 +612,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const translation =
           '{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, ' +
           'cat {chats} dog {chients} other {animaux}}!} other {other - {INTERPOLATION}}}';
-      ɵi18nConfigureLocalize({translations: {[key]: translation}});
+      loadTranslations({[key]: translation});
 
       const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural,
         =0 {zero}
@@ -729,7 +694,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         value = 3;
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      ɵi18nConfigureLocalize({translations: {}});
+      loadTranslations({});
 
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -979,14 +944,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   describe('should support attributes', () => {
     it('text', () => {
-      ɵi18nConfigureLocalize({translations: {'text': 'texte'}});
+      loadTranslations({'text': 'texte'});
       const fixture = initWithTemplate(AppComp, `<div i18n i18n-title title="text"></div>`);
       expect(fixture.nativeElement.innerHTML).toEqual(`<div title="texte"></div>`);
     });
 
     it('interpolations', () => {
-      ɵi18nConfigureLocalize(
-          {translations: {'hello {$interpolation}': 'bonjour {$interpolation}'}});
+      loadTranslations({'hello {$interpolation}': 'bonjour {$interpolation}'});
       const fixture =
           initWithTemplate(AppComp, `<div i18n i18n-title title="hello {{name}}"></div>`);
       expect(fixture.nativeElement.innerHTML).toEqual(`<div title="bonjour Angular"></div>`);
@@ -997,16 +961,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('with pipes', () => {
-      ɵi18nConfigureLocalize(
-          {translations: {'hello {$interpolation}': 'bonjour {$interpolation}'}});
+      loadTranslations({'hello {$interpolation}': 'bonjour {$interpolation}'});
       const fixture = initWithTemplate(
           AppComp, `<div i18n i18n-title title="hello {{name | uppercase}}"></div>`);
       expect(fixture.nativeElement.innerHTML).toEqual(`<div title="bonjour ANGULAR"></div>`);
     });
 
     it('multiple attributes', () => {
-      ɵi18nConfigureLocalize(
-          {translations: {'hello {$interpolation}': 'bonjour {$interpolation}'}});
+      loadTranslations({'hello {$interpolation}': 'bonjour {$interpolation}'});
       const fixture = initWithTemplate(
           AppComp,
           `<input i18n i18n-title title="hello {{name}}" i18n-placeholder placeholder="hello {{name}}">`);
@@ -1020,16 +982,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('on removed elements', () => {
-      ɵi18nConfigureLocalize(
-          {translations: {'text': 'texte', '{$startTagSpan}content{$closeTagSpan}': 'contenu'}});
+      loadTranslations({'text': 'texte', '{$startTagSpan}content{$closeTagSpan}': 'contenu'});
       const fixture =
           initWithTemplate(AppComp, `<div i18n><span i18n-title title="text">content</span></div>`);
       expect(fixture.nativeElement.innerHTML).toEqual(`<div>contenu</div>`);
     });
 
     it('with custom interpolation config', () => {
-      ɵi18nConfigureLocalize(
-          {translations: {'Hello {$interpolation}': 'Bonjour {$interpolation}'}});
+      loadTranslations({'Hello {$interpolation}': 'Bonjour {$interpolation}'});
       const interpolation = ['{%', '%}'] as[string, string];
       TestBed.overrideComponent(AppComp, {set: {interpolation}});
       const fixture =
@@ -1040,7 +1000,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('in nested template', () => {
-      ɵi18nConfigureLocalize({translations: {'Item {$interpolation}': 'Article {$interpolation}'}});
+      loadTranslations({'Item {$interpolation}': 'Article {$interpolation}'});
       const fixture = initWithTemplate(AppComp, `
           <div *ngFor='let item of [1,2,3]'>
             <div i18n-title='m|d' title='Item {{ item }}'></div>
@@ -1054,8 +1014,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should add i18n attributes on self-closing tags', () => {
-      ɵi18nConfigureLocalize(
-          {translations: {'Hello {$interpolation}': 'Bonjour {$interpolation}'}});
+      loadTranslations({'Hello {$interpolation}': 'Bonjour {$interpolation}'});
       const fixture =
           initWithTemplate(AppComp, `<img src="logo.png" i18n-title title="Hello {{ name }}">`);
 
@@ -1128,15 +1087,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     }
 
     TestBed.configureTestingModule({declarations: [ClsDir, MyApp]});
-    ɵi18nConfigureLocalize({
-      translations: {
-        // Not that this translation switches the order of the expressions!
-        'start {$interpolation} middle {$interpolation_1} end':
-            'début {$interpolation_1} milieu {$interpolation} fin',
-        '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}':
-            '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}',
-        ' trad: {$icu} ': ' traduction: {$icu} '
-      }
+    loadTranslations({
+      // Not that this translation switches the order of the expressions!
+      'start {$interpolation} middle {$interpolation_1} end':
+          'début {$interpolation_1} milieu {$interpolation} fin',
+      '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}':
+          '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}',
+      ' trad: {$icu} ': ' traduction: {$icu} '
     });
     const fixture = TestBed.createComponent(MyApp);
     fixture.detectChanges();
@@ -1178,9 +1135,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     }
 
     TestBed.configureTestingModule({declarations: [AppComp, MyComp]});
-    ɵi18nConfigureLocalize({
-      translations: {'Hello {$interpolation}': 'Bonjour {$interpolation}', 'works': 'fonctionne'}
-    });
+    loadTranslations({'Hello {$interpolation}': 'Bonjour {$interpolation}', 'works': 'fonctionne'});
     const fixture = initWithTemplate(
         AppComp,
         `<my-comp i18n i18n-title title="works" i18n-value="hi" value="Hello {{name}}"></my-comp>`);
@@ -1194,11 +1149,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support adding/moving/removing nodes', () => {
-    ɵi18nConfigureLocalize({
-      translations: {
-        '{$startTagDiv2}{$closeTagDiv2}{$startTagDiv3}{$closeTagDiv3}{$startTagDiv4}{$closeTagDiv4}{$startTagDiv5}{$closeTagDiv5}{$startTagDiv6}{$closeTagDiv6}{$startTagDiv7}{$closeTagDiv7}{$startTagDiv8}{$closeTagDiv8}':
-            '{$startTagDiv2}{$closeTagDiv2}{$startTagDiv8}{$closeTagDiv8}{$startTagDiv4}{$closeTagDiv4}{$startTagDiv5}{$closeTagDiv5}Bonjour monde{$startTagDiv3}{$closeTagDiv3}{$startTagDiv7}{$closeTagDiv7}'
-      }
+    loadTranslations({
+      '{$startTagDiv2}{$closeTagDiv2}{$startTagDiv3}{$closeTagDiv3}{$startTagDiv4}{$closeTagDiv4}{$startTagDiv5}{$closeTagDiv5}{$startTagDiv6}{$closeTagDiv6}{$startTagDiv7}{$closeTagDiv7}{$startTagDiv8}{$closeTagDiv8}':
+          '{$startTagDiv2}{$closeTagDiv2}{$startTagDiv8}{$closeTagDiv8}{$startTagDiv4}{$closeTagDiv4}{$startTagDiv5}{$closeTagDiv5}Bonjour monde{$startTagDiv3}{$closeTagDiv3}{$startTagDiv7}{$closeTagDiv7}'
     });
     const fixture = initWithTemplate(AppComp, `
       <div i18n>
@@ -1236,12 +1189,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         name: string = 'Parent';
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      ɵi18nConfigureLocalize({
-        translations: {
-          'Child of {$interpolation}': 'Enfant de {$interpolation}',
-          '{$startTagChild}I am projected from {$startBoldText}{$interpolation}{$startTagRemoveMe_1}{$closeTagRemoveMe_1}{$closeBoldText}{$startTagRemoveMe_2}{$closeTagRemoveMe_2}{$closeTagChild}{$startTagRemoveMe_3}{$closeTagRemoveMe_3}':
-              '{$startTagChild}Je suis projeté depuis {$startBoldText}{$interpolation}{$closeBoldText}{$closeTagChild}'
-        }
+      loadTranslations({
+
+        'Child of {$interpolation}': 'Enfant de {$interpolation}',
+        '{$startTagChild}I am projected from {$startBoldText}{$interpolation}{$startTagRemoveMe_1}{$closeTagRemoveMe_1}{$closeBoldText}{$startTagRemoveMe_2}{$closeTagRemoveMe_2}{$closeTagChild}{$startTagRemoveMe_3}{$closeTagRemoveMe_3}':
+            '{$startTagChild}Je suis projeté depuis {$startBoldText}{$interpolation}{$closeBoldText}{$closeTagChild}'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1270,11 +1222,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         name: string = 'Parent';
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      ɵi18nConfigureLocalize({
-        translations: {
-          'Child of {$interpolation}': 'Enfant de {$interpolation}',
-          'I am projected from {$interpolation}': 'Je suis projeté depuis {$interpolation}'
-        }
+      loadTranslations({
+
+        'Child of {$interpolation}': 'Enfant de {$interpolation}',
+        'I am projected from {$interpolation}': 'Je suis projeté depuis {$interpolation}'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1313,11 +1264,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
 
       TestBed.configureTestingModule({declarations: [Parent, Child, GrandChild]});
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{$startBoldText}Hello{$closeBoldText} World!':
-              '{$startBoldText}Bonjour{$closeBoldText} monde!'
-        }
+      loadTranslations({
+
+        '{$startBoldText}Hello{$closeBoldText} World!':
+            '{$startBoldText}Bonjour{$closeBoldText} monde!'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1341,8 +1291,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
 
       TestBed.configureTestingModule({declarations: [Parent, Child, GrandChild]});
-      ɵi18nConfigureLocalize(
-          {translations: {'{$startBoldText}Hello{$closeBoldText} World!': 'Bonjour monde!'}});
+      loadTranslations({'{$startBoldText}Hello{$closeBoldText} World!': 'Bonjour monde!'});
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
@@ -1367,11 +1316,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
 
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{$startTagSpan}{$closeTagSpan}{$startTagSpan_1}{$closeTagSpan}':
-              '{$startTagSpan}Contenu{$closeTagSpan}'
-        }
+      loadTranslations({
+
+        '{$startTagSpan}{$closeTagSpan}{$startTagSpan_1}{$closeTagSpan}':
+            '{$startTagSpan}Contenu{$closeTagSpan}'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1392,11 +1340,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         name: string = 'Parent';
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      ɵi18nConfigureLocalize({
-        translations: {
-          'Content projected from {$startTagNgContent}{$closeTagNgContent}':
-              'Contenu projeté depuis {$startTagNgContent}{$closeTagNgContent}'
-        }
+      loadTranslations({
+
+        'Content projected from {$startTagNgContent}{$closeTagNgContent}':
+            'Contenu projeté depuis {$startTagNgContent}{$closeTagNgContent}'
       });
 
       const fixture = TestBed.createComponent(Parent);
@@ -1423,11 +1370,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         name: string = 'Parent';
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      ɵi18nConfigureLocalize({
-        translations: {
-          'Content projected from {$startTagNgContent}{$closeTagNgContent}':
-              '{$startTagNgContent}{$closeTagNgContent} a projeté le contenu'
-        }
+      loadTranslations({
+
+        'Content projected from {$startTagNgContent}{$closeTagNgContent}':
+            '{$startTagNgContent}{$closeTagNgContent} a projeté le contenu'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1446,12 +1392,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         name: string = 'Parent';
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      ɵi18nConfigureLocalize({
-        translations: {
-          'Child content {$startTagNgContent}{$closeTagNgContent}':
-              'Contenu enfant {$startTagNgContent}{$closeTagNgContent}',
-          'and projection from {$interpolation}': 'et projection depuis {$interpolation}'
-        }
+      loadTranslations({
+
+        'Child content {$startTagNgContent}{$closeTagNgContent}':
+            'Contenu enfant {$startTagNgContent}{$closeTagNgContent}',
+        'and projection from {$interpolation}': 'et projection depuis {$interpolation}'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1478,7 +1423,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         value = 3;
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      ɵi18nConfigureLocalize({translations: {}});
+      loadTranslations({});
 
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1501,12 +1446,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         name: string = 'Parent';
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      ɵi18nConfigureLocalize({
-        translations: {
-          'Child content {$startTagNgContent}{$closeTagNgContent}':
-              'Contenu enfant {$startTagNgContent}{$closeTagNgContent}',
-          'and projection from {$icu}': 'et projection depuis {$icu}'
-        }
+      loadTranslations({
+
+        'Child content {$startTagNgContent}{$closeTagNgContent}':
+            'Contenu enfant {$startTagNgContent}{$closeTagNgContent}',
+        'and projection from {$icu}': 'et projection depuis {$icu}'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1532,11 +1476,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         name: string = 'Parent';
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      ɵi18nConfigureLocalize({
-        translations: {
-          'Child content {$startTagNgContent}{$closeTagNgContent}': 'Contenu enfant',
-          'and projection from {$interpolation}': 'et projection depuis {$interpolation}'
-        }
+      loadTranslations({
+
+        'Child content {$startTagNgContent}{$closeTagNgContent}': 'Contenu enfant',
+        'and projection from {$interpolation}': 'et projection depuis {$interpolation}'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1622,11 +1565,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
 
       TestBed.configureTestingModule({declarations: [TextDirective, DivQuery]});
-      ɵi18nConfigureLocalize({
-        translations: {
-          '{$startTagNgTemplate}{$startTagDiv_1}{$startTagDiv}{$startTagSpan}Content{$closeTagSpan}{$closeTagDiv}{$closeTagDiv}{$closeTagNgTemplate}':
-              '{$startTagNgTemplate}Contenu{$closeTagNgTemplate}'
-        }
+      loadTranslations({
+
+        '{$startTagNgTemplate}{$startTagDiv_1}{$startTagDiv}{$startTagSpan}Content{$closeTagSpan}{$closeTagDiv}{$closeTagDiv}{$closeTagNgTemplate}':
+            '{$startTagNgTemplate}Contenu{$closeTagNgTemplate}'
       });
       const fixture = initWithTemplate(AppComp, `
           <div-query #q i18n>
