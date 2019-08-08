@@ -21,7 +21,7 @@ export class InPlaceFileWriter implements FileWriter {
 
   writeBundle(
       _bundle: EntryPointBundle, transformedFiles: FileToWrite[],
-      _formatProperty?: EntryPointJsonProperty) {
+      _formatProperties?: EntryPointJsonProperty[]) {
     transformedFiles.forEach(file => this.writeFileAndBackup(file));
   }
 

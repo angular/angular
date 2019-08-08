@@ -32,8 +32,15 @@ runInEachFileSystem(() => {
 
         {
           name: _('/node_modules/test/package.json'),
-          contents:
-              '{"module": "./esm5.js", "es2015": "./es2015/index.js", "typings": "./index.d.ts"}'
+          contents: `
+            {
+              "module": "./esm5.js",
+              "fesm2015": "./es2015/index.js",
+              "fesm5": "./esm5.js",
+              "es2015": "./es2015/index.js",
+              "typings": "./index.d.ts"
+            }
+          `,
         },
         {name: _('/node_modules/test/index.d.ts'), contents: 'export declare class FooTop {}'},
         {name: _('/node_modules/test/index.d.ts.map'), contents: 'ORIGINAL MAPPING DATA'},
@@ -44,8 +51,15 @@ runInEachFileSystem(() => {
         {name: _('/node_modules/test/es2015/foo.js'), contents: 'export class FooTop {}'},
         {
           name: _('/node_modules/test/a/package.json'),
-          contents:
-              `{"module": "./esm5.js", "es2015": "./es2015/index.js", "typings": "./index.d.ts"}`
+          contents: `
+            {
+              "module": "./esm5.js",
+              "fesm2015": "./es2015/index.js",
+              "fesm5": "./esm5.js",
+              "es2015": "./es2015/index.js",
+              "typings": "./index.d.ts"
+            }
+          `,
         },
         {name: _('/node_modules/test/a/index.d.ts'), contents: 'export declare class FooA {}'},
         {name: _('/node_modules/test/a/index.metadata.json'), contents: '...'},
@@ -104,7 +118,7 @@ runInEachFileSystem(() => {
               },
               {path: _('/node_modules/test/esm5.js.map'), contents: 'MODIFIED MAPPING DATA'},
             ],
-            'module');
+            ['module']);
         expect(fs.readFile(_('/node_modules/test/__ivy_ngcc__/esm5.js')))
             .toEqual('export function FooTop() {} // MODIFIED');
         expect(fs.readFile(_('/node_modules/test/esm5.js'))).toEqual('export function FooTop() {}');
@@ -122,7 +136,7 @@ runInEachFileSystem(() => {
                 contents: 'export class FooTop {} // MODIFIED'
               },
             ],
-            'es2015');
+            ['es2015']);
         expect(fs.readFile(_('/node_modules/test/__ivy_ngcc__/es2015/foo.js')))
             .toEqual('export class FooTop {} // MODIFIED');
         expect(fs.readFile(_('/node_modules/test/es2015/foo.js')))
@@ -142,7 +156,7 @@ runInEachFileSystem(() => {
                 contents: 'export function FooTop() {} // MODIFIED'
               },
             ],
-            'module');
+            ['module']);
         expect(loadPackageJson(fs, '/node_modules/test')).toEqual(jasmine.objectContaining({
           module_ivy_ngcc: '__ivy_ngcc__/esm5.js',
         }));
@@ -155,10 +169,42 @@ runInEachFileSystem(() => {
                 contents: 'export class FooTop {} // MODIFIED'
               },
             ],
-            'es2015');
+            ['es2015']);
         expect(loadPackageJson(fs, '/node_modules/test')).toEqual(jasmine.objectContaining({
           module_ivy_ngcc: '__ivy_ngcc__/esm5.js',
           es2015_ivy_ngcc: '__ivy_ngcc__/es2015/index.js',
+        }));
+      });
+
+      it('should be able to update multiple package.json properties at once', () => {
+        fileWriter.writeBundle(
+            esm5bundle,
+            [
+              {
+                path: _('/node_modules/test/esm5.js'),
+                contents: 'export function FooTop() {} // MODIFIED'
+              },
+            ],
+            ['module', 'fesm5']);
+        expect(loadPackageJson(fs, '/node_modules/test')).toEqual(jasmine.objectContaining({
+          module_ivy_ngcc: '__ivy_ngcc__/esm5.js',
+          fesm5_ivy_ngcc: '__ivy_ngcc__/esm5.js',
+        }));
+
+        fileWriter.writeBundle(
+            esm2015bundle,
+            [
+              {
+                path: _('/node_modules/test/es2015/foo.js'),
+                contents: 'export class FooTop {} // MODIFIED'
+              },
+            ],
+            ['es2015', 'fesm2015']);
+        expect(loadPackageJson(fs, '/node_modules/test')).toEqual(jasmine.objectContaining({
+          module_ivy_ngcc: '__ivy_ngcc__/esm5.js',
+          fesm5_ivy_ngcc: '__ivy_ngcc__/esm5.js',
+          es2015_ivy_ngcc: '__ivy_ngcc__/es2015/index.js',
+          fesm2015_ivy_ngcc: '__ivy_ngcc__/es2015/index.js',
         }));
       });
 
@@ -172,7 +218,7 @@ runInEachFileSystem(() => {
               },
               {path: _('/node_modules/test/index.d.ts.map'), contents: 'MODIFIED MAPPING DATA'},
             ],
-            'es2015');
+            ['es2015']);
         expect(fs.readFile(_('/node_modules/test/index.d.ts')))
             .toEqual('export declare class FooTop {} // MODIFIED');
         expect(fs.readFile(_('/node_modules/test/index.d.ts.__ivy_ngcc_bak')))
@@ -207,7 +253,7 @@ runInEachFileSystem(() => {
                 contents: 'export function FooA() {} // MODIFIED'
               },
             ],
-            'module');
+            ['module']);
         expect(fs.readFile(_('/node_modules/test/__ivy_ngcc__/a/esm5.js')))
             .toEqual('export function FooA() {} // MODIFIED');
         expect(fs.readFile(_('/node_modules/test/a/esm5.js'))).toEqual('export function FooA() {}');
@@ -222,7 +268,7 @@ runInEachFileSystem(() => {
                 contents: 'export class FooA {} // MODIFIED'
               },
             ],
-            'es2015');
+            ['es2015']);
         expect(fs.readFile(_('/node_modules/test/__ivy_ngcc__/a/es2015/foo.js')))
             .toEqual('export class FooA {} // MODIFIED');
         expect(fs.readFile(_('/node_modules/test/a/es2015/foo.js')))
@@ -242,7 +288,7 @@ runInEachFileSystem(() => {
                 contents: 'export function FooA() {} // MODIFIED'
               },
             ],
-            'module');
+            ['module']);
         expect(loadPackageJson(fs, '/node_modules/test/a')).toEqual(jasmine.objectContaining({
           module_ivy_ngcc: '../__ivy_ngcc__/a/esm5.js',
         }));
@@ -255,10 +301,42 @@ runInEachFileSystem(() => {
                 contents: 'export class FooA {} // MODIFIED'
               },
             ],
-            'es2015');
+            ['es2015']);
         expect(loadPackageJson(fs, '/node_modules/test/a')).toEqual(jasmine.objectContaining({
           module_ivy_ngcc: '../__ivy_ngcc__/a/esm5.js',
           es2015_ivy_ngcc: '../__ivy_ngcc__/a/es2015/index.js',
+        }));
+      });
+
+      it('should be able to update multiple package.json properties at once', () => {
+        fileWriter.writeBundle(
+            esm5bundle,
+            [
+              {
+                path: _('/node_modules/test/a/esm5.js'),
+                contents: 'export function FooA() {} // MODIFIED'
+              },
+            ],
+            ['module', 'fesm5']);
+        expect(loadPackageJson(fs, '/node_modules/test/a')).toEqual(jasmine.objectContaining({
+          module_ivy_ngcc: '../__ivy_ngcc__/a/esm5.js',
+          fesm5_ivy_ngcc: '../__ivy_ngcc__/a/esm5.js',
+        }));
+
+        fileWriter.writeBundle(
+            esm2015bundle,
+            [
+              {
+                path: _('/node_modules/test/a/es2015/foo.js'),
+                contents: 'export class FooA {} // MODIFIED'
+              },
+            ],
+            ['es2015', 'fesm2015']);
+        expect(loadPackageJson(fs, '/node_modules/test/a')).toEqual(jasmine.objectContaining({
+          module_ivy_ngcc: '../__ivy_ngcc__/a/esm5.js',
+          fesm5_ivy_ngcc: '../__ivy_ngcc__/a/esm5.js',
+          es2015_ivy_ngcc: '../__ivy_ngcc__/a/es2015/index.js',
+          fesm2015_ivy_ngcc: '../__ivy_ngcc__/a/es2015/index.js',
         }));
       });
 
@@ -271,7 +349,7 @@ runInEachFileSystem(() => {
                 contents: 'export declare class FooA {} // MODIFIED'
               },
             ],
-            'es2015');
+            ['es2015']);
         expect(fs.readFile(_('/node_modules/test/a/index.d.ts')))
             .toEqual('export declare class FooA {} // MODIFIED');
         expect(fs.readFile(_('/node_modules/test/a/index.d.ts.__ivy_ngcc_bak')))
@@ -300,7 +378,7 @@ runInEachFileSystem(() => {
                 contents: 'export function FooB() {} // MODIFIED'
               },
             ],
-            'module');
+            ['module']);
         expect(fs.readFile(_('/node_modules/test/__ivy_ngcc__/lib/esm5.js')))
             .toEqual('export function FooB() {} // MODIFIED');
         expect(fs.readFile(_('/node_modules/test/lib/esm5.js')))
@@ -316,7 +394,7 @@ runInEachFileSystem(() => {
                 contents: 'export class FooB {} // MODIFIED'
               },
             ],
-            'es2015');
+            ['es2015']);
         expect(fs.readFile(_('/node_modules/test/__ivy_ngcc__/lib/es2015/foo.js')))
             .toEqual('export class FooB {} // MODIFIED');
         expect(fs.readFile(_('/node_modules/test/lib/es2015/foo.js')))
@@ -337,7 +415,7 @@ runInEachFileSystem(() => {
                    contents: 'export class FooB {} // MODIFIED'
                  },
                ],
-               'es2015');
+               ['es2015']);
            expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/a/index.d.ts'))).toEqual(false);
          });
 
@@ -350,7 +428,7 @@ runInEachFileSystem(() => {
                 contents: 'export class FooB {} // MODIFIED'
               },
             ],
-            'es2015');
+            ['es2015']);
         expect(fs.exists(_('/node_modules/test/other/index.d.ts'))).toEqual(false);
         expect(fs.exists(_('/node_modules/test/events/events.js'))).toEqual(false);
       });
@@ -364,7 +442,7 @@ runInEachFileSystem(() => {
                 contents: 'export function FooB() {} // MODIFIED'
               },
             ],
-            'module');
+            ['module']);
         expect(loadPackageJson(fs, '/node_modules/test/b')).toEqual(jasmine.objectContaining({
           module_ivy_ngcc: '../__ivy_ngcc__/lib/esm5.js',
         }));
@@ -377,7 +455,7 @@ runInEachFileSystem(() => {
                 contents: 'export class FooB {} // MODIFIED'
               },
             ],
-            'es2015');
+            ['es2015']);
         expect(loadPackageJson(fs, '/node_modules/test/b')).toEqual(jasmine.objectContaining({
           module_ivy_ngcc: '../__ivy_ngcc__/lib/esm5.js',
           es2015_ivy_ngcc: '../__ivy_ngcc__/lib/es2015/index.js',
@@ -393,7 +471,7 @@ runInEachFileSystem(() => {
                 contents: 'export declare class FooB {} // MODIFIED'
               },
             ],
-            'es2015');
+            ['es2015']);
         expect(fs.readFile(_('/node_modules/test/typings/index.d.ts')))
             .toEqual('export declare class FooB {} // MODIFIED');
         expect(fs.readFile(_('/node_modules/test/typings/index.d.ts.__ivy_ngcc_bak')))
