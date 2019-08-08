@@ -104,7 +104,6 @@
     "ng-on-changes-property-access": true,
     "rxjs-imports": true,
     "require-breaking-change-version": true,
-    "static-query": true,
     "no-host-decorator-in-concrete": [
       true,
       "HostBinding",
