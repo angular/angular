@@ -727,7 +727,8 @@
   integrity sha512-9a7C5VHh+1BKblaYiq+7Tfc+EOmjMdZaD1MYtkQjSoxgB69tBjW98ry6SKsi4zEIWztLOMRuL87A3bdT/Fc/4w==
   dependencies:
     "@types/node" "*"
-"@types/trusted-types@latest":
+
+"@types/trusted-types@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-1.0.1.tgz#e517bd4496e0fc75a8c88047c5bb437942148993"
   integrity sha512-+T99Y+JC3wc1e0BTBC8l60Pk4FNs5ynCWPZidAIbN07f2LjYRmlmoT5n0JybL9X0ghSFL/oUiYm3+YNR8WXPPA==

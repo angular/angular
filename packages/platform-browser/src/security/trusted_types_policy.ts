@@ -8,13 +8,13 @@
 
 /// <reference types="trusted-types" />
 
-import {Inject, Injectable, InjectionToken, SecurityContext} from '@angular/core';
+import {Inject, Injectable, InjectionToken, SecurityContext, Optional} from '@angular/core';
 
 /**
  * The name of the Trusted Type policy to create.
  * @publicApi
  */
-export const TRUSTED_TYPE_POLICY_NAME = new InjectionToken<string>('trusted-type-policy-name');
+export const DOM_SANITIZATION_POLICY_NAME = new InjectionToken<string>('DOM_SANITIZATION_POLICY_NAME_TOKEN');
 
 /**
  * This list is used to wrap values passed from DomRenderer2 in types.
@@ -58,12 +58,12 @@ export abstract class TrustedTypePolicyAdapter {
 
 @Injectable()
 export class TrustedTypePolicyAdapterImpl extends TrustedTypePolicyAdapter {
-  private _policy: TrustedTypePolicy|undefined;
-  constructor(@Inject(TRUSTED_TYPE_POLICY_NAME) private _name: string) {
+  private policy: TrustedTypePolicy|undefined;
+  constructor(@Inject(DOM_SANITIZATION_POLICY_NAME) private policyName: string) {
     super();
     if (typeof TrustedTypes !== 'undefined' && Boolean(TrustedTypes.createPolicy)) {
-      this._policy = TrustedTypes.createPolicy(
-          this._name, {
+      this.policy = TrustedTypes.createPolicy(
+          this.policyName, {
             createURL: (s: string) => {
               console.log('Angular createURL', s);
               return s;
@@ -85,42 +85,42 @@ export class TrustedTypePolicyAdapterImpl extends TrustedTypePolicyAdapter {
     }
   }
 
-  supportsTrustedTypes(): boolean { return Boolean(this._policy); }
+  supportsTrustedTypes(): boolean { return Boolean(this.policy); }
 
   isHTML(obj: any): boolean {
-    return this._policy ? obj instanceof TrustedHTML && (TrustedTypes as any).isHTML(obj) : false;
+    return this.policy ? obj instanceof TrustedHTML && (TrustedTypes as any).isHTML(obj) : false;
   }
 
   isScript(obj: any): boolean {
-    return this._policy ? obj instanceof TrustedScript && (TrustedTypes as any).isScript(obj) :
+    return this.policy ? obj instanceof TrustedScript && (TrustedTypes as any).isScript(obj) :
                           false;
   }
 
   isURL(obj: any): boolean {
-    return this._policy ? obj instanceof TrustedURL && (TrustedTypes as any).isURL(obj) : false;
+    return this.policy ? obj instanceof TrustedURL && (TrustedTypes as any).isURL(obj) : false;
   }
 
   isScriptURL(obj: any): boolean {
-    return this._policy ?
+    return this.policy ?
         obj instanceof TrustedScriptURL && (TrustedTypes as any).isScriptURL(obj) :
         false;
   }
 
   maybeCreateTrustedHTML(s: string): string {
-    return this._policy ? this._policy.createHTML(s) as unknown as string : s;
+    return this.policy ? this.policy.createHTML(s) as unknown as string : s;
   }
   maybeCreateTrustedURL(s: string): string {
-    return this._policy ? this._policy.createURL(s) as unknown as string : s;
+    return this.policy ? this.policy.createURL(s) as unknown as string : s;
   }
   maybeCreateTrustedScriptURL(s: string): string {
-    return this._policy ? this._policy.createScriptURL(s) as unknown as string : s;
+    return this.policy ? this.policy.createScriptURL(s) as unknown as string : s;
   }
   maybeCreateTrustedScript(s: string): string {
-    return this._policy ? this._policy.createScript(s) as unknown as string : s;
+    return this.policy ? this.policy.createScript(s) as unknown as string : s;
   }
   maybeCreateTrustedValueForAttribute(el: Element, name: string, value: string, namespace?: string):
       string {
-    if (!this._policy || !(el instanceof Element)) {
+    if (!this.policy || !(el instanceof Element)) {
       return value;
     }
     const context = this._getContext(el.tagName.toLowerCase(), name.toLowerCase(), namespace);
@@ -146,6 +146,7 @@ export class TrustedTypePolicyAdapterImpl extends TrustedTypePolicyAdapter {
     return newValue as string;
   }
 
+  // TT_TODO: make sure this function returns correct security context
   private _getContext(tag: string, attribute: string, namespace?: string): SecurityContext {
     const lookupCandidates = [
       tag + ':' + attribute,

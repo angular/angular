@@ -19,7 +19,7 @@ import {HAMMER_PROVIDERS} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
-import {TRUSTED_TYPE_POLICY_NAME, TrustedTypePolicyAdapter, TrustedTypePolicyAdapterImpl} from './security/trusted_types_policy';
+import {DOM_SANITIZATION_POLICY_NAME, TrustedTypePolicyAdapter, TrustedTypePolicyAdapterImpl} from './security/trusted_types_policy';
 
 export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
@@ -76,7 +76,7 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {
     provide: DomRendererFactory2,
     useClass: DomRendererFactory2,
-    deps: [EventManager, DomSharedStylesHost, TrustedTypePolicyAdapter, APP_ID]
+    deps: [EventManager, DomSharedStylesHost, APP_ID, TrustedTypePolicyAdapter]
   },
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
@@ -84,9 +84,8 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {
     provide: TrustedTypePolicyAdapter,
     useClass: TrustedTypePolicyAdapterImpl,
-    deps: [TRUSTED_TYPE_POLICY_NAME]
+    deps: [DOM_SANITIZATION_POLICY_NAME]
   },
-  // {provide: TRUSTED_TYPE_POLICY_NAME, useValue: '@angular/platform-browser-policy'},
   {provide: Testability, useClass: Testability, deps: [NgZone]},
   {provide: EventManager, useClass: EventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
   ELEMENT_PROBE_PROVIDERS,

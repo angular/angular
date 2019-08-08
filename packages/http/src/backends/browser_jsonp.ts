@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-import {dangerouslyTurnToTrustedScriptURL} from './trusted_types_policy';
+/// <reference types="trusted-types" />
+
+import {Injectable, InjectionToken, Inject} from '@angular/core';
 
 let _nextRequestId = 0;
 export const JSONP_HOME = '__ng_jsonp__';
@@ -21,13 +22,21 @@ function _getJsonpConnections(): {[key: string]: any} {
   return _jsonpConnections;
 }
 
+/**
+ * Injection token for trusted type policy for this module.
+ * @publicApi
+ */
+export const BROWSER_JSONP_POLICY = new InjectionToken<Pick<TrustedTypePolicy, 'createScriptURL'>>('BROWSER_JSONP_POLICY_TOKEN');
+
 // Make sure not to evaluate this in a non-browser environment!
 @Injectable()
 export class BrowserJsonp {
+  constructor(@Inject(BROWSER_JSONP_POLICY) private trustedTypesPolicy: Pick<TrustedTypePolicy, 'createScriptURL'>) {}
+
   // Construct a <script> element with the specified URL
   build(url: string): any {
     const node = document.createElement('script');
-    node.src = dangerouslyTurnToTrustedScriptURL(url) as string;
+    node.src = this.trustedTypesPolicy.createScriptURL(url) as unknown as string;
     return node;
   }
 

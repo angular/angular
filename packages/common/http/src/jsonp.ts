@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="trusted-types" />
+
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {Inject, Injectable, InjectionToken} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpRequest} from './request';
 import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse} from './response';
-import {dangerouslyTurnToTrustedScriptURL} from './trusted_types_policy';
-
 
 // Every request made through JSONP needs a callback name that's unique across the
 // whole page. Each request is assigned an id and the callback name is constructed
@@ -30,6 +30,12 @@ export const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callb
 // have a request method JSONP.
 export const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use JSONP request method.';
 export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json response type.';
+
+/**
+ * Injection token for trusted type policy for this module.
+ * @publicApi
+ */
+export const JSONP_CALLBACK_CONTEXT_POLICY = new InjectionToken<Pick<TrustedTypePolicy, 'createScriptURL'>>('JSONP_CALLBACK_CONTEXT_POLICY_TOKEN');
 
 /**
  * DI token/abstract type representing a map of JSONP callbacks.
@@ -50,7 +56,7 @@ export abstract class JsonpCallbackContext { [key: string]: (data: any) => void;
  */
 @Injectable()
 export class JsonpClientBackend implements HttpBackend {
-  constructor(private callbackMap: JsonpCallbackContext, @Inject(DOCUMENT) private document: any) {}
+  constructor(private callbackMap: JsonpCallbackContext, @Inject(DOCUMENT) private document: any, @Inject(JSONP_CALLBACK_CONTEXT_POLICY) private trustedTypesPolicy: Pick<TrustedTypePolicy, 'createScriptURL'>) {}
 
   /**
    * Get the name of the next callback method, by incrementing the global `nextRequestId`.
@@ -82,7 +88,7 @@ export class JsonpClientBackend implements HttpBackend {
 
       // Construct the <script> tag and point it at the URL.
       const node = this.document.createElement('script');
-      node.src = dangerouslyTurnToTrustedScriptURL(url);
+      node.src = this.trustedTypesPolicy.createScriptURL(url);
 
       // A JSONP request requires waiting for multiple callbacks. These variables
       // are closed over and track state across those callbacks.
