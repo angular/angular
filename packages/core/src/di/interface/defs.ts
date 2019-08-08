@@ -211,11 +211,10 @@ export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
  */
 export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
   if (type && type[NG_INJECTABLE_DEF]) {
-    // TODO(FW-1307): Re-add ngDevMode when closure can handle it
-    // ngDevMode &&
-    console.warn(
-        `DEPRECATED: DI is instantiating a token "${type.name}" that inherits its @Injectable decorator but does not provide one itself.\n` +
-        `This will become an error in v10. Please add @Injectable() to the "${type.name}" class.`);
+    ngDevMode &&
+        console.warn(
+            `DEPRECATED: DI is instantiating a token "${type.name}" that inherits its @Injectable decorator but does not provide one itself.\n` +
+            `This will become an error in v10. Please add @Injectable() to the "${type.name}" class.`);
     return type[NG_INJECTABLE_DEF];
   } else {
     return null;
