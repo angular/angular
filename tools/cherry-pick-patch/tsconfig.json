@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "lib": ["es2016"],
+    "types": ["node"],
+    "strictNullChecks": true
+  }
+}
