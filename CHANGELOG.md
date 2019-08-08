@@ -1,3 +1,15 @@
+<a name="9.0.0-next.1"></a>
+# [9.0.0-next.1](https://github.com/angular/angular/compare/9.0.0-next.0...9.0.0-next.1) (2019-08-08)
+
+
+### Bug Fixes
+
+* **language-service:** getSourceFile() should only be called on TS files ([#31920](https://github.com/angular/angular/issues/31920)) ([e8b8f6d](https://github.com/angular/angular/commit/e8b8f6d))
+* **language-service:** Make Definition and QuickInfo compatible with TS LS ([#31972](https://github.com/angular/angular/issues/31972)) ([a8e2ee1](https://github.com/angular/angular/commit/a8e2ee1))
+* **upgrade:** compile downgraded components synchronously (if possible) ([#31840](https://github.com/angular/angular/issues/31840)) ([c1ae612](https://github.com/angular/angular/commit/c1ae612)), closes [#27217](https://github.com/angular/angular/issues/27217) [#30330](https://github.com/angular/angular/issues/30330)
+
+
+
 <a name="8.2.1"></a>
 ## [8.2.1](https://github.com/angular/angular/compare/8.2.0...8.2.1) (2019-08-08)
 
