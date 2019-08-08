@@ -76,7 +76,7 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {
     provide: DomRendererFactory2,
     useClass: DomRendererFactory2,
-    deps: [EventManager, DomSharedStylesHost, APP_ID, TrustedTypePolicyAdapter]
+    deps: [EventManager, DomSharedStylesHost, TrustedTypePolicyAdapter, APP_ID]
   },
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
