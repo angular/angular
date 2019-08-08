@@ -333,7 +333,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
 
 /**
  * A directive that adds minimum length validation to controls marked with the
- * `minlength` attribute. The directive is provided with the `NG_VALIDATORS` mult-provider list.
+ * `minlength` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
  * 
  * @see [Form Validation](guide/form-validation)
  *
@@ -369,7 +369,7 @@ export class MinLengthValidator implements Validator,
    * Tracks changes to the the minimum length bound to this directive.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() minlength !: string;
+  @Input() minlength !: string | number;
 
   /**
    * @description
@@ -403,7 +403,8 @@ export class MinLengthValidator implements Validator,
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 
   private _createValidator(): void {
-    this._validator = Validators.minLength(parseInt(this.minlength, 10));
+    this._validator = Validators.minLength(
+        typeof this.minlength === 'number' ? this.minlength : parseInt(this.minlength, 10));
   }
 }
 
@@ -455,7 +456,7 @@ export class MaxLengthValidator implements Validator,
    * Tracks changes to the the maximum length bound to this directive.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() maxlength !: string;
+  @Input() maxlength !: string | number;
 
   /**
    * @description
@@ -489,7 +490,8 @@ export class MaxLengthValidator implements Validator,
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 
   private _createValidator(): void {
-    this._validator = Validators.maxLength(parseInt(this.maxlength, 10));
+    this._validator = Validators.maxLength(
+        typeof this.maxlength === 'number' ? this.maxlength : parseInt(this.maxlength, 10));
   }
 }
 
