@@ -168,7 +168,6 @@ export {
   ɵɵi18nEnd,
   ɵɵi18nApply,
   ɵɵi18nPostprocess,
-  i18nConfigureLocalize as ɵi18nConfigureLocalize,
   setLocaleId as ɵsetLocaleId,
   setClassMetadata as ɵsetClassMetadata,
   ɵɵresolveWindow,

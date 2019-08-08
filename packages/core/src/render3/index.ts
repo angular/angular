@@ -148,7 +148,6 @@ export {
   ɵɵi18nEnd,
   ɵɵi18nApply,
   ɵɵi18nPostprocess,
-  i18nConfigureLocalize,
   getLocaleId,
   setLocaleId,
 } from './i18n';

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵi18nConfigureLocalize} from '@angular/core';
+import {loadTranslations} from '@angular/localize/run_time';
 
-export const translations: {[key: string]: string} = {
+export const translations = {
   'What needs to be done?': `Qu'y a-t-il à faire ?`,
   '{$startHeadingLevel1}todos{$closeHeadingLevel1}{$tagInput}':
       '{$startHeadingLevel1}liste de tâches{$closeHeadingLevel1}{$tagInput}',
@@ -24,4 +24,4 @@ export const translations: {[key: string]: string} = {
   'Demonstrate internationalization': `Démontrer l'internationalisation`
 };
 
-ɵi18nConfigureLocalize({translations});
+loadTranslations(translations);
