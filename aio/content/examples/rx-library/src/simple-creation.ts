@@ -1,7 +1,7 @@
 
 // #docregion promise
 
-import { from } from 'rxjs';
+import { from, next } from 'rxjs';
 
 // Create an Observable out of a promise
 const data = from(fetch('/api/endpoint'));
