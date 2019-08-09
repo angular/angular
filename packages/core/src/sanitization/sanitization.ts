@@ -12,7 +12,8 @@ import {renderStringify} from '../render3/util/misc_utils';
 
 import {BypassType, allowSanitizationBypassAndThrow, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
-import {Sanitizer, SecurityContext} from './security';
+import {SecurityContext} from './security';
+import {Sanitizer} from './sanitizer';
 import {StyleSanitizeFn, StyleSanitizeMode, _sanitizeStyle as _sanitizeStyle} from './style_sanitizer';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 

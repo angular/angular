@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵdefineInjectable} from '../di/interface/defs';
-
 /**
  * A SecurityContext marks a location that has dangerous security implications, e.g. a DOM property
  * like `innerHTML` that could cause Cross Site Scripting (XSS) security bugs when improperly
@@ -24,19 +22,4 @@ export enum SecurityContext {
   SCRIPT = 3,
   URL = 4,
   RESOURCE_URL = 5,
-}
-
-/**
- * Sanitizer is used by the views to sanitize potentially dangerous values.
- *
- * @publicApi
- */
-export abstract class Sanitizer {
-  abstract sanitize(context: SecurityContext, value: {}|string|null): string|null;
-  /** @nocollapse */
-  static ngInjectableDef = ɵɵdefineInjectable({
-    token: Sanitizer,
-    providedIn: 'root',
-    factory: () => null,
-  });
 }

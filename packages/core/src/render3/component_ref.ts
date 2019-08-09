@@ -16,7 +16,7 @@ import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '.
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
-import {Sanitizer} from '../sanitization/security';
+import {Sanitizer} from '../sanitization/sanitizer';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider';
 
