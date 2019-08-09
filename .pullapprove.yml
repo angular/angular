@@ -1121,6 +1121,7 @@ groups:
           'docs/SAVED_REPLIES.md',
           'docs/TOOLS.md',
           'docs/TRIAGE_AND_LABELS.md',
+          'docs/images/**',
           'goldens/*',
           'modules/*',
           'packages/*',
