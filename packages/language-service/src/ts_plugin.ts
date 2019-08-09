@@ -10,7 +10,7 @@ import * as ts from 'typescript'; // used as value, passed in by tsserver at run
 import * as tss from 'typescript/lib/tsserverlibrary'; // used as type only
 
 import {createLanguageService} from './language_service';
-import {Completion, Diagnostic, DiagnosticMessageChain} from './types';
+import {Completion} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
 const projectHostMap = new WeakMap<tss.server.Project, TypeScriptServiceHost>();
@@ -30,36 +30,6 @@ function completionToEntry(c: Completion): tss.CompletionEntry {
     name: c.name,
     sortText: c.sort,
     kindModifiers: ''
-  };
-}
-
-function diagnosticChainToDiagnosticChain(chain: DiagnosticMessageChain):
-    ts.DiagnosticMessageChain {
-  return {
-    messageText: chain.message,
-    category: ts.DiagnosticCategory.Error,
-    code: 0,
-    next: chain.next ? diagnosticChainToDiagnosticChain(chain.next) : undefined
-  };
-}
-
-function diagnosticMessageToDiagnosticMessageText(message: string | DiagnosticMessageChain): string|
-    tss.DiagnosticMessageChain {
-  if (typeof message === 'string') {
-    return message;
-  }
-  return diagnosticChainToDiagnosticChain(message);
-}
-
-function diagnosticToDiagnostic(d: Diagnostic, file: tss.SourceFile | undefined): tss.Diagnostic {
-  return {
-    file,
-    start: d.span.start,
-    length: d.span.end - d.span.start,
-    messageText: diagnosticMessageToDiagnosticMessageText(d.message),
-    category: ts.DiagnosticCategory.Error,
-    code: 0,
-    source: 'ng'
   };
 }
 
@@ -115,16 +85,10 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
   function getSemanticDiagnostics(fileName: string): tss.Diagnostic[] {
     const results: tss.Diagnostic[] = [];
     if (!angularOnly) {
-      const tsResults = tsLS.getSemanticDiagnostics(fileName);
-      results.push(...tsResults);
+      results.push(...tsLS.getSemanticDiagnostics(fileName));
     }
     // For semantic diagnostics we need to combine both TS + Angular results
-    const ngResults = ngLS.getDiagnostics(fileName);
-    if (!ngResults.length) {
-      return results;
-    }
-    const sourceFile = fileName.endsWith('.ts') ? ngLSHost.getSourceFile(fileName) : undefined;
-    results.push(...ngResults.map(d => diagnosticToDiagnostic(d, sourceFile)));
+    results.push(...ngLS.getDiagnostics(fileName));
     return results;
   }
 

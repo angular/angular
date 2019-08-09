@@ -34,7 +34,7 @@ describe('diagnostics', () => {
   describe('for semantic errors', () => {
     const fileName = '/app/test.ng';
 
-    function diagnostics(template: string): Diagnostics {
+    function diagnostics(template: string): ts.Diagnostic[] {
       try {
         mockHost.override(fileName, template);
         return ngService.getDiagnostics(fileName) !;
@@ -185,7 +185,7 @@ describe('diagnostics', () => {
       addCode(code, fileName => {
         const diagnostic = findDiagnostic(ngService.getDiagnostics(fileName) !, 'pipe') !;
         expect(diagnostic).not.toBeUndefined();
-        expect(diagnostic.span.end - diagnostic.span.start).toBeLessThan(11);
+        expect(diagnostic.length).toBeLessThan(11);
       });
     });
 
@@ -379,13 +379,13 @@ describe('diagnostics', () => {
       }
     }
 
-    function expectOnlyModuleDiagnostics(diagnostics: Diagnostics | undefined) {
+    function expectOnlyModuleDiagnostics(diagnostics: ts.Diagnostic[] | undefined) {
       // Expect only the 'MyComponent' diagnostic
       if (!diagnostics) throw new Error('Expecting Diagnostics');
       if (diagnostics.length > 1) {
         const unexpectedDiagnostics =
-            diagnostics.filter(diag => !diagnosticMessageContains(diag.message, 'MyComponent'))
-                .map(diag => `(${diag.span.start}:${diag.span.end}): ${diag.message}`);
+            diagnostics.filter(diag => !diagnosticMessageContains(diag.messageText, 'MyComponent'))
+                .map(diag => `(${diag.start}:${diag.start! + diag.length!}): ${diag.messageText}`);
 
         if (unexpectedDiagnostics.length) {
           fail(`Unexpected diagnostics:\n  ${unexpectedDiagnostics.join('\n  ')}`);
@@ -393,7 +393,7 @@ describe('diagnostics', () => {
         }
       }
       expect(diagnostics.length).toBe(1);
-      expect(diagnosticMessageContains(diagnostics[0].message, 'MyComponent')).toBeTruthy();
+      expect(diagnosticMessageContains(diagnostics[0].messageText, 'MyComponent')).toBeTruthy();
     }
   });
 });
