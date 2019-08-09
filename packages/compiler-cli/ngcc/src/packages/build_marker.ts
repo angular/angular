@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem, dirname} from '../../../src/ngtsc/file_system';
-import {EntryPointJsonProperty, EntryPointPackageJson} from './entry_point';
+import {EntryPointPackageJson, PackageJsonFormatProperties} from './entry_point';
 
 export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
 
@@ -23,7 +23,7 @@ export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
  * @throws Error if the entry-point has already been processed with a different ngcc version.
  */
 export function hasBeenProcessed(
-    packageJson: EntryPointPackageJson, format: EntryPointJsonProperty | 'typings',
+    packageJson: EntryPointPackageJson, format: PackageJsonFormatProperties,
     entryPointPath: AbsoluteFsPath): boolean {
   if (!packageJson.__processed_by_ivy_ngcc__) {
     return false;
@@ -50,7 +50,7 @@ export function hasBeenProcessed(
  */
 export function markAsProcessed(
     fs: FileSystem, packageJson: EntryPointPackageJson, packageJsonPath: AbsoluteFsPath,
-    properties: (EntryPointJsonProperty | 'typings')[]) {
+    properties: PackageJsonFormatProperties[]) {
   const processed =
       packageJson.__processed_by_ivy_ngcc__ || (packageJson.__processed_by_ivy_ngcc__ = {});
 

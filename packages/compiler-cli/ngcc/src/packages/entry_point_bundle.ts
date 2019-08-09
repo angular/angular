@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../../src/ngtsc/file_system';
-import {NgtscCompilerHost} from '../../../src/ngtsc/file_system/src/compiler_host';
+import {AbsoluteFsPath, FileSystem, NgtscCompilerHost, absoluteFrom} from '../../../src/ngtsc/file_system';
 import {PathMappings} from '../utils';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';

@@ -38,7 +38,7 @@ export interface EntryPoint {
   compiledByAngular: boolean;
 }
 
-export interface PackageJsonFormatProperties {
+export interface PackageJsonFormatPropertiesMap {
   fesm2015?: string;
   fesm5?: string;
   es2015?: string;  // if exists then it is actually FESM2015
@@ -50,16 +50,18 @@ export interface PackageJsonFormatProperties {
   typings?: string;  // TypeScript .d.ts files
 }
 
+export type PackageJsonFormatProperties = keyof PackageJsonFormatPropertiesMap;
+
 /**
  * The properties that may be loaded from the `package.json` file.
  */
-export interface EntryPointPackageJson extends PackageJsonFormatProperties {
+export interface EntryPointPackageJson extends PackageJsonFormatPropertiesMap {
   name: string;
   scripts?: Record<string, string>;
   __processed_by_ivy_ngcc__?: Record<string, string>;
 }
 
-export type EntryPointJsonProperty = Exclude<keyof PackageJsonFormatProperties, 'types'|'typings'>;
+export type EntryPointJsonProperty = Exclude<PackageJsonFormatProperties, 'types'|'typings'>;
 // We need to keep the elements of this const and the `EntryPointJsonProperty` type in sync.
 export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
     ['fesm2015', 'fesm5', 'es2015', 'esm2015', 'esm5', 'main', 'module'];
