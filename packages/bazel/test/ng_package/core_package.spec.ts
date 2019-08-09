@@ -133,6 +133,10 @@ describe('@angular/core ng_package', () => {
       } else {
         it('should have decorators',
            () => { expect(shx.cat('fesm5/core.js')).toContain('__decorate'); });
+
+        // See: https://github.com/angular/angular/pull/32069
+        it('should retain access to const',
+           () => { expect(shx.cat('fesm5/core.js')).toContain('!ivyEnabled'); });
       }
 
       it('should load tslib from external bundle', () => {
