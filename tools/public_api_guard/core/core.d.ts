@@ -1314,6 +1314,7 @@ export declare abstract class RootRenderer {
 
 export declare abstract class Sanitizer {
     abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
+    static ngInjectableDef: never;
 }
 
 export interface SchemaMetadata {
