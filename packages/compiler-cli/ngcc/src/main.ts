@@ -16,12 +16,12 @@ import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
-import {AnalyzeFn, CreateCompileFn, EntryPointProcessingMetadata, ExecuteFn, Task, TaskProcessingOutcome} from './execution/api';
+import {AnalyzeEntryPointsFn, CreateCompileFn, EntryPointProcessingMetadata, ExecuteFn, Task, TaskProcessingOutcome} from './execution/api';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, PackageJsonFormatProperties, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
@@ -87,7 +87,7 @@ export function mainNgcc(
   const fileSystem = getFileSystem();
 
   // The function for performing the analysis.
-  const analyzeFn: AnalyzeFn = () => {
+  const analyzeFn: AnalyzeEntryPointsFn = () => {
     const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
 
     const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
@@ -113,13 +113,12 @@ export function mainNgcc(
     for (const entryPoint of entryPoints) {
       const packageJson = entryPoint.packageJson;
       const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings', entryPoint.path);
-      const {propertiesToProcess, propertyToPropertiesToMarkAsProcessed} =
-          getPropertiesToProcessAndMarkAsProcessed(packageJson, supportedPropertiesToConsider);
+      const {propertiesToProcess, equivalentPropertiesMap} =
+          getPropertiesToProcess(packageJson, supportedPropertiesToConsider);
       let processDts = !hasProcessedTypings;
 
       for (const formatProperty of propertiesToProcess) {
-        const formatPropertiesToMarkAsProcessed =
-            propertyToPropertiesToMarkAsProcessed.get(formatProperty) !;
+        const formatPropertiesToMarkAsProcessed = equivalentPropertiesMap.get(formatProperty) !;
         tasks.push({entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts});
 
         // Only process typings for the first property (if not already processed).
@@ -189,52 +188,53 @@ export function mainNgcc(
   };
 
   // The function for actually planning and getting the work done.
-  const executeFn: ExecuteFn = (analyzeFn: AnalyzeFn, createCompileFn: CreateCompileFn) => {
-    const {processingMetadataPerEntryPoint, tasks} = analyzeFn();
-    const compile = createCompileFn((task, outcome) => {
-      const {entryPoint, formatPropertiesToMarkAsProcessed, processDts} = task;
-      const processingMeta = processingMetadataPerEntryPoint.get(entryPoint.path) !;
-      processingMeta.hasAnyProcessedFormat = true;
+  const executeFn: ExecuteFn =
+      (analyzeFn: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn) => {
+        const {processingMetadataPerEntryPoint, tasks} = analyzeFn();
+        const compile = createCompileFn((task, outcome) => {
+          const {entryPoint, formatPropertiesToMarkAsProcessed, processDts} = task;
+          const processingMeta = processingMetadataPerEntryPoint.get(entryPoint.path) !;
+          processingMeta.hasAnyProcessedFormat = true;
 
-      if (outcome === TaskProcessingOutcome.Processed) {
-        const packageJsonPath = fileSystem.resolve(entryPoint.path, 'package.json');
-        const propsToMarkAsProcessed: (EntryPointJsonProperty | 'typings')[] =
-            [...formatPropertiesToMarkAsProcessed];
+          if (outcome === TaskProcessingOutcome.Processed) {
+            const packageJsonPath = fileSystem.resolve(entryPoint.path, 'package.json');
+            const propsToMarkAsProcessed: PackageJsonFormatProperties[] =
+                [...formatPropertiesToMarkAsProcessed];
 
-        if (processDts) {
-          processingMeta.hasProcessedTypings = true;
-          propsToMarkAsProcessed.push('typings');
+            if (processDts) {
+              processingMeta.hasProcessedTypings = true;
+              propsToMarkAsProcessed.push('typings');
+            }
+
+            markAsProcessed(
+                fileSystem, entryPoint.packageJson, packageJsonPath, propsToMarkAsProcessed);
+          }
+        });
+
+        // Process all tasks.
+        for (const task of tasks) {
+          const processingMeta = processingMetadataPerEntryPoint.get(task.entryPoint.path) !;
+
+          // If we only need one format processed and we already have one for the corresponding
+          // entry-point, skip the task.
+          if (!compileAllFormats && processingMeta.hasAnyProcessedFormat) continue;
+
+          compile(task);
         }
 
-        markAsProcessed(
-            fileSystem, entryPoint.packageJson, packageJsonPath, propsToMarkAsProcessed);
-      }
-    });
+        // Check for entry-points for which we could not process any format at all.
+        const unprocessedEntryPointPaths =
+            Array.from(processingMetadataPerEntryPoint.entries())
+                .filter(([, processingMeta]) => !processingMeta.hasAnyProcessedFormat)
+                .map(([entryPointPath]) => `\n  - ${entryPointPath}`)
+                .join('');
 
-    // Process all tasks.
-    for (const task of tasks) {
-      const processingMeta = processingMetadataPerEntryPoint.get(task.entryPoint.path) !;
-
-      // If we only need one format processed and we already have one for the corresponding
-      // entry-point, skip the task.
-      if (!compileAllFormats && processingMeta.hasAnyProcessedFormat) continue;
-
-      compile(task);
-    }
-
-    // Check for entry-points for which we could not process any format at all.
-    const unprocessedEntryPointPaths =
-        Array.from(processingMetadataPerEntryPoint.entries())
-            .filter(([, processingMeta]) => !processingMeta.hasAnyProcessedFormat)
-            .map(([entryPointPath]) => `\n  - ${entryPointPath}`)
-            .join('');
-
-    if (unprocessedEntryPointPaths) {
-      throw new Error(
-          'Failed to compile any formats for the following entry-points (tried ' +
-          `${propertiesToConsider.join(', ')}): ${unprocessedEntryPointPaths}`);
-    }
-  };
+        if (unprocessedEntryPointPaths) {
+          throw new Error(
+              'Failed to compile any formats for the following entry-points (tried ' +
+              `${propertiesToConsider.join(', ')}): ${unprocessedEntryPointPaths}`);
+        }
+      };
 
   return executeFn(analyzeFn, createCompileFn);
 }
@@ -370,16 +370,16 @@ function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryP
 /**
  * This function computes and returns the following:
  * - `propertiesToProcess`: An (ordered) list of properties that exist and need to be processed,
- *   based on the specified `propertiesToConsider`, the properties in `package.json` and their
+ *   based on the provided `propertiesToConsider`, the properties in `package.json` and their
  *   corresponding format-paths. NOTE: Only one property per format-path needs to be processed.
- * - `propertyToPropertiesToMarkAsProcessed`: A mapping from each property in `propertiesToProcess`
- *   to the list of other properties in `package.json` that need to be marked as processed as soon
- *   as of the former being processed.
+ * - `equivalentPropertiesMap`: A mapping from each property in `propertiesToProcess` to the list of
+ *   other format properties in `package.json` that need to be marked as processed as soon as the
+ *   former has been processed.
  */
-function getPropertiesToProcessAndMarkAsProcessed(
+function getPropertiesToProcess(
     packageJson: EntryPointPackageJson, propertiesToConsider: EntryPointJsonProperty[]): {
   propertiesToProcess: EntryPointJsonProperty[];
-  propertyToPropertiesToMarkAsProcessed: Map<EntryPointJsonProperty, EntryPointJsonProperty[]>;
+  equivalentPropertiesMap: Map<EntryPointJsonProperty, EntryPointJsonProperty[]>;
 } {
   const formatPathsToConsider = new Set<string>();
 
@@ -413,13 +413,12 @@ function getPropertiesToProcessAndMarkAsProcessed(
     list.push(prop);
   }
 
-  const propertyToPropertiesToMarkAsProcessed =
-      new Map<EntryPointJsonProperty, EntryPointJsonProperty[]>();
+  const equivalentPropertiesMap = new Map<EntryPointJsonProperty, EntryPointJsonProperty[]>();
   for (const prop of propertiesToConsider) {
     const formatPath = packageJson[prop] !;
-    const propertiesToMarkAsProcessed = formatPathToProperties[formatPath];
-    propertyToPropertiesToMarkAsProcessed.set(prop, propertiesToMarkAsProcessed);
+    const equivalentProperties = formatPathToProperties[formatPath];
+    equivalentPropertiesMap.set(prop, equivalentProperties);
   }
 
-  return {propertiesToProcess, propertyToPropertiesToMarkAsProcessed};
+  return {propertiesToProcess, equivalentPropertiesMap};
 }

@@ -9,23 +9,22 @@
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
 
 /** The type of the function that analyzes entry-points and creates the list of tasks. */
-export type AnalyzeFn = () => {
+export type AnalyzeEntryPointsFn = () => {
   processingMetadataPerEntryPoint: Map<string, EntryPointProcessingMetadata>;
   tasks: Task[];
 };
 
-/**
- * The type of the function that creates the `compile()` function, which in turn can be used to
- * process tasks.
- */
-export type CreateCompileFn =
-    (onTaskCompleted: (task: Task, outcome: TaskProcessingOutcome) => void) => (task: Task) => void;
+/** The type of the function that can process/compile a task. */
+export type CompileFn = (task: Task) => void;
+
+/** The type of the function that creates the `CompileFn` function used to process tasks. */
+export type CreateCompileFn = (onTaskCompleted: TaskCompletedCallback) => CompileFn;
 
 /**
  * The type of the function that orchestrates and executes the required work (i.e. analyzes the
  * entry-points, processes the resulting tasks, does book-keeping and validates the final outcome).
  */
-export type ExecuteFn = (analyzeFn: AnalyzeFn, createCompileFn: CreateCompileFn) => void;
+export type ExecuteFn = (analyzeFn: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn) => void;
 
 /** Represents metadata related to the processing of an entry-point. */
 export interface EntryPointProcessingMetadata {
@@ -63,6 +62,9 @@ export interface Task {
   /** Whether to also process typings for this entry-point as part of the task. */
   processDts: boolean;
 }
+
+/** A function to be called once a task has been processed. */
+export type TaskCompletedCallback = (task: Task, outcome: TaskProcessingOutcome) => void;
 
 /** Represents the outcome of processing a `Task`. */
 export const enum TaskProcessingOutcome {
