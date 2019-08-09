@@ -1520,6 +1520,52 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML).toEqual(`<child><div>Contenu enfant</div></child>`);
     });
+
+    it('should display/destroy projected i18n content', () => {
+
+      @Component({
+        selector: 'app',
+        template: `
+          <ng-content></ng-content>
+        `
+      })
+      class MyContentApp {
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: `
+          <app i18n *ngIf="condition">
+            {type, select, A {A} B {B} other {other}}
+          </app>
+        `
+      })
+      class MyApp {
+        type = 'A';
+        condition = true;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyApp, MyContentApp]});
+
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toContain('A');
+
+      // change `condition` to remove <app>
+      fixture.componentInstance.condition = false;
+      fixture.detectChanges();
+
+      // should not contain 'A'
+      expect(fixture.nativeElement.innerHTML).not.toContain('A');
+
+      // display <app> again
+      fixture.componentInstance.condition = true;
+      fixture.detectChanges();
+
+      // expect that 'A' is displayed again
+      expect(fixture.nativeElement.innerHTML).toContain('A');
+    });
   });
 
   describe('queries', () => {
