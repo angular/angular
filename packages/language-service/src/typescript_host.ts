@@ -166,16 +166,16 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return analyzedModules;
   }
 
-  getTemplates(fileName: string): TemplateSources {
+  getTemplates(fileName: string): TemplateSource[] {
+    const results: TemplateSource[] = [];
     if (fileName.endsWith('.ts')) {
       let version = this.host.getScriptVersion(fileName);
-      let result: TemplateSource[] = [];
 
       // Find each template string in the file
       let visit = (child: ts.Node) => {
         let templateSource = this.getSourceFromNode(fileName, version, child);
         if (templateSource) {
-          result.push(templateSource);
+          results.push(templateSource);
         } else {
           ts.forEachChild(child, visit);
         }
@@ -185,17 +185,17 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       if (sourceFile) {
         ts.forEachChild(sourceFile, visit);
       }
-      return result.length ? result : undefined;
     } else {
       this.ensureTemplateMap();
       const componentSymbol = this.fileToComponent.get(fileName);
       if (componentSymbol) {
         const templateSource = this.getTemplateAt(fileName, 0);
         if (templateSource) {
-          return [templateSource];
+          results.push(templateSource);
         }
       }
     }
+    return results;
   }
 
   getDeclarations(fileName: string): Declarations {
