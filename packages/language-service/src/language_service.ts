@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileMetadataResolver, CompilePipeSummary} from '@angular/compiler';
-import {DiagnosticTemplateInfo, getTemplateExpressionDiagnostics} from '@angular/compiler-cli/src/language_services';
+import {CompilePipeSummary} from '@angular/compiler';
 import * as tss from 'typescript/lib/tsserverlibrary';
+
 import {getTemplateCompletions} from './completions';
 import {getDefinitionAndBoundSpan} from './definitions';
-import {getDeclarationDiagnostics} from './diagnostics';
+import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic} from './diagnostics';
 import {getHover} from './hover';
-import {Completion, Diagnostic, DiagnosticKind, Diagnostics, Hover, LanguageService, LanguageServiceHost, Location, Span, TemplateSource} from './types';
-import {offsetSpan, spanOf} from './utils';
-
+import {Completion, Diagnostic, LanguageService, Span} from './types';
+import {TypeScriptServiceHost} from './typescript_host';
 
 
 /**
@@ -23,20 +22,21 @@ import {offsetSpan, spanOf} from './utils';
  *
  * @publicApi
  */
-export function createLanguageService(host: LanguageServiceHost): LanguageService {
+export function createLanguageService(host: TypeScriptServiceHost): LanguageService {
   return new LanguageServiceImpl(host);
 }
 
 class LanguageServiceImpl implements LanguageService {
-  constructor(private host: LanguageServiceHost) {}
+  constructor(private readonly host: TypeScriptServiceHost) {}
 
   getTemplateReferences(): string[] { return this.host.getTemplateReferences(); }
 
-  getDiagnostics(fileName: string): Diagnostic[] {
+  getDiagnostics(fileName: string): tss.Diagnostic[] {
     const results: Diagnostic[] = [];
     const templates = this.host.getTemplates(fileName);
-    if (templates && templates.length) {
-      results.push(...this.getTemplateDiagnostics(fileName, templates));
+    for (const template of templates) {
+      const ast = this.host.getTemplateAst(template, fileName);
+      results.push(...getTemplateDiagnostics(template, ast));
     }
 
     const declarations = this.host.getDeclarations(fileName);
@@ -44,8 +44,11 @@ class LanguageServiceImpl implements LanguageService {
       const summary = this.host.getAnalyzedModules();
       results.push(...getDeclarationDiagnostics(declarations, summary));
     }
-
-    return uniqueBySpan(results);
+    if (!results.length) {
+      return [];
+    }
+    const sourceFile = fileName.endsWith('.ts') ? this.host.getSourceFile(fileName) : undefined;
+    return uniqueBySpan(results).map(d => ngDiagnosticToTsDiagnostic(d, sourceFile));
   }
 
   getPipesAt(fileName: string, position: number): CompilePipeSummary[] {
@@ -75,38 +78,6 @@ class LanguageServiceImpl implements LanguageService {
     if (templateInfo) {
       return getHover(templateInfo);
     }
-  }
-
-  private getTemplateDiagnostics(fileName: string, templates: TemplateSource[]): Diagnostics {
-    const results: Diagnostics = [];
-    for (const template of templates) {
-      const ast = this.host.getTemplateAst(template, fileName);
-      if (ast) {
-        if (ast.parseErrors && ast.parseErrors.length) {
-          results.push(...ast.parseErrors.map<Diagnostic>(
-              e => ({
-                kind: DiagnosticKind.Error,
-                span: offsetSpan(spanOf(e.span), template.span.start),
-                message: e.msg
-              })));
-        } else if (ast.templateAst && ast.htmlAst) {
-          const info: DiagnosticTemplateInfo = {
-            templateAst: ast.templateAst,
-            htmlAst: ast.htmlAst,
-            offset: template.span.start,
-            query: template.query,
-            members: template.members
-          };
-          const expressionDiagnostics = getTemplateExpressionDiagnostics(info);
-          results.push(...expressionDiagnostics);
-        }
-        if (ast.errors) {
-          results.push(...ast.errors.map<Diagnostic>(
-              e => ({kind: e.kind, span: e.span || template.span, message: e.message})));
-        }
-      }
-    }
-    return results;
   }
 }
 
