@@ -137,9 +137,7 @@ export function ɵɵprojection(
     // re-distribution of projectable nodes is stored on a component's view level
     const renderer = lView[RENDERER];
     const renderParent = getRenderParent(tProjectionNode, lView);
-    const parentTNode: TNode = tProjectionNode.parent || lView[T_HOST] !;
-    const anchorNode = getNativeAnchorNode(parentTNode, lView);
     applyProjection(
-        renderer, WalkTNodeTreeAction.Create, lView, tProjectionNode, renderParent, anchorNode);
+        renderer, WalkTNodeTreeAction.Create, lView, tProjectionNode, renderParent, null);
   }
 }

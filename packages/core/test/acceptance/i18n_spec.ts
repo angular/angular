@@ -798,15 +798,18 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('with nested ICU expression and inside a container when creating a view via vcr.createEmbeddedView',
        () => {
+         let dir: Dir|null = null;
          @Directive({
            selector: '[someDir]',
          })
          class Dir {
            constructor(
                private readonly viewContainerRef: ViewContainerRef,
-               private readonly templateRef: TemplateRef<any>) {}
+               private readonly templateRef: TemplateRef<any>) {
+             dir = this;
+           }
 
-           ngOnInit() { this.viewContainerRef.createEmbeddedView(this.templateRef); }
+           attachEmbeddedView() { this.viewContainerRef.createEmbeddedView(this.templateRef); }
          }
 
          @Component({
@@ -844,6 +847,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
          });
          const fixture = TestBed.createComponent(App);
          fixture.componentRef.instance.count = 2;
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement.innerHTML)
+             .toBe('<my-cmp><!--container--></my-cmp>');
+
+         dir !.attachEmbeddedView();
          fixture.detectChanges();
          expect(fixture.debugElement.nativeElement.innerHTML)
              .toBe(

@@ -491,12 +491,16 @@ export function getRenderParent(tNode: TNode, currentView: LView): RElement|null
 
   // Skip over element and ICU containers as those are represented by a comment node and
   // can't be used as a render parent.
-  const parent = getHighestElementOrICUContainer(tNode);
-  const renderParent = parent.parent;
+  let parentTNode = tNode.parent;
+  while (parentTNode != null && (parentTNode.type === TNodeType.ElementContainer ||
+                                 parentTNode.type === TNodeType.IcuContainer)) {
+    tNode = parentTNode;
+    parentTNode = tNode.parent;
+  }
 
-  // If the parent is null, then we are inserting across views: either into an embedded view or a
-  // component view.
-  if (renderParent == null) {
+  // If the parent tNode is null, then we are inserting across views: either into an embedded view
+  // or a component view.
+  if (parentTNode == null) {
     const hostTNode = currentView[T_HOST] !;
     if (hostTNode.type === TNodeType.View) {
       // We are inserting a root element of an embedded view We might delay insertion of children
@@ -513,17 +517,17 @@ export function getRenderParent(tNode: TNode, currentView: LView): RElement|null
       return getHostNative(currentView);
     }
   } else {
-    const isIcuCase = parent && parent.type === TNodeType.IcuContainer;
+    const isIcuCase = tNode && tNode.type === TNodeType.IcuContainer;
     // If the parent of this node is an ICU container, then it is represented by comment node and we
-    // need to use it as an anchor. If it is projected then its direct parent node is the renderer.
-    if (isIcuCase && parent.flags & TNodeFlags.isProjected) {
-      return getNativeByTNode(parent, currentView).parentNode as RElement;
+    // need to use it as an anchor. If it is projected then it's direct parent node is the renderer.
+    if (isIcuCase && tNode.flags & TNodeFlags.isProjected) {
+      return getNativeByTNode(tNode, currentView).parentNode as RElement;
     }
 
-    ngDevMode && assertNodeType(renderParent, TNodeType.Element);
-    if (renderParent.flags & TNodeFlags.isComponent && !isIcuCase) {
+    ngDevMode && assertNodeType(parentTNode, TNodeType.Element);
+    if (parentTNode.flags & TNodeFlags.isComponent) {
       const tData = currentView[TVIEW].data;
-      const tNode = tData[renderParent.index] as TNode;
+      const tNode = tData[parentTNode.index] as TNode;
       const encapsulation = (tData[tNode.directiveStart] as ComponentDef<any>).encapsulation;
 
       // We've got a parent which is an element in the current view. We just need to verify if the
@@ -538,7 +542,7 @@ export function getRenderParent(tNode: TNode, currentView: LView): RElement|null
       }
     }
 
-    return getNativeByTNode(renderParent, currentView) as RElement;
+    return getNativeByTNode(parentTNode, currentView) as RElement;
   }
 }
 
@@ -655,20 +659,6 @@ export function appendChild(childEl: RNode | RNode[], childTNode: TNode, current
       nativeAppendOrInsertBefore(renderer, renderParent, childEl, anchorNode);
     }
   }
-}
-
-/**
- * Gets the top-level element or an ICU container if those containers are nested.
- *
- * @param tNode The starting TNode for which we should skip element and ICU containers
- * @returns The TNode of the highest level ICU container or element container
- */
-function getHighestElementOrICUContainer(tNode: TNode): TNode {
-  while (tNode.parent != null && (tNode.parent.type === TNodeType.ElementContainer ||
-                                  tNode.parent.type === TNodeType.IcuContainer)) {
-    tNode = tNode.parent;
-  }
-  return tNode;
 }
 
 export function getBeforeNodeForView(viewIndexInContainer: number, lContainer: LContainer): RNode|
@@ -823,15 +813,14 @@ function applyNodes(
       }
     }
     if ((tNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached) {
-      if (tNodeType === TNodeType.ElementContainer) {
-        executeActionOnElementOrContainer(action, renderer, renderParent, nativeNode, beforeNode);
+      if (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
         applyNodes(renderer, action, tNode.child, lView, renderParent, beforeNode, false);
+        executeActionOnElementOrContainer(action, renderer, renderParent, nativeNode, beforeNode);
       } else if (tNodeType === TNodeType.Projection) {
         applyProjection(
             renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
       } else {
-        ngDevMode && assertNodeOfPossibleTypes(
-                         tNode, TNodeType.Element, TNodeType.Container, TNodeType.IcuContainer);
+        ngDevMode && assertNodeOfPossibleTypes(tNode, TNodeType.Element, TNodeType.Container);
         executeActionOnElementOrContainer(action, renderer, renderParent, nativeNode, beforeNode);
       }
     }
