@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
 load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
@@ -22,24 +22,27 @@ ng_module(
     ],
 )
 
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index_aot.ts",
+    deps = [
+        ":ng2",
+        "@npm//rxjs",
+    ],
+)
+
 ts_devserver(
-    name = "devserver",
-    entry_module = "angular/modules/benchmarks/src/largetable/ng2/index",
+    name = "prodserver",
     index_html = "index.html",
     port = 4200,
-    scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
-        "//tools/rxjs:rxjs_umd_modules",
-    ],
     static_files = [
+        ":bundle.min_debug.es2015.js",
         "@npm//:node_modules/zone.js/dist/zone.js",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
-    deps = [":ng2"],
 )
 
 benchmark_test(
     name = "perf",
-    server = ":devserver",
+    server = ":prodserver",
     deps = ["//modules/benchmarks/src/largetable:perf_lib"],
 )
