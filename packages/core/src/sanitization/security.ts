@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '../di';
+import {ɵɵdefineInjectable} from '../di/interface/defs';
 
 /**
  * A SecurityContext marks a location that has dangerous security implications, e.g. a DOM property
@@ -31,10 +31,12 @@ export enum SecurityContext {
  *
  * @publicApi
  */
-@Injectable({
-  providedIn: 'root',
-  useValue: null,
-})
 export abstract class Sanitizer {
   abstract sanitize(context: SecurityContext, value: {}|string|null): string|null;
+  /** @nocollapse */
+  static ngInjectableDef = ɵɵdefineInjectable({
+    token: Sanitizer,
+    providedIn: 'root',
+    factory: () => null,
+  });
 }
