@@ -624,7 +624,8 @@ export function nativeNextSibling(renderer: Renderer3, node: RNode): RNode|null 
  */
 export function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
   if (parentTNode.type === TNodeType.View) {
-    const lContainer = getLContainer(parentTNode as TViewNode, lView) !;
+    const lContainer = getLContainer(parentTNode as TViewNode, lView);
+    if (lContainer === null) return null;
     const index = lContainer.indexOf(lView, CONTAINER_HEADER_OFFSET) - CONTAINER_HEADER_OFFSET;
     return getBeforeNodeForView(index, lContainer);
   } else if (

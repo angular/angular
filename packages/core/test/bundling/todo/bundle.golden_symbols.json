@@ -465,7 +465,19 @@
     "name": "appendChild"
   },
   {
+    "name": "applyContainer"
+  },
+  {
+    "name": "applyNodes"
+  },
+  {
+    "name": "applyProjection"
+  },
+  {
     "name": "applyStyling"
+  },
+  {
+    "name": "applyView"
   },
   {
     "name": "assertTemplate"
@@ -621,22 +633,7 @@
     "name": "enterView"
   },
   {
-    "name": "executeActionOnContainer"
-  },
-  {
-    "name": "executeActionOnElementContainerOrIcuContainer"
-  },
-  {
     "name": "executeActionOnElementOrContainer"
-  },
-  {
-    "name": "executeActionOnNode"
-  },
-  {
-    "name": "executeActionOnProjection"
-  },
-  {
-    "name": "executeActionOnView"
   },
   {
     "name": "executeContentQueries"
@@ -772,9 +769,6 @@
   },
   {
     "name": "getGuardMask"
-  },
-  {
-    "name": "getHighestElementOrICUContainer"
   },
   {
     "name": "getHostNative"

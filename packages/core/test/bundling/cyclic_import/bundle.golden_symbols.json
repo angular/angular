@@ -318,9 +318,6 @@
     "name": "getElementDepthCount"
   },
   {
-    "name": "getHighestElementOrICUContainer"
-  },
-  {
     "name": "getHostNative"
   },
   {
