@@ -11,7 +11,7 @@ import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, CompileTypeSum
 import {AstResult} from './common';
 import {getExpressionScope} from './expression_diagnostics';
 import {getExpressionSymbol} from './expressions';
-import {Definition, DirectiveKind, Span, Symbol} from './types';
+import {Definition, DirectiveKind, Span, Symbol, SymbolQuery} from './types';
 import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, inSpan, offsetSpan, spanOf} from './utils';
 
 export interface SymbolInfo {
@@ -81,7 +81,7 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
           visitVariable(ast) {},
           visitEvent(ast) {
             if (!attributeValueSymbol(ast.handler, /* inEvent */ true)) {
-              symbol = findOutputBinding(info, path, ast);
+              symbol = findOutputBinding(info.template.query, path, ast);
               symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.EVENT);
               span = spanOf(ast);
             }
@@ -130,7 +130,7 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
           },
           visitDirectiveProperty(ast) {
             if (!attributeValueSymbol(ast.value)) {
-              symbol = findInputBinding(info, path, ast);
+              symbol = findInputBinding(info.template.query, path, ast);
               span = spanOf(ast);
             }
           }
@@ -149,14 +149,15 @@ function findAttribute(info: AstResult, position: number): Attribute|undefined {
 }
 
 function findInputBinding(
-    info: AstResult, path: TemplateAstPath, binding: BoundDirectivePropertyAst): Symbol|undefined {
+    query: SymbolQuery, path: TemplateAstPath, binding: BoundDirectivePropertyAst): Symbol|
+    undefined {
   const element = path.first(ElementAst);
   if (element) {
     for (const directive of element.directives) {
       const invertedInput = invertMap(directive.directive.inputs);
       const fieldName = invertedInput[binding.templateName];
       if (fieldName) {
-        const classSymbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
+        const classSymbol = query.getTypeSymbol(directive.directive.type.reference);
         if (classSymbol) {
           return classSymbol.members().get(fieldName);
         }
@@ -165,15 +166,15 @@ function findInputBinding(
   }
 }
 
-function findOutputBinding(info: AstResult, path: TemplateAstPath, binding: BoundEventAst): Symbol|
-    undefined {
+export function findOutputBinding(
+    query: SymbolQuery, path: TemplateAstPath, binding: BoundEventAst): Symbol|undefined {
   const element = path.first(ElementAst);
   if (element) {
     for (const directive of element.directives) {
       const invertedOutputs = invertMap(directive.directive.outputs);
       const fieldName = invertedOutputs[binding.name];
       if (fieldName) {
-        const classSymbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
+        const classSymbol = query.getTypeSymbol(directive.directive.type.reference);
         if (classSymbol) {
           return classSymbol.members().get(fieldName);
         }

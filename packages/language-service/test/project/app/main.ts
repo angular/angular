@@ -50,6 +50,7 @@ import * as ParsingCases from './parsing-cases';
     ParsingCases.TemplateReference,
     ParsingCases.TestComponent,
     ParsingCases.TwoWayBinding,
+    ParsingCases.CustomEventComponent
   ]
 })
 export class AppModule {

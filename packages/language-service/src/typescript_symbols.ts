@@ -132,6 +132,19 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     }
   }
 
+  getTypeArguments(type: Symbol): Symbol[] {
+    const result: Symbol[] = [];
+    if (type && type instanceof TypeWrapper && type.tsType.symbol) {
+      const typeArguments: ts.Type[]|undefined = (type.tsType as any).typeArguments;
+      if (typeArguments && typeArguments.length) {
+        for (const parameter of typeArguments) {
+          result.push(new TypeWrapper(parameter, type.context));
+        }
+      }
+    }
+    return result;
+  }
+
   getNonNullableType(symbol: Symbol): Symbol {
     if (symbol instanceof TypeWrapper && (typeof this.checker.getNonNullableType == 'function')) {
       const tsType = symbol.tsType;

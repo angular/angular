@@ -202,3 +202,17 @@ export class EmptyInterpolation {
   title = 'Some title';
   subTitle = 'Some sub title';
 }
+
+@Component({
+  selector: 'custom-event-comp',
+  template: `
+  <custom-event-comp ~{custom-event-name}></custom-event-comp>
+  <custom-event-comp 
+    (deleteRequest)="log(~{custom-event-binding}$event.~{custom-event-members}name)">
+  </custom-event-comp>
+  `
+})
+export class CustomEventComponent {
+  @Output() deleteRequest = new EventEmitter<Person>();
+  log(text: string): void {}
+}

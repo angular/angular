@@ -9,6 +9,7 @@
 import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveSummary, CompileTypeMetadata, DirectiveAst, ElementAst, EmbeddedTemplateAst, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstPath, VariableAst, findNode, identifierName, templateVisitAll, tokenReference} from '@angular/compiler';
 
 import {AstType, DiagnosticKind, ExpressionDiagnosticsContext, TypeDiagnostic} from './expression_type';
+import {findOutputBinding} from './locate_symbol';
 import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 
 export interface DiagnosticTemplateInfo {
@@ -172,22 +173,32 @@ function refinedVariableType(
   return query.getBuiltinType(BuiltinType.Any);
 }
 
-function getEventDeclaration(info: DiagnosticTemplateInfo, includeEvent?: boolean) {
+function getEventDeclaration(
+    info: DiagnosticTemplateInfo, path: TemplateAstPath, includeEvent?: boolean) {
   let result: SymbolDeclaration[] = [];
   if (includeEvent) {
-    // TODO: Determine the type of the event parameter based on the Observable<T> or EventEmitter<T>
-    // of the event.
-    result = [{name: '$event', kind: 'variable', type: info.query.getBuiltinType(BuiltinType.Any)}];
+    let eventType = info.query.getBuiltinType(BuiltinType.Any);
+    if (path.tail instanceof BoundEventAst) {
+      const member = findOutputBinding(info.query, path, path.tail);
+      if (member && member.type) {
+        if (member.type.name == 'Observable' || member.type.name == 'EventEmitter') {
+          const typeArguments = info.query.getTypeArguments(member.type);
+          if (typeArguments && typeArguments.length) {
+            eventType = typeArguments[0];
+          }
+        }
+      }
+      result = [{name: '$event', kind: 'variable', type: eventType}];
+    }
   }
   return result;
 }
-
 export function getExpressionScope(
     info: DiagnosticTemplateInfo, path: TemplateAstPath, includeEvent: boolean): SymbolTable {
   let result = info.members;
   const references = getReferences(info);
   const variables = getVarDeclarations(info, path);
-  const events = getEventDeclaration(info, includeEvent);
+  const events = getEventDeclaration(info, path, includeEvent);
   if (references.length || variables.length || events.length) {
     const referenceTable = info.query.createSymbolTable(references);
     const variableTable = info.query.createSymbolTable(variables);
