@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassAndThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue, ɵɵinject} from '@angular/core';
+import {Inject, Injectable, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue, ɵɵinject} from '@angular/core';
 
 export {SecurityContext};
 
@@ -157,23 +157,28 @@ export class DomSanitizerImpl extends DomSanitizer {
       case SecurityContext.NONE:
         return value as string;
       case SecurityContext.HTML:
-        if (allowSanitizationBypassAndThrow(value, BypassType.Html)) return unwrapSafeValue(value);
+        if (allowSanitizationBypassOrThrow(value, BypassType.Html)) {
+          return unwrapSafeValue(value);
+        }
         return _sanitizeHtml(this._doc, String(value));
       case SecurityContext.STYLE:
-        if (allowSanitizationBypassAndThrow(value, BypassType.Style)) return unwrapSafeValue(value);
+        if (allowSanitizationBypassOrThrow(value, BypassType.Style)) {
+          return unwrapSafeValue(value);
+        }
         return _sanitizeStyle(value as string);
       case SecurityContext.SCRIPT:
-        if (allowSanitizationBypassAndThrow(value, BypassType.Script))
+        if (allowSanitizationBypassOrThrow(value, BypassType.Script)) {
           return unwrapSafeValue(value);
+        }
         throw new Error('unsafe value used in a script context');
       case SecurityContext.URL:
         const type = getSanitizationBypassType(value);
-        if (allowSanitizationBypassAndThrow(value, BypassType.Url)) {
+        if (allowSanitizationBypassOrThrow(value, BypassType.Url)) {
           return unwrapSafeValue(value);
         }
         return _sanitizeUrl(String(value));
       case SecurityContext.RESOURCE_URL:
-        if (allowSanitizationBypassAndThrow(value, BypassType.ResourceUrl)) {
+        if (allowSanitizationBypassOrThrow(value, BypassType.ResourceUrl)) {
           return unwrapSafeValue(value);
         }
         throw new Error(

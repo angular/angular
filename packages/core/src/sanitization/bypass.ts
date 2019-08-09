@@ -110,7 +110,7 @@ export function allowSanitizationBypassAndThrow(value: any, type: BypassType): b
   const actualType = getSanitizationBypassType(value);
   if (actualType != null && actualType !== type) {
     // Allow ResourceURLs in URL contexts, they are strictly more trusted.
-    if (actualType == BypassType.ResourceUrl && type == BypassType.Url) return true;
+    if (actualType === BypassType.ResourceUrl && type === BypassType.Url) return true;
     throw new Error(
         `Required a safe ${type}, got a ${actualType} (see http://g.co/ng/security#xss)`);
   }
