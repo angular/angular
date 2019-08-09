@@ -85,7 +85,7 @@ For example, the current version is `0.9.1`, and we want to release a new versio
 - create a new tag in `angular` repo. The `tag` must be `zone.js-<version>`, so in this example we need to create the tag `zone.js-0.10.0`.
 
 ```
-$ TAG=zone.js-0.10.0
+$ export TAG=zone.js-0.10.0
 $ git tag $TAG
 ```
 
