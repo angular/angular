@@ -89,10 +89,10 @@ class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
   getTypeName() { return BypassType.ResourceUrl; }
 }
 
-export function unwrapSafeValue(value: SafeValue) {
-  ngDevMode &&
-      assertEqual(value instanceof SafeValueImpl, true, 'Expected instance of SafeValueImpl');
-  return (value as SafeValueImpl).changingThisBreaksApplicationSecurity;
+export function unwrapSafeValue(value: SafeValue): string {
+  return value instanceof SafeValueImpl ?
+      (value as SafeValueImpl).changingThisBreaksApplicationSecurity :
+      '';
 }
 
 

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export {ɵSafeHtml as SafeHtml, ɵSafeResourceUrl as SafeResourceUrl, ɵSafeScript as SafeScript, ɵSafeStyle as SafeStyle, ɵSafeUrl as SafeUrl, ɵSafeValue as SafeValue} from '@angular/core';
 export {BrowserModule, platformBrowser} from './browser';
 export {Meta, MetaDefinition} from './browser/meta';
 export {Title} from './browser/title';
@@ -14,7 +15,7 @@ export {BrowserTransferStateModule, StateKey, TransferState, makeStateKey} from 
 export {By} from './dom/debug/by';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 export {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerLoader} from './dom/events/hammer_gestures';
-export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl, SafeValue} from './security/dom_sanitization_service';
+export {DomSanitizer} from './security/dom_sanitization_service';
 
 export * from './private_export';
 export {VERSION} from './version';

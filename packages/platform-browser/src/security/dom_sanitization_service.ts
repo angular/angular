@@ -7,53 +7,11 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue, ɵɵinject} from '@angular/core';
+import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵSafeHtml as SafeHtml, ɵSafeResourceUrl as SafeResourceUrl, ɵSafeScript as SafeScript, ɵSafeStyle as SafeStyle, ɵSafeUrl as SafeUrl, ɵSafeValue as SafeValue, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
 
 export {SecurityContext};
 
 
-
-/**
- * Marker interface for a value that's safe to use in a particular context.
- *
- * @publicApi
- */
-export interface SafeValue {}
-
-/**
- * Marker interface for a value that's safe to use as HTML.
- *
- * @publicApi
- */
-export interface SafeHtml extends SafeValue {}
-
-/**
- * Marker interface for a value that's safe to use as style (CSS).
- *
- * @publicApi
- */
-export interface SafeStyle extends SafeValue {}
-
-/**
- * Marker interface for a value that's safe to use as JavaScript.
- *
- * @publicApi
- */
-export interface SafeScript extends SafeValue {}
-
-/**
- * Marker interface for a value that's safe to use as a URL linking to a document.
- *
- * @publicApi
- */
-export interface SafeUrl extends SafeValue {}
-
-/**
- * Marker interface for a value that's safe to use as a URL to load executable code from.
- *
- * @publicApi
- */
-export interface SafeResourceUrl extends SafeValue {}
 
 /**
  * DomSanitizer helps preventing Cross Site Scripting Security bugs (XSS) by sanitizing
