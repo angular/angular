@@ -7,7 +7,7 @@
  */
 import * as vm from 'vm';
 import {AbsoluteFsPath, FileSystem, dirname, join, resolve} from '../../../src/ngtsc/file_system';
-import {PackageJsonFormatProperties} from './entry_point';
+import {PackageJsonFormatPropertiesMap} from './entry_point';
 
 /**
  * The format of a project level configuration file.
@@ -41,7 +41,7 @@ export interface NgccEntryPointConfig {
    * This property, if provided, holds values that will override equivalent properties in an
    * entry-point's package.json file.
    */
-  override?: PackageJsonFormatProperties;
+  override?: PackageJsonFormatPropertiesMap;
 }
 
 const NGCC_CONFIG_FILENAME = 'ngcc.config.js';

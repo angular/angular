@@ -7,8 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {FileSystem} from '../../../src/ngtsc/file_system';
-import {NgtscCompilerHost} from '../../../src/ngtsc/file_system/src/compiler_host';
+import {FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {isRelativePath} from '../utils';
 
 /**
