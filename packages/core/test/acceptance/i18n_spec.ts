@@ -1534,7 +1534,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       @Component({
         selector: 'app',
         template: `
-          <ng-content></ng-content>
+            <ng-container>(<ng-content></ng-content>)</ng-container>
         `
       })
       class MyContentApp {
@@ -1543,9 +1543,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       @Component({
         selector: 'my-app',
         template: `
-          <app i18n *ngIf="condition">
-            {type, select, A {A} B {B} other {other}}
-          </app>
+          <app i18n *ngIf="condition">{type, select, A {A} B {B} other {other}}</app>
         `
       })
       class MyApp {
@@ -1558,21 +1556,21 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const fixture = TestBed.createComponent(MyApp);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.innerHTML).toContain('A');
+      expect(fixture.nativeElement.textContent).toContain('(A)');
 
       // change `condition` to remove <app>
       fixture.componentInstance.condition = false;
       fixture.detectChanges();
 
       // should not contain 'A'
-      expect(fixture.nativeElement.innerHTML).not.toContain('A');
+      expect(fixture.nativeElement.textContent).toBe('');
 
       // display <app> again
       fixture.componentInstance.condition = true;
       fixture.detectChanges();
 
       // expect that 'A' is displayed again
-      expect(fixture.nativeElement.innerHTML).toContain('A');
+      expect(fixture.nativeElement.textContent).toContain('(A)');
     });
   });
 

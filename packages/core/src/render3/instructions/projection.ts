@@ -7,10 +7,10 @@
  */
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
-import {RENDERER, TVIEW, T_HOST} from '../interfaces/view';
-import {WalkTNodeTreeAction, applyProjection, getNativeAnchorNode, getRenderParent} from '../node_manipulation';
+import {TVIEW, T_HOST} from '../interfaces/view';
+import {applyProjection} from '../node_manipulation';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
-import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent} from '../state';
+import {getLView, setIsNotParent} from '../state';
 import {findComponentView} from '../util/view_traversal_utils';
 
 import {getOrCreateTNode} from './shared';
@@ -136,11 +136,6 @@ export function ɵɵprojection(
   // We might need to delay the projection of nodes if they are in the middle of an i18n block
   if (!delayProjection) {
     // re-distribution of projectable nodes is stored on a component's view level
-    const renderer = lView[RENDERER];
-    const renderParent = getRenderParent(tProjectionNode, lView);
-    const parentTNode = tProjectionNode.parent || lView[T_HOST] !;
-    const insertBefore = getNativeAnchorNode(parentTNode, lView);
-    applyProjection(
-        renderer, WalkTNodeTreeAction.Create, lView, tProjectionNode, renderParent, insertBefore);
+    applyProjection(lView, tProjectionNode);
   }
 }

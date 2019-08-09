@@ -24,7 +24,7 @@ import {RComment, RElement, RText} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {isLContainer} from './interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
-import {WalkTNodeTreeAction, appendChild, applyProjection, createTextNode, getRenderParent, nativeRemoveNode} from './node_manipulation';
+import {appendChild, applyProjection, createTextNode, nativeRemoveNode} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
 import {renderStringify} from './util/misc_utils';
@@ -522,11 +522,7 @@ function appendI18nNode(
 
   // If the placeholder to append is a projection, we need to move the projected nodes instead
   if (tNode.type === TNodeType.Projection) {
-    const tProjectionNode = tNode as TProjectionNode;
-    const renderer = lView[RENDERER];
-    const renderParent = getRenderParent(tProjectionNode, lView);
-    applyProjection(
-        renderer, WalkTNodeTreeAction.Create, lView, tProjectionNode, renderParent, null);
+    applyProjection(lView, tNode as TProjectionNode);
     return tNode;
   }
 
