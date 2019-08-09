@@ -2,14 +2,14 @@
 [![Discord](https://img.shields.io/discord/463752820026376202.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/angular)
 
 <p align="center">
+  <img src="aio/src/assets/images/logos/angular/angular.png" alt="angular-logo" width="120px" height="120px"/>
+  </br>
   <i>Angular is a development platform for building mobile and desktop web applications
     </br> using Typescript/JavaScript and other languages.</i>
-
   </br>
   </br>
 
   <a href="https://www.angular.io"><strong>www.angular.io</strong></a>
-
   </br>
   </br>
 
@@ -18,7 +18,7 @@
   <a href="https://github.com/">Submit an Issue</a>
   ·
   <a href="https://blog.angular.io/">Blog</a>
-  
+  </p>
   </br>
   </br>
 </p>
@@ -35,7 +35,7 @@
 ## Documentation
 Get started with Angular, learn the fundamentals and explore advanced topics on our documentation website.
 
- - [Getting Started][quickstart]
+- [Getting Started][quickstart]
 - [Architecture][architecture]
 - [Components and Templates][componentstemplates]
 - [Forms][forms]
@@ -76,8 +76,14 @@ ng serve
 [Get started in 5 minutes][quickstart].
 
 ## Ecosystem
+
+<p>
+  <img src="/docs/images/angular-ecosystem-logos.png" alt="angular ecosystem logos" width="500px" height="auto">
+</p>
+
 - [Angular Command Line (CLI)][cli]
 - [Angular Material][angularmaterial]
+
 
 ## Changelog
 
