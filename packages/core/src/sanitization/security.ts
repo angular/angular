@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injectable} from '../di';
+
 /**
  * A SecurityContext marks a location that has dangerous security implications, e.g. a DOM property
  * like `innerHTML` that could cause Cross Site Scripting (XSS) security bugs when improperly
@@ -29,6 +31,10 @@ export enum SecurityContext {
  *
  * @publicApi
  */
+@Injectable({
+  providedIn: 'root',
+  useValue: null,
+})
 export abstract class Sanitizer {
   abstract sanitize(context: SecurityContext, value: {}|string|null): string|null;
 }
