@@ -182,6 +182,36 @@ function runNgZoneNoLog(fn: () => any) {
       expect(runs).toBe(true);
     });
 
+    it('should run with this context and arguments', () => {
+      let runs = false;
+      let applyThisArray: any[] = [];
+      let applyArgsArray: any[] = [];
+      const testContext = {};
+      const testArgs = ['args'];
+      ngZone.run(function(this: any, arg: any) {
+        applyThisArray.push(this);
+        applyArgsArray.push([arg]);
+        ngZone.runGuarded(function(this: any, argGuarded: any) {
+          applyThisArray.push(this);
+          applyArgsArray.push([argGuarded]);
+          ngZone.runOutsideAngular(function(this: any, argOutsideAngular: any) {
+            applyThisArray.push(this);
+            applyArgsArray.push([argOutsideAngular]);
+            runs = true;
+          });
+        }, this, [arg]);
+      }, testContext, testArgs);
+      expect(runs).toBe(true);
+      expect(applyThisArray.length).toBe(3);
+      expect(applyArgsArray.length).toBe(3);
+      expect(applyThisArray[0]).toBe(testContext);
+      expect(applyThisArray[1]).toBe(testContext);
+      expect(applyThisArray[2]).not.toBe(testContext);
+      expect(applyArgsArray[0]).toEqual(testArgs);
+      expect(applyArgsArray[1]).toEqual(testArgs);
+      expect(applyArgsArray[2]).toEqual([undefined]);
+    });
+
     it('should have EventEmitter instances', () => {
       expect(ngZone.onError instanceof EventEmitter).toBe(true);
       expect(ngZone.onStable instanceof EventEmitter).toBe(true);
