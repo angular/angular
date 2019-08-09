@@ -24,11 +24,10 @@ import {RComment, RElement, RText} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {isLContainer} from './interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
-import {appendChild, appendProjectedNodes, createTextNode, nativeRemoveNode} from './node_manipulation';
+import {WalkTNodeTreeAction, appendChild, applyProjection, createTextNode, getRenderParent, nativeRemoveNode} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
 import {renderStringify} from './util/misc_utils';
-import {findComponentView} from './util/view_traversal_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode, load} from './util/view_utils';
 
 
@@ -490,7 +489,7 @@ function i18nStartFirstPass(
 }
 
 function appendI18nNode(
-    tNode: TNode, parentTNode: TNode, previousTNode: TNode | null, viewData: LView): TNode {
+    tNode: TNode, parentTNode: TNode, previousTNode: TNode | null, lView: LView): TNode {
   ngDevMode && ngDevMode.rendererMoveNode++;
   const nextNode = tNode.next;
   if (!previousTNode) {
@@ -508,7 +507,7 @@ function appendI18nNode(
     tNode.next = null;
   }
 
-  if (parentTNode !== viewData[T_HOST]) {
+  if (parentTNode !== lView[T_HOST]) {
     tNode.parent = parentTNode as TElementNode;
   }
 
@@ -524,17 +523,19 @@ function appendI18nNode(
   // If the placeholder to append is a projection, we need to move the projected nodes instead
   if (tNode.type === TNodeType.Projection) {
     const tProjectionNode = tNode as TProjectionNode;
-    appendProjectedNodes(
-        viewData, tProjectionNode, tProjectionNode.projection, findComponentView(viewData));
+    const renderer = lView[RENDERER];
+    const renderParent = getRenderParent(tProjectionNode, lView);
+    applyProjection(
+        renderer, WalkTNodeTreeAction.Create, lView, tProjectionNode, renderParent, null);
     return tNode;
   }
 
-  appendChild(getNativeByTNode(tNode, viewData), tNode, viewData);
+  appendChild(getNativeByTNode(tNode, lView), tNode, lView);
 
-  const slotValue = viewData[tNode.index];
+  const slotValue = lView[tNode.index];
   if (tNode.type !== TNodeType.Container && isLContainer(slotValue)) {
     // Nodes that inject ViewContainerRef also have a comment node that should be moved
-    appendChild(slotValue[NATIVE], tNode, viewData);
+    appendChild(slotValue[NATIVE], tNode, lView);
   }
   return tNode;
 }
