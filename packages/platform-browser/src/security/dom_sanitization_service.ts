@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue, ɵɵinject} from '@angular/core';
+import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue, ɵɵinject} from '@angular/core';
 
 export {SecurityContext};
 
@@ -143,11 +143,11 @@ export abstract class DomSanitizer implements Sanitizer {
   abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
 }
 
-export function domSanitizerImplFactory(doc: Document) {
-  return new DomSanitizerImpl(doc);
+export function domSanitizerImplFactory(injector: Injector) {
+  return new DomSanitizerImpl(injector.get(DOCUMENT));
 }
 
-@Injectable({providedIn: 'root', useFactory: domSanitizerImplFactory, deps: [DOCUMENT]})
+@Injectable({providedIn: 'root', useFactory: domSanitizerImplFactory, deps: [Injector]})
 export class DomSanitizerImpl extends DomSanitizer {
   constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
 
