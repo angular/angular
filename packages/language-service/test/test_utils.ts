@@ -331,18 +331,19 @@ function removeReferenceMarkers(value: string): string {
   return value.replace(referenceMarker, (match, text) => text.replace(/ᐱ/g, ''));
 }
 
-export function noDiagnostics(diagnostics: Diagnostics) {
+export function noDiagnostics(diagnostics: ts.Diagnostic[]) {
   if (diagnostics && diagnostics.length) {
-    throw new Error(`Unexpected diagnostics: \n  ${diagnostics.map(d => d.message).join('\n  ')}`);
+    throw new Error(
+        `Unexpected diagnostics: \n  ${diagnostics.map(d => d.messageText).join('\n  ')}`);
   }
 }
 
 export function diagnosticMessageContains(
-    message: string | DiagnosticMessageChain, messageFragment: string): boolean {
+    message: string | ts.DiagnosticMessageChain, messageFragment: string): boolean {
   if (typeof message == 'string') {
     return message.indexOf(messageFragment) >= 0;
   }
-  if (message.message.indexOf(messageFragment) >= 0) {
+  if (message.messageText.indexOf(messageFragment) >= 0) {
     return true;
   }
   if (message.next) {
@@ -351,16 +352,17 @@ export function diagnosticMessageContains(
   return false;
 }
 
-export function findDiagnostic(diagnostics: Diagnostic[], messageFragment: string): Diagnostic|
-    undefined {
-  return diagnostics.find(d => diagnosticMessageContains(d.message, messageFragment));
+export function findDiagnostic(
+    diagnostics: ts.Diagnostic[], messageFragment: string): ts.Diagnostic|undefined {
+  return diagnostics.find(d => diagnosticMessageContains(d.messageText, messageFragment));
 }
 
 export function includeDiagnostic(
-    diagnostics: Diagnostics, message: string, text?: string, len?: string): void;
+    diagnostics: ts.Diagnostic[], message: string, text?: string, len?: string): void;
 export function includeDiagnostic(
-    diagnostics: Diagnostics, message: string, at?: number, len?: number): void;
-export function includeDiagnostic(diagnostics: Diagnostics, message: string, p1?: any, p2?: any) {
+    diagnostics: ts.Diagnostic[], message: string, at?: number, len?: number): void;
+export function includeDiagnostic(
+    diagnostics: ts.Diagnostic[], message: string, p1?: any, p2?: any) {
   expect(diagnostics).toBeDefined();
   if (diagnostics) {
     const diagnostic = findDiagnostic(diagnostics, message);
@@ -368,13 +370,12 @@ export function includeDiagnostic(diagnostics: Diagnostics, message: string, p1?
     if (diagnostic && p1 != null) {
       const at = typeof p1 === 'number' ? p1 : p2.indexOf(p1);
       const len = typeof p2 === 'number' ? p2 : p1.length;
-      expect(diagnostic.span.start)
+      expect(diagnostic.start)
           .toEqual(
               at,
-              `expected message '${message}' was reported at ${diagnostic.span.start} but should be ${at}`);
+              `expected message '${message}' was reported at ${diagnostic.start} but should be ${at}`);
       if (len != null) {
-        expect(diagnostic.span.end - diagnostic.span.start)
-            .toEqual(len, `expected '${message}'s span length to be ${len}`);
+        expect(diagnostic.length).toEqual(len, `expected '${message}'s span length to be ${len}`);
       }
     }
   }

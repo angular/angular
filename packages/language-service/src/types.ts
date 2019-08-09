@@ -190,7 +190,7 @@ export interface LanguageServiceHost {
    * Return the template source information for all templates in `fileName` or for `fileName` if
    * it is a template file.
    */
-  getTemplates(fileName: string): TemplateSources;
+  getTemplates(fileName: string): TemplateSource[];
 
   /**
    * Returns the Angular declarations in the given file.
@@ -386,7 +386,7 @@ export interface LanguageService {
   /**
    * Returns a list of all error for all templates in the given file.
    */
-  getDiagnostics(fileName: string): Diagnostic[];
+  getDiagnostics(fileName: string): tss.Diagnostic[];
 
   /**
    * Return the completions at the given position.
