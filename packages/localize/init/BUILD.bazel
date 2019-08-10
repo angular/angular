@@ -5,15 +5,15 @@ package(default_visibility = ["//visibility:public"])
 exports_files(["package.json"])
 
 ts_library(
-    name = "run_time",
+    name = "init",
     srcs = glob(
         [
             "**/*.ts",
         ],
     ),
-    module_name = "@angular/localize/run_time",
+    module_name = "@angular/localize/init",
     deps = [
-        "//packages/localize",
+        "//packages/localize/src/localize",
         "@npm//@types/node",
     ],
 )

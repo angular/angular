@@ -5,8 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {loadTranslations} from '@angular/localize/run_time';
+// Make the `$localize()` global function available to the compiled templates, and the direct calls
+// below. This would normally be done inside the application `polyfills.ts` file.
+import '@angular/localize/init';
+import {loadTranslations} from '@angular/localize';
 
 export const translations = {
   'What needs to be done?': `Qu'y a-t-il à faire ?`,

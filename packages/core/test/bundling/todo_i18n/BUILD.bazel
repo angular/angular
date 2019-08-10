@@ -17,7 +17,8 @@ ng_module(
         "//packages/common",
         "//packages/core",
         "//packages/core/test/bundling/util:reflect_metadata",
-        "//packages/localize/run_time",
+        "//packages/localize",
+        "//packages/localize/init",
     ],
 )
 

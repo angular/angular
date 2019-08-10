@@ -1,0 +1,11 @@
+{
+  "name": "@angular/localize/init",
+  "typings": "./index.d.ts",
+  "main": "../bundles/localize-init.umd.js",
+  "module": "../fesm5/init.js",
+  "es2015": "../fesm2015/init.js",
+  "esm5": "../esm5/init/index.js",
+  "esm2015": "../esm2015/init/index.js",
+  "fesm5": "../fesm5/init.js",
+  "fesm2015": "../fesm2015/init.js"
+}

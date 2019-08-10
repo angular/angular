@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// DO NOT ADD public exports to this file.
-// The public API exports are specified in the `./localize` module, which is checked by the
-// public_api_guard rules
+// This file contains the public API of the `@angular/localize` entry-point
 
-export * from './localize';
+export {clearTranslations, loadTranslations} from './src/translate';
