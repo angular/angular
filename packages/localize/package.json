@@ -26,5 +26,10 @@
   ],
   "engines": {
     "node": ">=8.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.5.5",
+    "glob": "7.1.2",
+    "yargs": "13.1.0"
   }
 }

@@ -14,7 +14,11 @@ ts_library(
     deps = [
         "//packages/compiler",
         "//packages/localize/src/localize",
+        "@npm//@babel/core",
+        "@npm//@babel/types",
+        "@npm//@types/glob",
         "@npm//@types/node",
+        "@npm//@types/yargs",
     ],
 )
 
