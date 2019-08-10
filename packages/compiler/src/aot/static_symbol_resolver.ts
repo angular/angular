@@ -273,13 +273,7 @@ export class StaticSymbolResolver {
     // Note: Some users use libraries that were not compiled with ngc, i.e. they don't
     // have summaries, only .d.ts files, but `summaryResolver.isLibraryFile` returns true.
     this._createSymbolsOf(filePath);
-    const metadataSymbols: StaticSymbol[] = [];
-    this.resolvedSymbols.forEach((resolvedSymbol) => {
-      if (resolvedSymbol.symbol.filePath === filePath) {
-        metadataSymbols.push(resolvedSymbol.symbol);
-      }
-    });
-    return metadataSymbols;
+    return this.symbolFromFile.get(filePath) || [];
   }
 
   private _createSymbolsOf(filePath: string) {
@@ -363,9 +357,12 @@ export class StaticSymbolResolver {
             this.createResolvedSymbol(symbol, filePath, topLevelSymbolNames, symbolMeta));
       });
     }
-    resolvedSymbols.forEach(
-        (resolvedSymbol) => this.resolvedSymbols.set(resolvedSymbol.symbol, resolvedSymbol));
-    this.symbolFromFile.set(filePath, resolvedSymbols.map(resolvedSymbol => resolvedSymbol.symbol));
+    const uniqueSymbols = new Set<StaticSymbol>();
+    for (const resolvedSymbol of resolvedSymbols) {
+      this.resolvedSymbols.set(resolvedSymbol.symbol, resolvedSymbol);
+      uniqueSymbols.add(resolvedSymbol.symbol);
+    }
+    this.symbolFromFile.set(filePath, Array.from(uniqueSymbols));
   }
 
   private createResolvedSymbol(
