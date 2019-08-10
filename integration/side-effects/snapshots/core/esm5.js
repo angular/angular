@@ -15,5 +15,5 @@ var __global = "undefined" !== typeof global && global;
 var _global = __globalThis || __global || __window || __self;
 
 if (ngDevMode) _global.$localize = _global.$localize || function() {
-    throw new Error("It looks like your application or one of its dependencies is using i18n.\n" + "Angular 9 introduced a global `$localize()` function that needs to be loaded.\n" + "Please add `import '@angular/localize';` to your polyfills.ts file.");
+    throw new Error("It looks like your application or one of its dependencies is using i18n.\n" + "Angular 9 introduced a global `$localize()` function that needs to be loaded.\n" + "Please add `import '@angular/localize/init';` to your polyfills.ts file.");
 };

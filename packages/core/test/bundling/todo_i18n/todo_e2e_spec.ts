@@ -5,10 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import '@angular/localize/init';
 import '@angular/compiler';
+
 import {ɵwhenRendered as whenRendered} from '@angular/core';
 import {getComponent} from '@angular/core/src/render3';
+import {clearTranslations} from '@angular/localize';
 import {withBody} from '@angular/private/testing';
 import * as path from 'path';
 
@@ -19,12 +21,7 @@ describe('functional test for todo i18n', () => {
   BUNDLES.forEach(bundle => {
     describe(bundle, () => {
       it('should render todo i18n', withBody('<todo-app></todo-app>', async() => {
-           // We need to delete the dummy `$localize` that was added because of the import of
-           // `@angular/core` at the top of this file.
-           // Also to clear out the translations from the previous test.
-           // This would not be needed in normal applications since the import of
-           // `@angular/localize` would be in polyfill.ts before any other import.
-           ($localize as any) = undefined;
+           clearTranslations();
            require(path.join(PACKAGE, bundle));
            const toDoAppComponent = getComponent(document.querySelector('todo-app') !);
            expect(document.body.textContent).toContain('liste de tâches');

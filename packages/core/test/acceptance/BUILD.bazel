@@ -20,7 +20,7 @@ ts_library(
         "//packages/core/src/util",
         "//packages/core/testing",
         "//packages/localize",
-        "//packages/localize/run_time",
+        "//packages/localize/init",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",

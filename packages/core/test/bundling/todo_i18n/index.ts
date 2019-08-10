@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '@angular/core/test/bundling/util/src/reflect_metadata';
-// Make the `$localize()` global function available to the compiled templates, and the direct calls
-// below. This would normally be done inside the application `polyfills.ts` file.
-import '@angular/localize';
 import './translations';
 import {CommonModule} from '@angular/common';
 import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';

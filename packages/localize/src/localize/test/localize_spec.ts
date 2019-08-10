@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import '..'; // Ensure $localize is attached to the global scope
-import {TranslateFn} from '../src/localize';
+import {$localize, TranslateFn} from '../src/localize';
 
 describe('$localize tag', () => {
   describe('with no `translate()` defined (the default)', () => {
