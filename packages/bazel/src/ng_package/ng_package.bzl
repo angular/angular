@@ -112,7 +112,7 @@ def _rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, for
         args.add("--amd.id", package_name)
 
     # After updating to build_bazel_rules_nodejs 0.27.0+, rollup has been updated to v1.3.1
-    # which tree shakes @__PURE__ annotations and const variables which are later ammended by NGCC.
+    # which tree shakes @__PURE__ annotations and const variables which are later amended by NGCC.
     # We turn this feature off for ng_package as Angular bundles contain these and there are
     # test failures if they are removed.
     # See comments in:
