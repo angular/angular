@@ -5,8 +5,8 @@
   "main": "./bundles/localize.umd.js",
   "module": "./fesm5/localize.js",
   "es2015": "./fesm2015/localize.js",
-  "esm5": "./esm5/localize.js",
-  "esm2015": "./esm2015/localize.js",
+  "esm5": "./esm5/index.js",
+  "esm2015": "./esm2015/index.js",
   "fesm5": "./fesm5/localize.js",
   "fesm2015": "./fesm2015/localize.js",
   "typings": "./index.d.ts",
@@ -19,7 +19,11 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": true,
+  "sideEffects": [
+    "**/init/index.js",
+    "**/init.js",
+    "**/localize-init.umd.js"
+  ],
   "engines": {
     "node": ">=8.0"
   }

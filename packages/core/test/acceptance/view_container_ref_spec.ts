@@ -11,7 +11,7 @@ import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, Eleme
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed, TestComponentRenderer} from '@angular/core/testing';
-import {loadTranslations} from '@angular/localize/run_time';
+import {loadTranslations} from '@angular/localize';
 import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';

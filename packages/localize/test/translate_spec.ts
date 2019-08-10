@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-// Ensure that `$localize` is loaded to the global scope.
-import '@angular/localize';
+import '@angular/localize/init';
 import {clearTranslations, loadTranslations} from '../src/translate';
 
 describe('$localize tag with translations', () => {

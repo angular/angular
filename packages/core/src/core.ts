@@ -47,6 +47,6 @@ if (ngDevMode) {
     throw new Error(
         'It looks like your application or one of its dependencies is using i18n.\n' +
         'Angular 9 introduced a global `$localize()` function that needs to be loaded.\n' +
-        'Please add `import \'@angular/localize\';` to your polyfills.ts file.');
+        'Please add `import \'@angular/localize/init\';` to your polyfills.ts file.');
   };
 }
