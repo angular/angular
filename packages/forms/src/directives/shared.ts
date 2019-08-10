@@ -28,8 +28,8 @@ import {SelectMultipleControlValueAccessor} from './select_multiple_control_valu
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 
-export function controlPath(name: string | null, parent: ControlContainer): string[] {
-  return [...parent.path !, name !];
+export function controlPath(name: string, parent: ControlContainer): string[] {
+  return [...parent.path !, name];
 }
 
 export function setUpControl(control: FormControl, dir: NgControl): void {
