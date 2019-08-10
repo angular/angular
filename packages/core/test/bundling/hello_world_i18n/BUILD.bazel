@@ -11,7 +11,8 @@ ng_module(
     ],
     deps = [
         "//packages/core",
-        "//packages/localize/run_time",
+        "//packages/localize",
+        "//packages/localize/init",
     ],
 )
 
