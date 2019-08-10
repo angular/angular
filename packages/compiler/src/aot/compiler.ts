@@ -797,7 +797,6 @@ export interface NgAnalyzedFileWithInjectables {
 export interface NgAnalyzedFile {
   fileName: string;
   directives: StaticSymbol[];
-  abstractDirectives: StaticSymbol[];
   pipes: StaticSymbol[];
   ngModules: CompileNgModuleMetadata[];
   injectables: CompileInjectableMetadata[];
@@ -858,20 +857,18 @@ function _analyzeFilesIncludingNonProgramFiles(
 export function analyzeFile(
     host: NgAnalyzeModulesHost, staticSymbolResolver: StaticSymbolResolver,
     metadataResolver: CompileMetadataResolver, fileName: string): NgAnalyzedFile {
-  const abstractDirectives: StaticSymbol[] = [];
   const directives: StaticSymbol[] = [];
   const pipes: StaticSymbol[] = [];
   const injectables: CompileInjectableMetadata[] = [];
   const ngModules: CompileNgModuleMetadata[] = [];
   const hasDecorators = staticSymbolResolver.hasDecorators(fileName);
   let exportsNonSourceFiles = false;
-  const isDeclarationFile = fileName.endsWith('.d.ts');
   // Don't analyze .d.ts files that have no decorators as a shortcut
   // to speed up the analysis. This prevents us from
   // resolving the references in these files.
   // Note: exportsNonSourceFiles is only needed when compiling with summaries,
   // which is not the case when .d.ts files are treated as input files.
-  if (!isDeclarationFile || hasDecorators) {
+  if (!fileName.endsWith('.d.ts') || hasDecorators) {
     staticSymbolResolver.getSymbolsOf(fileName).forEach((symbol) => {
       const resolvedSymbol = staticSymbolResolver.resolveSymbol(symbol);
       const symbolMeta = resolvedSymbol.metadata;
@@ -882,23 +879,7 @@ export function analyzeFile(
       if (symbolMeta.__symbolic === 'class') {
         if (metadataResolver.isDirective(symbol)) {
           isNgSymbol = true;
-          if (!isDeclarationFile) {
-            // This directive either has a selector or doesn't. Selector-less directives get tracked
-            // in abstractDirectives, not directives. The compiler doesn't deal with selector-less
-            // directives at all, really, other than to persist their metadata. This is done so that
-            // apps will have an easier time migrating to Ivy, which requires the selector-less
-            // annotations to be applied.
-            if (!metadataResolver.isAbstractDirective(symbol)) {
-              // The directive is an ordinary directive.
-              directives.push(symbol);
-            } else {
-              // The directive has no selector and is an "abstract" directive, so track it
-              // accordingly.
-              abstractDirectives.push(symbol);
-            }
-          } else {
-            directives.push(symbol);
-          }
+          directives.push(symbol);
         } else if (metadataResolver.isPipe(symbol)) {
           isNgSymbol = true;
           pipes.push(symbol);
@@ -923,8 +904,7 @@ export function analyzeFile(
     });
   }
   return {
-      fileName,  directives,  abstractDirectives,    pipes,
-      ngModules, injectables, exportsNonSourceFiles,
+      fileName, directives, pipes, ngModules, injectables, exportsNonSourceFiles,
   };
 }
 
