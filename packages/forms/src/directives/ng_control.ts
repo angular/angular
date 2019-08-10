@@ -36,7 +36,7 @@ export abstract class NgControl extends AbstractControlDirective {
    * @description
    * The name for the control
    */
-  name: string|number|null = null;
+  name: string|null = null;
 
   /**
    * @description
