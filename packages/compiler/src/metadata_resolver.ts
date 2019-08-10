@@ -348,7 +348,11 @@ export class CompileMetadataResolver {
     } else {
       // Directive
       if (!selector) {
-        selector = null !;
+        this._reportError(
+            syntaxError(
+                `Directive ${stringifyType(directiveType)} has no selector, please add it!`),
+            directiveType);
+        selector = 'error';
       }
     }
 
@@ -426,19 +430,6 @@ export class CompileMetadataResolver {
   isDirective(type: any) {
     return !!this._loadSummary(type, cpl.CompileSummaryKind.Directive) ||
         this._directiveResolver.isDirective(type);
-  }
-
-  isAbstractDirective(type: any): boolean {
-    const summary =
-        this._loadSummary(type, cpl.CompileSummaryKind.Directive) as cpl.CompileDirectiveSummary;
-    if (summary) {
-      return !summary.selector;
-    }
-    const meta = this.getNonNormalizedDirectiveMetadata(type);
-    if (!meta) {
-      return false;
-    }
-    return !meta.metadata.selector;
   }
 
   isPipe(type: any) {
@@ -616,12 +607,6 @@ export class CompileMetadataResolver {
         }
         const declaredIdentifier = this._getIdentifierMetadata(declaredType);
         if (this.isDirective(declaredType)) {
-          if (this.isAbstractDirective(declaredType)) {
-            this._reportError(
-                syntaxError(
-                    `Directive ${stringifyType(declaredType)} has no selector, please add it!`),
-                declaredType);
-          }
           transitiveModule.addDirective(declaredIdentifier);
           declaredDirectives.push(declaredIdentifier);
           this._addTypeToModule(declaredType, moduleType);
