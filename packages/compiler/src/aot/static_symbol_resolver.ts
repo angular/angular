@@ -273,13 +273,9 @@ export class StaticSymbolResolver {
     // Note: Some users use libraries that were not compiled with ngc, i.e. they don't
     // have summaries, only .d.ts files, but `summaryResolver.isLibraryFile` returns true.
     this._createSymbolsOf(filePath);
-    const metadataSymbols: StaticSymbol[] = [];
-    this.resolvedSymbols.forEach((resolvedSymbol) => {
-      if (resolvedSymbol.symbol.filePath === filePath) {
-        metadataSymbols.push(resolvedSymbol.symbol);
-      }
-    });
-    return metadataSymbols;
+    const metadataSymbols = this.symbolFromFile.get(filePath) || [];
+    const uniqueMetadataSymbols = new Set<StaticSymbol>(metadataSymbols);
+    return Array.from(uniqueMetadataSymbols);
   }
 
   private _createSymbolsOf(filePath: string) {
