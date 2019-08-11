@@ -275,88 +275,145 @@ This section lists all of the currently-deprecated features, which includes temp
 
 
 {@a wtf}
+<!--
 ### Web Tracing Framework integration
+-->
+### 웹 트레이싱 프레임워크 지원
 
+<!--
 Angular previously has supported an integration with the Web Tracing Framework (WTF) for performance testing of Angular applications. This integration has not been maintained and likely does not work for the majority of Angular applications today. As a result, we are deprecating the integration in Angular version 8.
-
+-->
+Angular는 이전까지 Angular 애플리케이션의 성능을 측정할 때 사용하기 위해 웹 트레이싱 프레임워크(Web Tracing Framework, WTF)를 지원했습니다. 하지만 이 프레임워크는 더이상 유지보수되지 않아 최신버전의 Angular 애플리케이션에는 동작하지 않기 때문에 Angular 8 버전부터 지원이 중단되었습니다.
 
 {@a deep-component-style-selector}
+<!--
 ### `/deep/`, `>>>` and `:ng-deep` component style selectors
+-->
+### 컴포넌트 스타일 셀렉터: `/deep/`, `>>>`, `:ng-deep`
 
+<!--
 The shadow-dom-piercing descendant combinator is deprecated and support is being [removed from major browsers and tools](https://developers.google.com/web/updates/2017/10/remove-shadow-piercing). As such, in v4 we deprecated support in Angular for all 3 of `/deep/`, `>>>` and `::ng-deep`. Until removal, `::ng-deep` is preferred for broader compatibility with the tools.
 
 For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#deprecated-deep--and-ng-deep "Component Styles guide, Deprecated deep and ngdeep")
  in the Component Styles guide.
+-->
+섀도우 DOM 안쪽으로 자식 엘리먼트를 선택하는 셀렉터는 [최신 브라우저에서 지원하지 않기 때문에 제거되었습니다](https://developers.google.com/web/updates/2017/10/remove-shadow-piercing). 이에 따라 Angular 3 버전에 존재하던 `/deep/`과 `>>>`, `::ng-deep`은 모두 Angular 4버전부터 지원이 중단되는 것으로 계획되었습니다. 지원이 중단되기 전까지 이 기능이 꼭 필요하다면 이 중에서는 `::ng-deep`을 사용하는 것을 권장합니다.
 
+더 자세한 내용은 컴포넌트 스타일 가이드 문서의 [/deep/, >>>, ::ng-deep](guide/component-styles#deprecated-deep--and-ng-deep "Component Styles guide, Deprecated deep and ngdeep") 섹션을 참고하세요.
 
 {@a template-tag}
+<!--
 ### &lt;template&gt; tag
+-->
+### &lt;template&gt; 태그
 
+<!--
 The `<template>` tag was deprecated in v4 to avoid colliding with the DOM's element of the same name (such as when using web components). Use `<ng-template>` instead. For more information, see the [Ahead-of-Time Compilation](guide/aot-compiler#enablelegacytemplate) guide.
-
+-->
+`<template>` 태그는 같은 이름이 웹 컴포넌트에서 사용하는 DOM 엘리먼트와 중복되었기 때문에 Angular 4버전부터 지원이 중단되었습니다. Angular에서는 이 태그 대신 `<ng-template>`을 사용하면 됩니다. 더 자세한 내용은 [Ahead-of-Time (AOT) 컴파일러](guide/aot-compiler#enablelegacytemplate) 가이드 문서를 참고하세요.
 
 
 {@a ngform}
+<!--
 ### ngForm element selector
+-->
+### ngForm 엘리먼트 셀렉터
 
+<!--
 Support for using `ngForm` element selector was deprecated in v6.
 It has been deprecated to be consistent with other core Angular selectors, which are typically written in kebab-case.
 
 Deprecated:
+-->
+`ngForm` 엘리먼트 셀렉터는 Angular 6버전부터 지원이 중단되었습니다.
+이 셀렉터는 Angular 코어 라이브러리에서 사용하는 셀렉터가 모두 케밥-케이스로 사용하는 것이 일반적이었기 때문에, 통일성을 맞추기 위해 변경되었습니다.
+
+원래 아래와 같이 사용했습니다:
 
 ```
 <ngForm #myForm="ngForm">
 ```
 
+<!--
 Replacement:
+-->
+이 코드는 이렇게 변경하면 됩니다:
 
 ```
 <ng-form #myForm="ngForm">
 ```
 
+<!--
 The [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) directive is solely used to display warnings when the deprecated `ngForm` selector is used.
+-->
+`ngForm` 셀렉터가 사용되었을 때 경고 메시지를 표시하려면 [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) 디렉티브를 사용하는 것도 좋습니다.
 
 
 {@a ngmodel-reactive}
+<!--
 ### ngModel with reactive forms
+-->
+### 반응형 폼에 사용하는 ngModel
 
+<!--
 Support for using the `ngModel` input property and `ngModelChange` event with reactive form directives was deprecated in version 6.
 
 For more information, see the usage notes for [`FormControlDirective`](api/forms/FormControlDirective#use-with-ngmodel) and [`FormControlName`](api/forms/FormControlName#use-with-ngmodel).
+-->
+반응형 폼에서 입력 프로퍼티로 사용하는 `ngModel`과 `ngModelChange` 이벤트는 Angular 6버전부터 지원이 중단되었습니다.
 
+자세한 내용은 [`FormControlDirective`](api/forms/FormControlDirective#use-with-ngmodel)와 [`FormControlName`](api/forms/FormControlName#use-with-ngmodel) 문서를 참고하세요.
 
 {@a sw-versionedfiles}
+<!--
 ### Service worker versionedFiles
+-->
+### 서비스 워커 versionedFiles 옵션
 
+<!--
 In the service worker configuration file `ngsw-config.json`, `versionedFiles` and `files` have the same behavior. As of v6, `versionedFiles` is deprecated; use `files` instead.
 
 For more information, see [Service Worker Configuration](guide/service-worker-config#assetgroups).
+-->
+서비스 워커 환경설정 파일 `ngsw-config.json`에 사용하는 옵션 중 `versionedFiles`와 `files`는 같은 동작을 합니다. 그래서 Angular 6 버전부터는 `files`를 사용하며 `versionedFiles`는 지원이 중단되었습니다.
 
+더 자세한 내용은 [서비스 워커 환경설정](guide/service-worker-config#assetgroups) 문서를 참고하세요.
 
 {@a reflectiveinjector}
 ### ReflectiveInjector
 
+<!--
 In v5, Angular replaced the `ReflectiveInjector` with the `StaticInjector`. The injector no longer requires the Reflect polyfill, reducing application size for most developers.
 
 Before:
+-->
+Angular 5버전부터 `ReflectiveInjector`가 `StaticInjector`로 변경되었습니다. 그 결과로 이제는 더이상 Reflect 폴리필이 사용되지 않기 때문에 Angular 애플리케이션의 빌드 결과물 크기도 더 작아졌습니다.
+
+이전에는 이렇게 사용했습니다:
 
 ```
 ReflectiveInjector.resolveAndCreate(providers);
 ```
 
+<!--
 After:
+-->
+이제는 이렇게 사용합니다:
 
 ```
 Injector.create({providers});
 ```
 
 {@a i18n-pipes}
+<!--
 ### Pipes using Intl API
+-->
+### 다국어 API를 사용하는 파이프
 
 <!--
 From https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced
 -->
-
+<!--
 Angular used to rely on the browser to provide number, date, and currency formatting using browser i18n APIs. This practice meant that most apps needed to use a polyfill, users were seeing inconsistent results across browsers, and common formats (such as the currency pipe) didn’t match developer expectations out of the box.
 
 In version 4.3, Angular introduced new number, date, and currency pipes that increase standardization across browsers and eliminate the need for i18n polyfills. These pipes use the Unicode Common Locale Data Repository (CLDR) instead of the JS Intl API to provide extensive locale support.
@@ -365,7 +422,14 @@ In version 5.0.0, Angular updated its standard pipes to use the CLRD implementat
 At that time, Angular also added [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) and related APIs to provide limited-time access to the old behavior. If you need to use these `Deprecated*` pipes, see [Angular change log](https://github.com/angular/angular/blob/master/CHANGELOG.md#i18n-pipes) and the [Date Formats mappings](https://docs.google.com/spreadsheets/d/12iygt-_cakNP1VO7MV9g4lq9NsxVWG4tSfc98HpHb0k/edit#gid=0 "Date Formats Google sheet").
 
 Reminder: If you use these `Deprecated*` pipes, you should migrate to the current APIs listed above as soon as possible. These deprecated APIs are candidates for removal in version 9.
+-->
+Angular는 숫자나 날짜, 통화 형식을 표현할 때 브라우저가 제공하는 다국어 API를 사용합니다. 이 말은, 브라우저에 따라 결과가 동일하지 않은 상황을 대비해서 Angular 애플리케이션에 폴리필을 사용해야 한다는 것을 의미합니다.
 
+Angular 4.3 버전에는 이를 대비해서 숫자, 날짜, 통화 파이프가 브라우저와 관계없이 동일하게 동작할 수 있도록 새로 추가되었으며, 다국어 폴리필도 제거했습니다. 새롭게 도입된 파이프는 기존에 사용하던 JS 다국어 API 대신 Unicode Common Locale Data Repository (CLDR)을 활용합니다.
+
+그리고 이 파이프는 Angular 5.0.0 버전부터 표준 파이프로 적용되었습니다. 이 때 이전에 사용하던 [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule)가 지원 중단되는 것으로 계획되었습니다. 다만, 이렇게 지원이 중단된 파이프를 꼭 사용해야 한다면 [Angular 체인지 로그](https://github.com/angular/angular/blob/master/CHANGELOG.md#i18n-pipes)와 [Date Formats mappings](https://docs.google.com/spreadsheets/d/12iygt-_cakNP1VO7MV9g4lq9NsxVWG4tSfc98HpHb0k/edit#gid=0 "Date Formats Google sheet") 문서를 확인한 후에 사용하세요.
+
+참고: 지원이 중단될 예정인 파이프를 사용하더라도 조만간 새로운 방식으로 변경해야 합니다. 이 API들은 Angular 9 버전부터 완전히 제거될 것입니다.
 
 {@a loadChildren}
 ### loadChildren string syntax
