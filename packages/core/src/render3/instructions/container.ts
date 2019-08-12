@@ -16,7 +16,7 @@ import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../i
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {getNativeByTNode, loadInternal} from '../util/view_utils';
+import {getNativeByTNode, load} from '../util/view_utils';
 
 import {addToViewTree, createDirectivesAndLocals, createLContainer, createTView, getOrCreateTNode, resolveDirectives} from './shared';
 
@@ -100,7 +100,7 @@ export function ɵɵtemplate(
 export function ɵɵcontainerRefreshStart(index: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
-  let previousOrParentTNode = loadInternal(tView.data, index) as TNode;
+  let previousOrParentTNode = load(tView.data, index) as TNode;
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
   setPreviousOrParentTNode(previousOrParentTNode, true);
 

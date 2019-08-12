@@ -7,7 +7,7 @@
  */
 import {HEADER_OFFSET, TVIEW} from '../interfaces/view';
 import {getContextLView, getLView} from '../state';
-import {loadInternal} from '../util/view_utils';
+import {load} from '../util/view_utils';
 
 /** Store a value in the `data` at a given `index`. */
 export function store<T>(index: number, value: T): void {
@@ -35,14 +35,5 @@ export function store<T>(index: number, value: T): void {
  */
 export function ɵɵreference<T>(index: number) {
   const contextLView = getContextLView();
-  return loadInternal<T>(contextLView, index);
-}
-
-/**
- * Retrieves a value from current `viewData`.
- *
- * @codeGenApi
- */
-export function ɵɵload<T>(index: number): T {
-  return loadInternal<T>(getLView(), index);
+  return load<T>(contextLView, index);
 }

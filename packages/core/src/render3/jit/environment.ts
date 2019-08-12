@@ -76,7 +76,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵgetCurrentView': r3.ɵɵgetCurrentView,
        'ɵɵrestoreView': r3.ɵɵrestoreView,
        'ɵɵlistener': r3.ɵɵlistener,
-       'ɵɵload': r3.ɵɵload,
        'ɵɵprojection': r3.ɵɵprojection,
        'ɵɵupdateSyntheticHostBinding': r3.ɵɵupdateSyntheticHostBinding,
        'ɵɵcomponentHostSyntheticListener': r3.ɵɵcomponentHostSyntheticListener,
