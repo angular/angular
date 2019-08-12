@@ -72,7 +72,6 @@ export {
   ɵɵinjectAttribute,
 
   ɵɵlistener,
-  ɵɵload,
 
   ɵɵnamespaceHTML,
   ɵɵnamespaceMathML,

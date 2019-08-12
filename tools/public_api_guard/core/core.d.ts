@@ -924,8 +924,6 @@ export declare function ɵɵinjectPipeChangeDetectorRef(flags?: InjectFlags): Ch
 
 export declare function ɵɵlistener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): void;
 
-export declare function ɵɵload<T>(index: number): T;
-
 export declare function ɵɵloadQuery<T>(): QueryList<T>;
 
 export declare function ɵɵnamespaceHTML(): void;

@@ -14,7 +14,7 @@ import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 import {attachPatchData} from './context_discovery';
-import {bind, setDelayProjection, ɵɵload} from './instructions/all';
+import {bind, setDelayProjection} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
 import {TsickleIssue1009, allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, textBindingInternal} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
@@ -29,7 +29,7 @@ import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPrev
 import {NO_CHANGE} from './tokens';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView} from './util/view_traversal_utils';
-import {getNativeByIndex, getNativeByTNode, getTNode} from './util/view_utils';
+import {getNativeByIndex, getNativeByTNode, getTNode, load} from './util/view_utils';
 
 
 const MARKER = `�`;
@@ -912,7 +912,7 @@ function removeNode(index: number, viewData: LView) {
     nativeRemoveNode(viewData[RENDERER], removedPhRNode);
   }
 
-  const slotValue = ɵɵload(index) as RElement | RComment | LContainer;
+  const slotValue = load(viewData, index) as RElement | RComment | LContainer;
   if (isLContainer(slotValue)) {
     const lContainer = slotValue as LContainer;
     if (removedPhTNode.type !== TNodeType.Container) {

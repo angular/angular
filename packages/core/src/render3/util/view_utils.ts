@@ -128,7 +128,7 @@ export function getTNode(index: number, view: LView): TNode {
 }
 
 /** Retrieves a value from any `LView` or `TData`. */
-export function loadInternal<T>(view: LView | TData, index: number): T {
+export function load<T>(view: LView | TData, index: number): T {
   ngDevMode && assertDataInRange(view, index + HEADER_OFFSET);
   return view[index + HEADER_OFFSET];
 }

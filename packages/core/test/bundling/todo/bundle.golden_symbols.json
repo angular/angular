@@ -1089,7 +1089,7 @@
     "name": "listenerInternal"
   },
   {
-    "name": "loadInternal"
+    "name": "load"
   },
   {
     "name": "locateDirectiveOrProvider"

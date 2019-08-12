@@ -152,7 +152,6 @@ export {
   ɵɵtemplate,
   ɵɵembeddedViewEnd,
   store as ɵstore,
-  ɵɵload,
   ɵɵpipe,
   ɵɵBaseDef,
   ComponentDef as ɵComponentDef,
