@@ -432,8 +432,12 @@ Angular 4.3 버전에는 이를 대비해서 숫자, 날짜, 통화 파이프가
 참고: 지원이 중단될 예정인 파이프를 사용하더라도 조만간 새로운 방식으로 변경해야 합니다. 이 API들은 Angular 9 버전부터 완전히 제거될 것입니다.
 
 {@a loadChildren}
+<!--
 ### loadChildren string syntax
+-->
+### loadChildren 문법
 
+<!--
 When Angular first introduced lazy routes, there wasn't browser support for dynamically loading additional JavaScript. Angular created our own scheme using the syntax `loadChildren: './lazy/lazy.module#LazyModule'` and built tooling to support it. Now that ECMAScript dynamic import is supported in many browsers, Angular is moving toward this new syntax.
 
 In version 8, the string syntax for the [`loadChildren`](api/router/LoadChildren) route specification was deprecated, in favor of new syntax that uses `import()` syntax.
@@ -447,7 +451,22 @@ const routes: Routes = [{
   loadChildren: './lazy/lazy.module#LazyModule'
 }];
 ```
+-->
+Angular에 지연 라우팅이 처음 등장했을 때는 브라우저가 JavaScript 리소스를 추가로, 동적으로 로딩하는 기능이 없습니다. 그래서 Angular는 이 기능을 구현하기 위해 독자적으로 `loadChildren: './lazy/lazy.module#LazyModule'`와 같은 문법을 만들어냈습니다. 하지만 이제는 ECMAScript의 동적 로딩 기능을 브라우저 계층에서 지원하는 경우가 많아졌습니다. 그래서 Angular도 이전 방식 대신 새로운 방식을 활용하기로 결정했습니다.
 
+Angular 8 버전부터는 이전까지 사용하던 [`loadChildren`](api/router/LoadChildren) 문법을 사용하지 않고, `import()`를 사용하는 문법으로 대체됩니다.
+
+이전에는 이렇게 사용했습니다:
+
+```
+const routes: Routes = [{
+  path: 'lazy',
+  // loadChildren에 문자열을 사용해서 지연로딩하는 문법은 이제 사용하지 않습니다.
+  loadChildren: './lazy/lazy.module#LazyModule'
+}];
+```
+
+<!--
 After:
 
 ```
@@ -457,27 +476,46 @@ const routes: Routes = [{
   loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
 }];
 ```
+-->
+이제는 이렇게 사용합니다:
+
+```
+const routes: Routes = [{
+  path: 'lazy',
+  // 이제는 import() 문법을 사용합니다.
+  loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
+}];
+```
 
 
 <div class="alert is-helpful">
 
 
+<!--
 **Version 8 update**: When you update to version 8, the [`ng update`](cli/update) command performs the transformation automatically. Prior to version 7, the `import()` syntax only works in JIT mode (with view engine).
-
+-->
+**8 버전으로 업데이트하기**: Angular를 8버전으로 올리기 위해 [`ng update`](cli/update) 명령을 실행하면 `loadChildren`으로 지연로딩하던 문법이 자동으로 수정됩니다. 7버전까지는 `import()` 문법이 JIT 모드에서만 동작했습니다.
 
 </div>
 
 <div class="alert is-helpful">
 
+<!--
 **Declaration syntax**: It's important to follow the route declaration syntax `loadChildren: () => import('...').then(m => m.ModuleName)` to allow `ngc` to discover the lazy-loaded module and the associated `NgModule`. You can find the complete list of allowed syntax constructs [here](https://github.com/angular/angular-cli/blob/a491b09800b493fe01301387fa9a025f7c7d4808/packages/ngtools/webpack/src/transformers/import_factory.ts#L104-L113). These restrictions will be relaxed with the release of Ivy since it'll no longer use `NgFactories`.
+-->
+**선언형 문법(declaration syntax)**: `loadChildren` 프로퍼티를 사용해서 모듈을 지연로딩 하려면 `loadChildren: () => import('...').then(m => m.ModuleName)`와 같은 문법을 사용해야 `ngc`가 해당 모듈을 제대로 로드할 수 있습니다. 이 때 사용할 수 있는 문법에 대해서는 [이 문서](https://github.com/angular/angular-cli/blob/a491b09800b493fe01301387fa9a025f7c7d4808/packages/ngtools/webpack/src/transformers/import_factory.ts#L104-L113)를 참고하세요. 문법이 한정되어 있어서 개발자에게는 제약인 것처럼 느낄 수 있지만, 이 방식은 `NgFactories`를 사용하지 않기 때문에 Ivy를 도입하는 측면에서는 더 유리합니다.
 
 </div>
 
 
 
 {@a activatedroute-props}
+<!--
 ### ActivatedRoute params and queryParams properties
+-->
+### ActivatedRoute 객체의 params와 queryParams 프로퍼티
 
+<!--
 [ActivatedRoute](api/router/ActivatedRoute) contains two [properties](api/router/ActivatedRoute#properties) that are less capable than their replacements and may be deprecated in a future Angular version.
 
 | Property | Replacement |
@@ -486,32 +524,67 @@ const routes: Routes = [{
 | `queryParams` | `queryParamMap` |
 
 For more information see the [Router guide](guide/router#activated-route).
+-->
+[ActivatedRoute](api/router/ActivatedRoute)에 있던 [프로퍼티](api/router/ActivatedRoute#properties) 중에서 활용도가 상대적으로 높지 않았던 프로퍼티가 다른 타입의 프로퍼티로 대체되었습니다.
+
+| 프로퍼티 | 대체 프로퍼티 |
+| -------- | ----------- |
+| `params` | `paramMap` |
+| `queryParams` | `queryParamMap` |
+
+더 자세한 내용은 [라우터 가이드 문서](guide/router#activated-route)를 참고하세요.
 
 
 {@a reflect-metadata}
+<!--
 ### Dependency on a reflect-metadata polyfill in JIT mode
+-->
+### JIT 모드에서 사용하는 reflect-metadata 폴리필
+
+<!--
 Angular applications, and specifically applications that relied on the JIT compiler, used to require a polyfill for the [reflect-metadata](https://github.com/rbuckton/reflect-metadata) APIs.
 
 The need for this polyfill was removed in Angular version 8.0 ([see #14473](https://github.com/angular/angular-cli/pull/14473)), rendering the presence of the poylfill in most Angular applications unnecessary. Because the polyfill can be depended on by 3rd-party libraries, instead of removing it from all Angular projects, we are deprecating the requirement for this polyfill as of version 8.0. This should give library authors and application developers sufficient time to evaluate if they need the polyfill, and perform any refactoring necessary to remove the dependency on it.
 
 In a typical Angular project, the polyfill is not used in production builds, so removing it should not impact production applications. The goal behind this removal is overall simplification of the build setup and decrease in the number of external dependencies.
+-->
+Angular 애플리케이션과 같이 JIT 컴파일러를 사용하는 애플리케이션은 [reflect-metadata](https://github.com/rbuckton/reflect-metadata) API를 사용하기 위해 폴리필이 필요했습니다.
+
+이 폴리필은 Angular 8.0 버전부터 사용하지 않지만([#14473 참고](https://github.com/angular/angular-cli/pull/14473)), 서드파티 패키지에 의존성이 있었기 때문에 제거하지는 않았습니다. 이 버전에서는 단순하게 Angular가 사용하는 reflect-metadata 관련 코드를 제거했을 뿐입니다. 당분간 이 패키지는 그대로 유지되겠지만 애플리케이션 개발자나 서드파티 라이브러리 개발자는 이 폴리필이 정말 필요한지 판단해보고 사용하지 않는 쪽으로 코드를 리팩토링하는 것이 나을 수 있습니다.
+
+Angular 프로젝트를 운영용으로 빌드하더라도 폴리필이 사용되는 경우는 그리 많지 않기 때문에 이 폴리필이 제거되더라도 애플리케이션을 운영하는 데에는 큰 영향이 없습니다. 하지만 빌드 단계를 조금 더 단순하게 줄이고 외부 의존성을 정리하기 위해서는 최종적으로 폴리필을 제거하는 것이 좋습니다.
 
 {@a static-query-resolution}
+<!--
 ### `@ViewChild()` / `@ContentChild()` static resolution as the default
+-->
+### `@ViewChild()`, `@ContentChild()` 정적 평가
 
+<!--
 See our [dedicated migration guide for static queries](guide/static-query-migration).
+-->
+[정적 쿼리 적용 가이드 문서](guide/static-query-migration)를 참고하세요.
 
 {@a contentchild-input-together}
+<!--
 ### `@ContentChild()` / `@Input()` used together
+-->
+### `@ContentChild()`와 `@Input()`을 함께쓰는 문법
 
+<!--
 The following pattern is deprecated:
+-->
+다음과 같이 사용하던 패턴은 더이상 사용되지 않습니다:
 
 ```ts
 @Input() @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
 ```
 
+<!--
 Rather than using this pattern, separate the two decorators into their own
 properties and add fallback logic as in the following example:
+-->
+이 방법보다는 두 데코레이터를 따로 나눠서 다음과 같이 구현하는 것이 좋습니다:
 
 ```ts
 @Input() tpl !: TemplateRef<any>;
