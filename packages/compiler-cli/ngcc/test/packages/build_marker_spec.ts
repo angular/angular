@@ -147,6 +147,26 @@ runInEachFileSystem(() => {
         expect(pkg.scripts.prepublishOnly).toContain('This is not allowed');
         expect(pkg.scripts.prepublishOnly__ivy_ngcc_bak).toBe(prepublishOnly);
       });
+
+      it(`should not keep backup of overwritten 'prepublishOnly' script`, () => {
+        const COMMON_PACKAGE_PATH = _('/node_modules/@angular/common/package.json');
+        const fs = getFileSystem();
+        let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
+
+        markAsProcessed(fs, pkg, COMMON_PACKAGE_PATH, ['fesm2015']);
+
+        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
+        expect(pkg.scripts.prepublishOnly).toContain('This is not allowed');
+        expect(pkg.scripts.prepublishOnly__ivy_ngcc_bak).toBeUndefined();
+
+        // Running again, now that there is `prepublishOnly` script (created by `ngcc`), it should
+        // still not back it up as `prepublishOnly__ivy_ngcc_bak`.
+        markAsProcessed(fs, pkg, COMMON_PACKAGE_PATH, ['fesm2015']);
+
+        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
+        expect(pkg.scripts.prepublishOnly).toContain('This is not allowed');
+        expect(pkg.scripts.prepublishOnly__ivy_ngcc_bak).toBeUndefined();
+      });
     });
 
     describe('hasBeenProcessed', () => {
