@@ -1,3 +1,12 @@
+<a name="8.2.2"></a>
+## [8.2.2](https://github.com/angular/angular/compare/8.2.1...8.2.2) (2019-08-12)
+
+
+### Bug Fixes
+
+* **bazel:** disable treeshaking when generating FESM and UMD bundles ([#32069](https://github.com/angular/angular/issues/32069)) ([3420d29](https://github.com/angular/angular/commit/3420d29))
+
+
 <a name="8.2.1"></a>
 ## [8.2.1](https://github.com/angular/angular/compare/8.2.0...8.2.1) (2019-08-08)
 
