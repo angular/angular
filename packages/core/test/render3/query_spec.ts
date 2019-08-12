@@ -9,12 +9,12 @@
 import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {EventEmitter} from '../..';
-import {AttributeMarker, detectChanges, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵload, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
+import {AttributeMarker, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ɵɵcontentQuery, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/query';
 import {getLView} from '../../src/render3/state';
-import {getNativeByIndex} from '../../src/render3/util/view_utils';
+import {getNativeByIndex, load} from '../../src/render3/util/view_utils';
 import {ɵɵtemplateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 
 import {ComponentFixture, TemplateFixture, createComponent, createDirective, getDirectiveOnNode, renderComponent} from './render_util';
@@ -1701,8 +1701,9 @@ describe('query', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              outInstance = ɵɵload<QueryDirective>(1);
-              inInstance = ɵɵload<QueryDirective>(5);
+              const lView = getLView();
+              outInstance = load<QueryDirective>(lView, 1);
+              inInstance = load<QueryDirective>(lView, 5);
             }
           },
           10, 0, [QueryDirective]);
@@ -1758,8 +1759,9 @@ describe('query', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              outInstance = ɵɵload<QueryDirective>(1);
-              inInstance = ɵɵload<QueryDirective>(3);
+              const lView = getLView();
+              outInstance = load<QueryDirective>(lView, 1);
+              inInstance = load<QueryDirective>(lView, 3);
             }
           },
           7, 0, [QueryDirective]);
@@ -1814,8 +1816,9 @@ describe('query', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              outInstance = ɵɵload<QueryDirective>(1);
-              inInstance = ɵɵload<QueryDirective>(3);
+              const lView = getLView();
+              outInstance = load<QueryDirective>(lView, 1);
+              inInstance = load<QueryDirective>(lView, 3);
             }
           },
           7, 0, [QueryDirective]);
@@ -1902,8 +1905,9 @@ describe('query', () => {
                  ɵɵelementEnd();
                }
                if (rf & RenderFlags.Update) {
-                 shallowInstance = ɵɵload<ShallowQueryDirective>(1);
-                 deepInstance = ɵɵload<DeepQueryDirective>(2);
+                 const lView = getLView();
+                 shallowInstance = load<ShallowQueryDirective>(lView, 1);
+                 deepInstance = load<DeepQueryDirective>(lView, 2);
                }
              },
              8, 0, [ShallowQueryDirective, DeepQueryDirective]);
