@@ -1,3 +1,21 @@
+<a name="9.0.0-next.2"></a>
+# [9.0.0-next.2](https://github.com/angular/angular/compare/9.0.0-next.1...9.0.0-next.2) (2019-08-12)
+
+
+### Bug Fixes
+
+* **bazel:** disable treeshaking when generating FESM and UMD bundles ([#32069](https://github.com/angular/angular/issues/32069)) ([4f37487](https://github.com/angular/angular/commit/4f37487))
+* **compiler:** do not remove whitespace wrapping i18n expansions ([#31962](https://github.com/angular/angular/issues/31962)) ([0ddf0c4](https://github.com/angular/angular/commit/0ddf0c4))
+* **ivy:** reuse compilation scope for incremental template changes. ([#31932](https://github.com/angular/angular/issues/31932)) ([eb5412d](https://github.com/angular/angular/commit/eb5412d)), closes [#31654](https://github.com/angular/angular/issues/31654)
+
+
+
+### Performance Improvements
+
+* **ivy:** don't read global state when interpolated values don't change ([#32093](https://github.com/angular/angular/issues/32093)) ([6eb9c2f](https://github.com/angular/angular/commit/6eb9c2f))
+
+
+
 <a name="8.2.2"></a>
 ## [8.2.2](https://github.com/angular/angular/compare/8.2.1...8.2.2) (2019-08-12)
 
