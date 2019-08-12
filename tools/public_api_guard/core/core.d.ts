@@ -926,9 +926,7 @@ export declare function ɵɵlistener(eventName: string, listenerFn: (e?: any) =>
 
 export declare function ɵɵload<T>(index: number): T;
 
-export declare function ɵɵloadContentQuery<T>(): QueryList<T>;
-
-export declare function ɵɵloadViewQuery<T>(): QueryList<T>;
+export declare function ɵɵloadQuery<T>(): QueryList<T>;
 
 export declare function ɵɵnamespaceHTML(): void;
 

@@ -1535,8 +1535,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 var $tmp$;
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDir = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDirs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDirs = $tmp$);
               }
             },
             consts: 1,
@@ -1593,8 +1593,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 var $tmp$;
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRef = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRefs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.myRef = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.myRefs = $tmp$);
               }
             },
             …
@@ -1646,8 +1646,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 var $tmp$;
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDir = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.foo = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.foo = $tmp$.first);
               }
             },
             consts: 1,
@@ -1711,10 +1711,10 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 var $tmp$;
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRef = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDir = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRefs = $tmp$);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDirs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.myRef = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.myRefs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDirs = $tmp$);
               }
             },
             …
@@ -1775,8 +1775,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
               var $tmp$;
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDir = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDirList = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDirList = $tmp$);
               }
             },
             ngContentSelectors: _c0,
@@ -1835,8 +1835,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
               var $tmp$;
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRef = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRefs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.myRef = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.myRefs = $tmp$);
               }
             },
             …
@@ -1897,8 +1897,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
               var $tmp$;
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDir = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.foo = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.foo = $tmp$.first);
               }
             },
             ngContentSelectors: $_c1$,
@@ -1964,10 +1964,10 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
               var $tmp$;
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRef = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDir = $tmp$.first);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRefs = $tmp$);
-                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDirs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.myRef = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.myRefs = $tmp$);
+                $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDirs = $tmp$);
               }
             },
             …
@@ -3144,7 +3144,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             var $tmp$;
-            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.something = $tmp$.first);
+            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.something = $tmp$.first);
           }
         }
       });
@@ -3189,7 +3189,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             var $tmp$;
-            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.something = $tmp$);
+            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.something = $tmp$);
           }
         }
       });
@@ -3232,7 +3232,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             var $tmp$;
-            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.something = $tmp$.first);
+            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.something = $tmp$.first);
           }
         }
       });
@@ -3277,7 +3277,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             var $tmp$;
-            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.something = $tmp$);
+            $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.something = $tmp$);
           }
         }
       });

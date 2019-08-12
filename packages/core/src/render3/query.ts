@@ -449,15 +449,6 @@ function viewQueryInternal<T>(
 }
 
 /**
- * Loads a QueryList corresponding to the current view query.
- *
- * @codeGenApi
- */
-export function ɵɵloadViewQuery<T>(): QueryList<T> {
-  return loadQueryInternal<T>(getLView(), getCurrentQueryIndex());
-}
-
-/**
  * Registers a QueryList, associated with a content query, for later refresh (part of a view
  * refresh).
  *
@@ -509,11 +500,11 @@ function contentQueryInternal<T>(
 }
 
 /**
- * Loads a QueryList corresponding to the current content query.
+ * Loads a QueryList corresponding to the current view or content query.
  *
  * @codeGenApi
  */
-export function ɵɵloadContentQuery<T>(): QueryList<T> {
+export function ɵɵloadQuery<T>(): QueryList<T> {
   return loadQueryInternal<T>(getLView(), getCurrentQueryIndex());
 }
 

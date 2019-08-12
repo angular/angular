@@ -8,7 +8,7 @@
 
 import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ComponentRef, ElementRef, QueryList, TemplateRef, ViewContainerRef, ViewRef,} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
-import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵlistener, ɵɵloadViewQuery, ɵɵqueryRefresh, ɵɵviewQuery,} from '../../src/render3/index';
+import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵlistener, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery,} from '../../src/render3/index';
 
 import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtemplate, ɵɵtext,} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -443,7 +443,7 @@ describe('ViewContainerRef', () => {
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+              ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                   (ctx.foo = tmp as QueryList<any>);
             }
           }

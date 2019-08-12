@@ -12,7 +12,7 @@ import {EventEmitter} from '../..';
 import {AttributeMarker, detectChanges, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
 import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵload, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {ɵɵcontentQuery, ɵɵloadContentQuery, ɵɵloadViewQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/query';
+import {ɵɵcontentQuery, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/query';
 import {getLView} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
 import {ɵɵtemplateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
@@ -85,9 +85,9 @@ describe('query', () => {
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+            ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                 (ctx.query0 = tmp as QueryList<any>);
-            ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+            ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                 (ctx.query1 = tmp as QueryList<any>);
           }
         });
@@ -124,7 +124,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -162,7 +162,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -196,7 +196,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -264,11 +264,9 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
-                    (ctx.directive = tmp.first);
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
-                    (ctx.service = tmp.first);
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) && (ctx.alias = tmp.first);
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) && (ctx.directive = tmp.first);
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) && (ctx.service = tmp.first);
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) && (ctx.alias = tmp.first);
               }
             },
             directives: [MyDirective]
@@ -309,8 +307,7 @@ describe('query', () => {
                 ɵɵviewQuery(MyDirective, false, Alias);
               }
               if (rf & RenderFlags.Update) {
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
-                    (ctx.service = tmp.first);
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) && (ctx.service = tmp.first);
               }
             },
             directives: [MyDirective]
@@ -351,7 +348,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -390,9 +387,9 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.fooQuery = tmp as QueryList<any>);
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.barQuery = tmp as QueryList<any>);
               }
             });
@@ -438,7 +435,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -476,7 +473,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -513,7 +510,7 @@ describe('query', () => {
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
-                   ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                   ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                        (ctx.query = tmp as QueryList<any>);
                  }
                });
@@ -549,7 +546,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -615,9 +612,9 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.deep = tmp as QueryList<any>);
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.shallow = tmp as QueryList<any>);
               }
             });
@@ -650,7 +647,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -682,7 +679,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -716,7 +713,7 @@ describe('query', () => {
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
-                   ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                   ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                        (ctx.query = tmp as QueryList<any>);
                  }
                });
@@ -750,7 +747,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -783,7 +780,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -821,7 +818,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -867,7 +864,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -906,7 +903,7 @@ describe('query', () => {
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
-                   ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                   ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                        (ctx.query = tmp as QueryList<any>);
                  }
                });
@@ -947,7 +944,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -988,9 +985,9 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.fooQuery = tmp as QueryList<any>);
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.barQuery = tmp as QueryList<any>);
               }
             });
@@ -1031,7 +1028,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1070,7 +1067,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1105,7 +1102,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1139,7 +1136,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1173,7 +1170,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1204,7 +1201,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1237,7 +1234,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1271,7 +1268,7 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1321,9 +1318,9 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.tmplQuery = tmp as QueryList<any>);
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.elemQuery = tmp as QueryList<any>);
               }
             });
@@ -1362,7 +1359,7 @@ describe('query', () => {
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+              ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                   (ctx.query = queryInstance = tmp as QueryList<any>);
             }
           });
@@ -1444,7 +1441,7 @@ describe('query', () => {
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+            ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                 (ctx.query = tmp as QueryList<any>);
           }
         });
@@ -1480,7 +1477,7 @@ describe('query', () => {
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            ɵɵqueryRefresh(tmp = ɵɵloadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+            ɵɵqueryRefresh(tmp = ɵɵloadQuery<ElementRef>()) && (ctx.foos = tmp);
           }
         }
       });
@@ -1604,7 +1601,7 @@ describe('query', () => {
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+              ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                   (ctx.foos = tmp as QueryList<any>);
             }
           });
@@ -1645,7 +1642,7 @@ describe('query', () => {
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+              ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                   (ctx.bars = tmp as QueryList<any>);
             }
           });
@@ -1671,7 +1668,7 @@ describe('query', () => {
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              ɵɵqueryRefresh(tmp = ɵɵloadContentQuery<ElementRef>()) && (ctx.fooBars = tmp);
+              ɵɵqueryRefresh(tmp = ɵɵloadQuery<ElementRef>()) && (ctx.fooBars = tmp);
             }
           }
         });
@@ -1735,7 +1732,7 @@ describe('query', () => {
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              ɵɵqueryRefresh(tmp = ɵɵloadContentQuery<ElementRef>()) && (ctx.fooBars = tmp);
+              ɵɵqueryRefresh(tmp = ɵɵloadQuery<ElementRef>()) && (ctx.fooBars = tmp);
             }
           }
         });
@@ -1791,7 +1788,7 @@ describe('query', () => {
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              ɵɵqueryRefresh(tmp = ɵɵloadContentQuery<ElementRef>()) && (ctx.fooBars = tmp);
+              ɵɵqueryRefresh(tmp = ɵɵloadQuery<ElementRef>()) && (ctx.fooBars = tmp);
             }
           }
         });
@@ -1851,7 +1848,7 @@ describe('query', () => {
                }
                if (rf & RenderFlags.Update) {
                  let tmp: any;
-                 ɵɵqueryRefresh(tmp = ɵɵloadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<ElementRef>()) && (ctx.foos = tmp);
                }
              }
            });
@@ -1872,7 +1869,7 @@ describe('query', () => {
                }
                if (rf & RenderFlags.Update) {
                  let tmp: any;
-                 ɵɵqueryRefresh(tmp = ɵɵloadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<ElementRef>()) && (ctx.foos = tmp);
                }
              }
            });
@@ -1948,7 +1945,7 @@ describe('query', () => {
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              ɵɵqueryRefresh(tmp = ɵɵloadContentQuery<TextDirective>()) && (ctx.texts = tmp);
+              ɵɵqueryRefresh(tmp = ɵɵloadQuery<TextDirective>()) && (ctx.texts = tmp);
             }
           }
         });
@@ -2027,7 +2024,7 @@ describe('query', () => {
               ɵɵviewQuery(TextDirective, true);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<TextDirective>>()) &&
+              ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<TextDirective>>()) &&
                   (ctx.texts = tmp as QueryList<TextDirective>);
             }
           },
