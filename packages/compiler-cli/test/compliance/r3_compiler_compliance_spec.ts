@@ -669,44 +669,6 @@ describe('compiler compliance', () => {
           source, EmptyOutletComponentDefinition, 'Incorrect EmptyOutletComponent.ngComponentDef');
     });
 
-    it('should not support directives without selector', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, Directive, NgModule} from '@angular/core';
-
-            @Directive({})
-            export class EmptyOutletDirective {}
-
-            @NgModule({declarations: [EmptyOutletDirective]})
-            export class MyModule{}
-          `
-        }
-      };
-
-      expect(() => compile(files, angularFiles))
-          .toThrowError('Directive EmptyOutletDirective has no selector, please add it!');
-    });
-
-    it('should not support directives with empty selector', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, Directive, NgModule} from '@angular/core';
-
-            @Directive({selector: ''})
-            export class EmptyOutletDirective {}
-
-            @NgModule({declarations: [EmptyOutletDirective]})
-            export class MyModule{}
-          `
-        }
-      };
-
-      expect(() => compile(files, angularFiles))
-          .toThrowError('Directive EmptyOutletDirective has no selector, please add it!');
-    });
-
     it('should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting',
        () => {
          const files = {

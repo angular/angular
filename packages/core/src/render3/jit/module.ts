@@ -185,6 +185,7 @@ function verifySemanticsOfNgModuleDef(
   });
   const exports = maybeUnwrapFn(ngModuleDef.exports);
   declarations.forEach(verifyDeclarationsHaveDefinitions);
+  declarations.forEach(verifyDirectivesHaveSelector);
   const combinedDeclarations: Type<any>[] = [
     ...declarations.map(resolveForwardRef),
     ...flatten(imports.map(computeCombinedExports)).map(resolveForwardRef),
@@ -217,6 +218,14 @@ function verifySemanticsOfNgModuleDef(
     if (!def) {
       errors.push(
           `Unexpected value '${stringifyForError(type)}' declared by the module '${stringifyForError(moduleType)}'. Please add a @Pipe/@Directive/@Component annotation.`);
+    }
+  }
+
+  function verifyDirectivesHaveSelector(type: Type<any>): void {
+    type = resolveForwardRef(type);
+    const def = getDirectiveDef(type);
+    if (!getComponentDef(type) && def && def.selectors.length == 0) {
+      errors.push(`Directive ${stringifyForError(type)} has no selector, please add it!`);
     }
   }
 

@@ -72,6 +72,10 @@ export class DirectiveDecoratorHandler implements
       });
     }
 
+    if (analysis && !analysis.selector) {
+      this.metaRegistry.registerAbstractDirective(node);
+    }
+
     if (analysis === undefined) {
       return {};
     }
@@ -102,7 +106,10 @@ export class DirectiveDecoratorHandler implements
 }
 
 /**
- * Helper function to extract metadata from a `Directive` or `Component`.
+ * Helper function to extract metadata from a `Directive` or `Component`. `Directive`s without a
+ * selector are allowed to be used for abstract base classes. These abstract directives should not
+ * appear in the declarations of an `NgModule` and additional verification is done when processing
+ * the module.
  */
 export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
@@ -112,17 +119,22 @@ export function extractDirectiveMetadata(
   metadata: R3DirectiveMetadata,
   decoratedElements: ClassMember[],
 }|undefined {
-  if (decorator.args === null || decorator.args.length !== 1) {
+  let directive: Map<string, ts.Expression>;
+  if (decorator.args === null || decorator.args.length === 0) {
+    directive = new Map<string, ts.Expression>();
+  } else if (decorator.args.length !== 1) {
     throw new FatalDiagnosticError(
         ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
         `Incorrect number of arguments to @${decorator.name} decorator`);
+  } else {
+    const meta = unwrapExpression(decorator.args[0]);
+    if (!ts.isObjectLiteralExpression(meta)) {
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_ARG_NOT_LITERAL, meta,
+          `@${decorator.name} argument must be literal.`);
+    }
+    directive = reflectObjectLiteral(meta);
   }
-  const meta = unwrapExpression(decorator.args[0]);
-  if (!ts.isObjectLiteralExpression(meta)) {
-    throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARG_NOT_LITERAL, meta, `@${decorator.name} argument must be literal.`);
-  }
-  const directive = reflectObjectLiteral(meta);
 
   if (directive.has('jit')) {
     // The only allowed value is true, so there's no need to expand further.
@@ -188,9 +200,11 @@ export function extractDirectiveMetadata(
     }
     // use default selector in case selector is an empty string
     selector = resolved === '' ? defaultSelector : resolved;
-  }
-  if (!selector) {
-    throw new Error(`Directive ${clazz.name.text} has no selector, please add it!`);
+    if (!selector) {
+      throw new FatalDiagnosticError(
+          ErrorCode.DIRECTIVE_MISSING_SELECTOR, expr,
+          `Directive ${clazz.name.text} has no selector, please add it!`);
+    }
   }
 
   const host = extractHostBindings(decoratedElements, evaluator, coreModule, directive);

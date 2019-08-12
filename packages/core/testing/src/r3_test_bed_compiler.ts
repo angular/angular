@@ -299,7 +299,7 @@ export class R3TestBedCompiler {
     this.pendingComponents.clear();
 
     this.pendingDirectives.forEach(declaration => {
-      const metadata = this.resolvers.directive.resolve(declaration) !;
+      const metadata = this.resolvers.directive.resolve(declaration);
       this.maybeStoreNgDef(NG_DIRECTIVE_DEF, declaration);
       compileDirective(declaration, metadata);
     });

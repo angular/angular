@@ -16,10 +16,14 @@ import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta}
  * unit, which supports both reading and registering.
  */
 export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
+  private abstractDirectives = new Set<ClassDeclaration>();
   private directives = new Map<ClassDeclaration, DirectiveMeta>();
   private ngModules = new Map<ClassDeclaration, NgModuleMeta>();
   private pipes = new Map<ClassDeclaration, PipeMeta>();
 
+  isAbstractDirective(ref: Reference<ClassDeclaration>): boolean {
+    return this.abstractDirectives.has(ref.node);
+  }
   getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
     return this.directives.has(ref.node) ? this.directives.get(ref.node) ! : null;
   }
@@ -30,6 +34,7 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
     return this.pipes.has(ref.node) ? this.pipes.get(ref.node) ! : null;
   }
 
+  registerAbstractDirective(clazz: ClassDeclaration): void { this.abstractDirectives.add(clazz); }
   registerDirectiveMetadata(meta: DirectiveMeta): void { this.directives.set(meta.ref.node, meta); }
   registerNgModuleMetadata(meta: NgModuleMeta): void { this.ngModules.set(meta.ref.node, meta); }
   registerPipeMetadata(meta: PipeMeta): void { this.pipes.set(meta.ref.node, meta); }
@@ -40,6 +45,12 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
  */
 export class CompoundMetadataRegistry implements MetadataRegistry {
   constructor(private registries: MetadataRegistry[]) {}
+
+  registerAbstractDirective(clazz: ClassDeclaration) {
+    for (const registry of this.registries) {
+      registry.registerAbstractDirective(clazz);
+    }
+  }
 
   registerDirectiveMetadata(meta: DirectiveMeta): void {
     for (const registry of this.registries) {

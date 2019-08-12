@@ -117,6 +117,8 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     }
   }
 
+  registerAbstractDirective(clazz: ClassDeclaration): void {}
+
   registerDirectiveMetadata(directive: DirectiveMeta): void {}
 
   registerPipeMetadata(pipe: PipeMeta): void {}

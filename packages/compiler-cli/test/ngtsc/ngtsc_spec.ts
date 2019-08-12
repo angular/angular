@@ -1008,19 +1008,43 @@ runInEachFileSystem(os => {
         expect(jsContents).toContain('selectors: [["ng-component"]]');
       });
 
-      it('should throw if selector is missing in Directive decorator params', () => {
-        env.write('test.ts', `
-        import {Directive} from '@angular/core';
+      it('should allow directives with no selector that are not in NgModules', () => {
+        env.write('main.ts', `
+          import {Directive} from '@angular/core';
 
-        @Directive({
-          inputs: ['a', 'b']
-        })
-        export class TestDir {}
-      `);
+          @Directive({})
+          export class BaseDir {}
 
+          @Directive({})
+          export abstract class AbstractBaseDir {}
+
+          @Directive()
+          export abstract class EmptyDir {}
+
+          @Directive({
+            inputs: ['a', 'b']
+          })
+          export class TestDirWithInputs {}
+        `);
+        const errors = env.driveDiagnostics();
+        expect(errors.length).toBe(0);
+      });
+
+      it('should not allow directives with no selector that are in NgModules', () => {
+        env.write('main.ts', `
+          import {Directive, NgModule} from '@angular/core';
+
+          @Directive({})
+          export class BaseDir {}
+
+          @NgModule({
+            declarations: [BaseDir],
+          })
+          export class MyModule {}
+        `);
         const errors = env.driveDiagnostics();
         expect(trim(errors[0].messageText as string))
-            .toContain('Directive TestDir has no selector, please add it!');
+            .toContain('Directive BaseDir has no selector, please add it!');
       });
 
       it('should throw if Directive selector is an empty string', () => {

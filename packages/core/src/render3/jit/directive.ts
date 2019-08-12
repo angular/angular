@@ -117,7 +117,7 @@ function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
  * In the event that compilation is not immediate, `compileDirective` will return a `Promise` which
  * will resolve when compilation completes and the directive becomes usable.
  */
-export function compileDirective(type: Type<any>, directive: Directive): void {
+export function compileDirective(type: Type<any>, directive: Directive | null): void {
   let ngDirectiveDef: any = null;
   Object.defineProperty(type, NG_DIRECTIVE_DEF, {
     get: () => {
@@ -125,7 +125,10 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
         const name = type && type.name;
         const sourceMapUrl = `ng:///${name}/ngDirectiveDef.js`;
         const compiler = getCompilerFacade();
-        const facade = directiveMetadata(type as ComponentType<any>, directive);
+        // `directive` can be null in the case of abstract directives as a base class
+        // that use `@Directive()` with no selector. In that case, pass empty object to the
+        // `directiveMetadata` function instead of null.
+        const facade = directiveMetadata(type as ComponentType<any>, directive || {});
         facade.typeSourceSpan = compiler.createParseSourceSpan('Directive', name, sourceMapUrl);
         if (facade.usesInheritance) {
           addBaseDefToUndecoratedParents(type);

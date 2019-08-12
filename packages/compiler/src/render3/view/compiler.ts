@@ -132,10 +132,6 @@ export function compileDirectiveFromMetadata(
   addFeatures(definitionMap, meta);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
 
-  if (!meta.selector) {
-    throw new Error(`Directive ${meta.name} has no selector, please add it!`);
-  }
-
   const type = createTypeForDef(meta, R3.DirectiveDefWithMeta);
   return {expression, type, statements};
 }
