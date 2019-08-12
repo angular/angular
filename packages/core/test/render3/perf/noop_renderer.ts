@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3} from '../../../src/render3/interfaces/renderer';
 
 export class WebWorkerRenderNode implements RNode, RComment, RText {
@@ -32,13 +39,9 @@ export class NoopRenderer implements ProceduralRenderer3 {
   }
   addClass(el: RElement, name: string): void { throw new Error('Method not implemented.'); }
   removeClass(el: RElement, name: string): void { throw new Error('Method not implemented.'); }
-  setStyle(el: RElement, style: string, value: any, flags?: RendererStyleFlags3|undefined): void {
-    throw new Error('Method not implemented.');
-  }
-  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags3|undefined): void {
-    throw new Error('Method not implemented.');
-  }
-  setProperty(el: RElement, name: string, value: any): void { (el as any)[name] = value; }
+  setStyle(el: RElement, style: string, value: any, flags?: RendererStyleFlags3|undefined): void {}
+  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags3|undefined): void {}
+  setProperty(el: RElement, name: string, value: any): void {}
   setValue(node: RComment|RText, value: string): void { node.textContent = value; }
   listen(
       target: RNode|'document'|'window'|'body', eventName: string,
