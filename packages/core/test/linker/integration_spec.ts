@@ -1411,7 +1411,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().querySelectorAll(fixture.nativeElement, 'script').length).toEqual(0);
       });
 
-      it('should throw when using directives without selector', () => {
+      it('should throw when using directives without selector in NgModule declarations', () => {
         @Directive({})
         class SomeDirective {
         }
@@ -1424,6 +1424,38 @@ function declareTests(config?: {useJit: boolean}) {
         expect(() => TestBed.createComponent(MyComp))
             .toThrowError(`Directive ${stringify(SomeDirective)} has no selector, please add it!`);
       });
+
+      it('should not throw when using directives without selector as base class not in declarations',
+         () => {
+           @Directive({})
+           abstract class Base {
+             constructor(readonly injector: Injector) {}
+           }
+
+           @Directive()
+           abstract class EmptyDir {
+           }
+
+           @Directive({inputs: ['a', 'b']})
+           class TestDirWithInputs {
+           }
+
+           @Component({selector: 'comp', template: ''})
+           class SomeComponent extends Base {
+           }
+
+           @Component({selector: 'comp2', template: ''})
+           class SomeComponent2 extends EmptyDir {
+           }
+
+           @Component({selector: 'comp3', template: ''})
+           class SomeComponent3 extends TestDirWithInputs {
+           }
+
+           TestBed.configureTestingModule(
+               {declarations: [MyComp, SomeComponent, SomeComponent2, SomeComponent3]});
+           expect(() => TestBed.createComponent(MyComp)).not.toThrowError();
+         });
 
       it('should throw when using directives with empty string selector', () => {
         @Directive({selector: ''})
