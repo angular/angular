@@ -38,9 +38,7 @@ export class NoopRenderer implements ProceduralRenderer3 {
   removeStyle(el: RElement, style: string, flags?: RendererStyleFlags3|undefined): void {
     throw new Error('Method not implemented.');
   }
-  setProperty(el: RElement, name: string, value: any): void {
-    throw new Error('Method not implemented.');
-  }
+  setProperty(el: RElement, name: string, value: any): void { (el as any)[name] = value; }
   setValue(node: RComment|RText, value: string): void { node.textContent = value; }
   listen(
       target: RNode|'document'|'window'|'body', eventName: string,
