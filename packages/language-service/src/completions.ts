@@ -498,3 +498,12 @@ function expandedAttr(attr: AttrInfo): AttrInfo[] {
 function lowerName(name: string): string {
   return name && (name[0].toLowerCase() + name.substr(1));
 }
+
+export function ngCompletionToTsCompletionEntry(completion: Completion): ts.CompletionEntry {
+  return {
+    name: completion.name,
+    kind: completion.kind as ts.ScriptElementKind,
+    kindModifiers: '',
+    sortText: completion.sort,
+  };
+}

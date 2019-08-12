@@ -376,7 +376,7 @@ export interface LanguageService {
   /**
    * Returns a list of all the external templates referenced by the project.
    */
-  getTemplateReferences(): string[]|undefined;
+  getTemplateReferences(): string[];
 
   /**
    * Returns a list of all error for all templates in the given file.
@@ -386,7 +386,7 @@ export interface LanguageService {
   /**
    * Return the completions at the given position.
    */
-  getCompletionsAt(fileName: string, position: number): Completion[]|undefined;
+  getCompletionsAt(fileName: string, position: number): tss.CompletionInfo|undefined;
 
   /**
    * Return the definition location for the symbol at position.
@@ -397,9 +397,4 @@ export interface LanguageService {
    * Return the hover information for the symbol at position.
    */
   getHoverAt(fileName: string, position: number): tss.QuickInfo|undefined;
-
-  /**
-   * Return the pipes that are available at the given position.
-   */
-  getPipesAt(fileName: string, position: number): CompilePipeSummary[];
 }
