@@ -3,6 +3,7 @@ dist/
 vendor/
 */src/*.d.ts
 */src/*.js
+!karma.conf.js
 **/*.ngfactory.ts
 **/*.ngsummary.json
 **/*.ngsummary.ts
