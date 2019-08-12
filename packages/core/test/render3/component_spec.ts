@@ -21,6 +21,7 @@ describe('component', () => {
 
     increment() { this.count++; }
 
+    static ngFactoryDef = () => new CounterComponent;
     static ngComponentDef = ɵɵdefineComponent({
       type: CounterComponent,
       encapsulation: ViewEncapsulation.None,
@@ -36,7 +37,6 @@ describe('component', () => {
           ɵɵtextBinding(ctx.count);
         }
       },
-      factory: () => new CounterComponent,
       inputs: {count: 'count'},
     });
   }
@@ -72,11 +72,11 @@ describe('component', () => {
     }
     class MyComponent {
       constructor(public myService: MyService) {}
+      static ngFactoryDef = () => new MyComponent(ɵɵdirectiveInject(MyService));
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         encapsulation: ViewEncapsulation.None,
         selectors: [['my-component']],
-        factory: () => new MyComponent(ɵɵdirectiveInject(MyService)),
         consts: 1,
         vars: 1,
         template: function(fs: RenderFlags, ctx: MyComponent) {
@@ -117,10 +117,10 @@ describe('component', () => {
       // @Input
       name = '';
 
+      static ngFactoryDef = () => new Comp();
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
-        factory: () => new Comp(),
         consts: 1,
         vars: 1,
         template: (rf: RenderFlags, ctx: Comp) => {
@@ -172,15 +172,17 @@ it('should not invoke renderer destroy method for embedded views', () => {
   class Comp {
     visible = true;
 
+    static ngFactoryDef =
+        () => {
+          comp = new Comp();
+          return comp;
+        }
+
     static ngComponentDef = ɵɵdefineComponent({
       type: Comp,
       selectors: [['comp']],
       consts: 3,
       vars: 1,
-      factory: () => {
-        comp = new Comp();
-        return comp;
-      },
       directives: [NgIf],
       /**
        *  <div>Root view</div>
@@ -248,6 +250,7 @@ describe('component with a container', () => {
   class WrapperComponent {
     // TODO(issue/24571): remove '!'.
     items !: string[];
+    static ngFactoryDef = () => new WrapperComponent;
     static ngComponentDef = ɵɵdefineComponent({
       type: WrapperComponent,
       encapsulation: ViewEncapsulation.None,
@@ -268,7 +271,6 @@ describe('component with a container', () => {
           ɵɵcontainerRefreshEnd();
         }
       },
-      factory: () => new WrapperComponent,
       inputs: {items: 'items'}
     });
   }
@@ -326,11 +328,11 @@ describe('recursive components', () => {
 
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
+    static ngFactoryDef = () => new TreeComponent();
     static ngComponentDef = ɵɵdefineComponent({
       type: TreeComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['tree-comp']],
-      factory: () => new TreeComponent(),
       consts: 3,
       vars: 1,
       template: (rf: RenderFlags, ctx: TreeComponent) => {
@@ -393,11 +395,11 @@ describe('recursive components', () => {
 
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
+    static ngFactoryDef = () => new NgIfTree();
     static ngComponentDef = ɵɵdefineComponent({
       type: NgIfTree,
       encapsulation: ViewEncapsulation.None,
       selectors: [['ng-if-tree']],
-      factory: () => new NgIfTree(),
       consts: 3,
       vars: 3,
       template: (rf: RenderFlags, ctx: NgIfTree) => {
@@ -543,6 +545,7 @@ describe('recursive components', () => {
     class TestInputsComponent {
       // TODO(issue/24571): remove '!'.
       minifiedName !: string;
+      static ngFactoryDef = () => new TestInputsComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: TestInputsComponent,
         encapsulation: ViewEncapsulation.None,
@@ -550,7 +553,6 @@ describe('recursive components', () => {
         inputs: {minifiedName: 'unminifiedName'},
         consts: 0,
         vars: 0,
-        factory: () => new TestInputsComponent(),
         template: function(rf: RenderFlags, ctx: TestInputsComponent): void {
           // Template not needed for this test
         }

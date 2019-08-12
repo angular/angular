@@ -95,7 +95,7 @@ export {BoundAttribute as TmplAstBoundAttribute, BoundEvent as TmplAstBoundEvent
 export * from './render3/view/t2_api';
 export * from './render3/view/t2_binder';
 export {Identifiers as R3Identifiers} from './render3/r3_identifiers';
-export {R3DependencyMetadata, R3FactoryMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
+export {R3DependencyMetadata, R3FactoryDefMetadata, R3ResolvedDependencyType, compileFactoryFromMetadata, R3FactoryMetadata} from './render3/r3_factory';
 export {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';
 export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 export {makeBindingParser, parseTemplate, ParseTemplateOptions} from './render3/view/template';

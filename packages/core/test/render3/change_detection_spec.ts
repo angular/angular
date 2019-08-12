@@ -25,10 +25,10 @@ describe('change detection', () => {
       doCheckCount = 0;
       ngDoCheck(): void { this.doCheckCount++; }
 
+      static ngFactoryDef = () => new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
-        factory: () => new MyComponent(),
         consts: 2,
         vars: 1,
         template: (rf: RenderFlags, ctx: MyComponent) => {
@@ -101,10 +101,10 @@ describe('change detection', () => {
 
       onClick() {}
 
+      static ngFactoryDef = () => comp = new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
-        factory: () => comp = new MyComponent(),
         consts: 2,
         vars: 2,
         /**
@@ -140,10 +140,10 @@ describe('change detection', () => {
 
         onClick() {}
 
+        static ngFactoryDef = () => comp = new ManualComponent();
         static ngComponentDef = ɵɵdefineComponent({
           type: ManualComponent,
           selectors: [['manual-comp']],
-          factory: () => comp = new ManualComponent(),
           consts: 2,
           vars: 2,
           /**
@@ -177,10 +177,10 @@ describe('change detection', () => {
       class ManualApp {
         name: string = 'Nancy';
 
+        static ngFactoryDef = () => new ManualApp();
         static ngComponentDef = ɵɵdefineComponent({
           type: ManualApp,
           selectors: [['manual-app']],
-          factory: () => new ManualApp(),
           consts: 1,
           vars: 1,
           /** <manual-comp [name]="name"></manual-comp> */
@@ -233,10 +233,10 @@ describe('change detection', () => {
              doCheckCount = 0;
              ngDoCheck(): void { this.doCheckCount++; }
 
+             static ngFactoryDef = () => parent = new ButtonParent();
              static ngComponentDef = ɵɵdefineComponent({
                type: ButtonParent,
                selectors: [['button-parent']],
-               factory: () => parent = new ButtonParent(),
                consts: 2,
                vars: 1,
                /** {{ doCheckCount }} - <manual-comp></manual-comp> */
@@ -311,10 +311,10 @@ describe('change detection', () => {
         return 'works';
       }
 
+      static ngFactoryDef = () => new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
-        factory: () => new MyComponent(),
         consts: 1,
         vars: 1,
         template: (rf: RenderFlags, ctx: MyComponent) => {

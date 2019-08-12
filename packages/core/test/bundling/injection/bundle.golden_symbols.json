@@ -27,6 +27,9 @@
     "name": "NEW_LINE"
   },
   {
+    "name": "NG_FACTORY_DEF"
+  },
+  {
     "name": "NG_INJECTABLE_DEF"
   },
   {
@@ -115,6 +118,9 @@
   },
   {
     "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getFactoryDef"
   },
   {
     "name": "getInheritedInjectableDef"

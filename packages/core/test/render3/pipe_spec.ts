@@ -29,12 +29,8 @@ describe('pipe', () => {
     class WrappingPipe implements PipeTransform {
       transform(value: any) { return new WrappedValue('Bar'); }
 
-      static ngPipeDef = ɵɵdefinePipe({
-        name: 'wrappingPipe',
-        type: WrappingPipe,
-        factory: function WrappingPipe_Factory() { return new WrappingPipe(); },
-        pure: false
-      });
+      static ngFactoryDef = function WrappingPipe_Factory() { return new WrappingPipe(); };
+      static ngPipeDef = ɵɵdefinePipe({name: 'wrappingPipe', type: WrappingPipe, pure: false});
     }
 
     function createTemplate() {

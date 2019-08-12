@@ -18,6 +18,9 @@ export class TreeFunction {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
+  static ngFactoryDef = () => new TreeFunction;
+
+  /** @nocollapse */
   static ngComponentDef = ɵɵdefineComponent({
     type: TreeFunction,
     selectors: [['tree']],
@@ -27,7 +30,6 @@ export class TreeFunction {
       // bit of a hack
       TreeTpl(rf, ctx.data);
     },
-    factory: () => new TreeFunction,
     inputs: {data: 'data'}
   });
 }
