@@ -9,15 +9,14 @@
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {PRESERVE_WS_ATTR_NAME, removeWhitespaces} from '../../src/ml_parser/html_whitespaces';
-import {TokenizeOptions} from '../../src/ml_parser/lexer';
 
 import {humanizeDom} from './ast_spec_utils';
 
 {
   describe('removeWhitespaces', () => {
 
-    function parseAndRemoveWS(template: string, options?: TokenizeOptions): any[] {
-      return humanizeDom(removeWhitespaces(new HtmlParser().parse(template, 'TestComp', options)));
+    function parseAndRemoveWS(template: string): any[] {
+      return humanizeDom(removeWhitespaces(new HtmlParser().parse(template, 'TestComp')));
     }
 
     it('should remove blank text nodes', () => {
@@ -96,17 +95,6 @@ import {humanizeDom} from './ast_spec_utils';
       expect(parseAndRemoveWS(` {{exp}} `)).toEqual([
         [html.Text, ' {{exp}} ', 0],
       ]);
-    });
-
-    it('should preserve whitespaces around ICU expansions', () => {
-      expect(parseAndRemoveWS(`<span> {a, b, =4 {c}} </span>`, {tokenizeExpansionForms: true}))
-          .toEqual([
-            [html.Element, 'span', 0],
-            [html.Text, ' ', 1],
-            [html.Expansion, 'a', 'b', 1],
-            [html.ExpansionCase, '=4', 2],
-            [html.Text, ' ', 1],
-          ]);
     });
 
     it('should preserve whitespaces inside <pre> elements', () => {
