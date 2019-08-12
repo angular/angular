@@ -93,6 +93,19 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
     metadata.ngModuleMeta.set(meta.ref.node, meta);
   }
 
+  isAbstractDirective(ref: Reference<ClassDeclaration>): boolean {
+    if (!this.metadata.has(ref.node.getSourceFile())) {
+      return false;
+    }
+    const metadata = this.metadata.get(ref.node.getSourceFile()) !;
+    return metadata.abstractDirectives.has(ref.node);
+  }
+
+  registerAbstractDirective(clazz: ClassDeclaration): void {
+    const metadata = this.ensureMetadata(clazz.getSourceFile());
+    metadata.abstractDirectives.add(clazz);
+  }
+
   getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
     if (!this.metadata.has(ref.node.getSourceFile())) {
       return null;
@@ -187,6 +200,7 @@ class FileMetadata {
   /** A set of source files that this file depends upon. */
   fileDependencies = new Set<ts.SourceFile>();
   resourcePaths = new Set<string>();
+  abstractDirectives = new Set<ClassDeclaration>();
   directiveMeta = new Map<ClassDeclaration, DirectiveMeta>();
   ngModuleMeta = new Map<ClassDeclaration, NgModuleMeta>();
   pipeMeta = new Map<ClassDeclaration, PipeMeta>();

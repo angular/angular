@@ -125,6 +125,10 @@ function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {
 export class CompoundMetadataReader implements MetadataReader {
   constructor(private readers: MetadataReader[]) {}
 
+  isAbstractDirective(node: Reference<ClassDeclaration>): boolean {
+    return this.readers.some(r => r.isAbstractDirective(node));
+  }
+
   getDirectiveMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): DirectiveMeta|null {
     for (const reader of this.readers) {
       const meta = reader.getDirectiveMetadata(node);

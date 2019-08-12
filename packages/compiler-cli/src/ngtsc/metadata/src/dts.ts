@@ -21,6 +21,11 @@ import {extractDirectiveGuards, extractReferencesFromType, readStringArrayType, 
 export class DtsMetadataReader implements MetadataReader {
   constructor(private checker: ts.TypeChecker, private reflector: ReflectionHost) {}
 
+  isAbstractDirective(ref: Reference<ClassDeclaration>): boolean {
+    const meta = this.getDirectiveMetadata(ref);
+    return meta !== null && meta.selector === null;
+  }
+
   /**
    * Read the metadata from a class that has already been compiled somehow (either it's in a .d.ts
    * file, or in a .ts file with a handwritten definition).
