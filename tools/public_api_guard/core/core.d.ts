@@ -771,7 +771,6 @@ export declare function ɵɵdefineBase<T>(baseDefinition: {
 export declare function ɵɵdefineComponent<T>(componentDefinition: {
     type: Type<T>;
     selectors: CssSelectorList;
-    factory: FactoryFn<T>;
     consts: number;
     vars: number;
     inputs?: {
@@ -801,7 +800,6 @@ export declare function ɵɵdefineComponent<T>(componentDefinition: {
 export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
     type: Type<T>;
     selectors: (string | SelectorFlags)[][];
-    factory: FactoryFn<T>;
     inputs?: { [P in keyof T]?: string | [string, string] | undefined; } | undefined;
     outputs?: { [P in keyof T]?: string | undefined; } | undefined;
     features?: DirectiveDefFeature[] | undefined;
@@ -836,7 +834,6 @@ export declare function ɵɵdefineNgModule<T>(def: {
 export declare function ɵɵdefinePipe<T>(pipeDef: {
     name: string;
     type: Type<T>;
-    factory: FactoryFn<T>;
     pure?: boolean;
 }): never;
 

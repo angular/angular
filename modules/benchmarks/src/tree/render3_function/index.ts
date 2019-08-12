@@ -27,9 +27,11 @@ export class TreeFunction {
       // bit of a hack
       TreeTpl(rf, ctx.data);
     },
-    factory: () => new TreeFunction,
     inputs: {data: 'data'}
   });
+
+  /** @nocollapse */
+  static ngFactoryFn = () => new TreeFunction;
 }
 
 export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {

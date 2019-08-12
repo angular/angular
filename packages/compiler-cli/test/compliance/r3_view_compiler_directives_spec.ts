@@ -41,7 +41,6 @@ describe('compiler compliance: directives', () => {
             MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
-                factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
                 consts: 1,
                 vars: 0,
                 template: function MyComponent_Template(rf, ctx) {
@@ -53,10 +52,15 @@ describe('compiler compliance: directives', () => {
             });
         `;
 
+      const MyComponentFactory = `
+        MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+      `;
+
       const result = compile(files, angularFiles);
       const source = result.source;
 
       expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
+      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ngFactoryFn');
     });
 
     it('should not match directives on i18n-prefixed attributes', () => {
@@ -87,7 +91,6 @@ describe('compiler compliance: directives', () => {
             MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
-                factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
                 consts: 1,
                 vars: 0,
                 template: function MyComponent_Template(rf, ctx) {
@@ -99,10 +102,15 @@ describe('compiler compliance: directives', () => {
             });
         `;
 
+      const MyComponentFactory = `
+        MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+      `;
+
       const result = compile(files, angularFiles);
       const source = result.source;
 
       expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
+      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ngFactoryFn');
     });
 
     it('should match directives on element bindings', () => {

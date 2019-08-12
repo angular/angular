@@ -26,6 +26,7 @@ const R3_DEF_NAME_PATTERN = [
   'ngInjectorDef',
   'ngModuleDef',
   'ngPipeDef',
+  'ngFactoryFn',
 ].join('|');
 
 // Pattern matching `Identifier.property` where property is a Render3 property.

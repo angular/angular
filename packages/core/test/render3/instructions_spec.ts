@@ -275,7 +275,6 @@ describe('instructions', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: NestedLoops,
           selectors: [['nested-loops']],
-          factory: function ToDoAppComponent_Factory() { return new NestedLoops(); },
           consts: 1,
           vars: 1,
           template: function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
@@ -288,6 +287,7 @@ describe('instructions', () => {
           },
           directives: [NgForOf]
         });
+        static ngFactoryFn = function ToDoAppComponent_Factory() { return new NestedLoops(); };
       }
       const fixture = new ComponentFixture(NestedLoops);
       expect(ngDevMode).toHaveProperties({

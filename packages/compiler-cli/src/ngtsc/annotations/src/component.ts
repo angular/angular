@@ -517,18 +517,21 @@ export class ComponentDecoratorHandler implements
   }
 
   compile(node: ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
-      CompileResult {
+      CompileResult[] {
     const res = compileComponentFromMetadata(analysis.meta, pool, makeBindingParser());
 
     const statements = res.statements;
     if (analysis.metadataStmt !== null) {
       statements.push(analysis.metadataStmt);
     }
-    return {
-      name: 'ngComponentDef',
-      initializer: res.expression, statements,
-      type: res.type,
-    };
+    return [
+      {
+        name: 'ngComponentDef',
+        initializer: res.expression, statements,
+        type: res.type,
+      },
+      {name: 'ngFactoryFn', initializer: res.factory, statements: [], type: res.type}
+    ];
   }
 
   private _resolveLiteral(decorator: Decorator): ts.ObjectLiteralExpression {

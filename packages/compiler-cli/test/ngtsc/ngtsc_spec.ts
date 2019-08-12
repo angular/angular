@@ -880,8 +880,10 @@ runInEachFileSystem(os => {
 
       expect(jsContents)
           .toContain(
-              'TestPipe.ngPipeDef = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
-              'factory: function TestPipe_Factory(t) { return new (t || TestPipe)(); }, pure: false })');
+              'TestPipe.ngPipeDef = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: false })');
+      expect(jsContents)
+          .toContain(
+              'TestPipe.ngFactoryFn = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
       expect(dtsContents)
           .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
     });
@@ -903,8 +905,10 @@ runInEachFileSystem(os => {
 
       expect(jsContents)
           .toContain(
-              'TestPipe.ngPipeDef = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
-              'factory: function TestPipe_Factory(t) { return new (t || TestPipe)(); }, pure: true })');
+              'TestPipe.ngPipeDef = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: true })');
+      expect(jsContents)
+          .toContain(
+              'TestPipe.ngFactoryFn = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
       expect(dtsContents)
           .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
     });
@@ -1615,7 +1619,7 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              `factory: function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`);
+              `FooCmp.ngFactoryFn = function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`);
     });
 
     it('should generate queries for components', () => {

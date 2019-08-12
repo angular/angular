@@ -22,12 +22,12 @@ describe('object literals', () => {
     static ngComponentDef = ɵɵdefineComponent({
       type: ObjectComp,
       selectors: [['object-comp']],
-      factory: function ObjectComp_Factory() { return objectComp = new ObjectComp(); },
       consts: 0,
       vars: 1,
       template: function ObjectComp_Template() {},
       inputs: {config: 'config'}
     });
+    static ngFactoryFn = function ObjectComp_Factory() { return objectComp = new ObjectComp(); };
   }
 
   const defs = [ObjectComp];

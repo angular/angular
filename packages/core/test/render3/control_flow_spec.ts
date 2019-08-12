@@ -697,12 +697,12 @@ describe('JS control flow', () => {
         selectors: [['comp']],
         consts: 0,
         vars: 0,
-        factory: () => {
-          log.push('comp!');
-          return new Comp();
-        },
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
+      static ngFactoryFn = () => {
+        log.push('comp!');
+        return new Comp();
+      }
     }
 
     class App {
@@ -712,7 +712,6 @@ describe('JS control flow', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        factory: () => new App(),
         consts: 3,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
@@ -748,6 +747,7 @@ describe('JS control flow', () => {
         },
         directives: () => [Comp]
       });
+      static ngFactoryFn = () => new App();
     }
 
     const fixture = new ComponentFixture(App);
@@ -765,12 +765,12 @@ describe('JS control flow', () => {
         selectors: [['comp']],
         consts: 0,
         vars: 0,
-        factory: () => {
-          log.push('comp!');
-          return new Comp();
-        },
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
+      static ngFactoryFn = () => {
+        log.push('comp!');
+        return new Comp();
+      }
     }
 
     class App {
@@ -780,7 +780,6 @@ describe('JS control flow', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        factory: () => new App(),
         consts: 3,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
@@ -816,6 +815,7 @@ describe('JS control flow', () => {
         },
         directives: () => [Comp]
       });
+      static ngFactoryFn = () => new App();
     }
 
     const fixture = new ComponentFixture(App);

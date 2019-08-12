@@ -72,7 +72,7 @@
     "name": "NG_ELEMENT_ID"
   },
   {
-    "name": "NG_INJECTABLE_DEF"
+    "name": "NG_FACTORY_FN"
   },
   {
     "name": "NG_PIPE_DEF"
@@ -471,6 +471,9 @@
     "name": "setTNodeAndViewData"
   },
   {
+    "name": "stringify"
+  },
+  {
     "name": "stringifyForError"
   },
   {
@@ -484,9 +487,6 @@
   },
   {
     "name": "ɵɵdefineComponent"
-  },
-  {
-    "name": "ɵɵdefineInjectable"
   },
   {
     "name": "ɵɵtext"

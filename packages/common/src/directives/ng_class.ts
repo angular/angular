@@ -32,7 +32,6 @@ export const ngClassDirectiveDef__PRE_R3__ = undefined;
 export const ngClassDirectiveDef__POST_R3__ = ɵɵdefineDirective({
   type: function() {} as any,
   selectors: null as any,
-  factory: () => {},
   hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
     if (rf & ɵRenderFlags.Create) {
       ɵɵallocHostVars(1);
@@ -46,6 +45,10 @@ export const ngClassDirectiveDef__POST_R3__ = ɵɵdefineDirective({
 });
 
 export const ngClassDirectiveDef = ngClassDirectiveDef__PRE_R3__;
+
+export const ngClassFactoryFn__PRE_R3__ = undefined;
+export const ngClassFactoryFn__POST_R3__ = function() {};
+export const ngClassFactoryFn = ngClassFactoryFn__PRE_R3__;
 
 /**
  * Serves as the base non-VE container for NgClass.
@@ -63,6 +66,7 @@ export const ngClassDirectiveDef = ngClassDirectiveDef__PRE_R3__;
  */
 export class NgClassBase {
   static ngDirectiveDef: any = ngClassDirectiveDef;
+  static ngFactoryFn: any = ngClassFactoryFn;
 
   constructor(protected _delegate: NgClassImpl) {}
 

@@ -27,9 +27,9 @@ describe('outputs', () => {
       template: function(rf: RenderFlags, ctx: any) {},
       consts: 0,
       vars: 0,
-      factory: () => buttonToggle = new ButtonToggle(),
       outputs: {change: 'change', resetStream: 'reset'}
     });
+    static ngFactoryFn = () => buttonToggle = new ButtonToggle();
   }
 
   let otherDir: OtherDir;
@@ -37,12 +37,9 @@ describe('outputs', () => {
   class OtherDir {
     changeStream = new EventEmitter();
 
-    static ngDirectiveDef = ɵɵdefineDirective({
-      type: OtherDir,
-      selectors: [['', 'otherDir', '']],
-      factory: () => otherDir = new OtherDir,
-      outputs: {changeStream: 'change'}
-    });
+    static ngDirectiveDef = ɵɵdefineDirective(
+        {type: OtherDir, selectors: [['', 'otherDir', '']], outputs: {changeStream: 'change'}});
+    static ngFactoryFn = () => otherDir = new OtherDir;
   }
 
 

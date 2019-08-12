@@ -147,9 +147,9 @@ describe('render3 integration test', () => {
             ɵɵcontainerRefreshEnd();
           }
         },
-        factory: () => new ChildComponent,
         inputs: {beforeTree: 'beforeTree', afterTree: 'afterTree'}
       });
+      static ngFactoryFn = () => new ChildComponent;
     }
 
     function parentTemplate(rf: RenderFlags, ctx: ParentCtx) {
@@ -207,13 +207,13 @@ describe('component styles', () => {
         vars: 0,
         encapsulation: 100,
         selectors: [['foo']],
-        factory: () => new StyledComp(),
         template: (rf: RenderFlags, ctx: StyledComp) => {
           if (rf & RenderFlags.Create) {
             ɵɵelement(0, 'div');
           }
         }
       });
+      static ngFactoryFn = () => new StyledComp();
     }
     const rendererFactory = new ProxyRenderer3Factory();
     new ComponentFixture(StyledComp, {rendererFactory});
@@ -239,9 +239,9 @@ describe('component animations', () => {
           ],
         },
         selectors: [['foo']],
-        factory: () => new AnimComp(),
         template: (rf: RenderFlags, ctx: AnimComp) => {}
       });
+      static ngFactoryFn = () => new AnimComp();
     }
     const rendererFactory = new ProxyRenderer3Factory();
     new ComponentFixture(AnimComp, {rendererFactory});
@@ -263,9 +263,9 @@ describe('component animations', () => {
           animation: [],
         },
         selectors: [['foo']],
-        factory: () => new AnimComp(),
         template: (rf: RenderFlags, ctx: AnimComp) => {}
       });
+      static ngFactoryFn = () => new AnimComp();
     }
     const rendererFactory = new ProxyRenderer3Factory();
     new ComponentFixture(AnimComp, {rendererFactory});
@@ -280,7 +280,6 @@ describe('component animations', () => {
         consts: 1,
         vars: 1,
         selectors: [['foo']],
-        factory: () => new AnimComp(),
         template: (rf: RenderFlags, ctx: AnimComp) => {
           if (rf & RenderFlags.Create) {
             ɵɵelement(0, 'div', [AttributeMarker.Bindings, '@fooAnimation']);
@@ -291,6 +290,7 @@ describe('component animations', () => {
           }
         }
       });
+      static ngFactoryFn = () => new AnimComp();
 
       animationValue = '123';
     }
@@ -317,13 +317,13 @@ describe('component animations', () => {
            consts: 1,
            vars: 1,
            selectors: [['foo']],
-           factory: () => new AnimComp(),
            template: (rf: RenderFlags, ctx: AnimComp) => {
              if (rf & RenderFlags.Create) {
                ɵɵelement(0, 'div', ['@fooAnimation', '']);
              }
            }
          });
+         static ngFactoryFn = () => new AnimComp();
        }
 
        const rendererFactory = new MockRendererFactory(['setProperty']);
@@ -347,7 +347,6 @@ describe('component animations', () => {
   //     class ChildCompWithAnim {
   //       static ngDirectiveDef = ɵɵdefineDirective({
   //         type: ChildCompWithAnim,
-  //         factory: () => new ChildCompWithAnim(),
   //         selectors: [['child-comp-with-anim']],
   //         hostBindings: function(rf: RenderFlags, ctx: any, elementIndex: number): void {
   //           if (rf & RenderFlags.Update) {
@@ -355,6 +354,7 @@ describe('component animations', () => {
   //           }
   //         },
   //       });
+  //       static ngFactoryFn = () => new ChildCompWithAnim();
 
   //       exp = 'go';
   //     }
@@ -365,7 +365,6 @@ describe('component animations', () => {
   //         consts: 1,
   //         vars: 1,
   //         selectors: [['foo']],
-  //         factory: () => new ParentComp(),
   //         template: (rf: RenderFlags, ctx: ParentComp) => {
   //           if (rf & RenderFlags.Create) {
   //             ɵɵelement(0, 'child-comp-with-anim');
@@ -373,6 +372,7 @@ describe('component animations', () => {
   //         },
   //         directives: [ChildCompWithAnim]
   //       });
+  //       static ngFactoryFn = () => new ParentComp();
   //     }
 
   //     const rendererFactory = new MockRendererFactory(['setProperty']);
@@ -393,7 +393,6 @@ describe('element discovery', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        factory: () => new StructuredComp(),
         consts: 2,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {
@@ -407,6 +406,7 @@ describe('element discovery', () => {
           }
         }
       });
+      static ngFactoryFn = () => new StructuredComp();
     }
 
     const fixture = new ComponentFixture(StructuredComp);
@@ -425,7 +425,6 @@ describe('element discovery', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: ChildComp,
         selectors: [['child-comp']],
-        factory: () => new ChildComp(),
         consts: 3,
         vars: 0,
         template: (rf: RenderFlags, ctx: ChildComp) => {
@@ -436,6 +435,7 @@ describe('element discovery', () => {
           }
         }
       });
+      static ngFactoryFn = () => new ChildComp();
     }
 
     class ParentComp {
@@ -443,7 +443,6 @@ describe('element discovery', () => {
         type: ParentComp,
         selectors: [['parent-comp']],
         directives: [ChildComp],
-        factory: () => new ParentComp(),
         consts: 2,
         vars: 0,
         template: (rf: RenderFlags, ctx: ParentComp) => {
@@ -455,6 +454,7 @@ describe('element discovery', () => {
           }
         }
       });
+      static ngFactoryFn = () => new ParentComp();
     }
 
     const fixture = new ComponentFixture(ParentComp);
@@ -476,7 +476,6 @@ describe('element discovery', () => {
         type: StructuredComp,
         selectors: [['structured-comp']],
         directives: [NgIf],
-        factory: () => new StructuredComp(),
         consts: 2,
         vars: 1,
         template: (rf: RenderFlags, ctx: StructuredComp) => {
@@ -498,6 +497,7 @@ describe('element discovery', () => {
           }
         }
       });
+      static ngFactoryFn = () => new StructuredComp();
     }
 
     const fixture = new ComponentFixture(StructuredComp);
@@ -525,7 +525,6 @@ describe('element discovery', () => {
         type: StructuredComp,
         selectors: [['structured-comp']],
         directives: [NgIf],
-        factory: () => new StructuredComp(),
         consts: 2,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {
@@ -535,6 +534,7 @@ describe('element discovery', () => {
           }
         }
       });
+      static ngFactoryFn = () => new StructuredComp();
     }
 
     const fixture = new ComponentFixture(StructuredComp);
@@ -562,7 +562,6 @@ describe('element discovery', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        factory: () => new StructuredComp(),
         consts: 1,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {
@@ -571,6 +570,7 @@ describe('element discovery', () => {
           }
         }
       });
+      static ngFactoryFn = () => new StructuredComp();
     }
 
     const fixture = new ComponentFixture(StructuredComp);
@@ -594,7 +594,6 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           factory: () => new StructuredComp(),
            consts: 2,
            vars: 0,
            template: (rf: RenderFlags, ctx: StructuredComp) => {
@@ -605,6 +604,7 @@ describe('element discovery', () => {
              }
            }
          });
+         static ngFactoryFn = () => new StructuredComp();
        }
 
        const fixture = new ComponentFixture(StructuredComp);
@@ -627,7 +627,6 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           factory: () => new StructuredComp(),
            consts: 1,
            vars: 0,
            template: (rf: RenderFlags, ctx: StructuredComp) => {
@@ -641,6 +640,7 @@ describe('element discovery', () => {
              }
            }
          });
+         static ngFactoryFn = () => new StructuredComp();
        }
 
        const fixture = new ComponentFixture(StructuredComp);
@@ -680,7 +680,6 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: ProjectorComp,
            selectors: [['projector-comp']],
-           factory: () => new ProjectorComp(),
            consts: 4,
            vars: 0,
            template: (rf: RenderFlags, ctx: ProjectorComp) => {
@@ -697,6 +696,7 @@ describe('element discovery', () => {
              }
            }
          });
+         static ngFactoryFn = () => new ProjectorComp();
        }
 
        class ParentComp {
@@ -704,7 +704,6 @@ describe('element discovery', () => {
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ProjectorComp],
-           factory: () => new ParentComp(),
            consts: 5,
            vars: 0,
            template: (rf: RenderFlags, ctx: ParentComp) => {
@@ -720,6 +719,7 @@ describe('element discovery', () => {
              }
            }
          });
+         static ngFactoryFn = () => new ParentComp();
        }
 
        const fixture = new ComponentFixture(ParentComp);
@@ -777,7 +777,6 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           factory: () => new StructuredComp(),
            consts: 1,
            vars: 0,
            template: (rf: RenderFlags, ctx: StructuredComp) => {
@@ -786,6 +785,7 @@ describe('element discovery', () => {
              }
            }
          });
+         static ngFactoryFn = () => new StructuredComp();
        }
 
        const fixture = new ComponentFixture(StructuredComp);
@@ -804,11 +804,11 @@ describe('element discovery', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        factory: () => new StructuredComp(),
         consts: 0,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {}
       });
+      static ngFactoryFn = () => new StructuredComp();
     }
 
     const fixture = new ComponentFixture(StructuredComp);
@@ -840,27 +840,21 @@ describe('element discovery', () => {
        let myDir3Instance: MyDir2|null = null;
 
        class MyDir1 {
-         static ngDirectiveDef = ɵɵdefineDirective({
-           type: MyDir1,
-           selectors: [['', 'my-dir-1', '']],
-           factory: () => myDir1Instance = new MyDir1()
-         });
+         static ngDirectiveDef =
+             ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
+         static ngFactoryFn = () => myDir1Instance = new MyDir1();
        }
 
        class MyDir2 {
-         static ngDirectiveDef = ɵɵdefineDirective({
-           type: MyDir2,
-           selectors: [['', 'my-dir-2', '']],
-           factory: () => myDir2Instance = new MyDir2()
-         });
+         static ngDirectiveDef =
+             ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
+         static ngFactoryFn = () => myDir2Instance = new MyDir2();
        }
 
        class MyDir3 {
-         static ngDirectiveDef = ɵɵdefineDirective({
-           type: MyDir3,
-           selectors: [['', 'my-dir-3', '']],
-           factory: () => myDir3Instance = new MyDir2()
-         });
+         static ngDirectiveDef =
+             ɵɵdefineDirective({type: MyDir3, selectors: [['', 'my-dir-3', '']]});
+         static ngFactoryFn = () => myDir3Instance = new MyDir2();
        }
 
        class StructuredComp {
@@ -868,7 +862,6 @@ describe('element discovery', () => {
            type: StructuredComp,
            selectors: [['structured-comp']],
            directives: [MyDir1, MyDir2, MyDir3],
-           factory: () => new StructuredComp(),
            consts: 2,
            vars: 0,
            template: (rf: RenderFlags, ctx: StructuredComp) => {
@@ -878,6 +871,7 @@ describe('element discovery', () => {
              }
            }
          });
+         static ngFactoryFn = () => new StructuredComp();
        }
 
        const fixture = new ComponentFixture(StructuredComp);
@@ -929,26 +923,21 @@ describe('element discovery', () => {
        let childComponentInstance: ChildComp|null = null;
 
        class MyDir1 {
-         static ngDirectiveDef = ɵɵdefineDirective({
-           type: MyDir1,
-           selectors: [['', 'my-dir-1', '']],
-           factory: () => myDir1Instance = new MyDir1()
-         });
+         static ngDirectiveDef =
+             ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
+         static ngFactoryFn = () => myDir1Instance = new MyDir1();
        }
 
        class MyDir2 {
-         static ngDirectiveDef = ɵɵdefineDirective({
-           type: MyDir2,
-           selectors: [['', 'my-dir-2', '']],
-           factory: () => myDir2Instance = new MyDir2()
-         });
+         static ngDirectiveDef =
+             ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
+         static ngFactoryFn = () => myDir2Instance = new MyDir2();
        }
 
        class ChildComp {
          static ngComponentDef = ɵɵdefineComponent({
            type: ChildComp,
            selectors: [['child-comp']],
-           factory: () => childComponentInstance = new ChildComp(),
            consts: 1,
            vars: 0,
            template: (rf: RenderFlags, ctx: ChildComp) => {
@@ -957,6 +946,7 @@ describe('element discovery', () => {
              }
            }
          });
+         static ngFactoryFn = () => childComponentInstance = new ChildComp();
        }
 
        class ParentComp {
@@ -964,7 +954,6 @@ describe('element discovery', () => {
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ChildComp, MyDir1, MyDir2],
-           factory: () => new ParentComp(),
            consts: 1,
            vars: 0,
            template: (rf: RenderFlags, ctx: ParentComp) => {
@@ -973,6 +962,7 @@ describe('element discovery', () => {
              }
            }
          });
+         static ngFactoryFn = () => new ParentComp();
        }
 
        const fixture = new ComponentFixture(ParentComp);
@@ -1025,7 +1015,6 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: ChildComp,
            selectors: [['child-comp']],
-           factory: () => new ChildComp(),
            consts: 3,
            vars: 0,
            template: (rf: RenderFlags, ctx: ChildComp) => {
@@ -1036,6 +1025,7 @@ describe('element discovery', () => {
              }
            }
          });
+         static ngFactoryFn = () => new ChildComp();
        }
 
        class ParentComp {
@@ -1043,7 +1033,6 @@ describe('element discovery', () => {
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ChildComp],
-           factory: () => new ParentComp(),
            consts: 2,
            vars: 0,
            template: (rf: RenderFlags, ctx: ParentComp) => {
@@ -1055,6 +1044,7 @@ describe('element discovery', () => {
              }
            }
          });
+         static ngFactoryFn = () => new ParentComp();
        }
 
        const fixture = new ComponentFixture(ParentComp);
@@ -1086,7 +1076,6 @@ describe('sanitization', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: SanitizationComp,
         selectors: [['sanitize-this']],
-        factory: () => new SanitizationComp(),
         consts: 1,
         vars: 1,
         template: (rf: RenderFlags, ctx: SanitizationComp) => {
@@ -1099,6 +1088,7 @@ describe('sanitization', () => {
           }
         }
       });
+      static ngFactoryFn = () => new SanitizationComp();
 
       private href = '';
 
@@ -1129,7 +1119,6 @@ describe('sanitization', () => {
       static ngDirectiveDef = ɵɵdefineDirective({
         type: UnsafeUrlHostBindingDir,
         selectors: [['', 'unsafeUrlHostBindingDir', '']],
-        factory: () => hostBindingDir = new UnsafeUrlHostBindingDir(),
         hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
           if (rf & RenderFlags.Create) {
             ɵɵallocHostVars(1);
@@ -1140,13 +1129,13 @@ describe('sanitization', () => {
           }
         }
       });
+      static ngFactoryFn = () => hostBindingDir = new UnsafeUrlHostBindingDir();
     }
 
     class SimpleComp {
       static ngComponentDef = ɵɵdefineComponent({
         type: SimpleComp,
         selectors: [['sanitize-this']],
-        factory: () => new SimpleComp(),
         consts: 1,
         vars: 0,
         template: (rf: RenderFlags, ctx: SimpleComp) => {
@@ -1156,6 +1145,7 @@ describe('sanitization', () => {
         },
         directives: [UnsafeUrlHostBindingDir]
       });
+      static ngFactoryFn = () => new SimpleComp();
     }
 
     const sanitizer = new LocalSanitizer((value) => 'http://bar');

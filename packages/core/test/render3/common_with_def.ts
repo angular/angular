@@ -18,9 +18,6 @@ export const NgTemplateOutlet: DirectiveType<NgTemplateOutletDef> = NgTemplateOu
 NgForOf.ngDirectiveDef = ɵɵdefineDirective({
   type: NgForOfDef,
   selectors: [['', 'ngForOf', '']],
-  factory: () => new NgForOfDef(
-               ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any),
-               ɵɵdirectiveInject(IterableDiffers)),
   inputs: {
     ngForOf: 'ngForOf',
     ngForTrackBy: 'ngForTrackBy',
@@ -28,19 +25,26 @@ NgForOf.ngDirectiveDef = ɵɵdefineDirective({
   }
 });
 
-(NgIf as any).ngDirectiveDef = ɵɵdefineDirective({
+NgForOf.ngFactoryFn = () => new NgForOfDef(
+    ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any),
+    ɵɵdirectiveInject(IterableDiffers));
+
+NgIf.ngDirectiveDef = ɵɵdefineDirective({
   type: NgIfDef,
   selectors: [['', 'ngIf', '']],
-  factory: () => new NgIfDef(
-               ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any)),
   inputs: {ngIf: 'ngIf', ngIfThen: 'ngIfThen', ngIfElse: 'ngIfElse'}
 });
 
-(NgTemplateOutlet as any).ngDirectiveDef = ɵɵdefineDirective({
+NgIf.ngFactoryFn = () =>
+    new NgIfDef(ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any));
+
+NgTemplateOutlet.ngDirectiveDef = ɵɵdefineDirective({
   type: NgTemplateOutletDef,
   selectors: [['', 'ngTemplateOutlet', '']],
-  factory: () => new NgTemplateOutletDef(ɵɵdirectiveInject(ViewContainerRef as any)),
   features: [ɵɵNgOnChangesFeature()],
   inputs:
       {ngTemplateOutlet: 'ngTemplateOutlet', ngTemplateOutletContext: 'ngTemplateOutletContext'}
 });
+
+NgTemplateOutlet.ngFactoryFn = () =>
+    new NgTemplateOutletDef(ɵɵdirectiveInject(ViewContainerRef as any));

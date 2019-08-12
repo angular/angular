@@ -20,7 +20,6 @@ describe('Debug Representation', () => {
         selectors: [['my-comp']],
         vars: 0,
         consts: 2,
-        factory: () => new MyComponent(),
         template: function(rf: RenderFlags, ctx: MyComponent) {
           if (rf == RenderFlags.Create) {
             ɵɵelementStart(0, 'div', ['id', '123']);
@@ -29,6 +28,7 @@ describe('Debug Representation', () => {
           }
         }
       });
+      static ngFactoryFn = () => new MyComponent();
     }
 
     const fixture = new ComponentFixture(MyComponent);

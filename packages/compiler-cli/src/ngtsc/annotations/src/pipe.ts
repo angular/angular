@@ -105,16 +105,19 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     };
   }
 
-  compile(node: ClassDeclaration, analysis: PipeHandlerData): CompileResult {
+  compile(node: ClassDeclaration, analysis: PipeHandlerData): CompileResult[] {
     const res = compilePipeFromMetadata(analysis.meta);
     const statements = res.statements;
     if (analysis.metadataStmt !== null) {
       statements.push(analysis.metadataStmt);
     }
-    return {
-      name: 'ngPipeDef',
-      initializer: res.expression, statements,
-      type: res.type,
-    };
+    return [
+      {
+        name: 'ngPipeDef',
+        initializer: res.expression, statements,
+        type: res.type,
+      },
+      {name: 'ngFactoryFn', initializer: res.factory, statements: [], type: res.type}
+    ];
   }
 }

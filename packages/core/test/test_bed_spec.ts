@@ -506,7 +506,6 @@ describe('TestBed', () => {
             static ngComponentDef = defineComponent({
               type: ComponentClass,
               selectors: [['comp']],
-              factory: () => new ComponentClass(),
               consts: 1,
               vars: 0,
               template: (rf: any, ctx: any) => {
@@ -516,6 +515,8 @@ describe('TestBed', () => {
               },
               styles: ['body { margin: 0; }']
             });
+
+            static ngFactoryFn = () => new ComponentClass();
           }
           setClassMetadata(
               ComponentClass, [{

@@ -26,8 +26,8 @@ describe('ComponentFactory', () => {
           consts: 0,
           vars: 0,
           template: () => undefined,
-          factory: () => new TestComponent(),
         });
+        static ngFactoryFn = () => new TestComponent();
       }
 
       const cf = cfr.resolveComponentFactory(TestComponent);
@@ -49,7 +49,6 @@ describe('ComponentFactory', () => {
           vars: 0,
           template: () => undefined,
           ngContentSelectors: ['*', 'a', 'b'],
-          factory: () => new TestComponent(),
           inputs: {
             in1: 'in1',
             in2: ['input-attr-2', 'in2'],
@@ -59,6 +58,7 @@ describe('ComponentFactory', () => {
             out2: 'output-attr-2',
           },
         });
+        static ngFactoryFn = () => new TestComponent();
       }
 
       const cf = cfr.resolveComponentFactory(TestComponent);
@@ -96,8 +96,8 @@ describe('ComponentFactory', () => {
           consts: 0,
           vars: 0,
           template: () => undefined,
-          factory: () => new TestComponent(),
         });
+        static ngFactoryFn = () => new TestComponent();
       }
 
       cf = cfr.resolveComponentFactory(TestComponent);

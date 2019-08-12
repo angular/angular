@@ -7,6 +7,7 @@
  */
 
 import '../util/ng_dev_mode';
+
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {NG_INJECTABLE_DEF, ɵɵdefineInjectable} from '../di/interface/defs';
 import {Mutable, Type} from '../interface/type';
@@ -15,8 +16,9 @@ import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
 import {stringify} from '../util/stringify';
+
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_LOCALE_ID_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
+import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_FACTORY_FN, NG_LOCALE_ID_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction, ɵɵBaseDef} from './interfaces/definition';
 // while SelectorFlags is unused here, it's required so that types don't get resolved lazily
 // see: https://github.com/Microsoft/web-build-tools/issues/1050
@@ -48,11 +50,6 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
 
   /** The selectors that will be used to match nodes to this component. */
   selectors: CssSelectorList;
-
-  /**
-   * Factory method used to create an instance of directive.
-   */
-  factory: FactoryFn<T>;
 
   /**
    * The number of nodes, local refs, and pipes in this component template.
@@ -251,7 +248,6 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     providersResolver: null,
     consts: componentDefinition.consts,
     vars: componentDefinition.vars,
-    factory: componentDefinition.factory,
     template: componentDefinition.template || null !,
     ngContentSelectors: componentDefinition.ngContentSelectors,
     hostBindings: componentDefinition.hostBindings || null,
@@ -300,15 +296,6 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     def.pipeDefs = pipeTypes ?
         () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
         null;
-
-    // Add ngInjectableDef so components are reachable through the module injector by default
-    // (unless it has already been set by the @Injectable decorator). This is mostly to
-    // support injecting components in tests. In real application code, components should
-    // be retrieved through the node injector, so this isn't a problem.
-    if (!type.hasOwnProperty(NG_INJECTABLE_DEF)) {
-      (type as any)[NG_INJECTABLE_DEF] =
-          ɵɵdefineInjectable<T>({token: type, factory: componentDefinition.factory as() => T});
-    }
   }) as never;
 
   return def as never;
@@ -616,11 +603,6 @@ export const ɵɵdefineDirective = ɵɵdefineComponent as any as<T>(directiveDef
   selectors: CssSelectorList;
 
   /**
-   * Factory method used to create an instance of directive.
-   */
-  factory: FactoryFn<T>;
-
-  /**
    * A map of input names.
    *
    * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
@@ -731,15 +713,12 @@ export function ɵɵdefinePipe<T>(pipeDef: {
   /** Pipe class reference. Needed to extract pipe lifecycle hooks. */
   type: Type<T>,
 
-  /** A factory for creating a pipe instance. */
-  factory: FactoryFn<T>,
-
   /** Whether the pipe is pure. */
   pure?: boolean
 }): never {
   return (<PipeDef<T>>{
+    type: pipeDef.type,
     name: pipeDef.name,
-    factory: pipeDef.factory,
     pure: pipeDef.pure !== false,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
   }) as never;
@@ -752,25 +731,35 @@ export function ɵɵdefinePipe<T>(pipeDef: {
  */
 
 export function getComponentDef<T>(type: any): ComponentDef<T>|null {
-  return (type as any)[NG_COMPONENT_DEF] || null;
+  return type[NG_COMPONENT_DEF] || null;
 }
 
 export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
-  return (type as any)[NG_DIRECTIVE_DEF] || null;
+  return type[NG_DIRECTIVE_DEF] || null;
 }
 
 export function getPipeDef<T>(type: any): PipeDef<T>|null {
-  return (type as any)[NG_PIPE_DEF] || null;
+  return type[NG_PIPE_DEF] || null;
 }
 
 export function getBaseDef<T>(type: any): ɵɵBaseDef<T>|null {
-  return (type as any)[NG_BASE_DEF] || null;
+  return type[NG_BASE_DEF] || null;
+}
+
+export function getFactoryFn<T>(type: any, throwNotFound: true): FactoryFn<T>;
+export function getFactoryFn<T>(type: any): FactoryFn<T>|null;
+export function getFactoryFn<T>(type: any, throwNotFound?: boolean): FactoryFn<T>|null {
+  const factoryFn = type[NG_FACTORY_FN] || null;
+  if (!factoryFn && throwNotFound === true) {
+    throw new Error(`Type ${stringify(type)} does not have 'ngFactoryFn' property.`);
+  }
+  return factoryFn;
 }
 
 export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;
 export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null;
 export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleDef<T>|null {
-  const ngModuleDef = (type as any)[NG_MODULE_DEF] || null;
+  const ngModuleDef = type[NG_MODULE_DEF] || null;
   if (!ngModuleDef && throwNotFound === true) {
     throw new Error(`Type ${stringify(type)} does not have 'ngModuleDef' property.`);
   }

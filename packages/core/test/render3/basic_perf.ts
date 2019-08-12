@@ -59,9 +59,9 @@ describe('iv perf test', () => {
                 }
                 ɵɵcontainerRefreshEnd();
               }
-            },
-            factory: () => new Component
+            }
           });
+          static ngFactoryFn = () => new Component;
         }
 
         const start = new Date().getTime();

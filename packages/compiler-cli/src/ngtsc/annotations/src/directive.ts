@@ -90,18 +90,21 @@ export class DirectiveDecoratorHandler implements
   }
 
   compile(node: ClassDeclaration, analysis: DirectiveHandlerData, pool: ConstantPool):
-      CompileResult {
+      CompileResult[] {
     const res = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
     const statements = res.statements;
     if (analysis.metadataStmt !== null) {
       statements.push(analysis.metadataStmt);
     }
-    return {
-      name: 'ngDirectiveDef',
-      initializer: res.expression,
-      statements: statements,
-      type: res.type,
-    };
+    return [
+      {
+        name: 'ngDirectiveDef',
+        initializer: res.expression,
+        statements: statements,
+        type: res.type,
+      },
+      {name: 'ngFactoryFn', initializer: res.factory, statements: [], type: res.type}
+    ];
   }
 }
 

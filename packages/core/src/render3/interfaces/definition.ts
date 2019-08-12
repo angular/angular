@@ -76,7 +76,10 @@ export interface ComponentType<T> extends Type<T> { ngComponentDef: never; }
  * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
  * consumable for rendering.
  */
-export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: never; }
+export interface DirectiveType<T> extends Type<T> {
+  ngDirectiveDef: never;
+  ngFactoryFn: () => T;
+}
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
 
@@ -173,11 +176,6 @@ export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
    * Name under which the directive is exported (for use with local references in template)
    */
   readonly exportAs: string[]|null;
-
-  /**
-   * Factory function used to create a new directive instance.
-   */
-  factory: FactoryFn<T>;
 
   /* The following are lifecycle hooks for this component */
   onChanges: (() => void)|null;
@@ -329,17 +327,15 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
  * See: {@link definePipe}
  */
 export interface PipeDef<T> {
+  /** Token representing the pipe. */
+  type: Type<T>;
+
   /**
    * Pipe name.
    *
    * Used to resolve pipe in templates.
    */
   readonly name: string;
-
-  /**
-   * Factory function used to create a new pipe instance.
-   */
-  factory: FactoryFn<T>;
 
   /**
    * Whether or not the pipe is pure.

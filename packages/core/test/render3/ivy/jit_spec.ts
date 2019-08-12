@@ -15,7 +15,7 @@ import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/core/src/metadata/di';
 import {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
 import {NgModule, NgModuleDef} from '@angular/core/src/metadata/ng_module';
-import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/definition';
+import {ComponentDef, FactoryFn, PipeDef} from '@angular/core/src/render3/interfaces/definition';
 
 
 ivyEnabled && describe('render3 jit', () => {
@@ -34,7 +34,7 @@ ivyEnabled && describe('render3 jit', () => {
     const SomeCmpAny = SomeCmp as any;
 
     expect(SomeCmpAny.ngComponentDef).toBeDefined();
-    expect(SomeCmpAny.ngComponentDef.factory() instanceof SomeCmp).toBe(true);
+    expect(SomeCmpAny.ngFactoryFn() instanceof SomeCmp).toBe(true);
   });
 
   it('compiles an injectable with a type provider', () => {
@@ -242,9 +242,10 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     const pipeDef = (P as any).ngPipeDef as PipeDef<P>;
+    const pipeFactory = (P as any).ngFactoryFn as FactoryFn<P>;
     expect(pipeDef.name).toBe('test-pipe');
     expect(pipeDef.pure).toBe(false, 'pipe should not be pure');
-    expect(pipeDef.factory() instanceof P)
+    expect(pipeFactory() instanceof P)
         .toBe(true, 'factory() should create an instance of the pipe');
   });
 

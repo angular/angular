@@ -65,7 +65,6 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
         injectFn: R3.directiveInject,
       },
       true);
-  definitionMapValues.push({key: 'factory', value: templateFactory.factory, quoted: false});
 
   // e.g. `pure: true`
   definitionMapValues.push({key: 'pure', value: o.literal(metadata.pure), quoted: false});
@@ -75,7 +74,13 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
     typeWithParameters(metadata.type, metadata.typeArgumentCount),
     new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),
   ]));
-  return {expression, type, statements: templateFactory.statements};
+
+  return {
+    expression,
+    type,
+    statements: templateFactory.statements,
+    factory: templateFactory.factory
+  };
 }
 
 /**
@@ -83,9 +88,8 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
  */
 export function compilePipeFromRender2(
     outputCtx: OutputContext, pipe: CompilePipeMetadata, reflector: CompileReflector) {
-  const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
-
   const name = identifierName(pipe.type);
+
   if (!name) {
     return error(`Cannot resolve the name of ${pipe.type}`);
   }
@@ -100,10 +104,8 @@ export function compilePipeFromRender2(
   };
 
   const res = compilePipeFromMetadata(metadata);
-
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Pipe);
-
-  outputCtx.statements.push(new o.ClassStmt(
+  const pipeDefStatement = new o.ClassStmt(
       /* name */ name,
       /* parent */ null,
       /* fields */[new o.ClassField(
@@ -113,5 +115,19 @@ export function compilePipeFromRender2(
           /* initializer */ res.expression)],
       /* getters */[],
       /* constructorMethod */ new o.ClassMethod(null, [], []),
-      /* methods */[]));
+      /* methods */[]);
+  const ngFactoryFnStatement = new o.ClassStmt(
+      /* name */ name,
+      /* parent */ null,
+      /* fields */
+      [new o.ClassField(
+          /* name */ 'ngFactoryFn',
+          /* type */ o.INFERRED_TYPE,
+          /* modifiers */[o.StmtModifier.Static],
+          /* initializer */ res.factory)],
+      /* getters */[],
+      /* constructorMethod */ new o.ClassMethod(null, [], []),
+      /* methods */[]);
+
+  outputCtx.statements.push(pipeDefStatement, ngFactoryFnStatement);
 }

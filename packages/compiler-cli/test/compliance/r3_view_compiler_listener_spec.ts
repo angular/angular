@@ -201,7 +201,6 @@ describe('compiler compliance: listen()', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
-          factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
           consts: 4,
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {
@@ -222,10 +221,15 @@ describe('compiler compliance: listen()', () => {
         });
       `;
 
+    const MyComponentFactoryFn = `
+      MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+    `;
+
     const result = compile(files, angularFiles);
     const source = result.source;
 
     expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ngComponentDef');
+    expectEmit(source, MyComponentFactoryFn, 'Incorrect MyComponent.ngFactoryFn');
   });
 
 });

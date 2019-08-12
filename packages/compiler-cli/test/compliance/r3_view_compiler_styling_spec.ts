@@ -131,9 +131,6 @@ describe('compiler compliance: styling', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors:[["my-component"]],
-          factory:function MyComponent_Factory(t){
-            return new (t || MyComponent)();
-          },
           consts: 0,
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
@@ -173,9 +170,6 @@ describe('compiler compliance: styling', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors:[["my-component"]],
-          factory:function MyComponent_Factory(t){
-            return new (t || MyComponent)();
-          },
           consts: 0,
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
@@ -524,9 +518,6 @@ describe('compiler compliance: styling', () => {
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
-              factory:function MyComponent_Factory(t){
-                return new (t || MyComponent)();
-              },
               consts: 1,
               vars: 4,
               template:  function MyComponent_Template(rf, $ctx$) {
@@ -577,9 +568,6 @@ describe('compiler compliance: styling', () => {
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyComponent,
             selectors: [["my-component"]],
-            factory: function MyComponent_Factory(t) {
-              return new (t || MyComponent)();
-            },
             consts: 1,
             vars: 1,
             template:  function MyComponent_Template(rf, ctx) {
@@ -736,9 +724,6 @@ describe('compiler compliance: styling', () => {
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
-              factory:function MyComponent_Factory(t){
-                return new (t || MyComponent)();
-              },
               consts: 1,
               vars: 4,
               template:  function MyComponent_Template(rf, $ctx$) {
@@ -791,9 +776,6 @@ describe('compiler compliance: styling', () => {
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
-              factory:function MyComponent_Factory(t){
-                return new (t || MyComponent)();
-              },
               consts: 1,
               vars: 2,
               template:  function MyComponent_Template(rf, $ctx$) {

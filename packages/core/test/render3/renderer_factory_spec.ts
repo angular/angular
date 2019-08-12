@@ -40,9 +40,9 @@ describe('renderer factory lifecycle', () => {
         if (rf & RenderFlags.Update) {
           logs.push('component update');
         }
-      },
-      factory: () => new SomeComponent
+      }
     });
+    static ngFactoryFn = () => new SomeComponent;
   }
 
   class SomeComponentWhichThrows {
@@ -54,9 +54,9 @@ describe('renderer factory lifecycle', () => {
       vars: 0,
       template: function(rf: RenderFlags, ctx: SomeComponentWhichThrows) {
         throw(new Error('SomeComponentWhichThrows threw'));
-      },
-      factory: () => new SomeComponentWhichThrows
+      }
     });
+    static ngFactoryFn = () => new SomeComponentWhichThrows;
   }
 
   function Template(rf: RenderFlags, ctx: any) {
@@ -161,8 +161,8 @@ describe('Renderer2 destruction hooks', () => {
             ɵɵelement(0, 'span');
           }
         },
-        factory: () => new SimpleComponent,
       });
+      static ngFactoryFn = () => new SimpleComponent;
     }
 
     let condition = true;

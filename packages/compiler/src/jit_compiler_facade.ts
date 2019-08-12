@@ -43,7 +43,10 @@ export class CompilerFacadeImpl implements CompilerFacade {
       pipeName: facade.pipeName,
       pure: facade.pure,
     });
-    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements);
+    return [
+      this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements),
+      this.jitExpression(res.factory, angularCoreEnv, '', [])
+    ];
   }
 
   compileInjectable(
@@ -106,7 +109,11 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade);
     const res = compileDirectiveFromMetadata(meta, constantPool, bindingParser);
     const preStatements = [...constantPool.statements, ...res.statements];
-    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
+
+    return [
+      this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements),
+      this.jitExpression(res.factory, angularCoreEnv, '', [])
+    ];
   }
 
   compileComponent(
@@ -148,8 +155,11 @@ export class CompilerFacadeImpl implements CompilerFacade {
         },
         constantPool, makeBindingParser(interpolationConfig));
     const preStatements = [...constantPool.statements, ...res.statements];
-    return this.jitExpression(
-        res.expression, angularCoreEnv, `ng:///${facade.name}.js`, preStatements);
+
+    return [
+      this.jitExpression(res.expression, angularCoreEnv, `ng:///${facade.name}.js`, preStatements),
+      this.jitExpression(res.factory, angularCoreEnv, sourceMapUrl, [])
+    ];
   }
 
   compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, facade: R3BaseMetadataFacade):

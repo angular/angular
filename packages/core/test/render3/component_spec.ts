@@ -36,9 +36,9 @@ describe('component', () => {
           ɵɵtextBinding(ctx.count);
         }
       },
-      factory: () => new CounterComponent,
       inputs: {count: 'count'},
     });
+    static ngFactoryFn = () => new CounterComponent;
   }
 
   describe('renderComponent', () => {
@@ -76,7 +76,6 @@ describe('component', () => {
         type: MyComponent,
         encapsulation: ViewEncapsulation.None,
         selectors: [['my-component']],
-        factory: () => new MyComponent(ɵɵdirectiveInject(MyService)),
         consts: 1,
         vars: 1,
         template: function(fs: RenderFlags, ctx: MyComponent) {
@@ -89,6 +88,7 @@ describe('component', () => {
           }
         }
       });
+      static ngFactoryFn = () => new MyComponent(ɵɵdirectiveInject(MyService));
     }
 
     class MyModule {
@@ -120,7 +120,6 @@ describe('component', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
-        factory: () => new Comp(),
         consts: 1,
         vars: 1,
         template: (rf: RenderFlags, ctx: Comp) => {
@@ -134,6 +133,7 @@ describe('component', () => {
         },
         inputs: {name: 'name'}
       });
+      static ngFactoryFn = () => new Comp();
     }
 
     // Artificially inflating the slot IDs of this app component to mimic an app
@@ -177,10 +177,6 @@ it('should not invoke renderer destroy method for embedded views', () => {
       selectors: [['comp']],
       consts: 3,
       vars: 1,
-      factory: () => {
-        comp = new Comp();
-        return comp;
-      },
       directives: [NgIf],
       /**
        *  <div>Root view</div>
@@ -200,6 +196,10 @@ it('should not invoke renderer destroy method for embedded views', () => {
         }
       }
     });
+    static ngFactoryFn = () => {
+      comp = new Comp();
+      return comp;
+    }
   }
 
   const rendererFactory = new MockRendererFactory(['destroy']);
@@ -268,9 +268,9 @@ describe('component with a container', () => {
           ɵɵcontainerRefreshEnd();
         }
       },
-      factory: () => new WrapperComponent,
       inputs: {items: 'items'}
     });
+    static ngFactoryFn = () => new WrapperComponent;
   }
 
   function template(rf: RenderFlags, ctx: {items: string[]}) {
@@ -330,7 +330,6 @@ describe('recursive components', () => {
       type: TreeComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['tree-comp']],
-      factory: () => new TreeComponent(),
       consts: 3,
       vars: 1,
       template: (rf: RenderFlags, ctx: TreeComponent) => {
@@ -376,6 +375,7 @@ describe('recursive components', () => {
       },
       inputs: {data: 'data'}
     });
+    static ngFactoryFn = () => new TreeComponent();
   }
 
   (TreeComponent.ngComponentDef as ComponentDef<TreeComponent>).directiveDefs =
@@ -397,7 +397,6 @@ describe('recursive components', () => {
       type: NgIfTree,
       encapsulation: ViewEncapsulation.None,
       selectors: [['ng-if-tree']],
-      factory: () => new NgIfTree(),
       consts: 3,
       vars: 3,
       template: (rf: RenderFlags, ctx: NgIfTree) => {
@@ -423,6 +422,7 @@ describe('recursive components', () => {
       },
       inputs: {data: 'data'},
     });
+    static ngFactoryFn = () => new NgIfTree();
   }
 
   function IfTemplate(rf: RenderFlags, left: any) {
@@ -550,11 +550,11 @@ describe('recursive components', () => {
         inputs: {minifiedName: 'unminifiedName'},
         consts: 0,
         vars: 0,
-        factory: () => new TestInputsComponent(),
         template: function(rf: RenderFlags, ctx: TestInputsComponent): void {
           // Template not needed for this test
         }
       });
+      static ngFactoryFn = () => new TestInputsComponent();
     }
 
     const testInputsComponentFactory = new ComponentFactory(TestInputsComponent.ngComponentDef);
