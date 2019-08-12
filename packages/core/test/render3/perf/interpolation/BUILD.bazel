@@ -1,0 +1,21 @@
+package(default_visibility = ["//visibility:private"])
+
+load("//tools:defaults.bzl", "ts_library", "ng_rollup_bundle")
+
+ts_library(
+    name = "perf_lib",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
