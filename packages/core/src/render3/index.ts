@@ -178,9 +178,8 @@ export {
   ɵɵqueryRefresh,
   ɵɵviewQuery,
   ɵɵstaticViewQuery,
-  ɵɵloadViewQuery,
+  ɵɵloadQuery,
   ɵɵcontentQuery,
-  ɵɵloadContentQuery,
   ɵɵstaticContentQuery
 } from './query';
 
