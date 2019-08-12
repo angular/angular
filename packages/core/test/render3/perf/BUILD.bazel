@@ -13,8 +13,16 @@ ts_library(
 )
 
 ng_rollup_bundle(
-    name = "bundle",
-    entry_point = ":index.ts",
+    name = "interpolation",
+    entry_point = ":interpolation/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "noop_change_detection",
+    entry_point = ":noop_change_detection/index.ts",
     deps = [
         ":perf_lib",
     ],
