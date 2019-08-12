@@ -219,8 +219,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     const result: Declarations = [];
     const sourceFile = this.getSourceFile(fileName);
     if (sourceFile) {
-      let visit = (child: ts.Node) => {
-        let declaration = this.getDeclarationFromNode(sourceFile, child);
+      const visit = (child: ts.Node) => {
+        const declaration = this.getDeclarationFromNode(sourceFile, child);
         if (declaration) {
           result.push(declaration);
         } else {
@@ -383,13 +383,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   private get reflector(): StaticReflector {
-    let result = this._reflector;
-    if (!result) {
-      const ssr = this.staticSymbolResolver;
-      result = this._reflector = new StaticReflector(
-          this.summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath !));
+    if (!this._reflector) {
+      this._reflector = new StaticReflector(
+          this.summaryResolver, this.staticSymbolResolver,
+          [],  // knownMetadataClasses
+          [],  // knownMetadataFunctions
+          (e, filePath) => this.collectError(e, filePath !));
     }
-    return result;
+    return this._reflector;
   }
 
   private getTemplateClassFromStaticSymbol(type: StaticSymbol): ts.ClassDeclaration|undefined {
@@ -442,12 +443,12 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
     const callTarget = (<ts.CallExpression>parentNode).expression;
 
-    let decorator = parentNode.parent;  // Decorator
+    const decorator = parentNode.parent;  // Decorator
     if (!decorator || decorator.kind !== ts.SyntaxKind.Decorator) {
       return TypeScriptServiceHost.missingTemplate;
     }
 
-    let declaration = <ts.ClassDeclaration>decorator.parent;  // ClassDeclaration
+    const declaration = <ts.ClassDeclaration>decorator.parent;  // ClassDeclaration
     if (!declaration || declaration.kind !== ts.SyntaxKind.ClassDeclaration) {
       return TypeScriptServiceHost.missingTemplate;
     }
@@ -531,73 +532,73 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   getTemplateAstAtPosition(fileName: string, position: number): TemplateInfo|undefined {
-    let template = this.getTemplateAt(fileName, position);
-    if (template) {
-      let astResult = this.getTemplateAst(template, fileName);
-      if (astResult && astResult.htmlAst && astResult.templateAst && astResult.directive &&
-          astResult.directives && astResult.pipes && astResult.expressionParser)
-        return {
-          position,
-          fileName,
-          template,
-          htmlAst: astResult.htmlAst,
-          directive: astResult.directive,
-          directives: astResult.directives,
-          pipes: astResult.pipes,
-          templateAst: astResult.templateAst,
-          expressionParser: astResult.expressionParser
-        };
+    const template = this.getTemplateAt(fileName, position);
+    if (!template) {
+      return;
     }
-    return undefined;
+    const astResult = this.getTemplateAst(template, fileName);
+    if (astResult && astResult.htmlAst && astResult.templateAst && astResult.directive &&
+        astResult.directives && astResult.pipes && astResult.expressionParser) {
+      return {
+        position,
+        fileName,
+        template,
+        htmlAst: astResult.htmlAst,
+        directive: astResult.directive,
+        directives: astResult.directives,
+        pipes: astResult.pipes,
+        templateAst: astResult.templateAst,
+        expressionParser: astResult.expressionParser
+      };
+    }
   }
 
   getTemplateAst(template: TemplateSource, contextFile: string): AstResult {
-    let result: AstResult|undefined = undefined;
     try {
-      const resolvedMetadata =
-          this.resolver.getNonNormalizedDirectiveMetadata(template.type as any);
+      const resolvedMetadata = this.resolver.getNonNormalizedDirectiveMetadata(template.type);
       const metadata = resolvedMetadata && resolvedMetadata.metadata;
-      if (metadata) {
-        const rawHtmlParser = new HtmlParser();
-        const htmlParser = new I18NHtmlParser(rawHtmlParser);
-        const expressionParser = new Parser(new Lexer());
-        const config = new CompilerConfig();
-        const parser = new TemplateParser(
-            config, this.resolver.getReflector(), expressionParser, new DomElementSchemaRegistry(),
-            htmlParser, null !, []);
-        const htmlResult = htmlParser.parse(template.source, '', {tokenizeExpansionForms: true});
-        let errors: Diagnostic[]|undefined = undefined;
-        let ngModule = this.analyzedModules.ngModuleByPipeOrDirective.get(template.type);
-        if (!ngModule) {
+      if (!metadata) {
+        return {};
+      }
+      const rawHtmlParser = new HtmlParser();
+      const htmlParser = new I18NHtmlParser(rawHtmlParser);
+      const expressionParser = new Parser(new Lexer());
+      const config = new CompilerConfig();
+      const parser = new TemplateParser(
+          config, this.resolver.getReflector(), expressionParser, new DomElementSchemaRegistry(),
+          htmlParser, null !, []);
+      const htmlResult = htmlParser.parse(template.source, '', {tokenizeExpansionForms: true});
+      const errors: Diagnostic[]|undefined = undefined;
+      const ngModule = this.analyzedModules.ngModuleByPipeOrDirective.get(template.type) ||
           // Reported by the the declaration diagnostics.
-          ngModule = findSuitableDefaultModule(this.analyzedModules);
-        }
-        if (ngModule) {
-          const directives =
-              ngModule.transitiveModule.directives
-                  .map(d => this.resolver.getNonNormalizedDirectiveMetadata(d.reference))
-                  .filter(d => d)
-                  .map(d => d !.metadata.toSummary());
-          const pipes = ngModule.transitiveModule.pipes.map(
-              p => this.resolver.getOrLoadPipeMetadata(p.reference).toSummary());
-          const schemas = ngModule.schemas;
-          const parseResult = parser.tryParseHtml(htmlResult, metadata, directives, pipes, schemas);
-          result = {
-            htmlAst: htmlResult.rootNodes,
-            templateAst: parseResult.templateAst,
-            directive: metadata, directives, pipes,
-            parseErrors: parseResult.errors, expressionParser, errors
-          };
-        }
+          findSuitableDefaultModule(this.analyzedModules);
+      if (!ngModule) {
+        return {};
       }
+      const directives = ngModule.transitiveModule.directives
+                             .map(d => this.resolver.getNonNormalizedDirectiveMetadata(d.reference))
+                             .filter(d => d)
+                             .map(d => d !.metadata.toSummary());
+      const pipes = ngModule.transitiveModule.pipes.map(
+          p => this.resolver.getOrLoadPipeMetadata(p.reference).toSummary());
+      const schemas = ngModule.schemas;
+      const parseResult = parser.tryParseHtml(htmlResult, metadata, directives, pipes, schemas);
+      return {
+        htmlAst: htmlResult.rootNodes,
+        templateAst: parseResult.templateAst,
+        directive: metadata, directives, pipes,
+        parseErrors: parseResult.errors, expressionParser, errors
+      };
     } catch (e) {
-      let span = template.span;
-      if (e.fileName == contextFile) {
-        span = template.query.getSpanAt(e.line, e.column) || span;
-      }
-      result = {errors: [{kind: DiagnosticKind.Error, message: e.message, span}]};
+      const span =
+          e.fileName === contextFile && template.query.getSpanAt(e.line, e.column) || template.span;
+      return {
+        errors: [{
+          kind: DiagnosticKind.Error,
+          message: e.message, span,
+        }],
+      };
     }
-    return result || {};
   }
 }
 

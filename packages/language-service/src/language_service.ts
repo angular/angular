@@ -6,16 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilePipeSummary} from '@angular/compiler';
 import * as tss from 'typescript/lib/tsserverlibrary';
-
-import {getTemplateCompletions} from './completions';
+import {getTemplateCompletions, ngCompletionToTsCompletionEntry} from './completions';
 import {getDefinitionAndBoundSpan} from './definitions';
-import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic} from './diagnostics';
+import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic, uniqueBySpan} from './diagnostics';
 import {getHover} from './hover';
-import {Completion, Diagnostic, LanguageService, Span} from './types';
+import {Diagnostic, LanguageService} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
-
 
 /**
  * Create an instance of an Angular `LanguageService`.
@@ -53,21 +50,22 @@ class LanguageServiceImpl implements LanguageService {
     return uniqueBySpan(results).map(d => ngDiagnosticToTsDiagnostic(d, sourceFile));
   }
 
-  getPipesAt(fileName: string, position: number): CompilePipeSummary[] {
+  getCompletionsAt(fileName: string, position: number): tss.CompletionInfo|undefined {
     this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
-    if (templateInfo) {
-      return templateInfo.pipes;
+    if (!templateInfo) {
+      return;
     }
-    return [];
-  }
-
-  getCompletionsAt(fileName: string, position: number): Completion[]|undefined {
-    this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
-    const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
-    if (templateInfo) {
-      return getTemplateCompletions(templateInfo);
+    const results = getTemplateCompletions(templateInfo);
+    if (!results || !results.length) {
+      return;
     }
+    return {
+      isGlobalCompletion: false,
+      isMemberCompletion: false,
+      isNewIdentifierLocation: false,
+      entries: results.map(ngCompletionToTsCompletionEntry),
+    };
   }
 
   getDefinitionAt(fileName: string, position: number): tss.DefinitionInfoAndBoundSpan|undefined {
@@ -85,22 +83,4 @@ class LanguageServiceImpl implements LanguageService {
       return getHover(templateInfo);
     }
   }
-}
-
-function uniqueBySpan<T extends{span: Span}>(elements: T[]): T[] {
-  const result: T[] = [];
-  const map = new Map<number, Set<number>>();
-  for (const element of elements) {
-    const {span} = element;
-    let set = map.get(span.start);
-    if (!set) {
-      set = new Set();
-      map.set(span.start, set);
-    }
-    if (!set.has(span.end)) {
-      set.add(span.end);
-      result.push(element);
-    }
-  }
-  return result;
 }
