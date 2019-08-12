@@ -59,15 +59,19 @@ export function markAsProcessed(
   }
 
   const scripts = packageJson.scripts || (packageJson.scripts = {});
-  scripts.prepublishOnly__ivy_ngcc_bak =
-      scripts.prepublishOnly__ivy_ngcc_bak || scripts.prepublishOnly;
-
-  scripts.prepublishOnly = 'node --eval \"console.error(\'' +
+  const oldPrepublishOnly = scripts.prepublishOnly;
+  const newPrepublishOnly = 'node --eval \"console.error(\'' +
       'ERROR: Trying to publish a package that has been compiled by NGCC. This is not allowed.\\n' +
       'Please delete and rebuild the package, without compiling with NGCC, before attempting to publish.\\n' +
       'Note that NGCC may have been run by importing this package into another project that is being built with Ivy enabled.\\n' +
       '\')\" ' +
       '&& exit 1';
+
+  if (oldPrepublishOnly && (oldPrepublishOnly !== newPrepublishOnly)) {
+    scripts.prepublishOnly__ivy_ngcc_bak = oldPrepublishOnly;
+  }
+
+  scripts.prepublishOnly = newPrepublishOnly;
 
   // Just in case this package.json was synthesized due to a custom configuration
   // we will ensure that the path to the containing folder exists before we write the file.
