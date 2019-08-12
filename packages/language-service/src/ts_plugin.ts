@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript'; // used as value, passed in by tsserver at runtime
 import * as tss from 'typescript/lib/tsserverlibrary'; // used as type only
 
 import {createLanguageService} from './language_service';
-import {Completion} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
 const projectHostMap = new WeakMap<tss.server.Project, TypeScriptServiceHost>();
@@ -22,16 +20,6 @@ export function getExternalFiles(project: tss.server.Project): string[]|undefine
     const externalFiles = host.getTemplateReferences();
     return externalFiles;
   }
-}
-
-function completionToEntry(c: Completion): tss.CompletionEntry {
-  return {
-    // TODO: remove any and fix type error.
-    kind: c.kind as any,
-    name: c.name,
-    sortText: c.sort,
-    kindModifiers: ''
-  };
 }
 
 export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
@@ -60,16 +48,7 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
         return results;
       }
     }
-    const results = ngLS.getCompletionsAt(fileName, position);
-    if (!results || !results.length) {
-      return;
-    }
-    return {
-      isGlobalCompletion: false,
-      isMemberCompletion: false,
-      isNewIdentifierLocation: false,
-      entries: results.map(completionToEntry),
-    };
+    return ngLS.getCompletionsAt(fileName, position);
   }
 
   function getQuickInfoAtPosition(fileName: string, position: number): tss.QuickInfo|undefined {
