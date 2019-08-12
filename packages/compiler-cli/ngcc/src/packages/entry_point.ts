@@ -38,6 +38,11 @@ export interface EntryPoint {
   compiledByAngular: boolean;
 }
 
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonArray | JsonObject | undefined;
+export interface JsonArray extends Array<JsonValue> {}
+export interface JsonObject { [key: string]: JsonValue; }
+
 export interface PackageJsonFormatPropertiesMap {
   fesm2015?: string;
   fesm5?: string;
@@ -55,7 +60,7 @@ export type PackageJsonFormatProperties = keyof PackageJsonFormatPropertiesMap;
 /**
  * The properties that may be loaded from the `package.json` file.
  */
-export interface EntryPointPackageJson extends PackageJsonFormatPropertiesMap {
+export interface EntryPointPackageJson extends JsonObject, PackageJsonFormatPropertiesMap {
   name: string;
   scripts?: Record<string, string>;
   __processed_by_ivy_ngcc__?: Record<string, string>;

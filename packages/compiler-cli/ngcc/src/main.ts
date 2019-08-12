@@ -28,6 +28,7 @@ import {PathMappings} from './utils';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
+import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater';
 
 /**
  * The options to configure the ngcc compiler.
@@ -85,6 +86,7 @@ export function mainNgcc(
      compileAllFormats = true, createNewEntryPointFormats = false,
      logger = new ConsoleLogger(LogLevel.info), pathMappings}: NgccOptions): void {
   const fileSystem = getFileSystem();
+  const pkgJsonUpdater = new DirectPackageJsonUpdater(fileSystem);
 
   // The function for performing the analysis.
   const analyzeEntryPoints: AnalyzeEntryPointsFn = () => {
@@ -104,8 +106,8 @@ export function mainNgcc(
     const absBasePath = absoluteFrom(basePath);
     const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
     const entryPoints = getEntryPoints(
-        fileSystem, config, logger, dependencyResolver, absBasePath, targetEntryPointPath,
-        pathMappings, supportedPropertiesToConsider, compileAllFormats);
+        fileSystem, pkgJsonUpdater, logger, dependencyResolver, config, absBasePath,
+        targetEntryPointPath, pathMappings, supportedPropertiesToConsider, compileAllFormats);
 
     const processingMetadataPerEntryPoint = new Map<string, EntryPointProcessingMetadata>();
     const tasks: Task[] = [];
@@ -136,7 +138,7 @@ export function mainNgcc(
 
   // The function for creating the `compile()` function.
   const createCompileFn: CreateCompileFn = onTaskCompleted => {
-    const fileWriter = getFileWriter(fileSystem, createNewEntryPointFormats);
+    const fileWriter = getFileWriter(fileSystem, pkgJsonUpdater, createNewEntryPointFormats);
     const transformer = new Transformer(fileSystem, logger);
 
     return (task: Task) => {
@@ -207,7 +209,7 @@ export function mainNgcc(
             }
 
             markAsProcessed(
-                fileSystem, entryPoint.packageJson, packageJsonPath, propsToMarkAsProcessed);
+                pkgJsonUpdater, entryPoint.packageJson, packageJsonPath, propsToMarkAsProcessed);
           }
         });
 
@@ -261,28 +263,32 @@ function ensureSupportedProperties(properties: string[]): EntryPointJsonProperty
   return supportedProperties;
 }
 
-function getFileWriter(fs: FileSystem, createNewEntryPointFormats: boolean): FileWriter {
-  return createNewEntryPointFormats ? new NewEntryPointFileWriter(fs) : new InPlaceFileWriter(fs);
+function getFileWriter(
+    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater,
+    createNewEntryPointFormats: boolean): FileWriter {
+  return createNewEntryPointFormats ? new NewEntryPointFileWriter(fs, pkgJsonUpdater) :
+                                      new InPlaceFileWriter(fs);
 }
 
 function getEntryPoints(
-    fs: FileSystem, config: NgccConfiguration, logger: Logger, resolver: DependencyResolver,
-    basePath: AbsoluteFsPath, targetEntryPointPath: string | undefined,
-    pathMappings: PathMappings | undefined, propertiesToConsider: string[],
-    compileAllFormats: boolean): EntryPoint[] {
+    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, logger: Logger,
+    resolver: DependencyResolver, config: NgccConfiguration, basePath: AbsoluteFsPath,
+    targetEntryPointPath: string | undefined, pathMappings: PathMappings | undefined,
+    propertiesToConsider: string[], compileAllFormats: boolean): EntryPoint[] {
   const {entryPoints, invalidEntryPoints} = (targetEntryPointPath !== undefined) ?
       getTargetedEntryPoints(
-          fs, config, logger, resolver, basePath, targetEntryPointPath, propertiesToConsider,
-          compileAllFormats, pathMappings) :
+          fs, pkgJsonUpdater, logger, resolver, config, basePath, targetEntryPointPath,
+          propertiesToConsider, compileAllFormats, pathMappings) :
       getAllEntryPoints(fs, config, logger, resolver, basePath, pathMappings);
   logInvalidEntryPoints(logger, invalidEntryPoints);
   return entryPoints;
 }
 
 function getTargetedEntryPoints(
-    fs: FileSystem, config: NgccConfiguration, logger: Logger, resolver: DependencyResolver,
-    basePath: AbsoluteFsPath, targetEntryPointPath: string, propertiesToConsider: string[],
-    compileAllFormats: boolean, pathMappings: PathMappings | undefined): SortedEntryPointsInfo {
+    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, logger: Logger,
+    resolver: DependencyResolver, config: NgccConfiguration, basePath: AbsoluteFsPath,
+    targetEntryPointPath: string, propertiesToConsider: string[], compileAllFormats: boolean,
+    pathMappings: PathMappings | undefined): SortedEntryPointsInfo {
   const absoluteTargetEntryPointPath = resolve(basePath, targetEntryPointPath);
   if (hasProcessedTargetEntryPoint(
           fs, absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
@@ -300,7 +306,7 @@ function getTargetedEntryPoints(
         invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`));
   }
   if (entryPointInfo.entryPoints.length === 0) {
-    markNonAngularPackageAsProcessed(fs, absoluteTargetEntryPointPath);
+    markNonAngularPackageAsProcessed(fs, pkgJsonUpdater, absoluteTargetEntryPointPath);
   }
   return entryPointInfo;
 }
@@ -349,13 +355,14 @@ function hasProcessedTargetEntryPoint(
  * So mark all formats in this entry-point as processed so that clients of ngcc can avoid
  * triggering ngcc for this entry-point in the future.
  */
-function markNonAngularPackageAsProcessed(fs: FileSystem, path: AbsoluteFsPath) {
+function markNonAngularPackageAsProcessed(
+    fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, path: AbsoluteFsPath) {
   const packageJsonPath = resolve(path, 'package.json');
   const packageJson = JSON.parse(fs.readFile(packageJsonPath));
 
   // Note: We are marking all supported properties as processed, even if they don't exist in the
   //       `package.json` file. While this is redundant, it is also harmless.
-  markAsProcessed(fs, packageJson, packageJsonPath, SUPPORTED_FORMAT_PROPERTIES);
+  markAsProcessed(pkgJsonUpdater, packageJson, packageJsonPath, SUPPORTED_FORMAT_PROPERTIES);
 }
 
 function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryPoint[]): void {
