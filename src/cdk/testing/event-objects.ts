@@ -6,6 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/** Modifier keys that may be held while typing. */
+export interface ModifierKeys {
+  control?: boolean;
+  alt?: boolean;
+  shift?: boolean;
+  meta?: boolean;
+}
+
 /**
  * Creates a browser MouseEvent with the specified options.
  * @docs-private
@@ -63,15 +71,21 @@ export function createTouchEvent(type: string, pageX = 0, pageY = 0) {
  * Dispatches a keydown event from an element.
  * @docs-private
  */
-export function createKeyboardEvent(type: string, keyCode: number, target?: Element, key?: string) {
+export function createKeyboardEvent(type: string, keyCode: number = 0, key: string = '',
+                                    target?: Element, modifiers: ModifierKeys = {}) {
   let event = document.createEvent('KeyboardEvent') as any;
   let originalPreventDefault = event.preventDefault;
 
   // Firefox does not support `initKeyboardEvent`, but supports `initKeyEvent`.
   if (event.initKeyEvent) {
-    event.initKeyEvent(type, true, true, window, 0, 0, 0, 0, 0, keyCode);
+    event.initKeyEvent(type, true, true, window, modifiers.control, modifiers.alt, modifiers.shift,
+        modifiers.meta, keyCode);
   } else {
-    event.initKeyboardEvent(type, true, true, window, 0, key, 0, '', false);
+    // `initKeyboardEvent` expects to receive modifiers as a whitespace-delimited string
+    // See https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/initKeyboardEvent
+    const modifiersStr = (modifiers.control ? 'Control ' : '' + modifiers.alt ? 'Alt ' : '' +
+        modifiers.shift ? 'Shift ' : '' + modifiers.meta ? 'Meta' : '').trim();
+    event.initKeyboardEvent(type, true, true, window, 0, key, 0, modifiersStr, false);
   }
 
   // Webkit Browsers don't set the keyCode when calling the init function.
@@ -79,7 +93,11 @@ export function createKeyboardEvent(type: string, keyCode: number, target?: Elem
   Object.defineProperties(event, {
     keyCode: { get: () => keyCode },
     key: { get: () => key },
-    target: { get: () => target }
+    target: { get: () => target },
+    ctrlKey: { get: () => !!modifiers.control },
+    altKey: { get: () => !!modifiers.alt },
+    shiftKey: { get: () => !!modifiers.shift },
+    metaKey: { get: () => !!modifiers.meta }
   });
 
   // IE won't set `defaultPrevented` on synthetic events so we need to do it manually.

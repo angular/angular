@@ -155,6 +155,18 @@ describe('ProtractorHarnessEnvironment', () => {
       const globalEl = await harness.globalEl();
       expect(await globalEl.text()).toBe('I am a sibling!');
     });
+
+    it('should send enter key', async () => {
+      const specialKey = await harness.specaialKey();
+      await harness.sendEnter();
+      expect(await specialKey.text()).toBe('enter');
+    });
+
+    it('should send alt+j key', async () => {
+      const specialKey = await harness.specaialKey();
+      await harness.sendAltJ();
+      expect(await specialKey.text()).toBe('alt-j');
+    });
   });
 
   describe('TestElement', () => {

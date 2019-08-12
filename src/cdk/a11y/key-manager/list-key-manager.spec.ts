@@ -655,9 +655,9 @@ describe('Key managers', () => {
       });
 
       it('should debounce the input key presses', fakeAsync(() => {
-        keyManager.onKeydown(createKeyboardEvent('keydown', 79, undefined, 'o')); // types "o"
-        keyManager.onKeydown(createKeyboardEvent('keydown', 78, undefined, 'n')); // types "n"
-        keyManager.onKeydown(createKeyboardEvent('keydown', 69, undefined, 'e')); // types "e"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 79, 'o')); // types "o"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 78, 'n')); // types "n"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 69, 'e')); // types "e"
 
         expect(keyManager.activeItem).not.toBe(itemList.items[0]);
 
@@ -667,7 +667,7 @@ describe('Key managers', () => {
       }));
 
       it('should focus the first item that starts with a letter', fakeAsync(() => {
-        keyManager.onKeydown(createKeyboardEvent('keydown', 84, undefined, 't')); // types "t"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 84, 't')); // types "t"
 
         tick(debounceInterval);
 
@@ -675,7 +675,7 @@ describe('Key managers', () => {
       }));
 
       it('should not move focus if a modifier, that is not allowed, is pressed', fakeAsync(() => {
-        const tEvent = createKeyboardEvent('keydown', 84, undefined, 't');
+        const tEvent = createKeyboardEvent('keydown', 84, 't');
         Object.defineProperty(tEvent, 'ctrlKey', {get: () => true});
 
         expect(keyManager.activeItem).toBeFalsy();
@@ -687,7 +687,7 @@ describe('Key managers', () => {
       }));
 
       it('should always allow the shift key', fakeAsync(() => {
-        const tEvent = createKeyboardEvent('keydown', 84, undefined, 't');
+        const tEvent = createKeyboardEvent('keydown', 84, 't');
         Object.defineProperty(tEvent, 'shiftKey', {get: () => true});
 
         expect(keyManager.activeItem).toBeFalsy();
@@ -699,8 +699,8 @@ describe('Key managers', () => {
       }));
 
       it('should focus the first item that starts with sequence of letters', fakeAsync(() => {
-        keyManager.onKeydown(createKeyboardEvent('keydown', 84, undefined, 't')); // types "t"
-        keyManager.onKeydown(createKeyboardEvent('keydown', 72, undefined, 'h')); // types "h"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 84, 't')); // types "t"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 72, 'h')); // types "h"
 
         tick(debounceInterval);
 
@@ -708,8 +708,8 @@ describe('Key managers', () => {
       }));
 
       it('should cancel any pending timers if a navigation key is pressed', fakeAsync(() => {
-        keyManager.onKeydown(createKeyboardEvent('keydown', 84, undefined, 't')); // types "t"
-        keyManager.onKeydown(createKeyboardEvent('keydown', 72, undefined, 'h')); // types "h"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 84, 't')); // types "t"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 72, 'h')); // types "h"
         keyManager.onKeydown(fakeKeyEvents.downArrow);
 
         tick(debounceInterval);
@@ -724,7 +724,7 @@ describe('Key managers', () => {
           new FakeFocusable('три')
         ];
 
-        const keyboardEvent = createKeyboardEvent('keydown', 68, undefined, 'д');
+        const keyboardEvent = createKeyboardEvent('keydown', 68, 'д');
 
         keyManager.onKeydown(keyboardEvent); // types "д"
         tick(debounceInterval);
@@ -739,15 +739,15 @@ describe('Key managers', () => {
           new FakeFocusable('`!?')
         ];
 
-        keyManager.onKeydown(createKeyboardEvent('keydown', 192, undefined, '`')); // types "`"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 192, '`')); // types "`"
         tick(debounceInterval);
         expect(keyManager.activeItem).toBe(itemList.items[2]);
 
-        keyManager.onKeydown(createKeyboardEvent('keydown', 51, undefined, '3')); // types "3"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 51, '3')); // types "3"
         tick(debounceInterval);
         expect(keyManager.activeItem).toBe(itemList.items[1]);
 
-        keyManager.onKeydown(createKeyboardEvent('keydown', 219, undefined, '[')); // types "["
+        keyManager.onKeydown(createKeyboardEvent('keydown', 219, '[')); // types "["
         tick(debounceInterval);
         expect(keyManager.activeItem).toBe(itemList.items[0]);
       }));
@@ -756,7 +756,7 @@ describe('Key managers', () => {
         expect(keyManager.activeItem).toBeFalsy();
 
         itemList.items[0].disabled = true;
-        keyManager.onKeydown(createKeyboardEvent('keydown', 79, undefined, 'o')); // types "o"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 79, 'o')); // types "o"
         tick(debounceInterval);
 
         expect(keyManager.activeItem).toBeFalsy();
@@ -772,7 +772,7 @@ describe('Key managers', () => {
         ];
 
         keyManager.setActiveItem(1);
-        keyManager.onKeydown(createKeyboardEvent('keydown', 66, undefined, 'b'));
+        keyManager.onKeydown(createKeyboardEvent('keydown', 66, 'b'));
         tick(debounceInterval);
 
         expect(keyManager.activeItem).toBe(itemList.items[3]);
@@ -788,7 +788,7 @@ describe('Key managers', () => {
         ];
 
         keyManager.setActiveItem(3);
-        keyManager.onKeydown(createKeyboardEvent('keydown', 66, undefined, 'b'));
+        keyManager.onKeydown(createKeyboardEvent('keydown', 66, 'b'));
         tick(debounceInterval);
 
         expect(keyManager.activeItem).toBe(itemList.items[0]);
@@ -796,7 +796,7 @@ describe('Key managers', () => {
 
       it('should wrap back around if the last item is active', fakeAsync(() => {
         keyManager.setActiveItem(2);
-        keyManager.onKeydown(createKeyboardEvent('keydown', 79, undefined, 'o'));
+        keyManager.onKeydown(createKeyboardEvent('keydown', 79, 'o'));
         tick(debounceInterval);
 
         expect(keyManager.activeItem).toBe(itemList.items[0]);
@@ -804,7 +804,7 @@ describe('Key managers', () => {
 
       it('should be able to select the first item', fakeAsync(() => {
         keyManager.setActiveItem(-1);
-        keyManager.onKeydown(createKeyboardEvent('keydown', 79, undefined, 'o'));
+        keyManager.onKeydown(createKeyboardEvent('keydown', 79, 'o'));
         tick(debounceInterval);
 
         expect(keyManager.activeItem).toBe(itemList.items[0]);
@@ -812,7 +812,7 @@ describe('Key managers', () => {
 
       it('should not do anything if there is no match', fakeAsync(() => {
         keyManager.setActiveItem(1);
-        keyManager.onKeydown(createKeyboardEvent('keydown', 87, undefined, 'w'));
+        keyManager.onKeydown(createKeyboardEvent('keydown', 87, 'w'));
         tick(debounceInterval);
 
         expect(keyManager.activeItem).toBe(itemList.items[1]);

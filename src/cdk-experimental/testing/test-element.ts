@@ -6,6 +6,48 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/** Keyboard keys that do not result in input characters. */
+import {ModifierKeys} from '@angular/cdk/testing';
+
+/** An enum of non-text keys that can be used with the `sendKeys` method. */
+// NOTE: This is a separate enum from `@angular/cdk/keycodes` because we don't necessarily want to
+// support every possible keyCode. We also can't rely on Protractor's `Key` because we don't want a
+// dependency on any particular testing framework here. Instead we'll just maintain this supported
+// list of keys and let individual concrete `HarnessEnvironment` classes map them to whatever key
+// representation is used in its respective testing framework.
+export enum TestKey {
+  BACKSPACE,
+  TAB,
+  ENTER,
+  SHIFT,
+  CONTROL,
+  ALT,
+  ESCAPE,
+  PAGE_UP,
+  PAGE_DOWN,
+  END,
+  HOME,
+  LEFT_ARROW,
+  UP_ARROW,
+  RIGHT_ARROW,
+  DOWN_ARROW,
+  INSERT,
+  DELETE,
+  F1,
+  F2,
+  F3,
+  F4,
+  F5,
+  F6,
+  F7,
+  F8,
+  F9,
+  F10,
+  F11,
+  F12,
+  META
+}
+
 /**
  * This acts as a common interface for DOM elements across both unit and e2e tests. It is the
  * interface through which the ComponentHarness interacts with the component's DOM.
@@ -33,7 +75,13 @@ export interface TestElement {
    * Sends the given string to the input as a series of key presses. Also fires input events
    * and attempts to add the string to the Element's value.
    */
-  sendKeys(keys: string): Promise<void>;
+  sendKeys(...keys: (string | TestKey)[]): Promise<void>;
+
+  /**
+   * Sends the given string to the input as a series of key presses. Also fires input events
+   * and attempts to add the string to the Element's value.
+   */
+  sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
 
   /** Gets the text from the element. */
   text(): Promise<string>;

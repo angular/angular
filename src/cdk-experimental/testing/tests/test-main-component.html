@@ -8,7 +8,8 @@
   <div id="asyncCounter">{{asyncCounter}}</div>
 </div>
 <div class="inputs">
-  <input [(ngModel)]="input" id="input" aria-label="input">
+  <input [(ngModel)]="input" id="input" aria-label="input" (keydown)="onKeyDown($event)">
+  <span class="special-key">{{specialKey}}</span>
   <div id="value">Input: {{input}}</div>
   <textarea id="memo" aria-label="memo">{{memo}}</textarea>
 </div>

@@ -235,8 +235,8 @@ describe('MatBottomSheet', () => {
     const container =
         overlayContainerElement.querySelector('mat-bottom-sheet-container') as HTMLElement;
     dispatchKeyboardEvent(document.body, 'keydown', A);
-    dispatchKeyboardEvent(document.body, 'keydown', A, backdrop);
-    dispatchKeyboardEvent(document.body, 'keydown', A, container);
+    dispatchKeyboardEvent(document.body, 'keydown', A, undefined, backdrop);
+    dispatchKeyboardEvent(document.body, 'keydown', A, undefined, container);
 
     expect(spy).toHaveBeenCalledTimes(3);
   }));

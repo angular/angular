@@ -195,7 +195,7 @@ describe('MatSelectionList without forms', () => {
 
     it('should be able to use keyboard select with SPACE', () => {
       const testListItem = listOptions[1].nativeElement as HTMLElement;
-      const SPACE_EVENT: KeyboardEvent = createKeyboardEvent('keydown', SPACE, testListItem);
+      const SPACE_EVENT = createKeyboardEvent('keydown', SPACE, undefined, testListItem);
       const selectList =
           selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
       expect(selectList.selected.length).toBe(0);
@@ -211,7 +211,7 @@ describe('MatSelectionList without forms', () => {
 
     it('should be able to select an item using ENTER', () => {
       const testListItem = listOptions[1].nativeElement as HTMLElement;
-      const ENTER_EVENT: KeyboardEvent = createKeyboardEvent('keydown', ENTER, testListItem);
+      const ENTER_EVENT = createKeyboardEvent('keydown', ENTER, undefined, testListItem);
       const selectList =
           selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
       expect(selectList.selected.length).toBe(0);
@@ -233,7 +233,7 @@ describe('MatSelectionList without forms', () => {
       expect(selectList.selected.length).toBe(0);
 
       [ENTER, SPACE].forEach(key => {
-        const event = createKeyboardEvent('keydown', key, testListItem);
+        const event = createKeyboardEvent('keydown', key, undefined, testListItem);
         Object.defineProperty(event, 'ctrlKey', { get: () => true });
 
         dispatchFakeEvent(testListItem, 'focus');
@@ -254,7 +254,8 @@ describe('MatSelectionList without forms', () => {
       listOptions[1].componentInstance.disabled = true;
 
       dispatchFakeEvent(testListItem, 'focus');
-      selectionList.componentInstance._keydown(createKeyboardEvent('keydown', SPACE, testListItem));
+      selectionList.componentInstance._keydown(
+          createKeyboardEvent('keydown', SPACE, undefined, testListItem));
       fixture.detectChanges();
 
       expect(selectionModel.selected.length).toBe(0);
@@ -296,8 +297,7 @@ describe('MatSelectionList without forms', () => {
 
     it('should focus previous item when press UP ARROW', () => {
       let testListItem = listOptions[2].nativeElement as HTMLElement;
-      let UP_EVENT: KeyboardEvent =
-        createKeyboardEvent('keydown', UP_ARROW, testListItem);
+      let UP_EVENT = createKeyboardEvent('keydown', UP_ARROW, undefined, testListItem);
       let manager = selectionList.componentInstance._keyManager;
 
       dispatchFakeEvent(listOptions[2].nativeElement, 'focus');
@@ -468,13 +468,13 @@ describe('MatSelectionList without forms', () => {
 
       expect(manager.activeItemIndex).toBe(-1);
 
-      dispatchEvent(listEl, createKeyboardEvent('keydown', 83, undefined, 's'));
+      dispatchEvent(listEl, createKeyboardEvent('keydown', 83, 's'));
       fixture.detectChanges();
       tick(200);
 
       expect(manager.activeItemIndex).toBe(1);
 
-      dispatchEvent(listEl, createKeyboardEvent('keydown', 68, undefined, 'd'));
+      dispatchEvent(listEl, createKeyboardEvent('keydown', 68, 'd'));
       fixture.detectChanges();
       tick(200);
 

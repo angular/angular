@@ -12,6 +12,9 @@ ng_module(
         ],
     ),
     module_name = "@angular/cdk-experimental/testing",
+    deps = [
+        "//src/cdk/testing",
+    ],
 )
 
 ng_web_test_suite(

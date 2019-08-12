@@ -104,11 +104,11 @@ describe('OverlayKeyboardDispatcher', () => {
     instance.attach(new ComponentPortal(TestComponent));
     instance.keydownEvents().subscribe(spy);
 
-    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, instance.overlayElement);
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, undefined, instance.overlayElement);
     expect(spy).toHaveBeenCalledTimes(1);
 
     instance.detach();
-    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, instance.overlayElement);
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, undefined, instance.overlayElement);
 
     expect(spy).toHaveBeenCalledTimes(1);
   });
@@ -120,11 +120,11 @@ describe('OverlayKeyboardDispatcher', () => {
     instance.attach(new ComponentPortal(TestComponent));
     instance.keydownEvents().subscribe(spy);
 
-    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, instance.overlayElement);
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, undefined, instance.overlayElement);
     expect(spy).toHaveBeenCalledTimes(1);
 
     instance.dispose();
-    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, instance.overlayElement);
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, undefined, instance.overlayElement);
 
     expect(spy).toHaveBeenCalledTimes(1);
   });

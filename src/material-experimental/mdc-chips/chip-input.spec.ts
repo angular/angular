@@ -55,7 +55,7 @@ describe('MatChipInput', () => {
 
   describe('basic behavior', () => {
     it('emits the (chipEnd) on enter keyup', () => {
-      let ENTER_EVENT = createKeyboardEvent('keydown', ENTER, inputNativeElement);
+      let ENTER_EVENT = createKeyboardEvent('keydown', ENTER, undefined, inputNativeElement);
 
       spyOn(testChipInput, 'add');
 
@@ -107,7 +107,7 @@ describe('MatChipInput', () => {
 
       expect(gridElement.getAttribute('tabindex')).toBe('0');
 
-      dispatchKeyboardEvent(inputNativeElement, 'keydown', TAB, inputNativeElement);
+      dispatchKeyboardEvent(inputNativeElement, 'keydown', TAB, undefined, inputNativeElement);
       fixture.detectChanges();
 
       expect(gridElement.getAttribute('tabindex'))
@@ -122,7 +122,7 @@ describe('MatChipInput', () => {
 
     it('should not allow focus to escape when tabbing backwards', fakeAsync(() => {
       const gridElement: HTMLElement = fixture.nativeElement.querySelector('mat-chip-grid');
-      const event = createKeyboardEvent('keydown', TAB, inputNativeElement);
+      const event = createKeyboardEvent('keydown', TAB, undefined, inputNativeElement);
       Object.defineProperty(event, 'shiftKey', {get: () => true});
 
       expect(gridElement.getAttribute('tabindex')).toBe('0');
@@ -164,7 +164,7 @@ describe('MatChipInput', () => {
 
   describe('[separatorKeyCodes]', () => {
     it('does not emit (chipEnd) when a non-separator key is pressed', () => {
-      let ENTER_EVENT = createKeyboardEvent('keydown', ENTER, inputNativeElement);
+      let ENTER_EVENT = createKeyboardEvent('keydown', ENTER, undefined, inputNativeElement);
       spyOn(testChipInput, 'add');
 
       chipInputDirective.separatorKeyCodes = [COMMA];
@@ -175,7 +175,7 @@ describe('MatChipInput', () => {
     });
 
     it('emits (chipEnd) when a custom separator keys is pressed', () => {
-      let COMMA_EVENT = createKeyboardEvent('keydown', COMMA, inputNativeElement);
+      let COMMA_EVENT = createKeyboardEvent('keydown', COMMA, undefined, inputNativeElement);
       spyOn(testChipInput, 'add');
 
       chipInputDirective.separatorKeyCodes = [COMMA];
@@ -186,7 +186,7 @@ describe('MatChipInput', () => {
     });
 
     it('emits accepts the custom separator keys in a Set', () => {
-      let COMMA_EVENT = createKeyboardEvent('keydown', COMMA, inputNativeElement);
+      let COMMA_EVENT = createKeyboardEvent('keydown', COMMA, undefined, inputNativeElement);
       spyOn(testChipInput, 'add');
 
       chipInputDirective.separatorKeyCodes = new Set([COMMA]);
@@ -222,12 +222,13 @@ describe('MatChipInput', () => {
       spyOn(testChipInput, 'add');
       fixture.detectChanges();
 
-      chipInputDirective._keydown(createKeyboardEvent('keydown', COMMA, inputNativeElement));
+      chipInputDirective._keydown(
+          createKeyboardEvent('keydown', COMMA, undefined, inputNativeElement));
       expect(testChipInput.add).toHaveBeenCalled();
     });
 
     it('should not emit the chipEnd event if a separator is pressed with a modifier key', () => {
-      const ENTER_EVENT = createKeyboardEvent('keydown', ENTER, inputNativeElement);
+      const ENTER_EVENT = createKeyboardEvent('keydown', ENTER, undefined, inputNativeElement);
       Object.defineProperty(ENTER_EVENT, 'shiftKey', {get: () => true});
       spyOn(testChipInput, 'add');
 

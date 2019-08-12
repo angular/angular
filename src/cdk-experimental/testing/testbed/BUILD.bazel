@@ -11,6 +11,7 @@ ts_library(
     module_name = "@angular/cdk-experimental/testing/testbed",
     deps = [
         "//src/cdk-experimental/testing",
+        "//src/cdk/keycodes",
         "//src/cdk/testing",
         "@npm//@angular/core",
     ],

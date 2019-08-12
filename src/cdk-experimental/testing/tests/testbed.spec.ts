@@ -174,6 +174,18 @@ describe('TestbedHarnessEnvironment', () => {
       expect(globalEl).not.toBeNull();
       expect(await globalEl.text()).toBe('Hello Yi from Angular 2!');
     });
+
+    it('should send enter key', async () => {
+      const specialKey = await harness.specaialKey();
+      await harness.sendEnter();
+      expect(await specialKey.text()).toBe('enter');
+    });
+
+    it('should send alt+j key', async () => {
+      const specialKey = await harness.specaialKey();
+      await harness.sendAltJ();
+      expect(await specialKey.text()).toBe('alt-j');
+    });
   });
 
   describe('TestElement', () => {

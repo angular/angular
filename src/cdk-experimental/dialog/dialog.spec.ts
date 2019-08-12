@@ -308,8 +308,8 @@ describe('Dialog', () => {
     let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
     let container = overlayContainerElement.querySelector('cdk-dialog-container') as HTMLElement;
     dispatchKeyboardEvent(document.body, 'keydown', A);
-    dispatchKeyboardEvent(document.body, 'keydown', A, backdrop);
-    dispatchKeyboardEvent(document.body, 'keydown', A, container);
+    dispatchKeyboardEvent(document.body, 'keydown', A, undefined, backdrop);
+    dispatchKeyboardEvent(document.body, 'keydown', A, undefined, container);
 
     expect(spy).toHaveBeenCalledTimes(3);
   }));

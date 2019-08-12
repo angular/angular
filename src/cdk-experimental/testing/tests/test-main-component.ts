@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ENTER} from '@angular/cdk/keycodes';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -35,6 +36,7 @@ export class TestMainComponent {
   testTools: string[];
   testMethods: string[];
   _isHovering: boolean;
+  specialKey = '';
 
   onMouseOver() {
     this._isHovering = true;
@@ -63,5 +65,14 @@ export class TestMainComponent {
       this.asyncCounter++;
       this._cdr.markForCheck();
     }, 500);
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    if (event.keyCode === ENTER && event.key === 'Enter') {
+      this.specialKey = 'enter';
+    }
+    if (event.key === 'j' && event.altKey) {
+      this.specialKey = 'alt-j';
+    }
   }
 }

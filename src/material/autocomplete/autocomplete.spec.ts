@@ -1,14 +1,15 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, SPACE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
 import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
-import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {MockNgZone} from '@angular/cdk/private/testing';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
+  clearElement,
   createKeyboardEvent,
+  dispatchEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   typeInElement,
-  dispatchEvent,
 } from '@angular/cdk/testing';
 import {
   ChangeDetectionStrategy,
@@ -18,9 +19,9 @@ import {
   OnInit,
   Provider,
   QueryList,
+  Type,
   ViewChild,
   ViewChildren,
-  Type,
 } from '@angular/core';
 import {
   async,
@@ -36,7 +37,7 @@ import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Observable, Subject, Subscription, EMPTY} from 'rxjs';
+import {EMPTY, Observable, Subject, Subscription} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {MatInputModule} from '../input/index';
 import {
@@ -45,11 +46,10 @@ import {
   MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
   MatAutocomplete,
   MatAutocompleteModule,
+  MatAutocompleteOrigin,
   MatAutocompleteSelectedEvent,
   MatAutocompleteTrigger,
-  MatAutocompleteOrigin,
 } from './index';
-
 
 describe('MatAutocomplete', () => {
   let overlayContainer: OverlayContainer;
@@ -217,7 +217,7 @@ describe('MatAutocomplete', () => {
       zone.simulateZoneExit();
 
       // Filter down the option list to a subset of original options ('Alabama', 'California')
-      typeInElement('al', input);
+      typeInElement(input, 'al');
       fixture.detectChanges();
       tick();
 
@@ -228,7 +228,8 @@ describe('MatAutocomplete', () => {
       // Changing value from 'Alabama' to 'al' to re-populate the option list,
       // ensuring that 'California' is created new.
       dispatchFakeEvent(input, 'focusin');
-      typeInElement('al', input);
+      clearElement(input);
+      typeInElement(input, 'al');
       fixture.detectChanges();
       tick();
 
@@ -275,7 +276,7 @@ describe('MatAutocomplete', () => {
           .toContain('mat-autocomplete-visible', `Expected panel to start out visible.`);
 
       // Filter down the option list such that no options match the value
-      typeInElement('af', input);
+      typeInElement(input, 'af');
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
@@ -359,7 +360,7 @@ describe('MatAutocomplete', () => {
       expect(overlayContainerElement.querySelector('.mat-autocomplete-panel')!.classList)
           .toContain('mat-autocomplete-visible', 'Expected panel to be visible.');
 
-      typeInElement('x', input);
+      typeInElement(input, 'x');
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
@@ -373,7 +374,8 @@ describe('MatAutocomplete', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
-      typeInElement('al', input);
+      clearElement(input);
+      typeInElement(input, 'al');
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
@@ -446,7 +448,7 @@ describe('MatAutocomplete', () => {
 
       expect(fixture.componentInstance.openedSpy).toHaveBeenCalledTimes(1);
 
-      typeInElement('Alabam', input);
+      typeInElement(input, 'Alabam');
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
@@ -495,7 +497,7 @@ describe('MatAutocomplete', () => {
       fixture.componentInstance.autocompleteDisabled = true;
       fixture.detectChanges();
 
-      typeInElement('hello', input);
+      typeInElement(input, 'hello');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.value).toBe('hello');
@@ -587,13 +589,13 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
       zone.simulateZoneExit();
 
-      typeInElement('a', input);
+      typeInElement(input, 'a');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.value)
           .toEqual('a', 'Expected control value to be updated as user types.');
 
-      typeInElement('al', input);
+      typeInElement(input, 'l');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.value)
@@ -638,7 +640,8 @@ describe('MatAutocomplete', () => {
         options[1].click();
         fixture.detectChanges();
 
-        typeInElement('Californi', input);
+        clearElement(input);
+        typeInElement(input, 'Californi');
         fixture.detectChanges();
         tick();
 
@@ -690,7 +693,7 @@ describe('MatAutocomplete', () => {
       }));
 
     it('should clear the text field if value is reset programmatically', fakeAsync(() => {
-      typeInElement('Alabama', input);
+      typeInElement(input, 'Alabama');
       fixture.detectChanges();
       tick();
 
@@ -725,7 +728,7 @@ describe('MatAutocomplete', () => {
       expect(fixture.componentInstance.stateCtrl.dirty)
           .toBe(false, `Expected control to start out pristine.`);
 
-      typeInElement('a', input);
+      typeInElement(input, 'a');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.dirty)
@@ -891,7 +894,7 @@ describe('MatAutocomplete', () => {
     it('should set the active item properly after filtering', () => {
       const componentInstance = fixture.componentInstance;
 
-      typeInElement('o', input);
+      typeInElement(input, 'o');
       fixture.detectChanges();
 
       componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
@@ -939,7 +942,7 @@ describe('MatAutocomplete', () => {
     });
 
     it('should fill the text field, not select an option, when SPACE is entered', () => {
-      typeInElement('New', input);
+      typeInElement(input, 'New');
       fixture.detectChanges();
 
       const SPACE_EVENT = createKeyboardEvent('keydown', SPACE);
@@ -977,7 +980,8 @@ describe('MatAutocomplete', () => {
           .toEqual('', `Expected panel to close after ENTER key.`);
 
       dispatchFakeEvent(input, 'focusin');
-      typeInElement('Alabama', input);
+      clearElement(input);
+      typeInElement(input, 'Alabama');
       fixture.detectChanges();
       tick();
 
@@ -992,7 +996,7 @@ describe('MatAutocomplete', () => {
         const trigger = fixture.componentInstance.trigger;
 
         dispatchFakeEvent(input, 'focusin');
-        typeInElement('A', input);
+        typeInElement(input, 'A');
         fixture.detectChanges();
         tick();
 
@@ -1354,7 +1358,7 @@ describe('MatAutocomplete', () => {
       expect(input.getAttribute('aria-expanded'))
           .toBe('true', 'Expected aria-expanded to be true while panel is open.');
 
-      typeInElement('zz', input);
+      typeInElement(input, 'zz');
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
@@ -1497,7 +1501,7 @@ describe('MatAutocomplete', () => {
       inputReference.style.position = 'fixed';
 
       // Type enough to only show one option.
-      typeInElement('California', inputEl);
+      typeInElement(inputEl, 'California');
       fixture.detectChanges();
       tick();
 
@@ -1512,7 +1516,8 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       // Change the text so we get more than one result.
-      typeInElement('C', inputEl);
+      clearElement(inputEl);
+      typeInElement(inputEl, 'C');
       fixture.detectChanges();
       tick();
 
@@ -1540,7 +1545,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
       zone.simulateZoneExit();
 
-      typeInElement('f', input);
+      typeInElement(input, 'f');
       fixture.detectChanges();
       tick();
 
@@ -1843,7 +1848,7 @@ describe('MatAutocomplete', () => {
       formField.style.bottom = '100px';
       formField.style.position = 'fixed';
 
-      typeInElement('Cali', input);
+      typeInElement(input, 'Cali');
       fixture.detectChanges();
       tick();
       zone.simulateZoneExit();
@@ -1856,7 +1861,7 @@ describe('MatAutocomplete', () => {
       expect(Math.floor(inputBottom)).toBe(Math.floor(panelTop),
           `Expected panel top to match input bottom when there is only one option.`);
 
-      typeInElement('', input);
+      clearElement(input);
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
@@ -1968,7 +1973,7 @@ describe('MatAutocomplete', () => {
         fixture.detectChanges();
 
         const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        typeInElement('d', input);
+        typeInElement(input, 'd');
         fixture.detectChanges();
 
         const options =
@@ -2021,7 +2026,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
-      typeInElement('o', input);
+      typeInElement(input, 'o');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.matOptions.length).toBe(2);
@@ -2137,7 +2142,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
 
-      typeInElement('1337', input);
+      typeInElement(input, '1337');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.selectedValue).toBe(1337);
@@ -2411,7 +2416,7 @@ describe('MatAutocomplete', () => {
     const input = fixture.debugElement.query(By.css('input')).nativeElement;
     const formControl = fixture.componentInstance.stateCtrl;
 
-    typeInElement('Cal', input);
+    typeInElement(input, 'Cal');
     fixture.detectChanges();
     tick();
     fixture.detectChanges();
@@ -2423,14 +2428,13 @@ describe('MatAutocomplete', () => {
 
     expect(input.value).toBe('', 'Expected input value to reset when model is reset');
 
-    typeInElement('Cal', input);
+    typeInElement(input, 'Cal');
     fixture.detectChanges();
     tick();
     fixture.detectChanges();
 
     expect(formControl.value).toBe('Cal', 'Expected new value to be propagated to model');
   }));
-
 });
 
 @Component({

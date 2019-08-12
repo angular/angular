@@ -279,7 +279,7 @@ describe('MatChipList', () => {
           let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
           let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
-          let LEFT_EVENT = createKeyboardEvent('keydown', LEFT_ARROW, lastNativeChip);
+          let LEFT_EVENT = createKeyboardEvent('keydown', LEFT_ARROW, undefined, lastNativeChip);
           let array = chips.toArray();
           let lastIndex = array.length - 1;
           let lastItem = array[lastIndex];
@@ -302,7 +302,7 @@ describe('MatChipList', () => {
           let firstNativeChip = nativeChips[0] as HTMLElement;
 
           let RIGHT_EVENT: KeyboardEvent =
-            createKeyboardEvent('keydown', RIGHT_ARROW, firstNativeChip);
+            createKeyboardEvent('keydown', RIGHT_ARROW, undefined, firstNativeChip);
           let array = chips.toArray();
           let firstItem = array[0];
 
@@ -321,7 +321,7 @@ describe('MatChipList', () => {
 
         it('should not handle arrow key events from non-chip elements', () => {
           const event: KeyboardEvent =
-              createKeyboardEvent('keydown', RIGHT_ARROW, chipListNativeElement);
+              createKeyboardEvent('keydown', RIGHT_ARROW, undefined, chipListNativeElement);
           const initialActiveIndex = manager.activeItemIndex;
 
           chipListInstance._keydown(event);
@@ -334,7 +334,7 @@ describe('MatChipList', () => {
         it('should focus the first item when pressing HOME', () => {
           const nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
           const lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
-          const HOME_EVENT = createKeyboardEvent('keydown', HOME, lastNativeChip);
+          const HOME_EVENT = createKeyboardEvent('keydown', HOME, undefined, lastNativeChip);
           const array = chips.toArray();
           const lastItem = array[array.length - 1];
 
@@ -350,7 +350,7 @@ describe('MatChipList', () => {
 
         it('should focus the last item when pressing END', () => {
           const nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
-          const END_EVENT = createKeyboardEvent('keydown', END, nativeChips[0]);
+          const END_EVENT = createKeyboardEvent('keydown', END, undefined, nativeChips[0]);
 
           expect(manager.activeItemIndex).toBe(-1);
 
@@ -374,7 +374,7 @@ describe('MatChipList', () => {
           let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
           let RIGHT_EVENT: KeyboardEvent =
-              createKeyboardEvent('keydown', RIGHT_ARROW, lastNativeChip);
+              createKeyboardEvent('keydown', RIGHT_ARROW, undefined, lastNativeChip);
           let array = chips.toArray();
           let lastIndex = array.length - 1;
           let lastItem = array[lastIndex];
@@ -397,7 +397,7 @@ describe('MatChipList', () => {
           let firstNativeChip = nativeChips[0] as HTMLElement;
 
           let LEFT_EVENT: KeyboardEvent =
-              createKeyboardEvent('keydown', LEFT_ARROW, firstNativeChip);
+              createKeyboardEvent('keydown', LEFT_ARROW, undefined, firstNativeChip);
           let array = chips.toArray();
           let firstItem = array[0];
 
@@ -452,7 +452,7 @@ describe('MatChipList', () => {
         let firstNativeChip = nativeChips[0] as HTMLElement;
 
         let RIGHT_EVENT: KeyboardEvent =
-          createKeyboardEvent('keydown', RIGHT_ARROW, firstNativeChip);
+          createKeyboardEvent('keydown', RIGHT_ARROW, undefined, firstNativeChip);
         let array = chips.toArray();
         let firstItem = array[0];
 
@@ -525,7 +525,7 @@ describe('MatChipList', () => {
         it('should focus the last chip when press BACKSPACE', () => {
           let nativeInput = fixture.nativeElement.querySelector('input');
           let BACKSPACE_EVENT: KeyboardEvent =
-              createKeyboardEvent('keydown', BACKSPACE, nativeInput);
+              createKeyboardEvent('keydown', BACKSPACE, undefined, nativeInput);
 
           // Focus the input
           nativeInput.focus();
@@ -1084,7 +1084,7 @@ describe('MatChipList', () => {
       expect(fixture.componentInstance.foods).toEqual([], 'Expected all chips to be removed.');
       expect(document.activeElement).toBe(nativeInput, 'Expected input to be focused.');
 
-      typeInElement('123', nativeInput);
+      typeInElement(nativeInput, '123');
       fixture.detectChanges();
       dispatchKeyboardEvent(nativeInput, 'keydown', ENTER);
       fixture.detectChanges();
@@ -1137,7 +1137,7 @@ describe('MatChipList', () => {
         it('should focus the last chip when press BACKSPACE', () => {
           let nativeInput = fixture.nativeElement.querySelector('input');
           let BACKSPACE_EVENT: KeyboardEvent =
-            createKeyboardEvent('keydown', BACKSPACE, nativeInput);
+            createKeyboardEvent('keydown', BACKSPACE, undefined, nativeInput);
 
           // Focus the input
           nativeInput.focus();

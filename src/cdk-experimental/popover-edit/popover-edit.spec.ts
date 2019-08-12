@@ -484,7 +484,7 @@ describe('CDK Popover Edit', () => {
 
         describe('arrow keys', () => {
           const dispatchKey = (cell: HTMLElement, keyCode: number) =>
-              dispatchKeyboardEvent(cell, 'keydown', keyCode, cell);
+              dispatchKeyboardEvent(cell, 'keydown', keyCode, undefined, cell);
 
           it('moves focus up/down/left/right and prevents default', () => {
             const rowCells = getRowCells();

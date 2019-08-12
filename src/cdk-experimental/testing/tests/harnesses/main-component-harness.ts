@@ -7,7 +7,7 @@
  */
 
 import {ComponentHarness} from '../../component-harness';
-import {TestElement} from '../../test-element';
+import {TestElement, TestKey} from '../../test-element';
 import {SubComponentHarness} from './sub-component-harness';
 
 export class WrongComponentHarness extends ComponentHarness {
@@ -47,6 +47,7 @@ export class MainComponentHarness extends ComponentHarness {
   readonly testLists = this.locatorForAll(SubComponentHarness.with({title: /test/}));
   readonly requiredFourIteamToolsLists =
       this.locatorFor(SubComponentHarness.with({title: 'List of test tools', itemCount: 4}));
+  readonly specaialKey = this.locatorFor('.special-key');
 
   private _testTools = this.locatorFor(SubComponentHarness);
 
@@ -65,5 +66,13 @@ export class MainComponentHarness extends ComponentHarness {
   async getTestTools(): Promise<TestElement[]> {
     const subComponent = await this._testTools();
     return subComponent.getItems();
+  }
+
+  async sendEnter(): Promise<void> {
+    return (await this.input()).sendKeys(TestKey.ENTER);
+  }
+
+  async sendAltJ(): Promise<void> {
+    return (await this.input()).sendKeys({alt: true}, 'j');
   }
 }

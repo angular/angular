@@ -468,14 +468,14 @@ describe('MatSelect', () => {
 
           expect(formControl.value).toBeFalsy('Expected no initial value.');
 
-          dispatchEvent(select, createKeyboardEvent('keydown', 80, undefined, 'p'));
+          dispatchEvent(select, createKeyboardEvent('keydown', 80, 'p'));
           tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
 
           expect(options[1].selected).toBe(true, 'Expected second option to be selected.');
           expect(formControl.value).toBe(options[1].value,
             'Expected value from second option to have been set on the model.');
 
-          dispatchEvent(select, createKeyboardEvent('keydown', 69, undefined, 'e'));
+          dispatchEvent(select, createKeyboardEvent('keydown', 69, 'e'));
           tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
 
           expect(options[5].selected).toBe(true, 'Expected sixth option to be selected.');
@@ -492,7 +492,7 @@ describe('MatSelect', () => {
 
           expect(formControl.value).toBeFalsy('Expected no initial value.');
 
-          dispatchEvent(select, createKeyboardEvent('keydown', 80, undefined, 'p'));
+          dispatchEvent(select, createKeyboardEvent('keydown', 80, 'p'));
           tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
 
           expect(formControl.value).toBeFalsy('Expected no value after a bit of time has passed.');
@@ -560,7 +560,7 @@ describe('MatSelect', () => {
 
           expect(instance.select.panelOpen).toBe(false, 'Expected panel to be closed.');
 
-          dispatchEvent(select, createKeyboardEvent('keydown', 80, undefined, 'p'));
+          dispatchEvent(select, createKeyboardEvent('keydown', 80, 'p'));
 
           expect(instance.select.panelOpen).toBe(false, 'Expected panel to stay closed.');
           expect(instance.control.value).toBe(initialValue, 'Expected value to stay the same.');
@@ -1989,7 +1989,7 @@ describe('MatSelect', () => {
       it('should scroll to the active option when typing', fakeAsync(() => {
         for (let i = 0; i < 15; i++) {
           // Press the letter 'o' 15 times since all the options are named 'Option <index>'
-          dispatchEvent(host, createKeyboardEvent('keydown', 79, undefined, 'o'));
+          dispatchEvent(host, createKeyboardEvent('keydown', 79, 'o'));
           fixture.detectChanges();
           tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
         }
