@@ -9,4 +9,5 @@
   Spacer used to force the scrolling container to the correct size for the *total* number of items
   so that the scrollbar captures the size of the entire data set.
 -->
-<div class="cdk-virtual-scroll-spacer" [style.transform]="_totalContentSizeTransform"></div>
+<div class="cdk-virtual-scroll-spacer"
+     [style.width]="_totalContentWidth" [style.height]="_totalContentHeight"></div>

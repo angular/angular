@@ -90,7 +90,8 @@ export declare type CdkVirtualForOfContext<T> = {
 
 export declare class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, OnDestroy {
     _contentWrapper: ElementRef<HTMLElement>;
-    _totalContentSizeTransform: string;
+    _totalContentHeight: string;
+    _totalContentWidth: string;
     elementRef: ElementRef<HTMLElement>;
     orientation: 'horizontal' | 'vertical';
     renderedRangeStream: Observable<ListRange>;

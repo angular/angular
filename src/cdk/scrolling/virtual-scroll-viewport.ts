@@ -71,7 +71,17 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   private _renderedRangeSubject = new Subject<ListRange>();
 
   /** The direction the viewport scrolls. */
-  @Input() orientation: 'horizontal' | 'vertical' = 'vertical';
+  @Input()
+  get orientation() {
+    return this._orientation;
+  }
+  set orientation(orientation: 'horizontal' | 'vertical') {
+    if (this._orientation !== orientation) {
+      this._orientation = orientation;
+      this._calculateSpacerSize();
+    }
+  }
+  private _orientation: 'horizontal' | 'vertical' = 'vertical';
 
   // Note: we don't use the typical EventEmitter here because we need to subscribe to the scroll
   // strategy lazily (i.e. only if the user is actually listening to the events). We do this because
@@ -90,15 +100,15 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   renderedRangeStream: Observable<ListRange> = this._renderedRangeSubject.asObservable();
 
   /**
-   * The transform used to scale the spacer to the same size as all content, including content that
-   * is not currently rendered.
-   */
-  _totalContentSizeTransform = '';
-
-  /**
    * The total size of all content (in pixels), including content that is not currently rendered.
    */
   private _totalContentSize = 0;
+
+  /** A string representing the `style.width` property value to be used for the spacer element. */
+  _totalContentWidth = '';
+
+  /** A string representing the `style.height` property value to be used for the spacer element. */
+  _totalContentHeight = '';
 
   /**
    * The CSS transform applied to the rendered subset of items so that they appear within the bounds
@@ -238,8 +248,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   setTotalContentSize(size: number) {
     if (this._totalContentSize !== size) {
       this._totalContentSize = size;
-      const axis = this.orientation == 'horizontal' ? 'X' : 'Y';
-      this._totalContentSizeTransform = `scale${axis}(${this._totalContentSize})`;
+      this._calculateSpacerSize();
       this._markChangeDetectionNeeded();
     }
   }
@@ -397,5 +406,13 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     for (const fn of runAfterChangeDetection) {
       fn();
     }
+  }
+
+  /** Calculates the `style.width` and `style.height` for the spacer element. */
+  private _calculateSpacerSize() {
+    this._totalContentHeight =
+        this.orientation === 'horizontal' ? '' : `${this._totalContentSize}px`;
+    this._totalContentWidth =
+        this.orientation === 'horizontal' ? `${this._totalContentSize}px` : '';
   }
 }
