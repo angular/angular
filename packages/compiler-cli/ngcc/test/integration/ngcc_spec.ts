@@ -11,6 +11,7 @@ import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
 import {mainNgcc} from '../../src/main';
 import {markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLogger} from '../helpers/mock_logger';
 
 const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
@@ -19,10 +20,12 @@ runInEachFileSystem(() => {
   describe('ngcc main()', () => {
     let _: typeof absoluteFrom;
     let fs: FileSystem;
+    let pkgJsonUpdater: PackageJsonUpdater;
 
     beforeEach(() => {
       _ = absoluteFrom;
       fs = getFileSystem();
+      pkgJsonUpdater = new DirectPackageJsonUpdater(fs);
       initMockFileSystem(fs, testFiles);
     });
 
@@ -195,7 +198,8 @@ runInEachFileSystem(() => {
       const basePath = _('/node_modules');
       const targetPackageJsonPath = join(basePath, packagePath, 'package.json');
       const targetPackage = loadPackage(packagePath);
-      markAsProcessed(fs, targetPackage, targetPackageJsonPath, ['typings', ...properties]);
+      markAsProcessed(
+          pkgJsonUpdater, targetPackage, targetPackageJsonPath, ['typings', ...properties]);
     }
 
 
