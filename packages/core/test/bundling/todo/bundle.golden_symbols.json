@@ -1233,9 +1233,6 @@
     "name": "renderStringify"
   },
   {
-    "name": "renderStylingMap"
-  },
-  {
     "name": "resetAllStylingState"
   },
   {
@@ -1327,6 +1324,9 @@
   },
   {
     "name": "setSelectedIndex"
+  },
+  {
+    "name": "setStaticAttr"
   },
   {
     "name": "setStyle"

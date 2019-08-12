@@ -30,6 +30,7 @@ import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, leaveView, namespaceHTMLInternal, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap} from '../styling_next/bindings';
+import {getInitialStylingValue} from '../styling_next/util';
 import {NO_CHANGE} from '../tokens';
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
@@ -1861,6 +1862,22 @@ export function textBindingInternal(lView: LView, index: number, value: string):
  * style and class entries to the element.
  */
 export function renderInitialStyling(renderer: Renderer3, native: RElement, tNode: TNode) {
-  renderStylingMap(renderer, native, tNode.classes, true);
-  renderStylingMap(renderer, native, tNode.styles, false);
+  const classValue = getInitialStylingValue(tNode.classes);
+  if (classValue) {
+    setStaticAttr(native, renderer, 'class', classValue);
+  }
+
+  const styleValue = getInitialStylingValue(tNode.styles);
+  if (styleValue) {
+    setStaticAttr(native, renderer, 'style', styleValue);
+  }
+}
+
+function setStaticAttr(native: RElement, renderer: Renderer3, name: string, value: string) {
+  ngDevMode && ngDevMode.rendererSetAttribute++;
+  if (isProceduralRenderer(renderer)) {
+    renderer.setAttribute(native, name, value);
+  } else {
+    native.setAttribute(name, value);
+  }
 }

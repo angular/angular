@@ -117,9 +117,6 @@
     "name": "RENDERER_FACTORY"
   },
   {
-    "name": "RendererStyleFlags3"
-  },
-  {
     "name": "SANITIZER"
   },
   {
@@ -576,9 +573,6 @@
     "name": "renderStringify"
   },
   {
-    "name": "renderStylingMap"
-  },
-  {
     "name": "resetAllStylingState"
   },
   {
@@ -607,9 +601,6 @@
   },
   {
     "name": "setBindingRoot"
-  },
-  {
-    "name": "setClass"
   },
   {
     "name": "setCurrentDirectiveDef"
@@ -651,7 +642,7 @@
     "name": "setSelectedIndex"
   },
   {
-    "name": "setStyle"
+    "name": "setStaticAttr"
   },
   {
     "name": "setTNodeAndViewData"
