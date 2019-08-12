@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
-import {MetadataRegistry} from '../../metadata';
+import {MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
@@ -40,7 +40,8 @@ export interface NgModuleAnalysis {
 export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
+      private metaReader: MetadataReader, private metaRegistry: MetadataRegistry,
+      private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
       private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
       private defaultImportRecorder: DefaultImportRecorder, private localeId?: string) {}
@@ -210,13 +211,21 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const scope = this.scopeRegistry.getScopeOfModule(node);
     const diagnostics = this.scopeRegistry.getDiagnosticsOfModule(node) || undefined;
 
-    // Using the scope information, extend the injector's imports using the modules that are
-    // specified as module exports.
     if (scope !== null) {
+      // Using the scope information, extend the injector's imports using the modules that are
+      // specified as module exports.
       const context = getSourceFile(node);
       for (const exportRef of analysis.exports) {
         if (isNgModule(exportRef.node, scope.compilation)) {
           analysis.ngInjectorDef.imports.push(this.refEmitter.emit(exportRef, context));
+        }
+      }
+
+      for (const decl of analysis.declarations) {
+        if (this.metaReader.isAbstractDirective(decl)) {
+          throw new FatalDiagnosticError(
+              ErrorCode.DIRECTIVE_MISSING_SELECTOR, decl.node,
+              `Directive ${decl.node.name.text} has no selector, please add it!`);
         }
       }
     }

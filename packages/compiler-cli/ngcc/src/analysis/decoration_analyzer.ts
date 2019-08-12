@@ -86,9 +86,9 @@ export class DecorationAnalyzer {
         this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
         /* strictCtorDeps */ false),
     new NgModuleDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
-        this.referencesRegistry, this.isCore, /* routeAnalyzer */ null, this.refEmitter,
-        NOOP_DEFAULT_IMPORT_RECORDER),
+        this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
+        this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
+        this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER),
     new PipeDecoratorHandler(
         this.reflectionHost, this.evaluator, this.metaRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
         this.isCore),
