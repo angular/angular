@@ -76,7 +76,10 @@ export interface ComponentType<T> extends Type<T> { ngComponentDef: never; }
  * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
  * consumable for rendering.
  */
-export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: never; }
+export interface DirectiveType<T> extends Type<T> {
+  ngDirectiveDef: never;
+  ngFactoryDef: () => T;
+}
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
 
@@ -175,9 +178,10 @@ export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
   readonly exportAs: string[]|null;
 
   /**
-   * Factory function used to create a new directive instance.
+   * Factory function used to create a new directive instance. Will be null initially.
+   * Populated when the factory is first requested by directive instantiation logic.
    */
-  factory: FactoryFn<T>;
+  factory: FactoryFn<T>|null;
 
   /* The following are lifecycle hooks for this component */
   onChanges: (() => void)|null;
@@ -206,6 +210,11 @@ export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
 export type ɵɵComponentDefWithMeta<
     T, Selector extends String, ExportAs extends string[], InputMap extends{[key: string]: string},
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = ComponentDef<T>;
+
+/**
+ * @codeGenApi
+ */
+export type ɵɵFactoryDef<T> = () => T;
 
 /**
  * Runtime link information for Components.
@@ -329,6 +338,9 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
  * See: {@link definePipe}
  */
 export interface PipeDef<T> {
+  /** Token representing the pipe. */
+  type: Type<T>;
+
   /**
    * Pipe name.
    *
@@ -337,9 +349,10 @@ export interface PipeDef<T> {
   readonly name: string;
 
   /**
-   * Factory function used to create a new pipe instance.
+   * Factory function used to create a new pipe instance. Will be null initially.
+   * Populated when the factory is first requested by pipe instantiation logic.
    */
-  factory: FactoryFn<T>;
+  factory: FactoryFn<T>|null;
 
   /**
    * Whether or not the pipe is pure.

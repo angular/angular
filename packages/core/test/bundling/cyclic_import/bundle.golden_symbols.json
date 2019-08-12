@@ -81,7 +81,7 @@
     "name": "NG_ELEMENT_ID"
   },
   {
-    "name": "NG_INJECTABLE_DEF"
+    "name": "NG_FACTORY_DEF"
   },
   {
     "name": "NG_PIPE_DEF"
@@ -310,6 +310,9 @@
   },
   {
     "name": "getElementDepthCount"
+  },
+  {
+    "name": "getFactoryDef"
   },
   {
     "name": "getHostNative"
@@ -673,9 +676,6 @@
   },
   {
     "name": "ɵɵdefineComponent"
-  },
-  {
-    "name": "ɵɵdefineInjectable"
   },
   {
     "name": "ɵɵdefineInjector"

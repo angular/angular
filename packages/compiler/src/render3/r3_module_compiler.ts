@@ -207,6 +207,7 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
   const result = compileFactoryFunction({
     name: meta.name,
     type: meta.type,
+    typeArgumentCount: 0,
     deps: meta.deps,
     injectFn: R3.inject,
   });

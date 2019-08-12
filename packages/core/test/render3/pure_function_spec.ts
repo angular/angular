@@ -19,10 +19,10 @@ describe('object literals', () => {
     // TODO(issue/24571): remove '!'.
     config !: {[key: string]: any};
 
+    static ngFactoryDef = function ObjectComp_Factory() { return objectComp = new ObjectComp(); };
     static ngComponentDef = ɵɵdefineComponent({
       type: ObjectComp,
       selectors: [['object-comp']],
-      factory: function ObjectComp_Factory() { return objectComp = new ObjectComp(); },
       consts: 0,
       vars: 1,
       template: function ObjectComp_Template() {},

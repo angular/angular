@@ -14,6 +14,7 @@ export const NG_PIPE_DEF = getClosureSafeProperty({ngPipeDef: getClosureSafeProp
 export const NG_MODULE_DEF = getClosureSafeProperty({ngModuleDef: getClosureSafeProperty});
 export const NG_LOCALE_ID_DEF = getClosureSafeProperty({ngLocaleIdDef: getClosureSafeProperty});
 export const NG_BASE_DEF = getClosureSafeProperty({ngBaseDef: getClosureSafeProperty});
+export const NG_FACTORY_DEF = getClosureSafeProperty({ngFactoryDef: getClosureSafeProperty});
 
 /**
  * If a directive is diPublic, bloomAdd sets a property on the type with this constant as

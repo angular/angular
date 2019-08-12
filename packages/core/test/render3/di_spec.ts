@@ -31,12 +31,9 @@ describe('di', () => {
       value = 'DirB';
       constructor() { log.push(this.value); }
 
-      static ngDirectiveDef = ɵɵdefineDirective({
-        selectors: [['', 'dirB', '']],
-        type: DirB,
-        factory: () => new DirB(),
-        inputs: {value: 'value'}
-      });
+      static ngFactoryDef = () => new DirB();
+      static ngDirectiveDef =
+          ɵɵdefineDirective({selectors: [['', 'dirB', '']], type: DirB, inputs: {value: 'value'}});
     }
 
     beforeEach(() => log = []);
@@ -49,11 +46,8 @@ describe('di', () => {
       class DirA {
         constructor(dir: DirB) { log.push(`DirA (dep: ${dir.value})`); }
 
-        static ngDirectiveDef = ɵɵdefineDirective({
-          selectors: [['', 'dirA', '']],
-          type: DirA,
-          factory: () => new DirA(ɵɵdirectiveInject(DirB))
-        });
+        static ngFactoryDef = () => new DirA(ɵɵdirectiveInject(DirB));
+        static ngDirectiveDef = ɵɵdefineDirective({selectors: [['', 'dirA', '']], type: DirA});
       }
 
       /**
@@ -92,13 +86,11 @@ describe('di', () => {
           this.injector = vcr.injector;
         }
 
-        static ngDirectiveDef = ɵɵdefineDirective({
-          type: DirA,
-          selectors: [['', 'dirA', '']],
-          factory:
-              () => new DirA(ɵɵdirectiveInject(DirB), ɵɵdirectiveInject(ViewContainerRef as any)),
-          exportAs: ['dirA']
-        });
+        static ngFactoryDef = () => new DirA(
+            ɵɵdirectiveInject(DirB), ɵɵdirectiveInject(ViewContainerRef as any))
+
+            static ngDirectiveDef =
+                ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']], exportAs: ['dirA']});
       }
 
       /**
@@ -171,12 +163,9 @@ describe('di', () => {
         // TODO(issue/24571): remove '!'.
         value !: string;
 
-        static ngDirectiveDef = ɵɵdefineDirective({
-          type: DirB,
-          selectors: [['', 'dirB', '']],
-          factory: () => new DirB(),
-          inputs: {value: 'dirB'}
-        });
+        static ngFactoryDef = () => new DirB();
+        static ngDirectiveDef =
+            ɵɵdefineDirective({type: DirB, selectors: [['', 'dirB', '']], inputs: {value: 'dirB'}});
       }
 
       describe('Optional', () => {
@@ -185,11 +174,13 @@ describe('di', () => {
         class DirA {
           constructor(@Optional() public dirB: DirB|null) {}
 
-          static ngDirectiveDef = ɵɵdefineDirective({
-            type: DirA,
-            selectors: [['', 'dirA', '']],
-            factory: () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Optional))
-          });
+          static ngFactoryDef =
+              () => {
+                dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Optional));
+                return dirA;
+              }
+
+          static ngDirectiveDef = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
         }
 
         beforeEach(() => dirA = null);
@@ -214,11 +205,8 @@ describe('di', () => {
         class DirA {
           constructor(@Self() public dirB: DirB) {}
 
-          static ngDirectiveDef = ɵɵdefineDirective({
-            type: DirA,
-            selectors: [['', 'dirA', '']],
-            factory: () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Self))
-          });
+          static ngFactoryDef = () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Self));
+          static ngDirectiveDef = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
         }
 
         const DirC = createDirective('dirC');
@@ -251,11 +239,8 @@ describe('di', () => {
         class DirA {
           constructor(@Host() public dirB: DirB) {}
 
-          static ngDirectiveDef = ɵɵdefineDirective({
-            type: DirA,
-            selectors: [['', 'dirA', '']],
-            factory: () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Host))
-          });
+          static ngFactoryDef = () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Host));
+          static ngDirectiveDef = ɵɵdefineDirective({type: DirA, selectors: [['', 'dirA', '']]});
         }
 
         /**
@@ -319,10 +304,10 @@ describe('di', () => {
       class MyComp {
         constructor(public cdr: ChangeDetectorRef) {}
 
+        static ngFactoryDef = () => comp = new MyComp(ɵɵdirectiveInject(ChangeDetectorRef as any));
         static ngComponentDef = ɵɵdefineComponent({
           type: MyComp,
           selectors: [['my-comp']],
-          factory: () => comp = new MyComp(ɵɵdirectiveInject(ChangeDetectorRef as any)),
           consts: 1,
           vars: 0,
           template: function(rf: RenderFlags, ctx: MyComp) {
@@ -339,23 +324,24 @@ describe('di', () => {
 
         constructor(public cdr: ChangeDetectorRef) { this.value = (cdr.constructor as any).name; }
 
-        static ngDirectiveDef = ɵɵdefineDirective({
-          type: Directive,
-          selectors: [['', 'dir', '']],
-          factory: () => dir = new Directive(ɵɵdirectiveInject(ChangeDetectorRef as any)),
-          exportAs: ['dir']
-        });
+        static ngFactoryDef =
+            () => {
+              dir = new Directive(ɵɵdirectiveInject(ChangeDetectorRef as any));
+              return dir;
+            }
+
+        static ngDirectiveDef =
+            ɵɵdefineDirective({type: Directive, selectors: [['', 'dir', '']], exportAs: ['dir']});
       }
 
       class DirectiveSameInstance {
         constructor(public cdr: ChangeDetectorRef) {}
 
-        static ngDirectiveDef = ɵɵdefineDirective({
-          type: DirectiveSameInstance,
-          selectors: [['', 'dirSame', '']],
-          factory: () => dirSameInstance =
-                       new DirectiveSameInstance(ɵɵdirectiveInject(ChangeDetectorRef as any))
-        });
+        static ngFactoryDef = () => dirSameInstance =
+            new DirectiveSameInstance(ɵɵdirectiveInject(ChangeDetectorRef as any))
+
+                static ngDirectiveDef = ɵɵdefineDirective(
+                    {type: DirectiveSameInstance, selectors: [['', 'dirSame', '']]});
       }
 
       const directives = [MyComp, Directive, DirectiveSameInstance];
@@ -371,10 +357,10 @@ describe('di', () => {
 
           constructor(public cdr: ChangeDetectorRef) {}
 
+          static ngFactoryDef = () => new MyApp(ɵɵdirectiveInject(ChangeDetectorRef as any));
           static ngComponentDef = ɵɵdefineComponent({
             type: MyApp,
             selectors: [['my-app']],
-            factory: () => new MyApp(ɵɵdirectiveInject(ChangeDetectorRef as any)),
             consts: 1,
             vars: 0,
             /**
@@ -426,10 +412,10 @@ describe('di', () => {
     class MyComp {
       constructor(public renderer: Renderer2) {}
 
+      static ngFactoryDef = () => new MyComp(ɵɵdirectiveInject(Renderer2 as any));
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['my-comp']],
-        factory: () => new MyComp(ɵɵdirectiveInject(Renderer2 as any)),
         consts: 1,
         vars: 0,
         template: function(rf: RenderFlags, ctx: MyComp) {
@@ -537,24 +523,22 @@ describe('di', () => {
       class ChildDirective {
         value: string;
         constructor(public parent: any) { this.value = (parent.constructor as any).name; }
-        static ngDirectiveDef = ɵɵdefineDirective({
-          type: ChildDirective,
-          selectors: [['', 'childDir', '']],
-          factory: () => new ChildDirective(ɵɵdirectiveInject(ParentDirective)),
-          exportAs: ['childDir']
-        });
+        static ngFactoryDef = () => new ChildDirective(ɵɵdirectiveInject(ParentDirective));
+        static ngDirectiveDef = ɵɵdefineDirective(
+            {type: ChildDirective, selectors: [['', 'childDir', '']], exportAs: ['childDir']});
       }
 
       class Child2Directive {
         value: boolean;
         constructor(parent: any, child: ChildDirective) { this.value = parent === child.parent; }
-        static ngDirectiveDef = ɵɵdefineDirective({
-          selectors: [['', 'child2Dir', '']],
-          type: Child2Directive,
-          factory: () => new Child2Directive(
-                       ɵɵdirectiveInject(ParentDirective), ɵɵdirectiveInject(ChildDirective)),
-          exportAs: ['child2Dir']
-        });
+        static ngFactoryDef = () => new Child2Directive(
+            ɵɵdirectiveInject(ParentDirective), ɵɵdirectiveInject(ChildDirective))
+
+            static ngDirectiveDef = ɵɵdefineDirective({
+              selectors: [['', 'child2Dir', '']],
+              type: Child2Directive,
+              exportAs: ['child2Dir']
+            });
       }
 
       /**

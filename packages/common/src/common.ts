@@ -29,5 +29,5 @@ export {ViewportScroller, NullViewportScroller as ɵNullViewportScroller} from '
 
 export {NgClassImplProvider__POST_R3__ as ɵNgClassImplProvider__POST_R3__, NgClassR2Impl as ɵNgClassR2Impl, NgClassImpl as ɵNgClassImpl} from './directives/ng_class_impl';
 export {NgStyleImplProvider__POST_R3__ as ɵNgStyleImplProvider__POST_R3__, NgStyleR2Impl as ɵNgStyleR2Impl, NgStyleImpl as ɵNgStyleImpl} from './directives/ng_style_impl';
-export {ngStyleDirectiveDef__POST_R3__ as ɵngStyleDirectiveDef__POST_R3__} from './directives/ng_style';
-export {ngClassDirectiveDef__POST_R3__ as ɵngClassDirectiveDef__POST_R3__} from './directives/ng_class';
+export {ngStyleDirectiveDef__POST_R3__ as ɵngStyleDirectiveDef__POST_R3__, ngStyleFactoryDef__POST_R3__ as ɵngStyleFactoryDef__POST_R3__} from './directives/ng_style';
+export {ngClassDirectiveDef__POST_R3__ as ɵngClassDirectiveDef__POST_R3__, ngClassFactoryDef__POST_R3__ as ɵngClassFactoryDef__POST_R3__} from './directives/ng_class';

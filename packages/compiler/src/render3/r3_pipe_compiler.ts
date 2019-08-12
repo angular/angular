@@ -12,7 +12,7 @@ import {DefinitionKind} from '../constant_pool';
 import * as o from '../output/output_ast';
 import {OutputContext, error} from '../util';
 
-import {R3DependencyMetadata, compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
+import {R3DependencyMetadata, compileFactoryFromMetadata, compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
 import {typeWithParameters} from './util';
 
@@ -57,16 +57,6 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
   // e.g. `type: MyPipe`
   definitionMapValues.push({key: 'type', value: metadata.type, quoted: false});
 
-  const templateFactory = compileFactoryFunction(
-      {
-        name: metadata.name,
-        type: metadata.type,
-        deps: metadata.deps,
-        injectFn: R3.directiveInject,
-      },
-      true);
-  definitionMapValues.push({key: 'factory', value: templateFactory.factory, quoted: false});
-
   // e.g. `pure: true`
   definitionMapValues.push({key: 'pure', value: o.literal(metadata.pure), quoted: false});
 
@@ -75,7 +65,8 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
     typeWithParameters(metadata.type, metadata.typeArgumentCount),
     new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),
   ]));
-  return {expression, type, statements: templateFactory.statements};
+
+  return {expression, type};
 }
 
 /**
@@ -83,9 +74,8 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
  */
 export function compilePipeFromRender2(
     outputCtx: OutputContext, pipe: CompilePipeMetadata, reflector: CompileReflector) {
-  const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
-
   const name = identifierName(pipe.type);
+
   if (!name) {
     return error(`Cannot resolve the name of ${pipe.type}`);
   }
@@ -98,12 +88,22 @@ export function compilePipeFromRender2(
     deps: dependenciesFromGlobalMetadata(pipe.type, outputCtx, reflector),
     pure: pipe.pure,
   };
-
   const res = compilePipeFromMetadata(metadata);
-
+  const factoryRes = compileFactoryFromMetadata({...metadata, isPipe: true});
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Pipe);
-
-  outputCtx.statements.push(new o.ClassStmt(
+  const ngFactoryDefStatement = new o.ClassStmt(
+      /* name */ name,
+      /* parent */ null,
+      /* fields */
+      [new o.ClassField(
+          /* name */ 'ngFactoryDef',
+          /* type */ o.INFERRED_TYPE,
+          /* modifiers */[o.StmtModifier.Static],
+          /* initializer */ factoryRes.factory)],
+      /* getters */[],
+      /* constructorMethod */ new o.ClassMethod(null, [], []),
+      /* methods */[]);
+  const pipeDefStatement = new o.ClassStmt(
       /* name */ name,
       /* parent */ null,
       /* fields */[new o.ClassField(
@@ -113,5 +113,7 @@ export function compilePipeFromRender2(
           /* initializer */ res.expression)],
       /* getters */[],
       /* constructorMethod */ new o.ClassMethod(null, [], []),
-      /* methods */[]));
+      /* methods */[]);
+
+  outputCtx.statements.push(ngFactoryDefStatement, pipeDefStatement);
 }

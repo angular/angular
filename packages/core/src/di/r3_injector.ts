@@ -10,6 +10,7 @@ import '../util/ng_dev_mode';
 
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
+import {getFactoryDef} from '../render3/definition';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors';
 import {deepForEach, newArray} from '../util/array_utils';
 import {stringify} from '../util/stringify';
@@ -398,8 +399,10 @@ export class R3Injector {
 function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): () => any {
   // Most tokens will have an ngInjectableDef directly on them, which specifies a factory directly.
   const injectableDef = getInjectableDef(token);
-  if (injectableDef !== null) {
-    return injectableDef.factory;
+  const factory = injectableDef !== null ? injectableDef.factory : getFactoryDef(token);
+
+  if (factory !== null) {
+    return factory;
   }
 
   // If the token is an NgModule, it's also injectable but the factory is on its ngInjectorDef.

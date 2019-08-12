@@ -15,12 +15,12 @@ import {ComponentFixture} from './render_util';
 describe('Debug Representation', () => {
   it('should generate a human readable version', () => {
     class MyComponent {
+      static ngFactoryDef = () => new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
         vars: 0,
         consts: 2,
-        factory: () => new MyComponent(),
         template: function(rf: RenderFlags, ctx: MyComponent) {
           if (rf == RenderFlags.Create) {
             ɵɵelementStart(0, 'div', ['id', '123']);
