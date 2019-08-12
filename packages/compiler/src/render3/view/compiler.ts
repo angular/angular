@@ -487,9 +487,9 @@ function createContentQueriesFunction(
             .callFn([o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any])
             .toStmt());
 
-    // update, e.g. (r3.queryRefresh(tmp = r3.loadContentQuery()) && (ctx.someDir = tmp));
+    // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));
     const temporary = tempAllocator();
-    const getQueryList = o.importExpr(R3.loadContentQuery).callFn([]);
+    const getQueryList = o.importExpr(R3.loadQuery).callFn([]);
     const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
     const updateDirective = o.variable(CONTEXT_NAME)
                                 .prop(query.propertyName)
@@ -561,9 +561,9 @@ function createViewQueriesFunction(
         o.importExpr(queryInstruction).callFn(prepareQueryParams(query, constantPool));
     createStatements.push(queryDefinition.toStmt());
 
-    // update, e.g. (r3.queryRefresh(tmp = r3.loadViewQuery()) && (ctx.someDir = tmp));
+    // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));
     const temporary = tempAllocator();
-    const getQueryList = o.importExpr(R3.loadViewQuery).callFn([]);
+    const getQueryList = o.importExpr(R3.loadQuery).callFn([]);
     const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
     const updateDirective = o.variable(CONTEXT_NAME)
                                 .prop(query.propertyName)
