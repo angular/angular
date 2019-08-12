@@ -2600,16 +2600,14 @@ describe('i18n support in the view compiler', () => {
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", $_c2$);
-            i0.ɵɵtext(1, " ");
-            $r3$.ɵɵi18n(2, $I18N_3$);
-            i0.ɵɵtext(3, " ");
+            $r3$.ɵɵi18n(1, $I18N_3$);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵselect(1);
             $r3$.ɵɵi18nExp($ctx_r0$.age);
-            $r3$.ɵɵi18nApply(2);
+            $r3$.ɵɵi18nApply(1);
           }
         }
         const $_c3$ = ["title", "icu and text"];
@@ -2648,7 +2646,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵi18n(1, $I18N_0$);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 4, 1, "div", $_c0$);
+            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 2, 1, "div", $_c0$);
             $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c1$);
           }
           if (rf & 2) {
@@ -2732,7 +2730,7 @@ describe('i18n support in the view compiler', () => {
         const $_c2$ = [1, "other"];
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$ = goog.getMsg(" {$icu} {$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
+            const $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
               "startBoldText": "\uFFFD#2\uFFFD",
               "closeBoldText": "\uFFFD/#2\uFFFD",
               "startTagDiv": "\uFFFD#3\uFFFD",
@@ -2744,7 +2742,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.ɵɵi18nLocalize(" {$icu} {$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$icu}{$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
               "startBoldText": "\uFFFD#2\uFFFD",
               "closeBoldText": "\uFFFD/#2\uFFFD",
               "startTagDiv": "\uFFFD#3\uFFFD",
@@ -2850,14 +2848,14 @@ describe('i18n support in the view compiler', () => {
         });
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$ = goog.getMsg(" {$icu} {$icu_1} ", {
+            const $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$icu_1}", {
               "icu": $I18N_1$,
               "icu_1": $I18N_2$
             });
             $I18N_0$ = $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.ɵɵi18nLocalize(" {$icu} {$icu_1} ", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$icu}{$icu_1}", {
               "icu": $I18N_1$,
               "icu_1": $I18N_2$
             });
@@ -2932,7 +2930,7 @@ describe('i18n support in the view compiler', () => {
         });
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_APP_SPEC_TS_0$ = goog.getMsg(" {$icu} {$startTagDiv} {$icu} {$closeTagDiv}{$startTagDiv_1} {$icu} {$closeTagDiv}", {
+            const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
               "startTagDiv": "\uFFFD#2\uFFFD",
               "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
               "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
@@ -2941,7 +2939,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.ɵɵi18nLocalize(" {$icu} {$startTagDiv} {$icu} {$closeTagDiv}{$startTagDiv_1} {$icu} {$closeTagDiv}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
               "startTagDiv": "\uFFFD#2\uFFFD",
               "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
               "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
@@ -3002,26 +3000,19 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        var $I18N_1$;
+        var $I18N_0$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
-            $I18N_1$ = $MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$;
+            $I18N_0$ = $MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
         }
-        $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD",
           "VAR_SELECT_1": "\uFFFD1\uFFFD"
         });
-        var $I18N_0$;
-        if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_3052001905251380936$$APP_SPEC_TS_3$ = goog.getMsg(" {$icu} ", { "icu": $I18N_1$ });
-            $I18N_0$ = $MSG_EXTERNAL_3052001905251380936$$APP_SPEC_TS_3$;
-        }
-        else {
-            $I18N_0$ = i0.ɵɵi18nLocalize(" {$icu} ", { "icu": $I18N_1$ });
-        }        …
+        …
         consts: 2,
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
@@ -3126,7 +3117,7 @@ describe('i18n support in the view compiler', () => {
         });
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$ = goog.getMsg(" {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}", {
+            const $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
               "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
               "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
               "icu": $I18N_1$,
@@ -3135,7 +3126,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.ɵɵi18nLocalize(" {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
               "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
               "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
               "icu": $I18N_1$,
@@ -3216,7 +3207,7 @@ describe('i18n support in the view compiler', () => {
         });
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$ = goog.getMsg(" {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}", {
+            const $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
               "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
               "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
               "icu": $I18N_1$,
@@ -3225,7 +3216,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.ɵɵi18nLocalize(" {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
               "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
               "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
               "icu": $I18N_1$,

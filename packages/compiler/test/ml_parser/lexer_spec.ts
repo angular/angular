@@ -798,30 +798,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             ]);
       });
 
-      it('should parse an expansion form with whitespace surrounding it', () => {
-        expect(tokenizeAndHumanizeParts(
-                   '<div><span> {a, b, =4 {c}} </span></div>', {tokenizeExpansionForms: true}))
-            .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '', 'div'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.TAG_OPEN_START, '', 'span'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.TEXT, ' '],
-              [lex.TokenType.EXPANSION_FORM_START],
-              [lex.TokenType.RAW_TEXT, 'a'],
-              [lex.TokenType.RAW_TEXT, 'b'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'c'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
-              [lex.TokenType.TEXT, ' '],
-              [lex.TokenType.TAG_CLOSE, '', 'span'],
-              [lex.TokenType.TAG_CLOSE, '', 'div'],
-              [lex.TokenType.EOF],
-            ]);
-      });
-
       it('should parse an expansion forms with elements in it', () => {
         expect(tokenizeAndHumanizeParts(
                    '{one.two, three, =4 {four <b>a</b>}}', {tokenizeExpansionForms: true}))

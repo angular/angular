@@ -40,7 +40,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
       it('should not create a message for plain elements',
          () => { expect(_humanizeMessages('<div></div>')).toEqual([]); });
 
-      it('should support void elements', () => {
+      it('should suppoprt void elements', () => {
         expect(_humanizeMessages('<div i18n="m|d"><p><br></p></div>')).toEqual([
           [
             [
@@ -169,13 +169,6 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
       it('should extract as ICU + ph when not single child of an element', () => {
         expect(_humanizeMessages('<div i18n="m|d">b{count, plural, =0 {zero}}a</div>')).toEqual([
           [['b', '<ph icu name="ICU">{count, plural, =0 {[zero]}}</ph>', 'a'], 'm', 'd'],
-          [['{count, plural, =0 {[zero]}}'], '', ''],
-        ]);
-      });
-
-      it('should extract as ICU + ph when wrapped in whitespace in an element', () => {
-        expect(_humanizeMessages('<div i18n="m|d"> {count, plural, =0 {zero}} </div>')).toEqual([
-          [[' ', '<ph icu name="ICU">{count, plural, =0 {[zero]}}</ph>', ' '], 'm', 'd'],
           [['{count, plural, =0 {[zero]}}'], '', ''],
         ]);
       });
