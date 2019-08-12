@@ -503,10 +503,10 @@ describe('TestBed', () => {
          */
         const getAOTCompiledComponent = () => {
           class ComponentClass {
+            static ngFactoryDef = () => new ComponentClass();
             static ngComponentDef = defineComponent({
               type: ComponentClass,
               selectors: [['comp']],
-              factory: () => new ComponentClass(),
               consts: 1,
               vars: 0,
               template: (rf: any, ctx: any) => {

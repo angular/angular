@@ -217,12 +217,12 @@ describe('query', () => {
       class MyDirective {
         constructor(public service: Service) {}
 
+        static ngFactoryDef = function MyDirective_Factory() {
+          return directive = new MyDirective(ɵɵdirectiveInject(Service));
+        };
         static ngDirectiveDef = ɵɵdefineDirective({
           type: MyDirective,
           selectors: [['', 'myDir', '']],
-          factory: function MyDirective_Factory() {
-            return directive = new MyDirective(ɵɵdirectiveInject(Service));
-          },
           features: [ɵɵProvidersFeature([Service, {provide: Alias, useExisting: Service}])],
         });
       }
@@ -245,12 +245,12 @@ describe('query', () => {
           service?: Service;
           alias?: Alias;
 
+          static ngFactoryDef = function App_Factory() { return new App(); };
           static ngComponentDef = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
             consts: 1,
             vars: 0,
-            factory: function App_Factory() { return new App(); },
             template: function App_Template(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', ['myDir']);
@@ -290,12 +290,12 @@ describe('query', () => {
         class App {
           service?: Service;
 
+          static ngFactoryDef = function App_Factory() { return new App(); };
           static ngComponentDef = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
             consts: 1,
             vars: 0,
-            factory: function App_Factory() { return new App(); },
             template: function App_Template(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', ['myDir']);
@@ -833,10 +833,10 @@ describe('query', () => {
         let childInstance: Child;
 
         class Child {
+          static ngFactoryDef = () => childInstance = new Child();
           static ngComponentDef = ɵɵdefineComponent({
             type: Child,
             selectors: [['child']],
-            factory: () => childInstance = new Child(),
             consts: 0,
             vars: 0,
             template: (rf: RenderFlags, ctx: Child) => {},
@@ -1406,13 +1406,13 @@ describe('query', () => {
         this.vcr.createEmbeddedView(this.temp);
       }
 
-      static ngDirectiveDef = ɵɵdefineDirective({
-        type: SomeDir,
-        selectors: [['', 'someDir', '']],
-        factory:
-            () => new SomeDir(
-                ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any))
-      });
+      static ngFactoryDef = () => new SomeDir(
+          ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any))
+
+          static ngDirectiveDef = ɵɵdefineDirective({
+            type: SomeDir,
+            selectors: [['', 'someDir', '']],
+          });
     }
 
     function AppComponent_Template_1(rf: RenderFlags, ctx: any) {
@@ -1467,10 +1467,10 @@ describe('query', () => {
         this.contentCheckedQuerySnapshot = this.foos ? this.foos.length : 0;
       }
 
+      static ngFactoryDef = () => withContentInstance = new WithContentDirective();
       static ngDirectiveDef = ɵɵdefineDirective({
         type: WithContentDirective,
         selectors: [['', 'with-content', '']],
-        factory: () => withContentInstance = new WithContentDirective(),
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
             ɵɵcontentQuery(dirIndex, ['foo'], true);
@@ -1655,11 +1655,11 @@ describe('query', () => {
     it('should report results to appropriate queries where deep content queries are nested', () => {
       class QueryDirective {
         fooBars: any;
+        static ngFactoryDef = () => new QueryDirective();
         static ngDirectiveDef = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
           exportAs: ['query'],
-          factory: () => new QueryDirective(),
           contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
             // @ContentChildren('foo, bar, baz', {descendants: true})
             // fooBars: QueryList<ElementRef>;
@@ -1720,11 +1720,11 @@ describe('query', () => {
 
       class QueryDirective {
         fooBars: any;
+        static ngFactoryDef = () => new QueryDirective();
         static ngDirectiveDef = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
           exportAs: ['query'],
-          factory: () => new QueryDirective(),
           contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
             // @ContentChildren('foo', {descendants: true})
             // fooBars: QueryList<ElementRef>;
@@ -1777,11 +1777,11 @@ describe('query', () => {
 
       class QueryDirective {
         fooBars: any;
+        static ngFactoryDef = () => new QueryDirective();
         static ngDirectiveDef = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
           exportAs: ['query'],
-          factory: () => new QueryDirective(),
           contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
             // @ContentChildren('foo', {descendants: true})
             // fooBars: QueryList<ElementRef>;
@@ -1838,11 +1838,11 @@ describe('query', () => {
        () => {
          class ShallowQueryDirective {
            foos: any;
+           static ngFactoryDef = () => new ShallowQueryDirective();
            static ngDirectiveDef = ɵɵdefineDirective({
              type: ShallowQueryDirective,
              selectors: [['', 'shallow-query', '']],
              exportAs: ['shallow-query'],
-             factory: () => new ShallowQueryDirective(),
              contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
                // @ContentChildren('foo', {descendants: false})
                // foos: QueryList<ElementRef>;
@@ -1859,11 +1859,11 @@ describe('query', () => {
 
          class DeepQueryDirective {
            foos: any;
+           static ngFactoryDef = () => new DeepQueryDirective();
            static ngDirectiveDef = ɵɵdefineDirective({
              type: DeepQueryDirective,
              selectors: [['', 'deep-query', '']],
              exportAs: ['deep-query'],
-             factory: () => new DeepQueryDirective(),
              contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
                // @ContentChildren('foo', {descendants: true})
                // foos: QueryList<ElementRef>;
@@ -1922,12 +1922,9 @@ describe('query', () => {
     class TextDirective {
       value !: string;
 
-      static ngDirectiveDef = ɵɵdefineDirective({
-        type: TextDirective,
-        selectors: [['', 'text', '']],
-        factory: () => new TextDirective(),
-        inputs: {value: 'text'}
-      });
+      static ngFactoryDef = () => new TextDirective();
+      static ngDirectiveDef = ɵɵdefineDirective(
+          {type: TextDirective, selectors: [['', 'text', '']], inputs: {value: 'text'}});
     }
 
     it('should register content matches from top to bottom', () => {
@@ -1937,10 +1934,10 @@ describe('query', () => {
         // @ContentChildren(TextDirective)
         texts !: QueryList<TextDirective>;
 
+        static ngFactoryDef = () => contentQueryDirective = new ContentQueryDirective();
         static ngComponentDef = ɵɵdefineDirective({
           type: ContentQueryDirective,
           selectors: [['', 'content-query', '']],
-          factory: () => contentQueryDirective = new ContentQueryDirective(),
           contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
             // @ContentChildren(TextDirective, {descendants: true})
             // texts: QueryList<TextDirective>;
@@ -2005,10 +2002,10 @@ describe('query', () => {
         // @ViewChildren(TextDirective)
         texts !: QueryList<TextDirective>;
 
+        static ngFactoryDef = () => new ViewQueryComponent();
         static ngComponentDef = ɵɵdefineComponent({
           type: ViewQueryComponent,
           selectors: [['view-query']],
-          factory: () => new ViewQueryComponent(),
           template: function(rf: RenderFlags, ctx: ViewQueryComponent) {
             if (rf & RenderFlags.Create) {
               ɵɵelement(0, 'span', ['text', 'A']);

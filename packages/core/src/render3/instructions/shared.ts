@@ -15,6 +15,7 @@ import {createNamedArrayType} from '../../util/named_array_type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertFirstTemplatePass, assertLView} from '../assert';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
+import {getFactoryDef} from '../definition';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPreOrderHooks} from '../hooks';
@@ -1028,7 +1029,7 @@ export function instantiateRootComponent<T>(
   if (tView.firstTemplatePass) {
     if (def.providersResolver) def.providersResolver(def);
     generateExpandoInstructionBlock(tView, rootTNode, 1);
-    baseResolveDirective(tView, viewData, def, def.factory);
+    baseResolveDirective(tView, viewData, def);
   }
   const directive =
       getNodeInjectable(tView.data, viewData, viewData.length - 1, rootTNode as TElementNode);
@@ -1072,7 +1073,7 @@ export function resolveDirectives(
       const def = directives[i] as DirectiveDef<any>;
 
       const directiveDefIdx = tView.data.length;
-      baseResolveDirective(tView, lView, def, def.factory);
+      baseResolveDirective(tView, lView, def);
 
       saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
 
@@ -1311,9 +1312,9 @@ export function initNodeFlags(tNode: TNode, index: number, numberOfDirectives: n
   tNode.providerIndexes = index;
 }
 
-function baseResolveDirective<T>(
-    tView: TView, viewData: LView, def: DirectiveDef<T>, directiveFactory: FactoryFn<T>) {
+function baseResolveDirective<T>(tView: TView, viewData: LView, def: DirectiveDef<T>) {
   tView.data.push(def);
+  const directiveFactory = def.factory || (def.factory = getFactoryDef(def.type, true));
   const nodeInjectorFactory = new NodeInjectorFactory(directiveFactory, isComponentDef(def), null);
   tView.blueprint.push(nodeInjectorFactory);
   viewData.push(nodeInjectorFactory);

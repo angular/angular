@@ -692,15 +692,17 @@ describe('JS control flow', () => {
     // Intentionally duplicating the templates in test below so we are
     // testing the behavior on firstTemplatePass for each of these tests
     class Comp {
+      static ngFactoryDef =
+          () => {
+            log.push('comp!');
+            return new Comp();
+          }
+
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
         consts: 0,
         vars: 0,
-        factory: () => {
-          log.push('comp!');
-          return new Comp();
-        },
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
     }
@@ -709,10 +711,10 @@ describe('JS control flow', () => {
       condition = true;
       condition2 = true;
 
+      static ngFactoryDef = () => new App();
       static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        factory: () => new App(),
         consts: 3,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
@@ -760,15 +762,17 @@ describe('JS control flow', () => {
     // Intentionally duplicating the templates from above so we are
     // testing the behavior on firstTemplatePass for each of these tests
     class Comp {
+      static ngFactoryDef =
+          () => {
+            log.push('comp!');
+            return new Comp();
+          }
+
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
         consts: 0,
         vars: 0,
-        factory: () => {
-          log.push('comp!');
-          return new Comp();
-        },
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
     }
@@ -777,10 +781,10 @@ describe('JS control flow', () => {
       condition = false;
       condition2 = true;
 
+      static ngFactoryDef = () => new App();
       static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        factory: () => new App(),
         consts: 3,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {

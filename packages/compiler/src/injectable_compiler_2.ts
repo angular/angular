@@ -37,6 +37,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   const factoryMeta = {
     name: meta.name,
     type: meta.type,
+    typeArgumentCount: meta.typeArgumentCount,
     deps: meta.ctorDeps,
     injectFn: Identifiers.inject,
   };

@@ -10,29 +10,48 @@ import {getCompilerFacade} from '../../compiler/compiler_facade';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
-import {NG_PIPE_DEF} from '../fields';
+import {NG_FACTORY_DEF, NG_PIPE_DEF} from '../fields';
 
 import {angularCoreEnv} from './environment';
 
 export function compilePipe(type: Type<any>, meta: Pipe): void {
   let ngPipeDef: any = null;
+  let ngFactoryDef: any = null;
+
+  Object.defineProperty(type, NG_FACTORY_DEF, {
+    get: () => {
+      if (ngFactoryDef === null) {
+        const metadata = getPipeMetadata(type, meta);
+        ngFactoryDef = getCompilerFacade().compileFactory(
+            angularCoreEnv, `ng:///${metadata.name}/ngFactory.js`, metadata, true);
+      }
+      return ngFactoryDef;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
+  });
+
   Object.defineProperty(type, NG_PIPE_DEF, {
     get: () => {
       if (ngPipeDef === null) {
-        const typeName = type.name;
-        ngPipeDef =
-            getCompilerFacade().compilePipe(angularCoreEnv, `ng:///${typeName}/ngPipeDef.js`, {
-              type: type,
-              typeArgumentCount: 0,
-              name: typeName,
-              deps: reflectDependencies(type),
-              pipeName: meta.name,
-              pure: meta.pure !== undefined ? meta.pure : true
-            });
+        const metadata = getPipeMetadata(type, meta);
+        ngPipeDef = getCompilerFacade().compilePipe(
+            angularCoreEnv, `ng:///${metadata.name}/ngPipeDef.js`, metadata);
       }
       return ngPipeDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
   });
+}
+
+function getPipeMetadata(type: Type<any>, meta: Pipe) {
+  return {
+    type: type,
+    typeArgumentCount: 0,
+    name: type.name,
+    deps: reflectDependencies(type),
+    pipeName: meta.name,
+    pure: meta.pure !== undefined ? meta.pure : true
+  };
 }

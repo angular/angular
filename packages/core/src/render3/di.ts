@@ -15,7 +15,7 @@ import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual} from '../util/assert';
 
-import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
+import {getFactoryDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
@@ -642,12 +642,10 @@ export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
     }) as any;
   }
 
-  const def = getComponentDef<T>(typeAny) || getDirectiveDef<T>(typeAny) ||
-      getPipeDef<T>(typeAny) || getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
-  if (!def || def.factory === undefined) {
-    return null;
-  }
-  return def.factory;
+  // TODO(crisbeto): unify injectable factories with getFactory.
+  const def = getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
+  const factory = def && def.factory || getFactoryDef<T>(typeAny);
+  return factory || null;
 }
 
 /**

@@ -156,6 +156,7 @@ export {
   ɵɵBaseDef,
   ComponentDef as ɵComponentDef,
   ɵɵComponentDefWithMeta,
+  ɵɵFactoryDef,
   DirectiveDef as ɵDirectiveDef,
   ɵɵDirectiveDefWithMeta,
   PipeDef as ɵPipeDef,

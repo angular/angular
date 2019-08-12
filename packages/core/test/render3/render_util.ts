@@ -260,7 +260,6 @@ export function renderTemplate<T>(
     selectView(hostLView, null);  // SUSPECT! why do we need to enter the View?
 
     const def: ComponentDef<any> = ɵɵdefineComponent({
-      factory: () => null,
       selectors: [],
       type: Object,
       template: templateFn,
@@ -369,12 +368,12 @@ export function createComponent(
     viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>): ComponentType<any> {
   return class Component {
     value: any;
+    static ngFactoryDef = () => new Component;
     static ngComponentDef = ɵɵdefineComponent({
       type: Component,
       selectors: [[name]],
       consts: consts,
       vars: vars,
-      factory: () => new Component,
       template: template,
       viewQuery: viewQuery,
       directives: directives, hostBindings,
@@ -388,10 +387,10 @@ export function createComponent(
 export function createDirective(
     name: string, {exportAs}: {exportAs?: string[]} = {}): DirectiveType<any> {
   return class Directive {
+    static ngFactoryDef = () => new Directive();
     static ngDirectiveDef = ɵɵdefineDirective({
       type: Directive,
       selectors: [['', name, '']],
-      factory: () => new Directive(),
       exportAs: exportAs,
     });
   };

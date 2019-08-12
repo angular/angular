@@ -671,7 +671,6 @@ describe('compiler compliance: bindings', () => {
         HostBindingDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
           type: HostBindingDir,
           selectors: [["", "hostBindingDir", ""]],
-          factory: function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); },
           hostBindings: function HostBindingDir_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
               $r3$.ɵɵallocHostVars(1);
@@ -718,7 +717,6 @@ describe('compiler compliance: bindings', () => {
         HostBindingComp.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: HostBindingComp,
           selectors: [["host-binding-comp"]],
-          factory: function HostBindingComp_Factory(t) { return new (t || HostBindingComp)(); },
           hostBindings: function HostBindingComp_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
               $r3$.ɵɵallocHostVars(3);
@@ -766,7 +764,6 @@ describe('compiler compliance: bindings', () => {
         HostAttributeDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
-          factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
               $r3$.ɵɵallocHostVars(1);
@@ -811,7 +808,6 @@ describe('compiler compliance: bindings', () => {
         HostAttributeDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
-          factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
               $r3$.ɵɵelementHostAttrs($c0$);
@@ -869,7 +865,6 @@ describe('compiler compliance: bindings', () => {
         HostAttributeComp.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: HostAttributeComp,
           selectors: [["my-host-attribute-component"]],
-          factory: function HostAttributeComp_Factory(t) { return new (t || HostAttributeComp)(); },
           hostBindings: function HostAttributeComp_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
               $r3$.ɵɵelementHostAttrs($c0$);
@@ -881,7 +876,6 @@ describe('compiler compliance: bindings', () => {
         HostAttributeDir.ngDirectiveDef = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
-          factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
               $r3$.ɵɵallocHostVars(2);

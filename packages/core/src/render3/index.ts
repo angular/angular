@@ -10,11 +10,12 @@ import {ɵɵdefineBase, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgMo
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType, PipeDef, ɵɵBaseDef, ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ɵɵPipeDefWithMeta} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType, PipeDef, ɵɵBaseDef, ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ɵɵFactoryDef, ɵɵPipeDefWithMeta} from './interfaces/definition';
 import {getComponent, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
 export {ɵɵgetFactoryOf, ɵɵgetInheritedFactory} from './di';
+
 // clang-format off
 export {
   detectChanges,
@@ -205,6 +206,7 @@ export {
   ɵɵBaseDef,
   ComponentDef,
   ɵɵComponentDefWithMeta,
+  ɵɵFactoryDef,
   ComponentTemplate,
   ComponentType,
   DirectiveDef,

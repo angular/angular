@@ -39,6 +39,10 @@ export interface CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3ComponentMetadataFacade): any;
   compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3BaseMetadataFacade):
       any;
+  compileFactory(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
+      meta: R3PipeMetadataFacade|R3DirectiveMetadataFacade|R3ComponentMetadataFacade,
+      isPipe?: boolean): any;
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
