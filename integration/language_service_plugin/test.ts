@@ -117,17 +117,6 @@ describe('Angular Language Service', () => {
       offset: 28,
     });
     expect(resp2).toMatchGolden('quickinfo.json');
-
-    client.sendRequest('open', {
-      file: `${PWD}/project/app/widget.component.html`,
-    });
-
-    const resp3 = await client.sendRequest('quickinfo', {
-      file: `${PWD}/project/app/widget.component.html`,
-      line: 1,
-      offset: 19,
-    });
-    expect(resp3).toMatchGolden('quickinfo_externalTemplate.json');
   });
 
   it('should perform definition', async () => {
