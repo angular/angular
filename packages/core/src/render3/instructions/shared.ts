@@ -333,8 +333,9 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
   ngDevMode && assertEqual(isCreationMode(lView), true, 'Should be run in creation mode');
   const oldView = enterView(lView, lView[T_HOST]);
   try {
-    if (tView.viewQuery !== null) {
-      executeViewQueryFn(RenderFlags.Create, tView, context);
+    const viewQuery = tView.viewQuery;
+    if (viewQuery !== null) {
+      executeViewQueryFn(RenderFlags.Create, viewQuery, context);
     }
 
     // Execute a template associated with this view, if it exists. A template function might not be
@@ -364,7 +365,7 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
     // in case a child component has projected a container. The LContainer needs
     // to exist so the embedded views are properly attached by the container.
     if (tView.staticViewQueries) {
-      executeViewQueryFn(RenderFlags.Update, tView, context);
+      executeViewQueryFn(RenderFlags.Update, tView.viewQuery !, context);
     }
 
     // Render child component views.
@@ -380,8 +381,8 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
 }
 
 /**
- * Processes a view in the update mode. This includes a number of steps in a specific order:
- * - executing a template function in the update mode;
+ * Processes a view in update mode. This includes a number of steps in a specific order:
+ * - executing a template function in update mode;
  * - executing hooks;
  * - refreshing queries;
  * - setting host bindings;
@@ -420,8 +421,9 @@ export function refreshView<T>(
 
     setHostBindings(tView, lView);
 
-    if (tView.viewQuery !== null) {
-      executeViewQueryFn(RenderFlags.Update, tView, context);
+    const viewQuery = tView.viewQuery;
+    if (viewQuery !== null) {
+      executeViewQueryFn(RenderFlags.Update, viewQuery, context);
     }
 
     // Refresh child component views.
@@ -1476,8 +1478,7 @@ export function createLContainer(
 
 /**
  * Goes over dynamic embedded views (ones created through ViewContainerRef APIs) and refreshes
- * them
- * by executing an associated template function.
+ * them by executing an associated template function.
  */
 function refreshDynamicEmbeddedViews(lView: LView) {
   let viewOrContainer = lView[CHILD_HEAD];
@@ -1487,8 +1488,6 @@ function refreshDynamicEmbeddedViews(lView: LView) {
     if (isLContainer(viewOrContainer) && viewOrContainer[ACTIVE_INDEX] === -1) {
       for (let i = CONTAINER_HEADER_OFFSET; i < viewOrContainer.length; i++) {
         const embeddedLView = viewOrContainer[i];
-        // The directives and pipes are not needed here as an existing view is only being
-        // refreshed.
         const embeddedTView = embeddedLView[TVIEW];
         ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
         refreshView(embeddedLView, embeddedTView, embeddedTView.template, embeddedLView[CONTEXT] !);
@@ -1727,12 +1726,11 @@ export function checkNoChangesInRootView(lView: LView): void {
   }
 }
 
-function executeViewQueryFn<T>(flags: RenderFlags, tView: TView, component: T): void {
-  const viewQuery = tView.viewQuery;
-  if (viewQuery !== null) {
-    setCurrentQueryIndex(0);
-    viewQuery(flags, component);
-  }
+function executeViewQueryFn<T>(
+    flags: RenderFlags, viewQueryFn: ViewQueriesFunction<{}>, component: T): void {
+  ngDevMode && assertDefined(viewQueryFn, 'View queries function to execute must be defined.');
+  setCurrentQueryIndex(0);
+  viewQueryFn(flags, component);
 }
 
 
