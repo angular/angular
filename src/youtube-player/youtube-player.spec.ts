@@ -13,16 +13,16 @@ declare global {
 describe('YoutubePlayer', () => {
   let playerCtorSpy: jasmine.Spy;
   let playerSpy: jasmine.SpyObj<YT.Player>;
-  let onPlayerReady: () => void;
   let fixture: ComponentFixture<TestApp>;
   let testComponent: TestApp;
+  let events: Required<YT.Events>;
 
   beforeEach(async(() => {
     const fake = createFakeYtNamespace();
     playerCtorSpy = fake.playerCtorSpy;
     playerSpy = fake.playerSpy;
-    onPlayerReady = fake.onPlayerReady;
     window.YT = fake.namespace;
+    events = fake.events;
 
     TestBed.configureTestingModule({
       imports: [YouTubePlayerModule],
@@ -52,7 +52,7 @@ describe('YoutubePlayer', () => {
   });
 
   it('destroys the iframe when the component is destroyed', () => {
-    onPlayerReady();
+    events.onReady({target: playerSpy});
 
     testComponent.visible = false;
     fixture.detectChanges();
@@ -68,7 +68,7 @@ describe('YoutubePlayer', () => {
 
     expect(playerSpy.cueVideoById).not.toHaveBeenCalled();
 
-    onPlayerReady();
+    events.onReady({target: playerSpy});
 
     expect(playerSpy.cueVideoById).toHaveBeenCalledWith(
       jasmine.objectContaining({videoId: 'otherId'}));
@@ -84,18 +84,53 @@ describe('YoutubePlayer', () => {
     expect(playerCtorSpy).toHaveBeenCalledWith(
       containerElement, jasmine.objectContaining({videoId: 'otherId2'}));
   });
+
+  it('proxies events as output', () => {
+    events.onReady({target: playerSpy});
+    expect(testComponent.onReady).toHaveBeenCalledWith({target: playerSpy});
+
+    events.onStateChange({target: playerSpy, data: 5});
+    expect(testComponent.onStateChange).toHaveBeenCalledWith({target: playerSpy, data: 5});
+
+    events.onPlaybackQualityChange({target: playerSpy, data: 'large'});
+    expect(testComponent.onPlaybackQualityChange)
+        .toHaveBeenCalledWith({target: playerSpy, data: 'large'});
+
+    events.onPlaybackRateChange({target: playerSpy, data: 2});
+    expect(testComponent.onPlaybackRateChange)
+        .toHaveBeenCalledWith({target: playerSpy, data: 2});
+
+    events.onError({target: playerSpy, data: 5});
+    expect(testComponent.onError)
+        .toHaveBeenCalledWith({target: playerSpy, data: 5});
+
+    events.onApiChange({target: playerSpy});
+    expect(testComponent.onApiChange).toHaveBeenCalledWith({target: playerSpy});
+  });
 });
 
 /** Test component that contains a YouTubePlayer. */
 @Component({
   selector: 'test-app',
   template: `
-    <youtube-player #player [videoId]="videoId" *ngIf="visible">
+    <youtube-player #player [videoId]="videoId" *ngIf="visible"
+      (ready)="onReady($event)"
+      (stateChange)="onStateChange($event)"
+      (playbackQualityChange)="onPlaybackQualityChange($event)"
+      (playbackRateChange)="onPlaybackRateChange($event)"
+      (error)="onError($event)"
+      (apiChange)="onApiChange($event)">
     </youtube-player>
   `
 })
 class TestApp {
   videoId: string | undefined = VIDEO_ID;
   visible = true;
+  onReady = jasmine.createSpy('onReady');
+  onStateChange = jasmine.createSpy('onStateChange');
+  onPlaybackQualityChange = jasmine.createSpy('onPlaybackQualityChange');
+  onPlaybackRateChange = jasmine.createSpy('onPlaybackRateChange');
+  onError = jasmine.createSpy('onError');
+  onApiChange = jasmine.createSpy('onApiChange');
   @ViewChild('player', {static: true}) youtubePlayer: YouTubePlayer;
 }

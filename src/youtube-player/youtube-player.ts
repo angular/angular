@@ -5,7 +5,9 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  NgZone,
   OnDestroy,
+  Output,
   ViewChild,
 } from '@angular/core';
 
@@ -71,6 +73,14 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
 
   private _videoId = new EventEmitter<string | undefined>();
 
+  /** Outputs are direct proxies from the player itself. */
+  @Output() ready = new EventEmitter<YT.PlayerEvent>();
+  @Output() stateChange = new EventEmitter<YT.OnStateChangeEvent>();
+  @Output() error = new EventEmitter<YT.OnErrorEvent>();
+  @Output() apiChange = new EventEmitter<YT.PlayerEvent>();
+  @Output() playbackQualityChange = new EventEmitter<YT.OnPlaybackQualityChangeEvent>();
+  @Output() playbackRateChange = new EventEmitter<YT.OnPlaybackRateChangeEvent>();
+
   /** The element that will be replaced by the iframe. */
   @ViewChild('youtube_container', {static: false}) youtubeContainer: ElementRef | undefined;
   private _youtubeContainer = new EventEmitter<HTMLElement>();
@@ -78,18 +88,18 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
 
   private _player: Player | undefined;
 
-  constructor() {
+  constructor(private _ngZone: NgZone) {
     if (!window.YT) {
       throw new Error('Namespace YT not found, cannot construct embedded youtube player. ' +
           'Please install the YouTube Player API Reference for iframe Embeds: ' +
           'https://developers.google.com/youtube/iframe_api_reference');
     }
-
     /** An observable of the currently loaded player. */
     const playerObs =
       createPlayerObservable(
         this._youtubeContainer,
         this._videoId,
+        this.createEventsBoundInZone(),
       ).pipe(waitUntilReady(), takeUntil(this._destroyed), publish());
 
     /** Set up side effects to bind inputs to the player. */
@@ -99,6 +109,18 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
 
     // After all of the subscriptions are set up, connect the observable.
     (playerObs as ConnectableObservable<Player>).connect();
+  }
+
+  createEventsBoundInZone(): YT.Events {
+    return {
+      onReady: this._runInZone((event) => this.ready.emit(event)),
+      onStateChange: this._runInZone((event) => this.stateChange.emit(event)),
+      onPlaybackQualityChange:
+          this._runInZone((event) => this.playbackQualityChange.emit(event)),
+      onPlaybackRateChange: this._runInZone((event) => this.playbackRateChange.emit(event)),
+      onError: this._runInZone((event) => this.error.emit(event)),
+      onApiChange: this._runInZone((event) => this.apiChange.emit(event)),
+    };
   }
 
   ngAfterViewInit() {
@@ -114,6 +136,13 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
     }
     this._player.destroy();
     this._destroyed.emit();
+  }
+
+  private _runInZone<T extends (...args: any[]) => void>(callback: T):
+      (...args: Parameters<T>) => void {
+    return (...args: Parameters<T>) => {
+      this._ngZone.run(() => callback(...args));
+    };
   }
 }
 
@@ -161,12 +190,13 @@ function fromPlayerOnReady(player: UninitializedPlayer): Observable<Player> {
 function createPlayerObservable(
   youtubeContainer: Observable<HTMLElement>,
   videoIdObs: Observable<string | undefined>,
+  events: YT.Events,
 ): Observable<UninitializedPlayer | undefined> {
 
   const playerOptions =
     videoIdObs
     .pipe(
-      map((videoId) => videoId ? {videoId} : undefined),
+      map((videoId) => videoId ? ({videoId, events}) : undefined),
     );
 
   return combineLatest(youtubeContainer, playerOptions)
@@ -203,7 +233,6 @@ function bindCueVideoCall(
   videoIdObs: Observable<string | undefined>,
   destroyed: Observable<undefined>,
 ) {
-
   // If the video id changed, there's no reason to run 'cue' unless the player
   // was initialized with a different video id.
   const changedVideoId = videoIdObs

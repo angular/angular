@@ -12,7 +12,7 @@ const playerState = {
 interface FakeYtNamespace {
   playerCtorSpy: jasmine.Spy;
   playerSpy: jasmine.SpyObj<YT.Player>;
-  onPlayerReady: () => void;
+  events: Required<YT.Events>;
   namespace: typeof YT;
 }
 
@@ -33,26 +33,37 @@ export function createFakeYtNamespace(): FakeYtNamespace {
     return playerSpy;
   });
 
-  const onPlayerReady = () => {
-    if (!playerConfig) {
-      throw new Error('Player not initialized before onPlayerReady called');
-    }
-
-    if (playerConfig && playerConfig.events && playerConfig.events.onReady) {
-      playerConfig.events.onReady({target: playerSpy});
-    }
-
-    for (const [event, callback] of playerSpy.addEventListener.calls.allArgs()) {
-      if (event === 'onReady') {
-        callback({target: playerSpy});
+  const eventHandlerFactory = (name: keyof YT.Events) => {
+    return (arg: Object = {}) => {
+      if (!playerConfig) {
+        throw new Error(`Player not initialized before ${name} called`);
       }
-    }
+
+      if (playerConfig && playerConfig.events && playerConfig.events[name]) {
+        playerConfig.events[name]!(arg as any);
+      }
+
+      for (const [event, callback] of playerSpy.addEventListener.calls.allArgs()) {
+        if (event === name) {
+          callback(arg);
+        }
+      }
+    };
+  };
+
+  const events: Required<YT.Events> = {
+    onReady: eventHandlerFactory('onReady'),
+    onStateChange: eventHandlerFactory('onStateChange'),
+    onPlaybackQualityChange: eventHandlerFactory('onPlaybackQualityChange'),
+    onPlaybackRateChange: eventHandlerFactory('onPlaybackRateChange'),
+    onError: eventHandlerFactory('onError'),
+    onApiChange: eventHandlerFactory('onApiChange'),
   };
 
   return {
     playerCtorSpy,
     playerSpy,
-    onPlayerReady,
+    events,
     namespace: {
       'Player': playerCtorSpy as unknown as typeof YT.Player,
       'PlayerState': playerState,
