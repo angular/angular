@@ -9,7 +9,7 @@
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {END, HOME} from '@angular/cdk/keycodes';
+import {HOME, END} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -26,7 +26,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {MDCChipSetFoundation} from '@material/chips';
+import {MDCChipSetAdapter, MDCChipSetFoundation} from '@material/chips';
 import {merge, Observable, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 import {MatChip, MatChipEvent} from './chip';
@@ -95,6 +95,22 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
 
   /** Subscription to focus changes in the chips. */
   private _chipFocusSubscription: Subscription | null;
+
+  /**
+   * Implementation of the MDC chip-set adapter interface.
+   * These methods are called by the chip set foundation.
+   *
+   * Overrides the base MatChipSet adapter to provide a setSelected method.
+   */
+  protected _chipSetAdapter: MDCChipSetAdapter = {
+    hasClass: (className: string) => this._hasMdcClass(className),
+    // No-op. We keep track of chips via ContentChildren, which will be updated when a chip is
+    // removed.
+    removeChip: () => {},
+    setSelected: (chipId: string, selected: boolean) => {
+      this._setSelected(chipId, selected);
+    }
+  };
 
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager<MatChip>;
@@ -207,11 +223,8 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
 
   constructor(protected _elementRef: ElementRef,
               _changeDetectorRef: ChangeDetectorRef,
-              @Optional() _dir: Directionality) {
-    super(_elementRef, _changeDetectorRef, _dir);
-    this._chipSetAdapter.selectChipAtIndex = (index: number, selected: boolean) => {
-      this._setSelected(index, selected);
-    };
+              @Optional() private _dir: Directionality) {
+    super(_elementRef, _changeDetectorRef);
     // Reinitialize the foundation with our overridden adapter
     this._chipSetFoundation = new MDCChipSetFoundation(this._chipSetAdapter);
     this._updateMdcSelectionClasses();
@@ -306,8 +319,8 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
   }
 
   /** Selects or deselects a chip by id. */
-  _setSelected(index: number, selected: boolean) {
-    const chip = this._chips.toArray()[index];
+  _setSelected(chipId: string, selected: boolean) {
+    const chip = this._chips.find(c => c.id === chipId);
     if (chip && chip.selected != selected) {
       chip.toggleSelected(true);
     }
@@ -455,7 +468,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
 
   /** Initializes the key manager to manage focus. */
   private _initKeyManager() {
-    this._keyManager = new FocusKeyManager<MatChip>(this._chips)
+    this._keyManager = new FocusKeyManager<MatChipOption>(this._chips)
       .withWrap()
       .withVerticalOrientation()
       .withHorizontalOrientation(this._dir ? this._dir.value : 'ltr');
@@ -530,7 +543,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
     this._chipSelectionSubscription = this.chipSelectionChanges.subscribe(
       (chipSelectionChange: MatChipSelectionChange) => {
         this._chipSetFoundation.handleChipSelection(
-          chipSelectionChange.source.id, chipSelectionChange.selected, false);
+          chipSelectionChange.source.id, chipSelectionChange.selected);
         if (chipSelectionChange.isUserInput) {
           this._propagateChanges();
         }

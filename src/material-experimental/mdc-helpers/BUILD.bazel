@@ -118,8 +118,6 @@ sass_library(
         "@npm//:node_modules/@material/theme/_variables.scss",
         "@npm//:node_modules/@material/top-app-bar/_mixins.scss",
         "@npm//:node_modules/@material/top-app-bar/_variables.scss",
-        "@npm//:node_modules/@material/touch-target/_mixins.scss",
-        "@npm//:node_modules/@material/touch-target/_variables.scss",
         "@npm//:node_modules/@material/typography/_functions.scss",
         "@npm//:node_modules/@material/typography/_mixins.scss",
         "@npm//:node_modules/@material/typography/_variables.scss",

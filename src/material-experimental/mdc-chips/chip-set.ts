@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
@@ -18,15 +17,18 @@ import {
   ElementRef,
   Input,
   OnDestroy,
-  Optional,
   QueryList,
   ViewEncapsulation
 } from '@angular/core';
-import {HasTabIndex, HasTabIndexCtor, mixinTabIndex} from '@angular/material/core';
 import {MDCChipSetAdapter, MDCChipSetFoundation} from '@material/chips';
+import {MatChip, MatChipEvent} from './chip';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
-import {MatChip, MatChipEvent} from './chip';
+import {
+  HasTabIndex,
+  HasTabIndexCtor,
+  mixinTabIndex,
+} from '@angular/material/core';
 
 
 let uid = 0;
@@ -95,15 +97,9 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
     hasClass: (className) => this._hasMdcClass(className),
     // No-op. We keep track of chips via ContentChildren, which will be updated when a chip is
     // removed.
-    removeChipAtIndex: () => {},
+    removeChip: () => {},
     // No-op for base chip set. MatChipListbox overrides the adapter to provide this method.
-    selectChipAtIndex: () => {},
-    getIndexOfChipById: (id: string) => this._chips.toArray().findIndex(chip => chip.id === id),
-    focusChipPrimaryActionAtIndex: () => {},
-    focusChipTrailingActionAtIndex: () => {},
-    removeFocusFromChipAtIndex: () => {},
-    isRTL: () => !!this._dir && this._dir.value === 'rtl',
-    getChipListCount: () => this._chips.length,
+    setSelected: () => {}
   };
 
   /** The aria-describedby attribute on the chip list for improved a11y. */
@@ -155,8 +151,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
   @ContentChildren(MatChip) _chips: QueryList<MatChip>;
 
   constructor(protected _elementRef: ElementRef,
-              protected _changeDetectorRef: ChangeDetectorRef,
-              @Optional() protected _dir: Directionality) {
+              protected _changeDetectorRef: ChangeDetectorRef) {
     super(_elementRef);
     this._chipSetFoundation = new MDCChipSetFoundation(this._chipSetAdapter);
   }
