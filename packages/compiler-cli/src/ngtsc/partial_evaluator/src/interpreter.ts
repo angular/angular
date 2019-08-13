@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
-import {Declaration, ReflectionHost} from '../../reflection';
+import {Declaration, InlineDeclaration, ReflectionHost} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
@@ -18,6 +18,7 @@ import {DynamicValue} from './dynamic';
 import {DependencyTracker, ForeignFunctionResolver} from './interface';
 import {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
 import {evaluateTsHelperInline} from './ts_helpers';
+
 
 
 /**
@@ -223,8 +224,13 @@ export class StaticInterpreter {
         return DynamicValue.fromUnknownIdentifier(node);
       }
     }
-    const result =
-        this.visitDeclaration(decl.node, {...context, ...joinModuleContext(context, node, decl)});
+    const declContext = {...context, ...joinModuleContext(context, node, decl)};
+    // The identifier's declaration is either concrete (a ts.Declaration exists for it) or inline
+    // (a direct reference to a ts.Expression).
+    // TODO(alxhub): remove cast once TS is upgraded in g3.
+    const result = decl.node !== null ?
+        this.visitDeclaration(decl.node, declContext) :
+        this.visitExpression((decl as InlineDeclaration).expression, declContext);
     if (result instanceof Reference) {
       // Only record identifiers to non-synthetic references. Synthetic references may not have the
       // same value at runtime as they do at compile time, so it's not legal to refer to them by the
@@ -322,10 +328,14 @@ export class StaticInterpreter {
     }
     const map = new Map<string, ResolvedValue>();
     declarations.forEach((decl, name) => {
-      const value = this.visitDeclaration(
-          decl.node, {
-                         ...context, ...joinModuleContext(context, node, decl),
-                     });
+      const declContext = {
+          ...context, ...joinModuleContext(context, node, decl),
+      };
+      // Visit both concrete and inline declarations.
+      // TODO(alxhub): remove cast once TS is upgraded in g3.
+      const value = decl.node !== null ?
+          this.visitDeclaration(decl.node, declContext) :
+          this.visitExpression((decl as InlineDeclaration).expression, declContext);
       map.set(name, value);
     });
     return map;

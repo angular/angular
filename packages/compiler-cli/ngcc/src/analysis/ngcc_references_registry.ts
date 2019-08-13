@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
-import {Declaration, ReflectionHost} from '../../../src/ngtsc/reflection';
+import {ConcreteDeclaration, ReflectionHost} from '../../../src/ngtsc/reflection';
 import {hasNameIdentifier} from '../utils';
 
 /**
@@ -20,7 +20,7 @@ import {hasNameIdentifier} from '../utils';
  * from libraries that are compiled by ngcc.
  */
 export class NgccReferencesRegistry implements ReferencesRegistry {
-  private map = new Map<ts.Identifier, Declaration>();
+  private map = new Map<ts.Identifier, ConcreteDeclaration>();
 
   constructor(private host: ReflectionHost) {}
 
@@ -34,7 +34,7 @@ export class NgccReferencesRegistry implements ReferencesRegistry {
       // Only store relative references. We are not interested in literals.
       if (ref.bestGuessOwningModule === null && hasNameIdentifier(ref.node)) {
         const declaration = this.host.getDeclarationOfIdentifier(ref.node.name);
-        if (declaration && hasNameIdentifier(declaration.node)) {
+        if (declaration && declaration.node !== null && hasNameIdentifier(declaration.node)) {
           this.map.set(declaration.node.name, declaration);
         }
       }
@@ -45,5 +45,5 @@ export class NgccReferencesRegistry implements ReferencesRegistry {
    * Create and return a mapping for the registered resolved references.
    * @returns A map of reference identifiers to reference declarations.
    */
-  getDeclarationMap(): Map<ts.Identifier, Declaration> { return this.map; }
+  getDeclarationMap(): Map<ts.Identifier, ConcreteDeclaration> { return this.map; }
 }

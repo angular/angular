@@ -1842,8 +1842,9 @@ runInEachFileSystem(() => {
           'SomeClass',
         ]);
 
-        const values = Array.from(exportDeclarations !.values())
-                           .map(declaration => [declaration.node.getText(), declaration.viaModule]);
+        const values =
+            Array.from(exportDeclarations !.values())
+                .map(declaration => [declaration.node !.getText(), declaration.viaModule]);
         expect(values).toEqual([
           [`Directive: FnWithArg<(clazz: any) => any>`, null],
           [`a = 'a'`, null],
