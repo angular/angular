@@ -256,23 +256,19 @@ jobs:
       - *init_environment
       - *setup_circleci_bazel_config
       - run:
-          name: Preparing environment for running tests on Saucelabs.
-          command: setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
-      - run:
-          name: Starting Saucelabs tunnel
-          command: ./scripts/saucelabs/start-tunnel.sh
-          background: true
-        # Waits for the Saucelabs tunnel to be ready. This ensures that we don't run tests
-        # too early without Saucelabs not being ready.
-      - run: ./scripts/saucelabs/wait-for-tunnel.sh
-        # All web tests are contained within a single //:test_web_all target for Saucelabs
-        # as running each set of tests as a separate target will attempt to acquire too
-        # many browsers on Saucelabs (7 per target currently) and some tests will always
-        # fail to acquire browsers. For example:
-        # 14 02 2019 19:52:33.170:WARN [launcher]: chrome beta on SauceLabs have not captured in 180000 ms, killing.
-        # //packages/forms/test:web_test_sauce TIMEOUT in 315.0s
-      - run: yarn bazel test --config=saucelabs //:test_web_all
-      - run: ./scripts/saucelabs/stop-tunnel.sh
+          name: Run Bazel tests in saucelabs
+          # All web tests are contained within a single //:test_web_all target for Saucelabs
+          # as running each set of tests as a separate target will attempt to acquire too
+          # many browsers on Saucelabs (7 per target currently) and some tests will always
+          # fail to acquire browsers. For example:
+          # 14 02 2019 19:52:33.170:WARN [launcher]: chrome beta on SauceLabs have not captured in 180000 ms, killing.
+          # //packages/forms/test:web_test_sauce TIMEOUT in 315.0s
+          command:  |
+            ./scripts/saucelabs/run-bazel-via-tunnel.sh \
+              --tunnel-id angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX} \
+              --username $SAUCE_USERNAME \
+              --key $(echo $SAUCE_ACCESS_KEY | rev) \
+              yarn bazel test //:test_web_all
       - *notify_dev_infra_on_fail
 
   test_aio:
