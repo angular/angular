@@ -11,14 +11,14 @@ import {attachPatchData} from '../context_discovery';
 import {executePreOrderHooks, registerPostOrderHooks} from '../hooks';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType} from '../interfaces/node';
+import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {getNativeByTNode, load} from '../util/view_utils';
 
-import {addToViewTree, createDirectivesAndLocals, createLContainer, createTView, getOrCreateTNode, resolveDirectives} from './shared';
+import {addToViewTree, createDirectivesAndLocals, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives} from './shared';
 
 
 
@@ -78,6 +78,10 @@ export function ɵɵtemplate(
     const embeddedTView = tContainerNode.tViews = createTView(
         -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null,
         tView.schemas);
+    const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
+    embeddedTViewNode.injectorIndex = tContainerNode.injectorIndex;
+    embeddedTView.node = embeddedTViewNode;
+
     if (tView.queries !== null) {
       tView.queries.template(tView, tContainerNode);
       embeddedTView.queries = tView.queries.embeddedTView(tContainerNode);

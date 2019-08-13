@@ -471,9 +471,6 @@
     "name": "assertTemplate"
   },
   {
-    "name": "assignTViewNodeToLView"
-  },
-  {
     "name": "attachPatchData"
   },
   {
@@ -535,9 +532,6 @@
   },
   {
     "name": "createElementRef"
-  },
-  {
-    "name": "createEmbeddedViewAndNode"
   },
   {
     "name": "createLContainer"
