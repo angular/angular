@@ -62,7 +62,7 @@ export interface MatTabsConfig {
 }
 
 /** Injection token that can be used to provide the default options the tabs module. */
-export const MAT_TABS_CONFIG = new InjectionToken('MAT_TABS_CONFIG');
+export const MAT_TABS_CONFIG = new InjectionToken<MatTabsConfig>('MAT_TABS_CONFIG');
 
 // Boilerplate for applying mixins to MatTabGroup.
 /** @docs-private */

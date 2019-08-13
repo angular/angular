@@ -50,9 +50,7 @@ export function addModuleImportToModule(host: Tree, modulePath: string, moduleNa
     throw new SchematicsException(`Module not found: ${modulePath}`);
   }
 
-  // TODO: TypeScript version mismatch due to @schematics/angular using a different version
-  // than Material. Cast to any to avoid the type assignment failure.
-  const changes = addImportToModule(moduleSource as any, modulePath, moduleName, src);
+  const changes = addImportToModule(moduleSource, modulePath, moduleName, src);
   const recorder = host.beginUpdate(modulePath);
 
   changes.forEach((change) => {

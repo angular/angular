@@ -7,7 +7,7 @@ export interface _MatInkBarPositioner {
     };
 }
 
-export declare const MAT_TABS_CONFIG: InjectionToken<{}>;
+export declare const MAT_TABS_CONFIG: InjectionToken<MatTabsConfig>;
 
 export declare class MatInkBar {
     _animationMode?: string | undefined;

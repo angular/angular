@@ -232,7 +232,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
    * An observable that emits when the drawer mode changes. This is used by the drawer container to
    * to know when to when the mode changes so it can adapt the margins on the content.
    */
-  readonly _modeChanged = new Subject();
+  readonly _modeChanged = new Subject<void>();
 
   get _isFocusTrapEnabled(): boolean {
     // The focus trap is only enabled when the drawer is open in any mode other than side.

@@ -72,9 +72,7 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
     const classifiedName = strings.classify(`${options.name}Component`);
 
     const declarationChanges = addDeclarationToModule(
-      // TODO: TypeScript version mismatch due to @schematics/angular using a different version
-      // than Material. Cast to any to avoid the type assignment failure.
-      source as any,
+      source,
       modulePath,
       classifiedName,
       relativePath);
@@ -93,9 +91,7 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
 
       const exportRecorder = host.beginUpdate(modulePath);
       const exportChanges = addExportToModule(
-        // TODO: TypeScript version mismatch due to @schematics/angular using a different version
-        // than Material. Cast to any to avoid the type assignment failure.
-        source as any,
+        source,
         modulePath,
         strings.classify(`${options.name}Component`),
         relativePath);
@@ -114,9 +110,7 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
 
       const entryComponentRecorder = host.beginUpdate(modulePath);
       const entryComponentChanges = addEntryComponentToModule(
-        // TODO: TypeScript version mismatch due to @schematics/angular using a different version
-        // than Material. Cast to any to avoid the type assignment failure.
-        source as any,
+        source,
         modulePath,
         strings.classify(`${options.name}Component`),
         relativePath);

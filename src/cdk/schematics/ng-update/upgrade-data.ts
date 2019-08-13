@@ -68,5 +68,7 @@ export interface RuleUpgradeData {
 export function
 getVersionUpgradeData<T extends keyof RuleUpgradeData, U = ValueOfChanges<RuleUpgradeData[T]>>(
     r: MigrationRule<RuleUpgradeData>, dataName: T): U[] {
-  return getChangesForTarget<U>(r.targetVersion, r.upgradeData[dataName] as VersionChanges<U>);
+  // Note that below we need to cast to `unknown` first TS doesn't infer the type of T correctly.
+  return getChangesForTarget<U>(r.targetVersion,
+                                r.upgradeData[dataName] as unknown as VersionChanges<U>);
 }

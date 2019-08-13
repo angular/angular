@@ -8,7 +8,7 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     _animationState: 'open-instant' | 'open' | 'void';
     readonly _closedStream: Observable<void>;
     readonly _isFocusTrapEnabled: boolean;
-    readonly _modeChanged: Subject<{}>;
+    readonly _modeChanged: Subject<void>;
     readonly _openedStream: Observable<void>;
     readonly _width: number;
     autoFocus: boolean;
