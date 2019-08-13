@@ -80,28 +80,53 @@ yarn webdriver-sauce-test
 Releasing
 ---------
 
-For example, the current version is `0.9.1`, and we want to release a new version `0.10.0`.
+Releasing `zone.js` is a two step process.
 
-- create a new tag in `angular` repo. The `tag` must be `zone.js-<version>`, so in this example we need to create the tag `zone.js-0.10.0`.
+1. Create a PR which updates the changelog, and get it merged using normal merge process.
+2. Once the PR is merged check out the merge SHA of the PR and release `zone.js` from that SHA and tag it.
 
-```
-$ export TAG=zone.js-0.10.0
-$ git tag $TAG
-```
-
-- Create PR to update `changelog` of zone.js, we need to define the previous tag which will be the current version.
+#### 1. Creating a PR for release
 
 ```
-$ export PREVIOUS_ZONE_TAG=zone.js-0.9.1
-$ yarn gulp changelog:zonejs
+export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-*' | tail -n1`
+export VERSION=`(cd packages/zone.js; npm version patch --no-git-tag-version)`
+export VERSION=${VERSION#v}
+export TAG="zone.js-${VERSION}"
+echo "Releasing zone.js version ${TAG}. Last release was ${PREVIOUS_ZONE_TAG}."
+yarn gulp changelog:zonejs
 ```
 
-- deploy to npm
+Inspect the `packages/zone.js/CHANGELOG.md` for any issues and than commit it with this command.
 
-To make a `dry-run`, run the following commands.
+Create a dry run build to make sure everything is ready.
+
 ```
-$ VERSION=<version>
-$ yarn bazel --output_base=$(mktemp -d) run //packages/zone.js:npm_package.pack --workspace_status_command="echo BUILD_SCM_VERSION $VERSION"
+yarn bazel --output_base=$(mktemp -d) run //packages/zone.js:npm_package.pack --workspace_status_command="echo BUILD_SCM_VERSION $VERSION"
 ```
 
-If everything looks fine, replace `.pack` with `.publish` to push to the npm registry.
+If everything looks good commit the changes and push them to your origin to create a PR.
+
+```
+git co -b "release_${TAG}"
+git add packages/zone.js/CHANGELOG.md packages/zone.js/package.json
+git ci -m "release: cut the ${TAG} release"
+git push origin "release_${TAG}"
+```
+
+
+#### 2. Cutting a release
+
+Check out the SHA on master which has the changelog commit of the zone.js
+
+```
+git fetch upstream
+export VERSION=`(node -e "console.log(require('./packages/zone.js/package.json').version)")`
+export TAG="zone.js-${VERSION}"
+export SHA=`git log upstream/master --oneline -n 1000 | grep "release: cut the ${TAG} release" | cut -f 1 -d " "`
+git co ${SHA}
+yarn bazel \
+  --output_base=$(mktemp -d) run //packages/zone.js:npm_package.publish \
+  --workspace_status_command="echo BUILD_SCM_VERSION $VERSION"
+git tag ${TAG} ${SHA}
+git push upstream ${TAG}
+```

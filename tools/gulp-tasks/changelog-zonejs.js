@@ -23,7 +23,7 @@ module.exports = (gulp) => () => {
             extendedRegexp: true,
             grep: '^[^(]+\\(zone\\.js\\)',
             from: ptag,
-            to: tag,
+            to: 'HEAD',
           }))
       .pipe(gulp.dest('./packages/zone.js/'));
 };
