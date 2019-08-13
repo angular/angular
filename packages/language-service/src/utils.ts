@@ -177,3 +177,14 @@ export function findTemplateAstAt(
 
   return new AstPath<TemplateAst>(path, position);
 }
+
+/**
+ * Return the node that most tightly encompass the specified `position`.
+ * @param node
+ * @param position
+ */
+export function findTighestNode(node: ts.Node, position: number): ts.Node|undefined {
+  if (node.getStart() <= position && position < node.getEnd()) {
+    return node.forEachChild(c => findTighestNode(c, position)) || node;
+  }
+}

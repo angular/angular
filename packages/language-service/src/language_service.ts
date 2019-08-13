@@ -36,7 +36,7 @@ class LanguageServiceImpl implements LanguageService {
     const results: Diagnostic[] = [];
     const templates = this.host.getTemplates(fileName);
     for (const template of templates) {
-      const ast = this.host.getTemplateAst(template, fileName);
+      const ast = this.host.getTemplateAst(template);
       results.push(...getTemplateDiagnostics(template, ast));
     }
     const declarations = this.host.getDeclarations(fileName);

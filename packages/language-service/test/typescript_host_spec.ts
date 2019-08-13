@@ -66,4 +66,33 @@ describe('TypeScriptServiceHost', () => {
       ngLSHost.getSourceFile('/src/test.ng');
     }).toThrowError('Non-TS source file requested: /src/test.ng');
   });
+
+  it('should be able to find a single inline template', () => {
+    const tsLSHost = new MockTypescriptHost(['/app/app.component.ts'], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    const templates = ngLSHost.getTemplates('/app/app.component.ts');
+    expect(templates.length).toBe(1);
+    const template = templates[0];
+    expect(template.source).toContain('<h2>{{hero.name}} details!</h2>');
+  });
+
+  it('should be able to find multiple inline templates', () => {
+    const tsLSHost = new MockTypescriptHost(['/app/parsing-cases.ts'], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    const templates = ngLSHost.getTemplates('/app/parsing-cases.ts');
+    expect(templates.length).toBe(16);
+  });
+
+  it('should be able to find external template', () => {
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts'], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    ngLSHost.getAnalyzedModules();
+    const templates = ngLSHost.getTemplates('/app/test.ng');
+    expect(templates.length).toBe(1);
+    const template = templates[0];
+    expect(template.source).toContain('<h2>{{hero.name}} details!</h2>');
+  });
 });
