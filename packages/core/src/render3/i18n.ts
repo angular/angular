@@ -684,7 +684,7 @@ function i18nEndFirstPass(tView: TView) {
   // Remove deleted nodes
   for (let i = rootIndex + 1; i <= lastCreatedNode.index - HEADER_OFFSET; i++) {
     if (visitedNodes.indexOf(i) === -1) {
-      removeNode(i, viewData);
+      removeNode(i, viewData, /* markAsDetached */ true);
     }
   }
 }
@@ -859,7 +859,10 @@ function readUpdateOpCodes(
                     switch (removeOpCode & I18nMutateOpCode.MASK_OPCODE) {
                       case I18nMutateOpCode.Remove:
                         const nodeIndex = removeOpCode >>> I18nMutateOpCode.SHIFT_REF;
-                        removeNode(nodeIndex, viewData);
+                        // Remove DOM element, but do *not* mark TNode as detached, since we are
+                        // just switching ICU cases (while keeping the same TNode), so a DOM element
+                        // representing a new ICU case will be re-created.
+                        removeNode(nodeIndex, viewData, /* markAsDetached */ false);
                         break;
                       case I18nMutateOpCode.RemoveNestedIcu:
                         const nestedIcuNodeIndex =
@@ -902,7 +905,7 @@ function readUpdateOpCodes(
   }
 }
 
-function removeNode(index: number, viewData: LView) {
+function removeNode(index: number, viewData: LView, markAsDetached: boolean) {
   const removedPhTNode = getTNode(index, viewData);
   const removedPhRNode = getNativeByIndex(index, viewData);
   if (removedPhRNode) {
@@ -917,8 +920,10 @@ function removeNode(index: number, viewData: LView) {
     }
   }
 
-  // Define this node as detached so that we don't risk projecting it
-  removedPhTNode.flags |= TNodeFlags.isDetached;
+  if (markAsDetached) {
+    // Define this node as detached to avoid projecting it later
+    removedPhTNode.flags |= TNodeFlags.isDetached;
+  }
   ngDevMode && ngDevMode.rendererRemoveNode++;
 }
 

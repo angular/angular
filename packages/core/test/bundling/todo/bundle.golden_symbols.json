@@ -318,9 +318,6 @@
     "name": "__spread"
   },
   {
-    "name": "__values"
-  },
-  {
     "name": "__window"
   },
   {
@@ -471,7 +468,7 @@
     "name": "applyNodes"
   },
   {
-    "name": "applyProjection"
+    "name": "applyProjectionRecursive"
   },
   {
     "name": "applyStyling"
