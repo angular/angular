@@ -8,6 +8,7 @@
     "moduleResolution": "node",
     "outDir": "../../dist/tools/gulp",
     "strictNullChecks": true,
+    "noImplicitReturns": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
     "noEmitOnError": true,

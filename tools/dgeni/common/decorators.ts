@@ -49,15 +49,14 @@ export function isPrimaryModuleDoc(doc: any) {
 }
 
 export function getDirectiveSelectors(classDoc: CategorizedClassDoc) {
-  if (!classDoc.directiveMetadata) {
-    return;
-  }
+  if (classDoc.directiveMetadata) {
+    const directiveSelectors: string = classDoc.directiveMetadata.get('selector');
 
-  const directiveSelectors: string = classDoc.directiveMetadata.get('selector');
-
-  if (directiveSelectors) {
-    return directiveSelectors.replace(/[\r\n]/g, '').split(/\s*,\s*/).filter(s => s !== '');
+    if (directiveSelectors) {
+      return directiveSelectors.replace(/[\r\n]/g, '').split(/\s*,\s*/).filter(s => s !== '');
+    }
   }
+  return undefined;
 }
 
 export function hasMemberDecorator(doc: MemberDoc, decoratorName: string) {

@@ -50,4 +50,6 @@ function getBindingPropertyData(doc: PropertyMemberDoc, metadata: Map<string, an
       alias: doc.decorators!.find(d => d.name == decoratorName)!.arguments![0]
     };
   }
+
+  return undefined;
 }

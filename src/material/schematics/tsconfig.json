@@ -6,6 +6,7 @@
     "outDir": "../../../dist/packages/material/schematics",
     "noEmitOnError": false,
     "strictNullChecks": true,
+    "noImplicitReturns": true,
     "skipDefaultLibCheck": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,

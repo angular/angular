@@ -126,10 +126,8 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
   private _getNodeOutlet() {
     const outlets = this.nodeOutlet;
 
-    if (outlets) {
-      // Note that since we use `descendants: true` on the query, we have to ensure
-      // that we don't pick up the outlet of a child node by accident.
-      return outlets.find(outlet => !outlet._node || outlet._node === this);
-    }
+    // Note that since we use `descendants: true` on the query, we have to ensure
+    // that we don't pick up the outlet of a child node by accident.
+    return outlets && outlets.find(outlet => !outlet._node || outlet._node === this);
   }
 }

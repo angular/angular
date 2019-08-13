@@ -8,6 +8,7 @@
     "outDir": "../../../dist/packages/cdk/schematics",
     "noEmitOnError": false,
     "strictNullChecks": true,
+    "noImplicitReturns": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": true,

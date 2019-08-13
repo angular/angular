@@ -188,6 +188,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
       const scale = this.bufferValue / 100;
       return {transform: `scaleX(${scale})`};
     }
+    return undefined;
   }
 
   ngAfterViewInit() {

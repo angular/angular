@@ -12,6 +12,7 @@
     "noUnusedParameters": false,
     "noUnusedLocals": false,
     "strictNullChecks": true,
+    "noImplicitReturns": true,
     "strictFunctionTypes": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,

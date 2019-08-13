@@ -574,6 +574,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 
       return verticalFit && horizontalFit;
     }
+    return false;
   }
 
   /**
