@@ -265,6 +265,12 @@
             "title": "Angular UI Toolkit",
             "url": "https://www.angular-ui-tools.com"
           },
+          "SenchaforAngular": {
+            "desc": "Build modern web apps faster with 115+ pre-built UI components. Try for free and download today.",
+            "rev": true,
+            "title": "Sencha for Angular",
+            "url": "https://www.sencha.com/products/extangular/"
+          },
           "IgniteUIforAngular": {
             "desc": "Ignite UI for Angular is a dependency-free Angular toolkit for building modern web apps.",
             "rev": true,
