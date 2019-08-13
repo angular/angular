@@ -1,3 +1,13 @@
+<a name="0.10.2"></a>
+## [0.10.2](https://github.com/angular/angular/compare/zone.js-0.10.1...zone.js-0.10.2) (2019-08-13)
+
+
+### Features
+
+* **zone.js:** support Promise.allSettled ([#31849](https://github.com/angular/angular/issues/31849)) ([96cbcd6](https://github.com/angular/angular/commit/96cbcd6))
+
+
+
 <a name="0.10.1"></a>
 ## [0.10.1](https://github.com/angular/angular/compare/zone.js-0.10.0...zone.js-0.10.1) (2019-08-02)
 
