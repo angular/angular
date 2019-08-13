@@ -1450,32 +1450,47 @@ describe('MatInput with appearance', () => {
 });
 
 describe('MatFormField default options', () => {
-  it('should be legacy appearance if no default options provided', fakeAsync(() => {
+  it('should be legacy appearance if no default options provided', () => {
     const fixture = createComponent(MatInputWithAppearance);
     fixture.detectChanges();
-    flush();
     expect(fixture.componentInstance.formField.appearance).toBe('legacy');
-  }));
+  });
 
-  it('should be legacy appearance if empty default options provided', fakeAsync(() => {
+  it('should be legacy appearance if empty default options provided', () => {
     const fixture = createComponent(MatInputWithAppearance, [{
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {}}
     ]);
 
     fixture.detectChanges();
-    flush();
     expect(fixture.componentInstance.formField.appearance).toBe('legacy');
-  }));
+  });
 
-  it('should be custom default appearance if custom appearance specified in default options',
-      fakeAsync(() => {
-        const fixture = createComponent(MatInputWithAppearance, [{
-          provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}
-        ]);
-        fixture.detectChanges();
-        flush();
-        expect(fixture.componentInstance.formField.appearance).toBe('fill');
-      }));
+  it('should be able to change the default appearance', () => {
+    const fixture = createComponent(MatInputWithAppearance, [{
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}
+    ]);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.formField.appearance).toBe('fill');
+  });
+
+  it('should default hideRequiredMarker to false', () => {
+    const fixture = createComponent(MatInputWithAppearance, [{
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {}}
+    ]);
+
+    fixture.detectChanges();
+    expect(fixture.componentInstance.formField.hideRequiredMarker).toBe(false);
+  });
+
+  it('should be able to change the default value of hideRequiredMarker', () => {
+    const fixture = createComponent(MatInputWithAppearance, [{
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {hideRequiredMarker: true}}
+    ]);
+
+    fixture.detectChanges();
+    expect(fixture.componentInstance.formField.hideRequiredMarker).toBe(true);
+  });
+
 });
 
 describe('MatInput with textarea autosize', () => {

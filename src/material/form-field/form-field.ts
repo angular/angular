@@ -84,6 +84,7 @@ export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
  */
 export interface MatFormFieldDefaultOptions {
   appearance?: MatFormFieldAppearance;
+  hideRequiredMarker?: boolean;
 }
 
 /**
@@ -280,6 +281,8 @@ export class MatFormField extends _MatFormFieldMixinBase
 
     // Set the default through here so we invoke the setter on the first run.
     this.appearance = (_defaults && _defaults.appearance) ? _defaults.appearance : 'legacy';
+    this._hideRequiredMarker = (_defaults && _defaults.hideRequiredMarker != null) ?
+        _defaults.hideRequiredMarker : false;
   }
 
   /**

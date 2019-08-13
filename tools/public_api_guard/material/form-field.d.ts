@@ -81,6 +81,7 @@ export declare abstract class MatFormFieldControl<T> {
 
 export interface MatFormFieldDefaultOptions {
     appearance?: MatFormFieldAppearance;
+    hideRequiredMarker?: boolean;
 }
 
 export declare class MatFormFieldModule {
