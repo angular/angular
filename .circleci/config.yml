@@ -145,11 +145,11 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
-      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
       - *yarn_install
+      - *setup_bazel_binary
 
       - run: bazel build src/... --build_tag_filters=-docs-package
 
@@ -165,11 +165,11 @@ jobs:
     steps:
     - *checkout_code
     - *restore_cache
-    - *setup_bazel_binary
     - *setup_bazel_ci_config
     - *setup_bazel_remote_execution
     - *yarn_download
     - *yarn_install
+    - *setup_bazel_binary
 
     - run: bazel test tools/public_api_guard/...
 
@@ -184,11 +184,11 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
-      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
       - *yarn_install
+      - *setup_bazel_binary
 
       - run: bazel test src/... --build_tag_filters=e2e --test_tag_filters=e2e
 
@@ -204,11 +204,11 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
-      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
       - *yarn_install
+      - *setup_bazel_binary
 
       - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e
 
@@ -358,11 +358,11 @@ jobs:
       - *checkout_code
       - *restore_cache
       - *attach_release_output
-      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
       - *yarn_install
+      - *setup_bazel_binary
 
       # CircleCI has a config setting to enforce SSH for all github connections.
       # This is not compatible with our mechanism of using a Personal Access Token
@@ -408,11 +408,11 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
-      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
       - *yarn_install
+      - *setup_bazel_binary
 
       # Setup Angular ivy snapshots built with ngtsc but locked to a specific tag. We
       # cannot determine the tag automatically based on the Angular version specified in
@@ -440,11 +440,11 @@ jobs:
     steps:
       - *checkout_code
       - *restore_cache
-      - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
       - *yarn_download
       - *yarn_install
+      - *setup_bazel_binary
 
       # Setup Angular ivy snapshots built with ngtsc.
       - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master-ivy-aot
