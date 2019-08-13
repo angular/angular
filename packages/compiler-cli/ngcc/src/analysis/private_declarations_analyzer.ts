@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath, absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
-import {Declaration} from '../../../src/ngtsc/reflection';
+import {ConcreteDeclaration} from '../../../src/ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';
 import {NgccReferencesRegistry} from './ngcc_references_registry';
@@ -40,15 +40,15 @@ export class PrivateDeclarationsAnalyzer {
 
   private getPrivateDeclarations(
       rootFiles: ts.SourceFile[],
-      declarations: Map<ts.Identifier, Declaration>): PrivateDeclarationsAnalyses {
-    const privateDeclarations: Map<ts.Identifier, Declaration> = new Map(declarations);
+      declarations: Map<ts.Identifier, ConcreteDeclaration>): PrivateDeclarationsAnalyses {
+    const privateDeclarations: Map<ts.Identifier, ConcreteDeclaration> = new Map(declarations);
     const exportAliasDeclarations: Map<ts.Identifier, string> = new Map();
 
     rootFiles.forEach(f => {
       const exports = this.host.getExportsOfModule(f);
       if (exports) {
         exports.forEach((declaration, exportedName) => {
-          if (hasNameIdentifier(declaration.node)) {
+          if (declaration.node !== null && hasNameIdentifier(declaration.node)) {
             if (privateDeclarations.has(declaration.node.name)) {
               const privateDeclaration = privateDeclarations.get(declaration.node.name) !;
               if (privateDeclaration.node !== declaration.node) {

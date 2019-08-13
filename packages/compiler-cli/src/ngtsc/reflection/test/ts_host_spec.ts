@@ -307,8 +307,9 @@ runInEachFileSystem(() => {
         } else if (directTargetDecl === null) {
           return fail('No declaration found for DirectTarget');
         }
-        expect(targetDecl.node.getSourceFile().fileName).toBe(_('/node_modules/absolute/index.ts'));
-        expect(ts.isClassDeclaration(targetDecl.node)).toBe(true);
+        expect(targetDecl.node !.getSourceFile().fileName)
+            .toBe(_('/node_modules/absolute/index.ts'));
+        expect(ts.isClassDeclaration(targetDecl.node !)).toBe(true);
         expect(directTargetDecl.viaModule).toBe('absolute');
         expect(directTargetDecl.node).toBe(targetDecl.node);
       });

@@ -1741,7 +1741,7 @@ runInEachFileSystem(() => {
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBe(null);
           expect(Array.from(exportDeclarations !.entries())
-                     .map(entry => [entry[0], entry[1].node.getText(), entry[1].viaModule]))
+                     .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
               .toEqual([
                 ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
                 ['a', `a = 'a'`, '/a_module'],

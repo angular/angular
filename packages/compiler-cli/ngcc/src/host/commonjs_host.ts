@@ -92,9 +92,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     for (const statement of this.getModuleStatements(sourceFile)) {
       if (isCommonJsExportStatement(statement)) {
         const exportDeclaration = this.extractCommonJsExportDeclaration(statement);
-        if (exportDeclaration !== null) {
-          moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
-        }
+        moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
       } else if (isReexportStatement(statement)) {
         const reexports = this.extractCommonJsReexports(statement, sourceFile);
         for (const reexport of reexports) {
@@ -106,14 +104,22 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   private extractCommonJsExportDeclaration(statement: CommonJsExportStatement):
-      CommonJsExportDeclaration|null {
+      CommonJsExportDeclaration {
     const exportExpression = statement.expression.right;
     const declaration = this.getDeclarationOfExpression(exportExpression);
-    if (declaration === null) {
-      return null;
-    }
     const name = statement.expression.left.name.text;
-    return {name, declaration};
+    if (declaration !== null) {
+      return {name, declaration};
+    } else {
+      return {
+        name,
+        declaration: {
+          node: null,
+          expression: exportExpression,
+          viaModule: null,
+        },
+      };
+    }
   }
 
   private extractCommonJsReexports(statement: ReexportStatement, containingFile: ts.SourceFile):
@@ -126,8 +132,14 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       const viaModule = stripExtension(importedFile.fileName);
       const importedExports = this.getExportsOfModule(importedFile);
       if (importedExports !== null) {
-        importedExports.forEach(
-            (decl, name) => reexports.push({name, declaration: {node: decl.node, viaModule}}));
+        importedExports.forEach((decl, name) => {
+          if (decl.node !== null) {
+            reexports.push({name, declaration: {node: decl.node, viaModule}});
+          } else {
+            reexports.push(
+                {name, declaration: {node: null, expression: decl.expression, viaModule}});
+          }
+        });
       }
     }
     return reexports;

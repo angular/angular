@@ -176,7 +176,13 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
       return null;
     }
     const exportMap = new Map<ts.Declaration, string>();
-    exports.forEach((declaration, name) => { exportMap.set(declaration.node, name); });
+    exports.forEach((declaration, name) => {
+      // It's okay to skip inline declarations, since by definition they're not target-able with a
+      // ts.Declaration anyway.
+      if (declaration.node !== null) {
+        exportMap.set(declaration.node, name);
+      }
+    });
     return exportMap;
   }
 }

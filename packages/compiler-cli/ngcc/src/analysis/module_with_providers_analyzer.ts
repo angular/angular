@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 
 import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
-import {ClassDeclaration, Declaration} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ConcreteDeclaration} from '../../../src/ngtsc/reflection';
 import {ModuleWithProvidersFunction, NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';
 
@@ -23,7 +23,7 @@ export interface ModuleWithProvidersInfo {
   /**
    * The NgModule class declaration (in the .d.ts file) to add as a type parameter.
    */
-  ngModule: Declaration<ClassDeclaration>;
+  ngModule: ConcreteDeclaration<ClassDeclaration>;
 }
 
 export type ModuleWithProvidersAnalyses = Map<ts.SourceFile, ModuleWithProvidersInfo[]>;

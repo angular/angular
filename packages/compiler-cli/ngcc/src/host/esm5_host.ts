@@ -140,7 +140,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     const outerClassNode = getClassDeclarationFromInnerFunctionDeclaration(id.parent);
     const declaration = super.getDeclarationOfIdentifier(outerClassNode ? outerClassNode.name : id);
 
-    if (!declaration || !ts.isVariableDeclaration(declaration.node) ||
+    if (!declaration || declaration.node === null || !ts.isVariableDeclaration(declaration.node) ||
         declaration.node.initializer !== undefined ||
         // VariableDeclaration => VariableDeclarationList => VariableStatement => IIFE Block
         !ts.isBlock(declaration.node.parent.parent.parent)) {

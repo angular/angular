@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
@@ -243,7 +243,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     // The identifier may have been of an additional class assignment such as `MyClass_1` that was
     // present as alias for `MyClass`. If so, resolve such aliases to their original declaration.
-    if (superDeclaration !== null) {
+    if (superDeclaration !== null && superDeclaration.node !== null) {
       const aliasedIdentifier = this.resolveAliasedClassIdentifier(superDeclaration.node);
       if (aliasedIdentifier !== null) {
         return this.getDeclarationOfIdentifier(aliasedIdentifier);
@@ -409,6 +409,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (!exports) return [];
     const infos: ModuleWithProvidersFunction[] = [];
     exports.forEach((declaration, name) => {
+      if (declaration.node === null) {
+        return;
+      }
       if (this.isClass(declaration.node)) {
         this.getMembersOfClass(declaration.node).forEach(member => {
           if (member.isStatic) {
@@ -497,7 +500,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     const aliasedIdentifier = initializer.left;
 
     const aliasedDeclaration = this.getDeclarationOfIdentifier(aliasedIdentifier);
-    if (aliasedDeclaration === null) {
+    if (aliasedDeclaration === null || aliasedDeclaration.node === null) {
       throw new Error(
           `Unable to locate declaration of ${aliasedIdentifier.text} in "${statement.getText()}"`);
     }
@@ -1407,7 +1410,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     const ngModuleDeclaration = this.getDeclarationOfExpression(ngModuleValue);
-    if (!ngModuleDeclaration) {
+    if (!ngModuleDeclaration || ngModuleDeclaration.node === null) {
       throw new Error(
           `Cannot find a declaration for NgModule ${ngModuleValue.getText()} referenced in "${declaration!.getText()}"`);
     }
@@ -1416,7 +1419,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
     return {
       name,
-      ngModule: ngModuleDeclaration as Declaration<ClassDeclaration>, declaration, container
+      ngModule: ngModuleDeclaration as ConcreteDeclaration<ClassDeclaration>, declaration, container
     };
   }
 
@@ -1430,7 +1433,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     const namespaceDecl = this.getDeclarationOfIdentifier(expression.expression);
-    if (!namespaceDecl || !ts.isSourceFile(namespaceDecl.node)) {
+    if (!namespaceDecl || namespaceDecl.node === null || !ts.isSourceFile(namespaceDecl.node)) {
       return null;
     }
 

@@ -72,7 +72,7 @@ export class UndecoratedParentMigration implements Migration {
     }
 
     const baseClazz = host.reflectionHost.getDeclarationOfIdentifier(baseClassExpr) !.node;
-    if (!isClassDeclaration(baseClazz)) {
+    if (baseClazz === null || !isClassDeclaration(baseClazz)) {
       return null;
     }
 

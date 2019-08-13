@@ -399,7 +399,7 @@ export { SomeDirective };
 
             const declaration = host.getDeclarationOfIdentifier(ngModuleRef !);
             expect(declaration).not.toBe(null);
-            expect(declaration !.node.getText()).toContain('function HttpClientXsrfModule()');
+            expect(declaration !.node !.getText()).toContain('function HttpClientXsrfModule()');
           });
         });
         describe('getVariableValue', () => {
