@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileMetadataResolver, CompilePipeSummary, NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
+import {CompileDirectiveMetadata, NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
 import {BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from '@angular/compiler-cli/src/language_services';
-import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult, TemplateInfo} from './common';
 
@@ -20,6 +19,7 @@ export {
   Pipes,
   Signature,
   Span,
+  StaticSymbol,
   Symbol,
   SymbolDeclaration,
   SymbolQuery,
@@ -41,16 +41,6 @@ export interface TemplateSource {
   readonly source: string;
 
   /**
-   * The version of the source. As files are modified the version should change. That is, if the
-   * `LanguageService` requesting template information for a source file and that file has changed
-   * since the last time the host was asked for the file then this version string should be
-   * different. No assumptions are made about the format of this string.
-   *
-   * The version can change more often than the source but should not change less often.
-   */
-  readonly version: string;
-
-  /**
    * The span of the template within the source file.
    */
   readonly span: Span;
@@ -69,6 +59,11 @@ export interface TemplateSource {
    * A `SymbolQuery` for the context of the template.
    */
   readonly query: SymbolQuery;
+
+  /**
+   * Name of the file that contains the template. Could be `.html` or `.ts`.
+   */
+  readonly fileName: string;
 }
 
 /**
@@ -79,7 +74,6 @@ export interface TemplateSource {
  * @publicApi
  */
 export type TemplateSources = TemplateSource[] | undefined;
-
 
 /**
  * Error information found getting declaration information
@@ -175,13 +169,6 @@ export type Declarations = Declaration[];
  */
 export interface LanguageServiceHost {
   /**
-   * Returns the template information for templates in `fileName` at the given location. If
-   * `fileName` refers to a template file then the `position` should be ignored. If the `position`
-   * is not in a template literal string then this method should return `undefined`.
-   */
-  getTemplateAt(fileName: string, position: number): TemplateSource|undefined;
-
-  /**
    * Return the template source information for all templates in `fileName` or for `fileName` if
    * it is a template file.
    */
@@ -205,7 +192,7 @@ export interface LanguageServiceHost {
   /**
    * Return the AST for both HTML and template for the contextFile.
    */
-  getTemplateAst(template: TemplateSource, contextFile: string): AstResult;
+  getTemplateAst(template: TemplateSource): AstResult;
 
   /**
    * Return the template AST for the node that corresponds to the position.
@@ -381,20 +368,20 @@ export interface LanguageService {
   /**
    * Returns a list of all error for all templates in the given file.
    */
-  getDiagnostics(fileName: string): tss.Diagnostic[];
+  getDiagnostics(fileName: string): ts.Diagnostic[];
 
   /**
    * Return the completions at the given position.
    */
-  getCompletionsAt(fileName: string, position: number): tss.CompletionInfo|undefined;
+  getCompletionsAt(fileName: string, position: number): ts.CompletionInfo|undefined;
 
   /**
    * Return the definition location for the symbol at position.
    */
-  getDefinitionAt(fileName: string, position: number): tss.DefinitionInfoAndBoundSpan|undefined;
+  getDefinitionAt(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan|undefined;
 
   /**
    * Return the hover information for the symbol at position.
    */
-  getHoverAt(fileName: string, position: number): tss.QuickInfo|undefined;
+  getHoverAt(fileName: string, position: number): ts.QuickInfo|undefined;
 }
