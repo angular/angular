@@ -305,24 +305,6 @@ export function allocExpando(view: LView, numSlotsToAlloc: number) {
 //////////////////////////
 
 /**
- * Used for creating the LView of a dynamic embedded view, either through
- * ViewContainerRef.createEmbeddedView() or TemplateRef.createEmbeddedView().
- */
-export function createEmbeddedViewAndNode<T>(
-    tView: TView, context: T, declarationView: LView, injectorIndex: number): LView {
-  const lView = createLView(declarationView, tView, context, LViewFlags.CheckAlways, null, null);
-  lView[DECLARATION_VIEW] = declarationView;
-
-  assignTViewNodeToLView(tView, null, -1, lView);
-
-  if (tView.firstTemplatePass) {
-    tView.node !.injectorIndex = injectorIndex;
-  }
-
-  return lView;
-}
-
-/**
  * Processes a view in the creation mode. This includes a number of steps in a specific order:
  * - creating view query functions (if any);
  * - executing a template function in the creation mode;

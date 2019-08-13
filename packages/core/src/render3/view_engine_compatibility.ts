@@ -17,16 +17,15 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_Vie
 import {Renderer2} from '../render/api';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
+
 import {assertLContainer} from './assert';
 import {NodeInjector, getParentInjectorLocation} from './di';
-import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderView} from './instructions/shared';
+import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
-
 import {isComponent, isLContainer, isLView, isRootView} from './interfaces/type_checks';
-import {CONTEXT, DECLARATION_LCONTAINER, LView, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
-
+import {CONTEXT, DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getParentInjectorTNode} from './node_util';
@@ -108,9 +107,9 @@ export function createTemplateRef<T>(
 
       createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
         const embeddedTView = this._declarationTContainer.tViews as TView;
-        const lView = createEmbeddedViewAndNode(
-            embeddedTView, context, this._declarationView,
-            this._declarationTContainer.injectorIndex);
+        const lView = createLView(
+            this._declarationView, embeddedTView, context, LViewFlags.CheckAlways, null,
+            embeddedTView.node);
 
         const declarationLContainer = this._declarationView[this._declarationTContainer.index];
         ngDevMode && assertLContainer(declarationLContainer);

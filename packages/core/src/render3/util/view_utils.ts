@@ -106,11 +106,14 @@ export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
  * @param lView
  */
 export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
-  ngDevMode && assertTNodeForLView(tNode, lView);
   const index = tNode.index;
-  const node: RNode|null = index == -1 ? null : unwrapRNode(lView[index]);
-  ngDevMode && node !== null && assertDomNode(node);
-  return node;
+  if (index !== -1) {
+    ngDevMode && assertTNodeForLView(tNode, lView);
+    const node: RNode|null = unwrapRNode(lView[index]);
+    ngDevMode && node !== null && assertDomNode(node);
+    return node;
+  }
+  return null;
 }
 
 
