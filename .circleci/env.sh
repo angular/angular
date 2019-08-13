@@ -61,6 +61,7 @@ else
   setPublicVar SAUCE_USERNAME "angular-ci";
   setSecretVar SAUCE_ACCESS_KEY "9b988f434ff8-fbca-8aa4-4ae3-35442987";
 fi
+# TODO(josephperrott): Remove environment variables once all saucelabs tests are via bazel method.
 setPublicVar SAUCE_LOG_FILE /tmp/angular/sauce-connect.log
 setPublicVar SAUCE_READY_FILE /tmp/angular/sauce-connect-ready-file.lock
 setPublicVar SAUCE_PID_FILE /tmp/angular/sauce-connect-pid-file.lock
