@@ -7,5 +7,6 @@
  */
 
 export type CheckboxHarnessFilters = {
-  label?: string | RegExp
+  label?: string|RegExp;
+  name?: string;
 };

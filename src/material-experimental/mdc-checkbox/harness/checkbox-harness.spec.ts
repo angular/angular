@@ -15,10 +15,12 @@ let checkboxHarness: typeof MatCheckboxHarness;
 describe('MatCheckboxHarness', () => {
   describe('non-MDC-based', () => {
     beforeEach(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatCheckboxModule, ReactiveFormsModule],
-        declarations: [CheckboxHarnessTest],
-      }).compileComponents();
+      await TestBed
+          .configureTestingModule({
+            imports: [MatCheckboxModule, ReactiveFormsModule],
+            declarations: [CheckboxHarnessTest],
+          })
+          .compileComponents();
 
       fixture = TestBed.createComponent(CheckboxHarnessTest);
       fixture.detectChanges();
@@ -31,10 +33,12 @@ describe('MatCheckboxHarness', () => {
 
   describe('MDC-based', () => {
     beforeEach(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatMdcCheckboxModule, ReactiveFormsModule],
-        declarations: [CheckboxHarnessTest],
-      }).compileComponents();
+      await TestBed
+          .configureTestingModule({
+            imports: [MatMdcCheckboxModule, ReactiveFormsModule],
+            declarations: [CheckboxHarnessTest],
+          })
+          .compileComponents();
 
       fixture = TestBed.createComponent(CheckboxHarnessTest);
       fixture.detectChanges();
@@ -57,6 +61,12 @@ function runTests() {
 
   it('should load checkbox with exact label', async () => {
     const checkboxes = await loader.getAllHarnesses(checkboxHarness.with({label: 'First'}));
+    expect(checkboxes.length).toBe(1);
+    expect(await checkboxes[0].getLabelText()).toBe('First');
+  });
+
+  it('should load checkbox with name', async () => {
+    const checkboxes = await loader.getAllHarnesses(checkboxHarness.with({name: 'first-name'}));
     expect(checkboxes.length).toBe(1);
     expect(await checkboxes[0].getLabelText()).toBe('First');
   });
@@ -199,4 +209,3 @@ class CheckboxHarnessTest {
   ctrl = new FormControl(true);
   disabled = true;
 }
-

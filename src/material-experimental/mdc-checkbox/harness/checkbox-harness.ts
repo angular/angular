@@ -21,12 +21,18 @@ export class MatCheckboxHarness extends ComponentHarness {
    * Gets a `HarnessPredicate` that can be used to search for a checkbox with specific attributes.
    * @param options Options for narrowing the search:
    *   - `label` finds a checkbox with specific label text.
+   *   - `name` finds a checkbox with specific name.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CheckboxHarnessFilters = {}): HarnessPredicate<MatCheckboxHarness> {
     return new HarnessPredicate(MatCheckboxHarness)
-        .addOption('label', options.label,
-            (harness, label) => HarnessPredicate.stringMatches(harness.getLabelText(), label));
+        .addOption(
+            'label', options.label,
+            (harness, label) => HarnessPredicate.stringMatches(harness.getLabelText(), label))
+        // We want to provide a filter option for "name" because the name of the checkbox is
+        // only set on the underlying input. This means that it's not possible for developers
+        // to retrieve the harness of a specific checkbox with name through a CSS selector.
+        .addOption('name', options.name, async (harness, name) => await harness.getName() === name);
   }
 
   private _label = this.locatorFor('.mat-checkbox-label');
@@ -64,22 +70,22 @@ export class MatCheckboxHarness extends ComponentHarness {
   }
 
   /** Gets a promise for the checkbox's name. */
-  async getName(): Promise<string | null> {
+  async getName(): Promise<string|null> {
     return (await this._input()).getAttribute('name');
   }
 
   /** Gets a promise for the checkbox's value. */
-  async getValue(): Promise<string | null> {
+  async getValue(): Promise<string|null> {
     return (await this._input()).getAttribute('value');
   }
 
   /** Gets a promise for the checkbox's aria-label. */
-  async getAriaLabel(): Promise<string | null> {
+  async getAriaLabel(): Promise<string|null> {
     return (await this._input()).getAttribute('aria-label');
   }
 
   /** Gets a promise for the checkbox's aria-labelledby. */
-  async getAriaLabelledby(): Promise<string | null> {
+  async getAriaLabelledby(): Promise<string|null> {
     return (await this._input()).getAttribute('aria-labelledby');
   }
 
