@@ -37,22 +37,6 @@ run --incompatible_strict_action_env
 test --incompatible_strict_action_env
 
 ###############################
-# Saucelabs support           #
-# Turn on these settings with #
-#  --config=saucelabs         #
-###############################
-
-# Expose SauceLabs environment to actions
-# These environment variables are needed by
-# web_test_karma to run on Saucelabs
-test:saucelabs --action_env=SAUCE_USERNAME
-test:saucelabs --action_env=SAUCE_ACCESS_KEY
-test:saucelabs --action_env=SAUCE_READY_FILE
-test:saucelabs --action_env=SAUCE_PID_FILE
-test:saucelabs --action_env=SAUCE_TUNNEL_IDENTIFIER
-test:saucelabs --define=KARMA_WEB_TEST_MODE=SL_REQUIRED
-
-###############################
 # Release support             #
 # Turn on these settings with #
 #  --config=release           #
