@@ -32,18 +32,36 @@ export const MAT_BUTTON_HOST = {
   '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
 };
 
-/**
- * List of classes to add to buttons instances based on host attributes to
- * style as different variants.
- */
+/** List of classes to add to buttons instances based on host attribute selector. */
 const HOST_SELECTOR_MDC_CLASS_PAIR: {selector: string, mdcClasses: string[]}[] = [
-  {selector: 'mat-button', mdcClasses: ['mdc-button']},
-  {selector: 'mat-flat-button', mdcClasses: ['mdc-button', 'mdc-button--unelevated']},
-  {selector: 'mat-raised-button', mdcClasses: ['mdc-button', 'mdc-button--raised']},
-  {selector: 'mat-stroked-button', mdcClasses: ['mdc-button', 'mdc-button--outlined']},
-  {selector: 'mat-fab', mdcClasses: ['mdc-fab']},
-  {selector: 'mat-mini-fab', mdcClasses: ['mdc-fab', 'mdc-fab--mini']},
-  {selector: 'mat-icon-button', mdcClasses: ['mdc-icon-button']}
+  {
+    selector: 'mat-button',
+    mdcClasses: ['mdc-button', 'mat-mdc-button'],
+  },
+  {
+    selector: 'mat-flat-button',
+    mdcClasses: ['mdc-button', 'mdc-button--unelevated', 'mat-mdc-unelevated-button'],
+  },
+  {
+    selector: 'mat-raised-button',
+    mdcClasses: ['mdc-button', 'mdc-button--raised', 'mat-mdc-raised-button'],
+  },
+  {
+    selector: 'mat-stroked-button',
+    mdcClasses: ['mdc-button', 'mdc-button--outlined', 'mat-mdc-outlined-button'],
+  },
+  {
+    selector: 'mat-fab',
+    mdcClasses: ['mdc-fab', 'mat-mdc-fab'],
+  },
+  {
+    selector: 'mat-mini-fab',
+    mdcClasses: ['mdc-fab', 'mdc-fab--mini', 'mat-mdc-mini-fab'],
+  },
+  {
+    selector: 'mat-icon-button',
+    mdcClasses: ['mdc-icon-button', 'mat-mdc-icon-button'],
+  }
 ];
 
 // Boilerplate for applying mixins to MatButton.
