@@ -342,28 +342,65 @@ export interface Import {
 }
 
 /**
- * The declaration of a symbol, along with information about how it was imported into the
- * application.
+ * Base type for all `Declaration`s.
  */
-export interface Declaration<T extends ts.Declaration = ts.Declaration> {
-  /**
-   * TypeScript reference to the declaration itself.
-   */
-  node: T;
-
+export interface BaseDeclaration<T extends ts.Declaration = ts.Declaration> {
   /**
    * The absolute module path from which the symbol was imported into the application, if the symbol
    * was imported via an absolute module (even through a chain of re-exports). If the symbol is part
    * of the application and was not imported from an absolute path, this will be `null`.
    */
   viaModule: string|null;
+
+  /**
+   * TypeScript reference to the declaration itself, if one exists.
+   */
+  node: T|null;
 }
+
+/**
+ * A declaration that has an associated TypeScript `ts.Declaration`.
+ *
+ * The alternative is an `InlineDeclaration`.
+ */
+export interface ConcreteDeclaration<T extends ts.Declaration = ts.Declaration> extends
+    BaseDeclaration<T> {
+  node: T;
+}
+
+/**
+ * A declaration that does not have an associated TypeScript `ts.Declaration`, only a
+ * `ts.Expression`.
+ *
+ * This can occur in some downlevelings when an `export const VAR = ...;` (a `ts.Declaration`) is
+ * transpiled to an assignment statement (e.g. `exports.VAR = ...;`). There is no `ts.Declaration`
+ * associated with `VAR` in that case, only an expression.
+ */
+export interface InlineDeclaration extends BaseDeclaration {
+  node: null;
+
+  /**
+   * The `ts.Expression` which constitutes the value of the declaration.
+   */
+  expression: ts.Expression;
+}
+
+/**
+ * The declaration of a symbol, along with information about how it was imported into the
+ * application.
+ *
+ * This can either be a `ConcreteDeclaration` if the underlying TypeScript node for the symbol is an
+ * actual `ts.Declaration`, or an `InlineDeclaration` if the declaration was transpiled in certain
+ * downlevelings to a `ts.Expression` instead.
+ */
+export type Declaration<T extends ts.Declaration = ts.Declaration> =
+    ConcreteDeclaration<T>| InlineDeclaration;
 
 /**
  * Abstracts reflection operations on a TypeScript AST.
  *
- * Depending on the format of the code being interpreted, different concepts are represented with
- * different syntactical structures. The `ReflectionHost` abstracts over those differences and
+ * Depending on the format of the code being interpreted, different concepts are represented
+ * with different syntactical structures. The `ReflectionHost` abstracts over those differences and
  * presents a single API by which the compiler can query specific information about the AST.
  *
  * All operations on the `ReflectionHost` require the use of TypeScript `ts.Node`s with binding
