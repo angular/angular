@@ -7,7 +7,7 @@
  */
 
 import {Platform} from '@angular/cdk/platform';
-import {ElementRef, NgZone, OnChanges, SimpleChanges} from '@angular/core';
+import {ElementRef, NgZone} from '@angular/core';
 import {
   CanColor,
   CanColorCtor,
@@ -18,9 +18,9 @@ import {
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
-  RippleRenderer,
-  RippleTarget
+  RippleAnimationConfig
 } from '@angular/material/core';
+import {numbers} from '@material/ripple';
 
 /** Inputs common to all buttons. */
 export const MAT_BUTTON_INPUTS = ['disabled', 'disableRipple', 'color'];
@@ -74,30 +74,20 @@ export const _MatButtonBaseMixin: CanDisableRippleCtor&CanDisableCtor&CanColorCt
 
 /** Base class for all buttons.  */
 export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, CanColor,
-                                                                  CanDisableRipple, OnChanges {
-  rippleTarget: RippleTarget = {
-    rippleConfig: {
-      animation: {
-        // TODO(mmalerba): Use the MDC constants once they are exported separately from the
-        // foundation. Grabbing them off the foundation prevents the foundation class from being
-        // tree-shaken. There is an open PR for this:
-        // https://github.com/material-components/material-components-web/pull/4593
-        enterDuration: 225 /* MDCRippleFoundation.numbers.DEACTIVATION_TIMEOUT_MS */,
-        exitDuration: 150 /* MDCRippleFoundation.numbers.FG_DEACTIVATION_MS */,
-      },
-    },
-    rippleDisabled: false,
+                                                                  CanDisableRipple {
+  /** The ripple animation configuration to use for the buttons. */
+  _rippleAnimation: RippleAnimationConfig = {
+    enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
+    exitDuration: numbers.FG_DEACTIVATION_MS
   };
 
-  /** The ripple renderer for the button. */
-  private _rippleRenderer =
-      new RippleRenderer(this.rippleTarget, this._ngZone, this._elementRef, this._platform);
+  /** Whether the ripple is centered on the button. */
+  _isRippleCentered = false;
 
   constructor(
       elementRef: ElementRef, public _platform: Platform, public _ngZone: NgZone,
       public _animationMode?: string) {
     super(elementRef);
-    this._rippleRenderer.setupTriggerEvents(this._elementRef.nativeElement);
 
     // For each of the variant selectors that is present in the button's host
     // attributes, add the correct corresponding MDC classes.
@@ -105,12 +95,6 @@ export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, Ca
       if (this._hasHostAttributes(pair.selector)) {
         (elementRef.nativeElement as HTMLElement).classList.add(...pair.mdcClasses);
       }
-    }
-  }
-
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['disableRipple'] || simpleChanges['disabled']) {
-      this.rippleTarget.rippleDisabled = this.disableRipple || this.disabled;
     }
   }
 
@@ -122,6 +106,10 @@ export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, Ca
   /** Gets whether the button has one of the given attributes. */
   private _hasHostAttributes(...attributes: string[]) {
     return attributes.some(attribute => this._elementRef.nativeElement.hasAttribute(attribute));
+  }
+
+  _isRippleDisabled() {
+    return this.disableRipple || this.disabled;
   }
 }
 

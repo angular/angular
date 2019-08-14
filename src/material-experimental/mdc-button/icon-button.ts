@@ -40,12 +40,12 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatIconButton extends MatButtonBase {
+  _isRippleCentered = true;
+
   constructor(
       elementRef: ElementRef, platform: Platform, ngZone: NgZone,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, platform, ngZone, animationMode);
-    this.rippleTarget.rippleConfig.centered = true;
-    this.rippleTarget.rippleConfig.radius = 24;
   }
 }
 
@@ -61,11 +61,11 @@ export class MatIconButton extends MatButtonBase {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatIconAnchor extends MatAnchorBase {
+  _isRippleCentered = true;
+
   constructor(
       elementRef: ElementRef, platform: Platform, ngZone: NgZone,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, platform, ngZone, animationMode);
-    this.rippleTarget.rippleConfig.centered = true;
-    this.rippleTarget.rippleConfig.radius = 24;
   }
 }

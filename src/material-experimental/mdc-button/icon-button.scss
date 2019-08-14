@@ -3,13 +3,7 @@
 
 @include mdc-icon-button-without-ripple($query: $mat-base-styles-query);
 
-$_mat-button-ripple-opacity: 0.1;
-
 .mat-mdc-icon-button {
-  // The ripple element is created from the RippleRenderer rather than the MDC ripple, so it is
-  // necessary to provide the color and opacity styling manually.
-  .mat-ripple-element {
-    opacity: $_mat-button-ripple-opacity;
-    background-color: currentColor;
-  }
+  // Border radius is inherited by ripple to know its shape. Set to 50% so the ripple is round.
+  border-radius: 50%;
 }
