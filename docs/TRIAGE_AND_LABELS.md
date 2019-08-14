@@ -172,7 +172,7 @@ Before a PR can be merged it must be approved by the appropriate reviewer(s).
 
 To ensure that the right people review each change, we configured [GitHub CODEOWNERS](https://help.github.com/articles/about-codeowners/) (via `.github/CODEOWNERS`) and require that each PR has at least one approval from an appropriate code owner.
 
-If the PR author is a code owner themselves, the approval can come from _any_ repo collaborator (person with write access). GitHub CODEOWNERs do not support this scenario, so the `merge-assistance` label must be added, mentioning that the PR author is a code owner. In any case, the reviewer should actually look through the code and provide feedback if necessary.
+If the PR author is a code owner themselves, the approval can come from _any_ repo collaborator (person with write access). GitHub CODEOWNERs does not support this scenario, so the `merge-assistance` label must be added, mentioning that the PR author is a code owner. In any case, the reviewer should actually look through the code and provide feedback if necessary.
 
 Note that approved state does not mean a PR is ready to be merged.
 For example, a reviewer might approve the PR but request a minor tweak that doesn't need further review, e.g., a rebase or small uncontroversial change.
