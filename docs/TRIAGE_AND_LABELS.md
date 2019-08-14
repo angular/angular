@@ -12,7 +12,6 @@ The owner of the component is then responsible for the secondary / component-lev
 The caretaker should be able to determine which component the issue belongs to.
 The components have a clear piece of source code associated with it within the `/packages/` folder of this repo.
 
-* `comp: docs-infra` - the angular.io application and docs-related tooling
 * `comp: animations`
 * `comp: bazel` - @angular/bazel rules
 * `comp: benchpress`
@@ -21,6 +20,8 @@ The components have a clear piece of source code associated with it within the `
 * `comp: core & compiler` - because core, compiler, compiler-cli and
   browser-platforms are very intertwined, we will be treating them as one
 * `comp: ivy` - a subset of core representing the new Ivy renderer.
+* `comp: ngcc` - a subset of ivy representing the [Angular Compatibility Compiler](../packages/compiler-cli/ngcc/README.md)
+* `comp: docs-infra` - the angular.io application and docs-related tooling
 * `comp: elements`
 * `comp: forms`
 * `comp: http`

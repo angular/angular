@@ -27,6 +27,7 @@
     "http",
     "ivy",
     "language-service",
+    "ngcc",
     "platform-browser",
     "platform-browser-dynamic",
     "platform-server",
