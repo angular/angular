@@ -539,8 +539,9 @@ runInEachFileSystem(() => {
 
       TYPINGS_SRC_FILES = [
         {
-          name: _('/src/index.js'),
+          name: _('/ep/src/index.js'),
           contents: `
+        import 'an_external_lib';
         import {InternalClass} from './internal';
         import * as func1 from './func1';
         import * as missing from './missing-class';
@@ -550,25 +551,32 @@ runInEachFileSystem(() => {
         `
         },
         {
-          name: _('/src/class1.js'),
+          name: _('/ep/src/class1.js'),
           contents: 'export class Class1 {}\nexport class MissingClass1 {}'
         },
-        {name: _('/src/class2.js'), contents: 'export class Class2 {}'},
-        {name: _('/src/func1.js'), contents: 'export function mooFn() {}'}, {
-          name: _('/src/internal.js'),
+        {name: _('/ep/src/class2.js'), contents: 'export class Class2 {}'},
+        {name: _('/ep/src/func1.js'), contents: 'export function mooFn() {}'},
+        {
+          name: _('/ep/src/internal.js'),
           contents: 'export class InternalClass {}\nexport class Class2 {}'
         },
-        {name: _('/src/missing-class.js'), contents: 'export class MissingClass2 {}'}, {
-          name: _('/src/flat-file.js'),
+        {name: _('/ep/src/missing-class.js'), contents: 'export class MissingClass2 {}'},
+        {
+          name: _('/ep/src/flat-file.js'),
           contents:
               'export class Class1 {}\nexport class MissingClass1 {}\nexport class MissingClass2 {}\class Class3 {}\nexport {Class3 as xClass3};',
-        }
+        },
+        {
+          name: _('/ep/src/shadow-class.js'),
+          contents: 'export class ShadowClass {}',
+        },
       ];
 
       TYPINGS_DTS_FILES = [
         {
-          name: _('/typings/index.d.ts'),
+          name: _('/ep/typings/index.d.ts'),
           contents: `
+            import '../../an_external_lib/index';
             import {InternalClass} from './internal';
             import {mooFn} from './func1';
             export * from './class1';
@@ -576,21 +584,24 @@ runInEachFileSystem(() => {
             `
         },
         {
-          name: _('/typings/class1.d.ts'),
+          name: _('/ep/typings/class1.d.ts'),
           contents: `export declare class Class1 {}\nexport declare class OtherClass {}`
         },
         {
-          name: _('/typings/class2.d.ts'),
+          name: _('/ep/typings/class2.d.ts'),
           contents:
               `export declare class Class2 {}\nexport declare interface SomeInterface {}\nexport {Class3 as xClass3} from './class3';`
         },
-        {name: _('/typings/func1.d.ts'), contents: 'export declare function mooFn(): void;'},
+        {name: _('/ep/typings/func1.d.ts'), contents: 'export declare function mooFn(): void;'},
         {
-          name: _('/typings/internal.d.ts'),
+          name: _('/ep/typings/internal.d.ts'),
           contents: `export declare class InternalClass {}\nexport declare class Class2 {}`
         },
-        {name: _('/typings/class3.d.ts'), contents: `export declare class Class3 {}`},
+        {name: _('/ep/typings/class3.d.ts'), contents: `export declare class Class3 {}`},
+        {name: _('/ep/typings/shadow-class.d.ts'), contents: `export declare class ShadowClass {}`},
+        {name: _('/an_external_lib/index.d.ts'), contents: 'export declare class ShadowClass {}'},
       ];
+
 
       MODULE_WITH_PROVIDERS_PROGRAM = [
         {
@@ -1794,12 +1805,12 @@ runInEachFileSystem(() => {
            const {program} = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
            const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
            const class1 =
-               getDeclaration(program, _('/src/class1.js'), 'Class1', isNamedClassDeclaration);
+               getDeclaration(program, _('/ep/src/class1.js'), 'Class1', isNamedClassDeclaration);
            const host =
                new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
 
            const dtsDeclaration = host.getDtsDeclaration(class1);
-           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class1.d.ts'));
+           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/ep/typings/class1.d.ts'));
          });
 
       it('should find the dts declaration for exported functions', () => {
@@ -1808,12 +1819,12 @@ runInEachFileSystem(() => {
         const {program} = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
         const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
         const mooFn =
-            getDeclaration(program, _('/src/func1.js'), 'mooFn', isNamedFunctionDeclaration);
+            getDeclaration(program, _('/ep/src/func1.js'), 'mooFn', isNamedFunctionDeclaration);
         const host =
             new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
 
         const dtsDeclaration = host.getDtsDeclaration(mooFn);
-        expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/func1.d.ts'));
+        expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/ep/typings/func1.d.ts'));
       });
 
       it('should return null if there is no matching class in the matching dts file', () => {
@@ -1821,8 +1832,8 @@ runInEachFileSystem(() => {
         loadTestFiles(TYPINGS_DTS_FILES);
         const {program} = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
         const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
-        const missingClass =
-            getDeclaration(program, _('/src/class1.js'), 'MissingClass1', isNamedClassDeclaration);
+        const missingClass = getDeclaration(
+            program, _('/ep/src/missing-class.js'), 'MissingClass2', isNamedClassDeclaration);
         const host =
             new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
 
@@ -1835,11 +1846,28 @@ runInEachFileSystem(() => {
         const {program} = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
         const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
         const missingClass = getDeclaration(
-            program, _('/src/missing-class.js'), 'MissingClass2', isNamedClassDeclaration);
+            program, _('/ep/src/missing-class.js'), 'MissingClass2', isNamedClassDeclaration);
         const host =
             new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
 
         expect(host.getDtsDeclaration(missingClass)).toBe(null);
+      });
+
+      it('should ignore dts files outside of the entrypoint', () => {
+        loadTestFiles(TYPINGS_SRC_FILES);
+        loadTestFiles(TYPINGS_DTS_FILES);
+        const {program} = makeTestBundleProgram(
+            getRootFiles(TYPINGS_SRC_FILES)[0], false, [_('/ep/src/shadow-class.js')]);
+        const dts = makeTestBundleProgram(
+            getRootFiles(TYPINGS_DTS_FILES)[0], false, [_('/ep/typings/shadow-class.d.ts')]);
+        const missingClass = getDeclaration(
+            program, _('/ep/src/shadow-class.js'), 'ShadowClass', isNamedClassDeclaration);
+        const host =
+            new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
+
+        const dtsDecl = host.getDtsDeclaration(missingClass) !;
+        expect(dtsDecl).not.toBeNull();
+        expect(dtsDecl.getSourceFile().fileName).toEqual(_('/ep/typings/shadow-class.d.ts'));
       });
 
       it('should find the dts file that contains a matching class declaration, even if the source files do not match',
@@ -1848,13 +1876,13 @@ runInEachFileSystem(() => {
            loadTestFiles(TYPINGS_DTS_FILES);
            const {program} = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
            const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
-           const class1 =
-               getDeclaration(program, _('/src/flat-file.js'), 'Class1', isNamedClassDeclaration);
+           const class1 = getDeclaration(
+               program, _('/ep/src/flat-file.js'), 'Class1', isNamedClassDeclaration);
            const host =
                new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
 
            const dtsDeclaration = host.getDtsDeclaration(class1);
-           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class1.d.ts'));
+           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/ep/typings/class1.d.ts'));
          });
 
       it('should find aliased exports', () => {
@@ -1863,12 +1891,12 @@ runInEachFileSystem(() => {
         const {program} = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
         const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
         const class3 =
-            getDeclaration(program, _('/src/flat-file.js'), 'Class3', isNamedClassDeclaration);
+            getDeclaration(program, _('/ep/src/flat-file.js'), 'Class3', isNamedClassDeclaration);
         const host =
             new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
 
         const dtsDeclaration = host.getDtsDeclaration(class3);
-        expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/class3.d.ts'));
+        expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/ep/typings/class3.d.ts'));
       });
 
       it('should find the dts file that contains a matching class declaration, even if the class is not publicly exported',
@@ -1878,12 +1906,13 @@ runInEachFileSystem(() => {
            const {program} = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
            const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
            const internalClass = getDeclaration(
-               program, _('/src/internal.js'), 'InternalClass', isNamedClassDeclaration);
+               program, _('/ep/src/internal.js'), 'InternalClass', isNamedClassDeclaration);
            const host =
                new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
 
            const dtsDeclaration = host.getDtsDeclaration(internalClass);
-           expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/typings/internal.d.ts'));
+           expect(dtsDeclaration !.getSourceFile().fileName)
+               .toEqual(_('/ep/typings/internal.d.ts'));
          });
 
       it('should prefer the publicly exported class if there are multiple classes with the same name',
@@ -1893,19 +1922,19 @@ runInEachFileSystem(() => {
            const {program} = makeTestBundleProgram(getRootFiles(TYPINGS_SRC_FILES)[0]);
            const dts = makeTestBundleProgram(getRootFiles(TYPINGS_DTS_FILES)[0]);
            const class2 =
-               getDeclaration(program, _('/src/class2.js'), 'Class2', isNamedClassDeclaration);
+               getDeclaration(program, _('/ep/src/class2.js'), 'Class2', isNamedClassDeclaration);
            const internalClass2 =
-               getDeclaration(program, _('/src/internal.js'), 'Class2', isNamedClassDeclaration);
+               getDeclaration(program, _('/ep/src/internal.js'), 'Class2', isNamedClassDeclaration);
            const host =
                new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
 
            const class2DtsDeclaration = host.getDtsDeclaration(class2);
            expect(class2DtsDeclaration !.getSourceFile().fileName)
-               .toEqual(_('/typings/class2.d.ts'));
+               .toEqual(_('/ep/typings/class2.d.ts'));
 
            const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
            expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
-               .toEqual(_('/typings/class2.d.ts'));
+               .toEqual(_('/ep/typings/class2.d.ts'));
          });
     });
 

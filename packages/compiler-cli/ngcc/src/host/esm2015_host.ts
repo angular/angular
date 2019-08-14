@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
@@ -85,7 +86,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       protected logger: Logger, protected isCore: boolean, checker: ts.TypeChecker,
       dts?: BundleProgram|null) {
     super(checker);
-    this.dtsDeclarationMap = dts && this.computeDtsDeclarationMap(dts.path, dts.program) || null;
+    this.dtsDeclarationMap =
+        dts && this.computeDtsDeclarationMap(dts.path, dts.program, dts.package) || null;
   }
 
   /**
@@ -1347,8 +1349,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param dtsProgram The program containing all the typings files.
    * @returns a map of class names to class declarations.
    */
-  protected computeDtsDeclarationMap(dtsRootFileName: AbsoluteFsPath, dtsProgram: ts.Program):
-      Map<string, ts.Declaration> {
+  protected computeDtsDeclarationMap(
+      dtsRootFileName: AbsoluteFsPath, dtsProgram: ts.Program,
+      dtsPackage: AbsoluteFsPath): Map<string, ts.Declaration> {
     const dtsDeclarationMap = new Map<string, ts.Declaration>();
     const checker = dtsProgram.getTypeChecker();
 
@@ -1361,8 +1364,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     // Now add any additional classes that are exported from individual  dts files,
     // but are not publicly exported from the entry-point.
-    dtsProgram.getSourceFiles().forEach(
-        sourceFile => { collectExportedDeclarations(checker, dtsDeclarationMap, sourceFile); });
+    dtsProgram.getSourceFiles().forEach(sourceFile => {
+      if (!isWithinPackage(dtsPackage, sourceFile)) {
+        return;
+      }
+      collectExportedDeclarations(checker, dtsDeclarationMap, sourceFile);
+    });
     return dtsDeclarationMap;
   }
 
