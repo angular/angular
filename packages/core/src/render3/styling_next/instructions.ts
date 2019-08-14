@@ -168,21 +168,19 @@ function _stylingProp(
   const tNode = getTNode(elementIndex, lView);
   const native = getNativeByTNode(tNode, lView) as RElement;
 
-  let updated = false;
-  if (value !== NO_CHANGE) {
-    if (isClassBased) {
-      updated = updateClassBinding(
-          getClassesContext(tNode), lView, native, prop, bindingIndex,
-          value as string | boolean | null, defer, false);
-    } else {
-      const sanitizer = getCurrentStyleSanitizer();
-      updated = updateStyleBinding(
-          getStylesContext(tNode), lView, native, prop, bindingIndex,
-          value as string | SafeValue | null, sanitizer, defer, false);
-    }
+  let valueHasChanged = false;
+  if (isClassBased) {
+    valueHasChanged = updateClassBinding(
+        getClassesContext(tNode), lView, native, prop, bindingIndex,
+        value as string | boolean | null, defer, false);
+  } else {
+    const sanitizer = getCurrentStyleSanitizer();
+    valueHasChanged = updateStyleBinding(
+        getStylesContext(tNode), lView, native, prop, bindingIndex,
+        value as string | SafeValue | null, sanitizer, defer, false);
   }
 
-  return updated;
+  return valueHasChanged;
 }
 
 /**
@@ -299,22 +297,20 @@ function _stylingMap(
   activateStylingMapFeature();
   const lView = getLView();
 
-  let valueHasChanged = false;
-  if (value !== NO_CHANGE) {
-    const tNode = getTNode(elementIndex, lView);
-    const native = getNativeByTNode(tNode, lView) as RElement;
-    const oldValue = lView[bindingIndex];
-    valueHasChanged = hasValueChanged(oldValue, value);
-    const stylingMapArr = normalizeIntoStylingMap(oldValue, value, !isClassBased);
-    if (isClassBased) {
-      updateClassBinding(
-          context, lView, native, null, bindingIndex, stylingMapArr, defer, valueHasChanged);
-    } else {
-      const sanitizer = getCurrentStyleSanitizer();
-      updateStyleBinding(
-          context, lView, native, null, bindingIndex, stylingMapArr, sanitizer, defer,
-          valueHasChanged);
-    }
+  const tNode = getTNode(elementIndex, lView);
+  const native = getNativeByTNode(tNode, lView) as RElement;
+  const oldValue = lView[bindingIndex];
+  const valueHasChanged = hasValueChanged(oldValue, value);
+  const stylingMapArr =
+      value === NO_CHANGE ? NO_CHANGE : normalizeIntoStylingMap(oldValue, value, !isClassBased);
+  if (isClassBased) {
+    updateClassBinding(
+        context, lView, native, null, bindingIndex, stylingMapArr, defer, valueHasChanged);
+  } else {
+    const sanitizer = getCurrentStyleSanitizer();
+    updateStyleBinding(
+        context, lView, native, null, bindingIndex, stylingMapArr, sanitizer, defer,
+        valueHasChanged);
   }
 
   return valueHasChanged;
