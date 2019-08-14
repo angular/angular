@@ -5,6 +5,41 @@
 
 @mixin mat-button-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
+    .mat-mdc-button {
+      &.mat-accent {
+        @include mdc-button-ink-color(secondary, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-warn {
+        @include mdc-button-ink-color(error, $query: $mat-theme-styles-query);
+      }
+    }
+
+    .mat-mdc-raised-button,
+    .mat-mdc-unelevated-button {
+      &.mat-accent {
+        @include mdc-button-container-fill-color(secondary, $query: $mat-theme-styles-query);
+        @include mdc-button-ink-color(on-secondary, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-warn {
+        @include mdc-button-container-fill-color(error, $query: $mat-theme-styles-query);
+        @include mdc-button-ink-color(on-error, $query: $mat-theme-styles-query);
+      }
+    }
+
+    .mat-mdc-outlined-button {
+      &.mat-accent {
+        @include mdc-button-outline-color(secondary, $query: $mat-theme-styles-query);
+        @include mdc-button-ink-color(secondary, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-warn {
+        @include mdc-button-outline-color(error, $query: $mat-theme-styles-query);
+        @include mdc-button-ink-color(error, $query: $mat-theme-styles-query);
+      }
+    }
+
     @include mdc-button-without-ripple($query: $mat-theme-styles-query);
   }
 }
@@ -17,6 +52,18 @@
 
 @mixin mat-fab-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
+    .mat-mdc-fab, .mat-mdc-mini-fab {
+      &.mat-primary {
+        @include mdc-fab-container-color(primary, $query: $mat-theme-styles-query);
+        @include mdc-fab-ink-color(on-primary, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-warn {
+        @include mdc-fab-container-color(error, $query: $mat-theme-styles-query);
+        @include mdc-fab-ink-color(on-error, $query: $mat-theme-styles-query);
+      }
+    }
+
     @include mdc-fab-without-ripple($query: $mat-theme-styles-query);
   }
 }
@@ -29,6 +76,20 @@
 
 @mixin mat-icon-button-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
+    .mat-mdc-icon-button {
+      &.mat-primary {
+        @include mdc-icon-button-ink-color(primary, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-accent {
+        @include mdc-icon-button-ink-color(secondary, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-warn {
+        @include mdc-icon-button-ink-color(error, $query: $mat-theme-styles-query);
+      }
+    }
+
     @include mdc-icon-button-without-ripple($query: $mat-theme-styles-query);
   }
 }

@@ -27,7 +27,6 @@ export const MAT_BUTTON_INPUTS = ['disabled', 'disableRipple', 'color'];
 
 /** Shared host configuration for all buttons */
 export const MAT_BUTTON_HOST = {
-  'class': 'mat-mdc-button',
   '[attr.disabled]': 'disabled || null',
   '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
 };
