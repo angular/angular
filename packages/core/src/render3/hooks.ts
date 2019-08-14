@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual} from '../util/assert';
+import {assertEqual, assertNotEqual} from '../util/assert';
 
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
+import {getCheckNoChangesMode} from './state';
 
 
 
@@ -138,70 +139,57 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
  * They are are stored as flags in LView[PREORDER_HOOK_FLAGS].
  */
 
-/**
- * Executes necessary hooks at the start of executing a template.
- *
- * Executes hooks that are to be run during the initialization of a directive such
- * as `onChanges`, `onInit`, and `doCheck`.
- *
- * @param lView The current view
- * @param tView Static data for the view containing the hooks to be executed
- * @param checkNoChangesMode Whether or not we're in checkNoChanges mode.
- * @param @param currentNodeIndex 2 cases depending the the value:
- * - undefined: execute hooks only from the saved index until the end of the array (pre-order case,
- * when flushing the remaining hooks)
- * - number: execute hooks only from the saved index until that node index exclusive (pre-order
- * case, when executing select(number))
- */
-export function executePreOrderHooks(
-    currentView: LView, tView: TView, checkNoChangesMode: boolean,
-    currentNodeIndex: number | undefined): void {
-  if (!checkNoChangesMode) {
-    executeHooks(
-        currentView, tView.preOrderHooks, tView.preOrderCheckHooks, checkNoChangesMode,
-        InitPhaseState.OnInitHooksToBeRun,
-        currentNodeIndex !== undefined ? currentNodeIndex : null);
-  }
-}
 
 /**
- * Executes hooks against the given `LView` based off of whether or not
- * This is the first pass.
- *
- * @param currentView The view instance data to run the hooks against
- * @param firstPassHooks An array of hooks to run if we're in the first view pass
- * @param checkHooks An Array of hooks to run if we're not in the first view pass.
- * @param checkNoChangesMode Whether or not we're in no changes mode.
- * @param initPhaseState the current state of the init phase
- * @param currentNodeIndex 3 cases depending the the value:
+ * Executes pre-order check hooks ( OnChanges, DoChanges) given a view where all the init hooks were
+ * executed once. This is a light version of executeInitAndCheckPreOrderHooks where we can skip read
+ * / write of the init-hooks related flags.
+ * @param lView The LView where hooks are defined
+ * @param hooks Hooks to be run
+ * @param nodeIndex 3 cases depending on the value:
  * - undefined: all hooks from the array should be executed (post-order case)
  * - null: execute hooks only from the saved index until the end of the array (pre-order case, when
  * flushing the remaining hooks)
  * - number: execute hooks only from the saved index until that node index exclusive (pre-order
  * case, when executing select(number))
  */
-export function executeHooks(
-    currentView: LView, firstPassHooks: HookData | null, checkHooks: HookData | null,
-    checkNoChangesMode: boolean, initPhaseState: InitPhaseState,
-    currentNodeIndex: number | null | undefined): void {
-  if (checkNoChangesMode) return;
+export function executeCheckHooks(lView: LView, hooks: HookData, nodeIndex?: number | null) {
+  callHooks(lView, hooks, InitPhaseState.InitPhaseCompleted, nodeIndex);
+}
 
-  if (checkHooks !== null || firstPassHooks !== null) {
-    const hooksToCall = (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhaseState ?
-        firstPassHooks :
-        checkHooks;
-    if (hooksToCall !== null) {
-      callHooks(currentView, hooksToCall, initPhaseState, currentNodeIndex);
-    }
+/**
+ * Executes post-order init and check hooks (one of AfterContentInit, AfterContentChecked,
+ * AfterViewInit, AfterViewChecked) given a view where there are pending init hooks to be executed.
+ * @param lView The LView where hooks are defined
+ * @param hooks Hooks to be run
+ * @param initPhase A phase for which hooks should be run
+ * @param nodeIndex 3 cases depending on the value:
+ * - undefined: all hooks from the array should be executed (post-order case)
+ * - null: execute hooks only from the saved index until the end of the array (pre-order case, when
+ * flushing the remaining hooks)
+ * - number: execute hooks only from the saved index until that node index exclusive (pre-order
+ * case, when executing select(number))
+ */
+export function executeInitAndCheckHooks(
+    lView: LView, hooks: HookData, initPhase: InitPhaseState, nodeIndex?: number | null) {
+  ngDevMode && assertNotEqual(
+                   initPhase, InitPhaseState.InitPhaseCompleted,
+                   'Init pre-order hooks should not be called more than once');
+  if ((lView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
+    callHooks(lView, hooks, initPhase, nodeIndex);
   }
+}
 
-  // The init phase state must be always checked here as it may have been recursively updated
-  let flags = currentView[FLAGS];
-  if (currentNodeIndex == null && (flags & LViewFlags.InitPhaseStateMask) === initPhaseState &&
-      initPhaseState !== InitPhaseState.InitPhaseCompleted) {
+export function incrementInitPhaseFlags(lView: LView, initPhase: InitPhaseState): void {
+  ngDevMode &&
+      assertNotEqual(
+          initPhase, InitPhaseState.InitPhaseCompleted,
+          'Init hooks phase should not be incremented after all init hooks have been run.');
+  let flags = lView[FLAGS];
+  if ((flags & LViewFlags.InitPhaseStateMask) === initPhase) {
     flags &= LViewFlags.IndexWithinInitPhaseReset;
     flags += LViewFlags.InitPhaseStateIncrementer;
-    currentView[FLAGS] = flags;
+    lView[FLAGS] = flags;
   }
 }
 
@@ -212,7 +200,7 @@ export function executeHooks(
  * @param currentView The current view
  * @param arr The array in which the hooks are found
  * @param initPhaseState the current state of the init phase
- * @param currentNodeIndex 3 cases depending the the value:
+ * @param currentNodeIndex 3 cases depending on the value:
  * - undefined: all hooks from the array should be executed (post-order case)
  * - null: execute hooks only from the saved index until the end of the array (pre-order case, when
  * flushing the remaining hooks)
@@ -222,6 +210,9 @@ export function executeHooks(
 function callHooks(
     currentView: LView, arr: HookData, initPhase: InitPhaseState,
     currentNodeIndex: number | null | undefined): void {
+  ngDevMode && assertEqual(
+                   getCheckNoChangesMode(), false,
+                   'Hooks should never be run in the check no changes mode.');
   const startIndex = currentNodeIndex !== undefined ?
       (currentView[PREORDER_HOOK_FLAGS] & PreOrderHookFlags.IndexOfTheNextPreOrderHookMaskMask) :
       0;
