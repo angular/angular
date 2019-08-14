@@ -6,7 +6,7 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {TNode, TNodeFlags} from '../interfaces/node';
-
+import {NO_CHANGE} from '../tokens';
 import {StylingMapArray, StylingMapArrayIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
 
 const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
@@ -146,8 +146,11 @@ export function isMapBased(prop: string) {
 }
 
 export function hasValueChanged(
-    a: StylingMapArray | number | String | string | null | boolean | undefined | {},
-    b: StylingMapArray | number | String | string | null | boolean | undefined | {}): boolean {
+    a: NO_CHANGE | StylingMapArray | number | String | string | null | boolean | undefined | {},
+    b: NO_CHANGE | StylingMapArray | number | String | string | null | boolean | undefined |
+        {}): boolean {
+  if (b === NO_CHANGE) return false;
+
   let compareValueA = Array.isArray(a) ? a[StylingMapArrayIndex.RawValuePosition] : a;
   let compareValueB = Array.isArray(b) ? b[StylingMapArrayIndex.RawValuePosition] : b;
 
