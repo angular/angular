@@ -137,8 +137,9 @@ export interface DataGroup {
 Similar to `assetGroups`, every data group has a `name` which uniquely identifies it.
 
 ### `urls`
-A list of URL patterns. URLs that match these patterns will be cached according to this data group's policy.<br>
-  _(Negative glob patterns are not supported and `?` will be matched literally; i.e. it will not match any character other than `?`.)_
+A list of URL patterns. URLs that match these patterns are cached according to this data group's policy. Only non-mutating requests (GET and HEAD) are cached.
+ * Negative glob patterns are not supported.
+ * `?` is matched literally; that is, it matches *only* the character `?`.
 
 ### `version`
 Occasionally APIs change formats in a way that is not backward-compatible. A new version of the app may not be compatible with the old API format and thus may not be compatible with existing cached resources from that API.
