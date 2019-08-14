@@ -17,7 +17,7 @@ import {assertFirstTemplatePass, assertLView} from '../assert';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
-import {executeHooks, executePreOrderHooks, registerPreOrderHooks} from '../hooks';
+import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPreOrderHooks} from '../hooks';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, FactoryFn, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
@@ -372,7 +372,8 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
 export function refreshView<T>(
     lView: LView, tView: TView, templateFn: ComponentTemplate<{}>| null, context: T) {
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
-  let oldView = enterView(lView, lView[T_HOST]);
+  const oldView = enterView(lView, lView[T_HOST]);
+  const flags = lView[FLAGS];
   try {
     resetPreOrderHookFlags(lView);
 
@@ -385,8 +386,25 @@ export function refreshView<T>(
     lView[BINDING_INDEX] = tView.bindingStartIndex;
 
     const checkNoChangesMode = getCheckNoChangesMode();
+    const hooksInitPhaseCompleted =
+        (flags & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
 
-    executePreOrderHooks(lView, tView, checkNoChangesMode, undefined);
+    // execute pre-order hooks (OnInit, OnChanges, DoChanges)
+    // PERF WARNING: do NOT extract this to a separate function without running benchmarks
+    if (!checkNoChangesMode) {
+      if (hooksInitPhaseCompleted) {
+        const preOrderCheckHooks = tView.preOrderCheckHooks;
+        if (preOrderCheckHooks !== null) {
+          executeCheckHooks(lView, preOrderCheckHooks, null);
+        }
+      } else {
+        const preOrderHooks = tView.preOrderHooks;
+        if (preOrderHooks !== null) {
+          executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, null);
+        }
+        incrementInitPhaseFlags(lView, InitPhaseState.OnInitHooksToBeRun);
+      }
+    }
 
     refreshDynamicEmbeddedViews(lView);
 
@@ -395,10 +413,23 @@ export function refreshView<T>(
       refreshContentQueries(tView, lView);
     }
 
-    resetPreOrderHookFlags(lView);
-    executeHooks(
-        lView, tView.contentHooks, tView.contentCheckHooks, checkNoChangesMode,
-        InitPhaseState.AfterContentInitHooksToBeRun, undefined);
+    // execute content hooks (AfterContentInit, AfterContentChecked)
+    // PERF WARNING: do NOT extract this to a separate function without running benchmarks
+    if (!checkNoChangesMode) {
+      if (hooksInitPhaseCompleted) {
+        const contentCheckHooks = tView.contentCheckHooks;
+        if (contentCheckHooks !== null) {
+          executeCheckHooks(lView, contentCheckHooks);
+        }
+      } else {
+        const contentHooks = tView.contentHooks;
+        if (contentHooks !== null) {
+          executeInitAndCheckHooks(
+              lView, contentHooks, InitPhaseState.AfterContentInitHooksToBeRun);
+        }
+        incrementInitPhaseFlags(lView, InitPhaseState.AfterContentInitHooksToBeRun);
+      }
+    }
 
     setHostBindings(tView, lView);
 
@@ -413,10 +444,22 @@ export function refreshView<T>(
       refreshChildComponents(lView, components);
     }
 
-    resetPreOrderHookFlags(lView);
-    executeHooks(
-        lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode,
-        InitPhaseState.AfterViewInitHooksToBeRun, undefined);
+    // execute view hooks (AfterViewInit, AfterViewChecked)
+    // PERF WARNING: do NOT extract this to a separate function without running benchmarks
+    if (!checkNoChangesMode) {
+      if (hooksInitPhaseCompleted) {
+        const viewCheckHooks = tView.viewCheckHooks;
+        if (viewCheckHooks !== null) {
+          executeCheckHooks(lView, viewCheckHooks);
+        }
+      } else {
+        const viewHooks = tView.viewHooks;
+        if (viewHooks !== null) {
+          executeInitAndCheckHooks(lView, viewHooks, InitPhaseState.AfterViewInitHooksToBeRun);
+        }
+        incrementInitPhaseFlags(lView, InitPhaseState.AfterViewInitHooksToBeRun);
+      }
+    }
 
   } finally {
     lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
