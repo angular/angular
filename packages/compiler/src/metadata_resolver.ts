@@ -431,14 +431,16 @@ export class CompileMetadataResolver {
   isAbstractDirective(type: any): boolean {
     const summary =
         this._loadSummary(type, cpl.CompileSummaryKind.Directive) as cpl.CompileDirectiveSummary;
-    if (summary) {
+    if (summary && !summary.isComponent) {
       return !summary.selector;
     }
-    const meta = this.getNonNormalizedDirectiveMetadata(type);
-    if (!meta) {
-      return false;
+
+    const meta = this._directiveResolver.resolve(type, false);
+    if (meta && !createComponent.isTypeOf(meta)) {
+      return !meta.selector;
     }
-    return !meta.metadata.selector;
+
+    return false;
   }
 
   isPipe(type: any) {
