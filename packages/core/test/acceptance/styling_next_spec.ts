@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Component, Directive, HostBinding, Input, ViewChild} from '@angular/core';
-import {SecurityContext} from '@angular/core/src/core';
 import {DebugNode, LViewDebug, toDebug} from '@angular/core/src/render3/instructions/lview_debug';
-import {getCheckNoChangesMode} from '@angular/core/src/render3/state';
 import {loadLContextFromNode} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters as resetStylingCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
@@ -1056,6 +1054,44 @@ describe('new styling integration', () => {
             expect(div.style.width).toEqual('100px');
             expect(div.style.height).toEqual('300px');
           });
+
+  it('should work with NO_CHANGE values if they are applied to bindings ', () => {
+    @Component({
+      template: `
+            <div
+              [style.width]="w"
+              style.height="{{ h }}"
+              [style.opacity]="o"></div>
+          `
+    })
+    class Cmp {
+      w: any = null;
+      h: any = null;
+      o: any = null;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    const comp = fixture.componentInstance;
+
+    comp.w = '100px';
+    comp.h = '200px';
+    comp.o = '0.5';
+    fixture.detectChanges();
+
+    const div = fixture.nativeElement.querySelector('div');
+    expect(div.style.width).toEqual('100px');
+    expect(div.style.height).toEqual('200px');
+    expect(div.style.opacity).toEqual('0.5');
+
+    comp.w = '500px';
+    comp.o = '1';
+    fixture.detectChanges();
+
+    expect(div.style.width).toEqual('500px');
+    expect(div.style.height).toEqual('200px');
+    expect(div.style.opacity).toEqual('1');
+  });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {

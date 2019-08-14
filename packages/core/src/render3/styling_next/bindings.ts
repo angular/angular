@@ -8,6 +8,7 @@
 import {SafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {ProceduralRenderer3, RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
+import {NO_CHANGE} from '../tokens';
 
 import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
 import {BIT_MASK_START_VALUE, deleteStylingStateFromStorage, getStylingState, resetStylingState, storeStylingState} from './state';
@@ -80,21 +81,23 @@ let deferredBindingQueue: (TStylingContext | number | string | null | boolean)[]
  */
 export function updateClassBinding(
     context: TStylingContext, data: LStylingData, element: RElement, prop: string | null,
-    bindingIndex: number, value: boolean | string | null | undefined | StylingMapArray,
+    bindingIndex: number, value: boolean | string | null | undefined | StylingMapArray | NO_CHANGE,
     deferRegistration: boolean, forceUpdate: boolean): boolean {
   const isMapBased = !prop;
   const state = getStylingState(element, stateIsPersisted(context));
   const index = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.classesIndex++;
-  const updated = updateBindingData(
-      context, data, index, prop, bindingIndex, value, deferRegistration, forceUpdate, false);
-  if (updated || forceUpdate) {
-    // We flip the bit in the bitMask to reflect that the binding
-    // at the `index` slot has changed. This identifies to the flushing
-    // phase that the bindings for this particular CSS class need to be
-    // applied again because on or more of the bindings for the CSS
-    // class have changed.
-    state.classesBitMask |= 1 << index;
-    return true;
+  if (value !== NO_CHANGE) {
+    const updated = updateBindingData(
+        context, data, index, prop, bindingIndex, value, deferRegistration, forceUpdate, false);
+    if (updated || forceUpdate) {
+      // We flip the bit in the bitMask to reflect that the binding
+      // at the `index` slot has changed. This identifies to the flushing
+      // phase that the bindings for this particular CSS class need to be
+      // applied again because on or more of the bindings for the CSS
+      // class have changed.
+      state.classesBitMask |= 1 << index;
+      return true;
+    }
   }
   return false;
 }
@@ -111,25 +114,27 @@ export function updateClassBinding(
  */
 export function updateStyleBinding(
     context: TStylingContext, data: LStylingData, element: RElement, prop: string | null,
-    bindingIndex: number, value: string | number | SafeValue | null | undefined | StylingMapArray,
+    bindingIndex: number,
+    value: string | number | SafeValue | null | undefined | StylingMapArray | NO_CHANGE,
     sanitizer: StyleSanitizeFn | null, deferRegistration: boolean, forceUpdate: boolean): boolean {
   const isMapBased = !prop;
   const state = getStylingState(element, stateIsPersisted(context));
   const index = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : state.stylesIndex++;
-  const sanitizationRequired = isMapBased ?
-      true :
-      (sanitizer ? sanitizer(prop !, null, StyleSanitizeMode.ValidateProperty) : false);
-  const updated = updateBindingData(
-      context, data, index, prop, bindingIndex, value, deferRegistration, forceUpdate,
-      sanitizationRequired);
-  if (updated || forceUpdate) {
-    // We flip the bit in the bitMask to reflect that the binding
-    // at the `index` slot has changed. This identifies to the flushing
-    // phase that the bindings for this particular property need to be
-    // applied again because on or more of the bindings for the CSS
-    // property have changed.
-    state.stylesBitMask |= 1 << index;
-    return true;
+  if (value !== NO_CHANGE) {
+    const sanitizationRequired = isMapBased ||
+        (sanitizer ? sanitizer(prop !, null, StyleSanitizeMode.ValidateProperty) : false);
+    const updated = updateBindingData(
+        context, data, index, prop, bindingIndex, value, deferRegistration, forceUpdate,
+        sanitizationRequired);
+    if (updated || forceUpdate) {
+      // We flip the bit in the bitMask to reflect that the binding
+      // at the `index` slot has changed. This identifies to the flushing
+      // phase that the bindings for this particular property need to be
+      // applied again because on or more of the bindings for the CSS
+      // property have changed.
+      state.stylesBitMask |= 1 << index;
+      return true;
+    }
   }
   return false;
 }
@@ -150,7 +155,7 @@ export function updateStyleBinding(
 function updateBindingData(
     context: TStylingContext, data: LStylingData, counterIndex: number, prop: string | null,
     bindingIndex: number,
-    value: string | SafeValue | number | boolean | null | undefined | StylingMapArray,
+    value: string | SafeValue | number | boolean | null | undefined | StylingMapArray | NO_CHANGE,
     deferRegistration: boolean, forceUpdate: boolean, sanitizationRequired: boolean): boolean {
   if (!isContextLocked(context)) {
     if (deferRegistration) {
