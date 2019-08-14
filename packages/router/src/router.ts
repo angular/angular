@@ -279,7 +279,7 @@ function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
 /**
  * @description
  *
- * An NgModule that provides navigation and URL manipulation capabilities.
+ * A service that provides navigation and URL manipulation capabilities.
  *
  * @see `Route`.
  * @see [Routing and Navigation Guide](guide/router).
