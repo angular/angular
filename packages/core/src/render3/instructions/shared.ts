@@ -452,10 +452,10 @@ function executeTemplate<T>(
   const prevSelectedIndex = getSelectedIndex();
   try {
     setActiveHostElement(null);
-    if (rf & RenderFlags.Update) {
+    if (rf & RenderFlags.Update && lView.length > HEADER_OFFSET) {
       // When we're updating, have an inherent ɵɵselect(0) so we don't have to generate that
       // instruction for most update blocks
-      selectInternal(lView, 0);
+      selectInternal(lView, 0, getCheckNoChangesMode());
     }
     templateFn(rf, context);
   } finally {
