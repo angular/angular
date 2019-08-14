@@ -14,7 +14,7 @@ This guide contains a summary of all Angular APIs and features that are currentl
 Angular는 혁신과 안정성 사이에서 균형을 추구합니다.
 그래서 특정 API나 기능이 더이상 필요없다면 이 기능을 제거하거나 다른 기능으로 대체하면서 누구나 Angular를 최선의 방식으로 활용할 수 있도록 관리하고 있습니다. 가끔은 의존성 패키지가 변경되거나 플랫폼과 관련된 기능이 변경되기도 합니다.
 
-이런 변화를 자연스럽게 도입할 수 있도록 지원이 중단되는 기능이나 API는 Angular에서 바로 제거되지 않고 약간 시간 여유를 둔 이후에 제거됩니다. 지원이 중단되는 것으로 결정된 기능이 있다면 이 기간을 이용해서 더 나은 방식으로 변경하는 것이 좋습니다.
+이런 변화를 자연스럽게 도입할 수 있도록 지원이 중단되는 기능이나 API는 Angular에서 바로 제거되지 않고 약간 시간 여유를 둔 후에 제거됩니다. 지원이 중단되는 것으로 결정된 기능이 있다면 이 기간을 이용해서 더 나은 방식으로 변경하는 것이 좋습니다.
 
 이 문서는 Angular가 제공하던 기능이나 API 중에서 지금은 지원이 중단된 기능에 대해 안내합니다.
 
@@ -25,7 +25,7 @@ Features and APIs that were deprecated in v6 or earlier are candidates for remov
 
 For step-by-step instructions on how to update to the latest Angular release, use the interactive update guide at [update.angular.io](https://update.angular.io).
 -->
-Angular v6 버전까지 지원이 중단되기로 계획되었던 기능들은 Angular 9 버전부터 완전히 제거됩니다. 자세한 내용은 [Angular의 릴리즈 정책](guide/releases#deprecation-practices "Angular의 릴리즈 정책: 지원이 중단되는 기능") 문서를 참고하세요.
+Angular 6 버전까지 지원이 중단되기로 계획되었던 기능들은 Angular 9 버전부터 완전히 제거됩니다. 자세한 내용은 [Angular의 릴리즈 정책](guide/releases#deprecation-practices "Angular의 릴리즈 정책: 지원이 중단되는 기능") 문서를 참고하세요.
 
 그리고 지원이 중단되는 기능을 단계별로 수정하는 방법에 대해 알아보려면 [update.angular.io](https://update.angular.io) 가이드를 참고하세요.
 
@@ -174,7 +174,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | API | 대체 기능 | 지원 중단 발표 | 참고 |
 | --- | ----------- | --------------------- | ----- |
 | [`CollectionChangeRecord`](api/core/CollectionChangeRecord) | [`IterableChangeRecord`](api/core/IterableChangeRecord) | v4 | 없음 |
-| [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | 해당 없음 | v4 | 퍼블릭 API 아님 |
+| [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | 해당 없음 | v4 | 퍼블릭 API는 아님 |
 | [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | 빌드해서 생성된 코드에만 사용되기 때문에 이 API를 직접 사용하는 코드는 없음 |
 | [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create)  | v5 | [`ReflectiveInjector`](#reflectiveinjector) 참고 |
 | [`ReflectiveKey`](api/core/ReflectiveKey) | 없음 | v5 | 없음 |
@@ -246,7 +246,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 -->
 | API | 대체 기능 | 지원 중단 발표 | 참고 |
 | --- | ----------- | --------------------- | ----- |
-| [모든 API](api/upgrade) | [`@angular/upgrade/static`](api/upgrade/static) | v5 | [Upgrading from AngularJS](guide/upgrade) 참고 |
+| [모든 API](api/upgrade) | [`@angular/upgrade/static`](api/upgrade/static) | v5 | [AngularJS 앱 업그레이드하기](guide/upgrade) 참고 |
 
 {@a upgrade-static}
 ### @angular/upgrade/static
@@ -271,7 +271,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 <!--
 This section lists all of the currently-deprecated features, which includes template syntax, configuration options, and any other deprecations not listed in the [Deprecated APIs](#deprecated-apis) section above. It also includes deprecated API usage scenarios or API combinations, to augment the information above.
 -->
-이 섹션에서는 [지원이 중단된 API](#deprecated-apis)에 다루지 않았던 템플릿 문법, 환경설정 옵션 등 지금까지 지원이 중단된 기능에 대해 안내합니다. 그리고 이 섹션에서는 좀 더 복잡한 시나리오에 사용하는 API나 여러 API를 조합해서 사용하는 API 중 이제는 지원이 중단된 API에 대해서도 설명합니다.
+이 섹션에서는 템플릿 문법, 환경설정 옵션 등 [지원이 중단된 API](#deprecated-apis)에 다루지 않았던 지원 중단 기능에 대해 안내합니다. 그리고 이 섹션에서는 좀 더 복잡한 시나리오에 사용하는 API나 여러 API를 조합해서 사용하는 API 중 이제는 지원이 중단된 API에 대해서도 설명합니다.
 
 
 {@a wtf}
@@ -297,7 +297,7 @@ The shadow-dom-piercing descendant combinator is deprecated and support is being
 For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#deprecated-deep--and-ng-deep "Component Styles guide, Deprecated deep and ngdeep")
  in the Component Styles guide.
 -->
-섀도우 DOM 안쪽으로 자식 엘리먼트를 선택하는 셀렉터는 [최신 브라우저에서 지원하지 않기 때문에 제거되었습니다](https://developers.google.com/web/updates/2017/10/remove-shadow-piercing). 이에 따라 Angular 3 버전에 존재하던 `/deep/`과 `>>>`, `::ng-deep`은 모두 Angular 4버전부터 지원이 중단되는 것으로 계획되었습니다. 지원이 중단되기 전까지 이 기능이 꼭 필요하다면 이 중에서는 `::ng-deep`을 사용하는 것을 권장합니다.
+섀도우 DOM 안쪽으로 자식 엘리먼트를 선택하는 셀렉터는 [최신 브라우저에서 지원하지 않기 때문에 제거되었습니다](https://developers.google.com/web/updates/2017/10/remove-shadow-piercing). 이에 따라 Angular 3 버전에 존재하던 `/deep/`과 `>>>`, `::ng-deep`은 모두 Angular 4버전부터 지원이 중단되는 것으로 계획되었습니다. 다만, 지원이 중단되기 전까지 이 기능이 꼭 필요하다면 이 중에서는 `::ng-deep`을 사용하는 것을 권장합니다.
 
 더 자세한 내용은 컴포넌트 스타일 가이드 문서의 [/deep/, >>>, ::ng-deep](guide/component-styles#deprecated-deep--and-ng-deep "Component Styles guide, Deprecated deep and ngdeep") 섹션을 참고하세요.
 
@@ -310,7 +310,7 @@ For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#de
 <!--
 The `<template>` tag was deprecated in v4 to avoid colliding with the DOM's element of the same name (such as when using web components). Use `<ng-template>` instead. For more information, see the [Ahead-of-Time Compilation](guide/aot-compiler#enablelegacytemplate) guide.
 -->
-`<template>` 태그는 같은 이름이 웹 컴포넌트에서 사용하는 DOM 엘리먼트와 중복되었기 때문에 Angular 4버전부터 지원이 중단되었습니다. Angular에서는 이 태그 대신 `<ng-template>`을 사용하면 됩니다. 더 자세한 내용은 [Ahead-of-Time (AOT) 컴파일러](guide/aot-compiler#enablelegacytemplate) 가이드 문서를 참고하세요.
+`<template>` 태그는 웹 컴포넌트에서 사용하는 DOM 엘리먼트와 이름이 중복되었기 때문에 Angular 4버전부터 지원이 중단되었습니다. Angular에서는 이 태그 대신 `<ng-template>`을 사용하면 됩니다. 더 자세한 내용은 [Ahead-of-Time (AOT) 컴파일러](guide/aot-compiler#enablelegacytemplate) 가이드 문서를 참고하세요.
 
 
 {@a ngform}
@@ -328,7 +328,7 @@ Deprecated:
 `ngForm` 엘리먼트 셀렉터는 Angular 6버전부터 지원이 중단되었습니다.
 이 셀렉터는 Angular 코어 라이브러리에서 사용하는 셀렉터가 모두 케밥-케이스로 사용하는 것이 일반적이었기 때문에, 통일성을 맞추기 위해 변경되었습니다.
 
-원래 아래와 같이 사용했습니다:
+원래 다음과 같이 사용했습니다:
 
 ```
 <ngForm #myForm="ngForm">
@@ -360,7 +360,7 @@ Support for using the `ngModel` input property and `ngModelChange` event with re
 
 For more information, see the usage notes for [`FormControlDirective`](api/forms/FormControlDirective#use-with-ngmodel) and [`FormControlName`](api/forms/FormControlName#use-with-ngmodel).
 -->
-반응형 폼에서 입력 프로퍼티로 사용하는 `ngModel`과 `ngModelChange` 이벤트는 Angular 6버전부터 지원이 중단되었습니다.
+반응형 폼에서 입력 프로퍼티로 사용하는 `ngModel`과 `ngModelChange` 이벤트는 Angular 6버전부터 더이상 사용하지 않습니다.
 
 자세한 내용은 [`FormControlDirective`](api/forms/FormControlDirective#use-with-ngmodel)와 [`FormControlName`](api/forms/FormControlName#use-with-ngmodel) 문서를 참고하세요.
 
@@ -375,7 +375,7 @@ In the service worker configuration file `ngsw-config.json`, `versionedFiles` an
 
 For more information, see [Service Worker Configuration](guide/service-worker-config#assetgroups).
 -->
-서비스 워커 환경설정 파일 `ngsw-config.json`에 사용하는 옵션 중 `versionedFiles`와 `files`는 같은 동작을 합니다. 그래서 Angular 6 버전부터는 `files`를 사용하며 `versionedFiles`는 지원이 중단되었습니다.
+서비스 워커 환경설정 파일 `ngsw-config.json`에 사용하는 옵션 중 `versionedFiles`와 `files`는 같은 동작을 합니다. 그래서 Angular 6 버전부터는 `files`를 사용하며 `versionedFiles`는 더이상 사용하지 않습니다.
 
 더 자세한 내용은 [서비스 워커 환경설정](guide/service-worker-config#assetgroups) 문서를 참고하세요.
 
@@ -423,13 +423,13 @@ At that time, Angular also added [`DeprecatedI18NPipesModule`](api/common/Deprec
 
 Reminder: If you use these `Deprecated*` pipes, you should migrate to the current APIs listed above as soon as possible. These deprecated APIs are candidates for removal in version 9.
 -->
-Angular는 숫자나 날짜, 통화 형식을 표현할 때 브라우저가 제공하는 다국어 API를 사용합니다. 이 말은, 브라우저에 따라 결과가 동일하지 않은 상황을 대비해서 Angular 애플리케이션에 폴리필을 사용해야 한다는 것을 의미합니다.
+Angular는 숫자나 날짜, 통화 형식을 표현할 때 브라우저가 제공하는 다국어 API를 사용했습니다. 이 말은, 브라우저에 따라 결과가 동일하지 않을 수 있기 때문에 폴리필이 추가로 필요하다는 것을 의미했습니다.
 
-Angular 4.3 버전에는 이를 대비해서 숫자, 날짜, 통화 파이프가 브라우저와 관계없이 동일하게 동작할 수 있도록 새로 추가되었으며, 다국어 폴리필도 제거했습니다. 새롭게 도입된 파이프는 기존에 사용하던 JS 다국어 API 대신 Unicode Common Locale Data Repository (CLDR)을 활용합니다.
+Angular 4.3 버전에는 이를 대비해서 숫자, 날짜, 통화 파이프가 브라우저와 관계없이 동일하게 동작할 수 있도록 새로 추가되었으며, 다국어 폴리필도 제거되었습니다. 새롭게 도입된 파이프는 기존에 사용하던 JS 다국어 API 대신 Unicode Common Locale Data Repository (CLDR)을 활용합니다.
 
-그리고 이 파이프는 Angular 5.0.0 버전부터 표준 파이프로 적용되었습니다. 이 때 이전에 사용하던 [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule)가 지원 중단되는 것으로 계획되었습니다. 다만, 이렇게 지원이 중단된 파이프를 꼭 사용해야 한다면 [Angular 체인지 로그](https://github.com/angular/angular/blob/master/CHANGELOG.md#i18n-pipes)와 [Date Formats mappings](https://docs.google.com/spreadsheets/d/12iygt-_cakNP1VO7MV9g4lq9NsxVWG4tSfc98HpHb0k/edit#gid=0 "Date Formats Google sheet") 문서를 확인한 후에 사용하세요.
+그리고 이 파이프는 Angular 5.0.0 버전부터 표준 파이프로 적용되었으며, 이와 동시에 이전에 사용하던 [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule)가 지원 중단되는 것으로 정해졌습니다. 다만, 이렇게 지원이 중단된 파이프를 꼭 사용해야 한다면 [Angular 체인지 로그](https://github.com/angular/angular/blob/master/CHANGELOG.md#i18n-pipes)와 [Date Formats mappings](https://docs.google.com/spreadsheets/d/12iygt-_cakNP1VO7MV9g4lq9NsxVWG4tSfc98HpHb0k/edit#gid=0 "Date Formats Google sheet") 문서를 확인한 후에 사용하세요.
 
-참고: 지원이 중단될 예정인 파이프를 사용하더라도 조만간 새로운 방식으로 변경해야 합니다. 이 API들은 Angular 9 버전부터 완전히 제거될 것입니다.
+참고: 지금은 지원이 중단될 예정인 파이프를 사용하더라도 조만간 새로운 방식으로 변경해야 합니다. 이 API들은 Angular 9 버전부터 완전히 제거될 것입니다.
 
 {@a loadChildren}
 <!--
@@ -452,9 +452,9 @@ const routes: Routes = [{
 }];
 ```
 -->
-Angular에 지연 라우팅이 처음 등장했을 때는 브라우저가 JavaScript 리소스를 추가로, 동적으로 로딩하는 기능이 없습니다. 그래서 Angular는 이 기능을 구현하기 위해 독자적으로 `loadChildren: './lazy/lazy.module#LazyModule'`와 같은 문법을 만들어냈습니다. 하지만 이제는 ECMAScript의 동적 로딩 기능을 브라우저 계층에서 지원하는 경우가 많아졌습니다. 그래서 Angular도 이전 방식 대신 새로운 방식을 활용하기로 결정했습니다.
+Angular에 지연 라우팅이 처음 등장했을 때는 브라우저가 JavaScript 리소스를 추가로, 동적으로 로딩하는 기능이 없었습니다. 그래서 Angular는 이 기능을 구현하기 위해 독자적으로 `loadChildren: './lazy/lazy.module#LazyModule'`와 같은 문법을 만들어냈습니다. 하지만 이제는 ECMAScript의 동적 로딩 기능을 브라우저 계층에서 지원하는 경우가 많아졌습니다. 그래서 Angular도 이전 방식 대신 새로운 방식을 활용하기로 결정했습니다.
 
-Angular 8 버전부터는 이전까지 사용하던 [`loadChildren`](api/router/LoadChildren) 문법을 사용하지 않고, `import()`를 사용하는 문법으로 대체됩니다.
+Angular 8 버전부터는 이전까지 사용하던 [`loadChildren`](api/router/LoadChildren) 문법을 사용하지 않고, `import()`를 사용합니다.
 
 이전에는 이렇게 사용했습니다:
 
@@ -525,14 +525,14 @@ const routes: Routes = [{
 
 For more information see the [Router guide](guide/router#activated-route).
 -->
-[ActivatedRoute](api/router/ActivatedRoute)에 있던 [프로퍼티](api/router/ActivatedRoute#properties) 중에서 활용도가 상대적으로 높지 않았던 프로퍼티가 다른 타입의 프로퍼티로 대체되었습니다.
+[ActivatedRoute](api/router/ActivatedRoute)에 있던 [프로퍼티](api/router/ActivatedRoute#properties) 중에서 자주 사용되지 않던 프로퍼티가 다른 타입의 프로퍼티로 대체되었습니다.
 
 | 프로퍼티 | 대체 프로퍼티 |
 | -------- | ----------- |
 | `params` | `paramMap` |
 | `queryParams` | `queryParamMap` |
 
-더 자세한 내용은 [라우터 가이드 문서](guide/router#activated-route)를 참고하세요.
+자세한 내용은 [라우터 가이드 문서](guide/router#activated-route)를 참고하세요.
 
 
 {@a reflect-metadata}
@@ -550,7 +550,7 @@ In a typical Angular project, the polyfill is not used in production builds, so 
 -->
 Angular 애플리케이션과 같이 JIT 컴파일러를 사용하는 애플리케이션은 [reflect-metadata](https://github.com/rbuckton/reflect-metadata) API를 사용하기 위해 폴리필이 필요했습니다.
 
-이 폴리필은 Angular 8.0 버전부터 사용하지 않지만([#14473 참고](https://github.com/angular/angular-cli/pull/14473)), 서드파티 패키지에 의존성이 있었기 때문에 제거하지는 않았습니다. 이 버전에서는 단순하게 Angular가 사용하는 reflect-metadata 관련 코드를 제거했을 뿐입니다. 당분간 이 패키지는 그대로 유지되겠지만 애플리케이션 개발자나 서드파티 라이브러리 개발자는 이 폴리필이 정말 필요한지 판단해보고 사용하지 않는 쪽으로 코드를 리팩토링하는 것이 나을 수 있습니다.
+이 폴리필은 Angular 8.0 버전부터 사용하지 않지만([#14473 참고](https://github.com/angular/angular-cli/pull/14473)), 서드파티 패키지에 의존성이 있었기 때문에 제거하지는 않았습니다. 이 버전에서는 단순하게 Angular가 직접 사용하는 reflect-metadata 관련 코드를 제거했을 뿐입니다. 당분간 이 패키지는 그대로 유지되겠지만 애플리케이션 개발자나 서드파티 라이브러리 개발자는 이 폴리필이 정말 필요한지 판단해보고 사용하지 않는 쪽으로 코드를 리팩토링하는 것이 나을 수 있습니다.
 
 Angular 프로젝트를 운영용으로 빌드하더라도 폴리필이 사용되는 경우는 그리 많지 않기 때문에 이 폴리필이 제거되더라도 애플리케이션을 운영하는 데에는 큰 영향이 없습니다. 하지만 빌드 단계를 조금 더 단순하게 줄이고 외부 의존성을 정리하기 위해서는 최종적으로 폴리필을 제거하는 것이 좋습니다.
 
@@ -591,36 +591,63 @@ properties and add fallback logic as in the following example:
 @ContentChild(TemplateRef) inlineTemplate !: TemplateRef<any>;
 ```
 {@a cant-assign-template-vars}
+<!--
 ### Cannot assign to template variables
+-->
+### 템플릿 변수에 값을 직접 할당할 수 없습니다.
 
+<!--
 In the following example, the two-way binding means that `optionName`
 should be written when the `valueChange` event fires.
+-->
+아래와 같이 작성된 코드가 있다면, 이 코드는 `valueChange` 이벤트가 발생했을 때 `optionName`의 값이 변경된다는 양방향 바인딩을 의미합니다.
 
 ```html
 <option *ngFor="let optionName of options" [(value)]="optionName"></option>
 ```
 
+<!--
 However, in practice, Angular simply ignores two-way bindings to template variables. Starting in version 8, attempting to write to template variables is deprecated. In a future version, we will throw to indicate that the write is not supported.
+-->
+하지만 Angular는 템플릿 변수가 양방향 바인딩으로 연결되되더라도 템플릿 변수에 값을 할당하는 로직은 처리하지 않습니다. 그리고 이제 Angular 8 버전부터는 템플릿 변수에 값을 할당하는 로직 자체를 작성할 수 없습니다. 이 코드는 다음과 같이 작성되어야 하며, 이 코드를 그대로 남겨둔다면 이후 버전에서는 에러가 발생할 수도 있습니다.
 
 ```html
 <option *ngFor="let optionName of options" [value]="optionName"></option>
 ```
 
 {@a binding-to-innertext}
+<!--
 ### Binding to `innerText` in `platform-server`
+-->
+### `platform-server`가 자동으로 변환하던 `innerText` 바인딩
 
+<!--
 [Domino](https://github.com/fgnass/domino), which is used in server-side rendering, doesn't support `innerText`, so in platform-server's "domino adapter", there was special code to fall back to `textContent` if you tried to bind to `innerText`.
 
 These two properties have subtle differences, so switching to `textContent` under the hood can be surprising to users. For this reason, we are deprecating this behavior. Going forward, users should explicitly bind to `textContent` when using Domino.
+-->
+서버 사이드 렌더링에 사용되는 [Domino](https://github.com/fgnass/domino)는 `innerText`를 지원하지 않기 때문에 Domino에 사용된 `innerText`를 자동으로 `textContent`로 변환하는 "domino 어댑터"를 platform-server에서 제공했습니다.
+
+그런데 두 프로퍼티의 동작이 약간 다르기 때문에 `innerText`를 사용한 개발자가 혼란스러울 수 있었습니다. 그래서 앞으로는 Domino에 `innerText`를 사용할 수 없고 명확하게 `textContext`만 사용해서 바인딩하도록 변경되었습니다.
 
 {@a wtf-apis}
+<!--
 ### `wtfStartTimeRange` and all `wtf*` APIs
+-->
+### `wtfStartTimeRange`와 `wtf`로 시작하는 모든 API
 
+<!--
 All of the `wtf*` APIs are deprecated and will be removed in a future version.
+-->
+`wtf`로 시작하는 모든 API는 앞으로 배포될 버전에 모두 지원이 중단됩니다.
 
 {@a webworker-apps}
+<!--
 ### Running Angular applications in platform-webworker 
+-->
+### Angular 애플리케이션을 platform-webworker로 동작시키기
 
+<!--
 The `@angular/platform-*` packages enable Angular to be run in different contexts. For examples,
 `@angular/platform-server` enables Angular to be run on the server, and `@angular/platform-browser`
 enables Angular to be run in a web browser.
@@ -639,10 +666,23 @@ and image processing). Learn more in the
 As of Angular version 8, all  `platform-webworker` APIs are deprecated.
 This includes both packages: `@angular/platform-webworker` and
 `@angular/platform-webworker-dynamic`.
+-->
+`@angular/platform-*` 패키지는 Angular 애플리케이션을 다양한 환경에서 실행하기 위해 사용합니다. Angular 앱을 서버에서 실행하려면 `@angular/platform-server` 패키지를 사용하며, Angular 앱을 웹 브라우저에서 실행하려면 `@angular/platform-browser` 패키지를 사용하는 식입니다.
+
+`@angular/platform-webworker`는 Angular 애플리케이션을 [웹 워커](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)로 실행할 때 사용하기 위해 Angular 2 버전부터 도입된 패키지입니다. 그런데 이 실험적인 패키지를 운영해오면서 Angular 팀은 Angular 앱을 통째로 웹 워커로 실행하는 것은 최선의 방법이 아니라는 결론을 내렸습니다.
+
+그래서 이제는 웹 워커를 본연의 목적으로만 사용하기로 결정했습니다. 웹 워커는 CPU 부하가 많이 필요한 로직을 분산하는 역할에 충실하도록 개발 방향을 변경했고, 메모리 탐색이나 이미지 처리와 같이 초기 렌더링에 영향을 주지 않는 용도로만 사용하려고 합니다. 자세한 내용은 [Angular로 웹 워커 활용하기](guide/web-worker) 문서를 참고하세요.
+
+그래서 Angular 8 버전부터는 `platform-webworker` API의 지원이 중단됩니다.
+`@angular/platform-webworker`, `@angular/platform-webworker-dynamic` 모두 해당됩니다.
 
 {@a removed}
+<!--
 ## Removed APIs
+-->
+## 지원이 중단된 API
 
+<!--
 The following APIs have been removed starting with version 8.0.0:
 
 | Package | API            | Replacement | Notes |
@@ -652,8 +692,16 @@ The following APIs have been removed starting with version 8.0.0:
 | `@angular/platform-browser` | [`DOCUMENT`](https://v7.angular.io/api/platform-browser/DOCUMENT) | [`DOCUMENT` in `@angular/common`](https://v7.angular.io/api/common/DOCUMENT) | Updating to version 8 with [`ng update`](cli/update) changes this automatically.  |
 | `@angular/core/testing` | [`TestBed.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBed#deprecatedoverrideprovider) | [`TestBed.overrideProvider()`] (api/core/testing/TestBed#overrideprovider) | none |
 | `@angular/core/testing` | [`TestBedStatic.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBedStatic#deprecatedoverrideprovider) | [`TestBedStatic.overrideProvider()`](api/core/testing/TestBedStatic#overrideprovider) | none |
+-->
+다음 API들은 8.0.0 버전부터 완전히 제거되었습니다:
 
-
+| 패키지 | API            | 대안 | 참고 |
+| ------- | -------------- | ----------- | ----- |
+| [`@angular/http`](https://v7.angular.io/api/http) | 모든 API | [`@angular/common/http`](https://v7.angular.io/api/common/http) | [아래](#http) 참고 |
+[`@angular/http/testing`](https://v7.angular.io/api/http/testing) | 모든 API | [`@angular/common/http/testing`](https://v7.angular.io/api/common/http/testing) | [아래](#http) 참고 |
+| `@angular/platform-browser` | [`DOCUMENT`](https://v7.angular.io/api/platform-browser/DOCUMENT) | [`@angular/common`가 제공하던 `DOCUMENT`](https://v7.angular.io/api/common/DOCUMENT) | 8 버전에서 [`ng update`](cli/update) 를 실행하면 자동으로 변경됩니다.  |
+| `@angular/core/testing` | [`TestBed.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBed#deprecatedoverrideprovider) | [`TestBed.overrideProvider()`](api/core/testing/TestBed#overrideprovider) | 없음 |
+| `@angular/core/testing` | [`TestBedStatic.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBedStatic#deprecatedoverrideprovider) | [`TestBedStatic.overrideProvider()`](api/core/testing/TestBedStatic#overrideprovider) | 없음 |
 
 <!-- The following anchor is used by redirects from the removed API pages. Do not change or remove. -->
 {@a http}
@@ -664,7 +712,7 @@ Deprecation announced in version 5
 https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced)
 -->
 
-
+<!--
 The entire [`@angular/http`](http://v7.angular.io/api/http) package has been removed. Use [`@angular/common/http`](api/common/http) instead.
 
 The new API is a smaller, easier, and more powerful way to make HTTP requests in Angular.
@@ -677,8 +725,21 @@ To update your apps:
 * Remove any `map(res => res.json())` calls. They are no longer needed.
 
 For more information about using `@angular/common/http`, see the [HttpClient guide](guide/http "HTTP Client guide").
+-->
+[`@angular/http`](http://v7.angular.io/api/http) 패키지는 전부 제거되었습니다. 이제는 이 패키지 대신 [`@angular/common/http`](api/common/http) 패키지를 사용해야 합니다.
 
+새로 도입된 API는 좀 더 간단하고, 사용하기 쉽지만, 좀 더 효율적인 방식으로 HTTP 요청을 처리합니다.
+게다가 이제 HTTP 응답으로 받은 데이터를 파싱하기 위해 `.json()`을 직접 호출할 필요가 없습니다.
+HTTP 응답이나 인터셉터로 받은 반환값의 타입을 지정할 수도 있습니다.
 
+이 패키지를 적용하려면 다음과 같이 수정하면 됩니다:
+* 모듈에 로드하던 `HttpModule` 대신 [`@angular/common/http`](api/common/http) 패키지로 제공되는 [`HttpClientModule`](api/common/http/HttpClientModule)를 로드합니다.
+* `Http` 대신 [`HttpClient`](api/common/http/HttpClient)를 의존성으로 주입합니다.
+* `map(res => res.json())` 코드를 모두 제거합니다. 이 코드는 더이상 필요없습니다.
+
+`@angular/common/http` 패키지를 사용하는 방법은 [HttpClient](guide/http "HttpClient") 문서를 참고하세요.
+
+<!--
 | `@angular/http` | Closest replacement in `@angular/common/http` |
 | ------------- | ------------------------------------------- |
 | `BaseRequestOptions` |  [`HttpRequest`](/api/common/http/HttpRequest) |
@@ -715,4 +776,40 @@ For more information about using `@angular/common/http`, see the [HttpClient gui
 | --------------------- | ------------------------------------------- |
 | `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 | `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
+-->
+| `@angular/http` | `@angular/common/http` 패키지에서 비슷한 역할 |
+| ------------- | ------------------------------------------- |
+| `BaseRequestOptions` |  [`HttpRequest`](/api/common/http/HttpRequest) |
+| `BaseResponseOptions` | [`HttpResponse`](/api/common/http/HttpResponse) |
+| `BrowserXhr` |  |
+| `Connection` | [`HttpBackend`](/api/common/http/HttpBackend) |
+| `ConnectionBackend` | [`HttpBackend`](/api/common/http/HttpBackend) |
+| `CookieXSRFStrategy` | [`HttpClientXsrfModule`](/api/common/http/HttpClientXsrfModule) |
+| `Headers` | [`HttpHeaders`](/api/common/http/HttpHeaders) |
+| `Http` | [`HttpClient`](/api/common/http/HttpClient) |
+| `HttpModule` | [`HttpClientModule`](/api/common/http/HttpClientModule) |
+| `Jsonp` | [`HttpClient`](/api/common/http/HttpClient) |
+| `JSONPBackend` | [`JsonpClientBackend`](/api/common/http/JsonpClientBackend) |
+| `JSONPConnection` | [`JsonpClientBackend`](/api/common/http/JsonpClientBackend) |
+| `JsonpModule` | [`HttpClientJsonpModule`](/api/common/http/HttpClientJsonpModule) |
+| `QueryEncoder` | [`HttpUrlEncodingCodec`](/api/common/http/HttpUrlEncodingCodec) |
+| `ReadyState` | [`HttpBackend`](/api/common/http/HttpBackend) |
+| `Request` | [`HttpRequest`](/api/common/http/HttpRequest) |
+| `RequestMethod` | [`HttpClient`](/api/common/http/HttpClient) |
+| `RequestOptions` | [`HttpRequest`](/api/common/http/HttpRequest) |
+| `RequestOptionsArgs` | [`HttpRequest`](/api/common/http/HttpRequest) |
+| `Response` | [`HttpResponse`](/api/common/http/HttpResponse) |
+| `ResponseContentType` | [`HttpClient`](/api/common/http/HttpClient) |
+| `ResponseOptions` | [`HttpResponse`](/api/common/http/HttpResponse) |
+| `ResponseOptionsArgs` | [`HttpResponse`](/api/common/http/HttpResponse) |
+| `ResponseType` | [`HttpClient`](/api/common/http/HttpClient) |
+| `URLSearchParams` | [`HttpParams`](/api/common/http/HttpParams) |
+| `XHRBackend` | [`HttpXhrBackend`](/api/common/http/HttpXhrBackend) |
+| `XHRConnection` | [`HttpXhrBackend`](/api/common/http/HttpXhrBackend) |
+| `XSRFStrategy` | [`HttpClientXsrfModule`](/api/common/http/HttpClientXsrfModule) |
 
+
+| `@angular/http/testing` | `@angular/common/http/testing` 패키지에서 비슷한 역할 |
+| --------------------- | ------------------------------------------- |
+| `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
+| `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
