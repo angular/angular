@@ -36,28 +36,31 @@ export function makeTestEntryPointBundle(
     dtsRootNames?: AbsoluteFsPath[]): EntryPointBundle {
   const entryPoint = makeTestEntryPoint(packageName);
   const src = makeTestBundleProgram(srcRootNames[0], isCore);
-  const dts = dtsRootNames ? makeTestDtsBundleProgram(dtsRootNames[0], isCore) : null;
+  const dts =
+      dtsRootNames ? makeTestDtsBundleProgram(dtsRootNames[0], entryPoint.package, isCore) : null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
   return {entryPoint, format, rootDirs: [absoluteFrom('/')], src, dts, isCore, isFlatCore};
 }
 
 export function makeTestBundleProgram(
-    path: AbsoluteFsPath, isCore: boolean = false): BundleProgram {
+    path: AbsoluteFsPath, isCore: boolean = false,
+    additionalFiles?: AbsoluteFsPath[]): BundleProgram {
   const fs = getFileSystem();
   const entryPointPath = fs.dirname(path);
   const rootDir = fs.dirname(entryPointPath);
   const options: ts.CompilerOptions =
       {allowJs: true, maxNodeModuleJsDepth: Infinity, checkJs: false, rootDir, rootDirs: [rootDir]};
   const host = new NgccSourcesCompilerHost(fs, options, entryPointPath);
-  return makeBundleProgram(fs, isCore, path, 'r3_symbols.js', options, host);
+  return makeBundleProgram(
+      fs, isCore, rootDir, path, 'r3_symbols.js', options, host, additionalFiles);
 }
 
 export function makeTestDtsBundleProgram(
-    path: AbsoluteFsPath, isCore: boolean = false): BundleProgram {
+    path: AbsoluteFsPath, packagePath: AbsoluteFsPath, isCore: boolean = false): BundleProgram {
   const fs = getFileSystem();
   const options = {};
   const host = new NgtscCompilerHost(fs, options);
-  return makeBundleProgram(fs, isCore, path, 'r3_symbols.d.ts', options, host);
+  return makeBundleProgram(fs, isCore, packagePath, path, 'r3_symbols.d.ts', options, host);
 }
 
 export function convertToDirectTsLibImport(filesystem: TestFile[]) {

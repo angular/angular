@@ -1992,7 +1992,7 @@ exports.ExternalModule = ExternalModule;
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
              const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'));
+             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
              const class1 =
                  getDeclaration(program, _('/src/class1.js'), 'Class1', ts.isVariableDeclaration);
              const host =
@@ -2006,7 +2006,7 @@ exports.ExternalModule = ExternalModule;
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
           const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'));
+          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
           const mooFn =
               getDeclaration(program, _('/src/func1.js'), 'mooFn', ts.isFunctionDeclaration);
           const host =
@@ -2019,7 +2019,7 @@ exports.ExternalModule = ExternalModule;
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
           const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'));
+          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
           const missingClass = getDeclaration(
               program, _('/src/class1.js'), 'MissingClass1', ts.isVariableDeclaration);
           const host =
@@ -2032,7 +2032,7 @@ exports.ExternalModule = ExternalModule;
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
           const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'));
+          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
           const missingClass = getDeclaration(
               program, _('/src/missing-class.js'), 'MissingClass2', ts.isVariableDeclaration);
           const host =
@@ -2046,7 +2046,7 @@ exports.ExternalModule = ExternalModule;
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
              const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'));
+             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
              const class1 = getDeclaration(
                  program, _('/src/flat-file.js'), 'Class1', ts.isVariableDeclaration);
              const host =
@@ -2060,7 +2060,7 @@ exports.ExternalModule = ExternalModule;
           loadTestFiles(TYPINGS_SRC_FILES);
           loadTestFiles(TYPINGS_DTS_FILES);
           const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'));
+          const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
           const class3 =
               getDeclaration(program, _('/src/flat-file.js'), 'Class3', ts.isVariableDeclaration);
           const host =
@@ -2075,7 +2075,7 @@ exports.ExternalModule = ExternalModule;
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
              const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'));
+             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
              const internalClass = getDeclaration(
                  program, _('/src/internal.js'), 'InternalClass', ts.isVariableDeclaration);
              const host =
@@ -2090,7 +2090,7 @@ exports.ExternalModule = ExternalModule;
              loadTestFiles(TYPINGS_SRC_FILES);
              loadTestFiles(TYPINGS_DTS_FILES);
              const {program, host: compilerHost} = makeTestBundleProgram(_('/src/index.js'));
-             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'));
+             const dts = makeTestDtsBundleProgram(_('/typings/index.d.ts'), _('/'));
              const class2 =
                  getDeclaration(program, _('/src/class2.js'), 'Class2', ts.isVariableDeclaration);
              const internalClass2 =
