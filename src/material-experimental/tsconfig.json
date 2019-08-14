@@ -8,6 +8,7 @@
       "@angular/cdk/*": ["../cdk/*"],
       "@angular/material/*": ["../material/*"],
       "@angular/cdk-experimental/*": ["../cdk-experimental/*"],
+      "@angular/material-experimental/*": ["../material-experimental/*"],
       "@material/*": ["../../node_modules/@material/*/index.d.ts"]
     }
   },
