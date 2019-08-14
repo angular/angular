@@ -16,6 +16,7 @@ import {
   Input,
   HostListener,
 } from '@angular/core';
+import {hasModifierKey} from '@angular/cdk/keycodes';
 import {EDIT_PANE_SELECTOR} from './constants';
 import {closest} from './polyfill';
 import {EditRef} from './edit-ref';
@@ -130,8 +131,9 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
   // tslint:disable:no-host-decorator-in-concrete
   @HostListener('keydown', ['$event'])
   _handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' && !hasModifierKey(event)) {
       this.close();
+      event.preventDefault();
     }
   }
 

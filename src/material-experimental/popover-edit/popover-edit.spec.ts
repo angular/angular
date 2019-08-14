@@ -690,10 +690,27 @@ matPopoverEditTabOut`, fakeAsync(() => {
         it('closes the lens on escape', fakeAsync(() => {
           component.openLens();
 
-          component.getInput()!.dispatchEvent(
-              new KeyboardEvent('keydown', {bubbles: true, key: 'Escape'}));
+          const event = new KeyboardEvent('keydown', {bubbles: true, key: 'Escape'});
+
+          spyOn(event, 'preventDefault').and.callThrough();
+          component.getInput()!.dispatchEvent(event);
 
           expect(component.lensIsOpen()).toBe(false);
+          expect(event.preventDefault).toHaveBeenCalled();
+          clearLeftoverTimers();
+        }));
+
+        it('does not close the lens on escape with a modifier key', fakeAsync(() => {
+          component.openLens();
+
+          const event = new KeyboardEvent('keydown', {bubbles: true, key: 'Escape'});
+          Object.defineProperty(event, 'altKey', {get: () => true});
+
+          spyOn(event, 'preventDefault').and.callThrough();
+          component.getInput()!.dispatchEvent(event);
+
+          expect(component.lensIsOpen()).toBe(true);
+          expect(event.preventDefault).not.toHaveBeenCalled();
           clearLeftoverTimers();
         }));
 
