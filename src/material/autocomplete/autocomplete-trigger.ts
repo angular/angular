@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Directionality} from '@angular/cdk/bidi';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {DOWN_ARROW, ENTER, ESCAPE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
 import {
   FlexibleConnectedPositionStrategy,
@@ -16,10 +17,12 @@ import {
   ScrollStrategy,
   ConnectedPosition,
 } from '@angular/cdk/overlay';
+import {_supportsShadowDom} from '@angular/cdk/platform';
 import {TemplatePortal} from '@angular/cdk/portal';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
-import {filter, take, switchMap, delay, tap, map} from 'rxjs/operators';
 import {
+  AfterViewInit,
   ChangeDetectorRef,
   Directive,
   ElementRef,
@@ -35,7 +38,6 @@ import {
   OnChanges,
   SimpleChanges,
 } from '@angular/core';
-import {ViewportRuler} from '@angular/cdk/scrolling';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   _countGroupLabelsBeforeOption,
@@ -44,9 +46,10 @@ import {
   MatOptionSelectionChange,
 } from '@angular/material/core';
 import {MatFormField} from '@angular/material/form-field';
-import {Subscription, defer, fromEvent, merge, of as observableOf, Subject, Observable} from 'rxjs';
+import {defer, fromEvent, merge, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
+import {delay, filter, map, switchMap, take, tap} from 'rxjs/operators';
+
 import {MatAutocomplete} from './autocomplete';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MatAutocompleteOrigin} from './autocomplete-origin';
 
 
@@ -119,7 +122,8 @@ export function getMatAutocompleteMissingPanelError(): Error {
   exportAs: 'matAutocompleteTrigger',
   providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR]
 })
-export class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, OnDestroy {
+export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewInit, OnChanges,
+  OnDestroy {
   private _overlayRef: OverlayRef | null;
   private _portal: TemplatePortal;
   private _componentDestroyed = false;
@@ -147,6 +151,9 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, 
    * comes back.
    */
   private _canOpenOnNextFocus = true;
+
+  /** Whether the element is inside of a ShadowRoot component. */
+  private _isInsideShadowRoot: boolean;
 
   /** Stream of keyboard events that can close the panel. */
   private readonly _closeKeyEventStream = new Subject<void>();
@@ -213,14 +220,24 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, 
               @Optional() @Inject(DOCUMENT) private _document: any,
               // @breaking-change 8.0.0 Make `_viewportRuler` required.
               private _viewportRuler?: ViewportRuler) {
+    this._scrollStrategy = scrollStrategy;
+  }
 
+  ngAfterViewInit() {
     if (typeof window !== 'undefined') {
-      _zone.runOutsideAngular(() => {
+      this._zone.runOutsideAngular(() => {
         window.addEventListener('blur', this._windowBlurHandler);
       });
-    }
 
-    this._scrollStrategy = scrollStrategy;
+      if (_supportsShadowDom()) {
+        const element = this._element.nativeElement;
+        const rootNode = element.getRootNode ? element.getRootNode() : null;
+
+        // We need to take the `ShadowRoot` off of `window`, because the built-in types are
+        // incorrect. See https://github.com/Microsoft/TypeScript/issues/27929.
+        this._isInsideShadowRoot = rootNode instanceof (window as any).ShadowRoot;
+      }
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -341,19 +358,20 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, 
   /** Stream of clicks outside of the autocomplete panel. */
   private _getOutsideClickStream(): Observable<any> {
     return merge(
-      fromEvent(this._document, 'click') as Observable<MouseEvent>,
-      fromEvent(this._document, 'touchend') as Observable<TouchEvent>
-    )
-    .pipe(filter(event => {
-      const clickTarget = event.target as HTMLElement;
-      const formField = this._formField ?
-          this._formField._elementRef.nativeElement : null;
+               fromEvent(this._document, 'click') as Observable<MouseEvent>,
+               fromEvent(this._document, 'touchend') as Observable<TouchEvent>)
+        .pipe(filter(event => {
+          // If we're in the Shadow DOM the event target will be the shadow root so we have to fall
+          // back to check the first element in the path of the click event.
+          const clickTarget =
+              (this._isInsideShadowRoot && event.composedPath ? event.composedPath()[0] :
+                                                                event.target) as HTMLElement;
+          const formField = this._formField ? this._formField._elementRef.nativeElement : null;
 
-      return this._overlayAttached &&
-              clickTarget !== this._element.nativeElement &&
+          return this._overlayAttached && clickTarget !== this._element.nativeElement &&
               (!formField || !formField.contains(clickTarget)) &&
               (!!this._overlayRef && !this._overlayRef.overlayElement.contains(clickTarget));
-    }));
+        }));
   }
 
   // Implemented as part of ControlValueAccessor.

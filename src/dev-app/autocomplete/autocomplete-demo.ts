@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
 import {FormControl, NgModel} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -27,6 +27,7 @@ export interface StateGroup {
   selector: 'autocomplete-demo',
   templateUrl: 'autocomplete-demo.html',
   styleUrls: ['autocomplete-demo.css'],
+  encapsulation: ViewEncapsulation.ShadowDom
 })
 export class AutocompleteDemo {
   stateCtrl: FormControl;

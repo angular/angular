@@ -1,3 +1,5 @@
+export declare function _supportsShadowDom(): boolean;
+
 export declare function getRtlScrollAxisType(): RtlScrollAxisType;
 
 export declare function getSupportedInputTypes(): Set<string>;

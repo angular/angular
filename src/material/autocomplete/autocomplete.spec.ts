@@ -1,8 +1,9 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, SPACE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
 import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
-import {MockNgZone} from '@angular/cdk/private/testing';
+import {_supportsShadowDom} from '@angular/cdk/platform';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
+import {MockNgZone} from '@angular/cdk/private/testing';
 import {
   clearElement,
   createKeyboardEvent,
@@ -22,6 +23,7 @@ import {
   Type,
   ViewChild,
   ViewChildren,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   async,
@@ -39,7 +41,9 @@ import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {EMPTY, Observable, Subject, Subscription} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
+
 import {MatInputModule} from '../input/index';
+
 import {
   getMatAutocompleteMissingPanelError,
   MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
@@ -513,6 +517,49 @@ describe('MatAutocomplete', () => {
     });
 
   });
+
+  it('should not close the panel when clicking on the input', fakeAsync(() => {
+       const fixture = createComponent(SimpleAutocomplete);
+       fixture.detectChanges();
+       const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+       dispatchFakeEvent(input, 'focusin');
+       fixture.detectChanges();
+       zone.simulateZoneExit();
+
+       expect(fixture.componentInstance.trigger.panelOpen)
+           .toBe(true, 'Expected panel to be opened on focus.');
+
+       input.click();
+       fixture.detectChanges();
+
+       expect(fixture.componentInstance.trigger.panelOpen)
+           .toBe(true, 'Expected panel to remain opened after clicking on the input.');
+     }));
+
+  it('should not close the panel when clicking on the input inside shadow DOM', fakeAsync(() => {
+       // This test is only relevant for Shadow DOM-capable browsers.
+       if (!_supportsShadowDom()) {
+         return;
+       }
+
+       const fixture = createComponent(SimpleAutocompleteShadowDom);
+       fixture.detectChanges();
+       const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+       dispatchFakeEvent(input, 'focusin');
+       fixture.detectChanges();
+       zone.simulateZoneExit();
+
+       expect(fixture.componentInstance.trigger.panelOpen)
+           .toBe(true, 'Expected panel to be opened on focus.');
+
+       input.click();
+       fixture.detectChanges();
+
+       expect(fixture.componentInstance.trigger.panelOpen)
+           .toBe(true, 'Expected panel to remain opened after clicking on the input.');
+     }));
 
   it('should have the correct text direction in RTL', () => {
     const rtlFixture = createComponent(SimpleAutocomplete, [
@@ -2437,26 +2484,26 @@ describe('MatAutocomplete', () => {
   }));
 });
 
-@Component({
-  template: `
-    <mat-form-field [floatLabel]="floatLabel" [style.width.px]="width">
-      <input
-        matInput
-        placeholder="State"
-        [matAutocomplete]="auto"
-        [matAutocompletePosition]="position"
-        [matAutocompleteDisabled]="autocompleteDisabled"
-        [formControl]="stateCtrl">
-    </mat-form-field>
+const SIMPLE_AUTOCOMPLETE_TEMPLATE = `
+  <mat-form-field [floatLabel]="floatLabel" [style.width.px]="width">
+    <input
+      matInput
+      placeholder="State"
+      [matAutocomplete]="auto"
+      [matAutocompletePosition]="position"
+      [matAutocompleteDisabled]="autocompleteDisabled"
+      [formControl]="stateCtrl">
+  </mat-form-field>
 
-    <mat-autocomplete [class]="panelClass" #auto="matAutocomplete" [displayWith]="displayFn"
-      [disableRipple]="disableRipple" (opened)="openedSpy()" (closed)="closedSpy()">
-      <mat-option *ngFor="let state of filteredStates" [value]="state">
-        <span>{{ state.code }}: {{ state.name }}</span>
-      </mat-option>
-    </mat-autocomplete>
-  `
-})
+  <mat-autocomplete [class]="panelClass" #auto="matAutocomplete" [displayWith]="displayFn"
+    [disableRipple]="disableRipple" (opened)="openedSpy()" (closed)="closedSpy()">
+    <mat-option *ngFor="let state of filteredStates" [value]="state">
+      <span>{{ state.code }}: {{ state.name }}</span>
+    </mat-option>
+  </mat-autocomplete>
+`;
+
+@Component({template: SIMPLE_AUTOCOMPLETE_TEMPLATE})
 class SimpleAutocomplete implements OnDestroy {
   stateCtrl = new FormControl();
   filteredStates: any[];
@@ -2505,6 +2552,10 @@ class SimpleAutocomplete implements OnDestroy {
   ngOnDestroy() {
     this.valueSub.unsubscribe();
   }
+}
+
+@Component({template: SIMPLE_AUTOCOMPLETE_TEMPLATE, encapsulation: ViewEncapsulation.ShadowDom})
+class SimpleAutocompleteShadowDom extends SimpleAutocomplete {
 }
 
 @Component({

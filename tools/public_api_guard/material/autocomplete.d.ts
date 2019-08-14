@@ -69,7 +69,7 @@ export declare class MatAutocompleteSelectedEvent {
     option: MatOption);
 }
 
-export declare class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, OnDestroy {
+export declare class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
     _onChange: (value: any) => void;
     _onTouched: () => void;
     readonly activeOption: MatOption | null;
@@ -86,6 +86,7 @@ export declare class MatAutocompleteTrigger implements ControlValueAccessor, OnC
     _handleInput(event: KeyboardEvent): void;
     _handleKeydown(event: KeyboardEvent): void;
     closePanel(): void;
+    ngAfterViewInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     openPanel(): void;
