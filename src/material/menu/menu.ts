@@ -255,9 +255,11 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
 
   /** Stream that emits whenever the hovered menu item changes. */
   _hovered(): Observable<MatMenuItem> {
-    return this._directDescendantItems.changes.pipe(
+    // Coerce the `changes` property because Angular types it as `Observable<any>`
+    const itemChanges = this._directDescendantItems.changes as Observable<QueryList<MatMenuItem>>;
+    return itemChanges.pipe(
       startWith(this._directDescendantItems),
-      switchMap(items => merge<MatMenuItem>(...items.map((item: MatMenuItem) => item._hovered)))
+      switchMap(items => merge(...items.map((item: MatMenuItem) => item._hovered)))
     );
   }
 

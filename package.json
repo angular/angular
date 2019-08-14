@@ -51,7 +51,7 @@
     "@webcomponents/custom-elements": "^1.1.0",
     "core-js": "^2.6.1",
     "material-components-web": "^3.0.0",
-    "rxjs": "^6.4.0",
+    "rxjs": "^6.5.2",
     "systemjs": "0.19.43",
     "tsickle": "^0.35.0",
     "tslib": "^1.9.3",
