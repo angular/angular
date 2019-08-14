@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {assertDataInRange, assertGreaterThan} from '../../util/assert';
-import {executePreOrderHooks} from '../hooks';
-import {HEADER_OFFSET, LView, TVIEW} from '../interfaces/view';
+import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
+import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TVIEW} from '../interfaces/view';
 import {getCheckNoChangesMode, getLView, setSelectedIndex} from '../state';
+
 
 
 /**
@@ -41,7 +42,22 @@ export function selectInternal(lView: LView, index: number, checkNoChangesMode: 
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
 
   // Flush the initial hooks for elements in the view that have been added up to this point.
-  executePreOrderHooks(lView, lView[TVIEW], checkNoChangesMode, index);
+  // PERF WARNING: do NOT extract this to a separate function without running benchmarks
+  if (!checkNoChangesMode) {
+    const hooksInitPhaseCompleted =
+        (lView[FLAGS] & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
+    if (hooksInitPhaseCompleted) {
+      const preOrderCheckHooks = lView[TVIEW].preOrderCheckHooks;
+      if (preOrderCheckHooks !== null) {
+        executeCheckHooks(lView, preOrderCheckHooks, index);
+      }
+    } else {
+      const preOrderHooks = lView[TVIEW].preOrderHooks;
+      if (preOrderHooks !== null) {
+        executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, index);
+      }
+    }
+  }
 
   // We must set the selected index *after* running the hooks, because hooks may have side-effects
   // that cause other template functions to run, thus updating the selected index, which is global
