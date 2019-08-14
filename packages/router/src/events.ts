@@ -122,7 +122,10 @@ export class NavigationEnd extends RouterEvent {
 }
 
 /**
- * An event triggered when a navigation is canceled.
+ * An event triggered when a navigation is canceled, directly or indirectly.
+ *
+ * This can happen when a [route guard](guide/router#milestone-5-route-guards)
+ * returns `false` or initiates a redirect by returning a `UrlTree`.
  *
  * @publicApi
  */
