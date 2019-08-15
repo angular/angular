@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle")
+load("//tools:defaults.bzl", "rollup_bundle")
 load("//packages/zone.js:bundles.bzl", "ES2015_BUNDLES", "ES5_BUNDLES", "ES5_GLOBAL_BUNDLES")
 
 package(default_visibility = ["//packages/zone.js:__subpackages__"])

@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle")
+load("//tools:defaults.bzl", "rollup_bundle", "ts_library")
 load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
 
 def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point):

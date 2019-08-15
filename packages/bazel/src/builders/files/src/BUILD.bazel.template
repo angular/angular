@@ -47,6 +47,7 @@ ng_module(
 
 rollup_bundle(
     name = "bundle",
+    enable_code_splitting = False,
     entry_point = ":main.prod.ts",
     deps = [
         "//src",
@@ -145,6 +146,7 @@ ts_web_test_suite(
     browsers = [
         "@io_bazel_rules_webtesting//browsers:chromium-local",
     ],
+    tags = ["native"],
     deps = [
         ":rxjs_umd_modules",
         ":test_lib",

@@ -55,6 +55,8 @@ ts_web_test_suite(
         # See https://github.com/bazelbuild/rules_typescript/issues/296
         # "@io_bazel_rules_webtesting//browsers:firefox-local",
     ],
+    # rules_webtesting has a required_tag "native" for `chromium-local` browser
+    tags = ["native"],
     deps = [
         ":test_lib",
         "//src:rxjs_umd_modules",
