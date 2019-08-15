@@ -1,0 +1,13 @@
+@import '../mdc-helpers/mdc-helpers';
+
+@mixin mat-sidenav-theme-mdc($theme) {
+  @include mat-using-mdc-theme($theme) {
+    // TODO: implement MDC-based sidenav.
+  }
+}
+
+@mixin mat-sidenav-typography-mdc($config) {
+  @include mat-using-mdc-typography($config) {
+    // TODO: implement MDC-based sidenav.
+  }
+}

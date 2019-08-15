@@ -101,6 +101,7 @@
 /src/material-experimental/mdc-radio/**            @mmalerba
 /src/material-experimental/mdc-slide-toggle/**     @crisbeto
 /src/material-experimental/mdc-tabs/**             @crisbeto
+/src/material-experimental/mdc-sidenav/**          @crisbeto
 /src/material-experimental/mdc-theming/**          @mmalerba
 /src/material-experimental/mdc-typography/**       @mmalerba
 /src/material-experimental/popover-edit/**         @kseamon @andrewseguin
