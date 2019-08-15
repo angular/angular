@@ -183,8 +183,51 @@ export function findTemplateAstAt(
  * @param node
  * @param position
  */
-export function findTighestNode(node: ts.Node, position: number): ts.Node|undefined {
+export function findTightestNode(node: ts.Node, position: number): ts.Node|undefined {
   if (node.getStart() <= position && position < node.getEnd()) {
-    return node.forEachChild(c => findTighestNode(c, position)) || node;
+    return node.forEachChild(c => findTightestNode(c, position)) || node;
+  }
+}
+
+interface DirectiveClassLike {
+  decoratorId: ts.Identifier;  // decorator identifier
+  classDecl: ts.ClassDeclaration;
+}
+
+/**
+ * Return metadata about `node` if it looks like an Angular directive class.
+ * In this case, potential matches are `@NgModule`, `@Component`, `@Directive`,
+ * `@Pipe`, etc.
+ * These class declarations all share some common attributes, namely their
+ * decorator takes exactly one parameter and the parameter must be an object
+ * literal.
+ *
+ * For example,
+ *     v---------- `decoratorId`
+ * @NgModule({
+ *   declarations: [],
+ * })
+ * class AppModule {}
+ *          ^----- `classDecl`
+ *
+ * @param node Potential node that represents an Angular directive.
+ */
+export function getDirectiveClassLike(node: ts.Node): DirectiveClassLike|undefined {
+  if (!ts.isClassDeclaration(node) || !node.name || !node.decorators) {
+    return;
+  }
+  for (const d of node.decorators) {
+    const expr = d.expression;
+    if (!ts.isCallExpression(expr) || expr.arguments.length !== 1 ||
+        !ts.isIdentifier(expr.expression)) {
+      continue;
+    }
+    const arg = expr.arguments[0];
+    if (ts.isObjectLiteralExpression(arg)) {
+      return {
+        decoratorId: expr.expression,
+        classDecl: node,
+      };
+    }
   }
 }
