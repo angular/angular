@@ -48,7 +48,7 @@ class LQueries_ implements LQueries {
     if (tQueries !== null) {
       const noOfInheritedQueries =
           tView.contentQueries !== null ? tView.contentQueries[0] : tQueries.length;
-      const viewLQueries: LQuery<any>[] = new Array(noOfInheritedQueries);
+      const viewLQueries: LQuery<any>[] = [];
 
       // An embedded view has queries propagated from a declaration view at the beginning of the
       // TQueries collection and up until a first content query declared in the embedded view. Only
@@ -57,7 +57,7 @@ class LQueries_ implements LQueries {
       for (let i = 0; i < noOfInheritedQueries; i++) {
         const tQuery = tQueries.getByIndex(i);
         const parentLQuery = this.queries[tQuery.indexInDeclarationView];
-        viewLQueries[i] = parentLQuery.clone();
+        viewLQueries.push(parentLQuery.clone());
       }
 
       return new LQueries_(viewLQueries);
@@ -313,19 +313,18 @@ function materializeViewResults<T>(lView: LView, tQuery: TQuery, queryIndex: num
   if (lQuery.matches === null) {
     const tViewData = lView[TVIEW].data;
     const tQueryMatches = tQuery.matches !;
-    const result: T|null[] = new Array(tQueryMatches.length / 2);
+    const result: T|null[] = [];
     for (let i = 0; i < tQueryMatches.length; i += 2) {
       const matchedNodeIdx = tQueryMatches[i];
       if (matchedNodeIdx < 0) {
         // we at the <ng-template> marker which might have results in views created based on this
         // <ng-template> - those results will be in separate views though, so here we just leave
         // null as a placeholder
-        result[i / 2] = null;
+        result.push(null);
       } else {
         ngDevMode && assertDataInRange(tViewData, matchedNodeIdx);
         const tNode = tViewData[matchedNodeIdx] as TNode;
-        result[i / 2] =
-            createResultForNode(lView, tNode, tQueryMatches[i + 1], tQuery.metadata.read);
+        result.push(createResultForNode(lView, tNode, tQueryMatches[i + 1], tQuery.metadata.read));
       }
     }
     lQuery.matches = result;

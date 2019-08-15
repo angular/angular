@@ -10,6 +10,7 @@ import {AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler, t
 import {MetadataBundlerHost} from '@angular/compiler-cli/src/metadata/bundler';
 import {MetadataCollector} from '@angular/compiler-cli/src/metadata/collector';
 import {ModuleMetadata} from '@angular/compiler-cli/src/metadata/index';
+import {newArray} from '@angular/compiler/src/util';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -686,7 +687,7 @@ export function expectNoDiagnostics(program: ts.Program) {
     return '';
   }
 
-  function chars(len: number, ch: string): string { return new Array(len).fill(ch).join(''); }
+  function chars(len: number, ch: string): string { return newArray(len, ch).join(''); }
 
   function lineNoOf(offset: number, text: string): number {
     let result = 1;

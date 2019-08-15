@@ -11,9 +11,8 @@ import '../util/ng_dev_mode';
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors';
-import {deepForEach} from '../util/array_utils';
+import {deepForEach, newArray} from '../util/array_utils';
 import {stringify} from '../util/stringify';
-
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
@@ -428,7 +427,7 @@ function getUndecoratedInjectableFactory(token: Function) {
   // If the token has parameters then it has dependencies that we cannot resolve implicitly.
   const paramLength = token.length;
   if (paramLength > 0) {
-    const args: string[] = new Array(paramLength).fill('?');
+    const args: string[] = newArray(paramLength, '?');
     throw new Error(`Can't resolve all parameters for ${stringify(token)}: (${args.join(', ')}).`);
   }
 

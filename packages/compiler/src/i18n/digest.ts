@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {utf8Encode} from '../util';
+import {newArray, utf8Encode} from '../util';
 
 import * as i18n from './i18n_ast';
 
@@ -93,7 +93,7 @@ export function sha1(str: string): string {
   const words32 = stringToWords32(utf8, Endian.Big);
   const len = utf8.length * 8;
 
-  const w = new Array(80);
+  const w = newArray(80);
   let [a, b, c, d, e]: number[] = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0];
 
   words32[len >> 5] |= 0x80 << (24 - len % 32);
@@ -247,9 +247,10 @@ function rol64([hi, lo]: [number, number], count: number): [number, number] {
 }
 
 function stringToWords32(str: string, endian: Endian): number[] {
-  const words32 = Array((str.length + 3) >>> 2);
+  const size = (str.length + 3) >>> 2;
+  const words32 = [];
 
-  for (let i = 0; i < words32.length; i++) {
+  for (let i = 0; i < size; i++) {
     words32[i] = wordAt(str, i * 4, endian);
   }
 

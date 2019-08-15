@@ -60,7 +60,7 @@ export class ServiceMessageBroker {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       const serializedArgs = message.args;
       const numArgs = signature ? signature.length : 0;
-      const deserializedArgs = new Array(numArgs);
+      const deserializedArgs = [];
       for (let i = 0; i < numArgs; i++) {
         const serializedArg = serializedArgs[i];
         deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature ![i]);

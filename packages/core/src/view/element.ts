@@ -73,7 +73,7 @@ export function elementDef(
     [ns, name] = splitNamespace(namespaceAndName);
   }
   bindings = bindings || [];
-  const bindingDefs: BindingDef[] = new Array(bindings.length);
+  const bindingDefs: BindingDef[] = [];
   for (let i = 0; i < bindings.length; i++) {
     const [bindingFlags, namespaceAndName, suffixOrSecurityContext] = bindings[i];
 
@@ -93,7 +93,7 @@ export function elementDef(
         {flags: bindingFlags, ns, name, nonMinifiedName: name, securityContext, suffix};
   }
   outputs = outputs || [];
-  const outputDefs: OutputDef[] = new Array(outputs.length);
+  const outputDefs: OutputDef[] = [];
   for (let i = 0; i < outputs.length; i++) {
     const [target, eventName] = outputs[i];
     outputDefs[i] = {
