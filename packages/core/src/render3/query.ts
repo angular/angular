@@ -91,13 +91,13 @@ class TQueries_ implements TQueries {
   elementStart(tView: TView, tNode: TNode): void {
     ngDevMode && assertFirstTemplatePass(
                      tView, 'Queries should collect results on the first template pass only');
-    for (let query of this.queries) {
-      query.elementStart(tView, tNode);
+    for (let i = 0; i < this.queries.length; i++) {
+      this.queries[i].elementStart(tView, tNode);
     }
   }
   elementEnd(tNode: TNode): void {
-    for (let query of this.queries) {
-      query.elementEnd(tNode);
+    for (let i = 0; i < this.queries.length; i++) {
+      this.queries[i].elementEnd(tNode);
     }
   }
   embeddedTView(tNode: TNode): TQueries|null {
@@ -123,8 +123,8 @@ class TQueries_ implements TQueries {
   template(tView: TView, tNode: TNode): void {
     ngDevMode && assertFirstTemplatePass(
                      tView, 'Queries should collect results on the first template pass only');
-    for (let query of this.queries) {
-      query.template(tView, tNode);
+    for (let i = 0; i < this.queries.length; i++) {
+      this.queries[i].template(tView, tNode);
     }
   }
 
@@ -367,8 +367,9 @@ function collectQueryResults<T>(lView: LView, queryIndex: number, result: T[]): 
         // collect matches for views created from this declaration container and inserted into
         // different containers
         if (declarationLContainer[MOVED_VIEWS] !== null) {
-          for (let embeddedLView of declarationLContainer[MOVED_VIEWS] !) {
-            collectQueryResults(embeddedLView, childQueryIndex, result);
+          const embeddedLViews = declarationLContainer[MOVED_VIEWS] !;
+          for (let i = 0; i < embeddedLViews.length; i++) {
+            collectQueryResults(embeddedLViews[i], childQueryIndex, result);
           }
         }
       }
