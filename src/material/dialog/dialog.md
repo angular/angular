@@ -39,6 +39,37 @@ export class YourDialog {
 }
 ```
 
+### Configuring dialog content via `entryComponents`
+
+Because `MatDialog` instantiates components at run-time, the Angular compiler needs extra
+information to create the necessary `ComponentFactory` for your dialog content component.
+
+For any component loaded into a dialog, you must include your component class in the list of
+`entryComponents` in your NgModule definition so that the Angular compiler knows to create
+the `ComponentFactory` for it.
+
+```ts
+@NgModule({
+  imports: [
+    // ...
+    MatDialogModule
+  ],
+
+  declarations: [
+    AppComponent,
+    ExampleDialogComponent
+  ],
+
+  entryComponents: [
+    ExampleDialogComponent
+  ],
+
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule {}
+```
+
 ### Specifying global configuration defaults
 Default dialog options can be specified by providing an instance of `MatDialogConfig` for
 MAT_DIALOG_DEFAULT_OPTIONS in your application's root module.
@@ -108,37 +139,6 @@ You can control which elements are tab stops with the `tabindex` attribute
 ```
 
 <!-- example(dialog-content) -->
-
-### Configuring dialog content via `entryComponents`
-
-Because `MatDialog` instantiates components at run-time, the Angular compiler needs extra
-information to create the necessary `ComponentFactory` for your dialog content component.
-
-For any component loaded into a dialog, you must include your component class in the list of
-`entryComponents` in your NgModule definition so that the Angular compiler knows to create
-the `ComponentFactory` for it.
-
-```ts
-@NgModule({
-  imports: [
-    // ...
-    MatDialogModule
-  ],
-
-  declarations: [
-    AppComponent,
-    ExampleDialogComponent
-  ],
-
-  entryComponents: [
-    ExampleDialogComponent
-  ],
-
-  providers: [],
-  bootstrap: [AppComponent]
-})
-export class AppModule {}
-```
 
 ### Accessibility
 By default, each dialog has `role="dialog"` on the root element. The role can be changed to
