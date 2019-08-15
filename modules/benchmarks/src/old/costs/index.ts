@@ -18,7 +18,7 @@ let testList = null;
 
 export function main() {
   const size = getIntParameter('size');
-  testList = new Array(size);
+  testList = [];
 
   platformBrowserDynamic().bootstrapModule(AppModule).then((ref) => {
     const injector = ref.injector;

@@ -6,22 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {newArray} from '../util/array_utils';
+
 import {BindingDef, BindingFlags, NodeDef, NodeFlags, PureExpressionData, ViewData, asPureExpressionData} from './types';
 import {calcBindingFlags, checkAndUpdateBinding} from './util';
 
 export function purePipeDef(checkIndex: number, argCount: number): NodeDef {
   // argCount + 1 to include the pipe as first arg
-  return _pureExpressionDef(NodeFlags.TypePurePipe, checkIndex, new Array(argCount + 1));
+  return _pureExpressionDef(NodeFlags.TypePurePipe, checkIndex, newArray(argCount + 1));
 }
 
 export function pureArrayDef(checkIndex: number, argCount: number): NodeDef {
-  return _pureExpressionDef(NodeFlags.TypePureArray, checkIndex, new Array(argCount));
+  return _pureExpressionDef(NodeFlags.TypePureArray, checkIndex, newArray(argCount));
 }
 
 export function pureObjectDef(checkIndex: number, propToIndex: {[p: string]: number}): NodeDef {
   const keys = Object.keys(propToIndex);
   const nbKeys = keys.length;
-  const propertyNames = new Array(nbKeys);
+  const propertyNames = [];
   for (let i = 0; i < nbKeys; i++) {
     const key = keys[i];
     const index = propToIndex[key];
@@ -33,7 +35,7 @@ export function pureObjectDef(checkIndex: number, propToIndex: {[p: string]: num
 
 function _pureExpressionDef(
     flags: NodeFlags, checkIndex: number, propertyNames: string[]): NodeDef {
-  const bindings: BindingDef[] = new Array(propertyNames.length);
+  const bindings: BindingDef[] = [];
   for (let i = 0; i < propertyNames.length; i++) {
     const prop = propertyNames[i];
     bindings[i] = {
@@ -99,7 +101,7 @@ export function checkAndUpdatePureExpressionInline(
     let value: any;
     switch (def.flags & NodeFlags.Types) {
       case NodeFlags.TypePureArray:
-        value = new Array(bindings.length);
+        value = [];
         if (bindLen > 0) value[0] = v0;
         if (bindLen > 1) value[1] = v1;
         if (bindLen > 2) value[2] = v2;

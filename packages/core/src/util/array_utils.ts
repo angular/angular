@@ -61,3 +61,13 @@ export function removeFromArray(arr: any[], index: number): any {
     return arr.splice(index, 1)[0];
   }
 }
+
+export function newArray(size: number): any[];
+export function newArray<T>(size: number, value?: T): T[];
+export function newArray<T>(size: number, value?: T): T[] {
+  const list: T[] = [];
+  for (let i = 0; i < size; i++) {
+    list.push(value as T);
+  }
+  return list;
+}
