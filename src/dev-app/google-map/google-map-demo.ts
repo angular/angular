@@ -18,6 +18,9 @@ import {HttpClient} from '@angular/common/http';
 export class GoogleMapDemo {
   isReady = false;
 
+  center = {lat: 24, lng: 12};
+  zoom = 4;
+
   constructor(httpClient: HttpClient) {
     httpClient.jsonp('https://maps.googleapis.com/maps/api/js?', 'callback')
       .subscribe(() => {
