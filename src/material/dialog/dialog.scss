@@ -61,10 +61,7 @@ $mat-dialog-button-margin: 8px !default;
     justify-content: center;
   }
 
-  .mat-button + .mat-button,
-  .mat-raised-button + .mat-raised-button,
-  .mat-button + .mat-raised-button,
-  .mat-raised-button + .mat-button {
+  .mat-button-base + .mat-button-base {
     margin-left: $mat-dialog-button-margin;
 
     [dir='rtl'] & {
