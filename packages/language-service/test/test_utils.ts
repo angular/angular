@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {Diagnostic, DiagnosticMessageChain, Diagnostics, Span} from '../src/types';
+import {Span} from '../src/types';
 
 export type MockData = string | MockDirectory;
 
@@ -104,6 +104,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     } else {
       this.overrides.delete(fileName);
     }
+    return content;
   }
 
   addScript(fileName: string, content: string) {
@@ -329,54 +330,4 @@ function getReferenceMarkers(value: string): ReferenceResult {
 
 function removeReferenceMarkers(value: string): string {
   return value.replace(referenceMarker, (match, text) => text.replace(/ᐱ/g, ''));
-}
-
-export function noDiagnostics(diagnostics: ts.Diagnostic[]) {
-  if (diagnostics && diagnostics.length) {
-    throw new Error(
-        `Unexpected diagnostics: \n  ${diagnostics.map(d => d.messageText).join('\n  ')}`);
-  }
-}
-
-export function diagnosticMessageContains(
-    message: string | ts.DiagnosticMessageChain, messageFragment: string): boolean {
-  if (typeof message == 'string') {
-    return message.indexOf(messageFragment) >= 0;
-  }
-  if (message.messageText.indexOf(messageFragment) >= 0) {
-    return true;
-  }
-  if (message.next) {
-    return diagnosticMessageContains(message.next, messageFragment);
-  }
-  return false;
-}
-
-export function findDiagnostic(
-    diagnostics: ts.Diagnostic[], messageFragment: string): ts.Diagnostic|undefined {
-  return diagnostics.find(d => diagnosticMessageContains(d.messageText, messageFragment));
-}
-
-export function includeDiagnostic(
-    diagnostics: ts.Diagnostic[], message: string, text?: string, len?: string): void;
-export function includeDiagnostic(
-    diagnostics: ts.Diagnostic[], message: string, at?: number, len?: number): void;
-export function includeDiagnostic(
-    diagnostics: ts.Diagnostic[], message: string, p1?: any, p2?: any) {
-  expect(diagnostics).toBeDefined();
-  if (diagnostics) {
-    const diagnostic = findDiagnostic(diagnostics, message);
-    expect(diagnostic).toBeDefined(`no diagnostic contains '${message}`);
-    if (diagnostic && p1 != null) {
-      const at = typeof p1 === 'number' ? p1 : p2.indexOf(p1);
-      const len = typeof p2 === 'number' ? p2 : p1.length;
-      expect(diagnostic.start)
-          .toEqual(
-              at,
-              `expected message '${message}' was reported at ${diagnostic.start} but should be ${at}`);
-      if (len != null) {
-        expect(diagnostic.length).toEqual(len, `expected '${message}'s span length to be ${len}`);
-      }
-    }
-  }
 }
