@@ -11,7 +11,7 @@ import {FocusTrapFactory} from '@angular/cdk/a11y';
 import {
   BasePortalOutlet,
   ComponentPortal,
-  PortalHostDirective,
+  CdkPortalOutlet,
   TemplatePortal
 } from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
@@ -99,7 +99,7 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   // tslint:disable:no-host-decorator-in-concrete
 
   /** The portal host inside of this container into which the dialog content will be loaded. */
-  @ViewChild(PortalHostDirective, {static: true}) _portalHost: PortalHostDirective;
+  @ViewChild(CdkPortalOutlet, {static: true}) _portalHost: CdkPortalOutlet;
 
   /** A subject emitting before the dialog enters the view. */
   _beforeEnter: Subject<void> = new Subject();

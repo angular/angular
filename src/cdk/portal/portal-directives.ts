@@ -27,7 +27,7 @@ import {BasePortalOutlet, ComponentPortal, Portal, TemplatePortal} from './porta
  * the directive instance itself can be attached to a host, enabling declarative use of portals.
  */
 @Directive({
-  selector: '[cdk-portal], [cdkPortal], [portal]',
+  selector: '[cdkPortal]',
   exportAs: 'cdkPortal',
 })
 export class CdkPortal extends TemplatePortal {
@@ -35,6 +35,20 @@ export class CdkPortal extends TemplatePortal {
     super(templateRef, viewContainerRef);
   }
 }
+
+/**
+ * @deprecated Use `CdkPortal` instead.
+ * @breaking-change 9.0.0
+ */
+@Directive({
+  selector: '[cdk-portal], [portal]',
+  exportAs: 'cdkPortal',
+  providers: [{
+    provide: CdkPortal,
+    useExisting: TemplatePortalDirective
+  }]
+})
+export class TemplatePortalDirective extends CdkPortal {}
 
 /**
  * Possible attached references to the CdkPortalOutlet.
@@ -50,8 +64,8 @@ export type CdkPortalOutletAttachedRef = ComponentRef<any> | EmbeddedViewRef<any
  * `<ng-template [cdkPortalOutlet]="greeting"></ng-template>`
  */
 @Directive({
-  selector: '[cdkPortalOutlet], [cdkPortalHost], [portalHost]',
-  exportAs: 'cdkPortalOutlet, cdkPortalHost',
+  selector: '[cdkPortalOutlet]',
+  exportAs: 'cdkPortalOutlet',
   inputs: ['portal: cdkPortalOutlet']
 })
 export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestroy {
@@ -158,9 +172,24 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
   }
 }
 
+/**
+ * @deprecated Use `CdkPortalOutlet` instead.
+ * @breaking-change 9.0.0
+ */
+@Directive({
+  selector: '[cdkPortalHost], [portalHost]',
+  exportAs: 'cdkPortalHost',
+  inputs: ['portal: cdkPortalHost'],
+  providers: [{
+    provide: CdkPortalOutlet,
+    useExisting: PortalHostDirective
+  }]
+})
+export class PortalHostDirective extends CdkPortalOutlet {}
+
 
 @NgModule({
-  exports: [CdkPortal, CdkPortalOutlet],
-  declarations: [CdkPortal, CdkPortalOutlet],
+  exports: [CdkPortal, CdkPortalOutlet, TemplatePortalDirective, PortalHostDirective],
+  declarations: [CdkPortal, CdkPortalOutlet, TemplatePortalDirective, PortalHostDirective],
 })
 export class PortalModule {}
