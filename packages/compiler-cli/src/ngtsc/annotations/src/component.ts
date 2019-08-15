@@ -353,15 +353,16 @@ export class ComponentDecoratorHandler implements
     if (!ts.isClassDeclaration(node)) {
       return;
     }
-    const scope = this.scopeReader.getScopeForComponent(node);
+
+    const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
     const matcher = new SelectorMatcher<DirectiveMeta>();
+
+    const scope = this.scopeReader.getScopeForComponent(node);
     if (scope !== null) {
       for (const meta of scope.compilation.directives) {
         const extMeta = flattenInheritedDirectiveMetadata(this.metaReader, meta.ref);
         matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
       }
-      const bound = new R3TargetBinder(matcher).bind({template: meta.parsedTemplate.nodes});
-      const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
       for (const {name, ref} of scope.compilation.pipes) {
         if (!ts.isClassDeclaration(ref.node)) {
           throw new Error(
@@ -369,8 +370,10 @@ export class ComponentDecoratorHandler implements
         }
         pipes.set(name, ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
       }
-      ctx.addTemplate(new Reference(node), bound, pipes, meta.parsedTemplate.file);
     }
+
+    const bound = new R3TargetBinder(matcher).bind({template: meta.parsedTemplate.nodes});
+    ctx.addTemplate(new Reference(node), bound, pipes, meta.parsedTemplate.file);
   }
 
   resolve(node: ClassDeclaration, analysis: ComponentHandlerData): ResolveResult {
