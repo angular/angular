@@ -6,26 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {newArray} from '../util/array_utils';
+
 import {BindingDef, BindingFlags, NodeDef, NodeFlags, PureExpressionData, ViewData, asPureExpressionData} from './types';
 import {calcBindingFlags, checkAndUpdateBinding} from './util';
 
 export function purePipeDef(checkIndex: number, argCount: number): NodeDef {
   // argCount + 1 to include the pipe as first arg
-  return _pureExpressionDef(NodeFlags.TypePurePipe, checkIndex, new Array(argCount + 1));
+  return _pureExpressionDef(NodeFlags.TypePurePipe, checkIndex, newArray(argCount + 1));
 }
 
 export function pureArrayDef(checkIndex: number, argCount: number): NodeDef {
-  return _pureExpressionDef(NodeFlags.TypePureArray, checkIndex, new Array(argCount));
+  return _pureExpressionDef(NodeFlags.TypePureArray, checkIndex, newArray(argCount));
 }
 
 export function pureObjectDef(checkIndex: number, propToIndex: {[p: string]: number}): NodeDef {
   const keys = Object.keys(propToIndex);
   const nbKeys = keys.length;
-  const propertyNames = new Array(nbKeys);
+  const propertyNames = [];
   for (let i = 0; i < nbKeys; i++) {
     const key = keys[i];
     const index = propToIndex[key];
-    propertyNames[index] = key;
+    propertyNames.push(key);
   }
 
   return _pureExpressionDef(NodeFlags.TypePureObject, checkIndex, propertyNames);
@@ -33,17 +35,17 @@ export function pureObjectDef(checkIndex: number, propToIndex: {[p: string]: num
 
 function _pureExpressionDef(
     flags: NodeFlags, checkIndex: number, propertyNames: string[]): NodeDef {
-  const bindings: BindingDef[] = new Array(propertyNames.length);
+  const bindings: BindingDef[] = [];
   for (let i = 0; i < propertyNames.length; i++) {
     const prop = propertyNames[i];
-    bindings[i] = {
+    bindings.push({
       flags: BindingFlags.TypeProperty,
       name: prop,
       ns: null,
       nonMinifiedName: prop,
       securityContext: null,
       suffix: null
-    };
+    });
   }
   return {
     // will bet set by the view definition
@@ -99,17 +101,17 @@ export function checkAndUpdatePureExpressionInline(
     let value: any;
     switch (def.flags & NodeFlags.Types) {
       case NodeFlags.TypePureArray:
-        value = new Array(bindings.length);
-        if (bindLen > 0) value[0] = v0;
-        if (bindLen > 1) value[1] = v1;
-        if (bindLen > 2) value[2] = v2;
-        if (bindLen > 3) value[3] = v3;
-        if (bindLen > 4) value[4] = v4;
-        if (bindLen > 5) value[5] = v5;
-        if (bindLen > 6) value[6] = v6;
-        if (bindLen > 7) value[7] = v7;
-        if (bindLen > 8) value[8] = v8;
-        if (bindLen > 9) value[9] = v9;
+        value = [];
+        if (bindLen > 0) value.push(v0);
+        if (bindLen > 1) value.push(v1);
+        if (bindLen > 2) value.push(v2);
+        if (bindLen > 3) value.push(v3);
+        if (bindLen > 4) value.push(v4);
+        if (bindLen > 5) value.push(v5);
+        if (bindLen > 6) value.push(v6);
+        if (bindLen > 7) value.push(v7);
+        if (bindLen > 8) value.push(v8);
+        if (bindLen > 9) value.push(v9);
         break;
       case NodeFlags.TypePureObject:
         value = {};

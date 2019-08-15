@@ -335,7 +335,7 @@ function main(args: string[]): number {
     const parts = packageName.split('/');
     // Remove the scoped package part, like @angular if present
     const nameParts = packageName.startsWith('@') ? parts.splice(1) : parts;
-    const relativePath = Array(nameParts.length - 1).fill('..').join('/') || '.';
+    const relativePath = newArray(nameParts.length - 1, '..').join('/') || '.';
     let basename: string;
     if (dir === 'bundles') {
       basename = nameParts.join('-') + '.umd';
@@ -434,4 +434,14 @@ export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, '')
 
 if (require.main === module) {
   process.exitCode = main(process.argv.slice(2));
+}
+
+export function newArray<T = any>(size: number): T[];
+export function newArray<T>(size: number, value: T): T[];
+export function newArray<T>(size: number, value?: T): T[] {
+  const list: T[] = [];
+  for (let i = 0; i < size; i++) {
+    list.push(value !);
+  }
+  return list;
 }
