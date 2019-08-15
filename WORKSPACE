@@ -21,8 +21,8 @@ http_archive(
     patch_args = ["-p1"],
     # Patch https://github.com/bazelbuild/rules_nodejs/pull/903
     patches = ["//tools:rollup_bundle_commonjs_ignoreGlobal.patch"],
-    sha256 = "7c4a690268be97c96f04d505224ec4cb1ae53c2c2b68be495c9bd2634296a5cd",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.34.0/rules_nodejs-0.34.0.tar.gz"],
+    sha256 = "da217044d24abd16667324626a33581f3eaccabf80985b2688d6a08ed2f864be",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.37.1/rules_nodejs-0.37.1.tar.gz"],
 )
 
 # Check the bazel version and download npm dependencies
@@ -54,7 +54,8 @@ Try running `yarn bazel` instead.
 #   - 0.32.1 remove override of @bazel/tsetse & exclude typescript lib declarations in node_module_library transitive_declarations
 #   - 0.32.2 resolves bug in @bazel/hide-bazel-files postinstall step
 #   - 0.34.0 introduces protractor rule
-check_rules_nodejs_version(minimum_version_string = "0.34.0")
+#   - 0.37.1 windows fixes
+check_rules_nodejs_version(minimum_version_string = "0.37.1")
 
 # Setup the Node.js toolchain
 node_repositories(
@@ -110,11 +111,12 @@ load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories"
 
 web_test_repositories()
 
-# Temporary work-around for https://github.com/angular/angular/issues/28681
-# TODO(gregmagolan): go back to @io_bazel_rules_webtesting browser_repositories
-load("//:browser_repositories.bzl", "browser_repositories")
+load("@io_bazel_rules_webtesting//web/versioned:browsers-0.3.2.bzl", "browser_repositories")
 
-browser_repositories()
+browser_repositories(
+    chromium = True,
+    firefox = True,
+)
 
 # Setup the rules_typescript tooolchain
 load("@npm_bazel_typescript//:index.bzl", "ts_setup_workspace")
