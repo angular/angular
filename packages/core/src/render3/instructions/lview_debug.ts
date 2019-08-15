@@ -10,6 +10,7 @@ import {AttributeMarker, ComponentTemplate} from '..';
 import {SchemaMetadata} from '../../core';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
+import {initNgDevMode} from '../../util/ng_dev_mode';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
@@ -55,7 +56,8 @@ import {getTNode, unwrapRNode} from '../util/view_utils';
  */
 
 
-export const LViewArray = ngDevMode && createNamedArrayType('LView');
+export const LViewArray = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('LView');
 let LVIEW_EMPTY: unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
                              // constructor could have side-effects.
 /**
@@ -195,7 +197,8 @@ function processTNodeChildren(tNode: TNode | null, buf: string[]) {
   }
 }
 
-const TViewData = ngDevMode && createNamedArrayType('TViewData');
+const TViewData = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('TViewData');
 let TVIEWDATA_EMPTY:
     unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
                 // constructor could have side-effects.
@@ -209,14 +212,27 @@ export function cloneToTViewData(list: any[]): TData {
   return TVIEWDATA_EMPTY.concat(list) as any;
 }
 
-export const LViewBlueprint = ngDevMode && createNamedArrayType('LViewBlueprint');
-export const MatchesArray = ngDevMode && createNamedArrayType('MatchesArray');
-export const TViewComponents = ngDevMode && createNamedArrayType('TViewComponents');
-export const TNodeLocalNames = ngDevMode && createNamedArrayType('TNodeLocalNames');
-export const TNodeInitialInputs = ngDevMode && createNamedArrayType('TNodeInitialInputs');
-export const TNodeInitialData = ngDevMode && createNamedArrayType('TNodeInitialData');
-export const LCleanup = ngDevMode && createNamedArrayType('LCleanup');
-export const TCleanup = ngDevMode && createNamedArrayType('TCleanup');
+export const LViewBlueprint =
+    ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('LViewBlueprint');
+export const MatchesArray = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('MatchesArray');
+export const TViewComponents =
+    ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('TViewComponents');
+export const TNodeLocalNames =
+    ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('TNodeLocalNames');
+export const TNodeInitialInputs =
+    ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('TNodeInitialInputs');
+export const TNodeInitialData =
+    ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('TNodeInitialData');
+export const LCleanup = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('LCleanup');
+export const TCleanup = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('TCleanup');
 
 
 

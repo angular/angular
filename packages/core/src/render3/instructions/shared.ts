@@ -12,6 +12,7 @@ import {validateAgainstEventAttributes, validateAgainstEventProperties} from '..
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertNotEqual, assertNotSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
+import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertFirstTemplatePass, assertLView} from '../assert';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
@@ -1422,7 +1423,8 @@ function generateInitialInputs(
 //////////////////////////
 
 // Not sure why I need to do `any` here but TS complains later.
-const LContainerArray: any = ngDevMode && createNamedArrayType('LContainer');
+const LContainerArray: any = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
+    createNamedArrayType('LContainer');
 
 /**
  * Creates a LContainer, either from a container instruction, or for a ViewContainerRef.

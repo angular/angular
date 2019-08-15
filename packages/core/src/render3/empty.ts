@@ -5,7 +5,7 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import '../util/ng_dev_mode';
+import {initNgDevMode} from '../util/ng_dev_mode';
 
 /**
  * This file contains reuseable "empty" symbols that can be used as default return values
@@ -18,7 +18,7 @@ export const EMPTY_OBJ: {} = {};
 export const EMPTY_ARRAY: any[] = [];
 
 // freezing the values prevents any code from accidentally inserting new values in
-if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+if ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) {
   // These property accesses can be ignored because ngDevMode will be set to false
   // when optimizing code and the whole if statement will be dropped.
   // tslint:disable-next-line:no-toplevel-property-access

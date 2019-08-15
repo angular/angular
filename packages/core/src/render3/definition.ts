@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../util/ng_dev_mode';
-
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {NG_INJECTABLE_DEF, ɵɵdefineInjectable} from '../di/interface/defs';
 import {Mutable, Type} from '../interface/type';
 import {NgModuleDef} from '../metadata/ng_module';
 import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
+import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
@@ -240,6 +238,10 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    */
   schemas?: SchemaMetadata[] | null;
 }): never {
+  // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
+  // See the `initNgDevMode` docstring for more information.
+  typeof ngDevMode === 'undefined' && initNgDevMode();
+
   const type = componentDefinition.type;
   const typePrototype = type.prototype;
   const declaredInputs: {[key: string]: string} = {} as any;
