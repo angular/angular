@@ -39,7 +39,8 @@
     "master": {
       "uncompressed": {
         "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
-        "bundle": 177137
+        "bundle": "TODO(i): we should define ngDevMode to false in Closure, but --define only works in the global scope.",
+        "bundle": 177447
       }
     }
   }
