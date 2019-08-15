@@ -24,6 +24,11 @@
       "version": "9-beta",
       "description": "Decorates undecorated base classes of directives/components that use dependency injection. Copies metadata from base classes to derived directives/components/pipes that are not decorated.",
       "factory": "./migrations/undecorated-classes-with-di/index"
+    },
+    "migration-v9-undecorated-classes-with-decorated-fields": {
+      "version": "9-beta",
+      "description": "Adds an Angular decorator to undecorated classes that have decorated fields",
+      "factory": "./migrations/undecorated-classes-with-decorated-fields/index"
     }
   }
 }
