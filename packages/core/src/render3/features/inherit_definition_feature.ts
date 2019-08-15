@@ -95,7 +95,8 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
       // Run parent features
       const features = superDef.features;
       if (features) {
-        for (const feature of features) {
+        for (let i = 0; i < features.length; i++) {
+          const feature = features[i];
           if (feature && feature.ngInherit) {
             (feature as DirectiveDefFeature)(definition);
           }
