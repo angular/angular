@@ -56,6 +56,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private readonly summaryResolver: AotSummaryResolver;
   private readonly reflectorHost: ReflectorHost;
   private readonly staticSymbolResolver: StaticSymbolResolver;
+  private readonly reflector: StaticReflector;
+  private readonly resolver: CompileMetadataResolver;
 
   private readonly staticSymbolCache = new StaticSymbolCache();
   private readonly fileToComponent = new Map<string, StaticSymbol>();
@@ -70,11 +72,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     ngModules: [],
   };
 
-  // Data members below are prefixed with '_' because they have corresponding
-  // getters. These properties get invalidated when caches are cleared.
-  private _resolver: CompileMetadataResolver|null = null;
-  private _reflector: StaticReflector|null = null;
-
   constructor(
       private readonly host: ts.LanguageServiceHost, private readonly tsLS: ts.LanguageService) {
     this.summaryResolver = new AotSummaryResolver(
@@ -88,34 +85,42 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this.reflectorHost = new ReflectorHost(() => tsLS.getProgram() !, host);
     this.staticSymbolResolver = new StaticSymbolResolver(
         this.reflectorHost, this.staticSymbolCache, this.summaryResolver,
-        (e, filePath) => this.collectError(e, filePath !));
+        (e, filePath) => this.collectError(e, filePath));
+    this.reflector = new StaticReflector(
+        this.summaryResolver, this.staticSymbolResolver,
+        [],  // knownMetadataClasses
+        [],  // knownMetadataFunctions
+        (e, filePath) => this.collectError(e, filePath));
+    this.resolver = this.createMetadataResolver();
   }
 
-  private get resolver(): CompileMetadataResolver {
-    if (!this._resolver) {
-      const moduleResolver = new NgModuleResolver(this.reflector);
-      const directiveResolver = new DirectiveResolver(this.reflector);
-      const pipeResolver = new PipeResolver(this.reflector);
-      const elementSchemaRegistry = new DomElementSchemaRegistry();
-      const resourceLoader = new DummyResourceLoader();
-      const urlResolver = createOfflineCompileUrlResolver();
-      const htmlParser = new DummyHtmlParser();
-      // This tracks the CompileConfig in codegen.ts. Currently these options
-      // are hard-coded.
-      const config = new CompilerConfig({
-        defaultEncapsulation: ViewEncapsulation.Emulated,
-        useJit: false,
-      });
-      const directiveNormalizer =
-          new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
-
-      this._resolver = new CompileMetadataResolver(
-          config, htmlParser, moduleResolver, directiveResolver, pipeResolver,
-          new JitSummaryResolver(), elementSchemaRegistry, directiveNormalizer, new Console(),
-          this.staticSymbolCache, this.reflector,
-          (error, type) => this.collectError(error, type && type.filePath));
+  /**
+   * Creates a new metadata resolver. This should only be called once.
+   */
+  private createMetadataResolver(): CompileMetadataResolver {
+    if (this.resolver) {
+      return this.resolver;  // There should only be a single instance
     }
-    return this._resolver;
+    const moduleResolver = new NgModuleResolver(this.reflector);
+    const directiveResolver = new DirectiveResolver(this.reflector);
+    const pipeResolver = new PipeResolver(this.reflector);
+    const elementSchemaRegistry = new DomElementSchemaRegistry();
+    const resourceLoader = new DummyResourceLoader();
+    const urlResolver = createOfflineCompileUrlResolver();
+    const htmlParser = new DummyHtmlParser();
+    // This tracks the CompileConfig in codegen.ts. Currently these options
+    // are hard-coded.
+    const config = new CompilerConfig({
+      defaultEncapsulation: ViewEncapsulation.Emulated,
+      useJit: false,
+    });
+    const directiveNormalizer =
+        new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
+    return new CompileMetadataResolver(
+        config, htmlParser, moduleResolver, directiveResolver, pipeResolver,
+        new JitSummaryResolver(), elementSchemaRegistry, directiveNormalizer, new Console(),
+        this.staticSymbolCache, this.reflector,
+        (error, type) => this.collectError(error, type && type.filePath));
   }
 
   getTemplateReferences(): string[] { return [...this.templateReferences]; }
@@ -236,9 +241,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       return true;
     }
 
-    this._resolver = null;
-    this._reflector = null;
-
     // Invalidate file that have changed in the static symbol resolver
     const seen = new Set<string>();
     for (const sourceFile of program.getSourceFiles()) {
@@ -325,7 +327,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return new ExternalTemplate(source, fileName, classDecl, classSymbol, this);
   }
 
-  private collectError(error: any, filePath: string|null) {
+  private collectError(error: any, filePath?: string) {
     if (filePath) {
       let errors = this.collectedErrors.get(filePath);
       if (!errors) {
@@ -336,29 +338,21 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
   }
 
-  private get reflector(): StaticReflector {
-    if (!this._reflector) {
-      this._reflector = new StaticReflector(
-          this.summaryResolver, this.staticSymbolResolver,
-          [],  // knownMetadataClasses
-          [],  // knownMetadataFunctions
-          (e, filePath) => this.collectError(e, filePath !));
-    }
-    return this._reflector;
-  }
-
   private getCollectedErrors(defaultSpan: Span, sourceFile: ts.SourceFile): DeclarationError[] {
     const errors = this.collectedErrors.get(sourceFile.fileName);
-    return (errors && errors.map((e: any) => {
-             const line = e.line || (e.position && e.position.line);
-             const column = e.column || (e.position && e.position.column);
-             const span = spanAt(sourceFile, line, column) || defaultSpan;
-             if (isFormattedError(e)) {
-               return errorToDiagnosticWithChain(e, span);
-             }
-             return {message: e.message, span};
-           })) ||
-        [];
+    if (!errors) {
+      return [];
+    }
+    // TODO: Add better typings for the errors
+    return errors.map((e: any) => {
+      const line = e.line || (e.position && e.position.line);
+      const column = e.column || (e.position && e.position.column);
+      const span = spanAt(sourceFile, line, column) || defaultSpan;
+      if (isFormattedError(e)) {
+        return errorToDiagnosticWithChain(e, span);
+      }
+      return {message: e.message, span};
+    });
   }
 
   private getDeclarationFromNode(sourceFile: ts.SourceFile, node: ts.Node): Declaration|undefined {
@@ -457,8 +451,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const expressionParser = new Parser(new Lexer());
       const config = new CompilerConfig();
       const parser = new TemplateParser(
-          config, this.resolver.getReflector(), expressionParser, new DomElementSchemaRegistry(),
-          htmlParser, null !, []);
+          config, this.reflector, expressionParser, new DomElementSchemaRegistry(), htmlParser,
+          null !, []);
       const htmlResult = htmlParser.parse(template.source, '', {tokenizeExpansionForms: true});
       const errors: Diagnostic[]|undefined = undefined;
       const ngModule = this.analyzedModules.ngModuleByPipeOrDirective.get(template.type) ||
