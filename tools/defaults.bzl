@@ -1,6 +1,6 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
-load("@build_bazel_rules_nodejs//:defs.bzl", _nodejs_binary = "nodejs_binary", _npm_package = "npm_package")
+load("@build_bazel_rules_nodejs//:defs.bzl", _nodejs_binary = "nodejs_binary", _npm_package = "npm_package", _rollup_bundle = "rollup_bundle")
 load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm_bazel_karma//:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite", _ts_web_test = "ts_web_test", _ts_web_test_suite = "ts_web_test_suite")
 load("@npm_bazel_typescript//:index.bzl", _ts_library = "ts_library")
@@ -187,6 +187,12 @@ def ts_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
         "//tools/testing:browser",
     ] + runtime_deps
 
+    tags = kwargs.pop("tags", [])
+
+    # rules_webtesting has a required_tag "native" for `chromium-local` browser
+    if not "native" in tags:
+        tags = tags + ["native"]
+
     _ts_web_test_suite(
         runtime_deps = local_runtime_deps,
         bootstrap = bootstrap,
@@ -202,6 +208,7 @@ def ts_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
             # "@io_bazel_rules_webtesting//browsers:firefox-local",
             # TODO(alexeagle): add remote browsers on SauceLabs
         ],
+        tags = tags,
         **kwargs
     )
 
@@ -240,6 +247,12 @@ def karma_web_test_suite(bootstrap = [], deps = [], **kwargs):
         "//tools/rxjs:rxjs_umd_modules",
     ] + deps
 
+    tags = kwargs.pop("tags", [])
+
+    # rules_webtesting has a required_tag "native" for `chromium-local` browser
+    if not "native" in tags:
+        tags = tags + ["native"]
+
     _karma_web_test_suite(
         bootstrap = bootstrap,
         deps = local_deps,
@@ -254,6 +267,7 @@ def karma_web_test_suite(bootstrap = [], deps = [], **kwargs):
             # "@io_bazel_rules_webtesting//browsers:firefox-local",
             # TODO(alexeagle): add remote browsers on SauceLabs
         ],
+        tags = tags,
         **kwargs
     )
 
@@ -293,5 +307,14 @@ def ng_rollup_bundle(deps = [], **kwargs):
     ]
     _ng_rollup_bundle(
         deps = deps,
+        **kwargs
+    )
+
+def rollup_bundle(**kwargs):
+    """Default values for rollup_bundle"""
+    _rollup_bundle(
+        # code-splitting is turned on by default in nodejs rules 0.35.0
+        # we want to default to remain off
+        enable_code_splitting = False,
         **kwargs
     )

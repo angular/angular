@@ -30,12 +30,12 @@
     rxjs "6.4.0"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "0.0.0"
+  version "9.0.0-next.6"
   dependencies:
     "@angular-devkit/architect" "^0.800.0-beta.15"
     "@angular-devkit/core" "^8.0.0-beta.15"
     "@angular-devkit/schematics" "^8.0.0-beta.15"
-    "@microsoft/api-extractor" "^7.0.21"
+    "@microsoft/api-extractor" "^7.3.9"
     "@schematics/angular" "^8.0.0-beta.15"
     "@types/node" "6.0.84"
     semver "^5.6.0"
@@ -62,49 +62,63 @@
     universal-analytics "^0.4.20"
     uuid "^3.3.2"
 
-"@bazel/bazel-darwin_x64@0.26.1":
-  version "0.26.1"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.26.1.tgz#1b5c69b635e5c2a8c3090fa5f6bcb45735f06045"
-  integrity sha512-9VjrR+ce+iS9xS1lgeAo1RAPXlxCvez/r3smN1lP4s4YNF0s5LAT0cevIl6Zz2nwyEha/6JvY3v6Euemy36F0w==
+"@bazel/bazel-darwin_x64@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.28.1.tgz#415658785e1dbd6f7ab5c8f2b98c1c99c614e1d5"
+  integrity sha512-VDKWmplAfa4uCAbkIQ5nRn04MFQqtsPNuc2HkluJ8OIum773yC2dPR+OlLBKxrlBuKJYB27TtbOwOa6w/uK7aw==
 
-"@bazel/bazel-linux_x64@0.26.1":
-  version "0.26.1"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.26.1.tgz#04dd194bdcd6b9d45bd865a9a60c280d0d600251"
-  integrity sha512-oZooDxI1C4p7o18zx2Uns2cK/NN2hgF2YSBKH0aVDPAAxQA85h+g124CWDEbsghOdRMSBM0Hd0SSeIqwZcqLSw==
+"@bazel/bazel-linux_x64@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.28.1.tgz#f78006089e17660261088272a0e04fc886572e34"
+  integrity sha512-n4XfNxagYhejQD32V4XSxT/qzuH1l/2jxslbKSak66/uQ+wad8Ew9rjNb4JUin3xtrfFtzmxx2jpQkybZsRVGA==
 
-"@bazel/bazel-win32_x64@0.26.1":
-  version "0.26.1"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.26.1.tgz#9351f07313173b1f98006da8131c94db7aa7c506"
-  integrity sha512-0FkOo8+bxw13X2m6ALhXX2241gG9ZXgcLu0E/IbCWy/TmOB5bR0Z73CslszWbXIldVYnANuhFmnkxIa745Du5Q==
+"@bazel/bazel-win32_x64@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.28.1.tgz#60a2819618cf7582cc35ac16c01763a5e807b414"
+  integrity sha512-T4xksGfKikaHS4zxnGT6r5R436mz9j2lz//L1vc5sJnaEF/1e2Gv6MLl86vfZW2Xxo6iIEi6ntSzgYxP2Blohw==
 
 "@bazel/bazel@file:../../node_modules/@bazel/bazel":
-  version "0.26.1"
-  optionalDependencies:
-    "@bazel/bazel-darwin_x64" "0.26.1"
-    "@bazel/bazel-linux_x64" "0.26.1"
-    "@bazel/bazel-win32_x64" "0.26.1"
-
-"@microsoft/api-extractor@^7.0.21":
-  version "7.0.22"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.0.22.tgz#9c6eb0500168811ed14194de413ddd310622533a"
-  integrity sha512-1mNMbmUeqtjNmS9hgrONio2uRZL2eeZk39zCKq04ReImFXnMR+fnMTQG98B+SAkFFGJuOucwke5U0bgWnrG6kw==
+  version "0.28.1"
   dependencies:
-    "@microsoft/node-core-library" "3.12.0"
-    "@microsoft/ts-command-line" "4.2.3"
-    "@microsoft/tsdoc" "0.12.7"
+    "@bazel/hide-bazel-files" latest
+  optionalDependencies:
+    "@bazel/bazel-darwin_x64" "0.28.1"
+    "@bazel/bazel-linux_x64" "0.28.1"
+    "@bazel/bazel-win32_x64" "0.28.1"
+
+"@bazel/hide-bazel-files@latest":
+  version "0.37.1"
+  resolved "https://registry.yarnpkg.com/@bazel/hide-bazel-files/-/hide-bazel-files-0.37.1.tgz#70702139318996672d279024076427f2b8ab6879"
+  integrity sha512-9wDXQHG4MitPIFvQOKi1zFzSI79mzH5R3iWa/e/nuhD+uVfeOaoyAGTCiwxm13/sGt/Hjlx3vRb8WT7ucq0ouw==
+
+"@microsoft/api-extractor-model@7.4.1":
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.4.1.tgz#3376f72570d336960c9b7b0dd44c8a0dbbe34604"
+  integrity sha512-rBO/QbrOMCdL8e9qwhIu1aH4C5sKOnUO1YhEh3+kVieFzTjiRnync7ghyQOtCaCVl2VXtp4LuOIv02e82oRqUg==
+  dependencies:
+    "@microsoft/node-core-library" "3.14.2"
+    "@microsoft/tsdoc" "0.12.14"
     "@types/node" "8.5.8"
-    "@types/z-schema" "3.16.31"
+
+"@microsoft/api-extractor@^7.3.9":
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.4.2.tgz#440023cf05c69840e054cdb5f85cab9680227a40"
+  integrity sha512-O8OEaFvsvWEuwkOcVyWegIAFDY6TBZBvSIoOKLsSQYiQZtryGf13e2ym83iewhbUN7RmuOJtyQUKlBvcJbpgQA==
+  dependencies:
+    "@microsoft/api-extractor-model" "7.4.1"
+    "@microsoft/node-core-library" "3.14.2"
+    "@microsoft/ts-command-line" "4.2.8"
+    "@microsoft/tsdoc" "0.12.14"
     colors "~1.2.1"
-    lodash "~4.17.5"
+    lodash "~4.17.15"
     resolve "1.8.1"
     source-map "~0.6.1"
-    typescript "~3.1.6"
-    z-schema "~3.18.3"
+    typescript "~3.5.3"
 
-"@microsoft/node-core-library@3.12.0":
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.12.0.tgz#f9c27b8bb6b55d60b91d4e1962f42b03b9f8f47f"
-  integrity sha512-9T2dEXmmxZqnqcpHuIB8mTAOM/DNSi/QcAwKYDjvZvkd+PGT5lCUXjM9GL7SaR2NPa3UrWDGgFhNoqLqLfEPbw==
+"@microsoft/node-core-library@3.14.2":
+  version "3.14.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.14.2.tgz#255d421963f2d447a19f935e3c8eb3053e8e381b"
+  integrity sha512-bd8XhqhIvXsWg/SSNsZJdJxkN8Ucj7XKQkRe4cdYiKqpVdAREvW/shw8AoZIdgvjLI53029I/MO2Wn/AjGD3Jw==
   dependencies:
     "@types/fs-extra" "5.0.4"
     "@types/jju" "~1.4.0"
@@ -115,20 +129,20 @@
     jju "~1.4.0"
     z-schema "~3.18.3"
 
-"@microsoft/ts-command-line@4.2.3":
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/@microsoft/ts-command-line/-/ts-command-line-4.2.3.tgz#20d6a1684148b9fc0df25ee7335c3bb227d47d4f"
-  integrity sha512-SIs4q7RcG7efBbh5Ffrf6V4jVLxWihD4NDRY3+gPiOG8CYawBzE22tTEloZ1yj/FBvBZQkQ0GYwXoPhn6ElYXA==
+"@microsoft/ts-command-line@4.2.8":
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/@microsoft/ts-command-line/-/ts-command-line-4.2.8.tgz#92f4c85d0a4b893090fe6605f255e272b270495e"
+  integrity sha512-K4sc8/OJ/y5uQPWJFACMExS2UIqF+t3vdQ2A9Mhl9tMsp70CXf0sp6Y9ENYju1K7XWwR5Clh8dkP2jO1Ntlg1g==
   dependencies:
     "@types/argparse" "1.0.33"
     "@types/node" "8.5.8"
     argparse "~1.0.9"
     colors "~1.2.1"
 
-"@microsoft/tsdoc@0.12.7":
-  version "0.12.7"
-  resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.12.7.tgz#8fb4a9f4fdf01f1469c9fc54b0ad2d36ec57c25d"
-  integrity sha512-0bqNlQT8aR4Iq9xx/OsY579Zeqon9uTZDIuvl+XXu16TPPN2sASeKojwm366jA2MjgXd9iyTWpJM5/P1QJ4Dxg==
+"@microsoft/tsdoc@0.12.14":
+  version "0.12.14"
+  resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.12.14.tgz#0e0810a0a174e50e22dfe8edb30599840712f22d"
+  integrity sha512-518yewjSga1jLdiLrcmpMFlaba5P+50b0TWNFUpC+SL9Yzf0kMi57qw+bMl+rQ08cGqH1vLx4eg9YFUbZXgZ0Q==
 
 "@schematics/angular@8.0.0-beta.15", "@schematics/angular@^8.0.0-beta.15":
   version "8.0.0-beta.15"
@@ -902,10 +916,15 @@ lodash.isequal@^4.0.0:
   resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
   integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
 
-lodash@^4.17.11, lodash@~4.17.5:
+lodash@^4.17.11:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
+
+lodash@~4.17.15:
+  version "4.17.15"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
+  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
 
 lru-cache@^4.1.2, lru-cache@^4.1.3:
   version "4.1.5"
@@ -1641,10 +1660,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@~3.1.6:
-  version "3.1.6"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.1.6.tgz#b6543a83cfc8c2befb3f4c8fba6896f5b0c9be68"
-  integrity sha512-tDMYfVtvpb96msS1lDX9MEdHrW4yOuZ4Kdc4Him9oU796XldPYF/t2+uKoX0BBa0hXXwDlqYQbXY5Rzjzc5hBA==
+typescript@~3.5.3:
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"
+  integrity sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
 
 unique-filename@^1.1.1:
   version "1.1.1"
