@@ -26,13 +26,21 @@ import {SchematicsException} from '@angular-devkit/schematics';
 let ts: typeof typescript;
 
 try {
-  ts = require('@schematics/angular/node_modules/typescript');
+  ts = require('@schematics/angular/third_party/github.com/Microsoft/TypeScript/lib/typescript');
 } catch {
+  // Fallback for CLI versions before v8.0.0. The TypeScript dependency has been dropped in
+  // CLI version v8.0.0 but older CLI versions can still run the latest generation schematics.
+  // See: https://github.com/angular/angular-cli/commit/bf1c069f73c8e3d4f0e8d584cbfb47c408c1730b
   try {
-    ts = require('typescript');
+    ts = require('@schematics/angular/node_modules/typescript');
   } catch {
-    throw new SchematicsException('Error: Could not find a TypeScript version for the ' +
-      'schematics. Please report an issue on the Angular Material repository.');
+    try {
+      ts = require('typescript');
+    } catch {
+      throw new SchematicsException(
+          'Error: Could not find a TypeScript version for the ' +
+          'schematics. Please report an issue on the Angular Material repository.');
+    }
   }
 }
 
