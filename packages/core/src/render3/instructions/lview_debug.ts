@@ -10,6 +10,7 @@ import {AttributeMarker, ComponentTemplate} from '..';
 import {SchemaMetadata} from '../../core';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
+import {initNgDevMode} from '../../util/ng_dev_mode';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
@@ -24,6 +25,7 @@ import {isStylingContext} from '../styling_next/util';
 import {attachDebugObject} from '../util/debug_utils';
 import {getTNode, unwrapRNode} from '../util/view_utils';
 
+const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
 
 /*
  * This file contains conditionally attached classes which provide human readable (debug) level
@@ -54,8 +56,7 @@ import {getTNode, unwrapRNode} from '../util/view_utils';
  * ```
  */
 
-
-export const LViewArray = ngDevMode && createNamedArrayType('LView');
+export const LViewArray = NG_DEV_MODE && createNamedArrayType('LView') || null !as ArrayConstructor;
 let LVIEW_EMPTY: unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
                              // constructor could have side-effects.
 /**
@@ -64,7 +65,7 @@ let LVIEW_EMPTY: unknown[];  // can't initialize here or it will not be tree sha
  * Simple slice will keep the same type, and we need it to be LView
  */
 export function cloneToLView(list: any[]): LView {
-  if (LVIEW_EMPTY === undefined) LVIEW_EMPTY = new LViewArray !();
+  if (LVIEW_EMPTY === undefined) LVIEW_EMPTY = new LViewArray();
   return LVIEW_EMPTY.concat(list) as any;
 }
 
@@ -195,7 +196,7 @@ function processTNodeChildren(tNode: TNode | null, buf: string[]) {
   }
 }
 
-const TViewData = ngDevMode && createNamedArrayType('TViewData');
+const TViewData = NG_DEV_MODE && createNamedArrayType('TViewData') || null !as ArrayConstructor;
 let TVIEWDATA_EMPTY:
     unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
                 // constructor could have side-effects.
@@ -205,18 +206,26 @@ let TVIEWDATA_EMPTY:
  * Simple slice will keep the same type, and we need it to be TData
  */
 export function cloneToTViewData(list: any[]): TData {
-  if (TVIEWDATA_EMPTY === undefined) TVIEWDATA_EMPTY = new TViewData !();
+  if (TVIEWDATA_EMPTY === undefined) TVIEWDATA_EMPTY = new TViewData();
   return TVIEWDATA_EMPTY.concat(list) as any;
 }
 
-export const LViewBlueprint = ngDevMode && createNamedArrayType('LViewBlueprint');
-export const MatchesArray = ngDevMode && createNamedArrayType('MatchesArray');
-export const TViewComponents = ngDevMode && createNamedArrayType('TViewComponents');
-export const TNodeLocalNames = ngDevMode && createNamedArrayType('TNodeLocalNames');
-export const TNodeInitialInputs = ngDevMode && createNamedArrayType('TNodeInitialInputs');
-export const TNodeInitialData = ngDevMode && createNamedArrayType('TNodeInitialData');
-export const LCleanup = ngDevMode && createNamedArrayType('LCleanup');
-export const TCleanup = ngDevMode && createNamedArrayType('TCleanup');
+export const LViewBlueprint =
+    NG_DEV_MODE && createNamedArrayType('LViewBlueprint') || null !as ArrayConstructor;
+export const MatchesArray =
+    NG_DEV_MODE && createNamedArrayType('MatchesArray') || null !as ArrayConstructor;
+export const TViewComponents =
+    NG_DEV_MODE && createNamedArrayType('TViewComponents') || null !as ArrayConstructor;
+export const TNodeLocalNames =
+    NG_DEV_MODE && createNamedArrayType('TNodeLocalNames') || null !as ArrayConstructor;
+export const TNodeInitialInputs =
+    NG_DEV_MODE && createNamedArrayType('TNodeInitialInputs') || null !as ArrayConstructor;
+export const TNodeInitialData =
+    NG_DEV_MODE && createNamedArrayType('TNodeInitialData') || null !as ArrayConstructor;
+export const LCleanup =
+    NG_DEV_MODE && createNamedArrayType('LCleanup') || null !as ArrayConstructor;
+export const TCleanup =
+    NG_DEV_MODE && createNamedArrayType('TCleanup') || null !as ArrayConstructor;
 
 
 
