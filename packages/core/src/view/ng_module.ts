@@ -12,6 +12,7 @@ import {INJECTOR, setCurrentInjector} from '../di/injector_compatibility';
 import {getInjectableDef, ɵɵInjectableDef} from '../di/interface/defs';
 import {APP_ROOT} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';
+import {newArray} from '../util/array_utils';
 import {stringify} from '../util/stringify';
 
 import {DepDef, DepFlags, NgModuleData, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from './types';
@@ -65,7 +66,7 @@ export function moduleDef(providers: NgModuleProviderDef[]): NgModuleDefinition 
 
 export function initNgModule(data: NgModuleData) {
   const def = data._def;
-  const providers = data._providers = new Array(def.providers.length);
+  const providers = data._providers = newArray(def.providers.length);
   for (let i = 0; i < def.providers.length; i++) {
     const provDef = def.providers[i];
     if (!(provDef.flags & NodeFlags.LazyProvider)) {
@@ -179,7 +180,7 @@ function _createClass(ngModule: NgModuleData, ctor: any, deps: DepDef[]): any {
           resolveNgModuleDep(ngModule, deps[0]), resolveNgModuleDep(ngModule, deps[1]),
           resolveNgModuleDep(ngModule, deps[2]));
     default:
-      const depValues = new Array(len);
+      const depValues = [];
       for (let i = 0; i < len; i++) {
         depValues[i] = resolveNgModuleDep(ngModule, deps[i]);
       }
@@ -201,7 +202,7 @@ function _callFactory(ngModule: NgModuleData, factory: any, deps: DepDef[]): any
           resolveNgModuleDep(ngModule, deps[0]), resolveNgModuleDep(ngModule, deps[1]),
           resolveNgModuleDep(ngModule, deps[2]));
     default:
-      const depValues = Array(len);
+      const depValues = [];
       for (let i = 0; i < len; i++) {
         depValues[i] = resolveNgModuleDep(ngModule, deps[i]);
       }

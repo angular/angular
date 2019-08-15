@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {newArray} from '../../util/array_utils';
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
 import {TVIEW, T_HOST} from '../interfaces/view';
@@ -81,7 +82,7 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
     // projection slot with the wildcard selector.
     const numProjectionSlots = projectionSlots ? projectionSlots.length : 1;
     const projectionHeads: (TNode | null)[] = componentNode.projection =
-        new Array(numProjectionSlots).fill(null);
+        newArray(numProjectionSlots, null !as TNode);
     const tails: (TNode | null)[] = projectionHeads.slice();
 
     let componentChild: TNode|null = componentNode.child;

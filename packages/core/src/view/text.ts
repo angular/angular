@@ -11,7 +11,7 @@ import {checkAndUpdateBinding, getParentRenderElement} from './util';
 
 export function textDef(
     checkIndex: number, ngContentIndex: number | null, staticText: string[]): NodeDef {
-  const bindings: BindingDef[] = new Array(staticText.length - 1);
+  const bindings: BindingDef[] = [];
   for (let i = 1; i < staticText.length; i++) {
     bindings[i - 1] = {
       flags: BindingFlags.TypeProperty,

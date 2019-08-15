@@ -278,9 +278,9 @@ function createClass(
           resolveDep(view, elDef, allowPrivateServices, deps[1]),
           resolveDep(view, elDef, allowPrivateServices, deps[2]));
     default:
-      const depValues = new Array(len);
+      const depValues = [];
       for (let i = 0; i < len; i++) {
-        depValues[i] = resolveDep(view, elDef, allowPrivateServices, deps[i]);
+        depValues.push(resolveDep(view, elDef, allowPrivateServices, deps[i]));
       }
       return new ctor(...depValues);
   }
@@ -305,9 +305,9 @@ function callFactory(
           resolveDep(view, elDef, allowPrivateServices, deps[1]),
           resolveDep(view, elDef, allowPrivateServices, deps[2]));
     default:
-      const depValues = Array(len);
+      const depValues = [];
       for (let i = 0; i < len; i++) {
-        depValues[i] = resolveDep(view, elDef, allowPrivateServices, deps[i]);
+        depValues.push(resolveDep(view, elDef, allowPrivateServices, deps[i]));
       }
       return factory(...depValues);
   }

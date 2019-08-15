@@ -10,6 +10,8 @@ import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
+import {newArray} from '@angular/compiler/src/util';
+
 import {stripSourceMapAndNewLine} from './abstract_emitter_spec';
 
 const someGenFilePath = 'somePackage/someGenFile';
@@ -160,7 +162,7 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
     });
 
     it('should break expressions into multiple lines if they are too long', () => {
-      const values: o.Expression[] = new Array(100);
+      const values: o.Expression[] = newArray(100);
       values.fill(o.literal(1));
       values.splice(50, 0, o.fn([], [new o.ReturnStatement(o.literal(1))]));
       expect(emitStmt(o.variable('fn').callFn(values).toStmt())).toEqual([

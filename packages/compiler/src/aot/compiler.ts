@@ -14,7 +14,6 @@ import {MessageBundle} from '../i18n/message_bundle';
 import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {InjectableCompiler} from '../injectable_compiler';
 import {CompileMetadataResolver} from '../metadata_resolver';
-import * as html from '../ml_parser/ast';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {removeWhitespaces} from '../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
@@ -32,7 +31,7 @@ import {SummaryResolver} from '../summary_resolver';
 import {BindingParser} from '../template_parser/binding_parser';
 import {TemplateAst} from '../template_parser/template_ast';
 import {TemplateParser} from '../template_parser/template_parser';
-import {OutputContext, ValueVisitor, error, syntaxError, visitValue} from '../util';
+import {OutputContext, ValueVisitor, error, newArray, syntaxError, visitValue} from '../util';
 import {TypeCheckCompiler} from '../view_compiler/type_check_compiler';
 import {ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
 
@@ -690,7 +689,7 @@ export class AotCompiler {
           const suppliedTypeParams = typeParams || [];
           const missingTypeParamsCount = arity - suppliedTypeParams.length;
           const allTypeParams =
-              suppliedTypeParams.concat(new Array(missingTypeParamsCount).fill(o.DYNAMIC_TYPE));
+              suppliedTypeParams.concat(newArray(missingTypeParamsCount, o.DYNAMIC_TYPE));
           return members.reduce(
               (expr, memberName) => expr.prop(memberName),
               <o.Expression>o.importExpr(
