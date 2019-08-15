@@ -14,8 +14,8 @@ import {AstResult, TemplateInfo} from './common';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {ExternalTemplate, InlineTemplate, getClassDeclFromTemplateNode} from './template';
-import {Declaration, DeclarationError, Declarations, Diagnostic, DiagnosticKind, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
-import {findTighestNode} from './utils';
+import {Declaration, DeclarationError, Diagnostic, DiagnosticKind, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
+import {findTightestNode, getDirectiveClassLike} from './utils';
 
 /**
  * Create a `LanguageServiceHost`
@@ -194,24 +194,50 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return results;
   }
 
-  getDeclarations(fileName: string): Declarations {
+  /**
+   * Return metadata about all class declarations in the file that are Angular
+   * directives. Potential matches are `@NgModule`, `@Component`, `@Directive`,
+   * `@Pipes`, etc. class declarations.
+   *
+   * @param fileName TS file
+   */
+  getDeclarations(fileName: string): Declaration[] {
     if (!fileName.endsWith('.ts')) {
       return [];
     }
-    const result: Declarations = [];
     const sourceFile = this.getSourceFile(fileName);
-    if (sourceFile) {
-      const visit = (child: ts.Node) => {
-        const declaration = this.getDeclarationFromNode(sourceFile, child);
-        if (declaration) {
-          result.push(declaration);
-        } else {
-          ts.forEachChild(child, visit);
-        }
-      };
-      ts.forEachChild(sourceFile, visit);
+    if (!sourceFile) {
+      return [];
     }
-    return result;
+    const results: Declaration[] = [];
+    const visit = (child: ts.Node) => {
+      const candidate = getDirectiveClassLike(child);
+      if (candidate) {
+        const {decoratorId, classDecl} = candidate;
+        const declarationSpan = spanOf(decoratorId);
+        const className = classDecl.name !.text;
+        const classSymbol = this.reflector.getStaticSymbol(sourceFile.fileName, className);
+        // Ask the resolver to check if candidate is actually Angular directive
+        if (!this.resolver.isDirective(classSymbol)) {
+          return;
+        }
+        const data = this.resolver.getNonNormalizedDirectiveMetadata(classSymbol);
+        if (!data) {
+          return;
+        }
+        results.push({
+          type: classSymbol,
+          declarationSpan,
+          metadata: data.metadata,
+          errors: this.getCollectedErrors(declarationSpan, sourceFile),
+        });
+      } else {
+        child.forEachChild(visit);
+      }
+    };
+    ts.forEachChild(sourceFile, visit);
+
+    return results;
   }
 
   getSourceFile(fileName: string): ts.SourceFile|undefined {
@@ -276,7 +302,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
    * })
    * class AppComponent {}
    *           ^---- class declaration node
-   *
    *
    * @param node Potential template node
    */
@@ -355,49 +380,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     });
   }
 
-  private getDeclarationFromNode(sourceFile: ts.SourceFile, node: ts.Node): Declaration|undefined {
-    if (node.kind == ts.SyntaxKind.ClassDeclaration && node.decorators &&
-        (node as ts.ClassDeclaration).name) {
-      for (const decorator of node.decorators) {
-        if (decorator.expression && decorator.expression.kind == ts.SyntaxKind.CallExpression) {
-          const classDeclaration = node as ts.ClassDeclaration;
-          if (classDeclaration.name) {
-            const call = decorator.expression as ts.CallExpression;
-            const target = call.expression;
-            const type = this.program.getTypeChecker().getTypeAtLocation(target);
-            if (type) {
-              const staticSymbol =
-                  this.reflector.getStaticSymbol(sourceFile.fileName, classDeclaration.name.text);
-              try {
-                if (this.resolver.isDirective(staticSymbol as any)) {
-                  const {metadata} =
-                      this.resolver.getNonNormalizedDirectiveMetadata(staticSymbol as any) !;
-                  const declarationSpan = spanOf(target);
-                  return {
-                    type: staticSymbol,
-                    declarationSpan,
-                    metadata,
-                    errors: this.getCollectedErrors(declarationSpan, sourceFile)
-                  };
-                }
-              } catch (e) {
-                if (e.message) {
-                  this.collectError(e, sourceFile.fileName);
-                  const declarationSpan = spanOf(target);
-                  return {
-                    type: staticSymbol,
-                    declarationSpan,
-                    errors: this.getCollectedErrors(declarationSpan, sourceFile)
-                  };
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
   /**
    * Return the parsed template for the template at the specified `position`.
    * @param fileName TS or HTML file
@@ -411,7 +393,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         return;
       }
       // Find the node that most closely matches the position
-      const node = findTighestNode(sourceFile, position);
+      const node = findTightestNode(sourceFile, position);
       if (!node) {
         return;
       }
