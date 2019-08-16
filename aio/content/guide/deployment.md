@@ -41,7 +41,7 @@ You will need two terminals to get the live-reload experience.
 
   <code-example language="none" class="code-shell">
 
-   lite-server --baseDir="dist"
+   lite-server --baseDir="dist/project-name"
 
   </code-example>
 
