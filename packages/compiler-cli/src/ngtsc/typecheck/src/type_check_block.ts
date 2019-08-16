@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, ImplicitReceiver, MethodCall, ParseSourceSpan, ParseSpan, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, ImplicitReceiver, MethodCall, ParseSourceSpan, ParseSpan, PropertyRead, SchemaMetadata, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -14,6 +14,7 @@ import {ClassDeclaration} from '../../reflection';
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
 import {addParseSpanInfo, addSourceId, toAbsoluteSpan, wrapForDiagnostics} from './diagnostics';
+import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {astToTypescript} from './expression';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
@@ -33,8 +34,9 @@ import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsC
  */
 export function generateTypeCheckBlock(
     env: Environment, ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, name: ts.Identifier,
-    meta: TypeCheckBlockMetadata): ts.FunctionDeclaration {
-  const tcb = new Context(env, meta.boundTarget, meta.pipes);
+    meta: TypeCheckBlockMetadata, domSchemaChecker: DomSchemaChecker): ts.FunctionDeclaration {
+  const tcb =
+      new Context(env, domSchemaChecker, meta.id, meta.boundTarget, meta.pipes, meta.schemas);
   const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !);
   const ctxRawType = env.referenceType(ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
@@ -300,6 +302,49 @@ class TcbDirectiveOp extends TcbOp {
 }
 
 /**
+ * A `TcbOp` which feeds elements and unclaimed properties to the `DomSchemaChecker`.
+ *
+ * The DOM schema is not checked via TCB code generation. Instead, the `DomSchemaChecker` ingests
+ * elements and property bindings and accumulates synthetic `ts.Diagnostic`s out-of-band. These are
+ * later merged with the diagnostics generated from the TCB.
+ *
+ * For convenience, the TCB iteration of the template is used to drive the `DomSchemaChecker` via
+ * the `TcbDomSchemaCheckerOp`.
+ */
+class TcbDomSchemaCheckerOp extends TcbOp {
+  constructor(
+      private tcb: Context, private element: TmplAstElement, private checkElement: boolean,
+      private claimedInputs: Set<string>) {
+    super();
+  }
+
+  execute(): ts.Expression|null {
+    if (this.checkElement) {
+      this.tcb.domSchemaChecker.checkElement(this.tcb.id, this.element, this.tcb.schemas);
+    }
+
+    // TODO(alxhub): this could be more efficient.
+    for (const binding of this.element.inputs) {
+      if (binding.type === BindingType.Property && this.claimedInputs.has(binding.name)) {
+        // Skip this binding as it was claimed by a directive.
+        continue;
+      }
+
+      if (binding.type === BindingType.Property) {
+        if (binding.name !== 'style' && binding.name !== 'class') {
+          // A direct binding to a property.
+          const propertyName = ATTR_TO_PROP[binding.name] || binding.name;
+          this.tcb.domSchemaChecker.checkProperty(
+              this.tcb.id, this.element, propertyName, binding.sourceSpan, this.tcb.schemas);
+        }
+      }
+    }
+    return null;
+  }
+}
+
+
+/**
  * Mapping between attributes names that don't correspond to their element property names.
  * Note: this mapping has to be kept in sync with the equally named mapping in the runtime.
  */
@@ -316,6 +361,9 @@ const ATTR_TO_PROP: {[name: string]: string} = {
  * A `TcbOp` which generates code to check "unclaimed inputs" - bindings on an element which were
  * not attributed to any directive or component, and are instead processed against the HTML element
  * itself.
+ *
+ * Currently, only the expressions of these bindings are checked. The targets of the bindings are
+ * checked against the DOM schema via a `TcbDomSchemaCheckerOp`.
  *
  * Executing this operation returns nothing.
  */
@@ -343,11 +391,11 @@ class TcbUnclaimedInputsOp extends TcbOp {
 
       // If checking the type of bindings is disabled, cast the resulting expression to 'any' before
       // the assignment.
-      if (!this.tcb.env.config.checkTypeOfBindings) {
+      if (!this.tcb.env.config.checkTypeOfInputBindings) {
         expr = tsCastToAny(expr);
       }
 
-      if (binding.type === BindingType.Property) {
+      if (this.tcb.env.config.checkTypeOfDomBindings && binding.type === BindingType.Property) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           // A direct binding to a property.
           const propertyName = ATTR_TO_PROP[binding.name] || binding.name;
@@ -390,8 +438,10 @@ export class Context {
   private nextId = 1;
 
   constructor(
-      readonly env: Environment, readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-      private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>) {}
+      readonly env: Environment, readonly domSchemaChecker: DomSchemaChecker, readonly id: string,
+      readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
+      private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
+      readonly schemas: SchemaMetadata[]) {}
 
   /**
    * Allocate a new variable name for use within the `Context`.
@@ -644,6 +694,8 @@ class Scope {
       // to add them if needed.
       if (node instanceof TmplAstElement) {
         this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
+        this.opQueue.push(
+            new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs));
       }
       return;
     }
@@ -667,6 +719,12 @@ class Scope {
       }
 
       this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
+      // If there are no directives which match this element, then it's a "plain" DOM element (or a
+      // web component), and should be checked against the DOM schema. If any directives match,
+      // we must assume that the element could be custom (either a component, or a directive like
+      // <router-outlet>) and shouldn't validate the element name itself.
+      const checkElement = directives.length === 0;
+      this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
     }
   }
 }
@@ -722,7 +780,7 @@ function tcbCallTypeCtor(
   // Construct an array of `ts.PropertyAssignment`s for each input of the directive that has a
   // matching binding.
   const members = bindings.map(({field, expression, sourceSpan}) => {
-    if (!tcb.env.config.checkTypeOfBindings) {
+    if (!tcb.env.config.checkTypeOfInputBindings) {
       expression = tsCastToAny(expression);
     }
     const assignment = ts.createPropertyAssignment(field, wrapForDiagnostics(expression));
