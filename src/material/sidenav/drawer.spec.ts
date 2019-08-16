@@ -52,7 +52,7 @@ describe('MatDrawer', () => {
 
       expect(testComponent.openCount).toBe(0);
       expect(testComponent.openStartCount).toBe(0);
-      expect(container.classList).not.toContain('mat-drawer-opened');
+      expect(container.classList).not.toContain('mat-drawer-container-has-open');
 
       tick();
       expect(testComponent.openStartCount).toBe(1);
@@ -60,7 +60,7 @@ describe('MatDrawer', () => {
 
       expect(testComponent.openCount).toBe(1);
       expect(testComponent.openStartCount).toBe(1);
-      expect(container.classList).toContain('mat-drawer-opened');
+      expect(container.classList).toContain('mat-drawer-container-has-open');
     }));
 
     it('should be able to close', fakeAsync(() => {
@@ -80,7 +80,7 @@ describe('MatDrawer', () => {
 
       expect(testComponent.closeCount).toBe(0);
       expect(testComponent.closeStartCount).toBe(0);
-      expect(container.classList).toContain('mat-drawer-opened');
+      expect(container.classList).toContain('mat-drawer-container-has-open');
 
       flush();
       expect(testComponent.closeStartCount).toBe(1);
@@ -88,7 +88,7 @@ describe('MatDrawer', () => {
 
       expect(testComponent.closeCount).toBe(1);
       expect(testComponent.closeStartCount).toBe(1);
-      expect(container.classList).not.toContain('mat-drawer-opened');
+      expect(container.classList).not.toContain('mat-drawer-container-has-open');
     }));
 
     it('should resolve the open method promise with the new state of the drawer', fakeAsync(() => {

@@ -40,7 +40,7 @@ $mat-drawer-over-drawer-z-index: 4;
   &[fullscreen] {
     @include mat-fill();
 
-    &.mat-drawer-opened {
+    &.mat-drawer-container-has-open {
       overflow: hidden;
     }
   }

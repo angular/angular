@@ -715,10 +715,13 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
 
   /** Toggles the 'mat-drawer-opened' class on the main 'mat-drawer-container' element. */
   private _setContainerClass(isAdd: boolean): void {
+    const classList = this._element.nativeElement.classList;
+    const className = 'mat-drawer-container-has-open';
+
     if (isAdd) {
-      this._element.nativeElement.classList.add('mat-drawer-opened');
+      classList.add(className);
     } else {
-      this._element.nativeElement.classList.remove('mat-drawer-opened');
+      classList.remove(className);
     }
   }
 
