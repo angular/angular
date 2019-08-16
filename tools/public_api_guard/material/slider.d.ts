@@ -47,6 +47,7 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     _onSlide(event: HammerInput): void;
     _onSlideEnd(): void;
     _onSlideStart(event: HammerInput | null): void;
+    _shouldInvertMouseCoords(): boolean;
     blur(): void;
     focus(options?: FocusOptions): void;
     ngOnDestroy(): void;

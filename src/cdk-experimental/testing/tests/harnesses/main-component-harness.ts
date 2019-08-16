@@ -26,6 +26,8 @@ export class MainComponentHarness extends ComponentHarness {
   readonly allLabels = this.locatorForAll('label');
   readonly allLists = this.locatorForAll(SubComponentHarness);
   readonly memo = this.locatorFor('textarea');
+  readonly clickTest = this.locatorFor('.click-test');
+  readonly clickTestResult = this.locatorFor('.click-test-result');
   // Allow null for element
   readonly nullItem = this.locatorForOptional('wrong locator');
   // Allow null for component harness
@@ -36,7 +38,7 @@ export class MainComponentHarness extends ComponentHarness {
   readonly errorGlobalEl = this.documentRootLocatorFactory().locatorFor('wrong locator');
   readonly nullGlobalEl = this.documentRootLocatorFactory().locatorForOptional('wrong locator');
 
-  readonly optionalDiv = this.locatorForOptional('div');
+  readonly optionalUsername = this.locatorForOptional('#username');
   readonly optionalSubComponent = this.locatorForOptional(SubComponentHarness);
   readonly errorSubComponent = this.locatorFor(WrongComponentHarness);
 

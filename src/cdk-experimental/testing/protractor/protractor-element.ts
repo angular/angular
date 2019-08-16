@@ -8,6 +8,7 @@
 
 import {ModifierKeys} from '@angular/cdk/testing';
 import {browser, ElementFinder, Key} from 'protractor';
+import {ElementDimensions} from '../element-dimensions';
 import {TestElement, TestKey} from '../test-element';
 
 /** Maps the `TestKey` constants to Protractor's `Key` constants. */
@@ -74,8 +75,11 @@ export class ProtractorElement implements TestElement {
     return this.element.clear();
   }
 
-  async click(): Promise<void> {
-    return this.element.click();
+  async click(relativeX = 0, relativeY = 0): Promise<void> {
+    await browser.actions()
+      .mouseMove(await this.element.getWebElement(), {x: relativeX, y: relativeY})
+      .click()
+      .perform();
   }
 
   async focus(): Promise<void> {
@@ -125,5 +129,11 @@ export class ProtractorElement implements TestElement {
   async hasClass(name: string): Promise<boolean> {
     const classes = (await this.getAttribute('class')) || '';
     return new Set(classes.split(/\s+/).filter(c => c)).has(name);
+  }
+
+  async getDimensions(): Promise<ElementDimensions> {
+    const {width, height} = await this.element.getSize();
+    const {x: left, y: top} = await this.element.getLocation();
+    return {width, height, left, top};
   }
 }

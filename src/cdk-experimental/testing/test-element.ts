@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/** Keyboard keys that do not result in input characters. */
 import {ModifierKeys} from '@angular/cdk/testing';
+import {ElementDimensions} from './element-dimensions';
 
 /** An enum of non-text keys that can be used with the `sendKeys` method. */
 // NOTE: This is a separate enum from `@angular/cdk/keycodes` because we don't necessarily want to
@@ -59,8 +59,12 @@ export interface TestElement {
   /** Clear the element's input (for input elements only). */
   clear(): Promise<void>;
 
-  /** Click the element. */
-  click(): Promise<void>;
+  /**
+   * Click the element.
+   * @param relativeX Coordinate within the element, along the X-axis at which to click.
+   * @param relativeY Coordinate within the element, along the Y-axis at which to click.
+   */
+  click(relativeX?: number, relativeY?: number): Promise<void>;
 
   /** Focus the element. */
   focus(): Promise<void>;
@@ -94,4 +98,7 @@ export interface TestElement {
 
   /** Checks whether the element has the given class. */
   hasClass(name: string): Promise<boolean>;
+
+  /** Gets the dimensions of the element. */
+  getDimensions(): Promise<ElementDimensions>;
 }

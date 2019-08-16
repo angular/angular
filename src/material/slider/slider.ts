@@ -132,6 +132,9 @@ const _MatSliderMixinBase:
     '[class.mat-slider-has-ticks]': 'tickInterval',
     '[class.mat-slider-horizontal]': '!vertical',
     '[class.mat-slider-axis-inverted]': '_invertAxis',
+    // Class binding which is only used by the test harness as there is no other
+    // way for the harness to detect if mouse coordinates need to be inverted.
+    '[class.mat-slider-invert-mouse-coords]': '_shouldInvertMouseCoords()',
     '[class.mat-slider-sliding]': '_isSliding',
     '[class.mat-slider-thumb-label-showing]': 'thumbLabel',
     '[class.mat-slider-vertical]': 'vertical',
@@ -451,7 +454,7 @@ export class MatSlider extends _MatSliderMixinBase
    * Whether mouse events should be converted to a slider position by calculating their distance
    * from the right or bottom edge of the slider as opposed to the top or left.
    */
-  private _shouldInvertMouseCoords() {
+  _shouldInvertMouseCoords() {
     return (this._getDirection() == 'rtl' && !this.vertical) ? !this._invertAxis : this._invertAxis;
   }
 

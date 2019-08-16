@@ -17,6 +17,7 @@ import {
   typeInElement
 } from '@angular/cdk/testing';
 import {TestElement, TestKey} from '../test-element';
+import {ElementDimensions} from '../element-dimensions';
 
 /** Maps `TestKey` constants to the `keyCode` and `key` values used by native browser events. */
 const keyMap = {
@@ -71,9 +72,16 @@ export class UnitTestElement implements TestElement {
     await this._stabilize();
   }
 
-  async click(): Promise<void> {
+  async click(relativeX = 0, relativeY = 0): Promise<void> {
     await this._stabilize();
-    dispatchMouseEvent(this.element, 'click');
+    const {left, top} = this.element.getBoundingClientRect();
+    // Round the computed click position as decimal pixels are not
+    // supported by mouse events and could lead to unexpected results.
+    const clientX = Math.round(left + relativeX);
+    const clientY = Math.round(top + relativeY);
+    dispatchMouseEvent(this.element, 'mousedown', clientX, clientY);
+    dispatchMouseEvent(this.element, 'mouseup', clientX, clientY);
+    dispatchMouseEvent(this.element, 'click', clientX, clientY);
     await this._stabilize();
   }
 
@@ -125,5 +133,10 @@ export class UnitTestElement implements TestElement {
   async hasClass(name: string): Promise<boolean> {
     await this._stabilize();
     return this.element.classList.contains(name);
+  }
+
+  async getDimensions(): Promise<ElementDimensions> {
+    await this._stabilize();
+    return this.element.getBoundingClientRect();
   }
 }

@@ -100,6 +100,8 @@
 # Note to implementer: please repossess
 /src/material-experimental/mdc-radio/**            @mmalerba
 /src/material-experimental/mdc-slide-toggle/**     @crisbeto
+# Note to implementer: please repossess
+/src/material-experimental/mdc-slider/**           @devversion
 /src/material-experimental/mdc-tabs/**             @crisbeto
 /src/material-experimental/mdc-sidenav/**          @crisbeto
 /src/material-experimental/mdc-theming/**          @mmalerba

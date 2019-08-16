@@ -1,4 +1,9 @@
-<h1 style="height: 50px">Main Component</h1>
+<div class="click-test" (click)="onClick($event)"
+     style="width: 100px; height: 100px; background: grey"
+     #clickTestElement>
+</div>
+<div class="click-test-result">{{relativeX}}-{{relativeY}}</div>
+<h1 style="height: 100px; width: 200px;">Main Component</h1>
 <div id="username">Hello {{username}} from Angular 2!</div>
 <div class="counters">
   <button (click)="click()">Up</button><br>

@@ -103,7 +103,7 @@ describe('TestbedHarnessEnvironment', () => {
     });
 
     it('should locate an optional element based on CSS selector', async () => {
-      const present = await harness.optionalDiv();
+      const present = await harness.optionalUsername();
       const missing = await harness.nullItem();
       expect(present).not.toBeNull();
       expect(await present!.text()).toBe('Hello Yi from Angular 2!');
@@ -212,6 +212,13 @@ describe('TestbedHarnessEnvironment', () => {
       expect(await counter.text()).toBe('3');
     });
 
+    it('should be able to click at a specific position within an element', async () => {
+      const clickTest = await harness.clickTest();
+      const clickTestResult = await harness.clickTestResult();
+      await clickTest.click(50, 50);
+      expect(await clickTestResult.text()).toBe('50-50');
+    });
+
     it('should be able to send key', async () => {
       const input = await harness.input();
       const value = await harness.value();
@@ -225,6 +232,11 @@ describe('TestbedHarnessEnvironment', () => {
       const input = await harness.input();
       await input.sendKeys('Yi');
       expect(await input.getAttribute('id')).toBe(document.activeElement!.id);
+    });
+
+    it('should be able to retrieve dimensions', async () => {
+      const dimensions = await (await harness.title()).getDimensions();
+      expect(dimensions).toEqual(jasmine.objectContaining({height: 100, width: 200}));
     });
 
     it('should be able to hover', async () => {
@@ -248,7 +260,7 @@ describe('TestbedHarnessEnvironment', () => {
 
     it('should be able to getCssValue', async () => {
       const title = await harness.title();
-      expect(await title.getCssValue('height')).toBe('50px');
+      expect(await title.getCssValue('height')).toBe('100px');
     });
 
     it('should focus and blur element', async () => {

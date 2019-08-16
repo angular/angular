@@ -11,6 +11,8 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
+  ViewChild,
   ViewEncapsulation
 } from '@angular/core';
 
@@ -37,6 +39,10 @@ export class TestMainComponent {
   testMethods: string[];
   _isHovering: boolean;
   specialKey = '';
+  relativeX = 0;
+  relativeY = 0;
+
+  @ViewChild('clickTestElement', {static: false}) clickTestElement: ElementRef<HTMLElement>;
 
   onMouseOver() {
     this._isHovering = true;
@@ -74,5 +80,11 @@ export class TestMainComponent {
     if (event.key === 'j' && event.altKey) {
       this.specialKey = 'alt-j';
     }
+  }
+
+  onClick(event: MouseEvent) {
+    const {top, left} = this.clickTestElement.nativeElement.getBoundingClientRect();
+    this.relativeX = Math.round(event.clientX - left);
+    this.relativeY = Math.round(event.clientY - top);
   }
 }
