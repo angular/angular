@@ -39,6 +39,9 @@ declare global {
   interface Window { YT: typeof YT | undefined; }
 }
 
+export const DEFAULT_PLAYER_WIDTH = 640;
+export const DEFAULT_PLAYER_HEIGHT = 390;
+
 // The native YT.Player doesn't expose the set videoId, but we need it for
 // convenience.
 interface Player extends YT.Player {
@@ -62,16 +65,32 @@ type UninitializedPlayer = Pick<Player, 'videoId' | 'destroy' | 'addEventListene
 })
 export class YouTubePlayer implements AfterViewInit, OnDestroy {
   /** YouTube Video ID to view */
-  get videoId(): string | undefined {
-    return this._player && this._player.videoId;
-  }
-
   @Input()
+  get videoId(): string | undefined { return this._player && this._player.videoId; }
   set videoId(videoId: string | undefined) {
     this._videoId.emit(videoId);
   }
-
   private _videoId = new EventEmitter<string | undefined>();
+
+  /** Height of video player */
+  @Input()
+  get height(): number | undefined { return this._height; }
+  set height(height: number | undefined) {
+    this._height = height || DEFAULT_PLAYER_HEIGHT;
+    this._heightObs.emit(this._height);
+  }
+  private _height = DEFAULT_PLAYER_HEIGHT;
+  private _heightObs = new EventEmitter<number>();
+
+  /** Width of video player */
+  @Input()
+  get width(): number | undefined { return this._width; }
+  set width(width: number | undefined) {
+    this._width = width || DEFAULT_PLAYER_WIDTH;
+    this._widthObs.emit(this._width);
+  }
+  private _width = DEFAULT_PLAYER_WIDTH;
+  private _widthObs = new EventEmitter<number>();
 
   /** Outputs are direct proxies from the player itself. */
   @Output() ready = new EventEmitter<YT.PlayerEvent>();
@@ -94,16 +113,24 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
           'Please install the YouTube Player API Reference for iframe Embeds: ' +
           'https://developers.google.com/youtube/iframe_api_reference');
     }
+    // Add initial values to all of the inputs.
+    const widthObs = this._widthObs.pipe(startWith(this._width));
+    const heightObs = this._heightObs.pipe(startWith(this._height));
+
     /** An observable of the currently loaded player. */
     const playerObs =
       createPlayerObservable(
         this._youtubeContainer,
         this._videoId,
+        widthObs,
+        heightObs,
         this.createEventsBoundInZone(),
       ).pipe(waitUntilReady(), takeUntil(this._destroyed), publish());
 
     /** Set up side effects to bind inputs to the player. */
     playerObs.subscribe(player => this._player = player);
+
+    bindSizeToPlayer(playerObs, widthObs, heightObs);
 
     bindCueVideoCall(playerObs, this._videoId, this._destroyed);
 
@@ -144,6 +171,16 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
       this._ngZone.run(() => callback(...args));
     };
   }
+}
+
+/** Listens to changes to the given width and height and sets it on the player. */
+function bindSizeToPlayer(
+  playerObs: Observable<YT.Player | undefined>,
+  widthObs: Observable<number>,
+  heightObs: Observable<number>
+) {
+  return combineLatest(playerObs, widthObs, heightObs)
+      .subscribe(([player, width, height]) => player && player.setSize(width, height));
 }
 
 /**
@@ -190,13 +227,16 @@ function fromPlayerOnReady(player: UninitializedPlayer): Observable<Player> {
 function createPlayerObservable(
   youtubeContainer: Observable<HTMLElement>,
   videoIdObs: Observable<string | undefined>,
+  widthObs: Observable<number>,
+  heightObs: Observable<number>,
   events: YT.Events,
 ): Observable<UninitializedPlayer | undefined> {
 
   const playerOptions =
     videoIdObs
     .pipe(
-      map((videoId) => videoId ? ({videoId, events}) : undefined),
+      withLatestFrom(combineLatest(widthObs, heightObs)),
+      map(([videoId, [width, height]]) => videoId ? ({videoId, width, height, events}) : undefined),
     );
 
   return combineLatest(youtubeContainer, playerOptions)

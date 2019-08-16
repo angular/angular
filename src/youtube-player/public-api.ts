@@ -1,2 +1,2 @@
 export * from './youtube-module';
-export * from './youtube-player';
+export {YouTubePlayer} from './youtube-player';
