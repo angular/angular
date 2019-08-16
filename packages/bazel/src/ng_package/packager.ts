@@ -436,7 +436,9 @@ if (require.main === module) {
   process.exitCode = main(process.argv.slice(2));
 }
 
-function newArray<T>(size: number, value?: T): T[] {
+export function newArray(size: number): any[];
+export function newArray<T>(size: number, value: T): T[];
+export function newArray<T>(size: number, value?: T): T[] {
   const list: T[] = [];
   for (let i = 0; i < size; i++) {
     list.push(value);

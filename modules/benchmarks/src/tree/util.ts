@@ -71,8 +71,8 @@ export function flattenTree(node: TreeNode, target: TreeNode[] = []): TreeNode[]
 
 export function newArray(size: number): any[];
 export function newArray<T>(size: number, value: T): T[];
-export function newArray<T>(size: number, value?: T): any[] {
-  const list: any[] = [];
+export function newArray<T>(size: number, value?: T): T[] {
+  const list: T[] = [];
   for (let i = 0; i < size; i++) {
     list.push(value);
   }

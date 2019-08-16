@@ -255,11 +255,11 @@ const _global: {[name: string]: any} = __global || __window || __self;
 export {_global as global};
 
 export function newArray(size: number): any[];
-export function newArray<T>(size: number, value?: T): T[];
+export function newArray<T>(size: number, value: T): T[];
 export function newArray<T>(size: number, value?: T): T[] {
   const list: T[] = [];
   for (let i = 0; i < size; i++) {
-    list.push(value as T);
+    list.push(value);
   }
   return list;
 }
