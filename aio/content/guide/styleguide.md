@@ -284,7 +284,7 @@ Naming conventions are hugely important to maintainability and readability. This
 
 
 
-**Do** follow a pattern that describes the symbol's feature then its type. The recommended pattern is `feature.type.ts`.
+**Do** follow a pattern that describes the symbol's feature and type. The recommended pattern is `feature.type.ts`. A supported alternate pattern is `type.feature.ts`.
 
 
 </div>
@@ -295,7 +295,7 @@ Naming conventions are hugely important to maintainability and readability. This
 
 
 
-**Why?** Naming conventions help provide a consistent way to find content at a glance. Consistency within the project is vital. Consistency with a team is important. Consistency across a company provides tremendous efficiency.
+**Why?** Naming conventions help provide a consistent way to find content at a glance. Consistency within the project is vital. Consistency with a team is important. Consistency across a company provides tremendous efficiency. For small projects with few features, it is efficient to look up component by a known feature. For large projects with many features, it may be relatively easier to narrow down the search space to components, then search through potentially unknown features for a desired component.
 
 
 </div>
@@ -317,7 +317,7 @@ Naming conventions are hugely important to maintainability and readability. This
 
 
 
-**Why?** Names of folders and files should clearly convey their intent. For example, `app/heroes/hero-list.component.ts` may contain a component that manages a list of heroes.
+**Why?** Names of folders and files should clearly convey their intent. For example, `app/heroes/hero-list.component.ts` may contain a component that manages a list of heroes. When using `--flat=false`, `app/heroes/hero-list-component/hero-list.component.ts` allows systems and humans to more efficiently group and distinguish types without needing to enter a deeper directory level.
 
 
 </div>
