@@ -56,7 +56,7 @@ const enum WalkTNodeTreeAction {
 
   /**
    * node insert in the native environment.
-   * Run after initial creation has been detached and needs to be re-attached
+   * Run when existing node has been detached and needs to be re-attached.
    */
   Insert = 1,
 
@@ -73,7 +73,7 @@ const enum WalkTNodeTreeAction {
  * NOTE: for performance reasons, the possible actions are inlined within the function instead of
  * being passed as an argument.
  */
-function executeActionOnElementOrContainer(
+function applyToElementOrContainer(
     action: WalkTNodeTreeAction, renderer: Renderer3, parent: RElement | null,
     lNodeToHandle: RNode | LContainer | LView, beforeNode?: RNode | null) {
   // If this slot was allocated for a text node dynamically created by i18n, the text node itself
@@ -705,24 +705,24 @@ function applyNodes(
     ngDevMode && assertNodeOfPossibleTypes(
                      tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer,
                      TNodeType.Projection, TNodeType.Projection, TNodeType.IcuContainer);
-    const nativeNode = lView[tNode.index];
+    const rawSlotValue = lView[tNode.index];
     const tNodeType = tNode.type;
     if (isProjection) {
       if (action === WalkTNodeTreeAction.Create) {
-        nativeNode && attachPatchData(nativeNode, lView);
+        rawSlotValue && attachPatchData(unwrapRNode(rawSlotValue), lView);
         tNode.flags |= TNodeFlags.isProjected;
       }
     }
     if ((tNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached) {
       if (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
         applyNodes(renderer, action, tNode.child, lView, renderParent, beforeNode, false);
-        executeActionOnElementOrContainer(action, renderer, renderParent, nativeNode, beforeNode);
+        applyToElementOrContainer(action, renderer, renderParent, rawSlotValue, beforeNode);
       } else if (tNodeType === TNodeType.Projection) {
         applyProjectionRecursive(
             renderer, action, lView, tNode as TProjectionNode, renderParent, beforeNode);
       } else {
         ngDevMode && assertNodeOfPossibleTypes(tNode, TNodeType.Element, TNodeType.Container);
-        executeActionOnElementOrContainer(action, renderer, renderParent, nativeNode, beforeNode);
+        applyToElementOrContainer(action, renderer, renderParent, rawSlotValue, beforeNode);
       }
     }
     tNode = isProjection ? tNode.projectionNext : tNode.next;
@@ -765,7 +765,7 @@ function applyView(
  * `applyProjection` performs operation on the projection.
  *
  * Inserting a projection requires us to locate the projected nodes from the parent component. The
- * complication is that those nodes themselves could be re-projected from its parent component.
+ * complication is that those nodes themselves could be re-projected from their parent component.
  *
  * @param lView The LView which needs to be inserted, detached, destroyed.
  * @param tProjectionNode node to project
@@ -784,7 +784,7 @@ export function applyProjection(lView: LView, tProjectionNode: TProjectionNode) 
  * detach, destroy)
  *
  * Inserting a projection requires us to locate the projected nodes from the parent component. The
- * complication is that those nodes themselves could be re-projected from its parent component.
+ * complication is that those nodes themselves could be re-projected from their parent component.
  *
  * @param renderer Render to use
  * @param action action to perform (insert, detach, destroy)
@@ -802,14 +802,14 @@ function applyProjectionRecursive(
       assertEqual(typeof tProjectionNode.projection, 'number', 'expecting projection index');
   const nodeToProjectOrRNodes = componentNode.projection ![tProjectionNode.projection] !;
   if (Array.isArray(nodeToProjectOrRNodes)) {
-    // This should not exist, it is a bit of a hack. When we bootstrap to level node and we
-    // need to support passing projectable nodes. Se we cheat and put them in the TNode
+    // This should not exist, it is a bit of a hack. When we bootstrap a top level node and we
+    // need to support passing projectable nodes, so we cheat and put them in the TNode
     // of the Host TView. (Yes we put instance info at the T Level). We can get away with it
     // because we know that that TView is not shared and therefore it will not be a problem.
     // This should be refactored and cleaned up.
     for (let i = 0; i < nodeToProjectOrRNodes.length; i++) {
       const rNode = nodeToProjectOrRNodes[i];
-      executeActionOnElementOrContainer(action, renderer, renderParent, rNode, beforeNode);
+      applyToElementOrContainer(action, renderer, renderParent, rNode, beforeNode);
     }
   } else {
     let nodeToProject: TNode|null = nodeToProjectOrRNodes;
@@ -850,7 +850,7 @@ function applyContainer(
     // see a reason why they should be different, but they are.
     //
     // If they are we need to process the second anchor as well.
-    executeActionOnElementOrContainer(action, renderer, renderParent, anchor, beforeNode);
+    applyToElementOrContainer(action, renderer, renderParent, anchor, beforeNode);
   }
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const lView = lContainer[i] as LView;

@@ -474,6 +474,9 @@
     "name": "applyStyling"
   },
   {
+    "name": "applyToElementOrContainer"
+  },
+  {
     "name": "applyView"
   },
   {
@@ -628,9 +631,6 @@
   },
   {
     "name": "enterView"
-  },
-  {
-    "name": "executeActionOnElementOrContainer"
   },
   {
     "name": "executeContentQueries"
