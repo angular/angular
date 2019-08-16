@@ -149,17 +149,28 @@ export function translateDiagnostic(
   }
 
   const mapping = resolver.getSourceMapping(sourceLocation.id);
+  return makeTemplateDiagnostic(
+      mapping, span, diagnostic.category, diagnostic.code, diagnostic.messageText);
+}
+
+/**
+ * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
+ */
+export function makeTemplateDiagnostic(
+    mapping: TemplateSourceMapping, span: ParseSourceSpan, category: ts.DiagnosticCategory,
+    code: number, messageText: string | ts.DiagnosticMessageChain): ts.Diagnostic {
   if (mapping.type === 'direct') {
     // For direct mappings, the error is shown inline as ngtsc was able to pinpoint a string
     // constant within the `@Component` decorator for the template. This allows us to map the error
     // directly into the bytes of the source file.
     return {
       source: 'ngtsc',
+      code,
+      category,
+      messageText,
       file: mapping.node.getSourceFile(),
       start: span.start.offset,
       length: span.end.offset - span.start.offset,
-      code: diagnostic.code, messageText,
-      category: diagnostic.category,
     };
   } else if (mapping.type === 'indirect' || mapping.type === 'external') {
     // For indirect mappings (template was declared inline, but ngtsc couldn't map it directly
@@ -180,12 +191,12 @@ export function translateDiagnostic(
 
     return {
       source: 'ngtsc',
+      category,
+      code,
+      messageText,
       file: sf,
       start: span.start.offset,
       length: span.end.offset - span.start.offset,
-      messageText: diagnostic.messageText,
-      category: diagnostic.category,
-      code: diagnostic.code,
       // Show a secondary message indicating the component whose template contains the error.
       relatedInformation: [{
         category: ts.DiagnosticCategory.Message,

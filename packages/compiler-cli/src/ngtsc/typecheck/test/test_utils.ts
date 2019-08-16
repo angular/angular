@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, R3TargetBinder, SelectorMatcher, parseTemplate} from '@angular/compiler';
+import {CssSelector, ParseSourceFile, ParseSourceSpan, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from '../../file_system';
@@ -17,6 +17,7 @@ import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
 import {TypeCheckContext} from '../src/context';
+import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
 import {generateTypeCheckBlock} from '../src/type_check_block';
 
@@ -117,7 +118,10 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   applyTemplateContextGuards: true,
   checkQueries: false,
   checkTemplateBodies: true,
-  checkTypeOfBindings: true,
+  checkTypeOfInputBindings: true,
+  // Feature is still in development.
+  // TODO(alxhub): enable when DOM checking via lib.dom.d.ts is further along.
+  checkTypeOfDomBindings: false,
   checkTypeOfPipes: true,
   strictSafeNavigationTypes: true,
 };
@@ -150,12 +154,13 @@ export function tcb(
   const binder = new R3TargetBinder(matcher);
   const boundTarget = binder.bind({template: nodes});
 
-  const meta: TypeCheckBlockMetadata = {boundTarget, pipes, id: 'tcb'};
+  const meta: TypeCheckBlockMetadata = {boundTarget, pipes, id: 'tcb', schemas: []};
 
   config = config || {
     applyTemplateContextGuards: true,
     checkQueries: false,
-    checkTypeOfBindings: true,
+    checkTypeOfInputBindings: true,
+    checkTypeOfDomBindings: false,
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
     strictSafeNavigationTypes: true,
@@ -165,7 +170,8 @@ export function tcb(
   };
 
   const tcb = generateTypeCheckBlock(
-      FakeEnvironment.newFake(config), new Reference(clazz), ts.createIdentifier('Test_TCB'), meta);
+      FakeEnvironment.newFake(config), new Reference(clazz), ts.createIdentifier('Test_TCB'), meta,
+      new NoopSchemaChecker());
 
   const removeComments = !options.emitSpans;
   const res = ts.createPrinter({removeComments}).printNode(ts.EmitHint.Unspecified, tcb, sf);
@@ -227,7 +233,7 @@ export function typecheck(
     node: clazz.node.name,
   };
 
-  ctx.addTemplate(clazz, boundTarget, pipes, sourceMapping, templateFile);
+  ctx.addTemplate(clazz, boundTarget, pipes, [], sourceMapping, templateFile);
   return ctx.calculateTemplateDiagnostics(program, host, options).diagnostics;
 }
 
@@ -308,4 +314,13 @@ class FakeEnvironment /* implements Environment */ {
   static newFake(config: TypeCheckingConfig): Environment {
     return new FakeEnvironment(config) as Environment;
   }
+}
+
+export class NoopSchemaChecker implements DomSchemaChecker {
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return []; }
+
+  checkElement(id: string, element: TmplAstElement, schemas: SchemaMetadata[]): void {}
+  checkProperty(
+      id: string, element: TmplAstElement, name: string, span: ParseSourceSpan,
+      schemas: SchemaMetadata[]): void {}
 }
