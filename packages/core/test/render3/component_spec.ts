@@ -21,6 +21,7 @@ describe('component', () => {
 
     increment() { this.count++; }
 
+    static ngFactoryFn = () => new CounterComponent;
     static ngComponentDef = ɵɵdefineComponent({
       type: CounterComponent,
       encapsulation: ViewEncapsulation.None,
@@ -38,7 +39,6 @@ describe('component', () => {
       },
       inputs: {count: 'count'},
     });
-    static ngFactoryFn = () => new CounterComponent;
   }
 
   describe('renderComponent', () => {
@@ -72,6 +72,7 @@ describe('component', () => {
     }
     class MyComponent {
       constructor(public myService: MyService) {}
+      static ngFactoryFn = () => new MyComponent(ɵɵdirectiveInject(MyService));
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         encapsulation: ViewEncapsulation.None,
@@ -88,7 +89,6 @@ describe('component', () => {
           }
         }
       });
-      static ngFactoryFn = () => new MyComponent(ɵɵdirectiveInject(MyService));
     }
 
     class MyModule {
@@ -117,6 +117,7 @@ describe('component', () => {
       // @Input
       name = '';
 
+      static ngFactoryFn = () => new Comp();
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
@@ -133,7 +134,6 @@ describe('component', () => {
         },
         inputs: {name: 'name'}
       });
-      static ngFactoryFn = () => new Comp();
     }
 
     // Artificially inflating the slot IDs of this app component to mimic an app
@@ -172,6 +172,12 @@ it('should not invoke renderer destroy method for embedded views', () => {
   class Comp {
     visible = true;
 
+    static ngFactoryFn =
+        () => {
+          comp = new Comp();
+          return comp;
+        }
+
     static ngComponentDef = ɵɵdefineComponent({
       type: Comp,
       selectors: [['comp']],
@@ -196,10 +202,6 @@ it('should not invoke renderer destroy method for embedded views', () => {
         }
       }
     });
-    static ngFactoryFn = () => {
-      comp = new Comp();
-      return comp;
-    }
   }
 
   const rendererFactory = new MockRendererFactory(['destroy']);
@@ -248,6 +250,7 @@ describe('component with a container', () => {
   class WrapperComponent {
     // TODO(issue/24571): remove '!'.
     items !: string[];
+    static ngFactoryFn = () => new WrapperComponent;
     static ngComponentDef = ɵɵdefineComponent({
       type: WrapperComponent,
       encapsulation: ViewEncapsulation.None,
@@ -270,7 +273,6 @@ describe('component with a container', () => {
       },
       inputs: {items: 'items'}
     });
-    static ngFactoryFn = () => new WrapperComponent;
   }
 
   function template(rf: RenderFlags, ctx: {items: string[]}) {
@@ -326,6 +328,7 @@ describe('recursive components', () => {
 
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
+    static ngFactoryFn = () => new TreeComponent();
     static ngComponentDef = ɵɵdefineComponent({
       type: TreeComponent,
       encapsulation: ViewEncapsulation.None,
@@ -375,7 +378,6 @@ describe('recursive components', () => {
       },
       inputs: {data: 'data'}
     });
-    static ngFactoryFn = () => new TreeComponent();
   }
 
   (TreeComponent.ngComponentDef as ComponentDef<TreeComponent>).directiveDefs =
@@ -393,6 +395,7 @@ describe('recursive components', () => {
 
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
+    static ngFactoryFn = () => new NgIfTree();
     static ngComponentDef = ɵɵdefineComponent({
       type: NgIfTree,
       encapsulation: ViewEncapsulation.None,
@@ -422,7 +425,6 @@ describe('recursive components', () => {
       },
       inputs: {data: 'data'},
     });
-    static ngFactoryFn = () => new NgIfTree();
   }
 
   function IfTemplate(rf: RenderFlags, left: any) {
@@ -543,6 +545,7 @@ describe('recursive components', () => {
     class TestInputsComponent {
       // TODO(issue/24571): remove '!'.
       minifiedName !: string;
+      static ngFactoryFn = () => new TestInputsComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: TestInputsComponent,
         encapsulation: ViewEncapsulation.None,
@@ -554,7 +557,6 @@ describe('recursive components', () => {
           // Template not needed for this test
         }
       });
-      static ngFactoryFn = () => new TestInputsComponent();
     }
 
     const testInputsComponentFactory = new ComponentFactory(TestInputsComponent.ngComponentDef);

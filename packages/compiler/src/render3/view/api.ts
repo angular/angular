@@ -237,8 +237,6 @@ export interface R3QueryMetadata {
 export interface R3DirectiveDef {
   expression: o.Expression;
   type: o.Type;
-  statements: o.Statement[];
-  factory: o.Expression;
 }
 
 /**
@@ -247,8 +245,6 @@ export interface R3DirectiveDef {
 export interface R3ComponentDef {
   expression: o.Expression;
   type: o.Type;
-  statements: o.Statement[];
-  factory: o.Expression;
 }
 
 /**

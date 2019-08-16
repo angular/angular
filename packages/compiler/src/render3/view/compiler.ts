@@ -22,7 +22,7 @@ import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {OutputContext, error} from '../../util';
 import {BoundEvent} from '../r3_ast';
-import {compileFactoryFunction, dependenciesFromGlobalMetadata} from '../r3_factory';
+import {compileFactoryFromMetadata, compileFactoryFunction, dependenciesFromGlobalMetadata} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
@@ -43,8 +43,8 @@ function getStylingPrefix(name: string): string {
 }
 
 function baseDirectiveFields(
-    meta: R3DirectiveMetadata, constantPool: ConstantPool, bindingParser: BindingParser):
-    {definitionMap: DefinitionMap, statements: o.Statement[], factory: o.Expression} {
+    meta: R3DirectiveMetadata, constantPool: ConstantPool,
+    bindingParser: BindingParser): DefinitionMap {
   const definitionMap = new DefinitionMap();
 
   // e.g. `type: MyDirective`
@@ -52,14 +52,6 @@ function baseDirectiveFields(
 
   // e.g. `selectors: [['', 'someDir', '']]`
   definitionMap.set('selectors', createDirectiveSelector(meta.selector));
-
-  // e.g. `factory: () => new MyApp(directiveInject(ElementRef))`
-  const result = compileFactoryFunction({
-    name: meta.name,
-    type: meta.type,
-    deps: meta.deps,
-    injectFn: R3.directiveInject,
-  });
 
   if (meta.queries.length > 0) {
     // e.g. `contentQueries: (rf, ctx, dirIndex) => { ... }
@@ -88,7 +80,7 @@ function baseDirectiveFields(
     definitionMap.set('exportAs', o.literalArr(meta.exportAs.map(e => o.literal(e))));
   }
 
-  return {definitionMap, statements: result.statements, factory: result.factory};
+  return definitionMap;
 }
 
 /**
@@ -126,13 +118,12 @@ function addFeatures(
 export function compileDirectiveFromMetadata(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3DirectiveDef {
-  const {definitionMap, statements, factory} =
-      baseDirectiveFields(meta, constantPool, bindingParser);
+  const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
 
   const type = createTypeForDef(meta, R3.DirectiveDefWithMeta);
-  return {expression, type, statements, factory};
+  return {expression, type};
 }
 
 export interface R3BaseRefMetaData {
@@ -196,8 +187,7 @@ export function compileBaseDefFromMetadata(
 export function compileComponentFromMetadata(
     meta: R3ComponentMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3ComponentDef {
-  const {definitionMap, statements, factory} =
-      baseDirectiveFields(meta, constantPool, bindingParser);
+  const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
 
   const selector = meta.selector && CssSelector.parse(meta.selector);
@@ -315,7 +305,7 @@ export function compileComponentFromMetadata(
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
   const type = createTypeForDef(meta, R3.ComponentDefWithMeta);
 
-  return {expression, type, statements, factory};
+  return {expression, type};
 }
 
 /**
@@ -335,18 +325,19 @@ export function compileDirectiveFromRender2(
 
   const meta = directiveMetadataFromGlobalMetadata(directive, outputCtx, reflector);
   const res = compileDirectiveFromMetadata(meta, outputCtx.constantPool, bindingParser);
+  const factoryRes = compileFactoryFromMetadata(meta);
 
+  const ngFactoryFnStatement = new o.ClassStmt(
+      name, null, [new o.ClassField(
+                      'ngFactoryFn', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)],
+      [], new o.ClassMethod(null, [], []), []);
   const directiveDefStatement = new o.ClassStmt(
       name, null,
       [new o.ClassField(definitionField, o.INFERRED_TYPE, [o.StmtModifier.Static], res.expression)],
       [], new o.ClassMethod(null, [], []), []);
-  const ngFactoryFnStatement = new o.ClassStmt(
-      name, null,
-      [new o.ClassField('ngFactoryFn', o.INFERRED_TYPE, [o.StmtModifier.Static], res.factory)], [],
-      new o.ClassMethod(null, [], []), []);
 
   // Create the partial class to be merged with the actual class.
-  outputCtx.statements.push(directiveDefStatement, ngFactoryFnStatement);
+  outputCtx.statements.push(ngFactoryFnStatement, directiveDefStatement);
 }
 
 /**
@@ -387,18 +378,19 @@ export function compileComponentFromRender2(
     i18nUseExternalIds: true,
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
+  const factoryRes = compileFactoryFromMetadata(meta);
 
+  const ngFactoryFnStatement = new o.ClassStmt(
+      name, null, [new o.ClassField(
+                      'ngFactoryFn', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)],
+      [], new o.ClassMethod(null, [], []), []);
   const componentDefStatement = new o.ClassStmt(
       name, null,
       [new o.ClassField(definitionField, o.INFERRED_TYPE, [o.StmtModifier.Static], res.expression)],
       [], new o.ClassMethod(null, [], []), []);
-  const ngFactoryFnStatement = new o.ClassStmt(
-      name, null,
-      [new o.ClassField('ngFactoryFn', o.INFERRED_TYPE, [o.StmtModifier.Static], res.factory)], [],
-      new o.ClassMethod(null, [], []), []);
 
   // Create the partial class to be merged with the actual class.
-  outputCtx.statements.push(componentDefStatement, ngFactoryFnStatement);
+  outputCtx.statements.push(ngFactoryFnStatement, componentDefStatement);
 }
 
 /**

@@ -248,6 +248,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     providersResolver: null,
     consts: componentDefinition.consts,
     vars: componentDefinition.vars,
+    factory: null,
     template: componentDefinition.template || null !,
     ngContentSelectors: componentDefinition.ngContentSelectors,
     hostBindings: componentDefinition.hostBindings || null,
@@ -719,6 +720,7 @@ export function ɵɵdefinePipe<T>(pipeDef: {
   return (<PipeDef<T>>{
     type: pipeDef.type,
     name: pipeDef.name,
+    factory: null,
     pure: pipeDef.pure !== false,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
   }) as never;
@@ -750,7 +752,7 @@ export function getFactoryFn<T>(type: any, throwNotFound: true): FactoryFn<T>;
 export function getFactoryFn<T>(type: any): FactoryFn<T>|null;
 export function getFactoryFn<T>(type: any, throwNotFound?: boolean): FactoryFn<T>|null {
   const factoryFn = type[NG_FACTORY_FN] || null;
-  if (!factoryFn && throwNotFound === true) {
+  if (!factoryFn && throwNotFound === true && ngDevMode) {
     throw new Error(`Type ${stringify(type)} does not have 'ngFactoryFn' property.`);
   }
   return factoryFn;

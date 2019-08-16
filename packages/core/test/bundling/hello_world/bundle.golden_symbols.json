@@ -471,9 +471,6 @@
     "name": "setTNodeAndViewData"
   },
   {
-    "name": "stringify"
-  },
-  {
     "name": "stringifyForError"
   },
   {

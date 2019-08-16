@@ -25,6 +25,7 @@ describe('change detection', () => {
       doCheckCount = 0;
       ngDoCheck(): void { this.doCheckCount++; }
 
+      static ngFactoryFn = () => new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
@@ -42,7 +43,6 @@ describe('change detection', () => {
           }
         }
       });
-      static ngFactoryFn = () => new MyComponent();
     }
 
     it('should mark a component dirty and schedule change detection', withBody('my-comp', () => {
@@ -101,6 +101,7 @@ describe('change detection', () => {
 
       onClick() {}
 
+      static ngFactoryFn = () => comp = new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
@@ -127,7 +128,6 @@ describe('change detection', () => {
         changeDetection: ChangeDetectionStrategy.OnPush,
         inputs: {name: 'name'}
       });
-      static ngFactoryFn = () => comp = new MyComponent();
     }
 
     describe('Manual mode', () => {
@@ -140,6 +140,7 @@ describe('change detection', () => {
 
         onClick() {}
 
+        static ngFactoryFn = () => comp = new ManualComponent();
         static ngComponentDef = ɵɵdefineComponent({
           type: ManualComponent,
           selectors: [['manual-comp']],
@@ -171,12 +172,12 @@ describe('change detection', () => {
           changeDetection: ChangeDetectionStrategy.OnPush,
           inputs: {name: 'name'}
         });
-        static ngFactoryFn = () => comp = new ManualComponent();
       }
 
       class ManualApp {
         name: string = 'Nancy';
 
+        static ngFactoryFn = () => new ManualApp();
         static ngComponentDef = ɵɵdefineComponent({
           type: ManualApp,
           selectors: [['manual-app']],
@@ -195,7 +196,6 @@ describe('change detection', () => {
           },
           directives: () => [ManualComponent]
         });
-        static ngFactoryFn = () => new ManualApp();
       }
 
 
@@ -233,6 +233,7 @@ describe('change detection', () => {
              doCheckCount = 0;
              ngDoCheck(): void { this.doCheckCount++; }
 
+             static ngFactoryFn = () => parent = new ButtonParent();
              static ngComponentDef = ɵɵdefineComponent({
                type: ButtonParent,
                selectors: [['button-parent']],
@@ -252,7 +253,6 @@ describe('change detection', () => {
                directives: () => [ManualComponent],
                changeDetection: ChangeDetectionStrategy.OnPush
              });
-             static ngFactoryFn = () => parent = new ButtonParent();
            }
 
            const MyButtonApp = createComponent('my-button-app', function(rf: RenderFlags) {
@@ -311,6 +311,7 @@ describe('change detection', () => {
         return 'works';
       }
 
+      static ngFactoryFn = () => new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
@@ -326,7 +327,6 @@ describe('change detection', () => {
           }
         }
       });
-      static ngFactoryFn = () => new MyComponent();
     }
 
     const myComp = renderComponent(MyComponent, {rendererFactory: testRendererFactory});

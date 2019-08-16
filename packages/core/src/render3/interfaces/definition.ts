@@ -177,6 +177,12 @@ export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
    */
   readonly exportAs: string[]|null;
 
+  /**
+   * Factory function used to create a new directive instance. Will be null initially.
+   * Populated when the factory is first requested by directive instantiation logic.
+   */
+  factory: FactoryFn<T>|null;
+
   /* The following are lifecycle hooks for this component */
   onChanges: (() => void)|null;
   onInit: (() => void)|null;
@@ -204,6 +210,11 @@ export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
 export type ɵɵComponentDefWithMeta<
     T, Selector extends String, ExportAs extends string[], InputMap extends{[key: string]: string},
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = ComponentDef<T>;
+
+/**
+ * @codeGenApi
+ */
+export type ɵɵFactoryFn<T> = () => T;
 
 /**
  * Runtime link information for Components.
@@ -336,6 +347,12 @@ export interface PipeDef<T> {
    * Used to resolve pipe in templates.
    */
   readonly name: string;
+
+  /**
+   * Factory function used to create a new pipe instance. Will be null initially.
+   * Populated when the factory is first requested by pipe instantiation logic.
+   */
+  factory: FactoryFn<T>|null;
 
   /**
    * Whether or not the pipe is pure.

@@ -368,6 +368,7 @@ export function createComponent(
     viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>): ComponentType<any> {
   return class Component {
     value: any;
+    static ngFactoryFn = () => new Component;
     static ngComponentDef = ɵɵdefineComponent({
       type: Component,
       selectors: [[name]],
@@ -380,19 +381,18 @@ export function createComponent(
       features: (providers.length > 0 || viewProviders.length > 0)?
       [ɵɵProvidersFeature(providers || [], viewProviders || [])]: []
     });
-    static ngFactoryFn = () => new Component;
   };
 }
 
 export function createDirective(
     name: string, {exportAs}: {exportAs?: string[]} = {}): DirectiveType<any> {
   return class Directive {
+    static ngFactoryFn = () => new Directive();
     static ngDirectiveDef = ɵɵdefineDirective({
       type: Directive,
       selectors: [['', name, '']],
       exportAs: exportAs,
     });
-    static ngFactoryFn = () => new Directive();
   };
 }
 

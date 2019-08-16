@@ -42,6 +42,18 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
 
   // Metadata may have resources which need to be resolved.
   maybeQueueResolutionOfComponentResources(type, metadata);
+
+  Object.defineProperty(type, NG_FACTORY_FN, {
+    get: () => {
+      if (ngFactoryFn === null) {
+        [ngComponentDef, ngFactoryFn] = getComponentCompilerOutput(type, metadata);
+      }
+      return ngFactoryFn;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
+  });
+
   Object.defineProperty(type, NG_COMPONENT_DEF, {
     get: () => {
       if (ngComponentDef === null) {
@@ -64,17 +76,6 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
         }
       }
       return ngComponentDef;
-    },
-    // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
-  });
-
-  Object.defineProperty(type, NG_FACTORY_FN, {
-    get: () => {
-      if (ngFactoryFn === null) {
-        [ngComponentDef, ngFactoryFn] = getComponentCompilerOutput(type, metadata);
-      }
-      return ngFactoryFn;
     },
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
@@ -138,20 +139,6 @@ export function compileDirective(type: Type<any>, directive: Directive | null): 
   let ngDirectiveDef: any = null;
   let ngFactoryFn: any = null;
 
-  Object.defineProperty(type, NG_DIRECTIVE_DEF, {
-    get: () => {
-      if (ngDirectiveDef === null) {
-        // `directive` can be null in the case of abstract directives as a base class
-        // that use `@Directive()` with no selector. In that case, pass empty object to the
-        // `directiveMetadata` function instead of null.
-        [ngDirectiveDef, ngFactoryFn] = getDirectiveCompilerOutput(type, directive || {});
-      }
-      return ngDirectiveDef;
-    },
-    // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
-  });
-
   Object.defineProperty(type, NG_FACTORY_FN, {
     get: () => {
       if (ngFactoryFn === null) {
@@ -161,6 +148,20 @@ export function compileDirective(type: Type<any>, directive: Directive | null): 
         [ngDirectiveDef, ngFactoryFn] = getDirectiveCompilerOutput(type, directive || {});
       }
       return ngFactoryFn;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
+  });
+
+  Object.defineProperty(type, NG_DIRECTIVE_DEF, {
+    get: () => {
+      if (ngDirectiveDef === null) {
+        // `directive` can be null in the case of abstract directives as a base class
+        // that use `@Directive()` with no selector. In that case, pass empty object to the
+        // `directiveMetadata` function instead of null.
+        [ngDirectiveDef, ngFactoryFn] = getDirectiveCompilerOutput(type, directive || {});
+      }
+      return ngDirectiveDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,

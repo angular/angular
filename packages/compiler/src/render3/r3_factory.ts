@@ -15,7 +15,9 @@ import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
 import {OutputContext} from '../util';
 
+import {typeWithParameters} from './util';
 import {unsupported} from './view/util';
+
 
 
 /**
@@ -35,6 +37,9 @@ export interface R3ConstructorFactoryMetadata {
    * `useNew` property determines whether it will be called as a constructor or not.
    */
   type: o.Expression;
+
+  /** Number of arguments for the `type`. */
+  typeArgumentCount: number;
 
   /**
    * Regardless of whether `fnOrClass` is a constructor function or a user-defined factory, it
@@ -76,6 +81,13 @@ export interface R3ExpressionFactoryMetadata extends R3ConstructorFactoryMetadat
 
 export type R3FactoryMetadata = R3ConstructorFactoryMetadata | R3DelegatedFactoryMetadata |
     R3DelegatedFnOrClassMetadata | R3ExpressionFactoryMetadata;
+
+export interface R3FactoryFnMetadata {
+  name: string;
+  type: o.Expression;
+  typeArgumentCount: number;
+  deps: R3DependencyMetadata[]|null;
+}
 
 /**
  * Resolved type of a dependency.
@@ -143,8 +155,8 @@ export interface R3DependencyMetadata {
 /**
  * Construct a factory function expression for the given `R3FactoryMetadata`.
  */
-export function compileFactoryFunction(
-    meta: R3FactoryMetadata, isPipe = false): {factory: o.Expression, statements: o.Statement[]} {
+export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false):
+    {factory: o.Expression, statements: o.Statement[], type: o.ExpressionType} {
   const t = o.variable('t');
   const statements: o.Statement[] = [];
 
@@ -234,7 +246,25 @@ export function compileFactoryFunction(
         [new o.FnParam('t', o.DYNAMIC_TYPE)], body, o.INFERRED_TYPE, undefined,
         `${meta.name}_Factory`),
     statements,
+    type: o.expressionType(
+        o.importExpr(R3.FactoryFn, [typeWithParameters(meta.type, meta.typeArgumentCount)]))
   };
+}
+
+/**
+ * Constructs the `ngFactoryFn` from directive/component/pipe metadata.
+ */
+export function compileFactoryFromMetadata(meta: R3FactoryFnMetadata, isPipe = false) {
+  return compileFactoryFunction(
+      {
+        name: meta.name,
+        type: meta.type,
+        deps: meta.deps,
+        typeArgumentCount: meta.typeArgumentCount,
+        // TODO(crisbeto): this should be refactored once we start using it for injectables.
+        injectFn: R3.directiveInject,
+      },
+      isPipe);
 }
 
 function injectDependencies(

@@ -241,6 +241,11 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  static FactoryFn: o.ExternalReference = {
+    name: 'ɵɵFactoryFn',
+    moduleName: CORE,
+  };
+
   static defineDirective: o.ExternalReference = {
     name: 'ɵɵdefineDirective',
     moduleName: CORE,

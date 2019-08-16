@@ -692,6 +692,12 @@ describe('JS control flow', () => {
     // Intentionally duplicating the templates in test below so we are
     // testing the behavior on firstTemplatePass for each of these tests
     class Comp {
+      static ngFactoryFn =
+          () => {
+            log.push('comp!');
+            return new Comp();
+          }
+
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
@@ -699,16 +705,13 @@ describe('JS control flow', () => {
         vars: 0,
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
-      static ngFactoryFn = () => {
-        log.push('comp!');
-        return new Comp();
-      }
     }
 
     class App {
       condition = true;
       condition2 = true;
 
+      static ngFactoryFn = () => new App();
       static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
@@ -747,7 +750,6 @@ describe('JS control flow', () => {
         },
         directives: () => [Comp]
       });
-      static ngFactoryFn = () => new App();
     }
 
     const fixture = new ComponentFixture(App);
@@ -760,6 +762,12 @@ describe('JS control flow', () => {
     // Intentionally duplicating the templates from above so we are
     // testing the behavior on firstTemplatePass for each of these tests
     class Comp {
+      static ngFactoryFn =
+          () => {
+            log.push('comp!');
+            return new Comp();
+          }
+
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
@@ -767,16 +775,13 @@ describe('JS control flow', () => {
         vars: 0,
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
-      static ngFactoryFn = () => {
-        log.push('comp!');
-        return new Comp();
-      }
     }
 
     class App {
       condition = false;
       condition2 = true;
 
+      static ngFactoryFn = () => new App();
       static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
@@ -815,7 +820,6 @@ describe('JS control flow', () => {
         },
         directives: () => [Comp]
       });
-      static ngFactoryFn = () => new App();
     }
 
     const fixture = new ComponentFixture(App);

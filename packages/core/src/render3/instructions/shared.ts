@@ -1314,7 +1314,7 @@ export function initNodeFlags(tNode: TNode, index: number, numberOfDirectives: n
 
 function baseResolveDirective<T>(tView: TView, viewData: LView, def: DirectiveDef<T>) {
   tView.data.push(def);
-  const directiveFactory = getFactoryFn(def.type, true);
+  const directiveFactory = def.factory || (def.factory = getFactoryFn(def.type, true));
   const nodeInjectorFactory = new NodeInjectorFactory(directiveFactory, isComponentDef(def), null);
   tView.blueprint.push(nodeInjectorFactory);
   viewData.push(nodeInjectorFactory);

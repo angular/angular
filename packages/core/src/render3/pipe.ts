@@ -44,7 +44,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
     pipeDef = tView.data[adjustedIndex] as PipeDef<any>;
   }
 
-  const pipeFactory = getFactoryFn(pipeDef.type, true);
+  const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryFn(pipeDef.type, true));
   const pipeInstance = pipeFactory();
   store(index, pipeInstance);
   return pipeInstance;

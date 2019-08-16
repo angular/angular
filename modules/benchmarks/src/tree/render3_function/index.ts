@@ -18,6 +18,9 @@ export class TreeFunction {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
+  static ngFactoryFn = () => new TreeFunction;
+
+  /** @nocollapse */
   static ngComponentDef = ɵɵdefineComponent({
     type: TreeFunction,
     selectors: [['tree']],
@@ -29,9 +32,6 @@ export class TreeFunction {
     },
     inputs: {data: 'data'}
   });
-
-  /** @nocollapse */
-  static ngFactoryFn = () => new TreeFunction;
 }
 
 export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {

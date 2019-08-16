@@ -503,6 +503,7 @@ describe('TestBed', () => {
          */
         const getAOTCompiledComponent = () => {
           class ComponentClass {
+            static ngFactoryFn = () => new ComponentClass();
             static ngComponentDef = defineComponent({
               type: ComponentClass,
               selectors: [['comp']],
@@ -515,8 +516,6 @@ describe('TestBed', () => {
               },
               styles: ['body { margin: 0; }']
             });
-
-            static ngFactoryFn = () => new ComponentClass();
           }
           setClassMetadata(
               ComponentClass, [{

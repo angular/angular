@@ -15,7 +15,7 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/int
 import {DeclareVarStmt, Expression, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
-import {R3DependencyMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
+import {R3DependencyMetadata, R3ResolvedDependencyType, compileFactoryFromMetadata} from './render3/r3_factory';
 import {R3JitReflector} from './render3/r3_jit';
 import {R3InjectorMetadata, R3NgModuleMetadata, compileInjector, compileNgModule} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata} from './render3/r3_pipe_compiler';
@@ -35,17 +35,19 @@ export class CompilerFacadeImpl implements CompilerFacade {
 
   compilePipe(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, facade: R3PipeMetadataFacade):
       any {
-    const res = compilePipeFromMetadata({
+    const metadata = {
       name: facade.name,
       type: new WrappedNodeExpr(facade.type),
       typeArgumentCount: facade.typeArgumentCount,
       deps: convertR3DependencyMetadataArray(facade.deps),
       pipeName: facade.pipeName,
       pure: facade.pure,
-    });
+    };
+    const res = compilePipeFromMetadata(metadata);
+    const factoryRes = compileFactoryFromMetadata(metadata, true);
     return [
-      this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements),
-      this.jitExpression(res.factory, angularCoreEnv, '', [])
+      this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []),
+      this.jitExpression(factoryRes.factory, angularCoreEnv, '', factoryRes.statements)
     ];
   }
 
@@ -108,11 +110,11 @@ export class CompilerFacadeImpl implements CompilerFacade {
 
     const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade);
     const res = compileDirectiveFromMetadata(meta, constantPool, bindingParser);
-    const preStatements = [...constantPool.statements, ...res.statements];
+    const factoryRes = compileFactoryFromMetadata(meta);
 
     return [
-      this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements),
-      this.jitExpression(res.factory, angularCoreEnv, '', [])
+      this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, constantPool.statements),
+      this.jitExpression(factoryRes.factory, angularCoreEnv, '', factoryRes.statements)
     ];
   }
 
@@ -136,29 +138,31 @@ export class CompilerFacadeImpl implements CompilerFacade {
 
     // Compile the component metadata, including template, into an expression.
     // TODO(alxhub): implement inputs, outputs, queries, etc.
+    const metadata = {
+      ...facade as R3ComponentMetadataFacadeNoPropAndWhitespace,
+      ...convertDirectiveFacadeToMetadata(facade),
+      selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
+      template,
+      wrapDirectivesAndPipesInClosure: false,
+      styles: facade.styles || [],
+      encapsulation: facade.encapsulation as any,
+      interpolation: interpolationConfig,
+      changeDetection: facade.changeDetection,
+      animations: facade.animations != null ? new WrappedNodeExpr(facade.animations) : null,
+      viewProviders: facade.viewProviders != null ? new WrappedNodeExpr(facade.viewProviders) :
+                                                    null,
+      relativeContextFilePath: '',
+      i18nUseExternalIds: true,
+    };
     const res = compileComponentFromMetadata(
-        {
-          ...facade as R3ComponentMetadataFacadeNoPropAndWhitespace,
-          ...convertDirectiveFacadeToMetadata(facade),
-          selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
-          template,
-          wrapDirectivesAndPipesInClosure: false,
-          styles: facade.styles || [],
-          encapsulation: facade.encapsulation as any,
-          interpolation: interpolationConfig,
-          changeDetection: facade.changeDetection,
-          animations: facade.animations != null ? new WrappedNodeExpr(facade.animations) : null,
-          viewProviders: facade.viewProviders != null ? new WrappedNodeExpr(facade.viewProviders) :
-                                                        null,
-          relativeContextFilePath: '',
-          i18nUseExternalIds: true,
-        },
-        constantPool, makeBindingParser(interpolationConfig));
-    const preStatements = [...constantPool.statements, ...res.statements];
-
+        metadata, constantPool, makeBindingParser(interpolationConfig));
+    const factoryRes = compileFactoryFromMetadata(metadata);
+    const jitExpressionSourceMap = `ng:///${facade.name}.js`;
     return [
-      this.jitExpression(res.expression, angularCoreEnv, `ng:///${facade.name}.js`, preStatements),
-      this.jitExpression(res.factory, angularCoreEnv, sourceMapUrl, [])
+      this.jitExpression(
+          res.expression, angularCoreEnv, jitExpressionSourceMap, constantPool.statements),
+      this.jitExpression(
+          factoryRes.factory, angularCoreEnv, jitExpressionSourceMap, factoryRes.statements)
     ];
   }
 

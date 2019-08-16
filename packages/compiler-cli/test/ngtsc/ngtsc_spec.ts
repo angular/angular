@@ -197,12 +197,14 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('TestCmp.ngComponentDef = i0.ɵɵdefineComponent');
+      expect(jsContents).toContain('TestCmp.ngFactoryFn = function');
       expect(jsContents).not.toContain('__decorate');
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
               'static ngComponentDef: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
+      expect(dtsContents).toContain('static ngFactoryFn: i0.ɵɵFactoryFn<TestCmp>');
     });
 
     it('should compile Components (dynamic inline template) without errors', () => {
@@ -220,12 +222,15 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('TestCmp.ngComponentDef = i0.ɵɵdefineComponent');
+      expect(jsContents).toContain('TestCmp.ngFactoryFn = function');
       expect(jsContents).not.toContain('__decorate');
 
       const dtsContents = env.getContents('test.d.ts');
+
       expect(dtsContents)
           .toContain(
               'static ngComponentDef: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
+      expect(dtsContents).toContain('static ngFactoryFn: i0.ɵɵFactoryFn<TestCmp>');
     });
 
     it('should compile Components (function call inline template) without errors', () => {
@@ -246,12 +251,14 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('TestCmp.ngComponentDef = i0.ɵɵdefineComponent');
+      expect(jsContents).toContain('TestCmp.ngFactoryFn = function');
       expect(jsContents).not.toContain('__decorate');
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
               'static ngComponentDef: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
+      expect(dtsContents).toContain('static ngFactoryFn: i0.ɵɵFactoryFn<TestCmp>');
     });
 
     it('should compile Components (external template) without errors', () => {
@@ -886,6 +893,7 @@ runInEachFileSystem(os => {
               'TestPipe.ngFactoryFn = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
       expect(dtsContents)
           .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
+      expect(dtsContents).toContain('static ngFactoryFn: i0.ɵɵFactoryFn<TestPipe>;');
     });
 
     it('should compile pure Pipes without errors', () => {
@@ -911,6 +919,7 @@ runInEachFileSystem(os => {
               'TestPipe.ngFactoryFn = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
       expect(dtsContents)
           .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
+      expect(dtsContents).toContain('static ngFactoryFn: i0.ɵɵFactoryFn<TestPipe>;');
     });
 
     it('should compile Pipes with dependencies', () => {
@@ -951,6 +960,7 @@ runInEachFileSystem(os => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain('static ngPipeDef: i0.ɵɵPipeDefWithMeta<TestPipe<any>, "test-pipe">;');
+      expect(dtsContents).toContain('static ngFactoryFn: i0.ɵɵFactoryFn<TestPipe<any>>;');
     });
 
     it('should include @Pipes in @NgModule scopes', () => {

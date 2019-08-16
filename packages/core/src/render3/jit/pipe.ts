@@ -18,23 +18,23 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
   let ngPipeDef: any = null;
   let ngFactoryFn: any = null;
 
-  Object.defineProperty(type, NG_PIPE_DEF, {
-    get: () => {
-      if (ngPipeDef === null) {
-        [ngPipeDef, ngFactoryFn] = getPipeCompilerOutput(type, meta);
-      }
-      return ngPipeDef;
-    },
-    // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
-  });
-
   Object.defineProperty(type, NG_FACTORY_FN, {
     get: () => {
       if (ngFactoryFn === null) {
         [ngPipeDef, ngFactoryFn] = getPipeCompilerOutput(type, meta);
       }
       return ngFactoryFn;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
+  });
+
+  Object.defineProperty(type, NG_PIPE_DEF, {
+    get: () => {
+      if (ngPipeDef === null) {
+        [ngPipeDef, ngFactoryFn] = getPipeCompilerOutput(type, meta);
+      }
+      return ngPipeDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,

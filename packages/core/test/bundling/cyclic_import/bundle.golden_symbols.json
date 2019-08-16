@@ -651,9 +651,6 @@
     "name": "setUpAttributes"
   },
   {
-    "name": "stringify"
-  },
-  {
     "name": "stringifyForError"
   },
   {
