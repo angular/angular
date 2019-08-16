@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExternalExpr} from '@angular/compiler';
+import {ExternalExpr, SchemaMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic} from '../../diagnostics';
@@ -28,6 +28,7 @@ export interface LocalNgModuleData {
 export interface LocalModuleScope extends ExportScope {
   compilation: ScopeData;
   reexports: Reexport[]|null;
+  schemas: SchemaMetadata[];
 }
 
 /**
@@ -375,6 +376,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       },
       exported,
       reexports,
+      schemas: ngModule.schemas,
     };
     this.cache.set(ref.node, scope);
     return scope;

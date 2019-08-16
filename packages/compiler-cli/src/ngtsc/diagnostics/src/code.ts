@@ -73,6 +73,16 @@ export enum ErrorCode {
    * expression.
    */
   NGCC_MIGRATION_DYNAMIC_BASE_CLASS = 7003,
+
+  /**
+   * An element name failed validation against the DOM schema.
+   */
+  SCHEMA_INVALID_ELEMENT = 8001,
+
+  /**
+   * An element's attribute name failed validation against the DOM schema.
+   */
+  SCHEMA_INVALID_ATTRIBUTE = 8002,
 }
 
 export function ngErrorCode(code: ErrorCode): number {

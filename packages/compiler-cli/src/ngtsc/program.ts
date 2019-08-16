@@ -400,7 +400,9 @@ export class NgtscProgram implements api.Program {
         applyTemplateContextGuards: true,
         checkQueries: false,
         checkTemplateBodies: true,
-        checkTypeOfBindings: true,
+        checkTypeOfInputBindings: true,
+        // Even in full template type-checking mode, DOM binding checks are not quite ready yet.
+        checkTypeOfDomBindings: false,
         checkTypeOfPipes: true,
         strictSafeNavigationTypes: true,
       };
@@ -409,7 +411,8 @@ export class NgtscProgram implements api.Program {
         applyTemplateContextGuards: false,
         checkQueries: false,
         checkTemplateBodies: false,
-        checkTypeOfBindings: false,
+        checkTypeOfInputBindings: false,
+        checkTypeOfDomBindings: false,
         checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
       };

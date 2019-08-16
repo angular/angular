@@ -7,7 +7,8 @@
  */
 
 import {TypeCheckingConfig} from '../src/api';
-import {TestDeclaration, TestDirective, tcb} from './test_utils';
+
+import {ALL_ENABLED_CONFIG, TestDeclaration, TestDirective, tcb} from './test_utils';
 
 
 describe('type check blocks', () => {
@@ -34,19 +35,26 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('((ctx).a)[(ctx).b];');
   });
 
-  it('should translate unclaimed bindings to their property equivalent', () => {
-    const TEMPLATE = `<label [for]="'test'"></label>`;
-    expect(tcb(TEMPLATE)).toContain('_t1.htmlFor = ("test");');
-  });
-
   it('should handle empty bindings', () => {
-    const TEMPLATE = `<input [type]="">`;
-    expect(tcb(TEMPLATE)).toContain('_t1.type = (undefined);');
+    const TEMPLATE = `<div dir-a [inputA]=""></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'DirA',
+      selector: '[dir-a]',
+      inputs: {inputA: 'inputA'},
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('inputA: (undefined)');
   });
 
   it('should handle bindings without value', () => {
-    const TEMPLATE = `<input [type]>`;
-    expect(tcb(TEMPLATE)).toContain('_t1.type = (undefined);');
+    const TEMPLATE = `<div dir-a [inputA]></div>`;
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
+      name: 'DirA',
+      selector: '[dir-a]',
+      inputs: {inputA: 'inputA'},
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('inputA: (undefined)');
   });
 
   it('should handle implicit vars on ng-template', () => {
@@ -142,6 +150,15 @@ describe('type check blocks', () => {
     expect(block).toContain('((ctx).a as any);');
   });
 
+  describe('experimental DOM checking via lib.dom.d.ts', () => {
+    it('should translate unclaimed bindings to their property equivalent', () => {
+      const TEMPLATE = `<label [for]="'test'"></label>`;
+      const CONFIG = {...ALL_ENABLED_CONFIG, checkTypeOfDomBindings: true};
+      expect(tcb(TEMPLATE, /* declarations */ undefined, CONFIG))
+          .toContain('_t1.htmlFor = ("test");');
+    });
+  });
+
   describe('template guards', () => {
     it('should emit invocation guards', () => {
       const DIRECTIVES: TestDeclaration[] = [{
@@ -189,7 +206,8 @@ describe('type check blocks', () => {
       applyTemplateContextGuards: true,
       checkQueries: false,
       checkTemplateBodies: true,
-      checkTypeOfBindings: true,
+      checkTypeOfInputBindings: true,
+      checkTypeOfDomBindings: false,
       checkTypeOfPipes: true,
       strictSafeNavigationTypes: true,
     };
@@ -203,7 +221,8 @@ describe('type check blocks', () => {
         expect(block).toContain(GUARD_APPLIED);
       });
       it('should not apply template context guards when disabled', () => {
-        const DISABLED_CONFIG = {...BASE_CONFIG, applyTemplateContextGuards: false};
+        const DISABLED_CONFIG:
+            TypeCheckingConfig = {...BASE_CONFIG, applyTemplateContextGuards: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).not.toContain(GUARD_APPLIED);
       });
@@ -217,7 +236,7 @@ describe('type check blocks', () => {
         expect(block).toContain('(ctx).a;');
       });
       it('should not descend into template bodies when disabled', () => {
-        const DISABLED_CONFIG = {...BASE_CONFIG, checkTemplateBodies: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTemplateBodies: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).not.toContain('(ctx).a;');
       });
@@ -229,13 +248,14 @@ describe('type check blocks', () => {
       it('should check types of bindings when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain('Dir.ngTypeCtor({ dirInput: ((ctx).a) })');
-        expect(block).toContain('.nonDirInput = ((ctx).a);');
+        expect(block).toContain('(ctx).a;');
       });
       it('should not check types of bindings when disabled', () => {
-        const DISABLED_CONFIG = {...BASE_CONFIG, checkTypeOfBindings: false};
+        const DISABLED_CONFIG:
+            TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfInputBindings: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('Dir.ngTypeCtor({ dirInput: (((ctx).a as any)) })');
-        expect(block).toContain('.nonDirInput = (((ctx).a as any));');
+        expect(block).toContain('((ctx).a as any);');
       });
     });
 
@@ -253,7 +273,7 @@ describe('type check blocks', () => {
         expect(block).toContain('(null as TestPipe).transform((ctx).a, (ctx).b, (ctx).c);');
       });
       it('should not check types of pipes when disabled', () => {
-        const DISABLED_CONFIG = {...BASE_CONFIG, checkTypeOfPipes: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfPipes: false};
         const block = tcb(TEMPLATE, PIPES, DISABLED_CONFIG);
         expect(block).toContain('(null as any).transform((ctx).a, (ctx).b, (ctx).c);');
       });
@@ -268,7 +288,8 @@ describe('type check blocks', () => {
         expect(block).toContain('(((ctx).a) != null ? ((ctx).a)!.b : undefined)');
       });
       it('should use an \'any\' type for safe navigation operations when disabled', () => {
-        const DISABLED_CONFIG = {...BASE_CONFIG, strictSafeNavigationTypes: false};
+        const DISABLED_CONFIG:
+            TypeCheckingConfig = {...BASE_CONFIG, strictSafeNavigationTypes: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('(((ctx).a) != null ? ((ctx).a)!.method() : null as any)');
         expect(block).toContain('(((ctx).a) != null ? ((ctx).a)!.b : null as any)');

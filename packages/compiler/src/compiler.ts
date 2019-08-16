@@ -31,6 +31,7 @@ import * as core from './core';
 import {publishFacade} from './jit_compiler_facade';
 import {global} from './util';
 
+export {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from './core';
 export {core};
 
 export * from './version';

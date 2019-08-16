@@ -77,3 +77,6 @@ export enum ChangeDetectionStrategy {
   OnPush = 0,
   Default = 1
 }
+
+export const CUSTOM_ELEMENTS_SCHEMA: any = false;
+export const NO_ERRORS_SCHEMA: any = false;

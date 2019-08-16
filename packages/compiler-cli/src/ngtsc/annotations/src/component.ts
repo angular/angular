@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, ParseTemplateOptions, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, ParseTemplateOptions, R3ComponentMetadata, R3TargetBinder, SchemaMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -396,6 +396,7 @@ export class ComponentDecoratorHandler implements
 
     const matcher = new SelectorMatcher<DirectiveMeta>();
     const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
+    let schemas: SchemaMetadata[] = [];
 
     const scope = this.scopeReader.getScopeForComponent(node);
     if (scope !== null) {
@@ -410,10 +411,12 @@ export class ComponentDecoratorHandler implements
         }
         pipes.set(name, ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
       }
+      schemas = scope.schemas;
     }
 
     const bound = new R3TargetBinder(matcher).bind({template: template.nodes});
-    ctx.addTemplate(new Reference(node), bound, pipes, meta.templateSourceMapping, template.file);
+    ctx.addTemplate(
+        new Reference(node), bound, pipes, schemas, meta.templateSourceMapping, template.file);
   }
 
   resolve(node: ClassDeclaration, analysis: ComponentHandlerData): ResolveResult {
