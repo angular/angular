@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
+import {BoundTarget, ParseSourceFile, SchemaMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -15,12 +15,13 @@ import {ClassDeclaration} from '../../reflection';
 import {ImportManager} from '../../translator';
 
 import {TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from './api';
-import {SourceLocation, TcbSourceResolver, shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
+import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
+import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {TypeCheckProgramHost} from './host';
-import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
+import {TcbSourceManager} from './source';
 import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
-import {TypeCheckFile, typeCheckFilePath} from './type_check_file';
+import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
 
 
@@ -53,14 +54,9 @@ export class TypeCheckContext {
    */
   private typeCtorPending = new Set<ts.ClassDeclaration>();
 
+  private sourceManager = new TcbSourceManager();
 
-  private nextTcbId: number = 1;
-  /**
-   * This map keeps track of all template sources that have been type-checked by the id that is
-   * attached to a TCB's function declaration as leading trivia. This enables translation of
-   * diagnostics produced for TCB code to their source location in the template.
-   */
-  private templateSources = new Map<string, TemplateSource>();
+  private domSchemaChecker = new RegistryDomSchemaChecker(this.sourceManager);
 
   /**
    * Record a template for the given component `node`, with a `SelectorMatcher` for directive
@@ -74,10 +70,9 @@ export class TypeCheckContext {
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
       pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      sourceMapping: TemplateSourceMapping, file: ParseSourceFile): void {
-    const id = `tcb${this.nextTcbId++}`;
-    this.templateSources.set(id, new TemplateSource(sourceMapping, file));
-
+      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
+      file: ParseSourceFile): void {
+    const id = this.sourceManager.captureSource(sourceMapping, file);
     // Get all of the directives used in the template and record type constructors for all of them.
     for (const dir of boundTarget.getUsedDirectives()) {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
@@ -99,14 +94,14 @@ export class TypeCheckContext {
       }
     }
 
-
+    const tcbMetadata: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas};
     if (requiresInlineTypeCheckBlock(ref.node)) {
       // This class didn't meet the requirements for external type checking, so generate an inline
       // TCB for the class.
-      this.addInlineTypeCheckBlock(ref, {id, boundTarget, pipes});
+      this.addInlineTypeCheckBlock(ref, tcbMetadata);
     } else {
       // The class can be type-checked externally as normal.
-      this.typeCheckFile.addTypeCheckBlock(ref, {id, boundTarget, pipes});
+      this.typeCheckFile.addTypeCheckBlock(ref, tcbMetadata, this.domSchemaChecker);
     }
   }
 
@@ -205,27 +200,11 @@ export class TypeCheckContext {
       rootNames: originalProgram.getRootFileNames(),
     });
 
-    const tcbResolver: TcbSourceResolver = {
-      getSourceMapping: (id: string): TemplateSourceMapping => {
-        if (!this.templateSources.has(id)) {
-          throw new Error(`Unexpected unknown TCB ID: ${id}`);
-        }
-        return this.templateSources.get(id) !.mapping;
-      },
-      sourceLocationToSpan: (location: SourceLocation): ParseSourceSpan | null => {
-        if (!this.templateSources.has(location.id)) {
-          return null;
-        }
-        const templateSource = this.templateSources.get(location.id) !;
-        return templateSource.toParseSourceSpan(location.start, location.end);
-      },
-    };
-
     const diagnostics: ts.Diagnostic[] = [];
     const collectDiagnostics = (diags: readonly ts.Diagnostic[]): void => {
       for (const diagnostic of diags) {
         if (shouldReportDiagnostic(diagnostic)) {
-          const translated = translateDiagnostic(diagnostic, tcbResolver);
+          const translated = translateDiagnostic(diagnostic, this.sourceManager);
 
           if (translated !== null) {
             diagnostics.push(translated);
@@ -237,6 +216,8 @@ export class TypeCheckContext {
     for (const sf of interestingFiles) {
       collectDiagnostics(typeCheckProgram.getSemanticDiagnostics(sf));
     }
+
+    diagnostics.push(...this.domSchemaChecker.diagnostics);
 
     return {
       diagnostics,
@@ -252,37 +233,7 @@ export class TypeCheckContext {
       this.opMap.set(sf, []);
     }
     const ops = this.opMap.get(sf) !;
-    ops.push(new TcbOp(ref, tcbMeta, this.config));
-  }
-}
-
-
-/**
- * Represents the source of a template that was processed during type-checking. This information is
- * used when translating parse offsets in diagnostics back to their original line/column location.
- */
-class TemplateSource {
-  private lineStarts: number[]|null = null;
-
-  constructor(readonly mapping: TemplateSourceMapping, private file: ParseSourceFile) {}
-
-  toParseSourceSpan(start: number, end: number): ParseSourceSpan {
-    const startLoc = this.toParseLocation(start);
-    const endLoc = this.toParseLocation(end);
-    return new ParseSourceSpan(startLoc, endLoc);
-  }
-
-  private toParseLocation(position: number) {
-    const lineStarts = this.acquireLineStarts();
-    const {line, character} = getLineAndCharacterFromPosition(lineStarts, position);
-    return new ParseLocation(this.file, position, line, character);
-  }
-
-  private acquireLineStarts(): number[] {
-    if (this.lineStarts === null) {
-      this.lineStarts = computeLineStartsMap(this.file.content);
-    }
-    return this.lineStarts;
+    ops.push(new TcbOp(ref, tcbMeta, this.config, this.domSchemaChecker));
   }
 }
 
@@ -313,7 +264,8 @@ interface Op {
 class TcbOp implements Op {
   constructor(
       readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      readonly meta: TypeCheckBlockMetadata, readonly config: TypeCheckingConfig) {}
+      readonly meta: TypeCheckBlockMetadata, readonly config: TypeCheckingConfig,
+      readonly domSchemaChecker: DomSchemaChecker) {}
 
   /**
    * Type check blocks are inserted immediately after the end of the component class.
@@ -324,7 +276,7 @@ class TcbOp implements Op {
       string {
     const env = new Environment(this.config, im, refEmitter, sf);
     const fnName = ts.createIdentifier(`_tcb_${this.ref.node.pos}`);
-    const fn = generateTypeCheckBlock(env, this.ref, fnName, this.meta);
+    const fn = generateTypeCheckBlock(env, this.ref, fnName, this.meta, this.domSchemaChecker);
     return printer.printNode(ts.EmitHint.Unspecified, fn, sf);
   }
 }

@@ -133,7 +133,7 @@ runInEachFileSystem(() => {
     });
 
     it('interprets interpolation as strings', () => {
-      const messages = diagnose(`<blockquote cite="{{ person }}"></blockquote>`, `
+      const messages = diagnose(`<blockquote title="{{ person }}"></blockquote>`, `
       class TestComponent {
         person: {};
       }`);
@@ -149,8 +149,8 @@ runInEachFileSystem(() => {
       }`);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 6): Property 'srcc' does not exist on type 'HTMLImageElement'. Did you mean 'src'?`,
         `synthetic.html(1, 29): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
+        `synthetic.html(1, 6): 'srcc' is not a valid property of <img>.`,
       ]);
     });
 
