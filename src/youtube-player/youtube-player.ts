@@ -171,6 +171,168 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
       this._ngZone.run(() => callback(...args));
     };
   }
+
+  /** Proxied methods. */
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#playVideo */
+  playVideo() {
+    if (!this._player) {
+      return;
+    }
+    this._player.playVideo();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#pauseVideo */
+  pauseVideo() {
+    if (!this._player) {
+      return;
+    }
+    this._player.pauseVideo();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#stopVideo */
+  stopVideo() {
+    if (!this._player) {
+      return;
+    }
+    this._player.stopVideo();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#seekTo */
+  seekTo(seconds: number, allowSeekAhead: boolean) {
+    if (!this._player) {
+      return;
+    }
+    this._player.seekTo(seconds, allowSeekAhead);
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#mute */
+  mute() {
+    if (!this._player) {
+      return;
+    }
+    this._player.mute();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#unMute */
+  unMute() {
+    if (!this._player) {
+      return;
+    }
+    this._player.unMute();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#isMuted */
+  isMuted(): boolean {
+    if (!this._player) {
+      return false;
+    }
+    return this._player.isMuted();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#setVolume */
+  setVolume(volume: number) {
+    if (!this._player) {
+      return;
+    }
+    this._player.setVolume(volume);
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getVolume */
+  getVolume(): number {
+    if (!this._player) {
+      return 0;
+    }
+    return this._player.getVolume();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#setPlaybackRate */
+  setPlaybackRate(playbackRate: number) {
+    if (!this._player) {
+      return;
+    }
+    return this._player.setPlaybackRate(playbackRate);
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getPlaybackRate */
+  getPlaybackRate(): number {
+    if (!this._player) {
+      return 0;
+    }
+    return this._player.getPlaybackRate();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getAvailablePlaybackRates */
+  getAvailablePlaybackRates(): number[] {
+    if (!this._player) {
+      return [];
+    }
+    return this._player.getAvailablePlaybackRates();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getVideoLoadedFraction */
+  getVideoLoadedFraction(): number {
+    if (!this._player) {
+      return 0;
+    }
+    return this._player.getVideoLoadedFraction();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getPlayerState */
+  getPlayerState(): YT.PlayerState {
+    if (!this._player) {
+      return YT.PlayerState.UNSTARTED;
+    }
+    return this._player.getPlayerState();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getCurrentTime */
+  getCurrentTime(): number {
+    if (!this._player) {
+      return 0;
+    }
+    return this._player.getCurrentTime();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getPlaybackQuality */
+  getPlaybackQuality(): YT.SuggestedVideoQuality {
+    if (!this._player) {
+      return 'default';
+    }
+    return this._player.getPlaybackQuality();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getAvailableQualityLevels */
+  getAvailableQualityLevels(): YT.SuggestedVideoQuality[] {
+    if (!this._player) {
+      return [];
+    }
+    return this._player.getAvailableQualityLevels();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getDuration */
+  getDuration(): number {
+    if (!this._player) {
+      return 0;
+    }
+    return this._player.getDuration();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getVideoUrl */
+  getVideoUrl(): string {
+    if (!this._player) {
+      return '';
+    }
+    return this._player.getVideoUrl();
+  }
+
+  /** See https://developers.google.com/youtube/iframe_api_reference#getVideoEmbedCode */
+  getVideoEmbedCode(): string {
+    if (!this._player) {
+      return '';
+    }
+    return this._player.getVideoEmbedCode();
+  }
 }
 
 /** Listens to changes to the given width and height and sets it on the player. */

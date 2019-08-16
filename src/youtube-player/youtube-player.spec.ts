@@ -154,6 +154,73 @@ describe('YoutubePlayer', () => {
     events.onApiChange({target: playerSpy});
     expect(testComponent.onApiChange).toHaveBeenCalledWith({target: playerSpy});
   });
+
+  it('proxies methods to the player', () => {
+    events.onReady({target: playerSpy});
+
+    testComponent.youtubePlayer.playVideo();
+    expect(playerSpy.playVideo).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.pauseVideo();
+    expect(playerSpy.pauseVideo).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.stopVideo();
+    expect(playerSpy.stopVideo).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.mute();
+    expect(playerSpy.mute).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.unMute();
+    expect(playerSpy.unMute).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.isMuted();
+    expect(playerSpy.isMuted).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.seekTo(5, true);
+    expect(playerSpy.seekTo).toHaveBeenCalledWith(5, true);
+
+    testComponent.youtubePlayer.isMuted();
+    expect(playerSpy.isMuted).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.setVolume(54);
+    expect(playerSpy.setVolume).toHaveBeenCalledWith(54);
+
+    testComponent.youtubePlayer.getVolume();
+    expect(playerSpy.getVolume).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.setPlaybackRate(1.5);
+    expect(playerSpy.setPlaybackRate).toHaveBeenCalledWith(1.5);
+
+    testComponent.youtubePlayer.getPlaybackRate();
+    expect(playerSpy.getPlaybackRate).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.getAvailablePlaybackRates();
+    expect(playerSpy.getAvailablePlaybackRates).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.getVideoLoadedFraction();
+    expect(playerSpy.getVideoLoadedFraction).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.getPlayerState();
+    expect(playerSpy.getPlayerState).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.getCurrentTime();
+    expect(playerSpy.getCurrentTime).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.getPlaybackQuality();
+    expect(playerSpy.getPlaybackQuality).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.getAvailableQualityLevels();
+    expect(playerSpy.getAvailableQualityLevels).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.getDuration();
+    expect(playerSpy.getDuration).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.getVideoUrl();
+    expect(playerSpy.getVideoUrl).toHaveBeenCalled();
+
+    testComponent.youtubePlayer.getVideoEmbedCode();
+    expect(playerSpy.getVideoEmbedCode).toHaveBeenCalled();
+  });
 });
 
 /** Test component that contains a YouTubePlayer. */
