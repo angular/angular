@@ -83,6 +83,12 @@ runInEachFileSystem(() => {
           const resolver = new ModuleResolver(getFileSystem());
           expect(resolver.resolveModuleImport('./y', _('/libs/local-package/index.js'))).toBe(null);
         });
+
+        it('should resolve modules that already include an extension', () => {
+          const resolver = new ModuleResolver(getFileSystem());
+          expect(resolver.resolveModuleImport('./x.js', _('/libs/local-package/index.js')))
+              .toEqual(new ResolvedRelativeModule(_('/libs/local-package/x.js')));
+        });
       });
 
       describe('with non-mapped external paths', () => {
