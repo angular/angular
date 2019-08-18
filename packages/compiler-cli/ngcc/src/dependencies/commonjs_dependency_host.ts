@@ -8,7 +8,6 @@
 import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {isRequireCall} from '../host/commonjs_host';
-import {resolveFileWithPostfixes} from '../utils';
 import {DependencyHostBase} from './dependency_host';
 import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
 
@@ -31,11 +30,7 @@ export class CommonJsDependencyHost extends DependencyHostBase {
   protected recursivelyFindDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<AbsoluteFsPath>, alreadySeen: Set<AbsoluteFsPath>): void {
-    const resolvedFile = resolveFileWithPostfixes(this.fs, file, ['', '.js', '/index.js']);
-    if (resolvedFile === null) {
-      return;
-    }
-    const fromContents = this.fs.readFile(resolvedFile);
+    const fromContents = this.fs.readFile(file);
 
     if (!this.hasRequireCalls(fromContents)) {
       // Avoid parsing the source file as there are no imports.
@@ -43,8 +38,8 @@ export class CommonJsDependencyHost extends DependencyHostBase {
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
-    const sf = ts.createSourceFile(
-        resolvedFile, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const sf =
+        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
 
     for (const statement of sf.statements) {
       const declarations =
@@ -52,7 +47,7 @@ export class CommonJsDependencyHost extends DependencyHostBase {
       for (const declaration of declarations) {
         if (declaration.initializer && isRequireCall(declaration.initializer)) {
           const importPath = declaration.initializer.arguments[0].text;
-          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, resolvedFile);
+          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
           if (resolvedModule) {
             if (resolvedModule instanceof ResolvedRelativeModule) {
               const internalDependency = resolvedModule.modulePath;

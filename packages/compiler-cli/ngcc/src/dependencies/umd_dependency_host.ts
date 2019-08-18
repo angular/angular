@@ -8,7 +8,6 @@
 import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {getImportsOfUmdModule, parseStatementForUmdModule} from '../host/umd_host';
-import {resolveFileWithPostfixes} from '../utils';
 import {DependencyHostBase} from './dependency_host';
 import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
 
@@ -31,11 +30,7 @@ export class UmdDependencyHost extends DependencyHostBase {
   protected recursivelyFindDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
-    const resolvedFile = resolveFileWithPostfixes(this.fs, file, ['', '.js', '/index.js']);
-    if (resolvedFile === null) {
-      return;
-    }
-    const fromContents = this.fs.readFile(resolvedFile);
+    const fromContents = this.fs.readFile(file);
 
     if (!this.hasRequireCalls(fromContents)) {
       // Avoid parsing the source file as there are no imports.
@@ -43,8 +38,8 @@ export class UmdDependencyHost extends DependencyHostBase {
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
-    const sf = ts.createSourceFile(
-        resolvedFile, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const sf =
+        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
 
     if (sf.statements.length !== 1) {
       return;
@@ -57,7 +52,7 @@ export class UmdDependencyHost extends DependencyHostBase {
     }
 
     umdImports.forEach(umdImport => {
-      const resolvedModule = this.moduleResolver.resolveModuleImport(umdImport.path, resolvedFile);
+      const resolvedModule = this.moduleResolver.resolveModuleImport(umdImport.path, file);
       if (resolvedModule) {
         if (resolvedModule instanceof ResolvedRelativeModule) {
           const internalDependency = resolvedModule.modulePath;
