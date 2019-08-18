@@ -25,7 +25,7 @@ export class ModuleResolver {
   private pathMappings: ProcessedPathMapping[];
 
   constructor(private fs: FileSystem, pathMappings?: PathMappings, private relativeExtensions = [
-    '.js', '/index.js'
+    '', '.js', '/index.js'
   ]) {
     this.pathMappings = pathMappings ? this.processPathMappings(pathMappings) : [];
   }
