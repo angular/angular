@@ -7,7 +7,6 @@
  */
 import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {resolveFileWithPostfixes} from '../utils';
 import {DependencyHostBase} from './dependency_host';
 import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
 
@@ -30,11 +29,7 @@ export class EsmDependencyHost extends DependencyHostBase {
   protected recursivelyFindDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
-    const resolvedFile = resolveFileWithPostfixes(this.fs, file, ['', '.js', '/index.js']);
-    if (resolvedFile === null) {
-      return;
-    }
-    const fromContents = this.fs.readFile(resolvedFile);
+    const fromContents = this.fs.readFile(file);
 
     if (!hasImportOrReexportStatements(fromContents)) {
       // Avoid parsing the source file as there are no imports.
@@ -42,8 +37,8 @@ export class EsmDependencyHost extends DependencyHostBase {
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
-    const sf = ts.createSourceFile(
-        resolvedFile, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const sf =
+        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
     sf.statements
         // filter out statements that are not imports or reexports
         .filter(isStringImportOrReexport)
@@ -51,7 +46,7 @@ export class EsmDependencyHost extends DependencyHostBase {
         .map(stmt => stmt.moduleSpecifier.text)
         // Resolve this module id into an absolute path
         .forEach(importPath => {
-          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, resolvedFile);
+          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
           if (resolvedModule) {
             if (resolvedModule instanceof ResolvedRelativeModule) {
               const internalDependency = resolvedModule.modulePath;
