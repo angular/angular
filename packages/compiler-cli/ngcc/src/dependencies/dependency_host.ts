@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
+import {resolveFileWithPostfixes} from '../utils';
+
 import {ModuleResolver} from './module_resolver';
 
 export interface DependencyHost {
@@ -32,10 +34,15 @@ export abstract class DependencyHostBase implements DependencyHost {
     const dependencies = new Set<AbsoluteFsPath>();
     const missing = new Set<AbsoluteFsPath|PathSegment>();
     const deepImports = new Set<AbsoluteFsPath>();
-    const alreadySeen = new Set<AbsoluteFsPath>();
 
-    this.recursivelyFindDependencies(
-        entryPointPath, dependencies, missing, deepImports, alreadySeen);
+    const resolvedFile =
+        resolveFileWithPostfixes(this.fs, entryPointPath, ['', '.js', '/index.js']);
+    if (resolvedFile !== null) {
+      const alreadySeen = new Set<AbsoluteFsPath>();
+      this.recursivelyFindDependencies(
+          resolvedFile, dependencies, missing, deepImports, alreadySeen);
+    }
+
     return {dependencies, missing, deepImports};
   }
 
