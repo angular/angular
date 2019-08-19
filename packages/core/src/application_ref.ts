@@ -601,7 +601,8 @@ export class ApplicationRef {
     this.componentTypes.push(componentFactory.componentType);
 
     // Create a factory associated with the current module if it's not bound to some other
-    const ngModule = isBoundToModule(componentFactory) ? null : this._injector.get(NgModuleRef);
+    const ngModule =
+        isBoundToModule(componentFactory) ? undefined : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
 

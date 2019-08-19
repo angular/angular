@@ -776,7 +776,7 @@ class HiddenModule {
              const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
              const http = ref.injector.get(HttpClient);
              ref.injector.get<NgZone>(NgZone).run(() => {
-               http.get('http://localhost/testing').subscribe((body: string) => {
+               http.get<string>('http://localhost/testing').subscribe((body: string) => {
                  NgZone.assertInAngularZone();
                  expect(body).toEqual('success!');
                });
@@ -791,8 +791,8 @@ class HiddenModule {
            platform.bootstrapModule(HttpClientExampleModule).then(ref => {
              const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
              const http = ref.injector.get(HttpClient);
-             ref.injector.get<NgZone>(NgZone).run(() => {
-               http.get('http://localhost/testing').subscribe((body: string) => {
+             ref.injector.get(NgZone).run(() => {
+               http.get<string>('http://localhost/testing').subscribe((body: string) => {
                  expect(body).toEqual('success!');
                });
                expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
@@ -808,8 +808,8 @@ class HiddenModule {
         platform.bootstrapModule(HttpInterceptorExampleModule).then(ref => {
           const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
           const http = ref.injector.get(HttpClient);
-          ref.injector.get<NgZone>(NgZone).run(() => {
-            http.get('http://localhost/testing').subscribe((body: string) => {
+          ref.injector.get(NgZone).run(() => {
+            http.get<string>('http://localhost/testing').subscribe((body: string) => {
               NgZone.assertInAngularZone();
               expect(body).toEqual('success!');
             });
