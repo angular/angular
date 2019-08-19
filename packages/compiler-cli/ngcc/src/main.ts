@@ -17,7 +17,7 @@ import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
 import {AnalyzeEntryPointsFn, CreateCompileFn, EntryPointProcessingMetadata, Executor, Task, TaskProcessingOutcome} from './execution/api';
-import {SingleProcessExecutor} from './execution/single_process_executor';
+import {AsyncSingleProcessExecutor, SingleProcessExecutor} from './execution/single_process_executor';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
@@ -32,11 +32,12 @@ import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater';
 
 /**
- * The options to configure the ngcc compiler.
+ * The options to configure the ngcc compiler for synchronous execution.
  */
-export interface NgccOptions {
+export interface SyncNgccOptions {
   /** The absolute path to the `node_modules` folder that contains the packages to process. */
   basePath: string;
+
   /**
    * The path to the primary package to be processed. If not absolute then it must be relative to
    * `basePath`.
@@ -44,35 +45,59 @@ export interface NgccOptions {
    * All its dependencies will need to be processed too.
    */
   targetEntryPointPath?: string;
+
   /**
    * Which entry-point properties in the package.json to consider when processing an entry-point.
    * Each property should hold a path to the particular bundle format for the entry-point.
    * Defaults to all the properties in the package.json.
    */
   propertiesToConsider?: string[];
+
   /**
    * Whether to process all formats specified by (`propertiesToConsider`)  or to stop processing
    * this entry-point at the first matching format. Defaults to `true`.
    */
   compileAllFormats?: boolean;
+
   /**
    * Whether to create new entry-points bundles rather than overwriting the original files.
    */
   createNewEntryPointFormats?: boolean;
+
   /**
    * Provide a logger that will be called with log messages.
    */
   logger?: Logger;
+
   /**
    * Paths mapping configuration (`paths` and `baseUrl`), as found in `ts.CompilerOptions`.
    * These are used to resolve paths to locally built Angular libraries.
    */
   pathMappings?: PathMappings;
+
   /**
    * Provide a file-system service that will be used by ngcc for all file interactions.
    */
   fileSystem?: FileSystem;
+
+  /**
+   * Whether the compilation should run and return asynchronously. Allowing asynchronous execution
+   * may speed up the compilation by utilizing multiple CPU cores (if available).
+   *
+   * Default: `false` (i.e. run synchronously)
+   */
+  async?: false;
 }
+
+/**
+ * The options to configure the ngcc compiler for asynchronous execution.
+ */
+export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'>& {async: true};
+
+/**
+ * The options to configure the ngcc compiler.
+ */
+export type NgccOptions = AsyncNgccOptions | SyncNgccOptions;
 
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).
@@ -82,10 +107,13 @@ export interface NgccOptions {
  *
  * @param options The options telling ngcc what to compile and how.
  */
+export function mainNgcc(options: AsyncNgccOptions): Promise<void>;
+export function mainNgcc(options: SyncNgccOptions): void;
 export function mainNgcc(
     {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
      compileAllFormats = true, createNewEntryPointFormats = false,
-     logger = new ConsoleLogger(LogLevel.info), pathMappings}: NgccOptions): void {
+     logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false}: NgccOptions): void|
+    Promise<void> {
   const fileSystem = getFileSystem();
   const pkgJsonUpdater = new DirectPackageJsonUpdater(fileSystem);
 
@@ -191,7 +219,7 @@ export function mainNgcc(
   };
 
   // The executor for actually planning and getting the work done.
-  const executor = getExecutor(logger, pkgJsonUpdater);
+  const executor = getExecutor(async, logger, pkgJsonUpdater);
   const execOpts = {compileAllFormats, propertiesToConsider};
 
   return executor.execute(analyzeFn, createCompileFn, execOpts);
@@ -226,8 +254,12 @@ function getFileWriter(
                                       new InPlaceFileWriter(fs);
 }
 
-function getExecutor(logger: Logger, pkgJsonUpdater: PackageJsonUpdater): Executor {
-  return new SingleProcessExecutor(logger, pkgJsonUpdater);
+function getExecutor(async: boolean, logger: Logger, pkgJsonUpdater: PackageJsonUpdater): Executor {
+  if (async) {
+    return new AsyncSingleProcessExecutor(logger, pkgJsonUpdater);
+  } else {
+    return new SingleProcessExecutor(logger, pkgJsonUpdater);
+  }
 }
 
 function getEntryPoints(

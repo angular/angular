@@ -7,14 +7,16 @@
  */
 import {CachedFileSystem, NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
 
-import {mainNgcc} from './src/main';
+import {AsyncNgccOptions, NgccOptions, SyncNgccOptions, mainNgcc} from './src/main';
 export {ConsoleLogger, LogLevel} from './src/logging/console_logger';
 export {Logger} from './src/logging/logger';
-export {NgccOptions} from './src/main';
+export {AsyncNgccOptions, NgccOptions, SyncNgccOptions} from './src/main';
 export {PathMappings} from './src/utils';
 
-export function process(...args: Parameters<typeof mainNgcc>) {
+export function process(options: AsyncNgccOptions): Promise<void>;
+export function process(options: SyncNgccOptions): void;
+export function process(options: NgccOptions): void|Promise<void> {
   // Recreate the file system on each call to reset the cache
   setFileSystem(new CachedFileSystem(new NodeJSFileSystem()));
-  return mainNgcc(...args);
+  return mainNgcc(options);
 }
