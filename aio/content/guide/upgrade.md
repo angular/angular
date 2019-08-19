@@ -422,8 +422,7 @@ will result in the same thing:
 </code-example>
 
 To begin converting your AngularJS application to a hybrid, you need to load the Angular framework.
-You can see how this can be done with SystemJS by following the instructions in [Setup](guide/setup),
-selectively copying code from the [QuickStart github repository](https://github.com/angular/quickstart).
+You can see how this can be done with SystemJS by following the instructions in [Setup for Upgrading to AngularJS](guide/upgrade-setup) for selectively copying code from the [QuickStart github repository](https://github.com/angular/quickstart).
 
 You also need to install the `@angular/upgrade` package via `npm install @angular/upgrade --save`
 and add a mapping for the `@angular/upgrade/static` package:
@@ -1311,7 +1310,7 @@ Turn to the [Angular animations](guide/animations) guide to learn about that.
 </div>
 
 Install Angular into the project, along with the SystemJS module loader.
-Take a look at the results of the [Setup](guide/setup) instructions
+Take a look at the results of the [upgrade setup instructions](guide/upgrade-setup)
 and get the following configurations from there:
 
 * Add Angular and the other new dependencies to `package.json`
@@ -1352,7 +1351,7 @@ to load the actual application:
 </code-example>
 
 You also need to make a couple of adjustments
-to the `systemjs.config.js` file installed during [setup](guide/setup).
+to the `systemjs.config.js` file installed during [upgrade setup](guide/upgrade-setup).
 
 Point the browser to the project root when loading things through SystemJS,
 instead of using the  `<base>` URL.
