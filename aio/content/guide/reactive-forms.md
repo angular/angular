@@ -766,11 +766,6 @@ Import the `FormArray` class from `@angular/forms` to use for type information. 
 ### 2단계 - FormArray 정의하기
 
 <!--
-You can initialize a `FormArray` with any number of controls, from zero to many, by defining them in an array. Add an `aliases` property to the `FormGroup` for the `profileForm` to define the `FormArray`.
--->
-`FormArray`는 배열로 초기화하며, 이 때 배열의 길이는 어떠한 것이라도 가능합니다. `profileForm`에 `aliases` 프로퍼티를 추가하고, 이 프로퍼티를 `FormArray`로 정의해 봅시다.
-
-<!--
 You can initialize a form array with any number of controls, from zero to many, by defining them in an array. Add an `aliases` property to the form group instance for `profileForm` to define the form array.
 -->
 폼 배열은 배열로 초기화하며, 이 때 배열의 길이는 어떠한 것이라도 가능합니다. `profileForm`에 `aliases` 프로퍼티를 추가하고, 이 프로퍼티를 폼 배열로 정의해 봅시다.
