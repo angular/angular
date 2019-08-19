@@ -361,8 +361,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
                fromEvent(this._document, 'click') as Observable<MouseEvent>,
                fromEvent(this._document, 'touchend') as Observable<TouchEvent>)
         .pipe(filter(event => {
-          // If we're in the Shadow DOM the event target will be the shadow root so we have to fall
-          // back to check the first element in the path of the click event.
+          // If we're in the Shadow DOM, the event target will be the shadow root, so we have to
+          // fall back to check the first element in the path of the click event.
           const clickTarget =
               (this._isInsideShadowRoot && event.composedPath ? event.composedPath()[0] :
                                                                 event.target) as HTMLElement;
