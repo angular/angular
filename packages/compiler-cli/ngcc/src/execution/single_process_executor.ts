@@ -44,3 +44,12 @@ export class SingleProcessExecutor implements Executor {
     checkForUnprocessedEntryPoints(processingMetadataPerEntryPoint, options.propertiesToConsider);
   }
 }
+
+/**
+ * An `Executor` that processes all tasks serially, but still completes asynchronously.
+ */
+export class AsyncSingleProcessExecutor extends SingleProcessExecutor {
+  async execute(...args: Parameters<Executor['execute']>): Promise<void> {
+    return super.execute(...args);
+  }
+}
