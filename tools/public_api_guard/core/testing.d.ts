@@ -58,9 +58,11 @@ export interface TestBed {
     configureTestingModule(moduleDef: TestModuleMetadata): void;
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
     execute(tokens: any[], fn: Function, context?: any): any;
-    get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     get(token: any, notFoundValue?: any): any;
+    get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
+    inject<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    inject<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T | null;
     overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;
     overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
     overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
@@ -93,17 +95,15 @@ export interface TestBedStatic {
     }): TestBedStatic;
     configureTestingModule(moduleDef: TestModuleMetadata): TestBedStatic;
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
-    get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     get(token: any, notFoundValue?: any): any;
+    get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
+    inject<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T | null;
+    inject<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
     overrideComponent(component: Type<any>, override: MetadataOverride<Component>): TestBedStatic;
     overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): TestBedStatic;
     overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic;
     overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedStatic;
-    overrideProvider(token: any, provider: {
-        useFactory: Function;
-        deps: any[];
-    }): TestBedStatic;
     overrideProvider(token: any, provider: {
         useValue: any;
     }): TestBedStatic;
@@ -111,6 +111,10 @@ export interface TestBedStatic {
         useFactory?: Function;
         useValue?: any;
         deps?: any[];
+    }): TestBedStatic;
+    overrideProvider(token: any, provider: {
+        useFactory: Function;
+        deps: any[];
     }): TestBedStatic;
     overrideTemplate(component: Type<any>, template: string): TestBedStatic;
     overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBedStatic;
