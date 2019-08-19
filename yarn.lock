@@ -301,7 +301,7 @@
     through2 "^2.0.0"
     xdg-basedir "^3.0.0"
 
-"@microsoft/api-extractor@^7.0.21":
+"@microsoft/api-extractor@7.0.21":
   version "7.0.21"
   resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.0.21.tgz#d5ff9bba4ff7283503aac83ad489b16cad293fc7"
   integrity sha512-7lFcHNykVz0tvgOz9juXqP+a1j0EmnJ9J080CBE/171IxL4fBrpslPhqN86dNuavuPragRpBLc8Okv/bV7FJPQ==
