@@ -677,7 +677,7 @@ describe('AppComponent', () => {
       });
 
       it('should not be loaded/registered until necessary', () => {
-        const loader: TestElementsLoader = fixture.debugElement.injector.get(ElementsLoader);
+        const loader = fixture.debugElement.injector.get(ElementsLoader) as unknown as TestElementsLoader;
         expect(loader.loadCustomElement).not.toHaveBeenCalled();
 
         setHasFloatingToc(true);

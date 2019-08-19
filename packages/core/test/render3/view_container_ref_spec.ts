@@ -299,7 +299,7 @@ describe('ViewContainerRef', () => {
              const changeDetector = ref.injector.get(ChangeDetectorRef);
              changeDetector.detectChanges();
              expect(dynamicComp.doCheckCount).toEqual(1);
-             expect(changeDetector.context).toEqual(dynamicComp);
+             expect((changeDetector as any).context).toEqual(dynamicComp);
            });
 
         it('should not throw when destroying a reattached component', () => {
