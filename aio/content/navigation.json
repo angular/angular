@@ -507,6 +507,12 @@
           "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
           "children": [
             {
+              "url": "guide/upgrade-setup",
+              "title": "Setup for Upgrading from AngularJS",
+              "tooltip": "Use code from the Angular QuickStart seed as part of upgrading from AngularJS.",
+              "hidden": true
+            },
+            {
               "url": "guide/upgrade",
               "title": "Upgrading Instructions",
               "tooltip": "Incrementally upgrade an AngularJS application to Angular."

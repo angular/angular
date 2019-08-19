@@ -1212,7 +1212,8 @@ value becomes available. The test must become _asynchronous_.
 
 #### Async test with _fakeAsync()_
 
-To use `fakeAsync()` functionality, you need to import `zone-testing`, for details, please read [setup guide](guide/setup#appendix-test-using-fakeasyncasync).
+To use `fakeAsync()` functionality, you must import `zone.js/dist/zone-testing` in your test setup file.
+If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
 
 The following test confirms the expected behavior when the service returns an `ErrorObservable`.
 
@@ -1230,6 +1231,13 @@ fakeAsync(() => { /* test body */ })`
 The `fakeAsync()` function enables a linear coding style by running the test body in a special `fakeAsync test zone`.
 The test body appears to be synchronous.
 There is no nested syntax (like a `Promise.then()`) to disrupt the flow of control.
+
+<div class="alert is-helpful">
+
+Limitation: The `fakeAsync()` function won't work if the test body makes an `XMLHttpRequest` (XHR) call.
+XHR calls within a test are rare, but if you need to call XHR, see [`async()`](#async), below.
+
+</div>
 
 {@a tick}
 
@@ -1406,13 +1414,13 @@ Then you can assert that the quote element displays the expected text.
 
 #### Async test with _async()_
 
-To use `async()` functionality, you need to import `zone-testing`, for details, please read [setup guide](guide/setup#appendix-test-using-fakeasyncasync).
+To use `async()` functionality, you must import `zone.js/dist/zone-testing` in your test setup file.
+If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
 
 The `fakeAsync()` utility function has a few limitations.
-In particular, it won't work if the test body makes an `XHR` call.
-
-`XHR` calls within a test are rare so you can generally stick with `fakeAsync()`.
-But if you ever do need to call `XHR`, you'll want to know about `async()`.
+In particular, it won't work if the test body makes an `XMLHttpRequest` (XHR) call.
+XHR calls within a test are rare so you can generally stick with [`fakeAsync()`](#fake-async).
+But if you ever do need to call `XMLHttpRequest`, you'll want to know about `async()`.
 
 <div class="alert is-helpful">
 
