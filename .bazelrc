@@ -44,6 +44,7 @@ build:release --workspace_status_command="node ./tools/bazel-stamp-vars.js"
 # running as daemons, and cache SourceFile AST's to reduce parse time.
 build --strategy=TypeScriptCompile=worker
 build --strategy=AngularTemplateCompile=worker
+build --strategy=SassCompiler=worker
 
 ################################
 # Temporary Settings for Ivy   #
