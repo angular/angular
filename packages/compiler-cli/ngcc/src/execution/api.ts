@@ -33,7 +33,7 @@ export interface ExecutionOptions {
 export interface Executor {
   execute(
       analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn,
-      options: ExecutionOptions): void;
+      options: ExecutionOptions): void|Promise<void>;
 }
 
 /** Represents metadata related to the processing of an entry-point. */
