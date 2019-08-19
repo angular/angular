@@ -216,7 +216,7 @@ the recipe.
 
 In order to start using any `upgrade/static` APIs, you still need to load the Angular framework as
 you would in a normal Angular app. You can see how this can be done with SystemJS by following the
-instructions in the [Setup](guide/setup) guide, selectively copying code from the
+instructions in the [Upgrade Setup](guide/upgrade-setup "Setup for Upgrading from AngularJS") guide, selectively copying code from the
 [QuickStart github repository](https://github.com/angular/quickstart).
 
 You also need to install the `@angular/upgrade` package via `npm install @angular/upgrade --save`

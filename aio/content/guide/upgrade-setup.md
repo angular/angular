@@ -1,15 +1,15 @@
 # Setup for Upgrading from AngularJS
 
-<!-- 
+<!--
 Question: Can we remove this file and instead direct readers to https://github.com/angular/quickstart/blob/master/README.md
 -->
 
 <div class="alert is-critical">
 
-**Audience:** Use this guide **only** in the context of  [Upgrading from AngularJS](guide/upgrade "Upgrading from AngularJS to Angular") or [Upgrading for Performance](guide/upgrade-performance "Upgrading for Performance"). 
-Those Upgrade guides refer to this Setup guide for information about using the [deprecated QuickStart GitHub repository](https://github.com/angular/quickstart "Deprecated Angular QuickStart GitHub repository"), which was created prior to the current Angular [CLI](cli "CLI Overview"). 
+**Audience:** Use this guide **only** in the context of  [Upgrading from AngularJS](guide/upgrade "Upgrading from AngularJS to Angular") or [Upgrading for Performance](guide/upgrade-performance "Upgrading for Performance").
+Those Upgrade guides refer to this Setup guide for information about using the [deprecated QuickStart GitHub repository](https://github.com/angular/quickstart "Deprecated Angular QuickStart GitHub repository"), which was created prior to the current Angular [CLI](cli "CLI Overview").
 
-**For all other scenarios,** see the current instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development").
+**For all other scenarios,** see the current instructions in [Setting up the Local Environment and Workspace](guide/setup-local "Setting up for Local Development").
 
 
 </div>
@@ -139,6 +139,11 @@ Consequently, there are many files in the project folder on your machine,
 most of which you can [learn about later](guide/file-structure).
 
 
+<div class="alert is-helpful">
+
+**Reminder:** The "QuickStart seed" example was created prior to the Angular CLI, so there are some differences between what is described here and an Angular CLI application.
+
+</div>
 
 {@a app-files}
 
@@ -265,8 +270,8 @@ The following are all in `src/`
 
 
       Defines `AppModule`, the  [root module](guide/bootstrapping "AppModule: the root module") that tells Angular how to assemble the application.
-      Right now it declares only the `AppComponent`.
-      Soon there will be more components to declare.
+      When initially created, it declares only the `AppComponent`.
+      Over time, you add more components to declare.
     </td>
 
   </tr>
@@ -284,51 +289,14 @@ The following are all in `src/`
       [bootstraps](guide/bootstrapping)
       the application's main module (`AppModule`) to run in the browser.
       The JIT compiler is a reasonable choice during the development of most projects and
-      it's the only viable choice for a sample running in a _live-coding_ environment like Stackblitz.
-      You'll learn about alternative compiling and [deployment](guide/deployment) options later in the documentation.
+      it's the only viable choice for a sample running in a _live-coding_ environment such as Stackblitz.
+      Alternative [compilation](guide/aot-compiler), [build](guide/build), and [deployment](guide/deployment) options are available.
 
     </td>
 
   </tr>
 
 </table>
-
-
-
-<div class="alert is-helpful">
-
-
-
-### Next Step
-
-If you're new to Angular, we recommend you follow the [tutorial](tutorial "Tour of Heroes tutorial").
-
-
-</div>
-
-<br></br><br></br>
-
-{@a install-prerequisites}
-
-
-
-## Appendix: Node.js and npm
-
-
-[Node.js](https://nodejs.org/en/) and the [npm](https://www.npmjs.com/) package manager are essential to modern web development with Angular and other platforms.
-Node.js powers client development and build tools.
-The _npm_ package manager, which is itself a _Node.js_ application, installs JavaScript libraries.
-
-<a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank" title="Installing Node.js and updating npm">
-Get them now</a> if they're not already installed on your machine.
-
-**Verify that you are running Node.js `v8.x` or higher and npm `5.x` or higher**
-by running the commands `node -v` and `npm -v` in a terminal/console window.
-Older versions produce errors.
-
-We recommend [nvm](https://github.com/creationix/nvm) for managing multiple versions of Node.js and npm.
-You may need [nvm](https://github.com/creationix/nvm) if you already have projects running on your machine that use other versions of Node.js and npm.
-
 
 
 ## Appendix: Develop locally with IE

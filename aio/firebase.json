@@ -26,6 +26,7 @@
       {"type": 301, "source": "/guide/service-worker-comm", "destination": "/guide/service-worker-communications"},
       {"type": 301, "source": "/guide/service-worker-configref", "destination": "/guide/service-worker-config"},
       {"type": 301, "source": "/guide/webpack", "destination": "https://v5.angular.io/guide/webpack"},
+      {"type": 301, "source": "/guide/setup", "destination": "/guide/setup-local"},
       {"type": 301, "source": "/guide/setup-systemjs-anatomy", "destination": "/guide/file-structure"},
       {"type": 301, "source": "/guide/change-log", "destination": "https://github.com/angular/angular/blob/master/CHANGELOG.md"},
       {"type": 301, "source": "/guide/quickstart", "destination": "/start"},
