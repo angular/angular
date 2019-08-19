@@ -11,6 +11,7 @@ import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
 import {mainNgcc} from '../../src/main';
 import {markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLogger} from '../helpers/mock_logger';
 
@@ -53,6 +54,53 @@ runInEachFileSystem(() => {
       expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
         es2015: '0.0.0-PLACEHOLDER',
         typings: '0.0.0-PLACEHOLDER',
+      });
+    });
+
+    it('should throw, if an error happens during processing', () => {
+      spyOn(Transformer.prototype, 'transform').and.throwError('Test error.');
+
+      expect(() => mainNgcc({
+               basePath: '/dist',
+               targetEntryPointPath: 'local-package',
+               propertiesToConsider: ['main', 'es2015'],
+               logger: new MockLogger(),
+             }))
+          .toThrowError(`Test error.`);
+
+      expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
+      expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toBeUndefined();
+    });
+
+    describe('in async mode', () => {
+      it('should run ngcc without errors for fesm2015', async() => {
+        const promise = mainNgcc({
+          basePath: '/node_modules',
+          propertiesToConsider: ['fesm2015'],
+          async: true,
+        });
+
+        expect(promise).toEqual(jasmine.any(Promise));
+        await promise;
+      });
+
+      it('should reject, if an error happens during processing', async() => {
+        spyOn(Transformer.prototype, 'transform').and.throwError('Test error.');
+
+        const promise = mainNgcc({
+          basePath: '/dist',
+          targetEntryPointPath: 'local-package',
+          propertiesToConsider: ['main', 'es2015'],
+          logger: new MockLogger(),
+          async: true,
+        });
+
+        await promise.then(
+            () => Promise.reject('Expected promise to be rejected.'),
+            err => expect(err).toEqual(new Error('Test error.')));
+
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toBeUndefined();
       });
     });
 

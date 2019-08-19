@@ -64,17 +64,21 @@ if (require.main === module) {
   const targetEntryPointPath = options['t'] ? options['t'] : undefined;
   const compileAllFormats = !options['first-only'];
   const logLevel = options['l'] as keyof typeof LogLevel | undefined;
-  try {
-    mainNgcc({
-      basePath: baseSourcePath,
-      propertiesToConsider,
-      targetEntryPointPath,
-      compileAllFormats,
-      logger: logLevel && new ConsoleLogger(LogLevel[logLevel]),
-    });
-    process.exitCode = 0;
-  } catch (e) {
-    console.error(e.stack || e.message);
-    process.exitCode = 1;
-  }
+
+  (async() => {
+    try {
+      await mainNgcc({
+        basePath: baseSourcePath,
+        propertiesToConsider,
+        targetEntryPointPath,
+        compileAllFormats,
+        logger: logLevel && new ConsoleLogger(LogLevel[logLevel]),
+        async: true,
+      });
+      process.exitCode = 0;
+    } catch (e) {
+      console.error(e.stack || e.message);
+      process.exitCode = 1;
+    }
+  })();
 }
