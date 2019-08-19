@@ -6,7 +6,6 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],
     deps = [
-        "//packages/core/schematics/migrations/injectable-pipe",
         "//packages/core/schematics/migrations/missing-injectable",
         "//packages/core/schematics/migrations/missing-injectable/google3",
         "//packages/core/schematics/migrations/renderer-to-renderer2",
