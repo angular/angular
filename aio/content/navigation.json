@@ -593,7 +593,7 @@
       "tooltip": "Build, testing, and deployment information.",
       "children": [
         {
-          "url": "guide/setup",
+          "url": "guide/upgrade-setup",
           "title": "Upgrade setup",
           "tooltip": "How to set up the Angular QuickStart seed in the context of upgrading from AngularJS.",
           "hidden": true
