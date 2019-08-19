@@ -44,7 +44,6 @@ sass_library(
     deps = [
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-        "//src/material/core:core_scss_lib",
     ],
 )
 
@@ -55,9 +54,9 @@ sass_binary(
         "external/npm/node_modules",
     ],
     deps = [
+        "//src/cdk/a11y:a11y_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-        "//src/material/core:all_themes",
     ],
 )
 
@@ -70,7 +69,6 @@ sass_binary(
     deps = [
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-        "//src/material/core:all_themes",
     ],
 )
 
@@ -83,7 +81,6 @@ sass_binary(
     deps = [
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-        "//src/material/core:all_themes",
     ],
 )
 
