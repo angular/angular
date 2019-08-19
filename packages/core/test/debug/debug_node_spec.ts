@@ -1018,4 +1018,22 @@ class TestCmptWithPropBindings {
     });
 
   });
+
+  it('should not error when accessing node name', () => {
+    @Component({template: ''})
+    class EmptyComponent {
+    }
+
+    const fixture = TestBed.configureTestingModule({declarations: [EmptyComponent]})
+                        .createComponent(EmptyComponent);
+    let node = fixture.debugElement;
+    let superParentName = '';
+    // Traverse upwards, all the way to #document, which is not a
+    // Node.ELEMENT_NODE
+    while (node) {
+      superParentName = node.name;
+      node = node.parent !;
+    }
+    expect(superParentName).not.toEqual('');
+  });
 }
