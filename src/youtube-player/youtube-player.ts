@@ -92,6 +92,24 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
   private _width = DEFAULT_PLAYER_WIDTH;
   private _widthObs = new EventEmitter<number>();
 
+  /** The moment when the player is supposed to start playing */
+  @Input() set startSeconds(startSeconds: number | undefined) {
+    this._startSeconds.emit(startSeconds);
+  }
+  private _startSeconds = new EventEmitter<number | undefined>();
+
+  /** The moment when the player is supposed to stop playing */
+  @Input() set endSeconds(endSeconds: number | undefined) {
+    this._endSeconds.emit(endSeconds);
+  }
+  private _endSeconds = new EventEmitter<number | undefined>();
+
+  /** The suggested quality of the player */
+  @Input() set suggestedQuality(suggestedQuality: YT.SuggestedVideoQuality | undefined) {
+    this._suggestedQuality.emit(suggestedQuality);
+  }
+  private _suggestedQuality = new EventEmitter<YT.SuggestedVideoQuality | undefined>();
+
   /** Outputs are direct proxies from the player itself. */
   @Output() ready = new EventEmitter<YT.PlayerEvent>();
   @Output() stateChange = new EventEmitter<YT.OnStateChangeEvent>();
@@ -117,6 +135,10 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
     const widthObs = this._widthObs.pipe(startWith(this._width));
     const heightObs = this._heightObs.pipe(startWith(this._height));
 
+    const startSecondsObs = this._startSeconds.pipe(startWith(undefined));
+    const endSecondsObs = this._endSeconds.pipe(startWith(undefined));
+    const suggestedQualityObs = this._suggestedQuality.pipe(startWith(undefined));
+
     /** An observable of the currently loaded player. */
     const playerObs =
       createPlayerObservable(
@@ -132,7 +154,15 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
 
     bindSizeToPlayer(playerObs, widthObs, heightObs);
 
-    bindCueVideoCall(playerObs, this._videoId, this._destroyed);
+    bindSuggestedQualityToPlayer(playerObs, suggestedQualityObs);
+
+    bindCueVideoCall(
+      playerObs,
+      this._videoId,
+      startSecondsObs,
+      endSecondsObs,
+      suggestedQualityObs,
+      this._destroyed);
 
     // After all of the subscriptions are set up, connect the observable.
     (playerObs as ConnectableObservable<Player>).connect();
@@ -345,6 +375,19 @@ function bindSizeToPlayer(
       .subscribe(([player, width, height]) => player && player.setSize(width, height));
 }
 
+/** Listens to changes from the suggested quality and sets it on the given player. */
+function bindSuggestedQualityToPlayer(
+  playerObs: Observable<YT.Player | undefined>,
+  suggestedQualityObs: Observable<YT.SuggestedVideoQuality | undefined>
+) {
+  return combineLatest(
+    playerObs,
+    suggestedQualityObs
+  ).subscribe(
+    ([player, suggestedQuality]) =>
+        player && suggestedQuality && player.setPlaybackQuality(suggestedQuality));
+}
+
 /**
  * Returns an observable that emits the loaded player once it's ready. Certain properties/methods
  * won't be available until the iframe finishes loading.
@@ -433,8 +476,18 @@ function syncPlayerState(
 function bindCueVideoCall(
   playerObs: Observable<Player | undefined>,
   videoIdObs: Observable<string | undefined>,
+  startSecondsObs: Observable<number | undefined>,
+  endSecondsObs: Observable<number | undefined>,
+  suggestedQualityObs: Observable<YT.SuggestedVideoQuality | undefined>,
   destroyed: Observable<undefined>,
 ) {
+  const cueOptionsObs = combineLatest(startSecondsObs, endSecondsObs)
+    .pipe(map(([startSeconds, endSeconds]) => ({startSeconds, endSeconds})));
+
+  // Only respond to changes in cue options if the player is not running.
+  const filteredCueOptions = cueOptionsObs
+    .pipe(filterOnOther(playerObs, player => !!player && !hasPlayerStarted(player)));
+
   // If the video id changed, there's no reason to run 'cue' unless the player
   // was initialized with a different video id.
   const changedVideoId = videoIdObs
@@ -442,21 +495,33 @@ function bindCueVideoCall(
 
   // If the player changed, there's no reason to run 'cue' unless there are cue options.
   const changedPlayer = playerObs.pipe(
-    filterOnOther(videoIdObs, (videoId, player) => !!player && videoId != player.videoId));
+    filterOnOther(
+      combineLatest(videoIdObs, cueOptionsObs),
+      ([videoId, cueOptions], player) =>
+          !!player &&
+            (videoId != player.videoId || !!cueOptions.startSeconds || !!cueOptions.endSeconds)));
 
-  merge(changedPlayer, changedVideoId)
-      .pipe(
-        withLatestFrom(combineLatest(playerObs, videoIdObs)),
-        map(([_, values]) => values),
-        takeUntil(destroyed),
-      )
-      .subscribe(([player, videoId]) => {
-        if (!videoId || !player) {
-          return;
-        }
-        player.videoId = videoId;
-        player.cueVideoById({videoId});
+  merge(changedPlayer, changedVideoId, filteredCueOptions)
+    .pipe(
+      withLatestFrom(combineLatest(playerObs, videoIdObs, cueOptionsObs, suggestedQualityObs)),
+      map(([_, values]) => values),
+      takeUntil(destroyed),
+    )
+    .subscribe(([player, videoId, cueOptions, suggestedQuality]) => {
+      if (!videoId || !player) {
+        return;
+      }
+      player.videoId = videoId;
+      player.cueVideoById({
+        videoId,
+        suggestedQuality,
+        ...cueOptions,
       });
+    });
+}
+
+function hasPlayerStarted(player: YT.Player): boolean {
+  return [YT.PlayerState.UNSTARTED, YT.PlayerState.CUED].indexOf(player.getPlayerState()) === -1;
 }
 
 /** Combines the two observables temporarily for the filter function. */

@@ -132,6 +132,61 @@ describe('YoutubePlayer', () => {
     expect(testComponent.youtubePlayer.height).toBe(DEFAULT_PLAYER_HEIGHT);
   });
 
+  it('initializes the player with start and end seconds', () => {
+    testComponent.startSeconds = 5;
+    testComponent.endSeconds = 6;
+    fixture.detectChanges();
+
+    expect(playerSpy.cueVideoById).not.toHaveBeenCalled();
+
+    playerSpy.getPlayerState.and.returnValue(window.YT!.PlayerState.CUED);
+    events.onReady({target: playerSpy});
+
+    expect(playerSpy.cueVideoById).toHaveBeenCalledWith(
+      jasmine.objectContaining({startSeconds: 5, endSeconds: 6}));
+
+    testComponent.endSeconds = 8;
+    fixture.detectChanges();
+
+    expect(playerSpy.cueVideoById).toHaveBeenCalledWith(
+      jasmine.objectContaining({startSeconds: 5, endSeconds: 8}));
+
+    testComponent.startSeconds = 7;
+    fixture.detectChanges();
+
+    expect(playerSpy.cueVideoById).toHaveBeenCalledWith(
+      jasmine.objectContaining({startSeconds: 7, endSeconds: 8}));
+
+    testComponent.startSeconds = 10;
+    testComponent.endSeconds = 11;
+    fixture.detectChanges();
+
+    expect(playerSpy.cueVideoById).toHaveBeenCalledWith(
+      jasmine.objectContaining({startSeconds: 10, endSeconds: 11}));
+  });
+
+  it('sets the suggested quality', () => {
+    testComponent.suggestedQuality = 'small';
+    fixture.detectChanges();
+
+    expect(playerSpy.setPlaybackQuality).not.toHaveBeenCalled();
+
+    events.onReady({target: playerSpy});
+
+    expect(playerSpy.setPlaybackQuality).toHaveBeenCalledWith('small');
+
+    testComponent.suggestedQuality = 'large';
+    fixture.detectChanges();
+
+    expect(playerSpy.setPlaybackQuality).toHaveBeenCalledWith('large');
+
+    testComponent.videoId = 'other';
+    fixture.detectChanges();
+
+    expect(playerSpy.cueVideoById).toHaveBeenCalledWith(
+      jasmine.objectContaining({suggestedQuality: 'large'}));
+  });
+
   it('proxies events as output', () => {
     events.onReady({target: playerSpy});
     expect(testComponent.onReady).toHaveBeenCalledWith({target: playerSpy});
@@ -228,6 +283,7 @@ describe('YoutubePlayer', () => {
   selector: 'test-app',
   template: `
     <youtube-player #player [videoId]="videoId" *ngIf="visible" [width]="width" [height]="height"
+      [startSeconds]="startSeconds" [endSeconds]="endSeconds" [suggestedQuality]="suggestedQuality"
       (ready)="onReady($event)"
       (stateChange)="onStateChange($event)"
       (playbackQualityChange)="onPlaybackQualityChange($event)"
@@ -242,6 +298,9 @@ class TestApp {
   visible = true;
   width: number | undefined;
   height: number | undefined;
+  startSeconds: number | undefined;
+  endSeconds: number | undefined;
+  suggestedQuality: YT.SuggestedVideoQuality | undefined;
   onReady = jasmine.createSpy('onReady');
   onStateChange = jasmine.createSpy('onStateChange');
   onPlaybackQualityChange = jasmine.createSpy('onPlaybackQualityChange');
