@@ -10,7 +10,6 @@ ts_library(
     ],
     deps = [
         "//packages/core/schematics/migrations/google3",
-        "//packages/core/schematics/migrations/injectable-pipe",
         "//packages/core/schematics/migrations/missing-injectable",
         "//packages/core/schematics/migrations/move-document",
         "//packages/core/schematics/migrations/renderer-to-renderer2",
