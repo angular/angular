@@ -16,12 +16,13 @@ import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
-import {AnalyzeEntryPointsFn, CreateCompileFn, EntryPointProcessingMetadata, ExecuteFn, Task, TaskProcessingOutcome} from './execution/api';
+import {AnalyzeEntryPointsFn, CreateCompileFn, EntryPointProcessingMetadata, Executor, Task, TaskProcessingOutcome} from './execution/api';
+import {SingleProcessExecutor} from './execution/single_process_executor';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, PackageJsonFormatProperties, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
@@ -189,56 +190,11 @@ export function mainNgcc(
     };
   };
 
-  // The function for actually planning and getting the work done.
-  const executeFn: ExecuteFn =
-      (analyzeFn: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn) => {
-        const {processingMetadataPerEntryPoint, tasks} = analyzeFn();
-        const compile = createCompileFn((task, outcome) => {
-          const {entryPoint, formatPropertiesToMarkAsProcessed, processDts} = task;
-          const processingMeta = processingMetadataPerEntryPoint.get(entryPoint.path) !;
-          processingMeta.hasAnyProcessedFormat = true;
+  // The executor for actually planning and getting the work done.
+  const executor = getExecutor(logger, pkgJsonUpdater);
+  const execOpts = {compileAllFormats, propertiesToConsider};
 
-          if (outcome === TaskProcessingOutcome.Processed) {
-            const packageJsonPath = fileSystem.resolve(entryPoint.path, 'package.json');
-            const propsToMarkAsProcessed: PackageJsonFormatProperties[] =
-                [...formatPropertiesToMarkAsProcessed];
-
-            if (processDts) {
-              processingMeta.hasProcessedTypings = true;
-              propsToMarkAsProcessed.push('typings');
-            }
-
-            markAsProcessed(
-                pkgJsonUpdater, entryPoint.packageJson, packageJsonPath, propsToMarkAsProcessed);
-          }
-        });
-
-        // Process all tasks.
-        for (const task of tasks) {
-          const processingMeta = processingMetadataPerEntryPoint.get(task.entryPoint.path) !;
-
-          // If we only need one format processed and we already have one for the corresponding
-          // entry-point, skip the task.
-          if (!compileAllFormats && processingMeta.hasAnyProcessedFormat) continue;
-
-          compile(task);
-        }
-
-        // Check for entry-points for which we could not process any format at all.
-        const unprocessedEntryPointPaths =
-            Array.from(processingMetadataPerEntryPoint.entries())
-                .filter(([, processingMeta]) => !processingMeta.hasAnyProcessedFormat)
-                .map(([entryPointPath]) => `\n  - ${entryPointPath}`)
-                .join('');
-
-        if (unprocessedEntryPointPaths) {
-          throw new Error(
-              'Failed to compile any formats for the following entry-points (tried ' +
-              `${propertiesToConsider.join(', ')}): ${unprocessedEntryPointPaths}`);
-        }
-      };
-
-  return executeFn(analyzeFn, createCompileFn);
+  return executor.execute(analyzeFn, createCompileFn, execOpts);
 }
 
 function ensureSupportedProperties(properties: string[]): EntryPointJsonProperty[] {
@@ -268,6 +224,10 @@ function getFileWriter(
     createNewEntryPointFormats: boolean): FileWriter {
   return createNewEntryPointFormats ? new NewEntryPointFileWriter(fs, pkgJsonUpdater) :
                                       new InPlaceFileWriter(fs);
+}
+
+function getExecutor(logger: Logger, pkgJsonUpdater: PackageJsonUpdater): Executor {
+  return new SingleProcessExecutor(logger, pkgJsonUpdater);
 }
 
 function getEntryPoints(
