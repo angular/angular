@@ -41,12 +41,12 @@ describe('type check blocks', () => {
 
   it('should handle empty bindings', () => {
     const TEMPLATE = `<input [type]="">`;
-    expect(tcb(TEMPLATE)).toContain('_t1.type = undefined;');
+    expect(tcb(TEMPLATE)).toContain('_t1.type = (undefined);');
   });
 
   it('should handle bindings without value', () => {
     const TEMPLATE = `<input [type]>`;
-    expect(tcb(TEMPLATE)).toContain('_t1.type = undefined;');
+    expect(tcb(TEMPLATE)).toContain('_t1.type = (undefined);');
   });
 
   it('should handle implicit vars on ng-template', () => {
