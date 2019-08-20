@@ -60,6 +60,9 @@ export declare class HammerGestureConfig {
 
 export declare type HammerLoader = () => Promise<void>;
 
+export declare class HammerModule {
+}
+
 export declare function makeStateKey<T = void>(key: string): StateKey<T>;
 
 export declare class Meta {

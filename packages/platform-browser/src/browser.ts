@@ -17,7 +17,7 @@ import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
-import {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerGesturesPlugin} from './dom/events/hammer_gestures';
+import {HAMMER_PROVIDERS} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
@@ -77,13 +77,7 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
     deps: [DOCUMENT, NgZone, PLATFORM_ID]
   },
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
-  {
-    provide: EVENT_MANAGER_PLUGINS,
-    useClass: HammerGesturesPlugin,
-    multi: true,
-    deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Console, [new Optional(), HAMMER_LOADER]]
-  },
-  {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
+  HAMMER_PROVIDERS,
   {
     provide: DomRendererFactory2,
     useClass: DomRendererFactory2,
