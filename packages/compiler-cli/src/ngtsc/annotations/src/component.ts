@@ -26,7 +26,7 @@ import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
-import {getNgFactoryFnCompileResult} from './factory';
+import {compileNgFactoryField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, unwrapExpression} from './util';
 
@@ -519,8 +519,12 @@ export class ComponentDecoratorHandler implements
 
   compile(node: ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
       CompileResult[] {
-    const res = compileComponentFromMetadata(analysis.meta, pool, makeBindingParser());
-    const factoryRes = getNgFactoryFnCompileResult(analysis.meta, analysis.metadataStmt);
+    const meta = analysis.meta;
+    const res = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const factoryRes = compileNgFactoryField(meta);
+    if (analysis.metadataStmt !== null) {
+      factoryRes.statements.push(analysis.metadataStmt);
+    }
     return [
       factoryRes, {
         name: 'ngComponentDef',

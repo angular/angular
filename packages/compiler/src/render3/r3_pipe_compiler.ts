@@ -88,9 +88,8 @@ export function compilePipeFromRender2(
     deps: dependenciesFromGlobalMetadata(pipe.type, outputCtx, reflector),
     pure: pipe.pure,
   };
-
   const res = compilePipeFromMetadata(metadata);
-  const factoryRes = compileFactoryFromMetadata(metadata, true);
+  const factoryRes = compileFactoryFromMetadata({...metadata, isPipe: true});
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Pipe);
   const ngFactoryFnStatement = new o.ClassStmt(
       /* name */ name,

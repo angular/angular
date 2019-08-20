@@ -21,7 +21,9 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
   Object.defineProperty(type, NG_FACTORY_FN, {
     get: () => {
       if (ngFactoryFn === null) {
-        [ngPipeDef, ngFactoryFn] = getPipeCompilerOutput(type, meta);
+        const metadata = getPipeMetadata(type, meta);
+        ngFactoryFn = getCompilerFacade().compileFactory(
+            angularCoreEnv, `ng:///${metadata.name}/ngFactoryFn.js`, metadata, true);
       }
       return ngFactoryFn;
     },
@@ -32,7 +34,9 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
   Object.defineProperty(type, NG_PIPE_DEF, {
     get: () => {
       if (ngPipeDef === null) {
-        [ngPipeDef, ngFactoryFn] = getPipeCompilerOutput(type, meta);
+        const metadata = getPipeMetadata(type, meta);
+        ngPipeDef = getCompilerFacade().compilePipe(
+            angularCoreEnv, `ng:///${metadata.name}/ngPipeDef.js`, metadata);
       }
       return ngPipeDef;
     },
@@ -41,15 +45,13 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
   });
 }
 
-function getPipeCompilerOutput(type: Type<any>, meta: Pipe) {
-  const typeName = type.name;
-
-  return getCompilerFacade().compilePipe(angularCoreEnv, `ng:///${typeName}/ngPipeDef.js`, {
+function getPipeMetadata(type: Type<any>, meta: Pipe) {
+  return {
     type: type,
     typeArgumentCount: 0,
-    name: typeName,
+    name: type.name,
     deps: reflectDependencies(type),
     pipeName: meta.name,
     pure: meta.pure !== undefined ? meta.pure : true
-  });
+  };
 }

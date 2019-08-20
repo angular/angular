@@ -87,6 +87,7 @@ export interface R3FactoryFnMetadata {
   type: o.Expression;
   typeArgumentCount: number;
   deps: R3DependencyMetadata[]|null;
+  isPipe?: boolean;
 }
 
 /**
@@ -152,11 +153,16 @@ export interface R3DependencyMetadata {
   skipSelf: boolean;
 }
 
+export interface R3FactoryFn {
+  factory: o.Expression;
+  statements: o.Statement[];
+  type: o.ExpressionType;
+}
+
 /**
  * Construct a factory function expression for the given `R3FactoryMetadata`.
  */
-export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false):
-    {factory: o.Expression, statements: o.Statement[], type: o.ExpressionType} {
+export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false): R3FactoryFn {
   const t = o.variable('t');
   const statements: o.Statement[] = [];
 
@@ -254,7 +260,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false):
 /**
  * Constructs the `ngFactoryFn` from directive/component/pipe metadata.
  */
-export function compileFactoryFromMetadata(meta: R3FactoryFnMetadata, isPipe = false) {
+export function compileFactoryFromMetadata(meta: R3FactoryFnMetadata): R3FactoryFn {
   return compileFactoryFunction(
       {
         name: meta.name,
@@ -264,7 +270,7 @@ export function compileFactoryFromMetadata(meta: R3FactoryFnMetadata, isPipe = f
         // TODO(crisbeto): this should be refactored once we start using it for injectables.
         injectFn: R3.directiveInject,
       },
-      isPipe);
+      meta.isPipe);
 }
 
 function injectDependencies(

@@ -312,6 +312,9 @@
     "name": "getElementDepthCount"
   },
   {
+    "name": "getFactoryFn"
+  },
+  {
     "name": "getHostNative"
   },
   {

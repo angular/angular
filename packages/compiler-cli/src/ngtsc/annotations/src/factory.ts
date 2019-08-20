@@ -6,17 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3FactoryFnMetadata, Statement, compileFactoryFromMetadata} from '@angular/compiler';
+import {R3FactoryFnMetadata, compileFactoryFromMetadata} from '@angular/compiler';
 
 import {CompileResult} from '../../transform';
 
-export function getNgFactoryFnCompileResult(
-    metadata: R3FactoryFnMetadata, metadataStatement: Statement | null,
-    isPipe = false): CompileResult {
-  const res = compileFactoryFromMetadata(metadata, isPipe);
-  if (metadataStatement !== null) {
-    res.statements.push(metadataStatement);
-  }
+export function compileNgFactoryField(metadata: R3FactoryFnMetadata): CompileResult {
+  const res = compileFactoryFromMetadata(metadata);
   return {
     name: 'ngFactoryFn',
     initializer: res.factory,

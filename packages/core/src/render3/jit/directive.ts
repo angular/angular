@@ -7,7 +7,7 @@
  */
 
 import {R3DirectiveMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
-import {R3BaseMetadataFacade, R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
+import {CompilerFacade, R3BaseMetadataFacade, R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {compileInjectable} from '../../di/jit/injectable';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
@@ -46,7 +46,10 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   Object.defineProperty(type, NG_FACTORY_FN, {
     get: () => {
       if (ngFactoryFn === null) {
-        [ngComponentDef, ngFactoryFn] = getComponentCompilerOutput(type, metadata);
+        const compiler = getCompilerFacade();
+        const meta = getComponentMetadata(compiler, type, metadata);
+        ngFactoryFn = compiler.compileFactory(
+            angularCoreEnv, `ng:///${type.name}/ngFactoryFn.js`, meta.metadata);
       }
       return ngFactoryFn;
     },
@@ -57,7 +60,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   Object.defineProperty(type, NG_COMPONENT_DEF, {
     get: () => {
       if (ngComponentDef === null) {
-        [ngComponentDef, ngFactoryFn] = getComponentCompilerOutput(type, metadata);
+        const compiler = getCompilerFacade();
+        const meta = getComponentMetadata(compiler, type, metadata);
+        ngComponentDef = compiler.compileComponent(angularCoreEnv, meta.templateUrl, meta.metadata);
 
         // When NgModule decorator executed, we enqueued the module definition such that
         // it would only dequeue and add itself as module scope to all of its declarations,
@@ -87,9 +92,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   compileInjectable(type);
 }
 
-function getComponentCompilerOutput(type: Type<any>, metadata: Component) {
-  const compiler = getCompilerFacade();
-
+function getComponentMetadata(compiler: CompilerFacade, type: Type<any>, metadata: Component) {
   if (componentNeedsResolution(metadata)) {
     const error = [`Component '${type.name}' is not resolved:`];
     if (metadata.templateUrl) {
@@ -120,7 +123,7 @@ function getComponentCompilerOutput(type: Type<any>, metadata: Component) {
   if (meta.usesInheritance) {
     addBaseDefToUndecoratedParents(type);
   }
-  return compiler.compileComponent(angularCoreEnv, templateUrl, meta);
+  return {metadata: meta, templateUrl};
 }
 
 function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
@@ -145,7 +148,9 @@ export function compileDirective(type: Type<any>, directive: Directive | null): 
         // `directive` can be null in the case of abstract directives as a base class
         // that use `@Directive()` with no selector. In that case, pass empty object to the
         // `directiveMetadata` function instead of null.
-        [ngDirectiveDef, ngFactoryFn] = getDirectiveCompilerOutput(type, directive || {});
+        const meta = getDirectiveMetadata(type, directive || {});
+        ngFactoryFn = getCompilerFacade().compileFactory(
+            angularCoreEnv, `ng:///${type.name}/ngFactoryFn.js`, meta.metadata);
       }
       return ngFactoryFn;
     },
@@ -159,7 +164,9 @@ export function compileDirective(type: Type<any>, directive: Directive | null): 
         // `directive` can be null in the case of abstract directives as a base class
         // that use `@Directive()` with no selector. In that case, pass empty object to the
         // `directiveMetadata` function instead of null.
-        [ngDirectiveDef, ngFactoryFn] = getDirectiveCompilerOutput(type, directive || {});
+        const meta = getDirectiveMetadata(type, directive || {});
+        ngDirectiveDef =
+            getCompilerFacade().compileDirective(angularCoreEnv, meta.sourceMapUrl, meta.metadata);
       }
       return ngDirectiveDef;
     },
@@ -173,7 +180,7 @@ export function compileDirective(type: Type<any>, directive: Directive | null): 
   compileInjectable(type);
 }
 
-function getDirectiveCompilerOutput(type: Type<any>, metadata: Directive) {
+function getDirectiveMetadata(type: Type<any>, metadata: Directive) {
   const name = type && type.name;
   const sourceMapUrl = `ng:///${name}/ngDirectiveDef.js`;
   const compiler = getCompilerFacade();
@@ -182,7 +189,7 @@ function getDirectiveCompilerOutput(type: Type<any>, metadata: Directive) {
   if (facade.usesInheritance) {
     addBaseDefToUndecoratedParents(type);
   }
-  return compiler.compileDirective(angularCoreEnv, sourceMapUrl, facade);
+  return {metadata: facade, sourceMapUrl};
 }
 
 export function extendsDirectlyFromObject(type: Type<any>): boolean {

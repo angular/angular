@@ -326,7 +326,6 @@ export function compileDirectiveFromRender2(
   const meta = directiveMetadataFromGlobalMetadata(directive, outputCtx, reflector);
   const res = compileDirectiveFromMetadata(meta, outputCtx.constantPool, bindingParser);
   const factoryRes = compileFactoryFromMetadata(meta);
-
   const ngFactoryFnStatement = new o.ClassStmt(
       name, null, [new o.ClassField(
                       'ngFactoryFn', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)],
@@ -379,7 +378,6 @@ export function compileComponentFromRender2(
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
   const factoryRes = compileFactoryFromMetadata(meta);
-
   const ngFactoryFnStatement = new o.ClassStmt(
       name, null, [new o.ClassField(
                       'ngFactoryFn', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)],

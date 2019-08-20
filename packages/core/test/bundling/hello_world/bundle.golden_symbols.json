@@ -249,6 +249,9 @@
     "name": "getDirectiveDef"
   },
   {
+    "name": "getFactoryFn"
+  },
+  {
     "name": "getHostNative"
   },
   {

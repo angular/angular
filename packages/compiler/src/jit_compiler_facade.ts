@@ -44,11 +44,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       pure: facade.pure,
     };
     const res = compilePipeFromMetadata(metadata);
-    const factoryRes = compileFactoryFromMetadata(metadata, true);
-    return [
-      this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []),
-      this.jitExpression(factoryRes.factory, angularCoreEnv, '', factoryRes.statements)
-    ];
+    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
   }
 
   compileInjectable(
@@ -110,12 +106,8 @@ export class CompilerFacadeImpl implements CompilerFacade {
 
     const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade);
     const res = compileDirectiveFromMetadata(meta, constantPool, bindingParser);
-    const factoryRes = compileFactoryFromMetadata(meta);
-
-    return [
-      this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, constantPool.statements),
-      this.jitExpression(factoryRes.factory, angularCoreEnv, '', factoryRes.statements)
-    ];
+    return this.jitExpression(
+        res.expression, angularCoreEnv, sourceMapUrl, constantPool.statements);
   }
 
   compileComponent(
@@ -156,14 +148,23 @@ export class CompilerFacadeImpl implements CompilerFacade {
     };
     const res = compileComponentFromMetadata(
         metadata, constantPool, makeBindingParser(interpolationConfig));
-    const factoryRes = compileFactoryFromMetadata(metadata);
     const jitExpressionSourceMap = `ng:///${facade.name}.js`;
-    return [
-      this.jitExpression(
-          res.expression, angularCoreEnv, jitExpressionSourceMap, constantPool.statements),
-      this.jitExpression(
-          factoryRes.factory, angularCoreEnv, jitExpressionSourceMap, factoryRes.statements)
-    ];
+    return this.jitExpression(
+        res.expression, angularCoreEnv, jitExpressionSourceMap, constantPool.statements);
+  }
+
+  compileFactory(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
+      meta: R3PipeMetadataFacade|R3DirectiveMetadataFacade|R3ComponentMetadataFacade,
+      isPipe = false) {
+    const factoryRes = compileFactoryFromMetadata({
+      name: meta.name,
+      type: new WrappedNodeExpr(meta.type),
+      typeArgumentCount: meta.typeArgumentCount,
+      deps: convertR3DependencyMetadataArray(meta.deps), isPipe
+    });
+    return this.jitExpression(
+        factoryRes.factory, angularCoreEnv, sourceMapUrl, factoryRes.statements);
   }
 
   compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, facade: R3BaseMetadataFacade):
