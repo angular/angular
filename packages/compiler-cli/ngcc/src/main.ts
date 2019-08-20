@@ -375,10 +375,10 @@ function getPropertiesToProcessAndMarkAsProcessed(
 
   const propertiesToProcess: EntryPointJsonProperty[] = [];
   for (const prop of propertiesToConsider) {
-    // Ignore properties that are not in `package.json`.
-    if (!packageJson.hasOwnProperty(prop)) continue;
+    const formatPath = packageJson[prop];
 
-    const formatPath = packageJson[prop] !;
+    // Ignore properties that are not defined in package.json.
+    if (typeof formatPath !== 'string') continue;
 
     // Ignore properties that map to the same format-path as a preceding property.
     if (formatPathsToConsider.has(formatPath)) continue;
@@ -390,10 +390,10 @@ function getPropertiesToProcessAndMarkAsProcessed(
 
   const formatPathToProperties: {[formatPath: string]: EntryPointJsonProperty[]} = {};
   for (const prop of SUPPORTED_FORMAT_PROPERTIES) {
-    // Ignore properties that are not in `package.json`.
-    if (!packageJson.hasOwnProperty(prop)) continue;
+    const formatPath = packageJson[prop];
 
-    const formatPath = packageJson[prop] !;
+    // Ignore properties that are not defined in package.json.
+    if (typeof formatPath !== 'string') continue;
 
     // Ignore properties that do not map to a format-path that will be considered.
     if (!formatPathsToConsider.has(formatPath)) continue;
