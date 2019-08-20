@@ -377,13 +377,13 @@ export function refreshView<T>(
   try {
     resetPreOrderHookFlags(lView);
 
-    if (templateFn !== null) {
-      executeTemplate(lView, templateFn, RenderFlags.Update, context);
-    }
-
     // Resetting the bindingIndex of the current LView as the next steps may trigger change
     // detection.
     lView[BINDING_INDEX] = tView.bindingStartIndex;
+
+    if (templateFn !== null) {
+      executeTemplate(lView, templateFn, RenderFlags.Update, context);
+    }
 
     const checkNoChangesMode = getCheckNoChangesMode();
     const hooksInitPhaseCompleted =
