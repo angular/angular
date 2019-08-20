@@ -8,7 +8,7 @@
 
 
 import {CommonModule} from '@angular/common';
-import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, Input, NgModule, OnInit, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, Input, NgModule, OnInit, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -543,6 +543,44 @@ describe('change detection', () => {
         fixture.detectChanges();
 
         expect(fixture.nativeElement.textContent).toEqual('1');
+      });
+
+      it('should support change detection triggered as a result of View queries processing', () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <div *ngIf="visible" #ref>Visible text</div>
+          `
+        })
+        class App {
+          @ViewChildren('ref')
+          ref !: QueryList<any>;
+
+          visible = false;
+
+          constructor(public changeDetectorRef: ChangeDetectorRef) {}
+
+          ngAfterViewInit() {
+            this.ref.changes.subscribe((refs: QueryList<any>) => {
+              this.visible = false;
+              this.changeDetectorRef.detectChanges();
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App],
+          imports: [CommonModule],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toBe('');
+
+        // even though we set "visible" to `true`, we do not expect any content to be displayed,
+        // since the flag is overridden in `ngAfterViewInit` back to `false`
+        fixture.componentInstance.visible = true;
+        fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toBe('');
       });
 
       describe('dynamic views', () => {
