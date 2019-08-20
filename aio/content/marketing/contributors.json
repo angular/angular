@@ -276,8 +276,7 @@
     "twitter": "deborahkurata",
     "website": "http://blogs.msmvps.com/deborahk/",
     "bio": "Deborah is a software developer, author, and Google Developer Expert. She is author of several Pluralsight courses including: 'Angular 2: Getting Started' and ‘Angular Routing’",
-    "groups": ["Collaborators", "GDE"],
-    "mentor": "kara"
+    "groups": ["GDE"]
   },
   "alyssa": {
     "name": "Alyssa Nicoll",
