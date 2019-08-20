@@ -1011,9 +1011,6 @@
     "name": "isDevMode"
   },
   {
-    "name": "isDifferent"
-  },
-  {
     "name": "isFactory"
   },
   {

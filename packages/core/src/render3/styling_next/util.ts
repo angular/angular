@@ -6,7 +6,6 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {TNode, TNodeFlags} from '../interfaces/node';
-import {isDifferent} from '../util/misc_utils';
 
 import {StylingMapArray, StylingMapArrayIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
 
@@ -160,7 +159,7 @@ export function hasValueChanged(
   if (compareValueB instanceof String) {
     compareValueB = compareValueB.toString();
   }
-  return isDifferent(compareValueA, compareValueB);
+  return !Object.is(compareValueA, compareValueB);
 }
 
 /**
