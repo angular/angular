@@ -66,6 +66,13 @@
             "rev": true,
             "title": "Happy Angular Podcast",
             "url": "https://happy-angular.de/"
+          },
+          "ngruair": {
+            "desc": "Russian language video podcast about Angular.",
+            "logo": "",
+            "rev": true,
+            "title": "NgRuAir",
+            "url": "https://github.com/ngRuAir/ngruair"
           }
         }
       }
