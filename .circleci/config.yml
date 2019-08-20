@@ -669,7 +669,10 @@ workflows:
   version: 2
   default_workflow:
     jobs:
-      - setup
+      - setup:
+          filters:
+            branches:
+              ignore: g3
       - lint:
           requires:
             - setup
@@ -780,9 +783,3 @@ workflows:
             branches:
               only:
                 - master
-
-# TODO:
-# - don't build the g3 branch
-# - verify that we are bootstrapping with the right yarn version coming from the docker image
-# - check local chrome version pulled from docker image
-# - remove /tools/ngcontainer
