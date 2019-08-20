@@ -68,7 +68,8 @@ export function mainDiagnosticsForTest(
 }
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
-  const transformDecorators = !options.enableIvy && options.annotationsAs !== 'decorators';
+  const transformDecorators =
+      (options.enableIvy === false && options.annotationsAs !== 'decorators');
   const transformTypesToClosure = options.annotateForClosureCompiler;
   if (!transformDecorators && !transformTypesToClosure) {
     return undefined;
@@ -205,7 +206,7 @@ function reportErrorsAndExit(
   const errorsAndWarnings = filterErrorsAndWarnings(allDiagnostics);
   if (errorsAndWarnings.length) {
     const formatHost = getFormatDiagnosticsHost(options);
-    if (options && options.enableIvy === true) {
+    if (options && options.enableIvy !== false) {
       const ngDiagnostics = errorsAndWarnings.filter(api.isNgDiagnostic);
       const tsDiagnostics = errorsAndWarnings.filter(api.isTsDiagnostic);
       consoleError(replaceTsWithNgInErrors(

@@ -28,7 +28,8 @@ describe('Renderer to Renderer2 migration', () => {
       compilerOptions: {
         lib: ['es2015'],
         strictNullChecks: true,
-      }
+      },
+      angularCompilerOptions: {enableIvy: false}
     }));
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}

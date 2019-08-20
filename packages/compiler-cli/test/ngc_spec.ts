@@ -59,6 +59,9 @@ describe('ngc transformer command-line', () => {
         "moduleResolution": "node",
         "lib": ["es6", "dom"],
         "typeRoots": ["node_modules/@types"]
+      },
+      "angularCompilerOptions": {
+        "enableIvy": false
       }
     }`);
   });
