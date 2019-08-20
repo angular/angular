@@ -254,6 +254,28 @@ describe('definitions', () => {
     }
   });
 
+  it('should be able to find a template from a url', () => {
+    const fileName = addCode(`
+      @Component({
+        templateUrl: './«test».ng',
+      })
+      export class MyComponent {}`);
+
+    const marker = getReferenceMarkerFor(fileName, 'test');
+    const result = ngService.getDefinitionAt(fileName, marker.start);
+
+    expect(result).toBeDefined();
+    const {textSpan, definitions} = result !;
+
+    expect(textSpan).toEqual({start: marker.start - 2, length: 9});
+
+    expect(definitions).toBeDefined();
+    expect(definitions !.length).toBe(1);
+    const [def] = definitions !;
+    expect(def.fileName).toBe('/app/test.ng');
+    expect(def.textSpan).toEqual({start: 0, length: 0});
+  });
+
   /**
    * Append a snippet of code to `app.component.ts` and return the file name.
    * There must not be any name collision with existing code.
