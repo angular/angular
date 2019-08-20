@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as path from 'path';
 import * as ts from 'typescript'; // used as value and is provided at runtime
 import {TemplateInfo} from './common';
 import {locateSymbol} from './locate_symbol';
-import {Span} from './types';
+import {Span, TemplateSource} from './types';
+import {findTightestNode} from './utils';
 
 /**
  * Convert Angular Span to TypeScript TextSpan. Angular Span has 'start' and
@@ -52,4 +54,61 @@ export function getDefinitionAndBoundSpan(info: TemplateInfo): ts.DefinitionInfo
   return {
       definitions, textSpan,
   };
+}
+
+/**
+ * Gets an Angular-specific definition in a TypeScript source file.
+ */
+export function getTsDefinitionAndBoundSpan(
+    sf: ts.SourceFile, position: number,
+    readTemplate: (file: string) => TemplateSource[]): ts.DefinitionInfoAndBoundSpan|undefined {
+  const node = findTightestNode(sf, position);
+  if (!node) return;
+  switch (node.kind) {
+    case ts.SyntaxKind.StringLiteral:
+    case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
+      // Attempt to extract definition of a URL in a property assignment.
+      return getUrlFromProperty(node as ts.StringLiteralLike, readTemplate);
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Attempts to get the definition of a file whose URL is specified in a property assignment.
+ * Currently applies to `templateUrl` properties.
+ */
+function getUrlFromProperty(
+    urlNode: ts.StringLiteralLike,
+    readTemplate: (file: string) => TemplateSource[]): ts.DefinitionInfoAndBoundSpan|undefined {
+  const sf = urlNode.getSourceFile();
+  const parent = urlNode.parent;
+  if (!ts.isPropertyAssignment(parent)) return;
+
+  switch (parent.name.getText()) {
+    case 'templateUrl':
+      // Extract definition of the template file specified by this `templateUrl` property.
+      const url = path.join(path.dirname(sf.fileName), urlNode.text);
+      const templates = readTemplate(url);
+      const templateDefinitions = templates.map(tmpl => {
+        return {
+          kind: ts.ScriptElementKind.externalModuleName,
+          name: url,
+          containerKind: ts.ScriptElementKind.unknown,
+          containerName: '',
+          textSpan: ngSpanToTsTextSpan(tmpl.span),
+          fileName: url,
+        };
+      });
+
+      return {
+        definitions: templateDefinitions,
+        textSpan: {
+          start: urlNode.getStart(),
+          length: urlNode.getWidth(),
+        },
+      };
+    default:
+      return undefined;
+  }
 }
