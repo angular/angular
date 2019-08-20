@@ -73,8 +73,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     ngModules: [],
   };
 
-  constructor(
-      private readonly host: ts.LanguageServiceHost, private readonly tsLS: ts.LanguageService) {
+  constructor(readonly host: ts.LanguageServiceHost, private readonly tsLS: ts.LanguageService) {
     this.summaryResolver = new AotSummaryResolver(
         {
           loadSummary(filePath: string) { return null; },

@@ -10,7 +10,7 @@ import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {isAstResult} from './common';
 import {getTemplateCompletions, ngCompletionToTsCompletionEntry} from './completions';
-import {getDefinitionAndBoundSpan} from './definitions';
+import {getDefinitionAndBoundSpan, getTsDefinitionAndBoundSpan} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic, uniqueBySpan} from './diagnostics';
 import {getHover} from './hover';
 import {Diagnostic, LanguageService} from './types';
@@ -79,6 +79,15 @@ class LanguageServiceImpl implements LanguageService {
     const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getDefinitionAndBoundSpan(templateInfo, position);
+    }
+
+    // Attempt to get Angular-specific definitions in a TypeScript file, like templates defined
+    // in a `templateUrl` property.
+    if (fileName.endsWith('.ts')) {
+      const sf = this.host.getSourceFile(fileName);
+      if (sf) {
+        return getTsDefinitionAndBoundSpan(sf, position, this.host.host);
+      }
     }
   }
 
