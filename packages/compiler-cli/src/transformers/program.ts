@@ -27,7 +27,6 @@ import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
 import {StripDecoratorsMetadataTransformer, getDecoratorStripTransformerFactory} from './r3_strip_decorators';
 import {getAngularClassTransformerFactory} from './r3_transform';
-import {TscPassThroughProgram} from './tsc_pass_through';
 import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
 
 
@@ -900,10 +899,9 @@ export function createProgram({rootNames, options, host, oldProgram}: {
 }): Program {
   if (options.enableIvy === true) {
     return new NgtscProgram(rootNames, options, host, oldProgram as NgtscProgram);
-  } else if (options.enableIvy === 'tsc') {
-    return new TscPassThroughProgram(rootNames, options, host, oldProgram);
+  } else {
+    return new AngularCompilerProgram(rootNames, options, host, oldProgram);
   }
-  return new AngularCompilerProgram(rootNames, options, host, oldProgram);
 }
 
 // Compute the AotCompiler options
