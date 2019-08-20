@@ -771,9 +771,9 @@ workflows:
   default_workflow:
     jobs:
       - setup:
-        filters:
-          branches:
-            ignore: g3
+          filters:
+            branches:
+              ignore: g3
       - lint:
           requires:
             - setup
