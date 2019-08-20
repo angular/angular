@@ -80,7 +80,7 @@ setPublicVar MATERIAL_REPO_TMP_DIR "/tmp/material2"
 setPublicVar MATERIAL_REPO_URL "https://github.com/angular/material2.git"
 setPublicVar MATERIAL_REPO_BRANCH "master"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI "config.yml".
-setPublicVar MATERIAL_REPO_COMMIT "097f4335a4e0b6e6b579829ae3a9cffce6292d2b"
+setPublicVar MATERIAL_REPO_COMMIT "eaf70ca2a0600757041633976b29ab5a95d08296"
 
 # Source `$BASH_ENV` to make the variables available immediately.
 source $BASH_ENV;
