@@ -197,6 +197,29 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       });
     });
 
+    describe((':host-context and :host combination selector'), () => {
+      it('should handle tag selector', () => {
+        expect(s(':host-context(div):host(.x) {}', 'contenta', 'a-host'))
+            .toEqual('div.x[a-host], div .x[a-host] {}');
+        expect(s(':host-context(ul):host(.x) > .y {}', 'contenta', 'a-host'))
+            .toEqual('ul.x[a-host] > .y[contenta], ul .x[a-host] > .y[contenta] {}');
+      });
+
+      it('should handle class selector', () => {
+        expect(s(':host-context(.x):host(.y) {}', 'contenta', 'a-host'))
+            .toEqual('.x.y[a-host], .x .y[a-host] {}');
+        expect(s(':host-context(.x):host(.y) > .z {}', 'contenta', 'a-host'))
+            .toEqual('.x.y[a-host] > .z[contenta], .x .y[a-host] > .z[contenta] {}');
+      });
+
+      it('should handle attribute selector', () => {
+        expect(s(':host-context([a="b"]):host(.y) {}', 'contenta', 'a-host'))
+            .toEqual('[a="b"].y[a-host], [a="b"] .y[a-host] {}');
+        expect(s(':host-context([a=b]):host(.y) {}', 'contenta', 'a-host'))
+            .toEqual('[a=b].y[a-host], [a="b"] .y[a-host] {}');
+      });
+    });
+
     it('should support polyfill-next-selector', () => {
       let css = s('polyfill-next-selector {content: \'x > y\'} z {}', 'contenta');
       expect(css).toEqual('x[contenta] > y[contenta]{}');

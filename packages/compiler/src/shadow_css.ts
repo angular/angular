@@ -304,7 +304,8 @@ export class ShadowCss {
     if (part.indexOf(_polyfillHost) > -1) {
       return this._colonHostPartReplacer(host, part, suffix);
     } else {
-      return host + part + suffix + ', ' + part + ' ' + host + suffix;
+      const updatedSuffix = suffix.indexOf(host) === 0 ? suffix : host + suffix;
+      return (part + updatedSuffix + ', ' + part + ' ' + updatedSuffix);
     }
   }
 
