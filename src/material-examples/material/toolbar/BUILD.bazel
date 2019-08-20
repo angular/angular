@@ -1,0 +1,25 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "toolbar",
+    srcs = glob(["**/*.ts"]),
+    assets = glob([
+        "**/*.html",
+        "**/*.css",
+    ]),
+    deps = [
+        "//src/material/icon",
+        "//src/material/toolbar",
+    ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob([
+        "*/*.html",
+        "*/*.css",
+        "*/*.ts",
+    ]),
+)

@@ -1,0 +1,25 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "bottom-sheet",
+    srcs = glob(["**/*.ts"]),
+    assets = glob([
+        "**/*.html",
+        "**/*.css",
+    ]),
+    deps = [
+        "//src/material/bottom-sheet",
+        "//src/material/list",
+    ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob([
+        "*/*.html",
+        "*/*.css",
+        "*/*.ts",
+    ]),
+)

@@ -1,0 +1,39 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@npm_bazel_typescript//:index.bzl", "ts_config")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "datepicker",
+    srcs = glob(["**/*.ts"]),
+    assets = glob([
+        "**/*.html",
+        "**/*.css",
+    ]),
+    tsconfig = ":tsconfig",
+    deps = [
+        "//src/material-moment-adapter",
+        "//src/material/button",
+        "//src/material/core",
+        "//src/material/datepicker",
+        "//src/material/icon",
+        "//src/material/input",
+        "@npm//@angular/forms",
+        "@npm//moment",
+    ],
+)
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig-build.json",
+    deps = ["//src:bazel-tsconfig-build.json"],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob([
+        "*/*.html",
+        "*/*.css",
+        "*/*.ts",
+    ]),
+)

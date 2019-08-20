@@ -4,10 +4,10 @@ export * from './example-data';
 // examples are being compiled, the module file will be generated.
 export * from './example-module';
 
-export * from './list-overview/list-overview-example';
-export * from './datepicker-overview/datepicker-overview-example';
-export * from './card-fancy/card-fancy-example';
-export * from './toolbar-multirow/toolbar-multirow-example';
-export * from './button-toggle-overview/button-toggle-overview-example';
-export * from './expansion-overview/expansion-overview-example';
-export * from './stepper-overview/stepper-overview-example';
+export * from './material/list/list-overview/list-overview-example';
+export * from './material/datepicker/datepicker-overview/datepicker-overview-example';
+export * from './material/card/card-fancy/card-fancy-example';
+export * from './material/toolbar/toolbar-multirow/toolbar-multirow-example';
+export * from './material/button-toggle/button-toggle-overview/button-toggle-overview-example';
+export * from './material/expansion/expansion-overview/expansion-overview-example';
+export * from './material/stepper/stepper-overview/stepper-overview-example';

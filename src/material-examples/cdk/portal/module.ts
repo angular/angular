@@ -1,0 +1,22 @@
+import {PortalModule} from '@angular/cdk/portal';
+import {NgModule} from '@angular/core';
+import {
+  CdkPortalOverviewExample,
+  ComponentPortalExample
+} from './cdk-portal-overview/cdk-portal-overview-example';
+
+const EXAMPLES = [
+  CdkPortalOverviewExample,
+  ComponentPortalExample,
+];
+
+@NgModule({
+  imports: [
+    PortalModule,
+  ],
+  declarations: EXAMPLES,
+  exports: EXAMPLES,
+  entryComponents: [ComponentPortalExample]
+})
+export class CdkPortalExamplesModule {
+}

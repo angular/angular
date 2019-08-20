@@ -1,39 +1,72 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "CDK_EXPERIMENTAL_TARGETS", "CDK_TARGETS", "MATERIAL_EXPERIMENTAL_TARGETS", "MATERIAL_PACKAGES", "ROLLUP_GLOBALS")
+load("//:packages.bzl", "ROLLUP_GLOBALS")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 load("//tools/highlight-files:index.bzl", "highlight_files")
 load("//tools/package-docs-content:index.bzl", "package_docs_content")
+
+EXAMPLE_PACKAGES = [
+    # TODO(devversion): try to have for each entry-point a bazel package so that
+    # we can automate this using the "package.bzl" variables.
+    "//src/material-examples/cdk/a11y",
+    "//src/material-examples/cdk/drag-drop",
+    "//src/material-examples/cdk/platform",
+    "//src/material-examples/cdk/popover-edit",
+    "//src/material-examples/cdk/portal",
+    "//src/material-examples/cdk/scrolling",
+    "//src/material-examples/cdk/stepper",
+    "//src/material-examples/cdk/table",
+    "//src/material-examples/cdk/text-field",
+    "//src/material-examples/cdk/tree",
+    "//src/material-examples/material/autocomplete",
+    "//src/material-examples/material/badge",
+    "//src/material-examples/material/bottom-sheet",
+    "//src/material-examples/material/button",
+    "//src/material-examples/material/button-toggle",
+    "//src/material-examples/material/card",
+    "//src/material-examples/material/checkbox",
+    "//src/material-examples/material/chips",
+    "//src/material-examples/material/core",
+    "//src/material-examples/material/datepicker",
+    "//src/material-examples/material/dialog",
+    "//src/material-examples/material/divider",
+    "//src/material-examples/material/expansion",
+    "//src/material-examples/material/form-field",
+    "//src/material-examples/material/grid-list",
+    "//src/material-examples/material/icon",
+    "//src/material-examples/material/input",
+    "//src/material-examples/material/list",
+    "//src/material-examples/material/menu",
+    "//src/material-examples/material/paginator",
+    "//src/material-examples/material/popover-edit",
+    "//src/material-examples/material/progress-bar",
+    "//src/material-examples/material/progress-spinner",
+    "//src/material-examples/material/radio",
+    "//src/material-examples/material/select",
+    "//src/material-examples/material/sidenav",
+    "//src/material-examples/material/slide-toggle",
+    "//src/material-examples/material/slider",
+    "//src/material-examples/material/snack-bar",
+    "//src/material-examples/material/sort",
+    "//src/material-examples/material/stepper",
+    "//src/material-examples/material/table",
+    "//src/material-examples/material/tabs",
+    "//src/material-examples/material/toolbar",
+    "//src/material-examples/material/tooltip",
+    "//src/material-examples/material/tree",
+]
 
 ng_module(
     name = "examples",
     # TODO(paul): re-add the example-module genfile once angular/angular#30259 is resolved.
     srcs = glob(["**/*.ts"]),
-    assets = glob([
-        "**/*.html",
-        "**/*.css",
-    ]),
     module_name = "@angular/material-examples",
-    # Specify the tsconfig that is also used by Gulp. We need to explicitly use this tsconfig
-    # because in order to import Moment with TypeScript, some specific options need to be set.
-    tsconfig = ":tsconfig-build.json",
-    deps = [
-        "@npm//@angular/animations",
-        "@npm//@angular/common",
-        "@npm//@angular/core",
-        "@npm//@angular/forms",
-        "@npm//moment",
-        "//src/material-moment-adapter",
-    ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_EXPERIMENTAL_TARGETS + ["//src/material/%s" % p for p in MATERIAL_PACKAGES],
+    deps = EXAMPLE_PACKAGES,
 )
 
 filegroup(
     name = "example-source-files",
-    srcs = glob([
-        "*/*.html",
-        "*/*.css",
-        "*/*.ts",
-    ]),
+    srcs = ["%s:source-files" % pkg for pkg in EXAMPLE_PACKAGES],
 )
 
 highlight_files(

@@ -151,7 +151,7 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      - run: bazel build src/... --build_tag_filters=-docs-package
+      - run: bazel build src/...
 
   # --------------------------------------------------------------------------------------------
   # Job that runs ts-api-guardian against our API goldens in "tools/public_api_guard".

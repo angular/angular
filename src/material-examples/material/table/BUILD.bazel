@@ -1,0 +1,32 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "table",
+    srcs = glob(["**/*.ts"]),
+    assets = glob([
+        "**/*.html",
+        "**/*.css",
+    ]),
+    deps = [
+        "//src/material/button",
+        "//src/material/button-toggle",
+        "//src/material/checkbox",
+        "//src/material/icon",
+        "//src/material/input",
+        "//src/material/paginator",
+        "//src/material/progress-spinner",
+        "//src/material/sort",
+        "//src/material/table",
+    ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob([
+        "*/*.html",
+        "*/*.css",
+        "*/*.ts",
+    ]),
+)

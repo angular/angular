@@ -9,3 +9,11 @@ common --announce_rc
 # Save downloaded repositories in a location that can be cached by CircleCI. This helps us
 # speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
 build --repository_cache=/home/circleci/bazel_repository_cache
+
+# Workaround https://github.com/bazelbuild/bazel/issues/3645. Bazel doesn't calculate the
+# memory ceiling correctly when running under Docker. Limit Bazel to consuming resources that
+# fit in CircleCI "xlarge" class. https://circleci.com/docs/2.0/configuration-reference/#resource_class
+# Note that we use less than the available RAM as bazel only estimates memory for actions
+# and we don't want to accidentally run out of memory.
+build --local_ram_resources=14336
+build --local_cpu_resources=8
