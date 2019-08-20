@@ -8,7 +8,7 @@ load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html
 load("//:packages.bzl", "ANGULAR_LIBRARY_UMDS", "VERSION_PLACEHOLDER_REPLACEMENTS")
 
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
-_DEFAULT_TSCONFIG_TEST = "//src:bazel-tsconfig-test.json"
+_DEFAULT_TSCONFIG_TEST = "//src:tsconfig-test"
 
 # Whether Angular type checking should be enabled or not. Enabled by
 # default but will be overwritten when running snapshots tests with Ivy

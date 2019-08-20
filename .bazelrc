@@ -36,16 +36,6 @@ test --test_output=errors
 # See https://docs.bazel.build/versions/master/user-manual.html#flag--workspace_status_command
 build:release --workspace_status_command="node ./tools/bazel-stamp-vars.js"
 
-###############################
-# Typescript / Angular / Sass #
-###############################
-
-# Make compilation fast, by keeping a few copies of the compilers
-# running as daemons, and cache SourceFile AST's to reduce parse time.
-build --strategy=TypeScriptCompile=worker
-build --strategy=AngularTemplateCompile=worker
-build --strategy=SassCompiler=worker
-
 ################################
 # Temporary Settings for Ivy   #
 ################################
@@ -62,12 +52,7 @@ build --define=compile=legacy
 build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
 build:remote --project_id=internal-200822
 
-# Setup the build strategy for various types of actions. Mixing "local" and "remote"
-# can cause unexpected results and we want to run everything remotely if possible.
-build:remote --spawn_strategy=remote,local
-build:remote --strategy=Javac=remote
-build:remote --strategy=Closure=remote
-build:remote --strategy=Genrule=remote
+# Needed due to: https://github.com/bazelbuild/bazel/issues/7254
 build:remote --define=EXECUTOR=remote
 
 # Setup the remote build execution servers.

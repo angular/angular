@@ -1,5 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@npm_bazel_typescript//:index.bzl", "ts_config")
 load("//:packages.bzl", "CDK_PACKAGES", "MATERIAL_PACKAGES")
 load("//tools:defaults.bzl", "ts_library")
 load("//tools/dgeni:index.bzl", "dgeni_api_docs")
@@ -19,6 +20,12 @@ exports_files([
 ts_library(
     name = "module-typings",
     srcs = [":module-typings.d.ts"],
+)
+
+ts_config(
+    name = "tsconfig-test",
+    src = "bazel-tsconfig-test.json",
+    deps = ["bazel-tsconfig-build.json"],
 )
 
 dgeni_api_docs(
