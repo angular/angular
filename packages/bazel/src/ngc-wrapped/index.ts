@@ -184,15 +184,10 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   }
 
   // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
-  const isInIvyMode = compilerOpts.enableIvy === 'ngtsc' || compilerOpts.enableIvy === 'tsc';
+  const isInIvyMode = compilerOpts.enableIvy === 'ngtsc';
 
   // Disable downleveling and Closure annotation if in Ivy mode.
   if (isInIvyMode) {
-    // In pass-through mode for TypeScript, we want to turn off decorator transpilation entirely.
-    // This causes ngc to be have exactly like tsc.
-    if (compilerOpts.enableIvy === 'tsc') {
-      compilerOpts.annotateForClosureCompiler = false;
-    }
     compilerOpts.annotationsAs = 'decorators';
   }
 
