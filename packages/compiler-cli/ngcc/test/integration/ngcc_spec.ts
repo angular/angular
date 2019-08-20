@@ -530,6 +530,67 @@ runInEachFileSystem(() => {
           typings: '0.0.0-PLACEHOLDER',
         });
       });
+
+      it('should support removing a format property by setting it to `undefined`', () => {
+        loadTestFiles([
+          {
+            name: _('/ngcc.config.js'),
+            contents: `
+              module.exports = {
+                packages: {
+                  'test-package': {
+                    entryPoints: {
+                      '.': {
+                        override: {
+                          fesm2015: undefined,
+                        },
+                      },
+                    },
+                  },
+                },
+              };
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/package.json'),
+            contents: `
+              {
+                "name": "test-package",
+                "fesm2015": "./index.es2015.js",
+                "fesm5": "./index.es5.js",
+                "typings": "./index.d.ts"
+              }
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/index.es5.js'),
+            contents: `
+              var TestService = (function () {
+                function TestService() {
+                }
+                return TestService;
+              }());
+            `,
+          },
+          {
+            name: _('/node_modules/test-package/index.d.js'),
+            contents: `
+              export declare class TestService {}
+            `,
+          },
+        ]);
+
+        mainNgcc({
+          basePath: '/node_modules',
+          targetEntryPointPath: 'test-package',
+          propertiesToConsider: ['fesm2015', 'fesm5'],
+        });
+
+        expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toEqual({
+          fesm5: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+      });
     });
 
     function loadPackage(
