@@ -12,8 +12,6 @@ import {throwErrorIfNoChangesMode} from './errors';
 import {LView} from './interfaces/view';
 import {getCheckNoChangesMode} from './state';
 import {NO_CHANGE} from './tokens';
-import {isDifferent} from './util/misc_utils';
-
 
 
 // TODO(misko): consider inlining
@@ -36,9 +34,11 @@ export function bindingUpdated(lView: LView, bindingIndex: number, value: any): 
   ngDevMode && assertNotSame(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
   ngDevMode &&
       assertLessThan(bindingIndex, lView.length, `Slot should have been initialized to NO_CHANGE`);
-
   const oldValue = lView[bindingIndex];
-  if (isDifferent(oldValue, value)) {
+
+  if (Object.is(oldValue, value)) {
+    return false;
+  } else {
     if (ngDevMode && getCheckNoChangesMode()) {
       // View engine didn't report undefined values as changed on the first checkNoChanges pass
       // (before the change detection was run).
@@ -50,8 +50,6 @@ export function bindingUpdated(lView: LView, bindingIndex: number, value: any): 
     lView[bindingIndex] = value;
     return true;
   }
-
-  return false;
 }
 
 /** Updates 2 bindings if changed, then returns whether either was updated. */
