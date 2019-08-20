@@ -3,7 +3,7 @@
 load("@npm_angular_bazel//:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm_bazel_typescript//:defs.bzl", _ts_library = "ts_library")
-load("@npm_bazel_karma//:defs.bzl", _ts_web_test_suite = "ts_web_test_suite")
+load("@npm_bazel_karma//:defs.bzl", _karma_web_test_suite = "karma_web_test_suite")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
 load("//:packages.bzl", "ANGULAR_LIBRARY_UMDS", "VERSION_PLACEHOLDER_REPLACEMENTS")
 
@@ -108,8 +108,8 @@ def ng_e2e_test_library(deps = [], tsconfig = None, **kwargs):
         **kwargs
     )
 
-def ts_web_test_suite(deps = [], srcs = [], **kwargs):
-    _ts_web_test_suite(
+def karma_web_test_suite(deps = [], srcs = [], **kwargs):
+    _karma_web_test_suite(
         deps = ["//tools/rxjs:rxjs_umd_modules"] + deps,
         # Required for running the compiled ng modules that use TypeScript import helpers.
         # TODO(jelbourn): remove UMDs from here once we don't have to manually include them
@@ -141,7 +141,7 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
     # Workaround for https://github.com/bazelbuild/rules_typescript/issues/301
     # Since some of our tests depend on CSS files which are not part of the `ng_module` rule,
     # we need to somehow load static CSS files within Karma (e.g. overlay prebuilt). Those styles
-    # are required for successful test runs. Since the `ts_web_test_suite` rule currently only
+    # are required for successful test runs. Since the `karma_web_test_suite` rule currently only
     # allows JS files to be included and served within Karma, we need to create a JS file that
     # loads the given CSS file.
     for css_label in static_css:
@@ -165,7 +165,7 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
       """ % css_label,
         )
 
-    ts_web_test_suite(
+    karma_web_test_suite(
         # Depend on our custom test initialization script. This needs to be the first dependency.
         deps = [
             "//test:angular_test_init",

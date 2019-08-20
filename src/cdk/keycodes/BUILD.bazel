@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "markdown_to_html", "ts_library", "ts_web_test_suite")
+load("//tools:defaults.bzl", "karma_web_test_suite", "markdown_to_html", "ts_library")
 
 ts_library(
     name = "keycodes",
@@ -25,7 +25,7 @@ ts_library(
     ],
 )
 
-ts_web_test_suite(
+karma_web_test_suite(
     name = "unit_tests",
     deps = [":unit_test_sources"],
 )

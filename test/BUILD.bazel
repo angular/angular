@@ -6,7 +6,7 @@ load("//tools:defaults.bzl", "ts_library")
 ts_library(
     name = "angular_test_init",
     testonly = True,
-    # This file *must* end with "spec" in order for ts_web_test to load it.
+    # This file *must* end with "spec" in order for "karma_web_test_suite" to load it.
     srcs = ["angular-test-init-spec.ts"],
     deps = [
         "@npm//@angular/core",
