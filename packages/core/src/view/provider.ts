@@ -307,7 +307,7 @@ function callFactory(
     default:
       const depValues = [];
       for (let i = 0; i < len; i++) {
-        depValues[i] = resolveDep(view, elDef, allowPrivateServices, deps[i]);
+        depValues.push(resolveDep(view, elDef, allowPrivateServices, deps[i]));
       }
       return factory(...depValues);
   }
