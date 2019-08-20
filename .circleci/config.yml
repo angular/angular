@@ -123,6 +123,12 @@ var_17: &setup_bazel_binary
     name: "Setting up global Bazel binary"
     command: ./scripts/circleci/setup_bazel_binary.sh
 
+# **Note**: When updating the beginning of the cache key, also update the fallback cache
+# key to match the new cache key prefix. This allows us to take advantage of CircleCI's
+# fallback caching. Read more here: https://circleci.com/docs/2.0/caching/#restoring-cache.
+var_18: &mdc_deps_cache_key v1-mdc-deps-{{ checksum "/tmp/material-components-web/package-lock.json" }}
+var_19: &mdc_deps_fallback_cache_key v1-mdc-deps-
+
 # -----------------------------
 # Container version of CircleCI
 # -----------------------------
@@ -456,6 +462,53 @@ jobs:
       - run: bazel build src/... --build_tag_filters=-docs-package,-e2e --define=compile=aot
       - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --define=compile=aot
 
+  # ----------------------------------------------------------------------------
+  # Job that runs all Bazel tests against material-components-web#master.
+  # ----------------------------------------------------------------------------
+  mdc_snapshot_test_cronjob:
+    <<: *job_defaults
+    resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
+      MDC_REPO_URL: "https://github.com/material-components/material-components-web.git"
+      MDC_REPO_BRANCH: "master"
+      MDC_REPO_TMP_DIR: "/tmp/material-components-web"
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *setup_bazel_binary
+      - *setup_bazel_ci_config
+      - *setup_bazel_remote_execution
+      - *yarn_download
+      - *yarn_install
+
+      - run: git clone ${MDC_REPO_URL} --branch ${MDC_REPO_BRANCH} --depth 1 ${MDC_REPO_TMP_DIR}
+      - restore_cache:
+          keys:
+            - *mdc_deps_cache_key
+            - *mdc_deps_fallback_cache_key
+      - run:
+          name: "Installing dependencies for MDC repository"
+          # MDC repository does not use Yarn for node dependencies, so in order to respect the
+          # lock-file we need to use "npm" when installing dependencies.
+          command: cd ${MDC_REPO_TMP_DIR} && npm install
+      - save_cache:
+          key: *mdc_deps_cache_key
+          paths:
+            # Repository path must be kept in sync with the `$MDC_REPO_TMP_DIR` env variable.
+            # It needs to be hardcoded here, because env variables interpolation is not supported.
+            - "/tmp/material-components-web/node_modules"
+      - run:
+          name: "Building MDC snapshot builds"
+          command: |
+            cd ${MDC_REPO_TMP_DIR}
+            yarn dist && node scripts/cp-pkgs.js
+      # Setup the components repository to use the MDC snapshot builds.
+      - run: node ./scripts/circleci/setup-mdc-snapshots.js ${MDC_REPO_TMP_DIR}/packages/ $(git -C ${MDC_REPO_TMP_DIR} rev-parse HEAD)
+      # Run project tests with the MDC snapshot builds.
+      - run: bazel build src/... --build_tag_filters=-docs-package,-e2e
+      - run: bazel test src/... --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e
+
 # ----------------------------------------------------------------------------------------
 # Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
 # one job depends on another.
@@ -519,6 +572,7 @@ workflows:
       # workflow. See: https://circleci.com/ideas/?idea=CCI-I-295
       - snapshot_tests_local_browsers
       - ivy_snapshot_test_cronjob
+      - mdc_snapshot_test_cronjob
     triggers:
       - schedule:
           cron: "0 * * * *"
