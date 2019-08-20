@@ -120,7 +120,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // based on function.length.
     // Note: We know that this is a real constructor as we checked
     // the content of the constructor above.
-    return newArray<any[]>(type.length as any, undefined);
+    return newArray<any[]>(type.length as any);
   }
 
   parameters(type: Type<any>): any[][] {
