@@ -186,10 +186,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
 
   /**
    * Tells the compiler to generate definitions using the Render3 style code generation.
-   * This option defaults to `false`.
-   *
-   * Not all features are supported with this option enabled. It is only supported
-   * for experimentation and testing of Render3 style code generation.
+   * This option defaults to `true`.
    *
    * Acceptable values are as follows:
    *

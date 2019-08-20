@@ -142,7 +142,7 @@ class AngularCompilerProgram implements Program {
     }
 
     this.loweringMetadataTransform =
-        new LowerMetadataTransform(options.enableIvy ? R3_LOWER_FIELDS : LOWER_FIELDS);
+        new LowerMetadataTransform(options.enableIvy !== false ? R3_LOWER_FIELDS : LOWER_FIELDS);
     this.metadataCache = this.createMetadataCache([this.loweringMetadataTransform]);
   }
 
@@ -262,7 +262,7 @@ class AngularCompilerProgram implements Program {
     emitCallback?: TsEmitCallback,
     mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
   } = {}): ts.EmitResult {
-    if (this.options.enableIvy) {
+    if (this.options.enableIvy !== false) {
       throw new Error('Cannot run legacy compiler in ngtsc mode');
     }
     return this._emitRender2(parameters);
@@ -897,7 +897,7 @@ export function createProgram({rootNames, options, host, oldProgram}: {
   options: CompilerOptions,
   host: CompilerHost, oldProgram?: Program
 }): Program {
-  if (options.enableIvy === true) {
+  if (options.enableIvy !== false) {
     return new NgtscProgram(rootNames, options, host, oldProgram as NgtscProgram);
   } else {
     return new AngularCompilerProgram(rootNames, options, host, oldProgram);

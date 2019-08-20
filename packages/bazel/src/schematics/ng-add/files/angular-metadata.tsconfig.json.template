@@ -12,6 +12,9 @@
     "module": "amd",
     "moduleResolution": "node"
   },
+  "angularCompilerOptions": {
+    "enableIvy": false
+  },
   "include": [
     "node_modules/@angular/**/*"
   ],
