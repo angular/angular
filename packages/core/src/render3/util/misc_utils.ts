@@ -8,18 +8,6 @@
 
 import {global} from '../../util/global';
 import {RElement} from '../interfaces/renderer';
-import {NO_CHANGE} from '../tokens';
-
-/**
- * Returns whether the values are different from a change detection stand point.
- *
- * Constraints are relaxed in checkNoChanges mode. See `devModeEqual` for details.
- */
-export function isDifferent(a: any, b: any): boolean {
-  // NaN is the only value that is not equal to itself so the first
-  // test checks if both a and b are not NaN
-  return !(a !== a && b !== b) && a !== b;
-}
 
 /**
  * Used for stringify render output in Ivy.
