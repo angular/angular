@@ -148,8 +148,8 @@ export function mainNgcc(
       const format = getEntryPointFormat(fileSystem, entryPoint, formatProperty);
 
       // All properties listed in `propertiesToProcess` are guaranteed to point to a format-path
-      // (i.e. they exist in `entryPointPackageJson`). Furthermore, they are also guaranteed to be
-      // among `SUPPORTED_FORMAT_PROPERTIES`.
+      // (i.e. they are defined in `entryPoint.packageJson`). Furthermore, they are also guaranteed
+      // to be among `SUPPORTED_FORMAT_PROPERTIES`.
       // Based on the above, `formatPath` should always be defined and `getEntryPointFormat()`
       // should always return a format here (and not `undefined`).
       if (!formatPath || !format) {
@@ -377,7 +377,7 @@ function getPropertiesToProcessAndMarkAsProcessed(
   for (const prop of propertiesToConsider) {
     const formatPath = packageJson[prop];
 
-    // Ignore properties that are not defined in package.json.
+    // Ignore properties that are not defined in `package.json`.
     if (typeof formatPath !== 'string') continue;
 
     // Ignore properties that map to the same format-path as a preceding property.
@@ -392,7 +392,7 @@ function getPropertiesToProcessAndMarkAsProcessed(
   for (const prop of SUPPORTED_FORMAT_PROPERTIES) {
     const formatPath = packageJson[prop];
 
-    // Ignore properties that are not defined in package.json.
+    // Ignore properties that are not defined in `package.json`.
     if (typeof formatPath !== 'string') continue;
 
     // Ignore properties that do not map to a format-path that will be considered.
