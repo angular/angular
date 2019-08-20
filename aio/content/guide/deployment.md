@@ -8,7 +8,7 @@ When you are ready to deploy your Angular application to a remote server, you ha
 
 ## Simple deployment options
 
-Before fully deploying your application, you can test the process, build configuration, and deployed behavior by using one of these interim techniques
+Before fully deploying your application, you can test the process, build configuration, and deployed behavior by using one of these interim techniques.
 
 ### Building and serving from disk
 
@@ -52,6 +52,39 @@ You will need two terminals to get the live-reload experience.
 This method is for development and testing only, and is not a supported or secure way of deploying an application.
 
 </div>
+
+### ng deploy
+
+Angular CLI introduced `deploy` command in version 8.3.0. By default, this command will execute the `deploy` [CLI builder](https://angular.io/guide/cli-builder) associated with your project. Currently, there are third-party builders which implement deployment capabilities to different cloud platforms:
+
+| Package                                                              | Description                                                                |
+|----------------------------------------------------------------------|----------------------------------------------------------------------------|
+| [`@angular/fire`](https://npmjs.org/package/@angular/fire)           | Deployment to [Firebase hosting](https://firebase.google.com/docs/hosting) |
+| [`@azure/ng-deploy`](https://npmjs.org/package/@angular/fire)        | Deployment to [Azure](https://azure.microsoft.com/en-us/)                  |
+| [`@zeit/ng-deploy`](https://npmjs.org/package/@angular/fire)         | Deployment to [Now](https://zeit.co/now)                                   |
+| [`@netlify-builder/deploy`](https://npmjs.org/package/@angular/fire) | Deployment to [Netlify](https://www.netlify.com/)                          |
+| [`angular-cli-ghpages`](https://npmjs.org/package/@angular/fire)     | Deployment to [GitHub pages](https://pages.github.com/)                    |
+
+You can read how to use the listed deployment builders following the links associated with each package name above.
+
+For example, to automatically deploy to Firebase via the `ng deploy` command run:
+
+<code-example language="none" class="code-shell">
+ng add @angular/fire
+ng deploy
+</code-example>
+
+The command above will:
+
+- Authenticate you using your Firebase account. If you don't already have a Firebase account, you will need to create one.
+- Let you select a Firebase project you want to deploy to.
+- Produce optimal build of your application equivalent to `ng deploy --prod`.
+- Upload your assets to Firebase hosting.
+
+If you're deploying to a self managed server or there's no builder for your favorite cloud platform you can either:
+
+- Create a new builder to utilize the `ng deploy` command
+- Read through the sections below to learn how to manually deploy your app
 
 ### Basic deployment to a remote server
 
