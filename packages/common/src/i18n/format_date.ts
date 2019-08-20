@@ -63,7 +63,7 @@ enum TranslationType {
  */
 export function formatDate(
     value: string | number | Date, format: string, locale: string, timezone?: string): string {
-  let date = toDate(value);
+  let date = parseDate(value);
   const namedFormat = getNamedFormat(locale, format);
   format = namedFormat || format;
 
@@ -662,7 +662,7 @@ function convertTimezoneToLocal(date: Date, timezone: string, reverse: boolean):
  *
  * @publicApi
  */
-export function toDate(value: string | number | Date): Date {
+export function parseDate(value: string | number | Date): Date {
   if (isDate(value)) {
     return value;
   }

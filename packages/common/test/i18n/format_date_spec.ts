@@ -14,35 +14,35 @@ import localeEnExtra from '@angular/common/locales/extra/en';
 import localeHu from '@angular/common/locales/hu';
 import localeSr from '@angular/common/locales/sr';
 import localeTh from '@angular/common/locales/th';
-import {isDate, toDate, formatDate} from '@angular/common/src/i18n/format_date';
+import {isDate, parseDate, formatDate} from '@angular/common/src/i18n/format_date';
 import {ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
 
 describe('Format date', () => {
   describe('toDate', () => {
-    it('should support date', () => { expect(isDate(toDate(new Date()))).toBeTruthy(); });
+    it('should support date', () => { expect(isDate(parseDate(new Date()))).toBeTruthy(); });
 
-    it('should support int', () => { expect(isDate(toDate(123456789))).toBeTruthy(); });
+    it('should support int', () => { expect(isDate(parseDate(123456789))).toBeTruthy(); });
 
     it('should support numeric strings',
-       () => { expect(isDate(toDate('123456789'))).toBeTruthy(); });
+       () => { expect(isDate(parseDate('123456789'))).toBeTruthy(); });
 
     it('should support decimal strings',
-       () => { expect(isDate(toDate('123456789.11'))).toBeTruthy(); });
+       () => { expect(isDate(parseDate('123456789.11'))).toBeTruthy(); });
 
     it('should support ISO string',
-       () => { expect(isDate(toDate('2015-06-15T21:43:11Z'))).toBeTruthy(); });
+       () => { expect(isDate(parseDate('2015-06-15T21:43:11Z'))).toBeTruthy(); });
 
-    it('should throw for empty string', () => { expect(() => toDate('')).toThrow(); });
+    it('should throw for empty string', () => { expect(() => parseDate('')).toThrow(); });
 
     it('should throw for alpha numeric strings',
-       () => { expect(() => toDate('123456789 hello')).toThrow(); });
+       () => { expect(() => parseDate('123456789 hello')).toThrow(); });
 
-    it('should throw for NaN', () => { expect(() => toDate(Number.NaN)).toThrow(); });
+    it('should throw for NaN', () => { expect(() => parseDate(Number.NaN)).toThrow(); });
 
     it('should support ISO string without time',
-       () => { expect(isDate(toDate('2015-01-01'))).toBeTruthy(); });
+       () => { expect(isDate(parseDate('2015-01-01'))).toBeTruthy(); });
 
-    it('should throw for objects', () => { expect(() => toDate({} as any)).toThrow(); });
+    it('should throw for objects', () => { expect(() => parseDate({} as any)).toThrow(); });
   });
 
   describe('formatDate', () => {
