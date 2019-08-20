@@ -53,6 +53,26 @@ runInEachFileSystem(() => {
          });
        });
 
+    it('should return null if configured to ignore the package', () => {
+      loadTestFiles([
+        {
+          name: _('/project/node_modules/some_package/valid_entry_point/package.json'),
+          contents: createPackageJson('valid_entry_point'),
+        },
+        {
+          name: _(
+              '/project/node_modules/some_package/valid_entry_point/valid_entry_point.metadata.json'),
+          contents: 'some meta data',
+        },
+      ]);
+      const config = new NgccConfiguration(fs, _('/project'));
+      spyOn(config, 'getConfig').and.returnValue({ignore: true, entryPoints: {}});
+      const entryPoint = getEntryPointInfo(
+          fs, config, new MockLogger(), SOME_PACKAGE,
+          _('/project/node_modules/some_package/valid_entry_point'));
+      expect(entryPoint).toBe(null);
+    });
+
     it('should return null if configured to ignore the specified entry-point', () => {
       loadTestFiles([
         {

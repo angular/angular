@@ -18,6 +18,9 @@ export interface NgccProjectConfig { packages: {[packagePath: string]: NgccPacka
  * The format of a package level configuration file.
  */
 export interface NgccPackageConfig {
+  /** Do not process any of the entry-points within this package, if true. */
+  ignore?: boolean;
+
   /**
    * The entry-points to configure for this package.
    *

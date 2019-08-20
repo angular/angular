@@ -75,7 +75,12 @@ export function getEntryPointInfo(
     fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
     entryPointPath: AbsoluteFsPath): EntryPoint|null {
   const packageJsonPath = resolve(entryPointPath, 'package.json');
-  const entryPointConfig = config.getConfig(packagePath).entryPoints[entryPointPath];
+  const packageConfig = config.getConfig(packagePath);
+  if (packageConfig.ignore === true) {
+    return null;
+  }
+
+  const entryPointConfig = packageConfig.entryPoints[entryPointPath];
   if (entryPointConfig === undefined && !fs.exists(packageJsonPath)) {
     return null;
   }
