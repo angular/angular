@@ -1,6 +1,7 @@
 {
   "angularCompilerOptions": {
-    "debug": true
+    "debug": true,
+    "enableIvy": false
   },
 
   "compilerOptions": {

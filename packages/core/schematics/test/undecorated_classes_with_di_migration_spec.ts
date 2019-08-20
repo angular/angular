@@ -31,7 +31,8 @@ describe('Undecorated classes with DI migration', () => {
     writeFile('/tsconfig.json', JSON.stringify({
       compilerOptions: {
         lib: ['es2015'],
-      }
+      },
+      angularCompilerOptions: {enableIvy: false}
     }));
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
@@ -1259,6 +1260,7 @@ describe('Undecorated classes with DI migration', () => {
         generateCodeForLibraries: false,
         allowEmptyCodegenFiles: true,
         enableSummariesForJit: true,
+        enableIvy: false,
       }
     }));
 

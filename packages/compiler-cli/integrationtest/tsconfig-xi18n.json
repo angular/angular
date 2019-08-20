@@ -1,7 +1,8 @@
 {
   "angularCompilerOptions": {
     "debug": true,
-    "enableSummariesForJit": true
+    "enableSummariesForJit": true,
+    "enableIvy": false
   },
 
   "compilerOptions": {

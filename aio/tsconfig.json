@@ -32,5 +32,8 @@
     "out-tsc",
     "scripts",
     "tools"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "enableIvy": false,
+  },
 }
