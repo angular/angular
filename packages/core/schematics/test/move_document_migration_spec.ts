@@ -27,7 +27,8 @@ describe('move-document migration', () => {
     writeFile('/tsconfig.json', JSON.stringify({
       compilerOptions: {
         lib: ['es2015'],
-      }
+      },
+      angularCompilerOptions: {enableIvy: false}
     }));
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}

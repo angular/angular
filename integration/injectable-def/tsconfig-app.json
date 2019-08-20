@@ -10,6 +10,9 @@
     "types": ["node"],
     "rootDir": "."
   },
+  "angularCompilerOptions": {
+    "enableIvy": false,
+  },
   "files": [
     "src/app.ts",
     "src/main.ts"

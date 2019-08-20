@@ -4,7 +4,8 @@
     "annotationsAs": "static fields",
     "debug": true,
     "enableSummariesForJit": true,
-    "i18nFormat": "xlf"
+    "i18nFormat": "xlf",
+    "enableIvy": false
   },
 
   "compilerOptions": {
