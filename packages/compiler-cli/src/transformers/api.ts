@@ -196,11 +196,10 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * `false` - run ngc normally
    * `true` - run the ngtsc compiler instead of the normal ngc compiler
    * `ngtsc` - alias for `true`
-   * `tsc` - behave like plain tsc as much as possible (used for testing JIT code)
    *
    * @publicApi
    */
-  enableIvy?: boolean|'ngtsc'|'tsc';
+  enableIvy?: boolean|'ngtsc';
 
   /** @internal */
   collectAllErrors?: boolean;
