@@ -359,6 +359,10 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
 
   /** Updates the size of the overlay element based on the overlay config. */
   private _updateElementSize() {
+    if (!this._pane) {
+      return;
+    }
+
     const style = this._pane.style;
 
     style.width = coerceCssPixelValue(this._config.width);
