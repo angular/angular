@@ -7,15 +7,21 @@
  */
 
 import * as ts from 'typescript';
-import {TemplateInfo} from './common';
+import {AstResult} from './common';
 import {locateSymbol} from './locate_symbol';
 
 // Reverse mappings of enum would generate strings
 const SYMBOL_SPACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.space];
 const SYMBOL_PUNC = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.punctuation];
 
-export function getHover(info: TemplateInfo): ts.QuickInfo|undefined {
-  const symbolInfo = locateSymbol(info);
+/**
+ * Traverse the template AST and look for the symbol located at `position`, then
+ * return the corresponding quick info.
+ * @param info template AST
+ * @param position location of the symbol
+ */
+export function getHover(info: AstResult, position: number): ts.QuickInfo|undefined {
+  const symbolInfo = locateSymbol(info, position);
   if (!symbolInfo) {
     return;
   }
