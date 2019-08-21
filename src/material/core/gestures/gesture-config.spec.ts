@@ -18,7 +18,7 @@ xdescribe('GestureConfig', () => {
   }));
 
   it('should instantiate HammerJS', () => {
-    spyOn(window, 'Hammer' as any).and.callThrough();
+    spyOn(window as any, 'Hammer').and.callThrough();
 
     const fixture = TestBed.createComponent(ButtonWithLongpressHander);
     fixture.detectChanges();
@@ -38,7 +38,7 @@ xdescribe('GestureConfig', () => {
       })
       .compileComponents();
 
-    spyOn(window, 'Hammer' as any).and.callThrough();
+    spyOn(window as any, 'Hammer').and.callThrough();
 
     const fixture = TestBed.createComponent(ButtonWithLongpressHander);
     fixture.detectChanges();

@@ -377,7 +377,7 @@ describe('MatButtonToggle without forms', () => {
       fixture.detectChanges();
 
       expect(buttonToggleInstances[0].checked).toBe(true);
-      expect(groupInstance.value);
+      expect(groupInstance.value).toBe('test1');
     });
 
     it('should change the vertical state', () => {

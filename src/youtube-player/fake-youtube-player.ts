@@ -45,7 +45,7 @@ export function createFakeYtNamespace(): FakeYtNamespace {
 
       for (const [event, callback] of playerSpy.addEventListener.calls.allArgs()) {
         if (event === name) {
-          callback(arg);
+          callback(arg as YT.PlayerEvent);
         }
       }
     };

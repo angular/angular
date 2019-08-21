@@ -46,7 +46,8 @@ describe('AriaReference', () => {
   it('should not add the same reference id if it already exists', () => {
     addAriaReferencedId(testElement!, 'aria-describedby', 'reference_1');
     addAriaReferencedId(testElement!, 'aria-describedby', 'reference_1');
-    expect(['reference_1']);
+    expect(getAriaReferenceIds(testElement!, 'aria-describedby'))
+        .toEqual(['reference_1']);
   });
 
   it('should retrieve ids that are deliminated by extra whitespace', () => {

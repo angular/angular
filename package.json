@@ -83,7 +83,7 @@
     "@types/gulp-util": "^3.0.34",
     "@types/hammerjs": "^2.0.35",
     "@types/inquirer": "^0.0.43",
-    "@types/jasmine": "^3.0.0",
+    "@types/jasmine": "^3.4.0",
     "@types/marked": "^0.4.2",
     "@types/merge2": "^0.3.30",
     "@types/minimist": "^1.2.0",

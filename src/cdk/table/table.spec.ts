@@ -749,7 +749,7 @@ describe('CdkTable', () => {
 
     function expectNoStickyStyles(elements: any[]) {
       elements.forEach(element => {
-        expect(element.classList.contains('cdk-table-sticky'));
+        expect(element.classList.contains('cdk-table-sticky')).toBe(false);
         expect(element.style.position).toBe('');
         expect(element.style.zIndex || '0').toBe('0');
         ['top', 'bottom', 'left', 'right'].forEach(d => {
