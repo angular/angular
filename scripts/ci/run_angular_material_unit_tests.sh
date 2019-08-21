@@ -21,9 +21,9 @@ cd ${MATERIAL_REPO_TMP_DIR}
 # Note that it's not necessary to perform a yarn install, as Bazel performs its own yarn install.
 node ${angular_dir}/scripts/ci/update-deps-to-dist-packages.js ${MATERIAL_REPO_TMP_DIR}/package.json ${angular_dir}/dist/packages-dist-ivy-aot/
 
-# Append the test blocklist into angular/material2's karma-test-shim.js.
-# This filters out known-failing tests because the goal is to prevent regressions.
-cat ${angular_dir}/tools/material-ci/angular_material_test_blocklist.js >> ./test/karma-test-shim.js
+# Copy the test blocklist into the "angular/components" repository. The components
+# repository automatically picks up the blocklist and disables the specified tests.
+cp ${angular_dir}/tools/material-ci/test-blocklist.ts ${MATERIAL_REPO_TMP_DIR}/test/
 
 # Create a symlink for the Bazel binary installed through NPM, as running through Yarn introduces OOM errors.
 ./scripts/circleci/setup_bazel_binary.sh
