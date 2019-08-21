@@ -153,7 +153,8 @@ $mat-radio-ripple-radius: 20px;
     opacity: 0.04;
   }
 
-  .mat-radio-button:not(.mat-radio-disabled).cdk-keyboard-focused & {
+  .mat-radio-button:not(.mat-radio-disabled).cdk-keyboard-focused &,
+  .mat-radio-button:not(.mat-radio-disabled).cdk-program-focused & {
     opacity: 0.12;
   }
 
