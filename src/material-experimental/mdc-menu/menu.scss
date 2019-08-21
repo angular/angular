@@ -40,6 +40,12 @@
   text-decoration: none;
 
   &[disabled] {
+    // Usually every click inside the menu closes it, however some browsers will stop events
+    // when the user clicks on a disabled item, **except** when the user clicks on a non-disabled
+    // child node of the disabled button. This is inconsistent because some regions of a disabled
+    // button will still cause the menu to close and some won't (see #16694). We make the behavior
+    // more consistent by disabling pointer events and allowing the user to click through.
+    pointer-events: none;
     cursor: default;
   }
 
