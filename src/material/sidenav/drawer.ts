@@ -154,6 +154,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   get mode(): 'over' | 'push' | 'side' { return this._mode; }
   set mode(value: 'over' | 'push' | 'side') {
     this._mode = value;
+    this._updateFocusTrapState();
     this._modeChanged.next();
   }
   private _mode: 'over' | 'push' | 'side' = 'over';
@@ -333,7 +334,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
   ngAfterContentInit() {
     this._focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
-    this._focusTrap.enabled = this._isFocusTrapEnabled;
+    this._updateFocusTrapState();
   }
 
   ngAfterContentChecked() {
@@ -400,9 +401,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
       this._restoreFocus();
     }
 
-    if (this._focusTrap) {
-      this._focusTrap.enabled = this._isFocusTrapEnabled;
-    }
+    this._updateFocusTrapState();
 
     return new Promise<MatDrawerToggleResult>(resolve => {
       this.openedChange.pipe(take(1)).subscribe(open => resolve(open ? 'open' : 'close'));
@@ -411,6 +410,13 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
   get _width(): number {
     return this._elementRef.nativeElement ? (this._elementRef.nativeElement.offsetWidth || 0) : 0;
+  }
+
+  /** Updates the enabled state of the focus trap. */
+  private _updateFocusTrapState() {
+    if (this._focusTrap) {
+      this._focusTrap.enabled = this._isFocusTrapEnabled;
+    }
   }
 
   // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.

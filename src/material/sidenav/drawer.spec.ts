@@ -510,6 +510,27 @@ describe('MatDrawer', () => {
       expect(document.activeElement).not.toBe(firstFocusableElement);
     }));
 
+    it('should update the focus trap enable state if the mode changes while open', fakeAsync(() => {
+      testComponent.mode = 'side';
+      fixture.detectChanges();
+
+      drawer.open();
+      fixture.detectChanges();
+      tick();
+
+      const anchors =
+          Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.cdk-focus-trap-anchor'));
+
+      expect(anchors.every(anchor => !anchor.hasAttribute('tabindex')))
+          .toBe(true, 'Expected focus trap anchors to be disabled in side mode.');
+
+      testComponent.mode = 'over';
+      fixture.detectChanges();
+
+      expect(anchors.every(anchor => anchor.getAttribute('tabindex') === '0'))
+          .toBe(true, 'Expected focus trap anchors to be enabled in over mode.');
+    }));
+
   });
 });
 
