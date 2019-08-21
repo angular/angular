@@ -6,4 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export type TabGroupHarnessFilters = {};
+export type TabGroupHarnessFilters = {
+  selectedTabLabel?: string|RegExp;
+};

@@ -43,6 +43,20 @@ function runTests() {
     expect(tabGroups.length).toBe(1);
   });
 
+  it('should load harness for tab-group with selected tab label', async () => {
+    const tabGroups = await loader.getAllHarnesses(tabGroupHarness.with({
+      selectedTabLabel: 'First',
+    }));
+    expect(tabGroups.length).toBe(1);
+  });
+
+  it('should load harness for tab-group with matching tab label regex', async () => {
+    const tabGroups = await loader.getAllHarnesses(tabGroupHarness.with({
+      selectedTabLabel: /f.*st/i,
+    }));
+    expect(tabGroups.length).toBe(1);
+  });
+
   it('should be able to get tabs of tab-group', async () => {
     const tabGroup = await loader.getHarness(tabGroupHarness);
     const tabs = await tabGroup.getTabs();
