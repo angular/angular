@@ -1,10 +1,10 @@
-# The Ahead-of-Time (AoT) compiler
+# The Ahead-of-Time (AOT) compiler
 
 An Angular application consists mainly of components and their HTML templates. Because the components and templates provided by Angular cannot be understood by the browser directly, Angular applications require a compilation process before they can run in a browser.
 
-The Angular Ahead-of-Time (AoT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code. Compiling your application during the build process provides a faster rendering in the browser.
+The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code. Compiling your application during the build process provides a faster rendering in the browser.
 
-This guide explains how to specify metadata and apply available compiler options to compile your applications efficiently using the AoT compiler.
+This guide explains how to specify metadata and apply available compiler options to compile your applications efficiently using the AOT compiler.
 
 <div class="alert is-helpful"
 
@@ -14,10 +14,10 @@ This guide explains how to specify metadata and apply available compiler options
 
 {@a why-aot}
 
-Here are some reasons you might want to use AoT.
+Here are some reasons you might want to use AOT.
 
 * *Faster rendering*
-   With AoT, the browser downloads a pre-compiled version of the application.
+   With AOT, the browser downloads a pre-compiled version of the application.
    The browser loads executable code so it can render the application immediately, without waiting to compile the app first.
 
 * *Fewer asynchronous requests*
@@ -29,11 +29,11 @@ Here are some reasons you might want to use AoT.
    The compiler is roughly half of Angular itself, so omitting it dramatically reduces the application payload.
 
 * *Detect template errors earlier*
-   The AoT compiler detects and reports template binding errors during the build step
+   The AOT compiler detects and reports template binding errors during the build step
    before users can see them.
 
 * *Better security*
-   AoT compiles HTML templates and components into JavaScript files long before they are served to the client.
+   AOT compiles HTML templates and components into JavaScript files long before they are served to the client.
    With no templates to read and no risky client-side HTML or JavaScript evaluation,
    there are fewer opportunities for injection attacks.
 
@@ -44,7 +44,7 @@ Here are some reasons you might want to use AoT.
 Angular offers two ways to compile your application:
 
 * **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime.
-* **_Ahead-of-Time_ (AoT)**, which compiles your app at build time.
+* **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
 
 JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands:
 
@@ -55,7 +55,7 @@ JIT compilation is the default when you run the [`ng build`](cli/build) (build o
 
 {@a compile}
 
-For AoT compilation, include the `--aot` option with the `ng build` or `ng serve` command:
+For AOT compilation, include the `--aot` option with the `ng build` or `ng serve` command:
 
 <code-example language="sh" class="code-shell">
   ng build --aot
@@ -64,15 +64,15 @@ For AoT compilation, include the `--aot` option with the `ng build` or `ng serve
 
 <div class="alert is-helpful">
 
-The `ng build` command with the `--prod` meta-flag (`ng build --prod`) compiles with AoT by default.
+The `ng build` command with the `--prod` meta-flag (`ng build --prod`) compiles with AOT by default.
 
 See the [CLI command reference](cli) and [Building and serving Angular apps](guide/build) for more information.
 
 </div>
 
-## How AoT works
+## How AOT works
 
-The Angular AoT compiler extracts **metadata** to interpret the parts of the application that Angular is supposed to manage.
+The Angular AOT compiler extracts **metadata** to interpret the parts of the application that Angular is supposed to manage.
 You can specify the metadata explicitly in **decorators** such as `@Component()` and `@Input()`, or implicitly in the constructor declarations of the decorated classes.
 The metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
 
@@ -94,14 +94,14 @@ When it needs to create a `TypicalComponent` instance, Angular calls the factory
 
 ### Compilation phases
 
-There are three phases of AoT compilation.
+There are three phases of AOT compilation.
 * Phase 1 is *code analysis*.
-   In this phase, the TypeScript compiler and  *AoT collector* create a representation of the source. The collector does not attempt to interpret the metadata it collects. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.
+   In this phase, the TypeScript compiler and  *AOT collector* create a representation of the source. The collector does not attempt to interpret the metadata it collects. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.
 
 * Phase 2 is *code generation*.
-   In this phase, the compiler's `StaticReflector` interprets the `.metadata.json` file created in phase 1, and places restrictions on what it interprets.
+    In this phase, the compiler's `StaticReflector` interprets the metadata collected in phase 1, performs additional validation of the metadata, and throws an error if it detects a metadata restriction violation.
 
-* Phase 3 is *validation*.
+* Phase 3 is *template type checking*.
    In this optional phase, the Angular *template compiler* uses the TypeScript compiler to validate the binding expressions in templates. You can enable this phase explicitly by setting the `fullTemplateTypeCheck` configuration option; see [Angular compiler options](guide/angular-compiler-options).
 
 
@@ -114,23 +114,23 @@ You write metadata in a _subset_ of TypeScript that must conform to the followin
 * Only call [functions supported](#supported-functions) by the compiler.
 * Decorated and data-bound class members must be public.
 
-For additional guidelines and instructions on preparing an application for AoT compilation, see [Angular: Writing AoT-friendly applications](https://medium.com/sparkles-blog/angular-writing-aot-friendly-applications-7b64c8afbe3f).
+For additional guidelines and instructions on preparing an application for AOT compilation, see [Angular: Writing AOT-friendly applications](https://medium.com/sparkles-blog/angular-writing-aot-friendly-applications-7b64c8afbe3f).
 
 <div class="alert is-helpful">
 
-Errors in AoT compilation commonly occur because of metadata that does not conform to the compiler's requirements (as described more fully below).
-For help in understanding and resolving these problems, see [AoT Metadata Errors](guide/aot-metadata-errors).
+Errors in AOT compilation commonly occur because of metadata that does not conform to the compiler's requirements (as described more fully below).
+For help in understanding and resolving these problems, see [AOT Metadata Errors](guide/aot-metadata-errors).
 
 </div>
 
-### Configuring AoT compilation
+### Configuring AOT compilation
 
 You can provide options in the `tsconfig.json` [TypeScript configuration file](guide/typescript-configuration) that control the compilation process. See [Angular compiler options](guide/angular-compiler-options) for a complete list of available options.
 
 ## Phase 1: Code analysis
 
-The TypeScript compiler does some of the analytic work of the first phase. It emits the `.d.ts` _type definition files_ with type information that the AoT compiler needs to generate application code.
-At the same time, the AoT **collector** analyzes the metadata recorded in the Angular decorators and outputs metadata information in **`.metadata.json`** files, one per `.d.ts` file.
+The TypeScript compiler does some of the analytic work of the first phase. It emits the `.d.ts` _type definition files_ with type information that the AOT compiler needs to generate application code.
+At the same time, the AOT **collector** analyzes the metadata recorded in the Angular decorators and outputs metadata information in **`.metadata.json`** files, one per `.d.ts` file.
 
 You can think of `.metadata.json` as a diagram of the overall structure of a decorator's metadata, represented as an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 
@@ -144,7 +144,7 @@ describes the JSON format as a collection of TypeScript interfaces.
 {@a expression-syntax}
 ### Expression syntax limitations
 
-The  AoT collector only understands a subset of JavaScript.
+The  AOT collector only understands a subset of JavaScript.
 Define metadata objects with the following limited syntax:
 
 <style>
@@ -248,7 +248,7 @@ Angular libraries have this option to ensure that all Angular `.metadata.json` f
 {@a arrow-functions}
 ### No arrow functions
 
-The AoT compiler does not support [function expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)
+The AOT compiler does not support [function expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)
 and [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions), also called _lambda_ functions.
 
 Consider the following component decorator:
@@ -260,7 +260,7 @@ Consider the following component decorator:
 })
 ```
 
-The AoT collector does not support the arrow function, `() => new Server()`, in a metadata expression.
+The AOT collector does not support the arrow function, `() => new Server()`, in a metadata expression.
 It generates an error node in place of the function.
 When the compiler later interprets this node, it reports an error that invites you to turn the arrow function into an _exported function_.
 
@@ -479,7 +479,7 @@ The compiler can only create instances certain classes, supports only core decor
 * Function calls
 
    Factory functions must be exported, named functions.
-   The AoT compiler does not support lambda expressions ("arrow functions") for factory functions.
+   The AOT compiler does not support lambda expressions ("arrow functions") for factory functions.
 
 {@a function-calls}
 ### Functions and static method calls
@@ -562,12 +562,11 @@ It does not, however, rewrite the `.d.ts` file, so TypeScript doesn't recognize 
 
 
 {@a binding-expression-validation}
-## Phase 3: Binding expression validation
+## Phase 3: Template type checking
 
-In the validation phase, the Angular template compiler uses the TypeScript compiler to validate the
-binding expressions in templates. Enable this phase explicitly by adding the compiler
-option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json` (see
-[Angular Compiler Options](guide/angular-compiler-options)).
+In the template type-checking phase, the Angular template compiler uses the TypeScript compiler to validate the binding expressions in templates.
+Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json`
+(see [Angular Compiler Options](guide/angular-compiler-options)).
 
 Template validation produces error messages when a type error is detected in a template binding
 expression, similar to how type errors are reported by the TypeScript compiler against code in a `.ts`
