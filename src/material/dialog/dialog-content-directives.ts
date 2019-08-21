@@ -25,7 +25,7 @@ let dialogElementUid = 0;
  * Button that will close the current dialog.
  */
 @Directive({
-  selector: `button[mat-dialog-close], button[matDialogClose]`,
+  selector: '[mat-dialog-close], [matDialogClose]',
   exportAs: 'matDialogClose',
   host: {
     '(click)': 'dialogRef.close(dialogResult)',
