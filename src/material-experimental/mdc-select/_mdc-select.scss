@@ -1,0 +1,13 @@
+@import '../mdc-helpers/mdc-helpers';
+
+@mixin mat-select-theme-mdc($theme) {
+  @include mat-using-mdc-theme($theme) {
+    // TODO: implement MDC-based select.
+  }
+}
+
+@mixin mat-select-typography-mdc($config) {
+  @include mat-using-mdc-typography($config) {
+    // TODO: implement MDC-based select.
+  }
+}

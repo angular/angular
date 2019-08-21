@@ -37,7 +37,7 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
   }
 
   protected getDocumentRoot(): Element {
-    return this._fixture.nativeElement;
+    return document.body;
   }
 
   protected createTestElement(element: Element): TestElement {
