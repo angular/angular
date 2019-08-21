@@ -92,11 +92,6 @@ the component, even in simple cases like this one.
 
 ### Requesting a typed response
 
-Notice that in the above example, the `subscribe` callback uses bracket notation to extract the data values.
-You can't write `data.heroesUrl` because TypeScript correctly complains that the data object from the service does not have a `heroesUrl` property.
-The `HttpClient.get()` method parsed the JSON server response into the anonymous Object type,
-and Angular doesn't know what properties that object has.
-
 You can structure your `HttpClient` request to declare the type of the response object, to make consuming the output easier and more obvious.
 Specifying the response type acts as a type assertion during the compile time.
 
@@ -118,7 +113,7 @@ Next, specify that interface as the `HttpClient.get()` call's type parameter in 
 
 <div class="alert is-helpful">
 
- When you pass an interface as a type parameter to the `HttpClient.get()` method, use the RxJS `map` operator to transform the response data  as needed by the UI. You can then pass the transformed data to the [async pipe](api/common/AsyncPipe).
+ When you pass an interface as a type parameter to the `HttpClient.get()` method, use the RxJS `map` operator to transform the response data as needed by the UI. You can then pass the transformed data to the [async pipe](api/common/AsyncPipe).
 
 </div>
 
@@ -891,10 +886,10 @@ The `switchMap()` operator has three important characteristics.
 1. It takes a function argument that returns an `Observable`.
 `PackageSearchService.search` returns an `Observable`, as other data service methods do.
 
-1. If a previous search request is still _in-flight_ (as when the network connection is poor),
+2. If a previous search request is still _in-flight_ (as when the network connection is poor),
 it cancels that request and sends a new one.
 
-1. It returns service responses in their original request order, even if the
+3. It returns service responses in their original request order, even if the
 server returns them out of order.
 
 <div class="alert is-helpful">
