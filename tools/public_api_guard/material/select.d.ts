@@ -115,7 +115,7 @@ export declare class MatSelectTrigger {
 
 export declare const SELECT_ITEM_HEIGHT_EM = 3;
 
-export declare let SELECT_MULTIPLE_PANEL_PADDING_X: number;
+export declare const SELECT_MULTIPLE_PANEL_PADDING_X: number;
 
 export declare const SELECT_PANEL_INDENT_PADDING_X: number;
 
