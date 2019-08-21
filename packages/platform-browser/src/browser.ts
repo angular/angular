@@ -20,6 +20,21 @@ import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
 
+export function initDomAdapter() {
+  BrowserDomAdapter.makeCurrent();
+  BrowserGetTestability.init();
+}
+
+export function errorHandler(): ErrorHandler {
+  return new ErrorHandler();
+}
+
+export function _document(): any {
+  // Tell ivy about the global document
+  ɵsetDocument(document);
+  return document;
+}
+
 export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
@@ -46,21 +61,6 @@ export const BROWSER_SANITIZATION_PROVIDERS = BROWSER_SANITIZATION_PROVIDERS__PR
  */
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
-
-export function initDomAdapter() {
-  BrowserDomAdapter.makeCurrent();
-  BrowserGetTestability.init();
-}
-
-export function errorHandler(): ErrorHandler {
-  return new ErrorHandler();
-}
-
-export function _document(): any {
-  // Tell ivy about the global document
-  ɵsetDocument(document);
-  return document;
-}
 
 export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   BROWSER_SANITIZATION_PROVIDERS,
