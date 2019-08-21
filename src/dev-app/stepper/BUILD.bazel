@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "stepper",
+    srcs = glob(["**/*.ts"]),
+    assets = ["stepper-demo.html"],
+    deps = [
+        "//src/material/button",
+        "//src/material/checkbox",
+        "//src/material/form-field",
+        "//src/material/input",
+        "//src/material/stepper",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+    ],
+)

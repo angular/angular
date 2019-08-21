@@ -1,0 +1,31 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "bottom-sheet",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "bottom-sheet-demo.html",
+        ":bottom_sheet_demo_scss",
+    ],
+    deps = [
+        "//src/material/bottom-sheet",
+        "//src/material/button",
+        "//src/material/card",
+        "//src/material/checkbox",
+        "//src/material/form-field",
+        "//src/material/icon",
+        "//src/material/input",
+        "//src/material/list",
+        "//src/material/select",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "bottom_sheet_demo_scss",
+    src = "bottom-sheet-demo.scss",
+)

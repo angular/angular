@@ -1,0 +1,14 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "tooltip",
+    srcs = glob(["**/*.ts"]),
+    assets = ["tooltip-demo.html"],
+    deps = [
+        "//src/dev-app/example",
+        "//src/material-examples:examples",
+        "@npm//@angular/router",
+    ],
+)

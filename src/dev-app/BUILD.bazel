@@ -2,59 +2,79 @@ package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
-load("//:packages.bzl", "CDK_EXPERIMENTAL_TARGETS", "CDK_TARGETS", "GOOGLE_MAPS_TARGETS", "MATERIAL_EXPERIMENTAL_SCSS_LIBS", "MATERIAL_EXPERIMENTAL_TARGETS", "MATERIAL_TARGETS")
+load("//:packages.bzl", "MATERIAL_EXPERIMENTAL_SCSS_LIBS")
 load("//tools:defaults.bzl", "ng_module")
-load("//tools:sass_generate_binaries.bzl", "sass_generate_binaries")
-
-# Generate sass binaries for all nested SCSS files.
-sass_generate_binaries(
-    "dev_app_scss",
-    glob(
-        ["**/*.scss"],
-        exclude = ["theme.scss"],
-    ),
-    [
-        # Needed for the input-demo sass file that uses CDK text-field mixins.
-        "//src/cdk/text-field:text_field_scss_lib",
-    ],
-)
 
 ng_module(
     name = "dev-app",
-    srcs = glob(
-        ["**/*.ts"],
-        exclude = [
-            "system-config.ts",
-            "system-rxjs-operators.ts",
-        ],
-    ),
-    assets = glob(
-        ["**/*.html"],
-        exclude = ["index.html"],
-    ) + [
-        ":dev_app_scss",
-        ":theme",
+    srcs = [
+        "dev-app.ts",
+        "main.ts",
+        "main-module.ts",
     ],
     deps = [
-        "@npm//@angular/animations",
-        "@npm//@angular/common",
-        "@npm//@angular/core",
-        "@npm//@angular/elements",
-        "@npm//@angular/forms",
-        "@npm//@angular/platform-browser",
-        "@npm//@angular/platform-browser-dynamic",
+        "//src/cdk/bidi",
+        "//src/cdk/overlay",
+        "//src/dev-app/autocomplete",
+        "//src/dev-app/badge",
+        "//src/dev-app/baseline",
+        "//src/dev-app/bottom-sheet",
+        "//src/dev-app/button",
+        "//src/dev-app/button-toggle",
+        "//src/dev-app/card",
+        "//src/dev-app/checkbox",
+        "//src/dev-app/chips",
+        "//src/dev-app/connected-overlay",
+        "//src/dev-app/datepicker",
+        "//src/dev-app/dev-app",
+        "//src/dev-app/dialog",
+        "//src/dev-app/drag-drop",
+        "//src/dev-app/drawer",
+        "//src/dev-app/example",
+        "//src/dev-app/examples-page",
+        "//src/dev-app/expansion",
+        "//src/dev-app/focus-origin",
+        "//src/dev-app/gestures",
+        "//src/dev-app/google-map",
+        "//src/dev-app/grid-list",
+        "//src/dev-app/icon",
+        "//src/dev-app/input",
+        "//src/dev-app/list",
+        "//src/dev-app/live-announcer",
+        "//src/dev-app/mdc-button",
+        "//src/dev-app/mdc-card",
+        "//src/dev-app/mdc-checkbox",
+        "//src/dev-app/mdc-chips",
+        "//src/dev-app/mdc-menu",
+        "//src/dev-app/mdc-radio",
+        "//src/dev-app/mdc-slide-toggle",
+        "//src/dev-app/mdc-tabs",
+        "//src/dev-app/menu",
+        "//src/dev-app/paginator",
+        "//src/dev-app/platform",
+        "//src/dev-app/popover-edit",
+        "//src/dev-app/portal",
+        "//src/dev-app/progress-bar",
+        "//src/dev-app/progress-spinner",
+        "//src/dev-app/radio",
+        "//src/dev-app/ripple",
+        "//src/dev-app/screen-type",
+        "//src/dev-app/select",
+        "//src/dev-app/sidenav",
+        "//src/dev-app/slide-toggle",
+        "//src/dev-app/slider",
+        "//src/dev-app/snack-bar",
+        "//src/dev-app/stepper",
+        "//src/dev-app/table",
+        "//src/dev-app/tabs",
+        "//src/dev-app/toolbar",
+        "//src/dev-app/tooltip",
+        "//src/dev-app/tree",
+        "//src/dev-app/typography",
+        "//src/dev-app/virtual-scroll",
+        "//src/material/core",
         "@npm//@angular/router",
-        "@npm//rxjs",
-        "//src/material-experimental/mdc-button",
-        "//src/material-experimental/mdc-card",
-        "//src/material-experimental/mdc-checkbox",
-        "//src/material-experimental/mdc-chips",
-        "//src/material-experimental/mdc-menu",
-        "//src/material-experimental/mdc-radio",
-        "//src/material-experimental/mdc-slide-toggle",
-        "//src/material-experimental/mdc-tabs",
-        "//src/material-examples:examples",
-    ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_TARGETS + MATERIAL_EXPERIMENTAL_TARGETS + GOOGLE_MAPS_TARGETS,
+    ],
 )
 
 sass_binary(
@@ -76,6 +96,7 @@ ts_devserver(
     port = 4200,
     static_files = [
         ":theme",
+        "//src/dev-app/icon:icon_demo_assets",
         "@npm//:node_modules/@material/animation/dist/mdc.animation.js",
         "@npm//:node_modules/@material/auto-init/dist/mdc.autoInit.js",
         "@npm//:node_modules/@material/base/dist/mdc.base.js",

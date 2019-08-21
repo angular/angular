@@ -1,0 +1,27 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "ripple",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "ripple-demo.html",
+        ":ripple_demo_scss",
+    ],
+    deps = [
+        "//src/dev-app/example",
+        "//src/material/button",
+        "//src/material/checkbox",
+        "//src/material/icon",
+        "//src/material/input",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "ripple_demo_scss",
+    src = "ripple-demo.scss",
+)

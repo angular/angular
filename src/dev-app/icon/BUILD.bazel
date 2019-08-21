@@ -1,0 +1,27 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "icon",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "icon-demo.html",
+        ":icon_demo_scss",
+    ],
+    deps = [
+        "//src/material/icon",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "icon_demo_scss",
+    src = "icon-demo.scss",
+)
+
+filegroup(
+    name = "icon_demo_assets",
+    srcs = glob(["assets/**/*"]),
+)

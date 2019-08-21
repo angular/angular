@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "mdc-radio",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mdc-radio-demo.html",
+        ":mdc_radio_demo_scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-radio",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "mdc_radio_demo_scss",
+    src = "mdc-radio-demo.scss",
+)

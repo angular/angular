@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "focus-origin",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "focus-origin-demo.html",
+        ":focus_origin_demo_scss",
+    ],
+    deps = [
+        "//src/cdk/a11y",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "focus_origin_demo_scss",
+    src = "focus-origin-demo.scss",
+)

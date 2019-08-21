@@ -9,7 +9,7 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {ChangeDetectorRef, Component, ElementRef, Inject, ViewEncapsulation} from '@angular/core';
-import {DevAppRippleOptions} from '../ripple/ripple-options';
+import {DevAppRippleOptions} from './ripple-options';
 import {DevAppDirectionality} from './dev-app-directionality';
 
 /** Root component for the dev-app demos. */

@@ -18,7 +18,7 @@ import {DevAppComponent} from './dev-app';
 import {DevAppDirectionality} from './dev-app/dev-app-directionality';
 import {DevAppModule} from './dev-app/dev-app-module';
 import {DEV_APP_ROUTES} from './dev-app/routes';
-import {DevAppRippleOptions} from './ripple/ripple-options';
+import {DevAppRippleOptions} from './dev-app/ripple-options';
 
 @NgModule({
   imports: [

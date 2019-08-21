@@ -1,0 +1,28 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "baseline",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "baseline-demo.html",
+        ":baseline_demo_scss",
+    ],
+    deps = [
+        "//src/material/card",
+        "//src/material/checkbox",
+        "//src/material/form-field",
+        "//src/material/input",
+        "//src/material/radio",
+        "//src/material/select",
+        "//src/material/toolbar",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "baseline_demo_scss",
+    src = "baseline-demo.scss",
+)

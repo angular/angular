@@ -1,0 +1,27 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "checkbox",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "checkbox-demo.html",
+        "nested-checklist.html",
+        ":checkbox_demo_scss",
+    ],
+    deps = [
+        "//src/material/checkbox",
+        "//src/material/core",
+        "//src/material/form-field",
+        "//src/material/input",
+        "//src/material/select",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "checkbox_demo_scss",
+    src = "checkbox-demo.scss",
+)

@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "mdc-card",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mdc-card-demo.html",
+        ":mdc_card_demo_scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-card",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "mdc_card_demo_scss",
+    src = "mdc-card-demo.scss",
+)

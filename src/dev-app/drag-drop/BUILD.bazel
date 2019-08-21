@@ -1,0 +1,26 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "drag-drop",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "drag-drop-demo.html",
+        ":drag-drop_demo_scss",
+    ],
+    deps = [
+        "//src/cdk/drag-drop",
+        "//src/material/form-field",
+        "//src/material/icon",
+        "//src/material/input",
+        "//src/material/select",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "drag-drop_demo_scss",
+    src = "drag-drop-demo.scss",
+)

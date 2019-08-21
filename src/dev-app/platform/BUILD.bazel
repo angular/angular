@@ -1,0 +1,13 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "platform",
+    srcs = glob(["**/*.ts"]),
+    assets = ["platform-demo.html"],
+    deps = [
+        "//src/cdk/platform",
+        "@npm//@angular/router",
+    ],
+)

@@ -1,0 +1,25 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "badge",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "badge-demo.html",
+        ":badge_demo_scss",
+    ],
+    deps = [
+        "//src/material/badge",
+        "//src/material/button",
+        "//src/material/icon",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "badge_demo_scss",
+    src = "badge-demo.scss",
+)

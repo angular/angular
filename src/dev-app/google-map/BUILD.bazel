@@ -1,0 +1,13 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "google-map",
+    srcs = glob(["**/*.ts"]),
+    assets = ["google-map-demo.html"],
+    deps = [
+        "//src/google-maps/google-map",
+        "@npm//@angular/router",
+    ],
+)

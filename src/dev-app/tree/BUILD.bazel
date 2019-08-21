@@ -1,0 +1,56 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "tree",
+    srcs = glob(["**/*.ts"]),
+    assets = glob([
+        "**/*.html",
+    ]) + [
+        ":tree_demo_scss",
+        ":checklist_nested_tree_demo_scss",
+        ":checklist_tree_demo_scss",
+        ":dynamic_tree_demo_scss",
+        ":loadmore_tree_demo_scss",
+    ],
+    deps = [
+        "//src/cdk/tree",
+        "//src/dev-app/example",
+        "//src/material/button",
+        "//src/material/checkbox",
+        "//src/material/expansion",
+        "//src/material/form-field",
+        "//src/material/icon",
+        "//src/material/input",
+        "//src/material/progress-bar",
+        "//src/material/tree",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "tree_demo_scss",
+    src = "tree-demo.scss",
+)
+
+sass_binary(
+    name = "checklist_nested_tree_demo_scss",
+    src = "checklist-tree-demo/checklist-nested-tree-demo.scss",
+)
+
+sass_binary(
+    name = "checklist_tree_demo_scss",
+    src = "checklist-tree-demo/checklist-tree-demo.scss",
+)
+
+sass_binary(
+    name = "dynamic_tree_demo_scss",
+    src = "dynamic-tree-demo/dynamic-tree-demo.scss",
+)
+
+sass_binary(
+    name = "loadmore_tree_demo_scss",
+    src = "loadmore-tree-demo/loadmore-tree-demo.scss",
+)

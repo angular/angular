@@ -1,0 +1,36 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "datepicker",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "datepicker-demo.html",
+        "custom-header.html",
+        ":datepicker_demo_scss",
+        ":custom_header_scss",
+    ],
+    deps = [
+        "//src/material/button",
+        "//src/material/checkbox",
+        "//src/material/core",
+        "//src/material/datepicker",
+        "//src/material/form-field",
+        "//src/material/icon",
+        "//src/material/input",
+        "//src/material/select",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "datepicker_demo_scss",
+    src = "datepicker-demo.scss",
+)
+
+sass_binary(
+    name = "custom_header_scss",
+    src = "custom-header.scss",
+)

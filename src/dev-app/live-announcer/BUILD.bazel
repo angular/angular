@@ -1,0 +1,14 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "live-announcer",
+    srcs = glob(["**/*.ts"]),
+    assets = ["live-announcer-demo.html"],
+    deps = [
+        "//src/cdk/a11y",
+        "//src/material/button",
+        "@npm//@angular/router",
+    ],
+)
