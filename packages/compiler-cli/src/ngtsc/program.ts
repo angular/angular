@@ -116,7 +116,7 @@ export class NgtscProgram implements api.Program {
     rootFiles.push(this.typeCheckFilePath);
 
     let entryPoint: AbsoluteFsPath|null = null;
-    if (options.flatModuleOutFile !== undefined) {
+    if (options.flatModuleOutFile != null && options.flatModuleOutFile !== '') {
       entryPoint = findFlatIndexEntryPoint(normalizedRootNames);
       if (entryPoint === null) {
         // This error message talks specifically about having a single .ts file in "files". However
