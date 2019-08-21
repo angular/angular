@@ -14,8 +14,7 @@ import {FALLBACK_DECORATOR, addImport, getNamedImports, getUndecoratedClassesWit
 
 
 /**
- * TSLint rule that adds an Angular decorator to classes that have Angular decorator field
- * decorators.
+ * TSLint rule that adds an Angular decorator to classes that have Angular field decorators.
  * https://hackmd.io/vuQfavzfRG6KUCtU7oK_EA
  */
 export class Rule extends Rules.TypedRule {
@@ -33,8 +32,7 @@ export class Rule extends Rules.TypedRule {
       // cases like an interface not being implemented correctly.
       const start = (name || declaration).getStart();
       const end = (name || declaration).getEnd();
-      const fixes =
-          [Replacement.appendText(declaration.getStart(), `@${FALLBACK_DECORATOR}({})\n`)];
+      const fixes = [Replacement.appendText(declaration.getStart(), `@${FALLBACK_DECORATOR}()\n`)];
 
       // If it's the first class that we're processing in this file, add `Directive` to the imports.
       if (index === 0 && !hasNamedImport(importDeclaration, FALLBACK_DECORATOR)) {

@@ -12,7 +12,7 @@ import {getAngularDecorators} from '../../utils/ng_decorators';
 /** Name of the decorator that should be added to undecorated classes. */
 export const FALLBACK_DECORATOR = 'Directive';
 
-/** Finds all of the undercorated classes that have decorated fields within a file. */
+/** Finds all of the undecorated classes that have decorated fields within a file. */
 export function getUndecoratedClassesWithDecoratedFields(
     sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker) {
   const classes: UndecoratedClassWithDecoratedFields[] = [];

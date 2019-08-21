@@ -50,7 +50,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     writeFile('/index.ts', `
       import { Input, Directive } from '@angular/core';
 
-      @Directive({})
+      @Directive()
       export class ValidClass {
         @Input() isActive: boolean;
       }
@@ -89,7 +89,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
         @Input() isActive: boolean;
       }
 
-      @Directive({})
+      @Directive()
       export class Child extends Base {
       }
     `);
@@ -108,7 +108,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     `);
 
     runTSLint(true);
-    expect(getFile('/index.ts')).toContain(`@Directive({})\nexport class Base {`);
+    expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should not change decorated classes', () => {
@@ -130,7 +130,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     expect(content).toContain(
         `import { Input, Component, Output, EventEmitter, Directive } from '@angular/core';`);
     expect(content).toContain(`@Component({})\n      export class Base {`);
-    expect(content).toContain(`@Directive({})\nexport class Child extends Base {`);
+    expect(content).toContain(`@Directive()\nexport class Child extends Base {`);
   });
 
   it('should add @Directive to undecorated classes that have @Output', () => {
@@ -143,7 +143,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     `);
 
     runTSLint(true);
-    expect(getFile('/index.ts')).toContain(`@Directive({})\nexport class Base {`);
+    expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a host binding', () => {
@@ -159,7 +159,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     `);
 
     runTSLint(true);
-    expect(getFile('/index.ts')).toContain(`@Directive({})\nexport class Base {`);
+    expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a host listener', () => {
@@ -175,7 +175,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     `);
 
     runTSLint(true);
-    expect(getFile('/index.ts')).toContain(`@Directive({})\nexport class Base {`);
+    expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ViewChild query', () => {
@@ -188,7 +188,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     `);
 
     runTSLint(true);
-    expect(getFile('/index.ts')).toContain(`@Directive({})\nexport class Base {`);
+    expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ViewChildren query', () => {
@@ -201,7 +201,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     `);
 
     runTSLint(true);
-    expect(getFile('/index.ts')).toContain(`@Directive({})\nexport class Base {`);
+    expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ContentChild query', () => {
@@ -214,7 +214,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     `);
 
     runTSLint(true);
-    expect(getFile('/index.ts')).toContain(`@Directive({})\nexport class Base {`);
+    expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ContentChildren query', () => {
@@ -227,7 +227,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     `);
 
     runTSLint(true);
-    expect(getFile('/index.ts')).toContain(`@Directive({})\nexport class Base {`);
+    expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
 });

@@ -16,7 +16,7 @@ import {FALLBACK_DECORATOR, addImport, getNamedImports, getUndecoratedClassesWit
 
 
 /**
- * Migration that adds an Angular decorator to classes that have Angular decorator field decorators.
+ * Migration that adds an Angular decorator to classes that have Angular field decorators.
  * https://hackmd.io/vuQfavzfRG6KUCtU7oK_EA
  */
 export default function(): Rule {
@@ -85,7 +85,7 @@ function runUndecoratedClassesMigration(tree: Tree, tsconfigPath: string, basePa
 
       // We don't need to go through the AST to insert the decorator, because the change
       // is pretty basic. Also this has a better chance of preserving the user's formatting.
-      update.insertLeft(current.classDeclaration.getStart(), `@${FALLBACK_DECORATOR}({})\n`);
+      update.insertLeft(current.classDeclaration.getStart(), `@${FALLBACK_DECORATOR}()\n`);
     });
 
     tree.commitUpdate(update);

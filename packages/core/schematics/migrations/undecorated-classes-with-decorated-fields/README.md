@@ -16,7 +16,7 @@ export class Base {
 ```ts
 import { Input, Directive } from '@angular/core';
 
-@Directive({})
+@Directive()
 export class Base {
   @Input() isActive: boolean;
 }
