@@ -53,9 +53,9 @@ This method is for development and testing only, and is not a supported or secur
 
 </div>
 
-### ng deploy
+### Automatic deployment with the CLI
 
-Angular CLI introduced `deploy` command in version 8.3.0. By default, this command will execute the `deploy` [CLI builder](https://angular.io/guide/cli-builder) associated with your project. Currently, there are third-party builders which implement deployment capabilities to different cloud platforms:
+The Angluar CLI command `ng deploy` (introduced in version 8.3.0) executes the `deploy` [CLI builder](https://angular.io/guide/cli-builder) associated with your project. A number of third-party builders implement deployment capabilities to different platforms. These include the following.
 
 | Deployment to                                                 | Package                                                                        |
 |---------------------------------------------------------------|--------------------------------------------------------------------------------|
@@ -67,24 +67,18 @@ Angular CLI introduced `deploy` command in version 8.3.0. By default, this comma
 
 You can read how to use the listed deployment builders following the links associated with each package name above.
 
-For example, to automatically deploy to Firebase via the `ng deploy` command run:
+For example, the following command automatically deploys the current project to Firebase.
 
 <code-example language="none" class="code-shell">
 ng add @angular/fire
 ng deploy
 </code-example>
 
-The command above will:
+The command is interactive. In this case, you must have or create a Firebase account, and authenticate using that account. The command prompts you to select a Firebase project for deployment
 
-- Authenticate you using your Firebase account. If you don't already have a Firebase account, you will need to create one.
-- Let you select a Firebase project you want to deploy to.
-- Produce optimal build of your application equivalent to `ng deploy --prod`.
-- Upload your assets to Firebase hosting.
+After the command produces an optimal build of your application (equivalent to `ng deploy --prod`), it'll upload the production assets to Firebase.
 
-If you're deploying to a self managed server or there's no builder for your favorite cloud platform you can either:
-
-- Create a new builder to utilize the `ng deploy` command
-- Read through the sections below to learn how to manually deploy your app
+If you're deploying to a self-managed server or there's no builder for your favorite cloud platform, you can either create a builder that allows you to use the `ng deploy` command, or read through this guide to learn how to manually deploy your app.
 
 ### Basic deployment to a remote server
 
