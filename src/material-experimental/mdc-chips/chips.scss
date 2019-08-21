@@ -1,5 +1,6 @@
 @import '@material/chips/mixins';
 @import '../../material/core/style/noop-animation';
+@import '../../cdk/a11y/a11y';
 @import '../mdc-helpers/mdc-helpers';
 
 @include mdc-chip-without-ripple($query: $mat-base-styles-query);
@@ -13,6 +14,15 @@
   overflow: hidden;
   // Required for the ripple to clip properly in Safari.
   transform: translateZ(0);
+
+  @include cdk-high-contrast {
+    outline: solid 1px;
+
+    &:focus {
+      // Use 2px here since the dotted outline is a little thinner.
+      outline: dotted 2px;
+    }
+  }
 }
 
 // The MDC chip styles related to hover and focus states are intertwined with the MDC ripple styles.
@@ -25,9 +35,13 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.2);
+
+      // Note that we use a `background` and `opacity`, instead of an `rgba` background, because
+      // `rgba` backgrounds get converted into solid colors in high contrast mode.
+      background: #000;
+      opacity: 0.2;
       top: 0;
-      left:0;
+      left: 0;
       pointer-events: none;
     }
   }
