@@ -348,10 +348,9 @@
 
 
 # ===========================================================
-#  @angular/fw-dev-infra
+#  @angular/dev-infra-framework
 # ===========================================================
 #
-#   - alexeagle
 #   - devversion
 #   - filipesilva
 #   - gkalpak
@@ -880,33 +879,33 @@ testing/**                                                      @angular/fw-test
 #  Build & CI Owners
 # ================================================
 
-/*                                                              @angular/fw-dev-infra
-/.buildkite/**                                                  @angular/fw-dev-infra
-/.circleci/**                                                   @angular/fw-dev-infra
-/.devcontainer/**                                               @angular/fw-dev-infra
-/.github/**                                                     @angular/fw-dev-infra
-/.vscode/**                                                     @angular/fw-dev-infra
-/docs/BAZEL.md                                                  @angular/fw-dev-infra
-/packages/*                                                     @angular/fw-dev-infra
-/scripts/**                                                     @angular/fw-dev-infra
-/third_party/**                                                 @angular/fw-dev-infra
-/tools/build/**                                                 @angular/fw-dev-infra
-/tools/cjs-jasmine/**                                           @angular/fw-dev-infra
-/tools/gulp-tasks/**                                            @angular/fw-dev-infra
-/tools/ngcontainer/**                                           @angular/fw-dev-infra
-/tools/npm/**                                                   @angular/fw-dev-infra
-/tools/npm_workspace/**                                         @angular/fw-dev-infra
-/tools/public_api_guard/**                                      @angular/fw-dev-infra
-/tools/rxjs/**                                                  @angular/fw-dev-infra
-/tools/source-map-test/**                                       @angular/fw-dev-infra
-/tools/symbol-extractor/**                                      @angular/fw-dev-infra
-/tools/testing/**                                               @angular/fw-dev-infra
-/tools/ts-api-guardian/**                                       @angular/fw-dev-infra
-/tools/tslint/**                                                @angular/fw-dev-infra
-/tools/validate-commit-message/**                               @angular/fw-dev-infra
-/tools/yarn/**                                                  @angular/fw-dev-infra
-/tools/*
-*.bzl                                                           @angular/fw-dev-infra
+/*                                                              @angular/dev-infra-framework
+/.buildkite/**                                                  @angular/dev-infra-framework
+/.circleci/**                                                   @angular/dev-infra-framework
+/.devcontainer/**                                               @angular/dev-infra-framework
+/.github/**                                                     @angular/dev-infra-framework
+/.vscode/**                                                     @angular/dev-infra-framework
+/docs/BAZEL.md                                                  @angular/dev-infra-framework
+/packages/*                                                     @angular/dev-infra-framework
+/scripts/**                                                     @angular/dev-infra-framework
+/third_party/**                                                 @angular/dev-infra-framework
+/tools/build/**                                                 @angular/dev-infra-framework
+/tools/cjs-jasmine/**                                           @angular/dev-infra-framework
+/tools/gulp-tasks/**                                            @angular/dev-infra-framework
+/tools/ngcontainer/**                                           @angular/dev-infra-framework
+/tools/npm/**                                                   @angular/dev-infra-framework
+/tools/npm_workspace/**                                         @angular/dev-infra-framework
+/tools/public_api_guard/**                                      @angular/dev-infra-framework
+/tools/rxjs/**                                                  @angular/dev-infra-framework
+/tools/source-map-test/**                                       @angular/dev-infra-framework
+/tools/symbol-extractor/**                                      @angular/dev-infra-framework
+/tools/testing/**                                               @angular/dev-infra-framework
+/tools/ts-api-guardian/**                                       @angular/dev-infra-framework
+/tools/tslint/**                                                @angular/dev-infra-framework
+/tools/validate-commit-message/**                               @angular/dev-infra-framework
+/tools/yarn/**                                                  @angular/dev-infra-framework
+/tools/*                                                        @angular/dev-infra-framework
+*.bzl                                                           @angular/dev-infra-framework
 
 
 
