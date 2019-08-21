@@ -57,13 +57,13 @@ This method is for development and testing only, and is not a supported or secur
 
 Angular CLI introduced `deploy` command in version 8.3.0. By default, this command will execute the `deploy` [CLI builder](https://angular.io/guide/cli-builder) associated with your project. Currently, there are third-party builders which implement deployment capabilities to different cloud platforms:
 
-| Package                                                              | Description                                                                |
-|----------------------------------------------------------------------|----------------------------------------------------------------------------|
-| [`@angular/fire`](https://npmjs.org/package/@angular/fire)           | Deployment to [Firebase hosting](https://firebase.google.com/docs/hosting) |
-| [`@azure/ng-deploy`](https://npmjs.org/package/@angular/fire)        | Deployment to [Azure](https://azure.microsoft.com/en-us/)                  |
-| [`@zeit/ng-deploy`](https://npmjs.org/package/@angular/fire)         | Deployment to [Now](https://zeit.co/now)                                   |
-| [`@netlify-builder/deploy`](https://npmjs.org/package/@angular/fire) | Deployment to [Netlify](https://www.netlify.com/)                          |
-| [`angular-cli-ghpages`](https://npmjs.org/package/@angular/fire)     | Deployment to [GitHub pages](https://pages.github.com/)                    |
+| Deployment to                                                 | Package                                                                        |
+|---------------------------------------------------------------|--------------------------------------------------------------------------------|
+| [Firebase hosting](https://firebase.google.com/docs/hosting)  | [`@angular/fire`](https://npmjs.org/package/@angular/fire)                     |
+| [Azure](https://azure.microsoft.com/en-us/)                   | [`@azure/ng-deploy`](https://npmjs.org/package/@azure/ng-deploy)               |
+| [Now](https://zeit.co/now)                                    | [`@zeit/ng-deploy`](https://npmjs.org/package/@zeit/ng-deploy)                 |
+| [Netlify](https://www.netlify.com/)                           | [`@netlify-builder/deploy`](https://npmjs.org/package/@netlify-builder/deploy) |
+| [GitHub pages](https://pages.github.com/)                     | [`angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages)         |
 
 You can read how to use the listed deployment builders following the links associated with each package name above.
 
