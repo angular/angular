@@ -27,7 +27,6 @@
 * **ivy:** support selector-less directive as base classes in Ivy ([#32125](https://github.com/angular/angular/issues/32125)) ([cfed0c0](https://github.com/angular/angular/commit/cfed0c0)), closes [#31379](https://github.com/angular/angular/issues/31379)
 * **ivy:** make the Ivy compiler the default for ngc ([#32219](https://github.com/angular/angular/issues/32219)) ([ec4381d](https://github.com/angular/angular/commit/ec4381d))
 * **ivy:** convert all ngtsc diagnostics to ts.Diagnostics ([#31952](https://github.com/angular/angular/issues/31952)) ([0287b23](https://github.com/angular/angular/commit/0287b23))
-* **ivy:** make Hammer support tree-shakable ([#32203](https://github.com/angular/angular/issues/32203)) ([de8ebbd](https://github.com/angular/angular/commit/de8ebbd))
 
 
 ### Performance Improvements
@@ -43,6 +42,11 @@
 * **ivy:** read selected index only when need in prop bindings ([#32212](https://github.com/angular/angular/issues/32212)) ([53f33c1](https://github.com/angular/angular/commit/53f33c1))
 * **ivy:** split hooks processing into init and check phases ([#32131](https://github.com/angular/angular/issues/32131)) ([1062960](https://github.com/angular/angular/commit/1062960))
 * **ivy:** split view processing into render (create) and refresh (update) pass ([#32020](https://github.com/angular/angular/issues/32020)) ([b9dfe66](https://github.com/angular/angular/commit/b9dfe66))
+
+
+### BREAKING CHANGES
+
+* **ivy:** make Hammer support tree-shakable. Previously, in Ivy applications, Hammer providers were included by default. With this commit, apps that want Hammer support must import `HammerModule`in their root module. ([#32203](https://github.com/angular/angular/issues/32203)) ([de8ebbd](https://github.com/angular/angular/commit/de8ebbd))
 
 
 
