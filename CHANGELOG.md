@@ -1,3 +1,13 @@
+<a name="8.2.3"></a>
+## [8.2.3](https://github.com/angular/angular/compare/8.2.2...8.2.3) (2019-08-21)
+
+
+### Bug Fixes
+
+* **bazel:** pin `[@microsoft](https://github.com/microsoft)/api-extractor` ([#32187](https://github.com/angular/angular/issues/32187)) ([a7b9478](https://github.com/angular/angular/commit/a7b9478))
+
+
+
 <a name="9.0.0-next.2"></a>
 # [9.0.0-next.2](https://github.com/angular/angular/compare/9.0.0-next.1...9.0.0-next.2) (2019-08-12)
 
