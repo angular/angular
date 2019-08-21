@@ -2967,6 +2967,35 @@ runInEachFileSystem(os => {
         expect(env.getContents('./public-api/index.js')).toContain(`export * from '../test';`);
       });
 
+      it('should not throw if "flatModuleOutFile" is set to null', () => {
+        env.tsconfig({
+          'flatModuleOutFile': null,
+        });
+
+        env.write('test.ts', `export const SOME_EXPORT = 'some-export'`);
+        // The "driveMain" method automatically ensures that there is no
+        // exception and that the build succeeded.
+        env.driveMain();
+      });
+
+      it('should not throw or produce flat module index if "flatModuleOutFile" is set to ' +
+             'empty string',
+         () => {
+           env.tsconfig({
+             'flatModuleOutFile': '',
+           });
+
+           env.write('test.ts', `export const SOME_EXPORT = 'some-export'`);
+           // The "driveMain" method automatically ensures that there is no
+           // exception and that the build succeeded.
+           env.driveMain();
+           // Previously ngtsc incorrectly tried generating a flat module index
+           // file if the "flatModuleOutFile" was set to an empty string. ngtsc
+           // just wrote the bundle file with an empty filename (just extension).
+           env.assertDoesNotExist('.js');
+           env.assertDoesNotExist('.d.ts');
+         });
+
       it('should report an error when a flat module index is requested but no entrypoint can be determined',
          () => {
            env.tsconfig({'flatModuleOutFile': 'flat.js'});
