@@ -2,7 +2,7 @@
   #button
   mat-icon-button
   type="button"
-  aria-haspopup="dialog"
+  [attr.aria-haspopup]="datepicker ? 'dialog' : null"
   [attr.aria-label]="_intl.openCalendarLabel"
   [attr.tabindex]="disabled ? -1 : tabIndex"
   [disabled]="disabled"

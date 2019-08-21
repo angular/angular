@@ -1539,12 +1539,35 @@ describe('MatDatepicker', () => {
     });
   });
 
-  describe('datepicker toggle without a datepicker', () => {
+  describe('datepicker directives without a datepicker', () => {
     it('should not throw on init if toggle does not have a datepicker', () => {
       expect(() => {
         const fixture = createComponent(DatepickerToggleWithNoDatepicker, [MatNativeDateModule]);
         fixture.detectChanges();
       }).not.toThrow();
+    });
+
+    it('should not set aria-haspopup if toggle does not have a datepicker', () => {
+      const fixture = createComponent(DatepickerToggleWithNoDatepicker, [MatNativeDateModule]);
+      fixture.detectChanges();
+      const toggle = fixture.nativeElement.querySelector('.mat-datepicker-toggle button');
+
+      expect(toggle.hasAttribute('aria-haspopup')).toBe(false);
+    });
+
+    it('should not throw on init if input does not have a datepicker', () => {
+      expect(() => {
+        const fixture = createComponent(DatepickerInputWithNoDatepicker, [MatNativeDateModule]);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
+    it('should not set aria-haspopup if input does not have a datepicker', () => {
+      const fixture = createComponent(DatepickerInputWithNoDatepicker, [MatNativeDateModule]);
+      fixture.detectChanges();
+      const toggle = fixture.nativeElement.querySelector('input');
+
+      expect(toggle.hasAttribute('aria-haspopup')).toBe(false);
     });
   });
 
@@ -1991,3 +2014,10 @@ class DatepickerWithTabindexOnToggle {}
   `,
 })
 class DatepickerToggleWithNoDatepicker {}
+
+@Component({
+  template: `
+    <input [matDatepicker]="d">
+  `,
+})
+class DatepickerInputWithNoDatepicker {}
