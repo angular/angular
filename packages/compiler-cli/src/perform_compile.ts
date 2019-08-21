@@ -120,10 +120,11 @@ export function calcProjectFileAndBasePath(project: string):
 export function createNgCompilerOptions(
     basePath: string, config: any, tsOptions: ts.CompilerOptions): api.CompilerOptions {
   // enableIvy `ngtsc` is an alias for `true`.
-  if (config.angularCompilerOptions && config.angularCompilerOptions.enableIvy === 'ngtsc') {
-    config.angularCompilerOptions.enableIvy = true;
-  }
-  return {...tsOptions, ...config.angularCompilerOptions, genDir: basePath, basePath};
+  const {angularCompilerOptions = {}} = config;
+  const {enableIvy} = angularCompilerOptions;
+  angularCompilerOptions.enableIvy = enableIvy !== false && enableIvy !== 'tsc';
+
+  return {...tsOptions, ...angularCompilerOptions, genDir: basePath, basePath};
 }
 
 export function readConfiguration(
