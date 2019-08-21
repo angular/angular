@@ -82,7 +82,7 @@ describe('diagnostics', () => {
       const {messageText, start, length} = diagnostics[0];
       expect(messageText)
           .toBe(
-              'Identifier \'$event\' is not defined. The component declaration, template variable declarations, and element references do not contain such a member');
+              `Identifier '$event' is not defined. The component declaration, template variable declarations, and element references do not contain such a member`);
       const keyword = '$event';
       expect(start).toBe(content.lastIndexOf(keyword));
       expect(length).toBe(keyword.length);
@@ -109,7 +109,7 @@ describe('diagnostics', () => {
     const {messageText, start, length} = diagnostics[0];
     expect(messageText)
         .toBe(
-            'Component \'MyComponent\' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration.');
+            `Component 'MyComponent' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration.`);
     const content = mockHost.getFileContent(fileName) !;
     const keyword = '@Component';
     expect(start).toBe(content.lastIndexOf(keyword) + 1);  // exclude leading '@'
@@ -175,7 +175,7 @@ describe('diagnostics', () => {
     expect(length).toBe(keyword.length);
     // messageText is a three-part chain
     const firstPart = messageText as ts.DiagnosticMessageChain;
-    expect(firstPart.messageText).toBe('Error during template compile of \'AppComponent\'');
+    expect(firstPart.messageText).toBe(`Error during template compile of 'AppComponent'`);
     const secondPart = firstPart.next !;
     expect(secondPart.messageText).toBe('Function expressions are not supported in decorators');
     const thirdPart = secondPart.next !;
@@ -474,6 +474,32 @@ describe('diagnostics', () => {
         .toBe(
             `Module '"../node_modules/@angular/core/core"' has no exported member 'OpaqueToken'.`);
   });
+
+  // https://github.com/angular/vscode-ng-language-service/issues/235
+  // There is no easy fix for this issue currently due to the way template
+  // tokenization is done. In the example below, the whole string
+  // `\r\n{{line0}}\r\n{{line1}}\r\n{{line2}}` is tokenized as a whole, and then
+  // CR characters are stripped from it. Source span information is lost in the
+  // process. For more discussion, see the link above.
+  /*
+  it('should work correctly with CRLF endings', () => {
+    const fileName = '/app/test.ng';
+    const content = mockHost.override(fileName,
+  '\r\n<div>\r\n{{line0}}\r\n{{line1}}\r\n{{line2}}\r\n</div>');
+    const ngDiags = ngLS.getDiagnostics(fileName);
+    expect(ngDiags.length).toBe(3);
+    for (let i = 0; i < 3; ++i) {
+      const {messageText, start, length} = ngDiags[i];
+      expect(messageText)
+          .toBe(
+              `Identifier 'line${i}' is not defined. The component declaration, template variable
+  declarations, and element references do not contain such a member`);
+      // Assert that the span is actually highlight the bounded text. The span
+      // would be off if CRLF endings are not handled properly.
+      expect(content.substring(start !, start ! + length !)).toBe(`line${i}`);
+    }
+  });
+  */
 
   function addCode(code: string) {
     const fileName = '/app/app.component.ts';
