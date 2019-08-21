@@ -748,6 +748,23 @@ describe('FlexibleConnectedPositionStrategy', () => {
         expect(Math.floor(overlayRect.left)).toBe(50);
       });
 
+      it('should be able to position relative to a point with width and height', () => {
+        positionStrategy
+          .setOrigin({x: 100, y: 200, width: 100, height: 50})
+          .withPositions([{
+            originX: 'end',
+            originY: 'bottom',
+            overlayX: 'end',
+            overlayY: 'top'
+          }]);
+
+        attachOverlay({positionStrategy});
+
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+        expect(Math.floor(overlayRect.top)).toBe(250);
+        expect(Math.floor(overlayRect.right)).toBe(200);
+      });
+
     });
 
     it('should account for the `offsetX` pushing the overlay out of the screen', () => {

@@ -128,6 +128,11 @@ export declare class FlexibleConnectedPositionStrategy implements PositionStrate
     withViewportMargin(margin: number): this;
 }
 
+export declare type FlexibleConnectedPositionStrategyOrigin = ElementRef | HTMLElement | Point & {
+    width?: number;
+    height?: number;
+};
+
 export declare class FullscreenOverlayContainer extends OverlayContainer implements OnDestroy {
     constructor(_document: any);
     protected _createContainer(): void;
