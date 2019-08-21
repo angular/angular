@@ -257,21 +257,6 @@ jobs:
 
     - run: ./scripts/circleci/run-saucelabs-tests.sh
 
-  # -----------------------------------------------------------------------------------------
-  # Job that builds the dev-app with AOT. In order to speed up this job, the release output
-  # from the workspace storage will be attached to this job.
-  # -----------------------------------------------------------------------------------------
-  build_devapp_aot:
-    <<: *job_defaults
-    steps:
-      - *checkout_code
-      - *restore_cache
-      - *yarn_download
-      - *yarn_install
-      - *attach_release_output
-
-      - run: yarn gulp ci:aot
-
   # -------------------------------------------------------------------------
   # Job that pre-render's the universal app with `@angular/platform-server`.
   # This verifies that Angular Material can be rendered within Node.
@@ -548,10 +533,6 @@ workflows:
     jobs:
       - build_release_packages:
           filters: *ignore_presubmit_branch_filter
-      - build_devapp_aot:
-          filters: *ignore_presubmit_branch_filter
-          requires:
-            - build_release_packages
       - publish_snapshots:
           filters: *publish_branches_filter
           requires:

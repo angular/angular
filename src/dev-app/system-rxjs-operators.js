@@ -13,13 +13,8 @@
 // that we re-export all operators from the UMD module. This is a small trade-off for not loading
 // all rxjs files individually.
 
-declare const define: {
-  (deps: string[], factory: (...deps: any[]) => void): void;
-  amd: boolean;
-};
-
 if (typeof define === 'function' && define.amd) {
-  define(['exports', 'rxjs'], (exports: any, rxjs: any) => {
+  define(['exports', 'rxjs'], (exports, rxjs) => {
     // Re-export all operators in this AMD module.
     Object.assign(exports, rxjs.operators);
   });

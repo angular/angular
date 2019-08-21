@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
 load("//:packages.bzl", "CDK_EXPERIMENTAL_TARGETS", "CDK_TARGETS", "GOOGLE_MAPS_TARGETS", "MATERIAL_EXPERIMENTAL_SCSS_LIBS", "MATERIAL_EXPERIMENTAL_TARGETS", "MATERIAL_TARGETS")
 load("//tools:defaults.bzl", "ng_module")
 load("//tools:sass_generate_binaries.bzl", "sass_generate_binaries")
@@ -27,7 +28,10 @@ ng_module(
             "system-rxjs-operators.ts",
         ],
     ),
-    assets = glob(["**/*.html"]) + [
+    assets = glob(
+        ["**/*.html"],
+        exclude = ["index.html"],
+    ) + [
         ":dev_app_scss",
         ":theme",
     ],
@@ -62,4 +66,59 @@ sass_binary(
     deps = [
         "//src/material/core:all_themes",
     ] + MATERIAL_EXPERIMENTAL_SCSS_LIBS,
+)
+
+ts_devserver(
+    name = "devserver",
+    additional_root_paths = [
+        "npm/node_modules",
+    ],
+    port = 4200,
+    static_files = [
+        ":theme",
+        "@npm//:node_modules/@material/animation/dist/mdc.animation.js",
+        "@npm//:node_modules/@material/auto-init/dist/mdc.autoInit.js",
+        "@npm//:node_modules/@material/base/dist/mdc.base.js",
+        "@npm//:node_modules/@material/checkbox/dist/mdc.checkbox.js",
+        "@npm//:node_modules/@material/chips/dist/mdc.chips.js",
+        "@npm//:node_modules/@material/dialog/dist/mdc.dialog.js",
+        "@npm//:node_modules/@material/dom/dist/mdc.dom.js",
+        "@npm//:node_modules/@material/drawer/dist/mdc.drawer.js",
+        "@npm//:node_modules/@material/floating-label/dist/mdc.floatingLabel.js",
+        "@npm//:node_modules/@material/form-field/dist/mdc.formField.js",
+        "@npm//:node_modules/@material/grid-list/dist/mdc.gridList.js",
+        "@npm//:node_modules/@material/icon-button/dist/mdc.iconButton.js",
+        "@npm//:node_modules/@material/line-ripple/dist/mdc.lineRipple.js",
+        "@npm//:node_modules/@material/linear-progress/dist/mdc.linearProgress.js",
+        "@npm//:node_modules/@material/list/dist/mdc.list.js",
+        "@npm//:node_modules/@material/menu-surface/dist/mdc.menuSurface.js",
+        "@npm//:node_modules/@material/menu/dist/mdc.menu.js",
+        "@npm//:node_modules/@material/notched-outline/dist/mdc.notchedOutline.js",
+        "@npm//:node_modules/@material/radio/dist/mdc.radio.js",
+        "@npm//:node_modules/@material/ripple/dist/mdc.ripple.js",
+        "@npm//:node_modules/@material/select/dist/mdc.select.js",
+        "@npm//:node_modules/@material/slider/dist/mdc.slider.js",
+        "@npm//:node_modules/@material/snackbar/dist/mdc.snackbar.js",
+        "@npm//:node_modules/@material/switch/dist/mdc.switch.js",
+        "@npm//:node_modules/@material/tab-bar/dist/mdc.tabBar.js",
+        "@npm//:node_modules/@material/tab-indicator/dist/mdc.tabIndicator.js",
+        "@npm//:node_modules/@material/tab-scroller/dist/mdc.tabScroller.js",
+        "@npm//:node_modules/@material/tab/dist/mdc.tab.js",
+        "@npm//:node_modules/@material/textfield/dist/mdc.textfield.js",
+        "@npm//:node_modules/@material/top-app-bar/dist/mdc.topAppBar.js",
+        "@npm//:node_modules/@webcomponents/custom-elements/custom-elements.min.js",
+        "@npm//:node_modules/core-js/client/core.js",
+        "@npm//:node_modules/hammerjs/hammer.min.js",
+        "@npm//:node_modules/moment/min/moment-with-locales.min.js",
+        "@npm//:node_modules/rxjs/bundles/rxjs.umd.min.js",
+        "@npm//:node_modules/systemjs/dist/system.js",
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//material-components-web",
+        "index.html",
+        "system-config.js",
+        "system-rxjs-operators.js",
+    ],
+    deps = [
+        ":dev-app",
+    ],
 )

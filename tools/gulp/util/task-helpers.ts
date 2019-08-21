@@ -1,8 +1,6 @@
-import {BrowserSyncInstance, create as createBrowserSyncInstance} from 'browser-sync';
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
-import {buildConfig} from 'material2-build-tools';
 import * as path from 'path';
 
 // This import lacks type definitions.
@@ -10,12 +8,7 @@ const gulpClean = require('gulp-clean');
 
 // There are no type definitions available for these imports.
 const resolveBin = require('resolve-bin');
-const httpRewrite = require('http-rewrite-middleware');
 
-const {projectDir} = buildConfig;
-
-/** Currently active browsersync instance. */
-let activeBrowserSyncInstance: BrowserSyncInstance;
 
 /** If the string passed in is a glob, returns it, otherwise append '**\/*' to it. */
 function _globify(maybeGlob: string, suffix = '**/*') {
@@ -122,54 +115,4 @@ export function copyTask(srcGlobOrDir: string | string[], outRoot: string) {
 /** Delete files. */
 export function cleanTask(glob: string) {
   return () => gulp.src(glob, { read: false }).pipe(gulpClean(null));
-}
-
-/**
- * Create a task that serves a given directory in the project.
- * The server rewrites all node_module/ or dist/ requests to the correct directory.
- */
-export function serverTask(packagePath: string, rewrites?: {from: string, to: string}[]) {
-  // The http-rewrite-middleware only supports relative paths as rewrite destinations.
-  const relativePath = path.relative(projectDir, packagePath);
-  const defaultHttpRewrites = [
-    // Rewrite the node_modules/ and dist/ folder to the real paths. This is a trick to
-    // avoid that those folders will be rewritten to the specified package path.
-    { from: '^/node_modules/(.*)$', to: '/node_modules/$1' },
-    { from: '^/dist/(.*)$', to: '/dist/$1' },
-    // Rewrite every path that doesn't point to a specific file to the index.html file.
-    // This is necessary for Angular's routing using the HTML5 History API.
-    { from: '^/[^.]+$', to: `/${relativePath}/index.html`},
-    // Rewrite any path that didn't match a pattern before to the specified package path.
-    { from: '^(.*)$', to: `/${relativePath}/$1` },
-  ];
-
-  return () => {
-    if (activeBrowserSyncInstance) {
-      throw new Error('Cannot setup BrowserSync because there is already an instance running.');
-    }
-
-    activeBrowserSyncInstance = createBrowserSyncInstance();
-    activeBrowserSyncInstance.init({
-      server: projectDir,
-      port: 4200,
-      middleware: httpRewrite.getMiddleware(rewrites || defaultHttpRewrites),
-      notify: false,
-
-      // Options which are disabled by default. We don't want to enable ghostMode by default
-      // because it can throw-off change detection due to the event listeners syncing events
-      // between browsers. Also opening the browser is not always desired because in some cases
-      // developers just want to serve the app, and open the browser on a different device.
-      ghostMode: process.argv.includes('--ghostMode'),
-      open: process.argv.includes('--open'),
-    });
-  };
-}
-
-/** Gets the currently active browsersync instance */
-export function getActiveBrowserSyncInstance(): BrowserSyncInstance {
-  if (!activeBrowserSyncInstance) {
-    throw new Error('Cannot return Browsersync instance because there is no instance running.');
-  }
-
-  return activeBrowserSyncInstance;
 }
