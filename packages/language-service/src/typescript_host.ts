@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompileNgModuleMetadata, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
-import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import {AotSummaryResolver, CompileDirectiveSummary, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
+import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as ts from 'typescript';
 
-import {AstResult, TemplateInfo} from './common';
+import {AstResult, isAstResult} from './common';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {ExternalTemplate, InlineTemplate, getClassDeclFromTemplateNode} from './template';
 import {Declaration, DeclarationError, Diagnostic, DiagnosticKind, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
 import {findTightestNode, getDirectiveClassLike} from './utils';
+
 
 /**
  * Create a `LanguageServiceHost`
@@ -385,7 +386,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
    * @param fileName TS or HTML file
    * @param position Position of the template in the TS file, otherwise ignored.
    */
-  getTemplateAstAtPosition(fileName: string, position: number): TemplateInfo|undefined {
+  getTemplateAstAtPosition(fileName: string, position: number): AstResult|undefined {
     let template: TemplateSource|undefined;
     if (fileName.endsWith('.ts')) {
       const sourceFile = this.getSourceFile(fileName);
@@ -405,66 +406,94 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       return;
     }
     const astResult = this.getTemplateAst(template);
-    if (astResult && astResult.htmlAst && astResult.templateAst && astResult.directive &&
-        astResult.directives && astResult.pipes && astResult.expressionParser) {
-      return {
-        position,
-        fileName,
-        template,
-        htmlAst: astResult.htmlAst,
-        directive: astResult.directive,
-        directives: astResult.directives,
-        pipes: astResult.pipes,
-        templateAst: astResult.templateAst,
-        expressionParser: astResult.expressionParser
-      };
+    if (!isAstResult(astResult)) {
+      return;
     }
+    return astResult;
   }
 
-  getTemplateAst(template: TemplateSource): AstResult {
+  /**
+   * Find the NgModule which the directive associated with the `classSymbol`
+   * belongs to, then return its schema and transitive directives and pipes.
+   * @param classSymbol Angular Symbol that defines a directive
+   */
+  private getModuleMetadataForDirective(classSymbol: StaticSymbol) {
+    const result = {
+      directives: [] as CompileDirectiveSummary[],
+      pipes: [] as CompilePipeSummary[],
+      schemas: [] as SchemaMetadata[],
+    };
+    // First find which NgModule the directive belongs to.
+    const ngModule = this.analyzedModules.ngModuleByPipeOrDirective.get(classSymbol) ||
+        findSuitableDefaultModule(this.analyzedModules);
+    if (!ngModule) {
+      return result;
+    }
+    // Then gather all transitive directives and pipes.
+    const {directives, pipes} = ngModule.transitiveModule;
+    for (const directive of directives) {
+      const data = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference);
+      if (data) {
+        result.directives.push(data.metadata.toSummary());
+      }
+    }
+    for (const pipe of pipes) {
+      const metadata = this.resolver.getOrLoadPipeMetadata(pipe.reference);
+      result.pipes.push(metadata.toSummary());
+    }
+    result.schemas.push(...ngModule.schemas);
+    return result;
+  }
+
+  /**
+   * Parse the `template` and return its AST if there's no error. Otherwise
+   * return a Diagnostic message.
+   * @param template template to be parsed
+   */
+  getTemplateAst(template: TemplateSource): AstResult|Diagnostic {
+    const {type: classSymbol, fileName} = template;
     try {
-      const resolvedMetadata = this.resolver.getNonNormalizedDirectiveMetadata(template.type);
-      const metadata = resolvedMetadata && resolvedMetadata.metadata;
-      if (!metadata) {
-        return {};
+      const data = this.resolver.getNonNormalizedDirectiveMetadata(classSymbol);
+      if (!data) {
+        return {
+          kind: DiagnosticKind.Error,
+          message: `No metadata found for '${classSymbol.name}' in ${fileName}.`,
+          span: template.span,
+        };
       }
-      const rawHtmlParser = new HtmlParser();
-      const htmlParser = new I18NHtmlParser(rawHtmlParser);
+      const htmlParser = new I18NHtmlParser(new HtmlParser());
       const expressionParser = new Parser(new Lexer());
-      const config = new CompilerConfig();
       const parser = new TemplateParser(
-          config, this.reflector, expressionParser, new DomElementSchemaRegistry(), htmlParser,
-          null !, []);
-      const htmlResult = htmlParser.parse(template.source, '', {tokenizeExpansionForms: true});
-      const errors: Diagnostic[]|undefined = undefined;
-      const ngModule = this.analyzedModules.ngModuleByPipeOrDirective.get(template.type) ||
-          // Reported by the the declaration diagnostics.
-          findSuitableDefaultModule(this.analyzedModules);
-      if (!ngModule) {
-        return {};
+          new CompilerConfig(), this.reflector, expressionParser, new DomElementSchemaRegistry(),
+          htmlParser,
+          null !,  // console
+          []       // tranforms
+          );
+      const htmlResult = htmlParser.parse(template.source, fileName, {
+        tokenizeExpansionForms: true,
+      });
+      const {directives, pipes, schemas} = this.getModuleMetadataForDirective(classSymbol);
+      const parseResult =
+          parser.tryParseHtml(htmlResult, data.metadata, directives, pipes, schemas);
+      if (!parseResult.templateAst) {
+        return {
+          kind: DiagnosticKind.Error,
+          message: `Failed to parse template for '${classSymbol.name}' in ${fileName}`,
+          span: template.span,
+        };
       }
-      const directives = ngModule.transitiveModule.directives
-                             .map(d => this.resolver.getNonNormalizedDirectiveMetadata(d.reference))
-                             .filter(d => d)
-                             .map(d => d !.metadata.toSummary());
-      const pipes = ngModule.transitiveModule.pipes.map(
-          p => this.resolver.getOrLoadPipeMetadata(p.reference).toSummary());
-      const schemas = ngModule.schemas;
-      const parseResult = parser.tryParseHtml(htmlResult, metadata, directives, pipes, schemas);
       return {
         htmlAst: htmlResult.rootNodes,
         templateAst: parseResult.templateAst,
-        directive: metadata, directives, pipes,
-        parseErrors: parseResult.errors, expressionParser, errors
+        directive: data.metadata, directives, pipes,
+        parseErrors: parseResult.errors, expressionParser, template,
       };
     } catch (e) {
-      const span = e.fileName === template.fileName && template.query.getSpanAt(e.line, e.column) ||
-          template.span;
       return {
-        errors: [{
-          kind: DiagnosticKind.Error,
-          message: e.message, span,
-        }],
+        kind: DiagnosticKind.Error,
+        message: e.message,
+        span:
+            e.fileName === fileName && template.query.getSpanAt(e.line, e.column) || template.span,
       };
     }
   }

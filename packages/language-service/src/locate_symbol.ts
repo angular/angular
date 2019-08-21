@@ -9,7 +9,7 @@
 import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
 import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
-import {TemplateInfo} from './common';
+import {AstResult} from './common';
 import {getExpressionSymbol} from './expressions';
 import {Definition, Span, Symbol} from './types';
 import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, inSpan, offsetSpan, spanOf} from './utils';
@@ -19,15 +19,19 @@ export interface SymbolInfo {
   span: Span;
 }
 
-export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
-  if (!info.position) return undefined;
-  const templatePosition = info.position - info.template.span.start;
+/**
+ * Traverse the template AST and locate the Symbol at the specified `position`.
+ * @param info Ast and Template Source
+ * @param position location to look for
+ */
+export function locateSymbol(info: AstResult, position: number): SymbolInfo|undefined {
+  const templatePosition = position - info.template.span.start;
   const path = findTemplateAstAt(info.templateAst, templatePosition);
   if (path.tail) {
     let symbol: Symbol|undefined = undefined;
     let span: Span|undefined = undefined;
     const attributeValueSymbol = (ast: AST, inEvent: boolean = false): boolean => {
-      const attribute = findAttribute(info);
+      const attribute = findAttribute(info, position);
       if (attribute) {
         if (inSpan(templatePosition, spanOf(attribute.valueSpan))) {
           const dinfo = diagnosticInfoFromTemplateInfo(info);
@@ -113,17 +117,14 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
   }
 }
 
-function findAttribute(info: TemplateInfo): Attribute|undefined {
-  if (info.position) {
-    const templatePosition = info.position - info.template.span.start;
-    const path = findNode(info.htmlAst, templatePosition);
-    return path.first(Attribute);
-  }
+function findAttribute(info: AstResult, position: number): Attribute|undefined {
+  const templatePosition = position - info.template.span.start;
+  const path = findNode(info.htmlAst, templatePosition);
+  return path.first(Attribute);
 }
 
 function findInputBinding(
-    info: TemplateInfo, path: TemplateAstPath, binding: BoundDirectivePropertyAst): Symbol|
-    undefined {
+    info: AstResult, path: TemplateAstPath, binding: BoundDirectivePropertyAst): Symbol|undefined {
   const element = path.first(ElementAst);
   if (element) {
     for (const directive of element.directives) {
@@ -139,8 +140,8 @@ function findInputBinding(
   }
 }
 
-function findOutputBinding(
-    info: TemplateInfo, path: TemplateAstPath, binding: BoundEventAst): Symbol|undefined {
+function findOutputBinding(info: AstResult, path: TemplateAstPath, binding: BoundEventAst): Symbol|
+    undefined {
   const element = path.first(ElementAst);
   if (element) {
     for (const directive of element.directives) {

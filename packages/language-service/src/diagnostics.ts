@@ -16,41 +16,28 @@ import {offsetSpan, spanOf} from './utils';
 
 /**
  * Return diagnostic information for the parsed AST of the template.
- * @param template source of the template and class information
  * @param ast contains HTML and template AST
  */
-export function getTemplateDiagnostics(
-    template: ng.TemplateSource, ast: AstResult): ng.Diagnostic[] {
+export function getTemplateDiagnostics(ast: AstResult): ng.Diagnostic[] {
   const results: ng.Diagnostic[] = [];
-
-  if (ast.parseErrors && ast.parseErrors.length) {
-    results.push(...ast.parseErrors.map(e => {
+  const {parseErrors, templateAst, htmlAst, template} = ast;
+  if (parseErrors) {
+    results.push(...parseErrors.map(e => {
       return {
         kind: ng.DiagnosticKind.Error,
         span: offsetSpan(spanOf(e.span), template.span.start),
         message: e.msg,
       };
     }));
-  } else if (ast.templateAst && ast.htmlAst) {
-    const expressionDiagnostics = getTemplateExpressionDiagnostics({
-      templateAst: ast.templateAst,
-      htmlAst: ast.htmlAst,
-      offset: template.span.start,
-      query: template.query,
-      members: template.members,
-    });
-    results.push(...expressionDiagnostics);
   }
-  if (ast.errors) {
-    results.push(...ast.errors.map(e => {
-      return {
-        kind: e.kind,
-        span: e.span || template.span,
-        message: e.message,
-      };
-    }));
-  }
-
+  const expressionDiagnostics = getTemplateExpressionDiagnostics({
+    templateAst: templateAst,
+    htmlAst: htmlAst,
+    offset: template.span.start,
+    query: template.query,
+    members: template.members,
+  });
+  results.push(...expressionDiagnostics);
   return results;
 }
 
