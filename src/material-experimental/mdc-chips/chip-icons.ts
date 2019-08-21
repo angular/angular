@@ -35,12 +35,11 @@ import {Subject} from 'rxjs';
 })
 export class MatChipAvatar {
   constructor(private _changeDetectorRef: ChangeDetectorRef,
-              private _elementRef: ElementRef) {}
+              private _elementRef: ElementRef<HTMLElement>) {}
 
   /** Sets whether the given CSS class should be applied to the leading icon. */
   setClass(cssClass: string, active: boolean) {
-    const element = this._elementRef.nativeElement;
-    active ? element.addClass(cssClass) : element.removeClass(cssClass);
+    this._elementRef.nativeElement.classList.toggle(cssClass, active);
     this._changeDetectorRef.markForCheck();
   }
 }
@@ -58,6 +57,16 @@ export class MatChipAvatar {
   }
 })
 export class MatChipTrailingIcon {
+  constructor(public _elementRef: ElementRef) {}
+
+  focus() {
+    this._elementRef.nativeElement.focus();
+  }
+
+  /** Sets an attribute on the icon. */
+  setAttribute(name: string, value: string) {
+    this._elementRef.nativeElement.setAttribute(name, value);
+  }
 }
 
 /**
@@ -65,8 +74,8 @@ export class MatChipTrailingIcon {
  * @docs-private
  */
 class MatChipRemoveBase extends MatChipTrailingIcon {
-  constructor(public _elementRef: ElementRef) {
-    super();
+  constructor(_elementRef: ElementRef) {
+    super(_elementRef);
   }
 }
 

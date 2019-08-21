@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
@@ -247,20 +248,33 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
       // No-op. We call dispatchSelectionEvent ourselves in MatChipOption, because we want to
       // specify whether selection occurred via user input.
     },
+    notifyNavigation: () => {
+      // TODO: This is a new feature added by MDC; consider exposing this event to users in the
+      // future.
+    },
     notifyTrailingIconInteraction: () => this.removeIconInteraction.emit(this.id),
     notifyRemoval: () => this.removed.emit({chip: this}),
-    getComputedStyleValue: (propertyName) => {
-      return window.getComputedStyle(this._elementRef.nativeElement).getPropertyValue(propertyName);
-    },
+    getComputedStyleValue: propertyName =>
+        window.getComputedStyle(this._elementRef.nativeElement).getPropertyValue(propertyName),
     setStyleProperty: (propertyName: string, value: string) => {
       this._elementRef.nativeElement.style.setProperty(propertyName, value);
     },
-    hasLeadingIcon: () => { return !!this.leadingIcon; },
-    setAttr: (name: string, value: string) => {
+    hasLeadingIcon: () => !!this.leadingIcon,
+    hasTrailingAction: () => !!this.trailingIcon,
+    isRTL: () => !!this._dir && this._dir.value === 'rtl',
+    focusPrimaryAction: () => {
+      // Angular Material MDC chips fully manage focus. TODO: Managing focus and handling keyboard
+      // events was added by MDC after our implementation; consider consolidating.
+    },
+    focusTrailingAction: () => {},
+    setTrailingActionAttr: (attr, value) =>
+        this.trailingIcon && this.trailingIcon.setAttribute(attr, value),
+    setPrimaryActionAttr: (name: string, value: string) => {
       // MDC is currently using this method to set aria-checked on choice and filter chips,
       // which in the MDC templates have role="checkbox" and role="radio" respectively.
       // We have role="option" on those chips instead, so we do not want aria-checked.
-      if (name === 'aria-checked') {
+      // Since we also manage the tabindex ourselves, we don't allow MDC to set it.
+      if (name === 'aria-checked' || name === 'tabindex') {
         return;
       }
       this._elementRef.nativeElement.setAttribute(name, value);
@@ -268,7 +282,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     // The 2 functions below are used by the MDC ripple, which we aren't using,
     // so they will never be called
     getRootBoundingClientRect: () => this._elementRef.nativeElement.getBoundingClientRect(),
-    getCheckmarkBoundingClientRect: () => { return null; },
+    getCheckmarkBoundingClientRect: () => null,
  };
 
  constructor(
@@ -278,6 +292,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     protected _ngZone: NgZone,
     @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
     private _globalRippleOptions: RippleGlobalOptions | null,
+    @Optional() private _dir: Directionality,
     // @breaking-change 8.0.0 `animationMode` parameter to become required.
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(_elementRef);
