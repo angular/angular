@@ -131,12 +131,12 @@ var_8: &yarn_install
 var_9: &setup_circleci_bazel_config
   run:
     name: Setting up CircleCI bazel configuration
-    command: sudo cp .circleci/bazel.linux.rc /etc/bazel.bazelrc
+    command: sudo cp .circleci/bazel.linux.rc $HOME/.bazelrc
 
 var_9_win: &setup_circleci_bazel_config_win
   run:
     name: Setting up CircleCI bazel configuration
-    command: copy .circleci\bazel.windows.rc $env:ProgramData\bazel.bazelrc
+    command: copy .circleci\bazel.windows.rc $env:USERPROFILE\.bazelrc
 
 var_10: &restore_cache
   restore_cache:
