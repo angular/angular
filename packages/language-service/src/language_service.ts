@@ -7,6 +7,8 @@
  */
 
 import * as tss from 'typescript/lib/tsserverlibrary';
+
+import {isAstResult} from './common';
 import {getTemplateCompletions, ngCompletionToTsCompletionEntry} from './completions';
 import {getDefinitionAndBoundSpan} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic, uniqueBySpan} from './diagnostics';
@@ -36,8 +38,12 @@ class LanguageServiceImpl implements LanguageService {
     const results: Diagnostic[] = [];
     const templates = this.host.getTemplates(fileName);
     for (const template of templates) {
-      const ast = this.host.getTemplateAst(template);
-      results.push(...getTemplateDiagnostics(template, ast));
+      const astOrDiagnostic = this.host.getTemplateAst(template);
+      if (isAstResult(astOrDiagnostic)) {
+        results.push(...getTemplateDiagnostics(astOrDiagnostic));
+      } else {
+        results.push(astOrDiagnostic);
+      }
     }
     const declarations = this.host.getDeclarations(fileName);
     if (declarations && declarations.length) {
@@ -52,11 +58,11 @@ class LanguageServiceImpl implements LanguageService {
 
   getCompletionsAt(fileName: string, position: number): tss.CompletionInfo|undefined {
     this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
-    const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
-    if (!templateInfo) {
+    const ast = this.host.getTemplateAstAtPosition(fileName, position);
+    if (!ast) {
       return;
     }
-    const results = getTemplateCompletions(templateInfo);
+    const results = getTemplateCompletions(ast, position);
     if (!results || !results.length) {
       return;
     }
@@ -72,7 +78,7 @@ class LanguageServiceImpl implements LanguageService {
     this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
-      return getDefinitionAndBoundSpan(templateInfo);
+      return getDefinitionAndBoundSpan(templateInfo, position);
     }
   }
 
@@ -80,7 +86,7 @@ class LanguageServiceImpl implements LanguageService {
     this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
-      return getHover(templateInfo);
+      return getHover(templateInfo, position);
     }
   }
 }

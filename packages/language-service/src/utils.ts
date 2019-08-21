@@ -10,7 +10,7 @@ import {AstPath, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, Dire
 import {DiagnosticTemplateInfo} from '@angular/compiler-cli/src/language_services';
 import * as ts from 'typescript';
 
-import {SelectorInfo, TemplateInfo} from './common';
+import {AstResult, SelectorInfo} from './common';
 import {Span} from './types';
 
 export interface SpanHolder {
@@ -67,7 +67,7 @@ export function hasTemplateReference(type: CompileTypeMetadata): boolean {
   return false;
 }
 
-export function getSelectors(info: TemplateInfo): SelectorInfo {
+export function getSelectors(info: AstResult): SelectorInfo {
   const map = new Map<CssSelector, CompileDirectiveSummary>();
   const selectors: CssSelector[] = flatten(info.directives.map(directive => {
     const selectors: CssSelector[] = CssSelector.parse(directive.selector !);
@@ -113,9 +113,9 @@ export function isTypescriptVersion(low: string, high?: string) {
   return true;
 }
 
-export function diagnosticInfoFromTemplateInfo(info: TemplateInfo): DiagnosticTemplateInfo {
+export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTemplateInfo {
   return {
-    fileName: info.fileName,
+    fileName: info.template.fileName,
     offset: info.template.span.start,
     query: info.template.query,
     members: info.template.members,

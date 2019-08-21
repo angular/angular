@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript'; // used as value and is provided at runtime
-import {TemplateInfo} from './common';
+import {AstResult} from './common';
 import {locateSymbol} from './locate_symbol';
 import {Span} from './types';
 
@@ -23,9 +23,15 @@ function ngSpanToTsTextSpan(span: Span): ts.TextSpan {
   };
 }
 
-export function getDefinitionAndBoundSpan(info: TemplateInfo): ts.DefinitionInfoAndBoundSpan|
-    undefined {
-  const symbolInfo = locateSymbol(info);
+/**
+ * Traverse the template AST and look for the symbol located at `position`, then
+ * return its definition and span of bound text.
+ * @param info
+ * @param position
+ */
+export function getDefinitionAndBoundSpan(
+    info: AstResult, position: number): ts.DefinitionInfoAndBoundSpan|undefined {
+  const symbolInfo = locateSymbol(info, position);
   if (!symbolInfo) {
     return;
   }

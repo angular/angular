@@ -11,26 +11,14 @@ import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, C
 import {Diagnostic, TemplateSource} from './types';
 
 export interface AstResult {
-  htmlAst?: HtmlAst[];
-  templateAst?: TemplateAst[];
-  directive?: CompileDirectiveMetadata;
-  directives?: CompileDirectiveSummary[];
-  pipes?: CompilePipeSummary[];
-  parseErrors?: ParseError[];
-  expressionParser?: Parser;
-  errors?: Diagnostic[];
-}
-
-export interface TemplateInfo {
-  position?: number;
-  fileName?: string;
-  template: TemplateSource;
   htmlAst: HtmlAst[];
+  templateAst: TemplateAst[];
   directive: CompileDirectiveMetadata;
   directives: CompileDirectiveSummary[];
   pipes: CompilePipeSummary[];
-  templateAst: TemplateAst[];
+  parseErrors?: ParseError[];
   expressionParser: Parser;
+  template: TemplateSource;
 }
 
 export interface AttrInfo {
@@ -45,3 +33,7 @@ export type SelectorInfo = {
   selectors: CssSelector[],
   map: Map<CssSelector, CompileDirectiveSummary>
 };
+
+export function isAstResult(result: AstResult | Diagnostic): result is AstResult {
+  return result.hasOwnProperty('templateAst');
+}
