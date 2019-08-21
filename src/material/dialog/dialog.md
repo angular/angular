@@ -107,6 +107,15 @@ export class YourDialog {
 }
 ```
 
+Note that if you're using a template dialog (one that was opened with a `TemplateRef`), the data
+will be available implicitly in the template:
+
+```html
+<ng-template let-data>
+  Hello, {{data.name}}
+</ng-template>
+```
+
 <!-- example(dialog-data) -->
 
 ### Dialog content
