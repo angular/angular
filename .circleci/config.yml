@@ -388,19 +388,19 @@ jobs:
   snapshot_tests_local_browsers:
     docker: *docker-firefox-image
     resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
     - *checkout_code
     - *restore_cache
+    - *setup_bazel_ci_config
+    - *setup_bazel_remote_execution
     - *yarn_download
     - *yarn_install
+    - *setup_bazel_binary
 
     - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master
-      # We need to re-run yarn install in order to pull the Angular snapshot builds. Note
-      # that we can't use the "--frozen-lockfile" option since the setup snapshots script does
-      # not update the lock file.
-    - run: yarn install --non-interactive
-    - run: ./scripts/circleci/run-local-browser-tests.sh
-
+    - run: bazel test src/... --build_tag_filters=-e2e --test_tag_filters=-e2e
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel tests against Ivy with the current Angular version

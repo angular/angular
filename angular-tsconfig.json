@@ -2,6 +2,11 @@
 // This file is required because when using the Angular NPM packages and building
 // with AOT compilation, NGC needs the "ngsummary.json" files.
 {
+  "angularCompilerOptions": {
+    // In snapshot builds the compiler-cli will now use ngtsc by default. In
+    // order to be able to build the summary files, we need to use ngc.
+    "enableIvy": false
+  },
   "compilerOptions": {
     "module": "umd",
     "moduleResolution": "node",
