@@ -22,11 +22,11 @@
 /api/core/testing/index/TestBed-class.html	/api/core/testing/TestBed
 /api/core/testing/inject-function	/api/core/testing/inject
 /api/core/testing/inject-function.html	/api/core/testing/inject
-/api/http/Headers-class	/guide/deprecations#http
-/api/http/Headers-class.html	/guide/deprecations#http
-/api/http/HTTP_PROVIDERS-let	/guide/deprecations#http
-/api/http/testing/index/MockBackend-class	/guide/deprecations#http
-/api/http/testing/index/MockBackend-class.html	/guide/deprecations#http
+/api/http/Headers-class	 /api/common/http/HttpHeaders
+/api/http/Headers-class.html  /api/common/http/HttpHeaders
+/api/http/HTTP_PROVIDERS-let  /api/common/http/HttpClientModule
+/api/http/testing/index/MockBackend-class  /api/common/http/testing/HttpTestingController
+/api/http/testing/index/MockBackend-class.html	/api/common/http/testing/HttpTestingController
 /api/platform-browser-dynamic/testing/index/platformBrowserDynamicTesting-let.html	/api/platform-browser-dynamic/testing/platformBrowserDynamicTesting
 /api/platform-browser/AnimationDriver	/api/animations/browser/AnimationDriver
 /api/router/Route-class	/api/router/Route
