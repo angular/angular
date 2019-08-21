@@ -143,7 +143,7 @@ var_14: &notify_dev_infra_on_fail
 
 # Cache key for the Material unit tests job. **Note** when updating the SHA in the cache keys,
 # also update the SHA for the "MATERIAL_REPO_COMMIT" environment variable.
-var_15: &material_unit_tests_cache_key v4-angular-material-701302dc482d7e4b77990b24e3b5ab330bbf1aa5
+var_15: &material_unit_tests_cache_key v4-angular-material-18b9ef3f5529f0fa8f034944681486447af7b879
 var_16: &material_unit_tests_cache_key_short v4-angular-material
 
 version: 2
