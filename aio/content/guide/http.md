@@ -177,19 +177,6 @@ As you can see, the response object has a `body` property of the correct type.
 
 Apps can use the the `HttpClient` to make [JSONP](https://en.wikipedia.org/wiki/JSONP) requests across domains when the server doesn't support [CORS protocol](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
 
-JSONP treats the API we need to access as a JavaScript file.
-The browser doesn't check cross domain when executing JavaScript files, so by using the Angular JSONP, an app can access APIs without facing the cross-domain issue.
-
-Make a JSONP request by passing a callback function that tells the server to wrap the response in that function.
-
-<div alert="is-important>
-
-Use JSONP requests only with APIs that support JSONP, as the server needs to respond with the JSONP callback method.
-
-JSONP requests only work for GET requests. They don't work for PUT/POST/DELETE and so on.
-
-</div>
-
 Angular JSONP requests return an `Observable`.
 Follow the pattern for subscribing to observables and use the RxJS `map` operator to transform the response before using the [async pipe](api/common/AsyncPipe) to manage the results.
 
