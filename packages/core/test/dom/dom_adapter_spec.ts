@@ -54,7 +54,7 @@ import {el, stringifyElement} from '@angular/platform-browser/testing/src/browse
       expect(getDOM().isTextNode(t)).toBe(true);
       const d = getDOM().createElement('div');
       getDOM().appendChild(d, t);
-      expect(getDOM().getInnerHTML(d)).toEqual('hello');
+      expect(d.innerHTML).toEqual('hello');
     });
 
     it('should set className via the class attribute', () => {
