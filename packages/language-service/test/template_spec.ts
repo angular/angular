@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {getClassDeclFromTemplateNode} from '../src/template';
+import {getClassDeclFromDecoratorProperty} from '../src/template';
 import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
@@ -22,7 +22,10 @@ describe('getClassDeclFromTemplateNode', () => {
         class MyComponent {}`,
         ts.ScriptTarget.ES2015, true /* setParentNodes */);
     function visit(node: ts.Node): ts.ClassDeclaration|undefined {
-      return getClassDeclFromTemplateNode(node) || node.forEachChild(visit);
+      if (ts.isPropertyAssignment(node)) {
+        return getClassDeclFromDecoratorProperty(node);
+      }
+      return node.forEachChild(visit);
     }
     const classDecl = sourceFile.forEachChild(visit);
     expect(classDecl).toBeTruthy();
@@ -36,10 +39,9 @@ describe('getClassDeclFromTemplateNode', () => {
     const tsLS = ts.createLanguageService(host);
     const sourceFile = tsLS.getProgram() !.getSourceFile('/app/app.component.ts');
     expect(sourceFile).toBeTruthy();
-    const classDecl = sourceFile !.forEachChild(function visit(node): ts.Node | undefined {
-      const candidate = getClassDeclFromTemplateNode(node);
-      if (candidate) {
-        return candidate;
+    const classDecl = sourceFile !.forEachChild(function visit(node): ts.Node|undefined {
+      if (ts.isPropertyAssignment(node)) {
+        return getClassDeclFromDecoratorProperty(node);
       }
       return node.forEachChild(visit);
     });
