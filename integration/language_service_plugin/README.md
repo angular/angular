@@ -1,25 +1,21 @@
 # Angular Language Service Test
 
 This directory is an integration test for `@angular/language-service` to ensure
-that various versions of the server can be loaded in the supported versions of 
-TypeScript's language service.
+that the language service works correctly as a `tsserver` plugin.
 
-## New supported version of TypeScript
+To use the tests:
 
-To add a new supported version of TypeScript:
-
-1) Create directory in `typescripts` to hold the new version following the pattern
-   of the other versions.
-2) Add the directory name to the end of the `TYPESCRIPTS` variable in the 
-   `scripts/env.sh` file.
-3) Run `scripts/update_golden.sh` to generate the expected files.
-4) Verify the expected output is reasonable by comparing to a known good output
-   from a previous version.
+- Use `yarn install` to install all dependencies in this directory and in the Angular repo root
+    directory.
+- From the Angular repo root directory, build Angular in the `dist/packages-dist` folder with
+    `./scripts/build-packages-dist.sh`.
+- In this directory, run the tests with `yarn test`.
 
 ## Update golden files
 
-If the expected output needs to be updated run `scripts/update_golden.sh` to
-update the expected output of the server.
+If the expected output needs to be updated, run `yarn golden my-golden.json`, replacing
+`my-golden.json` with the golden file to be updated. Do not qualify the file with a directory path.
+See [generate.ts](./generate.ts) for more information.
 
 ## Adding a new fixture
 
@@ -30,7 +26,7 @@ I also hand modified the input to remove superfluous request.
 
 Once a new fixture is created:
 
-1) Add the fixture base name (without the .json) to `FIXTURES` in 
-   `scripts/env.sh`.
-2) Run `scripts/udpate_golden.sh` to produce the expected output files.
-3) Hand validate the expected output is reasonable.
+1) Add the fixture name to `goldens/`
+2) Run `yarn golden my-golden.json`, replacing `my-golden.json` with the new fixture name, to
+   produce the expected output files.
+3) Hand validate that the expected output is reasonable.
