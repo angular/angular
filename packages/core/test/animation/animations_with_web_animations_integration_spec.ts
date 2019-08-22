@@ -13,7 +13,6 @@ import {Component, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-import {ivyEnabled} from '@angular/private/testing';
 
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
