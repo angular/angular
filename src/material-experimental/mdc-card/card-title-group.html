@@ -1,0 +1,12 @@
+<div>
+  <ng-content
+      select="mat-card-title, mat-card-subtitle,
+      [mat-card-title], [mat-card-subtitle],
+      [matCardTitle], [matCardSubtitle]"></ng-content>
+</div>
+<ng-content select="[mat-card-image], [matCardImage],
+                    [mat-card-sm-image], [matCardImageSmall],
+                    [mat-card-md-image], [matCardImageMedium],
+                    [mat-card-lg-image], [matCardImageLarge],
+                    [mat-card-xl-image], [matCardImageXLarge]"></ng-content>
+<ng-content></ng-content>

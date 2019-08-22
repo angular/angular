@@ -8,12 +8,14 @@
 
 import {NgModule} from '@angular/core';
 import {MatCardModule} from '@angular/material-experimental/mdc-card';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {RouterModule} from '@angular/router';
 import {MdcCardDemo} from './mdc-card-demo';
 
 @NgModule({
   imports: [
     MatCardModule,
+    MatButtonModule,
     RouterModule.forChild([{path: '', component: MdcCardDemo}]),
   ],
   declarations: [MdcCardDemo],

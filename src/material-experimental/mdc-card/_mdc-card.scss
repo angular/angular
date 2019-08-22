@@ -1,13 +1,34 @@
+@import '@material/card/mixins';
+@import '@material/typography/mixins';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-card-theme-mdc($theme) {
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
   @include mat-using-mdc-theme($theme) {
-    // TODO: MDC theme styles here.
+    @include mdc-card-without-ripple($query: $mat-theme-styles-query);
+
+    // Card subtitles are an Angular Material construct (not MDC), so we explicitly set their
+    // color to secondary text here.
+    .mat-mdc-card-subtitle {
+      color: mat-color($foreground, secondary-text);
+    }
   }
 }
 
 @mixin mat-card-typography-mdc($config) {
   @include mat-using-mdc-typography($config) {
-    // TODO: MDC typography styles here.
+    @include mdc-card-without-ripple($query: $mat-typography-styles-query);
+
+    // Card subtitles and titles are an Angular Material construct (not MDC), so we explicitly
+    // set their typographic styles here.
+    .mat-mdc-card-title {
+      @include mdc-typography(headline6);
+    }
+
+    .mat-mdc-card-subtitle {
+      @include mdc-typography(subtitle2);
+    }
   }
 }

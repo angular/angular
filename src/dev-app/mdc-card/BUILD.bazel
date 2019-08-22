@@ -11,6 +11,7 @@ ng_module(
         ":mdc_card_demo_scss",
     ],
     deps = [
+        "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-card",
         "@npm//@angular/router",
     ],

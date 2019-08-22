@@ -1,1 +1,18 @@
-// TODO: copy in demo styles from existing mat-card demo.
+.demo-card-container {
+  display: flex;
+  flex-flow: column nowrap;
+
+  .mat-mdc-card {
+    margin: 0 16px 16px 0;
+    width: 350px;
+  }
+
+  // Use a gray background instead of real images for that "mock" feel.
+  img {
+    background-color: gray;
+  }
+
+  .mdc-button {
+    text-transform: uppercase;
+  }
+}

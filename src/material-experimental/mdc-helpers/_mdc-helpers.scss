@@ -114,7 +114,7 @@ $mat-typography-level-mappings: (
   $primary: mat-color(map-get($theme, primary));
   $accent: mat-color(map-get($theme, accent));
   $warn: mat-color(map-get($theme, warn));
-  $background: mat-color(map-get($theme, background), background);
+  $background-palette: map-get($theme, background);
 
   // Save the original values.
   $orig-mdc-theme-primary: $mdc-theme-primary;
@@ -135,8 +135,8 @@ $mat-typography-level-mappings: (
   $mdc-theme-secondary: $accent !global;
   $mdc-theme-on-secondary:
       if(mdc-theme-contrast-tone($mdc-theme-secondary) == 'dark', #000, #fff) !global;
-  $mdc-theme-background: $background !global;
-  $mdc-theme-surface: $background !global;
+  $mdc-theme-background: mat-color($background-palette, background) !global;
+  $mdc-theme-surface: mat-color($background-palette, card) !global;
   $mdc-theme-on-surface:
       if(mdc-theme-contrast-tone($mdc-theme-surface) == 'dark', #000, #fff) !global;
   $mdc-theme-error: $warn !global;

@@ -9,12 +9,45 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {MatCard} from './card';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardAvatar,
+  MatCardContent,
+  MatCardFooter,
+  MatCardHeader,
+  MatCardImage,
+  MatCardLgImage,
+  MatCardMdImage,
+  MatCardSmImage,
+  MatCardSubtitle,
+  MatCardTitle,
+  MatCardTitleGroup,
+  MatCardXlImage,
+} from './card';
+
+
+const CARD_DIRECTIVES = [
+  MatCard,
+  MatCardActions,
+  MatCardAvatar,
+  MatCardContent,
+  MatCardFooter,
+  MatCardHeader,
+  MatCardImage,
+  MatCardLgImage,
+  MatCardMdImage,
+  MatCardSmImage,
+  MatCardSubtitle,
+  MatCardTitle,
+  MatCardTitleGroup,
+  MatCardXlImage
+];
 
 @NgModule({
   imports: [MatCommonModule, CommonModule],
-  exports: [MatCard, MatCommonModule],
-  declarations: [MatCard],
+  exports: [CARD_DIRECTIVES, MatCommonModule],
+  declarations: CARD_DIRECTIVES,
 })
 export class MatCardModule {
 }
