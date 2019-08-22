@@ -1,8 +1,7 @@
 # Angular Language Service Test
 
 This directory is an integration test for `@angular/language-service` to ensure
-that various versions of the server can be loaded in the supported versions of
-TypeScript's language service.
+that the language service works correctly as a `tsserver` plugin.
 
 The tests can be run with `yarn test`. Before doing so, please install all dependencies in this
 directory and the Angular repo root directory with `yarn install`, and
