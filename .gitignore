@@ -21,6 +21,7 @@ pubspec.lock
 modules/.settings
 modules/.vscode
 .vimrc
+.nvimrc
 
 # Don't check in secret files
 *secret.js
