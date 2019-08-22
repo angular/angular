@@ -20,7 +20,12 @@ http_archive(
     name = "build_bazel_rules_nodejs",
     patch_args = ["-p1"],
     # Patch https://github.com/bazelbuild/rules_nodejs/pull/903
-    patches = ["//tools:rollup_bundle_commonjs_ignoreGlobal.patch"],
+    # Patch "terser" used by the rollup bazel rule to create proper
+    # source-maps: https://github.com/terser-js/terser/pull/342
+    patches = [
+        "//tools:rollup_bundle_commonjs_ignoreGlobal.patch",
+        "//tools:rollup_terser_incorrect_source_maps.patch",
+    ],
     sha256 = "da217044d24abd16667324626a33581f3eaccabf80985b2688d6a08ed2f864be",
     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.37.1/rules_nodejs-0.37.1.tar.gz"],
 )

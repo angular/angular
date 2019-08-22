@@ -1,0 +1,25 @@
+diff --git a/internal/rollup/postinstall-patches.js b/internal/rollup/postinstall-patches.js
+index 3e0720e..0f6f8e7 100644
+--- a/internal/rollup/postinstall-patches.js
++++ b/internal/rollup/postinstall-patches.js
+@@ -43,3 +43,20 @@ console.log(
+     '\n# patch: @buxlabs/amd-to-es6 to generate namespace imports instead of default imports');
+ sed('-i', 'ImportDefaultSpecifier', 'ImportNamespaceSpecifier',
+     'node_modules/@buxlabs/amd-to-es6/src/lib/getImportDeclaration.js');
++
++// Fix terser bug where generated code (e.g. from rollup) is incorrectly mapped to
++// source files. See: https://github.com/terser-js/terser/pull/342
++const terminateSegmentSnippet = `
++  var generatedPos = { line: gen_line + options.dest_line_diff, column: gen_col };
++  if (generatedPos.column !== 0) {
++    generator.addMapping({
++        generated: generatedPos,
++        original: null,
++        source: null,
++        name: null
++    });
++  }
++`
++sed('-i', /if \(info.source === null\) {/, `$& ${terminateSegmentSnippet}`,
++    'node_modules/terser/dist/bundle.js');
++sed('-i', 'process.env.TERSER_NO_BUNDLE', 'true', 'node_modules/terser/bin/uglifyjs');
