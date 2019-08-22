@@ -566,6 +566,16 @@ class ArrayConsole implements Console {
           ]);
         });
 
+        it('should parse mixed case bound attributes with dot in the attribute name', () => {
+          expect(humanizeTplAst(parse('<div [attr.someAttr.someAttrSuffix]="v">', []))).toEqual([
+            [ElementAst, 'div'],
+            [
+              BoundElementPropertyAst, PropertyBindingType.Attribute, 'someAttr.someAttrSuffix',
+              'v', null
+            ]
+          ]);
+        });
+
         it('should parse and dash case bound classes', () => {
           expect(humanizeTplAst(parse('<div [class.some-class]="v">', []))).toEqual([
             [ElementAst, 'div'],

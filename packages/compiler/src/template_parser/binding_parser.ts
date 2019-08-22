@@ -278,7 +278,7 @@ export class BindingParser {
     // Check for special cases (prefix style, attr, class)
     if (parts.length > 1) {
       if (parts[0] == ATTRIBUTE_PREFIX) {
-        boundPropertyName = parts[1];
+        boundPropertyName = parts.slice(1).join(PROPERTY_PARTS_SEPARATOR);
         if (!skipValidation) {
           this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, true);
         }
