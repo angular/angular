@@ -65,9 +65,7 @@ export class WorkerDomAdapter extends DomAdapter {
   createEvent(eventType: string): any { throw 'not implemented'; }
   preventDefault(evt: any) { throw 'not implemented'; }
   isPrevented(evt: any): boolean { throw 'not implemented'; }
-  getInnerHTML(el: any): string { throw 'not implemented'; }
   getTemplateContent(el: any): any { throw 'not implemented'; }
-  getOuterHTML(el: any): string { throw 'not implemented'; }
   nodeName(node: any): string { throw 'not implemented'; }
   nodeValue(node: any): string { throw 'not implemented'; }
   type(node: any): string { throw 'not implemented'; }

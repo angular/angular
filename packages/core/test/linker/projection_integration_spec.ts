@@ -574,7 +574,7 @@ describe('projection', () => {
     const main = TestBed.createComponent(MainComp);
 
     main.detectChanges();
-    expect(getDOM().getInnerHTML(main.nativeElement))
+    expect(main.nativeElement.innerHTML)
         .toEqual(
             '<cmp-a><cmp-b><cmp-d><i>cmp-d</i></cmp-d></cmp-b>' +
             '<cmp-c><b>cmp-c</b></cmp-c></cmp-a>');
@@ -586,7 +586,7 @@ describe('projection', () => {
     const main = TestBed.createComponent(MainComp);
 
     main.detectChanges();
-    expect(getDOM().getInnerHTML(main.nativeElement))
+    expect(main.nativeElement.innerHTML)
         .toEqual(
             '<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1>' +
             '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');

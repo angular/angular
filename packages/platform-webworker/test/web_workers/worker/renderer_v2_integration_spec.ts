@@ -137,7 +137,7 @@ let lastCreatedRenderer: Renderer2;
       fixture.componentInstance.ctxBoolProp = true;
       fixture.detectChanges();
       const el = getRenderElement(fixture.nativeElement);
-      expect(getDOM().getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
+      expect(el.innerHTML).toContain('"ng-reflect-ng-if": "true"');
     });
 
     it('should add and remove fragments', () => {

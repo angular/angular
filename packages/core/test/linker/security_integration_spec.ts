@@ -283,19 +283,19 @@ function declareTests(config?: {useJit: boolean}) {
         // Make sure binding harmless values works.
         ci.ctxProp = 'some <p>text</p>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('some <p>text</p>');
+        expect(e.innerHTML).toEqual('some <p>text</p>');
 
         ci.ctxProp = 'ha <script>evil()</script>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('ha ');
+        expect(e.innerHTML).toEqual('ha ');
 
         ci.ctxProp = 'also <img src="x" onerror="evil()"> evil';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('also <img src="x"> evil');
+        expect(e.innerHTML).toEqual('also <img src="x"> evil');
 
         ci.ctxProp = 'also <iframe srcdoc="evil"></iframe> evil';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('also  evil');
+        expect(e.innerHTML).toEqual('also  evil');
       });
     });
   });
