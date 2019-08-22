@@ -99,7 +99,7 @@ The following example shows how to make a simple progress bar accessible by usin
 
       // Sets the minimum and maximum values for the progressbar role.
        'aria-valuemin': '0',
-       'aria-valuemax': '0',
+       'aria-valuemax': '100',
 
        // Binding that updates the current value of the progressbar.
        '[attr.aria-valuenow]': 'value',
