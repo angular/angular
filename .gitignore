@@ -20,6 +20,7 @@ pubspec.lock
 *.swo
 modules/.settings
 modules/.vscode
+.vimrc
 
 # Don't check in secret files
 *secret.js
