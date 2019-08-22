@@ -141,4 +141,6 @@ export class ProtractorElement implements TestElement {
   async getProperty(name: string): Promise<any> {
     return browser.executeScript(`return arguments[0][arguments[1]]`, this.element, name);
   }
+
+  async forceStabilize(): Promise<void> {}
 }

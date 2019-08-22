@@ -90,10 +90,7 @@ export interface TestElement {
   /** Gets the text from the element. */
   text(): Promise<string>;
 
-  /**
-   * Gets the value for the given attribute from the element. If the attribute does not exist,
-   * falls back to reading the property.
-   */
+  /** Gets the value for the given attribute from the element. */
   getAttribute(name: string): Promise<string | null>;
 
   /** Checks whether the element has the given class. */
@@ -104,4 +101,11 @@ export interface TestElement {
 
   /** Gets the value of a property of an element. */
   getProperty(name: string): Promise<any>;
+
+  /**
+   * Flushes change detection and async tasks.
+   * In most cases it should not be necessary to call this. However, there may be some edge cases
+   * where it is needed to fully flush animation events.
+   */
+  forceStabilize(): Promise<void>;
 }
