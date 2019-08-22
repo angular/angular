@@ -258,26 +258,12 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return styleValue ? value == styleValue : value.length > 0;
   }
   tagName(element: any): string { return element.tagName; }
-  attributeMap(element: any): Map<string, string> {
-    const res = new Map<string, string>();
-    const elAttrs = element.attributes;
-    for (let i = 0; i < elAttrs.length; i++) {
-      const attrib = elAttrs.item(i);
-      res.set(attrib.name, attrib.value);
-    }
-    return res;
-  }
+
   hasAttribute(element: Element, attribute: string): boolean {
     return element.hasAttribute(attribute);
   }
-  hasAttributeNS(element: Element, ns: string, attribute: string): boolean {
-    return element.hasAttributeNS(ns, attribute);
-  }
   getAttribute(element: Element, attribute: string): string|null {
     return element.getAttribute(attribute);
-  }
-  getAttributeNS(element: Element, ns: string, name: string): string|null {
-    return element.getAttributeNS(ns, name);
   }
   setAttribute(element: Element, name: string, value: string) { element.setAttribute(name, value); }
   setAttributeNS(element: Element, ns: string, name: string, value: string) {
@@ -369,9 +355,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getUserAgent(): string { return window.navigator.userAgent; }
   setData(element: Element, name: string, value: string) {
     this.setAttribute(element, 'data-' + name, value);
-  }
-  getData(element: Element, name: string): string|null {
-    return this.getAttribute(element, 'data-' + name);
   }
   getComputedStyle(element: any): any { return getComputedStyle(element); }
   // TODO(tbosch): move this into a separate environment class once we have it

@@ -107,6 +107,16 @@ export function normalizeCSS(css: string): string {
       .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
 }
 
+function getAttributeMap(element: any): Map<string, string> {
+  const res = new Map<string, string>();
+  const elAttrs = element.attributes;
+  for (let i = 0; i < elAttrs.length; i++) {
+    const attrib = elAttrs.item(i);
+    res.set(attrib.name, attrib.value);
+  }
+  return res;
+}
+
 const _selfClosingTags = ['br', 'hr', 'input'];
 export function stringifyElement(el: any /** TODO #9100 */): string {
   let result = '';
@@ -117,7 +127,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     result += `<${tagName}`;
 
     // Attributes in an ordered way
-    const attributeMap = getDOM().attributeMap(el);
+    const attributeMap = getAttributeMap(el);
     const sortedKeys = Array.from(attributeMap.keys()).sort();
     for (const key of sortedKeys) {
       const lowerCaseKey = key.toLowerCase();

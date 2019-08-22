@@ -117,11 +117,8 @@ export class WorkerDomAdapter extends DomAdapter {
     throw 'not implemented';
   }
   tagName(element: any): string { throw 'not implemented'; }
-  attributeMap(element: any): Map<string, string> { throw 'not implemented'; }
   hasAttribute(element: any, attribute: string): boolean { throw 'not implemented'; }
-  hasAttributeNS(element: any, ns: string, attribute: string): boolean { throw 'not implemented'; }
   getAttribute(element: any, attribute: string): string { throw 'not implemented'; }
-  getAttributeNS(element: any, ns: string, attribute: string): string { throw 'not implemented'; }
   setAttribute(element: any, name: string, value: string) { throw 'not implemented'; }
   setAttributeNS(element: any, ns: string, name: string, value: string) { throw 'not implemented'; }
   removeAttribute(element: any, attribute: string) { throw 'not implemented'; }
@@ -154,7 +151,6 @@ export class WorkerDomAdapter extends DomAdapter {
   getUserAgent(): string { return 'Fake user agent'; }
   setData(element: any, name: string, value: string) { throw 'not implemented'; }
   getComputedStyle(element: any): any { throw 'not implemented'; }
-  getData(element: any, name: string): string { throw 'not implemented'; }
   performanceNow(): number { throw 'not implemented'; }
   getAnimationPrefix(): string { throw 'not implemented'; }
   getTransitionEnd(): string { throw 'not implemented'; }
