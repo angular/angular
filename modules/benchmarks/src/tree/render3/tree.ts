@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Component, NgModule, ɵdetectChanges} from '@angular/core';
 
-import {TreeNode, buildTree, emptyTree} from '../util';
+import {buildTree, emptyTree} from '../util';
 
 export function destroyDom(component: TreeComponent) {
   component.data = emptyTree;
@@ -34,8 +34,11 @@ export function detectChanges(component: TreeComponent) {
 @Component({
   selector: 'tree',
   inputs: ['data'],
-  template:
-      `<span [style.backgroundColor]="bgColor"> {{data.value}} </span><tree *ngIf='data.right != null' [data]='data.right'></tree><tree *ngIf='data.left != null' [data]='data.left'></tree>`
+  template: `
+    <span [style.backgroundColor]="bgColor"> {{data.value}} </span>
+    <tree *ngIf='data.right != null' [data]='data.right'></tree>
+    <tree *ngIf='data.left != null' [data]='data.left'></tree>
+  `,
 })
 export class TreeComponent {
   data: any = emptyTree;
