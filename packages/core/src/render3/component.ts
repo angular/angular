@@ -23,7 +23,7 @@ import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
-import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setActiveHostElement} from './state';
+import {getPreviousOrParentTNode, resetComponentState, selectView, setActiveHostElement} from './state';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, stringifyForError} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
@@ -133,7 +133,7 @@ export function renderComponent<T>(
       null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, undefined,
       opts.injector || null);
 
-  const oldView = enterView(rootView, null);
+  const oldView = selectView(rootView, null);
   let component: T;
 
   try {
@@ -149,7 +149,7 @@ export function renderComponent<T>(
     refreshView(rootView, rootTView, null, null);
 
   } finally {
-    leaveView(oldView);
+    selectView(oldView, null);
     if (rendererFactory.end) rendererFactory.end();
   }
 

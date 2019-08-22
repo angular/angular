@@ -207,9 +207,6 @@
     "name": "domRendererFactory3"
   },
   {
-    "name": "enterView"
-  },
-  {
     "name": "executeCheckHooks"
   },
   {
@@ -360,9 +357,6 @@
     "name": "isRootView"
   },
   {
-    "name": "leaveView"
-  },
-  {
     "name": "locateHostElement"
   },
   {
@@ -436,6 +430,9 @@
   },
   {
     "name": "selectInternal"
+  },
+  {
+    "name": "selectView"
   },
   {
     "name": "setActiveHostElement"

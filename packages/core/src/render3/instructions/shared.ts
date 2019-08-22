@@ -28,7 +28,7 @@ import {isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootVie
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, leaveView, namespaceHTMLInternal, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, namespaceHTMLInternal, selectView, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap} from '../styling_next/bindings';
 import {NO_CHANGE} from '../tokens';
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../util/attrs_utils';
@@ -312,7 +312,7 @@ export function allocExpando(view: LView, numSlotsToAlloc: number) {
  */
 export function renderView<T>(lView: LView, tView: TView, context: T): void {
   ngDevMode && assertEqual(isCreationMode(lView), true, 'Should be run in creation mode');
-  const oldView = enterView(lView, lView[T_HOST]);
+  const oldView = selectView(lView, lView[T_HOST]);
   try {
     const viewQuery = tView.viewQuery;
     if (viewQuery !== null) {
@@ -357,7 +357,7 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
 
   } finally {
     lView[FLAGS] &= ~LViewFlags.CreationMode;
-    leaveView(oldView);
+    selectView(oldView, null);
   }
 }
 
@@ -372,7 +372,7 @@ export function renderView<T>(lView: LView, tView: TView, context: T): void {
 export function refreshView<T>(
     lView: LView, tView: TView, templateFn: ComponentTemplate<{}>| null, context: T) {
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
-  const oldView = enterView(lView, lView[T_HOST]);
+  const oldView = selectView(lView, lView[T_HOST]);
   const flags = lView[FLAGS];
   try {
     resetPreOrderHookFlags(lView);
@@ -460,7 +460,7 @@ export function refreshView<T>(
 
   } finally {
     lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
-    leaveView(oldView);
+    selectView(oldView, null);
   }
 }
 

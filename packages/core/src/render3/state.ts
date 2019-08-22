@@ -400,18 +400,18 @@ export function setCurrentQueryIndex(value: number): void {
 }
 
 /**
- * Swap the current state with a new state.
+ * Swap the current lView with a new lView.
  *
- * For performance reasons we store the state in the top level of the module.
+ * For performance reasons we store the lView in the top level of the module.
  * This way we minimize the number of properties to read. Whenever a new view
- * is entered we have to store the state for later, and when the view is
+ * is entered we have to store the lView for later, and when the view is
  * exited the state has to be restored
  *
- * @param newView New state to become active
+ * @param newView New lView to become active
  * @param host Element to which the View is a child of
- * @returns the previous state;
+ * @returns the previously active lView;
  */
-export function enterView(newView: LView, hostTNode: TElementNode | TViewNode | null): LView {
+export function selectView(newView: LView, hostTNode: TElementNode | TViewNode | null): LView {
   ngDevMode && assertLViewOrUndefined(newView);
   const oldView = lView;
 
@@ -448,16 +448,6 @@ export function resetComponentState() {
   bindingsEnabled = true;
   setCurrentStyleSanitizer(null);
   resetAllStylingState();
-}
-
-/**
- * Used in lieu of enterView to make it clear when we are exiting a child view. This makes
- * the direction of traversal (up or down the view tree) a bit clearer.
- *
- * @param newView New LView to become active
- */
-export function leaveView(newView: LView): void {
-  enterView(newView, null);
 }
 
 let _selectedIndex = -1;
