@@ -19,7 +19,7 @@ import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
 import {TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {dispatchEvent, el} from '@angular/platform-browser/testing/src/browser_util';
+import {dispatchEvent, el, isCommentNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -430,7 +430,7 @@ function declareTests(config?: {useJit: boolean}) {
 
         const childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
         expect(childNodesOfWrapper.length).toBe(1);
-        expect(getDOM().isCommentNode(childNodesOfWrapper[0])).toBe(true);
+        expect(isCommentNode(childNodesOfWrapper[0])).toBe(true);
       });
 
       it('should allow to transplant TemplateRefs into other ViewContainers', () => {

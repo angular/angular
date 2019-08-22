@@ -300,7 +300,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return this.isElementNode(el) && el.nodeName === 'TEMPLATE';
   }
   isTextNode(node: Node): boolean { return node.nodeType === Node.TEXT_NODE; }
-  isCommentNode(node: Node): boolean { return node.nodeType === Node.COMMENT_NODE; }
   isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
   hasShadowRoot(node: any): boolean {
     return node.shadowRoot != null && node instanceof HTMLElement;
@@ -371,12 +370,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   supportsCookies(): boolean { return true; }
 
   getCookie(name: string): string|null { return parseCookieValue(document.cookie, name); }
-
-  setCookie(name: string, value: string) {
-    // document.cookie is magical, assigning into it assigns/overrides one cookie value, but does
-    // not clear other cookies.
-    document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
-  }
 }
 
 let baseElement: HTMLElement|null = null;

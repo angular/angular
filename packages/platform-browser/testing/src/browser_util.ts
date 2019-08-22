@@ -157,8 +157,8 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     if (_selfClosingTags.indexOf(tagName) == -1) {
       result += `</${tagName}>`;
     }
-  } else if (getDOM().isCommentNode(el)) {
-    result += `<!--${getDOM().nodeValue(el)}-->`;
+  } else if (isCommentNode(el)) {
+    result += `<!--${el.nodeValue}-->`;
   } else {
     result += getDOM().getText(el);
   }
@@ -168,4 +168,14 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
 export function createNgZone(): NgZone {
   return new NgZone({enableLongStackTrace: true});
+}
+
+export function isCommentNode(node: Node): boolean {
+  return node.nodeType === Node.COMMENT_NODE;
+}
+
+export function setCookie(name: string, value: string) {
+  // document.cookie is magical, assigning into it assigns/overrides one cookie value, but does
+  // not clear other cookies.
+  document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
 }

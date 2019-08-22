@@ -10,6 +10,7 @@
 import {Type, ɵglobal as global} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 import {By, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {isCommentNode} from '@angular/platform-browser/testing/src/browser_util';
 
 
 
@@ -285,7 +286,7 @@ function elementText(n: any): string {
     return n.map(elementText).join('');
   }
 
-  if (getDOM().isCommentNode(n)) {
+  if (isCommentNode(n)) {
     return '';
   }
 
