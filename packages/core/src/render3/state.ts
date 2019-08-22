@@ -414,10 +414,6 @@ export function setCurrentQueryIndex(value: number): void {
 export function enterView(newView: LView, hostTNode: TElementNode | TViewNode | null): LView {
   ngDevMode && assertLViewOrUndefined(newView);
   const oldView = lView;
-  if (newView) {
-    const tView = newView[TVIEW];
-    bindingRootIndex = tView.bindingStartIndex;
-  }
 
   previousOrParentTNode = hostTNode !;
   isParent = true;
