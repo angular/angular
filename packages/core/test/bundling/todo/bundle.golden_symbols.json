@@ -630,9 +630,6 @@
     "name": "elementPropertyInternal"
   },
   {
-    "name": "enterView"
-  },
-  {
     "name": "executeCheckHooks"
   },
   {
@@ -1059,9 +1056,6 @@
     "name": "iterateListLike"
   },
   {
-    "name": "leaveView"
-  },
-  {
     "name": "listenerInternal"
   },
   {
@@ -1255,6 +1249,9 @@
   },
   {
     "name": "selectInternal"
+  },
+  {
+    "name": "selectView"
   },
   {
     "name": "setActiveHostElement"

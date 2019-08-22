@@ -249,9 +249,6 @@
     "name": "elementCreate"
   },
   {
-    "name": "enterView"
-  },
-  {
     "name": "executeCheckHooks"
   },
   {
@@ -489,9 +486,6 @@
     "name": "isStylingValueDefined"
   },
   {
-    "name": "leaveView"
-  },
-  {
     "name": "locateHostElement"
   },
   {
@@ -595,6 +589,9 @@
   },
   {
     "name": "selectInternal"
+  },
+  {
+    "name": "selectView"
   },
   {
     "name": "setActiveHostElement"

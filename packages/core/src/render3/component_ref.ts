@@ -29,7 +29,7 @@ import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {LView, LViewFlags, TVIEW} from './interfaces/view';
-import {enterView, leaveView, namespaceHTMLInternal} from './state';
+import {namespaceHTMLInternal, selectView} from './state';
 import {defaultScheduler} from './util/misc_utils';
 import {getTNode} from './util/view_utils';
 import {createElementRef} from './view_engine_compatibility';
@@ -167,7 +167,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         rootViewInjector);
 
     // rootView is the parent when bootstrapping
-    const oldLView = enterView(rootLView, null);
+    const oldLView = selectView(rootLView, null);
 
     let component: T;
     let tElementNode: TElementNode;
@@ -194,7 +194,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
       renderView(rootLView, rootTView, null);
     } finally {
-      leaveView(oldLView);
+      selectView(oldLView, null);
     }
 
     const componentRef = new ComponentRef(
