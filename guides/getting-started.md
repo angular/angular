@@ -1,196 +1,96 @@
-For help getting started with a new Angular app, check out the
-[Angular CLI](https://cli.angular.io/).
+# Getting Started with Angular Material
 
-For existing apps, follow these steps to begin using Angular Material.
+This guide explains how to setup your Angular project to begin using Angular Material. It includes information on prerequisites, installing Angular Material, and optionally displaying a sample material component in your application to verify your setup.
 
-### Step 1: Install Angular Material, Angular CDK and Angular Animations
+### New to Angular ?
 
-You can use either the npm or yarn command-line tool to install packages. Use whichever is appropriate for your project in the examples below.
+If you are new to Angular or getting started with a new Angular application, see [Angular's full Getting Started Guide](https://angular.io/start) and [Setting up your environment](https://angular.io/guide/setup-local).
 
-#### NPM
-```bash
-npm install --save @angular/material @angular/cdk @angular/animations
-```
-#### Yarn
-```bash
-yarn add @angular/material @angular/cdk @angular/animations
-```
+For existing applications, follow the steps below to begin using Angular Material:
 
 
-#### Alternative 1: Snapshot Build
+### Step 1: Install Angular Material npm packages
 
-A snapshot build with the latest changes from master is also available. Note that this snapshot
-build should not be considered stable and may break between releases.
-
-#### NPM
-```bash
-npm install --save angular/material2-builds angular/cdk-builds angular/animations-builds
-```
-
-#### Yarn
-```bash
-yarn add angular/material2-builds angular/cdk-builds angular/animations-builds
-```
-#### Alternative 2: Angular Devkit 6+
-
-Using the Angular CLI `ng add` command will update your Angular project with the correct dependencies, perform configuration changes and execute initialization code.
+Use the Angular CLI's install [schematic](https://material.angular.io/guide/schematics) to set up your Angular Material project by running the following command:
 
 ```bash
 ng add @angular/material
 ```
 
-### Step 2: Configure animations
+The `ng add` command will install Angular Material, the [Component Dev Kit (CDK)](https://material.angular.io/cdk/categories), [Angular Animations](https://angular.io/guide/animations) and ask you the following questions to determine which features to include:
 
-Once the animations package is installed, import `BrowserAnimationsModule` into your application to enable animations support.
+1. Choose a prebuilt theme name, or "custom" for a custom theme: 
+
+   You can choose from [prebuilt material design themes](https://material.angular.io/guide/theming#using-a-pre-built-theme) or set up an extensible [custom theme](https://material.angular.io/guide/theming#defining-a-custom-theme).
+
+2. Set up HammerJS for gesture recognition:
+
+   [HammerJS](http://hammerjs.github.io/) provides gesture recognition capabilities required by some components (`mat-slide-toggle`, `mat-slider`, `matToolTip`).
+
+   Please note, if you choose not to install HammerJS it can be installed later (see Appendix).
+
+3. Set up browser animations for Angular Material:
+
+   Importing the [`BrowserAnimationsModule`](https://angular.io/api/platform-browser/animations/BrowserAnimationsModule) into your application enables Angular's [animation system](https://angular.io/guide/animations). Declining this will disable most of Angular Material's animations.
+
+The `ng add` command will additionally perform the following configurations:
+
+* Add project dependencies to `package.json`
+* Add the Roboto font to your `index.html`
+* Add the Material Design icon font to your `index.html`
+* Add a few global CSS styles to:
+  * Remove margins from `body`
+  * Set `height: 100%` on `html` and `body`
+  * Set Roboto as the default application font
+
+You're done! Angular Material is now configured to be used in your application.
+
+
+### Step 2: Display an example Angular Material component
+
+Let's display a slider component in your app and verify that everything works.
+
+You need to import the `MatSliderModule` that you want to display by adding the following lines to your app.module.ts file.
 
 ```ts
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-
-@NgModule({
-  ...
-  imports: [BrowserAnimationsModule],
-  ...
+import { MatSliderModule } from '@angular/material';
+…
+@NgModule ({....
+  imports: [...,
+  MatSliderModule,
+…]
 })
-export class PizzaPartyAppModule { }
 ```
 
-Alternatively, you can disable animations by importing `NoopAnimationsModule`.
-
-```ts
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-
-@NgModule({
-  ...
-  imports: [NoopAnimationsModule],
-  ...
-})
-export class PizzaPartyAppModule { }
-```
-
-### Step 3: Import the component modules
-
-Import the NgModule for each component you want to use:
-
-```ts
-import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-
-@NgModule({
-  ...
-  imports: [MatButtonModule, MatCheckboxModule],
-  ...
-})
-export class PizzaPartyAppModule { }
-```
-
-Alternatively, you can create a separate NgModule that imports and then re-exports all of the Angular Material components that you will use in your application. By exporting them again, other modules can simply include your `CustomMaterialModule` wherever Material components are needed, and automatically get all of the exported Material modules. A good place for importing/exporting the application-wide Material modules is the [SharedModule](https://angular.io/guide/ngmodule-faq#sharedmodule).
-
-```ts
-import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-
-@NgModule({
-  imports: [MatButtonModule, MatCheckboxModule],
-  exports: [MatButtonModule, MatCheckboxModule],
-})
-export class MyOwnCustomMaterialModule { }
-```
-
-Whichever approach you use, be sure to import the Angular Material modules _after_ Angular's
-`BrowserModule`, as the import order matters for NgModules.
-
-### Step 4: Include a theme
-
-Including a theme is **required** to apply all of the core and theme styles to your application.
-
-To get started with a prebuilt theme, include one of Angular Material's prebuilt themes globally
-in your application. If you're using the Angular CLI, you can add this to your `styles.css`:
-```css
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
-```
-
-If you are not using the Angular CLI, you can include a prebuilt theme via a `<link>` element in
-your `index.html`.
-
-For more information on theming and instructions on how to create a custom theme, see the
-[theming guide](./theming.md).
-
-### Step 5: Gesture Support
-
-Some components (`mat-slide-toggle`, `mat-slider`, `matTooltip`) rely on
-[HammerJS](http://hammerjs.github.io/) for gestures. In order to get the full feature-set of these
-components, HammerJS must be loaded into the application.
-
-You can add HammerJS to your application via [npm](https://www.npmjs.com/package/hammerjs), a CDN
-(such as the [Google CDN](https://developers.google.com/speed/libraries/#hammerjs)), or served
-directly from your app.
-
-To install via npm, use the following command:
-
-#### NPM
-```bash
-npm install --save hammerjs
-```
-
-#### Yarn
-```bash
-yarn add hammerjs
-```
-
-After installing, import it on your app's entry point (e.g. `src/main.ts`).
-```ts
-import 'hammerjs';
-```
-
-### Step 6 (Optional): Add Material Icons
-
-If you want to use the `mat-icon` component with the official
-[Material Design Icons](https://material.io/icons/), load the icon font in your `index.html`.
+Add the `<mat-slider>` tag to the `app.component.html` like so:
 
 ```html
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<mat-slider min="1" max="100" step="1" value="1"></mat-slider>
 ```
 
-For more information on using Material Icons, check out the
-[Material Icons Guide](https://google.github.io/material-design-icons/).
+Run your local dev server:
 
-Note that `mat-icon` supports any font or svg icons; using Material Icons is one of many options.
-
-
-### Appendix: Configuring SystemJS
-
-If your project is using SystemJS for module loading, you will need to add `@angular/material` and
-`@angular/cdk` to the SystemJS configuration.
-
-The `@angular/cdk` package is organized of multiple entry-points.
-Each of these entry-points must be registered individually with SystemJS.
-
-Here is a example configuration where `@angular/material`, `@angular/cdk/platform` and
-`@angular/cdk/a11y` are used:
-
-
-```js
-System.config({
-  // Existing configuration options
-  map: {
-    // ...
-    '@angular/material': 'npm:@angular/material/bundles/material.umd.js',
-
-    // CDK individual packages
-    '@angular/cdk/platform': 'npm:@angular/cdk/bundles/cdk-platform.umd.js',
-    '@angular/cdk/a11y': 'npm:@angular/cdk/bundles/cdk-a11y.umd.js',
-    // ...
-    'hammerjs': 'npm:hammerjs',
-  },
-  packages: {
-    //...
-    hammerjs: {main: './hammer.min.js', defaultExtension: 'js'}
-    //...
-  }
-});
+```bash
+ng serve
 ```
 
+and point your browser to [http://localhost:4200](http://localhost:4200)
 
-### Example Angular Material projects
-- [material.angular.io](https://material.angular.io) -
-We build our own documentation with Angular Material!
+You should see the material slider component on the page.
+
+In addition to the install schematic, Angular Material comes with [several schematics](https://material.angular.io/guide/schematics) (like nav, table, address-form, etc.) that can be used to easily generate pre-built components in your application.
+
+
+### Appendix: Installing [HammerJS](http://hammerjs.github.io/)
+
+HammerJS can be installed using the following npm command:
+
+   ```bash
+   npm install --save hammerjs
+   ```
+
+   After installing, import it on your app's entry point (e.g. `src/main.ts`).
+
+   ```ts
+   import 'hammer.js';
+   ```
