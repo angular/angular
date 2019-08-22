@@ -377,10 +377,7 @@ export function refreshView<T>(
   try {
     resetPreOrderHookFlags(lView);
 
-    // Resetting the bindingIndex of the current LView as the next steps may trigger change
-    // detection.
-    lView[BINDING_INDEX] = tView.bindingStartIndex;
-
+    setBindingRoot(lView[BINDING_INDEX] = tView.bindingStartIndex);
     if (templateFn !== null) {
       executeTemplate(lView, templateFn, RenderFlags.Update, context);
     }
@@ -463,7 +460,6 @@ export function refreshView<T>(
 
   } finally {
     lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
-    lView[BINDING_INDEX] = tView.bindingStartIndex;
     leaveView(oldView);
   }
 }
