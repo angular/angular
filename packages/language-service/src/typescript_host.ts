@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {AstResult, isAstResult} from './common';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
-import {ExternalTemplate, InlineTemplate, getClassDeclFromTemplateNode} from './template';
+import {ExternalTemplate, InlineTemplate, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './template';
 import {Declaration, DeclarationError, Diagnostic, DiagnosticKind, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
 import {findTightestNode, getDirectiveClassLike} from './utils';
 
@@ -310,7 +310,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!ts.isStringLiteralLike(node)) {
       return;
     }
-    const classDecl = getClassDeclFromTemplateNode(node);
+    const tmplAsgn = getPropertyAssignmentFromValue(node);
+    if (!tmplAsgn || tmplAsgn.name.getText() !== 'template') {
+      return;
+    }
+    const classDecl = getClassDeclFromDecoratorProp(tmplAsgn);
     if (!classDecl || !classDecl.name) {  // Does not handle anonymous class
       return;
     }

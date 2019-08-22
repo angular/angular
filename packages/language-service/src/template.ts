@@ -127,30 +127,34 @@ export class ExternalTemplate extends BaseTemplate {
 }
 
 /**
- * Given a template node, return the ClassDeclaration node that corresponds to
- * the component class for the template.
+ * Returns a property assignment from the assignment value, or `undefined` if there is no
+ * assignment.
+ */
+export function getPropertyAssignmentFromValue(value: ts.Node): ts.PropertyAssignment|undefined {
+  if (!value.parent || !ts.isPropertyAssignment(value.parent)) {
+    return;
+  }
+  return value.parent;
+}
+
+/**
+ * Given a decorator property assignment, return the ClassDeclaration node that corresponds to the
+ * directive class the property applies to.
+ * If the property assignment is not on a class decorator, no declaration is returned.
  *
  * For example,
  *
  * @Component({
- *   template: '<div></div>' <-- template node
+ *   template: '<div></div>'
+ *   ^^^^^^^^^^^^^^^^^^^^^^^---- property assignment
  * })
  * class AppComponent {}
  *           ^---- class declaration node
  *
- * @param node template node
+ * @param propAsgn property assignment
  */
-export function getClassDeclFromTemplateNode(node: ts.Node): ts.ClassDeclaration|undefined {
-  if (!ts.isStringLiteralLike(node)) {
-    return;
-  }
-  if (!node.parent || !ts.isPropertyAssignment(node.parent)) {
-    return;
-  }
-  const propAsgnNode = node.parent;
-  if (propAsgnNode.name.getText() !== 'template') {
-    return;
-  }
+export function getClassDeclFromDecoratorProp(propAsgnNode: ts.PropertyAssignment):
+    ts.ClassDeclaration|undefined {
   if (!propAsgnNode.parent || !ts.isObjectLiteralExpression(propAsgnNode.parent)) {
     return;
   }
@@ -168,4 +172,15 @@ export function getClassDeclFromTemplateNode(node: ts.Node): ts.ClassDeclaration
   }
   const classDeclNode = decorator.parent;
   return classDeclNode;
+}
+
+/**
+ * Determines if a property assignment is on a class decorator.
+ * See `getClassDeclFromDecoratorProperty`, which gets the class the decorator is applied to, for
+ * more details.
+ *
+ * @param prop property assignment
+ */
+export function isClassDecoratorProperty(propAsgn: ts.PropertyAssignment): boolean {
+  return !!getClassDeclFromDecoratorProp(propAsgn);
 }
