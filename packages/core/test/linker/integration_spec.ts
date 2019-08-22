@@ -199,12 +199,12 @@ function declareTests(config?: {useJit: boolean}) {
 
         fixture.componentInstance.ctxProp = 'Some <span>HTML</span>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(fixture.debugElement.children[0].nativeElement))
+        expect(fixture.debugElement.children[0].nativeElement.innerHTML)
             .toEqual('Some <span>HTML</span>');
 
         fixture.componentInstance.ctxProp = 'Some other <div>HTML</div>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(fixture.debugElement.children[0].nativeElement))
+        expect(fixture.debugElement.children[0].nativeElement.innerHTML)
             .toEqual('Some other <div>HTML</div>');
       });
 
@@ -1726,7 +1726,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'hello';
         fixture.detectChanges();
 
-        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        const html = fixture.nativeElement.innerHTML;
         expect(html).toContain('ng-reflect-dir-prop="hello"');
       });
 
@@ -1737,7 +1737,7 @@ function declareTests(config?: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
         fixture.detectChanges();
 
-        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        const html = fixture.nativeElement.innerHTML;
         expect(html).toContain('ng-reflect-dir-prop="hello"');
         expect(html).not.toContain('ng-reflect-title');
       });
@@ -1747,7 +1747,7 @@ function declareTests(config?: {useJit: boolean}) {
         const fixture = TestBed.createComponent(ParentCmp);
         fixture.detectChanges();
 
-        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        const html = fixture.nativeElement.innerHTML;
         expect(html).toContain('ng-reflect-test_="hello"');
       });
 
@@ -1761,7 +1761,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
 
-        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        const html = fixture.nativeElement.innerHTML;
         expect(html).toContain('"ng-reflect-ng-if": "true"');
       });
 
@@ -1776,7 +1776,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
 
-        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        const html = fixture.nativeElement.innerHTML;
         expect(html).toContain('"ng-reflect-ng-if": "true"');
       });
 
@@ -1790,7 +1790,7 @@ function declareTests(config?: {useJit: boolean}) {
            fixture.componentInstance.ctxProp = 'hello';
            fixture.detectChanges();
 
-           const html = getDOM().getInnerHTML(fixture.nativeElement);
+           const html = fixture.nativeElement.innerHTML;
            expect(html).toContain('ng-reflect-dir-prop="hello"');
            expect(html).toContain('ng-reflect-dir-prop2="hello"');
          });
@@ -1802,7 +1802,7 @@ function declareTests(config?: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('[ERROR]');
+        expect(fixture.nativeElement.innerHTML).toContain('[ERROR]');
       });
 
       it('should not reflect undefined values', () => {
@@ -1814,13 +1814,12 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'hello';
         fixture.detectChanges();
 
-        expect(getDOM().getInnerHTML(fixture.nativeElement))
-            .toContain('ng-reflect-dir-prop="hello"');
+        expect(fixture.nativeElement.innerHTML).toContain('ng-reflect-dir-prop="hello"');
 
         fixture.componentInstance.ctxProp = undefined !;
         fixture.detectChanges();
 
-        expect(getDOM().getInnerHTML(fixture.nativeElement)).not.toContain('ng-reflect-');
+        expect(fixture.nativeElement.innerHTML).not.toContain('ng-reflect-');
       });
 
       it('should not reflect null values', () => {
@@ -1832,13 +1831,12 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'hello';
         fixture.detectChanges();
 
-        expect(getDOM().getInnerHTML(fixture.nativeElement))
-            .toContain('ng-reflect-dir-prop="hello"');
+        expect(fixture.nativeElement.innerHTML).toContain('ng-reflect-dir-prop="hello"');
 
         fixture.componentInstance.ctxProp = null !;
         fixture.detectChanges();
 
-        expect(getDOM().getInnerHTML(fixture.nativeElement)).not.toContain('ng-reflect-');
+        expect(fixture.nativeElement.innerHTML).not.toContain('ng-reflect-');
       });
 
       it('should reflect empty strings', () => {
@@ -1850,7 +1848,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = '';
         fixture.detectChanges();
 
-        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('ng-reflect-dir-prop=""');
+        expect(fixture.nativeElement.innerHTML).toContain('ng-reflect-dir-prop=""');
       });
 
       it('should not reflect in comment nodes when the value changes to undefined', () => {
@@ -1863,14 +1861,14 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
 
-        let html = getDOM().getInnerHTML(fixture.nativeElement);
+        let html = fixture.nativeElement.innerHTML;
         expect(html).toContain('bindings={');
         expect(html).toContain('"ng-reflect-ng-if": "true"');
 
         fixture.componentInstance.ctxBoolProp = undefined !;
         fixture.detectChanges();
 
-        html = getDOM().getInnerHTML(fixture.nativeElement);
+        html = fixture.nativeElement.innerHTML;
         expect(html).toContain('bindings={');
         expect(html).not.toContain('ng-reflect');
       });
@@ -1885,14 +1883,14 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
 
-        let html = getDOM().getInnerHTML(fixture.nativeElement);
+        let html = fixture.nativeElement.innerHTML;
         expect(html).toContain('bindings={');
         expect(html).toContain('"ng-reflect-ng-if": "true"');
 
         fixture.componentInstance.ctxBoolProp = null !;
         fixture.detectChanges();
 
-        html = getDOM().getInnerHTML(fixture.nativeElement);
+        html = fixture.nativeElement.innerHTML;
         expect(html).toContain('bindings={');
         expect(html).toContain('"ng-reflect-ng-if": null');
       });
@@ -1928,8 +1926,7 @@ function declareTests(config?: {useJit: boolean}) {
         dir.myAttr = 'aaa';
 
         fixture.detectChanges();
-        expect(getDOM().getOuterHTML(fixture.debugElement.children[0].nativeElement))
-            .toContain('my-attr="aaa"');
+        expect(fixture.debugElement.children[0].nativeElement.outerHTML).toContain('my-attr="aaa"');
       });
 
       if (getDOM().supportsDOMEvents()) {
