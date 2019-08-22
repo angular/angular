@@ -10,6 +10,7 @@ import * as path from 'path';
 import * as ts from 'typescript'; // used as value and is provided at runtime
 import {AstResult} from './common';
 import {locateSymbol} from './locate_symbol';
+import {getPropertyAssignmentFromValue, isClassDecoratorProperty} from './template';
 import {Span, TemplateSource} from './types';
 import {findTightestNode} from './utils';
 
@@ -81,17 +82,20 @@ export function getTsDefinitionAndBoundSpan(
 }
 
 /**
- * Attempts to get the definition of a file whose URL is specified in a property assignment.
+ * Attempts to get the definition of a file whose URL is specified in a property assignment in a
+ * directive decorator.
  * Currently applies to `templateUrl` properties.
  */
 function getUrlFromProperty(
     urlNode: ts.StringLiteralLike,
     readTemplate: (file: string) => TemplateSource[]): ts.DefinitionInfoAndBoundSpan|undefined {
-  const sf = urlNode.getSourceFile();
-  const parent = urlNode.parent;
-  if (!ts.isPropertyAssignment(parent)) return;
+  const asgn = getPropertyAssignmentFromValue(urlNode);
+  if (!asgn) return;
+  // If the URL is not a property of a class decorator, don't generate definitions for it.
+  if (!isClassDecoratorProperty(asgn)) return;
 
-  switch (parent.name.getText()) {
+  const sf = urlNode.getSourceFile();
+  switch (asgn.name.getText()) {
     case 'templateUrl':
       // Extract definition of the template file specified by this `templateUrl` property.
       const url = path.join(path.dirname(sf.fileName), urlNode.text);
