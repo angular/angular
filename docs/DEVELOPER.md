@@ -107,6 +107,17 @@ It will automatically pick up the settings from Angular's [settings.json](../.vs
 1. Add `<PATH_TO_YOUR_WORKSPACE>/angular/node_modules/clang-format/bin/<OS>/`
   where the OS options are: `darwin_x64`, `linux_x64`, and `win32`.
 
+### Vim
+1. Install [Vim Clang-Format](https://github.com/rhysd/vim-clang-format).
+2. Create a [project-specific `.vimrc`](https://andrew.stwrt.ca/posts/project-specific-vimrc/) in
+   your Angular directory containing
+
+```vim
+let g:clang_format#command = '$ANGULAR_PATH/node_modules/.bin/clang-format'
+```
+
+where `$ANGULAR_PATH` is an environment variable of the absolute path of your Angular directory.
+
 ## Linting/verifying your source code
 
 You can check that your code is properly formatted and adheres to coding style by running:
