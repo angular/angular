@@ -13,9 +13,10 @@ import * as ts from 'typescript';
 import {AstResult, TemplateInfo} from './common';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
-import {ExternalTemplate, getClassDeclFromDecoratorProperty, getPropertyAssignmentFromValue, InlineTemplate} from './template';
+import {ExternalTemplate, InlineTemplate, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './template';
 import {Declaration, DeclarationError, Diagnostic, DiagnosticKind, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
 import {findTightestNode, getDirectiveClassLike} from './utils';
+
 
 /**
  * Create a `LanguageServiceHost`
@@ -133,18 +134,16 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
    * same role as 'synchronizeHostData' in tsserver.
    */
   getAnalyzedModules(): NgAnalyzedModules {
-    if (this.upToDate()) { return this.analyzedModules; }
+    if (this.upToDate()) {
+      return this.analyzedModules;
+    }
 
     // Invalidate caches
     this.templateReferences = [];
     this.fileToComponent.clear();
     this.collectedErrors.clear();
 
-    const analyzeHost = {
-      isSourceFile(filePath: string) {
-        return true;
-      }
-    };
+    const analyzeHost = {isSourceFile(filePath: string) { return true; }};
     const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
     this.analyzedModules =
         analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
@@ -315,7 +314,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!tmplAsgn || tmplAsgn.name.getText() !== 'template') {
       return;
     }
-    const classDecl = getClassDeclFromDecoratorProperty(tmplAsgn);
+    const classDecl = getClassDeclFromDecoratorProp(tmplAsgn);
     if (!classDecl || !classDecl.name) {  // Does not handle anonymous class
       return;
     }

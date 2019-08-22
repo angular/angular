@@ -150,7 +150,7 @@ export function getPropertyAssignmentFromValue(value: ts.Node): ts.PropertyAssig
  *
  * @param propAsgn property assignment
  */
-export function getClassDeclFromDecoratorProperty(propAsgnNode: ts.PropertyAssignment):
+export function getClassDeclFromDecoratorProp(propAsgnNode: ts.PropertyAssignment):
     ts.ClassDeclaration|undefined {
   if (!propAsgnNode.parent || !ts.isObjectLiteralExpression(propAsgnNode.parent)) {
     return;
@@ -179,5 +179,5 @@ export function getClassDeclFromDecoratorProperty(propAsgnNode: ts.PropertyAssig
  * @param prop property assignment
  */
 export function isClassDecoratorProperty(propAsgn: ts.PropertyAssignment): boolean {
-  return getClassDeclFromDecoratorProperty(propAsgn) !== undefined;
+  return !!getClassDeclFromDecoratorProp(propAsgn);
 }

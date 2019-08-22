@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {getClassDeclFromDecoratorProperty} from '../src/template';
+import {getClassDeclFromDecoratorProp} from '../src/template';
 import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
@@ -23,7 +23,7 @@ describe('getClassDeclFromTemplateNode', () => {
         ts.ScriptTarget.ES2015, true /* setParentNodes */);
     function visit(node: ts.Node): ts.ClassDeclaration|undefined {
       if (ts.isPropertyAssignment(node)) {
-        return getClassDeclFromDecoratorProperty(node);
+        return getClassDeclFromDecoratorProp(node);
       }
       return node.forEachChild(visit);
     }
@@ -39,9 +39,9 @@ describe('getClassDeclFromTemplateNode', () => {
     const tsLS = ts.createLanguageService(host);
     const sourceFile = tsLS.getProgram() !.getSourceFile('/app/app.component.ts');
     expect(sourceFile).toBeTruthy();
-    const classDecl = sourceFile !.forEachChild(function visit(node): ts.Node|undefined {
+    const classDecl = sourceFile !.forEachChild(function visit(node): ts.Node | undefined {
       if (ts.isPropertyAssignment(node)) {
-        return getClassDeclFromDecoratorProperty(node);
+        return getClassDeclFromDecoratorProp(node);
       }
       return node.forEachChild(visit);
     });
