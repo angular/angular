@@ -31,11 +31,5 @@
     <tree id="root"></tree>
   </div>
 
-  <script>
-    // TODO(mlaval): remove once we have a proper solution
-    ngDevMode = false;
-    var bazelBundle = document.location.search.endsWith('debug') ? 'bundle.min_debug.js' : 'bundle.min.js';
-    document.write('<script src="' + bazelBundle + '">\u003c/script>');
-  </script>
 </body>
 </html>
