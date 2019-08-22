@@ -2080,9 +2080,8 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(SomeCmp, {set: {template}});
           const fixture = TestBed.createComponent(SomeCmp);
 
-          const useEl = getDOM().firstChild(fixture.nativeElement);
-          expect(getDOM().getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
-              .toEqual('#id');
+          const useEl = getDOM().firstChild(fixture.nativeElement) as Element;
+          expect(useEl.getAttributeNS('http://www.w3.org/1999/xlink', 'href')).toEqual('#id');
         });
 
         it('should support binding to attributes with namespace', () => {
@@ -2092,19 +2091,17 @@ function declareTests(config?: {useJit: boolean}) {
           const fixture = TestBed.createComponent(SomeCmp);
 
           const cmp = fixture.componentInstance;
-          const useEl = getDOM().firstChild(fixture.nativeElement);
+          const useEl = getDOM().firstChild(fixture.nativeElement) as Element;
 
           cmp.value = '#id';
           fixture.detectChanges();
 
-          expect(getDOM().getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
-              .toEqual('#id');
+          expect(useEl.getAttributeNS('http://www.w3.org/1999/xlink', 'href')).toEqual('#id');
 
           cmp.value = null;
           fixture.detectChanges();
 
-          expect(getDOM().hasAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
-              .toEqual(false);
+          expect(useEl.hasAttributeNS('http://www.w3.org/1999/xlink', 'href')).toEqual(false);
         });
       });
     }
