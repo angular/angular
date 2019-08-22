@@ -113,11 +113,8 @@ export abstract class DomAdapter {
   abstract getStyle(element: any, styleName: string): string;
   abstract hasStyle(element: any, styleName: string, styleValue?: string): boolean;
   abstract tagName(element: any): string;
-  abstract attributeMap(element: any): Map<string, string>;
   abstract hasAttribute(element: any, attribute: string): boolean;
-  abstract hasAttributeNS(element: any, ns: string, attribute: string): boolean;
   abstract getAttribute(element: any, attribute: string): string|null;
-  abstract getAttributeNS(element: any, ns: string, attribute: string): string|null;
   abstract setAttribute(element: any, name: string, value: string): any;
   abstract setAttributeNS(element: any, ns: string, name: string, value: string): any;
   abstract removeAttribute(element: any, attribute: string): any;
@@ -150,7 +147,6 @@ export abstract class DomAdapter {
   abstract getUserAgent(): string;
   abstract setData(element: any, name: string, value: string): any;
   abstract getComputedStyle(element: any): any;
-  abstract getData(element: any, name: string): string|null;
   abstract supportsWebAnimation(): boolean;
   abstract performanceNow(): number;
   abstract getAnimationPrefix(): string;
