@@ -123,7 +123,8 @@ export class ProtractorElement implements TestElement {
   }
 
   async getAttribute(name: string): Promise<string|null> {
-    return this.element.getAttribute(name);
+    return browser.executeScript(
+        `return arguments[0].getAttribute(arguments[1])`, this.element, name);
   }
 
   async hasClass(name: string): Promise<boolean> {
@@ -135,5 +136,9 @@ export class ProtractorElement implements TestElement {
     const {width, height} = await this.element.getSize();
     const {x: left, y: top} = await this.element.getLocation();
     return {width, height, left, top};
+  }
+
+  async getProperty(name: string): Promise<any> {
+    return browser.executeScript(`return arguments[0][arguments[1]]`, this.element, name);
   }
 }

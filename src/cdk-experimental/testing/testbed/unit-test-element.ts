@@ -120,14 +120,7 @@ export class UnitTestElement implements TestElement {
 
   async getAttribute(name: string): Promise<string|null> {
     await this._stabilize();
-    let value = this.element.getAttribute(name);
-    // If cannot find attribute in the element, also try to find it in property,
-    // this is useful for input/textarea tags.
-    if (value === null && name in this.element) {
-      // We need to cast the element so we can access its properties via string indexing.
-      return (this.element as unknown as {[key: string]: string|null})[name];
-    }
-    return value;
+    return this.element.getAttribute(name);
   }
 
   async hasClass(name: string): Promise<boolean> {
@@ -138,5 +131,10 @@ export class UnitTestElement implements TestElement {
   async getDimensions(): Promise<ElementDimensions> {
     await this._stabilize();
     return this.element.getBoundingClientRect();
+  }
+
+  async getProperty(name: string): Promise<any> {
+    await this._stabilize();
+    return (this.element as any)[name];
   }
 }

@@ -199,10 +199,10 @@ describe('TestbedHarnessEnvironment', () => {
     it('should be able to clear', async () => {
       const input = await harness.input();
       await input.sendKeys('Yi');
-      expect(await input.getAttribute('value')).toBe('Yi');
+      expect(await input.getProperty('value')).toBe('Yi');
 
       await input.clear();
-      expect(await input.getAttribute('value')).toBe('');
+      expect(await input.getProperty('value')).toBe('');
     });
 
     it('should be able to click', async () => {
@@ -224,7 +224,7 @@ describe('TestbedHarnessEnvironment', () => {
       const value = await harness.value();
       await input.sendKeys('Yi');
 
-      expect(await input.getAttribute('value')).toBe('Yi');
+      expect(await input.getProperty('value')).toBe('Yi');
       expect(await value.text()).toBe('Input: Yi');
     });
 
@@ -255,7 +255,7 @@ describe('TestbedHarnessEnvironment', () => {
       `;
       const memo = await harness.memo();
       await memo.sendKeys(memoStr);
-      expect(await memo.getAttribute('value')).toBe(memoStr);
+      expect(await memo.getProperty('value')).toBe(memoStr);
     });
 
     it('should be able to getCssValue', async () => {
@@ -270,6 +270,12 @@ describe('TestbedHarnessEnvironment', () => {
       expect(activeElementText()).toBe(await button.text());
       await button.blur();
       expect(activeElementText()).not.toBe(await button.text());
+    });
+
+    it('should be able to get the value of a property', async () => {
+      const input = await harness.input();
+      await input.sendKeys('Hello');
+      expect(await input.getProperty('value')).toBe('Hello');
     });
   });
 
