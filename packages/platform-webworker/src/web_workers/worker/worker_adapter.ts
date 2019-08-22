@@ -132,7 +132,6 @@ export class WorkerDomAdapter extends DomAdapter {
   elementMatches(n: any, selector: string): boolean { throw 'not implemented'; }
   isTemplateElement(el: any): boolean { throw 'not implemented'; }
   isTextNode(node: any): boolean { throw 'not implemented'; }
-  isCommentNode(node: any): boolean { throw 'not implemented'; }
   isElementNode(node: any): boolean { throw 'not implemented'; }
   hasShadowRoot(node: any): boolean { throw 'not implemented'; }
   isShadowRoot(node: any): boolean { throw 'not implemented'; }
@@ -159,5 +158,4 @@ export class WorkerDomAdapter extends DomAdapter {
 
   supportsCookies(): boolean { return false; }
   getCookie(name: string): string { throw 'not implemented'; }
-  setCookie(name: string, value: string) { throw 'not implemented'; }
 }

@@ -88,9 +88,6 @@ export class DominoAdapter extends BrowserDomAdapter {
   getShadowRoot(el: any): DocumentFragment { return el.shadowRoot; }
 
   isTextNode(node: any): boolean { return node.nodeType === DominoAdapter.defaultDoc.TEXT_NODE; }
-  isCommentNode(node: any): boolean {
-    return node.nodeType === DominoAdapter.defaultDoc.COMMENT_NODE;
-  }
   isElementNode(node: any): boolean {
     return node ? node.nodeType === DominoAdapter.defaultDoc.ELEMENT_NODE : false;
   }
@@ -220,5 +217,4 @@ export class DominoAdapter extends BrowserDomAdapter {
 
   supportsCookies(): boolean { return false; }
   getCookie(name: string): string { throw _notImplemented('getCookie'); }
-  setCookie(name: string, value: string) { throw _notImplemented('setCookie'); }
 }

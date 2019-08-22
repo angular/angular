@@ -128,7 +128,6 @@ export abstract class DomAdapter {
   abstract elementMatches(n: any, selector: string): boolean;
   abstract isTemplateElement(el: any): boolean;
   abstract isTextNode(node: any): boolean;
-  abstract isCommentNode(node: any): boolean;
   abstract isElementNode(node: any): boolean;
   abstract hasShadowRoot(node: any): boolean;
   abstract isShadowRoot(node: any): boolean;
@@ -153,7 +152,7 @@ export abstract class DomAdapter {
   abstract getTransitionEnd(): string;
   abstract supportsAnimation(): boolean;
 
+  // Used by CookieXSRFStrategy
   abstract supportsCookies(): boolean;
   abstract getCookie(name: string): string|null;
-  abstract setCookie(name: string, value: string): any;
 }
