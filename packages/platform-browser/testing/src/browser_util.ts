@@ -95,7 +95,7 @@ export function dispatchEvent(element: any, eventType: any): void {
 }
 
 export function el(html: string): HTMLElement {
-  return <HTMLElement>getDOM().firstChild(getDOM().content(getDOM().createTemplate(html)));
+  return <HTMLElement>getDOM().firstChild(getContent(getDOM().createTemplate(html)));
 }
 
 export function normalizeCSS(css: string): string {
@@ -121,7 +121,7 @@ const _selfClosingTags = ['br', 'hr', 'input'];
 export function stringifyElement(el: any /** TODO #9100 */): string {
   let result = '';
   if (getDOM().isElementNode(el)) {
-    const tagName = getDOM().tagName(el).toLowerCase();
+    const tagName = el.tagName.toLowerCase();
 
     // Opening tag
     result += `<${tagName}`;
@@ -147,7 +147,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     result += '>';
 
     // Children
-    const childrenRoot = getDOM().templateAwareRoot(el);
+    const childrenRoot = templateAwareRoot(el);
     const children = childrenRoot ? getDOM().childNodes(childrenRoot) : [];
     for (let j = 0; j < children.length; j++) {
       result += stringifyElement(children[j]);
@@ -172,6 +172,22 @@ export function createNgZone(): NgZone {
 
 export function isCommentNode(node: Node): boolean {
   return node.nodeType === Node.COMMENT_NODE;
+}
+
+export function isTextNode(node: Node): boolean {
+  return node.nodeType === Node.TEXT_NODE;
+}
+
+export function getContent(node: Node): Node {
+  if ('content' in node) {
+    return (<any>node).content;
+  } else {
+    return node;
+  }
+}
+
+export function templateAwareRoot(el: Node): any {
+  return getDOM().isElementNode(el) && el.nodeName === 'TEMPLATE' ? getContent(el) : el;
 }
 
 export function setCookie(name: string, value: string) {

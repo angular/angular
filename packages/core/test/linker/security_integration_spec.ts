@@ -122,7 +122,7 @@ function declareTests(config?: {useJit: boolean}) {
         const div = cmp.debugElement.children[0];
         expect(div.injector.get(OnPrefixDir).onclick).toBe(value);
         expect(getDOM().getProperty(div.nativeElement, 'onclick')).not.toBe(value);
-        expect(getDOM().hasAttribute(div.nativeElement, 'onclick')).toEqual(false);
+        expect(div.nativeElement.hasAttribute('onclick')).toEqual(false);
       });
 
     });
