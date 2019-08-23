@@ -7,7 +7,8 @@
  */
 const domino = require('domino');
 
-import {ɵBrowserDomAdapter as BrowserDomAdapter, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/platform-browser';
+import {ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
+import {ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
 
 function _notImplemented(methodName: string) {
   return new Error('This method is not implemented in DominoAdapter: ' + methodName);

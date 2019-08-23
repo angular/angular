@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {getDebugNode} from '@angular/core';
 import {NodeFlags, anchorDef, asElementData, elementDef} from '@angular/core/src/view/index';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {compViewDef, createAndGetRootNodes} from './helper';
 

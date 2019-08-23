@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, ɵɵinject} from '@angular/core';
 
-import {getDOM} from '../dom/dom_adapter';
 
 /**
  * Factory to create Title service.

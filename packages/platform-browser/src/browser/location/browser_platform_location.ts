@@ -6,13 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, LocationChangeListener, PlatformLocation} from '@angular/common';
+import {DOCUMENT, LocationChangeListener, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
-
-import {getDOM} from '../../dom/dom_adapter';
-
 import {supportsState} from './history';
-
 
 
 /**

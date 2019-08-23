@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DomAdapter} from '../dom/dom_adapter';
+import {ɵDomAdapter as DomAdapter} from '@angular/common';
 
 
 

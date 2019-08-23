@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {ErrorHandler, SecurityContext, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
 import {BindingFlags, NodeFlags, Services, ViewData, ViewDefinition, asElementData, elementDef} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDynamic, compViewDef, createAndGetRootNodes, isBrowser, recordNodeToRemove} from './helper';
 
