@@ -60,7 +60,7 @@ function declareTests(config?: {useJit: boolean}) {
           const children = getDOM().childNodes(el);
           expect(children.length).toBe(2);
           expect(isCommentNode(children[0])).toBe(true);
-          expect(getDOM().tagName(children[1]).toUpperCase()).toEqual('P');
+          expect((children[1] as Element).tagName.toUpperCase()).toEqual('P');
         });
 
     modifiedInIvy('FW-678: ivy generates different DOM structure for <ng-container>')
@@ -99,8 +99,8 @@ function declareTests(config?: {useJit: boolean}) {
           expect(isCommentNode(children[0])).toBe(true);
           // ng-container anchor
           expect(isCommentNode(children[1])).toBe(true);
-          expect(getDOM().tagName(children[2]).toUpperCase()).toEqual('P');
-          expect(getDOM().tagName(children[3]).toUpperCase()).toEqual('B');
+          expect((children[2] as Element).tagName.toUpperCase()).toEqual('P');
+          expect((children[3] as Element).tagName.toUpperCase()).toEqual('B');
 
           fixture.componentInstance.ctxBoolProp = false;
           fixture.detectChanges();

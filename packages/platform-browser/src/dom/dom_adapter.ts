@@ -56,7 +56,6 @@ export abstract class DomAdapter {
   abstract nodeName(node: any): string;
   abstract nodeValue(node: any): string|null;
   abstract type(node: any): string;
-  abstract content(node: any): any;
   abstract firstChild(el: any): Node|null;
   abstract nextSibling(el: any): Node|null;
   abstract parentElement(el: any): Node|null;
@@ -89,21 +88,24 @@ export abstract class DomAdapter {
   abstract removeStyle(element: any, styleName: string): any;
   abstract getStyle(element: any, styleName: string): string;
   abstract hasStyle(element: any, styleName: string, styleValue?: string): boolean;
-  abstract tagName(element: any): string;
-  abstract hasAttribute(element: any, attribute: string): boolean;
+
+  // Used by Meta
   abstract getAttribute(element: any, attribute: string): string|null;
+
+  // Used by platform-server
   abstract setAttribute(element: any, name: string, value: string): any;
   abstract setAttributeNS(element: any, ns: string, name: string, value: string): any;
   abstract removeAttribute(element: any, attribute: string): any;
   abstract removeAttributeNS(element: any, ns: string, attribute: string): any;
-  abstract templateAwareRoot(el: any): any;
   abstract createHtmlDocument(): HTMLDocument;
   abstract getDefaultDocument(): Document;
+
+  // Used by Title
   abstract getTitle(doc: Document): string;
   abstract setTitle(doc: Document, newTitle: string): any;
+
+  // Used by By.css
   abstract elementMatches(n: any, selector: string): boolean;
-  abstract isTemplateElement(el: any): boolean;
-  abstract isTextNode(node: any): boolean;
   abstract isElementNode(node: any): boolean;
 
   // Used by Testability

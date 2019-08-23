@@ -8,7 +8,7 @@
 
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {el, stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
+import {el, isTextNode, stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 {
   describe('dom adapter', () => {
@@ -41,17 +41,16 @@ import {el, stringifyElement} from '@angular/platform-browser/testing/src/browse
       const secondChild = cNodes[1];
       expect(getDOM().parentElement(firstChild)).toBe(clone);
       expect(getDOM().nextSibling(firstChild)).toBe(secondChild);
-      expect(getDOM().isTextNode(firstChild)).toBe(true);
+      expect(isTextNode(firstChild)).toBe(true);
 
       expect(getDOM().parentElement(secondChild)).toBe(clone);
       expect(getDOM().nextSibling(secondChild)).toBeFalsy();
       expect(getDOM().isElementNode(secondChild)).toBe(true);
-
     });
 
     it('should be able to create text nodes and use them with the other APIs', () => {
       const t = getDOM().createTextNode('hello');
-      expect(getDOM().isTextNode(t)).toBe(true);
+      expect(isTextNode(t)).toBe(true);
       const d = getDOM().createElement('div');
       getDOM().appendChild(d, t);
       expect(d.innerHTML).toEqual('hello');
