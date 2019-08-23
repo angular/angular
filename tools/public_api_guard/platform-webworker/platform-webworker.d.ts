@@ -77,25 +77,7 @@ export declare class UiArguments {
 export declare const VERSION: Version;
 
 /** @deprecated */
-export declare const WORKER_APP_LOCATION_PROVIDERS: ({
-    provide: typeof PlatformLocation;
-    useClass: typeof WebWorkerPlatformLocation;
-    useFactory?: undefined;
-    multi?: undefined;
-    deps?: undefined;
-} | {
-    provide: InjectionToken<(() => void)[]>;
-    useFactory: typeof appInitFnFactory;
-    multi: boolean;
-    deps: (typeof NgZone | typeof PlatformLocation)[];
-    useClass?: undefined;
-} | {
-    provide: InjectionToken<Promise<any>>;
-    useFactory: typeof locationInitialized;
-    deps: (typeof PlatformLocation)[];
-    useClass?: undefined;
-    multi?: undefined;
-})[];
+export declare const WORKER_APP_LOCATION_PROVIDERS: StaticProvider[];
 
 /** @deprecated */
 export declare const WORKER_UI_LOCATION_PROVIDERS: StaticProvider[];

@@ -178,9 +178,9 @@ export declare class Location {
     prepareExternalUrl(url: string): string;
     replaceState(path: string, query?: string, state?: any): void;
     subscribe(onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void) | null, onReturn?: (() => void) | null): SubscriptionLike;
-    static joinWithSlash(start: string, end: string): string;
-    static normalizeQueryParams(params: string): string;
-    static stripTrailingSlash(url: string): string;
+    static joinWithSlash: (start: string, end: string) => string;
+    static normalizeQueryParams: (params: string) => string;
+    static stripTrailingSlash: (url: string) => string;
 }
 
 export declare const LOCATION_INITIALIZED: InjectionToken<Promise<any>>;
