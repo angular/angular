@@ -12,6 +12,7 @@ import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitt
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled} from '@angular/private/testing';
 
@@ -254,24 +255,24 @@ class TestCmptWithPropBindings {
 
       // The root component has 3 elements in its view.
       expect(childEls.length).toEqual(3);
-      expect(getDOM().hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
-      expect(getDOM().hasClass(childEls[1].nativeElement, 'parent')).toBe(true);
-      expect(getDOM().hasClass(childEls[2].nativeElement, 'child-comp-class')).toBe(true);
+      expect(hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
+      expect(hasClass(childEls[1].nativeElement, 'parent')).toBe(true);
+      expect(hasClass(childEls[2].nativeElement, 'child-comp-class')).toBe(true);
 
       const nested = childEls[0].children;
       expect(nested.length).toEqual(1);
-      expect(getDOM().hasClass(nested[0].nativeElement, 'parentnested')).toBe(true);
+      expect(hasClass(nested[0].nativeElement, 'parentnested')).toBe(true);
 
       const childComponent = childEls[2];
 
       const childCompChildren = childComponent.children;
       expect(childCompChildren.length).toEqual(2);
-      expect(getDOM().hasClass(childCompChildren[0].nativeElement, 'child')).toBe(true);
-      expect(getDOM().hasClass(childCompChildren[1].nativeElement, 'child')).toBe(true);
+      expect(hasClass(childCompChildren[0].nativeElement, 'child')).toBe(true);
+      expect(hasClass(childCompChildren[1].nativeElement, 'child')).toBe(true);
 
       const childNested = childCompChildren[0].children;
       expect(childNested.length).toEqual(1);
-      expect(getDOM().hasClass(childNested[0].nativeElement, 'childnested')).toBe(true);
+      expect(hasClass(childNested[0].nativeElement, 'childnested')).toBe(true);
     });
 
     it('should list conditional component child elements', () => {
@@ -282,8 +283,8 @@ class TestCmptWithPropBindings {
 
       // The root component has 2 elements in its view.
       expect(childEls.length).toEqual(2);
-      expect(getDOM().hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
-      expect(getDOM().hasClass(childEls[1].nativeElement, 'cond-content-comp-class')).toBe(true);
+      expect(hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
+      expect(hasClass(childEls[1].nativeElement, 'cond-content-comp-class')).toBe(true);
 
       const conditionalContentComp = childEls[1];
 
@@ -353,7 +354,7 @@ class TestCmptWithPropBindings {
       const childTestEls = fixture.debugElement.queryAll(By.css('child-comp'));
 
       expect(childTestEls.length).toBe(1);
-      expect(getDOM().hasClass(childTestEls[0].nativeElement, 'child-comp-class')).toBe(true);
+      expect(hasClass(childTestEls[0].nativeElement, 'child-comp-class')).toBe(true);
     });
 
     it('should query child elements by directive', () => {
@@ -363,10 +364,10 @@ class TestCmptWithPropBindings {
       const childTestEls = fixture.debugElement.queryAll(By.directive(MessageDir));
 
       expect(childTestEls.length).toBe(4);
-      expect(getDOM().hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
-      expect(getDOM().hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
-      expect(getDOM().hasClass(childTestEls[2].nativeElement, 'child')).toBe(true);
-      expect(getDOM().hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
+      expect(hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
+      expect(hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
+      expect(hasClass(childTestEls[2].nativeElement, 'child')).toBe(true);
+      expect(hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
     });
 
     it('should query projected child elements by directive', () => {

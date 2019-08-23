@@ -196,12 +196,8 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getElementsByTagName(element: any, name: string): HTMLElement[] {
     return element.getElementsByTagName(name);
   }
-  classList(element: any): any[] { return Array.prototype.slice.call(element.classList, 0); }
   addClass(element: any, className: string) { element.classList.add(className); }
   removeClass(element: any, className: string) { element.classList.remove(className); }
-  hasClass(element: any, className: string): boolean {
-    return element.classList.contains(className);
-  }
   setStyle(element: any, styleName: string, styleValue: string) {
     element.style[styleName] = styleValue;
   }
@@ -210,11 +206,8 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     // see https://github.com/angular/angular/issues/7916
     element.style[stylename] = '';
   }
+
   getStyle(element: any, stylename: string): string { return element.style[stylename]; }
-  hasStyle(element: any, styleName: string, styleValue?: string|null): boolean {
-    const value = this.getStyle(element, styleName) || '';
-    return styleValue ? value == styleValue : value.length > 0;
-  }
 
   getAttribute(element: Element, attribute: string): string|null {
     return element.getAttribute(attribute);

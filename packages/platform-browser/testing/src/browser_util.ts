@@ -199,3 +199,16 @@ export function setCookie(name: string, value: string) {
 export function supportsWebAnimation(): boolean {
   return typeof(<any>Element).prototype['animate'] === 'function';
 }
+
+export function hasStyle(element: any, styleName: string, styleValue?: string | null): boolean {
+  const value = element.style[styleName] || '';
+  return styleValue ? value == styleValue : value.length > 0;
+}
+
+export function hasClass(element: any, className: string): boolean {
+  return element.classList.contains(className);
+}
+
+export function sortedClassList(element: any): any[] {
+  return Array.prototype.slice.call(element.classList, 0).sort();
+}

@@ -89,16 +89,11 @@ export class WorkerDomAdapter extends DomAdapter {
   getDistributedNodes(el: any): Node[] { throw 'not implemented'; }
   clone(node: Node): Node { throw 'not implemented'; }
   getElementsByTagName(element: any, name: string): HTMLElement[] { throw 'not implemented'; }
-  classList(element: any): any[] { throw 'not implemented'; }
   addClass(element: any, className: string) { throw 'not implemented'; }
   removeClass(element: any, className: string) { throw 'not implemented'; }
-  hasClass(element: any, className: string): boolean { throw 'not implemented'; }
   setStyle(element: any, styleName: string, styleValue: string) { throw 'not implemented'; }
   removeStyle(element: any, styleName: string) { throw 'not implemented'; }
   getStyle(element: any, styleName: string): string { throw 'not implemented'; }
-  hasStyle(element: any, styleName: string, styleValue?: string): boolean {
-    throw 'not implemented';
-  }
   getAttribute(element: any, attribute: string): string { throw 'not implemented'; }
   setAttribute(element: any, name: string, value: string) { throw 'not implemented'; }
   setAttributeNS(element: any, ns: string, name: string, value: string) { throw 'not implemented'; }
