@@ -50,9 +50,11 @@ export interface InjectableDecorator {
    *
    */
   (): TypeDecorator;
-  (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): TypeDecorator;
+  (options?: {providedIn: Type<any>| 'root' | 'platform' | 'any' | null}&
+   InjectableProvider): TypeDecorator;
   new (): Injectable;
-  new (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): Injectable;
+  new (options?: {providedIn: Type<any>| 'root' | 'platform' | 'any' | null}&
+       InjectableProvider): Injectable;
 }
 
 /**
@@ -64,10 +66,14 @@ export interface Injectable {
   /**
    * Determines which injectors will provide the injectable,
    * by either associating it with an @NgModule or other `InjectorType`,
-   * or by specifying that this injectable should be provided in the
-   * 'root' injector, which will be the application-level injector in most apps.
+   * or by specifying that this injectable should be provided in the:
+   * - 'root' injector, which will be the application-level injector in most apps.
+   * - 'platform' injector, which would be the special singleton platform injector shared by all
+   * applications on the page.
+   * - 'any` injector, which would be the injector which receives the resolution. (Note this only
+   * works on NgModule Injectors and not on Element Injector)
    */
-  providedIn?: Type<any>|'root'|null;
+  providedIn?: Type<any>|'root'|'platform'|'any'|null;
 }
 
 /**
@@ -90,9 +96,9 @@ export interface InjectableType<T> extends Type<T> { ngInjectableDef: ɵɵInject
 /**
  * Supports @Injectable() in JIT mode for Render2.
  */
-function render2CompileInjectable(
-    injectableType: Type<any>,
-    options?: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
+function render2CompileInjectable(injectableType: Type<any>, options?: {
+  providedIn?: Type<any>| 'root' | 'platform' | 'any' | null
+} & InjectableProvider): void {
   if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
     (injectableType as InjectableType<any>).ngInjectableDef = ɵɵdefineInjectable({
       token: injectableType,

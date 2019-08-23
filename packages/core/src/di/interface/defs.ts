@@ -35,7 +35,7 @@ export interface ɵɵInjectableDef<T> {
    * - `null`, does not belong to any injector. Must be explicitly listed in the injector
    *   `providers`.
    */
-  providedIn: InjectorType<any>|'root'|'any'|null;
+  providedIn: InjectorType<any>|'root'|'platform'|'any'|null;
 
   /**
    * The token to which this definition belongs.
@@ -140,7 +140,7 @@ export interface InjectorTypeWithProviders<T> {
  */
 export function ɵɵdefineInjectable<T>(opts: {
   token: unknown,
-  providedIn?: Type<any>| 'root' | 'any' | null,
+  providedIn?: Type<any>| 'root' | 'platform' | 'any' | null,
   factory: () => T,
 }): never {
   return ({

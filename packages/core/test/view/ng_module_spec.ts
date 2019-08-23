@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleRef} from '@angular/core';
+import {NgModuleRef, ɵINJECTOR_SCOPE as INJECTOR_SCOPE} from '@angular/core';
 import {InjectFlags, inject} from '@angular/core/src/di';
 import {Injector} from '@angular/core/src/di/injector';
 import {INJECTOR} from '@angular/core/src/di/injector_compatibility';
@@ -15,8 +15,6 @@ import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/
 import {moduleDef} from '@angular/core/src/view/ng_module';
 import {createNgModuleRef} from '@angular/core/src/view/refs';
 import {tokenKey} from '@angular/core/src/view/util';
-
-import {APP_ROOT} from '../../src/di/scope';
 
 class Foo {}
 
@@ -133,7 +131,7 @@ function makeFactoryProviders(
 function makeModule(modules: any[], providers: NgModuleProviderDef[]): NgModuleDefinition {
   const providersByKey: {[key: string]: NgModuleProviderDef} = {};
   providers.forEach(provider => providersByKey[tokenKey(provider.token)] = provider);
-  return {factory: null, providers, providersByKey, modules, isRoot: true};
+  return {factory: null, providers, providersByKey, modules, scope: 'root'};
 }
 
 describe('NgModuleRef_ injector', () => {
@@ -273,19 +271,24 @@ describe('NgModuleRef_ injector', () => {
       };
     }
 
-    it('sets isRoot to `true` when APP_ROOT is `true`', () => {
-      const def = moduleDef([createProvider(APP_ROOT, true)]);
-      expect(def.isRoot).toBe(true);
+    it('sets scope to `root` when INJECTOR_SCOPE is `root`', () => {
+      const def = moduleDef([createProvider(INJECTOR_SCOPE, 'root')]);
+      expect(def.scope).toBe('root');
     });
 
-    it('sets isRoot to `false` when APP_ROOT is absent', () => {
+    it('sets scope to `platform` when INJECTOR_SCOPE is `platform`', () => {
+      const def = moduleDef([createProvider(INJECTOR_SCOPE, 'platform')]);
+      expect(def.scope).toBe('platform');
+    });
+
+    it('sets scope to `null` when INJECTOR_SCOPE is absent', () => {
       const def = moduleDef([]);
-      expect(def.isRoot).toBe(false);
+      expect(def.scope).toBe(null);
     });
 
-    it('sets isRoot to `false` when APP_ROOT is `false`', () => {
-      const def = moduleDef([createProvider(APP_ROOT, false)]);
-      expect(def.isRoot).toBe(false);
+    it('sets isRoot to `null` when INJECTOR_SCOPE is `null`', () => {
+      const def = moduleDef([createProvider(INJECTOR_SCOPE, null)]);
+      expect(def.scope).toBe(null);
     });
   });
 });
