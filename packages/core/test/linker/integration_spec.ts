@@ -1006,8 +1006,8 @@ function declareTests(config?: {useJit: boolean}) {
           getDOM().dispatchEvent(fixture.debugElement.children[1].nativeElement, dispatchedEvent2);
           expect(getDOM().isPrevented(dispatchedEvent)).toBe(true);
           expect(getDOM().isPrevented(dispatchedEvent2)).toBe(false);
-          expect(getDOM().getChecked(fixture.debugElement.children[0].nativeElement)).toBeFalsy();
-          expect(getDOM().getChecked(fixture.debugElement.children[1].nativeElement)).toBeTruthy();
+          expect(fixture.debugElement.children[0].nativeElement.checked).toBeFalsy();
+          expect(fixture.debugElement.children[1].nativeElement.checked).toBeTruthy();
         });
       }
 
@@ -2689,15 +2689,14 @@ class ComponentWithoutView {
 @Directive({selector: '[no-duplicate]'})
 class DuplicateDir {
   constructor(elRef: ElementRef) {
-    getDOM().setText(elRef.nativeElement, getDOM().getText(elRef.nativeElement) + 'noduplicate');
+    getDOM().setText(elRef.nativeElement, elRef.nativeElement.textContent + 'noduplicate');
   }
 }
 
 @Directive({selector: '[no-duplicate]'})
 class OtherDuplicateDir {
   constructor(elRef: ElementRef) {
-    getDOM().setText(
-        elRef.nativeElement, getDOM().getText(elRef.nativeElement) + 'othernoduplicate');
+    getDOM().setText(elRef.nativeElement, elRef.nativeElement.textContent + 'othernoduplicate');
   }
 }
 

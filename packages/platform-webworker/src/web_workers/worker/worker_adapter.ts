@@ -69,25 +69,17 @@ export class WorkerDomAdapter extends DomAdapter {
   nextSibling(el: any): Node { throw 'not implemented'; }
   parentElement(el: any): Node { throw 'not implemented'; }
   childNodes(el: any): Node[] { throw 'not implemented'; }
-  childNodesAsList(el: any): Node[] { throw 'not implemented'; }
   clearNodes(el: any) { throw 'not implemented'; }
   appendChild(el: any, node: any) { throw 'not implemented'; }
   removeChild(el: any, node: any) { throw 'not implemented'; }
   remove(el: any): Node { throw 'not implemented'; }
   insertBefore(parent: any, el: any, node: any) { throw 'not implemented'; }
-  getText(el: any): string { throw 'not implemented'; }
   setText(el: any, value: string) { throw 'not implemented'; }
-  getValue(el: any): string { throw 'not implemented'; }
-  setValue(el: any, value: string) { throw 'not implemented'; }
-  getChecked(el: any): boolean { throw 'not implemented'; }
   createComment(text: string): any { throw 'not implemented'; }
-  createTemplate(html: any): HTMLElement { throw 'not implemented'; }
   createElement(tagName: any, doc?: any): HTMLElement { throw 'not implemented'; }
   createElementNS(ns: string, tagName: string, doc?: any): Element { throw 'not implemented'; }
   createTextNode(text: string, doc?: any): Text { throw 'not implemented'; }
   getHost(el: any): any { throw 'not implemented'; }
-  getDistributedNodes(el: any): Node[] { throw 'not implemented'; }
-  clone(node: Node): Node { throw 'not implemented'; }
   getElementsByTagName(element: any, name: string): HTMLElement[] { throw 'not implemented'; }
   addClass(element: any, className: string) { throw 'not implemented'; }
   removeClass(element: any, className: string) { throw 'not implemented'; }

@@ -412,7 +412,7 @@ class HiddenModule {
            expect(doc.head).toBe(getDOM().querySelector(doc, 'head'));
            expect(doc.body).toBe(getDOM().querySelector(doc, 'body'));
 
-           expect(getDOM().getText(doc.documentElement)).toEqual('Works!');
+           expect(doc.documentElement.textContent).toEqual('Works!');
 
            platform.destroy();
          });
@@ -428,13 +428,13 @@ class HiddenModule {
 
          platform.bootstrapModule(ExampleModule).then((moduleRef) => {
            const doc = moduleRef.injector.get(DOCUMENT);
-           expect(getDOM().getText(doc.documentElement)).toEqual('Works!');
+           expect(doc.documentElement.textContent).toEqual('Works!');
            platform.destroy();
          });
 
          platform2.bootstrapModule(ExampleModule2).then((moduleRef) => {
            const doc = moduleRef.injector.get(DOCUMENT);
-           expect(getDOM().getText(doc.documentElement)).toEqual('Works too!');
+           expect(doc.documentElement.textContent).toEqual('Works too!');
            platform2.destroy();
          });
        }));
@@ -449,7 +449,7 @@ class HiddenModule {
            const state = ref.injector.get(PlatformState);
            const doc = ref.injector.get(DOCUMENT);
            const title = getDOM().querySelector(doc, 'title');
-           expect(getDOM().getText(title)).toBe('Test App Title');
+           expect(title.textContent).toBe('Test App Title');
            expect(state.renderToString()).toContain('<title>Test App Title</title>');
          });
        }));
@@ -477,7 +477,7 @@ class HiddenModule {
            const head = getDOM().getElementsByTagName(doc, 'head')[0];
            const styles: any[] = head.children as any;
            expect(styles.length).toBe(1);
-           expect(getDOM().getText(styles[0])).toContain('color: red');
+           expect(styles[0].textContent).toContain('color: red');
            expect(getDOM().getAttribute(styles[0], 'ng-transition')).toBe('example-styles');
          });
        }));
