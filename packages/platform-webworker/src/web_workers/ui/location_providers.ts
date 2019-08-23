@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, ɵBrowserPlatformLocation as BrowserPlatformLocation} from '@angular/common';
 import {Injector, NgZone, PLATFORM_INITIALIZER, StaticProvider} from '@angular/core';
-import {ɵBrowserPlatformLocation as BrowserPlatformLocation} from '@angular/platform-browser';
 
 import {MessageBus} from '../shared/message_bus';
 import {Serializer} from '../shared/serializer';

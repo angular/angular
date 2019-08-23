@@ -27,8 +27,6 @@ function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
 }
 
-type __retain_for_correct_d_ts_generation__ = [PlatformRef];
-
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
   {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
@@ -93,7 +91,7 @@ function _document(injector: Injector) {
 /**
  * @publicApi
  */
-export const platformServer =
+export const platformServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef =
     createPlatformFactory(platformCore, 'server', INTERNAL_SERVER_PLATFORM_PROVIDERS);
 
 /**

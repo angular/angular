@@ -11,3 +11,4 @@ export {NgClassImpl as ɵNgClassImpl, NgClassImplProvider__POST_R3__ as ɵNgClas
 export {ngStyleDirectiveDef__POST_R3__ as ɵngStyleDirectiveDef__POST_R3__, ngStyleFactoryDef__POST_R3__ as ɵngStyleFactoryDef__POST_R3__} from './directives/ng_style';
 export {NgStyleImpl as ɵNgStyleImpl, NgStyleImplProvider__POST_R3__ as ɵNgStyleImplProvider__POST_R3__, NgStyleR2Impl as ɵNgStyleR2Impl} from './directives/ng_style_impl';
 export {DomAdapter as ɵDomAdapter, getDOM as ɵgetDOM, setRootDomAdapter as ɵsetRootDomAdapter} from './dom_adapter';
+export {BrowserPlatformLocation as ɵBrowserPlatformLocation} from './location/platform_location';

@@ -13,6 +13,7 @@ import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens
 import {getCompilerFacade} from './compiler/compiler_facade';
 import {Console} from './console';
 import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
+import {INJECTOR_SCOPE} from './di/scope';
 import {ErrorHandler} from './error_handler';
 import {DEFAULT_LOCALE_ID} from './i18n/localization';
 import {LOCALE_ID} from './i18n/tokens';
@@ -140,7 +141,10 @@ export function createPlatformFactory(
             providers.concat(extraProviders).concat({provide: marker, useValue: true}));
       } else {
         const injectedProviders: StaticProvider[] =
-            providers.concat(extraProviders).concat({provide: marker, useValue: true});
+            providers.concat(extraProviders).concat({provide: marker, useValue: true}, {
+              provide: INJECTOR_SCOPE,
+              useValue: 'platform'
+            });
         createPlatform(Injector.create({providers: injectedProviders, name: desc}));
       }
     }
