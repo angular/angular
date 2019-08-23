@@ -142,13 +142,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   nodeName(node: Node): string { return node.nodeName; }
   nodeValue(node: Node): string|null { return node.nodeValue; }
   type(node: HTMLInputElement): string { return node.type; }
-  content(node: Node): Node {
-    if (this.hasProperty(node, 'content')) {
-      return (<any>node).content;
-    } else {
-      return node;
-    }
-  }
   firstChild(el: Node): Node|null { return el.firstChild; }
   nextSibling(el: Node): Node|null { return el.nextSibling; }
   parentElement(el: Node): Node|null { return el.parentNode; }
@@ -222,11 +215,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     const value = this.getStyle(element, styleName) || '';
     return styleValue ? value == styleValue : value.length > 0;
   }
-  tagName(element: any): string { return element.tagName; }
 
-  hasAttribute(element: Element, attribute: string): boolean {
-    return element.hasAttribute(attribute);
-  }
   getAttribute(element: Element, attribute: string): string|null {
     return element.getAttribute(attribute);
   }
@@ -238,7 +227,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   removeAttributeNS(element: Element, ns: string, name: string) {
     element.removeAttributeNS(ns, name);
   }
-  templateAwareRoot(el: Node): any { return this.isTemplateElement(el) ? this.content(el) : el; }
+
   createHtmlDocument(): HTMLDocument {
     return document.implementation.createHTMLDocument('fakeTitle');
   }
@@ -254,10 +243,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
     return false;
   }
-  isTemplateElement(el: Node): boolean {
-    return this.isElementNode(el) && el.nodeName === 'TEMPLATE';
-  }
-  isTextNode(node: Node): boolean { return node.nodeType === Node.TEXT_NODE; }
+
   isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
 
   isShadowRoot(node: any): boolean { return node instanceof DocumentFragment; }

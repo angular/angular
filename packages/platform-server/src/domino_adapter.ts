@@ -79,7 +79,6 @@ export class DominoAdapter extends BrowserDomAdapter {
     return DominoAdapter.defaultDoc;
   }
 
-  isTextNode(node: any): boolean { return node.nodeType === DominoAdapter.defaultDoc.TEXT_NODE; }
   isElementNode(node: any): boolean {
     return node ? node.nodeType === DominoAdapter.defaultDoc.ELEMENT_NODE : false;
   }
