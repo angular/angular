@@ -130,7 +130,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
   /** Prevents the default element actions if it is disabled. */
   // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
   // In Ivy the `host` bindings will be merged when this class is extended, whereas in
-  // ViewEngine they're overwritte.
+  // ViewEngine they're overwritten.
   // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
   // tslint:disable-next-line:no-host-decorator-in-concrete
   @HostListener('click', ['$event'])
@@ -144,7 +144,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
   /** Emits to the hover stream. */
   // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
   // In Ivy the `host` bindings will be merged when this class is extended, whereas in
-  // ViewEngine they're overwritte.
+  // ViewEngine they're overwritten.
   // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
   // tslint:disable-next-line:no-host-decorator-in-concrete
   @HostListener('mouseenter')
