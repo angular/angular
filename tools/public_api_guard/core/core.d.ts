@@ -410,7 +410,7 @@ export interface Inject {
 export declare const Inject: InjectDecorator;
 
 export interface Injectable {
-    providedIn?: Type<any> | 'root' | null;
+    providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
 }
 
 export declare const Injectable: InjectableDecorator;
@@ -418,11 +418,11 @@ export declare const Injectable: InjectableDecorator;
 export interface InjectableDecorator {
     (): TypeDecorator;
     (options?: {
-        providedIn: Type<any> | 'root' | null;
+        providedIn: Type<any> | 'root' | 'platform' | 'any' | null;
     } & InjectableProvider): TypeDecorator;
     new (): Injectable;
     new (options?: {
-        providedIn: Type<any> | 'root' | null;
+        providedIn: Type<any> | 'root' | 'platform' | 'any' | null;
     } & InjectableProvider): Injectable;
 }
 
@@ -449,7 +449,7 @@ export declare class InjectionToken<T> {
     protected _desc: string;
     readonly ngInjectableDef: never | undefined;
     constructor(_desc: string, options?: {
-        providedIn?: Type<any> | 'root' | null;
+        providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
         factory: () => T;
     });
     toString(): string;
@@ -811,7 +811,7 @@ export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
 
 export declare function ɵɵdefineInjectable<T>(opts: {
     token: unknown;
-    providedIn?: Type<any> | 'root' | 'any' | null;
+    providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
     factory: () => T;
 }): never;
 
@@ -906,7 +906,7 @@ export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>, flags?
 
 export interface ɵɵInjectableDef<T> {
     factory: (t?: Type<any>) => T;
-    providedIn: InjectorType<any> | 'root' | 'any' | null;
+    providedIn: InjectorType<any> | 'root' | 'platform' | 'any' | null;
     token: unknown;
     value: T | undefined;
 }

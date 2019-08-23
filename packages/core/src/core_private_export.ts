@@ -15,7 +15,7 @@ export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetection
 export {Console as ɵConsole} from './console';
 export {inject, setCurrentInjector as ɵsetCurrentInjector, ɵɵinject} from './di/injector_compatibility';
 export {getInjectableDef as ɵgetInjectableDef, ɵɵInjectableDef, ɵɵInjectorDef} from './di/interface/defs';
-export {APP_ROOT as ɵAPP_ROOT} from './di/scope';
+export {INJECTOR_SCOPE as ɵINJECTOR_SCOPE} from './di/scope';
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {ivyEnabled as ɵivyEnabled} from './ivy_switch';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';

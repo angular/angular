@@ -57,7 +57,7 @@ export class InjectionToken<T> {
   readonly ngInjectableDef: never|undefined;
 
   constructor(protected _desc: string, options?: {
-    providedIn?: Type<any>| 'root' | null,
+    providedIn?: Type<any>| 'root' | 'platform' | 'any' | null,
     factory: () => T
   }) {
     this.ngInjectableDef = undefined;

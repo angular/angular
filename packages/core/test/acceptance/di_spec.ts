@@ -8,6 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {Attribute, ChangeDetectorRef, Component, Directive, ElementRef, EventEmitter, Host, HostBinding, INJECTOR, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, forwardRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
+import {ɵINJECTOR_SCOPE} from '@angular/core/src/core';
 import {ViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -863,6 +864,37 @@ describe('di', () => {
              });
         });
       });
+    });
+  });
+
+  describe('Tree shakable injectors', () => {
+    it('should support tree shakable injectors scopes', () => {
+      @Injectable({providedIn: 'any'})
+      class AnyService {
+        constructor(public injector: Injector) {}
+      }
+
+      @Injectable({providedIn: 'root'})
+      class RootService {
+        constructor(public injector: Injector) {}
+      }
+
+      @Injectable({providedIn: 'platform'})
+      class PlatformService {
+        constructor(public injector: Injector) {}
+      }
+
+      const testBedInjector: Injector = TestBed.get(Injector);
+      const childInjector = Injector.create([], testBedInjector);
+
+      const anyService = childInjector.get(AnyService);
+      expect(anyService.injector).toBe(childInjector);
+
+      const rootService = childInjector.get(RootService);
+      expect(rootService.injector.get(ɵINJECTOR_SCOPE)).toBe('root');
+
+      const platformService = childInjector.get(PlatformService);
+      expect(platformService.injector.get(ɵINJECTOR_SCOPE)).toBe('platform');
     });
   });
 
