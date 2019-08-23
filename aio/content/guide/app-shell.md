@@ -21,11 +21,10 @@ For an existing application, you have to manually add the `RouterModule` and def
 Use the CLI to automatically create the app shell.
 
 <code-example language="bash">
-ng generate app-shell --client-project my-app --universal-project server-app
+ng generate app-shell --client-project my-app
 </code-example>
 
-* `my-app` takes the name of your client application.
-* `server-app` takes the name of the Universal (or server) application.
+* `client-project` takes the name of your client application.
 
 After running this command you will notice that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
 
