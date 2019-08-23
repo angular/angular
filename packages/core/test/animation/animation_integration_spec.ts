@@ -13,6 +13,7 @@ import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {ANIMATION_MODULE_TYPE, BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {hasStyle} from '@angular/platform-browser/testing/src/browser_util';
 import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
@@ -1446,8 +1447,7 @@ const DEFAULT_COMPONENT_ID = '1';
         const player = engine.players.pop();
         player.finish();
 
-        expect(getDOM().hasStyle(cmp.element.nativeElement, 'background-color', 'green'))
-            .toBeTruthy();
+        expect(hasStyle(cmp.element.nativeElement, 'background-color', 'green')).toBeTruthy();
       });
 
       it('should retain state styles when the underlying DOM structure changes even if there are no insert/remove animations',
@@ -2039,7 +2039,7 @@ const DEFAULT_COMPONENT_ID = '1';
            player.finish();
 
            flushMicrotasks();
-           expect(getDOM().hasStyle(element, 'color', 'red')).toBeTruthy();
+           expect(hasStyle(element, 'color', 'red')).toBeTruthy();
 
            cmp.exp = '1';
            cmp.color = 'blue';
@@ -2047,7 +2047,7 @@ const DEFAULT_COMPONENT_ID = '1';
            resetLog();
 
            flushMicrotasks();
-           expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
+           expect(hasStyle(element, 'color', 'blue')).toBeTruthy();
 
            cmp.exp = '1';
            cmp.color = null;
@@ -2055,7 +2055,7 @@ const DEFAULT_COMPONENT_ID = '1';
            resetLog();
 
            flushMicrotasks();
-           expect(getDOM().hasStyle(element, 'color', 'black')).toBeTruthy();
+           expect(hasStyle(element, 'color', 'black')).toBeTruthy();
          }));
 
       it('should substitute in values if the provided state match is an object with values', () => {
@@ -2157,9 +2157,9 @@ const DEFAULT_COMPONENT_ID = '1';
            p1.finish();
            flushMicrotasks();
 
-           expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
-           expect(getDOM().hasStyle(element, 'fontSize', '50px')).toBeTruthy();
-           expect(getDOM().hasStyle(element, 'width', '888px')).toBeTruthy();
+           expect(hasStyle(element, 'color', 'blue')).toBeTruthy();
+           expect(hasStyle(element, 'fontSize', '50px')).toBeTruthy();
+           expect(hasStyle(element, 'width', '888px')).toBeTruthy();
          }));
 
       it('should only evaluate final state param substitutions from the expression and state values and not from the transition options ',
@@ -2223,8 +2223,8 @@ const DEFAULT_COMPONENT_ID = '1';
            p1.finish();
            flushMicrotasks();
 
-           expect(getDOM().hasStyle(element, 'width', '100px')).toBeTruthy();
-           expect(getDOM().hasStyle(element, 'height', '100px')).toBeTruthy();
+           expect(hasStyle(element, 'width', '100px')).toBeTruthy();
+           expect(hasStyle(element, 'height', '100px')).toBeTruthy();
          }));
 
       it('should not flush animations twice when an inner component runs change detection', () => {
