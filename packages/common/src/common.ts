@@ -11,6 +11,7 @@
  * @description
  * Entry point for all public APIs of the common package.
  */
+export * from './private_export';
 export * from './location/index';
 export {formatDate} from './i18n/format_date';
 export {formatCurrency, formatNumber, formatPercent} from './i18n/format_number';
@@ -26,8 +27,3 @@ export {DeprecatedDatePipe, DeprecatedCurrencyPipe, DeprecatedDecimalPipe, Depre
 export {PLATFORM_BROWSER_ID as ɵPLATFORM_BROWSER_ID, PLATFORM_SERVER_ID as ɵPLATFORM_SERVER_ID, PLATFORM_WORKER_APP_ID as ɵPLATFORM_WORKER_APP_ID, PLATFORM_WORKER_UI_ID as ɵPLATFORM_WORKER_UI_ID, isPlatformBrowser, isPlatformServer, isPlatformWorkerApp, isPlatformWorkerUi} from './platform_id';
 export {VERSION} from './version';
 export {ViewportScroller, NullViewportScroller as ɵNullViewportScroller} from './viewport_scroller';
-
-export {NgClassImplProvider__POST_R3__ as ɵNgClassImplProvider__POST_R3__, NgClassR2Impl as ɵNgClassR2Impl, NgClassImpl as ɵNgClassImpl} from './directives/ng_class_impl';
-export {NgStyleImplProvider__POST_R3__ as ɵNgStyleImplProvider__POST_R3__, NgStyleR2Impl as ɵNgStyleR2Impl, NgStyleImpl as ɵNgStyleImpl} from './directives/ng_style_impl';
-export {ngStyleDirectiveDef__POST_R3__ as ɵngStyleDirectiveDef__POST_R3__, ngStyleFactoryDef__POST_R3__ as ɵngStyleFactoryDef__POST_R3__} from './directives/ng_style';
-export {ngClassDirectiveDef__POST_R3__ as ɵngClassDirectiveDef__POST_R3__, ngClassFactoryDef__POST_R3__ as ɵngClassFactoryDef__POST_R3__} from './directives/ng_class';

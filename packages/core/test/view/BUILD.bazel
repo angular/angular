@@ -9,6 +9,7 @@ ts_library(
         ["**/*.ts"],
     ),
     deps = [
+        "//packages/common",
         "//packages/core",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",

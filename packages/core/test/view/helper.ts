@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Injector, NgModuleRef} from '@angular/core';
 import {ArgumentType, NodeCheckFn, NodeDef, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewUpdateFn, initServicesIfNeeded, rootRenderNodes, viewDef} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 export function isBrowser() {
   return getDOM().supportsDOMEvents();

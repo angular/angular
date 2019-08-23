@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {RequestOptions} from '@angular/http/src/base_request_options';
 import {ContentType} from '@angular/http/src/enums';

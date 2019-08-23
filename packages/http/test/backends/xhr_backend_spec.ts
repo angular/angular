@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Injectable} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {BrowserXhr} from '@angular/http/src/backends/browser_xhr';
@@ -18,7 +19,6 @@ import {XSRFStrategy} from '@angular/http/src/interfaces';
 import {Request} from '@angular/http/src/static_request';
 import {Response} from '@angular/http/src/static_response';
 import {URLSearchParams} from '@angular/http/src/url_search_params';
-import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {setCookie} from '@angular/platform-browser/testing/src/browser_util';
 
 let abortSpy: any;

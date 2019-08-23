@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵparseCookieValue as parseCookieValue} from '@angular/common';
+import {ɵparseCookieValue as parseCookieValue, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
 import {ɵglobal as global} from '@angular/core';
-
-import {setRootDomAdapter} from '../dom/dom_adapter';
 
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 

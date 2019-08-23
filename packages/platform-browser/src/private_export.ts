@@ -13,7 +13,6 @@ export {TRANSITION_ID as ɵTRANSITION_ID} from './browser/server-transition';
 export {BrowserGetTestability as ɵBrowserGetTestability} from './browser/testability';
 export {escapeHtml as ɵescapeHtml} from './browser/transfer_state';
 export {ELEMENT_PROBE_PROVIDERS as ɵELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
-export {DomAdapter as ɵDomAdapter, getDOM as ɵgetDOM, setRootDomAdapter as ɵsetRootDomAdapter} from './dom/dom_adapter';
 export {DomRendererFactory2 as ɵDomRendererFactory2, NAMESPACE_URIS as ɵNAMESPACE_URIS, flattenStyles as ɵflattenStyles, shimContentAttribute as ɵshimContentAttribute, shimHostAttribute as ɵshimHostAttribute} from './dom/dom_renderer';
 export {DomEventsPlugin as ɵDomEventsPlugin} from './dom/events/dom_events';
 export {HammerGesturesPlugin as ɵHammerGesturesPlugin} from './dom/events/hammer_gestures';

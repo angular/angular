@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {DebugElement, DebugNode, Predicate, Type} from '@angular/core';
-import {getDOM} from '../../dom/dom_adapter';
 
 
 
