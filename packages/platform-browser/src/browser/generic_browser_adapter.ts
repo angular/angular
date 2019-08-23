@@ -20,9 +20,6 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
   constructor() { super(); }
 
   getDistributedNodes(el: HTMLElement): Node[] { return (<any>el).getDistributedNodes(); }
-  resolveAndSetHref(el: HTMLAnchorElement, baseUrl: string, href: string) {
-    el.href = href == null ? baseUrl : baseUrl + '/../' + href;
-  }
   supportsDOMEvents(): boolean { return true; }
   supportsNativeShadowDOM(): boolean {
     return typeof(<any>document.body).createShadowRoot === 'function';

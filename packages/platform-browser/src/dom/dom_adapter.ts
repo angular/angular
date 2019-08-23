@@ -32,7 +32,6 @@ export function setRootDomAdapter(adapter: DomAdapter) {
  * can introduce XSS risks.
  */
 export abstract class DomAdapter {
-  public resourceLoaderType: Type<any> = null !;
   abstract hasProperty(element: any, name: string): boolean;
   abstract setProperty(el: Element, name: string, value: any): any;
   abstract getProperty(el: Element, name: string): any;
@@ -42,16 +41,6 @@ export abstract class DomAdapter {
   abstract log(error: any): any;
   abstract logGroup(error: any): any;
   abstract logGroupEnd(): any;
-
-  /**
-   * Maps attribute names to their corresponding property names for cases
-   * where attribute name doesn't match property name.
-   */
-  get attrToPropMap(): {[key: string]: string} { return this._attrToPropMap; }
-  set attrToPropMap(value: {[key: string]: string}) { this._attrToPropMap = value; }
-  /** @internal */
-  // TODO(issue/24571): remove '!'.
-  _attrToPropMap !: {[key: string]: string};
 
   abstract contains(nodeA: any, nodeB: any): boolean;
   abstract parse(templateHtml: string): any;
@@ -64,8 +53,6 @@ export abstract class DomAdapter {
   abstract createEvent(eventType: string): any;
   abstract preventDefault(evt: any): any;
   abstract isPrevented(evt: any): boolean;
-  /** Returns content if el is a <template> element, null otherwise. */
-  abstract getTemplateContent(el: any): any;
   abstract nodeName(node: any): string;
   abstract nodeValue(node: any): string|null;
   abstract type(node: any): string;
@@ -78,31 +65,23 @@ export abstract class DomAdapter {
   abstract clearNodes(el: any): any;
   abstract appendChild(el: any, node: any): any;
   abstract removeChild(el: any, node: any): any;
-  abstract replaceChild(el: any, newNode: any, oldNode: any): any;
   abstract remove(el: any): Node;
   abstract insertBefore(parent: any, ref: any, node: any): any;
-  abstract insertAllBefore(parent: any, ref: any, nodes: any): any;
-  abstract insertAfter(parent: any, el: any, node: any): any;
-  abstract setInnerHTML(el: any, value: any): any;
   abstract getText(el: any): string|null;
   abstract setText(el: any, value: string): any;
   abstract getValue(el: any): string;
   abstract setValue(el: any, value: string): any;
   abstract getChecked(el: any): boolean;
-  abstract setChecked(el: any, value: boolean): any;
   abstract createComment(text: string): any;
   abstract createTemplate(html: any): HTMLElement;
   abstract createElement(tagName: any, doc?: any): HTMLElement;
   abstract createElementNS(ns: string, tagName: string, doc?: any): Element;
   abstract createTextNode(text: string, doc?: any): Text;
-  abstract createScriptTag(attrName: string, attrValue: string, doc?: any): HTMLElement;
-  abstract createStyleElement(css: string, doc?: any): HTMLStyleElement;
   abstract createShadowRoot(el: any): any;
   abstract getShadowRoot(el: any): any;
   abstract getHost(el: any): any;
   abstract getDistributedNodes(el: any): Node[];
   abstract clone /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
-  abstract getElementsByClassName(element: any, name: string): HTMLElement[];
   abstract getElementsByTagName(element: any, name: string): HTMLElement[];
   abstract classList(element: any): any[];
   abstract addClass(element: any, className: string): any;
@@ -122,7 +101,6 @@ export abstract class DomAdapter {
   abstract templateAwareRoot(el: any): any;
   abstract createHtmlDocument(): HTMLDocument;
   abstract getDefaultDocument(): Document;
-  abstract getBoundingClientRect(el: any): any;
   abstract getTitle(doc: Document): string;
   abstract setTitle(doc: Document, newTitle: string): any;
   abstract elementMatches(n: any, selector: string): boolean;
@@ -131,11 +109,8 @@ export abstract class DomAdapter {
   abstract isElementNode(node: any): boolean;
   abstract hasShadowRoot(node: any): boolean;
   abstract isShadowRoot(node: any): boolean;
-  abstract importIntoDoc /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
-  abstract adoptNode /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
   abstract getHref(element: any): string;
   abstract getEventKey(event: any): string;
-  abstract resolveAndSetHref(element: any, baseUrl: string, href: string): any;
   abstract supportsDOMEvents(): boolean;
   abstract supportsNativeShadowDOM(): boolean;
   abstract getGlobalEventTarget(doc: Document, target: string): any;
@@ -143,6 +118,8 @@ export abstract class DomAdapter {
   abstract getLocation(): Location;
   abstract getBaseHref(doc: Document): string|null;
   abstract resetBaseElement(): void;
+
+  // TODO: remove dependency in DefaultValueAccessor
   abstract getUserAgent(): string;
 
   // Used by AngularProfiler
