@@ -16,6 +16,8 @@ import {isCommentNode} from '@angular/platform-browser/testing/src/browser_util'
 
 /**
  * Jasmine matchers that check Angular specific conditions.
+ *
+ * Note: These matchers will only work in a browser environment.
  */
 export interface NgMatchers<T = any> extends jasmine.Matchers<T> {
   /**
@@ -294,8 +296,8 @@ function elementText(n: any): string {
     return elementText(Array.prototype.slice.apply(getDOM().getDistributedNodes(n)));
   }
 
-  if (getDOM().hasShadowRoot(n)) {
-    return elementText(getDOM().childNodesAsList(getDOM().getShadowRoot(n)));
+  if (hasShadowRoot(n)) {
+    return elementText(getDOM().childNodesAsList((<any>n).shadowRoot));
   }
 
   if (hasNodes(n)) {
@@ -303,4 +305,8 @@ function elementText(n: any): string {
   }
 
   return getDOM().getText(n) !;
+}
+
+function hasShadowRoot(node: any): boolean {
+  return node.shadowRoot != null && node instanceof HTMLElement;
 }

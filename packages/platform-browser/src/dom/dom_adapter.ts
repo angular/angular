@@ -77,8 +77,6 @@ export abstract class DomAdapter {
   abstract createElement(tagName: any, doc?: any): HTMLElement;
   abstract createElementNS(ns: string, tagName: string, doc?: any): Element;
   abstract createTextNode(text: string, doc?: any): Text;
-  abstract createShadowRoot(el: any): any;
-  abstract getShadowRoot(el: any): any;
   abstract getHost(el: any): any;
   abstract getDistributedNodes(el: any): Node[];
   abstract clone /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
@@ -107,13 +105,18 @@ export abstract class DomAdapter {
   abstract isTemplateElement(el: any): boolean;
   abstract isTextNode(node: any): boolean;
   abstract isElementNode(node: any): boolean;
-  abstract hasShadowRoot(node: any): boolean;
+
+  // Used by Testability
   abstract isShadowRoot(node: any): boolean;
-  abstract getHref(element: any): string;
+
+  // Used by KeyEventsPlugin
   abstract getEventKey(event: any): string;
   abstract supportsDOMEvents(): boolean;
-  abstract supportsNativeShadowDOM(): boolean;
+
+  // Used by PlatformLocation and ServerEventManagerPlugin
   abstract getGlobalEventTarget(doc: Document, target: string): any;
+
+  // Used by PlatformLocation
   abstract getHistory(): History;
   abstract getLocation(): Location;
   abstract getBaseHref(doc: Document): string|null;

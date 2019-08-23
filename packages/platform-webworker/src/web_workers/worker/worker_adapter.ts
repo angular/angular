@@ -86,8 +86,6 @@ export class WorkerDomAdapter extends DomAdapter {
   createElement(tagName: any, doc?: any): HTMLElement { throw 'not implemented'; }
   createElementNS(ns: string, tagName: string, doc?: any): Element { throw 'not implemented'; }
   createTextNode(text: string, doc?: any): Text { throw 'not implemented'; }
-  createShadowRoot(el: any): any { throw 'not implemented'; }
-  getShadowRoot(el: any): any { throw 'not implemented'; }
   getHost(el: any): any { throw 'not implemented'; }
   getDistributedNodes(el: any): Node[] { throw 'not implemented'; }
   clone(node: Node): Node { throw 'not implemented'; }
@@ -118,12 +116,9 @@ export class WorkerDomAdapter extends DomAdapter {
   isTemplateElement(el: any): boolean { throw 'not implemented'; }
   isTextNode(node: any): boolean { throw 'not implemented'; }
   isElementNode(node: any): boolean { throw 'not implemented'; }
-  hasShadowRoot(node: any): boolean { throw 'not implemented'; }
   isShadowRoot(node: any): boolean { throw 'not implemented'; }
-  getHref(element: any): string { throw 'not implemented'; }
   getEventKey(event: any): string { throw 'not implemented'; }
   supportsDOMEvents(): boolean { throw 'not implemented'; }
-  supportsNativeShadowDOM(): boolean { throw 'not implemented'; }
   getGlobalEventTarget(doc: Document, target: string): any { throw 'not implemented'; }
   getHistory(): History { throw 'not implemented'; }
   getLocation(): Location { throw 'not implemented'; }
