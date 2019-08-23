@@ -179,3 +179,7 @@ export function setCookie(name: string, value: string) {
   // not clear other cookies.
   document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
 }
+
+export function supportsWebAnimation(): boolean {
+  return typeof(<any>Element).prototype['animate'] === 'function';
+}

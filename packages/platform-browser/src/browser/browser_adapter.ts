@@ -352,14 +352,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   resetBaseElement(): void { baseElement = null; }
   getUserAgent(): string { return window.navigator.userAgent; }
-  setData(element: Element, name: string, value: string) {
-    this.setAttribute(element, 'data-' + name, value);
-  }
-  getComputedStyle(element: any): any { return getComputedStyle(element); }
-  // TODO(tbosch): move this into a separate environment class once we have it
-  supportsWebAnimation(): boolean {
-    return typeof(<any>Element).prototype['animate'] === 'function';
-  }
   performanceNow(): number {
     // performance.now() is not available in all browsers, see
     // http://caniuse.com/#search=performance.now
