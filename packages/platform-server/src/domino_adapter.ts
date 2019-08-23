@@ -207,11 +207,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   getLocation(): Location { throw _notImplemented('getLocation'); }
   getUserAgent(): string { return 'Fake user agent'; }
 
-  supportsWebAnimation(): boolean { return false; }
   performanceNow(): number { return Date.now(); }
-  getAnimationPrefix(): string { return ''; }
-  getTransitionEnd(): string { return 'transitionend'; }
-  supportsAnimation(): boolean { return true; }
 
   getDistributedNodes(el: any): Node[] { throw _notImplemented('getDistributedNodes'); }
 

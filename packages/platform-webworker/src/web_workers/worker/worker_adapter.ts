@@ -148,13 +148,7 @@ export class WorkerDomAdapter extends DomAdapter {
   getBaseHref(doc: Document): string { throw 'not implemented'; }
   resetBaseElement(): void { throw 'not implemented'; }
   getUserAgent(): string { return 'Fake user agent'; }
-  setData(element: any, name: string, value: string) { throw 'not implemented'; }
-  getComputedStyle(element: any): any { throw 'not implemented'; }
   performanceNow(): number { throw 'not implemented'; }
-  getAnimationPrefix(): string { throw 'not implemented'; }
-  getTransitionEnd(): string { throw 'not implemented'; }
-  supportsAnimation(): boolean { throw 'not implemented'; }
-  supportsWebAnimation(): boolean { throw 'not implemented'; }
 
   supportsCookies(): boolean { return false; }
   getCookie(name: string): string { throw 'not implemented'; }

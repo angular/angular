@@ -522,12 +522,12 @@ describe('projection', () => {
       const main = TestBed.createComponent(MainComp);
 
       const mainEl = main.nativeElement;
-      const div1 = getDOM().firstChild(mainEl);
+      const div1 = getDOM().firstChild(mainEl) as Element;
       const div2 = getDOM().createElement('div');
       getDOM().setAttribute(div2, 'class', 'redStyle');
       getDOM().appendChild(mainEl, div2);
-      expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
-      expect(getDOM().getComputedStyle(div2).color).toEqual('rgb(255, 0, 0)');
+      expect(getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+      expect(getComputedStyle(div2).color).toEqual('rgb(255, 0, 0)');
     });
 
     it('should support emulated style encapsulation', () => {
@@ -542,11 +542,11 @@ describe('projection', () => {
       const main = TestBed.createComponent(MainComp);
 
       const mainEl = main.nativeElement;
-      const div1 = getDOM().firstChild(mainEl);
+      const div1 = getDOM().firstChild(mainEl) as Element;
       const div2 = getDOM().createElement('div');
       getDOM().appendChild(mainEl, div2);
-      expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
-      expect(getDOM().getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
+      expect(getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+      expect(getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
     });
   }
 

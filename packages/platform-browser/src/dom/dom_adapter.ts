@@ -144,13 +144,9 @@ export abstract class DomAdapter {
   abstract getBaseHref(doc: Document): string|null;
   abstract resetBaseElement(): void;
   abstract getUserAgent(): string;
-  abstract setData(element: any, name: string, value: string): any;
-  abstract getComputedStyle(element: any): any;
-  abstract supportsWebAnimation(): boolean;
+
+  // Used by AngularProfiler
   abstract performanceNow(): number;
-  abstract getAnimationPrefix(): string;
-  abstract getTransitionEnd(): string;
-  abstract supportsAnimation(): boolean;
 
   // Used by CookieXSRFStrategy
   abstract supportsCookies(): boolean;
