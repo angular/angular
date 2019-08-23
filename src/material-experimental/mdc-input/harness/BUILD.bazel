@@ -1,0 +1,33 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_test_library", "ng_web_test_suite", "ts_library")
+
+ts_library(
+    name = "harness",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    deps = [
+        "//src/cdk-experimental/testing",
+        "//src/cdk/coercion",
+    ],
+)
+
+ng_test_library(
+    name = "harness_tests",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":harness",
+        "//src/cdk-experimental/testing",
+        "//src/cdk-experimental/testing/testbed",
+        "//src/material/input",
+        "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+    ],
+)
+
+ng_web_test_suite(
+    name = "tests",
+    deps = [":harness_tests"],
+)

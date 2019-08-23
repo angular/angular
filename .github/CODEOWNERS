@@ -94,6 +94,8 @@
 /src/material-experimental/mdc-checkbox/**         @mmalerba
 /src/material-experimental/mdc-chips/**            @mmalerba
 /src/material-experimental/mdc-helpers/**          @mmalerba
+# Note to implementer: please repossess
+/src/material-experimental/mdc-input/**            @devversion
 /src/material-experimental/mdc-menu/**             @crisbeto
 /src/material-experimental/mdc-select/**           @crisbeto
 /src/material-experimental/mdc-progress-spinner/** @andrewseguin
