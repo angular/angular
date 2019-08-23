@@ -12,7 +12,7 @@ import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/t
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
-import {browserDetection, dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
+import {browserDetection, dispatchEvent, hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ClientMessageBrokerFactory} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/render_store';
@@ -109,10 +109,10 @@ let lastCreatedRenderer: Renderer2;
                 expect(el.tabIndex).toEqual(1);
 
                 lastCreatedRenderer.addClass(workerEl, 'a');
-                expect(getDOM().hasClass(el, 'a')).toBe(true);
+                expect(hasClass(el, 'a')).toBe(true);
 
                 lastCreatedRenderer.removeClass(workerEl, 'a');
-                expect(getDOM().hasClass(el, 'a')).toBe(false);
+                expect(hasClass(el, 'a')).toBe(false);
 
                 lastCreatedRenderer.setStyle(workerEl, 'width', '10px');
                 expect(getDOM().getStyle(el, 'width')).toEqual('10px');

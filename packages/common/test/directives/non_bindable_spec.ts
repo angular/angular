@@ -10,6 +10,7 @@ import {Component, Directive} from '@angular/core';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
@@ -37,7 +38,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          // We must use getDOM().querySelector instead of fixture.query here
          // since the elements inside are not compiled.
          const span = getDOM().querySelector(fixture.nativeElement, '#child');
-         expect(getDOM().hasClass(span, 'compiled')).toBeFalsy();
+         expect(hasClass(span, 'compiled')).toBeFalsy();
        }));
 
     it('should trigger directives on the same node', async(() => {
@@ -45,7 +46,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          const fixture = createTestComponent(template);
          fixture.detectChanges();
          const span = getDOM().querySelector(fixture.nativeElement, '#child');
-         expect(getDOM().hasClass(span, 'compiled')).toBeTruthy();
+         expect(hasClass(span, 'compiled')).toBeTruthy();
        }));
   });
 }

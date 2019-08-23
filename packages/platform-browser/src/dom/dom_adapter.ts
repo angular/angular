@@ -80,19 +80,16 @@ export abstract class DomAdapter {
   abstract getDistributedNodes(el: any): Node[];
   abstract clone /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
   abstract getElementsByTagName(element: any, name: string): HTMLElement[];
-  abstract classList(element: any): any[];
-  abstract addClass(element: any, className: string): any;
-  abstract removeClass(element: any, className: string): any;
-  abstract hasClass(element: any, className: string): boolean;
-  abstract setStyle(element: any, styleName: string, styleValue: string): any;
-  abstract removeStyle(element: any, styleName: string): any;
-  abstract getStyle(element: any, styleName: string): string;
-  abstract hasStyle(element: any, styleName: string, styleValue?: string): boolean;
 
   // Used by Meta
   abstract getAttribute(element: any, attribute: string): string|null;
 
   // Used by platform-server
+  abstract addClass(element: any, className: string): any;
+  abstract removeClass(element: any, className: string): any;
+  abstract getStyle(element: any, styleName: string): any;
+  abstract setStyle(element: any, styleName: string, styleValue: string): any;
+  abstract removeStyle(element: any, styleName: string): any;
   abstract setAttribute(element: any, name: string, value: string): any;
   abstract setAttributeNS(element: any, ns: string, name: string, value: string): any;
   abstract removeAttribute(element: any, attribute: string): any;
