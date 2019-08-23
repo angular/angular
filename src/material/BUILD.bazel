@@ -1,7 +1,5 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:sass_bundle.bzl", "sass_bundle")
-load("//tools:defaults.bzl", "ng_module", "ng_package")
 load(
     "//:packages.bzl",
     "MATERIAL_PACKAGES",
@@ -9,6 +7,8 @@ load(
     "MATERIAL_TARGETS",
     "ROLLUP_GLOBALS",
 )
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:sass_bundle.bzl", "sass_bundle")
 
 # Root "@angular/material" entry-point.
 ng_module(

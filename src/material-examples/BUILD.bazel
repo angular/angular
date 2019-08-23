@@ -82,20 +82,20 @@ package_docs_content(
         # in the documentation.
         "//guides": "guides",
 
-        # For the live-examples in our docs, we want to package the highlighted files
-        # into the docs content. These will be used to show the source code for examples.
-        ":highlighted-source-files": "examples-highlighted",
+        # Package the overviews for "@angular/material" and "@angular/cdk" into the docs content
+        "//src/cdk:overviews": "overviews/cdk",
+        "//src/material:overviews": "overviews/material",
+
+        # Package the API docs for the Material and CDK package into the docs-content
+        "//src:api-docs": "api-docs",
 
         # In order to be able to run examples in StackBlitz, we also want to package the
         # plain source files into the docs-content.
         ":example-source-files": "examples-source",
 
-        # Package the overviews for "@angular/material" and "@angular/cdk" into the docs content
-        "//src/material:overviews": "overviews/material",
-        "//src/cdk:overviews": "overviews/cdk",
-
-        # Package the API docs for the Material and CDK package into the docs-content
-        "//src:api-docs": "api-docs",
+        # For the live-examples in our docs, we want to package the highlighted files
+        # into the docs content. These will be used to show the source code for examples.
+        ":highlighted-source-files": "examples-highlighted",
     },
     tags = ["docs-package"],
 )

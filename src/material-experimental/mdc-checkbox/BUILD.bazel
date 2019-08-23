@@ -1,8 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
-load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite", "ts_library")
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite", "ts_library")
 
 ng_module(
     name = "mdc-checkbox",

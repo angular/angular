@@ -50,16 +50,16 @@ sass_bundle = rule(
         # the nodejs_binary runs.
         "srcs": attr.label_list(allow_files = True),
 
+        # The scss entry-point. Note that this uses a label and not a string
+        # in order to make bazel aware that this file is a *dependency* of the
+        # rule (and will thus be available to the nodejs_binary in the sandbox).
+        "entry_point": attr.label(mandatory = True, allow_single_file = True),
+
         # The name of the file to be output from this rule. The rule will fail if
         # the nodejs_binary does not produce this output file. By using
         # `attr.output()`, we can omit the separate `outputs` declaration a more
         # complicated rule would need.
         "output_name": attr.output(),
-
-        # The scss entry-point. Note that this uses a label and not a string
-        # in order to make bazel aware that this file is a *dependency* of the
-        # rule (and will thus be available to the nodejs_binary in the sandbox).
-        "entry_point": attr.label(mandatory = True, allow_single_file = True),
 
         # The executable (bundler) for this rule (private).
         "_sass_bundle": attr.label(

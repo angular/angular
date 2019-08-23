@@ -1,12 +1,12 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_package")
 load(
     "//:packages.bzl",
     "CDK_EXPERIMENTAL_PACKAGES",
     "CDK_EXPERIMENTAL_TARGETS",
     "ROLLUP_GLOBALS",
 )
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 ng_module(
     name = "cdk-experimental",

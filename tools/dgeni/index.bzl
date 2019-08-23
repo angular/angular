@@ -82,18 +82,18 @@ dgeni_api_docs = rule(
         # { "cdk": ["a11y", "platform", "bidi"] }.
         "entry_points": attr.string_list_dict(mandatory = True),
 
-        # Dgeni document templates that should be be available as inputs to the
-        # Bazel action. Dgeni tries to resolve templates from the execroot, so they
-        # need to be available in the sandbox.
-        "_dgeni_templates": attr.label(
-            default = Label("//tools/dgeni/templates"),
-        ),
-
         # NodeJS binary target that runs Dgeni and parses the passed command arguments.
         "_dgeni_bin": attr.label(
             default = Label("//tools/dgeni"),
             executable = True,
             cfg = "host",
+        ),
+
+        # Dgeni document templates that should be be available as inputs to the
+        # Bazel action. Dgeni tries to resolve templates from the execroot, so they
+        # need to be available in the sandbox.
+        "_dgeni_templates": attr.label(
+            default = Label("//tools/dgeni/templates"),
         ),
     },
 )

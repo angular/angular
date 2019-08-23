@@ -2,8 +2,8 @@ package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
-load("//tools:defaults.bzl", "ng_module")
 load("//:packages.bzl", "ANGULAR_LIBRARY_UMDS")
+load("//tools:defaults.bzl", "ng_module")
 
 exports_files([
     "protractor.conf.js",

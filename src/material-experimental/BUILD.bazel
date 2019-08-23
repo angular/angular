@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_package")
 load("//:packages.bzl", "ROLLUP_GLOBALS")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 exports_files(["mdc_require_config.js"])
 
