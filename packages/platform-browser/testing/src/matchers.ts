@@ -10,7 +10,7 @@
 import {Type, ɵglobal as global} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 import {By, ɵgetDOM as getDOM} from '@angular/platform-browser';
-import {isCommentNode} from '@angular/platform-browser/testing/src/browser_util';
+import {isCommentNode} from './browser_util';
 
 
 
@@ -292,7 +292,7 @@ function elementText(n: any): string {
     return '';
   }
 
-  if (getDOM().isElementNode(n) && getDOM().tagName(n) == 'CONTENT') {
+  if (getDOM().isElementNode(n) && (n as Element).tagName == 'CONTENT') {
     return elementText(Array.prototype.slice.apply(getDOM().getDistributedNodes(n)));
   }
 

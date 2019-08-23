@@ -137,8 +137,7 @@ function declareTests(config?: {useJit: boolean}) {
 
         fixture.componentInstance.ctxProp = null !;
         fixture.detectChanges();
-        expect(getDOM().hasAttribute(fixture.debugElement.children[0].nativeElement, 'foo'))
-            .toBeFalsy();
+        expect(fixture.debugElement.children[0].nativeElement.hasAttribute('foo')).toBeFalsy();
       });
 
       it('should remove style when when style expression evaluates to null', () => {

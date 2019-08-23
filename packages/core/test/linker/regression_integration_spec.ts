@@ -418,7 +418,7 @@ function declareTests(config?: {useJit: boolean}) {
       const compRef =
           modRef.componentFactoryResolver.resolveComponentFactory(App).create(Injector.NULL);
 
-      expect(getDOM().hasAttribute(compRef.location.nativeElement, 'ng-version')).toBe(false);
+      expect(compRef.location.nativeElement.hasAttribute('ng-version')).toBe(false);
     });
   });
 }

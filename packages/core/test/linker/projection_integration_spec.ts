@@ -980,7 +980,7 @@ class Tree {
 class CmpD {
   tagName: string;
   constructor(elementRef: ElementRef) {
-    this.tagName = getDOM().tagName(elementRef.nativeElement).toLowerCase();
+    this.tagName = elementRef.nativeElement.tagName.toLowerCase();
   }
 }
 
@@ -989,7 +989,7 @@ class CmpD {
 class CmpC {
   tagName: string;
   constructor(elementRef: ElementRef) {
-    this.tagName = getDOM().tagName(elementRef.nativeElement).toLowerCase();
+    this.tagName = elementRef.nativeElement.tagName.toLowerCase();
   }
 }
 

@@ -65,7 +65,6 @@ export class WorkerDomAdapter extends DomAdapter {
   nodeName(node: any): string { throw 'not implemented'; }
   nodeValue(node: any): string { throw 'not implemented'; }
   type(node: any): string { throw 'not implemented'; }
-  content(node: any): any { throw 'not implemented'; }
   firstChild(el: any): Node { throw 'not implemented'; }
   nextSibling(el: any): Node { throw 'not implemented'; }
   parentElement(el: any): Node { throw 'not implemented'; }
@@ -100,21 +99,16 @@ export class WorkerDomAdapter extends DomAdapter {
   hasStyle(element: any, styleName: string, styleValue?: string): boolean {
     throw 'not implemented';
   }
-  tagName(element: any): string { throw 'not implemented'; }
-  hasAttribute(element: any, attribute: string): boolean { throw 'not implemented'; }
   getAttribute(element: any, attribute: string): string { throw 'not implemented'; }
   setAttribute(element: any, name: string, value: string) { throw 'not implemented'; }
   setAttributeNS(element: any, ns: string, name: string, value: string) { throw 'not implemented'; }
   removeAttribute(element: any, attribute: string) { throw 'not implemented'; }
   removeAttributeNS(element: any, ns: string, attribute: string) { throw 'not implemented'; }
-  templateAwareRoot(el: any) { throw 'not implemented'; }
   createHtmlDocument(): HTMLDocument { throw 'not implemented'; }
   getDefaultDocument(): Document { throw 'not implemented'; }
   getTitle(doc: Document): string { throw 'not implemented'; }
   setTitle(doc: Document, newTitle: string) { throw 'not implemented'; }
   elementMatches(n: any, selector: string): boolean { throw 'not implemented'; }
-  isTemplateElement(el: any): boolean { throw 'not implemented'; }
-  isTextNode(node: any): boolean { throw 'not implemented'; }
   isElementNode(node: any): boolean { throw 'not implemented'; }
   isShadowRoot(node: any): boolean { throw 'not implemented'; }
   getEventKey(event: any): string { throw 'not implemented'; }

@@ -11,7 +11,7 @@ import {MockResourceLoader} from '@angular/compiler/testing';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RenderComponentType, Renderer, RendererFactory2, RendererType2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -1731,7 +1731,7 @@ function patchLoggingRenderer2(rendererFactory: RendererFactory2, log: RenderLog
       origSetProperty.call(renderer, el, name, value);
     };
     renderer.setValue = function(node: any, value: string): void {
-      if (getDOM().isTextNode(node)) {
+      if (isTextNode(node)) {
         log.setText(node, value);
       }
       origSetValue.call(renderer, node, value);
