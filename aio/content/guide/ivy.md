@@ -17,7 +17,8 @@ To opt out of Ivy and continue using View Engine for an existing project, set th
 
 AOT compilation with Ivy is faster than with View Engine, and can be used for development. 
 If you opt out of Ivy, AOT compilation will be slower, and should not be used for development in large projects. 
-When Ivy is disabled for a large project, make sure that the `aot` build option in that project configuration is not set.
+When Ivy is disabled for a large project, make sure that the `aot` build option in that project configuration is 
+set to `false` and it's only set to `true` in the `production` configuration.
 
 ```json
 {
@@ -27,7 +28,13 @@ When Ivy is disabled for a large project, make sure that the `aot` build option 
         "build": {
           "options": {
             ...
-            "aot": true,
+            "aot": false,
+          },
+          "configurations": {
+            "production": {
+              ...
+              "aot": true
+            }
           }
         }
       }
@@ -35,5 +42,3 @@ When Ivy is disabled for a large project, make sure that the `aot` build option 
   }
 }
 ```
-
- 
