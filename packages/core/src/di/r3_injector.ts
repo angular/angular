@@ -21,7 +21,7 @@ import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALU
 import {InjectorType, InjectorTypeWithProviders, getInheritedInjectableDef, getInjectableDef, getInjectorDef, ɵɵInjectableDef} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
-import {APP_ROOT} from './scope';
+import {INJECTOR_SCOPE} from './scope';
 
 
 
@@ -84,8 +84,10 @@ export function createInjector(
 export class R3Injector {
   /**
    * Map of tokens to records which contain the instances of those tokens.
+   * - `null` value implies that we don't have the record. Used by tree-shakable injectors
+   * to prevent further searches.
    */
-  private records = new Map<Type<any>|InjectionToken<any>, Record<any>>();
+  private records = new Map<Type<any>|InjectionToken<any>, Record<any>|null>();
 
   /**
    * The transitive set of `InjectorType`s which define this injector.
@@ -101,7 +103,7 @@ export class R3Injector {
    * Flag indicating this injector provides the APP_ROOT_SCOPE token, and thus counts as the
    * root scope.
    */
-  private readonly isRootInjector: boolean;
+  private readonly scope: 'root'|'platform'|null;
 
   readonly source: string|null;
 
@@ -129,7 +131,8 @@ export class R3Injector {
 
     // Detect whether this injector has the APP_ROOT_SCOPE token and thus should provide
     // any injectable scoped to APP_ROOT_SCOPE.
-    this.isRootInjector = this.records.has(APP_ROOT);
+    const record = this.records.get(INJECTOR_SCOPE);
+    this.scope = record != null ? record.value : null;
 
     // Eagerly instantiate the InjectorType classes themselves.
     this.injectorDefTypes.forEach(defType => this.get(defType));
@@ -170,7 +173,7 @@ export class R3Injector {
       // Check for the SkipSelf flag.
       if (!(flags & InjectFlags.SkipSelf)) {
         // SkipSelf isn't set, check if the record belongs to this injector.
-        let record: Record<T>|undefined = this.records.get(token);
+        let record: Record<T>|undefined|null = this.records.get(token);
         if (record === undefined) {
           // No record, but maybe the token is scoped to this injector. Look for an ngInjectableDef
           // with a scope matching this injector.
@@ -179,11 +182,13 @@ export class R3Injector {
             // Found an ngInjectableDef and it's scoped to this injector. Pretend as if it was here
             // all along.
             record = makeRecord(injectableDefOrInjectorDefFactory(token), NOT_YET);
-            this.records.set(token, record);
+          } else {
+            record = null;
           }
+          this.records.set(token, record);
         }
         // If a record was found, get the instance for it and return it.
-        if (record !== undefined) {
+        if (record != null /* NOT null || undefined */) {
           return this.hydrate(token, record);
         }
       }
@@ -389,7 +394,7 @@ export class R3Injector {
     if (!def.providedIn) {
       return false;
     } else if (typeof def.providedIn === 'string') {
-      return def.providedIn === 'any' || (def.providedIn === 'root' && this.isRootInjector);
+      return def.providedIn === 'any' || (def.providedIn === this.scope);
     } else {
       return this.injectorDefTypes.has(def.providedIn);
     }

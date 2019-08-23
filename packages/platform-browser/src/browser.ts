@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, PlatformLocation, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, Sanitizer, SkipSelf, StaticProvider, Testability, createPlatformFactory, platformCore, ɵAPP_ROOT as APP_ROOT, ɵConsole as Console} from '@angular/core';
+import {APP_ID, ApplicationModule, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, Sanitizer, SkipSelf, StaticProvider, Testability, createPlatformFactory, platformCore, ɵConsole as Console, ɵINJECTOR_SCOPE as INJECTOR_SCOPE} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
@@ -65,7 +65,7 @@ export function _document(): any {
 
 export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   BROWSER_SANITIZATION_PROVIDERS,
-  {provide: APP_ROOT, useValue: true},
+  {provide: INJECTOR_SCOPE, useValue: 'root'},
   {provide: ErrorHandler, useFactory: errorHandler, deps: []},
   {
     provide: EVENT_MANAGER_PLUGINS,
