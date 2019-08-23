@@ -70,6 +70,7 @@ export class DevAppLayout {
     {name: 'Tree', route: '/tree'},
     {name: 'Typography', route: '/typography'},
     {name: 'Virtual Scrolling', route: '/virtual-scroll'},
+    {name: 'YouTube Player', route: '/youtube-player'},
     {name: 'MDC Button', route: '/mdc-button'},
     {name: 'MDC Card', route: '/mdc-card'},
     {name: 'MDC Checkbox', route: '/mdc-checkbox'},

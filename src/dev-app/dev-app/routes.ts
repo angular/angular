@@ -105,6 +105,10 @@ export const DEV_APP_ROUTES: Routes = [
     path: 'virtual-scroll',
     loadChildren: 'virtual-scroll/virtual-scroll-demo-module#VirtualScrollDemoModule'
   },
+  {
+    path: 'youtube-player',
+    loadChildren: 'youtube-player/youtube-player-demo-module#YouTubePlayerDemoModule',
+  },
   {path: 'examples', loadChildren: 'examples-page/examples-page-module#ExamplesPageModule'},
   {path: '**', component: DevApp404},
 ];

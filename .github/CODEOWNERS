@@ -186,6 +186,7 @@
 /src/dev-app/tree/**                               @jelbourn
 /src/dev-app/typography/**                         @crisbeto
 /src/dev-app/virtual-scroll/**                     @mmalerba
+/src/dev-app/youtube-player/**                     @nathantate
 
 # E2E app
 /src/e2e-app/*                                     @jelbourn

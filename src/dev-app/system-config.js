@@ -105,6 +105,7 @@ MATERIAL_PACKAGES.forEach(function(pkgName) {
 GOOGLE_MAPS_PACKAGES.forEach(function(pkgName) {
   configureEntryPoint('google-maps', pkgName);
 });
+configureEntryPoint('youtube-player');
 
 /** Configures the specified package and its entry-point. */
 function configureEntryPoint(pkgName, entryPoint) {

@@ -72,6 +72,7 @@ ng_module(
         "//src/dev-app/tree",
         "//src/dev-app/typography",
         "//src/dev-app/virtual-scroll",
+        "//src/dev-app/youtube-player",
         "//src/material/core",
         "@npm//@angular/router",
     ],

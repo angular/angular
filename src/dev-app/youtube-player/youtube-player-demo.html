@@ -1,0 +1,16 @@
+<div>
+  <h1>Basic Example</h1>
+  <section>
+    <div class="demo-video-selection">
+      <label>Pick the video:</label>
+      <mat-radio-group aria-label="Select a video" [(ngModel)]="video">
+        <mat-radio-button *ngFor="let video of videos" [value]="video">
+          {{video.name}}
+        </mat-radio-button>
+        <mat-radio-button [value]="undefined">Unset</mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <p *ngIf="!apiLoaded">Loading youtube api...</p>
+    <youtube-player *ngIf="apiLoaded" [videoId]="video && video.id"></youtube-player>
+  </section>
+</div>
