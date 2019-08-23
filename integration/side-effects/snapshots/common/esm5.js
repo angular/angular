@@ -1,3 +1,3 @@
-import "@angular/core";
-
 import "tslib";
+
+import "@angular/core";
