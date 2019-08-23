@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, InjectionToken, NgZone} from '@angular/core';
-
-import {getDOM} from '../dom_adapter';
 
 /**
  * The injection token for the event-manager plug-in service.

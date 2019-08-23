@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, DOCUMENT, Location} from '@angular/common';
+import {APP_BASE_HREF, DOCUMENT, Location, ɵgetDOM as getDOM} from '@angular/common';
 import {ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, Component, NgModule, destroyPlatform} from '@angular/core';
 import {inject} from '@angular/core/testing';
-import {BrowserModule, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
 import {filter, first} from 'rxjs/operators';

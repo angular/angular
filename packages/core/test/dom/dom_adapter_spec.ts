@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {el, isTextNode, stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
+import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 
 {
   describe('dom adapter', () => {

@@ -8,11 +8,11 @@
 import {AUTO_STYLE, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild} from '@angular/core';
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {ANIMATION_MODULE_TYPE, BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {hasStyle} from '@angular/platform-browser/testing/src/browser_util';
 import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 

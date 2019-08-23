@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, destroyPlatform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
 import {browserDetection, dispatchEvent, hasClass} from '@angular/platform-browser/testing/src/browser_util';

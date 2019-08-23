@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DomAdapter} from '@angular/common/src/dom_adapter';
 import {ElementRef} from '@angular/core';
 import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detection';
 import {SpyObject} from '@angular/core/testing/src/testing_internal';
