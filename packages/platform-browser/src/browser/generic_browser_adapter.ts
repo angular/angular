@@ -21,7 +21,4 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
 
   getDistributedNodes(el: HTMLElement): Node[] { return (<any>el).getDistributedNodes(); }
   supportsDOMEvents(): boolean { return true; }
-  supportsNativeShadowDOM(): boolean {
-    return typeof(<any>document.body).createShadowRoot === 'function';
-  }
 }

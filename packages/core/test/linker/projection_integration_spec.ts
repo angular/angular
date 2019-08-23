@@ -491,7 +491,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
   });
 
-  if (getDOM().supportsNativeShadowDOM()) {
+  if (supportsNativeShadowDOM()) {
     it('should support native content projection and isolate styles per component', () => {
       TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
       TestBed.overrideComponent(MainComp, {
@@ -1031,4 +1031,8 @@ class CmpA1 {
   template: `{{'a2'}}<cmp-b21></cmp-b21><cmp-b22></cmp-b22>`,
 })
 class CmpA2 {
+}
+
+function supportsNativeShadowDOM(): boolean {
+  return typeof(<any>document.body).createShadowRoot === 'function';
 }
