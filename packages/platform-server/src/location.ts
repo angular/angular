@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
+import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, Optional} from '@angular/core';
-import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 import * as url from 'url';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';

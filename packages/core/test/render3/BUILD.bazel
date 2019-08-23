@@ -42,8 +42,8 @@ ts_library(
         "load_domino.ts",
     ],
     deps = [
+        "//packages/common",
         "//packages/compiler",
-        "//packages/platform-browser",
         "//packages/platform-server",
         "@npm//zone.js",
     ],

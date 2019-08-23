@@ -8,6 +8,7 @@
 
 import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {NgZone, RendererFactory2, RendererType2} from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {EventManager, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';

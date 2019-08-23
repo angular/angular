@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, isPlatformBrowser} from '@angular/common';
+import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
 import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Injector, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, Sanitizer, StaticProvider, Type, VERSION, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
@@ -15,7 +15,6 @@ import {Testability, TestabilityRegistry} from '@angular/core/src/testability/te
 import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 

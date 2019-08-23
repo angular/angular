@@ -9,7 +9,7 @@
 
 let _DOM: DomAdapter = null !;
 
-export function getDOM() {
+export function getDOM(): DomAdapter {
   return _DOM;
 }
 
@@ -94,7 +94,8 @@ export abstract class DomAdapter {
 
   // Used by PlatformLocation
   abstract getHistory(): History;
-  abstract getLocation(): Location;
+  abstract getLocation():
+      any; /** This is the ambient Location definition, NOT Location from @angular/common.  */
   abstract getBaseHref(doc: Document): string|null;
   abstract resetBaseElement(): void;
 

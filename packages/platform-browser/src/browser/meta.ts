@@ -6,12 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, ɵDomAdapter as DomAdapter, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, ɵɵinject} from '@angular/core';
-
-import {DomAdapter, getDOM} from '../dom/dom_adapter';
-
-
 
 /**
  * Represents a meta element.
