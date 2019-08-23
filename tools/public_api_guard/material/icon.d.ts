@@ -12,7 +12,7 @@ export declare const ICON_REGISTRY_PROVIDER: {
     useFactory: typeof ICON_REGISTRY_PROVIDER_FACTORY;
 };
 
-export declare function ICON_REGISTRY_PROVIDER_FACTORY(parentRegistry: MatIconRegistry, httpClient: HttpClient, sanitizer: DomSanitizer, document?: any): MatIconRegistry;
+export declare function ICON_REGISTRY_PROVIDER_FACTORY(parentRegistry: MatIconRegistry, httpClient: HttpClient, sanitizer: DomSanitizer, document?: any, errorHandler?: ErrorHandler): MatIconRegistry;
 
 export interface IconOptions {
     viewBox?: string;
@@ -43,7 +43,7 @@ export declare class MatIconModule {
 }
 
 export declare class MatIconRegistry implements OnDestroy {
-    constructor(_httpClient: HttpClient, _sanitizer: DomSanitizer, document: any);
+    constructor(_httpClient: HttpClient, _sanitizer: DomSanitizer, document: any, _errorHandler?: ErrorHandler | undefined);
     addSvgIcon(iconName: string, url: SafeResourceUrl, options?: IconOptions): this;
     addSvgIconInNamespace(namespace: string, iconName: string, url: SafeResourceUrl, options?: IconOptions): this;
     addSvgIconLiteral(iconName: string, literal: SafeHtml, options?: IconOptions): this;

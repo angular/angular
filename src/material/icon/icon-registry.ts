@@ -9,6 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {
+  ErrorHandler,
   Inject,
   Injectable,
   InjectionToken,
@@ -132,7 +133,9 @@ export class MatIconRegistry implements OnDestroy {
   constructor(
     @Optional() private _httpClient: HttpClient,
     private _sanitizer: DomSanitizer,
-    @Optional() @Inject(DOCUMENT) document: any) {
+    @Optional() @Inject(DOCUMENT) document: any,
+    // @breaking-change 9.0.0 _errorHandler parameter to be made required
+    @Optional() private readonly _errorHandler?: ErrorHandler) {
       this._document = document;
     }
 
@@ -373,7 +376,13 @@ export class MatIconRegistry implements OnDestroy {
 
             // Swallow errors fetching individual URLs so the
             // combined Observable won't necessarily fail.
-            console.error(`Loading icon set URL: ${url} failed: ${err.message}`);
+            const errorMessage = `Loading icon set URL: ${url} failed: ${err.message}`;
+            // @breaking-change 9.0.0 _errorHandler parameter to be made required
+            if (this._errorHandler) {
+              this._errorHandler.handleError(new Error(errorMessage));
+            } else {
+              console.error(errorMessage);
+            }
             return observableOf(null);
           })
         );
@@ -515,7 +524,7 @@ export class MatIconRegistry implements OnDestroy {
    * Converts an element into an SVG node by cloning all of its children.
    */
   private _toSvgElement(element: Element): SVGElement {
-    let svg = this._svgElementFromString('<svg></svg>');
+    const svg = this._svgElementFromString('<svg></svg>');
 
     for (let i = 0; i < element.childNodes.length; i++) {
       if (element.childNodes[i].nodeType === this._document.ELEMENT_NODE) {
@@ -616,8 +625,9 @@ export function ICON_REGISTRY_PROVIDER_FACTORY(
   parentRegistry: MatIconRegistry,
   httpClient: HttpClient,
   sanitizer: DomSanitizer,
-  document?: any) {
-  return parentRegistry || new MatIconRegistry(httpClient, sanitizer, document);
+  document?: any,
+  errorHandler?: ErrorHandler) {
+  return parentRegistry || new MatIconRegistry(httpClient, sanitizer, document, errorHandler);
 }
 
 /** @docs-private */
@@ -628,6 +638,7 @@ export const ICON_REGISTRY_PROVIDER = {
     [new Optional(), new SkipSelf(), MatIconRegistry],
     [new Optional(), HttpClient],
     DomSanitizer,
+    [new Optional(), ErrorHandler],
     [new Optional(), DOCUMENT as InjectionToken<any>],
   ],
   useFactory: ICON_REGISTRY_PROVIDER_FACTORY,
