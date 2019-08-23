@@ -52,9 +52,6 @@ export class WorkerDomAdapter extends DomAdapter {
   getProperty(el: Element, name: string): any { throw 'not implemented'; }
   invoke(el: Element, methodName: string, args: any[]): any { throw 'not implemented'; }
 
-  get attrToPropMap(): {[key: string]: string} { throw 'not implemented'; }
-  set attrToPropMap(value: {[key: string]: string}) { throw 'not implemented'; }
-
   parse(templateHtml: string) { throw 'not implemented'; }
   querySelector(el: any, selector: string): HTMLElement { throw 'not implemented'; }
   querySelectorAll(el: any, selector: string): any[] { throw 'not implemented'; }
@@ -65,7 +62,6 @@ export class WorkerDomAdapter extends DomAdapter {
   createEvent(eventType: string): any { throw 'not implemented'; }
   preventDefault(evt: any) { throw 'not implemented'; }
   isPrevented(evt: any): boolean { throw 'not implemented'; }
-  getTemplateContent(el: any): any { throw 'not implemented'; }
   nodeName(node: any): string { throw 'not implemented'; }
   nodeValue(node: any): string { throw 'not implemented'; }
   type(node: any): string { throw 'not implemented'; }
@@ -78,33 +74,23 @@ export class WorkerDomAdapter extends DomAdapter {
   clearNodes(el: any) { throw 'not implemented'; }
   appendChild(el: any, node: any) { throw 'not implemented'; }
   removeChild(el: any, node: any) { throw 'not implemented'; }
-  replaceChild(el: any, newNode: any, oldNode: any) { throw 'not implemented'; }
   remove(el: any): Node { throw 'not implemented'; }
   insertBefore(parent: any, el: any, node: any) { throw 'not implemented'; }
-  insertAllBefore(parent: any, el: any, nodes: any) { throw 'not implemented'; }
-  insertAfter(parent: any, el: any, node: any) { throw 'not implemented'; }
-  setInnerHTML(el: any, value: any) { throw 'not implemented'; }
   getText(el: any): string { throw 'not implemented'; }
   setText(el: any, value: string) { throw 'not implemented'; }
   getValue(el: any): string { throw 'not implemented'; }
   setValue(el: any, value: string) { throw 'not implemented'; }
   getChecked(el: any): boolean { throw 'not implemented'; }
-  setChecked(el: any, value: boolean) { throw 'not implemented'; }
   createComment(text: string): any { throw 'not implemented'; }
   createTemplate(html: any): HTMLElement { throw 'not implemented'; }
   createElement(tagName: any, doc?: any): HTMLElement { throw 'not implemented'; }
   createElementNS(ns: string, tagName: string, doc?: any): Element { throw 'not implemented'; }
   createTextNode(text: string, doc?: any): Text { throw 'not implemented'; }
-  createScriptTag(attrName: string, attrValue: string, doc?: any): HTMLElement {
-    throw 'not implemented';
-  }
-  createStyleElement(css: string, doc?: any): HTMLStyleElement { throw 'not implemented'; }
   createShadowRoot(el: any): any { throw 'not implemented'; }
   getShadowRoot(el: any): any { throw 'not implemented'; }
   getHost(el: any): any { throw 'not implemented'; }
   getDistributedNodes(el: any): Node[] { throw 'not implemented'; }
   clone(node: Node): Node { throw 'not implemented'; }
-  getElementsByClassName(element: any, name: string): HTMLElement[] { throw 'not implemented'; }
   getElementsByTagName(element: any, name: string): HTMLElement[] { throw 'not implemented'; }
   classList(element: any): any[] { throw 'not implemented'; }
   addClass(element: any, className: string) { throw 'not implemented'; }
@@ -126,7 +112,6 @@ export class WorkerDomAdapter extends DomAdapter {
   templateAwareRoot(el: any) { throw 'not implemented'; }
   createHtmlDocument(): HTMLDocument { throw 'not implemented'; }
   getDefaultDocument(): Document { throw 'not implemented'; }
-  getBoundingClientRect(el: any) { throw 'not implemented'; }
   getTitle(doc: Document): string { throw 'not implemented'; }
   setTitle(doc: Document, newTitle: string) { throw 'not implemented'; }
   elementMatches(n: any, selector: string): boolean { throw 'not implemented'; }
@@ -135,11 +120,8 @@ export class WorkerDomAdapter extends DomAdapter {
   isElementNode(node: any): boolean { throw 'not implemented'; }
   hasShadowRoot(node: any): boolean { throw 'not implemented'; }
   isShadowRoot(node: any): boolean { throw 'not implemented'; }
-  importIntoDoc(node: Node): Node { throw 'not implemented'; }
-  adoptNode(node: Node): Node { throw 'not implemented'; }
   getHref(element: any): string { throw 'not implemented'; }
   getEventKey(event: any): string { throw 'not implemented'; }
-  resolveAndSetHref(element: any, baseUrl: string, href: string) { throw 'not implemented'; }
   supportsDOMEvents(): boolean { throw 'not implemented'; }
   supportsNativeShadowDOM(): boolean { throw 'not implemented'; }
   getGlobalEventTarget(doc: Document, target: string): any { throw 'not implemented'; }

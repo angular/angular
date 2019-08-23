@@ -374,14 +374,6 @@ const SCHEMA: string[] = [
   ':svg:cursor^:svg:|',
 ];
 
-const attrToPropMap: {[name: string]: string} = <any>{
-  'class': 'className',
-  'formaction': 'formAction',
-  'innerHtml': 'innerHTML',
-  'readonly': 'readOnly',
-  'tabindex': 'tabIndex'
-};
-
 const EVENT = 'event';
 const BOOLEAN = 'boolean';
 const NUMBER = 'number';
