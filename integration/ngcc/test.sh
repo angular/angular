@@ -68,7 +68,7 @@ grep "_MatMenuBase.ngBaseDef = ɵngcc0.ɵɵdefineBase({ inputs: {" node_modules/
 if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it handle namespace imported decorators in UMD using `__decorate` syntax?
-grep "type: core.Injectable" node_modules/@angular/common/bundles/common.umd.js
+grep "type: i0.Injectable" node_modules/@angular/common/bundles/common.umd.js
 # (and ensure the @angular/common package is indeed using `__decorate` syntax)
 grep "JsonPipe = __decorate(" node_modules/@angular/common/bundles/common.umd.js.__ivy_ngcc_bak
 

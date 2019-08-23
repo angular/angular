@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, Injectable} from '@angular/core';
+import {EventEmitter, Injectable, ɵɵinject} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
-
 import {LocationStrategy} from './location_strategy';
 import {PlatformLocation} from './platform_location';
+import {joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util';
 
 /** @publicApi */
 export interface PopStateEvent {
@@ -48,7 +48,11 @@ export interface PopStateEvent {
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+  // See #23917
+  useFactory: createLocation,
+})
 export class Location {
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
@@ -65,7 +69,7 @@ export class Location {
     this._platformStrategy = platformStrategy;
     const browserBaseHref = this._platformStrategy.getBaseHref();
     this._platformLocation = platformLocation;
-    this._baseHref = Location.stripTrailingSlash(_stripIndexHtml(browserBaseHref));
+    this._baseHref = stripTrailingSlash(_stripIndexHtml(browserBaseHref));
     this._platformStrategy.onPopState((ev) => {
       this._subject.emit({
         'url': this.path(true),
@@ -105,7 +109,7 @@ export class Location {
    * otherwise.
    */
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
-    return this.path() == this.normalize(path + Location.normalizeQueryParams(query));
+    return this.path() == this.normalize(path + normalizeQueryParams(query));
   }
 
   /**
@@ -149,7 +153,7 @@ export class Location {
   go(path: string, query: string = '', state: any = null): void {
     this._platformStrategy.pushState(state, '', path, query);
     this._notifyUrlChangeListeners(
-        this.prepareExternalUrl(path + Location.normalizeQueryParams(query)), state);
+        this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
   }
 
   /**
@@ -163,7 +167,7 @@ export class Location {
   replaceState(path: string, query: string = '', state: any = null): void {
     this._platformStrategy.replaceState(state, '', path, query);
     this._notifyUrlChangeListeners(
-        this.prepareExternalUrl(path + Location.normalizeQueryParams(query)), state);
+        this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
   }
 
   /**
@@ -213,9 +217,7 @@ export class Location {
    *
    * @returns The normalized URL parameters string.
    */
-  public static normalizeQueryParams(params: string): string {
-    return params && params[0] !== '?' ? '?' + params : params;
-  }
+  public static normalizeQueryParams: (params: string) => string = normalizeQueryParams;
 
   /**
    * Joins two parts of a URL with a slash if needed.
@@ -226,28 +228,7 @@ export class Location {
    *
    * @returns The joined URL string.
    */
-  public static joinWithSlash(start: string, end: string): string {
-    if (start.length == 0) {
-      return end;
-    }
-    if (end.length == 0) {
-      return start;
-    }
-    let slashes = 0;
-    if (start.endsWith('/')) {
-      slashes++;
-    }
-    if (end.startsWith('/')) {
-      slashes++;
-    }
-    if (slashes == 2) {
-      return start + end.substring(1);
-    }
-    if (slashes == 1) {
-      return start + end;
-    }
-    return start + '/' + end;
-  }
+  public static joinWithSlash: (start: string, end: string) => string = joinWithSlash;
 
   /**
    * Removes a trailing slash from a URL string if needed.
@@ -258,12 +239,11 @@ export class Location {
    *
    * @returns The URL string, modified if needed.
    */
-  public static stripTrailingSlash(url: string): string {
-    const match = url.match(/#|\?|$/);
-    const pathEndIdx = match && match.index || url.length;
-    const droppedSlashIdx = pathEndIdx - (url[pathEndIdx - 1] === '/' ? 1 : 0);
-    return url.slice(0, droppedSlashIdx) + url.slice(pathEndIdx);
-  }
+  public static stripTrailingSlash: (url: string) => string = stripTrailingSlash;
+}
+
+export function createLocation() {
+  return new Location(ɵɵinject(LocationStrategy as any), ɵɵinject(PlatformLocation as any));
 }
 
 function _stripBaseHref(baseHref: string, url: string): string {

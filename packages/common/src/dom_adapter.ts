@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 let _DOM: DomAdapter = null !;
 
 export function getDOM(): DomAdapter {

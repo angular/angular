@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export {ɵgetDOM} from '@angular/common';
 export {BROWSER_SANITIZATION_PROVIDERS as ɵBROWSER_SANITIZATION_PROVIDERS, BROWSER_SANITIZATION_PROVIDERS__POST_R3__ as ɵBROWSER_SANITIZATION_PROVIDERS__POST_R3__, INTERNAL_BROWSER_PLATFORM_PROVIDERS as ɵINTERNAL_BROWSER_PLATFORM_PROVIDERS, initDomAdapter as ɵinitDomAdapter} from './browser';
 export {BrowserDomAdapter as ɵBrowserDomAdapter} from './browser/browser_adapter';
-export {BrowserPlatformLocation as ɵBrowserPlatformLocation} from './browser/location/browser_platform_location';
 export {TRANSITION_ID as ɵTRANSITION_ID} from './browser/server-transition';
 export {BrowserGetTestability as ɵBrowserGetTestability} from './browser/testability';
 export {escapeHtml as ɵescapeHtml} from './browser/transfer_state';
