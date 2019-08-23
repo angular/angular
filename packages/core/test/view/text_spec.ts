@@ -19,7 +19,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRoot
       it('should create text nodes without parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([textDef(0, null, ['a'])])).rootNodes;
         expect(rootNodes.length).toBe(1);
-        expect(getDOM().getText(rootNodes[0])).toBe('a');
+        expect(rootNodes[0].textContent).toBe('a');
       });
 
       it('should create views with multiple root text nodes', () => {
@@ -36,8 +36,8 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRoot
                             textDef(1, null, ['a']),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
-        const textNode = getDOM().firstChild(rootNodes[0]);
-        expect(getDOM().getText(textNode)).toBe('a');
+        const textNode = getDOM().firstChild(rootNodes[0]) as Element;
+        expect(textNode.textContent).toBe('a');
       });
 
       it('should add debug information to the renderer', () => {
@@ -61,7 +61,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRoot
 
           Services.checkAndUpdateView(view);
 
-          expect(getDOM().getText(rootNodes[0])).toBe('0a1b2');
+          expect(rootNodes[0].textContent).toBe('0a1b2');
         });
 
       });

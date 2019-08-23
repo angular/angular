@@ -60,31 +60,22 @@ export abstract class DomAdapter {
   abstract nextSibling(el: any): Node|null;
   abstract parentElement(el: any): Node|null;
   abstract childNodes(el: any): Node[];
-  abstract childNodesAsList(el: any): Node[];
-  abstract clearNodes(el: any): any;
-  abstract appendChild(el: any, node: any): any;
-  abstract removeChild(el: any, node: any): any;
-  abstract remove(el: any): Node;
-  abstract insertBefore(parent: any, ref: any, node: any): any;
-  abstract getText(el: any): string|null;
-  abstract setText(el: any, value: string): any;
-  abstract getValue(el: any): string;
-  abstract setValue(el: any, value: string): any;
-  abstract getChecked(el: any): boolean;
-  abstract createComment(text: string): any;
-  abstract createTemplate(html: any): HTMLElement;
-  abstract createElement(tagName: any, doc?: any): HTMLElement;
-  abstract createElementNS(ns: string, tagName: string, doc?: any): Element;
-  abstract createTextNode(text: string, doc?: any): Text;
-  abstract getHost(el: any): any;
-  abstract getDistributedNodes(el: any): Node[];
-  abstract clone /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
-  abstract getElementsByTagName(element: any, name: string): HTMLElement[];
 
   // Used by Meta
+  abstract remove(el: any): Node;
   abstract getAttribute(element: any, attribute: string): string|null;
 
   // Used by platform-server
+  abstract clearNodes(el: any): any;
+  abstract appendChild(el: any, node: any): any;
+  abstract removeChild(el: any, node: any): any;
+  abstract insertBefore(parent: any, ref: any, node: any): any;
+  abstract setText(el: any, value: string): any;
+  abstract createComment(text: string): any;
+  abstract createElement(tagName: any, doc?: any): HTMLElement;
+  abstract createElementNS(ns: string, tagName: string, doc?: any): Element;
+  abstract createTextNode(text: string, doc?: any): Text;
+  abstract getElementsByTagName(element: any, name: string): HTMLElement[];
   abstract addClass(element: any, className: string): any;
   abstract removeClass(element: any, className: string): any;
   abstract getStyle(element: any, styleName: string): any;
@@ -107,6 +98,7 @@ export abstract class DomAdapter {
 
   // Used by Testability
   abstract isShadowRoot(node: any): boolean;
+  abstract getHost(el: any): any;
 
   // Used by KeyEventsPlugin
   abstract getEventKey(event: any): string;

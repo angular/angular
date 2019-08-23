@@ -146,14 +146,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   nextSibling(el: Node): Node|null { return el.nextSibling; }
   parentElement(el: Node): Node|null { return el.parentNode; }
   childNodes(el: any): Node[] { return el.childNodes; }
-  childNodesAsList(el: Node): any[] {
-    const childNodes = el.childNodes;
-    const res = [];
-    for (let i = 0; i < childNodes.length; i++) {
-      res[i] = childNodes[i];
-    }
-    return res;
-  }
   clearNodes(el: Node) {
     while (el.firstChild) {
       el.removeChild(el.firstChild);
@@ -168,17 +160,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return node;
   }
   insertBefore(parent: Node, ref: Node, node: Node) { parent.insertBefore(node, ref); }
-  getText(el: Node): string|null { return el.textContent; }
   setText(el: Node, value: string) { el.textContent = value; }
   getValue(el: any): string { return el.value; }
-  setValue(el: any, value: string) { el.value = value; }
-  getChecked(el: any): boolean { return el.checked; }
   createComment(text: string): Comment { return this.getDefaultDocument().createComment(text); }
-  createTemplate(html: any): HTMLElement {
-    const t = this.getDefaultDocument().createElement('template');
-    t.innerHTML = html;
-    return t;
-  }
   createElement(tagName: string, doc?: Document): HTMLElement {
     doc = doc || this.getDefaultDocument();
     return doc.createElement(tagName);
@@ -192,7 +176,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return doc.createTextNode(text);
   }
   getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }
-  clone(node: Node): Node { return node.cloneNode(true); }
   getElementsByTagName(element: any, name: string): HTMLElement[] {
     return element.getElementsByTagName(name);
   }

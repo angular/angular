@@ -15,7 +15,7 @@ import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {getLocaleId} from '@angular/core/src/render3';
 import {BrowserModule} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {dispatchEvent, getContent} from '@angular/platform-browser/testing/src/browser_util';
+import {createTemplate, dispatchEvent, getContent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
@@ -35,7 +35,7 @@ class SomeComponent {
     function createRootEl(selector = 'bootstrap-app') {
       const doc = TestBed.get(DOCUMENT);
       const rootEl = <HTMLElement>getDOM().firstChild(
-          getContent(getDOM().createTemplate(`<${selector}></${selector}>`)));
+          getContent(createTemplate(`<${selector}></${selector}>`)));
       const oldRoots = getDOM().querySelectorAll(doc, selector);
       for (let i = 0; i < oldRoots.length; i++) {
         getDOM().remove(oldRoots[i]);

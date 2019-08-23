@@ -11,7 +11,7 @@ import {Type, ɵglobal as global} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 import {By, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
-import {hasClass, hasStyle, isCommentNode} from './browser_util';
+import {childNodesAsList, hasClass, hasStyle, isCommentNode} from './browser_util';
 
 
 
@@ -293,18 +293,18 @@ function elementText(n: any): string {
   }
 
   if (getDOM().isElementNode(n) && (n as Element).tagName == 'CONTENT') {
-    return elementText(Array.prototype.slice.apply(getDOM().getDistributedNodes(n)));
+    return elementText(Array.prototype.slice.apply((<any>n).getDistributedNodes()));
   }
 
   if (hasShadowRoot(n)) {
-    return elementText(getDOM().childNodesAsList((<any>n).shadowRoot));
+    return elementText(childNodesAsList((<any>n).shadowRoot));
   }
 
   if (hasNodes(n)) {
-    return elementText(getDOM().childNodesAsList(n));
+    return elementText(childNodesAsList(n));
   }
 
-  return getDOM().getText(n) !;
+  return (n as any).textContent;
 }
 
 function hasShadowRoot(node: any): boolean {

@@ -17,37 +17,6 @@ import {el, isTextNode, stringifyElement} from '@angular/platform-browser/testin
       defaultDoc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
     });
 
-    it('should not coalesque text nodes', () => {
-      const el1 = el('<div>a</div>');
-      const el2 = el('<div>b</div>');
-      getDOM().appendChild(el2, getDOM().firstChild(el1));
-      expect(getDOM().childNodes(el2).length).toBe(2);
-
-      const el2Clone = getDOM().clone(el2);
-      expect(getDOM().childNodes(el2Clone).length).toBe(2);
-    });
-
-    it('should clone correctly', () => {
-      const el1 = el('<div x="y">a<span>b</span></div>');
-      const clone = getDOM().clone(el1);
-
-      expect(clone).not.toBe(el1);
-      getDOM().setAttribute(clone, 'test', '1');
-      expect(stringifyElement(clone)).toEqual('<div test="1" x="y">a<span>b</span></div>');
-      expect(getDOM().getAttribute(el1, 'test')).toBeFalsy();
-
-      const cNodes = getDOM().childNodes(clone);
-      const firstChild = cNodes[0];
-      const secondChild = cNodes[1];
-      expect(getDOM().parentElement(firstChild)).toBe(clone);
-      expect(getDOM().nextSibling(firstChild)).toBe(secondChild);
-      expect(isTextNode(firstChild)).toBe(true);
-
-      expect(getDOM().parentElement(secondChild)).toBe(clone);
-      expect(getDOM().nextSibling(secondChild)).toBeFalsy();
-      expect(getDOM().isElementNode(secondChild)).toBe(true);
-    });
-
     it('should be able to create text nodes and use them with the other APIs', () => {
       const t = getDOM().createTextNode('hello');
       expect(isTextNode(t)).toBe(true);

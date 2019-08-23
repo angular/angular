@@ -95,7 +95,7 @@ export function dispatchEvent(element: any, eventType: any): void {
 }
 
 export function el(html: string): HTMLElement {
-  return <HTMLElement>getDOM().firstChild(getContent(getDOM().createTemplate(html)));
+  return <HTMLElement>getDOM().firstChild(getContent(createTemplate(html)));
 }
 
 export function normalizeCSS(css: string): string {
@@ -160,7 +160,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
   } else if (isCommentNode(el)) {
     result += `<!--${el.nodeValue}-->`;
   } else {
-    result += getDOM().getText(el);
+    result += el.textContent;
   }
 
   return result;
@@ -211,4 +211,19 @@ export function hasClass(element: any, className: string): boolean {
 
 export function sortedClassList(element: any): any[] {
   return Array.prototype.slice.call(element.classList, 0).sort();
+}
+
+export function createTemplate(html: any): HTMLElement {
+  const t = getDOM().getDefaultDocument().createElement('template');
+  t.innerHTML = html;
+  return t;
+}
+
+export function childNodesAsList(el: Node): any[] {
+  const childNodes = el.childNodes;
+  const res = [];
+  for (let i = 0; i < childNodes.length; i++) {
+    res[i] = childNodes[i];
+  }
+  return res;
 }
