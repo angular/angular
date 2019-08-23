@@ -25,6 +25,7 @@ import {isStylingContext} from '../styling_next/util';
 import {attachDebugObject} from '../util/debug_utils';
 import {getTNode, unwrapRNode} from '../util/view_utils';
 
+const NG_DEV_MODE = (typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode;
 
 /*
  * This file contains conditionally attached classes which provide human readable (debug) level
@@ -55,9 +56,7 @@ import {getTNode, unwrapRNode} from '../util/view_utils';
  * ```
  */
 
-
-export const LViewArray = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
-    createNamedArrayType('LView');
+export const LViewArray = NG_DEV_MODE && createNamedArrayType('LView');
 let LVIEW_EMPTY: unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
                              // constructor could have side-effects.
 /**
@@ -197,8 +196,7 @@ function processTNodeChildren(tNode: TNode | null, buf: string[]) {
   }
 }
 
-const TViewData = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
-    createNamedArrayType('TViewData');
+const TViewData = NG_DEV_MODE && createNamedArrayType('TViewData');
 let TVIEWDATA_EMPTY:
     unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
                 // constructor could have side-effects.
@@ -212,27 +210,14 @@ export function cloneToTViewData(list: any[]): TData {
   return TVIEWDATA_EMPTY.concat(list) as any;
 }
 
-export const LViewBlueprint =
-    ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
-    createNamedArrayType('LViewBlueprint');
-export const MatchesArray = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
-    createNamedArrayType('MatchesArray');
-export const TViewComponents =
-    ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
-    createNamedArrayType('TViewComponents');
-export const TNodeLocalNames =
-    ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
-    createNamedArrayType('TNodeLocalNames');
-export const TNodeInitialInputs =
-    ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
-    createNamedArrayType('TNodeInitialInputs');
-export const TNodeInitialData =
-    ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
-    createNamedArrayType('TNodeInitialData');
-export const LCleanup = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
-    createNamedArrayType('LCleanup');
-export const TCleanup = ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) &&
-    createNamedArrayType('TCleanup');
+export const LViewBlueprint = NG_DEV_MODE && createNamedArrayType('LViewBlueprint');
+export const MatchesArray = NG_DEV_MODE && createNamedArrayType('MatchesArray');
+export const TViewComponents = NG_DEV_MODE && createNamedArrayType('TViewComponents');
+export const TNodeLocalNames = NG_DEV_MODE && createNamedArrayType('TNodeLocalNames');
+export const TNodeInitialInputs = NG_DEV_MODE && createNamedArrayType('TNodeInitialInputs');
+export const TNodeInitialData = NG_DEV_MODE && createNamedArrayType('TNodeInitialData');
+export const LCleanup = NG_DEV_MODE && createNamedArrayType('LCleanup');
+export const TCleanup = NG_DEV_MODE && createNamedArrayType('TCleanup');
 
 
 
