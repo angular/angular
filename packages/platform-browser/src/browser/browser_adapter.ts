@@ -198,8 +198,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     doc = doc || this.getDefaultDocument();
     return doc.createTextNode(text);
   }
-  createShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).createShadowRoot(); }
-  getShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).shadowRoot; }
   getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }
   clone(node: Node): Node { return node.cloneNode(true); }
   getElementsByTagName(element: any, name: string): HTMLElement[] {
@@ -261,11 +259,8 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   isTextNode(node: Node): boolean { return node.nodeType === Node.TEXT_NODE; }
   isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
-  hasShadowRoot(node: any): boolean {
-    return node.shadowRoot != null && node instanceof HTMLElement;
-  }
+
   isShadowRoot(node: any): boolean { return node instanceof DocumentFragment; }
-  getHref(el: Element): string { return el.getAttribute('href') !; }
 
   getEventKey(event: any): string {
     let key = event.key;
