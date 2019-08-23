@@ -162,6 +162,12 @@ export class DominoAdapter extends BrowserDomAdapter {
     }
     element.setAttribute('style', styleAttrValue);
   }
+
+  getStyle(element: any, styleName: string): string {
+    const styleMap = this._readStyleAttribute(element);
+    return styleMap[styleName] || '';
+  }
+
   setStyle(element: any, styleName: string, styleValue?: string|null) {
     styleName = styleName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     const styleMap = this._readStyleAttribute(element);
@@ -172,14 +178,6 @@ export class DominoAdapter extends BrowserDomAdapter {
     // IE requires '' instead of null
     // see https://github.com/angular/angular/issues/7916
     this.setStyle(element, styleName, '');
-  }
-  getStyle(element: any, styleName: string): string {
-    const styleMap = this._readStyleAttribute(element);
-    return styleMap[styleName] || '';
-  }
-  hasStyle(element: any, styleName: string, styleValue?: string): boolean {
-    const value = this.getStyle(element, styleName);
-    return styleValue ? value == styleValue : value.length > 0;
   }
 
   dispatchEvent(el: Node, evt: any) {
