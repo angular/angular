@@ -103,8 +103,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
          fixture.detectChanges();
          expect(fixture.debugElement.queryAll(By.css('span')).length).toEqual(3);
-         expect(getDOM().getText(fixture.nativeElement))
-             .toEqual('helloNumberhelloStringhelloFunction');
+         expect(fixture.nativeElement.textContent).toEqual('helloNumberhelloStringhelloFunction');
 
          getComponent().numberCondition = 0;
          fixture.detectChanges();

@@ -197,8 +197,6 @@ export class DominoAdapter extends BrowserDomAdapter {
 
   performanceNow(): number { return Date.now(); }
 
-  getDistributedNodes(el: any): Node[] { throw _notImplemented('getDistributedNodes'); }
-
   supportsCookies(): boolean { return false; }
   getCookie(name: string): string { throw _notImplemented('getCookie'); }
 }
