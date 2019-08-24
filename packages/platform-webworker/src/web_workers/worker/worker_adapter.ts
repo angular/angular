@@ -50,7 +50,6 @@ export class WorkerDomAdapter extends DomAdapter {
   hasProperty(element: any, name: string): boolean { throw 'not implemented'; }
   setProperty(el: Element, name: string, value: any) { throw 'not implemented'; }
   getProperty(el: Element, name: string): any { throw 'not implemented'; }
-  invoke(el: Element, methodName: string, args: any[]): any { throw 'not implemented'; }
 
   parse(templateHtml: string) { throw 'not implemented'; }
   querySelector(el: any, selector: string): HTMLElement { throw 'not implemented'; }
@@ -62,9 +61,6 @@ export class WorkerDomAdapter extends DomAdapter {
   createEvent(eventType: string): any { throw 'not implemented'; }
   preventDefault(evt: any) { throw 'not implemented'; }
   isPrevented(evt: any): boolean { throw 'not implemented'; }
-  nodeName(node: any): string { throw 'not implemented'; }
-  nodeValue(node: any): string { throw 'not implemented'; }
-  type(node: any): string { throw 'not implemented'; }
   nextSibling(el: any): Node { throw 'not implemented'; }
   parentElement(el: any): Node { throw 'not implemented'; }
   clearNodes(el: any) { throw 'not implemented'; }

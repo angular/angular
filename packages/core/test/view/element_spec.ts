@@ -32,7 +32,7 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
                             elementDef(0, NodeFlags.None, null, null, 0, 'span')
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
-        expect(getDOM().nodeName(rootNodes[0]).toLowerCase()).toBe('span');
+        expect(rootNodes[0].nodeName.toLowerCase()).toBe('span');
       });
 
       it('should create views with multiple root elements', () => {
@@ -50,7 +50,7 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
         const spanEl = rootNodes[0].childNodes[0];
-        expect(getDOM().nodeName(spanEl).toLowerCase()).toBe('span');
+        expect(spanEl.nodeName.toLowerCase()).toBe('span');
       });
 
       it('should set fixed attributes', () => {

@@ -1494,8 +1494,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(noSelectorComponentFactory.selector).toBe('ng-component');
 
         expect(
-            getDOM()
-                .nodeName(noSelectorComponentFactory.create(Injector.NULL).location.nativeElement)
+            noSelectorComponentFactory.create(Injector.NULL).location.nativeElement.nodeName
                 .toLowerCase())
             .toEqual('ng-component');
       });
@@ -1534,7 +1533,7 @@ function declareTests(config?: {useJit: boolean}) {
               throw 'Should throw';
             } catch (e) {
               const c = getDebugContext(e);
-              expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
+              expect(c.componentRenderElement.nodeName.toUpperCase()).toEqual('DIV');
               expect((<Injector>c.injector).get).toBeTruthy();
             }
           });
@@ -1550,8 +1549,8 @@ function declareTests(config?: {useJit: boolean}) {
               throw 'Should throw';
             } catch (e) {
               const c = getDebugContext(e);
-              expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('INPUT');
-              expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
+              expect(c.renderNode.nodeName.toUpperCase()).toEqual('INPUT');
+              expect(c.componentRenderElement.nodeName.toUpperCase()).toEqual('DIV');
               expect((<Injector>c.injector).get).toBeTruthy();
               expect(c.context).toEqual(fixture.componentInstance);
               expect(c.references['local']).toBeDefined();
@@ -1595,8 +1594,8 @@ function declareTests(config?: {useJit: boolean}) {
 
                 expect(err).toBeTruthy();
                 const c = getDebugContext(err);
-                expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('SPAN');
-                expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
+                expect(c.renderNode.nodeName.toUpperCase()).toEqual('SPAN');
+                expect(c.componentRenderElement.nodeName.toUpperCase()).toEqual('DIV');
                 expect((<Injector>c.injector).get).toBeTruthy();
                 expect(c.context).toEqual(fixture.componentInstance);
                 expect(c.references['local']).toBeDefined();
