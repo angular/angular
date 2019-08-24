@@ -75,14 +75,27 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support interpolations with complex expressions', () => {
-    loadTranslations(
-        {'{$interpolation} - {$interpolation_1}': '{$interpolation} - {$interpolation_1} (fr)'});
-    const fixture =
-        initWithTemplate(AppComp, `<div i18n>{{ name | uppercase }} - {{ obj?.a?.b }}</div>`);
-    expect(fixture.nativeElement.innerHTML).toEqual(`<div>ANGULAR -  (fr)</div>`);
-    fixture.componentRef.instance.obj = {a: {b: 'value'}};
+    loadTranslations({
+      ' {$interpolation} - {$interpolation_1} - {$interpolation_2} ':
+          ' {$interpolation} - {$interpolation_1} - {$interpolation_2} (fr) '
+    });
+    const fixture = initWithTemplate(AppComp, `
+      <div i18n>
+        {{ name | uppercase }} -
+        {{ obj?.a?.b }} -
+        {{ obj?.getA()?.b }}
+      </div>
+    `);
+    // the `obj` field is not yet defined, so 2nd and 3rd interpolations return empty strings
+    expect(fixture.nativeElement.innerHTML).toEqual(`<div> ANGULAR -  -  (fr) </div>`);
+
+    fixture.componentRef.instance.obj = {
+      a: {b: 'value 1'},
+      getA: () => ({b: 'value 2'}),
+    };
     fixture.detectChanges();
-    expect(fixture.nativeElement.innerHTML).toEqual(`<div>ANGULAR - value (fr)</div>`);
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(`<div> ANGULAR - value 1 - value 2 (fr) </div>`);
   });
 
   it('should support elements', () => {
@@ -1056,6 +1069,25 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].children[0].references.ref.test).toBe('Set');
       expect(fixture.debugElement.children[1].children[0].references.ref.test).toBe('Set');
+    });
+
+    it('with complex expressions', () => {
+      loadTranslations({
+        '{$interpolation} - {$interpolation_1} - {$interpolation_2}':
+            '{$interpolation} - {$interpolation_1} - {$interpolation_2} (fr)'
+      });
+      const fixture = initWithTemplate(AppComp, `
+        <div i18n-title title="{{ name | uppercase }} - {{ obj?.a?.b }} - {{ obj?.getA()?.b }}"></div>
+      `);
+      // the `obj` field is not yet defined, so 2nd and 3rd interpolations return empty strings
+      expect(fixture.nativeElement.firstChild.title).toEqual(`ANGULAR -  -  (fr)`);
+
+      fixture.componentRef.instance.obj = {
+        a: {b: 'value 1'},
+        getA: () => ({b: 'value 2'}),
+      };
+      fixture.detectChanges();
+      expect(fixture.nativeElement.firstChild.title).toEqual(`ANGULAR - value 1 - value 2 (fr)`);
     });
   });
 

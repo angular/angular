@@ -664,7 +664,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
                 hasBindings = true;
                 bindings.push({
                   sourceSpan: element.sourceSpan,
-                  value: () => this.convertExpressionBinding(expression)
+                  value: () => this.convertPropertyBinding(expression)
                 });
               });
             }
@@ -1155,19 +1155,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         this._bindingScope.getOrCreateSharedContextVar(0);
   }
 
-  private convertExpressionBinding(value: AST): o.Expression {
-    const convertedPropertyBinding = convertPropertyBinding(
-        this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.TrySimple);
-    return convertedPropertyBinding.currValExpr;
-  }
-
   private convertPropertyBinding(value: AST): o.Expression {
     const convertedPropertyBinding = convertPropertyBinding(
         this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.TrySimple,
         () => error('Unexpected interpolation'));
     const valExpr = convertedPropertyBinding.currValExpr;
     this._tempVariables.push(...convertedPropertyBinding.stmts);
-
     return valExpr;
   }
 
