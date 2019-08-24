@@ -121,6 +121,31 @@ runInEachFileSystem(() => {
         expect(entryPoints).toEqual([]);
       });
 
+      // https://github.com/angular/angular/issues/32302
+      it('should return an empty array if the target path is not an Angular entry-point with typings',
+         () => {
+           const targetPath = _Abs('/no_valid_entry_points/node_modules/some_package');
+           loadTestFiles([
+             {
+               name: _Abs('/no_valid_entry_points/node_modules/some_package/package.json'),
+               contents: '{"typings": "./index.d.ts"}'
+             },
+             {
+               name: _Abs('/no_valid_entry_points/node_modules/some_package/index.d.ts'),
+               contents: 'export declare class MyClass {}'
+             },
+             {
+               name: _Abs('/no_valid_entry_points/node_modules/some_package/index.js'),
+               contents: 'export class MyClass {}'
+             },
+           ]);
+           const finder = new TargetedEntryPointFinder(
+               fs, config, logger, resolver, _Abs('/no_valid_entry_points/node_modules'),
+               targetPath, undefined);
+           const {entryPoints} = finder.findEntryPoints();
+           expect(entryPoints).toEqual([]);
+         });
+
       it('should handle nested node_modules folders', () => {
         const targetPath = _Abs('/nested_node_modules/node_modules/outer');
         loadTestFiles([
