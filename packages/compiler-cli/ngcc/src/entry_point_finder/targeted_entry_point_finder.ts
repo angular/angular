@@ -44,7 +44,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
   private processNextPath(): void {
     const path = this.unprocessedPaths.shift() !;
     const entryPoint = this.getEntryPoint(path);
-    if (entryPoint !== null) {
+    if (entryPoint !== null && entryPoint.compiledByAngular) {
       this.unsortedEntryPoints.set(entryPoint.path, entryPoint);
       const deps = this.resolver.getEntryPointDependencies(entryPoint);
       deps.dependencies.forEach(dep => {
