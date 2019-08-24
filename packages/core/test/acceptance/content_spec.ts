@@ -280,6 +280,36 @@ describe('projection', () => {
            .toBe(`<button></button>Some content<comp></comp>`);
      });
 
+  it('should project nodes into the last available ng-content', () => {
+    @Component({
+      selector: 'child',
+      template:
+        `<div><ng-content></ng-content></div>
+          <span *ngIf="show"><ng-content></ng-content></span>`
+    })
+    class Child {
+      @Input() show = false;
+    }
+
+    @Component({selector: 'parent', template: `<child [show]="show">content</child>`})
+    class Parent {
+      show = false;
+    }
+
+    TestBed.configureTestingModule({declarations: [Parent, Child], imports: [CommonModule]});
+    const fixture = TestBed.createComponent(Parent);
+    fixture.detectChanges();
+
+    expect(getElementHtml(fixture.nativeElement))
+      .toBe('<child><div>content</div></child>');
+
+    fixture.componentInstance.show = true;
+    fixture.detectChanges();
+
+    expect(getElementHtml(fixture.nativeElement))
+      .toBe('<child><div></div><span>content</span></child>');
+  });
+
   // https://stackblitz.com/edit/angular-ceqmnw?file=src%2Fapp%2Fapp.component.ts
   it('should project nodes into the last ng-content unrolled by ngFor', () => {
     @Component({
