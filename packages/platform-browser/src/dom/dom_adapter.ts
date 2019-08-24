@@ -35,7 +35,6 @@ export abstract class DomAdapter {
   abstract hasProperty(element: any, name: string): boolean;
   abstract setProperty(el: Element, name: string, value: any): any;
   abstract getProperty(el: Element, name: string): any;
-  abstract invoke(el: Element, methodName: string, args: any[]): any;
 
   abstract logError(error: any): any;
   abstract log(error: any): any;
@@ -53,17 +52,14 @@ export abstract class DomAdapter {
   abstract createEvent(eventType: string): any;
   abstract preventDefault(evt: any): any;
   abstract isPrevented(evt: any): boolean;
-  abstract nodeName(node: any): string;
-  abstract nodeValue(node: any): string|null;
-  abstract type(node: any): string;
-  abstract nextSibling(el: any): Node|null;
-  abstract parentElement(el: any): Node|null;
 
   // Used by Meta
   abstract remove(el: any): Node;
   abstract getAttribute(element: any, attribute: string): string|null;
 
   // Used by platform-server
+  abstract nextSibling(el: any): Node|null;
+  abstract parentElement(el: any): Node|null;
   abstract clearNodes(el: any): any;
   abstract appendChild(el: any, node: any): any;
   abstract removeChild(el: any, node: any): any;
