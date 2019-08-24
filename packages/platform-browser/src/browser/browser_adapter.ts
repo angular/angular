@@ -80,7 +80,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   hasProperty(element: Node, name: string): boolean { return name in element; }
   setProperty(el: Node, name: string, value: any) { (<any>el)[name] = value; }
   getProperty(el: Node, name: string): any { return (<any>el)[name]; }
-  invoke(el: Node, methodName: string, args: any[]): any { (<any>el)[methodName](...args); }
 
   // TODO(tbosch): move this into a separate environment class once we have it
   logError(error: string): void {
@@ -139,9 +138,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   isPrevented(evt: Event): boolean {
     return evt.defaultPrevented || evt.returnValue != null && !evt.returnValue;
   }
-  nodeName(node: Node): string { return node.nodeName; }
-  nodeValue(node: Node): string|null { return node.nodeValue; }
-  type(node: HTMLInputElement): string { return node.type; }
   nextSibling(el: Node): Node|null { return el.nextSibling; }
   parentElement(el: Node): Node|null { return el.parentNode; }
   clearNodes(el: Node) {
