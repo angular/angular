@@ -280,7 +280,7 @@ _global.beforeEach(function() {
 
 function elementText(n: any): string {
   const hasNodes = (n: any) => {
-    const children = getDOM().childNodes(n);
+    const children = n.childNodes;
     return children && children.length > 0;
   };
 

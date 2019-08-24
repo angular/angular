@@ -377,7 +377,7 @@ function declareTests(config?: {useJit: boolean}) {
 
             fixture.detectChanges();
 
-            const childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
+            const childNodesOfWrapper = fixture.nativeElement.childNodes;
             // 1 template + 2 copies.
             expect(childNodesOfWrapper.length).toBe(3);
             expect(childNodesOfWrapper[1]).toHaveText('hello');
@@ -427,7 +427,7 @@ function declareTests(config?: {useJit: boolean}) {
                 .overrideComponent(MyComp, {set: {template: '<ng-template></ng-template>'}})
                 .createComponent(MyComp);
 
-        const childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
+        const childNodesOfWrapper = fixture.nativeElement.childNodes;
         expect(childNodesOfWrapper.length).toBe(1);
         expect(isCommentNode(childNodesOfWrapper[0])).toBe(true);
       });
@@ -572,7 +572,7 @@ function declareTests(config?: {useJit: boolean}) {
 
               fixture.detectChanges();
               // Get the element at index 2, since index 0 is the <ng-template>.
-              expect(getDOM().childNodes(fixture.nativeElement)[2]).toHaveText('1-hello');
+              expect(fixture.nativeElement.childNodes[2]).toHaveText('1-hello');
             });
       });
 
@@ -2039,8 +2039,8 @@ function declareTests(config?: {useJit: boolean}) {
           const fixture = TestBed.createComponent(MyComp);
 
           const el = fixture.nativeElement;
-          const svg = getDOM().childNodes(el)[0];
-          const use = getDOM().childNodes(svg)[0];
+          const svg = el.childNodes[0];
+          const use = svg.childNodes[0];
           expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
               .toEqual('http://www.w3.org/2000/svg');
           expect(getDOM().getProperty(<Element>use, 'namespaceURI'))
@@ -2059,9 +2059,9 @@ function declareTests(config?: {useJit: boolean}) {
           const fixture = TestBed.createComponent(MyComp);
 
           const el = fixture.nativeElement;
-          const svg = getDOM().childNodes(el)[0];
-          const foreignObject = getDOM().childNodes(svg)[0];
-          const p = getDOM().childNodes(foreignObject)[0];
+          const svg = el.childNodes[0];
+          const foreignObject = svg.childNodes[0];
+          const p = foreignObject.childNodes[0];
           expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
               .toEqual('http://www.w3.org/2000/svg');
           expect(getDOM().getProperty(<Element>foreignObject, 'namespaceURI'))
@@ -2079,7 +2079,7 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(SomeCmp, {set: {template}});
           const fixture = TestBed.createComponent(SomeCmp);
 
-          const useEl = getDOM().firstChild(fixture.nativeElement) as Element;
+          const useEl = fixture.nativeElement.firstChild;
           expect(useEl.getAttributeNS('http://www.w3.org/1999/xlink', 'href')).toEqual('#id');
         });
 
@@ -2090,7 +2090,7 @@ function declareTests(config?: {useJit: boolean}) {
           const fixture = TestBed.createComponent(SomeCmp);
 
           const cmp = fixture.componentInstance;
-          const useEl = getDOM().firstChild(fixture.nativeElement) as Element;
+          const useEl = fixture.nativeElement.firstChild;
 
           cmp.value = '#id';
           fixture.detectChanges();

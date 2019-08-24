@@ -63,7 +63,7 @@ import {el} from '../../../testing/src/browser_util';
       // Workaround for https://bugs.webkit.org/show_bug.cgi?id=122755
       getDOM().appendChild(doc.body, element);
 
-      const child = getDOM().firstChild(element);
+      const child = element.firstChild;
       const dispatchedEvent = getDOM().createMouseEvent('click');
       let receivedEvent: any /** TODO #9100 */ = null;
       const handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
