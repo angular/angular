@@ -142,10 +142,8 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   nodeName(node: Node): string { return node.nodeName; }
   nodeValue(node: Node): string|null { return node.nodeValue; }
   type(node: HTMLInputElement): string { return node.type; }
-  firstChild(el: Node): Node|null { return el.firstChild; }
   nextSibling(el: Node): Node|null { return el.nextSibling; }
   parentElement(el: Node): Node|null { return el.parentNode; }
-  childNodes(el: any): Node[] { return el.childNodes; }
   clearNodes(el: Node) {
     while (el.firstChild) {
       el.removeChild(el.firstChild);

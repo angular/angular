@@ -502,7 +502,7 @@ describe('projection', () => {
       });
       const main = TestBed.createComponent(MainComp);
 
-      const childNodes = getDOM().childNodes(main.nativeElement);
+      const childNodes = main.nativeElement.childNodes;
       expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
       expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
       main.destroy();
@@ -522,7 +522,7 @@ describe('projection', () => {
       const main = TestBed.createComponent(MainComp);
 
       const mainEl = main.nativeElement;
-      const div1 = getDOM().firstChild(mainEl) as Element;
+      const div1 = mainEl.firstChild;
       const div2 = getDOM().createElement('div');
       getDOM().setAttribute(div2, 'class', 'redStyle');
       getDOM().appendChild(mainEl, div2);
@@ -542,7 +542,7 @@ describe('projection', () => {
       const main = TestBed.createComponent(MainComp);
 
       const mainEl = main.nativeElement;
-      const div1 = getDOM().firstChild(mainEl) as Element;
+      const div1 = mainEl.firstChild;
       const div2 = getDOM().createElement('div');
       getDOM().appendChild(mainEl, div2);
       expect(getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');

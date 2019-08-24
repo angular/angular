@@ -53,7 +53,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       attachEmbeddedView(parentView, viewContainerData, 1, childView1);
 
       // 2 anchors + 2 elements
-      const rootChildren = getDOM().childNodes(rootNodes[0]);
+      const rootChildren = rootNodes[0].childNodes;
       expect(rootChildren.length).toBe(4);
       expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child0');
       expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child1');
@@ -63,7 +63,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       detachEmbeddedView(viewContainerData, 0);
       rf.end !();
 
-      expect(getDOM().childNodes(rootNodes[0]).length).toBe(2);
+      expect(rootNodes[0].childNodes.length).toBe(2);
     });
 
     it('should move embedded views', () => {
@@ -88,7 +88,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       expect(viewContainerData.viewContainer !._embeddedViews).toEqual([childView1, childView0]);
       // 2 anchors + 2 elements
-      const rootChildren = getDOM().childNodes(rootNodes[0]);
+      const rootChildren = rootNodes[0].childNodes;
       expect(rootChildren.length).toBe(4);
       expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child1');
       expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child0');

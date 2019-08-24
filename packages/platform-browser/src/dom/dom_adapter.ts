@@ -56,10 +56,8 @@ export abstract class DomAdapter {
   abstract nodeName(node: any): string;
   abstract nodeValue(node: any): string|null;
   abstract type(node: any): string;
-  abstract firstChild(el: any): Node|null;
   abstract nextSibling(el: any): Node|null;
   abstract parentElement(el: any): Node|null;
-  abstract childNodes(el: any): Node[];
 
   // Used by Meta
   abstract remove(el: any): Node;

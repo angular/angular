@@ -95,7 +95,7 @@ export function dispatchEvent(element: any, eventType: any): void {
 }
 
 export function el(html: string): HTMLElement {
-  return <HTMLElement>getDOM().firstChild(getContent(createTemplate(html)));
+  return <HTMLElement>getContent(createTemplate(html)).firstChild;
 }
 
 export function normalizeCSS(css: string): string {
@@ -148,7 +148,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
     // Children
     const childrenRoot = templateAwareRoot(el);
-    const children = childrenRoot ? getDOM().childNodes(childrenRoot) : [];
+    const children = childrenRoot ? childrenRoot.childNodes : [];
     for (let j = 0; j < children.length; j++) {
       result += stringifyElement(children[j]);
     }

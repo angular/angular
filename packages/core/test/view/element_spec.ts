@@ -49,7 +49,7 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
                             elementDef(1, NodeFlags.None, null, null, 0, 'span'),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
-        const spanEl = getDOM().childNodes(rootNodes[0])[0];
+        const spanEl = rootNodes[0].childNodes[0];
         expect(getDOM().nodeName(spanEl).toLowerCase()).toBe('span');
       });
 

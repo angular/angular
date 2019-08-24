@@ -34,8 +34,8 @@ class SomeComponent {
 
     function createRootEl(selector = 'bootstrap-app') {
       const doc = TestBed.get(DOCUMENT);
-      const rootEl = <HTMLElement>getDOM().firstChild(
-          getContent(createTemplate(`<${selector}></${selector}>`)));
+      const rootEl =
+          <HTMLElement>getContent(createTemplate(`<${selector}></${selector}>`)).firstChild;
       const oldRoots = getDOM().querySelectorAll(doc, selector);
       for (let i = 0; i < oldRoots.length; i++) {
         getDOM().remove(oldRoots[i]);

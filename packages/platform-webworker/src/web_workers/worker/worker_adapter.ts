@@ -65,10 +65,8 @@ export class WorkerDomAdapter extends DomAdapter {
   nodeName(node: any): string { throw 'not implemented'; }
   nodeValue(node: any): string { throw 'not implemented'; }
   type(node: any): string { throw 'not implemented'; }
-  firstChild(el: any): Node { throw 'not implemented'; }
   nextSibling(el: any): Node { throw 'not implemented'; }
   parentElement(el: any): Node { throw 'not implemented'; }
-  childNodes(el: any): Node[] { throw 'not implemented'; }
   clearNodes(el: any) { throw 'not implemented'; }
   appendChild(el: any, node: any) { throw 'not implemented'; }
   removeChild(el: any, node: any) { throw 'not implemented'; }

@@ -36,7 +36,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRoot
                             textDef(1, null, ['a']),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
-        const textNode = getDOM().firstChild(rootNodes[0]) as Element;
+        const textNode = rootNodes[0].firstChild;
         expect(textNode.textContent).toBe('a');
       });
 

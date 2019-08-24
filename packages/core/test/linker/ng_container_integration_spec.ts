@@ -57,7 +57,7 @@ function declareTests(config?: {useJit: boolean}) {
           fixture.detectChanges();
 
           const el = fixture.nativeElement;
-          const children = getDOM().childNodes(el);
+          const children = el.childNodes;
           expect(children.length).toBe(2);
           expect(isCommentNode(children[0])).toBe(true);
           expect((children[1] as Element).tagName.toUpperCase()).toEqual('P');
@@ -73,7 +73,7 @@ function declareTests(config?: {useJit: boolean}) {
           fixture.detectChanges();
 
           const el = fixture.nativeElement;
-          const children = getDOM().childNodes(el);
+          const children = el.childNodes;
           expect(children.length).toBe(5);
           expect(isCommentNode(children[0])).toBe(true);
           expect(children[1]).toHaveText('1');
@@ -92,7 +92,7 @@ function declareTests(config?: {useJit: boolean}) {
           fixture.detectChanges();
 
           const el = fixture.nativeElement;
-          const children = getDOM().childNodes(el);
+          const children = el.childNodes;
 
           expect(children.length).toBe(4);
           // ngIf anchor
