@@ -596,6 +596,46 @@ describe('i18n support in the template compiler', () => {
       verify(input, output);
     });
 
+    it('should support complex expressions in interpolation', () => {
+      const input = `
+        <div i18n-title title="{{valueA.getRawValue()?.getTitle()}} title"></div>
+      `;
+
+      const output = String.raw `
+        const $_c0$ = [${AttributeMarker.I18n}, "title"];
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_3462388422673575127$$APP_SPEC_TS_2$ = goog.getMsg("{$interpolation} title", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_1$ = $MSG_EXTERNAL_3462388422673575127$$APP_SPEC_TS_2$;
+        }
+        else {
+            $I18N_1$ = $localize \`$` +
+          String.raw `{"\uFFFD0\uFFFD"}:interpolation: title\`;
+        }
+        const $_c3$ = ["title", $I18N_1$];
+        …
+        consts: 2,
+        vars: 1,
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵi18nAttributes(1, $_c3$);
+            $r3$.ɵɵelementEnd();
+          }
+          if (rf & 2) {
+              var $tmp_0_0$ = null;
+              const $currVal_0$ = ($tmp_0_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_0_0$.getTitle();
+              $r3$.ɵɵi18nExp($currVal_0$);
+              $r3$.ɵɵi18nApply(1);
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
+
     it('should support interpolation', () => {
       const input = `
         <div id="dynamic-1"
@@ -1055,22 +1095,25 @@ describe('i18n support in the template compiler', () => {
         <div i18n>
           {{ valueA | async }}
           {{ valueA?.a?.b }}
+          {{ valueA.getRawValue()?.getTitle() }}
         </div>
       `;
 
       const output = String.raw `
         var $I18N_0$;
         if (ngI18nClosureMode) {
-            const $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$ = goog.getMsg(" {$interpolation} {$interpolation_1} ", {
+            const $MSG_EXTERNAL_5146016486383316049$$APP_SPEC_TS_1$ = goog.getMsg(" {$interpolation} {$interpolation_1} {$interpolation_2} ", {
               "interpolation": "\uFFFD0\uFFFD",
-              "interpolation_1": "\uFFFD1\uFFFD"
+              "interpolation_1": "\uFFFD1\uFFFD",
+              "interpolation_2": "\uFFFD2\uFFFD"
             });
-            $I18N_0$ = $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$;
+            $I18N_0$ = $MSG_EXTERNAL_5146016486383316049$$APP_SPEC_TS_1$;
         }
         else {
             $I18N_0$ = $localize \` $` +
           String.raw `{"\uFFFD0\uFFFD"}:interpolation: $` +
-          String.raw `{"\uFFFD1\uFFFD"}:interpolation_1: \`;
+          String.raw `{"\uFFFD1\uFFFD"}:interpolation_1: $` +
+          String.raw `{"\uFFFD2\uFFFD"}:interpolation_2: \`;
         }
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -1081,8 +1124,10 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
+            var $tmp_2_0$ = null;
+            const $currVal_2$ = ($tmp_2_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_2_0$.getTitle();
             $r3$.ɵɵselect(1);
-            $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 2, ctx.valueA))(ctx.valueA == null ? null : ctx.valueA.a == null ? null : ctx.valueA.a.b);
+            $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 3, ctx.valueA))(ctx.valueA == null ? null : ctx.valueA.a == null ? null : ctx.valueA.a.b)($currVal_2$);
             $r3$.ɵɵi18nApply(1);
           }
         }
@@ -2615,9 +2660,9 @@ describe('i18n support in the template compiler', () => {
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", $_c2$);
-            i0.ɵɵtext(1, " ");
+            $r3$.ɵɵtext(1, " ");
             $r3$.ɵɵi18n(2, $I18N_3$);
-            i0.ɵɵtext(3, " ");
+            $r3$.ɵɵtext(3, " ");
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
