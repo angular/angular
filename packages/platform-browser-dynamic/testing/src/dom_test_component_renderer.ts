@@ -21,7 +21,7 @@ export class DOMTestComponentRenderer extends TestComponentRenderer {
   insertRootElement(rootElId: string) {
     const template = getDOM().getDefaultDocument().createElement('template');
     template.innerHTML = `<div id="${rootElId}"></div>`;
-    const rootEl = <HTMLElement>getDOM().firstChild(getContent(template));
+    const rootEl = <HTMLElement>getContent(template).firstChild;
 
     // TODO(juliemr): can/should this be optional?
     const oldRoots = getDOM().querySelectorAll(this._doc, '[id^=root]');
