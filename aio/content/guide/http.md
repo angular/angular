@@ -585,7 +585,7 @@ You may have expected the `intercept()` and `handle()` methods to return observa
 
 Instead they return observables of `HttpEvent<any>`.
 
-That's because interceptors work at a lower level than those `HttpClient` methods. A single HTTP request can generate multiple _events_, including upload and download progress events. The `HttpResponse` class itself is actually an event, whose type is `HttpEventType.HttpResponseEvent`.
+That's because interceptors work at a lower level than those `HttpClient` methods. A single HTTP request can generate multiple _events_, including upload and download progress events. The `HttpResponse` class itself is actually an event, whose type is `HttpEventType.Response`.
 
 Many interceptors are only concerned with the outgoing request and simply return the event stream from `next.handle()` without modifying it.
 
