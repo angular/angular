@@ -25,6 +25,7 @@ ng_module(
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//@material/checkbox",
+        "@npm//@material/ripple",
     ],
 )
 
@@ -81,7 +82,10 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    static_files = ["@npm//:node_modules/@material/checkbox/dist/mdc.checkbox.js"],
+    static_files = [
+        "@npm//:node_modules/@material/checkbox/dist/mdc.checkbox.js",
+        "@npm//:node_modules/@material/ripple/dist/mdc.ripple.js",
+    ],
     deps = [
         ":checkbox_tests_lib",
         "//src/material-experimental:mdc_require_config.js",

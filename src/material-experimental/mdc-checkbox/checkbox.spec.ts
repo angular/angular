@@ -38,6 +38,7 @@ describe('MatCheckbox', () => {
     let testComponent: SingleCheckbox;
     let inputElement: HTMLInputElement;
     let labelElement: HTMLLabelElement;
+    let checkboxElement: HTMLElement;
 
     beforeEach(() => {
       fixture = createComponent(SingleCheckbox);
@@ -49,6 +50,7 @@ describe('MatCheckbox', () => {
       testComponent = fixture.debugElement.componentInstance;
       inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
       labelElement = <HTMLLabelElement>checkboxNativeElement.querySelector('label');
+      checkboxElement = <HTMLLabelElement>checkboxNativeElement.querySelector('.mdc-checkbox');
     });
 
     it('should add and remove the checked state', fakeAsync(() => {
@@ -74,17 +76,17 @@ describe('MatCheckbox', () => {
 
       testComponent.isDisabled = true;
       fixture.detectChanges();
-      dispatchFakeEvent(labelElement, 'mousedown');
-      dispatchFakeEvent(labelElement, 'mouseup');
-      labelElement.click();
+      dispatchFakeEvent(checkboxElement, 'mousedown');
+      dispatchFakeEvent(checkboxElement, 'mouseup');
+      checkboxElement.click();
       expect(checkboxNativeElement.querySelectorAll(rippleSelector).length).toBe(0);
 
       flush();
       testComponent.isDisabled = false;
       fixture.detectChanges();
-      dispatchFakeEvent(labelElement, 'mousedown');
-      dispatchFakeEvent(labelElement, 'mouseup');
-      labelElement.click();
+      dispatchFakeEvent(checkboxElement, 'mousedown');
+      dispatchFakeEvent(checkboxElement, 'mouseup');
+      checkboxElement.click();
       expect(checkboxNativeElement.querySelectorAll(rippleSelector).length).toBe(1);
 
       flush();
@@ -379,9 +381,9 @@ describe('MatCheckbox', () => {
 
            expect(checkboxNativeElement.querySelector(rippleSelector)).toBeFalsy();
 
-           dispatchFakeEvent(labelElement, 'mousedown');
-           dispatchFakeEvent(labelElement, 'mouseup');
-           labelElement.click();
+           dispatchFakeEvent(checkboxElement, 'mousedown');
+           dispatchFakeEvent(checkboxElement, 'mouseup');
+           checkboxElement.click();
 
            expect(checkboxNativeElement.querySelectorAll(rippleSelector).length).toBe(1);
 
@@ -393,9 +395,9 @@ describe('MatCheckbox', () => {
            testComponent.isDisabled = true;
            fixture.detectChanges();
 
-           dispatchFakeEvent(labelElement, 'mousedown');
-           dispatchFakeEvent(labelElement, 'mouseup');
-           labelElement.click();
+           dispatchFakeEvent(checkboxElement, 'mousedown');
+           dispatchFakeEvent(checkboxElement, 'mouseup');
+           checkboxElement.click();
 
            expect(checkboxNativeElement.querySelectorAll(rippleSelector).length).toBe(0);
 
@@ -403,9 +405,9 @@ describe('MatCheckbox', () => {
            testComponent.isDisabled = false;
            fixture.detectChanges();
 
-           dispatchFakeEvent(labelElement, 'mousedown');
-           dispatchFakeEvent(labelElement, 'mouseup');
-           labelElement.click();
+           dispatchFakeEvent(checkboxElement, 'mousedown');
+           dispatchFakeEvent(checkboxElement, 'mouseup');
+           checkboxElement.click();
 
            expect(checkboxNativeElement.querySelectorAll(rippleSelector).length).toBe(1);
 
@@ -417,9 +419,9 @@ describe('MatCheckbox', () => {
            testComponent.disableRipple = true;
            fixture.detectChanges();
 
-           dispatchFakeEvent(labelElement, 'mousedown');
-           dispatchFakeEvent(labelElement, 'mouseup');
-           labelElement.click();
+           dispatchFakeEvent(checkboxElement, 'mousedown');
+           dispatchFakeEvent(checkboxElement, 'mouseup');
+           checkboxElement.click();
 
            expect(checkboxNativeElement.querySelectorAll(rippleSelector).length).toBe(0);
 
@@ -427,9 +429,9 @@ describe('MatCheckbox', () => {
            testComponent.disableRipple = false;
            fixture.detectChanges();
 
-           dispatchFakeEvent(labelElement, 'mousedown');
-           dispatchFakeEvent(labelElement, 'mouseup');
-           labelElement.click();
+           dispatchFakeEvent(checkboxElement, 'mousedown');
+           dispatchFakeEvent(checkboxElement, 'mouseup');
+           checkboxElement.click();
 
            expect(checkboxNativeElement.querySelectorAll(rippleSelector).length).toBe(1);
 

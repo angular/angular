@@ -19,7 +19,6 @@ import {
   forwardRef,
   Inject,
   Input,
-  NgZone,
   OnDestroy,
   Optional,
   Output,
@@ -28,27 +27,12 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {MAT_CHECKBOX_CLICK_ACTION, MatCheckboxClickAction} from '@angular/material/checkbox';
-import {RippleRenderer, RippleTarget, ThemePalette} from '@angular/material/core';
+import {ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MDCCheckboxAdapter, MDCCheckboxFoundation} from '@material/checkbox';
+import {numbers} from '@material/ripple';
 
 let nextUniqueId = 0;
-
-const rippleTarget: RippleTarget = {
-  rippleConfig: {
-    radius: 20,
-    centered: true,
-    animation: {
-      // TODO(mmalerba): Use the MDC constants once they are exported separately from the
-      // foundation. Grabbing them off the foundation prevents the foundation class from being
-      // tree-shaken. There is an open PR for this:
-      // https://github.com/material-components/material-components-web/pull/4593
-      enterDuration: 225 /* MDCRippleFoundation.numbers.DEACTIVATION_TIMEOUT_MS */,
-      exitDuration: 150 /* MDCRippleFoundation.numbers.FG_DEACTIVATION_MS */,
-    },
-  },
-  rippleDisabled: true
-};
 
 export const MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -195,14 +179,17 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   /** The set of classes that should be applied to the native input. */
   _classes: {[key: string]: boolean} = {'mdc-checkbox__native-control': true};
 
+  /** Animation config for the ripple. */
+  _rippleAnimation = {
+    enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
+    exitDuration: numbers.FG_DEACTIVATION_MS,
+  };
+
   /** ControlValueAccessor onChange */
   private _cvaOnChange = (_: boolean) => {};
 
   /** ControlValueAccessor onTouch */
   private _cvaOnTouch = () => {};
-
-  /** The ripple renderer for this checkbox. */
-  private _rippleRenderer: RippleRenderer;
 
   /**
    * A list of attributes that should not be modified by `MDCFoundation` classes.
@@ -239,7 +226,6 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   constructor(
       private _changeDetectorRef: ChangeDetectorRef,
       private _platform: Platform,
-      private _ngZone: NgZone,
       @Attribute('tabindex') tabIndex: string,
       @Optional() @Inject(MAT_CHECKBOX_CLICK_ACTION) private _clickAction: MatCheckboxClickAction,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
@@ -250,7 +236,6 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   }
 
   ngAfterViewInit() {
-    this._initRipple();
     this._checkboxFoundation.init();
   }
 
@@ -300,13 +285,6 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   /** Toggles the `checked` state of the checkbox. */
   toggle() {
     this.checked = !this.checked;
-  }
-
-  /** Triggers the checkbox ripple. */
-  _activateRipple() {
-    if (!this.disabled && !this.disableRipple && this._animationMode != 'NoopAnimations') {
-      this._rippleRenderer.fadeInRipple(0, 0, rippleTarget.rippleConfig);
-    }
   }
 
   /** Handles blur events on the native input. */
@@ -368,11 +346,5 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   private _setClass(cssClass: string, active: boolean) {
     this._classes[cssClass] = active;
     this._changeDetectorRef.markForCheck();
-  }
-
-  /** Initializes the ripple renderer. */
-  private _initRipple() {
-    this._rippleRenderer =
-        new RippleRenderer(rippleTarget, this._ngZone, this._checkbox, this._platform);
   }
 }

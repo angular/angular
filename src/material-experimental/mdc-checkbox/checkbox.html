@@ -1,8 +1,6 @@
 <div class="mdc-form-field"
      [class.mdc-form-field--align-end]="labelPosition == 'before'">
-  <div #checkbox
-       class="mdc-checkbox"
-       (click)="_activateRipple()">
+  <div #checkbox class="mdc-checkbox">
     <input #nativeCheckbox
            type="checkbox"
            [ngClass]="_classes"
@@ -30,6 +28,12 @@
       </svg>
       <div class="mdc-checkbox__mixedmark"></div>
     </div>
+    <div class="mat-mdc-checkbox-ripple" mat-ripple
+      [matRippleTrigger]="checkbox"
+      [matRippleDisabled]="disableRipple || disabled"
+      [matRippleCentered]="true"
+      [matRippleRadius]="20"
+      [matRippleAnimation]="_rippleAnimation"></div>
   </div>
   <label #label
          [for]="inputId"

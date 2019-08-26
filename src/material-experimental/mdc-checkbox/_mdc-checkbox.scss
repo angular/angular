@@ -30,7 +30,12 @@
     // class for accent and warn style, and applying the appropriate overrides below. Since we don't
     // use MDC's ripple, we also need to set the color for our replacement ripple.
     .mat-mdc-checkbox {
-      .mat-ripple-element {
+      .mat-ripple-element,
+      .mdc-checkbox__background::before {
+        background: mdc-theme-prop-value(on-surface);
+      }
+
+      .mdc-checkbox--selected ~ .mat-mdc-checkbox-ripple .mat-ripple-element {
         background: $primary;
       }
 
@@ -40,7 +45,7 @@
 
         @include mdc-checkbox-without-ripple($query: $mat-theme-styles-query);
 
-        .mat-ripple-element {
+        .mdc-checkbox--selected ~ .mat-mdc-checkbox-ripple .mat-ripple-element {
           background: $accent;
         }
       }
@@ -51,7 +56,7 @@
 
         @include mdc-checkbox-without-ripple($query: $mat-theme-styles-query);
 
-        .mat-ripple-element {
+        .mdc-checkbox--selected ~ .mat-mdc-checkbox-ripple .mat-ripple-element {
           background: $warn;
         }
       }

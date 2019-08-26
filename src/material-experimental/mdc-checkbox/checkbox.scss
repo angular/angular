@@ -14,12 +14,15 @@
   .mdc-checkbox:hover
       .mdc-checkbox__native-control:not([disabled]) ~ .mdc-checkbox__background::before {
     opacity: map-get($mdc-ripple-dark-ink-opacities, hover);
-    transform: scale(2.75, 2.75);
+    transform: scale(1);
     transition: mdc-checkbox-transition-enter(opacity, 0, 80ms),
                 mdc-checkbox-transition-enter(transform, 0, 80ms);
   }
 
-  .mdc-checkbox:hover .mdc-checkbox__native-control:focus ~ .mdc-checkbox__background::before {
+  // Note that the :not([disabled]) here isn't necessary, but we need it for the
+  // extra specificity so that the hover styles don't override the focus styles.
+  .mdc-checkbox
+      .mdc-checkbox__native-control:not([disabled]):focus ~ .mdc-checkbox__background::before {
     opacity: map-get($mdc-ripple-dark-ink-opacities, hover) +
                  map-get($mdc-ripple-dark-ink-opacities, focus);
   }
@@ -46,4 +49,15 @@
   label:empty {
     display: none;
   }
+}
+
+.mat-mdc-checkbox-ripple, .mat-mdc-checkbox .mdc-checkbox__background::before {
+  $ripple-size: 40px;
+  position: absolute;
+  width: $ripple-size;
+  height: $ripple-size;
+  top: 50%;
+  left: 50%;
+  margin: (-$ripple-size / 2) 0 0 (-$ripple-size / 2);
+  pointer-events: none;
 }
