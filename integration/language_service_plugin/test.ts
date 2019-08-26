@@ -1,12 +1,11 @@
 import {ChildProcess, fork} from 'child_process';
 import {join} from 'path';
-
 import {goldenMatcher} from './matcher';
 import {Client} from './tsclient';
 
 describe('Angular Language Service', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000; /* 10 seconds */
-  const PWD = process.env.PWD!;
+  const PWD = process.env.PWD !;
   const SERVER_PATH = './node_modules/typescript/lib/tsserver.js';
   let server: ChildProcess;
   let client: Client;
@@ -28,14 +27,14 @@ describe('Angular Language Service', () => {
     client.listen();
   });
 
-  afterEach(async () => {
+  afterEach(async() => {
     client.sendRequest('exit', {});
 
     // Give server process some time to flush all messages
     await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
-  it('should be launched as tsserver plugin', async () => {
+  it('should be launched as tsserver plugin', async() => {
     let response = await client.sendRequest('configure', {
       hostInfo: 'vscode',
     });
@@ -61,7 +60,7 @@ describe('Angular Language Service', () => {
     client.sendRequest('geterr', {delay: 0, files: [`${PWD}/project/app/app.module.ts`]});
   });
 
-  it('should perform completions', async () => {
+  it('should perform completions', async() => {
     await client.sendRequest('configure', {
       hostInfo: 'vscode',
     });
@@ -99,7 +98,7 @@ describe('Angular Language Service', () => {
     expect(response).toMatchGolden('completionInfo.json');
   });
 
-  it('should perform quickinfo', async () => {
+  it('should perform quickinfo', async() => {
     client.sendRequest('open', {
       file: `${PWD}/project/app/app.component.ts`,
     });
@@ -119,7 +118,7 @@ describe('Angular Language Service', () => {
     expect(resp2).toMatchGolden('quickinfo.json');
   });
 
-  it('should perform definition', async () => {
+  it('should perform definition', async() => {
     client.sendRequest('open', {
       file: `${PWD}/project/app/app.component.ts`,
     });
@@ -139,7 +138,7 @@ describe('Angular Language Service', () => {
     expect(resp2).toMatchGolden('definition.json');
   });
 
-  it('should perform definitionAndBoundSpan', async () => {
+  it('should perform definitionAndBoundSpan', async() => {
     client.sendRequest('open', {
       file: `${PWD}/project/app/app.component.ts`,
     });
@@ -159,7 +158,7 @@ describe('Angular Language Service', () => {
     expect(resp2).toMatchGolden('definitionAndBoundSpan.json');
   });
 
-  it('should perform definitionAndBoundSpan for template URLs', async () => {
+  it('should perform definitionAndBoundSpan for template URLs', async() => {
     client.sendRequest('open', {
       file: `${PWD}/project/app/widget.component.ts`,
     });
