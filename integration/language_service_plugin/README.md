@@ -3,13 +3,21 @@
 This directory is an integration test for `@angular/language-service` to ensure
 that the language service works correctly as a `tsserver` plugin.
 
+To use the tests:
+
+- Use `yarn install` to install all dependencies in this directory and in the Angular repo root
+    directory.
+- From the Angular repo root directory, build Angular in the `dist/packages-dist` folder with
+    `./scripts/build-packages-dist.sh`.
+- In this directory, run the tests with `yarn test`.
+
 The tests can be run with `yarn test`. Before doing so, please install all dependencies in this
 directory and the Angular repo root directory with `yarn install`, and
 [build Angular](../../docs/DEVELOPER.md#building).
 
 ## Update golden files
 
-If the expected output needs to be updated run `yarn golden my-golden.json`, replacing
+If the expected output needs to be updated, run `yarn golden my-golden.json`, replacing
 `my-golden.json` with the golden file to be updated. Do not qualify the file with a directory path.
 See [generate.ts](./generate.ts) for more information.
 
@@ -25,4 +33,4 @@ Once a new fixture is created:
 1) Add the fixture name to `goldens/`
 2) Run `yarn golden my-golden.json`, replacing `my-golden.json` with the new fixture name, to
    produce the expected output files.
-3) Hand validate the expected output is reasonable.
+3) Hand validate that the expected output is reasonable.
