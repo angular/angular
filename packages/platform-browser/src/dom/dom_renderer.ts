@@ -6,8 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {TrustedTypePolicyAdapter} from '../security/trusted_types_policy';
+import {
+  APP_ID,
+  Inject,
+  Injectable,
+  Renderer2,
+  RendererFactory2,
+  RendererStyleFlags2,
+  RendererType2,
+  ViewEncapsulation,
+  TrustedTypePolicyAdapter
+} from '@angular/core';
+
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
 
@@ -74,8 +84,11 @@ export class DomRendererFactory2 implements RendererFactory2 {
   private defaultRenderer: Renderer2;
 
   constructor(
-      private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      private policyAdapter: TrustedTypePolicyAdapter) {
+    private eventManager: EventManager,
+    private sharedStylesHost: DomSharedStylesHost,
+    @Inject(APP_ID) private appId: string,
+    private policyAdapter: TrustedTypePolicyAdapter
+  ) {
     this.defaultRenderer = new DefaultDomRenderer2(eventManager, policyAdapter);
   }
 
@@ -117,7 +130,7 @@ class DefaultDomRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
   constructor(
-      private eventManager: EventManager, private _policyAdapter: TrustedTypePolicyAdapter) {}
+      private eventManager: EventManager, private policyAdapter: TrustedTypePolicyAdapter) {}
 
   destroy(): void {}
 
@@ -168,10 +181,10 @@ class DefaultDomRenderer2 implements Renderer2 {
   nextSibling(node: any): any { return node.nextSibling; }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
-    // this is only called for constant values in angular templates written by user, these
+    // setAttribute is only called for constant values in angular templates provided by user. These
     // values skip sanitization and are not wrapped in trusted types.
     let newValue =
-        this._policyAdapter.maybeCreateTrustedValueForAttribute(el, name, value, namespace);
+        this.policyAdapter.dangerouslyCreateTrustedValueForAttribute(el, name, value, namespace);
     if (namespace) {
       name = namespace + ':' + name;
       // TODO(benlesh): Ivy may cause issues here because it's passing around

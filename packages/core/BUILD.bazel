@@ -18,6 +18,7 @@ ng_module(
         "//packages/core/src/reflection",
         "//packages/core/src/util",
         "//packages/localize",
+        "@npm//@types/trusted-types",
         "@npm//rxjs",
         "@npm//zone.js",
     ],

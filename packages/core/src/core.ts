@@ -37,6 +37,7 @@ export * from './core_render3_private_export';
 export {SecurityContext} from './sanitization/security';
 export {Sanitizer} from './sanitization/sanitizer';
 export * from './codegen_private_exports';
+export {DOM_SANITIZATION_POLICY_NAME, TrustedTypePolicyAdapter, TrustedTypePolicyAdapterImpl} from './security/trusted_types_policy';
 
 import {global} from './util/global';
 if (ngDevMode) {

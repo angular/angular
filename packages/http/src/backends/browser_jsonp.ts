@@ -36,6 +36,7 @@ export class BrowserJsonp {
   // Construct a <script> element with the specified URL
   build(url: string): any {
     const node = document.createElement('script');
+    // https://github.com/microsoft/TypeScript/issues/30024
     node.src = this.trustedTypesPolicy.createScriptURL(url) as unknown as string;
     return node;
   }

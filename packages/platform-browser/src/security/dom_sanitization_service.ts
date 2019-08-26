@@ -7,7 +7,17 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl} from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  Injector,
+  Sanitizer,
+  SecurityContext,
+  forwardRef,
+  ɵ_sanitizeHtml as _sanitizeHtml,
+  ɵ_sanitizeStyle as _sanitizeStyle,
+  ɵ_sanitizeUrl as _sanitizeUrl,
+} from '@angular/core';
 import {TrustedTypePolicyAdapter} from './trusted_types_policy';
 
 export {SecurityContext};
@@ -151,7 +161,7 @@ export function domSanitizerImplFactory(injector: Injector) {
 @Injectable({providedIn: 'root', useFactory: domSanitizerImplFactory, deps: [Injector]})
 export class DomSanitizerImpl extends DomSanitizer {
   constructor(
-      @Inject(DOCUMENT) private _doc: any, private _policyAdapter: TrustedTypePolicyAdapter) {
+      @Inject(DOCUMENT) private _doc: any, private policyAdapter: TrustedTypePolicyAdapter) {
     super();
   }
 
@@ -163,7 +173,8 @@ export class DomSanitizerImpl extends DomSanitizer {
       case SecurityContext.HTML:
         if (value instanceof SafeHtmlImpl)
           return value.changingThisBreaksApplicationSecurity as string;
-        if (this._policyAdapter.isHTML(value)) {
+        if (this.policyAdapter.isHTML(value)) {
+          // https://github.com/microsoft/TypeScript/issues/30024
           return value as unknown as string;
         }
         this.checkNotSafeValue(value, 'HTML');
@@ -176,7 +187,8 @@ export class DomSanitizerImpl extends DomSanitizer {
       case SecurityContext.SCRIPT:
         if (value instanceof SafeScriptImpl)
           return value.changingThisBreaksApplicationSecurity as string;
-        if (this._policyAdapter.isScript(value)) {
+        if (this.policyAdapter.isScript(value)) {
+          // https://github.com/microsoft/TypeScript/issues/30024
           return value as unknown as string;
         }
         this.checkNotSafeValue(value, 'Script');
@@ -186,16 +198,14 @@ export class DomSanitizerImpl extends DomSanitizer {
           // Allow resource URLs in URL contexts, they are strictly more trusted.
           return value.changingThisBreaksApplicationSecurity as string;
         }
-        if (this._policyAdapter.isURL(value)) {
-          return value as unknown as string;
-        }
         this.checkNotSafeValue(value, 'URL');
-        return this.sanitizeURL(String(value));
+        return _sanitizeUrl(String(value));
       case SecurityContext.RESOURCE_URL:
         if (value instanceof SafeResourceUrlImpl) {
           return value.changingThisBreaksApplicationSecurity as string;
         }
-        if (this._policyAdapter.isScriptURL(value)) {
+        if (this.policyAdapter.isScriptURL(value)) {
+          // https://github.com/microsoft/TypeScript/issues/30024
           return value as unknown as string;
         }
         throw new Error(
@@ -205,14 +215,9 @@ export class DomSanitizerImpl extends DomSanitizer {
     }
   }
 
-  private sanitizeURL(value: string): string {
-    const sanitized = _sanitizeUrl(value);
-    return this._policyAdapter.maybeCreateTrustedURL(sanitized);
-  }
-
   private sanitizeHTML(value: string): string {
-    const sanitized = _sanitizeHtml(this._doc, value);
-    return this._policyAdapter.maybeCreateTrustedHTML(sanitized);
+    const sanitized = _sanitizeHtml(this._doc, value, this.policyAdapter);
+    return this.policyAdapter.maybeCreateTrustedHTML(sanitized);
   }
 
   private checkNotSafeValue(value: any, expectedType: string) {
@@ -224,17 +229,17 @@ export class DomSanitizerImpl extends DomSanitizer {
   }
 
   bypassSecurityTrustHtml(value: string): SafeHtml {
-    return new SafeHtmlImpl(this._policyAdapter.maybeCreateTrustedHTML(value));
+    return new SafeHtmlImpl(this.policyAdapter.maybeCreateTrustedHTML(value));
   }
   bypassSecurityTrustStyle(value: string): SafeStyle { return new SafeStyleImpl(value); }
   bypassSecurityTrustScript(value: string): SafeScript {
-    return new SafeScriptImpl(this._policyAdapter.maybeCreateTrustedScript(value));
+    return new SafeScriptImpl(this.policyAdapter.maybeCreateTrustedScript(value));
   }
   bypassSecurityTrustUrl(value: string): SafeUrl {
-    return new SafeUrlImpl(this._policyAdapter.maybeCreateTrustedURL(value));
+    return new SafeUrlImpl(value);
   }
   bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl {
-    return new SafeResourceUrlImpl(this._policyAdapter.maybeCreateTrustedScriptURL(value));
+    return new SafeResourceUrlImpl(this.policyAdapter.maybeCreateTrustedScriptURL(value));
   }
 }
 

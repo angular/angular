@@ -19,7 +19,7 @@ import {HAMMER_PROVIDERS} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
-import {DOM_SANITIZATION_POLICY_NAME, TrustedTypePolicyAdapter, TrustedTypePolicyAdapterImpl} from './security/trusted_types_policy';
+import {DOM_SANITIZATION_POLICY_NAME, TrustedTypePolicyAdapter, TrustedTypePolicyAdapterImpl} from '@angular/core';
 
 export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},

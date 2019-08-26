@@ -1,3 +1,5 @@
+import { TrustedTypePolicyAdapter } from "../security/trusted_types_policy";
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -18,7 +20,7 @@ export class InertBodyHelper {
   private inertBodyElement: HTMLElement;
   private inertDocument: Document;
 
-  constructor(private defaultDoc: Document) {
+  constructor(private defaultDoc: Document, private policyAdapter?: TrustedTypePolicyAdapter) {
     this.inertDocument = this.defaultDoc.implementation.createHTMLDocument('sanitization-inert');
     this.inertBodyElement = this.inertDocument.body;
 
@@ -31,7 +33,7 @@ export class InertBodyHelper {
       inertHtml.appendChild(this.inertBodyElement);
     }
 
-    this.inertBodyElement.innerHTML = '<svg><g onload="this.parentNode.remove()"></g></svg>';
+    this.inertBodyElement.innerHTML = this.createTrustedHTML('<svg><g onload="this.parentNode.remove()"></g></svg>');
     if (this.inertBodyElement.querySelector && !this.inertBodyElement.querySelector('svg')) {
       // We just hit the Safari 10.1 bug - which allows JS to run inside the SVG G element
       // so use the XHR strategy.
@@ -39,8 +41,7 @@ export class InertBodyHelper {
       return;
     }
 
-    this.inertBodyElement.innerHTML =
-        '<svg><p><style><img src="</style><img src=x onerror=alert(1)//">';
+    this.inertBodyElement.innerHTML = this.createTrustedHTML('<svg><p><style><img src="</style><img src=x onerror=alert(1)//">');
     if (this.inertBodyElement.querySelector && this.inertBodyElement.querySelector('svg img')) {
       // We just hit the Firefox bug - which prevents the inner img JS from being sanitized
       // so use the DOMParser strategy, if it is available.
@@ -54,6 +55,10 @@ export class InertBodyHelper {
 
     // None of the bugs were hit so it is safe for us to use the default InertDocument strategy
     this.getInertBodyElement = this.getInertBodyElement_InertDocument;
+  }
+
+  createTrustedHTML(html: string) {
+    return this.policyAdapter ? this.policyAdapter.maybeCreateTrustedHTML(html) : html;
   }
 
   /**
@@ -71,7 +76,7 @@ export class InertBodyHelper {
     // We add these extra elements to ensure that the rest of the content is parsed as expected
     // e.g. leading whitespace is maintained and tags like `<meta>` do not get hoisted to the
     // `<head>` tag.
-    html = '<body><remove></remove>' + html + '</body>';
+    html = this.createTrustedHTML('<body><remove></remove>' + html + '</body>');
     try {
       html = encodeURI(html);
     } catch {
@@ -95,7 +100,7 @@ export class InertBodyHelper {
     // We add these extra elements to ensure that the rest of the content is parsed as expected
     // e.g. leading whitespace is maintained and tags like `<meta>` do not get hoisted to the
     // `<head>` tag.
-    html = '<body><remove></remove>' + html + '</body>';
+    html = this.createTrustedHTML('<body><remove></remove>' + html + '</body>');
     try {
       const body = new (window as any)
                        .DOMParser()

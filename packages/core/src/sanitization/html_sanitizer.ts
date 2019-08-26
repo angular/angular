@@ -9,6 +9,7 @@
 import {isDevMode} from '../util/is_dev_mode';
 import {InertBodyHelper} from './inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
+import { TrustedTypePolicyAdapter } from '../security/trusted_types_policy';
 
 function tagSet(tags: string): {[k: string]: boolean} {
   const res: {[k: string]: boolean} = {};
@@ -238,10 +239,10 @@ let inertBodyHelper: InertBodyHelper;
  * Sanitizes the given unsafe, untrusted HTML fragment, and returns HTML text that is safe to add to
  * the DOM in a browser environment.
  */
-export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
+export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string, policyAdapter?: TrustedTypePolicyAdapter): string {
   let inertBodyElement: HTMLElement|null = null;
   try {
-    inertBodyHelper = inertBodyHelper || new InertBodyHelper(defaultDoc);
+    inertBodyHelper = inertBodyHelper || new InertBodyHelper(defaultDoc, policyAdapter);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
     let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
     inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);

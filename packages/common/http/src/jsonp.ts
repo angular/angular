@@ -56,7 +56,11 @@ export abstract class JsonpCallbackContext { [key: string]: (data: any) => void;
  */
 @Injectable()
 export class JsonpClientBackend implements HttpBackend {
-  constructor(private callbackMap: JsonpCallbackContext, @Inject(DOCUMENT) private document: any, @Inject(JSONP_CALLBACK_CONTEXT_POLICY) private trustedTypesPolicy: Pick<TrustedTypePolicy, 'createScriptURL'>) {}
+  constructor(
+    private callbackMap: JsonpCallbackContext,
+    @Inject(DOCUMENT) private document: any,
+    @Inject(JSONP_CALLBACK_CONTEXT_POLICY) private trustedTypesPolicy: Pick<TrustedTypePolicy, 'createScriptURL'>
+  ) {}
 
   /**
    * Get the name of the next callback method, by incrementing the global `nextRequestId`.
