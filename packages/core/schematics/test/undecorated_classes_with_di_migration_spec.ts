@@ -209,6 +209,39 @@ describe('Undecorated classes with DI migration', () => {
       export class MyPipe extends PipeTransform {}`);
   });
 
+  it('should not decorate base class if no constructor is inherited', () => {
+    writeFile('/index.ts', dedent `
+      import {Component, NgModule, Directive} from '@angular/core';
+
+      export class BaseClassWithoutCtor {
+        someUnrelatedProp = true;
+      }
+
+      @Directive({selector: 'my-dir'})
+      export class MyDirective extends BaseClassWithoutCtor {}
+
+      @Pipe()
+      export class MyPipe extends BaseClassWithoutCtor {}
+
+      @NgModule({declarations: [MyDirective, MyPipe]})
+      export class AppModule {}
+    `);
+
+    runMigration();
+
+    expect(tree.readContent('/index.ts')).toContain(dedent `
+
+      export class BaseClassWithoutCtor {
+        someUnrelatedProp = true;
+      }
+
+      @Directive({selector: 'my-dir'})
+      export class MyDirective extends BaseClassWithoutCtor {}
+
+      @Pipe()
+      export class MyPipe extends BaseClassWithoutCtor {}`);
+  });
+
   it('should not decorate base class if directive/component/provider defines a constructor', () => {
     writeFile('/index.ts', dedent `
       import {Component, Injectable, NgModule, NgZone} from '@angular/core';
