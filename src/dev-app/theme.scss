@@ -44,7 +44,7 @@ $candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent);
 @include mat-radio-theme-mdc($candy-app-theme);
 @include mat-slide-toggle-theme-mdc($candy-app-theme);
 @include mat-tabs-theme-mdc($candy-app-theme);
-@include mat-edit-theme($candy-app-theme);
+@include mat-popover-edit-theme($candy-app-theme);
 @include mat-edit-typography(mat-typography-config());
 // Define an alternate dark theme.
 $dark-primary: mat-palette($mat-blue-grey);
@@ -68,5 +68,5 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   @include mat-radio-theme-mdc($dark-theme);
   @include mat-slide-toggle-theme-mdc($dark-theme);
   @include mat-tabs-theme-mdc($dark-theme);
-  @include mat-edit-theme($dark-theme);
+  @include mat-popover-edit-theme($dark-theme);
 }

@@ -9,11 +9,10 @@
   @return linear-gradient($direction, rgba($background-color, 0), $background-color 8px);
 }
 
-@mixin mat-edit-theme($theme) {
+@mixin mat-popover-edit-theme($theme) {
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
   $primary: map-get($theme, primary);
-
   $background-color: mat-color($background, 'card');
 
   .mat-row-hover-content-host-cell {
