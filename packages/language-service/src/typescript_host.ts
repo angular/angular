@@ -18,7 +18,6 @@ import {Declaration, DeclarationError, Diagnostic, DiagnosticKind, DiagnosticMes
 import {findTightestNode, getDirectiveClassLike} from './utils';
 
 
-
 /**
  * Create a `LanguageServiceHost`
  */
