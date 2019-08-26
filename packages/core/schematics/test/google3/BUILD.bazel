@@ -12,7 +12,7 @@ ts_library(
 )
 
 jasmine_node_test(
-    name = "test",
+    name = "google3",
     deps = [
         ":test_lib",
         "@npm//shelljs",
