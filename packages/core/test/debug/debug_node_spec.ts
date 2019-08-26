@@ -1036,4 +1036,19 @@ class TestCmptWithPropBindings {
     }
     expect(superParentName).not.toEqual('');
   });
+
+  it('should match node name with declared casing', () => {
+    @Component({template: `<div></div><myComponent></myComponent>`})
+    class Wrapper {
+    }
+
+    @Component({selector: 'myComponent', template: ''})
+    class MyComponent {
+    }
+
+    const fixture = TestBed.configureTestingModule({declarations: [Wrapper, MyComponent]})
+                        .createComponent(Wrapper);
+    expect(fixture.debugElement.query(e => e.name === 'myComponent')).toBeTruthy();
+    expect(fixture.debugElement.query(e => e.name === 'div')).toBeTruthy();
+  });
 }
