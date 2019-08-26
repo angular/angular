@@ -72,7 +72,7 @@ export function interpolationV(lView: LView, values: any[]): string|NO_CHANGE {
 export function interpolation1(lView: LView, prefix: string, v0: any, suffix: string): string|
     NO_CHANGE {
   const different = bindingUpdated(lView, lView[BINDING_INDEX]++, v0);
-  storeBindingMetadata(lView, prefix, suffix);
+  ngDevMode && storeBindingMetadata(lView, prefix, suffix);
   return different ? prefix + renderStringify(v0) + suffix : NO_CHANGE;
 }
 
@@ -85,10 +85,12 @@ export function interpolation2(
   const different = bindingUpdated2(lView, bindingIndex, v0, v1);
   lView[BINDING_INDEX] += 2;
 
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    lView[TVIEW].data[bindingIndex] = i0;
+  if (ngDevMode) {
+    // Only set static strings the first time (data will be null subsequent runs).
+    const data = storeBindingMetadata(lView, prefix, suffix);
+    if (data) {
+      lView[TVIEW].data[bindingIndex] = i0;
+    }
   }
 
   return different ? prefix + renderStringify(v0) + i0 + renderStringify(v1) + suffix : NO_CHANGE;
@@ -104,12 +106,14 @@ export function interpolation3(
   const different = bindingUpdated3(lView, bindingIndex, v0, v1, v2);
   lView[BINDING_INDEX] += 3;
 
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
+  if (ngDevMode) {
+    // Only set static strings the first time (data will be null subsequent runs).
+    const data = storeBindingMetadata(lView, prefix, suffix);
+    if (data) {
+      const tData = lView[TVIEW].data;
+      tData[bindingIndex] = i0;
+      tData[bindingIndex + 1] = i1;
+    }
   }
 
   return different ?
@@ -127,13 +131,15 @@ export function interpolation4(
   const different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
   lView[BINDING_INDEX] += 4;
 
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-    tData[bindingIndex + 2] = i2;
+  if (ngDevMode) {
+    // Only set static strings the first time (data will be null subsequent runs).
+    const data = storeBindingMetadata(lView, prefix, suffix);
+    if (data) {
+      const tData = lView[TVIEW].data;
+      tData[bindingIndex] = i0;
+      tData[bindingIndex + 1] = i1;
+      tData[bindingIndex + 2] = i2;
+    }
   }
 
   return different ?
@@ -153,14 +159,16 @@ export function interpolation5(
   different = bindingUpdated(lView, bindingIndex + 4, v4) || different;
   lView[BINDING_INDEX] += 5;
 
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-    tData[bindingIndex + 2] = i2;
-    tData[bindingIndex + 3] = i3;
+  if (ngDevMode) {
+    // Only set static strings the first time (data will be null subsequent runs).
+    const data = storeBindingMetadata(lView, prefix, suffix);
+    if (data) {
+      const tData = lView[TVIEW].data;
+      tData[bindingIndex] = i0;
+      tData[bindingIndex + 1] = i1;
+      tData[bindingIndex + 2] = i2;
+      tData[bindingIndex + 3] = i3;
+    }
   }
 
   return different ?
@@ -180,15 +188,17 @@ export function interpolation6(
   different = bindingUpdated2(lView, bindingIndex + 4, v4, v5) || different;
   lView[BINDING_INDEX] += 6;
 
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-    tData[bindingIndex + 2] = i2;
-    tData[bindingIndex + 3] = i3;
-    tData[bindingIndex + 4] = i4;
+  if (ngDevMode) {
+    // Only set static strings the first time (data will be null subsequent runs).
+    const data = storeBindingMetadata(lView, prefix, suffix);
+    if (data) {
+      const tData = lView[TVIEW].data;
+      tData[bindingIndex] = i0;
+      tData[bindingIndex + 1] = i1;
+      tData[bindingIndex + 2] = i2;
+      tData[bindingIndex + 3] = i3;
+      tData[bindingIndex + 4] = i4;
+    }
   }
 
   return different ?
@@ -209,16 +219,18 @@ export function interpolation7(
   different = bindingUpdated3(lView, bindingIndex + 4, v4, v5, v6) || different;
   lView[BINDING_INDEX] += 7;
 
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-    tData[bindingIndex + 2] = i2;
-    tData[bindingIndex + 3] = i3;
-    tData[bindingIndex + 4] = i4;
-    tData[bindingIndex + 5] = i5;
+  if (ngDevMode) {
+    // Only set static strings the first time (data will be null subsequent runs).
+    const data = storeBindingMetadata(lView, prefix, suffix);
+    if (data) {
+      const tData = lView[TVIEW].data;
+      tData[bindingIndex] = i0;
+      tData[bindingIndex + 1] = i1;
+      tData[bindingIndex + 2] = i2;
+      tData[bindingIndex + 3] = i3;
+      tData[bindingIndex + 4] = i4;
+      tData[bindingIndex + 5] = i5;
+    }
   }
 
   return different ?
@@ -240,17 +252,19 @@ export function interpolation8(
   different = bindingUpdated4(lView, bindingIndex + 4, v4, v5, v6, v7) || different;
   lView[BINDING_INDEX] += 8;
 
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-    tData[bindingIndex + 2] = i2;
-    tData[bindingIndex + 3] = i3;
-    tData[bindingIndex + 4] = i4;
-    tData[bindingIndex + 5] = i5;
-    tData[bindingIndex + 6] = i6;
+  if (ngDevMode) {
+    // Only set static strings the first time (data will be null subsequent runs).
+    const data = storeBindingMetadata(lView, prefix, suffix);
+    if (data) {
+      const tData = lView[TVIEW].data;
+      tData[bindingIndex] = i0;
+      tData[bindingIndex + 1] = i1;
+      tData[bindingIndex + 2] = i2;
+      tData[bindingIndex + 3] = i3;
+      tData[bindingIndex + 4] = i4;
+      tData[bindingIndex + 5] = i5;
+      tData[bindingIndex + 6] = i6;
+    }
   }
 
   return different ?

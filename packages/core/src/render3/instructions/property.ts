@@ -50,6 +50,6 @@ export function ɵɵproperty<T>(
  */
 export function bind<T>(lView: LView, value: T): T|NO_CHANGE {
   const bindingIndex = lView[BINDING_INDEX]++;
-  storeBindingMetadata(lView);
+  ngDevMode && storeBindingMetadata(lView);
   return bindingUpdated(lView, bindingIndex, value) ? value : NO_CHANGE;
 }
