@@ -12,12 +12,14 @@ import * as ts from 'typescript';
 
 /** Creates an NGC program that can be used to read and parse metadata for files. */
 export function createNgcProgram(
-    createHost: (options: ts.CompilerOptions) => ts.CompilerHost, tsconfigPath: string | null,
-    parseConfig: () => {
-      rootNames: readonly string[],
-      options: ts.CompilerOptions
-    } = () => readConfiguration(tsconfigPath !)) {
-  const {rootNames, options} = parseConfig();
+    createHost: (options: ts.CompilerOptions) => ts.CompilerHost, tsconfigPath: string) {
+  const {rootNames, options} = readConfiguration(tsconfigPath);
+
+  // https://github.com/angular/angular/commit/ec4381dd401f03bded652665b047b6b90f2b425f made Ivy
+  // the default. This breaks the assumption that "createProgram" from compiler-cli returns the
+  // NGC program. In order to ensure that the migration runs properly, we set "enableIvy" to false.
+  options.enableIvy = false;
+
   const host = createHost(options);
   const ngcProgram = createProgram({rootNames, options, host});
   const program = ngcProgram.getTsProgram();
