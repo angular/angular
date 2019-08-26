@@ -120,6 +120,8 @@ yarn docs-watch
 yarn serve-and-sync
 ```
 
+> If you get installation error during `yarn setup` verify if you have rights into the current directory, which is a common issue for `npm install` getting failed, to avoid this error, you can run the command prompt as administrator.
+
 * Open a browser at https://localhost:4200/ and navigate to the document on which you want to work.
 You can automatically open the browser by using `yarn start -o` in the first terminal.
 
