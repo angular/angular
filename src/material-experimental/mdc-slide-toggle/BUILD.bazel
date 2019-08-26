@@ -23,6 +23,7 @@ ng_module(
         "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",
+        "@npm//@material/ripple",
         "@npm//@material/switch",
     ],
 )
@@ -81,7 +82,10 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    static_files = ["@npm//:node_modules/@material/switch/dist/mdc.switch.js"],
+    static_files = [
+        "@npm//:node_modules/@material/ripple/dist/mdc.ripple.js",
+        "@npm//:node_modules/@material/switch/dist/mdc.switch.js",
+    ],
     deps = [
         ":slide_toggle_tests_lib",
         "//src/material-experimental:mdc_require_config.js",

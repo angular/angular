@@ -19,6 +19,7 @@ ng_module(
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//@material/chips",
+        "@npm//@material/ripple",
     ],
 )
 
@@ -72,7 +73,10 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    static_files = ["@npm//:node_modules/@material/chips/dist/mdc.chips.js"],
+    static_files = [
+        "@npm//:node_modules/@material/chips/dist/mdc.chips.js",
+        "@npm//:node_modules/@material/ripple/dist/mdc.ripple.js",
+    ],
     deps = [
         ":chips_tests_lib",
         "//src/material-experimental:mdc_require_config.js",

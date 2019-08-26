@@ -28,6 +28,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {ThemePalette, RippleAnimationConfig} from '@angular/material/core';
+import {numbers} from '@material/ripple';
 import {
   MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS,
   MatSlideToggleDefaultOptions,
@@ -106,12 +107,8 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
 
   /** Configuration for the underlying ripple. */
   _rippleAnimation: RippleAnimationConfig = {
-    // TODO(crisbeto): Use the MDC constants once they are exported separately from the
-    // foundation. Grabbing them off the foundation prevents the foundation class from being
-    // tree-shaken. There is an open PR for this:
-    // https://github.com/material-components/material-components-web/pull/4593
-    enterDuration: 225 /* MDCRippleFoundation.numbers.DEACTIVATION_TIMEOUT_MS */,
-    exitDuration: 150 /* MDCRippleFoundation.numbers.FG_DEACTIVATION_MS */,
+    enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
+    exitDuration: numbers.FG_DEACTIVATION_MS,
   };
 
   /** The color palette  for this slide toggle. */

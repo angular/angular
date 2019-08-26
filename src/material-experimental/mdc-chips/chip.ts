@@ -45,6 +45,7 @@ import {
   RippleTarget,
 } from '@angular/material/core';
 import {MDCChipAdapter, MDCChipFoundation} from '@material/chips';
+import {numbers} from '@material/ripple';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {MatChipAvatar, MatChipTrailingIcon, MatChipRemove} from './chip-icons';
@@ -373,8 +374,8 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
     // Configure ripple animation to match MDC Ripple.
     this.rippleConfig.animation = {
-      enterDuration: 225  /*MDCRippleFoundation.numbers.DEACTIVATION_TIMEOUT_MS */,
-      exitDuration: 150 /* MDCRippleFoundation.numbers.FG_DEACTIVATION_MS */,
+      enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
+      exitDuration: numbers.FG_DEACTIVATION_MS,
     };
 
     this._rippleRenderer =
