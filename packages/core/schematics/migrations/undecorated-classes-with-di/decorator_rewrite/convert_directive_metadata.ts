@@ -9,6 +9,9 @@
 import {StaticSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 
+/** Error that will be thrown if an unexpected value needs to be converted. */
+export class UnexpectedMetadataValueError extends Error {}
+
 /**
  * Converts a directive metadata object into a TypeScript expression. Throws
  * if metadata cannot be cleanly converted.
@@ -63,7 +66,7 @@ export function convertDirectiveMetadataToExpression(
             metadataValue, resolveSymbolImport, createImport, convertProperty);
       }
 
-      literalProperties.push(ts.createPropertyAssignment(key, propertyValue));
+      literalProperties.push(ts.createPropertyAssignment(getPropertyName(key), propertyValue));
     }
 
     return ts.createObjectLiteral(literalProperties, true);
@@ -72,5 +75,17 @@ export function convertDirectiveMetadataToExpression(
   throw new UnexpectedMetadataValueError();
 }
 
-/** Error that will be thrown if a unexpected value needs to be converted. */
-export class UnexpectedMetadataValueError extends Error {}
+/**
+ * Gets a valid property name from the given text. If the text cannot be used
+ * as unquoted identifier, the name will be wrapped in a string literal.
+*/
+function getPropertyName(name: string): string|ts.StringLiteral {
+  // Matches the most common identifiers that do not need quotes. Constructing a
+  // regular expression that matches the ECMAScript specification in order to determine
+  // whether quotes are needed is out of scope for this migration. For those more complex
+  // property names, we just always use quotes (when constructing AST from metadata).
+  if (/^[a-zA-Z_$]+$/.test(name)) {
+    return name;
+  }
+  return ts.createStringLiteral(name);
+}
