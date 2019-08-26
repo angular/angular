@@ -247,7 +247,17 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as Element : null;
   }
 
-  get name(): string { return this.nativeNode.nodeName; }
+  get name(): string {
+    try {
+      const context = loadLContext(this.nativeNode) !;
+      const lView = context.lView;
+      const tData = lView[TVIEW].data;
+      const tNode = tData[context.nodeIndex] as TNode;
+      return tNode.tagName !;
+    } catch (e) {
+      return this.nativeNode.nodeName;
+    }
+  }
 
   /**
    *  Gets a map of property names to property values for an element.
