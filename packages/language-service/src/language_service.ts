@@ -86,8 +86,7 @@ class LanguageServiceImpl implements LanguageService {
     if (fileName.endsWith('.ts')) {
       const sf = this.host.getSourceFile(fileName);
       if (sf) {
-        const readTemplate = this.host.getTemplates.bind(this.host);
-        return getTsDefinitionAndBoundSpan(sf, position, readTemplate);
+        return getTsDefinitionAndBoundSpan(sf, position, this.host.host);
       }
     }
   }
