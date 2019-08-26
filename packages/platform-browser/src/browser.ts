@@ -34,9 +34,6 @@ const BROWSER_SANITIZATION_PROVIDERS__PRE_R3__: StaticProvider[] = [
   {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [DOCUMENT]},
 ];
 
-/**
- * @codeGenApi
- */
 export const BROWSER_SANITIZATION_PROVIDERS__POST_R3__ = [];
 
 /**
