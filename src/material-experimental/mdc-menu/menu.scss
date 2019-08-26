@@ -3,6 +3,7 @@
 @import '@material/list/variables';
 @import '../../material/core/style/menu-common';
 @import '../../material/core/style/button-common';
+@import '../../cdk/a11y/a11y';
 
 @include mdc-menu-surface-core-styles($query: structure);
 
@@ -20,6 +21,10 @@
 
   // The CDK positioning uses flexbox to anchor the element, whereas MDC uses `position: absolute`.
   position: static;
+
+  @include cdk-high-contrast {
+    outline: solid 1px;
+  }
 }
 
 .mat-mdc-menu-item {
@@ -59,6 +64,14 @@
     .mat-icon {
       margin-right: 0;
       margin-left: $mdc-list-side-padding;
+    }
+  }
+
+  @include cdk-high-contrast {
+    &.cdk-program-focused,
+    &.cdk-keyboard-focused,
+    &-highlighted {
+      outline: dotted 1px;
     }
   }
 }
