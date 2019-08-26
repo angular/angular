@@ -62,12 +62,18 @@ To learn more about other browsers that are service worker ready, see the [Can I
 
 ## Related resources
 
+The rest of the articles in this section specifically address the Angular implementation of service workers.
+
+* [App Shell](guide/app-shell)
+* [Service Worker Communication](guide/service-worker-communications)
+* [Service Worker in Production](guide/service-worker-devops)
+* [Service Worker Configuration](guide/service-worker-config)
+
 For more information about service workers in general, see [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/primers/service-workers/).
 
 For more information about browser support, see the [browser support](https://developers.google.com/web/fundamentals/primers/service-workers/#browser_support) section of [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/primers/service-workers/), Jake Archibald's [Is Serviceworker ready?](https://jakearchibald.github.io/isserviceworkerready/), and
 [Can I Use](http://caniuse.com/#feat=serviceworkers).
 
-The remainder of this guide specifically addresses the Angular implementation of service workers.
 For additional recommendations and examples, see:
 
 * [Precaching with Angular Service Worker](https://web.dev/precaching-with-the-angular-service-worker/)
