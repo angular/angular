@@ -73,8 +73,8 @@ the component **subscribes** to the method's return value.
 The subscription callback copies the data fields into the component's `config` object,
 which is data-bound in the component template for display.
 
-<div class="alert is-helpful">
-**Why write a service?**
+<div class="callout is-helpful">
+ <header>Why write a service?</header>
 
 This example is so simple that it is tempting to write the `Http.get()` inside the
 component itself and skip the service.
