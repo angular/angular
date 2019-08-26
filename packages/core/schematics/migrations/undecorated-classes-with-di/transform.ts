@@ -97,6 +97,21 @@ export class UndecoratedClassesTransform {
   }
 
   private _migrateProviderBaseClass(node: ts.ClassDeclaration): TransformFailure[] {
+    return this._migrateDecoratedClassWithInheritedCtor(
+        node, symbol => this.metadataResolver.isInjectable(symbol),
+        node => this._addInjectableDecorator(node));
+  }
+
+  private _migrateDirectiveBaseClass(node: ts.ClassDeclaration): TransformFailure[] {
+    return this._migrateDecoratedClassWithInheritedCtor(
+        node, symbol => this.metadataResolver.isDirective(symbol),
+        node => this._addAbstractDirectiveDecorator(node));
+  }
+
+
+  private _migrateDecoratedClassWithInheritedCtor(
+      node: ts.ClassDeclaration, isClassDecorated: (symbol: StaticSymbol) => boolean,
+      addClassDecorator: (node: ts.ClassDeclaration) => void): TransformFailure[] {
     // In case the provider has an explicit constructor, we don't need to do anything
     // because the class is already decorated and does not inherit a constructor.
     if (hasExplicitConstructor(node)) {
@@ -104,77 +119,43 @@ export class UndecoratedClassesTransform {
     }
 
     const orderedBaseClasses = findBaseClassDeclarations(node, this.typeChecker);
-    let lastDecoratedClass: ts.ClassDeclaration = node;
+    const undecoratedBaseClasses: ts.ClassDeclaration[] = [];
 
     for (let {node: baseClass, identifier} of orderedBaseClasses) {
       const baseClassFile = baseClass.getSourceFile();
 
       if (hasExplicitConstructor(baseClass)) {
+        // All classes in between the decorated class and the undecorated class
+        // that defines the constructor need to be decorated as well.
+        undecoratedBaseClasses.forEach(b => addClassDecorator(b));
+
         if (baseClassFile.isDeclarationFile) {
           const staticSymbol = this._getStaticSymbolOfIdentifier(identifier);
 
           // If the base class is decorated through metadata files, we don't
           // need to add a comment to the derived class for the external base class.
-          if (staticSymbol && this.metadataResolver.isInjectable(staticSymbol)) {
+          if (staticSymbol && isClassDecorated(staticSymbol)) {
             break;
           }
 
-          // If the base class is not decorated, we cannot decorate the base class and
-          // need to a comment to the last decorated class.
+          // Find the last class in the inheritance chain that is decorated and will be
+          // used as anchor for a comment explaining that the class that defines the
+          // constructor cannot be decorated automatically.
+          const lastDecoratedClass =
+              undecoratedBaseClasses[undecoratedBaseClasses.length - 1] || node;
           return this._addMissingExplicitConstructorTodo(lastDecoratedClass);
         }
 
-        this._addInjectableDecorator(baseClass);
+        // Decorate the class that defines the constructor that is inherited.
+        addClassDecorator(baseClass);
         break;
       }
 
-      // Add the "@Injectable" decorator for all base classes in the inheritance chain
-      // until the base class with the explicit constructor. The decorator will be only
+      // Add the class decorator for all base classes in the inheritance chain until
+      // the base class with the explicit constructor. The decorator will be only
       // added for base classes which can be modified.
       if (!baseClassFile.isDeclarationFile) {
-        this._addInjectableDecorator(baseClass);
-        lastDecoratedClass = baseClass;
-      }
-    }
-    return [];
-  }
-
-  private _migrateDirectiveBaseClass(node: ts.ClassDeclaration): TransformFailure[] {
-    // In case the directive has an explicit constructor, we don't need to do
-    // anything because the class is already decorated with "@Directive" or "@Component"
-    if (hasExplicitConstructor(node)) {
-      return [];
-    }
-
-    const orderedBaseClasses = findBaseClassDeclarations(node, this.typeChecker);
-    let lastDecoratedClass: ts.ClassDeclaration = node;
-
-    for (let {node: baseClass, identifier} of orderedBaseClasses) {
-      const baseClassFile = baseClass.getSourceFile();
-
-      if (hasExplicitConstructor(baseClass)) {
-        if (baseClassFile.isDeclarationFile) {
-          // If the base class is decorated through metadata files, we don't
-          // need to add a comment to the derived class for the external base class.
-          if (this._hasDirectiveMetadata(identifier)) {
-            break;
-          }
-
-          // If the base class is not decorated, we cannot decorate the base class and
-          // need to a comment to the last decorated class.
-          return this._addMissingExplicitConstructorTodo(lastDecoratedClass);
-        }
-
-        this._addAbstractDirectiveDecorator(baseClass);
-        break;
-      }
-
-      // Add the abstract directive decorator for all base classes in the inheritance
-      // chain until the base class with the explicit constructor. The decorator will
-      // be only added for base classes which can be modified.
-      if (!baseClassFile.isDeclarationFile) {
-        this._addAbstractDirectiveDecorator(baseClass);
-        lastDecoratedClass = baseClass;
+        undecoratedBaseClasses.push(baseClass);
       }
     }
     return [];
@@ -229,7 +210,7 @@ export class UndecoratedClassesTransform {
   /** Adds a comment for adding an explicit constructor to the given class declaration. */
   private _addMissingExplicitConstructorTodo(node: ts.ClassDeclaration): TransformFailure[] {
     // In case a todo comment has been already inserted to the given class, we don't
-    //  want to add a comment or transform failure multiple times.
+    // want to add a comment or transform failure multiple times.
     if (this.missingExplicitConstructorClasses.has(node)) {
       return [];
     }
@@ -385,20 +366,6 @@ export class UndecoratedClassesTransform {
       }
       throw e;
     }
-  }
-
-  /**
-   * Whether the given identifier resolves to a class declaration that
-   * has metadata for a directive.
-   */
-  private _hasDirectiveMetadata(node: ts.Identifier): boolean {
-    const symbol = this._getStaticSymbolOfIdentifier(node);
-
-    if (!symbol) {
-      return false;
-    }
-
-    return this.metadataResolver.isDirective(symbol);
   }
 
   /**
