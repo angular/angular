@@ -1,3 +1,25 @@
+## 8.1.4 "orichalcum-ocarina" (2019-08-26)
+
+
+### Bug Fixes
+
+* **button:** fix opacity is not added to ripple when using CSS variables to define custom theme ([c62330b](https://github.com/angular/components/commit/c62330b))
+* **datepicker:** don't set aria-haspopup if no datepicker is set ([#15554](https://github.com/angular/components/issues/15554)) ([f590dc6](https://github.com/angular/components/commit/f590dc6))
+* **dialog:** not applying margins to new button variants ([#11961](https://github.com/angular/components/issues/11961)) ([0ad0d7a](https://github.com/angular/components/commit/0ad0d7a))
+* **expansion:** not adding margin for all button types ([#16806](https://github.com/angular/components/issues/16806)) ([1d545a6](https://github.com/angular/components/commit/1d545a6))
+* **menu:** inconsistent behavior when clicking on a disabled item ([#16696](https://github.com/angular/components/issues/16696)) ([e441a75](https://github.com/angular/components/commit/e441a75)), closes [#16694](https://github.com/angular/components/issues/16694)
+* **menu:** mark lazy menu content as dirty before attach ([#16506](https://github.com/angular/components/issues/16506)) ([1b54011](https://github.com/angular/components/commit/1b54011))
+* **overlay:** _updateElementSize should not fail if pane is disposed. ([#16600](https://github.com/angular/components/issues/16600)) ([febcaff](https://github.com/angular/components/commit/febcaff))
+* **radio:** show ripple on programmatic focus ([#16512](https://github.com/angular/components/issues/16512)) ([a243ef9](https://github.com/angular/components/commit/a243ef9))
+* **radio-button:** underlying input not respecting value binding ([e1760b6](https://github.com/angular/components/commit/e1760b6))
+* **schematics:** module imports not generated for schematics ([#16787](https://github.com/angular/components/issues/16787)) ([2cfcd36](https://github.com/angular/components/commit/2cfcd36))
+* **schematics:** navigation schematic not respecting breakpoints on initial render ([#16788](https://github.com/angular/components/issues/16788)) ([621ddf7](https://github.com/angular/components/commit/621ddf7))
+* **sidenav:** avoid CSS class name conflict ([#16798](https://github.com/angular/components/issues/16798)) ([636cb9f](https://github.com/angular/components/commit/636cb9f))
+* **sidenav:** focus trap enabled state not updated if mode changes while open ([#16602](https://github.com/angular/components/issues/16602)) ([666e9b3](https://github.com/angular/components/commit/666e9b3)), closes [#16601](https://github.com/angular/components/issues/16601)
+* **slider:** inconsistent cursor behavior if user's pointer moves around while dragging ([d62b19e](https://github.com/angular/components/commit/d62b19e)), closes [#14613](https://github.com/angular/components/issues/14613)
+
+
+
 ## 8.1.3 "gelatin-key" (2019-08-14)
 
 
