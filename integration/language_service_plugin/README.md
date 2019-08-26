@@ -11,10 +11,6 @@ To use the tests:
     `./scripts/build-packages-dist.sh`.
 - In this directory, run the tests with `yarn test`.
 
-The tests can be run with `yarn test`. Before doing so, please install all dependencies in this
-directory and the Angular repo root directory with `yarn install`, and
-[build Angular](../../docs/DEVELOPER.md#building).
-
 ## Update golden files
 
 If the expected output needs to be updated, run `yarn golden my-golden.json`, replacing
