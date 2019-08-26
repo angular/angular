@@ -892,7 +892,7 @@ export function elementPropertyInternal<T>(
       ngDevMode.rendererSetProperty++;
     }
 
-    savePropertyDebugData(tNode, lView, propName, lView[TVIEW].data, nativeOnly);
+    ngDevMode && savePropertyDebugData(tNode, lView, propName, lView[TVIEW].data, nativeOnly);
 
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the
