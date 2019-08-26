@@ -1027,7 +1027,10 @@ describe('Undecorated classes with DI migration', () => {
                     provide: NG_VALIDATORS,
                     useExisting: BaseComponent,
                     multi: true
-                }]
+                }],
+            host: {
+                "[class.is-enabled]": "isEnabled === true"
+            }
         })
         export class PassThrough extends BaseComponent {}`);
       expect(tree.readContent('/index.ts')).toContain(dedent `
@@ -1040,7 +1043,10 @@ describe('Undecorated classes with DI migration', () => {
                     provide: NG_VALIDATORS,
                     useExisting: BaseComponent,
                     multi: true
-                }]
+                }],
+            host: {
+                "[class.is-enabled]": "isEnabled === true"
+            }
         })
         export class MyComp extends PassThrough {}`);
       expect(tree.readContent('/index.ts')).toContain(dedent `
@@ -1081,7 +1087,10 @@ describe('Undecorated classes with DI migration', () => {
                     provide: NG_VALIDATORS,
                     useExisting: BaseComponent,
                     multi: true
-                }]
+                }],
+            host: {
+                "[class.is-enabled]": "isEnabled === true"
+            }
         })
         export class MyComp extends BaseComponent {}`);
     });
@@ -1238,6 +1247,9 @@ describe('Undecorated classes with DI migration', () => {
                 member: 'None'
               },
               providers: [{__symbolic: 'reference', name: 'testValidators'}],
+              host: {
+                '[class.is-enabled]': 'isEnabled === true',
+              }
             }]
           }],
           members: {}
