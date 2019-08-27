@@ -89,6 +89,7 @@ export class PendingCopy {
         const currentFocus = document.activeElement;
 
         textarea.select();
+        textarea.setSelectionRange(0, textarea.value.length);
         successful = this._document.execCommand('copy');
 
         if (currentFocus instanceof HTMLElement) {
