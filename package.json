@@ -9,7 +9,7 @@
   "//engines-comment": "Keep this in sync with aio/package.json",
   "engines": {
     "node": ">=10.9.0 <13.0.0",
-    "yarn": ">=1.12.1 <=1.18.0"
+    "yarn": ">=1.17.3 <=1.18.0"
   },
   "repository": {
     "type": "git",
