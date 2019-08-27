@@ -10,7 +10,7 @@
   "license": "MIT",
   "engines": {
     "node": ">= 5.4.1",
-    "yarn": ">= 1.13.0"
+    "yarn": ">= 1.17.3"
   },
   "scripts": {
     "postinstall": "ngc -p angular-tsconfig.json",

@@ -26,11 +26,11 @@ check_bazel_version("0.27.0")
 
 node_repositories(
     # For deterministic builds, specify explicit NodeJS and Yarn versions.
-    node_version = "10.13.0",
+    node_version = "10.16.0",
     yarn_repositories = {
-        "1.16.0": ("yarn-v1.16.0.tar.gz", "yarn-v1.16.0", "df202627d9a70cf09ef2fb11cb298cb619db1b958590959d6f6e571b50656029"),
+        "1.17.3": ("yarn-v1.17.3.tar.gz", "yarn-v1.17.3", "e3835194409f1b3afa1c62ca82f561f1c29d26580c9e220c36866317e043c6f3"),
     },
-    yarn_version = "1.16.0",
+    yarn_version = "1.17.3",
 )
 
 yarn_install(

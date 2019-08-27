@@ -64,15 +64,13 @@ var_10: &yarn_download
     name: "Downloading and installing Yarn"
     command: |
       touch $BASH_ENV
-      curl -o- -L https://yarnpkg.com/install.sh | PROFILE=$BASH_ENV bash -s -- --version "1.16.0"
-
+      curl -o- -L https://yarnpkg.com/install.sh | PROFILE=$BASH_ENV bash -s -- --version "1.17.3"
 # Sets up the Bazel config which is specific for CircleCI builds.
 var_11: &setup_bazel_ci_config
   run:
     name: "Setting up Bazel configuration for CI"
     command: |
       echo "import %workspace%/.circleci/bazel.rc" >> ./.bazelrc
-
 # Sets up a different Docker image that includes a moe recent Firefox version which
 # is needed for headless testing.
 var_12: &docker-firefox-image
@@ -322,7 +320,6 @@ jobs:
           command: |
             mkdir -p /tmp/cdk-umd-minified-bundles
             cp dist/releases/cdk/bundles/*.umd.min.js /tmp/cdk-umd-minified-bundles
-
       # Publish bundle artifacts which will be used to calculate the size change.
       # Note: Make sure that the size plugin from the Angular robot fetches the artifacts
       # from this CircleCI job (see .github/angular-robot.yml). Additionally any artifacts need to
