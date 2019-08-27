@@ -1321,19 +1321,17 @@ function baseResolveDirective<T>(tView: TView, viewData: LView, def: DirectiveDe
 }
 
 function addComponentLogic<T>(lView: LView, hostTNode: TNode, def: ComponentDef<T>): void {
-  const native = getNativeByTNode(hostTNode, lView);
+  const native = getNativeByTNode(hostTNode, lView) as RElement;
   const tView = getOrCreateTView(def);
 
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.
   const rendererFactory = lView[RENDERER_FACTORY];
   const componentView = addToViewTree(
-      lView, createLView(
-                 lView, tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
-                 lView[hostTNode.index], hostTNode as TElementNode, rendererFactory,
-                 rendererFactory.createRenderer(native as RElement, def)));
-
-  componentView[T_HOST] = hostTNode as TElementNode;
+      lView,
+      createLView(
+          lView, tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, native,
+          hostTNode as TElementNode, rendererFactory, rendererFactory.createRenderer(native, def)));
 
   // Component view will always be created before any injected LContainers,
   // so this is a regular element, wrap it with the component view
