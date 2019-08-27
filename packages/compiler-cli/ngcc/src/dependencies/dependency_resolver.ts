@@ -9,7 +9,8 @@
 import {DepGraph} from 'dependency-graph';
 import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
-import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from '../packages/entry_point';
+import {EntryPoint, EntryPointFormat, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from '../packages/entry_point';
+import {PartiallyOrderedList} from '../utils';
 import {DependencyHost, DependencyInfo} from './dependency_host';
 
 const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
@@ -52,6 +53,16 @@ export interface DependencyDiagnostics {
 }
 
 /**
+ * Represents a partially ordered list of entry-points.
+ *
+ * The entry-points' order/precedence is such that dependent entry-points always come later than
+ * their dependencies in the list.
+ *
+ * See `DependencyResolver#sortEntryPointsByDependency()`.
+ */
+export type PartiallyOrderedEntryPoints = PartiallyOrderedList<EntryPoint>;
+
+/**
  * A list of entry-points, sorted by their dependencies.
  *
  * The `entryPoints` array will be ordered so that no entry point depends upon an entry point that
@@ -60,7 +71,9 @@ export interface DependencyDiagnostics {
  * Some entry points or their dependencies may be have been ignored. These are captured for
  * diagnostic purposes in `invalidEntryPoints` and `ignoredDependencies` respectively.
  */
-export interface SortedEntryPointsInfo extends DependencyDiagnostics { entryPoints: EntryPoint[]; }
+export interface SortedEntryPointsInfo extends DependencyDiagnostics {
+  entryPoints: PartiallyOrderedEntryPoints;
+}
 
 /**
  * A class that resolves dependencies between entry-points.
@@ -94,7 +107,8 @@ export class DependencyResolver {
     }
 
     return {
-      entryPoints: sortedEntryPointNodes.map(path => graph.getNodeData(path)),
+      entryPoints: (sortedEntryPointNodes as PartiallyOrderedList<string>)
+                       .map(path => graph.getNodeData(path)),
       invalidEntryPoints,
       ignoredDependencies,
     };
