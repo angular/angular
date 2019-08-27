@@ -46,6 +46,15 @@ Here are the most important tasks you might need to use:
   - `yarn example-e2e --filter=foo` - limit e2e tests to those containing the word "foo"
   - `yarn example-e2e --setup --local` - run e2e tests with the local version of Angular contained in the "dist" folder
 
+> **Note for Windows users**
+>
+> Setting up the examples involves creating some [symbolic links](https://en.wikipedia.org/wiki/Symbolic_link) (see [here](./tools/examples/README.md#symlinked-node_modules) for details). On Windows, this requires to either have [Developer Mode enabled](https://blogs.windows.com/windowsdeveloper/2016/12/02/symlinks-windows-10) (supported on Windows 10 or newer) or run the setup commands as administrator.
+>
+> The affected commands are:
+> - `yarn setup` / `yarn setup-*`
+> - `yarn build` / `yarn build-*`
+> - `yarn boilerplate:add`
+> - `yarn example-e2e --setup`
 
 ## Using ServiceWorker locally
 
