@@ -95,4 +95,57 @@ describe('TypeScriptServiceHost', () => {
     const template = templates[0];
     expect(template.source).toContain('<h2>{{hero.name}} details!</h2>');
   });
+
+  // https://github.com/angular/angular/issues/32301
+  it('should clear caches when program changes', () => {
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts'], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    const fileName = '/app/app.component.ts';
+
+    // Get initial state
+    const oldModules = ngLSHost.getAnalyzedModules();
+    // First, make sure there is no missing modules
+    expect(oldModules.symbolsMissingModule).toEqual([]);
+    // Expect to find AppComponent in the old modules
+    const oldFile = oldModules.files.find(f => f.fileName === fileName);
+    expect(oldFile !.directives.length).toBe(1);
+    const appComp = oldFile !.directives[0];
+    expect(appComp.name).toBe('AppComponent');
+    expect(oldModules.ngModuleByPipeOrDirective.has(appComp)).toBe(true);
+
+    // Now, override app.component.ts with a different component
+    tsLSHost.override(fileName, `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<div>Hello</div>
+      })
+      export class HelloComponent {}
+    `);
+    // And override the containing NgModule to import the new component
+    tsLSHost.override('/app/main.ts', `
+      import {NgModule} from '@angular/core';
+      import {HelloComponent} from './app.component';
+
+      @NgModule({
+        declarations: [
+          HelloComponent,
+        ]
+      })
+      export class AppModule {}
+    `);
+    // Get the new state
+    const newModules = ngLSHost.getAnalyzedModules();
+    // Make sure there's no missing modules. If caches are not cleared properly,
+    // it will be a non-empty array
+    expect(newModules.symbolsMissingModule).toEqual([]);
+    // Expect to find HelloComponent in the new modules
+    const newFile = newModules.files.find(f => f.fileName === fileName);
+    expect(newFile !.directives.length).toBe(1);
+    const helloComp = newFile !.directives[0];
+    expect(helloComp.name).toBe('HelloComponent');
+    expect(newModules.ngModuleByPipeOrDirective.has(helloComp)).toBe(true);
+    expect(newModules.ngModuleByPipeOrDirective.has(appComp)).toBe(false);
+  });
 });
