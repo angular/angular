@@ -164,7 +164,7 @@ describe('MatPaginator', () => {
   });
 
   it('should not allow a negative pageIndex', () => {
-    paginator.pageSize = -42;
+    paginator.pageIndex = -42;
     expect(paginator.pageIndex).toBeGreaterThanOrEqual(0);
   });
 
