@@ -225,7 +225,7 @@ export declare class NgClassBase {
         [key: string]: any;
     } | null;
     static ngDirectiveDef: any;
-    static ngFactoryFn: any;
+    static ngFactoryDef: any;
 }
 
 export declare class NgComponentOutlet implements OnChanges, OnDestroy {
@@ -310,7 +310,7 @@ export declare class NgStyleBase {
         [key: string]: any;
     } | null;
     static ngDirectiveDef: any;
-    static ngFactoryFn: any;
+    static ngFactory: any;
 }
 
 export declare class NgSwitch {

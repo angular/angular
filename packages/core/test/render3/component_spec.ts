@@ -21,7 +21,7 @@ describe('component', () => {
 
     increment() { this.count++; }
 
-    static ngFactoryFn = () => new CounterComponent;
+    static ngFactoryDef = () => new CounterComponent;
     static ngComponentDef = ɵɵdefineComponent({
       type: CounterComponent,
       encapsulation: ViewEncapsulation.None,
@@ -72,7 +72,7 @@ describe('component', () => {
     }
     class MyComponent {
       constructor(public myService: MyService) {}
-      static ngFactoryFn = () => new MyComponent(ɵɵdirectiveInject(MyService));
+      static ngFactoryDef = () => new MyComponent(ɵɵdirectiveInject(MyService));
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         encapsulation: ViewEncapsulation.None,
@@ -117,7 +117,7 @@ describe('component', () => {
       // @Input
       name = '';
 
-      static ngFactoryFn = () => new Comp();
+      static ngFactoryDef = () => new Comp();
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
@@ -172,7 +172,7 @@ it('should not invoke renderer destroy method for embedded views', () => {
   class Comp {
     visible = true;
 
-    static ngFactoryFn =
+    static ngFactoryDef =
         () => {
           comp = new Comp();
           return comp;
@@ -250,7 +250,7 @@ describe('component with a container', () => {
   class WrapperComponent {
     // TODO(issue/24571): remove '!'.
     items !: string[];
-    static ngFactoryFn = () => new WrapperComponent;
+    static ngFactoryDef = () => new WrapperComponent;
     static ngComponentDef = ɵɵdefineComponent({
       type: WrapperComponent,
       encapsulation: ViewEncapsulation.None,
@@ -328,7 +328,7 @@ describe('recursive components', () => {
 
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
-    static ngFactoryFn = () => new TreeComponent();
+    static ngFactoryDef = () => new TreeComponent();
     static ngComponentDef = ɵɵdefineComponent({
       type: TreeComponent,
       encapsulation: ViewEncapsulation.None,
@@ -395,7 +395,7 @@ describe('recursive components', () => {
 
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
-    static ngFactoryFn = () => new NgIfTree();
+    static ngFactoryDef = () => new NgIfTree();
     static ngComponentDef = ɵɵdefineComponent({
       type: NgIfTree,
       encapsulation: ViewEncapsulation.None,
@@ -545,7 +545,7 @@ describe('recursive components', () => {
     class TestInputsComponent {
       // TODO(issue/24571): remove '!'.
       minifiedName !: string;
-      static ngFactoryFn = () => new TestInputsComponent();
+      static ngFactoryDef = () => new TestInputsComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: TestInputsComponent,
         encapsulation: ViewEncapsulation.None,

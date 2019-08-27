@@ -46,9 +46,9 @@ export const ngClassDirectiveDef__POST_R3__ = ɵɵdefineDirective({
 
 export const ngClassDirectiveDef = ngClassDirectiveDef__PRE_R3__;
 
-export const ngClassFactoryFn__PRE_R3__ = undefined;
-export const ngClassFactoryFn__POST_R3__ = function() {};
-export const ngClassFactoryFn = ngClassFactoryFn__PRE_R3__;
+export const ngClassFactoryDef__PRE_R3__ = undefined;
+export const ngClassFactoryDef__POST_R3__ = function() {};
+export const ngClassFactoryDef = ngClassFactoryDef__PRE_R3__;
 
 /**
  * Serves as the base non-VE container for NgClass.
@@ -66,7 +66,7 @@ export const ngClassFactoryFn = ngClassFactoryFn__PRE_R3__;
  */
 export class NgClassBase {
   static ngDirectiveDef: any = ngClassDirectiveDef;
-  static ngFactoryFn: any = ngClassFactoryFn;
+  static ngFactoryDef: any = ngClassFactoryDef;
 
   constructor(protected _delegate: NgClassImpl) {}
 

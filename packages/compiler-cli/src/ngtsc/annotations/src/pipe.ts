@@ -16,7 +16,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
-import {compileNgFactoryField} from './factory';
+import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getValidConstructorDependencies, unwrapExpression} from './util';
 
@@ -109,7 +109,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
   compile(node: ClassDeclaration, analysis: PipeHandlerData): CompileResult[] {
     const meta = analysis.meta;
     const res = compilePipeFromMetadata(meta);
-    const factoryRes = compileNgFactoryField({...meta, isPipe: true});
+    const factoryRes = compileNgFactoryDefField({...meta, isPipe: true});
     if (analysis.metadataStmt !== null) {
       factoryRes.statements.push(analysis.metadataStmt);
     }

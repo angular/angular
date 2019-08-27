@@ -27,7 +27,7 @@
     "name": "NEW_LINE"
   },
   {
-    "name": "NG_FACTORY_FN"
+    "name": "NG_FACTORY_DEF"
   },
   {
     "name": "NG_INJECTABLE_DEF"
@@ -120,7 +120,7 @@
     "name": "getClosureSafeProperty"
   },
   {
-    "name": "getFactoryFn"
+    "name": "getFactoryDef"
   },
   {
     "name": "getInheritedInjectableDef"

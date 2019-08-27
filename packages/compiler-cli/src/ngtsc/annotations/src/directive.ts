@@ -17,7 +17,7 @@ import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
-import {compileNgFactoryField} from './factory';
+import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getValidConstructorDependencies, readBaseClass, unwrapExpression, unwrapForwardRef} from './util';
 
@@ -94,7 +94,7 @@ export class DirectiveDecoratorHandler implements
       CompileResult[] {
     const meta = analysis.meta;
     const res = compileDirectiveFromMetadata(meta, pool, makeBindingParser());
-    const factoryRes = compileNgFactoryField(meta);
+    const factoryRes = compileNgFactoryDefField(meta);
     if (analysis.metadataStmt !== null) {
       factoryRes.statements.push(analysis.metadataStmt);
     }

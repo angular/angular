@@ -9,7 +9,7 @@
 import {WrappedValue} from '../change_detection/change_detection_util';
 import {PipeTransform} from '../change_detection/pipe_transform';
 
-import {getFactoryFn} from './definition';
+import {getFactoryDef} from './definition';
 import {store} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
@@ -44,7 +44,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
     pipeDef = tView.data[adjustedIndex] as PipeDef<any>;
   }
 
-  const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryFn(pipeDef.type, true));
+  const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryDef(pipeDef.type, true));
   const pipeInstance = pipeFactory();
   store(index, pipeInstance);
   return pipeInstance;

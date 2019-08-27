@@ -10,22 +10,22 @@ import {getCompilerFacade} from '../../compiler/compiler_facade';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
-import {NG_FACTORY_FN, NG_PIPE_DEF} from '../fields';
+import {NG_FACTORY_DEF, NG_PIPE_DEF} from '../fields';
 
 import {angularCoreEnv} from './environment';
 
 export function compilePipe(type: Type<any>, meta: Pipe): void {
   let ngPipeDef: any = null;
-  let ngFactoryFn: any = null;
+  let ngFactoryDef: any = null;
 
-  Object.defineProperty(type, NG_FACTORY_FN, {
+  Object.defineProperty(type, NG_FACTORY_DEF, {
     get: () => {
-      if (ngFactoryFn === null) {
+      if (ngFactoryDef === null) {
         const metadata = getPipeMetadata(type, meta);
-        ngFactoryFn = getCompilerFacade().compileFactory(
-            angularCoreEnv, `ng:///${metadata.name}/ngFactoryFn.js`, metadata, true);
+        ngFactoryDef = getCompilerFacade().compileFactory(
+            angularCoreEnv, `ng:///${metadata.name}/ngFactory.js`, metadata, true);
       }
-      return ngFactoryFn;
+      return ngFactoryDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,

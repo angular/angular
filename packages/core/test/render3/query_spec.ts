@@ -217,7 +217,7 @@ describe('query', () => {
       class MyDirective {
         constructor(public service: Service) {}
 
-        static ngFactoryFn = function MyDirective_Factory() {
+        static ngFactoryDef = function MyDirective_Factory() {
           return directive = new MyDirective(ɵɵdirectiveInject(Service));
         };
         static ngDirectiveDef = ɵɵdefineDirective({
@@ -245,7 +245,7 @@ describe('query', () => {
           service?: Service;
           alias?: Alias;
 
-          static ngFactoryFn = function App_Factory() { return new App(); };
+          static ngFactoryDef = function App_Factory() { return new App(); };
           static ngComponentDef = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
@@ -290,7 +290,7 @@ describe('query', () => {
         class App {
           service?: Service;
 
-          static ngFactoryFn = function App_Factory() { return new App(); };
+          static ngFactoryDef = function App_Factory() { return new App(); };
           static ngComponentDef = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
@@ -833,7 +833,7 @@ describe('query', () => {
         let childInstance: Child;
 
         class Child {
-          static ngFactoryFn = () => childInstance = new Child();
+          static ngFactoryDef = () => childInstance = new Child();
           static ngComponentDef = ɵɵdefineComponent({
             type: Child,
             selectors: [['child']],
@@ -1406,7 +1406,7 @@ describe('query', () => {
         this.vcr.createEmbeddedView(this.temp);
       }
 
-      static ngFactoryFn = () => new SomeDir(
+      static ngFactoryDef = () => new SomeDir(
           ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any))
 
           static ngDirectiveDef = ɵɵdefineDirective({
@@ -1467,7 +1467,7 @@ describe('query', () => {
         this.contentCheckedQuerySnapshot = this.foos ? this.foos.length : 0;
       }
 
-      static ngFactoryFn = () => withContentInstance = new WithContentDirective();
+      static ngFactoryDef = () => withContentInstance = new WithContentDirective();
       static ngDirectiveDef = ɵɵdefineDirective({
         type: WithContentDirective,
         selectors: [['', 'with-content', '']],
@@ -1655,7 +1655,7 @@ describe('query', () => {
     it('should report results to appropriate queries where deep content queries are nested', () => {
       class QueryDirective {
         fooBars: any;
-        static ngFactoryFn = () => new QueryDirective();
+        static ngFactoryDef = () => new QueryDirective();
         static ngDirectiveDef = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
@@ -1720,7 +1720,7 @@ describe('query', () => {
 
       class QueryDirective {
         fooBars: any;
-        static ngFactoryFn = () => new QueryDirective();
+        static ngFactoryDef = () => new QueryDirective();
         static ngDirectiveDef = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
@@ -1777,7 +1777,7 @@ describe('query', () => {
 
       class QueryDirective {
         fooBars: any;
-        static ngFactoryFn = () => new QueryDirective();
+        static ngFactoryDef = () => new QueryDirective();
         static ngDirectiveDef = ɵɵdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
@@ -1838,7 +1838,7 @@ describe('query', () => {
        () => {
          class ShallowQueryDirective {
            foos: any;
-           static ngFactoryFn = () => new ShallowQueryDirective();
+           static ngFactoryDef = () => new ShallowQueryDirective();
            static ngDirectiveDef = ɵɵdefineDirective({
              type: ShallowQueryDirective,
              selectors: [['', 'shallow-query', '']],
@@ -1859,7 +1859,7 @@ describe('query', () => {
 
          class DeepQueryDirective {
            foos: any;
-           static ngFactoryFn = () => new DeepQueryDirective();
+           static ngFactoryDef = () => new DeepQueryDirective();
            static ngDirectiveDef = ɵɵdefineDirective({
              type: DeepQueryDirective,
              selectors: [['', 'deep-query', '']],
@@ -1922,7 +1922,7 @@ describe('query', () => {
     class TextDirective {
       value !: string;
 
-      static ngFactoryFn = () => new TextDirective();
+      static ngFactoryDef = () => new TextDirective();
       static ngDirectiveDef = ɵɵdefineDirective(
           {type: TextDirective, selectors: [['', 'text', '']], inputs: {value: 'text'}});
     }
@@ -1934,7 +1934,7 @@ describe('query', () => {
         // @ContentChildren(TextDirective)
         texts !: QueryList<TextDirective>;
 
-        static ngFactoryFn = () => contentQueryDirective = new ContentQueryDirective();
+        static ngFactoryDef = () => contentQueryDirective = new ContentQueryDirective();
         static ngComponentDef = ɵɵdefineDirective({
           type: ContentQueryDirective,
           selectors: [['', 'content-query', '']],
@@ -2002,7 +2002,7 @@ describe('query', () => {
         // @ViewChildren(TextDirective)
         texts !: QueryList<TextDirective>;
 
-        static ngFactoryFn = () => new ViewQueryComponent();
+        static ngFactoryDef = () => new ViewQueryComponent();
         static ngComponentDef = ɵɵdefineComponent({
           type: ViewQueryComponent,
           selectors: [['view-query']],

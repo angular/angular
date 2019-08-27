@@ -241,8 +241,8 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static FactoryFn: o.ExternalReference = {
-    name: 'ɵɵFactoryFn',
+  static FactoryDef: o.ExternalReference = {
+    name: 'ɵɵFactoryDef',
     moduleName: CORE,
   };
 

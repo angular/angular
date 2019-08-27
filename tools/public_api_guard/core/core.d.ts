@@ -868,7 +868,7 @@ export declare function ɵɵembeddedViewStart(viewBlockId: number, consts: numbe
 
 export declare function ɵɵenableBindings(): void;
 
-export declare type ɵɵFactoryFn<T> = () => T;
+export declare type ɵɵFactoryDef<T> = () => T;
 
 export declare function ɵɵgetCurrentView(): OpaqueViewState;
 

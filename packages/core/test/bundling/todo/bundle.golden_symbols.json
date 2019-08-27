@@ -135,7 +135,7 @@
     "name": "NG_ELEMENT_ID"
   },
   {
-    "name": "NG_FACTORY_FN"
+    "name": "NG_FACTORY_DEF"
   },
   {
     "name": "NG_INJECTABLE_DEF"
@@ -762,7 +762,7 @@
     "name": "getErrorLogger"
   },
   {
-    "name": "getFactoryFn"
+    "name": "getFactoryDef"
   },
   {
     "name": "getGuardMask"

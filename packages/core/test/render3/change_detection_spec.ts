@@ -25,7 +25,7 @@ describe('change detection', () => {
       doCheckCount = 0;
       ngDoCheck(): void { this.doCheckCount++; }
 
-      static ngFactoryFn = () => new MyComponent();
+      static ngFactoryDef = () => new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
@@ -101,7 +101,7 @@ describe('change detection', () => {
 
       onClick() {}
 
-      static ngFactoryFn = () => comp = new MyComponent();
+      static ngFactoryDef = () => comp = new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
@@ -140,7 +140,7 @@ describe('change detection', () => {
 
         onClick() {}
 
-        static ngFactoryFn = () => comp = new ManualComponent();
+        static ngFactoryDef = () => comp = new ManualComponent();
         static ngComponentDef = ɵɵdefineComponent({
           type: ManualComponent,
           selectors: [['manual-comp']],
@@ -177,7 +177,7 @@ describe('change detection', () => {
       class ManualApp {
         name: string = 'Nancy';
 
-        static ngFactoryFn = () => new ManualApp();
+        static ngFactoryDef = () => new ManualApp();
         static ngComponentDef = ɵɵdefineComponent({
           type: ManualApp,
           selectors: [['manual-app']],
@@ -233,7 +233,7 @@ describe('change detection', () => {
              doCheckCount = 0;
              ngDoCheck(): void { this.doCheckCount++; }
 
-             static ngFactoryFn = () => parent = new ButtonParent();
+             static ngFactoryDef = () => parent = new ButtonParent();
              static ngComponentDef = ɵɵdefineComponent({
                type: ButtonParent,
                selectors: [['button-parent']],
@@ -311,7 +311,7 @@ describe('change detection', () => {
         return 'works';
       }
 
-      static ngFactoryFn = () => new MyComponent();
+      static ngFactoryDef = () => new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],

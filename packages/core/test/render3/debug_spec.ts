@@ -15,7 +15,7 @@ import {ComponentFixture} from './render_util';
 describe('Debug Representation', () => {
   it('should generate a human readable version', () => {
     class MyComponent {
-      static ngFactoryFn = () => new MyComponent();
+      static ngFactoryDef = () => new MyComponent();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],

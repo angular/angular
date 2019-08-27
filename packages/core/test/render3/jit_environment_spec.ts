@@ -18,7 +18,7 @@ const INTERFACE_EXCEPTIONS = new Set<string>([
   'ɵɵInjectorDef',
   'ɵɵNgModuleDefWithMeta',
   'ɵɵPipeDefWithMeta',
-  'ɵɵFactoryFn',
+  'ɵɵFactoryDef',
 ]);
 
 describe('r3 jit environment', () => {

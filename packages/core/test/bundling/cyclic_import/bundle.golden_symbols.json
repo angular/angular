@@ -81,7 +81,7 @@
     "name": "NG_ELEMENT_ID"
   },
   {
-    "name": "NG_FACTORY_FN"
+    "name": "NG_FACTORY_DEF"
   },
   {
     "name": "NG_PIPE_DEF"
@@ -312,7 +312,7 @@
     "name": "getElementDepthCount"
   },
   {
-    "name": "getFactoryFn"
+    "name": "getFactoryDef"
   },
   {
     "name": "getHostNative"

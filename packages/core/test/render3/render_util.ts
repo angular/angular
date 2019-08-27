@@ -368,7 +368,7 @@ export function createComponent(
     viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>): ComponentType<any> {
   return class Component {
     value: any;
-    static ngFactoryFn = () => new Component;
+    static ngFactoryDef = () => new Component;
     static ngComponentDef = ɵɵdefineComponent({
       type: Component,
       selectors: [[name]],
@@ -387,7 +387,7 @@ export function createComponent(
 export function createDirective(
     name: string, {exportAs}: {exportAs?: string[]} = {}): DirectiveType<any> {
   return class Directive {
-    static ngFactoryFn = () => new Directive();
+    static ngFactoryDef = () => new Directive();
     static ngDirectiveDef = ɵɵdefineDirective({
       type: Directive,
       selectors: [['', name, '']],

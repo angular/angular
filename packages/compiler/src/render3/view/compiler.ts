@@ -326,9 +326,10 @@ export function compileDirectiveFromRender2(
   const meta = directiveMetadataFromGlobalMetadata(directive, outputCtx, reflector);
   const res = compileDirectiveFromMetadata(meta, outputCtx.constantPool, bindingParser);
   const factoryRes = compileFactoryFromMetadata(meta);
-  const ngFactoryFnStatement = new o.ClassStmt(
-      name, null, [new o.ClassField(
-                      'ngFactoryFn', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)],
+  const ngFactoryDefStatement = new o.ClassStmt(
+      name, null,
+      [new o.ClassField(
+          'ngFactoryDef', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)],
       [], new o.ClassMethod(null, [], []), []);
   const directiveDefStatement = new o.ClassStmt(
       name, null,
@@ -336,7 +337,7 @@ export function compileDirectiveFromRender2(
       [], new o.ClassMethod(null, [], []), []);
 
   // Create the partial class to be merged with the actual class.
-  outputCtx.statements.push(ngFactoryFnStatement, directiveDefStatement);
+  outputCtx.statements.push(ngFactoryDefStatement, directiveDefStatement);
 }
 
 /**
@@ -378,9 +379,10 @@ export function compileComponentFromRender2(
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
   const factoryRes = compileFactoryFromMetadata(meta);
-  const ngFactoryFnStatement = new o.ClassStmt(
-      name, null, [new o.ClassField(
-                      'ngFactoryFn', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)],
+  const ngFactoryDefStatement = new o.ClassStmt(
+      name, null,
+      [new o.ClassField(
+          'ngFactoryDef', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)],
       [], new o.ClassMethod(null, [], []), []);
   const componentDefStatement = new o.ClassStmt(
       name, null,
@@ -388,7 +390,7 @@ export function compileComponentFromRender2(
       [], new o.ClassMethod(null, [], []), []);
 
   // Create the partial class to be merged with the actual class.
-  outputCtx.statements.push(ngFactoryFnStatement, componentDefStatement);
+  outputCtx.statements.push(ngFactoryDefStatement, componentDefStatement);
 }
 
 /**

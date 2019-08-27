@@ -91,12 +91,12 @@ export function compilePipeFromRender2(
   const res = compilePipeFromMetadata(metadata);
   const factoryRes = compileFactoryFromMetadata({...metadata, isPipe: true});
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Pipe);
-  const ngFactoryFnStatement = new o.ClassStmt(
+  const ngFactoryDefStatement = new o.ClassStmt(
       /* name */ name,
       /* parent */ null,
       /* fields */
       [new o.ClassField(
-          /* name */ 'ngFactoryFn',
+          /* name */ 'ngFactoryDef',
           /* type */ o.INFERRED_TYPE,
           /* modifiers */[o.StmtModifier.Static],
           /* initializer */ factoryRes.factory)],
@@ -115,5 +115,5 @@ export function compilePipeFromRender2(
       /* constructorMethod */ new o.ClassMethod(null, [], []),
       /* methods */[]);
 
-  outputCtx.statements.push(ngFactoryFnStatement, pipeDefStatement);
+  outputCtx.statements.push(ngFactoryDefStatement, pipeDefStatement);
 }

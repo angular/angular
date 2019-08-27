@@ -27,7 +27,7 @@ describe('event listeners', () => {
 
     onClick() { this.counter++; }
 
-    static ngFactoryFn =
+    static ngFactoryDef =
         () => {
           let comp = new MyComp();
           comps.push(comp);
@@ -60,7 +60,7 @@ describe('event listeners', () => {
     /* @HostListener('body:click') */
     onBodyClick() { events.push('component - body:click'); }
 
-    static ngFactoryFn =
+    static ngFactoryDef =
         () => {
           let comp = new MyCompWithGlobalListeners();
           comps.push(comp);
@@ -98,7 +98,9 @@ describe('event listeners', () => {
     /* @HostListener('body:click') */
     onBodyClick() { events.push('directive - body:click'); }
 
-    static ngFactoryFn = function HostListenerDir_Factory() { return new GlobalHostListenerDir(); };
+    static ngFactoryDef = function HostListenerDir_Factory() {
+      return new GlobalHostListenerDir();
+    };
     static ngDirectiveDef = ɵɵdefineDirective({
       type: GlobalHostListenerDir,
       selectors: [['', 'hostListenerDir', '']],
@@ -132,7 +134,7 @@ describe('event listeners', () => {
       return this.handlerReturnValue;
     }
 
-    static ngFactoryFn = () => new PreventDefaultComp();
+    static ngFactoryDef = () => new PreventDefaultComp();
     static ngComponentDef = ɵɵdefineComponent({
       type: PreventDefaultComp,
       selectors: [['prevent-default-comp']],
@@ -323,7 +325,7 @@ describe('event listeners', () => {
 
       onClick() { this.counter++; }
 
-      static ngFactoryFn = () => new AppComp();
+      static ngFactoryDef = () => new AppComp();
       static ngComponentDef = ɵɵdefineComponent({
         type: AppComp,
         selectors: [['app-comp']],
@@ -384,7 +386,7 @@ describe('event listeners', () => {
 
       onClick(index: number) { this.counters[index]++; }
 
-      static ngFactoryFn = () => new AppComp();
+      static ngFactoryDef = () => new AppComp();
       static ngComponentDef = ɵɵdefineComponent({
         type: AppComp,
         selectors: [['app-comp']],
@@ -448,7 +450,7 @@ describe('event listeners', () => {
 
       onClick(index: number) { this.counters[index]++; }
 
-      static ngFactoryFn = () => new AppComp();
+      static ngFactoryDef = () => new AppComp();
       static ngComponentDef = ɵɵdefineComponent({
         type: AppComp,
         selectors: [['app-comp']],
@@ -527,7 +529,7 @@ describe('event listeners', () => {
       /* @HostListener('click') */
       onClick() { events.push('click!'); }
 
-      static ngFactoryFn = () => { return new MyComp(); };
+      static ngFactoryDef = () => { return new MyComp(); };
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['comp']],
@@ -578,7 +580,7 @@ describe('event listeners', () => {
       /* @HostListener('click') */
       onClick() { events.push('click!'); }
 
-      static ngFactoryFn = function HostListenerDir_Factory() { return new HostListenerDir(); };
+      static ngFactoryDef = function HostListenerDir_Factory() { return new HostListenerDir(); };
       static ngDirectiveDef = ɵɵdefineDirective({
         type: HostListenerDir,
         selectors: [['', 'hostListenerDir', '']],
@@ -630,7 +632,7 @@ describe('event listeners', () => {
 
       onClick(a: any, b: any) { this.counter += a + b; }
 
-      static ngFactoryFn = () => new MyComp();
+      static ngFactoryDef = () => new MyComp();
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['comp']],
@@ -911,7 +913,7 @@ describe('event listeners', () => {
 
       onClick(comp: any) { this.comp = comp; }
 
-      static ngFactoryFn = () => new App();
+      static ngFactoryDef = () => new App();
       static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],

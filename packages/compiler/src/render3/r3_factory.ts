@@ -82,7 +82,7 @@ export interface R3ExpressionFactoryMetadata extends R3ConstructorFactoryMetadat
 export type R3FactoryMetadata = R3ConstructorFactoryMetadata | R3DelegatedFactoryMetadata |
     R3DelegatedFnOrClassMetadata | R3ExpressionFactoryMetadata;
 
-export interface R3FactoryFnMetadata {
+export interface R3FactoryDefMetadata {
   name: string;
   type: o.Expression;
   typeArgumentCount: number;
@@ -253,14 +253,14 @@ export function compileFactoryFunction(meta: R3FactoryMetadata, isPipe = false):
         `${meta.name}_Factory`),
     statements,
     type: o.expressionType(
-        o.importExpr(R3.FactoryFn, [typeWithParameters(meta.type, meta.typeArgumentCount)]))
+        o.importExpr(R3.FactoryDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]))
   };
 }
 
 /**
- * Constructs the `ngFactoryFn` from directive/component/pipe metadata.
+ * Constructs the `ngFactoryDef` from directive/component/pipe metadata.
  */
-export function compileFactoryFromMetadata(meta: R3FactoryFnMetadata): R3FactoryFn {
+export function compileFactoryFromMetadata(meta: R3FactoryDefMetadata): R3FactoryFn {
   return compileFactoryFunction(
       {
         name: meta.name,

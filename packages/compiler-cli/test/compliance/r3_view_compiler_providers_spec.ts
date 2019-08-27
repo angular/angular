@@ -144,7 +144,7 @@ describe('compiler compliance: providers', () => {
         result.source, `
     export class MyComponent {
     }
-    MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+    MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
     MyComponent.ngComponentDef = i0.ɵɵdefineComponent({
       type: MyComponent,
       selectors: [["my-component"]],

@@ -18,7 +18,7 @@ import {noSideEffects} from '../util/closure';
 import {stringify} from '../util/stringify';
 
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_FACTORY_FN, NG_LOCALE_ID_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
+import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_FACTORY_DEF, NG_LOCALE_ID_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction, ɵɵBaseDef} from './interfaces/definition';
 // while SelectorFlags is unused here, it's required so that types don't get resolved lazily
 // see: https://github.com/Microsoft/web-build-tools/issues/1050
@@ -748,12 +748,12 @@ export function getBaseDef<T>(type: any): ɵɵBaseDef<T>|null {
   return type[NG_BASE_DEF] || null;
 }
 
-export function getFactoryFn<T>(type: any, throwNotFound: true): FactoryFn<T>;
-export function getFactoryFn<T>(type: any): FactoryFn<T>|null;
-export function getFactoryFn<T>(type: any, throwNotFound?: boolean): FactoryFn<T>|null {
-  const factoryFn = type[NG_FACTORY_FN] || null;
+export function getFactoryDef<T>(type: any, throwNotFound: true): FactoryFn<T>;
+export function getFactoryDef<T>(type: any): FactoryFn<T>|null;
+export function getFactoryDef<T>(type: any, throwNotFound?: boolean): FactoryFn<T>|null {
+  const factoryFn = type[NG_FACTORY_DEF] || null;
   if (!factoryFn && throwNotFound === true && ngDevMode) {
-    throw new Error(`Type ${stringify(type)} does not have 'ngFactoryFn' property.`);
+    throw new Error(`Type ${stringify(type)} does not have 'ngFactoryDef' property.`);
   }
   return factoryFn;
 }

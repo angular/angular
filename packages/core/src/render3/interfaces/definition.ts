@@ -78,7 +78,7 @@ export interface ComponentType<T> extends Type<T> { ngComponentDef: never; }
  */
 export interface DirectiveType<T> extends Type<T> {
   ngDirectiveDef: never;
-  ngFactoryFn: () => T;
+  ngFactoryDef: () => T;
 }
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
@@ -214,7 +214,7 @@ export type ɵɵComponentDefWithMeta<
 /**
  * @codeGenApi
  */
-export type ɵɵFactoryFn<T> = () => T;
+export type ɵɵFactoryDef<T> = () => T;
 
 /**
  * Runtime link information for Components.

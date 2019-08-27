@@ -26,7 +26,7 @@ describe('renderer factory lifecycle', () => {
   rendererFactory.end = () => logs.push('end');
 
   class SomeComponent {
-    static ngFactoryFn = () => new SomeComponent;
+    static ngFactoryDef = () => new SomeComponent;
     static ngComponentDef = ɵɵdefineComponent({
       type: SomeComponent,
       encapsulation: ViewEncapsulation.None,
@@ -46,7 +46,7 @@ describe('renderer factory lifecycle', () => {
   }
 
   class SomeComponentWhichThrows {
-    static ngFactoryFn = () => new SomeComponentWhichThrows;
+    static ngFactoryDef = () => new SomeComponentWhichThrows;
     static ngComponentDef = ɵɵdefineComponent({
       type: SomeComponentWhichThrows,
       encapsulation: ViewEncapsulation.None,
@@ -150,7 +150,7 @@ describe('Renderer2 destruction hooks', () => {
 
   it('should call renderer.destroy for each component destroyed', () => {
     class SimpleComponent {
-      static ngFactoryFn = () => new SimpleComponent;
+      static ngFactoryDef = () => new SimpleComponent;
       static ngComponentDef = ɵɵdefineComponent({
         type: SimpleComponent,
         encapsulation: ViewEncapsulation.None,

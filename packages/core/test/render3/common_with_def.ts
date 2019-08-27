@@ -25,7 +25,7 @@ NgForOf.ngDirectiveDef = ɵɵdefineDirective({
   }
 });
 
-NgForOf.ngFactoryFn = () => new NgForOfDef(
+NgForOf.ngFactoryDef = () => new NgForOfDef(
     ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any),
     ɵɵdirectiveInject(IterableDiffers));
 
@@ -35,7 +35,7 @@ NgIf.ngDirectiveDef = ɵɵdefineDirective({
   inputs: {ngIf: 'ngIf', ngIfThen: 'ngIfThen', ngIfElse: 'ngIfElse'}
 });
 
-NgIf.ngFactoryFn = () =>
+NgIf.ngFactoryDef = () =>
     new NgIfDef(ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any));
 
 NgTemplateOutlet.ngDirectiveDef = ɵɵdefineDirective({
@@ -46,5 +46,5 @@ NgTemplateOutlet.ngDirectiveDef = ɵɵdefineDirective({
       {ngTemplateOutlet: 'ngTemplateOutlet', ngTemplateOutletContext: 'ngTemplateOutletContext'}
 });
 
-NgTemplateOutlet.ngFactoryFn = () =>
+NgTemplateOutlet.ngFactoryDef = () =>
     new NgTemplateOutletDef(ɵɵdirectiveInject(ViewContainerRef as any));

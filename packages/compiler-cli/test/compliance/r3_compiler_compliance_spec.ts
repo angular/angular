@@ -44,7 +44,7 @@ describe('compiler compliance', () => {
 
       // The factory should look like this:
       const factory =
-          'MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+          'MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
@@ -94,7 +94,7 @@ describe('compiler compliance', () => {
 
       // The factory should look like this:
       const factory =
-          'MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+          'MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
@@ -142,7 +142,7 @@ describe('compiler compliance', () => {
 
       // The factory should look like this:
       const factory =
-          'MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+          'MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
@@ -190,7 +190,7 @@ describe('compiler compliance', () => {
 
       // The factory should look like this:
       const factory =
-          'MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+          'MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
@@ -306,7 +306,7 @@ describe('compiler compliance', () => {
       };
 
       const factory =
-          'MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+          'MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
         const $e0_attrs$ = [${AttributeMarker.Bindings}, "id"];
         …
@@ -361,7 +361,7 @@ describe('compiler compliance', () => {
       ///////////////
 
       const factory =
-          'MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+          'MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -476,7 +476,7 @@ describe('compiler compliance', () => {
       };
 
       const factory =
-          'MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+          'MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
         MyComponent.ngComponentDef = i0.ɵɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
             consts: 1,
@@ -544,7 +544,7 @@ describe('compiler compliance', () => {
         });`;
 
       const ChildComponentFactory =
-          `ChildComponent.ngFactoryFn = function ChildComponent_Factory(t) { return new (t || ChildComponent)(); };`;
+          `ChildComponent.ngFactoryDef = function ChildComponent_Factory(t) { return new (t || ChildComponent)(); };`;
 
       // SomeDirective definition should be:
       const SomeDirectiveDefinition = `
@@ -555,7 +555,7 @@ describe('compiler compliance', () => {
       `;
 
       const SomeDirectiveFactory =
-          `SomeDirective.ngFactoryFn = function SomeDirective_Factory(t) {return new (t || SomeDirective)(); };`;
+          `SomeDirective.ngFactoryDef = function SomeDirective_Factory(t) {return new (t || SomeDirective)(); };`;
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
@@ -578,17 +578,17 @@ describe('compiler compliance', () => {
       `;
 
       const MyComponentFactory =
-          `MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); };`;
+          `MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };`;
 
       const result = compile(files, angularFiles);
       const source = result.source;
 
       expectEmit(source, ChildComponentDefinition, 'Incorrect ChildComponent.ngComponentDef');
-      expectEmit(source, ChildComponentFactory, 'Incorrect ChildComponent.ngFactoryFn');
+      expectEmit(source, ChildComponentFactory, 'Incorrect ChildComponent.ngFactoryDef');
       expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ngDirectiveDef');
-      expectEmit(source, SomeDirectiveFactory, 'Incorrect SomeDirective.ngFactoryFn');
+      expectEmit(source, SomeDirectiveFactory, 'Incorrect SomeDirective.ngFactoryDef');
       expectEmit(source, MyComponentDefinition, 'Incorrect MyComponentDefinition.ngComponentDef');
-      expectEmit(source, MyComponentFactory, 'Incorrect MyComponentDefinition.ngFactoryFn');
+      expectEmit(source, MyComponentFactory, 'Incorrect MyComponentDefinition.ngFactoryDef');
     });
 
     it('should support complex selectors', () => {
@@ -618,7 +618,7 @@ describe('compiler compliance', () => {
       `;
 
       const SomeDirectiveFactory =
-          `SomeDirective.ngFactoryFn = function SomeDirective_Factory(t) {return new (t || SomeDirective)(); };`;
+          `SomeDirective.ngFactoryDef = function SomeDirective_Factory(t) {return new (t || SomeDirective)(); };`;
 
       // OtherDirective definition should be:
       const OtherDirectiveDefinition = `
@@ -629,15 +629,15 @@ describe('compiler compliance', () => {
       `;
 
       const OtherDirectiveFactory =
-          `OtherDirective.ngFactoryFn = function OtherDirective_Factory(t) {return new (t || OtherDirective)(); };`;
+          `OtherDirective.ngFactoryDef = function OtherDirective_Factory(t) {return new (t || OtherDirective)(); };`;
 
       const result = compile(files, angularFiles);
       const source = result.source;
 
       expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ngDirectiveDef');
-      expectEmit(source, SomeDirectiveFactory, 'Incorrect SomeDirective.ngFactoryFn');
+      expectEmit(source, SomeDirectiveFactory, 'Incorrect SomeDirective.ngFactoryDef');
       expectEmit(source, OtherDirectiveDefinition, 'Incorrect OtherDirective.ngDirectiveDef');
-      expectEmit(source, OtherDirectiveFactory, 'Incorrect OtherDirective.ngFactoryFn');
+      expectEmit(source, OtherDirectiveFactory, 'Incorrect OtherDirective.ngFactoryDef');
     });
 
     it('should support components without selector', () => {
@@ -673,14 +673,15 @@ describe('compiler compliance', () => {
       `;
 
       const EmptyOutletComponentFactory =
-          `EmptyOutletComponent.ngFactoryFn = function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); };`;
+          `EmptyOutletComponent.ngFactoryDef = function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); };`;
 
       const result = compile(files, angularFiles);
       const source = result.source;
 
       expectEmit(
           source, EmptyOutletComponentDefinition, 'Incorrect EmptyOutletComponent.ngComponentDef');
-      expectEmit(source, EmptyOutletComponentFactory, 'Incorrect EmptyOutletComponent.ngFactoryFn');
+      expectEmit(
+          source, EmptyOutletComponentFactory, 'Incorrect EmptyOutletComponent.ngFactoryDef');
     });
 
     it('should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting',
@@ -715,7 +716,7 @@ describe('compiler compliance', () => {
           encapsulation: 2
         });`;
 
-         const MyComponentFactory = `MyComponent.ngFactoryFn = function MyComponent_Factory(t) {
+         const MyComponentFactory = `MyComponent.ngFactoryDef = function MyComponent_Factory(t) {
             return new (t || MyComponent)(
               $r3$.ɵɵdirectiveInject($i$.ElementRef), $r3$.ɵɵdirectiveInject($i$.ViewContainerRef),
               $r3$.ɵɵdirectiveInject($i$.ChangeDetectorRef));
@@ -725,7 +726,7 @@ describe('compiler compliance', () => {
          const source = result.source;
 
          expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ngComponentDef');
-         expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ngFactoryFn');
+         expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ngFactoryDef');
        });
 
     it('should support structural directives', () => {
@@ -759,7 +760,7 @@ describe('compiler compliance', () => {
           selectors: [["", "if", ""]]
         });`;
       const IfDirectiveFactory =
-          `IfDirective.ngFactoryFn = function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵɵdirectiveInject($i$.TemplateRef)); };`;
+          `IfDirective.ngFactoryDef = function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵɵdirectiveInject($i$.TemplateRef)); };`;
 
       const MyComponentDefinition = `
         const $c1$ = ["foo", ""];
@@ -795,15 +796,15 @@ describe('compiler compliance', () => {
         });`;
 
       const MyComponentFactory =
-          `MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); };`;
+          `MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };`;
 
       const result = compile(files, angularFiles);
       const source = result.source;
 
       expectEmit(source, IfDirectiveDefinition, 'Incorrect IfDirective.ngDirectiveDef');
-      expectEmit(source, IfDirectiveFactory, 'Incorrect IfDirective.ngFactoryFn');
+      expectEmit(source, IfDirectiveFactory, 'Incorrect IfDirective.ngFactoryDef');
       expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ngComponentDef');
-      expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ngFactoryFn');
+      expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ngFactoryDef');
     });
 
     describe('value composition', () => {
@@ -1993,8 +1994,8 @@ describe('compiler compliance', () => {
             });
         `;
 
-        const MyPipeNgFactoryFn = `
-          MyPipe.ngFactoryFn = function MyPipe_Factory(t) { return new (t || MyPipe)(); };
+        const MyPipengFactoryDef = `
+          MyPipe.ngFactoryDef = function MyPipe_Factory(t) { return new (t || MyPipe)(); };
         `;
 
         const MyPurePipeDefinition = `
@@ -2004,8 +2005,8 @@ describe('compiler compliance', () => {
               pure: true
             });`;
 
-        const MyPurePipeNgFactoryFn = `
-          MyPurePipe.ngFactoryFn = function MyPurePipe_Factory(t) { return new (t || MyPurePipe)(); };
+        const MyPurePipengFactoryDef = `
+          MyPurePipe.ngFactoryDef = function MyPurePipe_Factory(t) { return new (t || MyPurePipe)(); };
         `;
 
         const MyAppDefinition = `
@@ -2043,9 +2044,9 @@ describe('compiler compliance', () => {
         const source = result.source;
 
         expectEmit(source, MyPipeDefinition, 'Invalid pipe definition');
-        expectEmit(source, MyPipeNgFactoryFn, 'Invalid pipe factory function');
+        expectEmit(source, MyPipengFactoryDef, 'Invalid pipe factory function');
         expectEmit(source, MyPurePipeDefinition, 'Invalid pure pipe definition');
-        expectEmit(source, MyPurePipeNgFactoryFn, 'Invalid pure pipe factory function');
+        expectEmit(source, MyPurePipengFactoryDef, 'Invalid pure pipe factory function');
         expectEmit(source, MyAppDefinition, 'Invalid MyApp definition');
       });
 
@@ -2159,8 +2160,8 @@ describe('compiler compliance', () => {
               });
             `;
 
-           const MyPipeFactoryFn = `
-              MyPipe.ngFactoryFn = function MyPipe_Factory(t) { return new (t || MyPipe)($r3$.ɵɵinjectPipeChangeDetectorRef()); };
+           const MyPipeFactory = `
+              MyPipe.ngFactoryDef = function MyPipe_Factory(t) { return new (t || MyPipe)($r3$.ɵɵinjectPipeChangeDetectorRef()); };
             `;
 
            const MyOtherPipeDefinition = `
@@ -2170,17 +2171,17 @@ describe('compiler compliance', () => {
                 pure: true
               });`;
 
-           const MyOtherPipeFactoryFn = `
-              MyOtherPipe.ngFactoryFn = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($r3$.ɵɵinjectPipeChangeDetectorRef(8)); };
+           const MyOtherPipeFactory = `
+              MyOtherPipe.ngFactoryDef = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($r3$.ɵɵinjectPipeChangeDetectorRef(8)); };
             `;
 
            const result = compile(files, angularFiles);
            const source = result.source;
 
            expectEmit(source, MyPipeDefinition, 'Invalid pipe definition');
-           expectEmit(source, MyPipeFactoryFn, 'Invalid pipe factory function');
+           expectEmit(source, MyPipeFactory, 'Invalid pipe factory function');
            expectEmit(source, MyOtherPipeDefinition, 'Invalid alternate pipe definition');
-           expectEmit(source, MyOtherPipeFactoryFn, 'Invalid alternate pipe factory function');
+           expectEmit(source, MyOtherPipeFactory, 'Invalid alternate pipe factory function');
          });
 
     });
@@ -2573,7 +2574,7 @@ describe('compiler compliance', () => {
             `;
 
         const ForDirectiveFactory =
-            `ForOfDirective.ngFactoryFn = function ForOfDirective_Factory(t) {
+            `ForOfDirective.ngFactoryDef = function ForOfDirective_Factory(t) {
             return new (t || ForOfDirective)($r3$.ɵɵdirectiveInject(ViewContainerRef), $r3$.ɵɵdirectiveInject(TemplateRef));
           };`;
 
@@ -2654,7 +2655,7 @@ describe('compiler compliance', () => {
         `;
 
         const ForDirectiveFactory = `
-          ForOfDirective.ngFactoryFn = function ForOfDirective_Factory(t) {
+          ForOfDirective.ngFactoryDef = function ForOfDirective_Factory(t) {
             return new (t || ForOfDirective)($r3$.ɵɵdirectiveInject(ViewContainerRef), $r3$.ɵɵdirectiveInject(TemplateRef));
           };
         `;

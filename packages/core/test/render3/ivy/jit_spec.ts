@@ -34,7 +34,7 @@ ivyEnabled && describe('render3 jit', () => {
     const SomeCmpAny = SomeCmp as any;
 
     expect(SomeCmpAny.ngComponentDef).toBeDefined();
-    expect(SomeCmpAny.ngFactoryFn() instanceof SomeCmp).toBe(true);
+    expect(SomeCmpAny.ngFactoryDef() instanceof SomeCmp).toBe(true);
   });
 
   it('compiles an injectable with a type provider', () => {
@@ -242,7 +242,7 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     const pipeDef = (P as any).ngPipeDef as PipeDef<P>;
-    const pipeFactory = (P as any).ngFactoryFn as FactoryFn<P>;
+    const pipeFactory = (P as any).ngFactoryDef as FactoryFn<P>;
     expect(pipeDef.name).toBe('test-pipe');
     expect(pipeDef.pure).toBe(false, 'pipe should not be pure');
     expect(pipeFactory() instanceof P)

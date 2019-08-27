@@ -221,15 +221,15 @@ describe('compiler compliance: listen()', () => {
         });
       `;
 
-    const MyComponentFactoryFn = `
-      MyComponent.ngFactoryFn = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+    const MyComponentFactory = `
+      MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
     `;
 
     const result = compile(files, angularFiles);
     const source = result.source;
 
     expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ngComponentDef');
-    expectEmit(source, MyComponentFactoryFn, 'Incorrect MyComponent.ngFactoryFn');
+    expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ngFactoryDef');
   });
 
 });

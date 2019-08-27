@@ -18,7 +18,7 @@ import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from
 import {ViewEncapsulation} from '../../metadata/view';
 import {getBaseDef, getComponentDef, getDirectiveDef} from '../definition';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
-import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_FACTORY_FN} from '../fields';
+import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentType} from '../interfaces/definition';
 import {stringifyForError} from '../util/misc_utils';
 
@@ -38,20 +38,20 @@ import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, tra
  */
 export function compileComponent(type: Type<any>, metadata: Component): void {
   let ngComponentDef: any = null;
-  let ngFactoryFn: any = null;
+  let ngFactoryDef: any = null;
 
   // Metadata may have resources which need to be resolved.
   maybeQueueResolutionOfComponentResources(type, metadata);
 
-  Object.defineProperty(type, NG_FACTORY_FN, {
+  Object.defineProperty(type, NG_FACTORY_DEF, {
     get: () => {
-      if (ngFactoryFn === null) {
+      if (ngFactoryDef === null) {
         const compiler = getCompilerFacade();
         const meta = getComponentMetadata(compiler, type, metadata);
-        ngFactoryFn = compiler.compileFactory(
-            angularCoreEnv, `ng:///${type.name}/ngFactoryFn.js`, meta.metadata);
+        ngFactoryDef = compiler.compileFactory(
+            angularCoreEnv, `ng:///${type.name}/ngFactory.js`, meta.metadata);
       }
-      return ngFactoryFn;
+      return ngFactoryDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
@@ -140,19 +140,19 @@ function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
  */
 export function compileDirective(type: Type<any>, directive: Directive | null): void {
   let ngDirectiveDef: any = null;
-  let ngFactoryFn: any = null;
+  let ngFactoryDef: any = null;
 
-  Object.defineProperty(type, NG_FACTORY_FN, {
+  Object.defineProperty(type, NG_FACTORY_DEF, {
     get: () => {
-      if (ngFactoryFn === null) {
+      if (ngFactoryDef === null) {
         // `directive` can be null in the case of abstract directives as a base class
         // that use `@Directive()` with no selector. In that case, pass empty object to the
         // `directiveMetadata` function instead of null.
         const meta = getDirectiveMetadata(type, directive || {});
-        ngFactoryFn = getCompilerFacade().compileFactory(
-            angularCoreEnv, `ng:///${type.name}/ngFactoryFn.js`, meta.metadata);
+        ngFactoryDef = getCompilerFacade().compileFactory(
+            angularCoreEnv, `ng:///${type.name}/ngFactory.js`, meta.metadata);
       }
-      return ngFactoryFn;
+      return ngFactoryDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,

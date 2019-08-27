@@ -48,7 +48,7 @@ describe('compiler compliance: dependency injection', () => {
     };
 
     const factory = `
-      MyComponent.ngFactoryFn = function MyComponent_Factory(t) {
+      MyComponent.ngFactoryDef = function MyComponent_Factory(t) {
         return new (t || MyComponent)(
           $r3$.ɵɵinjectAttribute('name'),
           $r3$.ɵɵdirectiveInject(MyService),

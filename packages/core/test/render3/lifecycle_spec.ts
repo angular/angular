@@ -56,7 +56,7 @@ describe('lifecycles', () => {
           events.push(`${name}${this.val}`);
         }
 
-        static ngFactoryFn = () => new Component();
+        static ngFactoryDef = () => new Component();
         static ngComponentDef = ɵɵdefineComponent({
           type: Component,
           selectors: [[name]],
@@ -71,7 +71,7 @@ describe('lifecycles', () => {
     class Directive {
       ngOnInit() { events.push('dir'); }
 
-      static ngFactoryFn = () => new Directive();
+      static ngFactoryDef = () => new Directive();
       static ngDirectiveDef = ɵɵdefineDirective({type: Directive, selectors: [['', 'dir', '']]});
     }
 
