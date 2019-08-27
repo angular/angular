@@ -117,7 +117,6 @@ export {
   ɵɵtemplate,
 
   ɵɵtext,
-  ɵɵtextBinding,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵtextInterpolate2,
