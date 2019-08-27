@@ -1086,7 +1086,7 @@ export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplat
 
 export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LView): ViewEngine_TemplateRef<unknown> | null;
 
-export declare function ɵɵtext(index: number, value?: any): void;
+export declare function ɵɵtext(index: number, value?: string): void;
 
 export declare function ɵɵtextBinding<T>(value: T | NO_CHANGE): void;
 
