@@ -155,7 +155,7 @@ Tell `HttpClient` that you want the full response with the `observe` option:
   region="getConfigResponse">
 </code-example>
 
-Now `HttpClient.get()` returns an `Observable` of typed `HttpResponse` rather than just the JSON data.
+Now `HttpClient.get()` returns an `Observable` of type `HttpResponse` rather than just the JSON data.
 
 The component's `showConfigResponse()` method displays the response headers as well as the configuration:
 
