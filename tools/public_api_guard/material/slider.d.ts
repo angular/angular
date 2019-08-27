@@ -24,7 +24,7 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     };
     readonly change: EventEmitter<MatSliderChange>;
     readonly displayValue: string | number;
-    displayWith: (value: number | null) => string | number;
+    displayWith: (value: number) => string | number;
     readonly input: EventEmitter<MatSliderChange>;
     invert: boolean;
     max: number;

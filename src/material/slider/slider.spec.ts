@@ -1531,11 +1531,7 @@ class SliderWithThumbLabel { }
   styles: [styles],
 })
 class SliderWithCustomThumbLabelFormatting {
-  displayWith(value: number | null) {
-    if (!value) {
-      return 0;
-    }
-
+  displayWith(value: number) {
     if (value >= 1000) {
       return (value / 1000) + 'k';
     }

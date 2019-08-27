@@ -261,7 +261,7 @@ export class MatSlider extends _MatSliderMixinBase
    * in the thumb label. Can be used to format very large number in order
    * for them to fit into the slider thumb.
    */
-  @Input() displayWith: (value: number | null) => string | number;
+  @Input() displayWith: (value: number) => string | number;
 
   /** Whether the slider is vertical. */
   @Input()
@@ -287,7 +287,9 @@ export class MatSlider extends _MatSliderMixinBase
   /** The value to be used for display purposes. */
   get displayValue(): string | number {
     if (this.displayWith) {
-      return this.displayWith(this.value);
+      // Value is never null but since setters and getters cannot have
+      // different types, the value getter is also typed to return null.
+      return this.displayWith(this.value!);
     }
 
     // Note that this could be improved further by rounding something like 0.999 to 1 or
