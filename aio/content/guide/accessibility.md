@@ -84,48 +84,15 @@ The following example shows how to make a simple progress bar accessible by usin
 
 * The component defines an accessibility-enabled element with both the standard HTML attribute `role`, and ARIA attributes. The ARIA attribute `aria-valuenow` is bound to the user's input.
 
-   ```ts
-  import { Component, Input } from '@angular/core';
-   /**
-    * Example progressbar component.
-    */
-   @Component({
-     selector: 'example-progressbar',
-     template: `<div class="bar" [style.width.%]="value"></div>`,
-     styleUrls: ['./progress-bar.css'],
-     host: {
-       // Sets the role for this component to "progressbar"
-       role: 'progressbar',
+   <code-example path="accessibility/src/app/progress-bar.component.ts" header="src/app/progress-bar.component.ts" region="progressbar-component"></code-example>
 
-      // Sets the minimum and maximum values for the progressbar role.
-       'aria-valuemin': '0',
-       'aria-valuemax': '100',
-
-       // Binding that updates the current value of the progressbar.
-       '[attr.aria-valuenow]': 'value',
-     }
-   })
-   export class ExampleProgressbar  {
-     /** Current value of the progressbar. */
-     @Input() value: number = 0;
-   }
-   ```
 
 * In the template, the `aria-label` attribute ensures that the control is accessible to screen readers.
 
-   ```html
-   <label>
-      Enter an example progress value
-      <input type="number" min="0" max="100"
-         [value]="progress" (input)="progress = $event.target.value">
-   </label>
+   <code-example path="accessibility/src/app/app.component.html" header="src/app/app.component.html" region="template"></code-example>
 
-   <!-- The user of the progressbar sets an aria-label to communicate what the progress means. -->
-   <example-progressbar [value]="progress" aria-label="Example of a progress bar">
-   </example-progressbar>
-   ```
 
-[See the full example in StackBlitz](https://stackblitz.com/edit/angular-kn5jdi?file=src%2Fapp%2Fapp.component.html).
+To see the progress bar in a working example app, refer to the <live-example></live-example>.
 
 ## Routing and focus management
 
