@@ -13,7 +13,6 @@
     "test"
   ],
   "scopes": [
-    "aio",
     "animations",
     "bazel",
     "benchpress",
