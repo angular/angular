@@ -15,7 +15,7 @@ import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
  * @return A list of tasks that need to be executed in order to process the necessary format
  *         properties for all entry-points.
  */
-export type AnalyzeEntryPointsFn = () => Task[];
+export type AnalyzeEntryPointsFn = () => TaskQueue;
 
 /** The type of the function that can process/compile a task. */
 export type CompileFn = (task: Task) => void;
@@ -64,4 +64,44 @@ export const enum TaskProcessingOutcome {
 
   /** Successfully processed the target format property. */
   Processed,
+}
+
+/**
+ * A wrapper around a list of tasks and providing utility methods for getting the next task of
+ * interest and determining when all tasks have been completed.
+ *
+ * (This allows different implementations to impose different constraints on when a task's
+ * processing can start.)
+ */
+export interface TaskQueue {
+  /** Whether all tasks have been completed. */
+  allTasksCompleted: boolean;
+
+  /**
+   * Get the next task whose processing can start (if any).
+   *
+   * This implicitly marks the task as in-progress.
+   * (This information is used to determine whether all tasks have been completed.)
+   *
+   * @return The next task available for processing or `null`, if no task can be processed at the
+   *         moment (including if there are no more unprocessed tasks).
+   */
+  getNextTask(): Task|null;
+
+  /**
+   * Mark a task as completed.
+   *
+   * This removes the task from the internal list of in-progress tasks.
+   * (This information is used to determine whether all tasks have been completed.)
+   *
+   * @param task The task to mark as completed.
+   */
+  markTaskCompleted(task: Task): void;
+
+  /**
+   * Return a string representation of the task queue (for debugging purposes).
+   *
+   * @return A string representation of the task queue.
+   */
+  toString(): string;
 }

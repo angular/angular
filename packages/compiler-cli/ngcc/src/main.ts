@@ -16,8 +16,9 @@ import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
-import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, Task, TaskProcessingOutcome} from './execution/api';
+import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, Task, TaskProcessingOutcome, TaskQueue} from './execution/api';
 import {AsyncSingleProcessExecutor, SingleProcessExecutor} from './execution/single_process_executor';
+import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
@@ -174,7 +175,7 @@ export function mainNgcc(
           unprocessableEntryPointPaths.map(path => `\n  - ${path}`).join(''));
     }
 
-    return tasks;
+    return new SerialTaskQueue(tasks);
   };
 
   // The function for creating the `compile()` function.
