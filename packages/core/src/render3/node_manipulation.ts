@@ -20,7 +20,6 @@ import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRend
 import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_LCONTAINER, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, getNativeByTNodeOrNull, unwrapRNode} from './util/view_utils';
 
@@ -116,9 +115,11 @@ function applyToElementOrContainer(
   }
 }
 
-export function createTextNode(value: any, renderer: Renderer3): RText {
-  return isProceduralRenderer(renderer) ? renderer.createText(renderStringify(value)) :
-                                          renderer.createTextNode(renderStringify(value));
+export function createTextNode(value: string, renderer: Renderer3): RText {
+  ngDevMode && ngDevMode.rendererCreateTextNode++;
+  ngDevMode && ngDevMode.rendererSetText++;
+  return isProceduralRenderer(renderer) ? renderer.createText(value) :
+                                          renderer.createTextNode(value);
 }
 
 /**
