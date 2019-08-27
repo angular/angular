@@ -9,10 +9,18 @@ import {addToViewTree, createLContainer, createLView, createTNode, createTView, 
 import {ComponentTemplate} from '../../../src/render3/interfaces/definition';
 import {TNodeType, TViewNode} from '../../../src/render3/interfaces/node';
 import {RComment} from '../../../src/render3/interfaces/renderer';
-import {LView, LViewFlags} from '../../../src/render3/interfaces/view';
+import {LView, LViewFlags, TView} from '../../../src/render3/interfaces/view';
 import {insertView} from '../../../src/render3/node_manipulation';
 
 import {NoopRenderer, NoopRendererFactory, WebWorkerRenderNode} from './noop_renderer';
+
+export function createAndRenderLView(
+    parentLView: LView | null, tView: TView, hostTNode: TViewNode) {
+  const embeddedLView = createLView(
+      parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, new NoopRendererFactory(),
+      new NoopRenderer());
+  renderView(embeddedLView, tView, null);
+}
 
 export function setupRootViewWithEmbeddedViews(
     templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
