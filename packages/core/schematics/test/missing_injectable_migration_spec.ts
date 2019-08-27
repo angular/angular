@@ -21,7 +21,7 @@ describe('Missing injectable migration', () => {
   let warnOutput: string[];
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('./test-migrations.json'));
+    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -61,7 +61,7 @@ describe('Missing injectable migration', () => {
   }
 
   async function runMigration() {
-    await runner.runSchematicAsync('migration-missing-injectable', {}, tree).toPromise();
+    await runner.runSchematicAsync('migration-v9-missing-injectable', {}, tree).toPromise();
   }
 
   it('should migrate type provider in NgModule', async() => {
