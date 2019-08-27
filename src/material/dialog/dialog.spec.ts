@@ -34,7 +34,8 @@ import {
   MatDialog,
   MatDialogModule,
   MatDialogRef,
-  MAT_DIALOG_DEFAULT_OPTIONS
+  MAT_DIALOG_DEFAULT_OPTIONS,
+  MatDialogState
 } from './index';
 import {Subject} from 'rxjs';
 
@@ -754,6 +755,19 @@ describe('MatDialog', () => {
 
       expect(resolver.resolveComponentFactory).toHaveBeenCalled();
     }));
+
+  it('should return the current state of the dialog', fakeAsync(() => {
+    const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+
+    expect(dialogRef.getState()).toBe(MatDialogState.OPEN);
+    dialogRef.close();
+    viewContainerFixture.detectChanges();
+
+    expect(dialogRef.getState()).toBe(MatDialogState.CLOSING);
+    flush();
+
+    expect(dialogRef.getState()).toBe(MatDialogState.CLOSED);
+  }));
 
   describe('passing in data', () => {
     it('should be able to pass in data', () => {

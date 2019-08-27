@@ -20,6 +20,9 @@ import {MatDialogContainer} from './dialog-container';
 // Counter for unique dialog ids.
 let uniqueId = 0;
 
+/** Possible states of the lifecycle of a dialog. */
+export const enum MatDialogState {OPEN, CLOSING, CLOSED}
+
 /**
  * Reference to a dialog opened via the MatDialog service.
  */
@@ -44,6 +47,9 @@ export class MatDialogRef<T, R = any> {
 
   /** Handle to the timeout that's running as a fallback in case the exit animation doesn't fire. */
   private _closeFallbackTimeout: number;
+
+  /** Current state of the dialog. */
+  private _state = MatDialogState.OPEN;
 
   constructor(
     private _overlayRef: OverlayRef,
@@ -108,6 +114,7 @@ export class MatDialogRef<T, R = any> {
     .subscribe(event => {
       this._beforeClosed.next(dialogResult);
       this._beforeClosed.complete();
+      this._state = MatDialogState.CLOSED;
       this._overlayRef.detachBackdrop();
 
       // The logic that disposes of the overlay depends on the exit animation completing, however
@@ -121,6 +128,7 @@ export class MatDialogRef<T, R = any> {
     });
 
     this._containerInstance._startExitAnimation();
+    this._state = MatDialogState.CLOSING;
   }
 
   /**
@@ -221,6 +229,11 @@ export class MatDialogRef<T, R = any> {
    */
   beforeClose(): Observable<R | undefined> {
     return this.beforeClosed();
+  }
+
+  /** Gets the current state of the dialog's lifecycle. */
+  getState(): MatDialogState {
+    return this._state;
   }
 
   /** Fetches the position strategy object from the overlay ref. */
