@@ -20,6 +20,11 @@
       "description": "Migrates usages of Renderer to Renderer2",
       "factory": "./migrations/renderer-to-renderer2/index"
     },
+    "migration-v9-missing-injectable": {
+      "version": "9-beta",
+      "description": "Decorates all declared undecorated provider classes with @Injectable",
+      "factory": "./migrations/missing-injectable/index"
+    },
     "migration-v9-undecorated-classes-with-di": {
       "version": "9-beta",
       "description": "Decorates undecorated base classes of directives/components that use dependency injection. Copies metadata from base classes to derived directives/components/pipes that are not decorated.",
