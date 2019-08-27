@@ -254,14 +254,7 @@ export class DropListRef<T = any> {
 
     // @breaking-change 9.0.0 Remove check for _viewportRuler once it's marked as a required param.
     if (this._viewportRuler) {
-      this._viewportScrollPosition = this._viewportRuler.getViewportScrollPosition();
-      this._viewportScrollSubscription = this._dragDropRegistry.scroll.subscribe(() => {
-        if (this.isDragging()) {
-          const newPosition = this._viewportRuler!.getViewportScrollPosition();
-          this._updateAfterScroll(this._viewportScrollPosition, newPosition.top, newPosition.left,
-                                  this._clientRect);
-        }
-      });
+      this._listenToScrollEvents();
     }
   }
 
@@ -854,6 +847,7 @@ export class DropListRef<T = any> {
     if (!activeSiblings.has(sibling)) {
       activeSiblings.add(sibling);
       this._cacheOwnPosition();
+      this._listenToScrollEvents();
     }
   }
 
@@ -863,6 +857,24 @@ export class DropListRef<T = any> {
    */
   _stopReceiving(sibling: DropListRef) {
     this._activeSiblings.delete(sibling);
+    this._viewportScrollSubscription.unsubscribe();
+  }
+
+  /**
+   * Starts listening to scroll events on the viewport.
+   * Used for updating the internal state of the list.
+   */
+  private _listenToScrollEvents() {
+    this._viewportScrollPosition = this._viewportRuler!.getViewportScrollPosition();
+    this._viewportScrollSubscription = this._dragDropRegistry.scroll.subscribe(() => {
+      if (this.isDragging()) {
+        const newPosition = this._viewportRuler!.getViewportScrollPosition();
+        this._updateAfterScroll(this._viewportScrollPosition, newPosition.top, newPosition.left,
+                                this._clientRect);
+      } else if (this.isReceiving()) {
+        this._cacheOwnPosition();
+      }
+    });
   }
 }
 

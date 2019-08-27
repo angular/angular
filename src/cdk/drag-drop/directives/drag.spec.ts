@@ -3927,6 +3927,50 @@ describe('CdkDrag', () => {
       expect(itemEnterEvent).toEqual(expectedEvent);
     }));
 
+    it('should be able to drop into a new container after scrolling into view', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZones);
+      fixture.detectChanges();
+
+      // Make the page scrollable and scroll the items out of view.
+      const cleanup = makePageScrollable();
+      scrollTo(0, 4000);
+      dispatchFakeEvent(document, 'scroll');
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groupedDragItems;
+      const item = groups[0][1];
+
+      // Start dragging and then scroll the elements back into view.
+      startDraggingViaMouse(fixture, item.element.nativeElement);
+      scrollTo(0, 0);
+      dispatchFakeEvent(document, 'scroll');
+
+      const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+      dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+      dispatchMouseEvent(document, 'mouseup', targetRect.left + 1, targetRect.top + 1);
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      expect(event).toEqual({
+        previousIndex: 1,
+        currentIndex: 3,
+        item,
+        container: fixture.componentInstance.dropInstances.toArray()[1],
+        previousContainer: fixture.componentInstance.dropInstances.first,
+        isPointerOverContainer: true,
+        distance: {x: jasmine.any(Number), y: jasmine.any(Number)}
+      });
+
+      cleanup();
+    }));
+
   });
 
   describe('with nested drags', () => {
