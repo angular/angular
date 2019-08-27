@@ -11,7 +11,7 @@ import {withBody} from '@angular/private/testing';
 import {ChangeDetectionStrategy, DoCheck} from '../../src/core';
 import {whenRendered} from '../../src/render3/component';
 import {LifecycleHooksFeature, getRenderedText, ɵɵdefineComponent, ɵɵgetCurrentView, ɵɵproperty, ɵɵselect, ɵɵtextInterpolate1, ɵɵtextInterpolate2} from '../../src/render3/index';
-import {detectChanges, markDirty, tick, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵlistener, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {detectChanges, markDirty, tick, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵlistener, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {FLAGS, LViewFlags} from '../../src/render3/interfaces/view';
@@ -39,7 +39,7 @@ describe('change detection', () => {
           }
           if (rf & RenderFlags.Update) {
             ɵɵselect(1);
-            ɵɵtextBinding(ctx.value);
+            ɵɵtextInterpolate(ctx.value);
           }
         }
       });
@@ -323,7 +323,7 @@ describe('change detection', () => {
           }
           if (rf & RenderFlags.Update) {
             ɵɵselect(0);
-            ɵɵtextBinding(ctx.value);
+            ɵɵtextInterpolate(ctx.value);
           }
         }
       });

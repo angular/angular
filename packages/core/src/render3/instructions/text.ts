@@ -9,12 +9,8 @@ import {assertDataInRange, assertEqual} from '../../util/assert';
 import {TNodeType} from '../interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {appendChild, createTextNode} from '../node_manipulation';
-import {getLView, getSelectedIndex, setIsNotParent} from '../state';
-import {NO_CHANGE} from '../tokens';
-import {renderStringify} from '../util/misc_utils';
-
-import {bind} from './property';
-import {getOrCreateTNode, textBindingInternal} from './shared';
+import {getLView, setIsNotParent} from '../state';
+import {getOrCreateTNode} from './shared';
 
 
 
@@ -38,21 +34,4 @@ export function ɵɵtext(index: number, value: string = ''): void {
   // Text nodes are self closing.
   setIsNotParent();
   appendChild(textNative, tNode, lView);
-}
-
-/**
- * Create text node with binding
- * Bindings should be handled externally with the proper interpolation(1-8) method
- *
- * @param value Stringified value to write.
- *
- * @codeGenApi
- */
-export function ɵɵtextBinding<T>(value: T | NO_CHANGE): void {
-  const lView = getLView();
-  const index = getSelectedIndex();
-  const bound = bind(lView, value);
-  if (bound !== NO_CHANGE) {
-    textBindingInternal(lView, index, renderStringify(bound));
-  }
 }

@@ -968,8 +968,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           nodeIndex, text.sourceSpan, getTextInterpolationExpression(value),
           () => this.getUpdateInstructionArguments(value));
     } else {
-      this.updateInstruction(
-          nodeIndex, text.sourceSpan, R3.textBinding, () => [this.convertPropertyBinding(value)]);
+      error('Text nodes should be interpolated and never bound directly.');
     }
   }
 

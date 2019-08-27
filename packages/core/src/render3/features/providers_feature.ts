@@ -30,7 +30,7 @@ import {DirectiveDef} from '../interfaces/definition';
  *      }
  *      if (fs & RenderFlags.Update) {
  *        ɵɵselect(0);
- *        ɵɵtextBinding(ctx.greeter.greet());
+ *        ɵɵtextInterpolate(ctx.greeter.greet());
  *      }
  *    },
  *    features: [ProvidersFeature([GreeterDE])]

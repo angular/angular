@@ -10,7 +10,7 @@ import {Component as _Component, ComponentFactoryResolver, ElementRef, InjectFla
 import {forwardRef} from '../../src/di/forward_ref';
 import {createInjector} from '../../src/di/r3_injector';
 import {injectComponentFactoryResolver, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵselect, ɵɵtextInterpolate1} from '../../src/render3/index';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {getInjector} from '../../src/render3/util/discovery_utils';
@@ -881,9 +881,9 @@ describe('providers', () => {
             }
             if (fs & RenderFlags.Update) {
               ɵɵselect(0);
-              ɵɵtextBinding(ctx.s);
+              ɵɵtextInterpolate(ctx.s);
               ɵɵselect(1);
-              ɵɵtextBinding(ctx.n);
+              ɵɵtextInterpolate(ctx.n);
             }
           }
         });
@@ -968,9 +968,9 @@ describe('providers', () => {
             }
             if (fs & RenderFlags.Update) {
               ɵɵselect(0);
-              ɵɵtextBinding(ctx.s);
+              ɵɵtextInterpolate(ctx.s);
               ɵɵselect(1);
-              ɵɵtextBinding(ctx.n);
+              ɵɵtextInterpolate(ctx.n);
             }
           },
           features: [

@@ -134,7 +134,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵselect': r3.ɵɵselect,
        'ɵɵtemplate': r3.ɵɵtemplate,
        'ɵɵtext': r3.ɵɵtext,
-       'ɵɵtextBinding': r3.ɵɵtextBinding,
        'ɵɵtextInterpolate': r3.ɵɵtextInterpolate,
        'ɵɵtextInterpolate1': r3.ɵɵtextInterpolate1,
        'ɵɵtextInterpolate2': r3.ɵɵtextInterpolate2,
