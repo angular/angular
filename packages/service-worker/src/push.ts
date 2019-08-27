@@ -23,30 +23,14 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * You can inject a `SwPush` instance into any component or service
  * as a dependency.
  *
- * ```ts
- * import {SwPush} from '@angular/service-worker';
- * ...
- *   constructor(private swPush: SwPush) {}
- *   ...
- * ```
+ * <code-example path="service-worker/push/module.ts" region="inject-sw-push" header="app.component.ts"></code-example>
  *
  * To subscribe, call `SwPush.requestSubscription()`, which asks the user for permission.
  * The call returns a `Promise` with a new
  * [`PushSubscription`](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
  * instance.
  *
- * ```ts
- * async subscribeToPush() {
- *   try {
- *     const sub = await this.swPush.requestSubscription({
- *       serverPublicKey: PUBLIC_VAPID_KEY_OF_SERVER,
- *     });
- *     // TODO: Send to server.
- *   } catch (e) {
- *     console.error('Could not subscribe:', e);
- *   }
- * }
- * ```
+ * <code-example path="service-worker/push/module.ts" region="subscribe-to-push" header="app.component.ts"></code-example>
  *
  * A request is rejected if the user denies permission, or if the browser
  * blocks or does not support the Push API or ServiceWorkers.
@@ -90,11 +74,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * An application can subscribe to `SwPush.notificationClicks` observable to be notified when a user
  * clicks on a notification. For example:
  *
- * ```ts
- * swPush.notificationClicks.subscribe(({action, notification}) => {
- *   // TODO: Do something in response to notification click.
- * });
- * ```
+ * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks" header="app.component.ts"></code-example>
  *
  * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
  * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)
