@@ -1,6 +1,6 @@
 # Singleton services
 
-A singleton service is a service for which only once instance exists in an app.
+A singleton service is a service for which only one instance exists in an app.
 
 For a sample app using the app-wide singleton service that this page describes, see the
 <live-example name="ngmodules"></live-example> showcasing all the documented features of NgModules.
