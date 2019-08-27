@@ -54,13 +54,8 @@ export class WorkerDomAdapter extends DomAdapter {
   parse(templateHtml: string) { throw 'not implemented'; }
   querySelector(el: any, selector: string): HTMLElement { throw 'not implemented'; }
   querySelectorAll(el: any, selector: string): any[] { throw 'not implemented'; }
-  on(el: any, evt: any, listener: any) { throw 'not implemented'; }
   onAndCancel(el: any, evt: any, listener: any): Function { throw 'not implemented'; }
   dispatchEvent(el: any, evt: any) { throw 'not implemented'; }
-  createMouseEvent(eventType: any): any { throw 'not implemented'; }
-  createEvent(eventType: string): any { throw 'not implemented'; }
-  preventDefault(evt: any) { throw 'not implemented'; }
-  isPrevented(evt: any): boolean { throw 'not implemented'; }
   nextSibling(el: any): Node { throw 'not implemented'; }
   parentElement(el: any): Node { throw 'not implemented'; }
   clearNodes(el: any) { throw 'not implemented'; }
