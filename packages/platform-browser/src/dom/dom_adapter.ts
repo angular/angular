@@ -31,26 +31,23 @@ export function setRootDomAdapter(adapter: DomAdapter) {
  * can introduce XSS risks.
  */
 export abstract class DomAdapter {
-  abstract hasProperty(element: any, name: string): boolean;
-  abstract setProperty(el: Element, name: string, value: any): any;
+  // Needs Domino-friendly test utility
   abstract getProperty(el: Element, name: string): any;
+  abstract dispatchEvent(el: any, evt: any): any;
 
-  abstract logError(error: any): any;
+  // Used by router
   abstract log(error: any): any;
   abstract logGroup(error: any): any;
   abstract logGroupEnd(): any;
 
-  abstract contains(nodeA: any, nodeB: any): boolean;
-  abstract parse(templateHtml: string): any;
-  abstract querySelector(el: any, selector: string): any;
-  abstract querySelectorAll(el: any, selector: string): any[];
-  abstract dispatchEvent(el: any, evt: any): any;
-
   // Used by Meta
+  abstract querySelectorAll(el: any, selector: string): any[];
   abstract remove(el: any): Node;
   abstract getAttribute(element: any, attribute: string): string|null;
 
   // Used by platform-server
+  abstract setProperty(el: Element, name: string, value: any): any;
+  abstract querySelector(el: any, selector: string): any;
   abstract nextSibling(el: any): Node|null;
   abstract parentElement(el: any): Node|null;
   abstract clearNodes(el: any): any;

@@ -75,22 +75,9 @@ const nodeContains: (this: Node, other: Node) => boolean = (() => {
  */
 /* tslint:disable:requireParameterType no-console */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
-  parse(templateHtml: string) { throw new Error('parse not implemented'); }
   static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
-  hasProperty(element: Node, name: string): boolean { return name in element; }
   setProperty(el: Node, name: string, value: any) { (<any>el)[name] = value; }
   getProperty(el: Node, name: string): any { return (<any>el)[name]; }
-
-  // TODO(tbosch): move this into a separate environment class once we have it
-  logError(error: string): void {
-    if (window.console) {
-      if (console.error) {
-        console.error(error);
-      } else {
-        console.log(error);
-      }
-    }
-  }
 
   log(error: string): void {
     if (window.console) {
@@ -110,7 +97,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
   }
 
-  contains(nodeA: any, nodeB: any): boolean { return nodeContains.call(nodeA, nodeB); }
   querySelector(el: HTMLElement, selector: string): any { return el.querySelector(selector); }
   querySelectorAll(el: any, selector: string): any[] { return el.querySelectorAll(selector); }
   onAndCancel(el: Node, evt: any, listener: any): Function {
