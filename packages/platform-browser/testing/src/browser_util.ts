@@ -91,7 +91,15 @@ export class BrowserDetection {
 BrowserDetection.setup();
 
 export function dispatchEvent(element: any, eventType: any): void {
-  getDOM().dispatchEvent(element, getDOM().createEvent(eventType));
+  const evt: Event = getDOM().getDefaultDocument().createEvent('Event');
+  evt.initEvent(eventType, true, true);
+  getDOM().dispatchEvent(element, evt);
+}
+
+export function createMouseEvent(eventType: string): MouseEvent {
+  const evt: MouseEvent = getDOM().getDefaultDocument().createEvent('MouseEvent');
+  evt.initEvent(eventType, true, true);
+  return evt;
 }
 
 export function el(html: string): HTMLElement {
