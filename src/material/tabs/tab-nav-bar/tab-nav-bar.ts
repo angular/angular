@@ -46,6 +46,7 @@ import {FocusMonitor, FocusableOption} from '@angular/cdk/a11y';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MatInkBar} from '../ink-bar';
 import {MatPaginatedTabHeader} from '../paginated-tab-header';
+import {startWith, takeUntil} from 'rxjs/operators';
 
 
 /**
@@ -123,7 +124,12 @@ export class MatTabNav extends MatPaginatedTabHeader implements AfterContentChec
   }
 
   ngAfterContentInit() {
-    this.updateActiveLink();
+    // We need this to run before the `changes` subscription in parent to ensure that the
+    // selectedIndex is up-to-date by the time the super class starts looking for it.
+    this._items.changes.pipe(startWith(null), takeUntil(this._destroyed)).subscribe(() => {
+      this.updateActiveLink();
+    });
+
     super.ngAfterContentInit();
   }
 

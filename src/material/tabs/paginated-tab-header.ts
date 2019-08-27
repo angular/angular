@@ -80,7 +80,7 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
   private _selectedIndexChanged = false;
 
   /** Emits when the component is destroyed. */
-  private readonly _destroyed = new Subject<void>();
+  protected readonly _destroyed = new Subject<void>();
 
   /** Whether the controls for pagination should be displayed */
   _showPaginationControls = false;

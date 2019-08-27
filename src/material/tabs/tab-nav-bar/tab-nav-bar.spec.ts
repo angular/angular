@@ -253,6 +253,22 @@ describe('MatTabNavBar', () => {
     expect(tabLink.tabIndex).toBe(3, 'Expected the tabIndex to be have been set to 3.');
   });
 
+  it('should select the proper tab, if the tabs come in after init', () => {
+    const fixture = TestBed.createComponent(SimpleTabNavBarTestApp);
+    const instance = fixture.componentInstance;
+
+    instance.tabs = [];
+    instance.activeIndex = 1;
+    fixture.detectChanges();
+
+    expect(instance.tabNavBar.selectedIndex).toBe(-1);
+
+    instance.tabs = [0, 1, 2];
+    fixture.detectChanges();
+
+    expect(instance.tabNavBar.selectedIndex).toBe(1);
+  });
+
   describe('ripples', () => {
     let fixture: ComponentFixture<SimpleTabNavBarTestApp>;
 
