@@ -35,7 +35,7 @@ var_4: &init_environment
     # Overwrite the yarn installed in the docker container with our own version.
     command: |
       ./.circleci/env.sh
-      ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.13.0/bin/yarn.js)
+      ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.17.3/bin/yarn.js)
       sudo chmod a+x $ourYarn
       sudo ln -fs $ourYarn /usr/local/bin/yarn
       echo "Yarn version: $(yarn --version)"
