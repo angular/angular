@@ -72,7 +72,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     ngModules: [],
   };
 
-  constructor(readonly host: ts.LanguageServiceHost, private readonly tsLS: ts.LanguageService) {
+  constructor(
+      readonly tsLsHost: ts.LanguageServiceHost, private readonly tsLS: ts.LanguageService) {
     this.summaryResolver = new AotSummaryResolver(
         {
           loadSummary(filePath: string) { return null; },
@@ -81,7 +82,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           fromSummaryFileName(filePath: string): string{return filePath;},
         },
         this.staticSymbolCache);
-    this.reflectorHost = new ReflectorHost(() => this.program, host);
+    this.reflectorHost = new ReflectorHost(() => this.program, tsLsHost);
     this.staticSymbolResolver = new StaticSymbolResolver(
         this.reflectorHost, this.staticSymbolCache, this.summaryResolver,
         (e, filePath) => this.collectError(e, filePath));
@@ -277,7 +278,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     for (const sourceFile of program.getSourceFiles()) {
       const fileName = sourceFile.fileName;
       seen.add(fileName);
-      const version = this.host.getScriptVersion(fileName);
+      const version = this.tsLsHost.getScriptVersion(fileName);
       const lastVersion = this.fileVersions.get(fileName);
       if (version !== lastVersion) {
         this.fileVersions.set(fileName, version);
@@ -333,7 +334,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
    */
   private getExternalTemplate(fileName: string): TemplateSource|undefined {
     // First get the text for the template
-    const snapshot = this.host.getScriptSnapshot(fileName);
+    const snapshot = this.tsLsHost.getScriptSnapshot(fileName);
     if (!snapshot) {
       return;
     }
