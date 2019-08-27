@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1497,
-        "main": 164387,
+        "main": 161490,
         "polyfills": 45399
       }
     }
@@ -21,7 +21,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1440,
-        "main": 130975,
+        "main": 128448,
         "polyfills": 45340
       }
     }

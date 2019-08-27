@@ -11,7 +11,8 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
-import {el} from '../../../testing/src/browser_util';
+
+import {createMouseEvent, el} from '../../../testing/src/browser_util';
 
 (function() {
   if (isNode) return;
@@ -63,8 +64,8 @@ import {el} from '../../../testing/src/browser_util';
       // Workaround for https://bugs.webkit.org/show_bug.cgi?id=122755
       getDOM().appendChild(doc.body, element);
 
-      const child = element.firstChild;
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const child = element.firstChild as Element;
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvent: any /** TODO #9100 */ = null;
       const handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
@@ -77,7 +78,7 @@ import {el} from '../../../testing/src/browser_util';
     it('should add and remove global event listeners', () => {
       const element = el('<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvent: any /** TODO #9100 */ = null;
       const handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
@@ -97,7 +98,7 @@ import {el} from '../../../testing/src/browser_util';
 
       const element = el('<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvent: any /** TODO #9100 */ = null;
       let receivedZone: any = null;
       const handler = (e: any /** TODO #9100 */) => {
@@ -123,7 +124,7 @@ import {el} from '../../../testing/src/browser_util';
 
       const element = el('<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvents: any[] /** TODO #9100 */ = [];
       let receivedZones: any[] = [];
       const handler1 = (e: any /** TODO #9100 */) => {
@@ -158,7 +159,7 @@ import {el} from '../../../testing/src/browser_util';
 
       const element = el('<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvents: any[] /** TODO #9100 */ = [];
       let receivedZones: any[] = [];
       const handler1 = (e: any /** TODO #9100 */) => {
@@ -194,7 +195,7 @@ import {el} from '../../../testing/src/browser_util';
 
       const element = el('<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvents: any[] /** TODO #9100 */ = [];
       let receivedZones: any[] = [];
       let remover1: any = null;
@@ -230,7 +231,7 @@ import {el} from '../../../testing/src/browser_util';
 
       const element = el('<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvents: any[] /** TODO #9100 */ = [];
       let receivedZones: any[] = [];
       const handler = (e: any /** TODO #9100 */) => {
@@ -261,7 +262,7 @@ import {el} from '../../../testing/src/browser_util';
 
       const element = el('<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const dispatchedEvent = createMouseEvent('click');
       let receivedEvents: any[] /** TODO #9100 */ = [];
       let receivedZones: any[] = [];
       const handler1 = (e: any /** TODO #9100 */) => {
@@ -300,7 +301,7 @@ import {el} from '../../../testing/src/browser_util';
       const Zone = (window as any)['Zone'];
       const element = el('<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('scroll');
+      const dispatchedEvent = createMouseEvent('scroll');
       let receivedEvent: any /** TODO #9100 */ = null;
       let receivedZone: any = null;
       const handler = (e: any /** TODO #9100 */) => {

@@ -113,7 +113,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   contains(nodeA: any, nodeB: any): boolean { return nodeContains.call(nodeA, nodeB); }
   querySelector(el: HTMLElement, selector: string): any { return el.querySelector(selector); }
   querySelectorAll(el: any, selector: string): any[] { return el.querySelectorAll(selector); }
-  on(el: Node, evt: any, listener: any) { el.addEventListener(evt, listener, false); }
   onAndCancel(el: Node, evt: any, listener: any): Function {
     el.addEventListener(evt, listener, false);
     // Needed to follow Dart's subscription semantic, until fix of
@@ -121,23 +120,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return () => { el.removeEventListener(evt, listener, false); };
   }
   dispatchEvent(el: Node, evt: any) { el.dispatchEvent(evt); }
-  createMouseEvent(eventType: string): MouseEvent {
-    const evt: MouseEvent = this.getDefaultDocument().createEvent('MouseEvent');
-    evt.initEvent(eventType, true, true);
-    return evt;
-  }
-  createEvent(eventType: any): Event {
-    const evt: Event = this.getDefaultDocument().createEvent('Event');
-    evt.initEvent(eventType, true, true);
-    return evt;
-  }
-  preventDefault(evt: Event) {
-    evt.preventDefault();
-    evt.returnValue = false;
-  }
-  isPrevented(evt: Event): boolean {
-    return evt.defaultPrevented || evt.returnValue != null && !evt.returnValue;
-  }
   nextSibling(el: Node): Node|null { return el.nextSibling; }
   parentElement(el: Node): Node|null { return el.parentNode; }
   clearNodes(el: Node) {

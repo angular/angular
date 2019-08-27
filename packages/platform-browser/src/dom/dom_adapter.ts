@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
 
 let _DOM: DomAdapter = null !;
 
@@ -45,13 +44,7 @@ export abstract class DomAdapter {
   abstract parse(templateHtml: string): any;
   abstract querySelector(el: any, selector: string): any;
   abstract querySelectorAll(el: any, selector: string): any[];
-  abstract on(el: any, evt: any, listener: any): any;
-  abstract onAndCancel(el: any, evt: any, listener: any): Function;
   abstract dispatchEvent(el: any, evt: any): any;
-  abstract createMouseEvent(eventType: any): any;
-  abstract createEvent(eventType: string): any;
-  abstract preventDefault(evt: any): any;
-  abstract isPrevented(evt: any): boolean;
 
   // Used by Meta
   abstract remove(el: any): Node;
@@ -95,6 +88,7 @@ export abstract class DomAdapter {
   abstract getHost(el: any): any;
 
   // Used by KeyEventsPlugin
+  abstract onAndCancel(el: any, evt: any, listener: any): Function;
   abstract getEventKey(event: any): string;
   abstract supportsDOMEvents(): boolean;
 
