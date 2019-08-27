@@ -762,6 +762,44 @@ describe('MatMenu', () => {
     flush();
   }));
 
+  it('should respect the DOM order, rather than insertion order, when moving focus using ' +
+    'the arrow keys', fakeAsync(() => {
+      let fixture = createComponent(SimpleMenuWithRepeater);
+
+      fixture.detectChanges();
+      fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
+      tick(500);
+
+      let menuPanel = document.querySelector('.mat-mdc-menu-panel')!;
+      let items = menuPanel.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]');
+
+      expect(document.activeElement).toBe(items[0], 'Expected first item to be focused on open');
+
+      // Add a new item after the first one.
+      fixture.componentInstance.items.splice(1, 0, {label: 'Calzone', disabled: false});
+      fixture.detectChanges();
+
+      items = menuPanel.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]');
+      dispatchKeyboardEvent(menuPanel, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+      tick();
+
+      expect(document.activeElement).toBe(items[1], 'Expected second item to be focused');
+      flush();
+    }));
+
+  it('should focus the menu panel if all items are disabled', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenuWithRepeater, [], [FakeIcon]);
+    fixture.componentInstance.items.forEach(item => item.disabled = true);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    expect(document.activeElement)
+        .toBe(overlayContainerElement.querySelector('.mat-mdc-menu-panel'));
+  }));
+
   describe('lazy rendering', () => {
     it('should be able to render the menu content lazily', fakeAsync(() => {
       const fixture = createComponent(SimpleLazyMenu);
@@ -2360,4 +2398,22 @@ class DynamicPanelMenu {
 })
 class MenuWithCheckboxItems {
   @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
+}
+
+
+@Component({
+  template: `
+    <button [matMenuTriggerFor]="menu">Toggle menu</button>
+    <mat-menu #menu="matMenu">
+      <button
+        *ngFor="let item of items"
+        [disabled]="item.disabled"
+        mat-menu-item>{{item.label}}</button>
+    </mat-menu>
+  `
+})
+class SimpleMenuWithRepeater {
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
+  @ViewChild(MatMenu, {static: false}) menu: MatMenu;
+  items = [{label: 'Pizza', disabled: false}, {label: 'Pasta', disabled: false}];
 }

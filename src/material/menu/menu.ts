@@ -322,13 +322,35 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    * @param origin Action from which the focus originated. Used to set the correct styling.
    */
   focusFirstItem(origin: FocusOrigin = 'program'): void {
+    const manager = this._keyManager;
+
     // When the content is rendered lazily, it takes a bit before the items are inside the DOM.
     if (this.lazyContent) {
       this._ngZone.onStable.asObservable()
         .pipe(take(1))
-        .subscribe(() => this._keyManager.setFocusOrigin(origin).setFirstItemActive());
+        .subscribe(() => manager.setFocusOrigin(origin).setFirstItemActive());
     } else {
-      this._keyManager.setFocusOrigin(origin).setFirstItemActive();
+      manager.setFocusOrigin(origin).setFirstItemActive();
+    }
+
+    // If there's no active item at this point, it means that all the items are disabled.
+    // Move focus to the menu panel so keyboard events like Escape still work. Also this will
+    // give _some_ feedback to screen readers.
+    if (!manager.activeItem && this._directDescendantItems.length) {
+      let element = this._directDescendantItems.first._getHostElement().parentElement;
+
+      // Because the `mat-menu` is at the DOM insertion point, not inside the overlay, we don't
+      // have a nice way of getting a hold of the menu panel. We can't use a `ViewChild` either
+      // because the panel is inside an `ng-template`. We work around it by starting from one of
+      // the items and walking up the DOM.
+      while (element) {
+        if (element.getAttribute('role') === 'menu') {
+          element.focus();
+          break;
+        } else {
+          element = element.parentElement;
+        }
+      }
     }
   }
 
