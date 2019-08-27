@@ -267,11 +267,13 @@ describe('definitions', () => {
     expect(result).toBeDefined();
     const {textSpan, definitions} = result !;
 
+    expect(textSpan).toEqual({start: marker.start - 2, length: 9});
+
     expect(definitions).toBeDefined();
     expect(definitions !.length).toBe(1);
     const [def] = definitions !;
     expect(def.fileName).toBe('/app/test.ng');
-    expect(def.textSpan).toEqual({start: 0, length: 172});
+    expect(def.textSpan).toEqual({start: 0, length: 0});
   });
 
   /**
