@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {TrustedTypePolicyAdapter} from '../security/trusted_types_policy';
 import {isDevMode} from '../util/is_dev_mode';
+
 import {InertBodyHelper} from './inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
-import { TrustedTypePolicyAdapter } from '../security/trusted_types_policy';
 
 function tagSet(tags: string): {[k: string]: boolean} {
   const res: {[k: string]: boolean} = {};
@@ -239,7 +240,8 @@ let inertBodyHelper: InertBodyHelper;
  * Sanitizes the given unsafe, untrusted HTML fragment, and returns HTML text that is safe to add to
  * the DOM in a browser environment.
  */
-export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string, policyAdapter?: TrustedTypePolicyAdapter): string {
+export function _sanitizeHtml(
+    defaultDoc: any, unsafeHtmlInput: string, policyAdapter?: TrustedTypePolicyAdapter): string {
   let inertBodyElement: HTMLElement|null = null;
   try {
     inertBodyHelper = inertBodyHelper || new InertBodyHelper(defaultDoc, policyAdapter);

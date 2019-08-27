@@ -60,8 +60,15 @@ export interface SafeUrl extends SafeValue {}
 export interface SafeResourceUrl extends SafeValue {}
 
 
+<<<<<<< HEAD
 abstract class SafeValueImpl implements SafeValue {
   constructor(public changingThisBreaksApplicationSecurity: string) {}
+=======
+abstract class SafeValueImpl<T> implements SafeValue {
+  constructor(public changingThisBreaksApplicationSecurity: string|T) {
+    // empty
+  }
+>>>>>>> feat: Fix PR issues
 
   abstract getTypeName(): string;
 
@@ -71,26 +78,31 @@ abstract class SafeValueImpl implements SafeValue {
   }
 }
 
-class SafeHtmlImpl extends SafeValueImpl implements SafeHtml {
+class SafeHtmlImpl extends SafeValueImpl<TrustedHTML> implements SafeHtml {
   getTypeName() { return BypassType.Html; }
 }
-class SafeStyleImpl extends SafeValueImpl implements SafeStyle {
+class SafeStyleImpl extends SafeValueImpl<string> implements SafeStyle {
   getTypeName() { return BypassType.Style; }
 }
-class SafeScriptImpl extends SafeValueImpl implements SafeScript {
+class SafeScriptImpl extends SafeValueImpl<TrustedScript> implements SafeScript {
   getTypeName() { return BypassType.Script; }
 }
-class SafeUrlImpl extends SafeValueImpl implements SafeUrl {
+class SafeUrlImpl extends SafeValueImpl<string> implements SafeUrl {
   getTypeName() { return BypassType.Url; }
 }
-class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
+class SafeResourceUrlImpl extends SafeValueImpl<TrustedScriptURL> implements SafeResourceUrl {
   getTypeName() { return BypassType.ResourceUrl; }
 }
 
 export function unwrapSafeValue(value: string | SafeValue): string {
   return value instanceof SafeValueImpl ?
+<<<<<<< HEAD
       (value as SafeValueImpl).changingThisBreaksApplicationSecurity :
       (value as string);
+=======
+      (value as SafeValueImpl<any>).changingThisBreaksApplicationSecurity :
+      '';
+>>>>>>> feat: Fix PR issues
 }
 
 
@@ -116,7 +128,8 @@ export function allowSanitizationBypassAndThrow(value: any, type: BypassType): b
 }
 
 export function getSanitizationBypassType(value: any): BypassType|null {
-  return value instanceof SafeValueImpl && (value as SafeValueImpl).getTypeName() as BypassType ||
+  return value instanceof SafeValueImpl &&
+      (value as SafeValueImpl<unknown>).getTypeName() as BypassType ||
       null;
 }
 

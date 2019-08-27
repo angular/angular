@@ -9,7 +9,7 @@
 /// <reference types="trusted-types" />
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, InjectionToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken, Optional} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
@@ -35,7 +35,9 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
  * Injection token for trusted type policy for this module.
  * @publicApi
  */
-export const JSONP_CALLBACK_CONTEXT_POLICY = new InjectionToken<Pick<TrustedTypePolicy, 'createScriptURL'>>('JSONP_CALLBACK_CONTEXT_POLICY_TOKEN');
+export const JSONP_CALLBACK_CONTEXT_POLICY =
+    new InjectionToken<Pick<TrustedTypePolicy, 'createScriptURL'>>(
+        'JSONP_CALLBACK_CONTEXT_POLICY_TOKEN');
 
 /**
  * DI token/abstract type representing a map of JSONP callbacks.
@@ -57,10 +59,9 @@ export abstract class JsonpCallbackContext { [key: string]: (data: any) => void;
 @Injectable()
 export class JsonpClientBackend implements HttpBackend {
   constructor(
-    private callbackMap: JsonpCallbackContext,
-    @Inject(DOCUMENT) private document: any,
-    @Inject(JSONP_CALLBACK_CONTEXT_POLICY) private trustedTypesPolicy: Pick<TrustedTypePolicy, 'createScriptURL'>
-  ) {}
+      private callbackMap: JsonpCallbackContext, @Inject(DOCUMENT) private document: any,
+      @Optional() @Inject(JSONP_CALLBACK_CONTEXT_POLICY) private trustedTypesPolicy?:
+          Pick<TrustedTypePolicy, 'createScriptURL'>) {}
 
   /**
    * Get the name of the next callback method, by incrementing the global `nextRequestId`.
@@ -92,7 +93,7 @@ export class JsonpClientBackend implements HttpBackend {
 
       // Construct the <script> tag and point it at the URL.
       const node = this.document.createElement('script');
-      node.src = this.trustedTypesPolicy.createScriptURL(url);
+      node.src = this.trustedTypesPolicy ? this.trustedTypesPolicy.createScriptURL(url) : url;
 
       // A JSONP request requires waiting for multiple callbacks. These variables
       // are closed over and track state across those callbacks.

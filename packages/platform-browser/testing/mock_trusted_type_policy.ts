@@ -9,16 +9,16 @@
 import {TrustedTypePolicyAdapter} from '@angular/core';
 
 export class MockTrustedTypePolicyAdapter extends TrustedTypePolicyAdapter {
-  maybeCreateTrustedHTML(value: string): string { throw new Error('Method not implemented.'); }
-  maybeCreateTrustedScript(value: string): string { throw new Error('Method not implemented.'); }
+  maybeCreateTrustedHTML(value: string): string { return value; }
+  maybeCreateTrustedScript(value: string): string { return value; }
   maybeCreateTrustedScriptURL(value: string): string {
     return 'modified-by-policy-adapter:' + value;
   }
   dangerouslyCreateTrustedValueForAttribute(
       el: any, name: string, value: string, namespace?: string|undefined): string {
-    throw new Error('Method not implemented.');
+    return value;
   }
-  isHTML(obj: any): boolean { throw new Error('Method not implemented.'); }
-  isScriptURL(obj: any): boolean { throw new Error('Method not implemented.'); }
-  isScript(obj: any): boolean { throw new Error('Method not implemented.'); }
+  isHTML(obj: any): boolean { return false; }
+  isScriptURL(obj: any): boolean { return false; }
+  isScript(obj: any): boolean { return false; }
 }

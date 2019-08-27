@@ -8,7 +8,7 @@
 
 /// <reference types="trusted-types" />
 
-import {Injectable, InjectionToken, Inject} from '@angular/core';
+import {Inject, Injectable, InjectionToken, Optional} from '@angular/core';
 
 let _nextRequestId = 0;
 export const JSONP_HOME = '__ng_jsonp__';
@@ -26,18 +26,22 @@ function _getJsonpConnections(): {[key: string]: any} {
  * Injection token for trusted type policy for this module.
  * @publicApi
  */
-export const BROWSER_JSONP_POLICY = new InjectionToken<Pick<TrustedTypePolicy, 'createScriptURL'>>('BROWSER_JSONP_POLICY_TOKEN');
+export const BROWSER_JSONP_POLICY =
+    new InjectionToken<Pick<TrustedTypePolicy, 'createScriptURL'>>('BROWSER_JSONP_POLICY_TOKEN');
 
 // Make sure not to evaluate this in a non-browser environment!
 @Injectable()
 export class BrowserJsonp {
-  constructor(@Inject(BROWSER_JSONP_POLICY) private trustedTypesPolicy: Pick<TrustedTypePolicy, 'createScriptURL'>) {}
+  constructor(@Optional() @Inject(BROWSER_JSONP_POLICY) private trustedTypesPolicy?:
+                  Pick<TrustedTypePolicy, 'createScriptURL'>) {}
 
   // Construct a <script> element with the specified URL
   build(url: string): any {
     const node = document.createElement('script');
-    // https://github.com/microsoft/TypeScript/issues/30024
-    node.src = this.trustedTypesPolicy.createScriptURL(url) as unknown as string;
+    // TS doesn't support trusted types yet (https://github.com/microsoft/TypeScript/issues/30024).
+    node.src = this.trustedTypesPolicy ?
+        this.trustedTypesPolicy.createScriptURL(url) as unknown as string :
+        url;
     return node;
   }
 

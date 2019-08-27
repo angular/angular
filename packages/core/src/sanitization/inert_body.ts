@@ -1,5 +1,3 @@
-import { TrustedTypePolicyAdapter } from "../security/trusted_types_policy";
-
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -16,6 +14,9 @@ import { TrustedTypePolicyAdapter } from "../security/trusted_types_policy";
  * Support: Firefox -> DomParser strategy
  * Default: InertDocument strategy
  */
+
+import {TrustedTypePolicyAdapter} from '../security/trusted_types_policy';
+
 export class InertBodyHelper {
   private inertBodyElement: HTMLElement;
   private inertDocument: Document;
@@ -33,7 +34,8 @@ export class InertBodyHelper {
       inertHtml.appendChild(this.inertBodyElement);
     }
 
-    this.inertBodyElement.innerHTML = this.createTrustedHTML('<svg><g onload="this.parentNode.remove()"></g></svg>');
+    this.inertBodyElement.innerHTML =
+        this.createTrustedHTML('<svg><g onload="this.parentNode.remove()"></g></svg>');
     if (this.inertBodyElement.querySelector && !this.inertBodyElement.querySelector('svg')) {
       // We just hit the Safari 10.1 bug - which allows JS to run inside the SVG G element
       // so use the XHR strategy.
@@ -41,7 +43,8 @@ export class InertBodyHelper {
       return;
     }
 
-    this.inertBodyElement.innerHTML = this.createTrustedHTML('<svg><p><style><img src="</style><img src=x onerror=alert(1)//">');
+    this.inertBodyElement.innerHTML =
+        this.createTrustedHTML('<svg><p><style><img src="</style><img src=x onerror=alert(1)//">');
     if (this.inertBodyElement.querySelector && this.inertBodyElement.querySelector('svg img')) {
       // We just hit the Firefox bug - which prevents the inner img JS from being sanitized
       // so use the DOMParser strategy, if it is available.
@@ -76,7 +79,7 @@ export class InertBodyHelper {
     // We add these extra elements to ensure that the rest of the content is parsed as expected
     // e.g. leading whitespace is maintained and tags like `<meta>` do not get hoisted to the
     // `<head>` tag.
-    html = this.createTrustedHTML('<body><remove></remove>' + html + '</body>');
+    html = '<body><remove></remove>' + html + '</body>';
     try {
       html = encodeURI(html);
     } catch {

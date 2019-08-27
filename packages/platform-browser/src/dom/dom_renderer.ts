@@ -6,17 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  APP_ID,
-  Inject,
-  Injectable,
-  Renderer2,
-  RendererFactory2,
-  RendererStyleFlags2,
-  RendererType2,
-  ViewEncapsulation,
-  TrustedTypePolicyAdapter
-} from '@angular/core';
+import {APP_ID, Inject, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, TrustedTypePolicyAdapter, ViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
@@ -84,11 +74,8 @@ export class DomRendererFactory2 implements RendererFactory2 {
   private defaultRenderer: Renderer2;
 
   constructor(
-    private eventManager: EventManager,
-    private sharedStylesHost: DomSharedStylesHost,
-    @Inject(APP_ID) private appId: string,
-    private policyAdapter: TrustedTypePolicyAdapter
-  ) {
+      private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
+      @Inject(APP_ID) private appId: string, private policyAdapter: TrustedTypePolicyAdapter) {
     this.defaultRenderer = new DefaultDomRenderer2(eventManager, policyAdapter);
   }
 
@@ -129,8 +116,8 @@ export class DomRendererFactory2 implements RendererFactory2 {
 class DefaultDomRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
-  constructor(
-      private eventManager: EventManager, private policyAdapter: TrustedTypePolicyAdapter) {}
+  constructor(private eventManager: EventManager, private policyAdapter: TrustedTypePolicyAdapter) {
+  }
 
   destroy(): void {}
 
