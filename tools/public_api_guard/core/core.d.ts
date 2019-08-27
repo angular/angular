@@ -1089,8 +1089,6 @@ export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LVie
 
 export declare function ɵɵtext(index: number, value?: any): void;
 
-export declare function ɵɵtextBinding<T>(value: T | NO_CHANGE): void;
-
 export declare function ɵɵtextInterpolate(v0: any): TsickleIssue1009;
 
 export declare function ɵɵtextInterpolate1(prefix: string, v0: any, suffix: string): TsickleIssue1009;

@@ -9,7 +9,7 @@
 import {ViewEncapsulation, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
 import {createInjector} from '../../src/di/r3_injector';
 import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, getRenderedText, markDirty, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵselect, ɵɵtemplate} from '../../src/render3/index';
-import {tick, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {tick, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -33,7 +33,7 @@ describe('component', () => {
         }
         if (rf & RenderFlags.Update) {
           ɵɵselect(0);
-          ɵɵtextBinding(ctx.count);
+          ɵɵtextInterpolate(ctx.count);
         }
       },
       factory: () => new CounterComponent,
@@ -85,7 +85,7 @@ describe('component', () => {
           }
           if (fs & RenderFlags.Update) {
             ɵɵselect(0);
-            ɵɵtextBinding(ctx.myService.value);
+            ɵɵtextInterpolate(ctx.myService.value);
           }
         }
       });
@@ -129,7 +129,7 @@ describe('component', () => {
           }
           if (rf & RenderFlags.Update) {
             ɵɵselect(0);
-            ɵɵtextBinding(ctx.name);
+            ɵɵtextInterpolate(ctx.name);
           }
         },
         inputs: {name: 'name'}
@@ -235,7 +235,7 @@ describe('component with a container', () => {
             }
             if (rf0 & RenderFlags.Update) {
               ɵɵselect(0);
-              ɵɵtextBinding(item);
+              ɵɵtextInterpolate(item);
             }
           }
           ɵɵembeddedViewEnd();
@@ -341,7 +341,7 @@ describe('recursive components', () => {
         }
         if (rf & RenderFlags.Update) {
           ɵɵselect(0);
-          ɵɵtextBinding(ctx.data.value);
+          ɵɵtextInterpolate(ctx.data.value);
           ɵɵcontainerRefreshStart(1);
           {
             if (ctx.data.left != null) {
@@ -413,7 +413,7 @@ describe('recursive components', () => {
         }
         if (rf & RenderFlags.Update) {
           ɵɵselect(0);
-          ɵɵtextBinding(ctx.data.value);
+          ɵɵtextInterpolate(ctx.data.value);
           ɵɵselect(1);
           ɵɵproperty('ngIf', ctx.data.left);
           ɵɵselect(2);
