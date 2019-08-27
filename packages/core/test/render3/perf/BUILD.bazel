@@ -13,6 +13,14 @@ ts_library(
 )
 
 ng_rollup_bundle(
+    name = "element_text_create",
+    entry_point = ":element_text_create/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_rollup_bundle(
     name = "interpolation",
     entry_point = ":interpolation/index.ts",
     deps = [
