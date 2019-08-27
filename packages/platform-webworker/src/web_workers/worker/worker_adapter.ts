@@ -16,15 +16,6 @@ import {ɵDomAdapter as DomAdapter, ɵsetRootDomAdapter as setRootDomAdapter} fr
 export class WorkerDomAdapter extends DomAdapter {
   static makeCurrent() { setRootDomAdapter(new WorkerDomAdapter()); }
 
-  logError(error: any) {
-    if (console.error) {
-      console.error(error);
-    } else {
-      // tslint:disable-next-line:no-console
-      console.log(error);
-    }
-  }
-
   log(error: any) {
     // tslint:disable-next-line:no-console
     console.log(error);
@@ -33,7 +24,12 @@ export class WorkerDomAdapter extends DomAdapter {
   logGroup(error: any) {
     if (console.group) {
       console.group(error);
-      this.logError(error);
+      if (console.error) {
+        console.error(error);
+      } else {
+        // tslint:disable-next-line:no-console
+        console.log(error);
+      }
     } else {
       // tslint:disable-next-line:no-console
       console.log(error);
@@ -46,12 +42,9 @@ export class WorkerDomAdapter extends DomAdapter {
     }
   }
 
-  contains(nodeA: any, nodeB: any): boolean { throw 'not implemented'; }
-  hasProperty(element: any, name: string): boolean { throw 'not implemented'; }
   setProperty(el: Element, name: string, value: any) { throw 'not implemented'; }
   getProperty(el: Element, name: string): any { throw 'not implemented'; }
 
-  parse(templateHtml: string) { throw 'not implemented'; }
   querySelector(el: any, selector: string): HTMLElement { throw 'not implemented'; }
   querySelectorAll(el: any, selector: string): any[] { throw 'not implemented'; }
   onAndCancel(el: any, evt: any, listener: any): Function { throw 'not implemented'; }
