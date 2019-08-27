@@ -24,12 +24,12 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * as a dependency.
  *
  * ```ts
- *  import {Optional} from '@angular/core';
- *  import {SwPush} from '@angular/service-worker';
- *  ...
- *  constructor(@Optional() private swPush: SwPush) {}
- *  ...
+ * import {SwPush} from '@angular/service-worker';
+ * ...
+ *   constructor(private swPush: SwPush) {}
+ *   ...
  * ```
+ *
  * To subscribe, call `SwPush.requestSubscription()`, which asks the user for permission.
  * The call returns a `Promise` with a new
  * [`PushSubscription`](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
@@ -39,14 +39,13 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * async subscribeToPush() {
  *   try {
  *     const sub = await this.swPush.requestSubscription({
- *         serverPublicKey: PUBLIC_VAPID_KEY_OF_SERVER
- *         });
- *         // todo send to server
- *      }
- *   catch (e) {
- *      console.error('Could not subscribe', e);
- *      }
- *    }
+ *       serverPublicKey: PUBLIC_VAPID_KEY_OF_SERVER,
+ *     });
+ *     // TODO: Send to server.
+ *   } catch (e) {
+ *     console.error('Could not subscribe:', e);
+ *   }
+ * }
  * ```
  *
  * A request is rejected if the user denies permission, or if the browser
@@ -57,25 +56,26 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  *
  * ```ts
  * {
- *    "notification": {
- *      "actions": NotificationAction[],
- *      "badge": USVString
- *      "body": DOMString,
- *      "data": any,
- *      "dir": "auto"|"ltr"|"rtl",
- *      "icon": USVString,
- *      "image": USVString,
- *      "lang": DOMString,
- *      "renotify": boolean,
- *      "requireInteraction": boolean,
- *      "silent": boolean,
- *      "tag": DOMString,
- *      "timestamp": DOMTimeStamp,
- *      "title": DOMString,
- *      "vibrate": number[]
+ *   "notification": {
+ *     "actions": NotificationAction[],
+ *     "badge": USVString
+ *     "body": DOMString,
+ *     "data": any,
+ *     "dir": "auto"|"ltr"|"rtl",
+ *     "icon": USVString,
+ *     "image": USVString,
+ *     "lang": DOMString,
+ *     "renotify": boolean,
+ *     "requireInteraction": boolean,
+ *     "silent": boolean,
+ *     "tag": DOMString,
+ *     "timestamp": DOMTimeStamp,
+ *     "title": DOMString,
+ *     "vibrate": number[]
  *   }
  * }
  * ```
+ *
  * Only `title` is required. See `Notification`
  * [instance properties](https://developer.mozilla.org/en-US/docs/Web/API/Notification#Instance_properties).
  *
@@ -87,8 +87,9 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  *
  * Unsubscribe using `SwPush.unsubscribe()`.
  *
- * An application can subscribe to `SwPush.notificationClicks` observable
- * to be notified when a user clicks on a notification. For example:
+ * An application can subscribe to `SwPush.notificationClicks` observable to be notified when a user
+ * clicks on a notification. For example:
+ *
  * ```ts
  * swPush.notificationClicks.subscribe(({action, notification}) => {
  *   // TODO: Do something in response to notification click.
@@ -166,6 +167,7 @@ export class SwPush {
   /**
    * Subscribes to Web Push Notifications,
    * after requesting and receiving user permission.
+   *
    * @param options An object containing the `serverPublicKey` string.
    * @returns A Promise that resolves to the new subscription object.
    */
@@ -191,8 +193,9 @@ export class SwPush {
 
   /**
    * Unsubscribes from Service Worker push notifications.
-   * @returns A Promise that is resolved when the operation succeeds, or is rejected
-   * if there is no active subscription or the unsubscribe operation fails.
+   *
+   * @returns A Promise that is resolved when the operation succeeds, or is rejected if there is no
+   *          active subscription or the unsubscribe operation fails.
    */
   unsubscribe(): Promise<void> {
     if (!this.sw.isEnabled) {
