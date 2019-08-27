@@ -124,12 +124,13 @@ export function ɵɵelementEnd(): void {
   const lView = getLView();
   const tView = lView[TVIEW];
 
-  registerPostOrderHooks(tView, previousOrParentTNode);
   decreaseElementDepthCount();
 
-  if (tView.firstTemplatePass && tView.queries !== null &&
-      isContentQueryHost(previousOrParentTNode)) {
-    tView.queries !.elementEnd(previousOrParentTNode);
+  if (tView.firstTemplatePass) {
+    registerPostOrderHooks(tView, previousOrParentTNode);
+    if (isContentQueryHost(previousOrParentTNode)) {
+      tView.queries !.elementEnd(previousOrParentTNode);
+    }
   }
 
   if (hasClassInput(tNode) && tNode.classes) {
