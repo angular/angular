@@ -19,7 +19,7 @@ import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
 import {TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {dispatchEvent, el, isCommentNode} from '@angular/platform-browser/testing/src/browser_util';
+import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -1000,12 +1000,12 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          const dispatchedEvent = getDOM().createMouseEvent('click');
-          const dispatchedEvent2 = getDOM().createMouseEvent('click');
+          const dispatchedEvent = createMouseEvent('click');
+          const dispatchedEvent2 = createMouseEvent('click');
           getDOM().dispatchEvent(fixture.debugElement.children[0].nativeElement, dispatchedEvent);
           getDOM().dispatchEvent(fixture.debugElement.children[1].nativeElement, dispatchedEvent2);
-          expect(getDOM().isPrevented(dispatchedEvent)).toBe(true);
-          expect(getDOM().isPrevented(dispatchedEvent2)).toBe(false);
+          expect(isPrevented(dispatchedEvent)).toBe(true);
+          expect(isPrevented(dispatchedEvent2)).toBe(false);
           expect(fixture.debugElement.children[0].nativeElement.checked).toBeFalsy();
           expect(fixture.debugElement.children[1].nativeElement.checked).toBeTruthy();
         });
@@ -1493,9 +1493,8 @@ function declareTests(config?: {useJit: boolean}) {
 
         expect(noSelectorComponentFactory.selector).toBe('ng-component');
 
-        expect(
-            noSelectorComponentFactory.create(Injector.NULL).location.nativeElement.nodeName
-                .toLowerCase())
+        expect(noSelectorComponentFactory.create(Injector.NULL)
+                   .location.nativeElement.nodeName.toLowerCase())
             .toEqual('ng-component');
       });
     });
@@ -1961,7 +1960,7 @@ function declareTests(config?: {useJit: boolean}) {
           fixture.detectChanges();
           const dir = fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
           const native = fixture.debugElement.children[0].nativeElement;
-          getDOM().dispatchEvent(native, getDOM().createMouseEvent('click'));
+          getDOM().dispatchEvent(native, createMouseEvent('click'));
 
           expect(dir.target).toBe(native);
         });
@@ -2744,4 +2743,8 @@ export class ParentCmp {
 @Component({selector: 'cmp', template: ''})
 class SomeCmpWithInput {
   @Input() test$: any;
+}
+
+function isPrevented(evt: Event): boolean {
+  return evt.defaultPrevented || evt.returnValue != null && !evt.returnValue;
 }
