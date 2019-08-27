@@ -57,8 +57,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private readonly summaryResolver: AotSummaryResolver;
   private readonly reflectorHost: ReflectorHost;
   private readonly staticSymbolResolver: StaticSymbolResolver;
-  private readonly reflector: StaticReflector;
-  private readonly resolver: CompileMetadataResolver;
+  private resolver: CompileMetadataResolver;
 
   private readonly staticSymbolCache = new StaticSymbolCache();
   private readonly fileToComponent = new Map<string, StaticSymbol>();
@@ -83,28 +82,31 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           fromSummaryFileName(filePath: string): string{return filePath;},
         },
         this.staticSymbolCache);
-    this.reflectorHost = new ReflectorHost(() => tsLS.getProgram() !, host);
+    this.reflectorHost = new ReflectorHost(() => this.program, host);
     this.staticSymbolResolver = new StaticSymbolResolver(
         this.reflectorHost, this.staticSymbolCache, this.summaryResolver,
-        (e, filePath) => this.collectError(e, filePath));
-    this.reflector = new StaticReflector(
-        this.summaryResolver, this.staticSymbolResolver,
-        [],  // knownMetadataClasses
-        [],  // knownMetadataFunctions
         (e, filePath) => this.collectError(e, filePath));
     this.resolver = this.createMetadataResolver();
   }
 
   /**
-   * Creates a new metadata resolver. This should only be called once.
+   * Creates a new metadata resolver. This is needed whenever the program
+   * changes.
    */
   private createMetadataResolver(): CompileMetadataResolver {
-    if (this.resolver) {
-      return this.resolver;  // There should only be a single instance
-    }
-    const moduleResolver = new NgModuleResolver(this.reflector);
-    const directiveResolver = new DirectiveResolver(this.reflector);
-    const pipeResolver = new PipeResolver(this.reflector);
+    // StaticReflector keeps its own private caches that are not clearable.
+    // We have no choice but to create a new instance to invalidate the caches.
+    // TODO: Revisit this when language service gets rewritten for Ivy.
+    const staticReflector = new StaticReflector(
+        this.summaryResolver, this.staticSymbolResolver,
+        [],  // knownMetadataClasses
+        [],  // knownMetadataFunctions
+        (e, filePath) => this.collectError(e, filePath));
+    // Because static reflector above is changed, we need to create a new
+    // resolver.
+    const moduleResolver = new NgModuleResolver(staticReflector);
+    const directiveResolver = new DirectiveResolver(staticReflector);
+    const pipeResolver = new PipeResolver(staticReflector);
     const elementSchemaRegistry = new DomElementSchemaRegistry();
     const resourceLoader = new DummyResourceLoader();
     const urlResolver = createOfflineCompileUrlResolver();
@@ -120,7 +122,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return new CompileMetadataResolver(
         config, htmlParser, moduleResolver, directiveResolver, pipeResolver,
         new JitSummaryResolver(), elementSchemaRegistry, directiveNormalizer, new Console(),
-        this.staticSymbolCache, this.reflector,
+        this.staticSymbolCache, staticReflector,
         (error, type) => this.collectError(error, type && type.filePath));
   }
 
@@ -142,6 +144,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this.templateReferences = [];
     this.fileToComponent.clear();
     this.collectedErrors.clear();
+    this.resolver = this.createMetadataResolver();
 
     const analyzeHost = {isSourceFile(filePath: string) { return true; }};
     const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
@@ -248,7 +251,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return this.program.getSourceFile(fileName);
   }
 
-  get program() {
+  get program(): ts.Program {
     const program = this.tsLS.getProgram();
     if (!program) {
       // Program is very very unlikely to be undefined.
@@ -256,6 +259,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
     return program;
   }
+
+  get reflector(): StaticReflector { return this.resolver.getReflector() as StaticReflector; }
 
   /**
    * Checks whether the program has changed, and invalidate caches if it has.
