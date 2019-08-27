@@ -7,7 +7,7 @@
  */
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵselect, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵselect, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
 
@@ -32,7 +32,7 @@ describe('JS control flow', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 ɵɵselect(1);
-                ɵɵtextBinding(ctx.message);
+                ɵɵtextInterpolate(ctx.message);
               }
             }
             ɵɵembeddedViewEnd();
@@ -345,7 +345,7 @@ describe('JS control flow', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 ɵɵselect(1);
-                ɵɵtextBinding(data[i]);
+                ɵɵtextInterpolate(data[i]);
               }
             }
             ɵɵembeddedViewEnd();
@@ -410,7 +410,7 @@ describe('JS control flow', () => {
                     }
                     if (rf2 & RenderFlags.Update) {
                       ɵɵselect(0);
-                      ɵɵtextBinding(data[0][i] + value);
+                      ɵɵtextInterpolate(data[0][i] + value);
                     }
                     ɵɵembeddedViewEnd();
                   });
@@ -478,7 +478,7 @@ describe('JS control flow', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 ɵɵselect(1);
-                ɵɵtextBinding(cafes[i].name);
+                ɵɵtextInterpolate(cafes[i].name);
                 ɵɵcontainerRefreshStart(2);
                 {
                   for (let j = 0; j < cafes[i].entrees.length; j++) {
@@ -488,7 +488,7 @@ describe('JS control flow', () => {
                     }
                     if (rf2 & RenderFlags.Update) {
                       ɵɵselect(0);
-                      ɵɵtextBinding(cafes[i].entrees[j]);
+                      ɵɵtextInterpolate(cafes[i].entrees[j]);
                     }
                     ɵɵembeddedViewEnd();
                   }
@@ -575,7 +575,7 @@ describe('JS control flow', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 ɵɵselect(1);
-                ɵɵtextBinding(cafes[i].name);
+                ɵɵtextInterpolate(cafes[i].name);
                 ɵɵcontainerRefreshStart(2);
                 {
                   for (let j = 0; j < cafes[i].entrees.length; j++) {
@@ -589,7 +589,7 @@ describe('JS control flow', () => {
                       }
                       if (rf1 & RenderFlags.Update) {
                         ɵɵselect(1);
-                        ɵɵtextBinding(cafes[i].entrees[j].name);
+                        ɵɵtextInterpolate(cafes[i].entrees[j].name);
                         ɵɵcontainerRefreshStart(2);
                         {
                           for (let k = 0; k < cafes[i].entrees[j].foods.length; k++) {
@@ -599,7 +599,7 @@ describe('JS control flow', () => {
                             }
                             if (rf2 & RenderFlags.Update) {
                               ɵɵselect(0);
-                              ɵɵtextBinding(cafes[i].entrees[j].foods[k]);
+                              ɵɵtextInterpolate(cafes[i].entrees[j].foods[k]);
                             }
                             ɵɵembeddedViewEnd();
                           }
@@ -860,7 +860,7 @@ describe('JS for loop', () => {
             }
             if (rf2 & RenderFlags.Update) {
               ɵɵselect(0);
-              ɵɵtextBinding(config.data1[i]);
+              ɵɵtextInterpolate(config.data1[i]);
             }
             ɵɵembeddedViewEnd();
           }
@@ -871,7 +871,7 @@ describe('JS for loop', () => {
             }
             if (rf2 & RenderFlags.Update) {
               ɵɵselect(0);
-              ɵɵtextBinding(config.data2[j]);
+              ɵɵtextInterpolate(config.data2[j]);
             }
             ɵɵembeddedViewEnd();
           }
@@ -910,7 +910,7 @@ describe('function calls', () => {
       }
       if (rf & RenderFlags.Update) {
         ɵɵselect(1);
-        ɵɵtextBinding(message);
+        ɵɵtextInterpolate(message);
       }
     }
 
