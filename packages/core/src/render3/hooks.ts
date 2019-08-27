@@ -8,6 +8,7 @@
 
 import {assertEqual, assertNotEqual} from '../util/assert';
 
+import {assertFirstTemplatePass} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
@@ -35,9 +36,7 @@ import {getCheckNoChangesMode} from './state';
 export function registerPreOrderHooks(
     directiveIndex: number, directiveDef: DirectiveDef<any>, tView: TView, nodeIndex: number,
     initialPreOrderHooksLength: number, initialPreOrderCheckHooksLength: number): void {
-  ngDevMode &&
-      assertEqual(tView.firstTemplatePass, true, 'Should only be called on first template pass');
-
+  ngDevMode && assertFirstTemplatePass(tView);
   const {onChanges, onInit, doCheck} = directiveDef;
   if (initialPreOrderHooksLength >= 0 &&
       (!tView.preOrderHooks || initialPreOrderHooksLength === tView.preOrderHooks.length) &&
@@ -86,35 +85,33 @@ export function registerPreOrderHooks(
  * @param tNode The TNode whose directives are to be searched for hooks to queue
  */
 export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
-  if (tView.firstTemplatePass) {
-    // It's necessary to loop through the directives at elementEnd() (rather than processing in
-    // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
-    // hooks for projected components and directives must be called *before* their hosts.
-    for (let i = tNode.directiveStart, end = tNode.directiveEnd; i < end; i++) {
-      const directiveDef = tView.data[i] as DirectiveDef<any>;
-      if (directiveDef.afterContentInit) {
-        (tView.contentHooks || (tView.contentHooks = [])).push(-i, directiveDef.afterContentInit);
-      }
+  ngDevMode && assertFirstTemplatePass(tView);
+  // It's necessary to loop through the directives at elementEnd() (rather than processing in
+  // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
+  // hooks for projected components and directives must be called *before* their hosts.
+  for (let i = tNode.directiveStart, end = tNode.directiveEnd; i < end; i++) {
+    const directiveDef = tView.data[i] as DirectiveDef<any>;
+    if (directiveDef.afterContentInit) {
+      (tView.contentHooks || (tView.contentHooks = [])).push(-i, directiveDef.afterContentInit);
+    }
 
-      if (directiveDef.afterContentChecked) {
-        (tView.contentHooks || (tView.contentHooks = [])).push(i, directiveDef.afterContentChecked);
-        (tView.contentCheckHooks || (tView.contentCheckHooks = [
-         ])).push(i, directiveDef.afterContentChecked);
-      }
+    if (directiveDef.afterContentChecked) {
+      (tView.contentHooks || (tView.contentHooks = [])).push(i, directiveDef.afterContentChecked);
+      (tView.contentCheckHooks || (tView.contentCheckHooks = [
+       ])).push(i, directiveDef.afterContentChecked);
+    }
 
-      if (directiveDef.afterViewInit) {
-        (tView.viewHooks || (tView.viewHooks = [])).push(-i, directiveDef.afterViewInit);
-      }
+    if (directiveDef.afterViewInit) {
+      (tView.viewHooks || (tView.viewHooks = [])).push(-i, directiveDef.afterViewInit);
+    }
 
-      if (directiveDef.afterViewChecked) {
-        (tView.viewHooks || (tView.viewHooks = [])).push(i, directiveDef.afterViewChecked);
-        (tView.viewCheckHooks || (tView.viewCheckHooks = [
-         ])).push(i, directiveDef.afterViewChecked);
-      }
+    if (directiveDef.afterViewChecked) {
+      (tView.viewHooks || (tView.viewHooks = [])).push(i, directiveDef.afterViewChecked);
+      (tView.viewCheckHooks || (tView.viewCheckHooks = [])).push(i, directiveDef.afterViewChecked);
+    }
 
-      if (directiveDef.onDestroy != null) {
-        (tView.destroyHooks || (tView.destroyHooks = [])).push(i, directiveDef.onDestroy);
-      }
+    if (directiveDef.onDestroy != null) {
+      (tView.destroyHooks || (tView.destroyHooks = [])).push(i, directiveDef.onDestroy);
     }
   }
 }

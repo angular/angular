@@ -74,6 +74,7 @@ export function ɵɵtemplate(
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
     resolveDirectives(tView, lView, tContainerNode, localRefs || null);
+    registerPostOrderHooks(tView, tContainerNode);
 
     const embeddedTView = tContainerNode.tViews = createTView(
         -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null,
@@ -90,7 +91,6 @@ export function ɵɵtemplate(
 
   createDirectivesAndLocals(tView, lView, tContainerNode, localRefExtractor);
   attachPatchData(getNativeByTNode(tContainerNode, lView), lView);
-  registerPostOrderHooks(tView, tContainerNode);
   setIsNotParent();
 }
 
