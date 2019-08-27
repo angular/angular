@@ -88,7 +88,7 @@ When enabled, the `.js` output of `ngc` does not include any lazy-loaded templat
 
 ### `enableLegacyTemplate`
 
-When true, enables use of the `<template>` element, which was deprecated in Angular 4.0, in favor of `<ng-template>` (to avoid colliding with the DOM's element of the same name). Default is false. Might be required by some third-party Angular libraries. |
+When true, enables use of the `<template>` element, which was deprecated in Angular 4.0, in favor of `<ng-template>` (to avoid colliding with the DOM's element of the same name). Default is false. Might be required by some third-party Angular libraries.
 
 ### `flatModuleId`
 
