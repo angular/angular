@@ -863,7 +863,7 @@ export class Router {
   /**
    * Applies an array of commands to the current URL tree and creates a new URL tree.
    *
-   * When given an activate route, applies the given commands starting from the route.
+   * When given an activated route, applies the given commands starting from the route.
    * Otherwise, applies the given command starting from the root.
    *
    * @param commands An array of commands to apply.
