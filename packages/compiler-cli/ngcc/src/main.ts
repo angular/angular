@@ -10,19 +10,20 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
-import {DependencyResolver, InvalidEntryPoint, SortedEntryPointsInfo} from './dependencies/dependency_resolver';
+import {DependencyResolver, InvalidEntryPoint, PartiallyOrderedEntryPoints, SortedEntryPointsInfo} from './dependencies/dependency_resolver';
 import {EsmDependencyHost} from './dependencies/esm_dependency_host';
 import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
-import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, Task, TaskProcessingOutcome} from './execution/api';
+import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, PartiallyOrderedTasks, Task, TaskProcessingOutcome} from './execution/api';
 import {AsyncSingleProcessExecutor, SingleProcessExecutor} from './execution/single_process_executor';
+import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
+import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
@@ -139,7 +140,8 @@ export function mainNgcc(
         targetEntryPointPath, pathMappings, supportedPropertiesToConsider, compileAllFormats);
 
     const unprocessableEntryPointPaths: string[] = [];
-    const tasks: Task[] = [];
+    // The tasks are partially ordered by virtue of the entry-points being partially ordered too.
+    const tasks: PartiallyOrderedTasks = [] as any;
 
     for (const entryPoint of entryPoints) {
       const packageJson = entryPoint.packageJson;
@@ -174,7 +176,7 @@ export function mainNgcc(
           unprocessableEntryPointPaths.map(path => `\n  - ${path}`).join(''));
     }
 
-    return tasks;
+    return new SerialTaskQueue(tasks);
   };
 
   // The function for creating the `compile()` function.
@@ -277,7 +279,7 @@ function getEntryPoints(
     fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, logger: Logger,
     resolver: DependencyResolver, config: NgccConfiguration, basePath: AbsoluteFsPath,
     targetEntryPointPath: string | undefined, pathMappings: PathMappings | undefined,
-    propertiesToConsider: string[], compileAllFormats: boolean): EntryPoint[] {
+    propertiesToConsider: string[], compileAllFormats: boolean): PartiallyOrderedEntryPoints {
   const {entryPoints, invalidEntryPoints} = (targetEntryPointPath !== undefined) ?
       getTargetedEntryPoints(
           fs, pkgJsonUpdater, logger, resolver, config, basePath, targetEntryPointPath,
@@ -296,7 +298,11 @@ function getTargetedEntryPoints(
   if (hasProcessedTargetEntryPoint(
           fs, absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
     logger.debug('The target entry-point has already been processed');
-    return {entryPoints: [], invalidEntryPoints: [], ignoredDependencies: []};
+    return {
+      entryPoints: [] as unknown as PartiallyOrderedEntryPoints,
+      invalidEntryPoints: [],
+      ignoredDependencies: [],
+    };
   }
   const finder = new TargetedEntryPointFinder(
       fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);

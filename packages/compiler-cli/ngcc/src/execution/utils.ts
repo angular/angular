@@ -32,3 +32,7 @@ export const onTaskCompleted =
             pkgJsonUpdater, entryPoint.packageJson, packageJsonPath, propsToMarkAsProcessed);
       }
     };
+
+/** Stringify a task for debugging purposes. */
+export const stringifyTask = (task: Task): string =>
+    `{entryPoint: ${task.entryPoint.name}, formatProperty: ${task.formatProperty}, processDts: ${task.processDts}}`;
