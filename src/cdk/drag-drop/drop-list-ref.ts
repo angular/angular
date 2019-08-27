@@ -510,30 +510,27 @@ export class DropListRef<T = any> {
     let verticalScrollDirection = AutoScrollVerticalDirection.NONE;
     let horizontalScrollDirection = AutoScrollHorizontalDirection.NONE;
 
+    // Check whether we should start scrolling the container.
+    if (this._isPointerNearDropContainer(pointerX, pointerY)) {
+      const element = coerceElement(this.element);
+
+      [verticalScrollDirection, horizontalScrollDirection] =
+          getElementScrollDirections(element, this._clientRect, pointerX, pointerY);
+
+      if (verticalScrollDirection || horizontalScrollDirection) {
+        scrollNode = element;
+      }
+    }
+
     // @breaking-change 9.0.0 Remove null check for _viewportRuler once it's a required parameter.
-    // Check whether we're in range to scroll the viewport.
-    if (this._viewportRuler) {
+    // Otherwise check if we can start scrolling the viewport.
+    if (this._viewportRuler && !verticalScrollDirection && !horizontalScrollDirection) {
       const {width, height} = this._viewportRuler.getViewportSize();
       const clientRect = {width, height, top: 0, right: width, bottom: height, left: 0};
       verticalScrollDirection = getVerticalScrollDirection(clientRect, pointerY);
       horizontalScrollDirection = getHorizontalScrollDirection(clientRect, pointerX);
       scrollNode = window;
     }
-
-    // If we couldn't find a scroll direction based on the
-    // window, try with the container, if the pointer is close by.
-    if (!verticalScrollDirection && !horizontalScrollDirection &&
-        this._isPointerNearDropContainer(pointerX, pointerY)) {
-      verticalScrollDirection = getVerticalScrollDirection(this._clientRect, pointerY);
-      horizontalScrollDirection = getHorizontalScrollDirection(this._clientRect, pointerX);
-      scrollNode = coerceElement(this.element);
-    }
-
-    // TODO(crisbeto): we also need to account for whether the view or element are scrollable in
-    // the first place. With the current approach we'll still try to scroll them, but it just
-    // won't do anything. The only case where this is relevant is that if we have a scrollable
-    // list close to the viewport edge where the viewport isn't scrollable. In this case the
-    // we'll be trying to scroll the viewport rather than the list.
 
     if (scrollNode && (verticalScrollDirection !== this._verticalScrollDirection ||
         horizontalScrollDirection !== this._horizontalScrollDirection ||
@@ -1005,4 +1002,50 @@ function getHorizontalScrollDirection(clientRect: ClientRect, pointerX: number) 
   }
 
   return AutoScrollHorizontalDirection.NONE;
+}
+
+/**
+ * Gets the directions in which an element node should be scrolled,
+ * assuming that the user's pointer is already within it scrollable region.
+ * @param element Element for which we should calculate the scroll direction.
+ * @param clientRect Bounding client rectangle of the element.
+ * @param pointerX Position of the user's pointer along the x axis.
+ * @param pointerY Position of the user's pointer along the y axis.
+ */
+function getElementScrollDirections(element: HTMLElement, clientRect: ClientRect, pointerX: number,
+  pointerY: number): [AutoScrollVerticalDirection, AutoScrollHorizontalDirection] {
+  const computedVertical = getVerticalScrollDirection(clientRect, pointerY);
+  const computedHorizontal = getHorizontalScrollDirection(clientRect, pointerX);
+  let verticalScrollDirection = AutoScrollVerticalDirection.NONE;
+  let horizontalScrollDirection = AutoScrollHorizontalDirection.NONE;
+
+  // Note that we here we do some extra checks for whether the element is actually scrollable in
+  // a certain direction and we only assign the scroll direction if it is. We do this so that we
+  // can allow other elements to be scrolled, if the current element can't be scrolled anymore.
+  // This allows us to handle cases where the scroll regions of two scrollable elements overlap.
+  if (computedVertical) {
+    const scrollTop = element.scrollTop;
+
+    if (computedVertical === AutoScrollVerticalDirection.UP) {
+      if (scrollTop > 0) {
+        verticalScrollDirection = AutoScrollVerticalDirection.UP;
+      }
+    } else if (element.scrollHeight - scrollTop > element.clientHeight) {
+      verticalScrollDirection = AutoScrollVerticalDirection.DOWN;
+    }
+  }
+
+  if (computedHorizontal) {
+    const scrollLeft = element.scrollLeft;
+
+    if (computedHorizontal === AutoScrollHorizontalDirection.LEFT) {
+      if (scrollLeft > 0) {
+        horizontalScrollDirection = AutoScrollHorizontalDirection.LEFT;
+      }
+    } else if (element.scrollWidth - scrollLeft > element.clientWidth) {
+      horizontalScrollDirection = AutoScrollHorizontalDirection.RIGHT;
+    }
+  }
+
+  return [verticalScrollDirection, horizontalScrollDirection];
 }

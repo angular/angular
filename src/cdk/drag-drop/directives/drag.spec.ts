@@ -3081,9 +3081,9 @@ describe('CdkDrag', () => {
       cleanup();
     }));
 
-    it('should auto-scroll the viewport, not the list, when the pointer is over the edge of ' +
+    it('should auto-scroll the list, not the viewport, when the pointer is over the edge of ' +
       'both the list and the viewport', fakeAsync(() => {
-        const fixture = createComponent(DraggableInDropZone);
+        const fixture = createComponent(DraggableInScrollableVerticalDropZone);
         fixture.detectChanges();
 
         const list = fixture.componentInstance.dropInstance.element.nativeElement;
@@ -3102,6 +3102,45 @@ describe('CdkDrag', () => {
         const cleanup = makePageScrollable();
 
         scrollTo(0, viewportRuler.getViewportSize().height * 5);
+        list.scrollTop = 50;
+
+        const initialScrollDistance = viewportRuler.getViewportScrollPosition().top;
+        expect(initialScrollDistance).toBeGreaterThan(0);
+        expect(list.scrollTop).toBe(50);
+
+        startDraggingViaMouse(fixture, item);
+        dispatchMouseEvent(document, 'mousemove', listRect.left + listRect.width / 2, 0);
+        fixture.detectChanges();
+        tickAnimationFrames(20);
+
+        expect(viewportRuler.getViewportScrollPosition().top).toBe(initialScrollDistance);
+        expect(list.scrollTop).toBeLessThan(50);
+
+        cleanup();
+      }));
+
+    it('should auto-scroll the viewport, when the pointer is over the edge of both the list ' +
+      'and the viewport, if the list cannot be scrolled in that direction', fakeAsync(() => {
+        const fixture = createComponent(DraggableInScrollableVerticalDropZone);
+        fixture.detectChanges();
+
+        const list = fixture.componentInstance.dropInstance.element.nativeElement;
+        const viewportRuler: ViewportRuler = TestBed.get(ViewportRuler);
+        const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+
+        // Position the list so that its top aligns with the viewport top. That way the pointer
+        // will both over its top edge and the viewport's. We use top instead of bottom, because
+        // bottom behaves weirdly when we run tests on mobile devices.
+        list.style.position = 'fixed';
+        list.style.left = '50%';
+        list.style.top = '0';
+        list.style.margin = '0';
+
+        const listRect = list.getBoundingClientRect();
+        const cleanup = makePageScrollable();
+
+        scrollTo(0, viewportRuler.getViewportSize().height * 5);
+        list.scrollTop = 0;
 
         const initialScrollDistance = viewportRuler.getViewportScrollPosition().top;
         expect(initialScrollDistance).toBeGreaterThan(0);
