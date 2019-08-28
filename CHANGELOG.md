@@ -1,3 +1,28 @@
+<a name="9.0.0-next.4"></a>
+# [9.0.0-next.4](https://github.com/angular/angular/compare/9.0.0-next.3...9.0.0-next.4) (2019-08-28)
+
+
+### Bug Fixes
+
+* **ivy:** debug node names should match user declaration ([#32328](https://github.com/angular/angular/issues/32328)) ([14feb56](https://github.com/angular/angular/commit/14feb56))
+* **ivy:** ngtsc throws if "flatModuleOutFile" is set to null ([#32235](https://github.com/angular/angular/issues/32235)) ([4f7c971](https://github.com/angular/angular/commit/4f7c971))
+* **ivy:** reset binding index before executing a template in `refreshView` call ([#32201](https://github.com/angular/angular/issues/32201)) ([6b245a3](https://github.com/angular/angular/commit/6b245a3))
+* **ngcc:** do not analyze dependencies for non Angular entry-points ([#32303](https://github.com/angular/angular/issues/32303)) ([e563d77](https://github.com/angular/angular/commit/e563d77)), closes [#32302](https://github.com/angular/angular/issues/32302)
+
+
+### Features
+
+* **core:** add undecorated classes with decorated fields schematic ([#32130](https://github.com/angular/angular/issues/32130)) ([904a201](https://github.com/angular/angular/commit/904a201))
+* **ivy:** use the schema registry to check DOM bindings ([#32171](https://github.com/angular/angular/issues/32171)) ([0677cf0](https://github.com/angular/angular/commit/0677cf0))
+
+
+### Performance Improvements
+
+* **ivy:** minimise writes to the lView[BINDING_INDEX] / binding root ([#32263](https://github.com/angular/angular/issues/32263)) ([e3422e0](https://github.com/angular/angular/commit/e3422e0))
+* **ivy:** store binding metadata in the ngDevMode only ([#32317](https://github.com/angular/angular/issues/32317)) ([0874bf4](https://github.com/angular/angular/commit/0874bf4))
+
+
+
 
 <a name="8.2.4"></a>
 ## [8.2.4](https://github.com/angular/angular/compare/8.2.3...8.2.4) (2019-08-28)
