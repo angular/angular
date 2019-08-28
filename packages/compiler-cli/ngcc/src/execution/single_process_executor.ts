@@ -9,8 +9,8 @@
 import {Logger} from '../logging/logger';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
 
-import {AnalyzeEntryPointsFn, CreateCompileFn, ExecutionOptions, Executor} from './api';
-import {checkForUnprocessedEntryPoints, onTaskCompleted} from './utils';
+import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './api';
+import {onTaskCompleted} from './utils';
 
 
 /**
@@ -19,9 +19,7 @@ import {checkForUnprocessedEntryPoints, onTaskCompleted} from './utils';
 export class SingleProcessExecutor implements Executor {
   constructor(private logger: Logger, private pkgJsonUpdater: PackageJsonUpdater) {}
 
-  execute(
-      analyzeFn: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn,
-      options: ExecutionOptions): void {
+  execute(analyzeFn: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn): void {
     this.logger.debug(`Running ngcc on ${this.constructor.name}.`);
 
     const {processingMetadataPerEntryPoint, tasks} = analyzeFn();
@@ -31,17 +29,8 @@ export class SingleProcessExecutor implements Executor {
 
     // Process all tasks.
     for (const task of tasks) {
-      const processingMeta = processingMetadataPerEntryPoint.get(task.entryPoint.path) !;
-
-      // If we only need one format processed and we already have one for the corresponding
-      // entry-point, skip the task.
-      if (!options.compileAllFormats && processingMeta.hasAnyProcessedFormat) continue;
-
       compile(task);
     }
-
-    // Check for entry-points for which we could not process any format at all.
-    checkForUnprocessedEntryPoints(processingMetadataPerEntryPoint, options.propertiesToConsider);
   }
 }
 

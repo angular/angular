@@ -139,14 +139,24 @@ export function mainNgcc(
         targetEntryPointPath, pathMappings, supportedPropertiesToConsider, compileAllFormats);
 
     const processingMetadataPerEntryPoint = new Map<string, EntryPointProcessingMetadata>();
+    const unprocessableEntryPointPaths: string[] = [];
     const tasks: Task[] = [];
 
     for (const entryPoint of entryPoints) {
       const packageJson = entryPoint.packageJson;
       const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings', entryPoint.path);
       const {propertiesToProcess, equivalentPropertiesMap} =
-          getPropertiesToProcess(packageJson, supportedPropertiesToConsider);
+          getPropertiesToProcess(packageJson, supportedPropertiesToConsider, compileAllFormats);
       let processDts = !hasProcessedTypings;
+
+      if (propertiesToProcess.length === 0) {
+        // This entry-point is unprocessable (i.e. there is no format property that is of interest
+        // and can be processed). This will result in an error, but continue looping over
+        // entry-points in order to collect all unprocessable ones and display a more informative
+        // error.
+        unprocessableEntryPointPaths.push(entryPoint.path);
+        continue;
+      }
 
       for (const formatProperty of propertiesToProcess) {
         const formatPropertiesToMarkAsProcessed = equivalentPropertiesMap.get(formatProperty) !;
@@ -156,10 +166,15 @@ export function mainNgcc(
         processDts = false;
       }
 
-      processingMetadataPerEntryPoint.set(entryPoint.path, {
-        hasProcessedTypings,
-        hasAnyProcessedFormat: false,
-      });
+      processingMetadataPerEntryPoint.set(entryPoint.path, {hasProcessedTypings});
+    }
+
+    // Check for entry-points for which we could not process any format at all.
+    if (unprocessableEntryPointPaths.length > 0) {
+      throw new Error(
+          'Unable to process any formats for the following entry-points (tried ' +
+          `${propertiesToConsider.join(', ')}): ` +
+          unprocessableEntryPointPaths.map(path => `\n  - ${path}`).join(''));
     }
 
     return {processingMetadataPerEntryPoint, tasks};
@@ -220,9 +235,8 @@ export function mainNgcc(
 
   // The executor for actually planning and getting the work done.
   const executor = getExecutor(async, logger, pkgJsonUpdater);
-  const execOpts = {compileAllFormats, propertiesToConsider};
 
-  return executor.execute(analyzeFn, createCompileFn, execOpts);
+  return executor.execute(analyzeFn, createCompileFn);
 }
 
 function ensureSupportedProperties(properties: string[]): EntryPointJsonProperty[] {
@@ -376,7 +390,8 @@ function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryP
  *   former has been processed.
  */
 function getPropertiesToProcess(
-    packageJson: EntryPointPackageJson, propertiesToConsider: EntryPointJsonProperty[]): {
+    packageJson: EntryPointPackageJson, propertiesToConsider: EntryPointJsonProperty[],
+    compileAllFormats: boolean): {
   propertiesToProcess: EntryPointJsonProperty[];
   equivalentPropertiesMap: Map<EntryPointJsonProperty, EntryPointJsonProperty[]>;
 } {
@@ -395,6 +410,9 @@ function getPropertiesToProcess(
     // Process this property, because it is the first one to map to this format-path.
     formatPathsToConsider.add(formatPath);
     propertiesToProcess.push(prop);
+
+    // If we only need one format processed, there is no need to process any more properties.
+    if (!compileAllFormats) break;
   }
 
   const formatPathToProperties: {[formatPath: string]: EntryPointJsonProperty[]} = {};
