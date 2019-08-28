@@ -164,8 +164,8 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           Services.checkAndUpdateView(view);
 
           const el = rootNodes[0];
-          expect(el.style['width']).toBe('10px');
-          expect(el.style['color']).toBe('red');
+          expect(getDOM().getStyle(el, 'width')).toBe('10px');
+          expect(getDOM().getStyle(el, 'color')).toBe('red');
         });
       });
     });
