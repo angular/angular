@@ -71,6 +71,11 @@ function getPathsFromCodeowners() {
   // different kinds of matches (guide, image, example) later (see `isImage`/`isExample` below).
   const aioGuidesOrImagesPathRe = /^\/aio\/content\/(?:(images\/)?guide|(examples))\/([^\s\*/]+)/;
   const pkgExamplesPathRe = /^\/packages\/examples\/([^\s\*/]+)/;
+  const manualGlobExpansions = {
+    // `CODEOWNERS` has a glob to match all `testing/` directories, so no specific glob for
+    // `packages/examples/testing/` is necessary.
+    'testing/**': ['/packages/examples/testing/**'],
+  };
 
   const aioGuides = [];
   const aioImages = [];
@@ -82,6 +87,14 @@ function getPathsFromCodeowners() {
     readFileSync(CODEOWNERS_PATH, 'utf8').
     split('\n').
     map(l => l.trim());
+
+  // Manually expand globs to known matching patterns.
+  for (const [glob, expansions] of Object.entries(manualGlobExpansions)) {
+    const matchingLine = lines.find(l => l.startsWith(`${glob} `));
+    if (matchingLine !== undefined) {
+      lines.push(...expansions);
+    }
+  }
 
   // Collect `aio/` guides/images/examples.
   lines.
