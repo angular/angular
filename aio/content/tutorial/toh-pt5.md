@@ -46,7 +46,7 @@ Replace it with the following:
 
 First, `AppRoutingModule` imports `RouterModule` and `Routes` so the app can have routing functionality. The next import, `HeroesComponent`, will give the Router somewhere to go once you  configure the routes.
 
-Notice that the `CommonModule` references and `declarations` array are unecessary, so are no
+Notice that the `CommonModule` references and `declarations` array are unnecessary, so are no
 longer part of `AppRoutingModule`. The following sections explain the rest of the `AppRoutingModule` in more detail.
 
 
