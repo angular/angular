@@ -281,7 +281,7 @@ _global.beforeEach(function() {
             };
           }
 
-          const found = !!actualFixture.debugElement.query(By.directive(expectedComponentType));
+          const found = !!actualFixture.debugElement.query(By.directive(expectedComponentType))!;
           return found ?
               {pass: true} :
               {pass: false, message: msgFn(`Expected ${expectedComponentType.name} to show`)};

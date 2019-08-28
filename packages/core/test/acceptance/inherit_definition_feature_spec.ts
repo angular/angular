@@ -704,7 +704,7 @@ describe('inheritance', () => {
         fixture.detectChanges();
 
         const subDir =
-            fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
+            fixture.debugElement.query(By.directive(SubDirective))!.injector.get(SubDirective);
 
         expect(subDir.foo).toBe('a');
         expect(subDir.bar).toBe('b');
@@ -786,7 +786,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(SubDirective));
+        const queryResult = fixture.debugElement.query(By.directive(SubDirective))!;
 
         expect(queryResult.nativeElement.tagName).toBe('P');
         expect(queryResult.nativeElement.style.color).toBe('red');
@@ -825,7 +825,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(SubDirective));
+        const queryResult = fixture.debugElement.query(By.directive(SubDirective))!;
 
         expect(queryResult.nativeElement.title).toBe('test!!!');
       });
@@ -1265,7 +1265,7 @@ describe('inheritance', () => {
         fixture.detectChanges();
 
         const subDir =
-            fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
+            fixture.debugElement.query(By.directive(SubDirective))!.injector.get(SubDirective);
 
         expect(subDir.foo).toBe('a');
         expect(subDir.bar).toBe('b');
@@ -1353,7 +1353,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(SubDirective));
+        const queryResult = fixture.debugElement.query(By.directive(SubDirective))!;
 
         expect(queryResult.nativeElement.tagName).toBe('P');
         expect(queryResult.nativeElement.style.color).toBe('red');
@@ -1395,7 +1395,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(SubDirective));
+        const queryResult = fixture.debugElement.query(By.directive(SubDirective))!;
 
         expect(queryResult.nativeElement.title).toBe('test!!!');
       });
@@ -1840,7 +1840,7 @@ describe('inheritance', () => {
         fixture.detectChanges();
 
         const subDir =
-            fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
+            fixture.debugElement.query(By.directive(SubDirective))!.injector.get(SubDirective);
 
         expect(subDir.foo).toBe('a');
         expect(subDir.bar).toBe('b');
@@ -1942,7 +1942,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(SubDirective));
+        const queryResult = fixture.debugElement.query(By.directive(SubDirective))!;
 
         expect(queryResult.nativeElement.tagName).toBe('P');
         expect(queryResult.nativeElement.style.color).toBe('red');
@@ -1994,7 +1994,7 @@ describe('inheritance', () => {
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         const p: HTMLParagraphElement =
-            fixture.debugElement.query(By.directive(SubDirective)).nativeElement;
+            fixture.debugElement.query(By.directive(SubDirective))!.nativeElement;
 
         expect(p.title).toBe('test1!!!');
         expect(p.accessKey).toBe('test2???');
@@ -2442,7 +2442,7 @@ describe('inheritance', () => {
         fixture.detectChanges();
 
         const subDir: MyComponent =
-            fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+            fixture.debugElement.query(By.directive(MyComponent))!.componentInstance;
 
         expect(subDir.foo).toEqual('a');
         expect(subDir.bar).toEqual('b');
@@ -2526,7 +2526,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent))!;
 
         expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
         expect(queryResult.nativeElement.style.color).toBe('red');
@@ -2566,7 +2566,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent))!;
 
         expect(queryResult.nativeElement.title).toBe('test!!!');
       });
@@ -3003,7 +3003,7 @@ describe('inheritance', () => {
         fixture.detectChanges();
 
         const subDir: MyComponent =
-            fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+            fixture.debugElement.query(By.directive(MyComponent))!.componentInstance;
 
         expect(subDir.foo).toEqual('a');
         expect(subDir.bar).toEqual('b');
@@ -3093,7 +3093,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent))!;
 
         expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
         expect(queryResult.nativeElement.style.color).toBe('red');
@@ -3136,7 +3136,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent))!;
 
         expect(queryResult.nativeElement.title).toBe('test!!!');
       });
@@ -3625,7 +3625,7 @@ describe('inheritance', () => {
         fixture.detectChanges();
 
         const subDir: MyComponent =
-            fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+            fixture.debugElement.query(By.directive(MyComponent))!.componentInstance;
 
         expect(subDir.foo).toEqual('a');
         expect(subDir.bar).toEqual('b');
@@ -3719,7 +3719,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent))!;
 
         expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
         expect(queryResult.nativeElement.style.color).toBe('red');
@@ -3771,7 +3771,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent))!;
 
         expect(queryResult.nativeElement.title).toBe('test1!!!');
         expect(queryResult.nativeElement.accessKey).toBe('test2???');
@@ -4270,7 +4270,7 @@ describe('inheritance', () => {
         fixture.detectChanges();
 
         const subDir: MyComponent =
-            fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+            fixture.debugElement.query(By.directive(MyComponent))!.componentInstance;
 
         expect(subDir.foo).toEqual('a');
         expect(subDir.bar).toEqual('b');
@@ -4364,7 +4364,7 @@ describe('inheritance', () => {
             });
             const fixture = TestBed.createComponent(App);
             fixture.detectChanges();
-            const queryResult = fixture.debugElement.query(By.css('my-comp'));
+            const queryResult = fixture.debugElement.query(By.css('my-comp'))!;
 
             expect(queryResult.nativeElement.style.color).toBe('red');
           });
@@ -4413,7 +4413,7 @@ describe('inheritance', () => {
             });
             const fixture = TestBed.createComponent(App);
             fixture.detectChanges();
-            const queryResult = fixture.debugElement.query(By.css('my-comp'));
+            const queryResult = fixture.debugElement.query(By.css('my-comp'))!;
 
             expect(queryResult.nativeElement.style.color).toBe('blue');
             expect(queryResult.nativeElement.style.opacity).toBe('0.5');
@@ -4455,7 +4455,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent))!;
 
         expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
         expect(queryResult.nativeElement.style.color).toBe('red');
@@ -4499,7 +4499,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent))!;
 
         expect(queryResult.nativeElement.title).toBe('test!!!');
       });
@@ -4664,7 +4664,7 @@ describe('inheritance', () => {
       fixture.detectChanges();
 
       components.forEach(component => {
-        fixture.debugElement.query(By.directive(component)).nativeElement.click();
+        fixture.debugElement.query(By.directive(component))!.nativeElement.click();
       });
       expect(events).toEqual(
           ['BaseComponent.clicked', 'ChildComponent.clicked', 'GrandChildComponent.clicked']);
@@ -5072,7 +5072,7 @@ describe('inheritance', () => {
         fixture.detectChanges();
 
         const myComp: MyComponent =
-            fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+            fixture.debugElement.query(By.directive(MyComponent))!.componentInstance;
 
         expect(myComp.foo).toEqual('a');
         expect(myComp.bar).toEqual('b');
@@ -5199,7 +5199,7 @@ describe('inheritance', () => {
             });
             const fixture = TestBed.createComponent(App);
             fixture.detectChanges();
-            const queryResult = fixture.debugElement.query(By.css('my-comp'));
+            const queryResult = fixture.debugElement.query(By.css('my-comp'))!;
 
             expect(queryResult.nativeElement.style.color).toBe('blue');
             expect(queryResult.nativeElement.style.opacity).toBe('0.5');
@@ -5242,7 +5242,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent))!;
 
         expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
         expect(queryResult.nativeElement.style.color).toBe('red');
@@ -5295,7 +5295,7 @@ describe('inheritance', () => {
         });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent))!;
 
         expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
         expect(queryResult.nativeElement.title).toBe('test1!!!');

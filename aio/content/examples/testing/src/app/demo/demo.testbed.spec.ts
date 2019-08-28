@@ -211,7 +211,7 @@ describe('demo (with TestBed):', () => {
       click(heroes[0]);
       fixture.detectChanges();
 
-      const selected = fixture.debugElement.query(By.css('p'));
+      const selected = fixture.debugElement.query(By.css('p'))!;
       expect(selected).toHaveText(hero.name);
     });
 
@@ -221,7 +221,7 @@ describe('demo (with TestBed):', () => {
       const heroName = comp.heroes[0].name; // first hero's name
 
       fixture.detectChanges();
-      const ngForRow = fixture.debugElement.query(By.directive(IoComponent)); // first hero ngForRow
+      const ngForRow = fixture.debugElement.query(By.directive(IoComponent))!; // first hero ngForRow
 
       const hero = ngForRow.context.hero; // the hero object passed into the row
       expect(hero.name).toBe(heroName, 'ngRow.context.hero');
@@ -237,7 +237,7 @@ describe('demo (with TestBed):', () => {
     it('should support clicking a button', () => {
       const fixture = TestBed.createComponent(LightswitchComponent);
       const btn = fixture.debugElement.query(By.css('button'));
-      const span = fixture.debugElement.query(By.css('span')).nativeElement;
+      const span = fixture.debugElement.query(By.css('span'))!.nativeElement;
 
       fixture.detectChanges();
       expect(span.textContent).toMatch(/is off/i, 'before click');
@@ -257,7 +257,7 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
 
       const comp = fixture.componentInstance;
-      const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+      const input = fixture.debugElement.query(By.css('input'))!.nativeElement as HTMLInputElement;
 
       expect(comp.name).toBe(expectedOrigName,
         `At start name should be ${expectedOrigName} `);
@@ -297,7 +297,7 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
 
       const comp =  fixture.componentInstance;
-      const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+      const input = fixture.debugElement.query(By.css('input'))!.nativeElement as HTMLInputElement;
 
       expect(comp.name).toBe(expectedOrigName,
         `At start name should be ${expectedOrigName} `);
@@ -333,8 +333,8 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
 
       const comp = fixture.componentInstance;
-      const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
-      const span = fixture.debugElement.query(By.css('span')).nativeElement as HTMLElement;
+      const input = fixture.debugElement.query(By.css('input'))!.nativeElement as HTMLInputElement;
+      const span = fixture.debugElement.query(By.css('span'))!.nativeElement as HTMLElement;
 
       // simulate user entering new name in input
       input.value = inputText;
@@ -357,7 +357,7 @@ describe('demo (with TestBed):', () => {
       const fixture = TestBed.createComponent(InputComponent);
       fixture.detectChanges();
 
-      const inputEl = fixture.debugElement.query(By.css('input'));
+      const inputEl = fixture.debugElement.query(By.css('input'))!;
 
       expect(inputEl.providerTokens).toContain(NgModel, 'NgModel directive');
 
@@ -647,7 +647,7 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
       getChild();
 
-      const btn = fixture.debugElement.query(By.css('button'));
+      const btn = fixture.debugElement.query(By.css('button'))!;
       click(btn);
 
       fixture.detectChanges();

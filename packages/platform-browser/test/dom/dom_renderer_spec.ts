@@ -102,7 +102,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM',
          () => {
            const fixture = TestBed.createComponent(SomeApp);
-           const cmp = fixture.debugElement.query(By.css('cmp-shadow')).nativeElement;
+           const cmp = fixture.debugElement.query(By.css('cmp-shadow'))!.nativeElement;
            const shadow = cmp.shadowRoot.querySelector('.shadow');
 
            expect(window.getComputedStyle(shadow).color).toEqual('rgb(255, 0, 0)');

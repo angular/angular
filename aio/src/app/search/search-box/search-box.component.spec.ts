@@ -30,7 +30,7 @@ describe('SearchBoxComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HostComponent);
     host = fixture.componentInstance;
-    component = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
+    component = fixture.debugElement.query(By.directive(SearchBoxComponent))!.componentInstance;
     fixture.detectChanges();
   });
 
@@ -65,7 +65,7 @@ describe('SearchBoxComponent', () => {
     }));
 
     it('should pass through the value of the input box', fakeAsync(() => {
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
       input.nativeElement.value = 'some query (input)';
       component.doSearch();
       tick(300);
@@ -73,7 +73,7 @@ describe('SearchBoxComponent', () => {
     }));
 
     it('should only send events if the search value has changed', fakeAsync(() => {
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
 
       input.nativeElement.value = 'some query';
       component.doSearch();
@@ -93,7 +93,7 @@ describe('SearchBoxComponent', () => {
 
   describe('on input', () => {
     it('should trigger a search', () => {
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
       spyOn(component, 'doSearch');
       input.triggerEventHandler('input', { });
       expect(component.doSearch).toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe('SearchBoxComponent', () => {
 
   describe('on keyup', () => {
     it('should trigger a search', () => {
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
       spyOn(component, 'doSearch');
       input.triggerEventHandler('keyup', { });
       expect(component.doSearch).toHaveBeenCalled();
@@ -111,7 +111,7 @@ describe('SearchBoxComponent', () => {
 
   describe('on focus', () => {
     it('should trigger the onFocus event', () => {
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
       input.nativeElement.value = 'some query (focus)';
       input.triggerEventHandler('focus', { });
       expect(host.focusHandler).toHaveBeenCalledWith('some query (focus)');
@@ -120,7 +120,7 @@ describe('SearchBoxComponent', () => {
 
   describe('on click', () => {
     it('should trigger a search', () => {
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
       spyOn(component, 'doSearch');
       input.triggerEventHandler('click', { });
       expect(component.doSearch).toHaveBeenCalled();
@@ -129,7 +129,7 @@ describe('SearchBoxComponent', () => {
 
   describe('focus', () => {
     it('should set the focus to the input box', () => {
-      const input = fixture.debugElement.query(By.css('input'));
+      const input = fixture.debugElement.query(By.css('input'))!;
       component.focus();
       expect(document.activeElement).toBe(input.nativeElement);
     });

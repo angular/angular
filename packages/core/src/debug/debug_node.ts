@@ -88,7 +88,7 @@ export interface DebugElement extends DebugNode {
   readonly nativeElement: any;
   readonly children: DebugElement[];
 
-  query(predicate: Predicate<DebugElement>): DebugElement;
+  query(predicate: Predicate<DebugElement>): DebugElement|null;
   queryAll(predicate: Predicate<DebugElement>): DebugElement[];
   queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[];
   triggerEventHandler(eventName: string, eventObj: any): void;
@@ -148,7 +148,7 @@ export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements Debug
     }
   }
 
-  query(predicate: Predicate<DebugElement>): DebugElement {
+  query(predicate: Predicate<DebugElement>): DebugElement|null {
     const results = this.queryAll(predicate);
     return results[0] || null;
   }
@@ -404,7 +404,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return children;
   }
 
-  query(predicate: Predicate<DebugElement>): DebugElement {
+  query(predicate: Predicate<DebugElement>): DebugElement|null {
     const results = this.queryAll(predicate);
     return results[0] || null;
   }

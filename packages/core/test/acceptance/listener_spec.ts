@@ -124,7 +124,7 @@ describe('event listeners', () => {
           const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
           const fixture = TestBed.createComponent(TestCmpt);
           fixture.detectChanges();
-          const buttonDebugEl = fixture.debugElement.query(By.css('button'));
+          const buttonDebugEl = fixture.debugElement.query(By.css('button'))!;
 
           // We want to assert that only one native event handler was registered but still all
           // directives are notified when an event fires. This assertion can only be verified in
@@ -165,7 +165,7 @@ describe('event listeners', () => {
       });
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
-      const buttonDebugEl = fixture.debugElement.query(By.css('button'));
+      const buttonDebugEl = fixture.debugElement.query(By.css('button'))!;
 
       expect(buttonDebugEl.injector.get(LikesClicks).counter).toBe(0);
 
@@ -188,7 +188,7 @@ describe('event listeners', () => {
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
 
-      const buttonDebugEl = fixture.debugElement.query(By.css('button'));
+      const buttonDebugEl = fixture.debugElement.query(By.css('button'))!;
       const likesClicksDir = buttonDebugEl.injector.get(LikesClicks);
       const returnsFalseDir = buttonDebugEl.injector.get(ReturnsFalse);
       expect(likesClicksDir.counter).toBe(0);

@@ -526,7 +526,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
-      const a = fixture.debugElement.query(By.css('a'));
+      const a = fixture.debugElement.query(By.css('a'))!;
       const dir = a.injector.get(Dir);
       expect(dir.condition).toEqual(true);
     });

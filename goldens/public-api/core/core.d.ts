@@ -205,7 +205,7 @@ export declare interface DebugElement extends DebugNode {
     readonly styles: {
         [key: string]: string | null;
     };
-    query(predicate: Predicate<DebugElement>): DebugElement;
+    query(predicate: Predicate<DebugElement>): DebugElement | null;
     queryAll(predicate: Predicate<DebugElement>): DebugElement[];
     queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[];
     triggerEventHandler(eventName: string, eventObj: any): void;

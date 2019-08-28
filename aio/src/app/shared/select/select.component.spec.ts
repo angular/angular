@@ -23,7 +23,7 @@ describe('SelectComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HostComponent);
     host = fixture.componentInstance;
-    element = fixture.debugElement.query(By.directive(SelectComponent));
+    element = fixture.debugElement.query(By.directive(SelectComponent))!;
   });
 
   describe('(initially)', () => {
@@ -172,7 +172,7 @@ class HostComponent {
 }
 
 function getButton(): HTMLButtonElement {
-  return element.query(By.css('button')).nativeElement;
+  return element.query(By.css('button'))!.nativeElement;
 }
 
 function getButtonSymbol(): HTMLElement | null {

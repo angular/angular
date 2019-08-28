@@ -658,7 +658,7 @@ class TestCmptWithPropInterpolation {
       });
 
       it('can use a dynamic element as root for another query', () => {
-        const inner = fixture.debugElement.query(By.css('.inner'));
+        const inner = fixture.debugElement.query(By.css('.inner'))!;
         expect(inner).toBeTruthy();
         expect(inner.query(By.css('.myclass'))).toBeTruthy();
       });
@@ -730,7 +730,7 @@ class TestCmptWithPropInterpolation {
 
       onlyInIvy('VE does not match elements created outside Angular context')
           .it('when using the out-of-context element as the DebugElement query root', () => {
-            const debugElOutsideAngularContext = el.query(By.css('ul'));
+            const debugElOutsideAngularContext = el.query(By.css('ul'))!;
             expect(debugElOutsideAngularContext.queryAll(By.css('li')).length).toBe(1);
             expect(debugElOutsideAngularContext.query(By.css('li'))).toBeDefined();
           });
@@ -766,6 +766,24 @@ class TestCmptWithPropInterpolation {
 
          expect(results.map(r => r.nativeElement.nodeName.toLowerCase())).toEqual(['div', 'span']);
        });
+
+    it('DebugElement.query should return null when the child is not found', () => {
+      @Component({
+        selector: 'app-test',
+        template: '<div></div>',
+      })
+      class MyComponent {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComponent]});
+      const fixture = TestBed.createComponent(MyComponent);
+      fixture.detectChanges();
+
+      const result = fixture.debugElement.query(By.css('not-existing'));
+
+      expect(result).toBe(null);
+    });
+
 
     it('should list providerTokens', () => {
       fixture = TestBed.createComponent(ParentComp);
@@ -836,7 +854,7 @@ class TestCmptWithPropInterpolation {
         const fixture = TestBed.createComponent(TestCmptWithPropBindings);
         fixture.detectChanges();
 
-        const button = fixture.debugElement.query(By.css('button'));
+        const button = fixture.debugElement.query(By.css('button'))!;
         expect(button.properties.disabled).toEqual(true);
         expect(button.properties.tabIndex).toEqual(1337);
         expect(button.properties.title).toEqual('hello');
@@ -868,7 +886,7 @@ class TestCmptWithPropInterpolation {
         const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
         fixture.detectChanges();
 
-        const button = fixture.debugElement.query(By.css('button'));
+        const button = fixture.debugElement.query(By.css('button'))!;
         expect(button.properties.title).not.toEqual('goes to input');
       });
 
@@ -876,7 +894,7 @@ class TestCmptWithPropInterpolation {
         TestBed.overrideTemplate(TestCmptWithRenderer, `<button></button>`);
         const fixture = TestBed.createComponent(TestCmptWithRenderer);
         fixture.detectChanges();
-        const button = fixture.debugElement.query(By.css('button'));
+        const button = fixture.debugElement.query(By.css('button'))!;
         fixture.componentInstance.renderer.setProperty(button.nativeElement, 'title', 'myTitle');
         expect(button.properties.title).toBe('myTitle');
       });
@@ -888,7 +906,7 @@ class TestCmptWithPropInterpolation {
         fixture.detectChanges();
 
         const host = fixture.debugElement;
-        const button = fixture.debugElement.query(By.css('button'));
+        const button = fixture.debugElement.query(By.css('button'))!;
         expect(Object.keys(host.properties).filter(key => key.startsWith('__'))).toEqual([]);
         expect(Object.keys(host.properties).filter(key => key.startsWith('on'))).toEqual([]);
         expect(Object.keys(button.properties).filter(key => key.startsWith('__'))).toEqual([]);
@@ -903,7 +921,7 @@ class TestCmptWithPropInterpolation {
             fixture.detectChanges();
 
             const host = fixture.debugElement;
-            const button = fixture.debugElement.query(By.css('button'));
+            const button = fixture.debugElement.query(By.css('button'))!;
 
             expect(button.properties.title).toEqual('myTitle');
           });
@@ -962,7 +980,7 @@ class TestCmptWithPropInterpolation {
 
       TestBed.configureTestingModule({declarations: [TestComponent]});
       const fixture = TestBed.createComponent(TestComponent);
-      const button = fixture.debugElement.query(By.css('button'));
+      const button = fixture.debugElement.query(By.css('button'))!;
 
       expect(() => {
         button.triggerEventHandler('click', null);
@@ -987,7 +1005,7 @@ class TestCmptWithPropInterpolation {
                TestCmpt, `<parent-comp><child-comp></child-comp></parent-comp>`);
            fixture = TestBed.createComponent(TestCmpt);
 
-           const debugEl = fixture.debugElement.query(By.directive(ChildComp));
+           const debugEl = fixture.debugElement.query(By.directive(ChildComp))!;
            expect(debugEl.componentInstance).toBeAnInstanceOf(ChildComp);
          });
 
@@ -1011,7 +1029,7 @@ class TestCmptWithPropInterpolation {
            fixture = TestBed.createComponent(TestCmpt);
            fixture.detectChanges();
 
-           const debugEl = fixture.debugElement.query(By.directive(MyDir));
+           const debugEl = fixture.debugElement.query(By.directive(MyDir))!;
            expect(debugEl.componentInstance).toBeAnInstanceOf(TestCmpt);
          });
 
@@ -1040,7 +1058,7 @@ class TestCmptWithPropInterpolation {
 
            const fixture = TestBed.createComponent(TestApp);
            fixture.detectChanges();
-           const debugNode = fixture.debugElement.query(By.directive(ExampleComponent));
+           const debugNode = fixture.debugElement.query(By.directive(ExampleComponent))!;
 
            expect(debugNode.context instanceof ExampleComponent).toBe(true);
          });
@@ -1052,7 +1070,7 @@ class TestCmptWithPropInterpolation {
 
            const fixture = TestBed.createComponent(TestApp);
            fixture.detectChanges();
-           const debugNode = fixture.debugElement.query(By.css('span'));
+           const debugNode = fixture.debugElement.query(By.css('span'))!;
 
            expect(debugNode.context instanceof NgIfContext).toBe(true);
          });
@@ -1064,7 +1082,7 @@ class TestCmptWithPropInterpolation {
 
            const fixture = TestBed.createComponent(TestApp);
            fixture.detectChanges();
-           const debugNode = fixture.debugElement.query(By.directive(MyDir));
+           const debugNode = fixture.debugElement.query(By.directive(MyDir))!;
 
            expect(debugNode.context instanceof TestApp).toBe(true);
          });
@@ -1097,10 +1115,10 @@ class TestCmptWithPropInterpolation {
       TestBed.overrideTemplate(TestCmpt, `<span><div id="a"><div id="b"></div></div></span>`);
       fixture = TestBed.createComponent(TestCmpt);
 
-      const divA = fixture.debugElement.query(By.css('div'));
+      const divA = fixture.debugElement.query(By.css('div'))!;
       expect(divA.nativeElement.getAttribute('id')).toBe('a');
 
-      const divB = divA.query(By.css('div'));
+      const divB = divA.query(By.css('div'))!;
       expect(divB.nativeElement.getAttribute('id')).toBe('b');
     });
 
@@ -1154,7 +1172,7 @@ class TestCmptWithPropInterpolation {
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
-      const firstDiv = fixture.debugElement.query(By.css('div'));
+      const firstDiv = fixture.debugElement.query(By.css('div'))!;
       const firstDivChildren = firstDiv.queryAll(By.css('span'));
 
       expect(firstDivChildren.map(child => child.nativeNode.textContent.trim())).toEqual([
@@ -1195,7 +1213,7 @@ class TestCmptWithPropInterpolation {
       const fixture = TestBed.createComponent(Comp);
       fixture.detectChanges();
 
-      expect(fixture.debugElement.query(By.css('div')).attributes['xlink:href']).toBe('foo');
+      expect(fixture.debugElement.query(By.css('div'))!.attributes['xlink:href']).toBe('foo');
     });
 
     it('should include attributes added via Renderer2 in DebugNode.attributes', () => {
@@ -1208,7 +1226,7 @@ class TestCmptWithPropInterpolation {
 
       TestBed.configureTestingModule({declarations: [Comp]});
       const fixture = TestBed.createComponent(Comp);
-      const div = fixture.debugElement.query(By.css('div'));
+      const div = fixture.debugElement.query(By.css('div'))!;
 
       fixture.componentInstance.renderer.setAttribute(div.nativeElement, 'foo', 'bar');
 
@@ -1239,7 +1257,7 @@ class TestCmptWithPropInterpolation {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      const button = fixture.debugElement.query(By.directive(CancelButton));
+      const button = fixture.debugElement.query(By.directive(CancelButton))!;
       button.triggerEventHandler('cancel', {});
 
       expect(calls).toBe(1, 'Expected calls to be 1 after one event.');

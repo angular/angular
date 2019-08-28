@@ -48,7 +48,7 @@ describe('directives', () => {
       TestBed.overrideTemplate(TestComponent, `<span class="fade" [test]="false"></span>`);
 
       const fixture = TestBed.createComponent(TestComponent);
-      const testDir = fixture.debugElement.query(By.directive(TestDir)).injector.get(TestDir);
+      const testDir = fixture.debugElement.query(By.directive(TestDir))!.injector.get(TestDir);
       const spanEl = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -85,7 +85,7 @@ describe('directives', () => {
              `<span class="fade" [prop1]="true" [test]="false" [prop2]="true"></span>`);
 
          const fixture = TestBed.createComponent(TestComponent);
-         const testDir = fixture.debugElement.query(By.directive(TestDir)).injector.get(TestDir);
+         const testDir = fixture.debugElement.query(By.directive(TestDir))!.injector.get(TestDir);
          const spanEl = fixture.nativeElement.children[0];
          fixture.detectChanges();
 
@@ -141,7 +141,7 @@ describe('directives', () => {
           {declarations: [MyComponent, DirectiveA], imports: [CommonModule]});
       const fixture = TestBed.createComponent(MyComponent);
       fixture.detectChanges();
-      const directiveA = fixture.debugElement.query(By.css('span')).injector.get(DirectiveA);
+      const directiveA = fixture.debugElement.query(By.css('span'))!.injector.get(DirectiveA);
 
       expect(directiveA.viewContainerRef).toBeTruthy();
     });
@@ -547,7 +547,7 @@ describe('directives', () => {
 
       TestBed.configureTestingModule({declarations: [TestComp, TestDir]});
       const fixture = TestBed.createComponent(TestComp);
-      const testDir = fixture.debugElement.query(By.css('span')).injector.get(TestDir);
+      const testDir = fixture.debugElement.query(By.css('span'))!.injector.get(TestDir);
 
       expect(fixture.componentInstance.value).toBe(false);
 
@@ -581,7 +581,7 @@ describe('directives', () => {
       fixture.detectChanges();
 
       const dirWithTitle =
-          fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+          fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
       const div = fixture.nativeElement.querySelector('div');
       expect(dirWithTitle.title).toBe('a');
       expect(div.getAttribute('title')).toBe('a');
@@ -601,7 +601,7 @@ describe('directives', () => {
          fixture.detectChanges();
 
          const dirWithTitle =
-             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+             fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
          const div = fixture.nativeElement.querySelector('div');
          // We are checking the property here, not the attribute, because in the case of
          // [key]="value" we are always setting the property of the instance, and actually setting
@@ -624,7 +624,7 @@ describe('directives', () => {
          fixture.detectChanges();
 
          const dirWithTitle =
-             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+             fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
          const div = fixture.nativeElement.querySelector('div');
          expect(dirWithTitle.title).toBe('a');
          expect(div.getAttribute('attr.title')).toBe('test');
@@ -646,7 +646,7 @@ describe('directives', () => {
          fixture.detectChanges();
 
          const dirWithTitle =
-             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+             fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
          const div = fixture.nativeElement.querySelector('div');
          expect(dirWithTitle.title).toBe('a');
          expect(div.getAttribute('title')).toBe('b');
@@ -668,7 +668,7 @@ describe('directives', () => {
          fixture.detectChanges();
 
          const dirWithTitle =
-             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+             fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
          const div = fixture.nativeElement.querySelector('div');
          expect(dirWithTitle.title).toBe('a');
          expect(div.getAttribute('title')).toBe('b');
@@ -688,7 +688,7 @@ describe('directives', () => {
          fixture.detectChanges();
 
          const dirWithTitle =
-             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+             fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
          const div = fixture.nativeElement.querySelector('div');
          expect(dirWithTitle.title).toBe('a');
          expect(div.getAttribute('attr.title')).toBe('test');
@@ -711,7 +711,7 @@ describe('directives', () => {
          fixture.detectChanges();
 
          const dirWithTitle =
-             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+             fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
          const div = fixture.nativeElement.querySelector('div');
          expect(dirWithTitle.title).toBe('a');
          expect(div.getAttribute('title')).toBe('b');
@@ -733,7 +733,7 @@ describe('directives', () => {
          fixture.detectChanges();
 
          const dirWithTitle =
-             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+             fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
          const div = fixture.nativeElement.querySelector('div');
          expect(dirWithTitle.title).toBe('a');
          expect(div.getAttribute('title')).toBe('b');
@@ -753,7 +753,7 @@ describe('directives', () => {
          fixture.detectChanges();
 
          const dirWithTitle =
-             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+             fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
          const div = fixture.nativeElement.querySelector('div');
          expect(dirWithTitle.title).toBe('a');
          expect(div.title).toBe('');
@@ -773,7 +773,7 @@ describe('directives', () => {
          fixture.detectChanges();
 
          const dirWithTitle =
-             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+             fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
          const div = fixture.nativeElement.querySelector('div');
          expect(dirWithTitle.title).toBe('');
          expect(div.getAttribute('title')).toBe('a');
@@ -793,7 +793,7 @@ describe('directives', () => {
          fixture.detectChanges();
 
          const dirWithTitle =
-             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+             fixture.debugElement.query(By.directive(DirWithTitle))!.injector.get(DirWithTitle);
          const div = fixture.nativeElement.querySelector('div');
          expect(dirWithTitle.title).toBe('');
          expect(div.getAttribute('title')).toBe('a');

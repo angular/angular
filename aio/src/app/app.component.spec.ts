@@ -59,14 +59,14 @@ describe('AppComponent', () => {
     component.onResize(showTopMenuWidth + 1); // wide by default
 
     const de = fixture.debugElement;
-    const docViewerDe = de.query(By.css('aio-doc-viewer'));
+    const docViewerDe = de.query(By.css('aio-doc-viewer'))!;
 
     documentService = de.injector.get<DocumentService>(DocumentService);
     docViewer = docViewerDe.nativeElement;
     docViewerComponent = docViewerDe.componentInstance;
-    hamburger = de.query(By.css('.hamburger')).nativeElement;
+    hamburger = de.query(By.css('.hamburger'))!.nativeElement;
     locationService = de.injector.get<any>(LocationService);
-    sidenav = de.query(By.directive(MatSidenav)).componentInstance;
+    sidenav = de.query(By.directive(MatSidenav))!.componentInstance;
     tocService = de.injector.get<TocService>(TocService);
 
     return waitForDoc && awaitDocRendered();
@@ -270,7 +270,7 @@ describe('AppComponent', () => {
           });
 
           it('should close when clicking in gray content area overlay', () => {
-            const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement;
+            const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-drawer-backdrop'))!.nativeElement;
             sidenavBackdrop.click();
             fixture.detectChanges();
             expect(sidenav.opened).toBe(false);
@@ -385,7 +385,7 @@ describe('AppComponent', () => {
         createTestingModule('a/b', mode);
         await initializeTest();
         component.onResize(dockSideNavWidth + 1); // wide view
-        selectElement = fixture.debugElement.query(By.directive(SelectComponent));
+        selectElement = fixture.debugElement.query(By.directive(SelectComponent))!;
         selectComponent = selectElement.componentInstance;
       }
 
@@ -704,7 +704,7 @@ describe('AppComponent', () => {
 
     describe('footer', () => {
       it('should have version number', () => {
-        const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
+        const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer'))!.nativeElement;
         expect(versionEl.textContent).toContain(TestHttpClient.versionInfo.full);
       });
     });
@@ -713,14 +713,14 @@ describe('AppComponent', () => {
       it('should show a message if the deployment mode is "archive"', async () => {
         createTestingModule('a/b', 'archive');
         await initializeTest();
-        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
+        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner'))!.nativeElement;
         expect(banner.textContent).toContain('archived documentation for Angular v4');
       });
 
       it('should show no message if the deployment mode is not "archive"', async () => {
         createTestingModule('a/b', 'stable');
         await initializeTest();
-        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
+        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner'))!.nativeElement;
         expect(banner.textContent!.trim()).toEqual('');
       });
     });
@@ -754,7 +754,7 @@ describe('AppComponent', () => {
           component.showSearchResults = true;
           fixture.detectChanges();
 
-          const searchResults = fixture.debugElement.query(By.directive(SearchResultsComponent));
+          const searchResults = fixture.debugElement.query(By.directive(SearchResultsComponent))!;
           searchResults.nativeElement.click();
           fixture.detectChanges();
 
@@ -765,7 +765,7 @@ describe('AppComponent', () => {
           component.showSearchResults = true;
           fixture.detectChanges();
 
-          const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
+          const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent))!;
           searchBox.nativeElement.click();
           fixture.detectChanges();
 
@@ -780,7 +780,7 @@ describe('AppComponent', () => {
 
       describe('keyup handling', () => {
         it('should grab focus when the / key is pressed', () => {
-          const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
+          const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent))!.componentInstance;
           spyOn(searchBox, 'focus');
           window.document.dispatchEvent(new KeyboardEvent('keyup', { key: '/' }));
           fixture.detectChanges();
@@ -788,7 +788,7 @@ describe('AppComponent', () => {
         });
 
         it('should set focus back to the search box when the search results are displayed and the escape key is pressed', () => {
-          const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
+          const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent))!.componentInstance;
           spyOn(searchBox, 'focus');
           component.showSearchResults = true;
           window.document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
@@ -816,7 +816,7 @@ describe('AppComponent', () => {
           component.showSearchResults = true;
           fixture.detectChanges();
 
-          const searchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent));
+          const searchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent))!;
           searchResultsComponent.triggerEventHandler('resultSelected', {});
           fixture.detectChanges();
           expect(component.showSearchResults).toBe(false);
@@ -824,7 +824,7 @@ describe('AppComponent', () => {
 
         it('should re-run the search when the search box regains focus', () => {
           const doSearchSpy = spyOn(component, 'doSearch');
-          const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
+          const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent))!;
           searchBox.triggerEventHandler('onFocus', 'some query');
           expect(doSearchSpy).toHaveBeenCalledWith('some query');
         });
@@ -875,7 +875,7 @@ describe('AppComponent', () => {
   });
 
   describe('with mocked DocViewer', () => {
-    const getDocViewer = () => fixture.debugElement.query(By.css('aio-doc-viewer'));
+    const getDocViewer = () => fixture.debugElement.query(By.css('aio-doc-viewer'))!;
     const triggerDocViewerEvent =
         (evt: 'docReady' | 'docRemoved' | 'docInserted' | 'docRendered') =>
           getDocViewer().triggerEventHandler(evt, undefined);
@@ -916,7 +916,7 @@ describe('AppComponent', () => {
       it('should initially add the starting class until a document is rendered', () => {
         initializeTest(false);
         jasmine.clock().tick(1);  // triggers the HTTP response for the document
-        const sidenavContainer = fixture.debugElement.query(By.css('mat-sidenav-container')).nativeElement;
+        const sidenavContainer = fixture.debugElement.query(By.css('mat-sidenav-container'))!.nativeElement;
 
         expect(component.isStarting).toBe(true);
         expect(hamburger.classList.contains('starting')).toBe(true);
@@ -965,7 +965,7 @@ describe('AppComponent', () => {
       it('should set the transitioning class on `.app-toolbar` while a document is being rendered', () => {
         initializeTest(false);
         jasmine.clock().tick(1);  // triggers the HTTP response for the document
-        const toolbar = fixture.debugElement.query(By.css('.app-toolbar'));
+        const toolbar = fixture.debugElement.query(By.css('.app-toolbar'))!;
 
         // Initially, `isTransitoning` is true.
         expect(component.isTransitioning).toBe(true);
@@ -1028,7 +1028,7 @@ describe('AppComponent', () => {
 
       it('should set the id of the doc viewer container based on the current doc', () => {
         initializeTest(false);
-        const container = fixture.debugElement.query(By.css('main.sidenav-content'));
+        const container = fixture.debugElement.query(By.css('main.sidenav-content'))!;
 
         navigateTo('guide/pipes');
         expect(component.pageId).toEqual('guide-pipes');
@@ -1045,7 +1045,7 @@ describe('AppComponent', () => {
 
       it('should not be affected by changes to the query', () => {
         initializeTest(false);
-        const container = fixture.debugElement.query(By.css('main.sidenav-content'));
+        const container = fixture.debugElement.query(By.css('main.sidenav-content'))!;
 
         navigateTo('guide/pipes');
         navigateTo('guide/other?search=http');
@@ -1136,7 +1136,7 @@ describe('AppComponent', () => {
     describe('progress bar', () => {
       const SHOW_DELAY = 200;
       const HIDE_DELAY = 500;
-      const getProgressBar = () => fixture.debugElement.query(By.directive(MatProgressBar));
+      const getProgressBar = () => fixture.debugElement.query(By.directive(MatProgressBar))!;
       const initializeAndCompleteNavigation = () => {
         initializeTest(false);
         triggerDocViewerEvent('docReady');

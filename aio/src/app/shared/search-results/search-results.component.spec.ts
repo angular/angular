@@ -189,7 +189,7 @@ describe('SearchResultsComponent', () => {
       setSearchResults('something', [searchResult]);
 
       fixture.detectChanges();
-      anchor = fixture.debugElement.query(By.css('a'));
+      anchor = fixture.debugElement.query(By.css('a'))!;
 
       expect(selected).toBeNull();
     });

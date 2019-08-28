@@ -2,14 +2,14 @@
 // #docregion import-by
 // #enddocregion import-by
 // #docregion import-debug-element
-import { DebugElement } from '@angular/core';
+import {DebugElement} from '@angular/core';
 // #enddocregion import-debug-element
 // #docregion v1
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 
 // #enddocregion v1
-import { BannerComponent } from './banner-initial.component';
+import {BannerComponent} from './banner-initial.component';
 
 /*
 // #docregion v1
@@ -104,7 +104,7 @@ describe('BannerComponent (with beforeEach)', () => {
   // #docregion v4-test-5
   it('should find the <p> with fixture.debugElement.query(By.css)', () => {
     const bannerDe: DebugElement = fixture.debugElement;
-    const paragraphDe = bannerDe.query(By.css('p'));
+    const paragraphDe = bannerDe.query(By.css('p'))!;
     const p: HTMLElement = paragraphDe.nativeElement;
     expect(p.textContent).toEqual('banner works!');
   });

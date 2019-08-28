@@ -47,7 +47,7 @@ describe('providers', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      const otherDir = fixture.debugElement.query(By.css('div')).injector.get(OtherDirective);
+      const otherDir = fixture.debugElement.query(By.css('div'))!.injector.get(OtherDirective);
       expect(otherDir.dirs.length).toEqual(1);
       expect(otherDir.dirs[0] instanceof SubDirective).toBe(true);
     });
@@ -577,7 +577,7 @@ describe('providers', () => {
       });
 
       const fixture = TestBed.createComponent(TestComp);
-      const myCompInstance = fixture.debugElement.query(By.css('my-comp')).injector.get(MyComp);
+      const myCompInstance = fixture.debugElement.query(By.css('my-comp'))!.injector.get(MyComp);
       expect(myCompInstance.svc.value).toEqual('some value');
     });
 
@@ -593,7 +593,7 @@ describe('providers', () => {
       });
 
       const fixture = TestBed.createComponent(TestComp);
-      const myCompInstance = fixture.debugElement.query(By.css('div')).injector.get(MyDir);
+      const myCompInstance = fixture.debugElement.query(By.css('div'))!.injector.get(MyDir);
       expect(myCompInstance.svc.value).toEqual('some value');
     });
 

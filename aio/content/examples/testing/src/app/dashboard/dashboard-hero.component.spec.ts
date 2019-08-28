@@ -1,13 +1,13 @@
 
 // #docplaster
-import { DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import {DebugElement} from '@angular/core';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 
-import { addMatchers, click } from '../../testing';
-import { Hero } from '../model/hero';
+import {addMatchers, click} from '../../testing';
+import {Hero} from '../model/hero';
 
-import { DashboardHeroComponent } from './dashboard-hero.component';
+import {DashboardHeroComponent} from './dashboard-hero.component';
 
 beforeEach(addMatchers);
 
@@ -45,7 +45,7 @@ describe('DashboardHeroComponent when tested directly', () => {
     comp = fixture.componentInstance;
 
     // find the hero's DebugElement and element
-    heroDe = fixture.debugElement.query(By.css('.hero'));
+    heroDe = fixture.debugElement.query(By.css('.hero'))!;
     heroEl = heroDe.nativeElement;
 
     // mock the hero supplied by the parent component
@@ -141,7 +141,7 @@ describe('DashboardHeroComponent when inside a test host', () => {
 });
 
 ////// Test Host Component //////
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 // #docregion test-host
 @Component({

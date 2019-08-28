@@ -23,10 +23,10 @@ describe('TocComponent', () => {
   function setPage(): typeof page {
     return {
       listItems: tocComponentDe.queryAll(By.css('ul.toc-list>li')),
-      tocHeading: tocComponentDe.query(By.css('.toc-heading')),
-      tocHeadingButtonEmbedded: tocComponentDe.query(By.css('button.toc-heading.embedded')),
-      tocH1Heading: tocComponentDe.query(By.css('.h1')),
-      tocMoreButton: tocComponentDe.query(By.css('button.toc-more-items')),
+      tocHeading: tocComponentDe.query(By.css('.toc-heading'))!,
+      tocHeadingButtonEmbedded: tocComponentDe.query(By.css('button.toc-heading.embedded'))!,
+      tocH1Heading: tocComponentDe.query(By.css('.h1'))!,
+      tocMoreButton: tocComponentDe.query(By.css('button.toc-more-items'))!,
     };
   }
 

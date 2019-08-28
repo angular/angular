@@ -138,7 +138,7 @@ class Page {
     this.heroRows = Array.from(heroRowNodes);
 
     // Find the first element with an attached HighlightDirective
-    this.highlightDe = fixture.debugElement.query(By.directive(HighlightDirective));
+    this.highlightDe = fixture.debugElement.query(By.directive(HighlightDirective))!;
 
     // Get the component's injected router navigation spy
     const routerSpy = fixture.debugElement.injector.get(Router);

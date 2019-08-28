@@ -24,7 +24,7 @@ describe('NotificationComponent', () => {
 
   function createComponent() {
     fixture = TestBed.createComponent(TestComponent);
-    const debugElement = fixture.debugElement.query(By.directive(NotificationComponent));
+    const debugElement = fixture.debugElement.query(By.directive(NotificationComponent))!;
     component = debugElement.componentInstance;
     component.ngOnInit();
     fixture.detectChanges();
@@ -40,7 +40,7 @@ describe('NotificationComponent', () => {
     it('should render HTML elements', () => {
       configTestingModule();
       createComponent();
-      const button = fixture.debugElement.query(By.css('.action-button'));
+      const button = fixture.debugElement.query(By.css('.action-button'))!;
       expect(button.nativeElement.textContent).toEqual('Learn More');
     });
 
@@ -57,7 +57,7 @@ describe('NotificationComponent', () => {
     createComponent();
     spyOn(component, 'dismiss');
     component.dismissOnContentClick = true;
-    const message: HTMLSpanElement = fixture.debugElement.query(By.css('.messageholder')).nativeElement;
+    const message: HTMLSpanElement = fixture.debugElement.query(By.css('.messageholder'))!.nativeElement;
     message.click();
     expect(component.dismiss).toHaveBeenCalled();
   });
@@ -67,7 +67,7 @@ describe('NotificationComponent', () => {
     createComponent();
     spyOn(component, 'dismiss');
     component.dismissOnContentClick = false;
-    const message: HTMLSpanElement = fixture.debugElement.query(By.css('.messageholder')).nativeElement;
+    const message: HTMLSpanElement = fixture.debugElement.query(By.css('.messageholder'))!.nativeElement;
     message.click();
     expect(component.dismiss).not.toHaveBeenCalled();
   });
@@ -76,7 +76,7 @@ describe('NotificationComponent', () => {
     configTestingModule();
     createComponent();
     spyOn(component, 'dismiss');
-    fixture.debugElement.query(By.css('button')).triggerEventHandler('click', null);
+    fixture.debugElement.query(By.css('button'))!.triggerEventHandler('click', null);
     fixture.detectChanges();
     expect(component.dismiss).toHaveBeenCalled();
   });

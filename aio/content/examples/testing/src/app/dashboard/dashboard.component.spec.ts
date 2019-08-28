@@ -50,7 +50,7 @@ describe('DashboardComponent (shallow)', () => {
 
   function clickForShallow() {
     // get first <dashboard-hero> DebugElement
-    const heroDe = fixture.debugElement.query(By.css('dashboard-hero'));
+    const heroDe = fixture.debugElement.query(By.css('dashboard-hero'))!;
     heroDe.triggerEventHandler('selected', comp.heroes[0]);
   }
 });
