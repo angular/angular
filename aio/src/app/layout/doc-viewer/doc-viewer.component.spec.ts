@@ -128,8 +128,8 @@ describe('DocViewerComponent', () => {
     };
 
     beforeEach(() => {
-      titleService = TestBed.get(Title);
-      tocService = TestBed.get(TocService);
+      titleService = TestBed.inject(Title) as unknown as MockTitle;
+      tocService = TestBed.inject(TocService) as unknown as MockTocService;
 
       targetEl = document.createElement('div');
       document.body.appendChild(targetEl);  // Required for `innerText` to work as expected.
@@ -299,7 +299,7 @@ describe('DocViewerComponent', () => {
       docViewer.render({contents, id}).toPromise();
 
     beforeEach(() => {
-      const elementsLoader = TestBed.get(ElementsLoader) as MockElementsLoader;
+      const elementsLoader = TestBed.inject(ElementsLoader) as Partial<ElementsLoader> as MockElementsLoader;
       loadElementsSpy = elementsLoader.loadContainedCustomElements.and.returnValue(of(undefined));
       prepareTitleAndTocSpy = spyOn(docViewer, 'prepareTitleAndToc');
       swapViewsSpy = spyOn(docViewer, 'swapViews').and.returnValue(of(undefined));
@@ -369,17 +369,17 @@ describe('DocViewerComponent', () => {
 
       it('should remove the "noindex" meta tag if the document is valid', async () => {
         await doRender('foo', 'bar');
-        expect(TestBed.get(Meta).removeTag).toHaveBeenCalledWith('name="robots"');
+        expect(TestBed.inject(Meta).removeTag).toHaveBeenCalledWith('name="robots"');
       });
 
       it('should add the "noindex" meta tag if the document is 404', async () => {
         await doRender('missing', FILE_NOT_FOUND_ID);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
+        expect(TestBed.inject(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
       it('should add a "noindex" meta tag if the document fetching fails', async () => {
         await doRender('error', FETCHING_ERROR_ID);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
+        expect(TestBed.inject(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
     });
 
@@ -454,7 +454,9 @@ describe('DocViewerComponent', () => {
     describe('(on error) should clean up, log the error and recover', () => {
       let logger: MockLogger;
 
-      beforeEach(() => logger = TestBed.get(Logger));
+      beforeEach(() => {
+        logger = TestBed.inject(Logger) as unknown as MockLogger;
+      });
 
       it('when `prepareTitleAndTocSpy()` fails', async () => {
         const error = Error('Typical `prepareTitleAndToc()` error');
@@ -472,7 +474,7 @@ describe('DocViewerComponent', () => {
           [jasmine.any(Error)]
         ]);
         expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'foo': ${error.stack}`);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
+        expect(TestBed.inject(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
       it('when `EmbedComponentsService.embedInto()` fails', async () => {
@@ -491,7 +493,7 @@ describe('DocViewerComponent', () => {
         expect(logger.output.error).toEqual([
           [jasmine.any(Error)]
         ]);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
+        expect(TestBed.inject(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
       it('when `swapViews()` fails', async () => {
@@ -510,7 +512,7 @@ describe('DocViewerComponent', () => {
           [jasmine.any(Error)]
         ]);
         expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'qux': ${error.stack}`);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
+        expect(TestBed.inject(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
       it('when something fails with non-Error', async () => {
@@ -528,7 +530,7 @@ describe('DocViewerComponent', () => {
           [jasmine.any(Error)]
         ]);
         expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'qux': ${error}`);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
+        expect(TestBed.inject(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
     });
 

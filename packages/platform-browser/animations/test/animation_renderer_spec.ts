@@ -34,13 +34,13 @@ import {el} from '../../testing/src/browser_util';
         styles: [],
         data: {'animation': animationTriggers}
       };
-      return (TestBed.get(RendererFactory2) as AnimationRendererFactory)
+      return (TestBed.inject(RendererFactory2) as AnimationRendererFactory)
           .createRenderer(element, type);
     }
 
     it('should hook into the engine\'s insert operations when appending children', () => {
       const renderer = makeRenderer();
-      const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
+      const engine = TestBed.inject(AnimationEngine) as MockAnimationEngine;
       const container = el('<div></div>');
 
       renderer.appendChild(container, element);
@@ -50,7 +50,7 @@ import {el} from '../../testing/src/browser_util';
     it('should hook into the engine\'s insert operations when inserting a child before another',
        () => {
          const renderer = makeRenderer();
-         const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
+         const engine = TestBed.inject(AnimationEngine) as MockAnimationEngine;
          const container = el('<div></div>');
          const element2 = el('<div></div>');
          container.appendChild(element2);
@@ -61,7 +61,7 @@ import {el} from '../../testing/src/browser_util';
 
     it('should hook into the engine\'s insert operations when removing children', () => {
       const renderer = makeRenderer();
-      const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
+      const engine = TestBed.inject(AnimationEngine) as MockAnimationEngine;
       const container = el('<div></div>');
 
       renderer.removeChild(container, element);
@@ -70,7 +70,7 @@ import {el} from '../../testing/src/browser_util';
 
     it('should hook into the engine\'s setProperty call if the property begins with `@`', () => {
       const renderer = makeRenderer();
-      const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
+      const engine = TestBed.inject(AnimationEngine) as MockAnimationEngine;
 
       renderer.setProperty(element, 'prop', 'value');
       expect(engine.captures['setProperty']).toBeFalsy();
@@ -82,7 +82,7 @@ import {el} from '../../testing/src/browser_util';
     describe('listen', () => {
       it('should hook into the engine\'s listen call if the property begins with `@`', () => {
         const renderer = makeRenderer();
-        const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
+        const engine = TestBed.inject(AnimationEngine) as MockAnimationEngine;
 
         const cb = (event: any): boolean => { return true; };
 
@@ -96,7 +96,7 @@ import {el} from '../../testing/src/browser_util';
       it('should resolve the body|document|window nodes given their values as strings as input',
          () => {
            const renderer = makeRenderer();
-           const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
+           const engine = TestBed.inject(AnimationEngine) as MockAnimationEngine;
 
            const cb = (event: any): boolean => { return true; };
 
@@ -140,7 +140,7 @@ import {el} from '../../testing/src/browser_util';
           declarations: [Cmp]
         });
 
-        const engine = TestBed.get(AnimationEngine);
+        const engine = TestBed.inject(AnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.exp = 'state';
@@ -225,7 +225,7 @@ import {el} from '../../testing/src/browser_util';
              declarations: [Cmp]
            });
 
-           const engine = TestBed.get(AnimationEngine);
+           const engine = TestBed.inject(AnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -295,7 +295,7 @@ import {el} from '../../testing/src/browser_util';
         declarations: [Cmp]
       });
 
-      const renderer = TestBed.get(RendererFactory2) as ExtendedAnimationRendererFactory;
+      const renderer = TestBed.inject(RendererFactory2) as ExtendedAnimationRendererFactory;
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
 

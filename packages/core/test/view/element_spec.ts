@@ -280,7 +280,7 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
         });
 
         it('should report debug info on event errors', () => {
-          const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');
+          const handleErrorSpy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
           const addListenerSpy = spyOn(HTMLElement.prototype, addEventListener).and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
               0, NodeFlags.None, null, null, 0, 'button', null, null, [[null !, 'click']],

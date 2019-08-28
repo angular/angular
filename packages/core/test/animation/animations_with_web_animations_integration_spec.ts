@@ -53,7 +53,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
       TestBed.configureTestingModule({declarations: [Cmp]});
 
-      const engine = TestBed.get(ɵAnimationEngine);
+      const engine = TestBed.inject(ɵAnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
 
@@ -61,7 +61,8 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
       fixture.detectChanges();
 
       expect(engine.players.length).toEqual(1);
-      let webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+      let webPlayer =
+          (engine.players[0] as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
         {height: '0px', offset: 0}, {height: '100px', offset: 1}
@@ -75,7 +76,8 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
         engine.flush();
 
         expect(engine.players.length).toEqual(1);
-        webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+        webPlayer = (engine.players[0] as TransitionAnimationPlayer)
+                        .getRealPlayer() as ɵWebAnimationsPlayer;
 
         expect(webPlayer.keyframes).toEqual([
           {height: '100px', offset: 0}, {height: '0px', offset: 1}
@@ -106,7 +108,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
       TestBed.configureTestingModule({declarations: [Cmp]});
 
-      const engine = TestBed.get(ɵAnimationEngine);
+      const engine = TestBed.inject(ɵAnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
 
@@ -115,7 +117,8 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
       engine.flush();
 
       expect(engine.players.length).toEqual(1);
-      let webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+      let webPlayer =
+          (engine.players[0] as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
         {height: '100px', offset: 0}, {height: '120px', offset: 1}
@@ -144,7 +147,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
       TestBed.configureTestingModule({declarations: [Cmp]});
 
-      const engine = TestBed.get(ɵAnimationEngine);
+      const engine = TestBed.inject(ɵAnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
 
@@ -154,7 +157,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
       expect(engine.players.length).toEqual(1);
       let player = engine.players[0];
-      let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      let webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
         {height: '0px', offset: 0}, {height: '100px', offset: 1}
@@ -172,7 +175,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
       expect(engine.players.length).toEqual(1);
       player = engine.players[0];
-      webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
         {height: '100px', offset: 0}, {height: '80px', offset: 1}
@@ -215,7 +218,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
       TestBed.configureTestingModule({declarations: [Cmp]});
 
-      const engine = TestBed.get(ɵAnimationEngine);
+      const engine = TestBed.inject(ɵAnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
 
@@ -223,7 +226,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
       fixture.detectChanges();
 
       let player = engine.players[0] !;
-      let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      let webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
       expect(webPlayer.keyframes).toEqual([
         {height: '0px', offset: 0},
         {height: '300px', offset: 1},
@@ -234,7 +237,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
       fixture.detectChanges();
 
       player = engine.players[0] !;
-      webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
       expect(webPlayer.keyframes).toEqual([
         {height: '300px', offset: 0},
         {height: '0px', offset: 1},
@@ -295,7 +298,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
          TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.get(ɵAnimationEngine);
+         const engine = TestBed.inject(ɵAnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
 
@@ -308,7 +311,9 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
          fixture.detectChanges();
 
          player = engine.players[0] !as TransitionAnimationPlayer;
-         let queriedPlayers = (player.getRealPlayer() as AnimationGroupPlayer).players;
+         let queriedPlayers =
+             ((player as TransitionAnimationPlayer).getRealPlayer() as AnimationGroupPlayer)
+                 .players;
          expect(queriedPlayers.length).toEqual(5);
 
          let i = 0;
@@ -325,7 +330,9 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
          fixture.detectChanges();
 
          player = engine.players[0] !as TransitionAnimationPlayer;
-         queriedPlayers = (player.getRealPlayer() as AnimationGroupPlayer).players;
+         queriedPlayers =
+             ((player as TransitionAnimationPlayer).getRealPlayer() as AnimationGroupPlayer)
+                 .players;
          expect(queriedPlayers.length).toEqual(5);
 
          for (i = 0; i < queriedPlayers.length; i++) {
@@ -364,7 +371,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
       TestBed.configureTestingModule({declarations: [Cmp]});
 
-      const engine = TestBed.get(ɵAnimationEngine);
+      const engine = TestBed.inject(ɵAnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
 
@@ -372,14 +379,14 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
       fixture.detectChanges();
 
       let player = engine.players[0] !;
-      let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      let webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
       webPlayer.setPosition(0.5);
 
       cmp.exp = 'b';
       fixture.detectChanges();
 
       player = engine.players[0] !;
-      webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
       expect(approximate(parseFloat(webPlayer.keyframes[0]['width'] as string), 150))
           .toBeLessThan(0.05);
       expect(approximate(parseFloat(webPlayer.keyframes[0]['height'] as string), 300))
@@ -419,7 +426,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
          TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.get(ɵAnimationEngine);
+         const engine = TestBed.inject(ɵAnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
 
@@ -428,7 +435,8 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
          fixture.detectChanges();
 
          let player = engine.players[0] !;
-         let groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
+         let groupPlayer =
+             (player as TransitionAnimationPlayer).getRealPlayer() as AnimationGroupPlayer;
          let players = groupPlayer.players;
          expect(players.length).toEqual(5);
 
@@ -442,7 +450,8 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
          fixture.detectChanges();
 
          player = engine.players[0];
-         groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
+         groupPlayer =
+             (player as TransitionAnimationPlayer).getRealPlayer() as AnimationGroupPlayer;
          players = groupPlayer.players;
 
          expect(players.length).toEqual(5);
@@ -485,7 +494,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
          TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.get(ɵAnimationEngine);
+         const engine = TestBed.inject(ɵAnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
 
@@ -499,7 +508,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
          expect(elm.style.getPropertyValue('display')).toEqual('inline');
          expect(elm.style.getPropertyValue('position')).toEqual('absolute');
 
-         const player = engine.players.pop();
+         const player = engine.players.pop() !;
          player.finish();
          player.destroy();
 

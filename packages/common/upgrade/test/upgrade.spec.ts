@@ -75,7 +75,7 @@ describe('LocationProvider', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -101,7 +101,7 @@ describe('LocationHtml5Url', function() {
       providers: [UpgradeModule],
 
     });
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -176,7 +176,7 @@ describe('NewUrl', function() {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -482,7 +482,7 @@ describe('New URL Parsing', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -512,7 +512,7 @@ describe('New URL Parsing', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
@@ -639,7 +639,7 @@ describe('$location.onChange()', () => {
       providers: [UpgradeModule],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
     mock$rootScope = upgradeModule.$injector.get('$rootScope');
   });

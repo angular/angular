@@ -132,7 +132,7 @@ describe('property bindings', () => {
 
     expect(a.href.indexOf('unsafe:')).toBe(0);
 
-    const domSanitzer: DomSanitizer = TestBed.get(DomSanitizer);
+    const domSanitzer: DomSanitizer = TestBed.inject(DomSanitizer);
     fixture.componentInstance.url =
         domSanitzer.bypassSecurityTrustUrl('javascript:alert("the developer wanted this");');
     fixture.detectChanges();
@@ -353,7 +353,7 @@ describe('property bindings', () => {
         template: `
           <button idDir [id]="id1">Click me</button>
           <button *ngIf="condition" [id]="id2">Click me too (2)</button>
-          <button *ngIf="!condition" otherDir [id]="id3">Click me too (3)</button> 
+          <button *ngIf="!condition" otherDir [id]="id3">Click me too (3)</button>
         `
       })
       class App {

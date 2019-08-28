@@ -203,7 +203,7 @@ const DEFAULT_COMPONENT_ID = '1';
              }
 
              TestBed.configureTestingModule({declarations: [Cmp]});
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(Cmp);
              const cmp = fixture.componentInstance;
 
@@ -243,7 +243,7 @@ const DEFAULT_COMPONENT_ID = '1';
                declarations: [Cmp]
              });
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(Cmp);
              const cmp = fixture.componentInstance;
 
@@ -275,7 +275,7 @@ const DEFAULT_COMPONENT_ID = '1';
              }
 
              TestBed.configureTestingModule({declarations: [Cmp]});
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(Cmp);
              const cmp = fixture.componentInstance;
              cmp.exp = 'on';
@@ -315,7 +315,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.exp = true;
@@ -437,7 +437,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.exp = 0;
@@ -482,7 +482,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -554,7 +554,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            fixture.detectChanges();
@@ -591,7 +591,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -683,7 +683,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -735,7 +735,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -780,7 +780,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -835,7 +835,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [Cmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(Cmp);
              const cmp = fixture.componentInstance;
              fixture.detectChanges();
@@ -878,7 +878,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(ParentCmp);
              const cmp = fixture.componentInstance;
              fixture.detectChanges();
@@ -928,7 +928,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(ParentCmp);
              const cmp = fixture.componentInstance;
              fixture.detectChanges();
@@ -984,7 +984,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(ParentCmp);
              const cmp = fixture.componentInstance;
              fixture.detectChanges();
@@ -1038,7 +1038,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(ParentCmp);
              const cmp = fixture.componentInstance;
              fixture.detectChanges();
@@ -1082,7 +1082,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(ParentCmp);
              const cmp = fixture.componentInstance;
              const element = fixture.nativeElement;
@@ -1135,7 +1135,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1198,7 +1198,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1280,7 +1280,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1333,7 +1333,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp = true;
@@ -1370,7 +1370,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp = true;
@@ -1404,7 +1404,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1438,13 +1438,13 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         fixture.detectChanges();
         engine.flush();
 
-        const player = engine.players.pop();
+        const player = engine.players.pop() !;
         player.finish();
 
         expect(hasStyle(cmp.element.nativeElement, 'background-color', 'green')).toBeTruthy();
@@ -1581,7 +1581,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp = true;
@@ -1639,7 +1639,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.exp = 'go';
@@ -1681,7 +1681,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1724,7 +1724,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1774,7 +1774,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine) as ɵAnimationEngine;
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1830,7 +1830,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1889,7 +1889,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -1940,7 +1940,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -1982,7 +1982,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2027,7 +2027,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2077,7 +2077,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
@@ -2131,7 +2131,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2199,7 +2199,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2274,7 +2274,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
         TestBed.configureTestingModule({declarations: [OuterCmp, InnerCmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(OuterCmp);
         const cmp = fixture.componentInstance;
         fixture.detectChanges();
@@ -2463,7 +2463,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp = 'true';
@@ -2499,7 +2499,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2509,7 +2509,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            expect(cmp.event).toBeFalsy();
 
-           const player = engine.players.pop();
+           const player = engine.players.pop() !;
            player.finish();
            flushMicrotasks();
 
@@ -2559,7 +2559,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2621,7 +2621,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -2730,7 +2730,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp = 'TRUE';
@@ -2875,7 +2875,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.inject(ɵAnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
            cmp.exp1 = 'go';
@@ -2957,7 +2957,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
                TestBed.configureTestingModule({declarations: [Cmp]});
 
-               const engine = TestBed.get(ɵAnimationEngine);
+               const engine = TestBed.inject(ɵAnimationEngine);
                const fixture = TestBed.createComponent(Cmp);
                const cmp = fixture.componentInstance;
                cmp.exp = 'go';
@@ -3078,7 +3078,7 @@ const DEFAULT_COMPONENT_ID = '1';
           TestBed.configureTestingModule({declarations: [Cmp]});
 
           const fixture = TestBed.createComponent(Cmp);
-          const engine = TestBed.get(ɵAnimationEngine);
+          const engine = TestBed.inject(ɵAnimationEngine);
 
           function assertHeight(element: any, height: string) {
             expect(element.style['height']).toEqual(height);
@@ -3448,7 +3448,7 @@ const DEFAULT_COMPONENT_ID = '1';
              }
 
              TestBed.configureTestingModule({declarations: [Cmp]});
-             const engine = TestBed.get(ɵAnimationEngine);
+             const engine = TestBed.inject(ɵAnimationEngine);
              const fixture = TestBed.createComponent(Cmp);
              const cmp = fixture.componentInstance;
              cmp.disableExp = true;
@@ -3607,7 +3607,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
          TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.get(ɵAnimationEngine);
+         const engine = TestBed.inject(ɵAnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
          fixture.detectChanges();
@@ -3688,7 +3688,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
               TestBed.configureTestingModule({declarations: [Cmp]});
 
-              const engine = TestBed.get(ɵAnimationEngine);
+              const engine = TestBed.inject(ɵAnimationEngine);
               const fixture = TestBed.createComponent(Cmp);
 
               const runCD = () => fixture.detectChanges();

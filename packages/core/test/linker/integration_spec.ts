@@ -859,7 +859,7 @@ function declareTests(config?: {useJit: boolean}) {
         const template = '<div listener></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
-        const doc = TestBed.get(DOCUMENT);
+        const doc = TestBed.inject(DOCUMENT);
 
         const tc = fixture.debugElement.children[0];
         const listener = tc.injector.get(DirectiveListeningDomEvent);
@@ -1013,7 +1013,7 @@ function declareTests(config?: {useJit: boolean}) {
         const template = '<div *ngIf="ctxBoolProp" listener listenerother></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
-        const doc = TestBed.get(DOCUMENT);
+        const doc = TestBed.inject(DOCUMENT);
 
         globalCounter = 0;
         fixture.componentInstance.ctxBoolProp = true;
@@ -1113,7 +1113,7 @@ function declareTests(config?: {useJit: boolean}) {
 
             const compFixture =
                 TestBed.configureTestingModule({imports: [RootModule]}).createComponent(RootComp);
-            const compiler = <Compiler>TestBed.get(Compiler);
+            const compiler = TestBed.inject(Compiler);
             const myCompFactory =
                 <ComponentFactory<MyComp>>compiler.compileModuleAndAllComponentsSync(MyModule)
                     .componentFactories[0];
@@ -1150,10 +1150,11 @@ function declareTests(config?: {useJit: boolean}) {
 
             const compFixture =
                 TestBed.configureTestingModule({imports: [RootModule]}).createComponent(RootComp);
-            const compiler = <Compiler>TestBed.get(Compiler);
-            const myModule = compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
-            const myCompFactory = (<ComponentFactoryResolver>TestBed.get(ComponentFactoryResolver))
-                                      .resolveComponentFactory(MyComp);
+            const compiler = TestBed.inject(Compiler);
+            const myModule =
+                compiler.compileModuleSync(MyModule).create(TestBed.inject(NgModuleRef).injector);
+            const myCompFactory =
+                TestBed.inject(ComponentFactoryResolver).resolveComponentFactory(MyComp);
 
             // Note: MyComp was declared as entryComponent in the RootModule,
             // but we pass MyModule to the createComponent call.
@@ -1192,9 +1193,9 @@ function declareTests(config?: {useJit: boolean}) {
 
                const compFixture = TestBed.configureTestingModule({imports: [RootModule]})
                                        .createComponent(RootComp);
-               const compiler = <Compiler>TestBed.get(Compiler);
-               const myModule =
-                   compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
+               const compiler = TestBed.inject(Compiler);
+               const myModule = compiler.compileModuleSync(MyModule).create(
+                   TestBed.inject(NgModuleRef).injector);
                const myCompFactory =
                    myModule.componentFactoryResolver.resolveComponentFactory(MyComp);
 

@@ -41,9 +41,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
   }
 
   function initHelpers(): void {
-    renderLog = TestBed.get(RenderLog);
-    directiveLog = TestBed.get(DirectiveLog);
-    patchLoggingRenderer2(TestBed.get(RendererFactory2), renderLog);
+    renderLog = TestBed.inject(RenderLog);
+    directiveLog = TestBed.inject(DirectiveLog);
+    patchLoggingRenderer2(TestBed.inject(RendererFactory2), renderLog);
   }
 
   function queryDirs(el: DebugElement, dirType: Type<any>): any {
@@ -682,7 +682,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       it('should call the begin and end methods on the renderer factory when change detection is called',
          fakeAsync(() => {
            const ctx = createCompFixture('<div testDirective [a]="42"></div>');
-           const rf = TestBed.get(RendererFactory2);
+           const rf = TestBed.inject(RendererFactory2);
            spyOn(rf, 'begin');
            spyOn(rf, 'end');
            expect(rf.begin).not.toHaveBeenCalled();

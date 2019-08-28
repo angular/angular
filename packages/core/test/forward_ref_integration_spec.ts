@@ -26,7 +26,7 @@ describe('forwardRef integration', function() {
     const a = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
     a.detectChanges();
     expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
-    expect(TestBed.get(ModuleFrame)).toBeDefined();
+    expect(TestBed.inject(ModuleFrame)).toBeDefined();
   });
 });
 

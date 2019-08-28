@@ -12,7 +12,7 @@ import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
 import {buildTrigger} from '../../src/dsl/animation_trigger';
 import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {getBodyNode} from '../../src/render/shared';
-import {TransitionAnimationEngine} from '../../src/render/transition_animation_engine';
+import {TransitionAnimationEngine, TransitionAnimationPlayer} from '../../src/render/transition_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
 
 const DEFAULT_NAMESPACE_ID = 'id';
@@ -127,7 +127,9 @@ const DEFAULT_NAMESPACE_ID = 'id';
            registerTrigger(element, engine, trig);
            setProperty(element, engine, 'myTrigger', 'value');
            engine.flush();
-           expect((engine.players[0].getRealPlayer() as MockAnimationPlayer).duration)
+           expect(((engine.players[0] as TransitionAnimationPlayer)
+                       .getRealPlayer() as MockAnimationPlayer)
+                      .duration)
                .toEqual(1234);
 
            engine.destroy(DEFAULT_NAMESPACE_ID, null);
@@ -135,7 +137,9 @@ const DEFAULT_NAMESPACE_ID = 'id';
            registerTrigger(element, engine, trig);
            setProperty(element, engine, 'myTrigger', 'value2');
            engine.flush();
-           expect((engine.players[0].getRealPlayer() as MockAnimationPlayer).duration)
+           expect(((engine.players[0] as TransitionAnimationPlayer)
+                       .getRealPlayer() as MockAnimationPlayer)
+                      .duration)
                .toEqual(1234);
          });
     });

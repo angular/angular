@@ -254,7 +254,7 @@ describe('TestBed', () => {
          imports: [MyModule.forRoot()],
        });
 
-       const service = TestBed.get(MyService);
+       const service = TestBed.inject(MyService);
        expect(service.get()).toEqual('override');
      });
 
@@ -283,7 +283,7 @@ describe('TestBed', () => {
          providers: [{provide: MyService, useValue: serviceOverride}],
        });
 
-       const service = TestBed.get(MyService);
+       const service = TestBed.inject(MyService);
        expect(service.get()).toEqual('override');
      });
 
@@ -381,7 +381,7 @@ describe('TestBed', () => {
     getTestBed().resetTestingModule();
     TestBed.configureTestingModule({imports: [ProvidesErrorHandler, HelloWorldModule]});
 
-    expect(TestBed.get(ErrorHandler)).toEqual(jasmine.any(CustomErrorHandler));
+    expect(TestBed.inject(ErrorHandler)).toEqual(jasmine.any(CustomErrorHandler));
 
   });
 
@@ -691,7 +691,7 @@ describe('TestBed', () => {
              TestBed.configureTestingModule({imports: [Module, Module]});
              TestBed.overrideProvider(Token, {useValue: {name: 'fake'}});
 
-             expect(TestBed.get(Token).name).toEqual('fake');
+             expect(TestBed.inject(Token).name).toEqual('fake');
 
              TestBed.resetTestingModule();
 

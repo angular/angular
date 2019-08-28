@@ -1031,7 +1031,7 @@ the setup of the _service-under-test_.
 
 Now requests made in the course of your tests will hit the testing backend instead of the normal backend.
 
-This setup also calls `TestBed.get()` to inject the `HttpClient` service and the mocking controller
+This setup also calls `TestBed.inject()` to inject the `HttpClient` service and the mocking controller
 so they can be referenced during the tests.
 
 ### Expecting and answering requests
