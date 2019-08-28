@@ -86,23 +86,6 @@ export function removeSuffix(value: string, suffix: string) {
   return value;
 }
 
-export function uniqueByName < T extends {
-  name: string;
-}
-> (elements: T[] | undefined): T[]|undefined {
-  if (elements) {
-    const result: T[] = [];
-    const set = new Set<string>();
-    for (const element of elements) {
-      if (!set.has(element.name)) {
-        set.add(element.name);
-        result.push(element);
-      }
-    }
-    return result;
-  }
-}
-
 export function isTypescriptVersion(low: string, high?: string) {
   const version = ts.version;
 

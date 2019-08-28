@@ -6,20 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'reflect-metadata';
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {Completion} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 describe('completions', () => {
-  let documentRegistry = ts.createDocumentRegistry();
   let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
-  let service = ts.createLanguageService(mockHost, documentRegistry);
+  let service = ts.createLanguageService(mockHost);
   let ngHost = new TypeScriptServiceHost(mockHost, service);
   let ngService = createLanguageService(ngHost);
 
