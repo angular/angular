@@ -11,7 +11,7 @@ import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult} from './common';
 import {getExpressionSymbol} from './expressions';
-import {Definition, Span, Symbol} from './types';
+import {Definition, DirectiveKind, Span, Symbol} from './types';
 import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, inSpan, offsetSpan, spanOf} from './utils';
 
 export interface SymbolInfo {
@@ -58,7 +58,7 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
             const component = ast.directives.find(d => d.directive.isComponent);
             if (component) {
               symbol = info.template.query.getTypeSymbol(component.directive.type.reference);
-              symbol = symbol && new OverrideKindSymbol(symbol, 'component');
+              symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.COMPONENT);
               span = spanOf(ast);
             } else {
               // Find a directive that matches the element name
@@ -66,7 +66,7 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
                   d => d.directive.selector != null && d.directive.selector.indexOf(ast.name) >= 0);
               if (directive) {
                 symbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
-                symbol = symbol && new OverrideKindSymbol(symbol, 'directive');
+                symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.DIRECTIVE);
                 span = spanOf(ast);
               }
             }
@@ -79,7 +79,7 @@ export function locateSymbol(info: AstResult, position: number): SymbolInfo|unde
           visitEvent(ast) {
             if (!attributeValueSymbol(ast.handler, /* inEvent */ true)) {
               symbol = findOutputBinding(info, path, ast);
-              symbol = symbol && new OverrideKindSymbol(symbol, 'event');
+              symbol = symbol && new OverrideKindSymbol(symbol, DirectiveKind.EVENT);
               span = spanOf(ast);
             }
           },
@@ -170,8 +170,8 @@ function invertMap(obj: {[name: string]: string}): {[name: string]: string} {
  * Wrap a symbol and change its kind to component.
  */
 class OverrideKindSymbol implements Symbol {
-  public readonly kind: string;
-  constructor(private sym: Symbol, kindOverride: string) { this.kind = kindOverride; }
+  public readonly kind: DirectiveKind;
+  constructor(private sym: Symbol, kindOverride: DirectiveKind) { this.kind = kindOverride; }
 
   get name(): string { return this.sym.name; }
 
