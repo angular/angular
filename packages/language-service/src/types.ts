@@ -259,6 +259,24 @@ export enum DirectiveKind {
 }
 
 /**
+ * ScriptElementKind for completion.
+ */
+export enum CompletionKind {
+  ATTRIBUTE = 'attribute',
+  COMPONENT = 'component',
+  ELEMENT = 'element',
+  ENTITY = 'entity',
+  HTML_ATTRIBUTE = 'html attribute',
+  KEY = 'key',
+  METHOD = 'method',
+  PIPE = 'pipe',
+  PROPERTY = 'property',
+  REFERENCE = 'reference',
+  TYPE = 'type',
+  VARIABLE = 'variable',
+}
+
+/**
  * A template diagnostics message chain. This is similar to the TypeScript
  * DiagnosticMessageChain. The messages are intended to be formatted as separate
  * sentence fragments and indented.

@@ -9,7 +9,7 @@
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {isAstResult} from './common';
-import {getTemplateCompletions, ngCompletionToTsCompletionEntry} from './completions';
+import {getTemplateCompletions} from './completions';
 import {getDefinitionAndBoundSpan, getTsDefinitionAndBoundSpan} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic, uniqueBySpan} from './diagnostics';
 import {getHover} from './hover';
@@ -70,7 +70,7 @@ class LanguageServiceImpl implements LanguageService {
       isGlobalCompletion: false,
       isMemberCompletion: false,
       isNewIdentifierLocation: false,
-      entries: results.map(ngCompletionToTsCompletionEntry),
+      entries: results,
     };
   }
 
