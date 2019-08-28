@@ -46,21 +46,21 @@ describe('demo (with TestBed):', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({ providers: [ValueService] });
       // #enddocregion value-service-before-each
-      service = TestBed.get(ValueService);
+      service = TestBed.inject(ValueService);
       // #docregion value-service-before-each
     });
     // #enddocregion value-service-before-each, value-service-inject-before-each
 
     // #docregion value-service-inject-it
     it('should use ValueService', () => {
-      service = TestBed.get(ValueService);
+      service = TestBed.inject(ValueService);
       expect(service.getValue()).toBe('real value');
     });
     // #enddocregion value-service-inject-it
 
     it('can inject a default value when service is not provided', () => {
       // #docregion testbed-get-w-null
-      service = TestBed.get(NotProvided, null); // service is null
+      service = TestBed.inject(NotProvided, null); // service is null
       // #enddocregion testbed-get-w-null
     });
 
@@ -109,8 +109,8 @@ describe('demo (with TestBed):', () => {
         ]
       });
       // Inject both the service-to-test and its (spy) dependency
-      masterService = TestBed.get(MasterService);
-      valueServiceSpy = TestBed.get(ValueService);
+      masterService = TestBed.inject(MasterService);
+      valueServiceSpy = TestBed.inject(ValueService);
     });
     // #enddocregion master-service-before-each
 

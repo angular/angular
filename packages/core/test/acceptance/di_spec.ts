@@ -54,7 +54,7 @@ describe('di', () => {
         ]
       });
 
-      expect(TestBed.get(testToken) as string[]).toEqual(['A', 'B', 'C']);
+      expect(TestBed.inject(testToken)).toEqual(['A', 'B', 'C']);
     });
   });
 

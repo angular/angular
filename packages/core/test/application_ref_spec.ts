@@ -32,7 +32,7 @@ class SomeComponent {
     beforeEach(() => { mockConsole = new MockConsole(); });
 
     function createRootEl(selector = 'bootstrap-app') {
-      const doc = TestBed.get(DOCUMENT);
+      const doc = TestBed.inject(DOCUMENT);
       const rootEl =
           <HTMLElement>getContent(createTemplate(`<${selector}></${selector}>`)).firstChild;
       const oldRoots = doc.querySelectorAll(selector);
@@ -160,7 +160,7 @@ class SomeComponent {
 
         const fixture = TestBed.configureTestingModule({declarations: [ReenteringComponent]})
                             .createComponent(ReenteringComponent);
-        const appRef = TestBed.get(ApplicationRef) as ApplicationRef;
+        const appRef = TestBed.inject(ApplicationRef);
         appRef.attachView(fixture.componentRef.hostView);
         appRef.tick();
         expect(fixture.componentInstance.reenterErr.message)
@@ -437,7 +437,7 @@ class SomeComponent {
 
       it('should dirty check attached views', () => {
         const comp = TestBed.createComponent(MyComp);
-        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+        const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
         expect(appRef.viewCount).toBe(0);
 
         appRef.tick();
@@ -451,7 +451,7 @@ class SomeComponent {
 
       it('should not dirty check detached views', () => {
         const comp = TestBed.createComponent(MyComp);
-        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+        const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
 
         appRef.attachView(comp.componentRef.hostView);
         appRef.tick();
@@ -466,7 +466,7 @@ class SomeComponent {
 
       it('should detach attached views if they are destroyed', () => {
         const comp = TestBed.createComponent(MyComp);
-        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+        const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
 
         appRef.attachView(comp.componentRef.hostView);
         comp.destroy();
@@ -476,7 +476,7 @@ class SomeComponent {
 
       it('should detach attached embedded views if they are destroyed', () => {
         const comp = TestBed.createComponent(EmbeddedViewComp);
-        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+        const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
 
         const embeddedViewRef = comp.componentInstance.tplRef.createEmbeddedView({});
 
@@ -494,7 +494,7 @@ class SomeComponent {
            const containerComp = TestBed.createComponent(ContainerComp);
            containerComp.detectChanges();
            const vc = containerComp.componentInstance.vc;
-           const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+           const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
 
            vc.insert(hostView);
            expect(() => appRef.attachView(hostView))
@@ -578,8 +578,8 @@ class SomeComponent {
 
     function expectStableTexts(component: Type<any>, expected: string[]) {
       const fixture = TestBed.createComponent(component);
-      const appRef: ApplicationRef = TestBed.get(ApplicationRef);
-      const zone: NgZone = TestBed.get(NgZone);
+      const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
+      const zone: NgZone = TestBed.inject(NgZone);
       appRef.attachView(fixture.componentRef.hostView);
       zone.run(() => appRef.tick());
 
@@ -631,8 +631,8 @@ class SomeComponent {
 
       it('should be fired after app becomes unstable', async(() => {
            const fixture = TestBed.createComponent(ClickComp);
-           const appRef: ApplicationRef = TestBed.get(ApplicationRef);
-           const zone: NgZone = TestBed.get(NgZone);
+           const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
+           const zone: NgZone = TestBed.inject(NgZone);
            appRef.attachView(fixture.componentRef.hostView);
            zone.run(() => appRef.tick());
 

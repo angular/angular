@@ -33,8 +33,8 @@ export function createRootView(
     rootSelectorOrNode?: any): ViewData {
   initServicesIfNeeded();
   return Services.createRootView(
-      TestBed.get(Injector), projectableNodes || [], rootSelectorOrNode, def,
-      TestBed.get(NgModuleRef), context);
+      TestBed.inject(Injector), projectableNodes || [], rootSelectorOrNode, def,
+      TestBed.inject(NgModuleRef), context);
 }
 
 export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {

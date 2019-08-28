@@ -145,7 +145,7 @@ describe('insert/remove', () => {
      }));
 
   it('should resolve components from other modules, if supplied', async(() => {
-       const compiler = TestBed.get(Compiler) as Compiler;
+       const compiler = TestBed.inject(Compiler);
        let fixture = TestBed.createComponent(TestComponent);
 
        fixture.detectChanges();
@@ -160,7 +160,7 @@ describe('insert/remove', () => {
 
   it('should clean up moduleRef, if supplied', async(() => {
        let destroyed = false;
-       const compiler = TestBed.get(Compiler) as Compiler;
+       const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
        fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
        fixture.componentInstance.currentComponent = Module2InjectedComponent;
@@ -175,7 +175,7 @@ describe('insert/remove', () => {
      }));
 
   it('should not re-create moduleRef when it didn\'t actually change', async(() => {
-       const compiler = TestBed.get(Compiler) as Compiler;
+       const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
 
        fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
@@ -192,7 +192,7 @@ describe('insert/remove', () => {
      }));
 
   it('should re-create moduleRef when changed', async(() => {
-       const compiler = TestBed.get(Compiler) as Compiler;
+       const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
        fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
        fixture.componentInstance.currentComponent = Module2InjectedComponent;

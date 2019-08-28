@@ -103,7 +103,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
                     () => compViewDef([textDef(0, null, ['a'])])),
                 directiveDef(1, NodeFlags.Component, null, 0, SomeService, [])
               ]),
-              TestBed.get(Injector), [], getDOM().createElement('div'));
+              TestBed.inject(Injector), [], getDOM().createElement('div'));
         } catch (e) {
           err = e;
         }
@@ -377,7 +377,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
       });
 
       it('should report debug info on event errors', () => {
-        const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');
+        const handleErrorSpy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
         let emitter = new EventEmitter<any>();
 
         class SomeService {

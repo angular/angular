@@ -26,7 +26,7 @@ describe('HeroesService (from Angular)', () => {
 
   // #docregion angular-spec
   it('should have access to the HeroesService', () => {
-    const heroesService = TestBed.get(HeroesService) as HeroesService;
+    const heroesService = TestBed.inject(HeroesService);
     expect(heroesService).toBeDefined();
   });
   // #enddocregion angular-spec

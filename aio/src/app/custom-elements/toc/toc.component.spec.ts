@@ -48,7 +48,7 @@ describe('TocComponent', () => {
       fixture = TestBed.createComponent(HostEmbeddedTocComponent);
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
-      tocService = TestBed.get(TocService);
+      tocService = TestBed.inject(TocService)  as unknown as TestTocService;
     });
 
     it('should create tocComponent', () => {
@@ -137,7 +137,7 @@ describe('TocComponent', () => {
         beforeEach(() => {
           fixture.detectChanges();
           page = setPage();
-          scrollToTopSpy = TestBed.get(ScrollService).scrollToTop;
+          scrollToTopSpy = (TestBed.inject(ScrollService) as unknown as TestScrollService).scrollToTop;
         });
 
         it('should have more than 4 displayed items', () => {
@@ -252,7 +252,7 @@ describe('TocComponent', () => {
 
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
-      tocService = TestBed.get(TocService);
+      tocService = TestBed.inject(TocService)  as unknown as TestTocService;
 
       fixture.detectChanges();
       page = setPage();

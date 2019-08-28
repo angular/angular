@@ -100,7 +100,7 @@ describe('ngInjectableDef Bazel Integration', () => {
     TestBed.configureTestingModule({});
     TestBed.overrideProvider(Service, {useValue: new Service('overridden')});
 
-    expect(TestBed.get(Service).value).toEqual('overridden');
+    expect(TestBed.inject(Service).value).toEqual('overridden');
   });
 
   it('allows provider override in JIT for module-scoped @Injectables', () => {
@@ -122,7 +122,7 @@ describe('ngInjectableDef Bazel Integration', () => {
     });
     TestBed.overrideProvider(Service, {useValue: new Service('overridden')});
 
-    expect(TestBed.get(Service).value).toEqual('overridden');
+    expect(TestBed.inject(Service).value).toEqual('overridden');
   });
 
   it('does not override existing ngInjectableDef', () => {
@@ -140,7 +140,7 @@ describe('ngInjectableDef Bazel Integration', () => {
     }
 
     TestBed.configureTestingModule({});
-    expect(TestBed.get(Service).value).toEqual(true);
+    expect(TestBed.inject(Service).value).toEqual(true);
   });
 
   it('does not override existing ngInjectableDef in case of inheritance', () => {
@@ -157,14 +157,14 @@ describe('ngInjectableDef Bazel Integration', () => {
 
     TestBed.configureTestingModule({});
     // We are asserting that system throws an error, rather than taking the inherited annotation.
-    expect(() => TestBed.get(ChildService).value).toThrowError(/ChildService/);
+    expect(() => TestBed.inject(ChildService).value).toThrowError(/ChildService/);
   });
 
   it('NgModule injector understands requests for INJECTABLE', () => {
     TestBed.configureTestingModule({
       providers: [{provide: 'foo', useValue: 'bar'}],
     });
-    expect(TestBed.get(INJECTOR).get('foo')).toEqual('bar');
+    expect(TestBed.inject(INJECTOR).get('foo')).toEqual('bar');
   });
 
   it('Component injector understands requests for INJECTABLE', () => {

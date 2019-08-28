@@ -197,6 +197,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     it('should inject Meta service when using BrowserModule',
-       () => expect(TestBed.get(DependsOnMeta).meta).toBeAnInstanceOf(Meta));
+       () => expect(TestBed.inject(DependsOnMeta).meta).toBeAnInstanceOf(Meta));
   });
 }
