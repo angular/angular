@@ -20,20 +20,13 @@ export type CompileFn = (task: Task) => void;
 /** The type of the function that creates the `CompileFn` function used to process tasks. */
 export type CreateCompileFn = (onTaskCompleted: TaskCompletedCallback) => CompileFn;
 
-/** Options related to the orchestration/execution of tasks. */
-export interface ExecutionOptions {
-  compileAllFormats: boolean;
-  propertiesToConsider: string[];
-}
-
 /**
  * A class that orchestrates and executes the required work (i.e. analyzes the entry-points,
  * processes the resulting tasks, does book-keeping and validates the final outcome).
  */
 export interface Executor {
-  execute(
-      analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn,
-      options: ExecutionOptions): void|Promise<void>;
+  execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
+      void|Promise<void>;
 }
 
 /** Represents metadata related to the processing of an entry-point. */
@@ -43,12 +36,6 @@ export interface EntryPointProcessingMetadata {
    * processed).
    */
   hasProcessedTypings: boolean;
-
-  /**
-   * Whether at least one format has been successfully processed (or was already processed) for the
-   * entry-point.
-   */
-  hasAnyProcessedFormat: boolean;
 }
 
 /** Represents a unit of work: processing a specific format property of an entry-point. */

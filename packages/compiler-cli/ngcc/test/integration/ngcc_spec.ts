@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, join} from '../../../src/ngtsc/file_system';
-import {Folder, MockFileSystem, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {Folder, MockFileSystem, TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
 import {mainNgcc} from '../../src/main';
 import {markAsProcessed} from '../../src/packages/build_marker';
@@ -57,6 +57,36 @@ runInEachFileSystem(() => {
       });
     });
 
+    it('should throw, if some of the entry-points are unprocessable', () => {
+      const createEntryPoint = (name: string, prop: EntryPointJsonProperty): TestFile[] => {
+        return [
+          {
+            name: _(`/dist/${name}/package.json`),
+            contents: `{"name": "${name}", "typings": "./index.d.ts", "${prop}": "./index.js"}`,
+          },
+          {name: _(`/dist/${name}/index.js`), contents: 'var DUMMY_DATA = true;'},
+          {name: _(`/dist/${name}/index.d.ts`), contents: 'export type DummyData = boolean;'},
+          {name: _(`/dist/${name}/index.metadata.json`), contents: 'DUMMY DATA'},
+        ];
+      };
+
+      loadTestFiles([
+        ...createEntryPoint('processable-1', 'es2015'),
+        ...createEntryPoint('unprocessable-2', 'main'),
+        ...createEntryPoint('unprocessable-3', 'main'),
+      ]);
+
+      expect(() => mainNgcc({
+               basePath: '/dist',
+               propertiesToConsider: ['es2015', 'fesm5', 'module'],
+               logger: new MockLogger(),
+             }))
+          .toThrowError(
+              'Unable to process any formats for the following entry-points (tried es2015, fesm5, module): \n' +
+              `  - ${_('/dist/unprocessable-2')}\n` +
+              `  - ${_('/dist/unprocessable-3')}`);
+    });
+
     it('should throw, if an error happens during processing', () => {
       spyOn(Transformer.prototype, 'transform').and.throwError('Test error.');
 
@@ -82,6 +112,40 @@ runInEachFileSystem(() => {
 
         expect(promise).toEqual(jasmine.any(Promise));
         await promise;
+      });
+
+      it('should reject, if some of the entry-points are unprocessable', async() => {
+        const createEntryPoint = (name: string, prop: EntryPointJsonProperty): TestFile[] => {
+          return [
+            {
+              name: _(`/dist/${name}/package.json`),
+              contents: `{"name": "${name}", "typings": "./index.d.ts", "${prop}": "./index.js"}`,
+            },
+            {name: _(`/dist/${name}/index.js`), contents: 'var DUMMY_DATA = true;'},
+            {name: _(`/dist/${name}/index.d.ts`), contents: 'export type DummyData = boolean;'},
+            {name: _(`/dist/${name}/index.metadata.json`), contents: 'DUMMY DATA'},
+          ];
+        };
+
+        loadTestFiles([
+          ...createEntryPoint('processable-1', 'es2015'),
+          ...createEntryPoint('unprocessable-2', 'main'),
+          ...createEntryPoint('unprocessable-3', 'main'),
+        ]);
+
+        const promise = mainNgcc({
+          basePath: '/dist',
+          propertiesToConsider: ['es2015', 'fesm5', 'module'],
+          logger: new MockLogger(),
+          async: true,
+        });
+
+        await promise.then(
+            () => Promise.reject('Expected promise to be rejected.'),
+            err => expect(err).toEqual(new Error(
+                'Unable to process any formats for the following entry-points (tried es2015, fesm5, module): \n' +
+                `  - ${_('/dist/unprocessable-2')}\n` +
+                `  - ${_('/dist/unprocessable-3')}`)));
       });
 
       it('should reject, if an error happens during processing', async() => {
