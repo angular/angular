@@ -84,7 +84,7 @@ export function ɵɵelementStart(
     ngDevMode && ngDevMode.firstTemplatePass++;
     resolveDirectives(tView, lView, tNode, localRefs || null);
 
-    const inputData = initializeTNodeInputs(tNode);
+    const inputData = initializeTNodeInputs(tView, tNode);
     if (inputData && inputData.hasOwnProperty('class')) {
       tNode.flags |= TNodeFlags.hasClassInput;
     }

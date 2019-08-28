@@ -179,7 +179,7 @@ function listenerInternal(
   if (tNode.outputs === undefined) {
     // if we create TNode here, inputs must be undefined so we know they still need to be
     // checked
-    tNode.outputs = generatePropertyAliases(tNode, BindingDirection.Output);
+    tNode.outputs = generatePropertyAliases(tView, tNode, BindingDirection.Output);
   }
 
   const outputs = tNode.outputs;
