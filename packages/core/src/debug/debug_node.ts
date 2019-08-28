@@ -16,7 +16,7 @@ import {TStylingContext} from '../render3/styling_next/interfaces';
 import {stylingMapToStringMap} from '../render3/styling_next/map_based_bindings';
 import {NodeStylingDebug} from '../render3/styling_next/styling_debug';
 import {isStylingContext} from '../render3/styling_next/util';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/util/discovery_utils';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, isPropMetadataString, renderStringify} from '../render3/util/misc_utils';
 import {findComponentView} from '../render3/util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
@@ -272,7 +272,11 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
    *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
   get properties(): {[key: string]: any;} {
-    const context = loadLContext(this.nativeNode) !;
+    const context = loadLContext(this.nativeNode, false);
+    if (context == null) {
+      return {};
+    }
+
     const lView = context.lView;
     const tData = lView[TVIEW].data;
     const tNode = tData[context.nodeIndex] as TNode;
@@ -297,7 +301,11 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return attributes;
     }
 
-    const context = loadLContext(element);
+    const context = loadLContext(element, false);
+    if (context == null) {
+      return {};
+    }
+
     const lView = context.lView;
     const tNodeAttrs = (lView[TVIEW].data[context.nodeIndex] as TNode).attrs;
     const lowercaseTNodeAttrs: string[] = [];
@@ -413,22 +421,23 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 }
 
 function _getStylingDebugInfo(element: any, isClassBased: boolean) {
-  if (element) {
-    const context = loadLContextFromNode(element);
-    const lView = context.lView;
-    const tData = lView[TVIEW].data;
-    const tNode = tData[context.nodeIndex] as TNode;
-    if (isClassBased) {
-      return isStylingContext(tNode.classes) ?
-          new NodeStylingDebug(tNode.classes as TStylingContext, lView, true).values :
-          stylingMapToStringMap(tNode.classes);
-    } else {
-      return isStylingContext(tNode.styles) ?
-          new NodeStylingDebug(tNode.styles as TStylingContext, lView, false).values :
-          stylingMapToStringMap(tNode.styles);
-    }
+  const context = loadLContext(element, false);
+  if (!context) {
+    return {};
   }
-  return {};
+
+  const lView = context.lView;
+  const tData = lView[TVIEW].data;
+  const tNode = tData[context.nodeIndex] as TNode;
+  if (isClassBased) {
+    return isStylingContext(tNode.classes) ?
+        new NodeStylingDebug(tNode.classes as TStylingContext, lView, true).values :
+        stylingMapToStringMap(tNode.classes);
+  } else {
+    return isStylingContext(tNode.styles) ?
+        new NodeStylingDebug(tNode.styles as TStylingContext, lView, false).values :
+        stylingMapToStringMap(tNode.styles);
+  }
 }
 
 /**
