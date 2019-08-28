@@ -813,9 +813,8 @@ export function createTNode(
  * @param direction whether to consider inputs or outputs
  * @returns PropertyAliases|null aggregate of all properties if any, `null` otherwise
  */
-export function generatePropertyAliases(tNode: TNode, direction: BindingDirection): PropertyAliases|
-    null {
-  const tView = getLView()[TVIEW];
+export function generatePropertyAliases(
+    tView: TView, tNode: TNode, direction: BindingDirection): PropertyAliases|null {
   let propStore: PropertyAliases|null = null;
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
@@ -865,7 +864,7 @@ export function elementPropertyInternal<T>(
   const tNode = getTNode(index, lView);
   let inputData: PropertyAliases|null|undefined;
   let dataValue: PropertyAliasValue|undefined;
-  if (!nativeOnly && (inputData = initializeTNodeInputs(tNode)) &&
+  if (!nativeOnly && (inputData = initializeTNodeInputs(lView[TVIEW], tNode)) &&
       (dataValue = inputData[propName])) {
     setInputsForProperty(lView, dataValue, value);
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
@@ -1786,12 +1785,12 @@ export function storeBindingMetadata(lView: LView, prefix = '', suffix = ''): st
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 
-export function initializeTNodeInputs(tNode: TNode): PropertyAliases|null {
+export function initializeTNodeInputs(tView: TView, tNode: TNode): PropertyAliases|null {
   // If tNode.inputs is undefined, a listener has created outputs, but inputs haven't
   // yet been checked.
   if (tNode.inputs === undefined) {
     // mark inputs as checked
-    tNode.inputs = generatePropertyAliases(tNode, BindingDirection.Input);
+    tNode.inputs = generatePropertyAliases(tView, tNode, BindingDirection.Input);
   }
   return tNode.inputs;
 }
