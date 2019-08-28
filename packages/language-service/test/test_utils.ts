@@ -239,6 +239,78 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     }
     return name;
   }
+
+
+  /**
+   * Append a snippet of code to `app.component.ts` and return the file name.
+   * There must not be any name collision with existing code.
+   * @param code Snippet of code
+   */
+  addCode(code: string) {
+    const fileName = '/app/app.component.ts';
+    const originalContent = this.getFileContent(fileName);
+    const newContent = originalContent + code;
+    this.override(fileName, newContent);
+    return fileName;
+  }
+
+  /**
+   * Returns the definition marker ᐱselectorᐱ for the specified 'selector'.
+   * Asserts that marker exists.
+   * @param fileName name of the file
+   * @param selector name of the marker
+   */
+  getDefinitionMarkerFor(fileName: string, selector: string): ts.TextSpan {
+    const markers = this.getReferenceMarkers(fileName);
+    expect(markers).toBeDefined();
+    expect(Object.keys(markers !.definitions)).toContain(selector);
+    expect(markers !.definitions[selector].length).toBe(1);
+    const marker = markers !.definitions[selector][0];
+    expect(marker.start).toBeLessThanOrEqual(marker.end);
+    return {
+      start: marker.start,
+      length: marker.end - marker.start,
+    };
+  }
+
+  /**
+   * Returns the reference marker «selector» for the specified 'selector'.
+   * Asserts that marker exists.
+   * @param fileName name of the file
+   * @param selector name of the marker
+   */
+  getReferenceMarkerFor(fileName: string, selector: string): ts.TextSpan {
+    const markers = this.getReferenceMarkers(fileName);
+    expect(markers).toBeDefined();
+    expect(Object.keys(markers !.references)).toContain(selector);
+    expect(markers !.references[selector].length).toBe(1);
+    const marker = markers !.references[selector][0];
+    expect(marker.start).toBeLessThanOrEqual(marker.end);
+    return {
+      start: marker.start,
+      length: marker.end - marker.start,
+    };
+  }
+
+  /**
+   * Returns the location marker ~{selector} for the specified 'selector'.
+   * Asserts that marker exists.
+   * @param fileName name of the file
+   * @param selector name of the marker
+   */
+  getLocationMarkerFor(fileName: string, selector: string): ts.TextSpan {
+    const markers = this.getMarkerLocations(fileName);
+    expect(markers).toBeDefined();
+    const start = markers ![`start-${selector}`];
+    expect(start).toBeDefined();
+    const end = markers ![`end-${selector}`];
+    expect(end).toBeDefined();
+    expect(start).toBeLessThanOrEqual(end);
+    return {
+      start: start,
+      length: end - start,
+    };
+  }
 }
 
 function iterableToArray<T>(iterator: IterableIterator<T>) {
