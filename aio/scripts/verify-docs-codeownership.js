@@ -67,6 +67,8 @@ function getPathsFromAioContent() {
 }
 
 function getPathsFromCodeowners() {
+  // Use capturing groups for `images/` and `examples` to be able to differentiate between the
+  // different kinds of matches (guide, image, example) later (see `isImage`/`isExample` below).
   const aioGuidesOrImagesPathRe = /^\/aio\/content\/(?:(images\/)?guide|(examples))\/([^\s\*/]+)/;
   const pkgExamplesPathRe = /^\/packages\/examples\/([^\s\*/]+)/;
   const manualGlobExpansions = {
