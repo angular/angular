@@ -65,8 +65,8 @@ export const ngClassFactoryDef = ngClassFactoryDef__PRE_R3__;
  * @publicApi
  */
 export class NgClassBase {
-  static ngDirectiveDef: any = ngClassDirectiveDef;
-  static ngFactoryDef: any = ngClassFactoryDef;
+  static ngDirectiveDef: never = ngClassDirectiveDef as never;
+  static ngFactoryDef: never = ngClassFactoryDef as never;
 
   constructor(protected _delegate: NgClassImpl) {}
 

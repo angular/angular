@@ -64,8 +64,8 @@ export const ngStyleFactoryDef = ngStyleDirectiveDef__PRE_R3__;
  * @publicApi
  */
 export class NgStyleBase {
-  static ngDirectiveDef: any = ngStyleDirectiveDef;
-  static ngFactory: any = ngStyleFactoryDef;
+  static ngDirectiveDef: never = ngStyleDirectiveDef as never;
+  static ngFactory: never = ngStyleFactoryDef as never;
 
   constructor(protected _delegate: NgStyleImpl) {}
 
