@@ -212,7 +212,7 @@ export function getOrCreateTNode(
   // Keep this function short, so that the VM will inline it.
   const adjustedIndex = index + HEADER_OFFSET;
   const tNode = tView.data[adjustedIndex] as TNode ||
-      createTNodeAtIndex(tView, tHostNode, adjustedIndex, type, name, attrs, index);
+      createTNodeAtIndex(tView, tHostNode, adjustedIndex, type, name, attrs);
   setPreviousOrParentTNode(tNode, true);
   return tNode as TElementNode & TViewNode & TContainerNode & TElementContainerNode &
       TProjectionNode & TIcuContainerNode;
@@ -220,7 +220,7 @@ export function getOrCreateTNode(
 
 function createTNodeAtIndex(
     tView: TView, tHostNode: TNode | null, adjustedIndex: number, type: TNodeType,
-    name: string | null, attrs: TAttributes | null, index: number) {
+    name: string | null, attrs: TAttributes | null) {
   const previousOrParentTNode = getPreviousOrParentTNode();
   const isParent = getIsParent();
   const parent =
@@ -231,9 +231,10 @@ function createTNodeAtIndex(
   const tParentNode = parentInSameView ? parent as TElementNode | TContainerNode : null;
   const tNode = tView.data[adjustedIndex] =
       createTNode(tView, tParentNode, type, adjustedIndex, name, attrs);
-  // The first node is not always the one at index 0, in case of i18n, index 0 can be the
-  // instruction `i18nStart` and the first node has the index 1 or more
-  if (index === 0 || !tView.firstChild) {
+  // Assign a pointer to the first child node of a given view. The first node is not always the one
+  // at index 0, in case of i18n, index 0 can be the instruction `i18nStart` and the first node has
+  // the index 1 or more, so we can't just check node index.
+  if (tView.firstChild === null) {
     tView.firstChild = tNode;
   }
   if (previousOrParentTNode) {
