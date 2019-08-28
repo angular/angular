@@ -222,7 +222,7 @@ describe('CodeComponent', () => {
     });
 
     it('should call copier service when clicked', () => {
-      const copierService: CopierService = TestBed.get(CopierService);
+      const copierService: CopierService = TestBed.inject(CopierService);
       const spy = spyOn(copierService, 'copyText');
       expect(spy.calls.count()).toBe(0, 'before click');
       getButton().click();
@@ -230,14 +230,14 @@ describe('CodeComponent', () => {
     });
 
     it('should copy code text when clicked', () => {
-      const copierService: CopierService = TestBed.get(CopierService);
+      const copierService: CopierService = TestBed.inject(CopierService);
       const spy = spyOn(copierService, 'copyText');
       getButton().click();
       expect(spy.calls.argsFor(0)[0]).toBe(oneLineCode, 'after click');
     });
 
     it('should preserve newlines in the copied code', () => {
-      const copierService: CopierService = TestBed.get(CopierService);
+      const copierService: CopierService = TestBed.inject(CopierService);
       const spy = spyOn(copierService, 'copyText');
       const expectedCode = smallMultiLineCode.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
       let actualCode;
@@ -258,8 +258,8 @@ describe('CodeComponent', () => {
     });
 
     it('should display a message when copy succeeds', () => {
-      const snackBar: MatSnackBar = TestBed.get(MatSnackBar);
-      const copierService: CopierService = TestBed.get(CopierService);
+      const snackBar: MatSnackBar = TestBed.inject(MatSnackBar);
+      const copierService: CopierService = TestBed.inject(CopierService);
       spyOn(snackBar, 'open');
       spyOn(copierService, 'copyText').and.returnValue(true);
       getButton().click();
@@ -267,9 +267,9 @@ describe('CodeComponent', () => {
     });
 
     it('should display an error when copy fails', () => {
-      const snackBar: MatSnackBar = TestBed.get(MatSnackBar);
-      const copierService: CopierService = TestBed.get(CopierService);
-      const logger: TestLogger = TestBed.get(Logger);
+      const snackBar: MatSnackBar = TestBed.inject(MatSnackBar);
+      const copierService: CopierService = TestBed.inject(CopierService);
+      const logger = TestBed.inject(Logger) as unknown as TestLogger;
       spyOn(snackBar, 'open');
       spyOn(copierService, 'copyText').and.returnValue(false);
       getButton().click();

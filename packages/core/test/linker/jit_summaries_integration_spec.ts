@@ -80,8 +80,7 @@ import {obsoleteInIvy} from '@angular/private/testing';
           TestBed.configureTestingModule({imports: [SomeModule], providers: [SomeDep]});
 
           let summariesPromise = TestBed.compileComponents().then(() => {
-            const metadataResolver =
-                TestBed.get(CompileMetadataResolver) as CompileMetadataResolver;
+            const metadataResolver = TestBed.inject(CompileMetadataResolver);
             const summaries = [
               metadataResolver.getNgModuleSummary(SomeModule),
               // test nesting via closures, as we use this in the generated code too.
@@ -174,7 +173,7 @@ import {obsoleteInIvy} from '@angular/private/testing';
           TestBed.configureTestingModule({
             providers: [SomeService, SomeDep],
           });
-          TestBed.get(SomeService);
+          TestBed.inject(SomeService);
           expectInstanceCreated(SomeService);
         });
 

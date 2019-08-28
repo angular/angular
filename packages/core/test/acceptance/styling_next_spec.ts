@@ -728,7 +728,7 @@ describe('new styling integration', () => {
 
     TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    const sanitizer: DomSanitizer = TestBed.get(DomSanitizer);
+    const sanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
 
     fixture.componentInstance.path = sanitizer.bypassSecurityTrustStyle('url("#test")');
     fixture.detectChanges();

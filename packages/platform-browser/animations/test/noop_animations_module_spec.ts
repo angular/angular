@@ -68,7 +68,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});
-         const engine = TestBed.get(ɵAnimationEngine);
+         const engine = TestBed.inject(ɵAnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
 

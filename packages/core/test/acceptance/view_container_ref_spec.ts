@@ -590,7 +590,7 @@ describe('ViewContainerRef', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({declarations: [EmbeddedViewInsertionComp, VCRefDirective]});
 
-      const _origRendererFactory = TestBed.get(RendererFactory2) as RendererFactory2;
+      const _origRendererFactory = TestBed.inject(RendererFactory2);
       const _origCreateRenderer = _origRendererFactory.createRenderer;
 
       _origRendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
@@ -944,9 +944,9 @@ describe('ViewContainerRef', () => {
           {provide: String, useValue: 'root_module'},
           // We need to provide the following tokens because otherwise view engine
           // will throw when creating a component factory in debug mode.
-          {provide: Sanitizer, useValue: TestBed.get(DomSanitizer)},
-          {provide: ErrorHandler, useValue: TestBed.get(ErrorHandler)},
-          {provide: RendererFactory2, useValue: TestBed.get(RendererFactory2)},
+          {provide: Sanitizer, useValue: TestBed.inject(DomSanitizer)},
+          {provide: ErrorHandler, useValue: TestBed.inject(ErrorHandler)},
+          {provide: RendererFactory2, useValue: TestBed.inject(RendererFactory2)},
         ]
       })
       class MyAppModule {
@@ -958,7 +958,7 @@ describe('ViewContainerRef', () => {
 
       // Compile test modules in order to be able to pass the NgModuleRef or the
       // module injector to the ViewContainerRef create component method.
-      const compiler = TestBed.get(Compiler) as Compiler;
+      const compiler = TestBed.inject(Compiler);
       const appModuleFactory = compiler.compileModuleSync(MyAppModule);
       const someModuleFactory = compiler.compileModuleSync(SomeModule);
       const appModuleRef = appModuleFactory.create(null);

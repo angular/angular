@@ -355,7 +355,12 @@ array of the services that you'll test or mock.
   header="app/demo/demo.testbed.spec.ts (provide ValueService in beforeEach">
 </code-example>
 
-Then inject it inside a test by calling `TestBed.get()` with the service class as the argument.
+Then inject it inside a test by calling `TestBed.inject()` with the service class as the argument.
+
+**Note:** We used to have `TestBed.get()` instead of `TestBed.inject()`.
+The `get` method wasn't type safe, it always returned `any`, and this is error prone.
+We decided to migrate to a new function instead of updating the existing one given
+the large scale use that would have an immense amount of breaking changes.
 
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
@@ -1063,14 +1068,14 @@ The component injector is a property of the fixture's `DebugElement`.
 
 {@a testbed-get}
 
-#### _TestBed.get()_
+#### _TestBed.inject()_
 
-You _may_ also be able to get the service from the root injector via `TestBed.get()`.
+You _may_ also be able to get the service from the root injector via `TestBed.inject()`.
 This is easier to remember and less verbose.
 But it only works when Angular injects the component with the service instance in the test's root injector.
 
 In this test suite, the _only_ provider of `UserService` is the root testing module,
-so it is safe to call `TestBed.get()` as follows:
+so it is safe to call `TestBed.inject()` as follows:
 
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
@@ -1080,7 +1085,7 @@ so it is safe to call `TestBed.get()` as follows:
 
 <div class="alert is-helpful">
 
-For a use case in which `TestBed.get()` does not work,
+For a use case in which `TestBed.inject()` does not work,
 see the [_Override component providers_](#component-override) section that
 explains when and why you must get the service from the component's injector instead.
 
@@ -1102,7 +1107,7 @@ a clone of the provided `userServiceStub`.
 
 #### Final setup and tests
 
-Here's the complete `beforeEach()`, using `TestBed.get()`:
+Here's the complete `beforeEach()`, using `TestBed.inject()`:
 
 <code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="setup" header="app/welcome/welcome.component.spec.ts"></code-example>
 
@@ -3090,13 +3095,13 @@ Here are the most important static methods, in order of likely utility.
 
       What if the service is optional?
 
-      The `TestBed.get()` method takes an optional second parameter,
+      The `TestBed.inject()` method takes an optional second parameter,
       the object to return if Angular can't find the provider
       (`null` in this example):
 
       <code-example path="testing/src/app/demo/demo.testbed.spec.ts" region="testbed-get-w-null" header="app/demo/demo.testbed.spec.ts"></code-example>
 
-      After calling `get`, the `TestBed` configuration is frozen for the duration of the current spec.
+      After calling `TestBed.inject`, the `TestBed` configuration is frozen for the duration of the current spec.
 
     </td>
   </tr>

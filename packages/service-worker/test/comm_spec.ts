@@ -58,7 +58,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           ]
         });
 
-        expect(TestBed.get(NgswCommChannel).isEnabled).toEqual(false);
+        expect(TestBed.inject(NgswCommChannel).isEnabled).toEqual(false);
       });
       it('gives disabled NgswCommChannel when \'enabled\' option is false', () => {
         TestBed.configureTestingModule({
@@ -72,7 +72,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           ]
         });
 
-        expect(TestBed.get(NgswCommChannel).isEnabled).toEqual(false);
+        expect(TestBed.inject(NgswCommChannel).isEnabled).toEqual(false);
       });
       it('gives disabled NgswCommChannel when navigator.serviceWorker is undefined', () => {
         TestBed.configureTestingModule({
@@ -94,7 +94,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         try {
           // Set `navigator` to `{serviceWorker: undefined}`.
           Object.defineProperty(context, 'navigator', patchedDescriptor);
-          expect(TestBed.get(NgswCommChannel).isEnabled).toBe(false);
+          expect(TestBed.inject(NgswCommChannel).isEnabled).toBe(false);
         } finally {
           if (originalDescriptor) {
             Object.defineProperty(context, 'navigator', originalDescriptor);
@@ -123,7 +123,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
            try {
              // Set `navigator` to `{serviceWorker: mock}`.
              Object.defineProperty(context, 'navigator', patchedDescriptor);
-             expect(TestBed.get(NgswCommChannel).isEnabled).toBe(true);
+             expect(TestBed.inject(NgswCommChannel).isEnabled).toBe(true);
            } finally {
              if (originalDescriptor) {
                Object.defineProperty(context, 'navigator', originalDescriptor);
@@ -154,7 +154,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
             {provide: NgswCommChannel, useValue: comm},
           ]
         });
-        expect(() => TestBed.get(SwPush)).not.toThrow();
+        expect(() => TestBed.inject(SwPush)).not.toThrow();
       });
 
       describe('requestSubscription()', () => {
@@ -472,7 +472,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
             {provide: NgswCommChannel, useValue: comm},
           ]
         });
-        expect(() => TestBed.get(SwUpdate)).not.toThrow();
+        expect(() => TestBed.inject(SwUpdate)).not.toThrow();
       });
       describe('with no SW', () => {
         beforeEach(() => { comm = new NgswCommChannel(undefined); });

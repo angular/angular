@@ -32,7 +32,7 @@ describe('Router', () => {
     beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
 
     it('should copy config to avoid mutations of user-provided objects', () => {
-      const r: Router = TestBed.get(Router);
+      const r: Router = TestBed.inject(Router);
       const configs: Routes = [{
         path: 'a',
         component: TestComponent,
@@ -66,7 +66,7 @@ describe('Router', () => {
     beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
 
     it('should not change root route when updating the root component', () => {
-      const r: Router = TestBed.get(Router);
+      const r: Router = TestBed.inject(Router);
       const root = r.routerState.root;
 
       (r as any).resetRootComponentType(NewRootComponent);
