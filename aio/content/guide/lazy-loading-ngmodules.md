@@ -5,13 +5,13 @@
 By default, NgModules are eagerly loaded, which means that as soon as the app loads, so do all the NgModules, whether or not they are immediately necessary. For large apps with lots of routes, consider lazy loading&mdash;a design pattern that loads NgModules as needed. Lazy loading helps keep initial
 bundle sizes smaller, which in turn helps decrease load times.
 
-For the final sample app with two lazy loaded modules that this page describes, see the
+For the final sample app with two lazy-loaded modules that this page describes, see the
 <live-example></live-example>.
 
-There are three main steps to setting up a lazy loaded feature module:
+There are three main steps to setting up a lazy-loaded feature module:
 
-1. Create the feature module.
-1. Create the feature module’s routing module.
+1. Create the feature module with the CLI, using the `--route` flag.
+1. Create the feature module’s component.
 1. Configure the routes.
 
 ## Set up an app
@@ -32,53 +32,44 @@ Navigate into the project by issuing the command `cd customer-app`.
 
 ## Create a feature module with routing
 
-Next, you’ll need a feature module to route to. To make one, enter
-the following command at the terminal window prompt where `customers` is the name of the module:
+Next, you’ll need a feature module with a component to route to.
+To make one, enter the following command at the terminal window prompt, where `customers` is the name of the features module, and `customer-list` is the component to route to:
 
 ```sh
-ng generate module customers --routing
+ng generate module customers --route=customer-list --module=app.module
 ```
 
-This creates a customers folder with two files inside; `CustomersModule`
-and `CustomersRoutingModule`. `CustomersModule` will act as the gatekeeper
-for anything that concerns customers. `CustomersRoutingModule` will handle
-any customer-related routing. This keeps the app’s structure organized as
-the app grows and allows you to reuse this module while easily keeping its routing intact.
+This creates a `customers` folder with the new lazy-loadable module `CustomersModule` defined in the file `customers.module.ts`.
+Because the new module is meant to be lazy-loaded, the command does NOT add a JavaScript `import` statement for the new feature module to the root application's module file,
+`app.module.ts`.
+Instead, it adds the declared route to the `routes` array in `app.module.ts`. *Is this  what it is supposed to do? It doesn't do it.*
 
-The CLI imports the `CustomersRoutingModule` into the `CustomersModule` by
-adding a JavaScript import statement at the top of the file and adding
-`CustomersRoutingModule` to the `@NgModule` `imports` array.
+### Create the feature component
 
-## Add a component to the feature module
+To see the routing work, you need to add the `CustomerListComponent` to the new feature module.
+Use the following CLI command to generate a stub component, with `CustomersModule` as the declaring module.
 
-In order to see the module being lazy loaded in the browser, create a component to render some HTML when the app loads `CustomersModule`. At the command line, enter the following:
+<code-example language="bash">
+ng generate component customers/customer-list --module=customers.module
+</code-example>
+
+This creates the new component folder, `customer-list`, with the four files that make up the stub for `CustomerListComponent`.
+
+### Add another feature module
+
+For another place to route to, create a second lazy-loaded feature module with routing, and a stub component.
 
 ```sh
-ng generate component customers/customer-list
+ng generate module orders --route=order-list --module=orders.module
 ```
 
-This creates a folder inside of `customers` called `customer-list`
-with the four files that make up the component.
+This makes a new folder called `orders` containing an `OrdersModule` and `OrdersRoutingModule`, along with the new `order-list` folder. All of the module imports are added automatically.
 
-Just like with the routing module, the CLI imports the
-`CustomerListComponent` into the `CustomersModule`.
+Create an `OrderListComponent` in the new module folder.
 
-
-## Add another feature module
-
-For another place to route to, create a second feature module with routing:
-
-```sh
-ng generate module orders --routing
-```
-
-This makes a new folder called `orders` containing an `OrdersModule` and an `OrdersRoutingModule`.
-
-Now, just like with the `CustomersModule`, give it some content:
-
-```sh
-ng generate component orders/order-list
-```
+<code-example language="bash">
+ng generate component orders/order-list --module=orders.module
+</code-example>
 
 ## Set up the UI
 
@@ -209,4 +200,3 @@ You may also be interested in the following:
 * [Types of Feature Modules](guide/module-types).
 * [Route-level code-splitting in Angular](https://web.dev/route-level-code-splitting-in-angular/)
 * [Route preloading strategies in Angular](https://web.dev/route-preloading-in-angular/)
-
