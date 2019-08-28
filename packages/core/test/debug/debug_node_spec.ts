@@ -8,7 +8,7 @@
 
 
 import {CommonModule, NgIfContext, ɵgetDOM as getDOM} from '@angular/common';
-import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, OnInit, Output, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, DebugElement, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, OnInit, Output, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {hasClass} from '@angular/platform-browser/testing/src/browser_util';
@@ -578,6 +578,43 @@ class TestCmptWithPropBindings {
       fixture.detectChanges();
 
       expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy();
+    });
+
+    describe('DebugElement.query doesn\'t fail on elements outside Angular context', () => {
+      @Component({template: '<div></div>'})
+      class NativeEl {
+        constructor(private elementRef: ElementRef) {}
+
+        ngAfterViewInit() {
+          this.elementRef.nativeElement.children[0].appendChild(document.createElement('p'));
+        }
+      }
+
+      let el: DebugElement;
+      beforeEach(() => {
+        const fixture =
+            TestBed.configureTestingModule({declarations: [NativeEl]}).createComponent(NativeEl);
+        fixture.detectChanges();
+        el = fixture.debugElement;
+      });
+
+      it('when searching for elements by name',
+         () => { expect(() => el.query(e => e.name === 'any search text')).not.toThrow(); });
+
+      it('when searching for elements by their attributes', () => {
+        expect(() => el.query(e => e.attributes !['name'] === 'any attribute')).not.toThrow();
+      });
+
+      it('when searching for elements by their classes',
+         () => { expect(() => el.query(e => e.classes['any class'] === true)).not.toThrow(); });
+
+      it('when searching for elements by their styles', () => {
+        expect(() => el.query(e => e.styles['any style'] === 'any value')).not.toThrow();
+      });
+
+      it('when searching for elements by their properties', () => {
+        expect(() => el.query(e => e.properties['any prop'] === 'any value')).not.toThrow();
+      });
     });
 
     it('DebugElement.queryAll should pick up both elements inserted via the view and through Renderer2',
