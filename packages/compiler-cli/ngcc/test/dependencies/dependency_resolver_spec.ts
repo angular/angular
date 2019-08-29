@@ -5,6 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {DepGraph} from 'dependency-graph';
+
 import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
@@ -12,6 +15,7 @@ import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
+
 
 interface DepMap {
   [path: string]: {resolved: string[], missing: string[]};
@@ -160,6 +164,15 @@ runInEachFileSystem(() => {
           {entryPoint: first, dependencyPath: '/ignored-1'},
           {entryPoint: third, dependencyPath: '/ignored-2'},
         ]);
+      });
+
+      it('should return the computed dependency graph', () => {
+        spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
+        const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
+
+        expect(result.graph).toEqual(jasmine.any(DepGraph));
+        expect(result.graph.size()).toBe(5);
+        expect(result.graph.dependenciesOf(third.path)).toEqual([fifth.path, fourth.path]);
       });
 
       it('should only return dependencies of the target, if provided', () => {

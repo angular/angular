@@ -23,7 +23,7 @@ export type EntryPointFormat = 'esm5' | 'esm2015' | 'umd' | 'commonjs';
  * An object containing information about an entry-point, including paths
  * to each of the possible entry-point formats.
  */
-export interface EntryPoint {
+export interface EntryPoint extends JsonObject {
   /** The name of the package (e.g. `@angular/core`). */
   name: string;
   /** The parsed package.json file for this entry-point. */

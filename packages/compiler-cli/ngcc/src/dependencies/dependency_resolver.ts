@@ -63,16 +63,17 @@ export interface DependencyDiagnostics {
 export type PartiallyOrderedEntryPoints = PartiallyOrderedList<EntryPoint>;
 
 /**
- * A list of entry-points, sorted by their dependencies.
+ * A list of entry-points, sorted by their dependencies, and the dependency graph.
  *
  * The `entryPoints` array will be ordered so that no entry point depends upon an entry point that
  * appears later in the array.
  *
- * Some entry points or their dependencies may be have been ignored. These are captured for
+ * Some entry points or their dependencies may have been ignored. These are captured for
  * diagnostic purposes in `invalidEntryPoints` and `ignoredDependencies` respectively.
  */
 export interface SortedEntryPointsInfo extends DependencyDiagnostics {
   entryPoints: PartiallyOrderedEntryPoints;
+  graph: DepGraph<EntryPoint>;
 }
 
 /**
@@ -109,6 +110,7 @@ export class DependencyResolver {
     return {
       entryPoints: (sortedEntryPointNodes as PartiallyOrderedList<string>)
                        .map(path => graph.getNodeData(path)),
+      graph,
       invalidEntryPoints,
       ignoredDependencies,
     };
