@@ -23,7 +23,8 @@ export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
  * @throws Error if the entry-point has already been processed with a different ngcc version.
  */
 export function hasBeenProcessed(
-    packageJson: EntryPointPackageJson, format: EntryPointJsonProperty | 'typings'): boolean {
+    packageJson: EntryPointPackageJson, format: EntryPointJsonProperty | 'typings',
+    entryPointPath: AbsoluteFsPath): boolean {
   if (!packageJson.__processed_by_ivy_ngcc__) {
     return false;
   }
@@ -31,7 +32,7 @@ export function hasBeenProcessed(
           .some(property => packageJson.__processed_by_ivy_ngcc__ ![property] !== NGCC_VERSION)) {
     throw new Error(
         'The ngcc compiler has changed since the last ngcc build.\n' +
-        'Please completely remove `node_modules` and try again.');
+        `Please completely remove the "node_modules" folder containing "${entryPointPath}" and try again.`);
   }
 
   return packageJson.__processed_by_ivy_ngcc__[format] === NGCC_VERSION;
