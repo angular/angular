@@ -27,11 +27,17 @@ export class SingleProcessExecutor implements Executor {
         createCompileFn((task, outcome) => onTaskCompleted(this.pkgJsonUpdater, task, outcome));
 
     // Process all tasks.
+    this.logger.debug('Processing tasks...');
+    const startTime = Date.now();
+
     while (!taskQueue.allTasksCompleted) {
       const task = taskQueue.getNextTask() !;
       compile(task);
       taskQueue.markTaskCompleted(task);
     }
+
+    const duration = Math.round((Date.now() - startTime) / 1000);
+    this.logger.debug(`Processed tasks in ${duration}s.`);
   }
 }
 
