@@ -59,3 +59,11 @@ ng_rollup_bundle(
         ":perf_lib",
     ],
 )
+
+ng_rollup_bundle(
+    name = "map_based_style_and_class_bindings",
+    entry_point = ":map_based_style_and_class_bindings/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
