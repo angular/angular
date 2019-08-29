@@ -51,3 +51,11 @@ ng_rollup_bundle(
         ":perf_lib",
     ],
 )
+
+ng_rollup_bundle(
+    name = "style_and_class_bindings",
+    entry_point = ":style_and_class_bindings/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
