@@ -5,6 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+/// <reference types="node" />
+
+import * as os from 'os';
+
 import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
@@ -14,6 +19,7 @@ import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTI
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLogger} from '../helpers/mock_logger';
+
 
 const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
 
@@ -28,6 +34,9 @@ runInEachFileSystem(() => {
       fs = getFileSystem();
       pkgJsonUpdater = new DirectPackageJsonUpdater(fs);
       initMockFileSystem(fs, testFiles);
+
+      // Force single-process execution in unit tests by mocking available CPUs to 1.
+      spyOn(os, 'cpus').and.returnValue([{model: 'Mock CPU'}]);
     });
 
     it('should run ngcc without errors for esm2015', () => {
@@ -402,7 +411,6 @@ runInEachFileSystem(() => {
           propertiesToConsider: ['module', 'fesm5', 'esm5'],
           compileAllFormats: false,
           logger: new MockLogger(),
-
         });
         // * In the Angular packages fesm5 and module have the same underlying format,
         //   so both are marked as compiled.
