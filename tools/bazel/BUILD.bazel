@@ -1,0 +1,16 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+# Custom "tsc_wrapped" binary that has "tsickle" available as runtime dependency.
+# This is needed as the default compiler for a "ts_library" does not have a dependency
+# on "tsickle" by default.
+nodejs_binary(
+    name = "tsc_wrapped_with_tsickle",
+    data = [
+        "@npm//@bazel/typescript",
+        "@npm//tsickle",
+    ],
+    entry_point = "@npm//:node_modules/@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js",
+    install_source_map_support = False,
+)

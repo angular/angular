@@ -10,6 +10,10 @@
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true,
 
+    // Disable tsickle. Tsickle is only needed for building library code that will be
+    // shipped through npm packages. This should speed up compilation for tests.
+    "tsickle": false,
+
     // See https://github.com/angular/angular/issues/29107
     "devmodeTargetOverride": "es5"
   }

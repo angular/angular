@@ -35,9 +35,11 @@ node_repositories(
 
 yarn_install(
     name = "npm",
-    # Ensure that the script is available when running `postinstall` in the Bazel sandbox.
+    # Ensure that all resources are available when the "postinstall" or "preinstall" scripts
+    # are executed in the Bazel sandbox.
     data = [
         "//:angular-tsconfig.json",
+        "//:tools/bazel/postinstall-patches.js",
         "//:tools/npm/check-npm.js",
     ],
     package_json = "//:package.json",

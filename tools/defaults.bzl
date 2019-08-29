@@ -34,6 +34,10 @@ def ts_library(tsconfig = None, deps = [], testonly = False, **kwargs):
     _ts_library(
         tsconfig = tsconfig,
         testonly = testonly,
+        # The default "ts_library" compiler does not come with "tsickle" available. Since
+        # we have targets that use "tsickle" decorator processing, we need to ensure that
+        # the compiler could load "tsickle" if needed.
+        compiler = "//tools/bazel:tsc_wrapped_with_tsickle",
         deps = local_deps,
         **kwargs
     )

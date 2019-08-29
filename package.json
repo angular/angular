@@ -13,7 +13,7 @@
     "yarn": ">= 1.17.3"
   },
   "scripts": {
-    "postinstall": "ngc -p angular-tsconfig.json",
+    "postinstall": "node --preserve-symlinks --preserve-symlinks-main tools/bazel/postinstall-patches.js",
     "build": "gulp build-release-packages",
     "bazel:buildifier": "find . -type f \\( -name \"*.bzl\" -or -name WORKSPACE -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs buildifier -v --warnings=attr-cfg,attr-license,attr-non-empty,attr-output-default,attr-single-file,constant-glob,ctx-args,depset-iteration,depset-union,dict-concatenation,duplicated-name,filetype,git-repository,http-archive,integer-division,load,load-on-top,native-build,native-package,output-group,package-name,package-on-top,redefined-variable,repository-name,same-origin-load,string-iteration,unused-variable,unsorted-dict-items,out-of-order-load",
     "bazel:format-lint": "yarn -s bazel:buildifier --lint=warn --mode=check",
@@ -141,6 +141,7 @@
     "run-sequence": "^1.2.2",
     "scss-bundle": "^2.0.1-beta.7",
     "selenium-webdriver": "^3.6.0",
+    "shelljs": "^0.8.3",
     "sorcery": "^0.10.0",
     "stylelint": "^10.1.0",
     "ts-api-guardian": "^0.4.6",

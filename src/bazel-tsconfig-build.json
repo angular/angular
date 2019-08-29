@@ -33,6 +33,11 @@
     // some options here just in favor of the standard tsconfig's which extending this one.
     "suppressTsconfigOverrideWarnings": true,
 
+    // Enable tsickle so that decorators are processed by tsickle. This is necessary because
+    // we don't want to ship JavaScript files that contain references to DOM elements. This
+    // breaks server-side rendering for non-CLI projects: see: angular#30586.
+    "tsickle": true,
+
     // See https://github.com/angular/angular/issues/29107
     "devmodeTargetOverride": "es5"
   }
