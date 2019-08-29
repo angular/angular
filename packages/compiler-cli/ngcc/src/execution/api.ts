@@ -8,11 +8,14 @@
 
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
 
-/** The type of the function that analyzes entry-points and creates the list of tasks. */
-export type AnalyzeEntryPointsFn = () => {
-  processingMetadataPerEntryPoint: Map<string, EntryPointProcessingMetadata>;
-  tasks: Task[];
-};
+
+/**
+ * The type of the function that analyzes entry-points and creates the list of tasks.
+ *
+ * @return A list of tasks that need to be executed in order to process the necessary format
+ *         properties for all entry-points.
+ */
+export type AnalyzeEntryPointsFn = () => Task[];
 
 /** The type of the function that can process/compile a task. */
 export type CompileFn = (task: Task) => void;
@@ -27,15 +30,6 @@ export type CreateCompileFn = (onTaskCompleted: TaskCompletedCallback) => Compil
 export interface Executor {
   execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
       void|Promise<void>;
-}
-
-/** Represents metadata related to the processing of an entry-point. */
-export interface EntryPointProcessingMetadata {
-  /**
-   * Whether the typings for the entry-point have been successfully processed (or were already
-   * processed).
-   */
-  hasProcessedTypings: boolean;
 }
 
 /** Represents a unit of work: processing a specific format property of an entry-point. */
