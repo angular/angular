@@ -65,8 +65,13 @@ function runUndecoratedClassesMigration(tree: Tree, tsconfigPath: string, basePa
       file => !file.isDeclarationFile && !program.isSourceFileFromExternalLibrary(file));
 
   sourceFiles.forEach(sourceFile => {
-    const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     const classes = getUndecoratedClassesWithDecoratedFields(sourceFile, typeChecker);
+
+    if (classes.length === 0) {
+      return;
+    }
+
+    const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
 
     classes.forEach((current, index) => {
       // If it's the first class that we're processing in this file, add `Directive` to the imports.
