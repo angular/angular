@@ -22,10 +22,9 @@ export class SingleProcessExecutor implements Executor {
   execute(analyzeFn: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn): void {
     this.logger.debug(`Running ngcc on ${this.constructor.name}.`);
 
-    const {processingMetadataPerEntryPoint, tasks} = analyzeFn();
-    const compile = createCompileFn(
-        (task, outcome) =>
-            onTaskCompleted(this.pkgJsonUpdater, processingMetadataPerEntryPoint, task, outcome));
+    const tasks = analyzeFn();
+    const compile =
+        createCompileFn((task, outcome) => onTaskCompleted(this.pkgJsonUpdater, task, outcome));
 
     // Process all tasks.
     for (const task of tasks) {
