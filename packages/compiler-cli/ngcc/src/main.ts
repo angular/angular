@@ -16,7 +16,7 @@ import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
-import {AnalyzeEntryPointsFn, CreateCompileFn, EntryPointProcessingMetadata, Executor, Task, TaskProcessingOutcome} from './execution/api';
+import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, Task, TaskProcessingOutcome} from './execution/api';
 import {AsyncSingleProcessExecutor, SingleProcessExecutor} from './execution/single_process_executor';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
@@ -138,7 +138,6 @@ export function mainNgcc(
         fileSystem, pkgJsonUpdater, logger, dependencyResolver, config, absBasePath,
         targetEntryPointPath, pathMappings, supportedPropertiesToConsider, compileAllFormats);
 
-    const processingMetadataPerEntryPoint = new Map<string, EntryPointProcessingMetadata>();
     const unprocessableEntryPointPaths: string[] = [];
     const tasks: Task[] = [];
 
@@ -165,8 +164,6 @@ export function mainNgcc(
         // Only process typings for the first property (if not already processed).
         processDts = false;
       }
-
-      processingMetadataPerEntryPoint.set(entryPoint.path, {hasProcessedTypings});
     }
 
     // Check for entry-points for which we could not process any format at all.
@@ -177,7 +174,7 @@ export function mainNgcc(
           unprocessableEntryPointPaths.map(path => `\n  - ${path}`).join(''));
     }
 
-    return {processingMetadataPerEntryPoint, tasks};
+    return tasks;
   };
 
   // The function for creating the `compile()` function.

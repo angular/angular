@@ -11,14 +11,12 @@ import {markAsProcessed} from '../packages/build_marker';
 import {PackageJsonFormatProperties} from '../packages/entry_point';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
 
-import {EntryPointProcessingMetadata, Task, TaskProcessingOutcome} from './api';
+import {Task, TaskProcessingOutcome} from './api';
 
 
 /** A helper function for handling a task's being completed. */
 export const onTaskCompleted =
-    (pkgJsonUpdater: PackageJsonUpdater,
-     processingMetadataPerEntryPoint: Map<string, EntryPointProcessingMetadata>, task: Task,
-     outcome: TaskProcessingOutcome, ): void => {
+    (pkgJsonUpdater: PackageJsonUpdater, task: Task, outcome: TaskProcessingOutcome): void => {
       const {entryPoint, formatPropertiesToMarkAsProcessed, processDts} = task;
 
       if (outcome === TaskProcessingOutcome.Processed) {
@@ -27,8 +25,6 @@ export const onTaskCompleted =
             [...formatPropertiesToMarkAsProcessed];
 
         if (processDts) {
-          const processingMeta = processingMetadataPerEntryPoint.get(entryPoint.path) !;
-          processingMeta.hasProcessedTypings = true;
           propsToMarkAsProcessed.push('typings');
         }
 
