@@ -141,6 +141,9 @@ export function mainNgcc(
 
   // The function for performing the analysis.
   const analyzeFn: AnalyzeEntryPointsFn = () => {
+    logger.debug('Analyzing entry-points...');
+    const startTime = Date.now();
+
     const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
 
     const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
@@ -195,6 +198,11 @@ export function mainNgcc(
           `${propertiesToConsider.join(', ')}): ` +
           unprocessableEntryPointPaths.map(path => `\n  - ${path}`).join(''));
     }
+
+    const duration = Math.round((Date.now() - startTime) / 1000);
+    logger.debug(
+        `Analyzed ${entryPoints.length} entry-points in ${duration}s. ` +
+        `(Total tasks: ${tasks.length})`);
 
     return getTaskQueue(inParallel, tasks, graph);
   };
