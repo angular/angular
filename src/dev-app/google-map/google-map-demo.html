@@ -2,4 +2,9 @@
             height="400px"
             width="750px"
             [center]="center"
-            [zoom]="zoom"></google-map>
+            [zoom]="zoom"
+            (mapClick)="handleClick($event)"
+            (mapMousemove)="handleMove($event)"></google-map>
+
+<div>Latitude: {{display?.lat}}</div>
+<div>Longitude: {{display?.lng}}</div>
