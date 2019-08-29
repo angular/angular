@@ -1,0 +1,13 @@
+@import '../mdc-helpers/mdc-helpers';
+
+@mixin mat-autocomplete-theme-mdc($theme) {
+  @include mat-using-mdc-theme($theme) {
+    // TODO: implement MDC-based autocomplete.
+  }
+}
+
+@mixin mat-autocomplete-typography-mdc($config) {
+  @include mat-using-mdc-typography($config) {
+    // TODO: implement MDC-based autocomplete.
+  }
+}

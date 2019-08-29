@@ -89,6 +89,7 @@
 
 # Material experimental package
 /src/material-experimental/*                       @jelbourn
+/src/material-experimental/mdc-autocomplete/**     @crisbeto
 /src/material-experimental/mdc-button/**           @andrewseguin
 /src/material-experimental/mdc-card/**             @mmalerba
 /src/material-experimental/mdc-checkbox/**         @mmalerba

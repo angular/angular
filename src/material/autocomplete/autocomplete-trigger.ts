@@ -105,6 +105,7 @@ export function getMatAutocompleteMissingPanelError(): Error {
 @Directive({
   selector: `input[matAutocomplete], textarea[matAutocomplete]`,
   host: {
+    'class': 'mat-autocomplete-trigger',
     '[attr.autocomplete]': 'autocompleteAttribute',
     '[attr.role]': 'autocompleteDisabled ? null : "combobox"',
     '[attr.aria-autocomplete]': 'autocompleteDisabled ? null : "list"',
