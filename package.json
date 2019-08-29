@@ -126,7 +126,7 @@
     "@angular/cli": "^8.0.0-beta.15",
     "@bazel/bazel": "0.28.1",
     "@bazel/buildifier": "^0.26.0",
-    "@bazel/ibazel": "~0.9.0",
+    "@bazel/ibazel": "^0.10.3",
     "@types/minimist": "^1.2.0",
     "browserstacktunnel-wrapper": "2.0.1",
     "check-side-effects": "0.0.21",
