@@ -1,0 +1,60 @@
+
+<div>
+  <h1>Interpolation and Template Expressions</h1>
+  <hr />
+
+  <div>
+    <h2>Interpolation</h2>
+    <!-- #docregion interpolation-example1 -->
+    <h3>Current customer: {{ currentCustomer }}</h3>
+    <!-- #enddocregion interpolation-example1 -->
+
+    <!-- #docregion component-property -->
+    <p>{{title}}</p>
+    <div><img src="{{itemImageUrl}}"></div>
+    <!-- #enddocregion component-property -->
+
+    <h3>Evaluating template expressions </h3>
+    <h4>Simple evaluation (to a string):</h4>
+    <!-- #docregion convert-string -->
+    <!-- "The sum of 1 + 1 is 2" -->
+    <p>The sum of 1 + 1 is {{1 + 1}}.</p>
+    <!-- #enddocregion convert-string -->
+
+    <h4>Evaluates using a method (also evaluates to a string):</h4>
+    <!-- #docregion invoke-method -->
+    <!-- "The sum of 1 + 1 is not 4" -->
+    <p>The sum of 1 + 1 is not {{1 + 1 + getVal()}}.</p>
+    <!-- #enddocregion invoke-method -->
+  </div>
+
+  <hr />
+<h2>Expression Context</h2>
+
+<div>
+  <h3>Component context, properties of app.component.ts:</h3>
+  <!-- #docregion component-context -->
+  <h4>{{recommended}}</h4>
+  <img [src]="itemImageUrl2">
+  <!-- #enddocregion component-context -->
+</div>
+
+<div>
+  <h4>Template context, template input variables (let customer):</h4>
+  <!-- #docregion template-input-variable -->
+  <ul>
+    <li *ngFor="let customer of customers">{{customer.name}}</li>
+  </ul>
+  <!-- #enddocregion template-input-variable -->
+</div>
+
+<div (keyup)="0">
+  <h4>Template context: template reference variables (#customerInput):</h4>
+  <!-- #docregion template-reference-variable -->
+  <label>Type something:
+    <input #customerInput>{{customerInput.value}}
+  </label>
+  <!-- #enddocregion template-reference-variable -->
+</div>
+
+</div>

@@ -1,0 +1,20 @@
+{
+  "short_name": "Angular",
+  "name": "Angular",
+  "icons": [
+    {
+      "src":"assets/images/favicons/favicon-194x194.png",
+      "sizes": "194x194 512x512",
+      "type": "image/png"
+    },
+    {
+      "src":"assets/images/favicons/favicon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/?utm_source=homescreen",
+  "background_color": "#1976d2",
+  "theme_color": "#1976d2",
+  "display": "standalone"
+}

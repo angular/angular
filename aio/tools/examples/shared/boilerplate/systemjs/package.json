@@ -1,0 +1,43 @@
+{
+  "name": "angular-examples",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example package.json, only contains needed scripts for examples. See _examples/package.json for master package.json.",
+  "scripts": {
+    "build": "tsc -p src/",
+    "build:watch": "tsc -p src/ -w",
+    "build:e2e": "tsc -p e2e/",
+    "serve": "lite-server -c=bs-config.json",
+    "serve:e2e": "lite-server -c=bs-config.e2e.json",
+    "prestart": "npm run build",
+    "start": "concurrently \"npm run build:watch\" \"npm run serve\"",
+    "pree2e": "webdriver-manager update && npm run build:e2e",
+    "e2e": "concurrently \"npm run serve:e2e\" \"npm run protractor\" --kill-others --success first",
+    "protractor": "protractor protractor.config.js",
+    "pretest": "npm run build",
+    "test": "concurrently \"npm run build:watch\" \"karma start karma.conf.js\"",
+    "pretest:once": "npm run build",
+    "test:once": "karma start karma.conf.js --single-run",
+    "lint": "tslint ./src/**/*.ts -t verbose",
+
+    "build:upgrade": "tsc",
+    "serve:upgrade": "http-server",
+    "build:cli": "ng build --no-progress",
+    "serve:cli": "http-server dist/",
+    "build:aot": "ngc -p tsconfig-aot.json && rollup -c rollup-config.js",
+    "serve:aot": "lite-server -c bs-config.aot.json",
+    "build:babel": "babel src -d src --extensions \".es6\" --source-maps",
+
+    "clean": "rimraf src/dist && rimraf src/app/*.js* && rimraf src/universal/*.js* && rimraf src/main.js*",
+    "copy-dist-files": "node ./copy-dist-files.js",
+    "i18n": "ng-xi18n"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@angular/cli": "^1.2.0"
+  },
+  "repository": {}
+}

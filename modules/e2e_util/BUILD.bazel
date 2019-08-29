@@ -1,0 +1,19 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "e2e_util",
+    testonly = 1,
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/benchpress",
+        "@npm//@types/fs-extra",
+        "@npm//@types/selenium-webdriver",
+        "@npm//fs-extra",
+        "@npm//node-uuid",
+        "@npm//protractor",
+        "@npm//selenium-webdriver",
+    ],
+)

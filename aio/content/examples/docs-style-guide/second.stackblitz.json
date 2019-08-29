@@ -1,0 +1,8 @@
+{
+  "description": "Second authors style guide stackblitz (non-executing)",
+  "files": [
+    "src/index.2.html"
+  ],
+  "main": "src/index.2.html",
+  "tags": ["author", "style guide"]
+}

@@ -1,0 +1,14 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "target": "es2015",
+        "lib": [
+          "es2015",
+          "es2017.object",
+        ],
+        "strict": true,
+        "types": [
+          "jasmine"
+        ]
+    }
+}

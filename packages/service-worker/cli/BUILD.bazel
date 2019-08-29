@@ -1,0 +1,23 @@
+load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "cli",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "//packages/service-worker/config",
+        "@npm//@types/node",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "ngsw_config",
+    entry_point = ":main.ts",
+    deps = [
+        ":cli",
+    ],
+)

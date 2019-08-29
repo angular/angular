@@ -1,0 +1,101 @@
+{
+  "extends": "tslint:recommended",
+  "rulesDirectory": [
+    "codelyzer"
+  ],
+  "rules": {
+    "array-type": false,
+    "arrow-parens": false,
+    "ban": [
+      true,
+      {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
+      {"name": "fit", "message": "Don't keep jasmine focus methods."}
+    ],
+    "component-class-suffix": true,
+    "component-selector": [
+      true,
+      "element",
+      "aio",
+      "kebab-case"
+    ],
+    "contextual-lifecycle": true,
+    "deprecation": {
+      "severity": "warn"
+    },
+    "directive-class-suffix": true,
+    "directive-selector": [
+      true,
+      "attribute",
+      "aio",
+      "camelCase"
+    ],
+    "import-blacklist": [
+      true,
+      "rxjs/Rx"
+    ],
+    "interface-name": false,
+    "max-classes-per-file": false,
+    "max-line-length": [
+      true,
+      140
+    ],
+    "member-access": false,
+    "member-ordering": [
+      true,
+      {
+        "order": [
+          "static-field",
+          "instance-field",
+          "static-method",
+          "instance-method"
+        ]
+      }
+    ],
+    "no-conflicting-lifecycle": true,
+    "no-consecutive-blank-lines": false,
+    "no-console": [
+      true,
+      "debug",
+      "info",
+      "time",
+      "timeEnd",
+      "trace"
+    ],
+    "no-empty": false,
+    "no-host-metadata-property": true,
+    "no-inferrable-types": [
+      true,
+      "ignore-params"
+    ],
+    "no-input-rename": true,
+    "no-inputs-metadata-property": true,
+    "no-output-native": true,
+    "no-output-on-prefix": true,
+    "no-output-rename": true,
+    "no-outputs-metadata-property": true,
+    "no-string-literal": false,
+    "no-switch-case-fall-through": true,
+    "no-var-requires": false,
+    "object-literal-key-quotes": false,
+    "object-literal-sort-keys": false,
+    "only-arrow-functions": false,
+    "ordered-imports": false,
+    "quotemark": [
+      true,
+      "single"
+    ],
+    "template-banana-in-box": true,
+    "template-no-negated-async": true,
+    "trailing-comma": false,
+    "use-lifecycle-interface": true,
+    "use-pipe-transform-interface": true,
+    "variable-name": [
+      true,
+      "allow-leading-underscore",
+      "allow-pascal-case",
+      "ban-keywords",
+      "check-format",
+      "require-const-for-all-caps"
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_library")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+
+ng_module(
+    name = "application_lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "perf_lib",
+    testonly = 1,
+    srcs = ["benchmark_perf.spec.ts"],
+    deps = [
+        "//modules/e2e_util",
+        "@npm//protractor",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [
+        ":application_lib",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "prodserver",
+    static_files = [
+        ":bundle.min_debug.js",
+        ":bundle.min.js",
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "index.html",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "angular/modules/benchmarks/src/expanding_rows/index",
+    index_html = "index.html",
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    serving_path = "/index.js",
+    static_files = [
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "index.html",
+    ],
+    deps = [":application_lib"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":prodserver",
+    deps = [
+        ":perf_lib",
+    ],
+)

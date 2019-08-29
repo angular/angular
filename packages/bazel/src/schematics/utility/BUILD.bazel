@@ -1,0 +1,32 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "utility",
+    srcs = [
+        "json-utils.ts",
+        "workspace-utils.ts",
+    ],
+    module_name = "@angular/bazel/src/schematics/utility",
+    deps = [
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "test",
+    testonly = True,
+    srcs = [
+        "json-utils_spec.ts",
+        "workspace-utils_spec.ts",
+    ],
+    deps = [
+        ":utility",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+    ],
+)

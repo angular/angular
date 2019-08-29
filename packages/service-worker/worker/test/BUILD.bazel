@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/service-worker/config",
+        "//packages/service-worker/worker",
+        "//packages/service-worker/worker/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

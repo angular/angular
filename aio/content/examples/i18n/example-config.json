@@ -1,0 +1,13 @@
+{
+  "projectType": "i18n",
+  "e2e": [
+    {
+      "cmd": "yarn",
+      "args": [
+        "e2e",
+        "--no-webdriver-update",
+        "--port={PORT}"
+      ]
+    }
+  ]
+}

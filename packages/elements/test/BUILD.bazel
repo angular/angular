@@ -1,0 +1,42 @@
+load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/elements",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-browser/testing",
+        "@npm//rxjs",
+    ],
+)
+
+filegroup(
+    name = "elements_test_bootstrap_scripts",
+    testonly = True,
+    # do not sort
+    srcs = [
+        "@npm//:node_modules/@webcomponents/custom-elements/src/native-shim.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//:node_modules/zone.js/dist/zone-testing.js",
+    ],
+)
+
+ts_web_test_suite(
+    name = "test",
+    bootstrap = [
+        ":elements_test_bootstrap_scripts",
+    ],
+    # do not sort
+    deps = [
+        ":test_lib",
+    ],
+)

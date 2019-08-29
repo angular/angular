@@ -1,0 +1,6 @@
+{
+  "version": "0.0.0",
+  "bin": {
+    "ngc-wrapped": "./index.js"
+  }
+}

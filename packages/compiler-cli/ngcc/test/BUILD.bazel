@@ -1,0 +1,81 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["integration/**/*.ts"],
+    ),
+    deps = [
+        "//packages/compiler-cli/ngcc",
+        "//packages/compiler-cli/ngcc/test/helpers",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/transform",
+        "//packages/compiler-cli/src/ngtsc/translator",
+        "//packages/compiler-cli/test/helpers",
+        "@npm//@types/convert-source-map",
+        "@npm//convert-source-map",
+        "@npm//magic-string",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
+    data = [
+        "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
+    ],
+    deps = [
+        ":test_lib",
+        "//tools/testing:node_no_angular",
+    ],
+)
+
+ts_library(
+    name = "integration_lib",
+    testonly = True,
+    srcs = glob(
+        ["integration/**/*.ts"],
+    ),
+    deps = [
+        "//packages/compiler-cli/ngcc",
+        "//packages/compiler-cli/ngcc/test/helpers",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/test/helpers",
+        "@npm//rxjs",
+    ],
+)
+
+jasmine_node_test(
+    name = "integration",
+    timeout = "long",
+    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
+    data = [
+        "//packages/common:npm_package",
+        "//packages/core:npm_package",
+        "@npm//rxjs",
+    ],
+    shard_count = 4,
+    tags = [
+        # Disabled in AOT mode because we want ngcc to compile non-AOT Angular packages.
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":integration_lib",
+        "//tools/testing:node_no_angular",
+        "@npm//canonical-path",
+        "@npm//convert-source-map",
+    ],
+)

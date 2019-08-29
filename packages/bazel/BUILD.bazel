@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "npm_package")
+
+npm_package(
+    name = "npm_package",
+    srcs = glob(
+        ["*"],
+        exclude = ["yarn.lock"],
+    ) + [
+        "//packages/bazel/src:package_assets",
+        "//packages/bazel/src/api-extractor:package_assets",
+        "//packages/bazel/src/builders:package_assets",
+        "//packages/bazel/src/ng_package:package_assets",
+        "//packages/bazel/src/ngc-wrapped:package_assets",
+        "//packages/bazel/src/protractor:package_assets",
+        "//packages/bazel/src/schematics:package_assets",
+        "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:package_assets",
+    ],
+    packages = [
+        "//packages/bazel/docs",
+    ],
+    replacements = {
+        "(#|\/\/)\\s+BEGIN-DEV-ONLY[\\w\W]+?(#|\/\/)\\s+END-DEV-ONLY": "",
+        "//packages/bazel/": "//",
+        "angular/packages/bazel/": "npm_angular_bazel/",
+    },
+    tags = ["release-with-framework"],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
+    deps = [
+        "//packages/bazel/src/api-extractor:lib",
+        "//packages/bazel/src/builders",
+        "//packages/bazel/src/ng_package:lib",
+        "//packages/bazel/src/ngc-wrapped:ngc_lib",
+        "//packages/bazel/src/protractor/utils",
+        "//packages/bazel/src/schematics/ng-add",
+        "//packages/bazel/src/schematics/ng-new",
+    ],
+)

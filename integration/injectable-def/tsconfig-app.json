@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["es2015", "dom"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "outDir": "dist",
+    "types": ["node"],
+    "rootDir": "."
+  },
+  "angularCompilerOptions": {
+    "enableIvy": false,
+  },
+  "files": [
+    "src/app.ts",
+    "src/main.ts"
+  ]
+}

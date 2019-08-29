@@ -1,0 +1,22 @@
+{
+  "angularCompilerOptions": {
+    "flatModuleId": "flat_module",
+    "flatModuleOutFile": "index.js",
+    "skipTemplateCodegen": true,
+    "enableIvy": false
+  },
+
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "lib": ["es6", "dom"],
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "outDir": "../node_modules/flat_module",
+    "rootDir": "",
+    "target": "es5"
+ },
+
+ "files": ["public-api.ts"]
+}

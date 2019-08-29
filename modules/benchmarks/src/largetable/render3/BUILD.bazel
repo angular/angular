@@ -1,0 +1,48 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+
+ng_module(
+    name = "largetable_lib",
+    srcs = [
+        "index_aot.ts",
+        "table.ts",
+    ],
+    tags = ["ivy-only"],
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/largetable:util_lib",
+        "//packages:types",
+        "//packages/common",
+        "//packages/core",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index_aot.ts",
+    tags = ["ivy-only"],
+    deps = [
+        ":largetable_lib",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    index_html = "index.html",
+    port = 4200,
+    tags = ["ivy-only"],
+    deps = [
+        ":bundle.min_debug.js",
+    ],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    tags = ["ivy-only"],
+    deps = ["//modules/benchmarks/src/largetable:perf_lib"],
+)

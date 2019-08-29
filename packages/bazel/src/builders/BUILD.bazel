@@ -1,0 +1,30 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "package_assets",
+    srcs = [
+        "builders.json",
+    ],
+    visibility = ["//packages/bazel:__subpackages__"],
+)
+
+ts_library(
+    name = "builders",
+    srcs = [
+        "bazel.ts",
+        "index.ts",
+        "schema.d.ts",
+    ],
+    data = [
+        "schema.json",
+    ] + glob(["files/**/*"]),
+    module_name = "@angular/bazel/src/builders",
+    deps = [
+        "@npm//@angular-devkit/architect",
+        "@npm//@angular-devkit/core",
+        "@npm//@types/node",
+        "@npm//rxjs",
+    ],
+)

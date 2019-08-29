@@ -1,0 +1,40 @@
+load("//tools:defaults.bzl", "ts_library")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ts_library(
+    name = "ng2_static",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/tree:util_lib",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "angular/modules/benchmarks/src/tree/ng2_static/index",
+    index_html = "index.html",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = [
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
+    deps = [":ng2_static"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/tree:perf_lib"],
+)

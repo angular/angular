@@ -1,0 +1,47 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "platform-server",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/animations/browser",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "@npm//@types/node",
+        "@npm//rxjs",
+        "@npm//zone.js",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/platform-server/testing:package.json",
+    ],
+    entry_point = ":index.ts",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//packages/compiler-cli/integrationtest:__pkg__",
+    ],
+    deps = [
+        ":platform-server",
+        "//packages/platform-server/testing",
+    ],
+)

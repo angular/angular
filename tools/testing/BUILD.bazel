@@ -1,0 +1,37 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "browser",
+    testonly = 1,
+    srcs = ["init_browser_spec.ts"],
+    deps = [
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-browser/animations",
+    ],
+)
+
+ts_library(
+    name = "node",
+    testonly = 1,
+    srcs = ["init_node_spec.ts"],
+    deps = [
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/platform-server",
+        "//packages/platform-server/testing",
+        "@npm//domino",
+    ],
+)
+
+ts_library(
+    name = "node_no_angular",
+    testonly = 1,
+    srcs = ["init_node_no_angular_spec.ts"],
+    deps = [
+        "//packages:types",
+    ],
+)

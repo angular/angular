@@ -1,0 +1,42 @@
+package(default_visibility = ["//packages/bazel:__subpackages__"])
+
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*"]),
+)
+
+# For generating skydoc
+exports_files(glob(["*.bzl"]))
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+nodejs_binary(
+    name = "rollup_with_build_optimizer",
+    data = [
+        "@npm//@angular-devkit/build-optimizer",
+        "@npm//is-builtin-module",
+        "@npm//rollup",
+        "@npm//rollup-plugin-amd",
+        "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-json",
+        "@npm//rollup-plugin-node-resolve",
+        "@npm//rollup-plugin-sourcemaps",
+    ],
+    entry_point = "@npm//:node_modules/rollup/bin/rollup",
+    install_source_map_support = False,
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "empty_node_modules",
+    srcs = [],
+)
+
+nodejs_binary(
+    name = "modify_tsconfig",
+    data = ["modify_tsconfig.js"],
+    entry_point = ":modify_tsconfig.js",
+    install_source_map_support = False,
+    node_modules = ":empty_node_modules",
+    visibility = ["//visibility:public"],
+)

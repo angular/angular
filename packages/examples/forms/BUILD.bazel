@@ -1,0 +1,63 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ts_library")
+load("@npm_bazel_protractor//:index.bzl", "protractor_web_test_suite")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+
+ng_module(
+    name = "forms_examples",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_spec.ts"],
+    ),
+    # TODO: FW-1004 Type checking is currently not complete.
+    type_check = False,
+    deps = [
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/router",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "forms_e2e_tests_lib",
+    testonly = True,
+    srcs = glob(["**/e2e_test/*_spec.ts"]),
+    tsconfig = "//packages/examples:tsconfig-e2e.json",
+    deps = [
+        "//packages/examples/test-utils",
+        "//packages/private/testing",
+        "@npm//@types/jasminewd2",
+        "@npm//protractor",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "@angular/examples/forms/main",
+    index_html = "//packages/examples:index.html",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = [
+        "@npm//:node_modules/zone.js/dist/zone.js",
+    ],
+    deps = [":forms_examples"],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    data = ["//packages/bazel/src/protractor/utils"],
+    on_prepare = ":start-server.js",
+    server = ":devserver",
+    deps = [
+        ":forms_e2e_tests_lib",
+        "@npm//protractor",
+        "@npm//selenium-webdriver",
+    ],
+)

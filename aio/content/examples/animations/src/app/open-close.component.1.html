@@ -1,0 +1,10 @@
+<!-- #docplaster -->
+<nav>
+  <button (click)="toggle()">Toggle Open/Close</button>
+</nav>
+
+<!-- #docregion compare, trigger -->
+<div [@openClose]="isOpen ? 'open' : 'closed'" class="open-close-container">
+  <p>The box is now {{ isOpen ? 'Open' : 'Closed' }}!</p>
+</div>
+<!-- #enddocregion compare, trigger -->

@@ -1,0 +1,10 @@
+{
+  // Migrations which are not publicly enabled but still run as part of tests need to
+  // be part of a schematic collection in order to be able to run it.
+  "schematics": {
+    "migration-missing-injectable": {
+      "description": "Migrates all declared undecorated providers with the @Injectable decorator",
+      "factory": "../migrations/missing-injectable/index"
+    }
+  }
+}

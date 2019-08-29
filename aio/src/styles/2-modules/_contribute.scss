@@ -1,0 +1,19 @@
+.contribute-container {
+  h2 {
+    margin: 0;
+  }
+
+  .card-section {
+    justify-content: space-between;
+    max-width: 880px;
+
+    > :first-child {
+      margin-right: 2rem;
+      width: 60%;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "util_lib",
+    srcs = ["util.ts"],
+    deps = ["//modules/benchmarks/src:util_lib"],
+)
+
+ts_library(
+    name = "test_utils_lib",
+    testonly = 1,
+    srcs = ["tree_perf_test_utils.ts"],
+    deps = [
+        "//modules/e2e_util",
+        "@npm//protractor",
+    ],
+)
+
+ts_library(
+    name = "perf_lib",
+    testonly = 1,
+    srcs = ["tree_perf.spec.ts"],
+    deps = [
+        ":test_utils_lib",
+        "@npm//protractor",
+    ],
+)
+
+ts_library(
+    name = "perf_detect_changes_lib",
+    testonly = 1,
+    srcs = ["tree_perf_detect_changes.spec.ts"],
+    deps = [
+        ":test_utils_lib",
+        "@npm//protractor",
+    ],
+)

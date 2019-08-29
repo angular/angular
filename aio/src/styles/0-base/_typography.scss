@@ -1,0 +1,195 @@
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: $main-font;
+  margin: 0;
+  color: $darkgray;
+  @include font-size(14);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $deepgray;
+}
+
+h1 {
+  @include font-size(24);
+  font-weight: 500;
+  display: inline-block;
+  margin: 8px 0px;
+
+  @media screen and (max-width: 600px) {
+    margin-top: 0;
+  }
+}
+
+h2 {
+  @include font-size(22);
+  font-weight: 500;
+  margin: 32px 0px 24px;
+  clear: both;
+}
+
+h3 {
+  @include font-size(20);
+  font-weight: 400;
+  margin: 24px 0px 12px;
+  clear: both;
+}
+
+h4 {
+  @include font-size(18);
+  font-weight: 400;
+  margin: 8px 0px;
+  clear: both;
+}
+
+h5 {
+  @include font-size(16);
+  font-weight: 500;
+  margin: 8px 0px;
+  clear: both;
+}
+
+h6 {
+  @include font-size(16);
+  font-weight: 500;
+  color: $mediumgray;
+  margin: 8px 0px;
+  clear: both;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  a {
+    font-size: inherit;
+  }
+
+  @media screen and (max-width: 600px) {
+    margin: 8px 0;
+  }
+}
+
+.mat-tab-body-wrapper h2 {
+  margin-top: 0;
+}
+
+p,
+ol,
+ul,
+ol,
+li,
+input,
+a {
+  @include font-size(14);
+  @include line-height(24);
+  @include letter-spacing(0.3);
+  font-weight: 400;
+  color: $darkgray;
+  & > em {
+    @include letter-spacing(0.3);
+  }
+}
+
+p {
+  margin: 14px 0 0;
+}
+
+p + ul {
+  margin-top: 4px;
+}
+
+ol {
+  li,
+  p {
+    margin: 4px 0;
+  }
+}
+
+ol ol {
+  list-style-type: lower-alpha;
+
+  ol {
+    list-style-type: lower-roman;
+  }
+}
+
+li {
+  padding-bottom: 8px;
+
+  p {
+    margin: 0;
+  }
+}
+
+a {
+  text-decoration: none;
+}
+
+.app-toolbar a {
+  @include font-size(16);
+  font-weight: 400;
+  color: $white;
+  font-family: $main-font;
+  text-transform: uppercase;
+  padding: 21px 0;
+}
+
+strong {
+  font-weight: 500;
+}
+
+table {
+  border-collapse: collapse;
+  border-radius: 2px;
+  border-spacing: 0;
+  margin: 12px 0 32px;
+}
+
+table tbody th {
+  max-width: 100px;
+  padding: 13px 32px;
+  text-align: left;
+}
+
+td {
+  font-weight: 400;
+  padding: 8px 30px;
+  @include letter-spacing(0.3);
+
+  > p,
+  ul {
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+th {
+  @include font-size(16);
+  font-weight: 500;
+  padding: 13px 32px;
+  text-align: left;
+}
+
+code {
+  font-family: $code-font;
+  font-size: 90%;
+  color: $darkgray;
+}
+
+.sidenav-content a {
+  color: $blue;
+  &:hover {
+    color: $mediumgray;
+  }
+}

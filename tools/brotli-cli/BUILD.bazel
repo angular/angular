@@ -1,0 +1,11 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+nodejs_binary(
+    name = "brotli-cli",
+    data = [
+        "cli.js",
+        "@npm//brotli",
+    ],
+    entry_point = ":cli.js",
+    visibility = ["//:__subpackages__"],
+)

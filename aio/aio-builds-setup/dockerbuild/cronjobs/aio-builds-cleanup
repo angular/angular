@@ -1,0 +1,2 @@
+# Periodically clean up builds that do not correspond to currently open PRs
+0 12 * * * /usr/local/bin/aio-clean-up >> /var/log/cron.log 2>&1

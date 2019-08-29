@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/benchpress",
+        "//packages/core",
+        "//packages/core/testing",
+        "@npm//protractor",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    deps = [
+        ":test_lib",
+        "//packages/benchpress",
+        "//packages/core/testing",
+        "//tools/testing:node",
+        "@npm//protractor",
+    ],
+)

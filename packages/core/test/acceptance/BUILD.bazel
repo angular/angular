@@ -1,0 +1,51 @@
+package(default_visibility = ["//visibility:private"])
+
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+
+ts_library(
+    name = "acceptance_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/common/locales",
+        "//packages/compiler",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "//packages/core/src/util",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "//packages/platform-server",
+        "//packages/private/testing",
+        "//packages/router",
+        "@npm//rxjs",
+        "@npm//zone.js",
+    ],
+)
+
+jasmine_node_test(
+    name = "acceptance",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    deps = [
+        ":acceptance_lib",
+        "//tools/testing:node",
+        "@npm//base64-js",
+        "@npm//source-map",
+        "@npm//zone.js",
+    ],
+)
+
+ts_web_test_suite(
+    name = "acceptance_web",
+    deps = [
+        ":acceptance_lib",
+    ],
+)

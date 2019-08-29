@@ -1,0 +1,17 @@
+load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ts_devserver(
+    name = "devserver",
+    index_html = "index.html",
+    port = 4200,
+    static_files = ["largetable.js"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/largetable:perf_lib"],
+)

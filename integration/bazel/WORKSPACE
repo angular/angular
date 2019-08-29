@@ -1,0 +1,94 @@
+workspace(
+    name = "bazel_integration_test",
+    managed_directories = {"@npm": ["node_modules"]},
+)
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Fetch rules_nodejs so we can install our npm dependencies
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "7c4a690268be97c96f04d505224ec4cb1ae53c2c2b68be495c9bd2634296a5cd",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.34.0/rules_nodejs-0.34.0.tar.gz"],
+)
+
+# Fetch sass rules for compiling sass files
+http_archive(
+    name = "io_bazel_rules_sass",
+    sha256 = "4f05239080175a3f4efa8982d2b7775892d656bb47e8cf56914d5f9441fb5ea6",
+    strip_prefix = "rules_sass-86ca977cf2a8ed481859f83a286e164d07335116",
+    url = "https://github.com/bazelbuild/rules_sass/archive/86ca977cf2a8ed481859f83a286e164d07335116.zip",
+)
+
+# Check the bazel version and download npm dependencies
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
+
+# Bazel version must be at least the following version because:
+#   - 0.26.0 managed_directories feature added which is required for nodejs rules 0.30.0
+#   - 0.27.0 has a fix for managed_directories after `rm -rf node_modules`
+check_bazel_version(
+    message = """
+You no longer need to install Bazel on your machine.
+Angular has a dependency on the @bazel/bazel package which supplies it.
+Try running `yarn bazel` instead.
+    (If you did run that, check that you've got a fresh `yarn install`)
+
+""",
+    minimum_bazel_version = "0.27.0",
+)
+
+# Setup the Node.js toolchain
+node_repositories(
+    # Use same node version as root angular WORKSPACE since
+    # we share node_module packages and some require node >= 10.15.0
+    node_repositories = {
+        "10.16.0-darwin_amd64": ("node-v10.16.0-darwin-x64.tar.gz", "node-v10.16.0-darwin-x64", "6c009df1b724026d84ae9a838c5b382662e30f6c5563a0995532f2bece39fa9c"),
+        "10.16.0-linux_amd64": ("node-v10.16.0-linux-x64.tar.xz", "node-v10.16.0-linux-x64", "1827f5b99084740234de0c506f4dd2202a696ed60f76059696747c34339b9d48"),
+        "10.16.0-windows_amd64": ("node-v10.16.0-win-x64.zip", "node-v10.16.0-win-x64", "aa22cb357f0fb54ccbc06b19b60e37eefea5d7dd9940912675d3ed988bf9a059"),
+    },
+    node_version = "10.16.0",
+    yarn_version = "1.12.1",
+)
+
+# Install our npm dependencies into @npm
+yarn_install(
+    name = "npm",
+    package_json = "//:package.json",
+    yarn_lock = "//:yarn.lock",
+)
+
+# Install all bazel dependencies of our npm packages
+load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
+
+install_bazel_dependencies()
+
+# Load protractor dependencies
+load("@npm_bazel_protractor//:package.bzl", "npm_bazel_protractor_dependencies")
+
+npm_bazel_protractor_dependencies()
+
+# Load karma dependencies
+load("@npm_bazel_karma//:package.bzl", "rules_karma_dependencies")
+
+rules_karma_dependencies()
+
+# Setup the rules_webtesting toolchain
+load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories")
+
+web_test_repositories()
+
+# Temporary work-around for https://github.com/angular/angular/issues/28681
+# TODO(gregmagolan): go back to @io_bazel_rules_webtesting browser_repositories
+load("@npm_bazel_karma//:browser_repositories.bzl", "browser_repositories")
+
+browser_repositories()
+
+# Setup the rules_typescript tooolchain
+load("@npm_bazel_typescript//:index.bzl", "ts_setup_workspace")
+
+ts_setup_workspace()
+
+# Setup the rules_sass toolchain
+load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
+
+sass_repositories()

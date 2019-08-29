@@ -1,0 +1,34 @@
+{
+  "schematics": {
+    "migration-v8-move-document": {
+      "version": "8-beta",
+      "description": "Migrates DOCUMENT Injection token from platform-browser imports to common import",
+      "factory": "./migrations/move-document/index"
+    },
+    "migration-v8-static-queries": {
+      "version": "8-beta",
+      "description": "Migrates ViewChild and ContentChild to explicit query timing",
+      "factory": "./migrations/static-queries/index"
+    },
+    "migration-v8-template-local-variables": {
+      "version": "8-beta",
+      "description": "Warns developers if values are assigned to template variables",
+      "factory": "./migrations/template-var-assignment/index"
+    },
+    "migration-v9-renderer-to-renderer2": {
+      "version": "9-beta",
+      "description": "Migrates usages of Renderer to Renderer2",
+      "factory": "./migrations/renderer-to-renderer2/index"
+    },
+    "migration-v9-undecorated-classes-with-di": {
+      "version": "9-beta",
+      "description": "Decorates undecorated base classes of directives/components that use dependency injection. Copies metadata from base classes to derived directives/components/pipes that are not decorated.",
+      "factory": "./migrations/undecorated-classes-with-di/index"
+    },
+    "migration-v9-undecorated-classes-with-decorated-fields": {
+      "version": "9-beta",
+      "description": "Adds an Angular decorator to undecorated classes that have decorated fields",
+      "factory": "./migrations/undecorated-classes-with-decorated-fields/index"
+    }
+  }
+}

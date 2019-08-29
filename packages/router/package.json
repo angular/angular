@@ -1,0 +1,40 @@
+{
+  "name": "@angular/router",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - the routing library",
+  "main": "./bundles/router.umd.js",
+  "module": "./fesm5/router.js",
+  "es2015": "./fesm2015/router.js",
+  "esm5": "./esm5/router.js",
+  "esm2015": "./esm2015/router.js",
+  "fesm5": "./fesm5/router.js",
+  "fesm2015": "./fesm2015/router.js",
+  "typings": "./router.d.ts",
+  "keywords": [
+    "angular",
+    "router"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angular/angular.git"
+  },
+  "author": "angular",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "homepage": "https://github.com/angular/angular/tree/master/packages/router",
+  "dependencies": {
+    "tslib": "^1.9.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/common": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
+    "rxjs": "^6.4.0"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false
+}

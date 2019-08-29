@@ -1,0 +1,14 @@
+{%- if doc.selector %}
+<section class="selector-list">
+  <h2>Selectors</h2>
+  {% if doc.selectors %}
+    {$ doc.selectors | marked $}
+  {% else %}
+  <ul>
+    {%- for selector in doc.selectorArray %}
+    <li><code>{$ selector | replace(r/(:not\([^()]+\))/g, '<i>$1</i>') $}</code></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+{% endif %}

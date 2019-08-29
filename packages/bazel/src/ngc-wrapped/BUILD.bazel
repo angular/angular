@@ -1,0 +1,57 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
+
+ts_library(
+    name = "ngc_lib",
+    srcs = [
+        "extract_i18n.ts",
+        "index.ts",
+    ],
+    module_name = "@angular/bazel",
+    node_modules = "@npm//typescript:typescript__typings",
+    tsconfig = ":tsconfig.json",
+    visibility = [
+        "//packages/bazel:__pkg__",
+        "//packages/bazel/test/ngc-wrapped:__subpackages__",
+    ],
+    deps = [
+        # BEGIN-INTERNAL
+        # Only needed when compiling within the Angular repo.
+        # Users will get this dependency from node_modules.
+        "//packages/compiler-cli",
+        # END-INTERNAL
+        "@npm//@bazel/typescript",
+        "@npm//@types/node",
+        "@npm//tsickle",
+        "@npm//typescript",
+    ],
+)
+
+nodejs_binary(
+    name = "ngc-wrapped",
+    configuration_env_vars = ["compile"],
+    data = [
+        ":ngc_lib",
+        "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
+        "@npm//source-map-support",
+        "@npm//tslib",
+    ],
+    entry_point = ":index.ts",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "xi18n",
+    data = [
+        ":ngc_lib",
+        "@npm//source-map-support",
+    ],
+    entry_point = ":extract_i18n.ts",
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "package_assets",
+    srcs = ["BUILD.bazel"],
+    visibility = ["//packages/bazel:__subpackages__"],
+)

@@ -1,0 +1,18 @@
+load(":rollup.bzl", "ls_rollup_bundle")
+
+ls_rollup_bundle(
+    name = "language-service",
+    entry_point = "//packages/language-service:index.ts",
+    globals = {
+        "fs": "fs",
+        "path": "path",
+        "typescript": "ts",
+    },
+    license_banner = "banner.js.txt",
+    visibility = ["//packages/language-service:__pkg__"],
+    deps = [
+        "//packages/language-service",
+        "@npm//rxjs",
+        "@npm//tslib",
+    ],
+)

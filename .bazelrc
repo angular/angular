@@ -1,0 +1,161 @@
+# Enable debugging tests with --config=debug
+test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
+
+###############################
+# Filesystem interactions     #
+###############################
+
+# Create symlinks in the project:
+# - dist/bin for outputs
+# - dist/testlogs, dist/genfiles
+# - bazel-out
+# NB: bazel-out should be excluded from the editor configuration.
+# The checked-in /.vscode/settings.json does this for VSCode.
+# Other editors may require manual config to ignore this directory.
+# In the past, we say a problem where VSCode traversed a massive tree, opening file handles and
+# eventually a surprising failure with auto-discovery of the C++ toolchain in
+# MacOS High Sierra.
+# See https://github.com/bazelbuild/bazel/issues/4603
+build --symlink_prefix=dist/
+
+# Disable watchfs as it causes tests to be flaky on Windows
+# https://github.com/angular/angular/issues/29541
+build --nowatchfs
+
+# Turn off legacy external runfiles
+run --nolegacy_external_runfiles
+test --nolegacy_external_runfiles
+
+# Turn on --incompatible_strict_action_env which was on by default
+# in Bazel 0.21.0 but turned off again in 0.22.0. Follow
+# https://github.com/bazelbuild/bazel/issues/7026 for more details.
+# This flag is needed to so that the bazel cache is not invalidated
+# when running bazel via `yarn bazel`.
+# See https://github.com/angular/angular/issues/27514.
+build --incompatible_strict_action_env
+run --incompatible_strict_action_env
+test --incompatible_strict_action_env
+
+###############################
+# Release support             #
+# Turn on these settings with #
+#  --config=release           #
+###############################
+
+# Releases should always be stamped with version control info
+# This command assumes node on the path and is a workaround for
+# https://github.com/bazelbuild/bazel/issues/4802
+build:release --workspace_status_command="node ./tools/bazel_stamp_vars.js"
+
+###############################
+# Output                      #
+###############################
+
+# A more useful default output mode for bazel query
+# Prints eg. "ng_module rule //foo:bar" rather than just "//foo:bar"
+query --output=label_kind
+
+# By default, failing tests don't print any output, it goes to the log file
+test --test_output=errors
+
+################################
+# Settings for CircleCI        #
+################################
+
+# Bazel flags for CircleCI are in /.circleci/bazel.linux.rc and /.circleci/bazel.windows.rc
+
+################################
+# Temporary Settings for Ivy   #
+################################
+# to determine if the compiler used should be Ivy or ViewEngine one can use `--define=compile=aot` on
+# any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
+build --define=compile=legacy
+
+###############################
+# Remote Build Execution support
+# Turn on these settings with
+#  --config=remote
+###############################
+
+# Load default settings for Remote Build Execution.
+import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/.bazelrc.notoolchain
+
+# Increase the default number of jobs by 50% because our build has lots of
+# parallelism
+build:remote --jobs=150
+
+# Toolchain and platform related flags
+build:remote --host_javabase=@rbe_ubuntu1604_angular//java:jdk
+build:remote --javabase=@rbe_ubuntu1604_angular//java:jdk
+build:remote --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
+build:remote --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
+build:remote --crosstool_top=@rbe_ubuntu1604_angular//cc:toolchain
+build:remote --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build:remote --extra_toolchains=@rbe_ubuntu1604_angular//config:cc-toolchain
+build:remote --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
+build:remote --host_platform=//tools:rbe_ubuntu1604-angular
+build:remote --platforms=//tools:rbe_ubuntu1604-angular
+
+# Remote instance.
+build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
+build:remote --project_id=internal-200822
+
+# Remote caching
+build:remote --remote_cache=remotebuildexecution.googleapis.com
+# By default, do not accept remote cache, to be set to true for CI based on environment
+build:remote --remote_accept_cached=false
+# By default, do not upload local results to cache, to be set to true for CI based on environment
+build:remote --remote_upload_local_results=false
+
+# Build Event Service Configuration
+build:remote --bes_backend=buildeventservice.googleapis.com
+build:remote --bes_timeout=30s
+build:remote --bes_results_url="https://source.cloud.google.com/results/invocations/"
+
+###############################
+# NodeJS rules settings
+# These settings are required for rules_nodejs
+###############################
+
+# Turn on managed directories feature in Bazel
+# This allows us to avoid installing a second copy of node_modules
+common --experimental_allow_incremental_repository_updates
+
+# This option is changed to true in Bazel 0.27 and exposes a possible
+# regression in Bazel 0.27.0.
+# Error observed is in npm_package target `//packages/common/locales:package`:
+# ```
+# ERROR: /home/circleci/ng/packages/common/locales/BUILD.bazel:13:1: Assembling
+# npm package packages/common/locales/package failed: No usable spawn strategy found
+# for spawn with mnemonic SkylarkAction.  Your --spawn_strategyor --strategy flags
+# are probably too strict. Visit https://github.com/bazelbuild/bazel/issues/7480 for
+# migration advises
+# ```
+# Suspect is https://github.com/bazelbuild/rules_nodejs/blob/master/internal/npm_package/npm_package.bzl#L75-L82:
+# ```
+# execution_requirements = {
+#     # Never schedule this action remotely because it's not computationally expensive.
+#     # It just copies files into a directory; it's not worth copying inputs and outputs to a remote worker.
+#     # Also don't run it in a sandbox, because it resolves an absolute path to the bazel-out directory
+#     # allowing the .pack and .publish runnables to work with no symlink_prefix
+#     # See https://github.com/bazelbuild/rules_nodejs/issues/187
+#     "local": "1",
+# },
+# ```
+build --incompatible_list_based_execution_strategy_selection=false
+test --incompatible_list_based_execution_strategy_selection=false
+run --incompatible_list_based_execution_strategy_selection=false
+
+# Use workers for tsc and ngc when building locally.
+# This config is overwritten on CI to as the worker strategy causes flakes on CI.
+build --strategy=AngularTemplateCompile=worker
+build --strategy=TypeScriptCompile=worker
+
+####################################################
+# User bazel configuration
+# NOTE: This needs to be the *last* entry in the config.
+####################################################
+
+# Load any settings which are specific to the current user. Needs to be *last* statement
+# in this config, as the user configuration should be able to overwrite flags from this file.
+try-import .bazelrc.user

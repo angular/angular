@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsAngularNgNew",
+  "title": "Angular Ng New Options Schema",
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "The directory name to create the workspace in."
+    },
+    "name": {
+      "description": "The name of the new workspace and initial project.",
+      "type": "string",
+      "format": "html-selector",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the new workspace and initial project?"
+    },
+    "enableIvy": {
+      "description": "When true, creates a new app that uses the Ivy rendering engine.",
+      "type": "boolean",
+      "default": false
+    },
+    "skipInstall": {
+      "description": "When true, does not install dependency packages.",
+      "type": "boolean",
+      "default": false
+    },
+    "linkCli": {
+      "description": "When true, links the CLI to the global version (internal development only).",
+      "type": "boolean",
+      "default": false,
+      "visible": false
+    },
+    "skipGit": {
+      "description": "When true, does not initialize a git repository.",
+      "type": "boolean",
+      "default": false,
+      "alias": "g"
+    },
+    "commit": {
+      "description": "Initial git repository commit information.",
+      "oneOf": [
+        { "type": "boolean" },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "email"
+          ]
+        }
+      ],
+      "default": true
+    },
+    "newProjectRoot": {
+      "description": "The path where new projects will be created, relative to the new workspace root.",
+      "type": "string",
+      "default": "projects"
+    },
+    "inlineStyle": {
+      "description": "When true, includes styles inline in the component TS file. By default, an external styles file is created and referenced in the component TS file.",
+      "type": "boolean",
+      "default": false,
+      "alias": "s"
+    },
+    "inlineTemplate": {
+      "description": "When true, includes template inline in the component TS file. By default, an external template file is created and referenced in the component TS file.",
+      "type": "boolean",
+      "default": false,
+      "alias": "t"
+    },
+    "viewEncapsulation": {
+      "description": "The view encapsulation strategy to use in the initial project.",
+      "enum": ["Emulated", "Native", "None", "ShadowDom"],
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "description": "The version of the Angular CLI to use.",
+      "visible": false,
+      "$default": {
+        "$source": "ng-cli-version"
+      }
+    },
+    "routing": {
+      "type": "boolean",
+      "description": "When true, generates a routing module for the initial project.",
+      "default": false,
+      "x-prompt": "Would you like to add Angular routing?"
+    },
+    "prefix": {
+      "type": "string",
+      "format": "html-selector",
+      "description": "The prefix to apply to generated selectors for the initial project.",
+      "minLength": 1,
+      "default": "app",
+      "alias": "p"
+    },
+    "style": {
+      "description": "The file extension or preprocessor to use for style files.",
+      "type": "string",
+      "default": "css",
+      "enum": [
+        "css",
+        "scss",
+        "sass"
+      ],
+      "x-prompt": {
+        "message": "Which stylesheet format would you like to use?",
+        "type": "list",
+        "items": [
+          { "value": "css",  "label": "CSS" },
+          { "value": "scss", "label": "SCSS   [ http://sass-lang.com/documentation/file.SASS_REFERENCE.html#syntax ]" },
+          { "value": "sass", "label": "Sass   [ http://sass-lang.com/documentation/file.INDENTED_SYNTAX.html       ]" }
+        ]
+      }
+    },
+    "skipTests": {
+      "description": "When true, does not generate \"spec.ts\" test files for the new project. ",
+      "type": "boolean",
+      "default": false
+    },
+    "createApplication": {
+      "description": "When true (the default), creates a new initial app project in the src folder of the new workspace. When false, creates an empty workspace with no initial app. You can then use the generate application command so that all apps are created in the projects folder.",
+      "type": "boolean",
+      "default": true
+    },
+    "minimal": {
+      "description": "When true, creates a project without any testing frameworks. (Use for learning purposes only.)",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "name",
+    "version"
+  ]
+}

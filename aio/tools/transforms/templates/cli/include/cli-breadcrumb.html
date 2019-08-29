@@ -1,0 +1,16 @@
+{% set comma = joiner(',') %}
+{% set slash = joiner('/') %}
+
+<div class="breadcrumb">
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {%- for crumb in doc.breadCrumbs %}{$ comma() $}
+        { "@type": "ListItem", "position": {$ loop.index $}, "item": { "@id": "https://angular.io/{$ crumb.path $}", "name": "{$ crumb.text $}" } }{% endfor %}
+      ]
+    }
+  </script>
+  {% for crumb in doc.breadCrumbs %}{% if not loop.last %} {$ slash() $} {% if crumb.path %}<a href="{$ crumb.path $}">{$ crumb.text $}</a>{% else %}{$ crumb.text $}{% endif %}{% endif %}{% endfor %}
+</div>

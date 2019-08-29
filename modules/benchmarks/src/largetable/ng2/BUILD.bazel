@@ -1,0 +1,48 @@
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+# Note that this benchmark has been designed for Angular with ViewEngine, but once
+# ViewEngine is removed, we should should consider removing this one since there
+# already is a "render3" benchmark.
+ng_module(
+    name = "ng2",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    # TODO: FW-1004 Type checking is currently not complete.
+    type_check = False,
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/largetable:util_lib",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index_aot.ts",
+    deps = [
+        ":ng2",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "prodserver",
+    index_html = "index.html",
+    port = 4200,
+    static_files = [
+        ":bundle.min_debug.es2015.js",
+        "@npm//:node_modules/zone.js/dist/zone.js",
+    ],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":prodserver",
+    deps = ["//modules/benchmarks/src/largetable:perf_lib"],
+)

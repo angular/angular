@@ -1,0 +1,13 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "worker-config",
+    srcs = ["worker-configure.js"],
+    data = [
+        "//modules/playground:systemjs-config.js",
+        "//modules/playground:systemjs-rxjs-operators.js",
+        "@npm//reflect-metadata",
+        "@npm//systemjs",
+        "@npm//zone.js",
+    ],
+)

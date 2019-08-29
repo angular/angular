@@ -1,0 +1,53 @@
+package(default_visibility = ["//visibility:private"])
+
+load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
+
+ts_library(
+    name = "perf_lib",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "element_text_create",
+    entry_point = ":element_text_create/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "interpolation",
+    entry_point = ":interpolation/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "noop_change_detection",
+    entry_point = ":noop_change_detection/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "property_binding",
+    entry_point = ":property_binding/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "style_binding",
+    entry_point = ":style_binding/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)

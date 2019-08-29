@@ -1,0 +1,42 @@
+load("//tools:defaults.bzl", "ng_module")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ng_module(
+    name = "routing",
+    srcs = glob(["**/*.ts"]),
+    assets = glob(["**/*.html"]),
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    # TODO: FW-1004 Type checking is currently not complete.
+    type_check = False,
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/router",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    data = [
+        # This is temporarily needed because Angular imports from "rxjs/operators/index", while
+        # there is only one RxJS UMD bundle that re-exports everything at the root.
+        "//modules/playground:systemjs-rxjs-operators.js",
+        "//third_party/fonts.google.com/open-sans",
+        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+        "@npm//:node_modules/tslib/tslib.js",
+    ] + glob(["**/*.css"]),
+    port = 4200,
+    static_files = [
+        "index.html",
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "@npm//:node_modules/systemjs/dist/system.js",
+        "//modules/playground:systemjs-config.js",
+        "load-app.js",
+    ],
+    deps = [":routing"],
+)

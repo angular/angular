@@ -1,0 +1,9 @@
+.git
+node_modules
+dist
+aio/content
+aio/node_modules
+aio/tools/examples/shared/node_modules
+integration/bazel
+integration/bazel-schematics/demo
+packages/bazel/node_modules

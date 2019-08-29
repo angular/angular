@@ -1,0 +1,238 @@
+// VARIABLES
+$hamburgerShownMargin: 0 8px 0 0;
+$hamburgerHiddenMargin: 0 16px 0 -64px;
+
+// DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
+mat-toolbar.mat-toolbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+
+  mat-toolbar-row {
+    padding: 0 16px 0 0;
+  }
+
+  mat-icon {
+    color: $white;
+  }
+}
+
+// HOME PAGE OVERRIDE: TOPNAV TOOLBAR
+aio-shell.page-home mat-toolbar.mat-toolbar {
+  background-color: $blue;
+
+  @media (min-width: 481px) {
+    &:not(.transitioning) {
+      background-color: transparent;
+      transition: background-color 0.2s linear;
+    }
+  }
+}
+
+// MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
+aio-shell.page-home mat-toolbar.mat-toolbar,
+aio-shell.page-features mat-toolbar.mat-toolbar,
+aio-shell.page-events mat-toolbar.mat-toolbar,
+aio-shell.page-resources mat-toolbar.mat-toolbar {
+  box-shadow: none;
+
+  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
+  @media (min-width: 481px) {
+    position: absolute;
+  }
+}
+
+// DOCS PAGES OVERRIDE: HAMBURGER
+aio-shell.folder-api mat-toolbar.mat-toolbar,
+aio-shell.folder-cli mat-toolbar.mat-toolbar,
+aio-shell.folder-docs mat-toolbar.mat-toolbar,
+aio-shell.folder-getting-started mat-toolbar.mat-toolbar,
+aio-shell.folder-guide mat-toolbar.mat-toolbar,
+aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
+  @media (min-width: 992px) {
+    .hamburger.mat-button {
+      // Hamburger shown on non-marketing pages on large screens.
+      margin: $hamburgerShownMargin;
+    }
+  }
+}
+
+// HAMBURGER BUTTON
+.hamburger.mat-button {
+  height: 100%;
+  margin: $hamburgerShownMargin;
+  padding: 0;
+
+  @media (min-width: 992px) {
+    // Hamburger hidden by default on large screens.
+    // (Will be shown per doc.)
+    margin: $hamburgerHiddenMargin;
+  }
+
+  @media (max-width: 480px) {
+    min-width: 15%;
+  }
+
+  &:not(.starting) {
+    transition-duration: 0.4s;
+    transition-property: color, margin;
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  &:hover {
+    color: $offwhite;
+  }
+
+  & .mat-icon {
+    color: white;
+    position: inherit;
+  }
+}
+
+// HOME NAV-LINK
+.nav-link.home {
+  cursor: pointer;
+  margin: 0 16px 0 0;
+  padding: 21px 0;
+
+  @media screen and (max-width: 480px) {
+    margin-right: 8px;
+  }
+
+  img {
+    position: relative;
+    margin-top: -21px;
+    top: 12px;
+    height: 40px;
+
+    @media (max-width: 992px) {
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+// TOP MENU
+aio-top-menu {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 80%;
+
+  ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    list-style-position: inside;
+    padding: 0px;
+    margin: 0px;
+
+    li {
+      padding-bottom: 2px;
+      list-style-type: none;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.7;
+      }
+
+      &:focus {
+        background-color: $accentblue;
+        outline: none;
+      }
+    }
+  }
+
+  a.nav-link {
+    margin: 0;
+    padding: 24px 0px;
+    cursor: pointer;
+
+    .nav-link-inner {
+      padding: 8px 16px;
+    }
+
+    &:focus {
+      outline: none;
+
+      .nav-link-inner {
+        background: rgba($white, 0.15);
+        border-radius: 4px;
+      }
+    }
+  }
+}
+
+// SEARCH BOX
+aio-search-box.search-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  min-width: 150px;
+  height: 100%;
+
+  input {
+    color: $darkgray;
+    border: none;
+    border-radius: 100px;
+    background-color: $white;
+    padding: 5px 16px;
+    margin-left: 8px;
+    width: 180px;
+    max-width: 240px;
+    height: 50%;
+    -webkit-appearance: none;
+
+    &:focus {
+      outline: none;
+    }
+
+    @include placeholder {
+      @include font-size(14);
+      color: $mediumgray;
+    }
+
+    @include bp(big) {
+      transition: width 0.4s ease-in-out;
+
+      &:focus {
+        width: 50%;
+      }
+    }
+    @media (max-width: 480px) {
+      width: 150px;
+    }
+  }
+}
+
+// EXTERNAL LINK ICONS
+.app-toolbar {
+  .toolbar-external-icons-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+
+    a {
+      display: flex;
+      align-items: center;
+      margin-left: 16px;
+
+      @media screen and (max-width: 480px) {
+        margin-left: 8px;
+      }
+
+      &:hover {
+        opacity: 0.8;
+      }
+
+      img {
+        height: 24px;
+      }
+    }
+  }
+}

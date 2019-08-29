@@ -1,0 +1,7 @@
+{
+  "name": "lib2_built",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

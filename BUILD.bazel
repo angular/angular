@@ -1,0 +1,93 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "karma_web_test")
+
+exports_files([
+    "LICENSE",
+    "protractor-perf.conf.js",
+    "karma-js.conf.js",
+    "browser-providers.conf.js",
+])
+
+alias(
+    name = "tsconfig.json",
+    actual = "//packages:tsconfig-build.json",
+)
+
+filegroup(
+    name = "web_test_bootstrap_scripts",
+    # do not sort
+    srcs = [
+        "@npm//:node_modules/core-js/client/core.js",
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//:node_modules/zone.js/dist/zone-testing.js",
+        "@npm//:node_modules/zone.js/dist/task-tracking.js",
+        "//:test-events.js",
+        "//:shims_for_IE.js",
+        # Including systemjs because it defines `__eval`, which produces correct stack traces.
+        "@npm//:node_modules/systemjs/dist/system.src.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
+)
+
+filegroup(
+    name = "angularjs_scripts",
+    srcs = [
+        # We also declare the unminfied AngularJS files since these can be used for
+        # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
+        "@npm//:node_modules/angular/angular.js",
+        "@npm//:node_modules/angular/angular.min.js",
+        "@npm//:node_modules/angular-1.5/angular.js",
+        "@npm//:node_modules/angular-1.5/angular.min.js",
+        "@npm//:node_modules/angular-1.6/angular.js",
+        "@npm//:node_modules/angular-1.6/angular.min.js",
+        "@npm//:node_modules/angular-mocks/angular-mocks.js",
+        "@npm//:node_modules/angular-mocks-1.5/angular-mocks.js",
+        "@npm//:node_modules/angular-mocks-1.6/angular-mocks.js",
+    ],
+)
+
+# To run a karma_web_test target locally on SauceLabs:
+# 1) have SAUCE_USERNAME, SAUCE_ACCESS_KEY (and optionally a SAUCE_TUNNEL_IDENTIFIER) set in your environment
+# 2) open a sauce connection with `./scripts/saucelabs/start-tunnel.sh`
+#    NOTE: start-tunnel.sh uses `node_modules/sauce-connect` which is current linux specific:
+#          "sauce-connect": "https://saucelabs.com/downloads/sc-4.5.3-linux.tar.gz".
+#          On OSX or Windows you'll need to use the appropriate sauce-connect binary.
+# 3) run target with `yarn bazel test --config=saucelabs <target>`
+#    NOTE: --config=saucelabs is required as it makes the SAUCE_XXX environment variables available to
+#          the action. See /.bazelrc.
+karma_web_test(
+    name = "test_web_all",
+    tags = [
+        "local",
+        "manual",
+        "saucelabs",
+    ],
+    deps = [
+        # We combine all tests into a single karma_web_test target
+        # as running them as seperate targets in parallel leads to too many
+        # browsers being acquired at once in SauceLabs and the tests flake out
+        # TODO: this is an example subset of tests below, add all remaining angular tests
+        "//packages/common/http/test:test_lib",
+        "//packages/common/http/testing/test:test_lib",
+        "//packages/common/test:test_lib",
+        "//packages/core/test:test_lib",
+        "//packages/forms/test:test_lib",
+        "//packages/http/test:test_lib",
+        "//packages/zone.js/test:karma_jasmine_test_ci",
+        # "//packages/router/test:test_lib",
+        # //packages/router/test:test_lib fails with:
+        # IE 11.0.0 (Windows 8.1.0.0) bootstrap should restore the scrolling position FAILED
+        # 	Expected undefined to equal 5000.
+        # 	   at stack (eval code:2338:11)
+        # 	   at buildExpectationResult (eval code:2305:5)
+        # 	   at expectationResultFactory (eval code:858:11)
+        # 	   at Spec.prototype.addExpectationResult (eval code:487:5)
+        # 	   at addExpectationResult (eval code:802:9)
+        # 	   at Anonymous function (eval code:2252:7)
+        # 	   at Anonymous function (eval code:339:25)
+        # 	   at step (eval code:133:17)
+        # 	   at Anonymous function (eval code:114:50)
+        # 	   at fulfilled (eval code:104:47)
+    ],
+)

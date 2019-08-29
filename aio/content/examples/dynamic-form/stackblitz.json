@@ -1,0 +1,9 @@
+{
+  "description": "Dynamic Form",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1].*"
+  ],
+  "tags":["cookbook"]
+}

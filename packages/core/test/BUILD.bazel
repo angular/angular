@@ -1,0 +1,80 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*_node_only_spec.ts",
+        ],
+    ),
+    # Visible to //:test_web_all target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/common/locales",
+        "//packages/compiler",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/reflection",
+        "//packages/core/src/util",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+        "//packages/router",
+        "//packages/router/testing",
+        "@npm//rxjs",
+        "@npm//zone.js",
+    ],
+)
+
+ts_library(
+    name = "test_node_only_lib",
+    testonly = True,
+    srcs = glob(["**/*_node_only_spec.ts"]),
+    deps = [
+        ":test_lib",
+        "//packages/compiler",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "//packages/core/src/compiler",
+        "//packages/core/testing",
+        "//packages/platform-server",
+        "//packages/platform-server/testing",
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    shard_count = 4,
+    deps = [
+        ":test_lib",
+        ":test_node_only_lib",
+        "//packages/platform-server",
+        "//packages/platform-server/testing",
+        "//tools/testing:node",
+        "@npm//base64-js",
+        "@npm//source-map",
+        "@npm//zone.js",
+    ],
+)
+
+ts_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

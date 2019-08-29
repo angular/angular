@@ -1,0 +1,18 @@
+{
+  "angularCompilerOptions": {
+    "debug": true,
+    "enableIvy": false
+  },
+
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "lib": ["es6", "dom"],
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "rootDir": "",
+    "target": "es5",
+    "types": []
+  }
+}

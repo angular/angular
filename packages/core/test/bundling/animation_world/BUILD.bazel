@@ -1,0 +1,45 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
+load("@build_bazel_rules_nodejs//:defs.bzl", "http_server")
+
+ng_module(
+    name = "animation_world",
+    srcs = ["index.ts"],
+    tags = [
+        "ivy-only",
+    ],
+    type_check = False,  # see #26462
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/test/bundling/util:reflect_metadata",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        ":animation_world",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+http_server(
+    name = "devserver",
+    data = [
+        "animation_world.css",
+        "base.css",
+        "index.html",
+        ":bundle.min.js",
+        ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+)

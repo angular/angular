@@ -1,0 +1,10 @@
+{% import "lib/memberHelpers.html" as memberHelper -%}
+{% import "lib/descendants.html" as descendants -%}
+
+<section class="{$ doc.docType $}-overview">
+<code-example language="ts" hideCopy="true">
+{% if doc.isAbstract %}abstract {% endif%}class {$ doc.name $}{$ doc.typeParams | escape $}{$ memberHelper.renderHeritage(doc) $} {{$ memberHelper.renderMembers(doc) $}
+}
+</code-example>
+{$ descendants.renderDescendants(doc, 'class', 'Subclasses', true, r/class|directive|pipe|decorator/) $}
+</section>

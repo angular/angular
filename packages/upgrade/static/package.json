@@ -1,0 +1,12 @@
+{
+  "name": "@angular/upgrade/static",
+  "typings": "./static.d.ts",
+  "main": "../bundles/upgrade-static.umd.js",
+  "module": "../fesm5/static.js",
+  "es2015": "../fesm2015/static.js",
+  "esm5": "../esm5/static/static.js",
+  "esm2015": "../esm2015/static/static.js",
+  "fesm5": "../fesm5/static.js",
+  "fesm2015": "../fesm2015/static.js",
+  "sideEffects": false
+}

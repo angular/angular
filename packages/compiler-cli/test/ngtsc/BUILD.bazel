@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "ngtsc_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/indexer",
+        "//packages/compiler-cli/src/ngtsc/routing",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "//packages/compiler-cli/test:test_utils",
+        "//packages/compiler-cli/test/helpers",
+        "@npm//source-map",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "ngtsc",
+    timeout = "long",
+    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
+    data = [
+        "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
+    ],
+    shard_count = 4,
+    deps = [
+        ":ngtsc_lib",
+        "//tools/testing:node_no_angular",
+        "@npm//minimist",
+    ],
+)

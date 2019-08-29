@@ -1,0 +1,27 @@
+{
+  "scripts": [
+    { "name": "ng", "command": "ng" },
+    { "name": "start", "command": "ng serve" },
+    { "name": "test", "command": "ng test" },
+    { "name": "lint", "command": "ng lint" },
+    { "name": "e2e", "command": "ng e2e" },
+    { "name": "build:ssr", "command": "npm run build:client-and-server-bundles && npm run webpack:server" },
+    { "name": "serve:ssr", "command": "node dist/server.js" },
+    { "name": "build:client-and-server-bundles", "command": "ng build --prod && ng run angular.io-example:server" },
+    { "name": "webpack:server", "command": "webpack --config webpack.server.config.js --progress --colors" }
+  ],
+  "dependencies": [
+    "@nguniversal/express-engine",
+    "@nguniversal/module-map-ngfactory-loader"
+  ],
+  "devDependencies": [
+    "@angular-devkit/build-angular",
+    "@angular/cli",
+    "@types/jasminewd2",
+    "jasmine-spec-reporter",
+    "karma-coverage-istanbul-reporter",
+    "ts-loader",
+    "ts-node",
+    "webpack-cli"
+  ]
+}

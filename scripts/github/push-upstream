@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -u -e -o pipefail
+
+PATCH_BRANCH=`git branch --list '*.x' | cut -d ' ' -f2- | sort -r | head -n1`
+# Trim whitespace
+PATCH_BRANCH=`echo $PATCH_BRANCH`
+
+PUSH_BRANCHES="git push git@github.com:angular/angular.git master:master $PATCH_BRANCH:$PATCH_BRANCH"
+
+echo $PUSH_BRANCHES
+$PUSH_BRANCHES

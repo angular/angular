@@ -1,0 +1,42 @@
+load("//tools:defaults.bzl", "ng_module")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ng_module(
+    name = "ng2_switch",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    # TODO: FW-1004 Type checking is currently not complete.
+    type_check = False,
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/tree:util_lib",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "angular/modules/benchmarks/src/tree/ng2_switch/index",
+    index_html = "index.html",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = [
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
+    deps = [":ng2_switch"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/tree:perf_lib"],
+)

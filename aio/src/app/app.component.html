@@ -1,0 +1,76 @@
+<div id="top-of-page"></div>
+
+<div *ngIf="isFetching" class="progress-bar-container">
+  <mat-progress-bar mode="indeterminate" color="warn"></mat-progress-bar>
+</div>
+
+<mat-toolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
+  <mat-toolbar-row class="notification-container">
+    <aio-notification notificationId="survey-february-2019" expirationDate="2019-03-01" [dismissOnContentClick]="true" (dismissed)="notificationDismissed()">
+      <a href="http://bit.ly/angular-survey-2019">
+        <mat-icon class="icon" svgIcon="insert_comment" aria-label="Announcement"></mat-icon>
+        <span class="message">Help Angular by taking a <b>1 minute survey</b>!</span>
+        <span class="action-button">Go to survey</span>
+      </a>
+    </aio-notification>
+  </mat-toolbar-row>
+  <mat-toolbar-row>
+    <button mat-button class="hamburger" [class.starting]="isStarting" (click)="sidenav.toggle()" title="Docs menu">
+      <mat-icon svgIcon="menu"></mat-icon>
+    </button>
+    <a class="nav-link home" href="/" [ngSwitch]="isSideBySide">
+      <img *ngSwitchCase="true" src="assets/images/logos/angular/logo-nav@2x.png" width="150" height="40" title="Home" alt="Home">
+      <img *ngSwitchDefault src="assets/images/logos/angular/shield-large.svg" width="37" height="40" title="Home" alt="Home">
+    </a>
+    <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
+    <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
+    <div class="toolbar-external-icons-container">
+      <a href="https://twitter.com/angular" title="Twitter" aria-label="Angular on twitter">
+        <mat-icon svgIcon="logos:twitter"></mat-icon>
+      </a>
+      <a href="https://github.com/angular/angular" title="GitHub" aria-label="Angular on github">
+        <mat-icon svgIcon="logos:github"></mat-icon>
+      </a>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<aio-search-results #searchResultsView *ngIf="showSearchResults" [searchResults]="searchResults | async" (resultSelected)="hideSearchResults()"></aio-search-results>
+
+<mat-sidenav-container class="sidenav-container" [class.starting]="isStarting" [class.has-floating-toc]="hasFloatingToc" role="main">
+
+  <mat-sidenav [ngClass]="{'collapsed': !isSideBySide}" #sidenav class="sidenav" [mode]="mode" [opened]="isOpened" (openedChange)="updateHostClasses()">
+    <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow" [isWide]="false"></aio-nav-menu>
+    <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" [isWide]="isSideBySide"></aio-nav-menu>
+
+    <div class="doc-version">
+      <aio-select (change)="onDocVersionChange($event.index)" [options]="docVersions" [selected]="currentDocVersion"></aio-select>
+    </div>
+  </mat-sidenav>
+
+  <main class="sidenav-content" [id]="pageId" role="main">
+    <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
+    <aio-doc-viewer [class.no-animations]="isStarting" [doc]="currentDocument" (docReady)="onDocReady()" (docRemoved)="onDocRemoved()" (docInserted)="onDocInserted()" (docRendered)="onDocRendered()">
+    </aio-doc-viewer>
+    <aio-dt *ngIf="dtOn" [(doc)]="currentDocument"></aio-dt>
+  </main>
+
+</mat-sidenav-container>
+
+<div *ngIf="hasFloatingToc" class="toc-container no-print" [style.max-height.px]="tocMaxHeight" (mousewheel)="restrainScrolling($event)">
+  <aio-lazy-ce selector="aio-toc"></aio-lazy-ce>
+</div>
+
+<footer class="no-print">
+  <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo"></aio-footer>
+</footer>
+
+<!--
+  Work-around to ensure that the `.woff2` file for the 'Material Icons' font will always be fetched.
+  This allows the SW to cache the file (even if there are no icons in the current page) and ensure
+  material icons on other pages are displayed correctly in offline mode.
+  (Note: Instantiate lazily to avoid affecting the initial rendering.)
+-->
+<div class="cdk-visually-hidden" *ngIf="!isStarting">
+  <mat-icon>&nbsp;</mat-icon>
+</div>

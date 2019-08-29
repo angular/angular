@@ -1,0 +1,44 @@
+load("//tools:defaults.bzl", "ng_module")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ng_module(
+    name = "images",
+    srcs = glob(["**/*.ts"]),
+    assets = ["image_demo.html"],
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    # TODO: FW-1004 Type checking is currently not complete.
+    type_check = False,
+    deps = [
+        "//packages/core",
+        "//packages/platform-webworker",
+        "//packages/platform-webworker-dynamic",
+        "@npm//@types/base64-js",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    # Workaround for: https://github.com/bazelbuild/rules_typescript/issues/409
+    additional_root_paths = ["angular"],
+    data = [
+        "//modules/playground/src/web_workers:worker-config",
+        "@npm//:node_modules/base64-js/base64js.min.js",
+        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+        "@npm//:node_modules/tslib/tslib.js",
+        "loader.js",
+    ] + glob(["**/*.css"]),
+    entry_module = "angular/modules/playground/src/web_workers/images/index",
+    index_html = "index.html",
+    port = 4200,
+    scripts = ["@npm//:node_modules/tslib/tslib.js"],
+    static_files = [
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//:node_modules/materialize-css/dist/js/materialize.min.js",
+        "@npm//:node_modules/materialize-css/dist/css/materialize.min.css",
+        "@npm//:node_modules/jquery/dist/jquery.min.js",
+        "//third_party/github.com/google/material-design-icons",
+    ],
+    deps = [":images"],
+)

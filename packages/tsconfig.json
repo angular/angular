@@ -1,0 +1,54 @@
+{
+  "compilerOptions": {
+    // Setting the "baseUrl" to a different directory than "packages/" because otherwise
+    // packages like the native "http" module are resolved to the Angular "http" package.
+    "baseUrl": "..",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "strict": true,
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "outDir": "../dist/all/@angular",
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "selenium-webdriver": ["./node_modules/@types/selenium-webdriver/index.d.ts"],
+      "rxjs/*": ["./node_modules/rxjs/*"],
+      "@angular/*": ["./packages/*"],
+      "e2e_util/*": ["./modules/e2e_util/*"]
+    },
+    "rootDir": ".",
+    "inlineSourceMap": true,
+    "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable", "es2015.core", "es2017.object"],
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "target": "es5",
+    "types": ["angular"]
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  },
+  "exclude": [
+    "bazel",
+    "common/locales",
+    "compiler-cli/integrationtest",
+    "core/schematics",
+    "elements/schematics",
+    // Do not build the example package because there are no legacy tests that need to be
+    // built. Additionally the examples are not made compatible with the "strict" option.
+    "examples/**",
+    // Http doesn't need to built since it is no longer maintained and
+    // will be removed eventually. See: FW-1392.
+    "http/**",
+    "platform-server/integrationtest",
+    // The webworker packages have deprecated and are not made compatible with the
+    // strict flag. Until these packages are removed, we exclude them here.
+    "platform-webworker/**",
+    "platform-webworker-dynamic/**",
+    "router/test/aot_ngsummary_test",
+    "zone.js"
+  ]
+}

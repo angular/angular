@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+const shell = require('shelljs');
+shell.config.fatal = true;
+const util = require('./utils/git_util');
+
+if (require.main === module) {
+  main(process.argv.splice(2)).then(
+    (v) => process.exitCode, 
+    (e) => console.error(process.exitCode = 1, e) 
+  );
+}
+
+async function main(args) {
+  let flags = '';
+  let prNumber = 0;
+  let printHelp = false;
+
+  args.forEach((arg) => {
+    if (prNumber == 0 && Number.parseInt(arg) > 0) {
+      prNumber = Number.parseInt(arg);
+    } else if (arg == '--help') {
+      printHelp = true;
+    } else if (arg == '--force-with-lease') {
+      flags += ' --force-with-lease';
+    } else if (arg == '--force') {
+      flags += ' --force';
+    } else {
+      shell.echo('Unexpected argument: ', arg);
+    }
+  });
+
+  if (!prNumber) {
+    const branch = util.getCurrentBranch();
+    const maybePr = branch.split('/')[1];
+    if (maybePr > 0) {
+      shell.echo(`PR number not specified. Defaulting to #${maybePr}.`);
+      prNumber = maybePr;
+    }
+  }
+
+  if (!prNumber || printHelp) {
+    shell.echo(`Push the current HEAD into an existing pull request.`);
+    shell.echo(``);
+    shell.echo(`${process.argv[1]} [PR_NUMBER] [--force-with-lease]`);
+    shell.echo(``);
+    shell.echo(`    --force-with-lease    Continues even \if change can\'t be fast-forwarded.`);
+    shell.echo(`    --force               Forces the push with --force.`);
+    shell.echo(`    [PR_NUMBER]           If not present the script guesses the PR from the branch name.`);
+    return 1;
+  }
+
+  const prInfo = await util.githubPrInfo(prNumber);
+  const prPushCmd = `git push${flags} ${prInfo.repository.gitUrl} HEAD:${prInfo.branch}`;
+  shell.echo(`>>> ${prPushCmd}`);
+  shell.exec(prPushCmd);
+
+  return 0;
+ }

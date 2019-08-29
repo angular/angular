@@ -1,0 +1,16 @@
+licenses(["notice"])
+
+# Downloaded from: https://github.com/google/material-design-icons/blob/3.0.1/LICENSE
+# Timestamp: 06/02/2019
+exports_files(["LICENSE.txt"])
+
+filegroup(
+    name = "material-design-icons",
+    srcs = [
+        # https://github.com/google/material-design-icons/blob/3.0.1/iconfont/material-icons.css
+        "material-icons.css",
+        # https://github.com/google/material-design-icons/blob/3.0.1/iconfont/MaterialIcons-Regular.ttf
+        "MaterialIcons-Regular.ttf",
+    ],
+    visibility = ["//modules/playground:__subpackages__"],
+)

@@ -1,0 +1,11 @@
+{
+  "description": "Router",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[0-9].*",
+    "!src/app/crisis-list/*.*",
+    "!src/app/hero-list/*.*"
+  ],
+  "tags": ["router"]
+}

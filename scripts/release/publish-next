@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -u -e -o pipefail
+
+# Use for BETA and RC releases
+# Query Bazel for npm_package and ng_package rules with tags=["release-with-framework"]
+# Publish them to npm (tagged next)
+
+# We need to resolve the Bazel binary in the node modules because running Bazel
+# through `yarn bazel` causes additional output that throws off the command stdout.
+BAZEL_BIN=$(yarn bin)/bazel
+# Build into a distinct output location so that artifacts from previous builds are not reused
+BAZEL_OUTPUT_BASE=$(mktemp -d -t angular-release-next.XXXXXXX)
+BAZEL="$BAZEL_BIN --output_base=$BAZEL_OUTPUT_BASE"
+
+# query for all npm packages to be released as part of the framework release
+NPM_PACKAGE_LABELS=`${BAZEL_BIN} query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
+# build all npm packages in parallel
+$BAZEL build --config=release $NPM_PACKAGE_LABELS
+# publish all packages in sequence to make it easier to spot any errors or warnings
+for packageLabel in $NPM_PACKAGE_LABELS; do
+  echo "publishing $packageLabel"
+  $BAZEL run -- ${packageLabel}.publish --access public --tag next
+done

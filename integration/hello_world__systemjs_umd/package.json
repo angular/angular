@@ -1,0 +1,32 @@
+{
+  "name": "angular-integration",
+  "description": "Ensure SystemJS ^0.22 UMD compatibility via __esModule flag.",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "webdriver-manager update --gecko false --standalone false $CI_CHROMEDRIVER_VERSION_ARG",
+    "test": "concurrently \"yarn serve\" \"yarn protractor\" --kill-others --success first",
+    "serve": "lite-server -c bs-config.e2e.json",
+    "preprotractor": "tsc -p e2e",
+    "protractor": "protractor protractor.config.js"
+  },
+  "dependencies": {
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "core-js": "file:../../node_modules/core-js",
+    "plugin-typescript": "8.0.0",
+    "rxjs": "file:../../node_modules/rxjs",
+    "systemjs": "0.20.2",
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../node_modules/zone.js"
+  },
+  "devDependencies": {
+    "@types/jasmine": "2.5.41",
+    "concurrently": "3.4.0",
+    "lite-server": "2.2.2",
+    "protractor": "file:../../node_modules/protractor"
+  }
+}

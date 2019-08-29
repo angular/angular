@@ -1,0 +1,34 @@
+package(default_visibility = [
+    "//modules/playground:__subpackages__",
+    "//packages:__subpackages__",
+])
+
+exports_files(["package.json"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "testing",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    module_name = "@angular/private/testing",
+    deps = [
+        "//packages/core",
+    ],
+)
+
+## Controls if Ivy is enabled. (Temporary target until we permanently switch over to Ivy)
+##
+## This file generates `src/bazel_define_compile_value.ts` file which reexports
+## `--define=compile` value as `bazelDefineCompileValue` symbols so that runtime can detect
+## which mode it is running in.
+##
+## See: `//.bazelrc` where `--define=ivy=legacy` is defined as default.
+## See: `./src/bazel_define_compile_value.ts` for more details.
+genrule(
+    name = "bazel_define_compile_value",
+    outs = ["src/bazel_define_compile_value.ts"],
+    cmd = "echo export const bazelDefineCompileValue = \"'$(compile)'\"\; > $@",
+)

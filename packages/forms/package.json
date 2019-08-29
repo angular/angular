@@ -1,0 +1,32 @@
+{
+  "name": "@angular/forms",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - directives and services for creating forms",
+  "main": "./bundles/forms.umd.js",
+  "module": "./fesm5/forms.js",
+  "es2015": "./fesm2015/forms.js",
+  "esm5": "./esm5/forms.js",
+  "esm2015": "./esm2015/forms.js",
+  "fesm5": "./fesm5/forms.js",
+  "fesm2015": "./fesm2015/forms.js",
+  "typings": "./forms.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "dependencies": {
+    "tslib": "^1.9.0"
+  },
+  "peerDependencies": {
+    "rxjs": "^6.4.0",
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/common": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false
+}

@@ -1,0 +1,35 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+
+ng_module(
+    name = "router_activated_route_examples",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    # TODO: FW-1004 Type checking is currently not complete.
+    type_check = False,
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/router",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "@angular/examples/router/activated-route/main",
+    index_html = "//packages/examples:index.html",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = [
+        "@npm//:node_modules/zone.js/dist/zone.js",
+    ],
+    deps = [":router_activated_route_examples"],
+)

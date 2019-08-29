@@ -1,0 +1,45 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
+load("//packages/zone.js:bundles.bzl", "ES2015_BUNDLES", "ES5_BUNDLES", "ES5_GLOBAL_BUNDLES")
+
+exports_files([
+    "tsconfig.json",
+])
+
+genrule(
+    name = "LICENSE_copy",
+    srcs = ["//:LICENSE"],
+    outs = ["LICENSE"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "LICENSE_wrapped",
+    srcs = ["//:LICENSE"],
+    outs = ["LICENSE.wrapped"],
+    cmd = "(echo '/**\n @license' && cat $< && echo '*/') > $@",
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+        "CHANGELOG.md",
+        "README.md",
+        "package.json",
+    ],
+    visibility = ["//packages/zone.js/test:__pkg__"],
+    deps = [
+        ":LICENSE.wrapped",
+        ":LICENSE_copy",
+        "//packages/zone.js/dist:zone_externs",
+        "//packages/zone.js/lib",
+    ] + [
+        "//packages/zone.js/dist:" + b + "-dist"
+        for b in ES5_BUNDLES
+    ] + [
+        "//packages/zone.js/dist:" + b + "-dist"
+        for b in ES2015_BUNDLES
+    ] + [
+        "//packages/zone.js/dist:" + b + "-dist"
+        for b in ES5_GLOBAL_BUNDLES
+    ] + ["//packages/zone.js/dist:zone_d_ts"],
+)

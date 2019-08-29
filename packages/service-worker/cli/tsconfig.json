@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": false,
+    "strict": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "outDir": "../../../dist/all/@angular/service-worker/cli-custom",
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "rootDir": ".",
+    "paths": {
+      "@angular/service-worker/config": ["../../../dist/packages/service-worker/config"]
+    },
+    "inlineSourceMap": true,
+    "lib": ["es2015"],
+    "target": "es5",
+    "typeRoots": [],
+    "types": [
+      "node"
+    ]
+  },
+  "files": [
+    "main.ts",
+    "../../../node_modules/@types/node/index.d.ts"
+  ]
+}

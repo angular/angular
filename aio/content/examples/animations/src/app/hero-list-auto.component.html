@@ -1,0 +1,9 @@
+<ul class="heroes">
+  <li *ngFor="let hero of heroes"
+      [@shrinkOut]="'in'" (click)="removeHero(hero.id)">
+      <div class="inner">
+        <span class="badge">{{ hero.id }}</span>
+        <span>{{ hero.name }}</span>
+      </div>
+  </li>
+</ul>

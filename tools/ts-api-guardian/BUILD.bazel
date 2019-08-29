@@ -1,0 +1,94 @@
+# BEGIN-INTERNAL
+load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
+load("@npm_bazel_jasmine//:index.bzl", "jasmine_node_test")
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
+
+ts_library(
+    name = "lib",
+    srcs = glob(["lib/*.ts"]),
+    module_name = "ts-api-guardian",
+    tsconfig = "//tools:tsconfig.json",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@npm//@types/diff",
+        "@npm//@types/minimist",
+        "@npm//@types/node",
+        "@npm//chalk",
+        "@npm//diff",
+        "@npm//minimist",
+        "@npm//typescript",
+    ],
+)
+
+# Copy Angular's license to govern ts-api-guardian as well.
+# We use a genrule to put it in this package, so it will be in the right root directory.
+genrule(
+    name = "license",
+    srcs = ["//:LICENSE"],
+    outs = ["LICENSE"],
+    cmd = "cp $< $@",
+)
+
+npm_package(
+    name = "ts-api-guardian",
+    srcs = [
+        "BUILD.bazel",
+        "README.md",
+        "bin/ts-api-guardian",
+        "index.bzl",
+        "package.json",
+    ],
+    replacements = {
+        "@angular//tools/ts-api-guardian:bin": "@npm_ts_api_guardian//:bin",
+        "@angular//tools/ts-api-guardian:lib": "@npm//ts-api-guardian",
+        "angular/tools/ts-api-guardian/": "npm_ts_api_guardian/",
+    },
+    deps = [
+        ":lib",
+        ":license",
+    ],
+)
+
+#######################################3
+# Tests for this package
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["test/*.ts"]),
+    tsconfig = "//tools:tsconfig-test",
+    deps = [
+        ":lib",
+        "@npm//@types/chai",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//chai",
+        "@npm//jasmine",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "tests",
+    srcs = [":test_lib"],
+    bootstrap = ["angular/tools/ts-api-guardian/test/bootstrap.js"],
+    data = glob([
+        "test/fixtures/*.ts",
+        "test/fixtures/*.patch",
+    ]) + [
+        ":ts-api-guardian",
+        # TODO: remove this once the boostrap.js workaround has been removed.
+        ":package.json",
+    ],
+    tags = ["local"],
+)
+# END-INTERNAL
+
+filegroup(
+    name = "bin",
+    srcs = glob(["lib/*.js"]) + ["bin/ts-api-guardian"],
+    visibility = ["//visibility:public"],
+)
+
+# Exported to be referenced as entry_point of the nodejs_binary
+exports_files(["bin/ts-api-guardian"])

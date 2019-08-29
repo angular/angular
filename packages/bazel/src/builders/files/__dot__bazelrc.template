@@ -1,0 +1,35 @@
+# Make TypeScript and Angular compilation fast, by keeping a few copies of the
+# compiler running as daemons, and cache SourceFile AST's to reduce parse time.
+build --strategy=TypeScriptCompile=worker
+build --strategy=AngularTemplateCompile=worker
+
+# Don't create bazel-* symlinks in the WORKSPACE directory, except `bazel-out`,
+# which is mandatory.
+# These require .gitignore and may scare users.
+# Also, it's a workaround for https://github.com/bazelbuild/rules_typescript/issues/12
+# which affects the common case of having `tsconfig.json` in the WORKSPACE directory.
+#
+# Instead, the output will appear in `dist/bin`. You'll need to ignore the
+# `bazel-out` directory that is created in the workspace root.
+build --symlink_prefix=dist/
+
+# Turn on --incompatible_strict_action_env which was on by default
+# in Bazel 0.21.0 but turned off again in 0.22.0. Follow
+# https://github.com/bazelbuild/bazel/issues/7026 for more details.
+# This flag is needed to so that the bazel cache is not invalidated
+# when running bazel via `yarn bazel`.
+# See https://github.com/angular/angular/issues/27514.
+build --incompatible_strict_action_env
+run --incompatible_strict_action_env
+test --incompatible_strict_action_env
+
+build --incompatible_bzl_disallow_load_after_statement=false
+
+test --test_output=errors
+
+# Use the Angular 6 compiler
+build --define=compile=legacy
+
+# Turn on managed directories feature in Bazel
+# This allows us to avoid installing a second copy of node_modules
+common --experimental_allow_incremental_repository_updates

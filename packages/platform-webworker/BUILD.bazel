@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "platform-webworker",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    # Disable building with strict compatibility as the platform-webworker package is
+    # deprecated and therefore it is not needed to make it compatible with --strict.
+    tsconfig = "//packages:tsconfig-build-no-strict",
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/platform-browser",
+        "@npm//rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = ":index.ts",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
+    deps = [
+        ":platform-webworker",
+    ],
+)

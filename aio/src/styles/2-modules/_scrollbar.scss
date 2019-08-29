@@ -1,0 +1,27 @@
+body::-webkit-scrollbar, mat-sidenav.sidenav::-webkit-scrollbar, .mat-sidenav-content::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+body::-webkit-scrollbar-track, mat-sidenav.sidenav::-webkit-scrollbar-track, .mat-sidenav-content::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+body::-webkit-scrollbar-thumb, mat-sidenav.sidenav::-webkit-scrollbar-thumb, .mat-sidenav-content::-webkit-scrollbar-thumb {
+  background-color: $mediumgray;
+  outline: 1px solid $darkgray;
+}
+
+.search-results::-webkit-scrollbar, .toc-container::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.search-results::-webkit-scrollbar-track, .toc-container::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+.search-results::-webkit-scrollbar-thumb, .toc-container::-webkit-scrollbar-thumb {
+  background-color: $mediumgray;
+  outline: 1px solid slategrey;
+}

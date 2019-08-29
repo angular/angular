@@ -1,0 +1,14 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//packages/upgrade:__subpackages__"])
+
+ts_library(
+    name = "helpers",
+    srcs = glob([
+        "*.ts",
+    ]),
+    deps = [
+        "//packages/core/testing",
+        "//packages/upgrade/src/common",
+    ],
+)

@@ -1,0 +1,21 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ng_module(
+    name = "testing",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["testing.ts"],
+    ),
+    # compiler package is built using ts_library which doesn't support bundling yet.
+    bundle_dts = False,
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core",
+        "@npm//@types/node",
+    ],
+)

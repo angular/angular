@@ -1,0 +1,37 @@
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "ts_library")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ts_library(
+    name = "render3_function_lib",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/tree:util_lib",
+        "//modules/benchmarks/src/tree/render3:tree_lib",
+        "//packages/core",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "angular/modules/benchmarks/src/tree/render3_function/index",
+    index_html = "index.html",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    deps = [":render3_function_lib"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    deps = [
+        "//modules/benchmarks/src/tree:perf_detect_changes_lib",
+        "//modules/benchmarks/src/tree:perf_lib",
+    ],
+)

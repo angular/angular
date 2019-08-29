@@ -1,0 +1,35 @@
+package(default_visibility = ["//packages:__subpackages__"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+# BEGIN-DEV-ONLY
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "lib",
+    srcs = [
+        "index.ts",
+    ],
+    deps = [
+        "@npm//@bazel/typescript",
+        "@npm//@microsoft/api-extractor",
+        "@npm//@types/node",
+    ],
+)
+
+# END-DEV-ONLY
+nodejs_binary(
+    name = "api_extractor",
+    data = [
+        ":lib",
+        "@npm//@bazel/typescript",
+        "@npm//@microsoft/api-extractor",
+    ],
+    entry_point = ":index.ts",
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "package_assets",
+    srcs = ["BUILD.bazel"],
+)

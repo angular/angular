@@ -1,0 +1,42 @@
+load("//packages/bazel:index.bzl", "ng_module")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load(":extract_flat_module_index.bzl", "extract_flat_module_index")
+
+ng_module(
+    name = "test_module",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    api_extractor = "//packages/bazel/src/api-extractor:api_extractor",
+    compiler = "//packages/bazel/src/ngc-wrapped",
+    entry_point = "index.ts",
+    flat_module_out_file = "flat_module_filename",
+    module_name = "some_npm_module",
+    ng_xi18n = "//packages/bazel/src/ngc-wrapped:xi18n",
+    node_modules = "@npm//typescript:typescript__typings",
+    tags = [
+        # Disabled as this test is specific to the flat module indexing of metadata.json files that
+        # the old ngc compiler does. Ivy has no metadata.json files so this test does not apply.
+        "no-ivy-aot",
+    ],
+    deps = [
+        "//packages/core",
+        "@npm//tslib",
+    ],
+)
+
+extract_flat_module_index(
+    name = "flat_module_index",
+    testonly = True,
+    deps = [":test_module"],
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = ["spec.js"],
+    data = [":flat_module_index"],
+    tags = [
+        # Disabled as this test is specific to the flat module indexing of metadata.json files that
+        # the old ngc compiler does. Ivy has no metadata.json files so this test does not apply.
+        "no-ivy-aot",
+    ],
+)

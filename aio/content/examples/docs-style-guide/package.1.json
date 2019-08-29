@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "start": "concurrently \"npm run build:watch\" \"npm run serve\"",
+    "test": "concurrently \"npm run build:watch\" \"karma start karma.conf.js\"",
+    "lint": "tslint ./src/**/*.ts -t verbose"
+  }
+}

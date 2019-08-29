@@ -1,0 +1,235 @@
+#!/usr/bin/env bash
+
+# https://www.tldp.org/LDP/abs/html/options.html#AEN19601
+# https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
+set -u -e -E -o pipefail
+
+BOLD='printf \e[1m'
+RESET_STYLES='printf \e[0m'
+LIGHT_CYAN='printf \e[96m'
+LIGHT_MAGENTA='printf \e[95m'
+GREEN='printf \e[32m'
+RED='printf \e[31m'
+
+BASEDIR=$(dirname "$0")
+BASEDIR=`(cd $BASEDIR; pwd)`
+
+PR_NUMBER=0
+PUSH_UPSTREAM=1
+FORCE=0
+while [[ $# -gt 0 ]]
+do
+  key="$1"
+
+  case $key in
+      --dryrun)
+      PUSH_UPSTREAM=0
+      shift # past argument
+      ;;
+      --force)
+      FORCE=1
+      shift # past argument
+      ;;
+      *)    # unknown option
+      PR_NUMBER="$1" # save it in an array for later
+      shift # past argument
+      ;;
+  esac
+done
+
+if [ "$PR_NUMBER" -eq 0 ]; then
+  echo "Merge github PR into the target branches if status is green"
+  echo
+  echo "$0 PR_NUMBER [--dryrun] [--force]"
+  echo
+  echo    --dryrun   Performs all operations but does not push the merge back to git@github.com:angular/angular.git.
+  echo    --force    Continues even if PR status is not green.
+  exit 0
+fi
+
+if [ -z ${TOKEN:-''} ]; then
+    $RED
+    echo "############################################################"
+    echo "############################################################"
+    echo "WARNING: you should set the TOKEN variable to a github token"
+    echo "############################################################"
+    echo "############################################################"
+    $RESET_STYLES
+    GH_AUTH=""
+else
+    GH_AUTH="Authorization: token $TOKEN"
+fi
+
+PULL_JSON=`curl -H "$GH_AUTH" -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER`
+PR_SHA_COUNT=`node $BASEDIR/utils/json_extract.js commits <<< """$PULL_JSON"""`
+STATUS_JSON_URL=`node $BASEDIR/utils/json_extract.js _links.statuses.href <<< """$PULL_JSON"""`
+STATUS=`curl -H "$GH_AUTH" -s $STATUS_JSON_URL | node $BASEDIR/utils/json_extract.js description | cut -d '|' -f1`
+PR_LABELS=`curl -H "$GH_AUTH" -s https://api.github.com/repos/angular/angular/issues/$PR_NUMBER/labels`
+PR_ACTION=`echo "$PR_LABELS" | node $BASEDIR/utils/json_extract.js "name=^PR action:"`
+PR_TARGET=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^PR target:"`
+PR_CLA=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^cla"`
+MASTER_BRANCH='master'
+
+if [[ ! "$PR_ACTION" =~ "PR action: merge" ]]; then
+  $RED
+  echo The PR is missing 'PR action: merge(-assistance)' label, found: $PR_ACTION
+  $RESET_STYLES
+  exit 1
+fi
+
+if [[ "$PR_CLA" != "cla: yes" ]]; then
+  $RED
+  echo The PR is missing 'cla: Yes' label, found: $PR_CLA
+  $RESET_STYLES
+  exit 1
+fi
+
+if [[ "$STATUS" != "All checks passed!" ]]; then
+  echo PR $PR_NUMBER is failing with: $STATUS
+  if [[ $FORCE == 1 ]]; then
+    $BOLD
+    $LIGHT_MAGENTA
+    echo FORCING: --force flag used to ignore PR status.
+    $RESET_STYLES
+  else
+    echo Exiting...
+    exit 1
+  fi
+fi
+
+if [[ $PR_TARGET == "PR target: master & patch" ]]; then
+  MERGE_MASTER=1
+  MERGE_PATCH=1
+elif [[ $PR_TARGET == "PR target: master-only" ]]; then
+  MERGE_MASTER=1
+  MERGE_PATCH=0
+elif [[ $PR_TARGET == "PR target: patch-only" ]]; then
+  MERGE_MASTER=0
+  MERGE_PATCH=1
+else
+  $RED
+  echo "Unknown PR target format: $PR_TARGET"
+  $RESET_STYLES
+  exit 1;
+fi
+
+CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+PATCH_BRANCH=`git ls-remote --heads  git@github.com:angular/angular.git | grep -E 'refs\/heads\/[0-9]+\.[0-9]+\.x' | cut -d '/' -f3 | sort -r | head -n1`
+
+CHECKOUT_MASTER="git checkout merge_pr_master"
+CHECKOUT_PATCH="git checkout merge_pr_patch"
+RESTORE_BRANCH="git checkout $CURRENT_BRANCH"
+
+FETCH_PR="git fetch git@github.com:angular/angular.git pull/$PR_NUMBER/head:merge_pr heads/$MASTER_BRANCH:merge_pr_master heads/$PATCH_BRANCH:merge_pr_patch -f"
+BASE_PR="git checkout merge_pr~$PR_SHA_COUNT -B merge_pr_base"
+SQUASH_PR="git rebase --autosquash --interactive merge_pr_base merge_pr"
+REWRITE_MESSAGE="git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" merge_pr_base..merge_pr"
+PUSH_BRANCHES="git push git@github.com:angular/angular.git merge_pr_master:$MASTER_BRANCH merge_pr_patch:$PATCH_BRANCH"
+CHERRY_PICK_PR="git cherry-pick merge_pr_base..merge_pr"
+
+# Checks that each PR branch to be merged upstream contains SHAs of commits that significantly changed our CI infrastructure.
+#
+# This check is used to enforce that we don't merge PRs that have not been rebased recently and could result in merging
+# of non-approved or otherwise bad changes.
+REQUIRED_BASE_SHA_MASTER="a03a9236f2aed5d00012d25f032aa43a046d91da" # pullapprove => CODEOWNERS migration
+REQUIRED_BASE_SHA_PATCH="a03a9236f2aed5d00012d25f032aa43a046d91da"  # pullapprove => CODEOWNERS migration
+if [[ $MERGE_MASTER == 1 ]]; then
+  REQUIRED_BASE_SHA="$REQUIRED_BASE_SHA_MASTER"
+# check patch only if patch-only PR
+elif [[ $MERGE_PATCH == 1 ]]; then
+  REQUIRED_BASE_SHA="$REQUIRED_BASE_SHA_PATCH"
+fi
+CHECK_IF_PR_REBASED="git branch --quiet merge_pr --contains $REQUIRED_BASE_SHA"
+
+$BOLD
+$LIGHT_CYAN
+echo "======================"
+echo "GitHub Merge PR Steps"
+echo "======================"
+echo "   $FETCH_PR"
+echo "   $BASE_PR"
+echo "   $CHECK_IF_PR_REBASED"
+echo "   $SQUASH_PR"
+echo "   $REWRITE_MESSAGE"
+if [[ $MERGE_MASTER == 1 ]]; then
+  echo "   $CHECKOUT_MASTER && $CHERRY_PICK_PR"
+fi
+if [[ $MERGE_PATCH == 1 ]]; then
+  echo "   $CHECKOUT_PATCH && $CHERRY_PICK_PR"
+fi
+echo "   $PUSH_BRANCHES"
+echo "   $RESTORE_BRANCH"
+echo "----------------------"
+$RESET_STYLES
+$BOLD
+echo ""
+echo ">>> Fetch PR: $FETCH_PR"
+$RESET_STYLES
+$FETCH_PR
+$BOLD
+echo ""
+echo ">>> Mark base: $BASE_PR"
+$RESET_STYLES
+$BASE_PR
+$BOLD
+echo ""
+echo ">>> Check if PR rebased: $CHECK_IF_PR_REBASED"
+$RESET_STYLES
+if [[ $($CHECK_IF_PR_REBASED) != "" ]]; then
+  $GREEN
+  echo "The PR is sufficiently rebased!"
+  $RESET_STYLES
+else
+  $RED
+  echo ""
+  echo ""
+  echo "Failed to merge pull request #${PR_NUMBER} because it hasn't been rebased recently and could be bypassing new or updated CI checks!"
+  echo ""
+  echo "Please rebase the PR and try again."
+  echo ""|
+  $RESET_STYLES
+  $RESTORE_BRANCH
+  exit 1
+fi
+$BOLD
+echo ""
+echo ">>> Autosquash: $SQUASH_PR"
+$RESET_STYLES
+GIT_EDITOR=echo $SQUASH_PR
+$BOLD
+echo ""
+echo ">>> Rewrite message: $REWRITE_MESSAGE"
+# Next line should work, but it errors, hence copy paste the command.
+# $REWRITE_MESSAGE
+$RESET_STYLES
+git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" merge_pr_base..merge_pr
+if [[ $MERGE_MASTER == 1 ]]; then
+  $BOLD
+  echo
+  echo ">>> Cherry pick to master: $CHECKOUT_MASTER && $CHERRY_PICK_PR"
+  $RESET_STYLES
+  $CHECKOUT_MASTER
+  $CHERRY_PICK_PR
+fi
+if [[ $MERGE_PATCH == 1 ]]; then
+  $BOLD
+  echo
+  echo ">>> Cherry pick to patch: $CHECKOUT_PATCH && $CHERRY_PICK_PR"
+  $RESET_STYLES
+  $CHECKOUT_PATCH
+  $CHERRY_PICK_PR
+fi
+$RESTORE_BRANCH
+
+if [[ $PUSH_UPSTREAM == 1 ]]; then
+  $BOLD
+  echo
+  echo ">>> Push branches to angular repo"
+  $RESET_STYLES
+  $PUSH_BRANCHES
+fi
+$BOLD
+$GREEN
+echo
+echo ">>>>>> SUCCESS <<<<<< PR#$PR_NUMBER merged."
+$RESET_STYLES

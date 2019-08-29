@@ -1,0 +1,33 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "platform-webworker-dynamic",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = ":index.ts",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
+    deps = [":platform-webworker-dynamic"],
+)

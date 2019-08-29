@@ -1,0 +1,78 @@
+<!-- Filter the Movie Title   -->
+<div>
+  <h2>Movie List</h2>
+  <div>Who is your favorite hero?</div>
+  <div>
+    <!-- #docregion ngModel -->
+    <input [(ngModel)]="favoriteHero" />
+    <!-- #enddocregion ngModel -->
+
+    <!-- #docregion ngSwitch-->
+    <span [ngSwitch]="favoriteHero &&
+                   checkMovieHero(favoriteHero)">
+      <p *ngSwitchCase="true">
+        Excellent choice!
+      </p>
+      <p *ngSwitchCase="false">
+        No movie, sorry!
+      </p>
+      <p *ngSwitchDefault>
+        Please enter your favorite hero.
+      </p>
+    </span>
+    <!-- #enddocregion ngSwitch-->
+  </div>
+</div>
+
+<!-- #docregion hidden -->
+<h3 [hidden]="!favoriteHero">
+  <!-- #docregion interpolation -->
+  Your favorite hero is: {{favoriteHero}}
+  <!-- #enddocregion interpolation -->
+</h3>
+<!-- #enddocregion hidden -->
+
+<div>
+<!-- #docregion ngIf -->
+  <table *ngIf="movies.length">
+<!-- #enddocregion ngIf -->
+    <thead>
+      <tr>
+        <th>
+          <button (click)="toggleImage()">
+            {{showImage ? "Hide" : "Show"}} Poster
+          </button>
+        </th>
+        <th>Title</th>
+        <th>Hero</th>
+        <th>Release Date</th>
+        <th>Rating</th>
+        <th>Price</th>
+        <th>Star rating</th>
+        <th>Approval rating</th>
+      </tr>
+    </thead>
+    <tbody>
+  <!-- #docregion ngFor -->
+      <tr *ngFor="let movie of movies">
+  <!-- #enddocregion ngFor -->
+        <td>
+          <img [hidden]="!showImage || !movie.imageurl"
+                [style.height.px]="50"
+                [style.margin.px]="2"
+                [src]="movie.imageurl"
+                [title]="movie.title">
+        </td>
+        <td>{{movie.title}}</td>
+        <td>{{movie.hero}}</td>
+        <td>{{movie.releaseDate | date}}</td>
+        <td>{{movie.mpaa | uppercase}}</td>
+  <!-- #docregion currency -->
+        <td>{{movie.price | currency:'USD':true}}</td>
+  <!-- #enddocregion currency -->
+        <td>{{movie.starRating | number:'1.1-2'}}</td>
+        <td>{{movie.approvalRating | percent: '1.0-0'}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

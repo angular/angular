@@ -1,0 +1,50 @@
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+
+ng_module(
+    name = "tree_lib",
+    srcs = [
+        "index_aot.ts",
+        "tree.ts",
+    ],
+    tags = ["ivy-only"],
+    deps = [
+        "//modules/benchmarks/src/tree:util_lib",
+        "//packages:types",
+        "//packages/common",
+        "//packages/core",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index_aot.ts",
+    tags = ["ivy-only"],
+    deps = [
+        ":tree_lib",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    index_html = "index.html",
+    port = 4200,
+    tags = ["ivy-only"],
+    deps = [
+        ":bundle.min_debug.js",
+    ],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    tags = ["ivy-only"],
+    deps = [
+        "//modules/benchmarks/src/tree:perf_detect_changes_lib",
+        "//modules/benchmarks/src/tree:perf_lib",
+    ],
+)

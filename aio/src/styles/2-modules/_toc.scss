@@ -1,0 +1,209 @@
+.toc-container {
+  width: 18%;
+  position: fixed;
+  top: 76px;
+  right: 0;
+  bottom: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.toc-inner {
+  @include font-size(13);
+  overflow-y: visible;
+  padding: 4px 0 0 10px;
+
+  .toc-heading,
+  .toc-list .h1 {
+    @include font-size(16);
+  }
+
+  .toc-heading {
+    font-weight: 500;
+    margin: 0 0 16px 8px;
+    padding: 0;
+
+    &.secondary {
+      position: relative;
+      top: -8px;
+
+      &:hover {
+        color: $accentblue;
+      }
+    }
+  }
+
+  button {
+    &.toc-heading,
+    &.toc-more-items {
+      cursor: pointer;
+      display: inline-block;
+      background: 0;
+      background-color: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      text-align: start;
+
+      &.embedded:focus {
+        outline: none;
+        background: $lightgray;
+      }
+    }
+  }
+
+  &.toc-heading {
+    mat-icon.rotating-icon {
+      height: 18px;
+      width: 18px;
+      position: relative;
+      left: -4px;
+      top: 5px;
+    }
+
+    &:hover:not(.embedded) {
+      color: $accentblue;
+    }
+  }
+
+  &.toc-more-items {
+    color: $mediumgray;
+    top: 10px;
+    position: relative;
+
+    &:hover {
+      color: $accentblue;
+    }
+
+    &::after {
+      content: 'expand_less';
+    }
+
+    &.collapsed::after {
+      content: 'more_horiz';
+    }
+  }
+
+  .mat-icon {
+    &.collapsed {
+      @include rotate(0deg);
+    }
+
+    &:not(.collapsed) {
+      @include rotate(90deg);
+    }
+  }
+
+  ul.toc-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 8px 0 0;
+    
+    @media (max-width: 800px) {
+      width: auto;
+    }
+
+    li {
+      box-sizing: border-box;
+      @include font-size(12);
+      @include line-height(16);
+      padding: 3px 0 3px 12px;
+      position: relative;
+      transition: all 0.3s ease-in-out;
+
+      &.h1:after {
+        content: '';
+        display: block;
+        height: 1px;
+        width: 40%;
+        margin: 7px 0 4px 0;
+        background: $lightgray;
+        clear: both;
+      }
+
+      &.h3 {
+        padding-left: 24px;
+      }
+
+      a {
+        color: lighten($darkgray, 10);
+        overflow: visible;
+        @include font-size(12);
+        display: table-cell;
+      }
+
+      &:hover {
+        * {
+          color: $accentblue;
+        }
+      }
+
+      &.active {
+        * {
+          color: $blue;
+          font-weight: 500;
+
+          &:before {
+            content: '';
+            border-radius: 50%;
+            left: -3px;
+            top: 12px;
+            background: $blue;
+            position: absolute;
+            width: 6px;
+            height: 6px;
+          }
+        }
+      }
+    }
+
+    &:not(.embedded) li {
+      &:before {
+        border-left: 1px solid $lightgray;
+        bottom: 0;
+        content: '';
+        left: 0;
+        position: absolute;
+        top: 0;
+      }
+
+      &:first-child:before {
+        top: 13px;
+      }
+
+      &:last-child:before {
+        bottom: calc(100% - 14px);
+      }
+
+      &:not(.active):hover a:before {
+        content: '';
+        border-radius: 50%;
+        left: -3px;
+        top: 12px;
+        background: $lightgray;
+        position: absolute;
+        width: 6px;
+        height: 6px;
+      }
+    }
+  }
+}
+
+// Alternative TOC View for Smaller Screens
+aio-toc.embedded {
+  @media (min-width: 801px) {
+    display: none;
+  }
+
+  .toc-inner {
+    padding: 12px 0 0 0;
+
+    .toc-heading {
+      margin: 0 0 8px;
+    }
+  }
+
+  > div.collapsed li.secondary {
+    display: none;
+  }
+}

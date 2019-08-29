@@ -1,0 +1,31 @@
+# Make TypeScript and Angular compilation fast, by keeping a few copies of the
+# compiler running as daemons, and cache SourceFile AST's to reduce parse time.
+build --strategy=TypeScriptCompile=worker
+build --strategy=AngularTemplateCompile=worker
+
+test --test_output=errors
+
+# Workaround https://github.com/bazelbuild/bazel/issues/3645
+# Bazel doesn't calculate the memory ceiling correctly when running under Docker.
+# Limit Bazel to consuming resources that fit in CircleCI "xlarge" class
+# https://circleci.com/docs/2.0/configuration-reference/#resource_class
+build --local_resources=14336,8.0,1.0
+
+# Use the Angular 6 compiler
+build --define=compile=legacy
+
+# Don't create symlinks
+build --symlink_prefix=/
+
+# Turn on managed directories feature in Bazel
+# This allows us to avoid installing a second copy of node_modules
+common --experimental_allow_incremental_repository_updates
+
+# This option is changed to true in Bazel 0.27 and exposes a possible
+# regression in Bazel 0.27.0.
+# See root /.bazelrc for more info. integration/bazel uses
+# ng_package which depends on npm_package so this flag needs to be set
+# her as well.
+build --incompatible_list_based_execution_strategy_selection=false
+test --incompatible_list_based_execution_strategy_selection=false
+run --incompatible_list_based_execution_strategy_selection=false

@@ -1,0 +1,12 @@
+{
+  "name": "@angular/animations/browser",
+  "typings": "./browser.d.ts",
+  "main": "../bundles/animations-browser.umd.js",
+  "module": "../fesm5/browser.js",
+  "es2015": "../fesm2015/browser.js",
+  "esm5": "../esm5/browser/browser.js",
+  "esm2015": "../esm2015/browser/browser.js",
+  "fesm5": "../fesm5/browser.js",
+  "fesm2015": "../fesm2015/browser.js",
+  "sideEffects": false
+}

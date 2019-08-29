@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "size-tracking",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_spec.ts"],
+    ),
+    tsconfig = "//tools:tsconfig.json",
+    deps = [
+        "@npm//@types/node",
+        "@npm//chalk",
+        "@npm//source-map",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*_spec.ts"]),
+    deps = [
+        ":size-tracking",
+        "@npm//source-map",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [],
+    deps = [
+        ":test_lib",
+        "@npm//source-map",
+    ],
+)

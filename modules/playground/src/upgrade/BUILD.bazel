@@ -1,0 +1,34 @@
+load("//tools:defaults.bzl", "ts_library")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+# Since this test uses the AOT-incompatible version of "@angular/upgrade", we cannot
+# use the "ng_module" rule here unless we switch this example to "upgrade/static".
+ts_library(
+    name = "upgrade",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/upgrade",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "angular/modules/playground/src/upgrade/index",
+    index_html = "index.html",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = [
+        "@npm//:node_modules/zone.js/dist/zone.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "@npm//:node_modules/angular/angular.js",
+    ],
+    deps = [":upgrade"],
+)

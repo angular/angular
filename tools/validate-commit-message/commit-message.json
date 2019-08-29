@@ -1,0 +1,42 @@
+{
+  "maxLength": 120,
+  "types": [
+    "build",
+    "ci",
+    "docs",
+    "feat",
+    "fix",
+    "perf",
+    "refactor",
+    "release",
+    "style",
+    "test"
+  ],
+  "scopes": [
+    "animations",
+    "bazel",
+    "benchpress",
+    "common",
+    "compiler",
+    "compiler-cli",
+    "core",
+    "docs-infra",
+    "elements",
+    "forms",
+    "http",
+    "ivy",
+    "language-service",
+    "ngcc",
+    "platform-browser",
+    "platform-browser-dynamic",
+    "platform-server",
+    "platform-webworker",
+    "platform-webworker-dynamic",
+    "router",
+    "service-worker",
+    "upgrade",
+    "packaging",
+    "changelog",
+    "zone.js"
+  ]
+}

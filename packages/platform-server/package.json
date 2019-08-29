@@ -1,0 +1,39 @@
+{
+  "name": "@angular/platform-server",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - library for using Angular in Node.js",
+  "main": "./bundles/platform-server.umd.js",
+  "module": "./fesm5/platform-server.js",
+  "es2015": "./fesm2015/platform-server.js",
+  "esm5": "./esm5/platform-server.js",
+  "esm2015": "./esm2015/platform-server.js",
+  "fesm5": "./fesm5/platform-server.js",
+  "fesm2015": "./fesm2015/platform-server.js",
+  "typings": "./platform-server.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/animations": "0.0.0-PLACEHOLDER",
+    "@angular/common": "0.0.0-PLACEHOLDER",
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER"
+  },
+  "dependencies": {
+    "domino": "^2.1.2",
+    "tslib": "^1.9.0",
+    "xhr2": "^0.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=8.0"
+  }
+}

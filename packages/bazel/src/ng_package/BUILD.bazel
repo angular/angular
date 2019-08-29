@@ -1,0 +1,35 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+# BEGIN-DEV-ONLY
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
+
+ts_library(
+    name = "lib",
+    srcs = glob(["*.ts"]),
+    node_modules = "@npm//typescript:typescript__typings",
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "@npm//@types/node",
+        "@npm//@types/shelljs",
+    ],
+)
+
+# END-DEV-ONLY
+nodejs_binary(
+    name = "packager",
+    data = [
+        "lib",
+        "@npm//shelljs",
+    ],
+    entry_point = ":packager.ts",
+    install_source_map_support = False,
+)
+
+exports_files(["ng_package.bzl"])
+
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*.bzl"]) + ["BUILD.bazel"],
+)

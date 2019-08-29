@@ -1,0 +1,43 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
+load("//tools/size-tracking:index.bzl", "js_size_tracking_test")
+
+ts_library(
+    name = "core_all",
+    srcs = ["index.ts"],
+    tags = ["ivy-only"],
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        ":core_all",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+js_size_tracking_test(
+    name = "size_test",
+    src = "angular/packages/core/test/bundling/core_all/bundle.min.js",
+    data = [
+        ":bundle",
+        ":bundle.golden_size_map.json",
+    ],
+    goldenFile = "angular/packages/core/test/bundling/core_all/bundle.golden_size_map.json",
+    maxByteDiff = 250,
+    maxPercentageDiff = 15,
+    sourceMap = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
+    tags = [
+        "ivy-only",
+        "manual",
+    ],
+)
