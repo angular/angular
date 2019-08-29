@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {hasBeenProcessed, markAsProcessed} from '../../src/packages/build_marker';
@@ -150,55 +150,61 @@ runInEachFileSystem(() => {
     });
 
     describe('hasBeenProcessed', () => {
+      let entryPointPath: AbsoluteFsPath;
+
+      beforeEach(() => entryPointPath = _('/node_modules/test'));
+
       it('should return true if the marker exists for the given format property', () => {
         expect(hasBeenProcessed(
                    {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}},
-                   'fesm2015'))
+                   'fesm2015', entryPointPath))
             .toBe(true);
       });
       it('should return false if the marker does not exist for the given format property', () => {
         expect(hasBeenProcessed(
                    {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}},
-                   'module'))
+                   'module', entryPointPath))
             .toBe(false);
       });
       it('should return false if no markers exist',
-         () => { expect(hasBeenProcessed({name: 'test'}, 'module')).toBe(false); });
+         () => { expect(hasBeenProcessed({name: 'test'}, 'module', entryPointPath)).toBe(false); });
       it('should throw an Error if the format has been compiled with a different version.', () => {
         expect(
             () => hasBeenProcessed(
-                {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}}, 'fesm2015'))
+                {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}}, 'fesm2015',
+                entryPointPath))
             .toThrowError(
                 'The ngcc compiler has changed since the last ngcc build.\n' +
-                'Please completely remove `node_modules` and try again.');
+                `Please completely remove the "node_modules" folder containing "${entryPointPath}" and try again.`);
       });
       it('should throw an Error if any format has been compiled with a different version.', () => {
         expect(
             () => hasBeenProcessed(
-                {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}}, 'module'))
+                {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}}, 'module',
+                entryPointPath))
             .toThrowError(
                 'The ngcc compiler has changed since the last ngcc build.\n' +
-                'Please completely remove `node_modules` and try again.');
+                `Please completely remove the "node_modules" folder containing "${entryPointPath}" and try again.`);
         expect(
             () => hasBeenProcessed(
                 {
                   name: 'test',
                   __processed_by_ivy_ngcc__: {'module': '0.0.0-PLACEHOLDER', 'fesm2015': '8.0.0'}
                 },
-                'module'))
+                'module', entryPointPath))
             .toThrowError(
                 'The ngcc compiler has changed since the last ngcc build.\n' +
-                'Please completely remove `node_modules` and try again.');
+                `Please completely remove the "node_modules" folder containing "${entryPointPath}" and try again.`);
         expect(
             () => hasBeenProcessed(
                 {
                   name: 'test',
                   __processed_by_ivy_ngcc__: {'module': '0.0.0-PLACEHOLDER', 'fesm2015': '8.0.0'}
                 },
-                'fesm2015'))
+                'fesm2015', entryPointPath))
             .toThrowError(
                 'The ngcc compiler has changed since the last ngcc build.\n' +
-                'Please completely remove `node_modules` and try again.');
+                `Please completely remove the "node_modules" folder containing "${entryPointPath}" and try again.`);
       });
     });
   });
