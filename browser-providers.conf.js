@@ -29,11 +29,10 @@ var CIconfiguration = {
   'Edge': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android4.4': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android5': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
-  // TODO: Re-enable Android6 and Android7 as these are just temporarily disabled because
-  // the browsers don't capture. This seems to be because the browsers are not able to
-  // establish a connection to the karma server through the tunnel.
   'Android6': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android7': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Android8': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Android9': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Safari7': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari8': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari9': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
@@ -100,6 +99,20 @@ var customLaunchers = {
     platform: 'Android',
     version: '7.1',
     device: 'Android GoogleAPI Emulator'
+  },
+  'SL_ANDROID8': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '8.1',
+    device: 'Google Pixel GoogleAPI Emulator',
+  },
+  'SL_ANDROID9': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '9',
+    device: 'Android GoogleAPI Emulator',
   },
 
   'BS_CHROME': {base: 'BrowserStack', browser: 'chrome', os: 'OS X', os_version: 'Yosemite'},

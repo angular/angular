@@ -125,6 +125,9 @@ module.exports = function(config) {
       idleTimeout: 600,
       commandTimeout: 600,
       maxDuration: 5400,
+      options: {
+        extendedDebugging: true,
+      }
     },
 
     browserStack: {
