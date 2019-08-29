@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, JsonObject} from '../packages/entry_point';
 
 
 /**
@@ -32,7 +32,7 @@ export interface Executor {
 }
 
 /** Represents a unit of work: processing a specific format property of an entry-point. */
-export interface Task {
+export interface Task extends JsonObject {
   /** The `EntryPoint` which needs to be processed as part of the task. */
   entryPoint: EntryPoint;
 

@@ -82,6 +82,10 @@ grep "FocusMonitor.decorators =" node_modules/@angular/cdk/bundles/cdk-a11y.umd.
 ivy-ngcc -l debug | grep 'Skipping'
 if [[ $? != 0 ]]; then exit 1; fi
 
+# Does it process the tasks in parallel?
+ivy-ngcc -l debug | grep 'Running ngcc on ClusterExecutor'
+if [[ $? != 0 ]]; then exit 1; fi
+
 # Check that running it with logging level error outputs nothing
 ivy-ngcc -l error | grep '.' && exit 1
 

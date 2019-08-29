@@ -5,6 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+/// <reference types="node" />
+
+import {DepGraph} from 'dependency-graph';
+import * as os from 'os';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
@@ -17,7 +22,10 @@ import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor, Task, TaskProcessingOutcome, TaskQueue} from './execution/api';
+import {ClusterExecutor} from './execution/cluster/executor';
+import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
 import {AsyncSingleProcessExecutor, SingleProcessExecutor} from './execution/single_process_executor';
+import {ParallelTaskQueue} from './execution/task_selection/parallel_task_queue';
 import {SerialTaskQueue} from './execution/task_selection/serial_task_queue';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
@@ -31,6 +39,7 @@ import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater';
+
 
 /**
  * The options to configure the ngcc compiler for synchronous execution.
@@ -100,6 +109,8 @@ export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'>& {async: true};
  */
 export type NgccOptions = AsyncNgccOptions | SyncNgccOptions;
 
+const EMPTY_GRAPH = new DepGraph<EntryPoint>();
+
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).
  *
@@ -115,8 +126,18 @@ export function mainNgcc(
      compileAllFormats = true, createNewEntryPointFormats = false,
      logger = new ConsoleLogger(LogLevel.info), pathMappings, async = false}: NgccOptions): void|
     Promise<void> {
+  // Execute in parallel, if async execution is acceptable and there are more than 1 CPU cores.
+  const inParallel = async && (os.cpus().length > 1);
+
+  // Instantiate common utilities that are always used.
+  // NOTE: Avoid eagerly instantiating anything that might not be used when running sync/async or in
+  //       master/worker process.
   const fileSystem = getFileSystem();
-  const pkgJsonUpdater = new DirectPackageJsonUpdater(fileSystem);
+  // NOTE: To avoid file corruption, ensure that each `ngcc` invocation only creates _one_ instance
+  //       of `PackageJsonUpdater` that actually writes to disk (across all processes).
+  //       This is hard to enforce automatically, when running on multiple processes, so needs to be
+  //       enforced manually.
+  const pkgJsonUpdater = getPackageJsonUpdater(inParallel, fileSystem);
 
   // The function for performing the analysis.
   const analyzeFn: AnalyzeEntryPointsFn = () => {
@@ -135,7 +156,7 @@ export function mainNgcc(
 
     const absBasePath = absoluteFrom(basePath);
     const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
-    const entryPoints = getEntryPoints(
+    const {entryPoints, graph} = getEntryPoints(
         fileSystem, pkgJsonUpdater, logger, dependencyResolver, config, absBasePath,
         targetEntryPointPath, pathMappings, supportedPropertiesToConsider, compileAllFormats);
 
@@ -175,7 +196,7 @@ export function mainNgcc(
           unprocessableEntryPointPaths.map(path => `\n  - ${path}`).join(''));
     }
 
-    return new SerialTaskQueue(tasks);
+    return getTaskQueue(inParallel, tasks, graph);
   };
 
   // The function for creating the `compile()` function.
@@ -232,7 +253,7 @@ export function mainNgcc(
   };
 
   // The executor for actually planning and getting the work done.
-  const executor = getExecutor(async, logger, pkgJsonUpdater);
+  const executor = getExecutor(async, inParallel, logger, pkgJsonUpdater);
 
   return executor.execute(analyzeFn, createCompileFn);
 }
@@ -259,6 +280,11 @@ function ensureSupportedProperties(properties: string[]): EntryPointJsonProperty
   return supportedProperties;
 }
 
+function getPackageJsonUpdater(inParallel: boolean, fs: FileSystem): PackageJsonUpdater {
+  const directPkgJsonUpdater = new DirectPackageJsonUpdater(fs);
+  return inParallel ? new ClusterPackageJsonUpdater(directPkgJsonUpdater) : directPkgJsonUpdater;
+}
+
 function getFileWriter(
     fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater,
     createNewEntryPointFormats: boolean): FileWriter {
@@ -266,11 +292,22 @@ function getFileWriter(
                                       new InPlaceFileWriter(fs);
 }
 
-function getExecutor(async: boolean, logger: Logger, pkgJsonUpdater: PackageJsonUpdater): Executor {
-  if (async) {
-    return new AsyncSingleProcessExecutor(logger, pkgJsonUpdater);
+function getTaskQueue(inParallel: boolean, tasks: Task[], graph: DepGraph<EntryPoint>): TaskQueue {
+  return inParallel ? new ParallelTaskQueue(tasks, graph) : new SerialTaskQueue(tasks);
+}
+
+function getExecutor(
+    async: boolean, inParallel: boolean, logger: Logger,
+    pkgJsonUpdater: PackageJsonUpdater): Executor {
+  if (inParallel) {
+    // Execute in parallel (which implies async).
+    // Use up to 8 CPU cores for workers, always reserving one for master.
+    const workerCount = Math.min(8, os.cpus().length - 1);
+    return new ClusterExecutor(workerCount, logger, pkgJsonUpdater);
   } else {
-    return new SingleProcessExecutor(logger, pkgJsonUpdater);
+    // Execute serially, on a single thread (either sync or async).
+    return async ? new AsyncSingleProcessExecutor(logger, pkgJsonUpdater) :
+                   new SingleProcessExecutor(logger, pkgJsonUpdater);
   }
 }
 
@@ -278,14 +315,15 @@ function getEntryPoints(
     fs: FileSystem, pkgJsonUpdater: PackageJsonUpdater, logger: Logger,
     resolver: DependencyResolver, config: NgccConfiguration, basePath: AbsoluteFsPath,
     targetEntryPointPath: string | undefined, pathMappings: PathMappings | undefined,
-    propertiesToConsider: string[], compileAllFormats: boolean): EntryPoint[] {
-  const {entryPoints, invalidEntryPoints} = (targetEntryPointPath !== undefined) ?
+    propertiesToConsider: string[],
+    compileAllFormats: boolean): {entryPoints: EntryPoint[], graph: DepGraph<EntryPoint>} {
+  const {entryPoints, invalidEntryPoints, graph} = (targetEntryPointPath !== undefined) ?
       getTargetedEntryPoints(
           fs, pkgJsonUpdater, logger, resolver, config, basePath, targetEntryPointPath,
           propertiesToConsider, compileAllFormats, pathMappings) :
       getAllEntryPoints(fs, config, logger, resolver, basePath, pathMappings);
   logInvalidEntryPoints(logger, invalidEntryPoints);
-  return entryPoints;
+  return {entryPoints, graph};
 }
 
 function getTargetedEntryPoints(
@@ -297,7 +335,12 @@ function getTargetedEntryPoints(
   if (hasProcessedTargetEntryPoint(
           fs, absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
     logger.debug('The target entry-point has already been processed');
-    return {entryPoints: [], invalidEntryPoints: [], ignoredDependencies: []};
+    return {
+      entryPoints: [],
+      invalidEntryPoints: [],
+      ignoredDependencies: [],
+      graph: EMPTY_GRAPH,
+    };
   }
   const finder = new TargetedEntryPointFinder(
       fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
