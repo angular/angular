@@ -26,6 +26,7 @@ import {Deferred, sendMessageToWorker} from './utils';
  */
 export class ClusterMaster {
   private finishedDeferred = new Deferred<void>();
+  private processingStartTime: number = -1;
   private taskAssignments = new Map<number, Task|null>();
   private taskQueue: TaskQueue;
 
@@ -67,6 +68,9 @@ export class ClusterMaster {
 
     // First, check whether all tasks have been completed.
     if (this.taskQueue.allTasksCompleted) {
+      const duration = Math.round((Date.now() - this.processingStartTime) / 1000);
+      this.logger.debug(`Processed tasks in ${duration}s.`);
+
       return this.finishedDeferred.resolve();
     }
 
@@ -174,6 +178,11 @@ export class ClusterMaster {
   private onWorkerOnline(workerId: number): void {
     if (this.taskAssignments.has(workerId)) {
       throw new Error(`Invariant violated: Worker #${workerId} came online more than once.`);
+    }
+
+    if (this.processingStartTime === -1) {
+      this.logger.debug('Processing tasks...');
+      this.processingStartTime = Date.now();
     }
 
     this.taskAssignments.set(workerId, null);
