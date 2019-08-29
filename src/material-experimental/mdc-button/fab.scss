@@ -1,7 +1,12 @@
 @import '@material/fab/mixins';
 @import '../mdc-helpers/mdc-helpers';
+@import '_button-base';
 
 @include mdc-fab-without-ripple($query: $mat-base-styles-query);
+
+.mat-mdc-fab, .mat-mdc-mini-fab {
+  @include _mat-button-interactive();
+}
 
 // MDC expects the fab icon to contain this HTML content:
 // ```html

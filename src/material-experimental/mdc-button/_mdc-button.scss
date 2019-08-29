@@ -1,11 +1,20 @@
 @import '@material/button/mixins';
 @import '@material/fab/mixins';
+@import '@material/ripple/mixins';
 @import '@material/icon-button/mixins';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-button-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
-    .mat-mdc-button {
+    // Add state interactions for hover, focus, press, active. Colors are changed based on
+    // the mixin mdc-states-base-color
+    .mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-unelevated-button, .mat-mdc-outlined-button {
+      @include mdc-states($query: $mat-theme-styles-query);
+    }
+
+    .mat-mdc-button, .mat-mdc-outlined-button {
+      @include mdc-states-base-color(primary, $query: $mat-theme-styles-query);
+
       &.mat-accent {
         @include mdc-button-ink-color(secondary, $query: $mat-theme-styles-query);
       }
@@ -17,26 +26,28 @@
 
     .mat-mdc-raised-button,
     .mat-mdc-unelevated-button {
+      @include mdc-states-base-color(on-primary, $query: $mat-theme-styles-query);
+
       &.mat-accent {
         @include mdc-button-container-fill-color(secondary, $query: $mat-theme-styles-query);
         @include mdc-button-ink-color(on-secondary, $query: $mat-theme-styles-query);
+        @include mdc-states-base-color(on-secondary, $query: $mat-theme-styles-query);
       }
 
       &.mat-warn {
         @include mdc-button-container-fill-color(error, $query: $mat-theme-styles-query);
         @include mdc-button-ink-color(on-error, $query: $mat-theme-styles-query);
+        @include mdc-states-base-color(on-error, $query: $mat-theme-styles-query);
       }
     }
 
     .mat-mdc-outlined-button {
       &.mat-accent {
         @include mdc-button-outline-color(secondary, $query: $mat-theme-styles-query);
-        @include mdc-button-ink-color(secondary, $query: $mat-theme-styles-query);
       }
 
       &.mat-warn {
         @include mdc-button-outline-color(error, $query: $mat-theme-styles-query);
-        @include mdc-button-ink-color(error, $query: $mat-theme-styles-query);
       }
     }
 
@@ -53,12 +64,17 @@
 @mixin mat-fab-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
     .mat-mdc-fab, .mat-mdc-mini-fab {
+      @include mdc-states-base-color(secondary, $query: $mat-theme-styles-query);
+      @include mdc-states($query: $mat-theme-styles-query);
+
       &.mat-primary {
+        @include mdc-states-base-color(on-primary, $query: $mat-theme-styles-query);
         @include mdc-fab-container-color(primary, $query: $mat-theme-styles-query);
         @include mdc-fab-ink-color(on-primary, $query: $mat-theme-styles-query);
       }
 
       &.mat-warn {
+        @include mdc-states-base-color(on-error, $query: $mat-theme-styles-query);
         @include mdc-fab-container-color(error, $query: $mat-theme-styles-query);
         @include mdc-fab-ink-color(on-error, $query: $mat-theme-styles-query);
       }
@@ -77,15 +93,17 @@
 @mixin mat-icon-button-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
     .mat-mdc-icon-button {
-      &.mat-primary {
-        @include mdc-icon-button-ink-color(primary, $query: $mat-theme-styles-query);
-      }
+      @include mdc-states($query: $mat-theme-styles-query);
+      @include mdc-states-base-color(primary, $query: $mat-theme-styles-query);
+      @include mdc-icon-button-ink-color(primary, $query: $mat-theme-styles-query);
 
       &.mat-accent {
+        @include mdc-states-base-color(secondary, $query: $mat-theme-styles-query);
         @include mdc-icon-button-ink-color(secondary, $query: $mat-theme-styles-query);
       }
 
       &.mat-warn {
+        @include mdc-states-base-color(error, $query: $mat-theme-styles-query);
         @include mdc-icon-button-ink-color(error, $query: $mat-theme-styles-query);
       }
     }

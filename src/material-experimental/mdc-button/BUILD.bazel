@@ -47,6 +47,11 @@ sass_library(
     ],
 )
 
+sass_library(
+    name = "button_base_scss_lib",
+    srcs = ["_button-base.scss"],
+)
+
 sass_binary(
     name = "button_scss",
     src = "button.scss",
@@ -54,6 +59,7 @@ sass_binary(
         "external/npm/node_modules",
     ],
     deps = [
+        ":button_base_scss_lib",
         "//src/cdk/a11y:a11y_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
@@ -67,6 +73,7 @@ sass_binary(
         "external/npm/node_modules",
     ],
     deps = [
+        ":button_base_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     ],
@@ -79,6 +86,7 @@ sass_binary(
         "external/npm/node_modules",
     ],
     deps = [
+        ":button_base_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     ],

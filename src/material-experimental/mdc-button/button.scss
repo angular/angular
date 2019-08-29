@@ -1,6 +1,8 @@
 @import '@material/button/mixins';
+@import '@material/ripple/mixins';
 @import '../mdc-helpers/mdc-helpers';
 @import '../../cdk/a11y/a11y';
+@import '_button-base';
 
 @include mdc-button-without-ripple($query: $mat-base-styles-query);
 
@@ -12,4 +14,7 @@
       outline: solid 1px;
     }
   }
+
+  @include _mat-button-interactive();
 }
+
