@@ -49,6 +49,7 @@ export class MainComponentHarness extends ComponentHarness {
   readonly testLists = this.locatorForAll(SubComponentHarness.with({title: /test/}));
   readonly requiredFourIteamToolsLists =
       this.locatorFor(SubComponentHarness.with({title: 'List of test tools', itemCount: 4}));
+  readonly lastList = this.locatorFor(SubComponentHarness.with({selector: ':last-child'}));
   readonly specaialKey = this.locatorFor('.special-key');
 
   private _testTools = this.locatorFor(SubComponentHarness);

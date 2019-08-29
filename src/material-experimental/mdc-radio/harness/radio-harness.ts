@@ -21,13 +21,12 @@ export class MatRadioGroupHarness extends ComponentHarness {
    * Gets a `HarnessPredicate` that can be used to search for a radio-group with
    * specific attributes.
    * @param options Options for narrowing the search:
-   *   - `id` finds a radio-group with specific id.
+   *   - `selector` finds a radio-group whose host element matches the given selector.
    *   - `name` finds a radio-group with specific name.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: RadioGroupHarnessFilters = {}): HarnessPredicate<MatRadioGroupHarness> {
-    return new HarnessPredicate(MatRadioGroupHarness)
-        .addOption('id', options.id, async (harness, id) => (await harness.getId()) === id)
+    return new HarnessPredicate(MatRadioGroupHarness, options)
         .addOption('name', options.name, this._checkRadioGroupName);
   }
 
@@ -153,19 +152,18 @@ export class MatRadioButtonHarness extends ComponentHarness {
    * Gets a `HarnessPredicate` that can be used to search for a radio-button with
    * specific attributes.
    * @param options Options for narrowing the search:
+   *   - `selector` finds a radio-button whose host element matches the given selector.
    *   - `label` finds a radio-button with specific label text.
    *   - `name` finds a radio-button with specific name.
-   *   - `id` finds a radio-button with specific id.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: RadioButtonHarnessFilters = {}): HarnessPredicate<MatRadioButtonHarness> {
-    return new HarnessPredicate(MatRadioButtonHarness)
+    return new HarnessPredicate(MatRadioButtonHarness, options)
         .addOption(
             'label', options.label,
             (harness, label) => HarnessPredicate.stringMatches(harness.getLabelText(), label))
         .addOption(
-            'name', options.name, async (harness, name) => (await harness.getName()) === name)
-        .addOption('id', options.id, async (harness, id) => (await harness.getId()) === id);
+            'name', options.name, async (harness, name) => (await harness.getName()) === name);
   }
 
   private _textLabel = this.locatorFor('.mat-radio-label-content');

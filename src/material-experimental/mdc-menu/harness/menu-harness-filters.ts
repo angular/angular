@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export type MenuHarnessFilters = {
-  triggerText?: string | RegExp
-};
+import {BaseHarnessFilters} from '@angular/cdk-experimental/testing';
 
-export type MenuItemHarnessFilters = {
-  text?: string | RegExp
-};
+export interface MenuHarnessFilters extends BaseHarnessFilters {
+  triggerText?: string | RegExp;
+}
+
+export interface MenuItemHarnessFilters extends BaseHarnessFilters {
+  text?: string | RegExp;
+}

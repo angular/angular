@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '../../component-harness';
+import {BaseHarnessFilters, ComponentHarness, HarnessPredicate} from '../../component-harness';
 import {TestElement} from '../../test-element';
+
+export interface SubComponentHarnessFilters extends BaseHarnessFilters {
+  title?: string | RegExp;
+  itemCount?: number;
+}
 
 /** @dynamic */
 export class SubComponentHarness extends ComponentHarness {
   static readonly hostSelector = 'test-sub';
 
-  static with(options: {title?: string | RegExp, itemCount?: number} = {}) {
-    return new HarnessPredicate(SubComponentHarness)
+  static with(options: SubComponentHarnessFilters = {}) {
+    return new HarnessPredicate(SubComponentHarness, options)
         .addOption('title', options.title,
             async (harness, title) =>
                 HarnessPredicate.stringMatches((await harness.title()).text(), title))

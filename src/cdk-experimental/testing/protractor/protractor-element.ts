@@ -142,5 +142,16 @@ export class ProtractorElement implements TestElement {
     return browser.executeScript(`return arguments[0][arguments[1]]`, this.element, name);
   }
 
+  async matchesSelector(selector: string): Promise<boolean> {
+      return browser.executeScript(`
+          return (Element.prototype.matches ||
+                  Element.prototype.matchesSelector ||
+                  Element.prototype.mozMatchesSelector ||
+                  Element.prototype.msMatchesSelector ||
+                  Element.prototype.oMatchesSelector ||
+                  Element.prototype.webkitMatchesSelector).call(arguments[0], arguments[1])
+          `, this.element, selector);
+  }
+
   async forceStabilize(): Promise<void> {}
 }

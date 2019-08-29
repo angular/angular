@@ -69,16 +69,18 @@ function runTests() {
   });
 
   it('should be able to check whether a select is in multi-selection mode', async () => {
-    const singleSelection = await loader.getHarness(harness.with({id: 'single-selection'}));
-    const multipleSelection = await loader.getHarness(harness.with({id: 'multiple-selection'}));
+    const singleSelection = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const multipleSelection =
+        await loader.getHarness(harness.with({selector: '#multiple-selection'}));
 
     expect(await singleSelection.isMultiple()).toBe(false);
     expect(await multipleSelection.isMultiple()).toBe(true);
   });
 
   it('should get disabled state', async () => {
-    const singleSelection = await loader.getHarness(harness.with({id: 'single-selection'}));
-    const multipleSelection = await loader.getHarness(harness.with({id: 'multiple-selection'}));
+    const singleSelection = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const multipleSelection =
+        await loader.getHarness(harness.with({selector: '#multiple-selection'}));
 
     expect(await singleSelection.isDisabled()).toBe(false);
     expect(await multipleSelection.isDisabled()).toBe(false);
@@ -91,8 +93,9 @@ function runTests() {
   });
 
   it('should get required state', async () => {
-    const singleSelection = await loader.getHarness(harness.with({id: 'single-selection'}));
-    const multipleSelection = await loader.getHarness(harness.with({id: 'multiple-selection'}));
+    const singleSelection = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const multipleSelection =
+        await loader.getHarness(harness.with({selector: '#multiple-selection'}));
 
     expect(await singleSelection.isRequired()).toBe(false);
     expect(await multipleSelection.isRequired()).toBe(false);
@@ -105,15 +108,15 @@ function runTests() {
   });
 
   it('should get valid state', async () => {
-    const singleSelection = await loader.getHarness(harness.with({id: 'single-selection'}));
-    const withFormControl = await loader.getHarness(harness.with({id: 'with-form-control'}));
+    const singleSelection = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const withFormControl = await loader.getHarness(harness.with({selector: '#with-form-control'}));
 
     expect(await singleSelection.isValid()).toBe(true);
     expect(await withFormControl.isValid()).toBe(false);
   });
 
   it('should focus and blur a select', async () => {
-    const select = await loader.getHarness(harness.with({id: 'single-selection'}));
+    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
     expect(getActiveElementId()).not.toBe('single-selection');
     await select.focus();
     expect(getActiveElementId()).toBe('single-selection');
@@ -122,7 +125,7 @@ function runTests() {
   });
 
   it('should be able to open and close a single-selection select', async () => {
-    const select = await loader.getHarness(harness.with({id: 'single-selection'}));
+    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
 
     expect(await select.isOpen()).toBe(false);
 
@@ -134,7 +137,7 @@ function runTests() {
   });
 
   it('should be able to open and close a multi-selection select', async () => {
-    const select = await loader.getHarness(harness.with({id: 'multiple-selection'}));
+    const select = await loader.getHarness(harness.with({selector: '#multiple-selection'}));
 
     expect(await select.isOpen()).toBe(false);
 
@@ -146,13 +149,13 @@ function runTests() {
   });
 
   it('should be able to get the select panel', async () => {
-    const select = await loader.getHarness(harness.with({id: 'single-selection'}));
+    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
     await select.open();
     expect(await select.getPanel()).toBeTruthy();
   });
 
   it('should be able to get the select options', async () => {
-    const select = await loader.getHarness(harness.with({id: 'single-selection'}));
+    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
     await select.open();
     const options = await select.getOptions();
 
@@ -161,7 +164,7 @@ function runTests() {
   });
 
   it('should be able to get the select panel groups', async () => {
-    const select = await loader.getHarness(harness.with({id: 'grouped'}));
+    const select = await loader.getHarness(harness.with({selector: '#grouped'}));
     await select.open();
     const groups = await select.getOptionGroups();
     const options = await select.getOptions();
@@ -171,7 +174,7 @@ function runTests() {
   });
 
   it('should be able to get the value text from a single-selection select', async () => {
-    const select = await loader.getHarness(harness.with({id: 'single-selection'}));
+    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
     await select.open();
     const options = await select.getOptions();
 
@@ -181,7 +184,7 @@ function runTests() {
   });
 
   it('should be able to get the value text from a multi-selection select', async () => {
-    const select = await loader.getHarness(harness.with({id: 'multiple-selection'}));
+    const select = await loader.getHarness(harness.with({selector: '#multiple-selection'}));
     await select.open();
     const options = await select.getOptions();
 
@@ -192,7 +195,7 @@ function runTests() {
   });
 
   it('should be able to get whether a single-selection select is empty', async () => {
-    const select = await loader.getHarness(harness.with({id: 'single-selection'}));
+    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
 
     expect(await select.isEmpty()).toBe(true);
 
@@ -204,7 +207,7 @@ function runTests() {
   });
 
   it('should be able to get whether a multi-selection select is empty', async () => {
-    const select = await loader.getHarness(harness.with({id: 'multiple-selection'}));
+    const select = await loader.getHarness(harness.with({selector: '#multiple-selection'}));
 
     expect(await select.isEmpty()).toBe(true);
 
@@ -218,7 +221,7 @@ function runTests() {
 
   it('should be able to click an option', async () => {
     const control = fixture.componentInstance.formControl;
-    const select = await loader.getHarness(harness.with({id: 'with-form-control'}));
+    const select = await loader.getHarness(harness.with({selector: '#with-form-control'}));
 
     expect(control.value).toBeFalsy();
 

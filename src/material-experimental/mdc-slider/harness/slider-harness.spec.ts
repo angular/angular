@@ -43,7 +43,7 @@ function runTests() {
   });
 
   it('should load slider harness by id', async () => {
-    const sliders = await loader.getAllHarnesses(sliderHarness.with({id: 'my-slider'}));
+    const sliders = await loader.getAllHarnesses(sliderHarness.with({selector: '#my-slider'}));
     expect(sliders.length).toBe(1);
   });
 

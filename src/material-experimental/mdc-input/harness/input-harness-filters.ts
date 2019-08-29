@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export type InputHarnessFilters = {
-  id?: string;
-  name?: string;
+import {BaseHarnessFilters} from '@angular/cdk-experimental/testing';
+
+export interface InputHarnessFilters extends BaseHarnessFilters {
   value?: string;
-};
+}

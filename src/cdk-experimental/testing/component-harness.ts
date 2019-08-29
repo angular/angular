@@ -259,6 +259,10 @@ export interface ComponentHarnessConstructor<T extends ComponentHarness> {
   hostSelector: string;
 }
 
+export interface BaseHarnessFilters {
+  selector?: string;
+}
+
 /**
  * A class used to associate a ComponentHarness class with predicates functions that can be used to
  * filter instances of the class.
@@ -267,7 +271,14 @@ export class HarnessPredicate<T extends ComponentHarness> {
   private _predicates: AsyncPredicate<T>[] = [];
   private _descriptions: string[] = [];
 
-  constructor(public harnessType: ComponentHarnessConstructor<T>) {}
+  constructor(public harnessType: ComponentHarnessConstructor<T>, options: BaseHarnessFilters) {
+    const selector = options.selector;
+    if (selector !== undefined) {
+      this.add(`selector matches "${selector}"`, async item => {
+        return (await item.host()).matchesSelector(selector);
+      });
+    }
+  }
 
   /**
    * Checks if a string matches the given pattern.

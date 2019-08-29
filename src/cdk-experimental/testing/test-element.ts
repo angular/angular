@@ -102,6 +102,9 @@ export interface TestElement {
   /** Gets the value of a property of an element. */
   getProperty(name: string): Promise<any>;
 
+  /** Checks whether this element matches the given selector. */
+  matchesSelector(selector: string): Promise<boolean>;
+
   /**
    * Flushes change detection and async tasks.
    * In most cases it should not be necessary to call this. However, there may be some edge cases

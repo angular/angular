@@ -26,11 +26,7 @@ export class MatInputHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: InputHarnessFilters = {}): HarnessPredicate<MatInputHarness> {
-    // TODO(devversion): "name" and "id" can be removed once components#16848 is merged.
-    return new HarnessPredicate(MatInputHarness)
-        .addOption(
-            'name', options.name, async (harness, name) => (await harness.getName()) === name)
-        .addOption('id', options.id, async (harness, id) => (await harness.getId()) === id)
+    return new HarnessPredicate(MatInputHarness, options)
         .addOption(
             'value', options.value, async (harness, value) => (await harness.getValue()) === value);
   }

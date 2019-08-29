@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export type CheckboxHarnessFilters = {
-  label?: string|RegExp;
+import {BaseHarnessFilters} from '@angular/cdk-experimental/testing';
+
+export interface CheckboxHarnessFilters extends BaseHarnessFilters {
+  label?: string | RegExp;
   name?: string;
-};
+}

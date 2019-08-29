@@ -23,11 +23,7 @@ export class MatSidenavHarness extends ComponentHarness {
    * @return `HarnessPredicate` configured with the given options.
    */
   static with(options: SidenavHarnessFilters = {}): HarnessPredicate<MatSidenavHarness> {
-    return new HarnessPredicate(MatSidenavHarness)
-        .addOption('id', options.id, async (harness, id) => {
-          const host = await harness.host();
-          return (await host.getAttribute('id')) === id;
-        });
+    return new HarnessPredicate(MatSidenavHarness, options);
   }
 
   /** Gets whether the sidenav is open. */

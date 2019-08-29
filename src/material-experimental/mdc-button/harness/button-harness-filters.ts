@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export type ButtonHarnessFilters = {
-  text?: string | RegExp
-};
+import {BaseHarnessFilters} from '@angular/cdk-experimental/testing';
+
+export interface ButtonHarnessFilters extends BaseHarnessFilters {
+  text?: string | RegExp;
+}

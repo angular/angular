@@ -23,7 +23,7 @@ function _getErrorForMissingSelector(selector: string): Error {
 function _getErrorForMissingHarness<T extends ComponentHarness>(
     harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): Error {
   const harnessPredicate =
-      harnessType instanceof HarnessPredicate ? harnessType : new HarnessPredicate(harnessType);
+      harnessType instanceof HarnessPredicate ? harnessType : new HarnessPredicate(harnessType, {});
   const {name, hostSelector} = harnessPredicate.harnessType;
   const restrictions = harnessPredicate.getDescription();
   let message = `Expected to find element for ${name} matching selector: "${hostSelector}"`;
@@ -160,7 +160,8 @@ export abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFac
   private async _getAllHarnesses<T extends ComponentHarness>(
       harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): Promise<T[]> {
     const harnessPredicate =
-        harnessType instanceof HarnessPredicate ? harnessType : new HarnessPredicate(harnessType);
+        harnessType instanceof HarnessPredicate ?
+            harnessType : new HarnessPredicate(harnessType, {});
     const elements = await this.getAllRawElements(harnessPredicate.harnessType.hostSelector);
     return harnessPredicate.filter(elements.map(
         element => this.createComponentHarness(harnessPredicate.harnessType, element)));

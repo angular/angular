@@ -21,12 +21,13 @@ export class MatTabGroupHarness extends ComponentHarness {
    * Gets a `HarnessPredicate` that can be used to search for a radio-button with
    * specific attributes.
    * @param options Options for narrowing the search
+   *   - `selector` finds a tab-group whose host element matches the given selector.
    *   - `selectedTabLabel` finds a tab-group with a selected tab that matches the
    *      specified tab label.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: TabGroupHarnessFilters = {}): HarnessPredicate<MatTabGroupHarness> {
-    return new HarnessPredicate(MatTabGroupHarness)
+    return new HarnessPredicate(MatTabGroupHarness, options)
         .addOption('selectedTabLabel', options.selectedTabLabel, async (harness, label) => {
           const selectedTab = await harness.getSelectedTab();
           return HarnessPredicate.stringMatches(await selectedTab.getLabel(), label);

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export type RadioGroupHarnessFilters = {
-  id?: string;
-  name?: string;
-};
+import {BaseHarnessFilters} from '@angular/cdk-experimental/testing';
 
-export type RadioButtonHarnessFilters = {
-  label?: string|RegExp,
-  id?: string;
-  name?: string,
-};
+export interface RadioGroupHarnessFilters extends BaseHarnessFilters {
+  name?: string;
+}
+
+export interface RadioButtonHarnessFilters extends BaseHarnessFilters {
+  label?: string | RegExp;
+  name?: string;
+}

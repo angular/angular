@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export type SlideToggleHarnessFilters = {
-  label?: string | RegExp
-};
+import {BaseHarnessFilters} from '@angular/cdk-experimental/testing';
+
+export interface SlideToggleHarnessFilters extends BaseHarnessFilters {
+  label?: string | RegExp;
+}

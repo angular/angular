@@ -21,11 +21,12 @@ export class MatMenuItemHarness extends ComponentHarness {
   /**
    * Gets a `HarnessPredicate` that can be used to search for a menu with specific attributes.
    * @param options Options for narrowing the search:
-   *   - `label` finds a menu with specific label text.
+   *   - `selector` finds a menu item whose host element matches the given selector.
+   *   - `label` finds a menu item with specific label text.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: MenuItemHarnessFilters = {}): HarnessPredicate<MatMenuItemHarness> {
-    return new HarnessPredicate(MatMenuItemHarness); // TODO: add options here
+    return new HarnessPredicate(MatMenuItemHarness, options); // TODO: add options here
   }
 
   /** Gets a boolean promise indicating if the menu is disabled. */

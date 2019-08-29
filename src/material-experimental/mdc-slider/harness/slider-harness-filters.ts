@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {BaseHarnessFilters} from '@angular/cdk-experimental/testing';
 
-export type SliderHarnessFilters = {
-  id?: string;
-};
+export interface SliderHarnessFilters extends BaseHarnessFilters {}

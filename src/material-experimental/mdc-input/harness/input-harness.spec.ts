@@ -46,12 +46,13 @@ function runTests() {
   });
 
   it('should load input with specific id', async () => {
-    const inputs = await loader.getAllHarnesses(inputHarness.with({id: 'myTextarea'}));
+    const inputs = await loader.getAllHarnesses(inputHarness.with({selector: '#myTextarea'}));
     expect(inputs.length).toBe(1);
   });
 
   it('should load input with specific name', async () => {
-    const inputs = await loader.getAllHarnesses(inputHarness.with({name: 'favorite-food'}));
+    const inputs = await loader.getAllHarnesses(
+        inputHarness.with({selector: '[name="favorite-food"]'}));
     expect(inputs.length).toBe(1);
   });
 
@@ -157,14 +158,14 @@ function runTests() {
   });
 
   it('should be able to focus input', async () => {
-    const input = await loader.getHarness(inputHarness.with({name: 'favorite-food'}));
+    const input = await loader.getHarness(inputHarness.with({selector: '[name="favorite-food"]'}));
     expect(getActiveElementTagName()).not.toBe('input');
     await input.focus();
     expect(getActiveElementTagName()).toBe('input');
   });
 
   it('should be able to blur input', async () => {
-    const input = await loader.getHarness(inputHarness.with({name: 'favorite-food'}));
+    const input = await loader.getHarness(inputHarness.with({selector: '[name="favorite-food"]'}));
     expect(getActiveElementTagName()).not.toBe('input');
     await input.focus();
     expect(getActiveElementTagName()).toBe('input');

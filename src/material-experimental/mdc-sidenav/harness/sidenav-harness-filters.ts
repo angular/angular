@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export type SidenavHarnessFilters = {
-  id?: string;
-};
+import {BaseHarnessFilters} from '@angular/cdk-experimental/testing';
+
+export interface SidenavHarnessFilters extends BaseHarnessFilters {}

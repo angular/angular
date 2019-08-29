@@ -20,12 +20,13 @@ export class MatCheckboxHarness extends ComponentHarness {
   /**
    * Gets a `HarnessPredicate` that can be used to search for a checkbox with specific attributes.
    * @param options Options for narrowing the search:
+   *   - `selector` finds a checkbox whose host element matches the given selector.
    *   - `label` finds a checkbox with specific label text.
    *   - `name` finds a checkbox with specific name.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CheckboxHarnessFilters = {}): HarnessPredicate<MatCheckboxHarness> {
-    return new HarnessPredicate(MatCheckboxHarness)
+    return new HarnessPredicate(MatCheckboxHarness, options)
         .addOption(
             'label', options.label,
             (harness, label) => HarnessPredicate.stringMatches(harness.getLabelText(), label))

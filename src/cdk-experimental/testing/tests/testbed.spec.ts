@@ -264,7 +264,7 @@ describe('TestbedHarnessEnvironment', () => {
     });
 
     it('should focus and blur element', async () => {
-      let button = await harness.button();
+      const button = await harness.button();
       expect(activeElementText()).not.toBe(await button.text());
       await button.focus();
       expect(activeElementText()).toBe(await button.text());
@@ -276,6 +276,12 @@ describe('TestbedHarnessEnvironment', () => {
       const input = await harness.input();
       await input.sendKeys('Hello');
       expect(await input.getProperty('value')).toBe('Hello');
+    });
+
+    it('should check if selector matches', async () => {
+      const button = await harness.button();
+      expect(await button.matchesSelector('button:not(.fake-class)')).toBe(true);
+      expect(await button.matchesSelector('button:disabled')).toBe(false);
     });
   });
 
@@ -309,6 +315,11 @@ describe('TestbedHarnessEnvironment', () => {
       expect(testLists.length).toBe(2);
       expect(await (await testLists[0].title()).text()).toBe('List of test tools');
       expect(await (await testLists[1].title()).text()).toBe('List of test methods');
+    });
+
+    it('should find subcomponents that match selector', async () => {
+      const lastList = await harness.lastList();
+      expect(await (await lastList.title()).text()).toBe('List of test methods');
     });
 
     it('should error if predicate does not match but a harness is required', async () => {

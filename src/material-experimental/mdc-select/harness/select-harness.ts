@@ -35,11 +35,7 @@ export class MatSelectHarness extends ComponentHarness {
    * @return `HarnessPredicate` configured with the given options.
    */
   static with(options: SelectHarnessFilters = {}): HarnessPredicate<MatSelectHarness> {
-    return new HarnessPredicate(MatSelectHarness)
-        .addOption('id', options.id, async (harness, id) => {
-          const harnessId = (await harness.host()).getAttribute('id');
-          return (await harnessId) === id;
-        });
+    return new HarnessPredicate(MatSelectHarness, options);
   }
 
   /** Gets a boolean promise indicating if the select is disabled. */

@@ -47,7 +47,7 @@ function runRadioGroupTests() {
   });
 
   it('should load radio-group with exact id', async () => {
-    const groups = await loader.getAllHarnesses(radioGroupHarness.with({id: 'my-group-2'}));
+    const groups = await loader.getAllHarnesses(radioGroupHarness.with({selector: '#my-group-2'}));
     expect(groups.length).toBe(1);
   });
 
@@ -169,7 +169,7 @@ function runRadioButtonTests() {
   });
 
   it('should load radio-button with id', async () => {
-    const radios = await loader.getAllHarnesses(radioButtonHarness.with({id: 'opt3'}));
+    const radios = await loader.getAllHarnesses(radioButtonHarness.with({selector: '#opt3'}));
     expect(radios.length).toBe(1);
     expect(await radios[0].getId()).toBe('opt3');
     expect(await radios[0].getLabelText()).toBe('Option #3');
@@ -214,14 +214,14 @@ function runRadioButtonTests() {
   });
 
   it('should focus radio-button', async () => {
-    const radioButton = await loader.getHarness(radioButtonHarness.with({id: 'opt2'}));
+    const radioButton = await loader.getHarness(radioButtonHarness.with({selector: '#opt2'}));
     expect(getActiveElementTagName()).not.toBe('input');
     await radioButton.focus();
     expect(getActiveElementTagName()).toBe('input');
   });
 
   it('should blur radio-button', async () => {
-    const radioButton = await loader.getHarness(radioButtonHarness.with({id: 'opt2'}));
+    const radioButton = await loader.getHarness(radioButtonHarness.with({selector: '#opt2'}));
     await radioButton.focus();
     expect(getActiveElementTagName()).toBe('input');
     await radioButton.blur();
@@ -241,7 +241,7 @@ function runRadioButtonTests() {
     fixture.componentInstance.disableAll = true;
     fixture.detectChanges();
 
-    const radioButton = await loader.getHarness(radioButtonHarness.with({id: 'opt3'}));
+    const radioButton = await loader.getHarness(radioButtonHarness.with({selector: '#opt3'}));
     expect(await radioButton.isChecked()).toBe(false);
     await radioButton.check();
     expect(await radioButton.isChecked()).toBe(false);
@@ -255,7 +255,8 @@ function runRadioButtonTests() {
   });
 
   it('should get required state', async () => {
-    const radioButton = await loader.getHarness(radioButtonHarness.with({id: 'required-radio'}));
+    const radioButton =
+        await loader.getHarness(radioButtonHarness.with({selector: '#required-radio'}));
     expect(await radioButton.isRequired()).toBe(true);
   });
 }

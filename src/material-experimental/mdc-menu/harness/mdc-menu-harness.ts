@@ -23,11 +23,12 @@ export class MatMenuHarness extends ComponentHarness {
   /**
    * Gets a `HarnessPredicate` that can be used to search for a menu with specific attributes.
    * @param options Options for narrowing the search:
+   *   - `selector` finds a menu whose host element matches the given selector.
    *   - `label` finds a menu with specific label text.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: MenuHarnessFilters = {}): HarnessPredicate<MatMenuHarness> {
-    return new HarnessPredicate(MatMenuHarness)
+    return new HarnessPredicate(MatMenuHarness, options)
         .addOption('text', options.triggerText,
             (harness, text) => HarnessPredicate.stringMatches(harness.getTriggerText(), text));
   }

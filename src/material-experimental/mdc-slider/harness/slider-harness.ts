@@ -21,12 +21,12 @@ export class MatSliderHarness extends ComponentHarness {
    * Gets a `HarnessPredicate` that can be used to search for a mat-slider with
    * specific attributes.
    * @param options Options for narrowing the search:
+   *   - `selector` finds a slider whose host element matches the given selector.
    *   - `id` finds a slider with specific id.
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: SliderHarnessFilters = {}): HarnessPredicate<MatSliderHarness> {
-    return new HarnessPredicate(MatSliderHarness)
-        .addOption('id', options.id, async (harness, id) => (await harness.getId()) === id);
+    return new HarnessPredicate(MatSliderHarness, options);
   }
 
   private _textLabel = this.locatorFor('.mat-slider-thumb-label-text');
