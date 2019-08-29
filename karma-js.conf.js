@@ -120,7 +120,7 @@ module.exports = function(config) {
       testName: 'Angular2',
       retryLimit: 3,
       startConnect: false,
-      recordVideo: false,
+      recordVideo: true,
       recordScreenshots: false,
       idleTimeout: 600,
       commandTimeout: 600,
