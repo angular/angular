@@ -897,7 +897,7 @@ testing/**                                                      @angular/fw-test
 /.vscode/**                                                     @angular/dev-infra-framework
 /docs/BAZEL.md                                                  @angular/dev-infra-framework
 /packages/*                                                     @angular/dev-infra-framework
-/packages/examples/test-utils/**                                @angular/fw-dev-infra
+/packages/examples/test-utils/**                                @angular/dev-infra-framework
 /scripts/**                                                     @angular/dev-infra-framework
 /third_party/**                                                 @angular/dev-infra-framework
 /tools/build/**                                                 @angular/dev-infra-framework
