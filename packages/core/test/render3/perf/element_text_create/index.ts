@@ -10,6 +10,7 @@ import {createTNode, createTView} from '../../../../src/render3/instructions/sha
 import {ɵɵtext} from '../../../../src/render3/instructions/text';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TNodeType, TViewNode} from '../../../../src/render3/interfaces/node';
+import {resetComponentState} from '../../../../src/render3/state';
 import {createAndRenderLView} from '../setup';
 
 `<div>
@@ -64,6 +65,9 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 
 const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
 const embeddedTView = createTView(-1, testTemplate, 21, 0, null, null, null, null);
+
+// initialize global state
+resetComponentState();
 
 // create view once so we don't profile first template pass
 createAndRenderLView(null, embeddedTView, viewTNode);
