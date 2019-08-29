@@ -1,4 +1,6 @@
 @import '@material/fab/mixins';
+@import '@material/button/variables';
+@import '@material/theme/variables';
 @import '../mdc-helpers/mdc-helpers';
 @import '_button-base';
 
@@ -6,6 +8,18 @@
 
 .mat-mdc-fab, .mat-mdc-mini-fab {
   @include _mat-button-interactive();
+
+  // Spec does not define disabled FAB buttons but Angular Material does support it.
+  &:disabled {
+    background-color: rgba(mdc-theme-prop-value(on-surface), 0.12);
+    color: $mdc-button-disabled-ink-color;
+    cursor: default;
+    pointer-events: none;
+    box-shadow: none;
+  }
+}
+
+.mat-mdc-fab, .mat-mdc-mini-fab {
 }
 
 // MDC expects the fab icon to contain this HTML content:
