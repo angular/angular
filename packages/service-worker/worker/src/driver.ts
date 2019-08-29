@@ -305,6 +305,19 @@ export class Driver implements Debuggable, UpdateSource {
   }
 
   private async handlePush(data: any): Promise<void> {
+    let visible=false;
+    if(data.visible){
+        for(let client of await this.scope.clients.matchAll()){
+            if(client.visibilityState==='visible')
+                visible=true;
+        }
+        if(visible){
+            await this.broadcast({
+              type: 'PUSH',
+              data,
+            })
+        }
+    }      
     await this.broadcast({
       type: 'PUSH',
       data,
