@@ -1,6 +1,6 @@
 # Providers
 
-A provider is an instruction to the DI system on how to obtain a value for a dependency. Most of the time, these dependencies are services that you create and provide.
+A provider is an instruction to the [Dependency Injection](/guide/dependency-injection) system on how to obtain a value for a dependency. Most of the time, these dependencies are services that you create and provide.
 
 For the final sample app using the provider that this page describes,
 see the <live-example></live-example>.
