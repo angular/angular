@@ -11,6 +11,8 @@
 
 // A set of standard queries to use with MDC's queryable mixins.
 $mat-base-styles-query: mdc-feature-without(mdc-feature-any(color, typography));
+$mat-base-styles-without-animation-query:
+    mdc-feature-all($mat-base-styles-query, mdc-feature-without(animation));
 $mat-theme-styles-query: color;
 $mat-typography-styles-query: typography;
 

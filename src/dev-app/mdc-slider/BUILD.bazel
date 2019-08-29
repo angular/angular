@@ -1,0 +1,17 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "mdc-slider",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mdc-slider-demo.html",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-slider",
+        "//src/material/tabs",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+    ],
+)

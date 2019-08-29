@@ -8,6 +8,7 @@ load("//tools:defaults.bzl", "ng_module")
 exports_files([
     "protractor.conf.js",
     "start-devserver.js",
+    "devserver-configure.js",
 ])
 
 ng_module(

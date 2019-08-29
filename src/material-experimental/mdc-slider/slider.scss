@@ -1,0 +1,40 @@
+@import '@material/slider/mixins';
+@import '../mdc-helpers/mdc-helpers';
+
+$mat-slider-min-size: 128px !default;
+$mat-slider-horizontal-margin: 8px !default;
+
+@include mdc-slider-core-styles($query: $mat-base-styles-without-animation-query);
+
+// Overwrites the mdc-slider default styles to match the visual appearance of the
+// Angular Material standard slider. This involves making the slider an inline-block
+// element, aligning it in the vertical middle of a line, specifying a default minimum
+// width and adding horizontal margin.
+.mat-mdc-slider {
+  display: inline-block;
+  box-sizing: border-box;
+  outline: none;
+  vertical-align: middle;
+  margin: {
+    left: $mat-slider-horizontal-margin;
+    right: $mat-slider-horizontal-margin;
+  }
+
+  // Unset the default "width" property from the MDC slider class. We don't want
+  // the slider to automatically expand horizontally for backwards compatibility.
+  width: auto;
+  min-width: $mat-slider-min-size - (2 * $mat-slider-horizontal-margin);
+}
+
+// In order to make it possible for developers to disable animations for a  slider,
+// we only activate the MDC slider animation styles if animations are enabled.
+.mat-mdc-slider:not(._mat-animation-noopable) {
+  @include mdc-slider-core-styles($query: animation);
+}
+
+// Sliders without a thumb label (aka non-discrete) currently cannot have ticks
+// enabled. This breaks backwards compatibility with the standard Angular Material
+// slider, so we manually ensure that ticks can be rendered.
+.mat-slider-has-ticks:not(.mat-slider-disabled) .mdc-slider__track-marker-container {
+  visibility: visible;
+}

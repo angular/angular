@@ -96,6 +96,7 @@ MATERIAL_EXPERIMENTAL_PACKAGES = [
     "mdc-menu",
     "mdc-radio",
     "mdc-slide-toggle",
+    "mdc-slider",
     "popover-edit",
 ]
 

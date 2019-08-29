@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_test_library", "ng_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "ng_test_library", "ts_library")
 
 ts_library(
     name = "harness",
@@ -15,7 +15,7 @@ ts_library(
 )
 
 ng_test_library(
-    name = "harness_tests",
+    name = "tests_lib",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":harness",
@@ -23,9 +23,4 @@ ng_test_library(
         "//src/cdk-experimental/testing/testbed",
         "//src/material/slider",
     ],
-)
-
-ng_web_test_suite(
-    name = "tests",
-    deps = [":harness_tests"],
 )
