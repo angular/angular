@@ -305,6 +305,10 @@ describe('TocService', () => {
           <a class="header-link" href="tutorial/toh-pt1#setup-to-develop-locally" aria-hidden="true">
             <span class="icon">icon-link</span>
           </a>
+          <div class="github-links">
+            <a>GitHub</a>
+            <a>links</a>
+          </div>
         </h2>
       `, docId);
 
@@ -319,7 +323,7 @@ describe('TocService', () => {
       expect(tocItem.title).toEqual('Setup to develop locally.');
     });
 
-    it('should have removed anchor link from tocItem html content', () => {
+    it('should have removed anchor link and GitHub links from tocItem html content', () => {
       expect((tocItem.content as TestSafeHtml)
         .changingThisBreaksApplicationSecurity)
         .toEqual('Setup to develop <i>locally</i>.');
