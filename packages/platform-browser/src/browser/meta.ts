@@ -180,7 +180,8 @@ export class Meta {
   }
 
   private _setMetaElementAttributes(tag: MetaDefinition, el: HTMLMetaElement): HTMLMetaElement {
-    Object.keys(tag).forEach((prop: string) => el.setAttribute(prop, tag[prop]));
+    Object.keys(tag).forEach(
+        (prop: string) => el.setAttribute(this._getMetaKeyMap(prop), tag[prop]));
     return el;
   }
 
@@ -190,6 +191,18 @@ export class Meta {
   }
 
   private _containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {
-    return Object.keys(tag).every((key: string) => elem.getAttribute(key) === tag[key]);
+    return Object.keys(tag).every(
+        (key: string) => elem.getAttribute(this._getMetaKeyMap(key)) === tag[key]);
+  }
+
+  private _getMetaKeyMap(prop: string): string {
+    return META_KEYS_MAP[prop] || prop;
   }
 }
+
+/**
+ * Mapping for MetaDefinition properties with their correct meta attribute names
+ */
+const META_KEYS_MAP: {[prop: string]: string;} = {
+  httpEquiv: 'http-equiv'
+};
