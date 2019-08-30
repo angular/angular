@@ -37,7 +37,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
          // We must use getDOM().querySelector instead of fixture.query here
          // since the elements inside are not compiled.
-         const span = getDOM().querySelector(fixture.nativeElement, '#child');
+         const span = fixture.nativeElement.querySelector('#child');
          expect(hasClass(span, 'compiled')).toBeFalsy();
        }));
 
@@ -45,7 +45,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          const template = '<div><span id=child ngNonBindable test-dec>{{text}}</span></div>';
          const fixture = createTestComponent(template);
          fixture.detectChanges();
-         const span = getDOM().querySelector(fixture.nativeElement, '#child');
+         const span = fixture.nativeElement.querySelector('#child');
          expect(hasClass(span, 'compiled')).toBeTruthy();
        }));
   });
@@ -53,7 +53,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 @Directive({selector: '[test-dec]'})
 class TestDirective {
-  constructor(el: ElementRef) { getDOM().addClass(el.nativeElement, 'compiled'); }
+  constructor(el: ElementRef) { el.nativeElement.classList.add('compiled'); }
 }
 
 @Component({selector: 'test-cmp', template: ''})

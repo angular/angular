@@ -1694,7 +1694,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'TITLE';
         fixture.detectChanges();
 
-        const el = getDOM().querySelector(fixture.nativeElement, 'span');
+        const el = fixture.nativeElement.querySelector('span');
         expect(el.title).toBeFalsy();
       });
 
@@ -1707,7 +1707,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'TITLE';
         fixture.detectChanges();
 
-        const el = getDOM().querySelector(fixture.nativeElement, 'span');
+        const el = fixture.nativeElement.querySelector('span');
         expect(getDOM().getProperty(el, 'title')).toEqual('TITLE');
       });
     });
@@ -2685,16 +2685,12 @@ class ComponentWithoutView {
 
 @Directive({selector: '[no-duplicate]'})
 class DuplicateDir {
-  constructor(elRef: ElementRef) {
-    getDOM().setText(elRef.nativeElement, elRef.nativeElement.textContent + 'noduplicate');
-  }
+  constructor(elRef: ElementRef) { elRef.nativeElement.textContent += 'noduplicate'; }
 }
 
 @Directive({selector: '[no-duplicate]'})
 class OtherDuplicateDir {
-  constructor(elRef: ElementRef) {
-    getDOM().setText(elRef.nativeElement, elRef.nativeElement.textContent + 'othernoduplicate');
-  }
+  constructor(elRef: ElementRef) { elRef.nativeElement.textContent += 'othernoduplicate'; }
 }
 
 @Directive({selector: 'directive-throwing-error'})

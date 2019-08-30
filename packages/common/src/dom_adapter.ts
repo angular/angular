@@ -43,33 +43,17 @@ export abstract class DomAdapter {
   abstract querySelectorAll(el: any, selector: string): any[];
   abstract remove(el: any): Node;
   abstract getAttribute(element: any, attribute: string): string|null;
+  abstract appendChild(el: any, node: any): any;
+  abstract createElement(tagName: any, doc?: any): HTMLElement;
+  abstract setAttribute(element: any, name: string, value: string): any;
+  abstract getElementsByTagName(element: any, name: string): HTMLElement[];
+  abstract createHtmlDocument(): HTMLDocument;
+  abstract getDefaultDocument(): Document;
 
   // Used by platform-server
-  abstract setProperty(el: Element, name: string, value: any): any;
-  abstract querySelector(el: any, selector: string): any;
-  abstract nextSibling(el: any): Node|null;
-  abstract parentElement(el: any): Node|null;
-  abstract clearNodes(el: any): any;
-  abstract appendChild(el: any, node: any): any;
-  abstract removeChild(el: any, node: any): any;
-  abstract insertBefore(parent: any, ref: any, node: any): any;
-  abstract setText(el: any, value: string): any;
-  abstract createComment(text: string): any;
-  abstract createElement(tagName: any, doc?: any): HTMLElement;
-  abstract createElementNS(ns: string, tagName: string, doc?: any): Element;
-  abstract createTextNode(text: string, doc?: any): Text;
-  abstract getElementsByTagName(element: any, name: string): HTMLElement[];
-  abstract addClass(element: any, className: string): any;
-  abstract removeClass(element: any, className: string): any;
   abstract getStyle(element: any, styleName: string): any;
   abstract setStyle(element: any, styleName: string, styleValue: string): any;
   abstract removeStyle(element: any, styleName: string): any;
-  abstract setAttribute(element: any, name: string, value: string): any;
-  abstract setAttributeNS(element: any, ns: string, name: string, value: string): any;
-  abstract removeAttribute(element: any, attribute: string): any;
-  abstract removeAttributeNS(element: any, ns: string, attribute: string): any;
-  abstract createHtmlDocument(): HTMLDocument;
-  abstract getDefaultDocument(): Document;
 
   // Used by Title
   abstract getTitle(doc: Document): string;
@@ -80,6 +64,7 @@ export abstract class DomAdapter {
   abstract isElementNode(node: any): boolean;
 
   // Used by Testability
+  abstract parentElement(el: any): Node|null;
   abstract isShadowRoot(node: any): boolean;
   abstract getHost(el: any): any;
 

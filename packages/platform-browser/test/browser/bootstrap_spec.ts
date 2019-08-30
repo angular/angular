@@ -153,7 +153,7 @@ function bootstrap(
       getDOM().appendChild(doc.body, el);
       getDOM().appendChild(doc.body, el2);
       getDOM().appendChild(el, lightDom);
-      getDOM().setText(lightDom, 'loading');
+      lightDom.textContent = 'loading';
     }));
 
     afterEach(destroyPlatform);

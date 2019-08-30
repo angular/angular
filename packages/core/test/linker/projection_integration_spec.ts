@@ -136,8 +136,9 @@ describe('projection', () => {
         componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
     expect(componentFactory.ngContentSelectors).toEqual(['h1', '*']);
 
-    const nodeOne = getDOM().createTextNode('one');
-    const nodeTwo = getDOM().createTextNode('two');
+
+    const nodeOne = getDOM().getDefaultDocument().createTextNode('one');
+    const nodeTwo = getDOM().getDefaultDocument().createTextNode('two');
     const component = componentFactory.create(injector, [[nodeOne], [nodeTwo]]);
     expect(component.location.nativeElement).toHaveText('(one, two)');
   });
@@ -175,9 +176,9 @@ describe('projection', () => {
             componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
         expect(componentFactory.ngContentSelectors).toEqual(['h1', '*', 'h2']);
 
-        const nodeOne = getDOM().createTextNode('one');
-        const nodeTwo = getDOM().createTextNode('two');
-        const nodeThree = getDOM().createTextNode('three');
+        const nodeOne = getDOM().getDefaultDocument().createTextNode('one');
+        const nodeTwo = getDOM().getDefaultDocument().createTextNode('two');
+        const nodeThree = getDOM().getDefaultDocument().createTextNode('three');
         const component = componentFactory.create(injector, [[nodeOne], [nodeTwo], [nodeThree]]);
         component.changeDetectorRef.detectChanges();
         expect(component.location.nativeElement.textContent.trim()).toBe('1one 2two 3three');

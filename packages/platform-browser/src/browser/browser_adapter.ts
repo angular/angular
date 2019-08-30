@@ -74,7 +74,6 @@ const nodeContains: (this: Node, other: Node) => boolean = (() => {
 /* tslint:disable:requireParameterType no-console */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
-  setProperty(el: Node, name: string, value: any) { (<any>el)[name] = value; }
   getProperty(el: Node, name: string): any { return (<any>el)[name]; }
 
   log(error: string): void {
@@ -95,7 +94,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
   }
 
-  querySelector(el: HTMLElement, selector: string): any { return el.querySelector(selector); }
   querySelectorAll(el: any, selector: string): any[] { return el.querySelectorAll(selector); }
   onAndCancel(el: Node, evt: any, listener: any): Function {
     el.addEventListener(evt, listener, false);
@@ -104,43 +102,23 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return () => { el.removeEventListener(evt, listener, false); };
   }
   dispatchEvent(el: Node, evt: any) { el.dispatchEvent(evt); }
-  nextSibling(el: Node): Node|null { return el.nextSibling; }
   parentElement(el: Node): Node|null { return el.parentNode; }
-  clearNodes(el: Node) {
-    while (el.firstChild) {
-      el.removeChild(el.firstChild);
-    }
-  }
   appendChild(el: Node, node: Node) { el.appendChild(node); }
-  removeChild(el: Node, node: Node) { el.removeChild(node); }
   remove(node: Node): Node {
     if (node.parentNode) {
       node.parentNode.removeChild(node);
     }
     return node;
   }
-  insertBefore(parent: Node, ref: Node, node: Node) { parent.insertBefore(node, ref); }
-  setText(el: Node, value: string) { el.textContent = value; }
   getValue(el: any): string { return el.value; }
-  createComment(text: string): Comment { return this.getDefaultDocument().createComment(text); }
   createElement(tagName: string, doc?: Document): HTMLElement {
     doc = doc || this.getDefaultDocument();
     return doc.createElement(tagName);
-  }
-  createElementNS(ns: string, tagName: string, doc?: Document): Element {
-    doc = doc || this.getDefaultDocument();
-    return doc.createElementNS(ns, tagName);
-  }
-  createTextNode(text: string, doc?: Document): Text {
-    doc = doc || this.getDefaultDocument();
-    return doc.createTextNode(text);
   }
   getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }
   getElementsByTagName(element: any, name: string): HTMLElement[] {
     return element.getElementsByTagName(name);
   }
-  addClass(element: any, className: string) { element.classList.add(className); }
-  removeClass(element: any, className: string) { element.classList.remove(className); }
   setStyle(element: any, styleName: string, styleValue: string) {
     element.style[styleName] = styleValue;
   }
@@ -156,13 +134,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return element.getAttribute(attribute);
   }
   setAttribute(element: Element, name: string, value: string) { element.setAttribute(name, value); }
-  setAttributeNS(element: Element, ns: string, name: string, value: string) {
-    element.setAttributeNS(ns, name, value);
-  }
-  removeAttribute(element: Element, attribute: string) { element.removeAttribute(attribute); }
-  removeAttributeNS(element: Element, ns: string, name: string) {
-    element.removeAttributeNS(ns, name);
-  }
 
   createHtmlDocument(): HTMLDocument {
     return document.implementation.createHTMLDocument('fakeTitle');

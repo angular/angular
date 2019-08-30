@@ -124,7 +124,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          fixture.detectChanges();
          let els = fixture.debugElement.queryAll(By.css('span'));
          expect(els.length).toEqual(1);
-         getDOM().addClass(els[0].nativeElement, 'marker');
+         els[0].nativeElement.classList.add('marker');
          expect(fixture.nativeElement).toHaveText('hello');
 
          getComponent().numberCondition = 2;
