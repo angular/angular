@@ -299,12 +299,11 @@ describe('TocService', () => {
     beforeEach(() => {
       docId = 'fizz/buzz/';
 
-      // An almost-actual <h2> ... with extra whitespace
       callGenToc(`
         <h2 id="setup-to-develop-locally">
           Setup to <a href="moo">develop</a> <i>locally</i>.
           <a class="header-link" href="tutorial/toh-pt1#setup-to-develop-locally" aria-hidden="true">
-            <span class="icon icon-link"></span>
+            <span class="icon">icon-link</span>
           </a>
         </h2>
       `, docId);
