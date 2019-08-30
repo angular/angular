@@ -14,7 +14,7 @@ import {UnitTestElement} from './unit-test-element';
 
 /** A `HarnessEnvironment` implementation for Angular's Testbed. */
 export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
-  protected constructor(rawRootElement: Element, private _fixture: ComponentFixture<unknown>) {
+  constructor(rawRootElement: Element, private _fixture: ComponentFixture<unknown>) {
     super(rawRootElement);
   }
 
