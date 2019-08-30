@@ -524,8 +524,8 @@ describe('projection', () => {
       const mainEl = main.nativeElement;
       const div1 = mainEl.firstChild;
       const div2 = getDOM().createElement('div');
-      getDOM().setAttribute(div2, 'class', 'redStyle');
-      getDOM().appendChild(mainEl, div2);
+      div2.setAttribute('class', 'redStyle');
+      mainEl.appendChild(div2);
       expect(getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
       expect(getComputedStyle(div2).color).toEqual('rgb(255, 0, 0)');
     });
@@ -544,7 +544,7 @@ describe('projection', () => {
       const mainEl = main.nativeElement;
       const div1 = mainEl.firstChild;
       const div2 = getDOM().createElement('div');
-      getDOM().appendChild(mainEl, div2);
+      mainEl.appendChild(div2);
       expect(getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
       expect(getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
     });

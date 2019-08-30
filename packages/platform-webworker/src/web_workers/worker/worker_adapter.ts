@@ -44,15 +44,10 @@ export class WorkerDomAdapter extends DomAdapter {
 
   getProperty(el: Element, name: string): any { throw 'not implemented'; }
 
-  querySelectorAll(el: any, selector: string): any[] { throw 'not implemented'; }
   onAndCancel(el: any, evt: any, listener: any): Function { throw 'not implemented'; }
   dispatchEvent(el: any, evt: any) { throw 'not implemented'; }
-  appendChild(el: any, node: any) { throw 'not implemented'; }
   remove(el: any): Node { throw 'not implemented'; }
   createElement(tagName: any, doc?: any): HTMLElement { throw 'not implemented'; }
-  getElementsByTagName(element: any, name: string): HTMLElement[] { throw 'not implemented'; }
-  getAttribute(element: any, attribute: string): string { throw 'not implemented'; }
-  setAttribute(element: any, name: string, value: string) { throw 'not implemented'; }
   createHtmlDocument(): HTMLDocument { throw 'not implemented'; }
   getDefaultDocument(): Document { throw 'not implemented'; }
   isElementNode(node: any): boolean { throw 'not implemented'; }

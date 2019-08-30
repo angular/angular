@@ -883,7 +883,7 @@ class TestCmptWithPropBindings {
 
       // Move the content element outside the component
       // so that it can't be reached via querySelector.
-      getDOM().appendChild(parent, content);
+      parent.appendChild(content);
 
       expect(fixture.debugElement.query(By.css('.content'))).toBeTruthy();
 

@@ -58,7 +58,7 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
                             elementDef(0, NodeFlags.None, null, null, 0, 'div', [['title', 'a']]),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
-        expect(getDOM().getAttribute(rootNodes[0], 'title')).toBe('a');
+        expect(rootNodes[0].getAttribute('title')).toBe('a');
       });
 
       it('should add debug information to the renderer', () => {
@@ -114,8 +114,8 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           Services.checkAndUpdateView(view);
 
           const el = rootNodes[0];
-          expect(getDOM().getAttribute(el, 'a1')).toBe('v1');
-          expect(getDOM().getAttribute(el, 'a2')).toBe('v2');
+          expect(el.getAttribute('a1')).toBe('v1');
+          expect(el.getAttribute('a2')).toBe('v2');
         });
       });
     });
