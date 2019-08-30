@@ -115,10 +115,10 @@ let lastCreatedRenderer: Renderer2;
                 expect(hasClass(el, 'a')).toBe(false);
 
                 lastCreatedRenderer.setStyle(workerEl, 'width', '10px');
-                expect(getDOM().getStyle(el, 'width')).toEqual('10px');
+                expect(el.style['width']).toEqual('10px');
 
                 lastCreatedRenderer.removeStyle(workerEl, 'width');
-                expect(getDOM().getStyle(el, 'width')).toEqual('');
+                expect(el.style['width']).toEqual('');
 
                 lastCreatedRenderer.setAttribute(workerEl, 'someattr', 'someValue');
                 expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');

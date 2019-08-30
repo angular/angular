@@ -119,16 +119,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getElementsByTagName(element: any, name: string): HTMLElement[] {
     return element.getElementsByTagName(name);
   }
-  setStyle(element: any, styleName: string, styleValue: string) {
-    element.style[styleName] = styleValue;
-  }
-  removeStyle(element: any, stylename: string) {
-    // IE requires '' instead of null
-    // see https://github.com/angular/angular/issues/7916
-    element.style[stylename] = '';
-  }
-
-  getStyle(element: any, stylename: string): string { return element.style[stylename]; }
 
   getAttribute(element: Element, attribute: string): string|null {
     return element.getAttribute(attribute);

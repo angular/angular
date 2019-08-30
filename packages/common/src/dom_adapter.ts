@@ -50,11 +50,6 @@ export abstract class DomAdapter {
   abstract createHtmlDocument(): HTMLDocument;
   abstract getDefaultDocument(): Document;
 
-  // Used by platform-server
-  abstract getStyle(element: any, styleName: string): any;
-  abstract setStyle(element: any, styleName: string, styleValue: string): any;
-  abstract removeStyle(element: any, styleName: string): any;
-
   // Used by Title
   abstract getTitle(doc: Document): string;
   abstract setTitle(doc: Document, newTitle: string): any;

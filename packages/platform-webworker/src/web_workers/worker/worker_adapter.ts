@@ -53,9 +53,6 @@ export class WorkerDomAdapter extends DomAdapter {
   createElement(tagName: any, doc?: any): HTMLElement { throw 'not implemented'; }
   getHost(el: any): any { throw 'not implemented'; }
   getElementsByTagName(element: any, name: string): HTMLElement[] { throw 'not implemented'; }
-  setStyle(element: any, styleName: string, styleValue: string) { throw 'not implemented'; }
-  removeStyle(element: any, styleName: string) { throw 'not implemented'; }
-  getStyle(element: any, styleName: string): string { throw 'not implemented'; }
   getAttribute(element: any, attribute: string): string { throw 'not implemented'; }
   setAttribute(element: any, name: string, value: string) { throw 'not implemented'; }
   createHtmlDocument(): HTMLDocument { throw 'not implemented'; }

@@ -147,13 +147,11 @@ function declareTests(config?: {useJit: boolean}) {
 
         fixture.componentInstance.ctxProp = '10';
         fixture.detectChanges();
-        expect(getDOM().getStyle(fixture.debugElement.children[0].nativeElement, 'height'))
-            .toEqual('10px');
+        expect(fixture.debugElement.children[0].nativeElement.style['height']).toEqual('10px');
 
         fixture.componentInstance.ctxProp = null !;
         fixture.detectChanges();
-        expect(getDOM().getStyle(fixture.debugElement.children[0].nativeElement, 'height'))
-            .toEqual('');
+        expect(fixture.debugElement.children[0].nativeElement.style['height']).toEqual('');
       });
 
       it('should consume binding to property names where attr name and property name do not match',
