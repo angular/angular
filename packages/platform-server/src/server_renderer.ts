@@ -118,7 +118,7 @@ class DefaultServerRenderer2 implements Renderer2 {
     return el;
   }
 
-  parentNode(node: any): any { return getDOM().parentElement(node); }
+  parentNode(node: any): any { return node.parentNode; }
 
   nextSibling(node: any): any { return node.nextSibling; }
 

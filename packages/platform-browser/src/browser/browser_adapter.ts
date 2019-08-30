@@ -11,50 +11,6 @@ import {ɵglobal as global} from '@angular/core';
 
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
-
-const DOM_KEY_LOCATION_NUMPAD = 3;
-
-// Map to convert some key or keyIdentifier values to what will be returned by getEventKey
-const _keyMap: {[k: string]: string} = {
-  // The following values are here for cross-browser compatibility and to match the W3C standard
-  // cf http://www.w3.org/TR/DOM-Level-3-Events-key/
-  '\b': 'Backspace',
-  '\t': 'Tab',
-  '\x7F': 'Delete',
-  '\x1B': 'Escape',
-  'Del': 'Delete',
-  'Esc': 'Escape',
-  'Left': 'ArrowLeft',
-  'Right': 'ArrowRight',
-  'Up': 'ArrowUp',
-  'Down': 'ArrowDown',
-  'Menu': 'ContextMenu',
-  'Scroll': 'ScrollLock',
-  'Win': 'OS'
-};
-
-// There is a bug in Chrome for numeric keypad keys:
-// https://code.google.com/p/chromium/issues/detail?id=155654
-// 1, 2, 3 ... are reported as A, B, C ...
-const _chromeNumKeyPadMap = {
-  'A': '1',
-  'B': '2',
-  'C': '3',
-  'D': '4',
-  'E': '5',
-  'F': '6',
-  'G': '7',
-  'H': '8',
-  'I': '9',
-  'J': '*',
-  'K': '+',
-  'M': '-',
-  'N': '.',
-  'O': '/',
-  '\x60': '0',
-  '\x90': 'NumLock'
-};
-
 const nodeContains: (this: Node, other: Node) => boolean = (() => {
   if (global['Node']) {
     return global['Node'].prototype.contains || function(this: Node, node: any) {
@@ -102,7 +58,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return () => { el.removeEventListener(evt, listener, false); };
   }
   dispatchEvent(el: Node, evt: any) { el.dispatchEvent(evt); }
-  parentElement(el: Node): Node|null { return el.parentNode; }
   appendChild(el: Node, node: Node) { el.appendChild(node); }
   remove(node: Node): Node {
     if (node.parentNode) {
@@ -115,7 +70,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     doc = doc || this.getDefaultDocument();
     return doc.createElement(tagName);
   }
-  getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }
   getElementsByTagName(element: any, name: string): HTMLElement[] {
     return element.getElementsByTagName(name);
   }
@@ -129,45 +83,11 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return document.implementation.createHTMLDocument('fakeTitle');
   }
   getDefaultDocument(): Document { return document; }
-  getTitle(doc: Document): string { return doc.title; }
-  setTitle(doc: Document, newTitle: string) { doc.title = newTitle || ''; }
-  elementMatches(n: any, selector: string): boolean {
-    if (this.isElementNode(n)) {
-      return n.matches && n.matches(selector) ||
-          n.msMatchesSelector && n.msMatchesSelector(selector) ||
-          n.webkitMatchesSelector && n.webkitMatchesSelector(selector);
-    }
-
-    return false;
-  }
 
   isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
 
   isShadowRoot(node: any): boolean { return node instanceof DocumentFragment; }
 
-  getEventKey(event: any): string {
-    let key = event.key;
-    if (key == null) {
-      key = event.keyIdentifier;
-      // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and
-      // Safari cf
-      // http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
-      if (key == null) {
-        return 'Unidentified';
-      }
-      if (key.startsWith('U+')) {
-        key = String.fromCharCode(parseInt(key.substring(2), 16));
-        if (event.location === DOM_KEY_LOCATION_NUMPAD && _chromeNumKeyPadMap.hasOwnProperty(key)) {
-          // There is a bug in Chrome for numeric keypad keys:
-          // https://code.google.com/p/chromium/issues/detail?id=155654
-          // 1, 2, 3 ... are reported as A, B, C ...
-          key = (_chromeNumKeyPadMap as any)[key];
-        }
-      }
-    }
-
-    return _keyMap[key] || key;
-  }
   getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
     if (target === 'window') {
       return window;
