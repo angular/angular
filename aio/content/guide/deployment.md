@@ -618,14 +618,14 @@ In `angular.json` add two new configuration sections under the `build` and `serv
      ...
     },
     "es5": {
-      "browserTarget": "app:build:es5"
+      "browserTarget": "<app-name>:build:es5"
     }
   }
 },
 
 </code-example>
 
-You can then run the serve with this configuration.
+You can then run the `ng serve` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:build:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your app name is `myAngularApp` the config will become `"browserTarget": "myAngularApp:build:es5"`.
 
 <code-example language="none" class="code-shell">
 
@@ -680,24 +680,24 @@ Create an [ES5 serve configuration](guide/deployment#configuring-serve-for-es5) 
 
 <code-example language="json">
 
-"test": {
+"e2e": {
   "builder": "@angular-devkit/build-angular:protractor",
   "options": {
       ...
   },
   "configurations": {
-	"production": {
-		...
-	},
+	  "production": {
+		  ...
+	  },
     "es5": {
-      "devServerTarget": "app:serve:es5"
+      "devServerTarget": "<app-name>:serve:es5"
     }
   }
 },
 
 </code-example>
 
-You can then run the e2e's with this configuration
+You can then run the `ng e2e` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:serve:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your app name is `myAngularApp` the config will become `"devServerTarget": "myAngularApp:serve:es5"`.
 
 <code-example language="none" class="code-shell">
 
