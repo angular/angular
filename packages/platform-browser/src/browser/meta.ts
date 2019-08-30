@@ -65,7 +65,7 @@ export class Meta {
 
   getTags(attrSelector: string): HTMLMetaElement[] {
     if (!attrSelector) return [];
-    const list /*NodeList*/ = this._dom.querySelectorAll(this._doc, `meta[${attrSelector}]`);
+    const list /*NodeList*/ = this._doc.querySelectorAll(`meta[${attrSelector}]`);
     return list ? [].slice.call(list) : [];
   }
 
@@ -99,13 +99,13 @@ export class Meta {
     }
     const element: HTMLMetaElement = this._dom.createElement('meta') as HTMLMetaElement;
     this._setMetaElementAttributes(meta, element);
-    const head = this._dom.getElementsByTagName(this._doc, 'head')[0];
-    this._dom.appendChild(head, element);
+    const head = this._doc.getElementsByTagName('head')[0];
+    head.appendChild(element);
     return element;
   }
 
   private _setMetaElementAttributes(tag: MetaDefinition, el: HTMLMetaElement): HTMLMetaElement {
-    Object.keys(tag).forEach((prop: string) => this._dom.setAttribute(el, prop, tag[prop]));
+    Object.keys(tag).forEach((prop: string) => el.setAttribute(prop, tag[prop]));
     return el;
   }
 
@@ -115,6 +115,6 @@ export class Meta {
   }
 
   private _containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {
-    return Object.keys(tag).every((key: string) => this._dom.getAttribute(elem, key) === tag[key]);
+    return Object.keys(tag).every((key: string) => elem.getAttribute(key) === tag[key]);
   }
 }

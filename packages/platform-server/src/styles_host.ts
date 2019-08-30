@@ -18,7 +18,7 @@ export class ServerStylesHost extends SharedStylesHost {
       @Inject(DOCUMENT) private doc: any,
       @Optional() @Inject(ɵTRANSITION_ID) private transitionId: string) {
     super();
-    this.head = getDOM().getElementsByTagName(doc, 'head')[0];
+    this.head = doc.getElementsByTagName('head')[0];
   }
 
   private _addStyle(style: string): void {
@@ -26,9 +26,9 @@ export class ServerStylesHost extends SharedStylesHost {
     const el = adapter.createElement('style');
     el.textContent = style;
     if (!!this.transitionId) {
-      adapter.setAttribute(el, 'ng-transition', this.transitionId);
+      el.setAttribute('ng-transition', this.transitionId);
     }
-    adapter.appendChild(this.head, el);
+    this.head.appendChild(el);
   }
 
   onStylesAdded(additions: Set<string>) { additions.forEach(style => this._addStyle(style)); }

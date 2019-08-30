@@ -55,8 +55,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       // 2 anchors + 2 elements
       const rootChildren = rootNodes[0].childNodes;
       expect(rootChildren.length).toBe(4);
-      expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child0');
-      expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child1');
+      expect(rootChildren[1].getAttribute('name')).toBe('child0');
+      expect(rootChildren[2].getAttribute('name')).toBe('child1');
 
       rf.begin !();
       detachEmbeddedView(viewContainerData, 1);
@@ -90,8 +90,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       // 2 anchors + 2 elements
       const rootChildren = rootNodes[0].childNodes;
       expect(rootChildren.length).toBe(4);
-      expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child1');
-      expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child0');
+      expect(rootChildren[1].getAttribute('name')).toBe('child1');
+      expect(rootChildren[2].getAttribute('name')).toBe('child0');
     });
 
     it('should include embedded views in root nodes', () => {
@@ -107,8 +107,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       const rootNodes = rootRenderNodes(parentView);
       expect(rootNodes.length).toBe(3);
-      expect(getDOM().getAttribute(rootNodes[1], 'name')).toBe('child0');
-      expect(getDOM().getAttribute(rootNodes[2], 'name')).toBe('after');
+      expect(rootNodes[1].getAttribute('name')).toBe('child0');
+      expect(rootNodes[2].getAttribute('name')).toBe('after');
     });
 
     it('should dirty check embedded views', () => {

@@ -40,13 +40,8 @@ export abstract class DomAdapter {
   abstract logGroupEnd(): any;
 
   // Used by Meta
-  abstract querySelectorAll(el: any, selector: string): any[];
   abstract remove(el: any): Node;
-  abstract getAttribute(element: any, attribute: string): string|null;
-  abstract appendChild(el: any, node: any): any;
   abstract createElement(tagName: any, doc?: any): HTMLElement;
-  abstract setAttribute(element: any, name: string, value: string): any;
-  abstract getElementsByTagName(element: any, name: string): HTMLElement[];
   abstract createHtmlDocument(): HTMLDocument;
   abstract getDefaultDocument(): Document;
 

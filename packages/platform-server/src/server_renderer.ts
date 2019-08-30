@@ -88,7 +88,7 @@ class DefaultServerRenderer2 implements Renderer2 {
     return doc.createTextNode(value);
   }
 
-  appendChild(parent: any, newChild: any): void { getDOM().appendChild(parent, newChild); }
+  appendChild(parent: any, newChild: any): void { parent.appendChild(newChild); }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
@@ -126,7 +126,7 @@ class DefaultServerRenderer2 implements Renderer2 {
     if (namespace) {
       el.setAttributeNS(NAMESPACE_URIS[namespace], namespace + ':' + name, value);
     } else {
-      getDOM().setAttribute(el, name, value);
+      el.setAttribute(name, value);
     }
   }
 

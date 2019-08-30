@@ -78,7 +78,7 @@ export class DominoAdapter extends BrowserDomAdapter {
     if (name === 'href') {
       // Domino tries to resolve href-s which we do not want. Just return the
       // attribute value.
-      return this.getAttribute(el, 'href');
+      return el.getAttribute('href');
     } else if (name === 'innerText') {
       // Domino does not support innerText. Just map it to textContent.
       return el.textContent;

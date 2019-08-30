@@ -121,7 +121,7 @@ let lastCreatedRenderer: Renderer2;
                 expect(el.style['width']).toEqual('');
 
                 lastCreatedRenderer.setAttribute(workerEl, 'someattr', 'someValue');
-                expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');
+                expect(el.getAttribute('someattr')).toEqual('someValue');
               };
 
               // root element

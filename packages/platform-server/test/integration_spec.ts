@@ -473,11 +473,11 @@ class HiddenModule {
          }]);
          platform.bootstrapModule(ExampleStylesModule).then(ref => {
            const doc = ref.injector.get(DOCUMENT);
-           const head = getDOM().getElementsByTagName(doc, 'head')[0];
+           const head = doc.getElementsByTagName('head')[0];
            const styles: any[] = head.children as any;
            expect(styles.length).toBe(1);
            expect(styles[0].textContent).toContain('color: red');
-           expect(getDOM().getAttribute(styles[0], 'ng-transition')).toBe('example-styles');
+           expect(styles[0].getAttribute('ng-transition')).toBe('example-styles');
          });
        }));
 
@@ -487,7 +487,7 @@ class HiddenModule {
          platform.bootstrapModule(ImageExampleModule).then(ref => {
            const appRef: ApplicationRef = ref.injector.get(ApplicationRef);
            const app = appRef.components[0].location.nativeElement;
-           const img = getDOM().getElementsByTagName(app, 'img')[0] as any;
+           const img = app.getElementsByTagName('img')[0] as any;
            expect(img.attributes['src'].value).toEqual('link');
          });
        }));

@@ -438,7 +438,7 @@ function declareTestsUsingBootstrap() {
     beforeEach(inject([DOCUMENT], (doc: any) => {
       destroyPlatform();
       const el = getDOM().createElement(COMP_SELECTOR, doc);
-      getDOM().appendChild(doc.body, el);
+      doc.body.appendChild(el);
 
       logger = new MockConsole();
       errorHandler = new ErrorHandler();

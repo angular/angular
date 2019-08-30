@@ -340,7 +340,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
           expect(instance.b).toBe('v2');
 
           const el = rootNodes[0];
-          expect(getDOM().getAttribute(el, 'ng-reflect-a')).toBe('v1');
+          expect(el.getAttribute('ng-reflect-a')).toBe('v1');
         });
 
       });

@@ -42,15 +42,15 @@ describe('bootstrap', () => {
 
     const el1 = getDOM().createElement('test-app', doc);
     const el2 = getDOM().createElement('test-app2', doc);
-    getDOM().appendChild(doc.body, el1);
-    getDOM().appendChild(doc.body, el2);
+    doc.body.appendChild(el1);
+    doc.body.appendChild(el2);
 
     log = [];
     testProviders = [{provide: APP_BASE_HREF, useValue: ''}];
   }));
 
   afterEach(inject([DOCUMENT], (doc: any) => {
-    const oldRoots = getDOM().querySelectorAll(doc, 'test-app,test-app2');
+    const oldRoots = doc.querySelectorAll('test-app,test-app2');
     for (let i = 0; i < oldRoots.length; i++) {
       getDOM().remove(oldRoots[i]);
     }
