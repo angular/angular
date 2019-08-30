@@ -50,7 +50,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
   }
 
-  querySelectorAll(el: any, selector: string): any[] { return el.querySelectorAll(selector); }
   onAndCancel(el: Node, evt: any, listener: any): Function {
     el.addEventListener(evt, listener, false);
     // Needed to follow Dart's subscription semantic, until fix of
@@ -58,7 +57,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return () => { el.removeEventListener(evt, listener, false); };
   }
   dispatchEvent(el: Node, evt: any) { el.dispatchEvent(evt); }
-  appendChild(el: Node, node: Node) { el.appendChild(node); }
   remove(node: Node): Node {
     if (node.parentNode) {
       node.parentNode.removeChild(node);
@@ -70,15 +68,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     doc = doc || this.getDefaultDocument();
     return doc.createElement(tagName);
   }
-  getElementsByTagName(element: any, name: string): HTMLElement[] {
-    return element.getElementsByTagName(name);
-  }
-
-  getAttribute(element: Element, attribute: string): string|null {
-    return element.getAttribute(attribute);
-  }
-  setAttribute(element: Element, name: string, value: string) { element.setAttribute(name, value); }
-
   createHtmlDocument(): HTMLDocument {
     return document.implementation.createHTMLDocument('fakeTitle');
   }

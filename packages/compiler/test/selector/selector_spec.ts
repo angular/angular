@@ -128,7 +128,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
 
       const elementSelector = new CssSelector();
       const element = el('<div attr></div>');
-      const empty = getDOM().getAttribute(element, 'attr') !;
+      const empty = element.getAttribute('attr') !;
       elementSelector.addAttribute('some-decor', empty);
       matcher.match(elementSelector, selectableCollector);
       expect(matched).toEqual([s1[0], 1]);

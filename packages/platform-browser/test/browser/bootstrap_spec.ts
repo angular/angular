@@ -142,7 +142,7 @@ function bootstrap(
       compilerConsole = new DummyConsole();
       testProviders = [{provide: Console, useValue: compilerConsole}];
 
-      const oldRoots = getDOM().querySelectorAll(doc, 'hello-app,hello-app-2,light-dom-el');
+      const oldRoots = doc.querySelectorAll('hello-app,hello-app-2,light-dom-el');
       for (let i = 0; i < oldRoots.length; i++) {
         getDOM().remove(oldRoots[i]);
       }
@@ -150,9 +150,9 @@ function bootstrap(
       el = getDOM().createElement('hello-app', doc);
       el2 = getDOM().createElement('hello-app-2', doc);
       lightDom = getDOM().createElement('light-dom-el', doc);
-      getDOM().appendChild(doc.body, el);
-      getDOM().appendChild(doc.body, el2);
-      getDOM().appendChild(el, lightDom);
+      doc.body.appendChild(el);
+      doc.body.appendChild(el2);
+      el.appendChild(lightDom);
       lightDom.textContent = 'loading';
     }));
 
@@ -440,17 +440,17 @@ function bootstrap(
          const platform = platformBrowserDynamic();
          const document = platform.injector.get(DOCUMENT);
          const style = dom.createElement('style', document);
-         dom.setAttribute(style, 'ng-transition', 'my-app');
-         dom.appendChild(document.head, style);
+         style.setAttribute('ng-transition', 'my-app');
+         document.head.appendChild(style);
 
          const root = dom.createElement('root', document);
-         dom.appendChild(document.body, root);
+         document.body.appendChild(root);
 
          platform.bootstrapModule(TestModule).then(() => {
            const styles: HTMLElement[] =
-               Array.prototype.slice.apply(dom.getElementsByTagName(document, 'style') || []);
+               Array.prototype.slice.apply(document.getElementsByTagName('style') || []);
            styles.forEach(
-               style => { expect(dom.getAttribute(style, 'ng-transition')).not.toBe('my-app'); });
+               style => { expect(style.getAttribute('ng-transition')).not.toBe('my-app'); });
            async.done();
          });
        }));

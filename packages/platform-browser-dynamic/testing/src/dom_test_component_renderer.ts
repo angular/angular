@@ -23,11 +23,11 @@ export class DOMTestComponentRenderer extends TestComponentRenderer {
     const rootEl = <HTMLElement>getContent(template).firstChild;
 
     // TODO(juliemr): can/should this be optional?
-    const oldRoots = getDOM().querySelectorAll(this._doc, '[id^=root]');
+    const oldRoots = this._doc.querySelectorAll('[id^=root]');
     for (let i = 0; i < oldRoots.length; i++) {
       getDOM().remove(oldRoots[i]);
     }
-    getDOM().appendChild(this._doc.body, rootEl);
+    this._doc.body.appendChild(rootEl);
   }
 }
 
