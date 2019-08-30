@@ -70,7 +70,7 @@ export interface Injectable {
    * - 'root' injector, which will be the application-level injector in most apps.
    * - 'platform' injector, which would be the special singleton platform injector shared by all
    * applications on the page.
-   * - 'any` injector, which would be the injector which receives the resolution. (Note this only
+   * - 'any' injector, which would be the injector which receives the resolution. (Note this only
    * works on NgModule Injectors and not on Element Injector)
    */
   providedIn?: Type<any>|'root'|'platform'|'any'|null;
