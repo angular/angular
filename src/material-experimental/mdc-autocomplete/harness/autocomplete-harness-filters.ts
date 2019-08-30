@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export type AutocompleteHarnessFilters = {
-  id?: string;
-  name?: string,
-};
+import {BaseHarnessFilters} from '@angular/cdk-experimental/testing';
+
+export interface AutocompleteHarnessFilters extends BaseHarnessFilters {}

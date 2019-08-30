@@ -34,11 +34,7 @@ export class MatAutocompleteHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: AutocompleteHarnessFilters = {}): HarnessPredicate<MatAutocompleteHarness> {
-    return new HarnessPredicate(MatAutocompleteHarness)
-        .addOption('name', options.name,
-            async (harness, name) => (await harness.getAttribute('name')) === name)
-        .addOption('id', options.id,
-             async (harness, id) => (await harness.getAttribute('id')) === id);
+    return new HarnessPredicate(MatAutocompleteHarness, options);
   }
 
   async getAttribute(attributeName: string): Promise<string|null> {

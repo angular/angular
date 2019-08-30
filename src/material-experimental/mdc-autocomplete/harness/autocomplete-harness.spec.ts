@@ -56,20 +56,20 @@ function runTests() {
   });
 
   it('should be able to get text inside the input', async () => {
-    const input = await loader.getHarness(harness.with({id: 'prefilled'}));
+    const input = await loader.getHarness(harness.with({selector: '#prefilled'}));
     expect(await input.getText()).toBe('Prefilled value');
   });
 
   it('should get disabled state', async () => {
-    const enabled = await loader.getHarness(harness.with({id: 'plain'}));
-    const disabled = await loader.getHarness(harness.with({id: 'disabled'}));
+    const enabled = await loader.getHarness(harness.with({selector: '#plain'}));
+    const disabled = await loader.getHarness(harness.with({selector: '#disabled'}));
 
     expect(await enabled.isDisabled()).toBe(false);
     expect(await disabled.isDisabled()).toBe(true);
   });
 
   it('should focus and blur an input', async () => {
-    const input = await loader.getHarness(harness.with({id: 'plain'}));
+    const input = await loader.getHarness(harness.with({selector: '#plain'}));
     expect(getActiveElementId()).not.toBe('plain');
     await input.focus();
     expect(getActiveElementId()).toBe('plain');
@@ -78,19 +78,19 @@ function runTests() {
   });
 
   it('should be able to type in an input', async () => {
-    const input = await loader.getHarness(harness.with({id: 'plain'}));
+    const input = await loader.getHarness(harness.with({selector: '#plain'}));
     await input.enterText('Hello there');
     expect(await input.getText()).toBe('Hello there');
   });
 
   it('should be able to get the autocomplete panel', async () => {
-    const input = await loader.getHarness(harness.with({id: 'plain'}));
+    const input = await loader.getHarness(harness.with({selector: '#plain'}));
     await input.focus();
     expect(await input.getPanel()).toBeTruthy();
   });
 
   it('should be able to get the autocomplete panel options', async () => {
-    const input = await loader.getHarness(harness.with({id: 'plain'}));
+    const input = await loader.getHarness(harness.with({selector: '#plain'}));
     await input.focus();
     const options = await input.getOptions();
 
@@ -99,7 +99,7 @@ function runTests() {
   });
 
   it('should be able to get the autocomplete panel groups', async () => {
-    const input = await loader.getHarness(harness.with({id: 'grouped'}));
+    const input = await loader.getHarness(harness.with({selector: '#grouped'}));
     await input.focus();
     const groups = await input.getOptionGroups();
     const options = await input.getOptions();
@@ -113,13 +113,13 @@ function runTests() {
     fixture.componentInstance.states = [];
     fixture.detectChanges();
 
-    const input = await loader.getHarness(harness.with({id: 'plain'}));
+    const input = await loader.getHarness(harness.with({selector: '#plain'}));
     await input.focus();
     expect(await input.isPanelVisible()).toBe(false);
   });
 
   it('should be able to get whether the autocomplete is open', async () => {
-    const input = await loader.getHarness(harness.with({id: 'plain'}));
+    const input = await loader.getHarness(harness.with({selector: '#plain'}));
 
     expect(await input.isOpen()).toBe(false);
     await input.focus();
