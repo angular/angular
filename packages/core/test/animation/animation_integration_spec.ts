@@ -1589,7 +1589,7 @@ const DEFAULT_COMPONENT_ID = '1';
            engine.flush();
            resetLog();
 
-           const element = getDOM().querySelector(fixture.nativeElement, '.ng-if');
+           const element = fixture.nativeElement.querySelector('.ng-if');
            assertHasParent(element, true);
 
            cmp.exp = false;

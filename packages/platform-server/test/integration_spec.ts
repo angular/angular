@@ -408,8 +408,8 @@ class HiddenModule {
            expect(isPlatformServer(moduleRef.injector.get(PLATFORM_ID))).toBe(true);
            const doc = moduleRef.injector.get(DOCUMENT);
 
-           expect(doc.head).toBe(getDOM().querySelector(doc, 'head'));
-           expect(doc.body).toBe(getDOM().querySelector(doc, 'body'));
+           expect(doc.head).toBe(doc.querySelector('head') !);
+           expect(doc.body).toBe(doc.querySelector('body') !);
 
            expect(doc.documentElement.textContent).toEqual('Works!');
 
@@ -447,7 +447,7 @@ class HiddenModule {
          platform.bootstrapModule(TitleAppModule).then(ref => {
            const state = ref.injector.get(PlatformState);
            const doc = ref.injector.get(DOCUMENT);
-           const title = getDOM().querySelector(doc, 'title');
+           const title = doc.querySelector('title') !;
            expect(title.textContent).toBe('Test App Title');
            expect(state.renderToString()).toContain('<title>Test App Title</title>');
          });
