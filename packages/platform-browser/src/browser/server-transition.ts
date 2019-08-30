@@ -23,7 +23,7 @@ export function appInitializerFactory(transitionId: string, document: any, injec
       const dom = getDOM();
       const styles: any[] =
           Array.prototype.slice.apply(document.querySelectorAll(`style[ng-transition]`));
-      styles.filter(el => dom.getAttribute(el, 'ng-transition') === transitionId)
+      styles.filter(el => el.getAttribute('ng-transition') === transitionId)
           .forEach(el => dom.remove(el));
     });
   };

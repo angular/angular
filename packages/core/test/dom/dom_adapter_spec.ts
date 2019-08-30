@@ -21,13 +21,13 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
       const t = getDOM().getDefaultDocument().createTextNode('hello');
       expect(isTextNode(t)).toBe(true);
       const d = getDOM().createElement('div');
-      getDOM().appendChild(d, t);
+      d.appendChild(t);
       expect(d.innerHTML).toEqual('hello');
     });
 
     it('should set className via the class attribute', () => {
       const d = getDOM().createElement('div');
-      getDOM().setAttribute(d, 'class', 'class1');
+      d.setAttribute('class', 'class1');
       expect(d.className).toEqual('class1');
     });
 
@@ -45,9 +45,9 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 
         it('should return the value of the base element', () => {
           const baseEl = getDOM().createElement('base');
-          getDOM().setAttribute(baseEl, 'href', '/drop/bass/connon/');
+          baseEl.setAttribute('href', '/drop/bass/connon/');
           const headEl = defaultDoc.head;
-          getDOM().appendChild(headEl, baseEl);
+          headEl.appendChild(baseEl);
 
           const baseHref = getDOM().getBaseHref(defaultDoc);
           headEl.removeChild(baseEl);
@@ -58,9 +58,9 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 
         it('should return a relative url', () => {
           const baseEl = getDOM().createElement('base');
-          getDOM().setAttribute(baseEl, 'href', 'base');
+          baseEl.setAttribute('href', 'base');
           const headEl = defaultDoc.head;
-          getDOM().appendChild(headEl, baseEl);
+          headEl.appendChild(baseEl);
 
           const baseHref = getDOM().getBaseHref(defaultDoc) !;
           headEl.removeChild(baseEl);

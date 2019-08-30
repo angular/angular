@@ -35,11 +35,11 @@ class SomeComponent {
       const doc = TestBed.get(DOCUMENT);
       const rootEl =
           <HTMLElement>getContent(createTemplate(`<${selector}></${selector}>`)).firstChild;
-      const oldRoots = getDOM().querySelectorAll(doc, selector);
+      const oldRoots = doc.querySelectorAll(selector);
       for (let i = 0; i < oldRoots.length; i++) {
         getDOM().remove(oldRoots[i]);
       }
-      getDOM().appendChild(doc.body, rootEl);
+      doc.body.appendChild(rootEl);
     }
 
     type CreateModuleOptions =
