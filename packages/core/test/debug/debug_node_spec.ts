@@ -878,7 +878,7 @@ class TestCmptWithPropBindings {
       fixture = TestBed.createComponent(SimpleContentComp);
       fixture.detectChanges();
 
-      const parent = getDOM().parentElement(fixture.nativeElement) !;
+      const parent = fixture.nativeElement.parentElement;
       const content = fixture.componentInstance.content.nativeElement;
 
       // Move the content element outside the component

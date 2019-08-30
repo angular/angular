@@ -38,7 +38,7 @@ export class By {
   static css(selector: string): Predicate<DebugElement> {
     return (debugElement) => {
       return debugElement.nativeElement != null ?
-          getDOM().elementMatches(debugElement.nativeElement, selector) :
+          elementMatches(debugElement.nativeElement, selector) :
           false;
     };
   }
@@ -54,4 +54,14 @@ export class By {
   static directive(type: Type<any>): Predicate<DebugNode> {
     return (debugNode) => debugNode.providerTokens !.indexOf(type) !== -1;
   }
+}
+
+function elementMatches(n: any, selector: string): boolean {
+  if (getDOM().isElementNode(n)) {
+    return n.matches && n.matches(selector) ||
+        n.msMatchesSelector && n.msMatchesSelector(selector) ||
+        n.webkitMatchesSelector && n.webkitMatchesSelector(selector);
+  }
+
+  return false;
 }
