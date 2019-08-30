@@ -373,7 +373,7 @@ describe('MatSort', () => {
 
   it('should re-render when the i18n labels have changed',
     inject([MatSortHeaderIntl], (intl: MatSortHeaderIntl) => {
-      const header = fixture.debugElement.query(By.directive(MatSortHeader)).nativeElement;
+      const header = fixture.debugElement.query(By.directive(MatSortHeader))!.nativeElement;
       const button = header.querySelector('.mat-sort-header-button');
 
       intl.sortButtonLabel = () => 'Sort all of the things';

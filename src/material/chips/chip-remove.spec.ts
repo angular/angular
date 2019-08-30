@@ -25,7 +25,7 @@ describe('Chip Remove', () => {
     testChip = fixture.debugElement.componentInstance;
     fixture.detectChanges();
 
-    chipDebugElement = fixture.debugElement.query(By.directive(MatChip));
+    chipDebugElement = fixture.debugElement.query(By.directive(MatChip))!;
     chipNativeElement = chipDebugElement.nativeElement;
   }));
 

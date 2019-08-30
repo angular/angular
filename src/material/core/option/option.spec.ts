@@ -24,7 +24,7 @@ describe('MatOption component', () => {
     fixture.detectChanges();
 
     const optionInstance: MatOption =
-        fixture.debugElement.query(By.directive(MatOption)).componentInstance;
+        fixture.debugElement.query(By.directive(MatOption))!.componentInstance;
     const completeSpy = jasmine.createSpy('complete spy');
     const subscription = optionInstance._stateChanges.subscribe({complete: completeSpy});
 
@@ -38,7 +38,7 @@ describe('MatOption component', () => {
     fixture.detectChanges();
 
     const optionInstance: MatOption =
-        fixture.debugElement.query(By.directive(MatOption)).componentInstance;
+        fixture.debugElement.query(By.directive(MatOption))!.componentInstance;
 
     optionInstance.select();
     expect(optionInstance.selected).toBe(true);
@@ -60,7 +60,7 @@ describe('MatOption component', () => {
     fixture.detectChanges();
 
     const optionInstance: MatOption =
-        fixture.debugElement.query(By.directive(MatOption)).componentInstance;
+        fixture.debugElement.query(By.directive(MatOption))!.componentInstance;
 
     optionInstance.deselect();
     expect(optionInstance.selected).toBe(false);
@@ -83,7 +83,7 @@ describe('MatOption component', () => {
     fixture.componentInstance.id = 'custom-option';
     fixture.detectChanges();
 
-    const optionInstance = fixture.debugElement.query(By.directive(MatOption)).componentInstance;
+    const optionInstance = fixture.debugElement.query(By.directive(MatOption))!.componentInstance;
 
     expect(optionInstance.id).toBe('custom-option');
   });
@@ -92,7 +92,7 @@ describe('MatOption component', () => {
     const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
-    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption));
+    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption))!;
     const optionNativeElement: HTMLElement = optionDebugElement.nativeElement;
     const optionInstance: MatOption = optionDebugElement.componentInstance;
     const spy = jasmine.createSpy('selection change spy');
@@ -110,7 +110,7 @@ describe('MatOption component', () => {
     const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
-    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption));
+    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption))!;
     const optionNativeElement: HTMLElement = optionDebugElement.nativeElement;
     const optionInstance: MatOption = optionDebugElement.componentInstance;
     const spy = jasmine.createSpy('selection change spy');
@@ -128,7 +128,7 @@ describe('MatOption component', () => {
     const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
-    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption));
+    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption))!;
     const optionNativeElement: HTMLElement = optionDebugElement.nativeElement;
     const optionInstance: MatOption = optionDebugElement.componentInstance;
     const spy = jasmine.createSpy('selection change spy');
@@ -157,7 +157,7 @@ describe('MatOption component', () => {
       fixture = TestBed.createComponent(BasicOption);
       fixture.detectChanges();
 
-      optionDebugElement = fixture.debugElement.query(By.directive(MatOption));
+      optionDebugElement = fixture.debugElement.query(By.directive(MatOption))!;
       optionNativeElement = optionDebugElement.nativeElement;
       optionInstance = optionDebugElement.componentInstance;
     });

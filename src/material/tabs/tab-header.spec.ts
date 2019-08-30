@@ -268,7 +268,7 @@ describe('MatTabHeader', () => {
 
         expect(appComponent.tabHeader._showPaginationControls).toBe(true);
 
-        const buttonAfter = fixture.debugElement.query(By.css('.mat-tab-header-pagination-after'));
+        const buttonAfter = fixture.debugElement.query(By.css('.mat-tab-header-pagination-after'))!;
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
           .toBe(0, 'Expected no ripple to show up initially.');
@@ -287,7 +287,7 @@ describe('MatTabHeader', () => {
 
         expect(appComponent.tabHeader._showPaginationControls).toBe(true);
 
-        const buttonAfter = fixture.debugElement.query(By.css('.mat-tab-header-pagination-after'));
+        const buttonAfter = fixture.debugElement.query(By.css('.mat-tab-header-pagination-after'))!;
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
           .toBe(0, 'Expected no ripple to show up initially.');

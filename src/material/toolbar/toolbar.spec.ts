@@ -22,7 +22,7 @@ describe('MatToolbar', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(ToolbarSingleRow);
       testComponent = fixture.debugElement.componentInstance;
-      toolbarElement = fixture.debugElement.query(By.css('.mat-toolbar')).nativeElement;
+      toolbarElement = fixture.debugElement.query(By.css('.mat-toolbar'))!.nativeElement;
     });
 
     it('should apply class based on color attribute', () => {

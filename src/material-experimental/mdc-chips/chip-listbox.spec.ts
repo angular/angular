@@ -99,7 +99,7 @@ describe('MatChipListbox', () => {
       beforeEach(() => {
         fixture = createComponent(SelectedChipListbox);
         fixture.detectChanges();
-        chipListboxDebugElement = fixture.debugElement.query(By.directive(MatChipListbox));
+        chipListboxDebugElement = fixture.debugElement.query(By.directive(MatChipListbox))!;
         chipListboxNativeElement = chipListboxDebugElement.nativeElement;
       });
 
@@ -451,7 +451,7 @@ describe('MatChipListbox', () => {
         nativeChips = fixture.debugElement.queryAll(By.css('mat-chip-option'))
             .map((chip) => chip.nativeElement);
 
-        chipListboxDebugElement = fixture.debugElement.query(By.directive(MatChipListbox));
+        chipListboxDebugElement = fixture.debugElement.query(By.directive(MatChipListbox))!;
         chipListboxInstance = chipListboxDebugElement.componentInstance;
         chips = chipListboxInstance._chips;
 
@@ -595,7 +595,7 @@ describe('MatChipListbox', () => {
             .toBe(false, 'Expected the control to start off as untouched.');
 
           const nativeChipListbox = fixture.debugElement.query(
-            By.css('mat-chip-listbox')).nativeElement;
+            By.css('mat-chip-listbox'))!.nativeElement;
           dispatchFakeEvent(nativeChipListbox, 'blur');
           tick();
 
@@ -609,7 +609,7 @@ describe('MatChipListbox', () => {
 
           fixture.componentInstance.control.disable();
           const nativeChipListbox = fixture.debugElement.query(
-            By.css('mat-chip-listbox')).nativeElement;
+            By.css('mat-chip-listbox'))!.nativeElement;
           dispatchFakeEvent(nativeChipListbox, 'blur');
           tick();
 
@@ -776,7 +776,7 @@ describe('MatChipListbox', () => {
     }]);
     fixture.detectChanges();
 
-    chipListboxDebugElement = fixture.debugElement.query(By.directive(MatChipListbox));
+    chipListboxDebugElement = fixture.debugElement.query(By.directive(MatChipListbox))!;
     chipListboxNativeElement = chipListboxDebugElement.nativeElement;
     chipListboxInstance = chipListboxDebugElement.componentInstance;
     testComponent = fixture.debugElement.componentInstance;

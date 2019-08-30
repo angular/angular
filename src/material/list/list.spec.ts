@@ -25,7 +25,7 @@ describe('MatList', () => {
 
   it('should not apply any additional class to a list without lines', () => {
     const fixture = TestBed.createComponent(ListWithOneItem);
-    const listItem = fixture.debugElement.query(By.css('mat-list-item'));
+    const listItem = fixture.debugElement.query(By.css('mat-list-item'))!;
     fixture.detectChanges();
     expect(listItem.nativeElement.className).toBe('mat-list-item');
   });
@@ -79,7 +79,7 @@ describe('MatList', () => {
     fixture.debugElement.componentInstance.showThirdLine = false;
     fixture.detectChanges();
 
-    const listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'));
+    const listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'))!;
     expect(listItem.nativeElement.classList.length).toBe(2);
     expect(listItem.nativeElement.classList).toContain('mat-2-line');
     expect(listItem.nativeElement.classList).toContain('mat-list-item');
@@ -94,7 +94,7 @@ describe('MatList', () => {
     fixture.detectChanges();
 
     const list = fixture.debugElement.children[0];
-    const listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'));
+    const listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'))!;
     expect(list.nativeElement.getAttribute('role')).toBeNull('Expect mat-list no role');
     expect(listItem.nativeElement.getAttribute('role')).toBeNull('Expect mat-list-item no role');
   });
@@ -167,7 +167,7 @@ describe('MatList', () => {
     const fixture = TestBed.createComponent(ActionListWithoutType);
     fixture.detectChanges();
 
-    const listItemEl = fixture.debugElement.query(By.css('.mat-list-item'));
+    const listItemEl = fixture.debugElement.query(By.css('.mat-list-item'))!;
     expect(listItemEl.nativeElement.getAttribute('type')).toBe('button');
   });
 
@@ -175,7 +175,7 @@ describe('MatList', () => {
     const fixture = TestBed.createComponent(ActionListWithType);
     fixture.detectChanges();
 
-    const listItemEl = fixture.debugElement.query(By.css('.mat-list-item'));
+    const listItemEl = fixture.debugElement.query(By.css('.mat-list-item'))!;
     expect(listItemEl.nativeElement.getAttribute('type')).toBe('submit');
   });
 

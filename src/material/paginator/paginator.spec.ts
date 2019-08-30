@@ -391,7 +391,8 @@ describe('MatPaginator', () => {
   });
 
   it('should be able to disable all the controls in the paginator via the binding', () => {
-    const select: MatSelect = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
+    const select: MatSelect =
+        fixture.debugElement.query(By.directive(MatSelect))!.componentInstance;
 
     fixture.componentInstance.pageIndex = 1;
     fixture.componentInstance.showFirstLastButtons = true;

@@ -33,7 +33,7 @@ describe('MatProgressSpinner', () => {
     let fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.mode).toBe('determinate');
   });
 
@@ -41,7 +41,7 @@ describe('MatProgressSpinner', () => {
     let fixture = TestBed.createComponent(IndeterminateProgressSpinner);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.mode).toBe('indeterminate');
   });
 
@@ -49,13 +49,13 @@ describe('MatProgressSpinner', () => {
     let fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.value).toBe(0);
   });
 
   it('should set the value to 0 when the mode is set to indeterminate', () => {
     let fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     fixture.componentInstance.mode = 'determinate';
     fixture.detectChanges();
 
@@ -67,7 +67,7 @@ describe('MatProgressSpinner', () => {
 
   it('should retain the value if it updates while indeterminate', () => {
     let fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
 
     fixture.componentInstance.mode = 'determinate';
     fixture.detectChanges();
@@ -108,7 +108,7 @@ describe('MatProgressSpinner', () => {
     let fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     let progressComponent = progressElement.componentInstance;
 
     progressComponent.value = 50;
@@ -129,7 +129,7 @@ describe('MatProgressSpinner', () => {
 
   it('should default to a stroke width that is 10% of the diameter', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
-    const spinner = fixture.debugElement.query(By.directive(MatProgressSpinner));
+    const spinner = fixture.debugElement.query(By.directive(MatProgressSpinner))!;
 
     fixture.componentInstance.diameter = 67;
     fixture.detectChanges();
@@ -139,7 +139,7 @@ describe('MatProgressSpinner', () => {
 
   it('should allow a custom diameter', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
-    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner')).nativeElement;
+    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner'))!.nativeElement;
     const svgElement = fixture.nativeElement.querySelector('svg');
 
     fixture.componentInstance.diameter = 32;
@@ -227,7 +227,7 @@ describe('MatProgressSpinner', () => {
     let fixture = TestBed.createComponent(SpinnerWithColor);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-spinner'));
+    let progressElement = fixture.debugElement.query(By.css('mat-spinner'))!;
 
     expect(progressElement.nativeElement.classList).toContain('mat-primary');
 
@@ -242,7 +242,7 @@ describe('MatProgressSpinner', () => {
     let fixture = TestBed.createComponent(ProgressSpinnerWithColor);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
 
     expect(progressElement.nativeElement.classList).toContain('mat-primary');
 
@@ -263,7 +263,7 @@ describe('MatProgressSpinner', () => {
 
   it('should handle the number inputs being passed in as strings', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerWithStringValues);
-    const spinner = fixture.debugElement.query(By.directive(MatProgressSpinner));
+    const spinner = fixture.debugElement.query(By.directive(MatProgressSpinner))!;
     const svgElement = spinner.nativeElement.querySelector('svg');
 
     fixture.detectChanges();
@@ -281,7 +281,7 @@ describe('MatProgressSpinner', () => {
 
   it('should update the element size when changed dynamically', () => {
     let fixture = TestBed.createComponent(BasicProgressSpinner);
-    let spinner = fixture.debugElement.query(By.directive(MatProgressSpinner));
+    let spinner = fixture.debugElement.query(By.directive(MatProgressSpinner))!;
     spinner.componentInstance.diameter = 32;
     fixture.detectChanges();
     expect(spinner.nativeElement.style.width).toBe('32px');
@@ -304,7 +304,7 @@ describe('MatProgressSpinner', () => {
     const fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.diameter).toBe(23);
   });
 
@@ -324,13 +324,13 @@ describe('MatProgressSpinner', () => {
     const fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.strokeWidth).toBe(7);
   });
 
   it('should set `aria-valuenow` to the current value in determinate mode', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     fixture.componentInstance.mode = 'determinate';
     fixture.componentInstance.value = 37;
     fixture.detectChanges();
@@ -340,7 +340,7 @@ describe('MatProgressSpinner', () => {
 
   it('should clear `aria-valuenow` in indeterminate mode', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     fixture.componentInstance.mode = 'determinate';
     fixture.componentInstance.value = 89;
     fixture.detectChanges();
@@ -363,7 +363,7 @@ describe('MatProgressSpinner', () => {
     fixture.componentInstance.diameter = 27;
     fixture.detectChanges();
 
-    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner')).nativeElement;
+    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner'))!.nativeElement;
     const shadowRoot = _getShadowRoot(spinner, document) as HTMLElement;
 
     expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
@@ -384,7 +384,7 @@ describe('MatProgressSpinner', () => {
     fixture.componentInstance.diameter = 39;
     fixture.detectChanges();
 
-    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner')).nativeElement;
+    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner'))!.nativeElement;
     const shadowRoot = _getShadowRoot(spinner, document) as HTMLElement;
 
     expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="39"]').length).toBe(1);

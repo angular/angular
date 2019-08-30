@@ -45,7 +45,7 @@ describe('MatRadio', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup));
+      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup))!;
       groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
 
       radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
@@ -53,9 +53,9 @@ describe('MatRadio', () => {
       radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
 
       radioLabelElements = radioDebugElements
-        .map(debugEl => debugEl.query(By.css('label')).nativeElement);
+        .map(debugEl => debugEl.query(By.css('label'))!.nativeElement);
       radioInputElements = radioDebugElements
-        .map(debugEl => debugEl.query(By.css('input')).nativeElement);
+        .map(debugEl => debugEl.query(By.css('input'))!.nativeElement);
     }));
 
     it('should set individual radio names based on the group name', () => {
@@ -405,7 +405,7 @@ describe('MatRadio', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup));
+      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup))!;
       groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
       groupNgModel = groupDebugElement.injector.get<NgModel>(NgModel);
 
@@ -414,7 +414,7 @@ describe('MatRadio', () => {
       innerRadios = fixture.debugElement.queryAll(By.css('input[type="radio"]'));
 
       radioLabelElements = radioDebugElements
-        .map(debugEl => debugEl.query(By.css('label')).nativeElement);
+        .map(debugEl => debugEl.query(By.css('label'))!.nativeElement);
     });
 
     it('should set individual radio names based on the group name', () => {
@@ -532,7 +532,7 @@ describe('MatRadio', () => {
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
-      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup));
+      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup))!;
       groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
     });
 
@@ -562,7 +562,7 @@ describe('MatRadio', () => {
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
-      const radioDebugElement = fixture.debugElement.query(By.directive(MatRadioButton));
+      const radioDebugElement = fixture.debugElement.query(By.directive(MatRadioButton))!;
       radioInstance = radioDebugElement.injector.get<MatRadioButton>(MatRadioButton);
       radioNativeElement = radioDebugElement.nativeElement.querySelector('input');
     });
@@ -743,8 +743,8 @@ describe('MatRadio', () => {
     });
 
     it('should forward focus to native input', () => {
-      let radioButtonEl = fixture.debugElement.query(By.css('.mat-radio-button')).nativeElement;
-      let inputEl = fixture.debugElement.query(By.css('.mat-radio-input')).nativeElement;
+      let radioButtonEl = fixture.debugElement.query(By.css('.mat-radio-button'))!.nativeElement;
+      let inputEl = fixture.debugElement.query(By.css('.mat-radio-input'))!.nativeElement;
 
       radioButtonEl.focus();
       // Focus events don't always fire in tests, so we need to fake it.
@@ -756,7 +756,7 @@ describe('MatRadio', () => {
 
     it('should allow specifying an explicit tabindex for a single radio-button', () => {
       const radioButtonInput = fixture.debugElement
-        .query(By.css('.mat-radio-button input')).nativeElement as HTMLInputElement;
+        .query(By.css('.mat-radio-button input'))!.nativeElement as HTMLInputElement;
 
       expect(radioButtonInput.tabIndex)
         .toBe(0, 'Expected the tabindex to be set to "0" by default.');
@@ -773,7 +773,7 @@ describe('MatRadio', () => {
       predefinedFixture.detectChanges();
 
       const radioButtonEl =
-          predefinedFixture.debugElement.query(By.css('.mat-radio-button')).nativeElement;
+          predefinedFixture.debugElement.query(By.css('.mat-radio-button'))!.nativeElement;
 
       expect(radioButtonEl.getAttribute('tabindex')).toBe('-1');
     });
@@ -791,7 +791,7 @@ describe('MatRadio', () => {
       fixture = TestBed.createComponent(InterleavedRadioGroup);
       fixture.detectChanges();
 
-      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup));
+      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup))!;
       groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
       radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
       radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
@@ -822,7 +822,7 @@ describe('MatRadioDefaultOverrides', () => {
         TestBed.createComponent(DefaultRadioButton);
       fixture.detectChanges();
       const radioDebugElement: DebugElement =
-        fixture.debugElement.query(By.directive(MatRadioButton));
+        fixture.debugElement.query(By.directive(MatRadioButton))!;
       expect(
         radioDebugElement.nativeElement.classList
       ).toContain('mat-primary');
@@ -832,7 +832,7 @@ describe('MatRadioDefaultOverrides', () => {
         TestBed.createComponent(RadioButtonWithColorBinding);
       fixture.detectChanges();
       const radioDebugElement: DebugElement =
-        fixture.debugElement.query(By.directive(MatRadioButton));
+        fixture.debugElement.query(By.directive(MatRadioButton))!;
       expect(
         radioDebugElement.nativeElement.classList
       ).not.toContain('mat-primary');

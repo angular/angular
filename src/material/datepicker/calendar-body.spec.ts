@@ -36,7 +36,7 @@ describe('MatCalendarBody', () => {
       fixture = TestBed.createComponent(StandardCalendarBody);
       fixture.detectChanges();
 
-      const calendarBodyDebugElement = fixture.debugElement.query(By.directive(MatCalendarBody));
+      const calendarBodyDebugElement = fixture.debugElement.query(By.directive(MatCalendarBody))!;
       calendarBodyNativeElement = calendarBodyDebugElement.nativeElement;
       testComponent = fixture.componentInstance;
 

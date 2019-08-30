@@ -44,7 +44,7 @@ describe('MatCheckbox', () => {
       fixture = createComponent(SingleCheckbox);
       fixture.detectChanges();
 
-      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
       checkboxNativeElement = checkboxDebugElement.nativeElement;
       checkboxInstance = checkboxDebugElement.componentInstance;
       testComponent = fixture.debugElement.componentInstance;
@@ -480,7 +480,7 @@ describe('MatCheckbox', () => {
         fixture = createComponent(SingleCheckbox);
         fixture.detectChanges();
 
-        checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+        checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
         checkboxNativeElement = checkboxDebugElement.nativeElement;
         checkboxInstance = checkboxDebugElement.componentInstance;
         testComponent = fixture.debugElement.componentInstance;
@@ -512,7 +512,7 @@ describe('MatCheckbox', () => {
         fixture = createComponent(SingleCheckbox);
         fixture.detectChanges();
 
-        checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+        checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
         checkboxNativeElement = checkboxDebugElement.nativeElement;
         checkboxInstance = checkboxDebugElement.componentInstance;
         testComponent = fixture.debugElement.componentInstance;
@@ -564,7 +564,7 @@ describe('MatCheckbox', () => {
       fixture = createComponent(CheckboxWithChangeEvent);
       fixture.detectChanges();
 
-      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
       checkboxNativeElement = checkboxDebugElement.nativeElement;
       checkboxInstance = checkboxDebugElement.componentInstance;
       testComponent = fixture.debugElement.componentInstance;
@@ -614,7 +614,7 @@ describe('MatCheckbox', () => {
 
     it('should use the provided aria-label', fakeAsync(() => {
          fixture = createComponent(CheckboxWithAriaLabel);
-         checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+         checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
          checkboxNativeElement = checkboxDebugElement.nativeElement;
          inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
 
@@ -638,7 +638,7 @@ describe('MatCheckbox', () => {
 
     it('should use the provided aria-labelledby', fakeAsync(() => {
          fixture = createComponent(CheckboxWithAriaLabelledby);
-         checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+         checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
          checkboxNativeElement = checkboxDebugElement.nativeElement;
          inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
 
@@ -648,7 +648,7 @@ describe('MatCheckbox', () => {
 
     it('should not assign aria-labelledby if none is provided', fakeAsync(() => {
          fixture = createComponent(SingleCheckbox);
-         checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+         checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
          checkboxNativeElement = checkboxDebugElement.nativeElement;
          inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
 
@@ -668,7 +668,7 @@ describe('MatCheckbox', () => {
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
-      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
       checkboxNativeElement = checkboxDebugElement.nativeElement;
       inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
     });
@@ -698,7 +698,8 @@ describe('MatCheckbox', () => {
          fixture.detectChanges();
 
          const checkbox =
-             fixture.debugElement.query(By.directive(MatCheckbox)).componentInstance as MatCheckbox;
+             fixture.debugElement.query(By.directive(MatCheckbox))!
+             .componentInstance as MatCheckbox;
 
          expect(checkbox.tabIndex)
              .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
@@ -708,7 +709,7 @@ describe('MatCheckbox', () => {
          fixture = createComponent(CheckboxWithTabindexAttr);
          fixture.detectChanges();
 
-         const checkbox = fixture.debugElement.query(By.directive(MatCheckbox)).nativeElement;
+         const checkbox = fixture.debugElement.query(By.directive(MatCheckbox))!.nativeElement;
          expect(checkbox.getAttribute('tabindex')).toBeFalsy();
        }));
   });
@@ -743,7 +744,7 @@ describe('MatCheckbox', () => {
       fixture.componentInstance.isRequired = false;
       fixture.detectChanges();
 
-      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
       checkboxNativeElement = checkboxDebugElement.nativeElement;
       checkboxInstance = checkboxDebugElement.componentInstance;
       inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
@@ -785,7 +786,7 @@ describe('MatCheckbox', () => {
          fixture = createComponent(CheckboxWithNgModelAndOnPush);
          fixture.detectChanges();
 
-         checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+         checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
          checkboxNativeElement = checkboxDebugElement.nativeElement;
          checkboxInstance = checkboxDebugElement.componentInstance;
          inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
@@ -860,7 +861,7 @@ describe('MatCheckbox', () => {
     });
 
     it('should forward name value to input element', fakeAsync(() => {
-         let checkboxElement = fixture.debugElement.query(By.directive(MatCheckbox));
+         let checkboxElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
          let inputElement = <HTMLInputElement>checkboxElement.nativeElement.querySelector('input');
 
          expect(inputElement.getAttribute('name')).toBe('test-name');
@@ -877,7 +878,7 @@ describe('MatCheckbox', () => {
       fixture = createComponent(CheckboxWithFormControl);
       fixture.detectChanges();
 
-      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
       checkboxInstance = checkboxDebugElement.componentInstance;
       testComponent = fixture.debugElement.componentInstance;
       inputElement = <HTMLInputElement>checkboxDebugElement.nativeElement.querySelector('input');
@@ -905,8 +906,8 @@ describe('MatCheckbox', () => {
 
     beforeEach(() => {
       fixture = createComponent(CheckboxWithoutLabel);
-      const checkboxDebugEl = fixture.debugElement.query(By.directive(MatCheckbox));
-      checkboxInnerContainer = checkboxDebugEl.query(By.css('.mdc-form-field')).nativeElement;
+      const checkboxDebugEl = fixture.debugElement.query(By.directive(MatCheckbox))!;
+      checkboxInnerContainer = checkboxDebugEl.query(By.css('.mdc-form-field'))!.nativeElement;
     });
 
     it('should not add the "name" attribute if it is not passed in', fakeAsync(() => {

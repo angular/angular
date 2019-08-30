@@ -52,7 +52,7 @@ describe('MatCalendar', () => {
       fixture = TestBed.createComponent(StandardCalendar);
       fixture.detectChanges();
 
-      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar));
+      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar))!;
       calendarElement = calendarDebugElement.nativeElement;
       periodButton = calendarElement.querySelector('.mat-calendar-period-button') as HTMLElement;
 
@@ -294,7 +294,7 @@ describe('MatCalendar', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(CalendarWithMinMax);
 
-      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar));
+      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar))!;
       calendarElement = calendarDebugElement.nativeElement;
       calendarInstance = calendarDebugElement.componentInstance;
       testComponent = fixture.componentInstance;
@@ -450,7 +450,7 @@ describe('MatCalendar', () => {
       const dynamicFixture = TestBed.createComponent(CalendarWithSelectableMinDate);
       dynamicFixture.detectChanges();
 
-      const calendarDebugElement = dynamicFixture.debugElement.query(By.directive(MatCalendar));
+      const calendarDebugElement = dynamicFixture.debugElement.query(By.directive(MatCalendar))!;
       const disabledClass = 'mat-calendar-body-disabled';
       calendarElement = calendarDebugElement.nativeElement;
       calendarInstance = calendarDebugElement.componentInstance;
@@ -486,7 +486,7 @@ describe('MatCalendar', () => {
       fixture = TestBed.createComponent(CalendarWithDateFilter);
       fixture.detectChanges();
 
-      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar));
+      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar))!;
       calendarElement = calendarDebugElement.nativeElement;
       calendarInstance = calendarDebugElement.componentInstance;
       testComponent = fixture.componentInstance;

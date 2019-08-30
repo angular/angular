@@ -44,7 +44,7 @@ describe('MatChipInput', () => {
     testChipInput = fixture.debugElement.componentInstance;
     fixture.detectChanges();
 
-    inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput));
+    inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput))!;
     chipInputDirective = inputDebugElement.injector.get<MatChipInput>(MatChipInput);
     inputNativeElement = inputDebugElement.nativeElement;
   }));
@@ -211,7 +211,7 @@ describe('MatChipInput', () => {
       testChipInput = fixture.debugElement.componentInstance;
       fixture.detectChanges();
 
-      inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput));
+      inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput))!;
       chipInputDirective = inputDebugElement.injector.get<MatChipInput>(MatChipInput);
       inputNativeElement = inputDebugElement.nativeElement;
 

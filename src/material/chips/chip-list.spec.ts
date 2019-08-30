@@ -109,7 +109,7 @@ describe('MatChipList', () => {
       beforeEach(() => {
         fixture = createComponent(SelectedChipList);
         fixture.detectChanges();
-        chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
+        chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList))!;
         chipListNativeElement = chipListDebugElement.nativeElement;
       });
 
@@ -247,7 +247,7 @@ describe('MatChipList', () => {
             fixture = createComponent(StandardChipListWithAnimations, [], BrowserAnimationsModule);
             fixture.detectChanges();
 
-            chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
+            chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList))!;
             chipListNativeElement = chipListDebugElement.nativeElement;
             chipListInstance = chipListDebugElement.componentInstance;
             testComponent = fixture.debugElement.componentInstance;
@@ -572,7 +572,7 @@ describe('MatChipList', () => {
       fixture = createComponent(ChipListWithRemove);
       fixture.detectChanges();
 
-      chipList = fixture.debugElement.query(By.directive(MatChipList)).componentInstance;
+      chipList = fixture.debugElement.query(By.directive(MatChipList))!.componentInstance;
       chipRemoveDebugElements = fixture.debugElement.queryAll(By.directive(MatChipRemove));
       chips = chipList.chips;
     });
@@ -598,12 +598,12 @@ describe('MatChipList', () => {
       fixture = createComponent(BasicChipList);
       fixture.detectChanges();
 
-      formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+      formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
       nativeChips = fixture.debugElement.queryAll(By.css('mat-chip'))
           .map((chip) => chip.nativeElement);
 
 
-      chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
+      chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList))!;
       chipListInstance = chipListDebugElement.componentInstance;
       chips = chipListInstance.chips;
 
@@ -750,7 +750,7 @@ describe('MatChipList', () => {
         expect(fixture.componentInstance.control.touched)
           .toBe(false, 'Expected the control to start off as untouched.');
 
-        const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list')).nativeElement;
+        const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list'))!.nativeElement;
         dispatchFakeEvent(nativeChipList, 'blur');
 
         expect(fixture.componentInstance.control.touched)
@@ -762,7 +762,7 @@ describe('MatChipList', () => {
           .toBe(false, 'Expected the control to start off as untouched.');
 
         fixture.componentInstance.control.disable();
-        const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list')).nativeElement;
+        const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list'))!.nativeElement;
         dispatchFakeEvent(nativeChipList, 'blur');
 
         expect(fixture.componentInstance.control.touched)
@@ -792,14 +792,14 @@ describe('MatChipList', () => {
 
 
       it('should set an asterisk after the placeholder if the control is required', () => {
-        let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
+        let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
         expect(requiredMarker)
           .toBeNull(`Expected placeholder not to have an asterisk, as control was not required.`);
 
         fixture.componentInstance.isRequired = true;
         fixture.detectChanges();
 
-        requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
+        requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
         expect(requiredMarker)
           .not.toBeNull(`Expected placeholder to have an asterisk, as control was required.`);
       });
@@ -1011,7 +1011,7 @@ describe('MatChipList', () => {
       expect(fixture.componentInstance.control.touched)
         .toBe(false, 'Expected the control to start off as untouched.');
 
-      const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list')).nativeElement;
+      const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list'))!.nativeElement;
 
       dispatchFakeEvent(nativeChipList, 'blur');
       tick();
@@ -1025,7 +1025,7 @@ describe('MatChipList', () => {
         .toBe(false, 'Expected the control to start off as untouched.');
 
       fixture.componentInstance.control.disable();
-      const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list')).nativeElement;
+      const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list'))!.nativeElement;
       dispatchFakeEvent(nativeChipList, 'blur');
 
       expect(fixture.componentInstance.control.touched)
@@ -1055,14 +1055,14 @@ describe('MatChipList', () => {
 
 
     it('should set an asterisk after the placeholder if the control is required', () => {
-      let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
+      let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
       expect(requiredMarker)
         .toBeNull(`Expected placeholder not to have an asterisk, as control was not required.`);
 
       fixture.componentInstance.isRequired = true;
       fixture.detectChanges();
 
-      requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
+      requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
       expect(requiredMarker)
         .not.toBeNull(`Expected placeholder to have an asterisk, as control was required.`);
     });
@@ -1109,7 +1109,7 @@ describe('MatChipList', () => {
 
     describe('keyboard behavior', () => {
       beforeEach(() => {
-        chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
+        chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList))!;
         chipListInstance = chipListDebugElement.componentInstance;
         chips = chipListInstance.chips;
         manager = fixture.componentInstance.chipList._keyManager;
@@ -1164,8 +1164,8 @@ describe('MatChipList', () => {
       fixture = createComponent(ChipListWithFormErrorMessages);
       fixture.detectChanges();
       errorTestComponent = fixture.componentInstance;
-      containerEl = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
-      chipListEl = fixture.debugElement.query(By.css('mat-chip-list')).nativeElement;
+      containerEl = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+      chipListEl = fixture.debugElement.query(By.css('mat-chip-list'))!.nativeElement;
     });
 
     it('should not show any errors if the user has not interacted', () => {
@@ -1201,7 +1201,7 @@ describe('MatChipList', () => {
         .toBe(true, 'Expected form control to be invalid');
       expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
 
-      dispatchFakeEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+      dispatchFakeEvent(fixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
@@ -1251,7 +1251,8 @@ describe('MatChipList', () => {
     });
 
     it('sets the aria-describedby to reference errors when in error state', () => {
-      let hintId = fixture.debugElement.query(By.css('.mat-hint')).nativeElement.getAttribute('id');
+      let hintId =
+          fixture.debugElement.query(By.css('.mat-hint'))!.nativeElement.getAttribute('id');
       let describedBy = chipListEl.getAttribute('aria-describedby');
 
       expect(hintId).toBeTruthy('hint should be shown');
@@ -1301,7 +1302,7 @@ describe('MatChipList', () => {
     }]);
     fixture.detectChanges();
 
-    chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
+    chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList))!;
     chipListNativeElement = chipListDebugElement.nativeElement;
     chipListInstance = chipListDebugElement.componentInstance;
     testComponent = fixture.debugElement.componentInstance;
@@ -1312,7 +1313,7 @@ describe('MatChipList', () => {
     fixture = createComponent(FormFieldChipList);
     fixture.detectChanges();
 
-    chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
+    chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList))!;
     chipListNativeElement = chipListDebugElement.nativeElement;
     chipListInstance = chipListDebugElement.componentInstance;
     testComponent = fixture.debugElement.componentInstance;

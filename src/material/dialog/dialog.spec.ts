@@ -630,7 +630,8 @@ describe('MatDialog', () => {
   it('should set the proper animation states', () => {
     let dialogRef = dialog.open(PizzaMsg, { viewContainerRef: testViewContainerRef });
     let dialogContainer: MatDialogContainer =
-        viewContainerFixture.debugElement.query(By.directive(MatDialogContainer)).componentInstance;
+        viewContainerFixture.debugElement.query(By.directive(MatDialogContainer))!
+        .componentInstance;
 
     expect(dialogContainer._state).toBe('enter');
 

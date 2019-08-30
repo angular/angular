@@ -43,7 +43,7 @@ describe('MatCalendarHeader', () => {
       fixture = TestBed.createComponent(StandardCalendar);
       fixture.detectChanges();
 
-      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar));
+      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar))!;
       calendarElement = calendarDebugElement.nativeElement;
       periodButton = calendarElement.querySelector('.mat-calendar-period-button') as HTMLElement;
       prevButton = calendarElement.querySelector('.mat-calendar-previous-button') as HTMLElement;
@@ -164,7 +164,7 @@ describe('MatCalendarHeader', () => {
       fixture = TestBed.createComponent(CalendarWithMinMaxDate);
       fixture.detectChanges();
 
-      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar));
+      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar))!;
       calendarElement = calendarDebugElement.nativeElement;
       periodButton =
         calendarElement.querySelector('.mat-calendar-period-button') as HTMLButtonElement;
@@ -218,7 +218,7 @@ describe('MatCalendarHeader', () => {
       fixture = TestBed.createComponent(CalendarWithMinMaxDate);
       fixture.detectChanges();
 
-      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar));
+      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar))!;
       calendarElement = calendarDebugElement.nativeElement;
       periodButton =
         calendarElement.querySelector('.mat-calendar-period-button') as HTMLButtonElement;
@@ -271,7 +271,7 @@ describe('MatCalendarHeader', () => {
       fixture = TestBed.createComponent(CalendarWithMinMaxDate);
       fixture.detectChanges();
 
-      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar));
+      let calendarDebugElement = fixture.debugElement.query(By.directive(MatCalendar))!;
       calendarElement = calendarDebugElement.nativeElement;
       periodButton =
         calendarElement.querySelector('.mat-calendar-period-button') as HTMLButtonElement;

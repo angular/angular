@@ -20,7 +20,7 @@ describe('MatSidenav', () => {
     fixture = TestBed.createComponent(SidenavWithFixedPosition);
     fixture.detectChanges();
 
-    sidenavEl = fixture.debugElement.query(By.directive(MatSidenav)).nativeElement;
+    sidenavEl = fixture.debugElement.query(By.directive(MatSidenav))!.nativeElement;
   }));
 
   it('should be fixed position when in fixed mode', () => {

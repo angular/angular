@@ -48,7 +48,7 @@ describe('MatExpansionPanel', () => {
   it('should be able to render panel content lazily', fakeAsync(() => {
     const fixture = TestBed.createComponent(LazyPanelWithContent);
     const content = fixture.debugElement.query(
-      By.css('.mat-expansion-panel-content')).nativeElement;
+      By.css('.mat-expansion-panel-content'))!.nativeElement;
     fixture.detectChanges();
 
     expect(content.textContent.trim()).toBe('', 'Expected content element to be empty.');
@@ -63,7 +63,7 @@ describe('MatExpansionPanel', () => {
   it('should render the content for a lazy-loaded panel that is opened on init', fakeAsync(() => {
     const fixture = TestBed.createComponent(LazyPanelOpenOnLoad);
     const content = fixture.debugElement.query(
-      By.css('.mat-expansion-panel-content')).nativeElement;
+      By.css('.mat-expansion-panel-content'))!.nativeElement;
     fixture.detectChanges();
 
     expect(content.textContent.trim())
@@ -171,7 +171,7 @@ describe('MatExpansionPanel', () => {
     fixture.detectChanges();
     tick(250);
 
-    const button = fixture.debugElement.query(By.css('button')).nativeElement;
+    const button = fixture.debugElement.query(By.css('button'))!.nativeElement;
 
     button.focus();
     expect(document.activeElement).toBe(button, 'Expected button to start off focusable.');
@@ -191,8 +191,8 @@ describe('MatExpansionPanel', () => {
     fixture.detectChanges();
     tick(250);
 
-    const button = fixture.debugElement.query(By.css('button')).nativeElement;
-    const header = fixture.debugElement.query(By.css('mat-expansion-panel-header')).nativeElement;
+    const button = fixture.debugElement.query(By.css('button'))!.nativeElement;
+    const header = fixture.debugElement.query(By.css('mat-expansion-panel-header'))!.nativeElement;
 
     button.focus();
     expect(document.activeElement).toBe(button, 'Expected button to start off focusable.');
@@ -208,7 +208,7 @@ describe('MatExpansionPanel', () => {
     const fixture = TestBed.createComponent(PanelWithCustomMargin);
     fixture.detectChanges();
 
-    const panel = fixture.debugElement.query(By.css('mat-expansion-panel'));
+    const panel = fixture.debugElement.query(By.css('mat-expansion-panel'))!;
     let styles = getComputedStyle(panel.nativeElement);
 
     expect(panel.componentInstance._hasSpacing()).toBe(false);
@@ -232,7 +232,7 @@ describe('MatExpansionPanel', () => {
 
   it('should be able to hide the toggle', () => {
     const fixture = TestBed.createComponent(PanelWithContent);
-    const header = fixture.debugElement.query(By.css('.mat-expansion-panel-header')).nativeElement;
+    const header = fixture.debugElement.query(By.css('.mat-expansion-panel-header'))!.nativeElement;
 
     fixture.detectChanges();
 
@@ -253,7 +253,7 @@ describe('MatExpansionPanel', () => {
       fixture.detectChanges();
       tick(250);
 
-      const arrow = fixture.debugElement.query(By.css('.mat-expansion-indicator')).nativeElement;
+      const arrow = fixture.debugElement.query(By.css('.mat-expansion-indicator'))!.nativeElement;
 
       expect(arrow.style.transform).toBe('rotate(0deg)', 'Expected no rotation.');
 
@@ -276,7 +276,7 @@ describe('MatExpansionPanel', () => {
 
   it('should support two-way binding of the `expanded` property', () => {
     const fixture = TestBed.createComponent(PanelWithTwoWayBinding);
-    const header = fixture.debugElement.query(By.css('mat-expansion-panel-header')).nativeElement;
+    const header = fixture.debugElement.query(By.css('mat-expansion-panel-header'))!.nativeElement;
 
     fixture.detectChanges();
     expect(fixture.componentInstance.expanded).toBe(false);
@@ -333,8 +333,8 @@ describe('MatExpansionPanel', () => {
     const fixture = TestBed.createComponent(PanelWithTwoWayBinding);
     fixture.detectChanges();
 
-    const panel = fixture.debugElement.query(By.directive(MatExpansionPanel));
-    const header = fixture.debugElement.query(By.directive(MatExpansionPanelHeader));
+    const panel = fixture.debugElement.query(By.directive(MatExpansionPanel))!;
+    const header = fixture.debugElement.query(By.directive(MatExpansionPanelHeader))!;
 
     expect(panel.componentInstance.hideToggle).toBe(true);
     expect(header.componentInstance.expandedHeight).toBe('10px');
@@ -349,8 +349,8 @@ describe('MatExpansionPanel', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(PanelWithContent);
       fixture.detectChanges();
-      panel = fixture.debugElement.query(By.css('mat-expansion-panel')).nativeElement;
-      header = fixture.debugElement.query(By.css('mat-expansion-panel-header')).nativeElement;
+      panel = fixture.debugElement.query(By.css('mat-expansion-panel'))!.nativeElement;
+      header = fixture.debugElement.query(By.css('mat-expansion-panel-header'))!.nativeElement;
     });
 
     it('should toggle the aria-disabled attribute on the header', () => {

@@ -54,7 +54,7 @@ describe('MatMonthView', () => {
       fixture = TestBed.createComponent(StandardMonthView);
       fixture.detectChanges();
 
-      let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView));
+      let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView))!;
       monthViewNativeElement = monthViewDebugElement.nativeElement;
       testComponent = fixture.componentInstance;
     });
@@ -287,7 +287,7 @@ describe('MatMonthView', () => {
       fixture = TestBed.createComponent(MonthViewWithDateFilter);
       fixture.detectChanges();
 
-      let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView));
+      let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView))!;
       monthViewNativeElement = monthViewDebugElement.nativeElement;
     });
 
@@ -306,7 +306,7 @@ describe('MatMonthView', () => {
       fixture = TestBed.createComponent(MonthViewWithDateClass);
       fixture.detectChanges();
 
-      let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView));
+      let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView))!;
       monthViewNativeElement = monthViewDebugElement.nativeElement;
     });
 

@@ -75,7 +75,7 @@ describe('Directionality', () => {
     it('should provide itself as Directionality', () => {
       const fixture = TestBed.createComponent(ElementWithDir);
       const injectedDirectionality =
-        fixture.debugElement.query(By.directive(InjectsDirectionality)).componentInstance.dir;
+        fixture.debugElement.query(By.directive(InjectsDirectionality))!.componentInstance.dir;
 
       fixture.detectChanges();
 
@@ -85,7 +85,7 @@ describe('Directionality', () => {
     it('should emit a change event when the value changes', fakeAsync(() => {
       const fixture = TestBed.createComponent(ElementWithDir);
       const injectedDirectionality =
-        fixture.debugElement.query(By.directive(InjectsDirectionality)).componentInstance.dir;
+        fixture.debugElement.query(By.directive(InjectsDirectionality))!.componentInstance.dir;
 
       fixture.detectChanges();
 
@@ -108,7 +108,7 @@ describe('Directionality', () => {
     it('should complete the change stream on destroy', fakeAsync(() => {
       const fixture = TestBed.createComponent(ElementWithDir);
       const dir =
-        fixture.debugElement.query(By.directive(InjectsDirectionality)).componentInstance.dir;
+        fixture.debugElement.query(By.directive(InjectsDirectionality))!.componentInstance.dir;
       const spy = jasmine.createSpy('complete spy');
       const subscription = dir.change.subscribe(undefined, undefined, spy);
 

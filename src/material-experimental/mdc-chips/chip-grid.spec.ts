@@ -213,7 +213,7 @@ describe('MatChipGrid', () => {
             fixture = createComponent(StandardChipGridWithAnimations, [], BrowserAnimationsModule);
             fixture.detectChanges();
 
-            chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid));
+            chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid))!;
             chipGridNativeElement = chipGridDebugElement.nativeElement;
             chipGridInstance = chipGridDebugElement.componentInstance;
             testComponent = fixture.debugElement.componentInstance;
@@ -240,7 +240,7 @@ describe('MatChipGrid', () => {
           fixture = createComponent(ChipGridWithRemove);
           fixture.detectChanges();
 
-          chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid));
+          chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid))!;
           chipGridInstance = chipGridDebugElement.componentInstance;
           chipGridNativeElement = chipGridDebugElement.nativeElement;
           chips = chipGridInstance._chips;
@@ -535,7 +535,7 @@ describe('MatChipGrid', () => {
       fixture = createComponent(ChipGridWithRemove);
       fixture.detectChanges();
 
-      chipGrid = fixture.debugElement.query(By.directive(MatChipGrid)).componentInstance;
+      chipGrid = fixture.debugElement.query(By.directive(MatChipGrid))!.componentInstance;
       chipElements = fixture.debugElement.queryAll(By.directive(MatChipRow));
       chipRemoveDebugElements = fixture.debugElement.queryAll(By.directive(MatChipRemove));
       chips = chipGrid._chips;
@@ -622,7 +622,7 @@ describe('MatChipGrid', () => {
       expect(fixture.componentInstance.control.touched)
         .toBe(false, 'Expected the control to start off as untouched.');
 
-      const nativeChipGrid = fixture.debugElement.query(By.css('mat-chip-grid')).nativeElement;
+      const nativeChipGrid = fixture.debugElement.query(By.css('mat-chip-grid'))!.nativeElement;
       dispatchFakeEvent(nativeChipGrid, 'blur');
       tick();
 
@@ -635,7 +635,7 @@ describe('MatChipGrid', () => {
         .toBe(false, 'Expected the control to start off as untouched.');
 
       fixture.componentInstance.control.disable();
-      const nativeChipGrid = fixture.debugElement.query(By.css('mat-chip-grid')).nativeElement;
+      const nativeChipGrid = fixture.debugElement.query(By.css('mat-chip-grid'))!.nativeElement;
       dispatchFakeEvent(nativeChipGrid, 'blur');
       tick();
 
@@ -675,14 +675,14 @@ describe('MatChipGrid', () => {
     });
 
     it('should set an asterisk after the placeholder if the control is required', () => {
-      let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
+      let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
       expect(requiredMarker)
         .toBeNull(`Expected placeholder not to have an asterisk, as control was not required.`);
 
       fixture.componentInstance.isRequired = true;
       fixture.detectChanges();
 
-      requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
+      requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
       expect(requiredMarker)
         .not.toBeNull(`Expected placeholder to have an asterisk, as control was required.`);
     });
@@ -763,8 +763,8 @@ describe('MatChipGrid', () => {
       fixture = createComponent(ChipGridWithFormErrorMessages);
       fixture.detectChanges();
       errorTestComponent = fixture.componentInstance;
-      containerEl = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
-      chipGridEl = fixture.debugElement.query(By.css('mat-chip-grid')).nativeElement;
+      containerEl = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+      chipGridEl = fixture.debugElement.query(By.css('mat-chip-grid'))!.nativeElement;
     });
 
     it('should not show any errors if the user has not interacted', () => {
@@ -800,7 +800,7 @@ describe('MatChipGrid', () => {
         .toBe(true, 'Expected form control to be invalid');
       expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
 
-      dispatchFakeEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+      dispatchFakeEvent(fixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
@@ -850,7 +850,8 @@ describe('MatChipGrid', () => {
     });
 
     it('sets the aria-describedby to reference errors when in error state', () => {
-      let hintId = fixture.debugElement.query(By.css('.mat-hint')).nativeElement.getAttribute('id');
+      let hintId =
+          fixture.debugElement.query(By.css('.mat-hint'))!.nativeElement.getAttribute('id');
       let describedBy = chipGridEl.getAttribute('aria-describedby');
 
       expect(hintId).toBeTruthy('hint should be shown');
@@ -900,7 +901,7 @@ describe('MatChipGrid', () => {
     }]);
     fixture.detectChanges();
 
-    chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid));
+    chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid))!;
     chipGridNativeElement = chipGridDebugElement.nativeElement;
     chipGridInstance = chipGridDebugElement.componentInstance;
     testComponent = fixture.debugElement.componentInstance;
@@ -911,7 +912,7 @@ describe('MatChipGrid', () => {
     fixture = createComponent(FormFieldChipGrid);
     fixture.detectChanges();
 
-    chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid));
+    chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid))!;
     chipGridNativeElement = chipGridDebugElement.nativeElement;
     chipGridInstance = chipGridDebugElement.componentInstance;
     testComponent = fixture.debugElement.componentInstance;

@@ -294,7 +294,7 @@ describe('Overlay directives', () => {
     });
 
     it('should set the offsetY', () => {
-      const trigger = fixture.debugElement.query(By.css('button')).nativeElement;
+      const trigger = fixture.debugElement.query(By.css('button'))!.nativeElement;
       trigger.style.position = 'absolute';
       trigger.style.top = '30px';
       trigger.style.height = '20px';

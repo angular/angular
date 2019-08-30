@@ -427,7 +427,7 @@ describe('MatMenu', () => {
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
 
-    const menuEl = fixture.debugElement.query(By.css('mat-menu')).nativeElement;
+    const menuEl = fixture.debugElement.query(By.css('mat-menu'))!.nativeElement;
     const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
 
     expect(menuEl.classList).not.toContain('custom-one');
@@ -1224,8 +1224,8 @@ describe('MatMenu', () => {
       fixture.componentInstance.trigger.openMenu();
       fixture.detectChanges();
 
-      const item = fixture.debugElement.query(By.css('.mat-mdc-menu-item'));
-      const ripple = item.query(By.css('.mat-ripple')).injector.get<MatRipple>(MatRipple);
+      const item = fixture.debugElement.query(By.css('.mat-mdc-menu-item'))!;
+      const ripple = item.query(By.css('.mat-ripple'))!.injector.get<MatRipple>(MatRipple);
 
       expect(ripple.disabled).toBe(false);
     });
@@ -1238,7 +1238,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
 
       const items = fixture.debugElement.queryAll(By.css('.mat-mdc-menu-item'));
-      const ripple = items[1].query(By.css('.mat-ripple')).injector.get<MatRipple>(MatRipple);
+      const ripple = items[1].query(By.css('.mat-ripple'))!.injector.get<MatRipple>(MatRipple);
 
       expect(ripple.disabled).toBe(true);
     });
@@ -1252,7 +1252,7 @@ describe('MatMenu', () => {
 
       // The third menu item in the `SimpleMenu` component has ripples disabled.
       const items = fixture.debugElement.queryAll(By.css('.mat-mdc-menu-item'));
-      const ripple = items[2].query(By.css('.mat-ripple')).injector.get<MatRipple>(MatRipple);
+      const ripple = items[2].query(By.css('.mat-ripple'))!.injector.get<MatRipple>(MatRipple);
 
       expect(ripple.disabled).toBe(true);
     });
@@ -1483,7 +1483,7 @@ describe('MatMenu', () => {
       expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
           .toBe(1, 'Expected one open menu');
 
-      const item = fixture.debugElement.query(By.directive(MatMenuItem));
+      const item = fixture.debugElement.query(By.directive(MatMenuItem))!;
 
       item.componentInstance.disabled = true;
       fixture.detectChanges();

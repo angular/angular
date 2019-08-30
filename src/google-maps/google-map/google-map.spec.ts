@@ -69,7 +69,7 @@ describe('GoogleMap', () => {
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
 
-    const container = fixture.debugElement.query(By.css('div'));
+    const container = fixture.debugElement.query(By.css('div'))!;
     expect(container.nativeElement.style.height).toBe(DEFAULT_HEIGHT);
     expect(container.nativeElement.style.width).toBe(DEFAULT_WIDTH);
     expect(mapConstructorSpy).toHaveBeenCalledWith(container.nativeElement, DEFAULT_OPTIONS);
@@ -84,7 +84,7 @@ describe('GoogleMap', () => {
     fixture.componentInstance.width = '400px';
     fixture.detectChanges();
 
-    const container = fixture.debugElement.query(By.css('div'));
+    const container = fixture.debugElement.query(By.css('div'))!;
     expect(container.nativeElement.style.height).toBe('750px');
     expect(container.nativeElement.style.width).toBe('400px');
     expect(mapConstructorSpy).toHaveBeenCalledWith(container.nativeElement, DEFAULT_OPTIONS);
@@ -107,7 +107,7 @@ describe('GoogleMap', () => {
     fixture.componentInstance.zoom = options.zoom;
     fixture.detectChanges();
 
-    const container = fixture.debugElement.query(By.css('div'));
+    const container = fixture.debugElement.query(By.css('div'))!;
     expect(mapConstructorSpy).toHaveBeenCalledWith(container.nativeElement, options);
 
     fixture.componentInstance.center = {lat: 8, lng: 9};
@@ -126,7 +126,7 @@ describe('GoogleMap', () => {
     fixture.componentInstance.options = options;
     fixture.detectChanges();
 
-    const container = fixture.debugElement.query(By.css('div'));
+    const container = fixture.debugElement.query(By.css('div'))!;
     expect(mapConstructorSpy).toHaveBeenCalledWith(container.nativeElement, options);
 
     fixture.componentInstance.options = {...options, heading: 170};
@@ -147,7 +147,7 @@ describe('GoogleMap', () => {
     fixture.componentInstance.options = inputOptions;
     fixture.detectChanges();
 
-    const container = fixture.debugElement.query(By.css('div'));
+    const container = fixture.debugElement.query(By.css('div'))!;
     expect(mapConstructorSpy).toHaveBeenCalledWith(container.nativeElement, correctedOptions);
   });
 

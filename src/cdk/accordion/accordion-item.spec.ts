@@ -27,7 +27,7 @@ describe('CdkAccordionItem', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(SingleItem);
       item = fixture.debugElement
-        .query(By.directive(CdkAccordionItem))
+        .query(By.directive(CdkAccordionItem))!
         .injector.get<CdkAccordionItem>(CdkAccordionItem);
     });
 

@@ -52,7 +52,7 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputWithId);
     fixture.detectChanges();
 
-    let formField = fixture.debugElement.query(By.directive(MatFormField))
+    let formField = fixture.debugElement.query(By.directive(MatFormField))!
         .componentInstance as MatFormField;
     expect(formField.floatLabel).toBe('auto',
         'Expected MatInput to set floatingLabel to auto by default.');
@@ -64,7 +64,7 @@ describe('MatInput without forms', () => {
     }]);
     fixture.detectChanges();
 
-    let formField = fixture.debugElement.query(By.directive(MatFormField))
+    let formField = fixture.debugElement.query(By.directive(MatFormField))!
         .componentInstance as MatFormField;
     expect(formField.floatLabel).toBe('always',
       'Expected MatInput to set floatingLabel to always from global option.');
@@ -77,7 +77,7 @@ describe('MatInput without forms', () => {
       let fixture = createComponent(MatInputDateTestController);
       fixture.detectChanges();
 
-      let el = fixture.debugElement.query(By.css('label')).nativeElement;
+      let el = fixture.debugElement.query(By.css('label'))!.nativeElement;
       expect(el).not.toBeNull();
       expect(el.classList.contains('mat-form-field-empty')).toBe(false);
     }
@@ -91,7 +91,7 @@ describe('MatInput without forms', () => {
       let fixture = createComponent(MatInputDateTestController);
       fixture.detectChanges();
 
-      let el = fixture.debugElement.query(By.css('label')).nativeElement;
+      let el = fixture.debugElement.query(By.css('label'))!.nativeElement;
       expect(el).not.toBeNull();
       expect(el.classList.contains('mat-form-field-empty')).toBe(true);
     }
@@ -101,7 +101,7 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputTextTestController);
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('label')).nativeElement;
+    let el = fixture.debugElement.query(By.css('label'))!.nativeElement;
     expect(el).not.toBeNull();
     expect(el.classList.contains('mat-form-field-empty')).toBe(true);
   }));
@@ -110,7 +110,7 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputPasswordTestController);
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('label')).nativeElement;
+    let el = fixture.debugElement.query(By.css('label'))!.nativeElement;
     expect(el).not.toBeNull();
     expect(el.classList.contains('mat-form-field-empty')).toBe(true);
   }));
@@ -119,7 +119,7 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputNumberTestController);
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('label')).nativeElement;
+    let el = fixture.debugElement.query(By.css('label'))!.nativeElement;
     expect(el).not.toBeNull();
     expect(el.classList.contains('mat-form-field-empty')).toBe(true);
   }));
@@ -128,8 +128,8 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputTextTestController);
     fixture.detectChanges();
 
-    let inputEl = fixture.debugElement.query(By.css('input'));
-    let el = fixture.debugElement.query(By.css('label')).nativeElement;
+    let inputEl = fixture.debugElement.query(By.css('input'))!;
+    let el = fixture.debugElement.query(By.css('label'))!.nativeElement;
     expect(el).not.toBeNull();
     expect(el.classList.contains('mat-form-field-empty')).toBe(true, 'should be empty');
 
@@ -138,7 +138,7 @@ describe('MatInput without forms', () => {
     inputEl.triggerEventHandler('input', {target: inputEl.nativeElement});
     fixture.detectChanges();
 
-    el = fixture.debugElement.query(By.css('label')).nativeElement;
+    el = fixture.debugElement.query(By.css('label'))!.nativeElement;
     expect(el.classList.contains('mat-form-field-empty')).toBe(false, 'should not be empty');
   }));
 
@@ -146,8 +146,8 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputWithStaticLabel);
     fixture.detectChanges();
 
-    let inputEl = fixture.debugElement.query(By.css('input'));
-    let labelEl = fixture.debugElement.query(By.css('label')).nativeElement;
+    let inputEl = fixture.debugElement.query(By.css('input'))!;
+    let labelEl = fixture.debugElement.query(By.css('label'))!.nativeElement;
 
     expect(labelEl.classList).toContain('mat-form-field-empty');
     expect(labelEl.classList).not.toContain('mat-form-field-float');
@@ -165,7 +165,7 @@ describe('MatInput without forms', () => {
   it('should not be empty when the value set before view init', fakeAsync(() => {
     let fixture = createComponent(MatInputWithValueBinding);
     fixture.detectChanges();
-    let labelEl = fixture.debugElement.query(By.css('.mat-form-field-label')).nativeElement;
+    let labelEl = fixture.debugElement.query(By.css('.mat-form-field-label'))!.nativeElement;
 
     expect(labelEl.classList).not.toContain('mat-form-field-empty');
 
@@ -180,9 +180,9 @@ describe('MatInput without forms', () => {
     fixture.detectChanges();
 
     const inputElement: HTMLInputElement =
-        fixture.debugElement.query(By.css('input')).nativeElement;
+        fixture.debugElement.query(By.css('input'))!.nativeElement;
     const labelElement: HTMLInputElement =
-        fixture.debugElement.query(By.css('label')).nativeElement;
+        fixture.debugElement.query(By.css('label'))!.nativeElement;
 
     expect(inputElement.id).toBeTruthy();
     expect(inputElement.id).toEqual(labelElement.getAttribute('for')!);
@@ -193,9 +193,9 @@ describe('MatInput without forms', () => {
     fixture.detectChanges();
 
     const inputElement: HTMLInputElement =
-        fixture.debugElement.query(By.css('input')).nativeElement;
+        fixture.debugElement.query(By.css('input'))!.nativeElement;
     const labelElement: HTMLInputElement =
-        fixture.debugElement.query(By.css('label')).nativeElement;
+        fixture.debugElement.query(By.css('label'))!.nativeElement;
 
     expect(labelElement.getAttribute('aria-owns')).toBe(inputElement.id);
   }));
@@ -205,7 +205,7 @@ describe('MatInput without forms', () => {
     fixture.detectChanges();
 
     const inputElement: HTMLInputElement =
-        fixture.debugElement.query(By.css('input')).nativeElement;
+        fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(inputElement.getAttribute('aria-required'))
         .toBe('false', 'Expected aria-required to reflect required state of false');
@@ -222,9 +222,9 @@ describe('MatInput without forms', () => {
     fixture.detectChanges();
 
     const inputElement: HTMLInputElement =
-        fixture.debugElement.query(By.css('input')).nativeElement;
+        fixture.debugElement.query(By.css('input'))!.nativeElement;
     const labelElement: HTMLInputElement =
-        fixture.debugElement.query(By.css('label')).nativeElement;
+        fixture.debugElement.query(By.css('label'))!.nativeElement;
 
     expect(inputElement.id).toBe('test-id');
     expect(labelElement.getAttribute('for')).toBe('test-id');
@@ -320,7 +320,7 @@ describe('MatInput without forms', () => {
     fixture.componentInstance.label = 'label';
     fixture.detectChanges();
 
-    let hint = fixture.debugElement.query(By.css('.mat-hint')).nativeElement;
+    let hint = fixture.debugElement.query(By.css('.mat-hint'))!.nativeElement;
 
     expect(hint.getAttribute('id')).toBeTruthy();
   }));
@@ -330,12 +330,12 @@ describe('MatInput without forms', () => {
     fixture.detectChanges();
 
     // In this case, we should have an empty <mat-hint>.
-    let el = fixture.debugElement.query(By.css('mat-hint')).nativeElement;
+    let el = fixture.debugElement.query(By.css('mat-hint'))!.nativeElement;
     expect(el.textContent).toBeFalsy();
 
     fixture.componentInstance.label = 'label';
     fixture.detectChanges();
-    el = fixture.debugElement.query(By.css('mat-hint')).nativeElement;
+    el = fixture.debugElement.query(By.css('mat-hint'))!.nativeElement;
     expect(el.textContent).toBe('label');
   }));
 
@@ -345,7 +345,7 @@ describe('MatInput without forms', () => {
     fixture.componentInstance.label = 'label';
     fixture.detectChanges();
 
-    let hint = fixture.debugElement.query(By.css('mat-hint')).nativeElement;
+    let hint = fixture.debugElement.query(By.css('mat-hint'))!.nativeElement;
 
     expect(hint.getAttribute('id')).toBeTruthy();
   }));
@@ -354,7 +354,7 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputPlaceholderAttrTestComponent);
     fixture.detectChanges();
 
-    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+    let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(fixture.debugElement.query(By.css('label'))).toBeNull();
     expect(inputEl.placeholder).toBe('');
@@ -362,7 +362,7 @@ describe('MatInput without forms', () => {
     fixture.componentInstance.placeholder = 'Other placeholder';
     fixture.detectChanges();
 
-    let labelEl = fixture.debugElement.query(By.css('label'));
+    let labelEl = fixture.debugElement.query(By.css('label'))!;
 
     expect(inputEl.placeholder).toBe('Other placeholder');
     expect(labelEl).not.toBeNull();
@@ -373,14 +373,14 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputPlaceholderElementTestComponent);
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('label'));
+    let el = fixture.debugElement.query(By.css('label'))!;
     expect(el).not.toBeNull();
     expect(el.nativeElement.textContent).toMatch('Default Placeholder');
 
     fixture.componentInstance.placeholder = 'Other placeholder';
     fixture.detectChanges();
 
-    el = fixture.debugElement.query(By.css('label'));
+    el = fixture.debugElement.query(By.css('label'))!;
     expect(el).not.toBeNull();
     expect(el.nativeElement.textContent).toBe('Other placeholder');
   }));
@@ -389,7 +389,7 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputPlaceholderRequiredTestComponent);
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('label'));
+    let el = fixture.debugElement.query(By.css('label'))!;
     expect(el).not.toBeNull();
     expect(el.nativeElement.textContent).toBe('hello *');
   }));
@@ -400,7 +400,7 @@ describe('MatInput without forms', () => {
     fixture.componentInstance.disabled = true;
     fixture.detectChanges();
 
-    const el = fixture.debugElement.query(By.css('label'));
+    const el = fixture.debugElement.query(By.css('label'))!;
 
     expect(el).not.toBeNull();
     expect(el.nativeElement.textContent).toBe('hello');
@@ -410,7 +410,7 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputPlaceholderRequiredTestComponent);
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('.mat-form-field-required-marker')).nativeElement;
+    let el = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!.nativeElement;
 
     expect(el.getAttribute('aria-hidden')).toBe('true');
   }));
@@ -419,7 +419,7 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputPlaceholderRequiredTestComponent);
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('label'));
+    let el = fixture.debugElement.query(By.css('label'))!;
     expect(el).not.toBeNull();
     expect(el.nativeElement.textContent).toBe('hello *');
 
@@ -434,8 +434,8 @@ describe('MatInput without forms', () => {
     fixture.detectChanges();
 
     const formFieldEl =
-        fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
-    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
+    const inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(formFieldEl.classList.contains('mat-form-field-disabled'))
         .toBe(false, `Expected form field not to start out disabled.`);
@@ -454,8 +454,8 @@ describe('MatInput without forms', () => {
     fixture.detectChanges();
 
     const formFieldEl =
-        fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
-    const selectEl = fixture.debugElement.query(By.css('select')).nativeElement;
+        fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
+    const selectEl = fixture.debugElement.query(By.css('select'))!.nativeElement;
 
     expect(formFieldEl.classList.contains('mat-form-field-disabled'))
         .toBe(false, `Expected form field not to start out disabled.`);
@@ -473,7 +473,7 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputSelect);
     fixture.detectChanges();
 
-    const formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+    const formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
 
     expect(formField.classList).toContain('mat-form-field-type-mat-native-select');
   }));
@@ -482,7 +482,7 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputWithRequired);
     fixture.detectChanges();
 
-    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+    let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(inputEl.required).toBe(false);
 
@@ -496,7 +496,7 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputSelect);
     fixture.detectChanges();
 
-    const selectEl = fixture.debugElement.query(By.css('select')).nativeElement;
+    const selectEl = fixture.debugElement.query(By.css('select'))!.nativeElement;
 
     expect(selectEl.required).toBe(false);
 
@@ -510,7 +510,7 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputWithType);
     fixture.detectChanges();
 
-    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+    let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(inputEl.type).toBe('text');
 
@@ -542,8 +542,8 @@ describe('MatInput without forms', () => {
     fixture.componentInstance.label = 'label';
     fixture.detectChanges();
 
-    let hint = fixture.debugElement.query(By.css('.mat-hint')).nativeElement;
-    let input = fixture.debugElement.query(By.css('input')).nativeElement;
+    let hint = fixture.debugElement.query(By.css('.mat-hint'))!.nativeElement;
+    let input = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(input.getAttribute('aria-describedby')).toBe(hint.getAttribute('id'));
   }));
@@ -554,8 +554,8 @@ describe('MatInput without forms', () => {
     fixture.componentInstance.label = 'label';
     fixture.detectChanges();
 
-    let hint = fixture.debugElement.query(By.css('.mat-hint')).nativeElement;
-    let input = fixture.debugElement.query(By.css('input')).nativeElement;
+    let hint = fixture.debugElement.query(By.css('.mat-hint'))!.nativeElement;
+    let input = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(input.getAttribute('aria-describedby')).toBe(hint.getAttribute('id'));
   }));
@@ -567,7 +567,7 @@ describe('MatInput without forms', () => {
     fixture.componentInstance.endId = 'end';
     fixture.detectChanges();
 
-    let input = fixture.debugElement.query(By.css('input')).nativeElement;
+    let input = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(input.getAttribute('aria-describedby')).toBe('start end');
   }));
@@ -578,9 +578,10 @@ describe('MatInput without forms', () => {
 
       fixture.detectChanges();
 
-      let hintLabel = fixture.debugElement.query(By.css('.mat-hint:not(.mat-right)')).nativeElement;
-      let endLabel = fixture.debugElement.query(By.css('.mat-hint.mat-right')).nativeElement;
-      let input = fixture.debugElement.query(By.css('input')).nativeElement;
+      let hintLabel =
+          fixture.debugElement.query(By.css('.mat-hint:not(.mat-right)'))!.nativeElement;
+      let endLabel = fixture.debugElement.query(By.css('.mat-hint.mat-right'))!.nativeElement;
+      let input = fixture.debugElement.query(By.css('input'))!.nativeElement;
       let ariaValue = input.getAttribute('aria-describedby');
 
       expect(ariaValue).toBe(`${hintLabel.getAttribute('id')} ${endLabel.getAttribute('id')}`);
@@ -590,8 +591,8 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputWithDynamicLabel);
     fixture.detectChanges();
 
-    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
-    let formFieldEl = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+    let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
+    let formFieldEl = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
 
     expect(formFieldEl.classList).toContain('mat-form-field-can-float');
     expect(formFieldEl.classList).toContain('mat-form-field-should-float');
@@ -616,8 +617,8 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputWithDynamicLabel);
     fixture.detectChanges();
 
-    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
-    let formFieldEl = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+    let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
+    let formFieldEl = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
 
     expect(formFieldEl.classList).toContain('mat-form-field-can-float');
     expect(formFieldEl.classList).toContain('mat-form-field-should-float');
@@ -638,7 +639,7 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputSelect);
     fixture.detectChanges();
 
-    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
     expect(formFieldEl.classList).toContain('mat-form-field-should-float');
   }));
 
@@ -646,7 +647,7 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputSelect);
     fixture.detectChanges();
 
-    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
     const selectEl: HTMLSelectElement = formFieldEl.querySelector('select');
 
     expect(formFieldEl.classList).toContain('mat-form-field-should-float');
@@ -662,7 +663,7 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputSelectWithNoLabelNoValue);
     fixture.detectChanges();
 
-    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
     expect(formFieldEl.classList).not.toContain('mat-form-field-should-float');
   }));
 
@@ -671,7 +672,7 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputSelectWithLabel);
     fixture.detectChanges();
 
-    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
     expect(formFieldEl.classList).toContain('mat-form-field-should-float');
   }));
 
@@ -680,7 +681,7 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputSelectWithInnerHtml);
     fixture.detectChanges();
 
-    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field'))
+    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field'))!
         .nativeElement;
     expect(formFieldEl.classList).toContain('mat-form-field-should-float');
   }));
@@ -696,8 +697,8 @@ describe('MatInput without forms', () => {
     fixture.componentInstance.shouldFloat = 'never';
     fixture.detectChanges();
 
-    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
-    let labelEl = fixture.debugElement.query(By.css('label')).nativeElement;
+    let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
+    let labelEl = fixture.debugElement.query(By.css('label'))!.nativeElement;
 
     expect(labelEl.classList).toContain('mat-form-field-empty');
     expect(labelEl.classList).not.toContain('mat-form-field-float');
@@ -717,7 +718,7 @@ describe('MatInput without forms', () => {
 
     fixture.detectChanges();
 
-    const formField = fixture.debugElement.query(By.directive(MatFormField));
+    const formField = fixture.debugElement.query(By.directive(MatFormField))!;
     const containerInstance = formField.componentInstance as MatFormField;
     const label = formField.nativeElement.querySelector('.mat-form-field-label');
 
@@ -747,8 +748,8 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputWithPrefixAndSuffix);
     fixture.detectChanges();
 
-    const prefixEl = fixture.debugElement.query(By.css('.mat-form-field-prefix'));
-    const suffixEl = fixture.debugElement.query(By.css('.mat-form-field-suffix'));
+    const prefixEl = fixture.debugElement.query(By.css('.mat-form-field-prefix'))!;
+    const suffixEl = fixture.debugElement.query(By.css('.mat-form-field-suffix'))!;
 
     expect(prefixEl).not.toBeNull();
     expect(suffixEl).not.toBeNull();
@@ -761,7 +762,7 @@ describe('MatInput without forms', () => {
     fixture.detectChanges();
 
     let component = fixture.componentInstance;
-    let label = fixture.debugElement.query(By.css('.mat-form-field-label')).nativeElement;
+    let label = fixture.debugElement.query(By.css('.mat-form-field-label'))!.nativeElement;
 
     expect(label.classList).toContain('mat-form-field-empty', 'Input initially empty');
 
@@ -775,9 +776,9 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputTextTestController);
     fixture.detectChanges();
 
-    let input = fixture.debugElement.query(By.directive(MatInput))
+    let input = fixture.debugElement.query(By.directive(MatInput))!
       .injector.get<MatInput>(MatInput);
-    let container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+    let container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
 
     // Call the focus handler directly to avoid flakyness where
     // browsers don't focus elements if the window is minimized.
@@ -792,9 +793,9 @@ describe('MatInput without forms', () => {
       const fixture = createComponent(MatInputTextTestController);
       fixture.detectChanges();
 
-      const input = fixture.debugElement.query(By.directive(MatInput))
+      const input = fixture.debugElement.query(By.directive(MatInput))!
           .injector.get<MatInput>(MatInput);
-      const container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+      const container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
 
       // Call the focus handler directly to avoid flakyness where
       // browsers don't focus elements if the window is minimized.
@@ -813,9 +814,9 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputTextTestController);
     fixture.detectChanges();
 
-    let inputContainer = fixture.debugElement.query(By.directive(MatFormField))
+    let inputContainer = fixture.debugElement.query(By.directive(MatFormField))!
         .componentInstance as MatFormField;
-    let label = fixture.debugElement.query(By.css('.mat-form-field-label')).nativeElement;
+    let label = fixture.debugElement.query(By.css('.mat-form-field-label'))!.nativeElement;
 
     expect(inputContainer.floatLabel).toBe('auto');
 
@@ -838,8 +839,9 @@ describe('MatInput without forms', () => {
     let fixture = createComponent(MatInputWithReadonlyInput);
     fixture.detectChanges();
 
-    let input = fixture.debugElement.query(By.directive(MatInput)).injector.get<MatInput>(MatInput);
-    let container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+    let input =
+        fixture.debugElement.query(By.directive(MatInput))!.injector.get<MatInput>(MatInput);
+    let container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
 
     // Call the focus handler directly to avoid flakyness where
     // browsers don't focus elements if the window is minimized.
@@ -854,9 +856,9 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputWithReadonlyInput);
     fixture.detectChanges();
 
-    const inputDebugElement = fixture.debugElement.query(By.directive(MatInput));
+    const inputDebugElement = fixture.debugElement.query(By.directive(MatInput))!;
     const input = inputDebugElement.injector.get<MatInput>(MatInput);
-    const container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+    const container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
 
     fixture.componentInstance.isReadonly = false;
     fixture.detectChanges();
@@ -883,9 +885,9 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputWithLabelAndPlaceholder);
     fixture.detectChanges();
 
-    const container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
-    const label = fixture.debugElement.query(By.css('.mat-form-field-label')).nativeElement;
-    const input = fixture.debugElement.query(By.css('input')).nativeElement;
+    const container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+    const label = fixture.debugElement.query(By.css('.mat-form-field-label'))!.nativeElement;
+    const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(container.classList).toContain('mat-form-field-hide-placeholder');
     expect(container.classList).not.toContain('mat-form-field-should-float');
@@ -905,7 +907,7 @@ describe('MatInput without forms', () => {
     fixture.componentInstance.floatLabel = 'always';
     fixture.detectChanges();
 
-    const container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+    const container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
 
     expect(container.classList).not.toContain('mat-form-field-hide-placeholder');
   });
@@ -913,7 +915,7 @@ describe('MatInput without forms', () => {
   it('should not add the `placeholder` attribute if there is no placeholder', () => {
     const fixture = createComponent(MatInputWithoutPlaceholder);
     fixture.detectChanges();
-    const input = fixture.debugElement.query(By.css('input')).nativeElement;
+    const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(input.hasAttribute('placeholder')).toBe(false);
   });
@@ -924,8 +926,8 @@ describe('MatInput without forms', () => {
     fixture.componentInstance.floatLabel = 'never';
     fixture.detectChanges();
 
-    const container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
-    const input = fixture.debugElement.query(By.css('input')).nativeElement;
+    const container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+    const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(container.classList).toContain('mat-form-field-hide-placeholder');
     expect(container.classList).not.toContain('mat-form-field-should-float');
@@ -940,7 +942,7 @@ describe('MatInput without forms', () => {
   it('should not add the native select class if the control is not a native select', () => {
     const fixture = createComponent(MatInputWithId);
     fixture.detectChanges();
-    const formField = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+    const formField = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
 
     expect(formField.classList).not.toContain('mat-form-field-type-mat-native-select');
   });
@@ -949,7 +951,7 @@ describe('MatInput without forms', () => {
     'the element is empty with a custom accessor', fakeAsync(() => {
       let fixture = createComponent(MatInputWithCustomAccessor, [], [], [CustomMatInputAccessor]);
       fixture.detectChanges();
-      let label = fixture.debugElement.query(By.css('label')).nativeElement;
+      let label = fixture.debugElement.query(By.css('label'))!.nativeElement;
 
       expect(label.classList).toContain('mat-form-field-empty');
 
@@ -972,8 +974,8 @@ describe('MatInput with forms', () => {
       fixture = createComponent(MatInputWithFormErrorMessages);
       fixture.detectChanges();
       testComponent = fixture.componentInstance;
-      containerEl = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
-      inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+      containerEl = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+      inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
     }));
 
     it('should not show any errors if the user has not interacted', fakeAsync(() => {
@@ -1004,7 +1006,7 @@ describe('MatInput with forms', () => {
       expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
       expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
 
-      dispatchFakeEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+      dispatchFakeEvent(fixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
       fixture.detectChanges();
       flush();
 
@@ -1026,8 +1028,8 @@ describe('MatInput with forms', () => {
 
       groupFixture.detectChanges();
       component = groupFixture.componentInstance;
-      containerEl = groupFixture.debugElement.query(By.css('mat-form-field')).nativeElement;
-      inputEl = groupFixture.debugElement.query(By.css('input')).nativeElement;
+      containerEl = groupFixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+      inputEl = groupFixture.debugElement.query(By.css('input'))!.nativeElement;
 
       expect(component.formGroup.invalid).toBe(true, 'Expected form control to be invalid');
       expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
@@ -1036,7 +1038,7 @@ describe('MatInput with forms', () => {
       expect(component.formGroupDirective.submitted)
         .toBe(false, 'Expected form not to have been submitted');
 
-      dispatchFakeEvent(groupFixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+      dispatchFakeEvent(groupFixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
       groupFixture.detectChanges();
       flush();
 
@@ -1097,7 +1099,8 @@ describe('MatInput with forms', () => {
     }));
 
     it('sets the aria-describedby to reference errors when in error state', fakeAsync(() => {
-      let hintId = fixture.debugElement.query(By.css('.mat-hint')).nativeElement.getAttribute('id');
+      let hintId =
+          fixture.debugElement.query(By.css('.mat-hint'))!.nativeElement.getAttribute('id');
       let describedBy = inputEl.getAttribute('aria-describedby');
 
       expect(hintId).toBeTruthy('hint should be shown');
@@ -1122,7 +1125,7 @@ describe('MatInput with forms', () => {
       fixture.detectChanges();
 
       let component = fixture.componentInstance;
-      let containerEl = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+      let containerEl = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
 
       const control = component.formGroup.get('name')!;
 
@@ -1150,7 +1153,7 @@ describe('MatInput with forms', () => {
 
       fixture.detectChanges();
 
-      let containerEl = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+      let containerEl = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
       let testComponent = fixture.componentInstance;
 
       // Expect the control to still be untouched but the error to show due to the global setting
@@ -1164,7 +1167,7 @@ describe('MatInput with forms', () => {
       }]);
       fixture.detectChanges();
 
-      let containerEl = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+      let containerEl = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
       let testComponent = fixture.componentInstance;
 
       expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
@@ -1188,7 +1191,7 @@ describe('MatInput with forms', () => {
     let fixture = createComponent(MatInputWithFormControl);
     fixture.detectChanges();
 
-    let input = fixture.debugElement.query(By.directive(MatInput))
+    let input = fixture.debugElement.query(By.directive(MatInput))!
       .injector.get<MatInput>(MatInput);
 
     expect(input.value).toBeFalsy();
@@ -1203,8 +1206,8 @@ describe('MatInput with forms', () => {
     fixture.detectChanges();
 
     const formFieldEl =
-        fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
-    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
+    const inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(formFieldEl.classList)
       .not.toContain('mat-form-field-disabled', `Expected form field not to start out disabled.`);
@@ -1225,7 +1228,7 @@ describe('MatInput with forms', () => {
 
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('label')).nativeElement;
+    let el = fixture.debugElement.query(By.css('label'))!.nativeElement;
     expect(el).not.toBeNull();
     expect(el.classList.contains('mat-form-field-empty')).toBe(false);
   }));
@@ -1234,7 +1237,7 @@ describe('MatInput with forms', () => {
     const fixture = createComponent(MatInputWithFormControl);
     fixture.detectChanges();
 
-    const el = fixture.debugElement.query(By.css('label')).nativeElement;
+    const el = fixture.debugElement.query(By.css('label'))!.nativeElement;
 
     expect(el.classList).toContain('mat-form-field-empty');
 
@@ -1256,7 +1259,7 @@ describe('MatInput with appearance', () => {
     fixture = createComponent(MatInputWithAppearance);
     fixture.detectChanges();
     testComponent = fixture.componentInstance;
-    containerEl = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+    containerEl = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
   }));
 
   it('legacy appearance should promote placeholder to label', fakeAsync(() => {

@@ -22,7 +22,7 @@ describe('MatDivider', () => {
     fixture.componentInstance.vertical = true;
     fixture.detectChanges();
 
-    const divider = fixture.debugElement.query(By.css('mat-divider'));
+    const divider = fixture.debugElement.query(By.css('mat-divider'))!;
     expect(divider.nativeElement.classList).toContain('mat-divider');
     expect(divider.nativeElement.classList).toContain('mat-divider-vertical');
   });
@@ -31,7 +31,7 @@ describe('MatDivider', () => {
     fixture.componentInstance.vertical = false;
     fixture.detectChanges();
 
-    const divider = fixture.debugElement.query(By.css('mat-divider'));
+    const divider = fixture.debugElement.query(By.css('mat-divider'))!;
     expect(divider.nativeElement.classList).toContain('mat-divider');
     expect(divider.nativeElement.classList).not.toContain('mat-divider-vertical');
     expect(divider.nativeElement.classList).toContain('mat-divider-horizontal');
@@ -41,7 +41,7 @@ describe('MatDivider', () => {
     fixture.componentInstance.inset = true;
     fixture.detectChanges();
 
-    const divider = fixture.debugElement.query(By.css('mat-divider'));
+    const divider = fixture.debugElement.query(By.css('mat-divider'))!;
     expect(divider.nativeElement.classList).toContain('mat-divider');
     expect(divider.nativeElement.classList).toContain('mat-divider-inset');
   });
@@ -51,7 +51,7 @@ describe('MatDivider', () => {
     fixture.componentInstance.inset = true;
     fixture.detectChanges();
 
-    const divider = fixture.debugElement.query(By.css('mat-divider'));
+    const divider = fixture.debugElement.query(By.css('mat-divider'))!;
     expect(divider.nativeElement.classList).toContain('mat-divider');
     expect(divider.nativeElement.classList).toContain('mat-divider-inset');
     expect(divider.nativeElement.classList).toContain('mat-divider-vertical');
@@ -60,7 +60,7 @@ describe('MatDivider', () => {
   it('should add aria roles properly', () => {
     fixture.detectChanges();
 
-    const divider = fixture.debugElement.query(By.css('mat-divider'));
+    const divider = fixture.debugElement.query(By.css('mat-divider'))!;
     expect(divider.nativeElement.getAttribute('role')).toBe('separator');
   });
 });

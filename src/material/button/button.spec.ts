@@ -21,8 +21,8 @@ describe('MatButton', () => {
     let fixture = TestBed.createComponent(TestApp);
 
     let testComponent = fixture.debugElement.componentInstance;
-    let buttonDebugElement = fixture.debugElement.query(By.css('button'));
-    let aDebugElement = fixture.debugElement.query(By.css('a'));
+    let buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
+    let aDebugElement = fixture.debugElement.query(By.css('a'))!;
 
     testComponent.buttonColor = 'primary';
     fixture.detectChanges();
@@ -45,14 +45,14 @@ describe('MatButton', () => {
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
 
-    const button = fixture.debugElement.query(By.directive(MatButton)).componentInstance;
+    const button = fixture.debugElement.query(By.directive(MatButton))!.componentInstance;
     expect(button.ripple).toBeTruthy();
   });
 
   it('should not clear previous defined classes', () => {
     let fixture = TestBed.createComponent(TestApp);
     let testComponent = fixture.debugElement.componentInstance;
-    let buttonDebugElement = fixture.debugElement.query(By.css('button'));
+    let buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
 
     buttonDebugElement.nativeElement.classList.add('custom-class');
 
@@ -73,7 +73,7 @@ describe('MatButton', () => {
   describe('button[mat-fab]', () => {
     it('should have accent palette by default', () => {
       const fixture = TestBed.createComponent(TestApp);
-      const fabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-fab]'));
+      const fabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-fab]'))!;
 
       fixture.detectChanges();
 
@@ -85,7 +85,7 @@ describe('MatButton', () => {
   describe('button[mat-mini-fab]', () => {
     it('should have accent palette by default', () => {
       const fixture = TestBed.createComponent(TestApp);
-      const miniFabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-mini-fab]'));
+      const miniFabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-mini-fab]'))!;
 
       fixture.detectChanges();
 
@@ -99,7 +99,7 @@ describe('MatButton', () => {
     it('should handle a click on the button', () => {
       let fixture = TestBed.createComponent(TestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('button'));
+      let buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
 
       buttonDebugElement.nativeElement.click();
       expect(testComponent.clickCount).toBe(1);
@@ -108,7 +108,7 @@ describe('MatButton', () => {
     it('should not increment if disabled', () => {
       let fixture = TestBed.createComponent(TestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('button'));
+      let buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
 
       testComponent.isDisabled = true;
       fixture.detectChanges();
@@ -135,7 +135,7 @@ describe('MatButton', () => {
     it('should not redirect if disabled', () => {
       let fixture = TestBed.createComponent(TestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('a'));
+      let buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
 
       testComponent.isDisabled = true;
       fixture.detectChanges();
@@ -146,7 +146,7 @@ describe('MatButton', () => {
     it('should remove tabindex if disabled', () => {
       let fixture = TestBed.createComponent(TestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('a'));
+      let buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
       expect(buttonDebugElement.nativeElement.getAttribute('tabIndex')).toBe(null);
 
       testComponent.isDisabled = true;
@@ -157,7 +157,7 @@ describe('MatButton', () => {
     it('should add aria-disabled attribute if disabled', () => {
       let fixture = TestBed.createComponent(TestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('a'));
+      let buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
       fixture.detectChanges();
       expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled')).toBe('false');
 
@@ -169,7 +169,7 @@ describe('MatButton', () => {
     it('should not add aria-disabled attribute if disabled is false', () => {
       let fixture = TestBed.createComponent(TestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('a'));
+      let buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
       fixture.detectChanges();
       expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled'))
         .toBe('false', 'Expect aria-disabled="false"');
@@ -187,7 +187,7 @@ describe('MatButton', () => {
     it('should be able to set a custom tabindex', () => {
       let fixture = TestBed.createComponent(TestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let buttonElement = fixture.debugElement.query(By.css('a')).nativeElement;
+      let buttonElement = fixture.debugElement.query(By.css('a'))!.nativeElement;
 
       fixture.componentInstance.tabIndex = 3;
       fixture.detectChanges();
@@ -220,12 +220,12 @@ describe('MatButton', () => {
 
       testComponent = fixture.componentInstance;
 
-      buttonDebugElement = fixture.debugElement.query(By.css('button[mat-button]'));
-      buttonRippleDebugElement = buttonDebugElement.query(By.directive(MatRipple));
+      buttonDebugElement = fixture.debugElement.query(By.css('button[mat-button]'))!;
+      buttonRippleDebugElement = buttonDebugElement.query(By.directive(MatRipple))!;
       buttonRippleInstance = buttonRippleDebugElement.injector.get<MatRipple>(MatRipple);
 
-      anchorDebugElement = fixture.debugElement.query(By.css('a[mat-button]'));
-      anchorRippleDebugElement = anchorDebugElement.query(By.directive(MatRipple));
+      anchorDebugElement = fixture.debugElement.query(By.css('a[mat-button]'))!;
+      anchorRippleDebugElement = anchorDebugElement.query(By.directive(MatRipple))!;
       anchorRippleInstance = anchorRippleDebugElement.injector.get<MatRipple>(MatRipple);
     });
 

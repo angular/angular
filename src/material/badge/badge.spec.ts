@@ -22,7 +22,7 @@ describe('MatBadge', () => {
     testComponent = fixture.debugElement.componentInstance;
     fixture.detectChanges();
 
-    badgeDebugElement = fixture.debugElement.query(By.directive(MatBadge));
+    badgeDebugElement = fixture.debugElement.query(By.directive(MatBadge))!;
     badgeNativeElement = badgeDebugElement.nativeElement;
   }));
 

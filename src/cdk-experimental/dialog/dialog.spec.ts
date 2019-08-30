@@ -574,7 +574,8 @@ describe('Dialog', () => {
   it('should set the proper animation states', () => {
     let dialogRef = dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
     let dialogContainer: CdkDialogContainer =
-        viewContainerFixture.debugElement.query(By.directive(CdkDialogContainer)).componentInstance;
+        viewContainerFixture.debugElement.query(By.directive(CdkDialogContainer))!
+        .componentInstance;
 
     expect(dialogContainer._state).toBe('enter');
 

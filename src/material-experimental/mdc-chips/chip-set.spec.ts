@@ -26,7 +26,7 @@ describe('MatChipSet', () => {
         fixture = TestBed.createComponent(BasicChipSet);
         fixture.detectChanges();
 
-        chipSetDebugElement = fixture.debugElement.query(By.directive(MatChipSet));
+        chipSetDebugElement = fixture.debugElement.query(By.directive(MatChipSet))!;
         chipSetNativeElement = chipSetDebugElement.nativeElement;
         chipSetInstance = chipSetDebugElement.componentInstance;
         chips = chipSetInstance._chips;

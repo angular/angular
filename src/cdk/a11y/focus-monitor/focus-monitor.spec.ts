@@ -31,7 +31,7 @@ describe('FocusMonitor', () => {
     fixture = TestBed.createComponent(PlainButton);
     fixture.detectChanges();
 
-    buttonElement = fixture.debugElement.query(By.css('button')).nativeElement;
+    buttonElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
     focusMonitor = fm;
 
     changeHandler = jasmine.createSpy('focus origin change handler');
@@ -264,7 +264,7 @@ describe('cdkMonitorFocus', () => {
       fixture.detectChanges();
 
       spyOn(fixture.componentInstance, 'focusChanged');
-      buttonElement = fixture.debugElement.query(By.css('button')).nativeElement;
+      buttonElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
       patchElementFocus(buttonElement);
     });
 
@@ -362,8 +362,8 @@ describe('cdkMonitorFocus', () => {
       fixture = TestBed.createComponent(ComplexComponentWithMonitorElementFocus);
       fixture.detectChanges();
 
-      parentElement = fixture.debugElement.query(By.css('div')).nativeElement;
-      childElement = fixture.debugElement.query(By.css('button')).nativeElement;
+      parentElement = fixture.debugElement.query(By.css('div'))!.nativeElement;
+      childElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
 
       patchElementFocus(parentElement);
       patchElementFocus(childElement);
@@ -395,8 +395,8 @@ describe('cdkMonitorFocus', () => {
       fixture = TestBed.createComponent(ComplexComponentWithMonitorSubtreeFocus);
       fixture.detectChanges();
 
-      parentElement = fixture.debugElement.query(By.css('div')).nativeElement;
-      childElement = fixture.debugElement.query(By.css('button')).nativeElement;
+      parentElement = fixture.debugElement.query(By.css('div'))!.nativeElement;
+      childElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
 
       patchElementFocus(parentElement);
       patchElementFocus(childElement);
@@ -431,8 +431,8 @@ describe('cdkMonitorFocus', () => {
           TestBed.createComponent(ComplexComponentWithMonitorSubtreeFocusAndMonitorElementFocus);
       fixture.detectChanges();
 
-      parentElement = fixture.debugElement.query(By.css('div')).nativeElement;
-      childElement = fixture.debugElement.query(By.css('button')).nativeElement;
+      parentElement = fixture.debugElement.query(By.css('div'))!.nativeElement;
+      childElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
 
       patchElementFocus(parentElement);
       patchElementFocus(childElement);

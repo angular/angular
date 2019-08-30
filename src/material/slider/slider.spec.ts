@@ -54,7 +54,7 @@ describe('MatSlider', () => {
       fixture = createComponent(StandardSlider);
       fixture.detectChanges();
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.componentInstance;
 
@@ -235,7 +235,7 @@ describe('MatSlider', () => {
       fixture = createComponent(DisabledSlider);
       fixture.detectChanges();
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.componentInstance;
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-track-fill');
@@ -311,7 +311,7 @@ describe('MatSlider', () => {
       fixture = createComponent(SliderWithMinAndMax);
       fixture.detectChanges();
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       testComponent = fixture.debugElement.componentInstance;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get<MatSlider>(MatSlider);
@@ -405,7 +405,7 @@ describe('MatSlider', () => {
       fixture = createComponent(SliderWithValue);
       fixture.detectChanges();
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get<MatSlider>(MatSlider);
     });
@@ -442,7 +442,7 @@ describe('MatSlider', () => {
       fixture = createComponent(SliderWithStep);
       fixture.detectChanges();
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get<MatSlider>(MatSlider);
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-track-fill');
@@ -536,7 +536,7 @@ describe('MatSlider', () => {
       fixture = createComponent(SliderWithAutoTickInterval);
       fixture.detectChanges();
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       ticksContainerElement =
           <HTMLElement>sliderNativeElement.querySelector('.mat-slider-ticks-container');
@@ -566,7 +566,7 @@ describe('MatSlider', () => {
       fixture = createComponent(SliderWithSetTickInterval);
       fixture.detectChanges();
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       ticksContainerElement =
           <HTMLElement>sliderNativeElement.querySelector('.mat-slider-ticks-container');
@@ -608,7 +608,7 @@ describe('MatSlider', () => {
       fixture = createComponent(SliderWithThumbLabel);
       fixture.detectChanges();
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.componentInstance;
       thumbLabelTextElement = sliderNativeElement.querySelector('.mat-slider-thumb-label-text')!;
@@ -648,7 +648,7 @@ describe('MatSlider', () => {
       fixture = createComponent(SliderWithCustomThumbLabelFormatting);
       fixture.detectChanges();
 
-      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       const sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.componentInstance;
       thumbLabelTextElement = sliderNativeElement.querySelector('.mat-slider-thumb-label-text')!;
@@ -685,7 +685,7 @@ describe('MatSlider', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get<MatSlider>(MatSlider);
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-track-fill');
@@ -716,7 +716,7 @@ describe('MatSlider', () => {
       fixture = createComponent(SliderWithValueSmallerThanMin);
       fixture.detectChanges();
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.componentInstance;
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-track-fill');
@@ -744,7 +744,7 @@ describe('MatSlider', () => {
       fixture = createComponent(SliderWithValueGreaterThanMax);
       fixture.detectChanges();
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.componentInstance;
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-track-fill');
@@ -775,7 +775,7 @@ describe('MatSlider', () => {
       spyOn(testComponent, 'onChange');
       spyOn(testComponent, 'onInput');
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
     });
 
@@ -846,7 +846,7 @@ describe('MatSlider', () => {
       spyOn(testComponent, 'onInput');
       spyOn(testComponent, 'onChange');
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
     });
 
@@ -894,7 +894,7 @@ describe('MatSlider', () => {
       spyOn(testComponent, 'onInput');
       spyOn(testComponent, 'onChange');
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get<MatSlider>(MatSlider);
     });
@@ -1050,7 +1050,7 @@ describe('MatSlider', () => {
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderInstance = sliderDebugElement.injector.get<MatSlider>(MatSlider);
       sliderNativeElement = sliderDebugElement.nativeElement;
     });
@@ -1191,7 +1191,7 @@ describe('MatSlider', () => {
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderInstance = sliderDebugElement.injector.get<MatSlider>(MatSlider);
       sliderNativeElement = sliderDebugElement.nativeElement;
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-track-fill');
@@ -1246,7 +1246,7 @@ describe('MatSlider', () => {
       const fixture = createComponent(SliderWithTabIndexBinding);
       fixture.detectChanges();
 
-      const slider = fixture.debugElement.query(By.directive(MatSlider)).componentInstance;
+      const slider = fixture.debugElement.query(By.directive(MatSlider))!.componentInstance;
 
       expect(slider.tabIndex).toBe(0, 'Expected the tabIndex to be set to 0 by default.');
 
@@ -1260,7 +1260,7 @@ describe('MatSlider', () => {
       const fixture = createComponent(SliderWithNativeTabindexAttr);
       fixture.detectChanges();
 
-      const slider = fixture.debugElement.query(By.directive(MatSlider)).componentInstance;
+      const slider = fixture.debugElement.query(By.directive(MatSlider))!.componentInstance;
 
       expect(slider.tabIndex)
         .toBe(5, 'Expected the tabIndex to be set to the value of the native attribute.');
@@ -1279,7 +1279,7 @@ describe('MatSlider', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
     });
 
@@ -1341,7 +1341,7 @@ describe('MatSlider', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get<MatSlider>(MatSlider);
     });
@@ -1438,7 +1438,7 @@ describe('MatSlider', () => {
       fixture.detectChanges();
 
       testComponent = fixture.componentInstance;
-      let sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      let sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
     });
 

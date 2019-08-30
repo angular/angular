@@ -35,7 +35,7 @@ describe('LiveAnnouncer', () => {
     });
 
     it('should correctly update the announce text', fakeAsync(() => {
-      let buttonElement = fixture.debugElement.query(By.css('button')).nativeElement;
+      let buttonElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
       buttonElement.click();
 
       // This flushes our 100ms timeout for the screenreaders.

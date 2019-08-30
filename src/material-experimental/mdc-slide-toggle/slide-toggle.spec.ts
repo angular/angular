@@ -43,13 +43,13 @@ describe('MatSlideToggle without forms', () => {
       // Initialize the slide-toggle component, by triggering the first change detection cycle.
       fixture.detectChanges();
 
-      const slideToggleDebug = fixture.debugElement.query(By.css('mat-slide-toggle'));
+      const slideToggleDebug = fixture.debugElement.query(By.css('mat-slide-toggle'))!;
 
       testComponent = fixture.debugElement.componentInstance;
       slideToggle = slideToggleDebug.componentInstance;
       slideToggleElement = slideToggleDebug.nativeElement;
-      inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
-      labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
+      inputElement = fixture.debugElement.query(By.css('input'))!.nativeElement;
+      labelElement = fixture.debugElement.query(By.css('label'))!.nativeElement;
     }));
 
     it('should apply class based on color attribute', () => {
@@ -313,7 +313,7 @@ describe('MatSlideToggle without forms', () => {
       fixture.detectChanges();
 
       const slideToggle = fixture.debugElement
-        .query(By.directive(MatSlideToggle)).componentInstance as MatSlideToggle;
+        .query(By.directive(MatSlideToggle))!.componentInstance as MatSlideToggle;
 
       expect(slideToggle.tabIndex)
         .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
@@ -324,7 +324,7 @@ describe('MatSlideToggle without forms', () => {
 
       fixture.detectChanges();
 
-      const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle)).nativeElement;
+      const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle))!.nativeElement;
       expect(slideToggle.hasAttribute('tabindex')).toBe(false);
     }));
 
@@ -334,7 +334,7 @@ describe('MatSlideToggle without forms', () => {
       fixture.componentInstance.disabled = true;
       fixture.detectChanges();
 
-      const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle)).nativeElement;
+      const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle))!.nativeElement;
       expect(slideToggle.hasAttribute('tabindex')).toBe(false);
     }));
   });
@@ -354,11 +354,11 @@ describe('MatSlideToggle without forms', () => {
       fixture.detectChanges();
 
       const testComponent = fixture.debugElement.componentInstance;
-      const slideToggleDebug = fixture.debugElement.query(By.css('mat-slide-toggle'));
+      const slideToggleDebug = fixture.debugElement.query(By.css('mat-slide-toggle'))!;
 
       const slideToggle = slideToggleDebug.componentInstance;
-      const inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
-      const labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
+      const inputElement = fixture.debugElement.query(By.css('input'))!.nativeElement;
+      const labelElement = fixture.debugElement.query(By.css('label'))!.nativeElement;
 
       expect(testComponent.toggleTriggered).toBe(0);
       expect(testComponent.dragTriggered).toBe(0);
@@ -411,14 +411,14 @@ describe('MatSlideToggle with forms', () => {
       fixture = TestBed.createComponent(SlideToggleWithModel);
       fixture.detectChanges();
 
-      const slideToggleDebug = fixture.debugElement.query(By.directive(MatSlideToggle));
+      const slideToggleDebug = fixture.debugElement.query(By.directive(MatSlideToggle))!;
 
       testComponent = fixture.debugElement.componentInstance;
       slideToggle = slideToggleDebug.componentInstance;
       slideToggleElement = slideToggleDebug.nativeElement;
       slideToggleModel = slideToggleDebug.injector.get<NgModel>(NgModel);
-      inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
-      labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
+      inputElement = fixture.debugElement.query(By.css('input'))!.nativeElement;
+      labelElement = fixture.debugElement.query(By.css('label'))!.nativeElement;
     }));
 
     it('should be initially set to ng-pristine', () => {
@@ -524,8 +524,8 @@ describe('MatSlideToggle with forms', () => {
 
     it('should update checked state on click if control is checked initially', fakeAsync(() => {
       fixture = TestBed.createComponent(SlideToggleWithModel);
-      slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle)).componentInstance;
-      labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
+      slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle))!.componentInstance;
+      labelElement = fixture.debugElement.query(By.css('label'))!.nativeElement;
 
       fixture.componentInstance.modelValue = true;
       fixture.detectChanges();
@@ -554,7 +554,7 @@ describe('MatSlideToggle with forms', () => {
       fixture.componentInstance.modelValue = true;
       fixture.detectChanges();
 
-      const debugElement = fixture.debugElement.query(By.directive(MatSlideToggle));
+      const debugElement = fixture.debugElement.query(By.directive(MatSlideToggle))!;
       const modelInstance = debugElement.injector.get<NgModel>(NgModel);
 
       // Flush the microtasks because the forms module updates the model state asynchronously.
@@ -566,7 +566,7 @@ describe('MatSlideToggle with forms', () => {
     it('should set the model value when toggling via the `toggle` method', fakeAsync(() => {
       expect(testComponent.modelValue).toBe(false);
 
-      fixture.debugElement.query(By.directive(MatSlideToggle)).componentInstance.toggle();
+      fixture.debugElement.query(By.directive(MatSlideToggle))!.componentInstance.toggle();
       fixture.detectChanges();
       flushMicrotasks();
 
@@ -588,8 +588,8 @@ describe('MatSlideToggle with forms', () => {
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
-      slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle)).componentInstance;
-      inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+      slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle))!.componentInstance;
+      inputElement = fixture.debugElement.query(By.css('input'))!.nativeElement;
     });
 
     it('should toggle the disabled state', () => {
@@ -622,8 +622,8 @@ describe('MatSlideToggle with forms', () => {
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
-      buttonElement = fixture.debugElement.query(By.css('button')).nativeElement;
-      inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+      buttonElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
+      inputElement = fixture.debugElement.query(By.css('input'))!.nativeElement;
     }));
 
     it('should prevent the form from submit when being required', () => {
@@ -683,7 +683,7 @@ describe('MatSlideToggle with forms', () => {
       const fixture = TestBed.createComponent(SlideToggleWithModelAndChangeEvent);
       fixture.detectChanges();
 
-      const labelEl = fixture.debugElement.query(By.css('label')).nativeElement;
+      const labelEl = fixture.debugElement.query(By.css('label'))!.nativeElement;
 
       spyOn(fixture.componentInstance, 'onChange').and.callFake(() => {
         expect(fixture.componentInstance.checked)

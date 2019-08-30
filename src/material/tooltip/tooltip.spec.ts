@@ -97,7 +97,7 @@ describe('MatTooltip', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicTooltipDemo);
       fixture.detectChanges();
-      buttonDebugElement = fixture.debugElement.query(By.css('button'));
+      buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
       buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
       tooltipDirective = buttonDebugElement.injector.get<MatTooltip>(MatTooltip);
     });
@@ -186,7 +186,7 @@ describe('MatTooltip', () => {
 
       fixture = TestBed.createComponent(BasicTooltipDemo);
       fixture.detectChanges();
-      tooltipDirective = fixture.debugElement.query(By.css('button'))
+      tooltipDirective = fixture.debugElement.query(By.css('button'))!
           .injector.get<MatTooltip>(MatTooltip);
 
       tooltipDirective.show();
@@ -221,7 +221,7 @@ describe('MatTooltip', () => {
 
       const newFixture = TestBed.createComponent(TooltipDemoWithoutPositionBinding);
       newFixture.detectChanges();
-      tooltipDirective = newFixture.debugElement.query(By.css('button'))
+      tooltipDirective = newFixture.debugElement.query(By.css('button'))!
           .injector.get<MatTooltip>(MatTooltip);
 
       tooltipDirective.show();
@@ -728,7 +728,7 @@ describe('MatTooltip', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicTooltipDemo);
       fixture.detectChanges();
-      tooltip = fixture.debugElement.query(By.css('button')).injector.get<MatTooltip>(MatTooltip);
+      tooltip = fixture.debugElement.query(By.css('button'))!.injector.get<MatTooltip>(MatTooltip);
     });
 
     it('should set a fallback origin position by inverting the main origin position', () => {
@@ -776,7 +776,7 @@ describe('MatTooltip', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(ScrollableTooltipDemo);
       fixture.detectChanges();
-      buttonDebugElement = fixture.debugElement.query(By.css('button'));
+      buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
       tooltipDirective = buttonDebugElement.injector.get<MatTooltip>(MatTooltip);
     });
 
@@ -836,7 +836,7 @@ describe('MatTooltip', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(OnPushTooltipDemo);
       fixture.detectChanges();
-      buttonDebugElement = fixture.debugElement.query(By.css('button'));
+      buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
       buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
       tooltipDirective = buttonDebugElement.injector.get<MatTooltip>(MatTooltip);
     });

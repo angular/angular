@@ -48,7 +48,7 @@ describe('Option Chips', () => {
       fixture = TestBed.createComponent(SingleChip);
       fixture.detectChanges();
 
-      chipDebugElement = fixture.debugElement.query(By.directive(MatChipOption));
+      chipDebugElement = fixture.debugElement.query(By.directive(MatChipOption))!;
       chipNativeElement = chipDebugElement.nativeElement;
       chipInstance = chipDebugElement.injector.get<MatChipOption>(MatChipOption);
       testComponent = fixture.debugElement.componentInstance;

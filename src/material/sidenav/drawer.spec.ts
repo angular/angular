@@ -45,9 +45,9 @@ describe('MatDrawer', () => {
       fixture.detectChanges();
 
       const testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      const container = fixture.debugElement.query(By.css('mat-drawer-container')).nativeElement;
+      const container = fixture.debugElement.query(By.css('mat-drawer-container'))!.nativeElement;
 
-      fixture.debugElement.query(By.css('.open')).nativeElement.click();
+      fixture.debugElement.query(By.css('.open'))!.nativeElement.click();
       fixture.detectChanges();
 
       expect(testComponent.openCount).toBe(0);
@@ -68,14 +68,14 @@ describe('MatDrawer', () => {
       fixture.detectChanges();
 
       const testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      const container = fixture.debugElement.query(By.css('mat-drawer-container')).nativeElement;
+      const container = fixture.debugElement.query(By.css('mat-drawer-container'))!.nativeElement;
 
-      fixture.debugElement.query(By.css('.open')).nativeElement.click();
+      fixture.debugElement.query(By.css('.open'))!.nativeElement.click();
       fixture.detectChanges();
       flush();
       fixture.detectChanges();
 
-      fixture.debugElement.query(By.css('.close')).nativeElement.click();
+      fixture.debugElement.query(By.css('.close'))!.nativeElement.click();
       fixture.detectChanges();
 
       expect(testComponent.closeCount).toBe(0);
@@ -95,7 +95,7 @@ describe('MatDrawer', () => {
       const fixture = TestBed.createComponent(BasicTestApp);
       fixture.detectChanges();
       const drawer: MatDrawer =
-          fixture.debugElement.query(By.directive(MatDrawer)).componentInstance;
+          fixture.debugElement.query(By.directive(MatDrawer))!.componentInstance;
 
       drawer.open().then(result => expect(result).toBe('open'));
       fixture.detectChanges();
@@ -106,7 +106,7 @@ describe('MatDrawer', () => {
     it('should resolve the close method promise with the new state of the drawer', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicTestApp);
       fixture.detectChanges();
-      const drawer = fixture.debugElement.query(By.directive(MatDrawer));
+      const drawer = fixture.debugElement.query(By.directive(MatDrawer))!;
       const drawerInstance: MatDrawer = drawer.componentInstance;
 
       drawerInstance.open();
@@ -125,14 +125,14 @@ describe('MatDrawer', () => {
       fixture.detectChanges();
 
       const testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      fixture.debugElement.query(By.css('.open')).nativeElement.click();
+      fixture.debugElement.query(By.css('.open'))!.nativeElement.click();
       fixture.detectChanges();
 
       expect(testComponent.openCount).toBe(0);
       expect(testComponent.closeCount).toBe(0);
 
       tick();
-      fixture.debugElement.query(By.css('.close')).nativeElement.click();
+      fixture.debugElement.query(By.css('.close'))!.nativeElement.click();
       fixture.detectChanges();
 
       flush();
@@ -155,7 +155,7 @@ describe('MatDrawer', () => {
       fixture.detectChanges();
 
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      let openButtonElement = fixture.debugElement.query(By.css('.open')).nativeElement;
+      let openButtonElement = fixture.debugElement.query(By.css('.open'))!.nativeElement;
 
       openButtonElement.click();
       fixture.detectChanges();
@@ -163,7 +163,7 @@ describe('MatDrawer', () => {
 
       expect(testComponent.backdropClickedCount).toBe(0);
 
-      fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-drawer-backdrop'))!.nativeElement.click();
       fixture.detectChanges();
       flush();
 
@@ -173,7 +173,7 @@ describe('MatDrawer', () => {
       fixture.detectChanges();
       flush();
 
-      fixture.debugElement.query(By.css('.close')).nativeElement.click();
+      fixture.debugElement.query(By.css('.close'))!.nativeElement.click();
       fixture.detectChanges();
       flush();
 
@@ -186,7 +186,7 @@ describe('MatDrawer', () => {
       fixture.detectChanges();
 
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      let drawer = fixture.debugElement.query(By.directive(MatDrawer));
+      let drawer = fixture.debugElement.query(By.directive(MatDrawer))!;
 
       drawer.componentInstance.open();
       fixture.detectChanges();
@@ -212,7 +212,7 @@ describe('MatDrawer', () => {
       fixture.detectChanges();
 
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      let drawer = fixture.debugElement.query(By.directive(MatDrawer));
+      let drawer = fixture.debugElement.query(By.directive(MatDrawer))!;
 
       drawer.componentInstance.open();
       fixture.detectChanges();
@@ -244,7 +244,7 @@ describe('MatDrawer', () => {
     it('should not close by pressing escape when disableClose is set', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let drawer = fixture.debugElement.query(By.directive(MatDrawer));
+      let drawer = fixture.debugElement.query(By.directive(MatDrawer))!;
 
       drawer.componentInstance.disableClose = true;
       drawer.componentInstance.open();
@@ -262,14 +262,14 @@ describe('MatDrawer', () => {
     it('should not close by clicking on the backdrop when disableClose is set', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let drawer = fixture.debugElement.query(By.directive(MatDrawer)).componentInstance;
+      let drawer = fixture.debugElement.query(By.directive(MatDrawer))!.componentInstance;
 
       drawer.disableClose = true;
       drawer.open();
       fixture.detectChanges();
       tick();
 
-      fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-drawer-backdrop'))!.nativeElement.click();
       fixture.detectChanges();
       tick();
 
@@ -282,7 +282,7 @@ describe('MatDrawer', () => {
 
       fixture.detectChanges();
 
-      let drawer = fixture.debugElement.query(By.directive(MatDrawer)).componentInstance;
+      let drawer = fixture.debugElement.query(By.directive(MatDrawer))!.componentInstance;
       let openButton = fixture.componentInstance.openButton.nativeElement;
       let drawerButton = fixture.componentInstance.drawerButton.nativeElement;
 
@@ -303,7 +303,7 @@ describe('MatDrawer', () => {
     it('should not restore focus on close if focus is outside drawer', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
       let drawer: MatDrawer = fixture.debugElement
-          .query(By.directive(MatDrawer)).componentInstance;
+          .query(By.directive(MatDrawer))!.componentInstance;
       fixture.detectChanges();
 
       let openButton = fixture.componentInstance.openButton.nativeElement;
@@ -331,7 +331,7 @@ describe('MatDrawer', () => {
 
       fixture.detectChanges();
 
-      let drawer = fixture.debugElement.query(By.directive(MatDrawer)).componentInstance;
+      let drawer = fixture.debugElement.query(By.directive(MatDrawer))!.componentInstance;
 
       expect((drawer as MatDrawer).opened).toBe(false);
     });
@@ -341,7 +341,7 @@ describe('MatDrawer', () => {
 
       fixture.detectChanges();
 
-      let drawer = fixture.debugElement.query(By.directive(MatDrawer)).componentInstance;
+      let drawer = fixture.debugElement.query(By.directive(MatDrawer))!.componentInstance;
 
       expect((drawer as MatDrawer).opened).toBe(true);
     });
@@ -350,7 +350,7 @@ describe('MatDrawer', () => {
       const fixture = TestBed.createComponent(BasicTestApp);
       fixture.detectChanges();
 
-      const drawerEl = fixture.debugElement.query(By.css('mat-drawer')).nativeElement;
+      const drawerEl = fixture.debugElement.query(By.css('mat-drawer'))!.nativeElement;
       expect(drawerEl.hasAttribute('align'))
           .toBe(false, 'Expected drawer not to have a native align attribute.');
     });
@@ -389,7 +389,7 @@ describe('MatDrawer', () => {
       fixture.detectChanges();
 
       let drawer: MatDrawer = fixture.debugElement
-          .query(By.directive(MatDrawer)).componentInstance;
+          .query(By.directive(MatDrawer))!.componentInstance;
 
       drawer.open();
       fixture.detectChanges();
@@ -441,9 +441,9 @@ describe('MatDrawer', () => {
       fixture = TestBed.createComponent(DrawerWithFocusableElements);
       fixture.detectChanges();
       testComponent = fixture.debugElement.componentInstance;
-      drawer = fixture.debugElement.query(By.directive(MatDrawer)).componentInstance;
-      firstFocusableElement = fixture.debugElement.query(By.css('.input1')).nativeElement;
-      lastFocusableElement = fixture.debugElement.query(By.css('.input2')).nativeElement;
+      drawer = fixture.debugElement.query(By.directive(MatDrawer))!.componentInstance;
+      firstFocusableElement = fixture.debugElement.query(By.css('.input1'))!.nativeElement;
+      lastFocusableElement = fixture.debugElement.query(By.css('.input2'))!.nativeElement;
       lastFocusableElement.focus();
     });
 
@@ -487,7 +487,7 @@ describe('MatDrawer', () => {
       fixture.destroy();
 
       const nonFocusableFixture = TestBed.createComponent(DrawerWithoutFocusableElements);
-      const drawerEl = nonFocusableFixture.debugElement.query(By.directive(MatDrawer));
+      const drawerEl = nonFocusableFixture.debugElement.query(By.directive(MatDrawer))!;
       nonFocusableFixture.detectChanges();
 
       drawerEl.componentInstance.open();

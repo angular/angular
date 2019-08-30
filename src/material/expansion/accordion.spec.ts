@@ -124,7 +124,7 @@ describe('MatAccordion', () => {
 
   it('should update the expansion panel if hideToggle changed', () => {
     const fixture = TestBed.createComponent(AccordionWithHideToggle);
-    const panel = fixture.debugElement.query(By.directive(MatExpansionPanel));
+    const panel = fixture.debugElement.query(By.directive(MatExpansionPanel))!;
 
     fixture.detectChanges();
 
@@ -140,7 +140,7 @@ describe('MatAccordion', () => {
 
   it('should update the expansion panel if togglePosition changed', () => {
     const fixture = TestBed.createComponent(AccordionWithTogglePosition);
-    const panel = fixture.debugElement.query(By.directive(MatExpansionPanel));
+    const panel = fixture.debugElement.query(By.directive(MatExpansionPanel))!;
 
     fixture.detectChanges();
 
