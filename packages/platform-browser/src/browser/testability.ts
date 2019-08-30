@@ -59,8 +59,8 @@ export class BrowserGetTestability implements GetTestability {
       return null;
     }
     if (getDOM().isShadowRoot(elem)) {
-      return this.findTestabilityInTree(registry, getDOM().getHost(elem), true);
+      return this.findTestabilityInTree(registry, (<any>elem).host, true);
     }
-    return this.findTestabilityInTree(registry, getDOM().parentElement(elem), true);
+    return this.findTestabilityInTree(registry, elem.parentElement, true);
   }
 }

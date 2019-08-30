@@ -3743,7 +3743,7 @@ const DEFAULT_COMPONENT_ID = '1';
 })();
 
 function assertHasParent(element: any, yes: boolean) {
-  const parent = getDOM().parentElement(element);
+  const parent = element.parentNode;
   if (yes) {
     expect(parent).toBeTruthy();
   } else {
