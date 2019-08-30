@@ -33,6 +33,13 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+    // The "exports" object is available as global in CommonJS bundles, without a `ts.Declaration`
+    // nor `ts.Expression` in the source file. Since it represents the source file's exports, the
+    // source file itself can be used as declaration node.
+    if (id.text === 'exports') {
+      return {node: id.getSourceFile(), viaModule: null};
+    }
+
     return this.getCommonJsImportedDeclaration(id) || super.getDeclarationOfIdentifier(id);
   }
 

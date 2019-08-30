@@ -12,7 +12,7 @@ import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/test
 import {ClassMemberKind, CtorParameter, Import, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
-import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
+import {CommonJsReflectionHost, isCommonJsExportStatement} from '../../src/host/commonjs_host';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {getIifeBody} from '../../src/host/esm5_host';
 import {MockLogger} from '../helpers/mock_logger';
@@ -1629,6 +1629,19 @@ exports.ExternalModule = ExternalModule;
           expect(actualDeclaration).not.toBe(null);
           expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
           expect(actualDeclaration !.viaModule).toBe('@angular/core');
+        });
+
+        it('should return a declaration for the "exports" variable', () => {
+          loadTestFiles([INLINE_EXPORT_FILE]);
+          const {program, host: compilerHost} = makeTestBundleProgram(INLINE_EXPORT_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const file = getSourceFileOrError(program, INLINE_EXPORT_FILE.name);
+
+          const exportsIdentifier =
+              file.statements.find(isCommonJsExportStatement) !.expression.left.expression;
+          const exportDeclaration = host.getDeclarationOfIdentifier(exportsIdentifier);
+          expect(exportDeclaration).not.toBeNull();
+          expect(exportDeclaration !.node).toBe(file);
         });
       });
 
