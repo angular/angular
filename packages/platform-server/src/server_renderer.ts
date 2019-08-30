@@ -143,11 +143,16 @@ class DefaultServerRenderer2 implements Renderer2 {
   removeClass(el: any, name: string): void { el.classList.remove(name); }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
-    getDOM().setStyle(el, style, value);
+    style = style.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    const styleMap = _readStyleAttribute(el);
+    styleMap[style] = value || '';
+    _writeStyleAttribute(el, styleMap);
   }
 
   removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
-    getDOM().removeStyle(el, style);
+    // IE requires '' instead of null
+    // see https://github.com/angular/angular/issues/7916
+    this.setStyle(el, style, '', flags);
   }
 
   // The value was validated already as a property binding, against the property name.
@@ -245,4 +250,35 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
     super.setAttribute(el, this.contentAttr, '');
     return el;
   }
+}
+
+function _readStyleAttribute(element: any): {[name: string]: string} {
+  const styleMap: {[name: string]: string} = {};
+  const styleAttribute = element.getAttribute('style');
+  if (styleAttribute) {
+    const styleList = styleAttribute.split(/;+/g);
+    for (let i = 0; i < styleList.length; i++) {
+      const style = styleList[i].trim();
+      if (style.length > 0) {
+        const colonIndex = style.indexOf(':');
+        if (colonIndex === -1) {
+          throw new Error(`Invalid CSS style: ${style}`);
+        }
+        const name = style.substr(0, colonIndex).trim();
+        styleMap[name] = style.substr(colonIndex + 1).trim();
+      }
+    }
+  }
+  return styleMap;
+}
+
+function _writeStyleAttribute(element: any, styleMap: {[name: string]: string}) {
+  let styleAttrValue = '';
+  for (const key in styleMap) {
+    const newValue = styleMap[key];
+    if (newValue) {
+      styleAttrValue += key + ':' + styleMap[key] + ';';
+    }
+  }
+  element.setAttribute('style', styleAttrValue);
 }

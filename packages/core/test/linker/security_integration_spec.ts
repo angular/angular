@@ -247,12 +247,12 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.detectChanges();
         // In some browsers, this will contain the full background specification, not just
         // the color.
-        expect(getDOM().getStyle(e, 'background')).toMatch(/red.*/);
+        expect(e.style['background']).toMatch(/red.*/);
 
         ci.ctxProp = 'url(javascript:evil())';
         fixture.detectChanges();
         // Updated value gets rejected, no value change.
-        expect(getDOM().getStyle(e, 'background')).not.toContain('javascript');
+        expect(e.style['background']).not.toContain('javascript');
       });
 
       modifiedInIvy('Unknown property error thrown during update mode, not creation mode')
