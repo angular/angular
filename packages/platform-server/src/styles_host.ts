@@ -24,7 +24,7 @@ export class ServerStylesHost extends SharedStylesHost {
   private _addStyle(style: string): void {
     let adapter = getDOM();
     const el = adapter.createElement('style');
-    adapter.setText(el, style);
+    el.textContent = style;
     if (!!this.transitionId) {
       adapter.setAttribute(el, 'ng-transition', this.transitionId);
     }

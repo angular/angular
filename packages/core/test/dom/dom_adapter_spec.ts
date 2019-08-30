@@ -18,7 +18,7 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
     });
 
     it('should be able to create text nodes and use them with the other APIs', () => {
-      const t = getDOM().createTextNode('hello');
+      const t = getDOM().getDefaultDocument().createTextNode('hello');
       expect(isTextNode(t)).toBe(true);
       const d = getDOM().createElement('div');
       getDOM().appendChild(d, t);
@@ -71,7 +71,7 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
           getDOM().appendChild(headEl, baseEl);
 
           const baseHref = getDOM().getBaseHref(defaultDoc);
-          getDOM().removeChild(headEl, baseEl);
+          headEl.removeChild(baseEl);
           getDOM().resetBaseElement();
 
           expect(baseHref).toEqual('/drop/bass/connon/');
@@ -84,7 +84,7 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
           getDOM().appendChild(headEl, baseEl);
 
           const baseHref = getDOM().getBaseHref(defaultDoc) !;
-          getDOM().removeChild(headEl, baseEl);
+          headEl.removeChild(baseEl);
           getDOM().resetBaseElement();
 
           expect(baseHref.endsWith('/base')).toBe(true);
