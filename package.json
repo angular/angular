@@ -43,7 +43,7 @@
     "@bazel/karma": "0.34.0",
     "@bazel/protractor": "0.34.0",
     "@bazel/typescript": "0.34.0",
-    "@microsoft/api-extractor": "^7.3.8",
+    "@microsoft/api-extractor": "^7.3.9",
     "@schematics/angular": "^8.0.0-beta.15",
     "@types/angular": "^1.6.47",
     "@types/base64-js": "1.2.5",

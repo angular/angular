@@ -67,7 +67,7 @@ export function runMain(
     mainEntryPointFilePath: path.resolve(entryPoint),
     apiReport: {
       enabled: !!apiReviewFolder,
-      // todo(alan-agius4): remove this folder name when the below issue is solved upstream
+      // TODO(alan-agius4): remove this folder name when the below issue is solved upstream
       // See: https://github.com/microsoft/web-build-tools/issues/1470
       reportFileName: apiReviewFolder && path.resolve(apiReviewFolder) || 'invalid',
     },
@@ -91,10 +91,10 @@ export function runMain(
   };
 
   const extractorConfig = ExtractorConfig.prepare(options);
-  const extractorResult = Extractor.invoke(extractorConfig, extractorOptions);
+  const {succeeded} = Extractor.invoke(extractorConfig, extractorOptions);
 
   // API extractor errors are emitted by it's logger.
-  return extractorResult.succeeded ? 0 : 1;
+  return succeeded ? 0 : 1;
 }
 
 // Entry point
