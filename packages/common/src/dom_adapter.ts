@@ -50,22 +50,14 @@ export abstract class DomAdapter {
   abstract createHtmlDocument(): HTMLDocument;
   abstract getDefaultDocument(): Document;
 
-  // Used by Title
-  abstract getTitle(doc: Document): string;
-  abstract setTitle(doc: Document, newTitle: string): any;
-
   // Used by By.css
-  abstract elementMatches(n: any, selector: string): boolean;
   abstract isElementNode(node: any): boolean;
 
   // Used by Testability
-  abstract parentElement(el: any): Node|null;
   abstract isShadowRoot(node: any): boolean;
-  abstract getHost(el: any): any;
 
   // Used by KeyEventsPlugin
   abstract onAndCancel(el: any, evt: any, listener: any): Function;
-  abstract getEventKey(event: any): string;
   abstract supportsDOMEvents(): boolean;
 
   // Used by PlatformLocation and ServerEventManagerPlugin
