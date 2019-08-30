@@ -57,15 +57,15 @@ export class TocService {
   }
 
   // Transform the HTML content to be safe to use in the ToC:
-  //   - Strip off the auto-generated heading anchor links).
+  //   - Strip off certain auto-generated elements (such as GitHub links and heading anchor links).
   //   - Strip off any anchor links (but keep their content)
   //   - Mark the HTML as trusted to be used with `[innerHTML]`.
   private extractHeadingSafeHtml(heading: HTMLHeadingElement) {
     const div: HTMLDivElement = this.document.createElement('div');
     div.innerHTML = heading.innerHTML;
 
-    // Remove any `.header-link` elements (along with their content).
-    div.querySelectorAll('.header-link').forEach(removeNode);
+    // Remove any `.github-links` or `.header-link` elements (along with their content).
+    div.querySelectorAll('.github-links, .header-link').forEach(removeNode);
 
     // Remove any remaining `a` elements (but keep their content).
     div.querySelectorAll('a').forEach(anchorLink => {
