@@ -72,51 +72,59 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string, debugInfo?: any): any {
     if (namespace) {
-      return getDOM().createElementNS(NAMESPACE_URIS[namespace], name, this.document);
+      const doc = this.document || getDOM().getDefaultDocument();
+      return doc.createElementNS(NAMESPACE_URIS[namespace], name);
     }
 
     return getDOM().createElement(name, this.document);
   }
 
-  createComment(value: string, debugInfo?: any): any { return getDOM().createComment(value); }
+  createComment(value: string, debugInfo?: any): any {
+    return getDOM().getDefaultDocument().createComment(value);
+  }
 
-  createText(value: string, debugInfo?: any): any { return getDOM().createTextNode(value); }
+  createText(value: string, debugInfo?: any): any {
+    const doc = getDOM().getDefaultDocument();
+    return doc.createTextNode(value);
+  }
 
   appendChild(parent: any, newChild: any): void { getDOM().appendChild(parent, newChild); }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
-      getDOM().insertBefore(parent, refChild, newChild);
+      parent.insertBefore(newChild, refChild);
     }
   }
 
   removeChild(parent: any, oldChild: any): void {
     if (parent) {
-      getDOM().removeChild(parent, oldChild);
+      parent.removeChild(oldChild);
     }
   }
 
   selectRootElement(selectorOrNode: string|any, debugInfo?: any): any {
     let el: any;
     if (typeof selectorOrNode === 'string') {
-      el = getDOM().querySelector(this.document, selectorOrNode);
+      el = this.document.querySelector(selectorOrNode);
       if (!el) {
         throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
       }
     } else {
       el = selectorOrNode;
     }
-    getDOM().clearNodes(el);
+    while (el.firstChild) {
+      el.removeChild(el.firstChild);
+    }
     return el;
   }
 
   parentNode(node: any): any { return getDOM().parentElement(node); }
 
-  nextSibling(node: any): any { return getDOM().nextSibling(node); }
+  nextSibling(node: any): any { return node.nextSibling; }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
-      getDOM().setAttributeNS(el, NAMESPACE_URIS[namespace], namespace + ':' + name, value);
+      el.setAttributeNS(NAMESPACE_URIS[namespace], namespace + ':' + name, value);
     } else {
       getDOM().setAttribute(el, name, value);
     }
@@ -124,15 +132,15 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     if (namespace) {
-      getDOM().removeAttributeNS(el, NAMESPACE_URIS[namespace], name);
+      el.removeAttributeNS(NAMESPACE_URIS[namespace], name);
     } else {
-      getDOM().removeAttribute(el, name);
+      el.removeAttribute(name);
     }
   }
 
-  addClass(el: any, name: string): void { getDOM().addClass(el, name); }
+  addClass(el: any, name: string): void { el.classList.add(name); }
 
-  removeClass(el: any, name: string): void { getDOM().removeClass(el, name); }
+  removeClass(el: any, name: string): void { el.classList.remove(name); }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     getDOM().setStyle(el, style, value);
@@ -153,7 +161,11 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   setProperty(el: any, name: string, value: any): void {
     checkNoSyntheticProp(name, 'property');
-    getDOM().setProperty(el, name, value);
+    if (name === 'innerText') {
+      // Domino does not support innerText. Just map it to textContent.
+      el.textContent = value;
+    }
+    (<any>el)[name] = value;
     // Mirror property values for known HTML element properties in the attributes.
     // Skip `innerhtml` which is conservatively marked as an attribute for security
     // purposes but is not actually an attribute.
@@ -166,7 +178,7 @@ class DefaultServerRenderer2 implements Renderer2 {
     }
   }
 
-  setValue(node: any, value: string): void { getDOM().setText(node, value); }
+  setValue(node: any, value: string): void { node.textContent = value; }
 
   listen(
       target: 'document'|'window'|'body'|any, eventName: string,

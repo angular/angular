@@ -86,18 +86,6 @@ export class DominoAdapter extends BrowserDomAdapter {
     return (<any>el)[name];
   }
 
-  setProperty(el: Element, name: string, value: any) {
-    if (name === 'href') {
-      // Even though the server renderer reflects any properties to attributes
-      // map 'href' to attribute just to handle when setProperty is directly called.
-      this.setAttribute(el, 'href', value);
-    } else if (name === 'innerText') {
-      // Domino does not support innerText. Just map it to textContent.
-      el.textContent = value;
-    }
-    (<any>el)[name] = value;
-  }
-
   getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
     if (target === 'window') {
       return doc.defaultView;
@@ -112,7 +100,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   }
 
   getBaseHref(doc: Document): string {
-    const base = this.querySelector(doc.documentElement !, 'base');
+    const base = doc.documentElement !.querySelector('base');
     let href = '';
     if (base) {
       href = base.getAttribute('href') !;
