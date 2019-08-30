@@ -149,9 +149,10 @@ export class StylingBuilder {
 
   registerInputBasedOnName(name: string, expression: AST, sourceSpan: ParseSourceSpan) {
     let binding: BoundStylingEntry|null = null;
-    const nameToMatch = name.substring(0, 5);  // class | style
-    const isStyle = nameToMatch === 'style';
-    const isClass = isStyle ? false : (nameToMatch === 'class');
+    const prefix = name.substring(0, 6);
+    const isStyle = name === 'style' || prefix === 'style.' || prefix === 'style!';
+    const isClass = !isStyle &&
+        (name === 'class' || name === 'className' || prefix === 'class.' || prefix === 'class!');
     if (isStyle || isClass) {
       const isMapBased = name.charAt(5) !== '.';         // style.prop or class.prop makes this a no
       const property = name.substr(isMapBased ? 5 : 6);  // the dot explains why there's a +1

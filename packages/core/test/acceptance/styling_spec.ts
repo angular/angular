@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, ElementRef, Input} from '@angular/core';
+import {Component, Directive, ElementRef, HostBinding, Input, ViewChild} from '@angular/core';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
@@ -630,5 +630,47 @@ describe('styling', () => {
       expect(fixture.debugElement.nativeElement.textContent).toContain('Hello');
 
     });
+  });
+
+  it('should be able to name inputs starting with `class` or `style`', () => {
+    @Directive({selector: '[dir]'})
+    class Dir {
+      @Input('classesInSchool') classes = '';
+      @Input('styleOfClothing') style = '';
+    }
+
+    @Component({
+      template: '<span dir [classesInSchool]="classes" [styleOfClothing]="style"></span>',
+    })
+    class App {
+      @ViewChild(Dir, {static: false}) dir !: Dir;
+
+      classes = 'math';
+      style = '80s';
+    }
+
+    TestBed.configureTestingModule({declarations: [App, Dir]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const directive = fixture.componentInstance.dir;
+
+    expect(directive.classes).toBe('math');
+    expect(directive.style).toBe('80s');
+  });
+
+  it('should be able to bind to `className`', () => {
+    @Component({template: ''})
+    class App {
+      @HostBinding('className')
+      klass = 'one two';
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const classList = fixture.nativeElement.classList;
+
+    expect(classList.contains('one')).toBe(true);
+    expect(classList.contains('two')).toBe(true);
   });
 });
