@@ -286,7 +286,7 @@ describe('NgModuleRef_ injector', () => {
       expect(def.scope).toBe(null);
     });
 
-    it('sets isRoot to `null` when INJECTOR_SCOPE is `null`', () => {
+    it('sets scope to `null` when INJECTOR_SCOPE is `null`', () => {
       const def = moduleDef([createProvider(INJECTOR_SCOPE, null)]);
       expect(def.scope).toBe(null);
     });
