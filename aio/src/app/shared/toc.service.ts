@@ -34,12 +34,16 @@ export class TocService {
 
     const headings = this.findTocHeadings(docElement);
     const idMap = new Map<string, number>();
-    const tocList = headings.map(heading => ({
-      content: this.extractHeadingSafeHtml(heading),
-      href: `${docId}#${this.getId(heading, idMap)}`,
-      level: heading.tagName.toLowerCase(),
-      title: (heading.textContent || '').trim(),
-    }));
+    const tocList = headings.map(heading => {
+      const {title, content} = this.extractHeadingSafeHtml(heading);
+
+      return {
+        level: heading.tagName.toLowerCase(),
+        href: `${docId}#${this.getId(heading, idMap)}`,
+        title,
+        content,
+      };
+    });
 
     this.tocList.next(tocList);
 
@@ -52,29 +56,35 @@ export class TocService {
     this.tocList.next([]);
   }
 
-  // This bad boy exists only to strip off the anchor link attached to a heading
+  // Transform the HTML content to be safe to use in the ToC:
+  //   - Strip off the auto-generated heading anchor links).
+  //   - Strip off any anchor links (but keep their content)
+  //   - Mark the HTML as trusted to be used with `[innerHTML]`.
   private extractHeadingSafeHtml(heading: HTMLHeadingElement) {
     const div: HTMLDivElement = this.document.createElement('div');
     div.innerHTML = heading.innerHTML;
-    const anchorLinks = Array.from(div.querySelectorAll('a'));
-    for (const anchorLink of anchorLinks) {
-      if (!anchorLink.classList.contains('header-link')) {
-        // this is an anchor that contains actual content that we want to keep
-        // move the contents of the anchor into its parent
-        const parent = anchorLink.parentNode!;
-        while (anchorLink.childNodes.length) {
-          parent.insertBefore(anchorLink.childNodes[0], anchorLink);
-        }
+
+    // Remove any `.header-link` elements (along with their content).
+    div.querySelectorAll('.header-link').forEach(removeNode);
+
+    // Remove any remaining `a` elements (but keep their content).
+    div.querySelectorAll('a').forEach(anchorLink => {
+      // We want to keep the content of this anchor, so move it into its parent.
+      const parent = anchorLink.parentNode!;
+      while (anchorLink.childNodes.length) {
+        parent.insertBefore(anchorLink.childNodes[0], anchorLink);
       }
-      // now remove the anchor
-      if (anchorLink.parentNode !== null) {
-        // We cannot use ChildNode.remove() because of IE11
-        anchorLink.parentNode.removeChild(anchorLink);
-      }
-    }
-    // security: the document element which provides this heading content
-    // is always authored by the documentation team and is considered to be safe
-    return this.domSanitizer.bypassSecurityTrustHtml(div.innerHTML.trim());
+
+      // Now, remove the anchor.
+      removeNode(anchorLink);
+    });
+
+    return {
+      // Security: The document element which provides this heading content is always authored by
+      // the documentation team and is considered to be safe.
+      content: this.domSanitizer.bypassSecurityTrustHtml(div.innerHTML.trim()),
+      title: (div.textContent || '').trim(),
+    };
   }
 
   private findTocHeadings(docElement: Element): HTMLHeadingElement[] {
@@ -113,5 +123,13 @@ export class TocService {
       idMap.set(key, count);
       return count === 1 ? key : `${key}-${count}`;
     }
+  }
+}
+
+// Helpers
+function removeNode(node: Node): void {
+  if (node.parentNode !== null) {
+    // We cannot use `Node.remove()` because of IE11.
+    node.parentNode.removeChild(node);
   }
 }
