@@ -7,9 +7,10 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, R3BaseMetadataFacade, R3ComponentMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, R3BaseMetadataFacade, R3ComponentMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {HostBinding, HostListener, Input, Output, Type} from './core';
+import {Identifiers} from './identifiers';
 import {compileInjectable} from './injectable_compiler_2';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';
 import {DeclareVarStmt, Expression, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
@@ -59,7 +60,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
       useFactory: wrapExpression(facade, USE_FACTORY),
       useValue: wrapExpression(facade, USE_VALUE),
       useExisting: wrapExpression(facade, USE_EXISTING),
-      ctorDeps: convertR3DependencyMetadataArray(facade.ctorDeps),
       userDeps: convertR3DependencyMetadataArray(facade.userDeps) || undefined,
     });
 
@@ -154,14 +154,15 @@ export class CompilerFacadeImpl implements CompilerFacade {
   }
 
   compileFactory(
-      angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
-      meta: R3PipeMetadataFacade|R3DirectiveMetadataFacade|R3ComponentMetadataFacade,
-      isPipe = false) {
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade) {
     const factoryRes = compileFactoryFromMetadata({
       name: meta.name,
       type: new WrappedNodeExpr(meta.type),
       typeArgumentCount: meta.typeArgumentCount,
-      deps: convertR3DependencyMetadataArray(meta.deps), isPipe
+      deps: convertR3DependencyMetadataArray(meta.deps),
+      injectFn: meta.injectFn === 'directiveInject' ? Identifiers.directiveInject :
+                                                      Identifiers.inject,
+      isPipe: meta.isPipe
     });
     return this.jitExpression(
         factoryRes.factory, angularCoreEnv, sourceMapUrl, factoryRes.statements);

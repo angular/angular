@@ -171,8 +171,12 @@ export class DecorationAnalyzer {
     for (const {handler, analysis} of clazz.matches) {
       const result = handler.compile(clazz.declaration, analysis, constantPool);
       if (Array.isArray(result)) {
-        compilations.push(...result);
-      } else {
+        result.forEach(current => {
+          if (!compilations.some(compilation => compilation.name === current.name)) {
+            compilations.push(current);
+          }
+        });
+      } else if (!compilations.some(compilation => compilation.name === result.name)) {
         compilations.push(result);
       }
     }

@@ -66,4 +66,294 @@ describe('compiler compliance: dependency injection', () => {
     expectEmit(result.source, factory, 'Incorrect factory');
   });
 
+  it('should create a factory definition for an injectable', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Injectable} from '@angular/core';
+
+          class MyDependency {}
+
+          @Injectable()
+          export class MyService {
+            constructor(dep: MyDependency) {}
+          }
+        `
+      }
+    };
+
+    const factory = `
+      MyService.ngFactoryDef = function MyService_Factory(t) {
+        return new (t || MyService)($r3$.ɵɵinject(MyDependency));
+      }`;
+
+    const def = `
+      MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+        token: MyService,
+        factory: function(t) {
+          return MyService.ngFactoryDef(t);
+        },
+        providedIn: null
+      });
+    `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, factory, 'Incorrect factory definition');
+    expectEmit(result.source, def, 'Incorrect injectable definition');
+  });
+
+  it('should create a single ngFactoryDef if the class has more than one decorator', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Injectable, Pipe} from '@angular/core';
+
+          @Injectable()
+          @Pipe({name: 'my-pipe'})
+          export class MyPipe {
+          }
+        `
+      }
+    };
+
+    const result = compile(files, angularFiles).source;
+    const matches = result.match(/MyPipe\.ngFactoryDef = function MyPipe_Factory/g);
+    expect(matches ? matches.length : 0).toBe(1);
+  });
+
+  it('should delegate directly to the alternate factory when setting `useFactory` without `deps`',
+     () => {
+       const files = {
+         app: {
+           'spec.ts': `
+              import {Injectable} from '@angular/core';
+
+              class MyAlternateService {}
+
+              function alternateFactory() {
+                return new MyAlternateService();
+              }
+
+              @Injectable({
+                useFactory: alternateFactory
+              })
+              export class MyService {
+              }
+            `
+         }
+       };
+
+       const def = `
+          MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+            token: MyService,
+            factory: function() {
+              return alternateFactory();
+            },
+            providedIn: null
+          });
+        `;
+
+       const result = compile(files, angularFiles);
+       expectEmit(result.source, def, 'Incorrect injectable definition');
+     });
+
+  it('should not delegate directly to the alternate factory when setting `useFactory` with `deps`',
+     () => {
+       const files = {
+         app: {
+           'spec.ts': `
+              import {Injectable} from '@angular/core';
+
+              class SomeDep {}
+              class MyAlternateService {}
+
+              @Injectable({
+                useFactory: () => new MyAlternateFactory(),
+                deps: [SomeDep]
+              })
+              export class MyService {
+              }
+            `
+         }
+       };
+
+       const def = `
+          MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+            token: MyService,
+            factory: function MyService_Factory(t) {
+              var r = null;
+              if (t) {
+                (r = new t());
+              } else {
+                (r = (() => new MyAlternateFactory())($r3$.ɵɵinject(SomeDep)));
+              }
+              return r;
+            },
+            providedIn: null
+          });
+        `;
+
+       const result = compile(files, angularFiles);
+       expectEmit(result.source, def, 'Incorrect injectable definition');
+     });
+
+  it('should delegate directly to the alternate class factory when setting `useClass` without `deps`',
+     () => {
+       const files = {
+         app: {
+           'spec.ts': `
+              import {Injectable} from '@angular/core';
+
+              @Injectable()
+              class MyAlternateService {}
+
+              @Injectable({
+                useClass: MyAlternateService
+              })
+              export class MyService {
+              }
+            `
+         }
+       };
+
+       const factory = `
+          MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+            token: MyService,
+            factory: function(t) {
+              return MyAlternateService.ngFactoryDef(t);
+            },
+            providedIn: null
+          });
+        `;
+
+       const result = compile(files, angularFiles);
+       expectEmit(result.source, factory, 'Incorrect factory definition');
+     });
+
+  it('should not delegate directly to the alternate class when setting `useClass` with `deps`',
+     () => {
+       const files = {
+         app: {
+           'spec.ts': `
+            import {Injectable} from '@angular/core';
+
+            class SomeDep {}
+
+            @Injectable()
+            class MyAlternateService {}
+
+            @Injectable({
+              useClass: MyAlternateService,
+              deps: [SomeDep]
+            })
+            export class MyService {
+            }
+          `
+         }
+       };
+
+       const factory = `
+          MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+            token: MyService,
+            factory: function MyService_Factory(t) {
+              var r = null;
+              if (t) {
+                (r = new t());
+              } else {
+                (r = new MyAlternateService($r3$.ɵɵinject(SomeDep)));
+              }
+              return r;
+            },
+            providedIn: null
+          });
+        `;
+
+       const result = compile(files, angularFiles);
+       expectEmit(result.source, factory, 'Incorrect factory definition');
+     });
+
+  it('should unwrap forward refs when delegating to a different class', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+            import {Injectable, forwardRef} from '@angular/core';
+
+            @Injectable({providedIn: 'root', useClass: forwardRef(() => SomeProviderImpl)})
+            abstract class SomeProvider {
+            }
+
+            @Injectable()
+            class SomeProviderImpl extends SomeProvider {
+            }
+          `
+      }
+    };
+
+    const factory = `
+      SomeProvider.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+        token: SomeProvider,
+        factory: function(t) {
+          return SomeProviderImpl.ngFactoryDef(t);
+        },
+        providedIn: 'root'
+      });
+    `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, factory, 'Incorrect factory definition');
+  });
+
+  it('should have the pipe factory take precedence over the injectable factory, if a class has multiple decorators',
+     () => {
+       const files = {
+         app: {
+           'spec.ts': `
+            import {Component, NgModule, Pipe, PipeTransform, Injectable} from '@angular/core';
+
+            @Injectable()
+            class Service {}
+
+            @Injectable()
+            @Pipe({name: 'myPipe'})
+            export class MyPipe implements PipeTransform {
+              constructor(service: Service) {}
+              transform(value: any, ...args: any[]) { return value; }
+            }
+
+            @Pipe({name: 'myOtherPipe'})
+            @Injectable()
+            export class MyOtherPipe implements PipeTransform {
+              constructor(service: Service) {}
+              transform(value: any, ...args: any[]) { return value; }
+            }
+
+            @Component({
+              selector: 'my-app',
+              template: '{{0 | myPipe | myOtherPipe}}'
+            })
+            export class MyApp {}
+
+            @NgModule({declarations: [MyPipe, MyOtherPipe, MyApp], declarations: [Service]})
+            export class MyModule {}
+          `
+         }
+       };
+
+       const result = compile(files, angularFiles);
+       const source = result.source;
+
+       const MyPipeFactory = `
+        MyPipe.ngFactoryDef = function MyPipe_Factory(t) { return new (t || MyPipe)($r3$.ɵɵdirectiveInject(Service)); };
+      `;
+
+       const MyOtherPipeFactory = `
+        MyOtherPipe.ngFactoryDef = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($r3$.ɵɵdirectiveInject(Service)); };
+      `;
+
+       expectEmit(source, MyPipeFactory, 'Invalid pipe factory function');
+       expectEmit(source, MyOtherPipeFactory, 'Invalid pipe factory function');
+       expect(source.match(/MyPipe\.ngFactoryDef =/g) !.length).toBe(1);
+       expect(source.match(/MyOtherPipe\.ngFactoryDef =/g) !.length).toBe(1);
+     });
+
 });

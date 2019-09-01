@@ -753,11 +753,11 @@ export function getBaseDef<T>(type: any): ɵɵBaseDef<T>|null {
 export function getFactoryDef<T>(type: any, throwNotFound: true): FactoryFn<T>;
 export function getFactoryDef<T>(type: any): FactoryFn<T>|null;
 export function getFactoryDef<T>(type: any, throwNotFound?: boolean): FactoryFn<T>|null {
-  const factoryFn = type[NG_FACTORY_DEF] || null;
-  if (!factoryFn && throwNotFound === true && ngDevMode) {
+  const hasFactoryDef = type.hasOwnProperty(NG_FACTORY_DEF);
+  if (!hasFactoryDef && throwNotFound === true && ngDevMode) {
     throw new Error(`Type ${stringify(type)} does not have 'ngFactoryDef' property.`);
   }
-  return factoryFn;
+  return hasFactoryDef ? type[NG_FACTORY_DEF] : null;
 }
 
 export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;
