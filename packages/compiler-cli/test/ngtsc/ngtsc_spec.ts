@@ -67,6 +67,8 @@ runInEachFileSystem(os => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Dep>;');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Dep>;');
+      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Service>;');
     });
 
     it('should compile Injectables with a generic service', () => {
@@ -83,6 +85,7 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Store.ngInjectableDef =');
       const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Store<any>>;');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Store<any>>;');
     });
 
@@ -106,11 +109,15 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('Dep.ngInjectableDef =');
       expect(jsContents).toContain('Service.ngInjectableDef =');
       expect(jsContents)
-          .toContain('return new (t || Service)(i0.ɵɵinject(Dep)); }, providedIn: \'root\' });');
+          .toContain(
+              'Service.ngFactoryDef = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };');
+      expect(jsContents).toContain('providedIn: \'root\' })');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Dep>;');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Dep>;');
+      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Service>;');
     });
 
     it('should compile Injectables with providedIn and factory without errors', () => {
@@ -128,13 +135,14 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ngInjectableDef =');
-      expect(jsContents).toContain('(r = new t());');
-      expect(jsContents).toContain('(r = (function () { return new Service(); })());');
-      expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
-      expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
+      expect(jsContents)
+          .toContain('factory: function () { return (function () { return new Service(); })(); }');
+      expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
+      expect(jsContents).toContain(', providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Service>;');
     });
 
     it('should compile Injectables with providedIn and factory with deps without errors', () => {
@@ -156,13 +164,14 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ngInjectableDef =');
       expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
-      expect(jsContents).toContain('(r = new t(i0.ɵɵinject(Dep)));');
+      expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
       expect(jsContents)
           .toContain('(r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep)));');
       expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ngFactoryDef: i0.ɵɵFactoryDef<Service>;');
     });
 
     it('should compile @Injectable with an @Optional dependency', () => {
@@ -1282,7 +1291,7 @@ runInEachFileSystem(os => {
 
              env.driveMain();
              const jsContents = env.getContents('test.js');
-             expect(jsContents).toMatch(/if \(t\).*throw new Error.* else .* '42'/ms);
+             expect(jsContents).toMatch(/function Test_Factory\(t\) { throw new Error\(/ms);
            });
       });
 
@@ -1290,33 +1299,35 @@ runInEachFileSystem(os => {
         it('should compile an @Injectable on a class with a non-injectable constructor', () => {
           env.tsconfig({strictInjectionParameters: false});
           env.write('test.ts', `
-          import {Injectable} from '@angular/core';
+            import {Injectable} from '@angular/core';
 
-          @Injectable()
-          export class Test {
-            constructor(private notInjectable: string) {}
-          }
-        `);
+            @Injectable()
+            export class Test {
+              constructor(private notInjectable: string) {}
+            }
+          `);
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('factory: function Test_Factory(t) { throw new Error(');
+          expect(jsContents)
+              .toContain('Test.ngFactoryDef = function Test_Factory(t) { throw new Error(');
         });
 
         it('should compile an @Injectable provided in the root on a class with a non-injectable constructor',
            () => {
              env.tsconfig({strictInjectionParameters: false});
              env.write('test.ts', `
-            import {Injectable} from '@angular/core';
-            @Injectable({providedIn: 'root'})
-            export class Test {
-              constructor(private notInjectable: string) {}
-            }
-          `);
+              import {Injectable} from '@angular/core';
+              @Injectable({providedIn: 'root'})
+              export class Test {
+                constructor(private notInjectable: string) {}
+              }
+            `);
 
              env.driveMain();
              const jsContents = env.getContents('test.js');
-             expect(jsContents).toContain('factory: function Test_Factory(t) { throw new Error(');
+             expect(jsContents)
+                 .toContain('Test.ngFactoryDef = function Test_Factory(t) { throw new Error(');
            });
 
       });
