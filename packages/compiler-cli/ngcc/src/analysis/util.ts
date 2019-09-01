@@ -9,8 +9,9 @@ import * as ts from 'typescript';
 
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {AbsoluteFsPath, absoluteFromSourceFile, relative} from '../../../src/ngtsc/file_system';
-import {ClassSymbol, Decorator} from '../../../src/ngtsc/reflection';
+import {Decorator} from '../../../src/ngtsc/reflection';
 import {DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
+import {NgccClassSymbol} from '../host/ngcc_host';
 
 import {AnalyzedClass, MatchingHandler} from './types';
 
@@ -19,7 +20,7 @@ export function isWithinPackage(packagePath: AbsoluteFsPath, sourceFile: ts.Sour
 }
 
 export function analyzeDecorators(
-    symbol: ClassSymbol, decorators: Decorator[] | null,
+    symbol: NgccClassSymbol, decorators: Decorator[] | null,
     handlers: DecoratorHandler<any, any>[]): AnalyzedClass|null {
   const declaration = symbol.valueDeclaration;
   const matchingHandlers = handlers
