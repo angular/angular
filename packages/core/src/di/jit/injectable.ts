@@ -8,6 +8,7 @@
 
 import {R3InjectableMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
+import {NG_FACTORY_DEF} from '../../render3/fields';
 import {getClosureSafeProperty} from '../../util/property';
 import {Injectable} from '../injectable';
 import {NG_INJECTABLE_DEF} from '../interface/defs';
@@ -23,59 +24,36 @@ import {convertDependencies, reflectDependencies} from './util';
  * `ngInjectableDef` onto the injectable type.
  */
 export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
-  let def: any = null;
+  let ngInjectableDef: any = null;
+  let ngFactoryDef: any = null;
 
   // if NG_INJECTABLE_DEF is already defined on this class then don't overwrite it
-  if (type.hasOwnProperty(NG_INJECTABLE_DEF)) return;
-
-  Object.defineProperty(type, NG_INJECTABLE_DEF, {
-    get: () => {
-      if (def === null) {
-        // Allow the compilation of a class with a `@Injectable()` decorator without parameters
-        const meta: Injectable = srcMeta || {providedIn: null};
-        const hasAProvider = isUseClassProvider(meta) || isUseFactoryProvider(meta) ||
-            isUseValueProvider(meta) || isUseExistingProvider(meta);
-
-
-        const compilerMeta: R3InjectableMetadataFacade = {
-          name: type.name,
-          type: type,
-          typeArgumentCount: 0,
-          providedIn: meta.providedIn,
-          ctorDeps: reflectDependencies(type),
-          userDeps: undefined,
-        };
-        if ((isUseClassProvider(meta) || isUseFactoryProvider(meta)) && meta.deps !== undefined) {
-          compilerMeta.userDeps = convertDependencies(meta.deps);
+  if (!type.hasOwnProperty(NG_INJECTABLE_DEF)) {
+    Object.defineProperty(type, NG_INJECTABLE_DEF, {
+      get: () => {
+        if (ngInjectableDef === null) {
+          ngInjectableDef = getCompilerFacade().compileInjectable(
+              angularCoreDiEnv, `ng:///${type.name}/ngInjectableDef.js`,
+              getInjectableMetadata(type, srcMeta));
         }
-        if (!hasAProvider) {
-          // In the case the user specifies a type provider, treat it as {provide: X, useClass: X}.
-          // The deps will have been reflected above, causing the factory to create the class by
-          // calling
-          // its constructor with injected deps.
-          compilerMeta.useClass = type;
-        } else if (isUseClassProvider(meta)) {
-          // The user explicitly specified useClass, and may or may not have provided deps.
-          compilerMeta.useClass = meta.useClass;
-        } else if (isUseValueProvider(meta)) {
-          // The user explicitly specified useValue.
-          compilerMeta.useValue = meta.useValue;
-        } else if (isUseFactoryProvider(meta)) {
-          // The user explicitly specified useFactory.
-          compilerMeta.useFactory = meta.useFactory;
-        } else if (isUseExistingProvider(meta)) {
-          // The user explicitly specified useExisting.
-          compilerMeta.useExisting = meta.useExisting;
-        } else {
-          // Can't happen - either hasAProvider will be false, or one of the providers will be set.
-          throw new Error(`Unreachable state.`);
+        return ngInjectableDef;
+      },
+    });
+  }
+
+  // if NG_FACTORY_DEF is already defined on this class then don't overwrite it
+  if (!type.hasOwnProperty(NG_FACTORY_DEF)) {
+    Object.defineProperty(type, NG_FACTORY_DEF, {
+      get: () => {
+        if (ngFactoryDef === null) {
+          ngFactoryDef = getCompilerFacade().compileFactory(
+              angularCoreDiEnv, `ng:///${type.name}/ngFactoryDef.js`,
+              getInjectableMetadata(type, srcMeta));
         }
-        def = getCompilerFacade().compileInjectable(
-            angularCoreDiEnv, `ng:///${type.name}/ngInjectableDef.js`, compilerMeta);
-      }
-      return def;
-    },
-  });
+        return ngFactoryDef;
+      },
+    });
+  }
 }
 
 type UseClassProvider = Injectable & ClassSansProvider & {deps?: any[]};
@@ -97,4 +75,35 @@ function isUseFactoryProvider(meta: Injectable): meta is Injectable&FactorySansP
 
 function isUseExistingProvider(meta: Injectable): meta is Injectable&ExistingSansProvider {
   return (meta as ExistingSansProvider).useExisting !== undefined;
+}
+
+function getInjectableMetadata(type: Type<any>, srcMeta?: Injectable): R3InjectableMetadataFacade {
+  // Allow the compilation of a class with a `@Injectable()` decorator without parameters
+  const meta: Injectable = srcMeta || {providedIn: null};
+  const compilerMeta: R3InjectableMetadataFacade = {
+    name: type.name,
+    type: type,
+    typeArgumentCount: 0,
+    providedIn: meta.providedIn,
+    ctorDeps: reflectDependencies(type),
+    userDeps: undefined,
+    injectFn: 'inject'
+  };
+  if ((isUseClassProvider(meta) || isUseFactoryProvider(meta)) && meta.deps !== undefined) {
+    compilerMeta.userDeps = convertDependencies(meta.deps);
+  }
+  if (isUseClassProvider(meta)) {
+    // The user explicitly specified useClass, and may or may not have provided deps.
+    compilerMeta.useClass = meta.useClass;
+  } else if (isUseValueProvider(meta)) {
+    // The user explicitly specified useValue.
+    compilerMeta.useValue = meta.useValue;
+  } else if (isUseFactoryProvider(meta)) {
+    // The user explicitly specified useFactory.
+    compilerMeta.useFactory = meta.useFactory;
+  } else if (isUseExistingProvider(meta)) {
+    // The user explicitly specified useExisting.
+    compilerMeta.useExisting = meta.useExisting;
+  }
+  return compilerMeta;
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, EMPTY_SOURCE_SPAN, Expression, ParseError, ParsedHostBindings, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
+import {ConstantPool, EMPTY_SOURCE_SPAN, Expression, Identifiers, ParseError, ParsedHostBindings, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -94,7 +94,7 @@ export class DirectiveDecoratorHandler implements
       CompileResult[] {
     const meta = analysis.meta;
     const res = compileDirectiveFromMetadata(meta, pool, makeBindingParser());
-    const factoryRes = compileNgFactoryDefField(meta);
+    const factoryRes = compileNgFactoryDefField({...meta, injectFn: Identifiers.directiveInject});
     if (analysis.metadataStmt !== null) {
       factoryRes.statements.push(analysis.metadataStmt);
     }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
+import {Expression, Identifiers, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -14,6 +14,7 @@ import {DefaultImportRecorder} from '../../imports';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
+import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, validateConstructorDependencies} from './util';
 
@@ -60,17 +61,27 @@ export class InjectableDecoratorHandler implements
     };
   }
 
-  compile(node: ClassDeclaration, analysis: InjectableHandlerData): CompileResult {
+  compile(node: ClassDeclaration, analysis: InjectableHandlerData): CompileResult[] {
+    const meta = analysis.meta;
     const res = compileIvyInjectable(analysis.meta);
     const statements = res.statements;
+    const factoryRes = compileNgFactoryDefField({
+      name: meta.name,
+      type: meta.type,
+      typeArgumentCount: meta.typeArgumentCount,
+      deps: meta.ctorDeps,
+      injectFn: Identifiers.inject
+    });
     if (analysis.metadataStmt !== null) {
-      statements.push(analysis.metadataStmt);
+      factoryRes.statements.push(analysis.metadataStmt);
     }
-    return {
-      name: 'ngInjectableDef',
-      initializer: res.expression, statements,
-      type: res.type,
-    };
+    return [
+      factoryRes, {
+        name: 'ngInjectableDef',
+        initializer: res.expression, statements,
+        type: res.type,
+      }
+    ];
   }
 }
 

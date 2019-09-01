@@ -66,4 +66,103 @@ describe('compiler compliance: dependency injection', () => {
     expectEmit(result.source, factory, 'Incorrect factory');
   });
 
+  it('should create a factory definition for an injectable', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Injectable} from '@angular/core';
+
+          class MyDependency {}
+
+          @Injectable()
+          export class MyService {
+            constructor(dep: MyDependency) {}
+          }
+        `
+      }
+    };
+
+    const factory = `
+      MyService.ngFactoryDef = function MyService_Factory(t) {
+        return new (t || MyService)($r3$.ɵɵinject(MyDependency));
+      }`;
+
+    const def = `
+      MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+        token: MyService,
+        factory: function() {
+          return MyService.ngFactoryDef();
+        },
+        providedIn: null
+      });
+    `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, factory, 'Incorrect factory definition');
+    expectEmit(result.source, def, 'Incorrect injectable definition');
+  });
+
+  it('should not reference the ngFactoryDef if the injectable has an alternate factory', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Injectable} from '@angular/core';
+
+          class MyAlternateService {}
+
+          @Injectable({
+            useFactory: () => new MyAlternateFactory()
+          })
+          export class MyService {
+          }
+        `
+      }
+    };
+
+    const factory = `
+      MyService.ngFactoryDef = function MyService_Factory(t) {
+        return new (t || MyService)();
+      }`;
+
+    const def = `
+      MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
+        token: MyService,
+        factory: function MyService_Factory(t) {
+          var r = null;
+          if (t) {
+            (r = new t());
+          } else {
+            (r = (() => new MyAlternateFactory())());
+          }
+          return r;
+        },
+        providedIn: null
+      });
+    `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, factory, 'Incorrect factory definition');
+    expectEmit(result.source, def, 'Incorrect injectable definition');
+  });
+
+  it('should create a single ngFactoryDef if the class has more than one decorator', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Injectable, Pipe} from '@angular/core';
+
+          @Injectable()
+          @Pipe({name: 'my-pipe'})
+          export class MyPipe {
+          }
+        `
+      }
+    };
+
+    const result = compile(files, angularFiles).source;
+    const matches = result.match(/MyPipe\.ngFactoryDef = function MyPipe_Factory/g);
+    expect(matches ? matches.length : 0).toBe(1);
+  });
+
+
 });

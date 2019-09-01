@@ -7,9 +7,8 @@
  */
 
 import {R3DirectiveMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
-import {CompilerFacade, R3BaseMetadataFacade, R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
+import {R3BaseMetadataFacade, R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
-import {compileInjectable} from '../../di/jit/injectable';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Query} from '../../metadata/di';
@@ -43,31 +42,52 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
   let ngComponentDef: any = null;
-  let ngFactoryDef: any = null;
 
   // Metadata may have resources which need to be resolved.
   maybeQueueResolutionOfComponentResources(type, metadata);
 
-  Object.defineProperty(type, NG_FACTORY_DEF, {
-    get: () => {
-      if (ngFactoryDef === null) {
-        const compiler = getCompilerFacade();
-        const meta = getComponentMetadata(compiler, type, metadata);
-        ngFactoryDef = compiler.compileFactory(
-            angularCoreEnv, `ng:///${type.name}/ngFactory.js`, meta.metadata);
-      }
-      return ngFactoryDef;
-    },
-    // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
-  });
+  // Note that we're using the same function as `Directive`, because that's only subset of metadata
+  // that we need to create the ngFactoryDef. We're avoiding using the component metadata
+  // because we'd have to resolve the asynchronous templates.
+  addDirectiveFactoryDef(type, metadata);
 
   Object.defineProperty(type, NG_COMPONENT_DEF, {
     get: () => {
       if (ngComponentDef === null) {
         const compiler = getCompilerFacade();
-        const meta = getComponentMetadata(compiler, type, metadata);
-        ngComponentDef = compiler.compileComponent(angularCoreEnv, meta.templateUrl, meta.metadata);
+
+        if (componentNeedsResolution(metadata)) {
+          const error = [`Component '${type.name}' is not resolved:`];
+          if (metadata.templateUrl) {
+            error.push(` - templateUrl: ${metadata.templateUrl}`);
+          }
+          if (metadata.styleUrls && metadata.styleUrls.length) {
+            error.push(` - styleUrls: ${JSON.stringify(metadata.styleUrls)}`);
+          }
+          error.push(`Did you run and wait for 'resolveComponentResources()'?`);
+          throw new Error(error.join('\n'));
+        }
+
+        const templateUrl = metadata.templateUrl || `ng:///${type.name}/template.html`;
+        const meta: R3ComponentMetadataFacade = {
+          ...directiveMetadata(type, metadata),
+          typeSourceSpan: compiler.createParseSourceSpan('Component', type.name, templateUrl),
+          template: metadata.template || '',
+          preserveWhitespaces: metadata.preserveWhitespaces || false,
+          styles: metadata.styles || EMPTY_ARRAY,
+          animations: metadata.animations,
+          directives: [],
+          changeDetection: metadata.changeDetection,
+          pipes: new Map(),
+          encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
+          interpolation: metadata.interpolation,
+          viewProviders: metadata.viewProviders || null,
+        };
+        if (meta.usesInheritance) {
+          addBaseDefToUndecoratedParents(type);
+        }
+
+        ngComponentDef = compiler.compileComponent(angularCoreEnv, templateUrl, meta);
 
         // When NgModule decorator executed, we enqueued the module definition such that
         // it would only dequeue and add itself as module scope to all of its declarations,
@@ -90,45 +110,6 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
   });
-
-  // Add ngInjectableDef so components are reachable through the module injector by default
-  // This is mostly to support injecting components in tests. In real application code,
-  // components should be retrieved through the node injector, so this isn't a problem.
-  compileInjectable(type);
-}
-
-function getComponentMetadata(compiler: CompilerFacade, type: Type<any>, metadata: Component) {
-  if (componentNeedsResolution(metadata)) {
-    const error = [`Component '${type.name}' is not resolved:`];
-    if (metadata.templateUrl) {
-      error.push(` - templateUrl: ${metadata.templateUrl}`);
-    }
-    if (metadata.styleUrls && metadata.styleUrls.length) {
-      error.push(` - styleUrls: ${JSON.stringify(metadata.styleUrls)}`);
-    }
-    error.push(`Did you run and wait for 'resolveComponentResources()'?`);
-    throw new Error(error.join('\n'));
-  }
-
-  const templateUrl = metadata.templateUrl || `ng:///${type.name}/template.html`;
-  const meta: R3ComponentMetadataFacade = {
-    ...directiveMetadata(type, metadata),
-    typeSourceSpan: compiler.createParseSourceSpan('Component', type.name, templateUrl),
-    template: metadata.template || '',
-    preserveWhitespaces: metadata.preserveWhitespaces || false,
-    styles: metadata.styles || EMPTY_ARRAY,
-    animations: metadata.animations,
-    directives: [],
-    changeDetection: metadata.changeDetection,
-    pipes: new Map(),
-    encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
-    interpolation: metadata.interpolation,
-    viewProviders: metadata.viewProviders || null,
-  };
-  if (meta.usesInheritance) {
-    addBaseDefToUndecoratedParents(type);
-  }
-  return {metadata: meta, templateUrl};
 }
 
 function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
@@ -145,23 +126,8 @@ function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
  */
 export function compileDirective(type: Type<any>, directive: Directive | null): void {
   let ngDirectiveDef: any = null;
-  let ngFactoryDef: any = null;
 
-  Object.defineProperty(type, NG_FACTORY_DEF, {
-    get: () => {
-      if (ngFactoryDef === null) {
-        // `directive` can be null in the case of abstract directives as a base class
-        // that use `@Directive()` with no selector. In that case, pass empty object to the
-        // `directiveMetadata` function instead of null.
-        const meta = getDirectiveMetadata(type, directive || {});
-        ngFactoryDef = getCompilerFacade().compileFactory(
-            angularCoreEnv, `ng:///${type.name}/ngFactory.js`, meta.metadata);
-      }
-      return ngFactoryDef;
-    },
-    // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
-  });
+  addDirectiveFactoryDef(type, directive || {});
 
   Object.defineProperty(type, NG_DIRECTIVE_DEF, {
     get: () => {
@@ -178,11 +144,6 @@ export function compileDirective(type: Type<any>, directive: Directive | null): 
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
   });
-
-  // Add ngInjectableDef so directives are reachable through the module injector by default
-  // This is mostly to support injecting directives in tests. In real application code,
-  // directives should be retrieved through the node injector, so this isn't a problem.
-  compileInjectable(type);
 }
 
 function getDirectiveMetadata(type: Type<any>, metadata: Directive) {
@@ -195,6 +156,25 @@ function getDirectiveMetadata(type: Type<any>, metadata: Directive) {
     addBaseDefToUndecoratedParents(type);
   }
   return {metadata: facade, sourceMapUrl};
+}
+
+function addDirectiveFactoryDef(type: Type<any>, metadata: Directive | Component) {
+  let ngFactoryDef: any = null;
+
+  if (!type.hasOwnProperty(NG_FACTORY_DEF)) {
+    Object.defineProperty(type, NG_FACTORY_DEF, {
+      get: () => {
+        if (ngFactoryDef === null) {
+          const meta = getDirectiveMetadata(type, metadata);
+          ngFactoryDef = getCompilerFacade().compileFactory(
+              angularCoreEnv, `ng:///${type.name}/ngFactoryDef.js`, meta.metadata);
+        }
+        return ngFactoryDef;
+      },
+      // Make the property configurable in dev mode to allow overriding in tests
+      configurable: !!ngDevMode,
+    });
+  }
 }
 
 export function extendsDirectlyFromObject(type: Type<any>): boolean {
@@ -226,6 +206,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     exportAs: extractExportAs(metadata.exportAs),
     providers: metadata.providers || null,
     viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
+    injectFn: 'directiveInject'
   };
 }
 

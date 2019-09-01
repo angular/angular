@@ -642,9 +642,11 @@ export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
     }) as any;
   }
 
-  // TODO(crisbeto): unify injectable factories with getFactory.
-  const def = getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
-  const factory = def && def.factory || getFactoryDef<T>(typeAny);
+  let factory = getFactoryDef<T>(typeAny);
+  if (factory === null) {
+    const injectorDef = getInjectorDef<T>(typeAny);
+    factory = injectorDef && injectorDef.factory;
+  }
   return factory || null;
 }
 

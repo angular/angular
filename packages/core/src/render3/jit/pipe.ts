@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade} from '../../compiler/compiler_facade';
+import {R3PipeMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
@@ -18,18 +18,21 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
   let ngPipeDef: any = null;
   let ngFactoryDef: any = null;
 
-  Object.defineProperty(type, NG_FACTORY_DEF, {
-    get: () => {
-      if (ngFactoryDef === null) {
-        const metadata = getPipeMetadata(type, meta);
-        ngFactoryDef = getCompilerFacade().compileFactory(
-            angularCoreEnv, `ng:///${metadata.name}/ngFactory.js`, metadata, true);
-      }
-      return ngFactoryDef;
-    },
-    // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
-  });
+  // if NG_FACTORY_DEF is already defined on this class then don't overwrite it
+  if (!type.hasOwnProperty(NG_FACTORY_DEF)) {
+    Object.defineProperty(type, NG_FACTORY_DEF, {
+      get: () => {
+        if (ngFactoryDef === null) {
+          const metadata = getPipeMetadata(type, meta);
+          ngFactoryDef = getCompilerFacade().compileFactory(
+              angularCoreEnv, `ng:///${metadata.name}/ngFactoryDef.js`, metadata, true);
+        }
+        return ngFactoryDef;
+      },
+      // Make the property configurable in dev mode to allow overriding in tests
+      configurable: !!ngDevMode,
+    });
+  }
 
   Object.defineProperty(type, NG_PIPE_DEF, {
     get: () => {
@@ -45,13 +48,14 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
   });
 }
 
-function getPipeMetadata(type: Type<any>, meta: Pipe) {
+function getPipeMetadata(type: Type<any>, meta: Pipe): R3PipeMetadataFacade {
   return {
     type: type,
     typeArgumentCount: 0,
     name: type.name,
     deps: reflectDependencies(type),
     pipeName: meta.name,
-    pure: meta.pure !== undefined ? meta.pure : true
+    pure: meta.pure !== undefined ? meta.pure : true,
+    injectFn: 'directiveInject'
   };
 }

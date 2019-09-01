@@ -25,6 +25,7 @@ export {ɵɵinject} from './di/injector_compatibility';
 export {ɵɵInjectableDef, ɵɵInjectorDef, ɵɵdefineInjectable, ɵɵdefineInjector} from './di/interface/defs';
 export {NgModuleDef, ɵɵNgModuleDefWithMeta} from './metadata/ng_module';
 export {ɵɵdefineNgModule} from './render3/definition';
+export {ɵɵFactoryDef} from './render3/interfaces/definition';
 export {setClassMetadata} from './render3/metadata';
 export {NgModuleFactory} from './render3/ng_module_ref';
 

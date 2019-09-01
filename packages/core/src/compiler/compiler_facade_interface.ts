@@ -40,8 +40,8 @@ export interface CompilerFacade {
   compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3BaseMetadataFacade):
       any;
   compileFactory(
-      angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
-      meta: R3PipeMetadataFacade|R3DirectiveMetadataFacade|R3ComponentMetadataFacade,
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3PipeMetadataFacade|
+      R3DirectiveMetadataFacade|R3ComponentMetadataFacade|R3InjectableMetadataFacade,
       isPipe?: boolean): any;
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
@@ -88,6 +88,7 @@ export interface R3PipeMetadataFacade {
   pipeName: string;
   deps: R3DependencyMetadataFacade[]|null;
   pure: boolean;
+  injectFn: 'directiveInject'|'inject';
 }
 
 export interface R3InjectableMetadataFacade {
@@ -96,6 +97,7 @@ export interface R3InjectableMetadataFacade {
   typeArgumentCount: number;
   ctorDeps: R3DependencyMetadataFacade[]|null;
   providedIn: any;
+  injectFn: 'directiveInject'|'inject';
   useClass?: any;
   useFactory?: any;
   useExisting?: any;
@@ -139,6 +141,7 @@ export interface R3DirectiveMetadataFacade {
   exportAs: string[]|null;
   providers: Provider[]|null;
   viewQueries: R3QueryMetadataFacade[];
+  injectFn: 'directiveInject'|'inject';
 }
 
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
