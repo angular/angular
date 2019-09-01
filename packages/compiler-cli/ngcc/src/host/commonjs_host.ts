@@ -8,12 +8,13 @@
 
 import * as ts from 'typescript';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {ClassSymbol, Declaration, Import} from '../../../src/ngtsc/reflection';
+import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {isDefined} from '../utils';
 
 import {Esm5ReflectionHost} from './esm5_host';
+import {NgccClassSymbol} from './ngcc_host';
 
 export class CommonJsReflectionHost extends Esm5ReflectionHost {
   protected commonJsExports = new Map<ts.SourceFile, Map<string, Declaration>|null>();
@@ -57,7 +58,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
    * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested in.
    * @returns an array of nodes of calls to the helper with the given name.
    */
-  protected getHelperCallsForClass(classSymbol: ClassSymbol, helperName: string):
+  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperName: string):
       ts.CallExpression[] {
     const esm5HelperCalls = super.getHelperCallsForClass(classSymbol, helperName);
     if (esm5HelperCalls.length > 0) {
