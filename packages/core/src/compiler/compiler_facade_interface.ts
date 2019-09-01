@@ -40,9 +40,7 @@ export interface CompilerFacade {
   compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3BaseMetadataFacade):
       any;
   compileFactory(
-      angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
-      meta: R3PipeMetadataFacade|R3DirectiveMetadataFacade|R3ComponentMetadataFacade,
-      isPipe?: boolean): any;
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade): any;
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
@@ -94,7 +92,6 @@ export interface R3InjectableMetadataFacade {
   name: string;
   type: any;
   typeArgumentCount: number;
-  ctorDeps: R3DependencyMetadataFacade[]|null;
   providedIn: any;
   useClass?: any;
   useFactory?: any;
@@ -162,6 +159,15 @@ export interface R3BaseMetadataFacade {
   outputs?: {[key: string]: string};
   queries?: R3QueryMetadataFacade[];
   viewQueries?: R3QueryMetadataFacade[];
+}
+
+export interface R3FactoryDefMetadataFacade {
+  name: string;
+  type: any;
+  typeArgumentCount: number;
+  deps: R3DependencyMetadataFacade[]|null;
+  injectFn: 'directiveInject'|'inject';
+  isPipe: boolean;
 }
 
 export type ViewEncapsulation = number;

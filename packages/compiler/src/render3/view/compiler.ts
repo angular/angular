@@ -325,7 +325,7 @@ export function compileDirectiveFromRender2(
 
   const meta = directiveMetadataFromGlobalMetadata(directive, outputCtx, reflector);
   const res = compileDirectiveFromMetadata(meta, outputCtx.constantPool, bindingParser);
-  const factoryRes = compileFactoryFromMetadata(meta);
+  const factoryRes = compileFactoryFromMetadata({...meta, injectFn: R3.directiveInject});
   const ngFactoryDefStatement = new o.ClassStmt(
       name, null,
       [new o.ClassField(
@@ -378,7 +378,7 @@ export function compileComponentFromRender2(
     i18nUseExternalIds: true,
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
-  const factoryRes = compileFactoryFromMetadata(meta);
+  const factoryRes = compileFactoryFromMetadata({...meta, injectFn: R3.directiveInject});
   const ngFactoryDefStatement = new o.ClassStmt(
       name, null,
       [new o.ClassField(

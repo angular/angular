@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {formatDate} from '../i18n/format_date';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -150,7 +150,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @publicApi
  */
 // clang-format on
-@Injectable()
 @Pipe({name: 'date', pure: true})
 export class DatePipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private locale: string) {}
