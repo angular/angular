@@ -232,6 +232,11 @@ export class ShowIf {
       <label>name: </label>
     </div>
     &~{entity-amp}amp;
-    `
+`,
+    'test.css': `
+body, html {
+  width: 100%;
+}
+`,
   }
 };
