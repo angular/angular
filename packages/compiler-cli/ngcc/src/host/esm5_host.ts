@@ -8,11 +8,12 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, TsHelperFn, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, TsHelperFn, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
 import {getNameText, hasNameIdentifier, stripDollarSuffix} from '../utils';
 
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
+import {NgccClassSymbol} from './ngcc_host';
 
 
 
@@ -238,7 +239,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   }
 
   /** Gets all decorators of the given class symbol. */
-  getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
+  getDecoratorsOfSymbol(symbol: NgccClassSymbol): Decorator[]|null {
     // The necessary info is on the inner function declaration (inside the ES5 class IIFE).
     const innerFunctionSymbol =
         this.getInnerFunctionSymbolFromClassDeclaration(symbol.valueDeclaration);
@@ -302,12 +303,12 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @returns the inner function declaration identifier symbol or `undefined` if it is not a "class"
    * or has no identifier.
    */
-  protected getInnerFunctionSymbolFromClassDeclaration(clazz: ClassDeclaration): ClassSymbol
+  protected getInnerFunctionSymbolFromClassDeclaration(clazz: ClassDeclaration): NgccClassSymbol
       |undefined {
     const innerFunctionDeclaration = this.getInnerFunctionDeclarationFromClassDeclaration(clazz);
     if (!innerFunctionDeclaration || !hasNameIdentifier(innerFunctionDeclaration)) return undefined;
 
-    return this.checker.getSymbolAtLocation(innerFunctionDeclaration.name) as ClassSymbol;
+    return this.checker.getSymbolAtLocation(innerFunctionDeclaration.name) as NgccClassSymbol;
   }
 
   /**
@@ -322,7 +323,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
    * the class's constructor or `null` if there is no constructor.
    */
-  protected getConstructorParameterDeclarations(classSymbol: ClassSymbol):
+  protected getConstructorParameterDeclarations(classSymbol: NgccClassSymbol):
       ts.ParameterDeclaration[]|null {
     const constructor =
         this.getInnerFunctionDeclarationFromClassDeclaration(classSymbol.valueDeclaration);
@@ -348,7 +349,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @returns an array of constructor parameter info objects.
    */
   protected getConstructorParamInfo(
-      classSymbol: ClassSymbol, parameterNodes: ts.ParameterDeclaration[]): CtorParameter[] {
+      classSymbol: NgccClassSymbol, parameterNodes: ts.ParameterDeclaration[]): CtorParameter[] {
     // The necessary info is on the inner function declaration (inside the ES5 class IIFE).
     const innerFunctionSymbol =
         this.getInnerFunctionSymbolFromClassDeclaration(classSymbol.valueDeclaration);
@@ -479,7 +480,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * to reference the inner identifier inside the IIFE.
    * @returns an array of statements that may contain helper calls.
    */
-  protected getStatementsForClass(classSymbol: ClassSymbol): ts.Statement[] {
+  protected getStatementsForClass(classSymbol: NgccClassSymbol): ts.Statement[] {
     const classDeclarationParent = classSymbol.valueDeclaration.parent;
     return ts.isBlock(classDeclarationParent) ? Array.from(classDeclarationParent.statements) : [];
   }
@@ -496,7 +497,8 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param propertyName the name of static property.
    * @returns the symbol if it is found or `undefined` if not.
    */
-  protected getStaticProperty(symbol: ClassSymbol, propertyName: ts.__String): ts.Symbol|undefined {
+  protected getStaticProperty(symbol: NgccClassSymbol, propertyName: ts.__String): ts.Symbol
+      |undefined {
     // The symbol corresponds with the inner function declaration. First lets see if the static
     // property is set there.
     const prop = super.getStaticProperty(symbol, propertyName);
@@ -516,7 +518,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       return undefined;
     }
 
-    return super.getStaticProperty(outerSymbol as ClassSymbol, propertyName);
+    return super.getStaticProperty(outerSymbol as NgccClassSymbol, propertyName);
   }
 }
 

@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassSymbol, ConcreteDeclaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ConcreteDeclaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
 
 export const PRE_R3_MARKER = '__PRE_R3__';
 export const POST_R3_MARKER = '__POST_R3__';
@@ -44,6 +44,12 @@ export interface ModuleWithProvidersFunction {
 }
 
 /**
+ * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
+ * a `ClassDeclaration`.
+ */
+export type NgccClassSymbol = ts.Symbol & {valueDeclaration: ClassDeclaration};
+
+/**
  * A reflection host that has extra methods for looking at non-Typescript package formats
  */
 export interface NgccReflectionHost extends ReflectionHost {
@@ -53,7 +59,7 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @returns the symbol for the declaration or `undefined` if it is not
    * a "class" or has no symbol.
    */
-  getClassSymbol(node: ts.Node): ClassSymbol|undefined;
+  getClassSymbol(node: ts.Node): NgccClassSymbol|undefined;
 
   /**
    * Search the given module for variable declarations in which the initializer
@@ -68,14 +74,14 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @param symbol Class symbol that can refer to a declaration which can hold decorators.
    * @returns An array of decorators or null if none are declared.
    */
-  getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null;
+  getDecoratorsOfSymbol(symbol: NgccClassSymbol): Decorator[]|null;
 
   /**
    * Retrieves all class symbols of a given source file.
    * @param sourceFile The source file to search for classes.
    * @returns An array of found class symbols.
    */
-  findClassSymbols(sourceFile: ts.SourceFile): ClassSymbol[];
+  findClassSymbols(sourceFile: ts.SourceFile): NgccClassSymbol[];
 
   /**
    * Search the given source file for exported functions and static class methods that return
