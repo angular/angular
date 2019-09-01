@@ -1,0 +1,10 @@
+{
+  "seq": 0,
+  "type": "response",
+  "command": "definitionAndBoundSpan",
+  "request_seq": 3,
+  "success": true,
+  "body": {
+    "definitions": []
+  }
+}
