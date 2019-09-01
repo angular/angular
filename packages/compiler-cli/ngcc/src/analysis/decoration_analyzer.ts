@@ -14,10 +14,9 @@ import {FileSystem, LogicalFileSystem, absoluteFrom, dirname, resolve} from '../
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {ClassSymbol} from '../../../src/ngtsc/reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
 import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
-import {NgccReflectionHost} from '../host/ngcc_host';
+import {NgccClassSymbol, NgccReflectionHost} from '../host/ngcc_host';
 import {Migration, MigrationHost} from '../migrations/migration';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {isDefined} from '../utils';
@@ -128,7 +127,7 @@ export class DecorationAnalyzer {
     return analyzedClasses.length ? {sourceFile, analyzedClasses} : undefined;
   }
 
-  protected analyzeClass(symbol: ClassSymbol): AnalyzedClass|null {
+  protected analyzeClass(symbol: NgccClassSymbol): AnalyzedClass|null {
     const decorators = this.reflectionHost.getDecoratorsOfSymbol(symbol);
     const analyzedClass = analyzeDecorators(symbol, decorators, this.handlers);
     if (analyzedClass !== null && analyzedClass.diagnostics !== undefined) {

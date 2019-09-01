@@ -71,12 +71,6 @@ export function isDecoratorIdentifier(exp: ts.Expression): exp is DecoratorIdent
 export type ClassDeclaration<T extends ts.Declaration = ts.Declaration> = T & {name: ts.Identifier};
 
 /**
- * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
- * a `ClassDeclaration`.
- */
-export type ClassSymbol = ts.Symbol & {valueDeclaration: ClassDeclaration};
-
-/**
  * An enumeration of possible kinds of class members.
  */
 export enum ClassMemberKind {

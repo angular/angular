@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ErrorCode} from '../../../src/ngtsc/diagnostics';
-import {ClassDeclaration, ClassSymbol, Decorator} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {DefaultMigrationHost} from '../../src/analysis/migration_host';
 import {AnalyzedClass, AnalyzedFile} from '../../src/analysis/types';
+import {NgccClassSymbol} from '../../src/host/ngcc_host';
 
 describe('DefaultMigrationHost', () => {
   describe('injectSyntheticDecorator()', () => {
     const mockHost: any = {
-      getClassSymbol: (node: any): ClassSymbol | undefined =>
+      getClassSymbol: (node: any): NgccClassSymbol | undefined =>
                           ({ valueDeclaration: node, name: node.name.text } as any),
     };
     const mockMetadata: any = {};

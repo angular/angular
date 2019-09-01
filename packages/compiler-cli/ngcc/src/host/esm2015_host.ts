@@ -9,13 +9,13 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, TypeScriptReflectionHost, isDecoratorIdentifier, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
 
-import {ModuleWithProvidersFunction, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
+import {ModuleWithProvidersFunction, NgccClassSymbol, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
 export const PROP_DECORATORS = 'propDecorators' as ts.__String;
@@ -116,10 +116,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param node the node whose symbol we are finding.
    * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
-  getClassSymbol(declaration: ts.Node): ClassSymbol|undefined {
+  getClassSymbol(declaration: ts.Node): NgccClassSymbol|undefined {
     const classDeclaration = this.getClassDeclaration(declaration);
     return classDeclaration &&
-        this.checker.getSymbolAtLocation(classDeclaration.name) as ClassSymbol;
+        this.checker.getSymbolAtLocation(classDeclaration.name) as NgccClassSymbol;
   }
 
   /**
@@ -256,7 +256,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /** Gets all decorators of the given class symbol. */
-  getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
+  getDecoratorsOfSymbol(symbol: NgccClassSymbol): Decorator[]|null {
     const {classDecorators} = this.acquireDecoratorInfo(symbol);
     return classDecorators;
   }
@@ -338,8 +338,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param sourceFile The source file to search for classes.
    * @returns An array of class symbols.
    */
-  findClassSymbols(sourceFile: ts.SourceFile): ClassSymbol[] {
-    const classes: ClassSymbol[] = [];
+  findClassSymbols(sourceFile: ts.SourceFile): NgccClassSymbol[] {
+    const classes: NgccClassSymbol[] = [];
     this.getModuleStatements(sourceFile).forEach(statement => {
       if (ts.isVariableStatement(statement)) {
         statement.declarationList.declarations.forEach(declaration => {
@@ -547,7 +547,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param propertyName the name of static property.
    * @returns the symbol if it is found or `undefined` if not.
    */
-  protected getStaticProperty(symbol: ClassSymbol, propertyName: ts.__String): ts.Symbol|undefined {
+  protected getStaticProperty(symbol: NgccClassSymbol, propertyName: ts.__String): ts.Symbol
+      |undefined {
     return symbol.exports && symbol.exports.get(propertyName);
   }
 
@@ -559,7 +560,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param classSymbol the class for which decorators should be acquired.
    * @returns all information of the decorators on the class.
    */
-  protected acquireDecoratorInfo(classSymbol: ClassSymbol): DecoratorInfo {
+  protected acquireDecoratorInfo(classSymbol: NgccClassSymbol): DecoratorInfo {
     if (this.decoratorCache.has(classSymbol.valueDeclaration)) {
       return this.decoratorCache.get(classSymbol.valueDeclaration) !;
     }
@@ -585,7 +586,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns All information on the decorators as extracted from static properties, or `null` if
    * none of the static properties exist.
    */
-  protected computeDecoratorInfoFromStaticProperties(classSymbol: ClassSymbol): DecoratorInfo|null {
+  protected computeDecoratorInfoFromStaticProperties(classSymbol: NgccClassSymbol): DecoratorInfo
+      |null {
     let classDecorators: Decorator[]|null = null;
     let memberDecorators: Map<string, Decorator[]>|null = null;
     let constructorParamInfo: ParamInfo[]|null = null;
@@ -651,7 +653,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param symbol the `ClassSymbol` representing the class over which to reflect.
    * @returns an array of `ClassMember` metadata representing the members of the class.
    */
-  protected getMembersOfSymbol(symbol: ClassSymbol): ClassMember[] {
+  protected getMembersOfSymbol(symbol: NgccClassSymbol): ClassMember[] {
     const members: ClassMember[] = [];
 
     // The decorators map contains all the properties that are decorated
@@ -788,7 +790,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param classSymbol The class symbol for which decorators should be extracted.
    * @returns All information on the decorators of the class.
    */
-  protected computeDecoratorInfoFromHelperCalls(classSymbol: ClassSymbol): DecoratorInfo {
+  protected computeDecoratorInfoFromHelperCalls(classSymbol: NgccClassSymbol): DecoratorInfo {
     let classDecorators: Decorator[]|null = null;
     const memberDecorators = new Map<string, Decorator[]>();
     const constructorParamInfo: ParamInfo[] = [];
@@ -1178,7 +1180,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
    * the class's constructor or null if there is no constructor.
    */
-  protected getConstructorParameterDeclarations(classSymbol: ClassSymbol):
+  protected getConstructorParameterDeclarations(classSymbol: NgccClassSymbol):
       ts.ParameterDeclaration[]|null {
     if (classSymbol.members && classSymbol.members.has(CONSTRUCTOR)) {
       const constructorSymbol = classSymbol.members.get(CONSTRUCTOR) !;
@@ -1207,7 +1209,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an array of constructor parameter info objects.
    */
   protected getConstructorParamInfo(
-      classSymbol: ClassSymbol, parameterNodes: ts.ParameterDeclaration[]): CtorParameter[] {
+      classSymbol: NgccClassSymbol, parameterNodes: ts.ParameterDeclaration[]): CtorParameter[] {
     const {constructorParamInfo} = this.acquireDecoratorInfo(classSymbol);
 
     return parameterNodes.map((node, index) => {
@@ -1295,7 +1297,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * in.
    * @returns an array of CallExpression nodes for each matching helper call.
    */
-  protected getHelperCallsForClass(classSymbol: ClassSymbol, helperName: string):
+  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperName: string):
       ts.CallExpression[] {
     return this.getStatementsForClass(classSymbol)
         .map(statement => this.getHelperCall(statement, helperName))
@@ -1311,7 +1313,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param classSymbol the class whose helper calls we are interested in.
    * @returns an array of statements that may contain helper calls.
    */
-  protected getStatementsForClass(classSymbol: ClassSymbol): ts.Statement[] {
+  protected getStatementsForClass(classSymbol: NgccClassSymbol): ts.Statement[] {
     return Array.from(classSymbol.valueDeclaration.getSourceFile().statements);
   }
 
