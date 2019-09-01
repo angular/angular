@@ -84,45 +84,61 @@ export function getTsDefinitionAndBoundSpan(
 /**
  * Attempts to get the definition of a file whose URL is specified in a property assignment in a
  * directive decorator.
- * Currently applies to `templateUrl` properties.
+ * Currently applies to `templateUrl` and `styleUrls` properties.
  */
 function getUrlFromProperty(
     urlNode: ts.StringLiteralLike,
     tsLsHost: Readonly<ts.LanguageServiceHost>): ts.DefinitionInfoAndBoundSpan|undefined {
-  const asgn = getPropertyAssignmentFromValue(urlNode);
-  if (!asgn) return;
-  // If the URL is not a property of a class decorator, don't generate definitions for it.
+  // Get the property assignment node corresponding to the `templateUrl` or `styleUrls` assignment.
+  // These assignments are specified differently; `templateUrl` is a string, and `styleUrls` is
+  // an array of strings:
+  //   {
+  //        templateUrl: './template.ng.html',
+  //        styleUrls: ['./style.css', './other-style.css']
+  //   }
+  // `templateUrl`'s property assignment can be found from the string literal node;
+  // `styleUrls`'s property assignment can be found from the array (parent) node.
+  //
+  // First search for `templateUrl`.
+  let asgn = getPropertyAssignmentFromValue(urlNode);
+  if (!asgn || asgn.name.getText() !== 'templateUrl') {
+    // `templateUrl` assignment not found; search for `styleUrls` array assignment.
+    asgn = getPropertyAssignmentFromValue(urlNode.parent);
+    if (!asgn || asgn.name.getText() !== 'styleUrls') {
+      // Nothing found, bail.
+      return;
+    }
+  }
+
+  // If the property assignment is not a property of a class decorator, don't generate definitions
+  // for it.
   if (!isClassDecoratorProperty(asgn)) return;
 
   const sf = urlNode.getSourceFile();
-  switch (asgn.name.getText()) {
-    case 'templateUrl':
-      // Extract definition of the template file specified by this `templateUrl` property.
-      const url = path.join(path.dirname(sf.fileName), urlNode.text);
+  // Extract url path specified by the url node, which is relative to the TypeScript source file
+  // the url node is defined in.
+  const url = path.join(path.dirname(sf.fileName), urlNode.text);
 
-      // If the file does not exist, bail. It is possible that the TypeScript language service host
-      // does not have a `fileExists` method, in which case optimistically assume the file exists.
-      if (tsLsHost.fileExists && !tsLsHost.fileExists(url)) return;
+  // If the file does not exist, bail. It is possible that the TypeScript language service host
+  // does not have a `fileExists` method, in which case optimistically assume the file exists.
+  if (tsLsHost.fileExists && !tsLsHost.fileExists(url)) return;
 
-      const templateDefinitions: ts.DefinitionInfo[] = [{
-        kind: ts.ScriptElementKind.externalModuleName,
-        name: url,
-        containerKind: ts.ScriptElementKind.unknown,
-        containerName: '',
-        // Reading the template is expensive, so don't provide a preview.
-        textSpan: {start: 0, length: 0},
-        fileName: url,
-      }];
+  const templateDefinitions: ts.DefinitionInfo[] = [{
+    kind: ts.ScriptElementKind.externalModuleName,
+    name: url,
+    containerKind: ts.ScriptElementKind.unknown,
+    containerName: '',
+    // Reading the template is expensive, so don't provide a preview.
+    textSpan: {start: 0, length: 0},
+    fileName: url,
+  }];
 
-      return {
-        definitions: templateDefinitions,
-        textSpan: {
-          // Exclude opening and closing quotes in the url span.
-          start: urlNode.getStart() + 1,
-          length: urlNode.getWidth() - 2,
-        },
-      };
-    default:
-      return undefined;
-  }
+  return {
+    definitions: templateDefinitions,
+    textSpan: {
+      // Exclude opening and closing quotes in the url span.
+      start: urlNode.getStart() + 1,
+      length: urlNode.getWidth() - 2,
+    },
+  };
 }
