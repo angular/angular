@@ -25,7 +25,7 @@ import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/inj
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
+import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -523,18 +523,13 @@ export function executeContentQueries(tView: TView, tNode: TNode, lView: LView) 
 
 
 /**
- * Creates directive instances and populates local refs.
- *
- * @param localRefs Local refs of the node in question
- * @param localRefExtractor mapping function that extracts local ref value from TNode
+ * Creates directive instances.
  */
-export function createDirectivesAndLocals(
-    tView: TView, lView: LView, tNode: TElementNode | TContainerNode | TElementContainerNode,
-    localRefExtractor: LocalRefExtractor = getNativeByTNode) {
+export function createDirectivesInstances(
+    tView: TView, lView: LView, tNode: TElementNode | TContainerNode | TElementContainerNode) {
   if (!getBindingsEnabled()) return;
   instantiateAllDirectives(tView, lView, tNode);
   invokeDirectivesHostBindings(tView, lView, tNode);
-  saveResolvedLocalsInData(lView, tNode, localRefExtractor);
   setActiveHostElement(null);
 }
 
@@ -542,8 +537,8 @@ export function createDirectivesAndLocals(
  * Takes a list of local names and indices and pushes the resolved local variable values
  * to LView in the same order as they are loaded in the template with load().
  */
-function saveResolvedLocalsInData(
-    viewData: LView, tNode: TNode, localRefExtractor: LocalRefExtractor): void {
+export function saveResolvedLocalsInData(
+    viewData: LView, tNode: TNode, localRefExtractor: LocalRefExtractor = getNativeByTNode): void {
   const localNames = tNode.localNames;
   if (localNames) {
     let localIndex = tNode.index + 1;
@@ -866,7 +861,7 @@ export function elementPropertyInternal<T>(
   if (!nativeOnly && (inputData = initializeTNodeInputs(tView, tNode)) &&
       (dataValue = inputData[propName])) {
     setInputsForProperty(lView, dataValue, value);
-    if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
+    if (isComponentHost(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
     if (ngDevMode) {
       if (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container) {
         /**
@@ -1199,7 +1194,7 @@ function findDirectiveMatches(
         diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, viewData), tView, def.type);
 
         if (isComponentDef(def)) {
-          if (tNode.flags & TNodeFlags.isComponent) throwMultipleComponentError(tNode);
+          if (tNode.flags & TNodeFlags.isComponentHost) throwMultipleComponentError(tNode);
           markAsComponentHost(tView, tNode);
           // The component is always stored first with directives after.
           matches.unshift(def);
@@ -1219,7 +1214,7 @@ function findDirectiveMatches(
 */
 export function markAsComponentHost(tView: TView, hostTNode: TNode): void {
   ngDevMode && assertFirstTemplatePass(tView);
-  hostTNode.flags = TNodeFlags.isComponent;
+  hostTNode.flags = TNodeFlags.isComponentHost;
   (tView.components || (tView.components = ngDevMode ? new TViewComponents !() : [
    ])).push(hostTNode.index);
 }
@@ -1268,14 +1263,14 @@ function saveNameToExportMap(
 export function initNodeFlags(tNode: TNode, index: number, numberOfDirectives: number) {
   const flags = tNode.flags;
   ngDevMode && assertEqual(
-                   flags === 0 || flags === TNodeFlags.isComponent, true,
+                   flags === 0 || flags === TNodeFlags.isComponentHost, true,
                    'expected node flags to not be initialized');
 
   ngDevMode && assertNotEqual(
                    numberOfDirectives, tNode.directiveEnd - tNode.directiveStart,
                    'Reached the max number of directives');
   // When the first directive is created on a node, save the index
-  tNode.flags = flags & TNodeFlags.isComponent;
+  tNode.flags = (flags & TNodeFlags.isComponentHost) | TNodeFlags.isDirectiveHost;
   tNode.directiveStart = index;
   tNode.directiveEnd = index + numberOfDirectives;
   tNode.providerIndexes = index;

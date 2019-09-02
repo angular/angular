@@ -12,7 +12,7 @@ import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {isContentQueryHost} from '../interfaces/type_checks';
+import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
@@ -23,7 +23,7 @@ import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../styling_n
 import {setUpAttributes} from '../util/attrs_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
-import {createDirectivesAndLocals, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, renderInitialStyling, resolveDirectives, setInputsForProperty} from './shared';
+import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
 
 
 
@@ -98,8 +98,13 @@ export function ɵɵelementStart(
     }
   }
 
-  createDirectivesAndLocals(tView, lView, tNode);
-  executeContentQueries(tView, tNode, lView);
+  if (isDirectiveHost(tNode)) {
+    createDirectivesInstances(tView, lView, tNode);
+    executeContentQueries(tView, tNode, lView);
+  }
+  if (localRefs != null) {
+    saveResolvedLocalsInData(lView, tNode);
+  }
 }
 
 /**
