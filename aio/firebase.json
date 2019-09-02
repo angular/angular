@@ -59,7 +59,6 @@
       {"type": 301, "source": "/**/api/common/NgModel", "destination": "/api/forms/NgModel"},
 
       // `@angular/http` package was removed, and new `HttpClient` APIs are available under `@angular/common/http` package
-      {"type": 301, "source": "/api/http/:rest*", "destination": "/guide/deprecations#http"},
       {"type": 301, "source": "/api/http", "destination": "/guide/deprecations#http"},
       {"type": 301, "source": "/**/api/http", "destination": "/api/common/http"},
       {"type": 301, "source": "/**/api/http/BaseRequestOptions", "destination": "/api/common/http/HttpRequest"},
