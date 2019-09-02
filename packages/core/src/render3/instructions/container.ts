@@ -11,14 +11,15 @@ import {attachPatchData} from '../context_discovery';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags, registerPostOrderHooks} from '../hooks';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
+import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeFlags, TNodeType, TViewNode} from '../interfaces/node';
+import {isDirectiveHost} from '../interfaces/type_checks';
 import {BINDING_INDEX, FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {getNativeByTNode, load} from '../util/view_utils';
 
-import {addToViewTree, createDirectivesAndLocals, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives} from './shared';
+import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
 
 
@@ -89,8 +90,13 @@ export function ɵɵtemplate(
     }
   }
 
-  createDirectivesAndLocals(tView, lView, tContainerNode, localRefExtractor);
-  attachPatchData(getNativeByTNode(tContainerNode, lView), lView);
+  if (isDirectiveHost(tContainerNode)) {
+    createDirectivesInstances(tView, lView, tContainerNode);
+  }
+  if (localRefs != null) {
+    saveResolvedLocalsInData(lView, tContainerNode, localRefExtractor);
+  }
+
   setIsNotParent();
 }
 
@@ -176,6 +182,7 @@ function containerInternal(
   const lContainer = lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode);
 
   appendChild(comment, tNode, lView);
+  attachPatchData(getNativeByTNode(tNode, lView), lView);
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.

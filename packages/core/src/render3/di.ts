@@ -20,7 +20,7 @@ import {NG_ELEMENT_ID} from './fields';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
-import {isComponent, isComponentDef} from './interfaces/type_checks';
+import {isComponentDef, isComponentHost} from './interfaces/type_checks';
 import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
@@ -154,7 +154,7 @@ export function getOrCreateNodeInjectorForNode(
     insertBloom(tView.blueprint, null);
 
     ngDevMode && assertEqual(
-                     tNode.flags === 0 || tNode.flags === TNodeFlags.isComponent, true,
+                     tNode.flags === 0 || tNode.flags === TNodeFlags.isComponentHost, true,
                      'expected tNode.flags to not be initialized');
   }
 
@@ -464,7 +464,7 @@ function searchTokensOnInjector<T>(
       // - AND the injector set `includeViewProviders` to true (implying that the token can see
       // ViewProviders because it is the Component or a Service which itself was declared in
       // ViewProviders)
-      (isComponent(tNode) && includeViewProviders) :
+      (isComponentHost(tNode) && includeViewProviders) :
       // 2) `previousTView != null` which means that we are now walking across the parent nodes.
       // In such a case we are only allowed to look into the ViewProviders if:
       // - We just crossed from child View to Parent View `previousTView != currentTView`
