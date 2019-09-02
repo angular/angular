@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//:packages.bzl", "MATERIAL_EXPERIMENTAL_SCSS_LIBS")
 load("//tools:defaults.bzl", "ng_module")
 load("//tools/dev-server:index.bzl", "dev_server")
 
@@ -86,8 +85,11 @@ sass_binary(
         "external/npm/node_modules",
     ],
     deps = [
+        "//src/material-experimental/mdc-theming:all_themes",
+        "//src/material-experimental/mdc-typography:all_typography",
+        "//src/material-experimental/popover-edit:popover_edit_scss_lib",
         "//src/material/core:all_themes",
-    ] + MATERIAL_EXPERIMENTAL_SCSS_LIBS,
+    ],
 )
 
 dev_server(
