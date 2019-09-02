@@ -10,14 +10,14 @@ import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TNodeType} from '../interfaces/node';
-import {isContentQueryHost} from '../interfaces/type_checks';
+import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {registerInitialStylingOnTNode} from '../styling_next/instructions';
 
-import {createDirectivesAndLocals, executeContentQueries, getOrCreateTNode, resolveDirectives} from './shared';
+import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
 
 
@@ -61,6 +61,7 @@ export function ɵɵelementContainerStart(
   }
 
   appendChild(native, tNode, lView);
+  attachPatchData(native, lView);
 
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
@@ -70,9 +71,14 @@ export function ɵɵelementContainerStart(
     }
   }
 
-  createDirectivesAndLocals(tView, lView, tNode);
-  attachPatchData(native, lView);
-  executeContentQueries(tView, tNode, lView);
+  if (isDirectiveHost(tNode)) {
+    createDirectivesInstances(tView, lView, tNode);
+    executeContentQueries(tView, tNode, lView);
+  }
+
+  if (localRefs != null) {
+    saveResolvedLocalsInData(lView, tNode);
+  }
 }
 
 /**

@@ -24,7 +24,7 @@ import {addToViewTree, createLContainer, createLView, renderView} from './instru
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
-import {isComponent, isLContainer, isLView, isRootView} from './interfaces/type_checks';
+import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CONTEXT, DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
@@ -371,7 +371,7 @@ export function injectChangeDetectorRef(isPipe = false): ViewEngine_ChangeDetect
  */
 function createViewRef(
     hostTNode: TNode, hostView: LView, isPipe: boolean): ViewEngine_ChangeDetectorRef {
-  if (isComponent(hostTNode) && !isPipe) {
+  if (isComponentHost(hostTNode) && !isPipe) {
     const componentIndex = hostTNode.directiveStart;
     const componentView = getComponentViewByIndex(hostTNode.index, hostView);
     return new ViewRef(componentView, null, componentIndex);

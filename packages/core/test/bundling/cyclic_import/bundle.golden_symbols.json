@@ -204,7 +204,7 @@
     "name": "concatString"
   },
   {
-    "name": "createDirectivesAndLocals"
+    "name": "createDirectivesInstances"
   },
   {
     "name": "createLView"
@@ -454,6 +454,9 @@
   },
   {
     "name": "isCssClassMatching"
+  },
+  {
+    "name": "isDirectiveHost"
   },
   {
     "name": "isFactory"
