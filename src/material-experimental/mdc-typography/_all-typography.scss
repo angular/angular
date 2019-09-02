@@ -9,6 +9,10 @@
 @import '../mdc-tabs/mdc-tabs';
 
 @mixin angular-material-typography-mdc($config: null) {
+  @if $config == null {
+    $config: mat-typography-config();
+  }
+
   @include mat-button-typography-mdc($config);
   @include mat-fab-typography-mdc($config);
   @include mat-icon-button-typography-mdc($config);
