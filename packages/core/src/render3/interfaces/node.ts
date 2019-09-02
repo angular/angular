@@ -45,23 +45,28 @@ export const enum TNodeType {
  * Corresponds to the TNode.flags property.
  */
 export const enum TNodeFlags {
-  /** This bit is set if the node is a component */
-  isComponent = 0b000001,
+  /** This bit is set if the node is a host for any directive (including a component) */
+  isDirectiveHost = 0b00000001,
+
+  /**
+   * This bit is set if the node is a host for a component. Setting this bit implies that the
+   * isDirectiveHost bit is set as well. */
+  isComponentHost = 0b00000010,
 
   /** This bit is set if the node has been projected */
-  isProjected = 0b000010,
+  isProjected = 0b00000100,
 
   /** This bit is set if any directive on this node has content queries */
-  hasContentQuery = 0b000100,
+  hasContentQuery = 0b00001000,
 
   /** This bit is set if the node has any "class" inputs */
-  hasClassInput = 0b001000,
+  hasClassInput = 0b00010000,
 
   /** This bit is set if the node has any "style" inputs */
-  hasStyleInput = 0b010000,
+  hasStyleInput = 0b00100000,
 
   /** This bit is set if the node has been detached by i18n */
-  isDetached = 0b100000,
+  isDetached = 0b01000000,
 }
 
 /**

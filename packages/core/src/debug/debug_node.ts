@@ -10,7 +10,7 @@ import {Injector} from '../di';
 import {getViewComponent} from '../render3/global_utils_api';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
-import {isComponent, isLContainer} from '../render3/interfaces/type_checks';
+import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
 import {LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
 import {TStylingContext} from '../render3/styling_next/interfaces';
 import {stylingMapToStringMap} from '../render3/styling_next/map_based_bindings';
@@ -482,7 +482,7 @@ function _queryNodeChildrenR3(
     // Case 1: the TNode is an element
     // The native node has to be checked.
     _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
-    if (isComponent(tNode)) {
+    if (isComponentHost(tNode)) {
       // If the element is the host of a component, then all nodes in its view have to be processed.
       // Note: the component's content (tNode.child) will be processed from the insertion points.
       const componentView = getComponentViewByIndex(tNode.index, lView);

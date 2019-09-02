@@ -540,7 +540,7 @@
     "name": "createContainerRef"
   },
   {
-    "name": "createDirectivesAndLocals"
+    "name": "createDirectivesInstances"
   },
   {
     "name": "createElementRef"
@@ -990,10 +990,10 @@
     "name": "isAnimationProp"
   },
   {
-    "name": "isComponent"
+    "name": "isComponentDef"
   },
   {
-    "name": "isComponentDef"
+    "name": "isComponentHost"
   },
   {
     "name": "isContentQueryHost"
@@ -1009,6 +1009,9 @@
   },
   {
     "name": "isDevMode"
+  },
+  {
+    "name": "isDirectiveHost"
   },
   {
     "name": "isFactory"

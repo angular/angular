@@ -162,7 +162,8 @@ export const TNodeConstructor = class TNode implements ITNode {
     if (this.flags & TNodeFlags.hasClassInput) flags.push('TNodeFlags.hasClassInput');
     if (this.flags & TNodeFlags.hasContentQuery) flags.push('TNodeFlags.hasContentQuery');
     if (this.flags & TNodeFlags.hasStyleInput) flags.push('TNodeFlags.hasStyleInput');
-    if (this.flags & TNodeFlags.isComponent) flags.push('TNodeFlags.isComponent');
+    if (this.flags & TNodeFlags.isComponentHost) flags.push('TNodeFlags.isComponentHost');
+    if (this.flags & TNodeFlags.isDirectiveHost) flags.push('TNodeFlags.isDirectiveHost');
     if (this.flags & TNodeFlags.isDetached) flags.push('TNodeFlags.isDetached');
     if (this.flags & TNodeFlags.isProjected) flags.push('TNodeFlags.isProjected');
     return flags.join('|');

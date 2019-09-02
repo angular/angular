@@ -526,7 +526,7 @@ function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
     }
 
     ngDevMode && assertNodeType(parentTNode, TNodeType.Element);
-    if (parentTNode.flags & TNodeFlags.isComponent) {
+    if (parentTNode.flags & TNodeFlags.isComponentHost) {
       const tData = currentView[TVIEW].data;
       const tNode = tData[parentTNode.index] as TNode;
       const encapsulation = (tData[tNode.directiveStart] as ComponentDef<any>).encapsulation;
