@@ -118,8 +118,7 @@ export const TNodeConstructor = class TNode implements ITNode {
       public injectorIndex: number,                                            //
       public directiveStart: number,                                           //
       public directiveEnd: number,                                             //
-      public propertyMetadataStartIndex: number,                               //
-      public propertyMetadataEndIndex: number,                                 //
+      public propertyBindings: number[]|null,                                  //
       public flags: TNodeFlags,                                                //
       public providerIndexes: TNodeProviderIndexes,                            //
       public tagName: string|null,                                             //
