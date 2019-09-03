@@ -759,8 +759,7 @@ export function createTNode(
                          injectorIndex,  // injectorIndex: number
                          -1,             // directiveStart: number
                          -1,             // directiveEnd: number
-                         -1,             // propertyMetadataStartIndex: number
-                         -1,             // propertyMetadataEndIndex: number
+                         null,           // propertyBindings: number[]|null
                          0,              // flags: TNodeFlags
                          0,              // providerIndexes: TNodeProviderIndexes
                          tagName,        // tagName: string|null
@@ -784,8 +783,7 @@ export function createTNode(
                        injectorIndex: injectorIndex,
                        directiveStart: -1,
                        directiveEnd: -1,
-                       propertyMetadataStartIndex: -1,
-                       propertyMetadataEndIndex: -1,
+                       propertyBindings: null,
                        flags: 0,
                        providerIndexes: 0,
                        tagName: tagName,
@@ -860,11 +858,12 @@ export function elementPropertyInternal<T>(
     loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   const lView = getLView();
+  const tView = lView[TVIEW];
   const element = getNativeByIndex(index, lView) as RElement | RComment;
   const tNode = getTNode(index, lView);
   let inputData: PropertyAliases|null|undefined;
   let dataValue: PropertyAliasValue|undefined;
-  if (!nativeOnly && (inputData = initializeTNodeInputs(lView[TVIEW], tNode)) &&
+  if (!nativeOnly && (inputData = initializeTNodeInputs(tView, tNode)) &&
       (dataValue = inputData[propName])) {
     setInputsForProperty(lView, dataValue, value);
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
@@ -892,8 +891,6 @@ export function elementPropertyInternal<T>(
       validateAgainstUnknownProperties(lView, element, propName, tNode);
       ngDevMode.rendererSetProperty++;
     }
-
-    ngDevMode && savePropertyDebugData(tNode, lView, propName, lView[TVIEW].data, nativeOnly);
 
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the
@@ -980,34 +977,6 @@ function matchingSchemas(hostView: LView, tagName: string | null): boolean {
   }
 
   return false;
-}
-
-/**
-* Stores debugging data for this property binding on first template pass.
-* This enables features like DebugElement.properties.
-*/
-function savePropertyDebugData(
-    tNode: TNode, lView: LView, propName: string, tData: TData,
-    nativeOnly: boolean | undefined): void {
-  const lastBindingIndex = lView[BINDING_INDEX] - 1;
-
-  // Bind/interpolation functions save binding metadata in the last binding index,
-  // but leave the property name blank. If the interpolation delimiter is at the 0
-  // index, we know that this is our first pass and the property name still needs to
-  // be set.
-  const bindingMetadata = tData[lastBindingIndex] as string;
-  if (bindingMetadata[0] == INTERPOLATION_DELIMITER) {
-    tData[lastBindingIndex] = propName + bindingMetadata;
-
-    // We don't want to store indices for host bindings because they are stored in a
-    // different part of LView (the expando section).
-    if (!nativeOnly) {
-      if (tNode.propertyMetadataStartIndex == -1) {
-        tNode.propertyMetadataStartIndex = lastBindingIndex;
-      }
-      tNode.propertyMetadataEndIndex = lastBindingIndex + 1;
-    }
-  }
 }
 
 /**
@@ -1758,27 +1727,45 @@ function executeViewQueryFn<T>(
 ///////////////////////////////
 
 /**
- * Creates binding metadata for a particular binding and stores it in
- * TView.data. These are generated in order to support DebugElement.properties.
+ * Stores meta-data for a property binding to be used by TestBed's `DebugElement.properties`.
  *
- * Each binding / interpolation will have one (including attribute bindings)
- * because at the time of binding, we don't know to which instruction the binding
- * belongs. It is always stored in TView.data at the index of the last binding
- * value in LView (e.g. for interpolation8, it would be stored at the index of
- * the 8th value).
+ * In order to support TestBed's `DebugElement.properties` we need to save, for each binding:
+ * - a bound property name;
+ * - a static parts of interpolated strings;
  *
- * @param lView The LView that contains the current binding index.
- * @param prefix The static prefix string
- * @param suffix The static suffix string
+ * A given property metadata is saved at the binding's index in the `TView.data` (in other words, a
+ * property binding metadata will be stored in `TView.data` at the same index as a bound value in
+ * `LView`). Metadata are represented as `INTERPOLATION_DELIMITER`-delimited string with the
+ * following format:
+ * - `propertyName` for bound properties;
+ * - `propertyName�prefix�interpolation_static_part1�..interpolation_static_partN�suffix` for
+ * interpolated properties.
  *
- * @returns Newly created binding metadata string for this binding or null
+ * @param tData `TData` where meta-data will be saved;
+ * @param nodeIndex index of a `TNode` that is a target of the binding;
+ * @param propertyName bound property name;
+ * @param bindingIndex binding index in `LView`
+ * @param interpolationParts static interpolation parts (for property interpolations)
  */
-export function storeBindingMetadata(lView: LView, prefix = '', suffix = ''): string|null {
-  const tData = lView[TVIEW].data;
-  const lastBindingIndex = lView[BINDING_INDEX] - 1;
-  const value = INTERPOLATION_DELIMITER + prefix + INTERPOLATION_DELIMITER + suffix;
-
-  return tData[lastBindingIndex] == null ? (tData[lastBindingIndex] = value) : null;
+export function storePropertyBindingMetadata(
+    tData: TData, nodeIndex: number, propertyName: string, bindingIndex: number,
+    ...interpolationParts: string[]) {
+  // Binding meta-data are stored only the first time a given property instruction is processed.
+  // Since we don't have a concept of the "first update pass" we need to check for presence of the
+  // binding meta-data to decide if one should be stored (or if was stored already).
+  if (tData[bindingIndex] === null) {
+    const tNode = tData[nodeIndex + HEADER_OFFSET] as TNode;
+    if (tNode.inputs == null || !tNode.inputs[propertyName]) {
+      const propBindingIdxs = tNode.propertyBindings || (tNode.propertyBindings = []);
+      propBindingIdxs.push(bindingIndex);
+      let bindingMetadata = propertyName;
+      if (interpolationParts.length > 0) {
+        bindingMetadata +=
+            INTERPOLATION_DELIMITER + interpolationParts.join(INTERPOLATION_DELIMITER);
+      }
+      tData[bindingIndex] = bindingMetadata;
+    }
+  }
 }
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;

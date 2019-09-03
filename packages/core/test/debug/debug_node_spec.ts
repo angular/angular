@@ -33,6 +33,11 @@ class MessageDir {
   set message(newMessage: string) { this.logger.add(newMessage); }
 }
 
+@Directive({selector: '[with-title]', inputs: ['title']})
+class WithTitleDir {
+  title = '';
+}
+
 @Component({
   selector: 'child-comp',
   template: `<div class="child" message="child">
@@ -211,6 +216,23 @@ class TestCmptWithPropBindings {
   title = 'hello';
 }
 
+@Component({
+  template: `
+  <button title="{{0}}"></button>
+  <button title="a{{1}}b"></button>
+  <button title="a{{1}}b{{2}}c"></button>
+  <button title="a{{1}}b{{2}}c{{3}}d"></button>
+  <button title="a{{1}}b{{2}}c{{3}}d{{4}}e"></button>
+  <button title="a{{1}}b{{2}}c{{3}}d{{4}}e{{5}}f"></button>
+  <button title="a{{1}}b{{2}}c{{3}}d{{4}}e{{5}}f{{6}}g"></button>
+  <button title="a{{1}}b{{2}}c{{3}}d{{4}}e{{5}}f{{6}}g{{7}}h"></button>
+  <button title="a{{1}}b{{2}}c{{3}}d{{4}}e{{5}}f{{6}}g{{7}}h{{8}}i"></button>
+  <button title="a{{1}}b{{2}}c{{3}}d{{4}}e{{5}}f{{6}}g{{7}}h{{8}}i{{9}}j"></button>
+`
+})
+class TestCmptWithPropInterpolation {
+}
+
 {
   describe('debug element', () => {
     let fixture: ComponentFixture<any>;
@@ -235,6 +257,8 @@ class TestCmptWithPropBindings {
           TestCmptWithViewContainerRef,
           SimpleContentComp,
           TestCmptWithPropBindings,
+          TestCmptWithPropInterpolation,
+          WithTitleDir,
         ],
         providers: [Logger],
         schemas: [NO_ERRORS_SCHEMA],
@@ -718,6 +742,35 @@ class TestCmptWithPropBindings {
 
       const button = fixture.debugElement.query(By.css('button'));
       expect(button.properties).toEqual({disabled: true, tabIndex: 1337, title: 'hello'});
+    });
+
+    it('should include interpolated properties in the properties map', () => {
+      const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
+      fixture.detectChanges();
+
+      const buttons = fixture.debugElement.children;
+
+      expect(buttons.length).toBe(10);
+      expect(buttons[0].properties.title).toBe('0');
+      expect(buttons[1].properties.title).toBe('a1b');
+      expect(buttons[2].properties.title).toBe('a1b2c');
+      expect(buttons[3].properties.title).toBe('a1b2c3d');
+      expect(buttons[4].properties.title).toBe('a1b2c3d4e');
+      expect(buttons[5].properties.title).toBe('a1b2c3d4e5f');
+      expect(buttons[6].properties.title).toBe('a1b2c3d4e5f6g');
+      expect(buttons[7].properties.title).toBe('a1b2c3d4e5f6g7h');
+      expect(buttons[8].properties.title).toBe('a1b2c3d4e5f6g7h8i');
+      expect(buttons[9].properties.title).toBe('a1b2c3d4e5f6g7h8i9j');
+    });
+
+    it('should not include directive-shadowed properties in the properties map', () => {
+      TestBed.overrideTemplate(
+          TestCmptWithPropInterpolation, `<button with-title [title]="'goes to input'"></button>`);
+      const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
+      fixture.detectChanges();
+
+      const button = fixture.debugElement.query(By.css('button'));
+      expect(button.properties.title).toBeUndefined();
     });
 
     it('should trigger events registered via Renderer2', () => {

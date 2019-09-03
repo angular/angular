@@ -7,11 +7,11 @@
  */
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {BINDING_INDEX, LView} from '../interfaces/view';
+import {BINDING_INDEX, LView, TVIEW} from '../interfaces/view';
 import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
-import {TsickleIssue1009, elementPropertyInternal, storeBindingMetadata} from './shared';
+import {TsickleIssue1009, elementPropertyInternal, storePropertyBindingMetadata} from './shared';
 
 
 /**
@@ -35,9 +35,11 @@ import {TsickleIssue1009, elementPropertyInternal, storeBindingMetadata} from '.
 export function ɵɵproperty<T>(
     propName: string, value: T, sanitizer?: SanitizerFn | null): TsickleIssue1009 {
   const lView = getLView();
-  const bindReconciledValue = bind(lView, value);
-  if (bindReconciledValue !== NO_CHANGE) {
-    elementPropertyInternal(getSelectedIndex(), propName, bindReconciledValue, sanitizer);
+  const bindingIndex = lView[BINDING_INDEX]++;
+  if (bindingUpdated(lView, bindingIndex, value)) {
+    const nodeIndex = getSelectedIndex();
+    elementPropertyInternal(nodeIndex, propName, value, sanitizer);
+    ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵproperty;
 }
@@ -49,7 +51,5 @@ export function ɵɵproperty<T>(
  * @param value Value to diff
  */
 export function bind<T>(lView: LView, value: T): T|NO_CHANGE {
-  const bindingIndex = lView[BINDING_INDEX]++;
-  ngDevMode && storeBindingMetadata(lView);
-  return bindingUpdated(lView, bindingIndex, value) ? value : NO_CHANGE;
+  return bindingUpdated(lView, lView[BINDING_INDEX]++, value) ? value : NO_CHANGE;
 }
