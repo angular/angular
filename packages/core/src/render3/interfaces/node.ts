@@ -260,19 +260,13 @@ export interface TNode {
   directiveEnd: number;
 
   /**
-   * Stores the first index where property binding metadata is stored for
-   * this node.
+   * Stores indexes of property bindings. This field is only set in the ngDevMode and holds indexes
+   * of property bindings so TestBed can get bound property metadata for a given node.
    */
-  propertyMetadataStartIndex: number;
+  propertyBindings: number[]|null;
 
   /**
-   * Stores the exclusive final index where property binding metadata is
-   * stored for this node.
-   */
-  propertyMetadataEndIndex: number;
-
-  /**
-   * Stores if Node isComponent, isProjected, hasContentQuery, hasClassInput and hasStyleInput
+   * Stores if Node isComponent, isProjected, hasContentQuery, hasClassInput and hasStyleInput etc.
    */
   flags: TNodeFlags;
 
