@@ -15,8 +15,14 @@ import {NgccClassSymbol} from '../../src/host/ngcc_host';
 describe('DefaultMigrationHost', () => {
   describe('injectSyntheticDecorator()', () => {
     const mockHost: any = {
-      getClassSymbol: (node: any): NgccClassSymbol | undefined =>
-                          ({ valueDeclaration: node, name: node.name.text } as any),
+      getClassSymbol: (node: any): NgccClassSymbol | undefined => {
+        const symbol = { valueDeclaration: node, name: node.name.text } as any;
+        return {
+          name: node.name.text,
+          declaration: symbol,
+          implementation: symbol,
+        };
+      },
     };
     const mockMetadata: any = {};
     const mockEvaluator: any = {};
