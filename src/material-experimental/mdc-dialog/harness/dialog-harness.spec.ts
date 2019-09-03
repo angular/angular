@@ -50,7 +50,7 @@ function runTests() {
     let dialogs = await loader.getAllHarnesses(dialogHarness);
     expect(dialogs.length).toBe(2);
 
-    dialogs = await loader.getAllHarnesses(dialogHarness.with({id: 'my-dialog'}));
+    dialogs = await loader.getAllHarnesses(dialogHarness.with({selector: '#my-dialog'}));
     expect(dialogs.length).toBe(1);
   });
 

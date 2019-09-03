@@ -27,8 +27,7 @@ export class MatDialogHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: DialogHarnessFilters = {}): HarnessPredicate<MatDialogHarness> {
-    return new HarnessPredicate(MatDialogHarness)
-        .addOption('id', options.id, async (harness, id) => (await harness.getId()) === id);
+    return new HarnessPredicate(MatDialogHarness, options);
   }
 
   /** Gets the id of the dialog. */
