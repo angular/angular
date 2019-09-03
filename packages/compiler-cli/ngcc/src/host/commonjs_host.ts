@@ -64,7 +64,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     if (esm5HelperCalls.length > 0) {
       return esm5HelperCalls;
     } else {
-      const sourceFile = classSymbol.valueDeclaration.getSourceFile();
+      const sourceFile = classSymbol.declaration.valueDeclaration.getSourceFile();
       return this.getTopLevelHelperCalls(sourceFile, helperName);
     }
   }

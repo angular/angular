@@ -20,9 +20,9 @@ export function isWithinPackage(packagePath: AbsoluteFsPath, sourceFile: ts.Sour
 }
 
 export function analyzeDecorators(
-    symbol: NgccClassSymbol, decorators: Decorator[] | null,
+    classSymbol: NgccClassSymbol, decorators: Decorator[] | null,
     handlers: DecoratorHandler<any, any>[]): AnalyzedClass|null {
-  const declaration = symbol.valueDeclaration;
+  const declaration = classSymbol.declaration.valueDeclaration;
   const matchingHandlers = handlers
                                .map(handler => {
                                  const detected = handler.detect(declaration, decorators);
@@ -78,7 +78,7 @@ export function analyzeDecorators(
     }
   }
   return {
-    name: symbol.name,
+    name: classSymbol.name,
     declaration,
     decorators,
     matches,

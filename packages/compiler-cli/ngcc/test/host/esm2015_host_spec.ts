@@ -1565,6 +1565,95 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('getClassSymbol()', () => {
+      it('should return the class symbol for an ES2015 class', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const {program} = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const node =
+            getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
+        const classSymbol = host.getClassSymbol(node);
+
+        expect(classSymbol).toBeDefined();
+        expect(classSymbol !.declaration.valueDeclaration).toBe(node);
+        expect(classSymbol !.implementation.valueDeclaration).toBe(node);
+      });
+
+      it('should return the class symbol for a class expression (outer variable declaration)',
+         () => {
+           loadTestFiles([CLASS_EXPRESSION_FILE]);
+           const {program} = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
+           const host =
+               new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+           const outerNode = getDeclaration(
+               program, CLASS_EXPRESSION_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+           const innerNode = (outerNode.initializer as ts.ClassExpression);
+           const classSymbol = host.getClassSymbol(outerNode);
+
+           expect(classSymbol).toBeDefined();
+           expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+           expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
+         });
+
+      it('should return the class symbol for a class expression (inner class expression)', () => {
+        loadTestFiles([CLASS_EXPRESSION_FILE]);
+        const {program} = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const outerNode = getDeclaration(
+            program, CLASS_EXPRESSION_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+        const innerNode = (outerNode.initializer as ts.ClassExpression);
+        const classSymbol = host.getClassSymbol(innerNode);
+
+        expect(classSymbol).toBeDefined();
+        expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+        expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
+      });
+
+      it('should return the same class symbol (of the outer declaration) for outer and inner declarations',
+         () => {
+           loadTestFiles([CLASS_EXPRESSION_FILE]);
+           const {program} = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
+           const host =
+               new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+           const outerNode = getDeclaration(
+               program, CLASS_EXPRESSION_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
+           const innerNode = (outerNode.initializer as ts.ClassExpression);
+
+           const innerSymbol = host.getClassSymbol(innerNode) !;
+           const outerSymbol = host.getClassSymbol(outerNode) !;
+           expect(innerSymbol.declaration).toBe(outerSymbol.declaration);
+           expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
+         });
+
+      it('should return undefined if node is not a class', () => {
+        loadTestFiles([FOO_FUNCTION_FILE]);
+        const {program} = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const node =
+            getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
+        const classSymbol = host.getClassSymbol(node);
+
+        expect(classSymbol).toBeUndefined();
+      });
+
+      it('should return undefined if variable declaration is not initialized using a class expression',
+         () => {
+           const testFile = {
+             name: _('/test.js'),
+             contents: `var MyClass = null;`,
+           };
+           loadTestFiles([testFile]);
+           const {program} = makeTestBundleProgram(testFile.name);
+           const host =
+               new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+           const node =
+               getDeclaration(program, testFile.name, 'MyClass', isNamedVariableDeclaration);
+           const classSymbol = host.getClassSymbol(node);
+
+           expect(classSymbol).toBeUndefined();
+         });
+    });
+
     describe('isClass()', () => {
       it('should return true if a given node is a TS class declaration', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
