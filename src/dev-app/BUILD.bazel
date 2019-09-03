@@ -1,9 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
 load("//:packages.bzl", "MATERIAL_EXPERIMENTAL_SCSS_LIBS")
 load("//tools:defaults.bzl", "ng_module")
+load("//tools/dev-server:index.bzl", "dev_server")
 
 ng_module(
     name = "dev-app",
@@ -90,13 +90,12 @@ sass_binary(
     ] + MATERIAL_EXPERIMENTAL_SCSS_LIBS,
 )
 
-ts_devserver(
+dev_server(
     name = "devserver",
-    additional_root_paths = [
-        "npm/node_modules",
-    ],
-    port = 4200,
-    static_files = [
+    srcs = [
+        "index.html",
+        "system-config.js",
+        "system-rxjs-operators.js",
         ":theme",
         "//src/dev-app/icon:icon_demo_assets",
         "@npm//:node_modules/@material/animation/dist/mdc.animation.js",
@@ -137,9 +136,9 @@ ts_devserver(
         "@npm//:node_modules/systemjs/dist/system.js",
         "@npm//:node_modules/tslib/tslib.js",
         "@npm//:node_modules/zone.js/dist/zone.js",
-        "index.html",
-        "system-config.js",
-        "system-rxjs-operators.js",
+    ],
+    additional_root_paths = [
+        "npm/node_modules",
     ],
     deps = [
         ":dev-app",

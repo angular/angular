@@ -1,0 +1,32 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "ts_library")
+
+exports_files(["launcher_template.sh"])
+
+ts_library(
+    name = "dev-server_lib",
+    srcs = [
+        "dev-server.ts",
+        "ibazel.ts",
+        "main.ts",
+    ],
+    deps = [
+        "@npm//@types/browser-sync",
+        "@npm//@types/minimist",
+        "@npm//@types/node",
+        "@npm//@types/send",
+        "@npm//browser-sync",
+        "@npm//minimist",
+        "@npm//send",
+    ],
+)
+
+nodejs_binary(
+    name = "dev-server_bin",
+    data = [
+        ":dev-server_lib",
+    ],
+    entry_point = ":main.ts",
+)
