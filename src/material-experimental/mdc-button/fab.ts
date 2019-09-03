@@ -44,6 +44,7 @@ export class MatFabButton extends MatButtonBase {
       elementRef: ElementRef, platform: Platform, ngZone: NgZone,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, platform, ngZone, animationMode);
+    this.color = 'accent';
   }
 }
 
@@ -63,5 +64,6 @@ export class MatFabAnchor extends MatAnchor {
       elementRef: ElementRef, platform: Platform, ngZone: NgZone,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, platform, ngZone, animationMode);
+    this.color = 'accent';
   }
 }

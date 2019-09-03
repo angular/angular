@@ -7,7 +7,7 @@
  */
 
 import {Platform} from '@angular/cdk/platform';
-import {ElementRef, NgZone} from '@angular/core';
+import {ElementRef, NgZone, ViewChild} from '@angular/core';
 import {
   CanColor,
   CanColorCtor,
@@ -15,6 +15,7 @@ import {
   CanDisableCtor,
   CanDisableRipple,
   CanDisableRippleCtor,
+  MatRipple,
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
@@ -83,6 +84,9 @@ export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, Ca
 
   /** Whether the ripple is centered on the button. */
   _isRippleCentered = false;
+
+  /** Reference to the MatRipple instance of the button. */
+  @ViewChild(MatRipple, {static: false}) ripple: MatRipple;
 
   constructor(
       elementRef: ElementRef, public _platform: Platform, public _ngZone: NgZone,
