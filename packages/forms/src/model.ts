@@ -1055,7 +1055,7 @@ export class FormControl<T = any> extends AbstractControl<T> {
    * event to update the model.
    *
    */
-  setValue(value: T|null, options: {
+  setValue(value: T extends null ? any : T | null, options: {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,
@@ -1686,7 +1686,7 @@ export class FormArray<T = any> extends AbstractControl<T> {
   *
   */
   constructor(
-    public controls: AbstractControl<T>[],
+    public controls: AbstractControl<T[]>[],
     validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(
