@@ -60,7 +60,7 @@ describe('ProtractorHarnessEnvironment', () => {
 
     it('should get all matching components for all harnesses', async () => {
       const harnesses = await loader.getAllHarnesses(SubComponentHarness);
-      expect(harnesses.length).toBe(2);
+      expect(harnesses.length).toBe(4);
     });
   });
 
@@ -132,7 +132,9 @@ describe('ProtractorHarnessEnvironment', () => {
       const alllists = await harness.allLists();
       const items1 = await alllists[0].getItems();
       const items2 = await alllists[1].getItems();
-      expect(alllists.length).toBe(2);
+      const items3 = await alllists[2].getItems();
+      const items4 = await alllists[3].getItems();
+      expect(alllists.length).toBe(4);
       expect(items1.length).toBe(3);
       expect(await items1[0].text()).toBe('Protractor');
       expect(await items1[1].text()).toBe('TestBed');
@@ -142,6 +144,8 @@ describe('ProtractorHarnessEnvironment', () => {
       expect(await items2[1].text()).toBe('Integration Test');
       expect(await items2[2].text()).toBe('Performance Test');
       expect(await items2[3].text()).toBe('Mutation Test');
+      expect(items3.length).toBe(0);
+      expect(items4.length).toBe(0);
     });
 
     it('should wait for async operation to complete', async () => {
@@ -265,6 +269,57 @@ describe('ProtractorHarnessEnvironment', () => {
       const button = await harness.button();
       expect(await button.matchesSelector('button:not(.fake-class)')).toBe(true);
       expect(await button.matchesSelector('button:disabled')).toBe(false);
+    });
+
+    it('should load required harness with ancestor selector restriction', async () => {
+      const subcomp = await harness.requiredAncestorRestrictedSubcomponent();
+      expect(await (await subcomp.title()).text()).toBe('List of other 1');
+    });
+
+    it('should throw when failing to find required harness with ancestor selector restriction',
+        async () => {
+          try {
+            await harness.requiredAncestorRestrictedMissingSubcomponent();
+            fail('Expected to throw');
+          } catch (e) {
+            expect(e.message).toBe(
+                'Expected to find element for SubComponentHarness matching selector: "test-sub"' +
+                ' (with restrictions: has ancestor matching selector ".not-found"),' +
+                ' but none was found');
+          }
+        });
+
+    it('should load optional harness with ancestor selector restriction', async () => {
+      const [subcomp1, subcomp2] = await Promise.all([
+        harness.optionalAncestorRestrictedSubcomponent(),
+        harness.optionalAncestorRestrictedMissingSubcomponent()
+      ]);
+      expect(subcomp1).not.toBeNull();
+      expect(subcomp2).toBeNull();
+      expect(await (await subcomp1!.title()).text()).toBe('List of other 1');
+    });
+
+    it('should load all harnesses with ancestor selector restriction', async () => {
+      const [subcomps1, subcomps2] = await Promise.all([
+        harness.allAncestorRestrictedSubcomponent(),
+        harness.allAncestorRestrictedMissingSubcomponent()
+      ]);
+      expect(subcomps1.length).toBe(2);
+      expect(subcomps2.length).toBe(0);
+      const [title1, title2] =
+          await Promise.all(subcomps1.map(async comp => (await comp.title()).text()));
+      expect(title1).toBe('List of other 1');
+      expect(title2).toBe('List of other 2');
+    });
+
+    it('should load all harnesses with multiple ancestor selector restriction', async () => {
+      const subcomps = await harness.multipleAncestorSelectorsSubcomponent();
+      expect(subcomps.length).toBe(4);
+    });
+
+    it('should load all harnesses with direct ancestor selector restriction', async () => {
+      const subcomps = await harness.directAncestorSelectorSubcomponent();
+      expect(subcomps.length).toBe(2);
     });
   });
 

@@ -145,11 +145,7 @@ export class ProtractorElement implements TestElement {
   async matchesSelector(selector: string): Promise<boolean> {
       return browser.executeScript(`
           return (Element.prototype.matches ||
-                  Element.prototype.matchesSelector ||
-                  Element.prototype.mozMatchesSelector ||
-                  Element.prototype.msMatchesSelector ||
-                  Element.prototype.oMatchesSelector ||
-                  Element.prototype.webkitMatchesSelector).call(arguments[0], arguments[1])
+                  Element.prototype.msMatchesSelector).call(arguments[0], arguments[1])
           `, this.element, selector);
   }
 

@@ -189,7 +189,7 @@ export abstract class ComponentHarness {
   protected locatorFor<T extends ComponentHarness>(
       harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
 
-  protected locatorFor(arg: any): any {
+  protected locatorFor(arg: any) {
     return this.locatorFactory.locatorFor(arg);
   }
 
@@ -216,7 +216,7 @@ export abstract class ComponentHarness {
   protected locatorForOptional<T extends ComponentHarness>(
       harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T | null>;
 
-  protected locatorForOptional(arg: any): any {
+  protected locatorForOptional(arg: any) {
     return this.locatorFactory.locatorForOptional(arg);
   }
 
@@ -242,7 +242,7 @@ export abstract class ComponentHarness {
   protected locatorForAll<T extends ComponentHarness>(
       harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
 
-  protected locatorForAll(arg: any): any {
+  protected locatorForAll(arg: any) {
     return this.locatorFactory.locatorForAll(arg);
   }
 }
@@ -260,7 +260,10 @@ export interface ComponentHarnessConstructor<T extends ComponentHarness> {
 }
 
 export interface BaseHarnessFilters {
+  /** Only find component instances whose host element matches the given selector. */
   selector?: string;
+  /** Only find component instances that are nested under an element with the given selector. */
+  ancestor?: string;
 }
 
 /**
@@ -270,14 +273,10 @@ export interface BaseHarnessFilters {
 export class HarnessPredicate<T extends ComponentHarness> {
   private _predicates: AsyncPredicate<T>[] = [];
   private _descriptions: string[] = [];
+  private _ancestor: string;
 
   constructor(public harnessType: ComponentHarnessConstructor<T>, options: BaseHarnessFilters) {
-    const selector = options.selector;
-    if (selector !== undefined) {
-      this.add(`selector matches "${selector}"`, async item => {
-        return (await item.host()).matchesSelector(selector);
-      });
-    }
+    this._addBaseOptions(options);
   }
 
   /**
@@ -346,5 +345,26 @@ export class HarnessPredicate<T extends ComponentHarness> {
   /** Gets a description of this predicate for use in error messages. */
   getDescription() {
     return this._descriptions.join(', ');
+  }
+
+  /** Gets the selector used to find candidate elements. */
+  getSelector() {
+    return this._ancestor.split(',')
+        .map(part => `${part.trim()} ${this.harnessType.hostSelector}`.trim())
+        .join(',');
+  }
+
+  /** Adds base options common to all harness types. */
+  private _addBaseOptions(options: BaseHarnessFilters) {
+    this._ancestor = options.ancestor || '';
+    if (this._ancestor) {
+      this._descriptions.push(`has ancestor matching selector "${this._ancestor}"`);
+    }
+    const selector = options.selector;
+    if (selector !== undefined) {
+      this.add(`host matches selector "${selector}"`, async item => {
+        return (await item.host()).matchesSelector(selector);
+      });
+    }
   }
 }

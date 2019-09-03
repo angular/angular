@@ -26,7 +26,7 @@ export class MatMenuItemHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: MenuItemHarnessFilters = {}): HarnessPredicate<MatMenuItemHarness> {
-    return new HarnessPredicate(MatMenuItemHarness, options); // TODO: add options here
+    return new HarnessPredicate(MatMenuItemHarness, options);
   }
 
   /** Gets a boolean promise indicating if the menu is disabled. */

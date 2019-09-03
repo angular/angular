@@ -141,12 +141,8 @@ export class UnitTestElement implements TestElement {
   async matchesSelector(selector: string): Promise<boolean> {
     await this._stabilize();
     const elementPrototype = Element.prototype as any;
-    return (elementPrototype['matches'] ||
-            elementPrototype['matchesSelector'] ||
-            elementPrototype['mozMatchesSelector'] ||
-            elementPrototype['msMatchesSelector'] ||
-            elementPrototype['oMatchesSelector'] ||
-            elementPrototype['webkitMatchesSelector']).call(this.element, selector);
+    return (elementPrototype['matches'] || elementPrototype['msMatchesSelector'])
+        .call(this.element, selector);
   }
 
   async forceStabilize(): Promise<void> {
