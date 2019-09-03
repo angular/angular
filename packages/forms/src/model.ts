@@ -1078,7 +1078,7 @@ export class FormControl<T = any> extends AbstractControl<T> {
    *
    * @see `setValue` for options
    */
-  patchValue(value: Partial<T>, options: {
+  patchValue(value: T extends Object ? Partial<T> : T, options: {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,
