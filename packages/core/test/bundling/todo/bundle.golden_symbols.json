@@ -489,9 +489,6 @@
     "name": "baseResolveDirective"
   },
   {
-    "name": "bind"
-  },
-  {
     "name": "bindingUpdated"
   },
   {
