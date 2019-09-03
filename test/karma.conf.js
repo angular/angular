@@ -55,9 +55,15 @@ module.exports = config => {
       {pattern: 'test/karma-system-config.js', included: true, watched: false},
       {pattern: 'test/karma-test-shim.js', included: true, watched: false},
 
-      // Include a Material theme in the test suite.
+      // Include a Material theme in the test suite. Also include the MDC theme as
+      // karma runs tests for the MDC prototype components as well.
       {
         pattern: 'dist/packages/**/core/theming/prebuilt/indigo-pink.css',
+        included: true,
+        watched: true
+      },
+      {
+        pattern: 'dist/packages/material-experimental/mdc-theming/prebuilt/indigo-pink.css',
         included: true,
         watched: true
       },
