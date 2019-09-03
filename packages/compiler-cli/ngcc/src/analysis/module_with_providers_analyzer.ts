@@ -80,7 +80,7 @@ export class ModuleWithProvidersAnalyzer {
     let dtsFn: ts.Declaration|null = null;
     const containerClass = fn.container && this.host.getClassSymbol(fn.container);
     if (containerClass) {
-      const dtsClass = this.host.getDtsDeclaration(containerClass.valueDeclaration);
+      const dtsClass = this.host.getDtsDeclaration(containerClass.declaration.valueDeclaration);
       // Get the declaration of the matching static method
       dtsFn = dtsClass && ts.isClassDeclaration(dtsClass) ?
           dtsClass.members

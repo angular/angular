@@ -47,7 +47,32 @@ export interface ModuleWithProvidersFunction {
  * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
  * a `ClassDeclaration`.
  */
-export type NgccClassSymbol = ts.Symbol & {valueDeclaration: ClassDeclaration};
+export type ClassSymbol = ts.Symbol & {valueDeclaration: ClassDeclaration};
+
+/**
+ * A representation of a class that accounts for the potential existence of two `ClassSymbol`s for a
+ * given class, as the compiled JavaScript bundles that ngcc reflects on can have two declarations.
+ */
+export interface NgccClassSymbol {
+  /**
+   * The name of the class.
+   */
+  name: string;
+
+  /**
+   * Represents the symbol corresponding with the outer declaration of the class. This should be
+   * considered the public class symbol, i.e. its declaration is visible to the rest of the program.
+   */
+  declaration: ClassSymbol;
+
+  /**
+   * Represents the symbol corresponding with the inner declaration of the class, referred to as its
+   * "implementation". This is not necessarily a `ClassSymbol` but rather just a `ts.Symbol`, as the
+   * inner declaration does not need to satisfy the requirements imposed on a publicly visible class
+   * declaration.
+   */
+  implementation: ts.Symbol;
+}
 
 /**
  * A reflection host that has extra methods for looking at non-Typescript package formats
@@ -59,7 +84,7 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @returns the symbol for the declaration or `undefined` if it is not
    * a "class" or has no symbol.
    */
-  getClassSymbol(node: ts.Node): NgccClassSymbol|undefined;
+  getClassSymbol(declaration: ts.Node): NgccClassSymbol|undefined;
 
   /**
    * Search the given module for variable declarations in which the initializer
