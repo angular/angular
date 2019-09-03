@@ -1,38 +1,11 @@
 import * as child_process from 'child_process';
-import * as fs from 'fs';
 import * as gulp from 'gulp';
-import * as path from 'path';
 
 // This import lacks type definitions.
 const gulpClean = require('gulp-clean');
 
 // There are no type definitions available for these imports.
 const resolveBin = require('resolve-bin');
-
-
-/** If the string passed in is a glob, returns it, otherwise append '**\/*' to it. */
-function _globify(maybeGlob: string, suffix = '**/*') {
-  if (maybeGlob.indexOf('*') > -1) {
-    return maybeGlob;
-  }
-  try {
-    if (fs.statSync(maybeGlob).isFile()) {
-      return maybeGlob;
-    }
-  } catch {}
-  return path.join(maybeGlob, suffix);
-}
-
-
-/** Creates a task that runs the TypeScript compiler */
-export function tsBuildTask(tsConfigPath: string) {
-  return execNodeTask('typescript', 'tsc', ['-p', tsConfigPath]);
-}
-
-/** Creates a task that runs the Angular Compiler CLI. */
-export function ngcBuildTask(tsConfigPath: string) {
-  return execNodeTask('@angular/compiler-cli', 'ngc', ['-p', tsConfigPath]);
-}
 
 /** Options that can be passed to execTask or execNodeTask. */
 export interface ExecTaskOptions {
@@ -100,17 +73,6 @@ export function execNodeTask(packageName: string, executable: string | string[],
     });
   };
 }
-
-
-/** Copy files from a glob to a destination. */
-export function copyTask(srcGlobOrDir: string | string[], outRoot: string) {
-  if (typeof srcGlobOrDir === 'string') {
-    return () => gulp.src(_globify(srcGlobOrDir)).pipe(gulp.dest(outRoot));
-  } else {
-    return () => gulp.src(srcGlobOrDir.map(name => _globify(name))).pipe(gulp.dest(outRoot));
-  }
-}
-
 
 /** Delete files. */
 export function cleanTask(glob: string) {

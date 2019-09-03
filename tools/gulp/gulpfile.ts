@@ -29,7 +29,6 @@ import './tasks/example-module';
 import './tasks/lint';
 import './tasks/material-release';
 import './tasks/unit-test';
-import './tasks/universal';
 
 /** Task that builds all available release packages. */
 task('build-release-packages', sequenceTask(

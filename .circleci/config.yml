@@ -255,20 +255,6 @@ jobs:
 
     - run: ./scripts/circleci/run-saucelabs-tests.sh
 
-  # -------------------------------------------------------------------------
-  # Job that pre-render's the universal app with `@angular/platform-server`.
-  # This verifies that Angular Material can be rendered within Node.
-  # -------------------------------------------------------------------------
-  prerender_build:
-    <<: *job_defaults
-    steps:
-    - *checkout_code
-    - *restore_cache
-    - *yarn_download
-    - *yarn_install
-
-    - run: yarn gulp ci:prerender
-
   # ----------------------------------
   # Lint job. Runs the gulp lint task.
   # ----------------------------------
@@ -522,8 +508,6 @@ workflows:
   integration_tests:
     jobs:
       - e2e_tests:
-          filters: *ignore_presubmit_branch_filter
-      - prerender_build:
           filters: *ignore_presubmit_branch_filter
 
   release_output:

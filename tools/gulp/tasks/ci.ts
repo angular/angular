@@ -12,8 +12,5 @@ task('ci:test', ['test:single-run'], () => process.exit(0));
  */
 task('ci:aot', ['build-aot:no-release-build']);
 
-/** Task that verifies if all Material components are working with platform-server. */
-task('ci:prerender', ['prerender']);
-
 /** Task that builds all release packages. */
 task('ci:build-release-packages', ['build-release-packages']);

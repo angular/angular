@@ -1,0 +1,57 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//:packages.bzl", "CDK_EXPERIMENTAL_TARGETS", "CDK_TARGETS", "MATERIAL_EXPERIMENTAL_SCSS_LIBS", "MATERIAL_EXPERIMENTAL_TARGETS", "MATERIAL_TARGETS")
+load("//tools:defaults.bzl", "ng_module", "ts_library")
+
+ng_module(
+    name = "kitchen-sink",
+    srcs = [
+        "kitchen-sink-mdc/kitchen-sink-mdc.ts",
+        "kitchen-sink-root.ts",
+        "kitchen-sink/kitchen-sink.ts",
+    ],
+    assets = [
+        "kitchen-sink/kitchen-sink.html",
+        "kitchen-sink-mdc/kitchen-sink-mdc.html",
+    ],
+    deps = [
+        "@npm//@angular/platform-server",
+    ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_TARGETS + MATERIAL_EXPERIMENTAL_TARGETS,
+)
+
+ts_library(
+    name = "server",
+    srcs = [
+        "prerender.ts",
+    ],
+    deps = [
+        ":kitchen-sink",
+        "@npm//@angular/platform-server",
+        "@npm//@types/node",
+        "@npm//reflect-metadata",
+        "@npm//zone.js",
+    ],
+)
+
+sass_binary(
+    name = "theme_scss",
+    src = "theme.scss",
+    include_paths = [
+        "external/npm/node_modules",
+    ],
+    deps = [
+        "//src/material/core:all_themes",
+    ] + MATERIAL_EXPERIMENTAL_SCSS_LIBS,
+)
+
+nodejs_test(
+    name = "server_test",
+    data = [
+        "index.html",
+        ":server",
+        ":theme_scss",
+    ],
+    entry_point = ":prerender.ts",
+)
