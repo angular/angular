@@ -238,5 +238,38 @@ describe('event listeners', () => {
       expect(componentInstance.count).toEqual(1);
       expect(componentInstance.someValue).toEqual(42);
     });
+
+    it('should maintain the order in which listeners are registered', () => {
+      const log: string[] = [];
+      @Component({
+        selector: 'my-comp',
+        template: '<button dirA dirB (click)="count()">Click me!</button>',
+      })
+      class MyComp {
+        counter = 0;
+        count() { log.push('component.click'); }
+      }
+
+      @Directive({selector: '[dirA]'})
+      class DirA {
+        @HostListener('click')
+        count() { log.push('dirA.click'); }
+      }
+
+      @Directive({selector: '[dirB]'})
+      class DirB {
+        @HostListener('click')
+        count() { log.push('dirB.click'); }
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp, DirA, DirB]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.firstChild;
+      button.click();
+
+      expect(log).toEqual(['dirA.click', 'dirB.click', 'component.click']);
+    });
   });
 });
