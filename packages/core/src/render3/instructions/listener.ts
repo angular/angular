@@ -149,9 +149,13 @@ function listenerInternal(
         existingListener = findExistingListener(lView, eventName, tNode.index);
       }
       if (existingListener !== null) {
-        // Attach a new listener at the head of the coalesced listeners list.
-        (<any>listenerFn).__ngNextListenerFn__ = (<any>existingListener).__ngNextListenerFn__;
-        (<any>existingListener).__ngNextListenerFn__ = listenerFn;
+        // Attach a new listener to coalesced listeners list, maintaining the order in which
+        // listeners are registered. For performance reasons, we keep a reference to the last
+        // listener in that list (in `__ngLastListenerFn__` field), so we can avoid going through
+        // the entire set each time we need to add a new listener.
+        const lastListenerFn = (<any>existingListener).__ngLastListenerFn__ || existingListener;
+        lastListenerFn.__ngNextListenerFn__ = listenerFn;
+        (<any>existingListener).__ngLastListenerFn__ = listenerFn;
         processOutputs = false;
       } else {
         // The first argument of `listen` function in Procedural Renderer is:
