@@ -278,10 +278,35 @@ describe('MatIcon', () => {
       http.expectOne('farm-set-1.svg').error(new ErrorEvent('Network error'));
       fixture.detectChanges();
 
-      expect(errorHandler.handleError).toHaveBeenCalledTimes(1);
+      // Called twice once for the HTTP request failing and once for the icon
+      // then not being able to be found.
+      expect(errorHandler.handleError).toHaveBeenCalledTimes(2);
       expect(errorHandler.handleError.calls.argsFor(0)[0].message).toEqual(
         'Loading icon set URL: farm-set-1.svg failed: Http failure response ' +
         'for farm-set-1.svg: 0 ');
+      expect(errorHandler.handleError.calls.argsFor(1)[0].message)
+          .toEqual(
+              `Error retrieving icon ${testComponent.iconName}! ` +
+              'Unable to find icon with the name "pig"');
+    });
+
+    it('should delegate an error getting an SVG icon to the ErrorHandler', () => {
+      iconRegistry.addSvgIconSetInNamespace('farm', trustUrl('farm-set-1.svg'));
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      const testComponent = fixture.componentInstance;
+
+      testComponent.iconName = 'farm:DNE';
+      fixture.detectChanges();
+      http.expectOne('farm-set-1.svg').flush(FAKE_SVGS.farmSet1);
+      fixture.detectChanges();
+
+      // The HTTP request succeeded but the icon was not found so we logged.
+      expect(errorHandler.handleError).toHaveBeenCalledTimes(1);
+      expect(errorHandler.handleError.calls.argsFor(0)[0].message)
+          .toEqual(
+              `Error retrieving icon ${testComponent.iconName}! ` +
+              'Unable to find icon with the name "DNE"');
     });
 
     it('should extract icon from SVG icon set', () => {
