@@ -842,6 +842,7 @@ testing/**                                                      @angular/fw-test
 /aio/content/guide/workspace-config.md                          @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/deprecations.md                              @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/migration-renderer.md                        @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/migration-undecorated-classes.md             @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 # ================================================
