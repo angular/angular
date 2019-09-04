@@ -72,4 +72,3 @@ export function flattenTree(node: TreeNode, target: TreeNode[] = []): TreeNode[]
   }
   return target;
 }
-
