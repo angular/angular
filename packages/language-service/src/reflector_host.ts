@@ -7,7 +7,7 @@
  */
 
 import {StaticSymbolResolverHost} from '@angular/compiler';
-import {CompilerOptions, MetadataCollector, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
+import {MetadataCollector, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -48,13 +48,23 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost, Me
 }
 
 export class ReflectorHost implements StaticSymbolResolverHost {
-  private hostAdapter: ReflectorModuleModuleResolutionHost;
-  private metadataReaderCache = createMetadataReaderCache();
+  private readonly hostAdapter: ReflectorModuleModuleResolutionHost;
+  private readonly metadataReaderCache = createMetadataReaderCache();
+  private readonly moduleResolutionCache: ts.ModuleResolutionCache;
+  private readonly fakeContainingPath: string;
 
   constructor(
-      getProgram: () => ts.Program, serviceHost: ts.LanguageServiceHost,
-      private options: CompilerOptions) {
-    this.hostAdapter = new ReflectorModuleModuleResolutionHost(serviceHost, getProgram);
+      getProgram: () => ts.Program, private readonly tsLSHost: ts.LanguageServiceHost, _: {}) {
+    // tsLSHost.getCurrentDirectory() returns the directory where tsconfig.json
+    // is located. This is not the same as process.cwd() because the language
+    // service host sets the "project root path" as its current directory.
+    const currentDir = tsLSHost.getCurrentDirectory();
+    this.fakeContainingPath = currentDir ? path.join(currentDir, 'fakeContainingFile.ts') : '';
+    this.hostAdapter = new ReflectorModuleModuleResolutionHost(tsLSHost, getProgram);
+    this.moduleResolutionCache = ts.createModuleResolutionCache(
+        currentDir,
+        s => s,  // getCanonicalFileName
+        tsLSHost.getCompilationSettings());
   }
 
   getMetadataFor(modulePath: string): {[key: string]: any}[]|undefined {
@@ -63,15 +73,22 @@ export class ReflectorHost implements StaticSymbolResolverHost {
 
   moduleNameToFileName(moduleName: string, containingFile?: string): string|null {
     if (!containingFile) {
-      if (moduleName.indexOf('.') === 0) {
+      if (moduleName.startsWith('.')) {
         throw new Error('Resolution of relative paths requires a containing file.');
       }
-      // Any containing file gives the same result for absolute imports
-      containingFile = path.join(this.options.basePath !, 'index.ts').replace(/\\/g, '/');
+      if (!this.fakeContainingPath) {
+        // If current directory is empty then the file must belong to an inferred
+        // project (no tsconfig.json), in which case it's not possible to resolve
+        // the module without the caller explicitly providing a containing file.
+        throw new Error(`Could not resolve '${moduleName}' without a containing file.`);
+      }
+      containingFile = this.fakeContainingPath;
     }
-    const resolved =
-        ts.resolveModuleName(moduleName, containingFile !, this.options, this.hostAdapter)
-            .resolvedModule;
+    const compilerOptions = this.tsLSHost.getCompilationSettings();
+    const resolved = ts.resolveModuleName(
+                           moduleName, containingFile, compilerOptions, this.hostAdapter,
+                           this.moduleResolutionCache)
+                         .resolvedModule;
     return resolved ? resolved.resolvedFileName : null;
   }
 
