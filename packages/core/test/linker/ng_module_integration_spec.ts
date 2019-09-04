@@ -92,13 +92,6 @@ class SomePipe {
 class CompUsingModuleDirectiveAndPipe {
 }
 
-class DummyConsole implements Console {
-  public warnings: string[] = [];
-
-  log(message: string) {}
-  warn(message: string) { this.warnings.push(message); }
-}
-
 {
   if (ivyEnabled) {
     describe('ivy', () => { declareTests(); });
@@ -112,12 +105,8 @@ function declareTests(config?: {useJit: boolean}) {
   describe('NgModule', () => {
     let compiler: Compiler;
     let injector: Injector;
-    let console: DummyConsole;
 
-    beforeEach(() => {
-      console = new DummyConsole();
-      TestBed.configureCompiler({...config, providers: [{provide: Console, useValue: console}]});
-    });
+    beforeEach(() => { TestBed.configureCompiler(config || {}); });
 
     beforeEach(inject([Compiler, Injector], (_compiler: Compiler, _injector: Injector) => {
       compiler = _compiler;
@@ -261,7 +250,7 @@ function declareTests(config?: {useJit: boolean}) {
             expect(() => createModule(SomeModule)).toThrowError(/Can't bind to 'someUnknownProp'/);
           });
 
-      onlyInIvy('Unknown property error thrown during update mode, not creation mode')
+      onlyInIvy('Unknown property warning logged, instead of throwing an error')
           .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
             class ComponentUsingInvalidProperty {
@@ -271,8 +260,10 @@ function declareTests(config?: {useJit: boolean}) {
             class SomeModule {
             }
 
+            const spy = spyOn(console, 'warn');
             const fixture = createComp(ComponentUsingInvalidProperty, SomeModule);
-            expect(() => fixture.detectChanges()).toThrowError(/Can't bind to 'someUnknownProp'/);
+            fixture.detectChanges();
+            expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'someUnknownProp'/);
           });
 
       it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',

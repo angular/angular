@@ -883,14 +883,17 @@ export function elementPropertyInternal<T>(
 
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
-      validateAgainstUnknownProperties(lView, element, propName, tNode);
+      if (!validateProperty(lView, element, propName, tNode)) {
+        // Return here since we only log warnings for unknown properties.
+        warnAboutUnknownProperty(propName, tNode);
+        return;
+      }
       ngDevMode.rendererSetProperty++;
     }
 
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the
-    // property
-    // is risky, so sanitization can be done without further checks.
+    // property is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
     if (isProceduralRenderer(renderer)) {
       renderer.setProperty(element as RElement, propName, value);
@@ -902,7 +905,7 @@ export function elementPropertyInternal<T>(
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
     if (ngDevMode && !matchingSchemas(lView, tNode.tagName)) {
-      throw createUnknownPropertyError(propName, tNode);
+      warnAboutUnknownProperty(propName, tNode);
     }
   }
 }
@@ -940,22 +943,13 @@ export function setNgReflectProperty(
   }
 }
 
-function validateAgainstUnknownProperties(
-    hostView: LView, element: RElement | RComment, propName: string, tNode: TNode) {
-  // If the tag matches any of the schemas we shouldn't throw.
-  if (matchingSchemas(hostView, tNode.tagName)) {
-    return;
-  }
-
-  // If prop is not a known property of the HTML element...
-  if (!(propName in element) &&
-      // and we are in a browser context... (web worker nodes should be skipped)
-      typeof Node === 'function' && element instanceof Node &&
-      // and isn't a synthetic animation property...
-      propName[0] !== ANIMATION_PROP_PREFIX) {
-    // ... it is probably a user error and we should throw.
-    throw createUnknownPropertyError(propName, tNode);
-  }
+function validateProperty(
+    hostView: LView, element: RElement | RComment, propName: string, tNode: TNode): boolean {
+  // The property is considered valid if the element matches the schema, it exists on the element
+  // or it is synthetic, and we are in a browser context (web worker nodes should be skipped).
+  return matchingSchemas(hostView, tNode.tagName) || propName in element ||
+      propName[0] === ANIMATION_PROP_PREFIX || typeof Node !== 'function' ||
+      !(element instanceof Node);
 }
 
 function matchingSchemas(hostView: LView, tagName: string | null): boolean {
@@ -975,13 +969,13 @@ function matchingSchemas(hostView: LView, tagName: string | null): boolean {
 }
 
 /**
-* Creates an error that should be thrown when encountering an unknown property on an element.
-* @param propName Name of the invalid property.
-* @param tNode Node on which we encountered the error.
-*/
-function createUnknownPropertyError(propName: string, tNode: TNode): Error {
-  return new Error(
-      `Template error: Can't bind to '${propName}' since it isn't a known property of '${tNode.tagName}'.`);
+ * Logs a warning that a property is not supported on an element.
+ * @param propName Name of the invalid property.
+ * @param tNode Node on which we encountered the property.
+ */
+function warnAboutUnknownProperty(propName: string, tNode: TNode): void {
+  console.warn(
+      `Can't bind to '${propName}' since it isn't a known property of '${tNode.tagName}'.`);
 }
 
 /**
