@@ -194,10 +194,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_idA$$APP_SPEC_TS_1$;
         }
         else {
-          /**
-           * @desc descA
-           * @meaning meaningA
-           */
           $I18N_0$ = $localize \`Content A\`;
         }
         const $_c2$ = [${AttributeMarker.I18n}, "title"];
@@ -211,10 +207,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_idB$$APP_SPEC_TS_4$;
         }
         else {
-          /**
-           * @desc descB
-           * @meaning meaningB
-           */
           $I18N_3$ = $localize \`Title B\`;
         }
         const $_c5$ = ["title", $I18N_3$];
@@ -227,9 +219,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_7$ = $MSG_EXTERNAL_4978592519614169666$$APP_SPEC_TS_8$;
         }
         else {
-          /**
-           * @desc meaningC
-           */
           $I18N_7$ = $localize \`Title C\`;
         }
         const $_c9$ = ["title", $I18N_7$];
@@ -243,10 +232,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_11$ = $MSG_EXTERNAL_5200291527729162531$$APP_SPEC_TS_12$;
         }
         else {
-          /**
-           * @desc descD
-           * @meaning meaningD
-           */
           $I18N_11$ = $localize \`Title D\`;
         }
         const $_c13$ = ["title", $I18N_11$];
@@ -259,9 +244,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_15$ = $MSG_EXTERNAL_idE$$APP_SPEC_TS_16$;
         }
         else {
-          /**
-           * @desc meaningE
-           */
           $I18N_15$ = $localize \`Title E\`;
         }
         const $_c17$ = ["title", $I18N_15$];
@@ -283,9 +265,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_23$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$;
         }
         else {
-          /**
-           * @desc [BACKUP_MESSAGE_ID:idH]desc
-           */
           $I18N_23$ = $localize \`Title G\`;
         }
         const $_c25$ = ["title", $I18N_23$];
@@ -386,10 +365,6 @@ describe('i18n support in the view compiler', () => {
           $I18N_1$ = $MSG_EXTERNAL_8809028065680254561$$APP_SPEC_TS_1$;
         }
         else {
-          /**
-           * @desc d
-           * @meaning m
-           */
           $I18N_1$ = $localize \`introduction\`;
         }
         const $_c1$ = ["title", $I18N_1$];
@@ -441,10 +416,6 @@ describe('i18n support in the view compiler', () => {
           $I18N_2$ = $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$;
         }
         else {
-          /**
-           * @desc d
-           * @meaning m
-           */
           $I18N_2$ = $localize \`intro $` +
           String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
         }
@@ -460,10 +431,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$;
         }
         else {
-          /**
-           * @desc d1
-           * @meaning m1
-           */
           $I18N_3$ = $localize \`$` +
           String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
         }
@@ -485,10 +452,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_6$ = $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$;
         }
         else {
-          /**
-           * @desc d2
-           * @meaning m2
-           */
           $I18N_6$ = $localize \`$` +
           String.raw `{"\uFFFD0\uFFFD"}:interpolation: and $` +
           String.raw `{"\uFFFD1\uFFFD"}:interpolation_1: and again $` +
@@ -554,10 +517,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_8977039798304050198$;
         }
         else {
-          /**
-           * @desc d
-           * @meaning m
-           */
           $I18N_1$ = $localize \`intro $` +
           String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
         }
@@ -601,10 +560,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$;
         }
         else {
-          /**
-           * @desc d
-           * @meaning m
-           */
           $I18N_1$ = $localize \`different scope $` +
           String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
         }
@@ -679,10 +634,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$;
         }
         else {
-          /**
-           * @desc d
-           * @meaning m
-           */
           $I18N_2$ = $localize \`intro $` +
           String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
         }
@@ -698,10 +649,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$;
         }
         else {
-          /**
-           * @desc d1
-           * @meaning m1
-           */
           $I18N_3$ = $localize \`$` +
           String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
         }
@@ -723,10 +670,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_6$ = $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$;
         }
         else {
-          /**
-           * @desc d2
-           * @meaning m2
-           */
           $I18N_6$ = $localize \`$` +
           String.raw `{"\uFFFD0\uFFFD"}:interpolation: and $` +
           String.raw `{"\uFFFD1\uFFFD"}:interpolation_1: and again $` +
@@ -795,10 +738,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__3$;
         }
         else {
-          /**
-           * @desc d
-           * @meaning m
-           */
           $I18N_2$ = $localize \`different scope $` +
           String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
         }
@@ -852,10 +791,6 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_7727043314656808423$$APP_SPEC_TS_0$;
         }
         else {
-          /**
-           * @desc d
-           * @meaning m
-           */
           $I18N_0$ = $localize \`Element title\`;
         }
         const $_c1$ = ["title", $I18N_0$];

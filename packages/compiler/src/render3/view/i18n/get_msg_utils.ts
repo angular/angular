@@ -25,7 +25,10 @@ export function createGoogleGetMsgStatements(
     args.push(mapLiteral(params, true));
   }
 
-  // /** Description and meaning of message */
+  // /**
+  //  * @desc description of message
+  //  * @meaning meaning of message
+  //  */
   // const MSG_... = goog.getMsg(..);
   // I18N_X = MSG_...;
   const statements = [];
