@@ -1,3 +1,13 @@
+<a name="8.2.5"></a>
+## [8.2.5](https://github.com/angular/angular/compare/8.2.4...8.2.5) (2019-09-04)
+
+
+### Bug Fixes
+
+* **common:** HttpParams fromObject accepts ReadonlyArray<string> ([#31072](https://github.com/angular/angular/issues/31072)) ([b3ea698](https://github.com/angular/angular/commit/b3ea698)), closes [#28452](https://github.com/angular/angular/issues/28452)
+
+
+
 <a name="8.2.4"></a>
 ## [8.2.4](https://github.com/angular/angular/compare/8.2.3...8.2.4) (2019-08-28)
 
