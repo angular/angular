@@ -24,7 +24,8 @@ export type CreateCompileFn = (onTaskCompleted: TaskCompletedCallback) => Compil
  * The type of the function that orchestrates and executes the required work (i.e. analyzes the
  * entry-points, processes the resulting tasks, does book-keeping and validates the final outcome).
  */
-export type ExecuteFn = (analyzeFn: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn) => void;
+export type ExecuteFn =
+    (analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn) => void;
 
 /** Represents metadata related to the processing of an entry-point. */
 export interface EntryPointProcessingMetadata {

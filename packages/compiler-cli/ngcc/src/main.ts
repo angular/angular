@@ -87,7 +87,7 @@ export function mainNgcc(
   const fileSystem = getFileSystem();
 
   // The function for performing the analysis.
-  const analyzeFn: AnalyzeEntryPointsFn = () => {
+  const analyzeEntryPoints: AnalyzeEntryPointsFn = () => {
     const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
 
     const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
@@ -188,9 +188,9 @@ export function mainNgcc(
   };
 
   // The function for actually planning and getting the work done.
-  const executeFn: ExecuteFn =
-      (analyzeFn: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn) => {
-        const {processingMetadataPerEntryPoint, tasks} = analyzeFn();
+  const execute: ExecuteFn =
+      (analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn) => {
+        const {processingMetadataPerEntryPoint, tasks} = analyzeEntryPoints();
         const compile = createCompileFn((task, outcome) => {
           const {entryPoint, formatPropertiesToMarkAsProcessed, processDts} = task;
           const processingMeta = processingMetadataPerEntryPoint.get(entryPoint.path) !;
@@ -236,7 +236,7 @@ export function mainNgcc(
         }
       };
 
-  return executeFn(analyzeFn, createCompileFn);
+  return execute(analyzeEntryPoints, createCompileFn);
 }
 
 function ensureSupportedProperties(properties: string[]): EntryPointJsonProperty[] {
