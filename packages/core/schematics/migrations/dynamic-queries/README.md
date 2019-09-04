@@ -1,6 +1,7 @@
 ## Dynamic queries migration
 
-Automatically migrates dynamic queries to remove their `static` flag.
+Automatically migrates dynamic queries to remove their `static` flag. This flag will no
+longer be necessary in version 9 for dynamic queries, as `false` is the default value.
 
 #### Before
 ```ts

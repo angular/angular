@@ -12,7 +12,8 @@ import * as ts from 'typescript';
 import {identifyDynamicQueryNodes, removeOptionsParameter, removeStaticFlag} from '../dynamic-queries/util';
 
 const RULE_NAME = 'dynamic-queries';
-const FAILURE_MESSAGE = 'Static flag on queries is no longer required.';
+const FAILURE_MESSAGE =
+    'The static flag defaults to false, so setting it false manually is unnecessary.';
 
 /**
  * TSLint rule that removes the `static` flag from dynamic queries.

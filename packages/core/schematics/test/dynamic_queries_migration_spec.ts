@@ -108,7 +108,7 @@ describe('dynamic queries migration', () => {
            .toContain(`@ContentChild('child', { read: ElementRef }) child: ElementRef;`);
      });
 
-  it('should not change dynamic ViewChild queries', async() => {
+  it('should not change static ViewChild queries', async() => {
     writeFile('/index.ts', `
       import { Directive, ViewChild, ElementRef } from '@angular/core';
 
@@ -123,7 +123,7 @@ describe('dynamic queries migration', () => {
         .toContain(`@ViewChild('child', { read: ElementRef, static: true }) child: ElementRef;`);
   });
 
-  it('should not change dynamic ContentChild queries', async() => {
+  it('should not change static ContentChild queries', async() => {
     writeFile('/index.ts', `
       import { Directive, ContentChild, ElementRef } from '@angular/core';
 

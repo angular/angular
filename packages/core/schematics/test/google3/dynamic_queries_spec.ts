@@ -59,8 +59,10 @@ describe('Google3 dynamic queries TSLint rule', () => {
     const failures = linter.getResult().failures;
 
     expect(failures.length).toBe(2);
-    expect(failures[0].getFailure()).toMatch('Static flag on queries is no longer required.');
-    expect(failures[1].getFailure()).toMatch('Static flag on queries is no longer required.');
+    expect(failures[0].getFailure())
+        .toMatch('The static flag defaults to false, so setting it false manually is unnecessary.');
+    expect(failures[1].getFailure())
+        .toMatch('The static flag defaults to false, so setting it false manually is unnecessary.');
   });
 
   it('should remove the options object from a dynamic ViewChild query that only has one property',
@@ -125,7 +127,7 @@ describe('Google3 dynamic queries TSLint rule', () => {
            .toContain(`@ContentChild('child', { read: ElementRef }) child: ElementRef;`);
      });
 
-  it('should not change dynamic ViewChild queries', () => {
+  it('should not change static ViewChild queries', () => {
     writeFile('/index.ts', `
       import { Directive, ViewChild, ElementRef } from '@angular/core';
 
@@ -140,7 +142,7 @@ describe('Google3 dynamic queries TSLint rule', () => {
         .toContain(`@ViewChild('child', { read: ElementRef, static: true }) child: ElementRef;`);
   });
 
-  it('should not change dynamic ContentChild queries', () => {
+  it('should not change static ContentChild queries', () => {
     writeFile('/index.ts', `
       import { Directive, ContentChild, ElementRef } from '@angular/core';
 

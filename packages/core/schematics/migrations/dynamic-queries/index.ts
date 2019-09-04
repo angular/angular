@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {dirname, relative} from 'path';
 import * as ts from 'typescript';
 
@@ -16,14 +16,15 @@ import {identifyDynamicQueryNodes, removeOptionsParameter, removeStaticFlag} fro
 
 
 /**
- * Runs a migration over a TypeScript project that removes
- * the `static: false` flag from query annotations.
+ * Runs the dynamic queries migration for all TypeScript projects in the current CLI workspace.
  */
 export default function(): Rule {
-  return (tree: Tree) => {
+  return (tree: Tree, ctx: SchematicContext) => {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
+
+    ctx.logger.info('------ Dynamic queries migration ------');
 
     if (!allPaths.length) {
       throw new SchematicsException(
