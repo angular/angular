@@ -1276,6 +1276,178 @@ describe('ViewContainerRef', () => {
               '</loop-comp>');
     });
 
+    it('should insert elements in the proper order when template root is an ng-container', () => {
+      @Component({
+        template: `
+          <ng-container *ngFor="let item of items">|{{ item }}|</ng-container>
+        `
+      })
+      class App {
+        items = ['one', 'two', 'three'];
+      }
+
+      TestBed.configureTestingModule({imports: [CommonModule], declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
+
+      fixture.componentInstance.items.unshift('zero');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
+
+      fixture.componentInstance.items.push('four');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
+
+      fixture.componentInstance.items.splice(3, 0, 'two point five');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+          .toBe('|zero||one||two||two point five||three||four|');
+    });
+
+    it('should insert elements in the proper order when template root is an ng-container and is wrapped by an ng-container',
+       () => {
+         @Component({
+           template: `
+              <ng-container>
+                <ng-container *ngFor="let item of items">|{{ item }}|</ng-container>
+              </ng-container>
+            `
+         })
+         class App {
+           items = ['one', 'two', 'three'];
+         }
+
+         TestBed.configureTestingModule({imports: [CommonModule], declarations: [App]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
+
+         fixture.componentInstance.items.unshift('zero');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
+
+         fixture.componentInstance.items.push('four');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
+
+         fixture.componentInstance.items.splice(3, 0, 'two point five');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent)
+             .toBe('|zero||one||two||two point five||three||four|');
+       });
+
+    it('should insert elements in the proper order when template root is an ng-container and first node is a ng-container',
+       () => {
+         @Component({
+           template: `
+            <ng-container *ngFor="let item of items"><ng-container>|{{ item }}|</ng-container></ng-container>
+          `
+         })
+         class App {
+           items = ['one', 'two', 'three'];
+         }
+
+         TestBed.configureTestingModule({imports: [CommonModule], declarations: [App]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
+
+         fixture.componentInstance.items.unshift('zero');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
+
+         fixture.componentInstance.items.push('four');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
+
+         fixture.componentInstance.items.splice(3, 0, 'two point five');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent)
+             .toBe('|zero||one||two||two point five||three||four|');
+       });
+
+    it('should insert elements in the proper order when template root is an ng-container, wrapped in an ng-container with the root node as an ng-container',
+       () => {
+         @Component({
+           template: `
+            <ng-container>
+              <ng-container *ngFor="let item of items"><ng-container>|{{ item }}|</ng-container></ng-container>
+            </ng-container>
+          `
+         })
+         class App {
+           items = ['one', 'two', 'three'];
+         }
+
+         TestBed.configureTestingModule({imports: [CommonModule], declarations: [App]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
+
+         fixture.componentInstance.items.unshift('zero');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
+
+         fixture.componentInstance.items.push('four');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
+
+         fixture.componentInstance.items.splice(3, 0, 'two point five');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent)
+             .toBe('|zero||one||two||two point five||three||four|');
+       });
+
+    it('should insert elements in the proper order when the first child node is an ICU expression',
+       () => {
+         @Component({
+           template: `
+          <ng-container *ngFor="let item of items">{count, select, other {|{{ item }}|}}</ng-container>
+        `
+         })
+         class App {
+           items = ['one', 'two', 'three'];
+         }
+
+         TestBed.configureTestingModule({imports: [CommonModule], declarations: [App]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
+
+         fixture.componentInstance.items.unshift('zero');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
+
+         fixture.componentInstance.items.push('four');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
+
+         fixture.componentInstance.items.splice(3, 0, 'two point five');
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent)
+             .toBe('|zero||one||two||two point five||three||four|');
+       });
   });
 
   describe('lifecycle hooks', () => {
