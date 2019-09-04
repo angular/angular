@@ -922,7 +922,7 @@ Did you run and wait for 'resolveComponentResources()'?` :
       });
 
 
-      modifiedInIvy(`Unknown property error thrown during update mode, not creation mode`)
+      modifiedInIvy(`Unknown property error thrown instead of logging a warning`)
           .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
             class ComponentUsingInvalidProperty {
@@ -941,26 +941,18 @@ Did you run and wait for 'resolveComponentResources()'?` :
             restoreJasmineIt();
           });
 
-      onlyInIvy(`Unknown property error thrown during update mode, not creation mode`)
+      onlyInIvy(`Unknown property warning logged instead of an error`)
           .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
             class ComponentUsingInvalidProperty {
             }
 
-            const itPromise = patchJasmineIt();
-
-            expect(
-                () => it(
-                    'should fail', withModule(
-                                       {declarations: [ComponentUsingInvalidProperty]},
-                                       () => {
-                                         const fixture =
-                                             TestBed.createComponent(ComponentUsingInvalidProperty);
-                                         fixture.detectChanges();
-                                       })))
-                .toThrowError(/Can't bind to 'someUnknownProp'/);
-
-            restoreJasmineIt();
+            const spy = spyOn(console, 'warn');
+            withModule({declarations: [ComponentUsingInvalidProperty]}, () => {
+              const fixture = TestBed.createComponent(ComponentUsingInvalidProperty);
+              fixture.detectChanges();
+            })();
+            expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'someUnknownProp'/);
           });
     });
 

@@ -1630,7 +1630,7 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('Property bindings', () => {
-      modifiedInIvy('Unknown property error thrown during update mode, not creation mode')
+      modifiedInIvy('Unknown property error throws an error instead of logging a warning')
           .it('should throw on bindings to unknown properties', () => {
             TestBed.configureTestingModule({declarations: [MyComp]});
             const template = '<div unknown="{{ctxProp}}"></div>';
@@ -1644,35 +1644,46 @@ function declareTests(config?: {useJit: boolean}) {
             }
           });
 
-      onlyInIvy('Unknown property error thrown during update mode, not creation mode')
+      onlyInIvy('Unknown property warning logged instead of throwing an error')
           .it('should throw on bindings to unknown properties', () => {
             TestBed.configureTestingModule({declarations: [MyComp]});
             const template = '<div unknown="{{ctxProp}}"></div>';
             TestBed.overrideComponent(MyComp, {set: {template}});
+
+            const spy = spyOn(console, 'warn');
+            const fixture = TestBed.createComponent(MyComp);
+            fixture.detectChanges();
+            expect(spy.calls.mostRecent().args[0])
+                .toMatch(/Can't bind to 'unknown' since it isn't a known property of 'div'./);
+          });
+
+      modifiedInIvy('Unknown property error thrown instead of a warning')
+          .it('should throw on bindings to unknown properties', () => {
+            TestBed.configureTestingModule({imports: [CommonModule], declarations: [MyComp]});
+            const template = '<div *ngFor="let item in ctxArrProp">{{item}}</div>';
+            TestBed.overrideComponent(MyComp, {set: {template}});
+
             try {
               const fixture = TestBed.createComponent(MyComp);
               fixture.detectChanges();
               throw 'Should throw';
             } catch (e) {
               expect(e.message).toMatch(
-                  /Template error: Can't bind to 'unknown' since it isn't a known property of 'div'./);
+                  /Can't bind to 'ngForIn' since it isn't a known property of 'div'./);
             }
           });
 
-      it('should throw on bindings to unknown properties of containers', () => {
-        TestBed.configureTestingModule({imports: [CommonModule], declarations: [MyComp]});
-        const template = '<div *ngFor="let item in ctxArrProp">{{item}}</div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-
-        try {
-          const fixture = TestBed.createComponent(MyComp);
-          fixture.detectChanges();
-          throw 'Should throw';
-        } catch (e) {
-          expect(e.message).toMatch(
-              /Can't bind to 'ngForIn' since it isn't a known property of 'div'./);
-        }
-      });
+      onlyInIvy('Unknown property logs a warning instead of throwing an error')
+          .it('should throw on bindings to unknown properties', () => {
+            TestBed.configureTestingModule({imports: [CommonModule], declarations: [MyComp]});
+            const template = '<div *ngFor="let item in ctxArrProp">{{item}}</div>';
+            TestBed.overrideComponent(MyComp, {set: {template}});
+            const spy = spyOn(console, 'warn');
+            const fixture = TestBed.createComponent(MyComp);
+            fixture.detectChanges();
+            expect(spy.calls.mostRecent().args[0])
+                .toMatch(/Can't bind to 'ngForIn' since it isn't a known property of 'div'./);
+          });
 
       it('should not throw for property binding to a non-existing property when there is a matching directive property',
          () => {
