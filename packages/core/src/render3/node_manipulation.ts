@@ -669,12 +669,22 @@ export function getBeforeNodeForView(viewIndexInContainer: number, lContainer: L
   if (nextViewIndex < lContainer.length) {
     const lView = lContainer[nextViewIndex] as LView;
     ngDevMode && assertDefined(lView[T_HOST], 'Missing Host TNode');
-    const tViewNodeChild = (lView[T_HOST] as TViewNode).child;
-    return tViewNodeChild !== null ? getNativeByTNodeOrNull(tViewNodeChild, lView) :
-                                     lContainer[NATIVE];
-  } else {
-    return lContainer[NATIVE];
+    let tViewNodeChild = (lView[T_HOST] as TViewNode).child;
+    if (tViewNodeChild !== null) {
+      if (tViewNodeChild.type === TNodeType.ElementContainer ||
+          tViewNodeChild.type === TNodeType.IcuContainer) {
+        let currentChild = tViewNodeChild.child;
+        while (currentChild && (currentChild.type === TNodeType.ElementContainer ||
+                                currentChild.type === TNodeType.IcuContainer)) {
+          currentChild = currentChild.child;
+        }
+        tViewNodeChild = currentChild || tViewNodeChild;
+      }
+      return getNativeByTNodeOrNull(tViewNodeChild, lView);
+    }
   }
+
+  return lContainer[NATIVE];
 }
 
 /**
