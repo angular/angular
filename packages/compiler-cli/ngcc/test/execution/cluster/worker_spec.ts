@@ -17,8 +17,8 @@ import {mockProperty} from '../../helpers/spy_utils';
 
 
 describe('ClusterWorker', () => {
-  const setMockClusterIsMasterValue = mockProperty(cluster, 'isMaster');
-  const setMockProcessSendValue = mockProperty(process, 'send');
+  const runAsClusterMaster = mockProperty(cluster, 'isMaster');
+  const mockProcessSend = mockProperty(process, 'send');
   let processSendSpy: jasmine.Spy;
   let compileFnSpy: jasmine.Spy;
   let createCompileFnSpy: jasmine.Spy;
@@ -28,12 +28,12 @@ describe('ClusterWorker', () => {
     createCompileFnSpy = jasmine.createSpy('createCompileFn').and.returnValue(compileFnSpy);
 
     processSendSpy = jasmine.createSpy('process.send');
-    setMockProcessSendValue(processSendSpy);
+    mockProcessSend(processSendSpy);
   });
 
   describe('constructor()', () => {
     describe('(on cluster master)', () => {
-      beforeEach(() => setMockClusterIsMasterValue(true));
+      beforeEach(() => runAsClusterMaster(true));
 
       it('should throw an error', () => {
         expect(() => new ClusterWorker(createCompileFnSpy))
@@ -43,7 +43,7 @@ describe('ClusterWorker', () => {
     });
 
     describe('(on cluster worker)', () => {
-      beforeEach(() => setMockClusterIsMasterValue(false));
+      beforeEach(() => runAsClusterMaster(false));
 
       it('should create the `compileFn()`', () => {
         new ClusterWorker(createCompileFnSpy);
@@ -79,12 +79,12 @@ describe('ClusterWorker', () => {
     describe('(on cluster worker)', () => {
       // The `cluster.worker` property is normally `undefined` on the master process and set to the
       // current `cluster.Worker` on worker processes.
-      const setMockClusterWorkerValue = mockProperty(cluster, 'worker');
+      const mockClusterWorker = mockProperty(cluster, 'worker');
       let worker: ClusterWorker;
 
       beforeEach(() => {
-        setMockClusterIsMasterValue(false);
-        setMockClusterWorkerValue(Object.assign(new EventEmitter(), {id: 42}) as cluster.Worker);
+        runAsClusterMaster(false);
+        mockClusterWorker(Object.assign(new EventEmitter(), {id: 42}) as cluster.Worker);
 
         worker = new ClusterWorker(createCompileFnSpy);
       });

@@ -12,7 +12,7 @@ import * as cluster from 'cluster';
 
 import {CompileFn, CreateCompileFn} from '../api';
 
-import {MessageFromMaster} from './api';
+import {MessageToWorker} from './api';
 import {sendMessageToMaster} from './utils';
 
 
@@ -34,7 +34,7 @@ export class ClusterWorker {
 
   run(): Promise<void> {
     // Listen for `ProcessTaskMessage`s and process tasks.
-    cluster.worker.on('message', (msg: MessageFromMaster) => {
+    cluster.worker.on('message', (msg: MessageToWorker) => {
       try {
         switch (msg.type) {
           case 'process-task':

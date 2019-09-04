@@ -20,15 +20,15 @@ import {mockProperty} from '../../helpers/spy_utils';
 
 runInEachFileSystem(() => {
   describe('ClusterPackageJsonUpdater', () => {
-    const setMockClusterIsMasterValue = mockProperty(cluster, 'isMaster');
-    const setMockProcessSendValue = mockProperty(process, 'send');
+    const runAsClusterMaster = mockProperty(cluster, 'isMaster');
+    const mockProcessSend = mockProperty(process, 'send');
     let processSendSpy: jasmine.Spy;
     let delegate: PackageJsonUpdater;
     let updater: ClusterPackageJsonUpdater;
 
     beforeEach(() => {
       processSendSpy = jasmine.createSpy('process.send');
-      setMockProcessSendValue(processSendSpy);
+      mockProcessSend(processSendSpy);
 
       delegate = new MockPackageJsonUpdater();
       updater = new ClusterPackageJsonUpdater(delegate);
@@ -37,7 +37,7 @@ runInEachFileSystem(() => {
     describe('createUpdate()', () => {
       [true, false].forEach(
           isMaster => describe(`(on cluster ${isMaster ? 'master' : 'worker'})`, () => {
-            beforeEach(() => setMockClusterIsMasterValue(isMaster));
+            beforeEach(() => runAsClusterMaster(isMaster));
 
             it('should return a `PackageJsonUpdate` instance',
                () => { expect(updater.createUpdate()).toEqual(jasmine.any(PackageJsonUpdate)); });
@@ -58,7 +58,7 @@ runInEachFileSystem(() => {
 
     describe('writeChanges()', () => {
       describe('(on cluster master)', () => {
-        beforeEach(() => setMockClusterIsMasterValue(true));
+        beforeEach(() => runAsClusterMaster(true));
         afterEach(() => expect(processSendSpy).not.toHaveBeenCalled());
 
         it('should forward the call to the delegate `PackageJsonUpdater`', () => {
@@ -83,7 +83,7 @@ runInEachFileSystem(() => {
       });
 
       describe('(on cluster worker)', () => {
-        beforeEach(() => setMockClusterIsMasterValue(false));
+        beforeEach(() => runAsClusterMaster(false));
 
         it('should send an `update-package-json` message to the master process', () => {
           const jsonPath = _('/foo/package.json');

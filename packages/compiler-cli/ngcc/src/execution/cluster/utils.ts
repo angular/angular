@@ -9,7 +9,9 @@
 /// <reference types="node" />
 
 import * as cluster from 'cluster';
-import {MessageFromMaster, MessageFromWorker} from './api';
+
+import {MessageFromWorker, MessageToWorker} from './api';
+
 
 
 /** Expose a `Promise` instance as well as APIs for resolving/rejecting it. */
@@ -63,7 +65,7 @@ export const sendMessageToMaster = (msg: MessageFromWorker): void => {
  * @param workerId The ID of the recipient worker.
  * @param msg The message to send to the worker.
  */
-export const sendMessageToWorker = (workerId: number, msg: MessageFromMaster): void => {
+export const sendMessageToWorker = (workerId: number, msg: MessageToWorker): void => {
   if (!cluster.isMaster) {
     throw new Error('Unable to send message to worker process: Sender is not the master process.');
   }

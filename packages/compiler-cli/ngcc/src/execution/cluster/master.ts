@@ -64,7 +64,6 @@ export class ClusterMaster {
   /** Try to find available (idle) workers and assign them available (non-blocked) tasks. */
   private maybeDistributeWork(): void {
     let isWorkerAvailable = false;
-    let isWorkAvailable = false;
 
     // First, check whether all tasks have been completed.
     if (this.taskQueue.allTasksCompleted) {
@@ -86,9 +85,6 @@ export class ClusterMaster {
       if (task === null) {
         // No suitable work available right now.
         break;
-      } else {
-        // There is work available.
-        isWorkAvailable = true;
       }
 
       // Process the next task on the worker.
@@ -96,7 +92,6 @@ export class ClusterMaster {
       sendMessageToWorker(workerId, {type: 'process-task', task});
 
       isWorkerAvailable = false;
-      isWorkAvailable = false;
     }
 
     // If there are no available workers or no available tasks, log (for debugging purposes).
@@ -104,7 +99,7 @@ export class ClusterMaster {
       this.logger.debug(
           `All ${this.taskAssignments.size} workers are currently busy and cannot take on more ` +
           'work.');
-    } else if (!isWorkAvailable) {
+    } else {
       const busyWorkers = Array.from(this.taskAssignments)
                               .filter(([_workerId, task]) => task !== null)
                               .map(([workerId]) => workerId);

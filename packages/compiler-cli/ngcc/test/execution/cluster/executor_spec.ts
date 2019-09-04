@@ -19,7 +19,7 @@ import {mockProperty} from '../../helpers/spy_utils';
 
 
 describe('ClusterExecutor', () => {
-  const setMockClusterIsMasterValue = mockProperty(cluster, 'isMaster');
+  const runAsClusterMaster = mockProperty(cluster, 'isMaster');
   let masterRunSpy: jasmine.Spy;
   let workerRunSpy: jasmine.Spy;
   let mockLogger: MockLogger;
@@ -35,7 +35,7 @@ describe('ClusterExecutor', () => {
 
   describe('execute()', () => {
     describe('(on cluster master)', () => {
-      beforeEach(() => setMockClusterIsMasterValue(true));
+      beforeEach(() => runAsClusterMaster(true));
 
       it('should log debug info about the executor', () => {
         const anyFn: () => any = () => undefined;
@@ -63,7 +63,7 @@ describe('ClusterExecutor', () => {
     });
 
     describe('(on cluster worker)', () => {
-      beforeEach(() => setMockClusterIsMasterValue(false));
+      beforeEach(() => runAsClusterMaster(false));
 
       it('should not log debug info about the executor', () => {
         const anyFn: () => any = () => undefined;
