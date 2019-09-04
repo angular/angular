@@ -43,6 +43,12 @@ After running this command you will notice that the `angular.json` configuration
     "browserTarget": "my-app:build",
     "serverTarget": "my-app:server",
     "route": "shell"
+  },
+  "configurations": {
+    "production": {
+      "browserTarget": "my-app:build:production",
+      "serverTarget": "my-app:server:production"
+    }
   }
 }
 </code-example>
@@ -55,4 +61,12 @@ Use the CLI to build the `app-shell` target.
 ng run my-app:app-shell
 </code-example>
 
+Or to use the production configuration.
+
+<code-example language="bash">
+ng run my-app:app-shell:production
+</code-example>
+
 To verify the build output, open `dist/my-app/index.html`. Look for default text `app-shell works!` to show that the app shell route was rendered as part of the output.
+
+
