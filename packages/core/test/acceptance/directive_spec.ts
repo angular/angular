@@ -172,6 +172,23 @@ describe('directives', () => {
       expect(nodesWithDirective.length).toBe(1);
     });
 
+    it('should match classes to directive selectors without case sensitivity', () => {
+      @Directive({selector: '.Titledir'})
+      class TitleClassDirective {
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent, TitleClassDirective]});
+      TestBed.overrideTemplate(TestComponent, `
+        <div class="titleDir" [id]="someId"></div>
+      `);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const nodesWithDirective =
+          fixture.debugElement.queryAllNodes(By.directive(TitleClassDirective));
+
+      expect(nodesWithDirective.length).toBe(1);
+    });
+
     it('should NOT match classes to directive selectors', () => {
       TestBed.configureTestingModule({declarations: [TestComponent, TitleDirective]});
       TestBed.overrideTemplate(TestComponent, `
@@ -182,6 +199,23 @@ describe('directives', () => {
       const nodesWithDirective = fixture.debugElement.queryAllNodes(By.directive(TitleDirective));
 
       expect(nodesWithDirective.length).toBe(0);
+    });
+
+    it('should match attributes to directive selectors without case sensitivity', () => {
+      @Directive({selector: '[title=Titledir]'})
+      class TitleAttributeDirective {
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent, TitleAttributeDirective]});
+      TestBed.overrideTemplate(TestComponent, `
+        <div title="titleDir" [id]="someId"></div>
+      `);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const nodesWithDirective =
+          fixture.debugElement.queryAllNodes(By.directive(TitleAttributeDirective));
+
+      expect(nodesWithDirective.length).toBe(1);
     });
 
     it('should match directives with attribute selectors on outputs', () => {
