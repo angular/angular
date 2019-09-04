@@ -169,7 +169,7 @@ const verify = (input: string, output: string, extra: any = {}): void => {
   }
 };
 
-describe('i18n support in the view compiler', () => {
+describe('i18n support in the template compiler', () => {
 
   describe('element attributes', () => {
     it('should add the meaning and description as JsDoc comments', () => {
@@ -941,6 +941,24 @@ describe('i18n support in the view compiler', () => {
         '814405839137385666': 'No translation is produced for empty content (line breaks)'
       };
       verify(input, output, {exceptions});
+    });
+
+    it('should ignore HTML comments within translated text', () => {
+      const input = `
+        <div i18n>Some <!-- comments --> text</div>
+      `;
+
+      const output = String.raw `
+      var $I18N_0$;
+      if (ngI18nClosureMode) {
+          const $MSG_EXTERNAL_0$ = goog.getMsg("Some  text");
+          $I18N_0$ = $MSG_EXTERNAL_0$;
+      }
+      else {
+          $I18N_0$ = $localize \`Some  text\`;
+      }
+    `;
+      verify(input, output);
     });
 
     it('should properly escape quotes in content', () => {

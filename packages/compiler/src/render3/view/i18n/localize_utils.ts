@@ -44,7 +44,12 @@ class PlaceholderPiece extends MessagePiece {
  */
 class LocalizeSerializerVisitor implements i18n.Visitor {
   visitText(text: i18n.Text, context: MessagePiece[]): any {
-    context.push(new LiteralPiece(text.value));
+    if (context[context.length - 1] instanceof LiteralPiece) {
+      // Two literal pieces in a row means that there was some comment node in-between.
+      context[context.length - 1].text += text.value;
+    } else {
+      context.push(new LiteralPiece(text.value));
+    }
   }
 
   visitContainer(container: i18n.Container, context: MessagePiece[]): any {
