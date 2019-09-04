@@ -7,6 +7,7 @@
  */
 
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
+import {PartiallyOrderedList} from '../utils';
 
 
 /**
@@ -31,6 +32,21 @@ export interface Executor {
   execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
       void|Promise<void>;
 }
+
+/**
+ * Represents a partially ordered list of tasks.
+ *
+ * The ordering/precedence of tasks is determined by the inter-dependencies between their associated
+ * entry-points. Specifically, the tasks' order/precedence is such that tasks associated to
+ * dependent entry-points always come after tasks associated with their dependencies.
+ *
+ * As result of this ordering, it is guaranteed that - by processing tasks in the order in which
+ * they appear in the list - a task's dependencies will always have been processed before processing
+ * the task itself.
+ *
+ * See `DependencyResolver#sortEntryPointsByDependency()`.
+ */
+export type PartiallyOrderedTasks = PartiallyOrderedList<Task>;
 
 /** Represents a unit of work: processing a specific format property of an entry-point. */
 export interface Task {

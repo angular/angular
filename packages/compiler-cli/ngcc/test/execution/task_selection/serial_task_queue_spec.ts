@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Task, TaskQueue} from '../../../src/execution/api';
+import {PartiallyOrderedTasks, Task, TaskQueue} from '../../../src/execution/api';
 import {SerialTaskQueue} from '../../../src/execution/task_selection/serial_task_queue';
 
 
@@ -15,15 +15,15 @@ describe('SerialTaskQueue', () => {
   /**
    * Create a `TaskQueue` by generating mock tasks.
    *
-   * NOTE: Tasks as even indices generate typings.
+   * NOTE: Tasks at even indices generate typings.
    *
    * @param taskCount The number of tasks to generate.
    * @return An object with the following properties:
-   *         - `tasks`: The list of generated mock tasks.
+   *         - `tasks`: The (partially ordered) list of generated mock tasks.
    *         - `queue`: The created `TaskQueue`.
    */
-  const createQueue = (taskCount: number): {tasks: Task[], queue: TaskQueue} => {
-    const tasks: Task[] = [];
+  const createQueue = (taskCount: number): {tasks: PartiallyOrderedTasks, queue: TaskQueue} => {
+    const tasks: PartiallyOrderedTasks = [] as any;
     for (let i = 0; i < taskCount; i++) {
       tasks.push({
         entryPoint: {name: `entry-point-${i}`}, formatProperty: `prop-${i}`,
@@ -48,7 +48,7 @@ describe('SerialTaskQueue', () => {
     return task;
   };
 
-  describe('allTaskCompleted', () => {
+  describe('allTasksCompleted', () => {
     it('should be `false`, when there are unprocessed tasks', () => {
       const {queue} = createQueue(2);
       expect(queue.allTasksCompleted).toBe(false);
@@ -64,7 +64,7 @@ describe('SerialTaskQueue', () => {
       expect(queue.allTasksCompleted).toBe(false);
     });
 
-    it('should be `true`, when there are no unprocess or in-progress tasks', () => {
+    it('should be `true`, when there are no unprocessed or in-progress tasks', () => {
       const {queue} = createQueue(3);
 
       processNextTask(queue);

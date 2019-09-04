@@ -6,16 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Task, TaskQueue} from '../api';
+import {PartiallyOrderedTasks, Task, TaskQueue} from '../api';
 import {stringifyTask} from '../utils';
 
 
 /**
  * A base `TaskQueue` implementation to be used as base for concrete implementations.
- *
- * NOTE: It is assumed that `tasks` are sorted in such a way that tasks associated to dependent
- *       entry-points always come after tasks associated with their dependencies.
- *       See `DependencyResolver#sortEntryPointsByDependency()`.
  */
 export abstract class BaseTaskQueue implements TaskQueue {
   get allTasksCompleted(): boolean {
@@ -23,7 +19,7 @@ export abstract class BaseTaskQueue implements TaskQueue {
   }
   protected inProgressTasks = new Set<Task>();
 
-  constructor(protected tasks: Task[]) {}
+  constructor(protected tasks: PartiallyOrderedTasks) {}
 
   abstract getNextTask(): Task|null;
 
