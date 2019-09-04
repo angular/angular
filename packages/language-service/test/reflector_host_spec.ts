@@ -20,7 +20,7 @@ describe('reflector_host_spec', () => {
     const originalJoin = path.join;
     const originalPosixJoin = path.posix.join;
     let mockHost =
-        new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh, 'app/node_modules', {
+        new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh, 'node_modules', {
           ...path,
           join: (...args: string[]) => originalJoin.apply(path, args),
           posix:
