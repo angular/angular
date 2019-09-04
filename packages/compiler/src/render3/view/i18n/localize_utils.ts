@@ -17,10 +17,13 @@ export function createLocalizeStatements(
     params: {[name: string]: o.Expression}): o.Statement[] {
   const statements = [];
 
-  const jsdocComment = i18nMetaToDocStmt(metaFromI18nMessage(message));
-  if (jsdocComment !== null) {
-    statements.push(jsdocComment);
-  }
+  // TODO: re-enable these comments when we have a plan on how to make them work so that Closure
+  // compiler doesn't complain about the JSDOC comments.
+
+  // const jsdocComment = i18nMetaToDocStmt(metaFromI18nMessage(message));
+  // if (jsdocComment !== null) {
+  //   statements.push(jsdocComment);
+  // }
 
   const {messageParts, placeHolders} = serializeI18nMessageForLocalize(message);
   statements.push(new o.ExpressionStatement(variable.set(
