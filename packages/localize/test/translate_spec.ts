@@ -16,10 +16,10 @@ describe('$localize tag with translations', () => {
     beforeEach(() => {
       loadTranslations(computeIds({
         'abc': 'abc',
-        'abc{$ph_1}': 'abc{$ph_1}',
-        'abc{$ph_1}def': 'abc{$ph_1}def',
-        'abc{$ph_1}def{$ph_2}': 'abc{$ph_1}def{$ph_2}',
-        'Hello, {$ph_1}!': 'Hello, {$ph_1}!',
+        'abc{$PH}': 'abc{$PH}',
+        'abc{$PH}def': 'abc{$PH}def',
+        'abc{$PH}def{$PH_1}': 'abc{$PH}def{$PH_1}',
+        'Hello, {$PH}!': 'Hello, {$PH}!',
       }));
     });
     afterEach(() => { clearTranslations(); });
@@ -38,10 +38,10 @@ describe('$localize tag with translations', () => {
     beforeEach(() => {
       loadTranslations(computeIds({
         'abc': 'ABC',
-        'abc{$ph_1}': 'ABC{$ph_1}',
-        'abc{$ph_1}def': 'ABC{$ph_1}DEF',
-        'abc{$ph_1}def{$ph_2}': 'ABC{$ph_1}DEF{$ph_2}',
-        'Hello, {$ph_1}!': 'HELLO, {$ph_1}!',
+        'abc{$PH}': 'ABC{$PH}',
+        'abc{$PH}def': 'ABC{$PH}DEF',
+        'abc{$PH}def{$PH_1}': 'ABC{$PH}DEF{$PH_1}',
+        'Hello, {$PH}!': 'HELLO, {$PH}!',
       }));
     });
     afterEach(() => { clearTranslations(); });
@@ -59,7 +59,7 @@ describe('$localize tag with translations', () => {
   describe('to reverse expressions', () => {
     beforeEach(() => {
       loadTranslations(computeIds({
-        'abc{$ph_1}def{$ph_2} - Hello, {$ph_3}!': 'abc{$ph_3}def{$ph_2} - Hello, {$ph_1}!',
+        'abc{$PH}def{$PH_1} - Hello, {$PH_2}!': 'abc{$PH_2}def{$PH_1} - Hello, {$PH}!',
       }));
     });
     afterEach(() => { clearTranslations(); });
@@ -74,7 +74,7 @@ describe('$localize tag with translations', () => {
   describe('to remove expressions', () => {
     beforeEach(() => {
       loadTranslations(computeIds({
-        'abc{$ph_1}def{$ph_2} - Hello, {$ph_3}!': 'abc{$ph_1} - Hello, {$ph_3}!',
+        'abc{$PH}def{$PH_1} - Hello, {$PH_2}!': 'abc{$PH} - Hello, {$PH_2}!',
       }));
     });
     afterEach(() => { clearTranslations(); });
