@@ -182,15 +182,15 @@ function listenerInternal(
   }
 
   // subscribe to directive outputs
-  if (tNode.outputs === undefined) {
+  let outputs = tNode.outputs;
+  if (outputs === undefined) {
     // if we create TNode here, inputs must be undefined so we know they still need to be
     // checked
-    tNode.outputs = generatePropertyAliases(tView, tNode, BindingDirection.Output);
+    outputs = tNode.outputs = generatePropertyAliases(tView, tNode, BindingDirection.Output);
   }
 
-  const outputs = tNode.outputs;
   let props: PropertyAliasValue|undefined;
-  if (processOutputs && outputs && (props = outputs[eventName])) {
+  if (processOutputs && outputs !== null && (props = outputs[eventName])) {
     const propsLength = props.length;
     if (propsLength) {
       const lCleanup = getCleanup(lView);
