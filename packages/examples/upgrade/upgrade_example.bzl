@@ -61,7 +61,6 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
 
     protractor_web_test_suite(
         name = "%s_protractor" % name,
-        data = ["//packages/bazel/src/protractor/utils"],
         on_prepare = "//packages/examples/upgrade:start-server.js",
         server = ":devserver",
         deps = [

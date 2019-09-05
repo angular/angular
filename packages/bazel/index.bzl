@@ -8,17 +8,10 @@ Users should not load files under "/src"
 """
 
 load("//packages/bazel/src/ng_package:ng_package.bzl", _ng_package = "ng_package")
-load(
-    "//packages/bazel/src/protractor:protractor_web_test.bzl",
-    _protractor_web_test = "protractor_web_test",
-    _protractor_web_test_suite = "protractor_web_test_suite",
-)
 load("//packages/bazel/src:ng_module.bzl", _ng_module = "ng_module_macro")
 
 ng_module = _ng_module
 ng_package = _ng_package
-protractor_web_test = _protractor_web_test
-protractor_web_test_suite = _protractor_web_test_suite
 # DO NOT ADD PUBLIC API without including in the documentation generation
 # Run `yarn bazel build //packages/bazel/docs` to verify
 
