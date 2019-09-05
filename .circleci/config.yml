@@ -366,7 +366,7 @@ jobs:
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
         # Since the parallelism is set to "3", there will be three parallel CircleCI containers
         # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
+      - run: yarn --cwd aio example-e2e --setup --local --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --retry 2
 
   test_docs_examples_ivy:
     <<: *job_defaults
@@ -392,7 +392,7 @@ jobs:
         # Run examples tests with ivy. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
         # Since the parallelism is set to "3", there will be three parallel CircleCI containers
         # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local --ivy --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
+      - run: yarn --cwd aio example-e2e --setup --local --ivy --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --retry 2
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
