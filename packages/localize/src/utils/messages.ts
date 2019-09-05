@@ -82,7 +82,7 @@ export function parseMessage(
   const metadata = parseMetadata(messageParts[0], messageParts.raw[0]);
   let messageString = metadata.text;
   for (let i = 1; i < messageParts.length; i++) {
-    const {text: messagePart, block: placeholderName = `ph_${i}`} =
+    const {text: messagePart, block: placeholderName = computePlaceholderName(i)} =
         splitBlock(messageParts[i], messageParts.raw[i]);
     messageString += `{$${placeholderName}}${messagePart}`;
     if (expressions !== undefined) {
@@ -185,4 +185,8 @@ export function splitBlock(cooked: string, raw: string): {text: string, block?: 
       text: cooked.substring(endOfBlock + 1),
     };
   }
+}
+
+function computePlaceholderName(index: number) {
+  return index === 1 ? 'PH' : `PH_${index - 1}`;
 }
