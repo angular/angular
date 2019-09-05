@@ -12,10 +12,12 @@ import {isObservable} from '../../util/lang';
 import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
+import {isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {getLView, getPreviousOrParentTNode} from '../state';
-import {getComponentViewByIndex, getNativeByTNode, hasDirectives, unwrapRNode} from '../util/view_utils';
+import {getComponentViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
+
 import {BindingDirection, generatePropertyAliases, getCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
 
 /**
@@ -145,7 +147,7 @@ function listenerInternal(
       // Also, we don't have to search for existing listeners is there are no directives
       // matching on a given node as we can't register multiple event handlers for the same event in
       // a template (this would mean having duplicate attributes).
-      if (!eventTargetResolver && hasDirectives(tNode)) {
+      if (!eventTargetResolver && isDirectiveHost(tNode)) {
         existingListener = findExistingListener(lView, eventName, tNode.index);
       }
       if (existingListener !== null) {
