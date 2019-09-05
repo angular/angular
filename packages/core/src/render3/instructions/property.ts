@@ -7,9 +7,8 @@
  */
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {BINDING_INDEX, LView, TVIEW} from '../interfaces/view';
+import {BINDING_INDEX, TVIEW} from '../interfaces/view';
 import {getLView, getSelectedIndex} from '../state';
-import {NO_CHANGE} from '../tokens';
 
 import {TsickleIssue1009, elementPropertyInternal, storePropertyBindingMetadata} from './shared';
 
@@ -42,14 +41,4 @@ export function ɵɵproperty<T>(
     ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵproperty;
-}
-
-/**
- * Creates a single value binding.
- *
- * @param lView Current view
- * @param value Value to diff
- */
-export function bind<T>(lView: LView, value: T): T|NO_CHANGE {
-  return bindingUpdated(lView, lView[BINDING_INDEX]++, value) ? value : NO_CHANGE;
 }

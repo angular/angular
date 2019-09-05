@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
+import {BINDING_INDEX} from '../interfaces/view';
 import {getLView, getSelectedIndex} from '../state';
-import {NO_CHANGE} from '../tokens';
 
-import {bind} from './property';
 import {TsickleIssue1009, elementAttributeInternal} from './shared';
 
 
@@ -30,11 +30,9 @@ import {TsickleIssue1009, elementAttributeInternal} from './shared';
 export function ɵɵattribute(
     name: string, value: any, sanitizer?: SanitizerFn | null,
     namespace?: string): TsickleIssue1009 {
-  const index = getSelectedIndex();
   const lView = getLView();
-  const bound = bind(lView, value);
-  if (bound !== NO_CHANGE) {
-    elementAttributeInternal(index, name, bound, lView, sanitizer, namespace);
+  if (bindingUpdated(lView, lView[BINDING_INDEX]++, value)) {
+    elementAttributeInternal(getSelectedIndex(), name, value, lView, sanitizer, namespace);
   }
   return ɵɵattribute;
 }
