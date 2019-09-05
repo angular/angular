@@ -38,6 +38,14 @@ describe('MatDialogHarness', () => {
 
 /** Shared tests to run on both the original and MDC-based radio-button's. */
 function runTests() {
+  afterEach(() => {
+    // Close all dialogs upon test exit. This is necessary because the "MatDialog"
+    // service is not destroyed in TestBed automatically, and it could mean that
+    // dialogs are left in the DOM.
+    fixture.componentInstance.dialog.closeAll();
+    fixture.detectChanges();
+  });
+
   it('should load harness for dialog', async () => {
     fixture.componentInstance.open();
     const dialogs = await loader.getAllHarnesses(dialogHarness);
