@@ -1,8 +1,36 @@
 @import '@material/button/mixins';
+@import '@material/button/variables';
 @import '@material/fab/mixins';
 @import '@material/ripple/mixins';
 @import '@material/icon-button/mixins';
 @import '../mdc-helpers/mdc-helpers';
+
+// Applies the disabled theme color to the text color.
+@mixin _mat-button-disabled-color() {
+  @include mdc-theme-prop(color,
+      mdc-theme-ink-color-for-fill_(disabled, $mdc-theme-background));
+}
+
+// Wraps the content style in a selector for the disabled state.
+// MDC adds theme color by using :not(:disabled), so just using [disabled] once will not
+// override this, neither will it apply to anchor tags. This needs to override the
+// previously set theme color, so it must be ordered after the theme styles.
+// TODO(andrewseguin): Discuss with the MDC team to see if we can avoid the :not(:disabled) by
+// manually styling disabled buttons with a [disabled] selector.
+@mixin _mat-button-apply-disabled-style() {
+  &[disabled][disabled] {
+    @content;
+  }
+}
+
+// Applies the disabled theme background color for raised buttons. Value is taken from
+// mixin `mdc-button--filled`.
+// TODO(andrewseguin): Discuss with the MDC team about providing a variable for the 0.12 value
+// or otherwise have a mixin we can call to apply this style for both button and anchors.
+@mixin _mat-button-disabled-background() {
+  @include mdc-theme-prop(background-color, rgba(mdc-theme-prop-value(on-surface), 0.12));
+}
+
 
 @mixin mat-button-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
@@ -39,6 +67,10 @@
         @include mdc-button-ink-color(on-error, $query: $mat-theme-styles-query);
         @include mdc-states-base-color(on-error, $query: $mat-theme-styles-query);
       }
+
+      @include _mat-button-apply-disabled-style() {
+        @include _mat-button-disabled-background();
+      }
     }
 
     .mat-mdc-outlined-button {
@@ -48,6 +80,23 @@
 
       &.mat-warn {
         @include mdc-button-outline-color(error, $query: $mat-theme-styles-query);
+      }
+
+      @include _mat-button-apply-disabled-style() {
+        @include mdc-theme-prop(border-color,
+            mdc-theme-ink-color-for-fill_(disabled, $mdc-theme-background));
+      }
+    }
+
+    .mat-mdc-raised-button {
+      @include _mat-button-apply-disabled-style() {
+        @include mdc-elevation(0, $query: $mat-theme-styles-query);
+      }
+    }
+
+    .mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-unelevated-button, .mat-mdc-outlined-button {
+      @include _mat-button-apply-disabled-style() {
+        @include _mat-button-disabled-color();
       }
     }
 
@@ -78,6 +127,12 @@
         @include mdc-fab-container-color(error, $query: $mat-theme-styles-query);
         @include mdc-fab-ink-color(on-error, $query: $mat-theme-styles-query);
       }
+
+      @include _mat-button-apply-disabled-style() {
+        @include _mat-button-disabled-color();
+        @include _mat-button-disabled-background();
+        @include mdc-elevation(0, $query: $mat-theme-styles-query);
+      }
     }
 
     @include mdc-fab-without-ripple($query: $mat-theme-styles-query);
@@ -105,6 +160,10 @@
       &.mat-warn {
         @include mdc-states-base-color(error, $query: $mat-theme-styles-query);
         @include mdc-icon-button-ink-color(error, $query: $mat-theme-styles-query);
+      }
+
+      @include _mat-button-apply-disabled-style() {
+        @include _mat-button-disabled-color();
       }
     }
 

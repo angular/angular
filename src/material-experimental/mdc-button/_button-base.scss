@@ -13,3 +13,15 @@
     @content;
   }
 }
+
+// MDC's disabled buttons define a default cursor with pointer-events none. However, they select
+// :disabled for this, which does not affect anchor tags.
+// TODO(andrewseguin): Discuss with the MDC team about a mixin we can call for applying this style,
+// and note that having pointer-events may have unintended side-effects, e.g. allowing the user
+// to click the target underneath the button.
+@mixin _mat-button-disabled() {
+  &[disabled] {
+    cursor: default;
+    pointer-events: none;
+  }
+}

@@ -8,15 +8,7 @@
 
 .mat-mdc-fab, .mat-mdc-mini-fab {
   @include _mat-button-interactive();
-
-  // Spec does not define disabled FAB buttons but Angular Material does support it.
-  &:disabled {
-    background-color: rgba(mdc-theme-prop-value(on-surface), 0.12);
-    color: $mdc-button-disabled-ink-color;
-    cursor: default;
-    pointer-events: none;
-    box-shadow: none;
-  }
+  @include _mat-button-disabled();
 }
 
 .mat-mdc-fab, .mat-mdc-mini-fab {

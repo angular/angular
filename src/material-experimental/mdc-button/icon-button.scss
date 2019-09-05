@@ -12,4 +12,5 @@
   // Border radius is inherited by ripple to know its shape. Set to 50% so the ripple is round.
   border-radius: 50%;
 
+  @include _mat-button-disabled();
 }

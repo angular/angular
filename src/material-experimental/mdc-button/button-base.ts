@@ -122,7 +122,9 @@ export const MAT_ANCHOR_INPUTS = ['disabled', 'disableRipple', 'color', 'tabInde
 
 /** Shared host configuration for buttons using the `<a>` tag. */
 export const MAT_ANCHOR_HOST = {
-  ...MAT_BUTTON_HOST,
+  '[attr.disabled]': 'disabled || null',
+  '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+
   // Note that we ignore the user-specified tabindex when it's disabled for
   // consistency with the `mat-button` applied on native buttons where even
   // though they have an index, they're not tabbable.
