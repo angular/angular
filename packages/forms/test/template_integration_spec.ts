@@ -240,44 +240,6 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
         const form = fixture.debugElement.query(By.css('form'));
         expect(form.nativeElement.hasAttribute('novalidate')).toEqual(false);
       });
-
-      it('should fire `ngModelChange` event before `input` event', () => {
-        const log: string[] = [];
-        @Component({
-          selector: 'my-comp',
-          template: `
-            <input
-              type="number"
-              [(ngModel)]="myField"
-              (input)="handleInput($event)"
-            />
-          `
-        })
-        class MyComp {
-          private _myField: any = 1;
-
-          get myField() { return this._myField; }
-          set myField(value: any) {
-            this._myField = value;
-            log.push('ngModel');
-          }
-
-          handleInput() { log.push('input'); }
-        }
-
-        const fixture = initTest(MyComp);
-        fixture.detectChanges();
-
-        log.length = 0;
-
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        input.value = 2;
-        dispatchEvent(input, 'input');
-        fixture.detectChanges();
-
-        expect(log).toEqual(['ngModel', 'input']);
-        expect(fixture.componentInstance.myField).toEqual(2);
-      });
     });
 
     describe('name and ngModelOptions', () => {
