@@ -30,6 +30,14 @@ ng_rollup_bundle(
 )
 
 ng_rollup_bundle(
+    name = "listeners",
+    entry_point = ":listeners/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_rollup_bundle(
     name = "noop_change_detection",
     entry_point = ":noop_change_detection/index.ts",
     deps = [
