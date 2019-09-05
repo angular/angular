@@ -6,29 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {DOCUMENT} from '@angular/common';
+import {take} from 'rxjs/operators';
 import {
-  AfterViewChecked,
   Attribute,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  ErrorHandler,
-  inject,
-  Inject,
-  InjectionToken,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
-  Optional,
   SimpleChanges,
   ViewEncapsulation,
+  Optional,
+  InjectionToken,
+  inject,
+  Inject,
+  OnDestroy,
+  AfterViewChecked,
 } from '@angular/core';
+import {DOCUMENT} from '@angular/common';
 import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
-import {take} from 'rxjs/operators';
-
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MatIconRegistry} from './icon-registry';
 
 
@@ -180,15 +178,14 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
   private _elementsWithExternalReferences?: Map<Element, {name: string, value: string}[]>;
 
   constructor(
-      elementRef: ElementRef<HTMLElement>, private _iconRegistry: MatIconRegistry,
+      elementRef: ElementRef<HTMLElement>,
+      private _iconRegistry: MatIconRegistry,
       @Attribute('aria-hidden') ariaHidden: string,
       /**
        * @deprecated `location` parameter to be made required.
        * @breaking-change 8.0.0
        */
-      @Optional() @Inject(MAT_ICON_LOCATION) private _location?: MatIconLocation,
-      // @breaking-change 9.0.0 _errorHandler parameter to be made required
-      @Optional() private readonly _errorHandler?: ErrorHandler) {
+      @Optional() @Inject(MAT_ICON_LOCATION) private _location?: MatIconLocation) {
     super(elementRef);
 
     // If the user has not explicitly set aria-hidden, mark the icon as hidden, as this is
@@ -231,17 +228,10 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
       if (this.svgIcon) {
         const [namespace, iconName] = this._splitIconName(this.svgIcon);
 
-        this._iconRegistry.getNamedSvgIcon(iconName, namespace)
-            .pipe(take(1))
-            .subscribe(svg => this._setSvgElement(svg), (err: Error) => {
-              const errorMessage = `Error retrieving icon ${namespace}:${iconName}! ${err.message}`;
-              // @breaking-change 9.0.0 _errorHandler parameter to be made required.
-              if (this._errorHandler) {
-                this._errorHandler.handleError(new Error(errorMessage));
-              } else {
-                console.error(errorMessage);
-              }
-            });
+        this._iconRegistry.getNamedSvgIcon(iconName, namespace).pipe(take(1)).subscribe(
+          svg => this._setSvgElement(svg),
+          (err: Error) => console.log(`Error retrieving icon: ${err.message}`)
+        );
       } else if (svgIconChanges.previousValue) {
         this._clearSvgElement();
       }

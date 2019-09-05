@@ -28,7 +28,7 @@ export declare class MatIcon extends _MatIconMixinBase implements OnChanges, OnI
     inline: boolean;
     svgIcon: string;
     constructor(elementRef: ElementRef<HTMLElement>, _iconRegistry: MatIconRegistry, ariaHidden: string,
-    _location?: MatIconLocation | undefined, _errorHandler?: ErrorHandler | undefined);
+    _location?: MatIconLocation | undefined);
     ngAfterViewChecked(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
