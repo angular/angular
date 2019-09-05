@@ -41,20 +41,40 @@
     }
 
     .mat-mdc-button, .mat-mdc-outlined-button {
-      @include mdc-states-base-color(primary, $query: $mat-theme-styles-query);
+      &.mat-unthemed {
+        @include mdc-button-ink-color($mdc-theme-on-surface, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-primary {
+        @include mdc-button-ink-color(primary, $query: $mat-theme-styles-query);
+        @include mdc-states-base-color(primary, $query: $mat-theme-styles-query);
+      }
 
       &.mat-accent {
         @include mdc-button-ink-color(secondary, $query: $mat-theme-styles-query);
+        @include mdc-states-base-color(secondary, $query: $mat-theme-styles-query);
       }
 
       &.mat-warn {
         @include mdc-button-ink-color(error, $query: $mat-theme-styles-query);
+        @include mdc-states-base-color(error, $query: $mat-theme-styles-query);
       }
     }
 
     .mat-mdc-raised-button,
     .mat-mdc-unelevated-button {
-      @include mdc-states-base-color(on-primary, $query: $mat-theme-styles-query);
+      &.mat-unthemed {
+        @include mdc-button-container-fill-color(
+            $mdc-theme-surface, $query: $mat-theme-styles-query);
+        @include mdc-button-ink-color($mdc-theme-on-surface, $query: $mat-theme-styles-query);
+        @include mdc-states-base-color($mdc-theme-on-surface, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-primary {
+        @include mdc-button-container-fill-color(primary, $query: $mat-theme-styles-query);
+        @include mdc-button-ink-color(on-primary, $query: $mat-theme-styles-query);
+        @include mdc-states-base-color(on-primary, $query: $mat-theme-styles-query);
+      }
 
       &.mat-accent {
         @include mdc-button-container-fill-color(secondary, $query: $mat-theme-styles-query);
@@ -74,6 +94,14 @@
     }
 
     .mat-mdc-outlined-button {
+      &.mat-unthemed {
+        @include mdc-button-outline-color($mdc-theme-on-surface, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-primary {
+        @include mdc-button-outline-color(primary, $query: $mat-theme-styles-query);
+      }
+
       &.mat-accent {
         @include mdc-button-outline-color(secondary, $query: $mat-theme-styles-query);
       }
@@ -113,13 +141,24 @@
 @mixin mat-fab-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
     .mat-mdc-fab, .mat-mdc-mini-fab {
-      @include mdc-states-base-color(secondary, $query: $mat-theme-styles-query);
       @include mdc-states($query: $mat-theme-styles-query);
+
+      &.mat-unthemed {
+        @include mdc-states-base-color($mdc-theme-on-surface, $query: $mat-theme-styles-query);
+        @include mdc-fab-container-color($mdc-theme-surface, $query: $mat-theme-styles-query);
+        @include mdc-fab-ink-color($mdc-theme-on-surface, $query: $mat-theme-styles-query);
+      }
 
       &.mat-primary {
         @include mdc-states-base-color(on-primary, $query: $mat-theme-styles-query);
         @include mdc-fab-container-color(primary, $query: $mat-theme-styles-query);
         @include mdc-fab-ink-color(on-primary, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-accent {
+        @include mdc-states-base-color(on-secondary, $query: $mat-theme-styles-query);
+        @include mdc-fab-container-color(secondary, $query: $mat-theme-styles-query);
+        @include mdc-fab-ink-color(on-secondary, $query: $mat-theme-styles-query);
       }
 
       &.mat-warn {
@@ -149,8 +188,16 @@
   @include mat-using-mdc-theme($theme) {
     .mat-mdc-icon-button {
       @include mdc-states($query: $mat-theme-styles-query);
-      @include mdc-states-base-color(primary, $query: $mat-theme-styles-query);
-      @include mdc-icon-button-ink-color(primary, $query: $mat-theme-styles-query);
+
+      &.mat-unthemed {
+        @include mdc-states-base-color($mdc-theme-surface, $query: $mat-theme-styles-query);
+        @include mdc-icon-button-ink-color($mdc-theme-on-surface, $query: $mat-theme-styles-query);
+      }
+
+      &.mat-primary {
+        @include mdc-states-base-color(primary, $query: $mat-theme-styles-query);
+        @include mdc-icon-button-ink-color(primary, $query: $mat-theme-styles-query);
+      }
 
       &.mat-accent {
         @include mdc-states-base-color(secondary, $query: $mat-theme-styles-query);

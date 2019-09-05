@@ -30,6 +30,10 @@ export const MAT_BUTTON_INPUTS = ['disabled', 'disableRipple', 'color'];
 export const MAT_BUTTON_HOST = {
   '[attr.disabled]': 'disabled || null',
   '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+  // MDC automatically applies the primary theme color to the button, but we want to support
+  // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
+  // select and style this "theme".
+  '[class.mat-unthemed]': '!color',
 };
 
 /** List of classes to add to buttons instances based on host attribute selector. */
@@ -131,6 +135,10 @@ export const MAT_ANCHOR_HOST = {
   '[attr.tabindex]': 'disabled ? -1 : (tabIndex || 0)',
   '[attr.aria-disabled]': 'disabled.toString()',
   '(click)': '_haltDisabledEvents($event)',
+  // MDC automatically applies the primary theme color to the button, but we want to support
+  // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
+  // select and style this "theme".
+  '[class.mat-unthemed]': '!color',
 };
 
 /**
