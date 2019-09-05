@@ -45,7 +45,6 @@ merge:
       - "packages/bazel/src/api-extractor/**"
       - "packages/bazel/src/builders/**"
       - "packages/bazel/src/ng_package/**"
-      - "packages/bazel/src/protractor/**"
       - "packages/bazel/src/schematics/**"
       - "packages/compiler-cli/ngcc/**"
       - "packages/docs/**"

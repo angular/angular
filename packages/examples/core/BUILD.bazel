@@ -69,7 +69,6 @@ ts_devserver(
 
 protractor_web_test_suite(
     name = "protractor_tests",
-    data = ["//packages/bazel/src/protractor/utils"],
     on_prepare = ":start-server.js",
     server = ":devserver",
     deps = [

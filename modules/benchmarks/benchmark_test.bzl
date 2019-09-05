@@ -11,7 +11,6 @@ def benchmark_test(name, server, deps, tags = []):
         name = name,
         configuration = "//:protractor-perf.conf.js",
         data = [
-            "//packages/bazel/src/protractor/utils",
             "//packages/benchpress",
         ],
         on_prepare = "//modules/benchmarks:start-server.js",
