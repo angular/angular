@@ -909,9 +909,6 @@
     "name": "hasClassInput"
   },
   {
-    "name": "hasDirectives"
-  },
-  {
     "name": "hasParentInjector"
   },
   {
