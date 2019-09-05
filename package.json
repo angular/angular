@@ -72,6 +72,7 @@
     "@bazel/jasmine": "^0.35.0",
     "@bazel/karma": "^0.35.0",
     "@bazel/typescript": "^0.35.0",
+    "@bazel/protractor": "^0.35.0",
     "@firebase/app-types": "^0.3.2",
     "@octokit/rest": "^16.28.7",
     "@schematics/angular": "^8.2.1",
