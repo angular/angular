@@ -200,10 +200,10 @@ export const enum I18nUpdateOpCode {
  * Assume
  * ```ts
  *   if (rf & RenderFlags.Update) {
- *    i18nExp(bind(ctx.exp1)); // If changed set mask bit 1
- *    i18nExp(bind(ctx.exp2)); // If changed set mask bit 2
- *    i18nExp(bind(ctx.exp3)); // If changed set mask bit 3
- *    i18nExp(bind(ctx.exp4)); // If changed set mask bit 4
+ *    i18nExp(ctx.exp1); // If changed set mask bit 1
+ *    i18nExp(ctx.exp2); // If changed set mask bit 2
+ *    i18nExp(ctx.exp3); // If changed set mask bit 3
+ *    i18nExp(ctx.exp4); // If changed set mask bit 4
  *    i18nApply(0);            // Apply all changes by executing the OpCodes.
  *  }
  * ```
