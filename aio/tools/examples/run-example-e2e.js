@@ -36,10 +36,10 @@ if (argv.ivy) {
  * Run Protractor End-to-End Tests for Doc Samples
  *
  * Flags
- *   --filter to filter/select _example app subdir names
+ *  --filter to filter/select _example app subdir names
  *    e.g. --filter=foo  // all example apps with 'foo' in their folder names.
  *
- *  --setup run yarn install, copy boilerplate and update webdriver
+ *  --setup to run yarn install, copy boilerplate and update webdriver
  *    e.g. --setup
  *
  *  --local to use the locally built Angular packages, rather than versions from npm
@@ -55,6 +55,9 @@ if (argv.ivy) {
  *
  *  --cliSpecsConcurrency Amount of CLI example specs that should be executed concurrently.
  *    By default runs specs sequentially.
+ *
+ *  --retry to retry failed tests (useful for overcoming flakes)
+ *    e.g. --retry 3  // To try each test up to 3 times.
  */
 function runE2e() {
   if (argv.setup) {
@@ -70,7 +73,7 @@ function runE2e() {
 
   return Promise.resolve()
       .then(() => findAndRunE2eTests(argv.filter, outputFile, argv.shard,
-          argv.cliSpecsConcurrency || DEFAULT_CLI_SPECS_CONCURRENCY))
+          argv.cliSpecsConcurrency || DEFAULT_CLI_SPECS_CONCURRENCY, argv.retry || 1))
       .then((status) => {
         reportStatus(status, outputFile);
         if (status.failed.length > 0) {
@@ -85,7 +88,7 @@ function runE2e() {
 
 // Finds all of the *e2e-spec.tests under the examples folder along with the corresponding apps
 // that they should run under. Then run each app/spec collection sequentially.
-function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency) {
+function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency, maxAttempts) {
   const shardParts = shard ? shard.split('/') : [0, 1];
   const shardModulo = parseInt(shardParts[0], 10);
   const shardDivider = parseInt(shardParts[1], 10);
@@ -97,9 +100,22 @@ function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency) {
   fs.writeFileSync(outputFile, header);
 
   const status = {passed: [], failed: []};
-  const updateStatus = (specPath, passed) => {
+  const updateStatus = (specDescription, passed) => {
     const arr = passed ? status.passed : status.failed;
-    arr.push(specPath);
+    arr.push(specDescription);
+  };
+  const runTest = async (specPath, testFn) => {
+    let attempts = 0;
+    let passed = false;
+
+    while (true) {
+      attempts++;
+      passed = await testFn();
+
+      if (passed || (attempts >= maxAttempts)) break;
+    }
+
+    updateStatus(`${specPath} (attempts: ${attempts})`, passed);
   };
 
   return getE2eSpecs(EXAMPLES_PATH, filter)
@@ -117,12 +133,13 @@ function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency) {
 
         return e2eSpecPaths.systemjs
             .reduce(
-                (promise, specPath) => {
-                  return promise.then(() => {
-                    const examplePath = path.dirname(specPath);
-                    return runE2eTestsSystemJS(examplePath, outputFile)
-                      .then(passed => updateStatus(examplePath, passed));
-                  });
+                async (prevPromise, specPath) => {
+                  await prevPromise;
+
+                  const examplePath = path.dirname(specPath);
+                  const testFn = () => runE2eTestsSystemJS(examplePath, outputFile);
+
+                  await runTest(examplePath, testFn);
                 },
                 Promise.resolve())
             .then(async () => {
@@ -138,9 +155,11 @@ function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency) {
               const bufferOutput = cliSpecsConcurrency > 1;
               while (specQueue.length) {
                 const chunk = specQueue.splice(0, cliSpecsConcurrency);
-                await Promise.all(chunk.map((testDir, index) => {
-                  return runE2eTestsCLI(testDir, outputFile, bufferOutput, ports.pop())
-                    .then(passed => updateStatus(testDir, passed));
+                await Promise.all(chunk.map(testDir => {
+                  const port = ports.pop();
+                  const testFn = () => runE2eTestsCLI(testDir, outputFile, bufferOutput, port);
+
+                  return runTest(testDir, testFn);
                 }));
               }
             });
