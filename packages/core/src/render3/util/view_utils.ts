@@ -117,13 +117,6 @@ export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
 }
 
 
-/**
- * A helper function that returns `true` if a given `TNode` has any matching directives.
- */
-export function hasDirectives(tNode: TNode): boolean {
-  return tNode.directiveEnd > tNode.directiveStart;
-}
-
 export function getTNode(index: number, view: LView): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
   ngDevMode && assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');
