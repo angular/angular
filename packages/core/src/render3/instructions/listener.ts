@@ -37,7 +37,10 @@ import {BindingDirection, generatePropertyAliases, getCleanup, handleError, load
 export function ɵɵlistener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
-  listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver);
+  const lView = getLView();
+  const tNode = getPreviousOrParentTNode();
+  listenerInternal(
+      lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture, eventTargetResolver);
 }
 
 /**
@@ -64,7 +67,10 @@ export function ɵɵlistener(
 export function ɵɵcomponentHostSyntheticListener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
-  listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver, loadComponentRenderer);
+  const lView = getLView();
+  const tNode = getPreviousOrParentTNode();
+  const renderer = loadComponentRenderer(tNode, lView);
+  listenerInternal(lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
 }
 
 /**
@@ -101,11 +107,9 @@ function findExistingListener(
 }
 
 function listenerInternal(
-    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
-    eventTargetResolver?: GlobalTargetResolver,
-    loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
-  const lView = getLView();
-  const tNode = getPreviousOrParentTNode();
+    lView: LView, renderer: Renderer3, tNode: TNode, eventName: string,
+    listenerFn: (e?: any) => any, useCapture = false,
+    eventTargetResolver?: GlobalTargetResolver): void {
   const tView = lView[TVIEW];
   const firstTemplatePass = tView.firstTemplatePass;
   const tCleanup: false|any[] = firstTemplatePass && (tView.cleanup || (tView.cleanup = []));
@@ -120,7 +124,6 @@ function listenerInternal(
     const native = getNativeByTNode(tNode, lView) as RElement;
     const resolved = eventTargetResolver ? eventTargetResolver(native) : EMPTY_OBJ as any;
     const target = resolved.target || native;
-    const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     const lCleanup = getCleanup(lView);
     const lCleanupIndex = lCleanup.length;
     const idxOrTargetGetter = eventTargetResolver ?
