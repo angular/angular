@@ -45,6 +45,8 @@ if (ngDevMode) {
   // tslint:disable-next-line: no-toplevel-property-access
   global.$localize = global.$localize || function() {
     throw new Error(
-        'The global function `$localize` is missing. Please add `import \'@angular/localize\';` to your polyfills.ts file.');
+        'It looks like your application or one of its dependencies is using i18n.\n' +
+        'Angular 9 introduced a global `$localize()` function that needs to be loaded.\n' +
+        'Please add `import \'@angular/localize\';` to your polyfills.ts file.');
   };
 }
