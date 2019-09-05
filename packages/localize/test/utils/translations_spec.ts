@@ -83,10 +83,10 @@ describe('utils', () => {
     it('(with identity translations) should render template literals as-is', () => {
       const translations = {
         'abc': 'abc',
-        'abc{$ph_1}': 'abc{$ph_1}',
-        'abc{$ph_1}def': 'abc{$ph_1}def',
-        'abc{$ph_1}def{$ph_2}': 'abc{$ph_1}def{$ph_2}',
-        'Hello, {$ph_1}!': 'Hello, {$ph_1}!',
+        'abc{$PH}': 'abc{$PH}',
+        'abc{$PH}def': 'abc{$PH}def',
+        'abc{$PH}def{$PH_1}': 'abc{$PH}def{$PH_1}',
+        'Hello, {$PH}!': 'Hello, {$PH}!',
       };
       expect(doTranslate(translations, parts `abc`)).toEqual(parts `abc`);
       expect(doTranslate(translations, parts `abc${1 + 2 + 3}`)).toEqual(parts `abc${1 + 2 + 3}`);
@@ -103,10 +103,10 @@ describe('utils', () => {
        () => {
          const translations = {
            'abc': 'ABC',
-           'abc{$ph_1}': 'ABC{$ph_1}',
-           'abc{$ph_1}def': 'ABC{$ph_1}DEF',
-           'abc{$ph_1}def{$ph_2}': 'ABC{$ph_1}DEF{$ph_2}',
-           'Hello, {$ph_1}!': 'HELLO, {$ph_1}!',
+           'abc{$PH}': 'ABC{$PH}',
+           'abc{$PH}def': 'ABC{$PH}DEF',
+           'abc{$PH}def{$PH_1}': 'ABC{$PH}DEF{$PH_1}',
+           'Hello, {$PH}!': 'HELLO, {$PH}!',
          };
          expect(doTranslate(translations, parts `abc`)).toEqual(parts `ABC`);
          expect(doTranslate(translations, parts `abc${1 + 2 + 3}`))
@@ -123,7 +123,7 @@ describe('utils', () => {
     it('(with translations to reverse expressions) should render template literals with expressions reversed',
        () => {
          const translations = {
-           'abc{$ph_1}def{$ph_2} - Hello, {$ph_3}!': 'abc{$ph_3}def{$ph_2} - Hello, {$ph_1}!',
+           'abc{$PH}def{$PH_1} - Hello, {$PH_2}!': 'abc{$PH_2}def{$PH_1} - Hello, {$PH}!',
          };
          const getName = () => 'World';
          expect(doTranslate(
@@ -134,7 +134,7 @@ describe('utils', () => {
     it('(with translations to remove expressions) should render template literals with expressions removed',
        () => {
          const translations = {
-           'abc{$ph_1}def{$ph_2} - Hello, {$ph_3}!': 'abc{$ph_1} - Hello, {$ph_3}!',
+           'abc{$PH}def{$PH_1} - Hello, {$PH_2}!': 'abc{$PH} - Hello, {$PH_2}!',
          };
          const getName = () => 'World';
          expect(doTranslate(

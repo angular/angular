@@ -41,16 +41,26 @@ declare global {
    *
    * **Naming placeholders**
    *
-   * If the template literal string contains expressions then you can optionally name the
-   * placeholder
-   * associated with each expression. Do this by providing the placeholder name wrapped in `:`
-   * characters directly after the expression. These placeholder names are stripped out of the
-   * rendered localized string.
+   * If the template literal string contains expressions, then the expressions will be automatically
+   * associated with placeholder names for you.
    *
-   * For example, to name the `item.length` expression placeholder `itemCount` you write:
+   * For example:
    *
    * ```ts
-   * $localize `There are ${item.length}:itemCount: items`;
+   * $localize `Hi ${name}! There are ${items.length} items.`;
+   * ```
+   *
+   * will generate a message-source of `Hi {$PH}! There are {$PH_1} items`.
+   *
+   * The recommended practice is to name the placeholder associated with each expression though.
+   *
+   * Do this by providing the placeholder name wrapped in `:` characters directly after the
+   * expression. These placeholder names are stripped out of the rendered localized string.
+   *
+   * For example, to name the `items.length` expression placeholder `itemCount` you write:
+   *
+   * ```ts
+   * $localize `There are ${items.length}:itemCount: items`;
    * ```
    *
    * **Escaping colon markers**
