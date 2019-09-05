@@ -272,7 +272,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
         const input = fixture.debugElement.query(By.css('input')).nativeElement;
         input.value = 2;
-        input.dispatchEvent(new Event('input'));
+        dispatchEvent(input, 'input');
         fixture.detectChanges();
 
         expect(log).toEqual(['ngModel', 'input']);
