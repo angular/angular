@@ -27,7 +27,11 @@ import {
   MatButtonBase
 } from './button-base';
 
-
+/**
+ * Material Design icon button component. This type of button displays a single interactive icon for
+ * users to perform an action.
+ * See https://material.io/develop/web/components/buttons/icon-buttons/
+ */
 @Component({
   moduleId: module.id,
   selector: `button[mat-icon-button]`,
@@ -40,6 +44,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatIconButton extends MatButtonBase {
+  // Set the ripple to be centered for icon buttons
   _isRippleCentered = true;
 
   constructor(
@@ -49,6 +54,11 @@ export class MatIconButton extends MatButtonBase {
   }
 }
 
+/**
+ * Material Design icon button component for anchor elements. This button displays a single
+ * interaction icon that allows users to navigate across different routes or pages.
+ * See https://material.io/develop/web/components/buttons/icon-buttons/
+ */
 @Component({
   moduleId: module.id,
   selector: `a[mat-icon-button]`,
@@ -61,6 +71,7 @@ export class MatIconButton extends MatButtonBase {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatIconAnchor extends MatAnchorBase {
+  // Set the ripple to be centered for icon buttons
   _isRippleCentered = true;
 
   constructor(
