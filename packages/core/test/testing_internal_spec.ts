@@ -78,6 +78,21 @@ class TestObj {
         m2.set('b', 2);
         expect(m1).not.toEqual(m2);
       });
+
+      it('should detect equality for non-primitive keys', () => {
+        const key = {x: 1};
+        const m1 = new Map<{x: number}, number>([[key, 2]]);
+        const m2 = new Map<{x: number}, number>([[key, 2]]);
+
+        expect(m1).toEqual(m2);
+      });
+
+      it('should detect inequality for non-primitive keys', () => {
+        const m1 = new Map<{x: number}, number>([[{x: 1}, 2]]);
+        const m2 = new Map<{x: number}, number>([[{x: 1}, 2]]);
+
+        expect(m1).not.toEqual(m2);
+      });
     });
 
     describe('spy objects', () => {
