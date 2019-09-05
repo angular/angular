@@ -37,7 +37,7 @@ declare class Client {
 interface Clients {
   claim(): Promise<any>;
   get(id: string): Promise<Client>;
-  matchAll(options?: ClientMatchOptions): Promise<Array<WindowClient>>;
+  matchAll(options?: ClientMatchOptions): Promise<Array<Client>>;
 }
 
 interface ClientMatchOptions {
@@ -45,7 +45,7 @@ interface ClientMatchOptions {
   type?: ClientMatchTypes;
 }
 
-declare class WindowClient extends Client {
+interface WindowClient {
   focused: boolean;
   visibilityState: WindowClientState;
   focus(): Promise<WindowClient>;
