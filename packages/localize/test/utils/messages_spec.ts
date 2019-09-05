@@ -44,13 +44,13 @@ describe('messages utils', () => {
 
     it('should compute the translation key, inferring placeholder names if not given', () => {
       const message = parseMessage(makeTemplateObject(['a', 'b', 'c'], ['a', 'b', 'c']), [1, 2]);
-      expect(message.messageId).toEqual('3269094494609300850');
+      expect(message.messageId).toEqual('8107531564991075946');
     });
 
     it('should compute the translation key, ignoring escaped placeholder names', () => {
       const message = parseMessage(
           makeTemplateObject(['a', ':one:b', ':two:c'], ['a', '\\:one:b', '\\:two:c']), [1, 2]);
-      expect(message.messageId).toEqual('529036009514785949');
+      expect(message.messageId).toEqual('2623373088949454037');
     });
 
     it('should compute the translation key, handling empty raw values', () => {
@@ -67,7 +67,7 @@ describe('messages utils', () => {
 
     it('should build a map of implied placeholders to expressions', () => {
       const message = parseMessage(makeTemplateObject(['a', 'b', 'c'], ['a', 'b', 'c']), [1, 2]);
-      expect(message.substitutions).toEqual({ph_1: 1, ph_2: 2});
+      expect(message.substitutions).toEqual({PH: 1, PH_1: 2});
     });
 
   });
