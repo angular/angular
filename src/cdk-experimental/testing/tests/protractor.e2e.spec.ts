@@ -12,11 +12,11 @@ describe('ProtractorHarnessEnvironment', () => {
   describe('HarnessLoader', () => {
     let loader: HarnessLoader;
 
-    beforeEach(async () => {
+    beforeEach(() => {
       loader = ProtractorHarnessEnvironment.loader();
     });
 
-    it('should create HarnessLoader', async () => {
+    it('should create HarnessLoader', () => {
       expect(loader).not.toBeNull();
     });
 

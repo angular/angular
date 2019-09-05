@@ -21,11 +21,11 @@ describe('TestbedHarnessEnvironment', () => {
   describe('HarnessLoader', () => {
     let loader: HarnessLoader;
 
-    beforeEach(async () => {
+    beforeEach(() => {
       loader = TestbedHarnessEnvironment.loader(fixture);
     });
 
-    it('should create HarnessLoader from fixture', async () => {
+    it('should create HarnessLoader from fixture', () => {
       expect(loader).not.toBeNull();
     });
 

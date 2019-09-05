@@ -34,7 +34,7 @@ describe('MatChipGridHarness', () => {
   it('should get the chip input harness', async () => {
     const harnesses = await loader.getAllHarnesses(MatChipGridHarness);
     const input = await harnesses[0].getTextInput();
-    expect(await input).not.toBe(null);
+    expect(input).not.toBe(null);
   });
 });
 

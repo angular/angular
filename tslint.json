@@ -81,10 +81,11 @@
     ],
     // Avoids inconsistent linebreak styles in source files. Forces developers to use LF linebreaks.
     "linebreak-style": [true, "LF"],
-    // Namespaces are no allowed, because of Closure compiler.
+    // Namespaces are not allowed, because of Closure compiler.
     "no-namespace": true,
     "jsdoc-format": [true, "check-multiline-start"],
     "no-duplicate-imports": true,
+    "await-promise": true,
 
     // Codelyzer
     "template-banana-in-box": true,

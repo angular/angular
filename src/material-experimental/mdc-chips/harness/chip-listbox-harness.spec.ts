@@ -30,11 +30,11 @@ describe('MatChipListboxHarness', () => {
     expect ((await harnesses[0].getOptions()).length).toBe(4);
   });
 
-  describe('should get selection', async () => {
+  describe('should get selection', () => {
     it('with no selected options', async () => {
       const harnesses = await loader.getAllHarnesses(MatChipListboxHarness);
       const selectedOption = await harnesses[0].getSelected();
-      expect(await selectedOption.length).toBe(0);
+      expect(selectedOption.length).toBe(0);
     });
 
     it('with a single selected option', async () => {
@@ -43,7 +43,7 @@ describe('MatChipListboxHarness', () => {
 
       const harnesses = await loader.getAllHarnesses(MatChipListboxHarness);
       const selectedOption = await harnesses[0].getSelected();
-      expect(await selectedOption.length).toBe(1);
+      expect(selectedOption.length).toBe(1);
       expect(await selectedOption[0].getText()).toContain('Blue');
     });
 
@@ -55,7 +55,7 @@ describe('MatChipListboxHarness', () => {
 
       const harnesses = (await loader.getAllHarnesses(MatChipListboxHarness));
       const selectedOption = await harnesses[0].getSelected();
-      expect(await selectedOption.length).toBe(2);
+      expect(selectedOption.length).toBe(2);
       expect(await selectedOption[0].getText()).toContain('Blue');
       expect(await selectedOption[1].getText()).toContain('Green');
     });

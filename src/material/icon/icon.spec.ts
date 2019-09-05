@@ -961,7 +961,7 @@ describe('MatIcon without HttpClientModule', () => {
     sanitizer = ds;
   }));
 
-  it('should throw an error when trying to load a remote icon', async() => {
+  it('should throw an error when trying to load a remote icon', () => {
     const expectedError = wrappedErrorMessage(getMatIconNoHttpProviderError());
 
     expect(() => {
