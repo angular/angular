@@ -111,6 +111,7 @@ function listenerInternal(
     listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
   const tView = lView[TVIEW];
+  const isTNodeDirectiveHost = isDirectiveHost(tNode);
   const firstTemplatePass = tView.firstTemplatePass;
   const tCleanup: false|any[] = firstTemplatePass && (tView.cleanup || (tView.cleanup = []));
 
@@ -150,7 +151,7 @@ function listenerInternal(
       // Also, we don't have to search for existing listeners is there are no directives
       // matching on a given node as we can't register multiple event handlers for the same event in
       // a template (this would mean having duplicate attributes).
-      if (!eventTargetResolver && isDirectiveHost(tNode)) {
+      if (!eventTargetResolver && isTNodeDirectiveHost) {
         existingListener = findExistingListener(lView, eventName, tNode.index);
       }
       if (existingListener !== null) {
@@ -185,34 +186,36 @@ function listenerInternal(
   }
 
   // subscribe to directive outputs
-  let outputs = tNode.outputs;
-  if (outputs === undefined) {
-    // if we create TNode here, inputs must be undefined so we know they still need to be
-    // checked
-    outputs = tNode.outputs = generatePropertyAliases(tView, tNode, BindingDirection.Output);
-  }
+  if (isTNodeDirectiveHost && processOutputs) {
+    let outputs = tNode.outputs;
+    if (outputs === undefined) {
+      // if we create TNode here, inputs must be undefined so we know they still need to be
+      // checked
+      outputs = tNode.outputs = generatePropertyAliases(tView, tNode, BindingDirection.Output);
+    }
 
-  let props: PropertyAliasValue|undefined;
-  if (processOutputs && outputs !== null && (props = outputs[eventName])) {
-    const propsLength = props.length;
-    if (propsLength) {
-      const lCleanup = getCleanup(lView);
-      for (let i = 0; i < propsLength; i += 3) {
-        const index = props[i] as number;
-        ngDevMode && assertDataInRange(lView, index);
-        const minifiedName = props[i + 2];
-        const directiveInstance = lView[index];
-        const output = directiveInstance[minifiedName];
+    let props: PropertyAliasValue|undefined;
+    if (outputs !== null && (props = outputs[eventName])) {
+      const propsLength = props.length;
+      if (propsLength) {
+        const lCleanup = getCleanup(lView);
+        for (let i = 0; i < propsLength; i += 3) {
+          const index = props[i] as number;
+          ngDevMode && assertDataInRange(lView, index);
+          const minifiedName = props[i + 2];
+          const directiveInstance = lView[index];
+          const output = directiveInstance[minifiedName];
 
-        if (ngDevMode && !isObservable(output)) {
-          throw new Error(
-              `@Output ${minifiedName} not initialized in '${directiveInstance.constructor.name}'.`);
+          if (ngDevMode && !isObservable(output)) {
+            throw new Error(
+                `@Output ${minifiedName} not initialized in '${directiveInstance.constructor.name}'.`);
+          }
+
+          const subscription = output.subscribe(listenerFn);
+          const idx = lCleanup.length;
+          lCleanup.push(listenerFn, subscription);
+          tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
         }
-
-        const subscription = output.subscribe(listenerFn);
-        const idx = lCleanup.length;
-        lCleanup.push(listenerFn, subscription);
-        tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
       }
     }
   }
