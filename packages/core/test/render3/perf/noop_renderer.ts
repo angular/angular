@@ -46,7 +46,7 @@ export class NoopRenderer implements ProceduralRenderer3 {
   listen(
       target: RNode|'document'|'window'|'body', eventName: string,
       callback: (event: any) => boolean | void): () => void {
-    throw new Error('Method not implemented.');
+    return () => {};
   }
 }
 
