@@ -6,14 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '../util/ng_i18n_closure_mode';
+
 import {DEFAULT_LOCALE_ID, getPluralCase} from '../i18n/localization';
 import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
+
+import {bindingUpdated} from './bindings';
 import {attachPatchData} from './context_discovery';
-import {bind, setDelayProjection} from './instructions/all';
+import {setDelayProjection} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
 import {TsickleIssue1009, allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, textBindingInternal} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
@@ -25,7 +28,6 @@ import {isLContainer} from './interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {appendChild, applyProjection, createTextNode, nativeRemoveNode} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from './state';
-import {NO_CHANGE} from './tokens';
 import {renderStringify} from './util/misc_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode, load} from './util/view_utils';
 
@@ -1031,8 +1033,7 @@ let shiftsCounter = 0;
  */
 export function ɵɵi18nExp<T>(value: T): TsickleIssue1009 {
   const lView = getLView();
-  const expression = bind(lView, value);
-  if (expression !== NO_CHANGE) {
+  if (bindingUpdated(lView, lView[BINDING_INDEX]++, value)) {
     changeMask = changeMask | (1 << shiftsCounter);
   }
   shiftsCounter++;
