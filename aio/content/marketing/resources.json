@@ -115,6 +115,12 @@
             "title": "NGXS",
             "url": "https://ngxs.io/"
           },
+          "akita": {
+            "desc": "Akita is a state management pattern, built on top of RxJS, which takes the idea of multiple data stores from Flux and the immutable updates from Redux, along with the concept of streaming data, to create the Observable Data Store model.",
+            "rev": true,
+            "title": "Akita",
+            "url": "https://netbasal.gitbook.io/akita/"
+          },
           "ab": {
             "desc": "The official library for Firebase and Angular",
             "logo": "",
