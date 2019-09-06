@@ -816,5 +816,13 @@
     "website": "https://medium.com/@a.yurich.zuev",
     "bio": "Alexey is a web development addict who likes diving deep into the source code and sharing his knowledge through visualization. Creator of ng-run.com",
     "groups": ["GDE"]
+  },
+  "martinakraus": {
+    "name": "Martina Kraus",
+    "picture": "martina-kraus.jpg",
+    "twitter": "MartinaKraus11",
+    "website": "http://http://martina-kraus.io",
+    "bio": "Martina is a software engineer and an Angular enthusiast. As a trainer, mentor and speaker she loves sharing knowledge about Web Technologies and Angular. She is Organizer of ngGirls and the local Angular Meetup",
+    "groups": ["GDE"]
   }
 }
