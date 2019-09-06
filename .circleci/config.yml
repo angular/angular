@@ -439,7 +439,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
       MDC_REPO_URL: "https://github.com/material-components/material-components-web.git"
-      MDC_REPO_BRANCH: "master"
+      MDC_REPO_BRANCH: "develop"
       MDC_REPO_TMP_DIR: "/tmp/material-components-web"
     steps:
       - *checkout_code
