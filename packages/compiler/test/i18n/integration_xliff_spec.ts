@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgLocalization} from '@angular/common';
-import {ResourceLoader} from '@angular/compiler';
 import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {Xliff} from '@angular/compiler/src/i18n/serializers/xliff';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
@@ -40,7 +38,6 @@ import {FrLocalization, HTML, I18nComponent, validateHtml} from './integration_c
       const catalog = new MessageBundle(new HtmlParser, [], {});
       const serializer = new Xliff();
       catalog.updateFromTemplate(HTML, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
-
       expect(catalog.write(serializer)).toContain(XLIFF_EXTRACTED);
     });
 
@@ -169,6 +166,17 @@ const XLIFF_TOMERGE = `
       <trans-unit id="2e013b311caa0916478941a985887e091d8288b6" datatype="html">
         <source><x id="MAP NAME" equiv-text="{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}"/></source>
         <target><x id="MAP NAME"/></target>
+      </trans-unit>
+      <trans-unit id="64123fca16a9fb9d79df61f004bcd4952c5b66f4" datatype="html">
+        <source>
+    Hello, <x id="INTERPOLATION" equiv-text="{{&apos;World&apos;}}"/>!
+  </source>
+        <target>
+    Bonjour, <x id="INTERPOLATION" equiv-text="{{&apos;World&apos;}}"/>!
+  </target>
+      </trans-unit>
+      <trans-unit id="2fa5e80cfd3ad3d9151f61f5f9522fd6fc675904" datatype="html">
+        <target> Salut, <x id="INTERPOLATION" equiv-text="{{&apos;World&apos;}}"/>! </target>
       </trans-unit>`;
 
 const XLIFF_EXTRACTED = `
@@ -360,5 +368,21 @@ const XLIFF_EXTRACTED = `
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="64123fca16a9fb9d79df61f004bcd4952c5b66f4" datatype="html">
+        <source>
+    Hello, <x id="INTERPOLATION" equiv-text="{{&apos;World&apos;}}"/>!
+  </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2fa5e80cfd3ad3d9151f61f5f9522fd6fc675904" datatype="html">
+        <source> Hello, <x id="INTERPOLATION" equiv-text="{{&apos;World&apos;}}"/>! </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>`;

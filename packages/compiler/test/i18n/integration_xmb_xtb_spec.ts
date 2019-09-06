@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgLocalization} from '@angular/common';
-import {ResourceLoader} from '@angular/compiler';
 import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
@@ -86,6 +84,10 @@ const XTB = `
   <translation id="4085484936881858615">{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {une réponse} other {<ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> réponse} }</translation>
   <translation id="4035252431381981115">FOO<ph name="START_LINK"><ex>&lt;a&gt;</ex></ph>BAR<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex></ph></translation>
   <translation id="5339604010413301604"><ph name="MAP_NAME"><ex>MAP_NAME</ex></ph></translation>
+  <translation id="175806860771569047">
+    Bonjour, <ph name="INTERPOLATION"/>!
+  </translation>
+  <translation id="5671087595595669650"> Salut, <ph name="INTERPOLATION"/>! </translation>
 </translationbundle>`;
 
 const XMB = `<msg id="615790887472569365"><source>file.ts:3</source>i18n attribute on tags</msg>
@@ -119,4 +121,8 @@ const XMB = `<msg id="615790887472569365"><source>file.ts:3</source>i18n attribu
   <msg id="i18n17"><source>file.ts:43</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph>} }</msg>
   <msg id="4085484936881858615" desc="desc"><source>file.ts:46,52</source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>{{response.getItemsList().length}}</ex>{{response.getItemsList().length}}</ph> results} }</msg>
   <msg id="4035252431381981115"><source>file.ts:54</source>foo<ph name="START_LINK"><ex>&lt;a&gt;</ex>&lt;a&gt;</ph>bar<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex>&lt;/a&gt;</ph></msg>
-  <msg id="5339604010413301604"><source>file.ts:56</source><ph name="MAP_NAME"><ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ph></msg>`;
+  <msg id="5339604010413301604"><source>file.ts:56</source><ph name="MAP_NAME"><ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ph></msg>
+  <msg id="175806860771569047"><source>file.ts:58,60</source>
+    Hello, <ph name="INTERPOLATION"><ex>{{&apos;World&apos;}}</ex>{{&apos;World&apos;}}</ph>!
+  </msg>
+  <msg id="5671087595595669650"><source>file.ts:62</source> Hello, <ph name="INTERPOLATION"><ex>{{&apos;World&apos;}}</ex>{{&apos;World&apos;}}</ph>! </msg>`;

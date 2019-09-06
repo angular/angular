@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgLocalization} from '@angular/common';
-import {ResourceLoader} from '@angular/compiler';
 import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {Xliff2} from '@angular/compiler/src/i18n/serializers/xliff2';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
@@ -220,6 +218,21 @@ const XLIFF2_TOMERGE = `
         <source><ph id="0" equiv="MAP NAME" disp="{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}"/></source>
         <target><ph id="0" equiv="MAP NAME" disp="{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}"/></target>
       </segment>
+    </unit>
+    <unit id="175806860771569047">
+      <segment>
+        <source>
+    Hello, <ph id="0" equiv="INTERPOLATION" disp="{{&apos;World&apos;}}"/>!
+  </source>
+        <target>
+    Bonjour, <ph id="0" equiv="INTERPOLATION" disp="{{&apos;World&apos;}}"/>!
+  </target>
+      </segment>
+    </unit>
+    <unit id="5671087595595669650">
+      <segment>
+        <target> Salut, <ph id="0" equiv="INTERPOLATION" disp="{{&apos;World&apos;}}"/>! </target>
+      </segment>
     </unit>`;
 
 const XLIFF2_EXTRACTED = `
@@ -426,5 +439,23 @@ const XLIFF2_EXTRACTED = `
       </notes>
       <segment>
         <source><ph id="0" equiv="MAP NAME" disp="{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}"/></source>
+      </segment>
+    </unit>
+    <unit id="175806860771569047">
+      <notes>
+        <note category="location">file.ts:58,60</note>
+      </notes>
+      <segment>
+        <source>
+    Hello, <ph id="0" equiv="INTERPOLATION" disp="{{&apos;World&apos;}}"/>!
+  </source>
+      </segment>
+    </unit>
+    <unit id="5671087595595669650">
+      <notes>
+        <note category="location">file.ts:62</note>
+      </notes>
+      <segment>
+        <source> Hello, <ph id="0" equiv="INTERPOLATION" disp="{{&apos;World&apos;}}"/>! </source>
       </segment>
     </unit>`;

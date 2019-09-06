@@ -102,6 +102,13 @@ export function validateHtml(
   expectHtml(el, '#i18n-16').toMatch(/avec un ID explicite/);
   expectHtml(el, '#i18n-18')
       .toEqual('<div id="i18n-18">FOO<a title="dans une section traductible">BAR</a></div>');
+
+  // Note that the following two elements have different translations.
+  // Their messages only differ by surrounding whitespace.
+  // If their messages were "equivalent" then they would have equivalent message-ids
+  // and get translated to the same string.
+  expectHtml(el, '#i18n-19').toMatch(/Bonjour, World!/);
+  expectHtml(el, '#i18n-20').toMatch(/Salut, World!/);
 }
 
 function expectHtml(el: DebugElement, cssSelector: string): any {
@@ -164,4 +171,10 @@ export const HTML = `
 <div i18n id="i18n-18">foo<a i18n-title title="in a translatable section">bar</a></div>
 
 <div i18n>{{ 'test' //i18n(ph="map name") }}</div>
+<div>
+  <div i18n id="i18n-19">
+    Hello, {{'World'}}!
+  </div>
+</div>
+<div i18n id="i18n-20"> Hello, {{'World'}}! </div>
 `;
