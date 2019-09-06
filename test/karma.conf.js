@@ -58,7 +58,7 @@ module.exports = config => {
       // Include a Material theme in the test suite. Also include the MDC theme as
       // karma runs tests for the MDC prototype components as well.
       {
-        pattern: 'dist/packages/**/core/theming/prebuilt/indigo-pink.css',
+        pattern: 'dist/packages/material/core/theming/prebuilt/indigo-pink.css',
         included: true,
         watched: true
       },
