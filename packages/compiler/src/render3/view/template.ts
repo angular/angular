@@ -114,12 +114,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    * all local refs and context variables are available for matching.
    */
   private _updateCodeFns: (() => o.Statement)[] = [];
-  /**
-   * Memorizes the last node index for which a select instruction has been generated.
-   * We're initializing this to -1 to ensure the `select(0)` instruction is generated before any
-   * relevant update instructions.
-   */
-  private _lastNodeIndexWithFlush: number = -1;
+
+  /** Index of the currently-selected node. */
+  private _currentIndex: number = 0;
+
   /** Temporary variable declarations generated from visiting pipes, literals, etc. */
   private _tempVariables: o.Statement[] = [];
   /**
@@ -1100,7 +1098,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private updateInstruction(
       nodeIndex: number, span: ParseSourceSpan|null, reference: o.ExternalReference,
       paramsOrFn?: o.Expression[]|(() => o.Expression[])) {
-    this.addSelectInstructionIfNecessary(nodeIndex, span);
+    this.addAdvanceInstructionIfNecessary(nodeIndex, span);
     this.instructionFn(this._updateCodeFns, span, reference, paramsOrFn || []);
   }
 
@@ -1108,7 +1106,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       nodeIndex: number, reference: o.ExternalReference, bindings: ChainableBindingInstruction[]) {
     const span = bindings.length ? bindings[0].sourceSpan : null;
 
-    this.addSelectInstructionIfNecessary(nodeIndex, span);
+    this.addAdvanceInstructionIfNecessary(nodeIndex, span);
     this._updateCodeFns.push(() => {
       const calls = bindings.map(property => {
         const fnParams = [property.value(), ...(property.params || [])];
@@ -1122,12 +1120,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
   }
 
-  private addSelectInstructionIfNecessary(nodeIndex: number, span: ParseSourceSpan|null) {
-    if (this._lastNodeIndexWithFlush < nodeIndex) {
-      if (nodeIndex > 0) {
-        this.instructionFn(this._updateCodeFns, span, R3.select, [o.literal(nodeIndex)]);
+  private addAdvanceInstructionIfNecessary(nodeIndex: number, span: ParseSourceSpan|null) {
+    if (nodeIndex !== this._currentIndex) {
+      const delta = nodeIndex - this._currentIndex;
+
+      if (delta > 0) {
+        this.instructionFn(this._updateCodeFns, span, R3.advance, [o.literal(delta)]);
       }
-      this._lastNodeIndexWithFlush = nodeIndex;
+
+      this._currentIndex = nodeIndex;
     }
   }
 

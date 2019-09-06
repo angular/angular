@@ -488,7 +488,7 @@ describe('i18n support in the template compiler', () => {
           if (rf & 2) {
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(1, 6, ctx.valueA))(ctx.valueB);
             $r3$.ɵɵi18nApply(2);
-            $r3$.ɵɵselect(3);
+            $r3$.ɵɵadvance(3);
             $r3$.ɵɵi18nExp(ctx.valueA)(ctx.valueB)(ctx.valueA + ctx.valueB)(ctx.valueC);
             $r3$.ɵɵi18nApply(4);
           }
@@ -575,7 +575,7 @@ describe('i18n support in the template compiler', () => {
           }
           if (rf & 2) {
             const $outer_r1$ = ctx.$implicit;
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 1, $outer_r1$));
             $r3$.ɵɵi18nApply(3);
           }
@@ -746,7 +746,7 @@ describe('i18n support in the template compiler', () => {
           if (rf & 2) {
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(1, 6, ctx.valueA))(ctx.valueB);
             $r3$.ɵɵi18nApply(2);
-            $r3$.ɵɵselect(3);
+            $r3$.ɵɵadvance(3);
             $r3$.ɵɵi18nExp(ctx.valueA)(ctx.valueB)(ctx.valueA + ctx.valueB)(ctx.valueC);
             $r3$.ɵɵi18nApply(4);
           }
@@ -793,7 +793,7 @@ describe('i18n support in the template compiler', () => {
           }
           if (rf & 2) {
             const $outer_r1$ = ctx.$implicit;
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 1, $outer_r1$));
             $r3$.ɵɵi18nApply(3);
           }
@@ -1046,7 +1046,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.valueA)(ctx.valueB);
             $r3$.ɵɵi18nApply(1);
           }
@@ -1081,7 +1081,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.valueA);
             $r3$.ɵɵi18nApply(1);
           }
@@ -1126,7 +1126,7 @@ describe('i18n support in the template compiler', () => {
           if (rf & 2) {
             var $tmp_2_0$ = null;
             const $currVal_2$ = ($tmp_2_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_2_0$.getTitle();
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 3, ctx.valueA))(ctx.valueA == null ? null : ctx.valueA.a == null ? null : ctx.valueA.a.b)($currVal_2$);
             $r3$.ɵɵi18nApply(1);
           }
@@ -1193,13 +1193,13 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.one);
             $r3$.ɵɵi18nApply(1);
-            $r3$.ɵɵselect(3);
+            $r3$.ɵɵadvance(2);
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(4, 3, ctx.two));
             $r3$.ɵɵi18nApply(3);
-            $r3$.ɵɵselect(6);
+            $r3$.ɵɵadvance(3);
             $r3$.ɵɵi18nExp(ctx.three + ctx.four + ctx.five);
             $r3$.ɵɵi18nApply(6);
           }
@@ -1289,10 +1289,10 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.one);
             $r3$.ɵɵi18nApply(1);
-            $r3$.ɵɵselect(4);
+            $r3$.ɵɵadvance(3);
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(5, 3, ctx.two))(ctx.nestedInBlockTwo);
             $r3$.ɵɵi18nApply(4);
           }
@@ -1398,12 +1398,12 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(2);
             $r3$.ɵɵi18nExp(ctx.valueB)(ctx.valueC);
             $r3$.ɵɵi18nApply(3);
             $r3$.ɵɵi18nExp(ctx.valueA);
             $r3$.ɵɵi18nApply(1);
-            $r3$.ɵɵselect(7);
+            $r3$.ɵɵadvance(6);
             $r3$.ɵɵi18nExp(ctx.valueE);
             $r3$.ɵɵi18nApply(8);
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(6, 5, ctx.valueD));
@@ -1463,7 +1463,7 @@ describe('i18n support in the template compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(2);
             $r3$.ɵɵi18nExp($ctx_r0$.valueA)($r3$.ɵɵpipeBind1(4, 2, $ctx_r0$.valueB));
             $r3$.ɵɵi18nApply(2);
           }
@@ -1479,7 +1479,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(2);
             $r3$.ɵɵproperty("ngIf", ctx.visible);
           }
         }
@@ -1539,9 +1539,9 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵtemplate(2, MyComponent_img_2_Template, 2, 1, "img", $_c2$);
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵproperty("ngIf", ctx.visible);
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵproperty("ngIf", ctx.visible);
           }
         }
@@ -1604,7 +1604,7 @@ describe('i18n support in the template compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(4);
+            $r3$.ɵɵadvance(4);
             $r3$.ɵɵproperty("ngIf", $ctx_r0$.exists);
             $r3$.ɵɵi18nExp($ctx_r0$.valueA)($r3$.ɵɵpipeBind1(3, 3, $ctx_r0$.valueB));
             $r3$.ɵɵi18nApply(0);
@@ -1683,9 +1683,9 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(2);
             $r3$.ɵɵproperty("ngIf", ctx.visible);
-            $r3$.ɵɵselect(3);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵproperty("ngIf", !ctx.visible);
           }
         }
@@ -1727,7 +1727,7 @@ describe('i18n support in the template compiler', () => {
           }
           if (rf & 2) {
               const $ctx_r0$ = $r3$.ɵɵnextContext();
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵi18nExp($ctx_r0$.valueA);
               $r3$.ɵɵi18nApply(1);
           }
@@ -1833,7 +1833,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.age);
             $r3$.ɵɵi18nApply(1);
           }
@@ -1958,7 +1958,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementContainerEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 1, ctx.valueA));
             $r3$.ɵɵi18nApply(1);
           }
@@ -2063,7 +2063,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(4, 1, ctx.valueB));
             $r3$.ɵɵi18nApply(1);
           }
@@ -2123,7 +2123,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementContainerEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(2);
             $r3$.ɵɵi18nExp(ctx.age);
             $r3$.ɵɵi18nApply(2);
           }
@@ -2278,7 +2278,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 1, 1, "ng-template");
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.gender);
             $r3$.ɵɵi18nApply(1);
           }
@@ -2554,7 +2554,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.gender);
             $r3$.ɵɵi18nApply(1);
           }
@@ -2667,7 +2667,7 @@ describe('i18n support in the template compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(2);
             $r3$.ɵɵi18nExp($ctx_r0$.age);
             $r3$.ɵɵi18nApply(2);
           }
@@ -2695,7 +2695,7 @@ describe('i18n support in the template compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r1$ = $r3$.ɵɵnextContext();
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(2);
             $r3$.ɵɵi18nExp($ctx_r1$.count)($ctx_r1$.count);
             $r3$.ɵɵi18nApply(2);
           }
@@ -2712,12 +2712,12 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c1$);
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.gender);
             $r3$.ɵɵi18nApply(1);
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵproperty("ngIf", ctx.visible);
-            $r3$.ɵɵselect(3);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵproperty("ngIf", ctx.available);
           }
         }
@@ -2752,7 +2752,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.age)(ctx.other);
             $r3$.ɵɵi18nApply(1);
           }
@@ -2828,7 +2828,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.gender);
             $r3$.ɵɵi18nApply(1);
           }
@@ -2866,7 +2866,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.gender)(ctx.ageA + ctx.ageB + ctx.ageC);
             $r3$.ɵɵi18nApply(1);
           }
@@ -2929,7 +2929,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.gender)(ctx.age);
             $r3$.ɵɵi18nApply(1);
           }
@@ -3035,7 +3035,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(3);
+            $r3$.ɵɵadvance(3);
             $r3$.ɵɵproperty("ngIf", ctx.visible);
             $r3$.ɵɵi18nExp(ctx.gender)(ctx.gender);
             $r3$.ɵɵi18nApply(1);
@@ -3091,7 +3091,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.age)(ctx.gender);
             $r3$.ɵɵi18nApply(1);
           }
@@ -3140,7 +3140,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.name)(ctx.count)(ctx.count);
             $r3$.ɵɵi18nApply(1);
           }
@@ -3225,7 +3225,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(2);
             $r3$.ɵɵproperty("ngIf", ctx.ageVisible);
             $r3$.ɵɵi18nExp(ctx.gender);
             $r3$.ɵɵi18nApply(1);
@@ -3314,7 +3314,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(2);
+            $r3$.ɵɵadvance(2);
             $r3$.ɵɵproperty("ngIf", ctx.ageVisible);
             $r3$.ɵɵi18nExp(ctx.gender)(ctx.weight)(ctx.height);
             $r3$.ɵɵi18nApply(1);
@@ -3361,7 +3361,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(1);
+            $r3$.ɵɵadvance(1);
             $r3$.ɵɵi18nExp(ctx.gender)(ctx.weight)(ctx.height)(ctx.age);
             $r3$.ɵɵi18nApply(1);
           }

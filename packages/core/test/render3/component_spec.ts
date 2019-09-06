@@ -8,7 +8,7 @@
 
 import {ViewEncapsulation, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
 import {createInjector} from '../../src/di/r3_injector';
-import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, getRenderedText, markDirty, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵselect, ɵɵtemplate} from '../../src/render3/index';
+import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, getRenderedText, markDirty, ɵɵadvance, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵselect, ɵɵtemplate} from '../../src/render3/index';
 import {tick, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
@@ -33,7 +33,6 @@ describe('component', () => {
           ɵɵtext(0);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵselect(0);
           ɵɵtextInterpolate(ctx.count);
         }
       },
@@ -84,7 +83,6 @@ describe('component', () => {
             ɵɵtext(0);
           }
           if (fs & RenderFlags.Update) {
-            ɵɵselect(0);
             ɵɵtextInterpolate(ctx.myService.value);
           }
         }
@@ -128,7 +126,6 @@ describe('component', () => {
             ɵɵtext(0);
           }
           if (rf & RenderFlags.Update) {
-            ɵɵselect(0);
             ɵɵtextInterpolate(ctx.name);
           }
         },
@@ -143,7 +140,7 @@ describe('component', () => {
         ɵɵelement(4097, 'comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵselect(4097);
+        ɵɵadvance(4097);
         ɵɵproperty('name', ctx.name);
       }
     }, 4098, 1, [Comp]);
@@ -197,7 +194,7 @@ it('should not invoke renderer destroy method for embedded views', () => {
               2, MyComponent_div_Template_2, 2, 0, 'div', [AttributeMarker.Template, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵselect(2);
+          ɵɵadvance(2);
           ɵɵproperty('ngIf', ctx.visible);
         }
       }
@@ -280,7 +277,6 @@ describe('component with a container', () => {
       ɵɵelement(0, 'wrapper');
     }
     if (rf & RenderFlags.Update) {
-      ɵɵselect(0);
       ɵɵproperty('items', ctx.items);
     }
   }
@@ -342,7 +338,6 @@ describe('recursive components', () => {
           ɵɵcontainer(2);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵselect(0);
           ɵɵtextInterpolate(ctx.data.value);
           ɵɵcontainerRefreshStart(1);
           {
@@ -414,11 +409,10 @@ describe('recursive components', () => {
               [AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵselect(0);
           ɵɵtextInterpolate(ctx.data.value);
-          ɵɵselect(1);
+          ɵɵadvance(1);
           ɵɵproperty('ngIf', ctx.data.left);
-          ɵɵselect(2);
+          ɵɵadvance(1);
           ɵɵproperty('ngIf', ctx.data.right);
         }
 
@@ -434,7 +428,6 @@ describe('recursive components', () => {
     }
     if (rf & RenderFlags.Update) {
       const parent = ɵɵnextContext();
-      ɵɵselect(0);
       ɵɵproperty('data', parent.data.left);
     }
   }
@@ -446,7 +439,6 @@ describe('recursive components', () => {
     }
     if (rf & RenderFlags.Update) {
       const parent = ɵɵnextContext();
-      ɵɵselect(0);
       ɵɵproperty('data', parent.data.right);
     }
   }

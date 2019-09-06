@@ -221,9 +221,9 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵproperty("@foo", ctx.exp);
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵproperty("@bar", undefined);
-              $r3$.ɵɵselect(2);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵproperty("@baz", undefined);
             }
           },
@@ -955,7 +955,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵstyleProp("baz", $r3$.ɵɵpipeBind2(3, 12, $ctx$.bazExp, 4000));
               $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 15, $ctx$.fooExp, 2000));
               $r3$.ɵɵstylingApply();
-              $r3$.ɵɵselect(5);
+              $r3$.ɵɵadvance(5);
               $r3$.ɵɵtextInterpolate1(" ", $ctx$.item, "");
             }
           }
@@ -1000,13 +1000,13 @@ describe('compiler compliance: styling', () => {
             if (rf & 2) {
               $r3$.ɵɵstyleProp("width", $ctx$.w1);
               $r3$.ɵɵstylingApply();
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵstyleProp("height", $ctx$.h1);
               $r3$.ɵɵstylingApply();
-              $r3$.ɵɵselect(2);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵclassProp("active", $ctx$.a1);
               $r3$.ɵɵstylingApply();
-              $r3$.ɵɵselect(3);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵclassProp("removed", $ctx$.r1);
               $r3$.ɵɵstylingApply();
             }
@@ -1337,31 +1337,31 @@ describe('compiler compliance: styling', () => {
         if (rf & 2) {
           $r3$.ɵɵclassMapInterpolateV(["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(1);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵclassMapInterpolate8("a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(2);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵclassMapInterpolate7("a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(3);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵclassMapInterpolate6("a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(4);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵclassMapInterpolate5("a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(5);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵclassMapInterpolate4("a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(6);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵclassMapInterpolate3("a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(7);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵclassMapInterpolate2("a", ctx.one, "b", ctx.two, "c");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(8);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵclassMapInterpolate1("a", ctx.one, "b");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(9);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵclassMap(ctx.one);
           $r3$.ɵɵstylingApply();
       }
@@ -1439,31 +1439,31 @@ describe('compiler compliance: styling', () => {
         if (rf & 2) {
           $r3$.ɵɵstylePropInterpolateV("color", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(1);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵstylePropInterpolate8("color", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(2);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵstylePropInterpolate7("color", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(3);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵstylePropInterpolate6("color", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(4);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵstylePropInterpolate5("color", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(5);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵstylePropInterpolate4("color", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(6);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵstylePropInterpolate3("color", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(7);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵstylePropInterpolate2("color", "a", ctx.one, "b", ctx.two, "c");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(8);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵstylePropInterpolate1("color", "a", ctx.one, "b");
           $r3$.ɵɵstylingApply();
-          $r3$.ɵɵselect(9);
+          $r3$.ɵɵadvance(1);
           $r3$.ɵɵstyleProp("color", ctx.one);
           $r3$.ɵɵstylingApply();
       }
