@@ -4,9 +4,7 @@
   "compilerOptions": {
     "rootDir": "..",
     "baseUrl": ".",
-    "paths": {
-      "@angular/google-maps": ["./*"]
-    },
+    "paths": {},
     "types": [
       "jasmine",
       "googlemaps"

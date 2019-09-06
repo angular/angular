@@ -19,6 +19,8 @@ export class GoogleMapDemo {
   isReady = false;
 
   center = {lat: 24, lng: 12};
+  markerOptions = {draggable: false};
+  markerPositions: google.maps.LatLngLiteral[] = [];
   zoom = 4;
   display?: google.maps.LatLngLiteral;
 
@@ -30,10 +32,19 @@ export class GoogleMapDemo {
   }
 
   handleClick(event: google.maps.MouseEvent) {
-    this.center = event.latLng.toJSON();
+    this.markerPositions.push(event.latLng.toJSON());
   }
 
   handleMove(event: google.maps.MouseEvent) {
     this.display = event.latLng.toJSON();
+  }
+
+  clickMarker(event: google.maps.MouseEvent) {
+    console.log(this.markerOptions);
+    this.markerOptions = {draggable: true};
+  }
+
+  handleRightclick() {
+    this.markerPositions.pop();
   }
 }

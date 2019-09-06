@@ -8,13 +8,12 @@ load(
 )
 
 ng_module(
-    name = "google-map",
+    name = "map-marker",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
-        "//src/google-maps/map-marker",
         "@npm//@angular/core",
         "@npm//@types/googlemaps",
         "@npm//rxjs",
@@ -28,8 +27,7 @@ ng_test_library(
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
-        ":google-map",
-        "//src/google-maps/map-marker",
+        ":map-marker",
         "//src/google-maps/testing",
         "@npm//@angular/platform-browser",
     ],

@@ -1,9 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "GOOGLE_MAPS_PACKAGES", "GOOGLE_MAPS_TARGETS", "ROLLUP_GLOBALS")
+load("//:packages.bzl", "ROLLUP_GLOBALS")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 
-# Root "@angular/google-maps" entry-point that does not re-export individual entry-points.
 ng_module(
     name = "google-maps",
     srcs = glob(
@@ -11,15 +10,12 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     module_name = "@angular/google-maps",
-    deps = ["//src/google-maps/%s" % p for p in GOOGLE_MAPS_PACKAGES] + [
+    deps = [
+        "//src/google-maps/google-map",
+        "//src/google-maps/map-marker",
         "@npm//@angular/core",
         "@npm//@types/googlemaps",
     ],
-)
-
-filegroup(
-    name = "overviews",
-    srcs = ["//src/google-maps/%s:overview" % name for name in GOOGLE_MAPS_PACKAGES],
 )
 
 # Creates the @angular/google-maps package published to npm
@@ -29,5 +25,10 @@ ng_package(
     entry_point = ":public-api.ts",
     entry_point_name = "google-maps",
     globals = ROLLUP_GLOBALS,
-    deps = GOOGLE_MAPS_TARGETS,
+    deps = [":google-maps"],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

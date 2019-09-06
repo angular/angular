@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {HttpClientJsonpModule, HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
-import {GoogleMapModule} from '@angular/google-maps/google-map';
+import {GoogleMapsModule} from '@angular/google-maps';
 import {RouterModule} from '@angular/router';
 
 import {GoogleMapDemo} from './google-map-demo';
@@ -17,7 +17,7 @@ import {GoogleMapDemo} from './google-map-demo';
 @NgModule({
   imports: [
     CommonModule,
-    GoogleMapModule,
+    GoogleMapsModule,
     HttpClientJsonpModule,
     HttpClientModule,
     RouterModule.forChild([{path: '', component: GoogleMapDemo}]),

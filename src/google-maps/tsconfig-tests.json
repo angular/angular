@@ -11,9 +11,6 @@
       "jasmine",
       "googlemaps"
     ],
-    "paths": {
-      "@angular/google-maps/*": ["./*"]
-    }
   },
   "angularCompilerOptions": {
     "strictMetadataEmit": true,

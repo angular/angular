@@ -4,7 +4,14 @@
             [center]="center"
             [zoom]="zoom"
             (mapClick)="handleClick($event)"
-            (mapMousemove)="handleMove($event)"></google-map>
+            (mapMousemove)="handleMove($event)"
+            (mapRightclick)="handleRightclick()">
+  <map-marker></map-marker>
+  <map-marker *ngFor="let markerPosition of markerPositions"
+                     [position]="markerPosition"
+                     [options]="markerOptions"
+                     (mapClick)="clickMarker($event)"></map-marker>
+</google-map>
 
 <div>Latitude: {{display?.lat}}</div>
 <div>Longitude: {{display?.lng}}</div>

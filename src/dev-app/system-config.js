@@ -55,10 +55,6 @@ var MATERIAL_PACKAGES = [
   'tree',
 ];
 
-var GOOGLE_MAPS_PACKAGES = [
-  'google-map',
-];
-
 var MATERIAL_EXPERIMENTAL_PACKAGES = [
   'mdc-button',
   'mdc-card',
@@ -103,9 +99,7 @@ MATERIAL_EXPERIMENTAL_PACKAGES.forEach(function(pkgName) {
 MATERIAL_PACKAGES.forEach(function(pkgName) {
   configureEntryPoint('material', pkgName);
 });
-GOOGLE_MAPS_PACKAGES.forEach(function(pkgName) {
-  configureEntryPoint('google-maps', pkgName);
-});
+configureEntryPoint('google-maps');
 configureEntryPoint('youtube-player');
 
 /** Configures the specified package and its entry-point. */

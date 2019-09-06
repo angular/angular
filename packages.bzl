@@ -80,12 +80,6 @@ MATERIAL_SCSS_LIBS = [
     for p in MATERIAL_PACKAGES
 ]
 
-GOOGLE_MAPS_PACKAGES = [
-    "google-map",
-]
-
-GOOGLE_MAPS_TARGETS = ["//src/google-maps"] + ["//src/google-maps/%s" % p for p in GOOGLE_MAPS_PACKAGES]
-
 MATERIAL_EXPERIMENTAL_PACKAGES = [
     "mdc-button",
     "mdc-card",

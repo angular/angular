@@ -7,7 +7,7 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     assets = ["google-map-demo.html"],
     deps = [
-        "//src/google-maps/google-map",
+        "//src/google-maps",
         "@npm//@angular/router",
     ],
 )
