@@ -25,7 +25,7 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     readonly selectionChange: EventEmitter<MatChipSelectionChange>;
     trailingIcon: MatChipTrailingIcon;
     value: any;
-    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, animationMode?: string);
+    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, animationMode?: string, _changeDetectorRef?: ChangeDetectorRef | undefined);
     _addHostClassName(): void;
     _blur(): void;
     _handleClick(event: Event): void;

@@ -29,6 +29,7 @@ import {
   Type,
   ViewChild,
   ViewChildren,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -1270,6 +1271,16 @@ describe('MatChipList', () => {
     });
   });
 
+  it('should preselected chip as selected inside an OnPush component', fakeAsync(() => {
+    fixture = createComponent(PreselectedChipInsideOnPush);
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.mat-chip').classList)
+        .toContain('mat-chip-selected', 'Expected first chip to be selected.');
+  }));
+
   function createComponent<T>(component: Type<T>, providers: Provider[] = [], animationsModule:
       Type<NoopAnimationsModule> | Type<BrowserAnimationsModule> = NoopAnimationsModule):
           ComponentFixture<T> {
@@ -1606,4 +1617,20 @@ class ChipListWithRemove {
   removeChip(event: MatChipEvent) {
     this.chips.splice(event.chip.value, 1);
   }
+}
+
+
+@Component({
+  template: `
+    <mat-form-field>
+      <mat-chip-list [formControl]="control">
+        <mat-chip>Pizza</mat-chip>
+        <mat-chip>Pasta</mat-chip>
+      </mat-chip-list>
+    </mat-form-field>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+class PreselectedChipInsideOnPush {
+  control = new FormControl('Pizza');
 }
