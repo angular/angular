@@ -286,7 +286,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     // component will be only marked for check, but no actual change detection runs automatically.
     // Instead of going back into the zone in order to trigger a change detection which causes
     // *all* components to be checked (if explicitly marked or not using OnPush), we only trigger
-    // an explicit change detection for the checkbox view and it's children.
+    // an explicit change detection for the checkbox view and its children.
     this._changeDetectorRef.detectChanges();
   }
 

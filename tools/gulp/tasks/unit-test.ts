@@ -57,7 +57,7 @@ task('test:static', [':test:build'], karmaWatchTask({browsers: []}));
 /**
  * Returns a Gulp task that spawns a Karma server and reloads whenever the files change.
  * Note that this doesn't use Karma's built-in file watching. Due to the way our build
- * process is set up, Karma ends up firing it's change detection for every file that is
+ * process is set up, Karma ends up firing its change detection for every file that is
  * written to disk, which causes it to run tests multiple time and makes it hard to follow
  * the console output. This approach runs the Karma server and then depends on the Gulp API
  * to tell Karma when to run the tests.

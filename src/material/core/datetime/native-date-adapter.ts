@@ -79,7 +79,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
    * will produce `'8/13/1800'`.
    *
    * TODO(mmalerba): drop this variable. It's not being used in the code right now. We're now
-   * getting the string representation of a Date object from it's utc representation. We're keeping
+   * getting the string representation of a Date object from its utc representation. We're keeping
    * it here for sometime, just for precaution, in case we decide to revert some of these changes
    * though.
    */

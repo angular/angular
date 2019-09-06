@@ -45,7 +45,7 @@ const SCROLL_SCHEDULER =
     typeof requestAnimationFrame !== 'undefined' ? animationFrameScheduler : asapScheduler;
 
 
-/** A viewport that virtualizes it's scrolling with the help of `CdkVirtualForOf`. */
+/** A viewport that virtualizes its scrolling with the help of `CdkVirtualForOf`. */
 @Component({
   moduleId: module.id,
   selector: 'cdk-virtual-scroll-viewport',

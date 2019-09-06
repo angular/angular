@@ -12,7 +12,7 @@ import {FocusOrigin} from '../focus-monitor/focus-monitor';
 /**
  * This is the interface for focusable items (used by the FocusKeyManager).
  * Each item must know how to focus itself, whether or not it is currently disabled
- * and be able to supply it's label.
+ * and be able to supply its label.
  */
 export interface FocusableOption extends ListKeyManagerOption {
   /** Focuses the `FocusableOption`. */

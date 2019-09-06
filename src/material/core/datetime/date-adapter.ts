@@ -208,7 +208,7 @@ export abstract class DateAdapter<D> {
    * deserialize should only accept non-ambiguous, locale-independent formats (e.g. a ISO 8601
    * string). The default implementation does not allow any deserialization, it simply checks that
    * the given value is already a valid date object or null. The `<mat-datepicker>` will call this
-   * method on all of it's `@Input()` properties that accept dates. It is therefore possible to
+   * method on all of its `@Input()` properties that accept dates. It is therefore possible to
    * support passing values from your backend directly to these properties by overriding this method
    * to also deserialize the format used by your backend.
    * @param value The value to be deserialized into a date object.

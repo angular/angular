@@ -30,7 +30,7 @@ def _dgeni_api_docs(ctx):
     # output should be written to. (e.g. bazel-out/bin/src/docs-content)
     args.add(output_dir_path)
 
-    # Pass each specified entry point and it's corresponding entry points to Dgeni. This will then
+    # Pass each specified entry point and its corresponding entry points to Dgeni. This will then
     # be used to resolve the files that need to be parsed by Dgeni.
     for package_name, entry_points in ctx.attr.entry_points.items():
         args.add(package_name)
@@ -46,7 +46,7 @@ def _dgeni_api_docs(ctx):
 
         # Small workaround that ensures that the "ripple" API doc is properly exposed as an output
         # of the packaging rule. Technically Dgeni should not output the "ripple" directory as
-        # it's own entry-point. TODO(devversion): Support sub API docs for entry-points
+        # its own entry-point. TODO(devversion): Support sub API docs for entry-points
         if package_name == "material":
             expected_outputs += [
                 ctx.actions.declare_file("%s/%s-%s.html" % (output_dir_name, package_name, "ripple")),
