@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
- import {ChangeDetectorRef, Component} from '@angular/core';
-
-declare global {
-  interface Window {
-    YT: typeof YT | undefined;
-    onYouTubeIframeAPIReady: () => void;
-  }
-}
+ import {Component} from '@angular/core';
 
 interface Video {
   id: string;
@@ -45,16 +38,4 @@ export class YouTubePlayerDemo {
   video: Video | undefined = VIDEOS[0];
   videos = VIDEOS;
   apiLoaded = false;
-
-  constructor(private _ref: ChangeDetectorRef) {
-    if (window.YT) {
-      this.apiLoaded = true;
-      return;
-    }
-
-    window.onYouTubeIframeAPIReady = () => {
-      this.apiLoaded = true;
-      this._ref.detectChanges();
-    };
-  }
 }

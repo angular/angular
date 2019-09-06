@@ -10,7 +10,6 @@
         <mat-radio-button [value]="undefined">Unset</mat-radio-button>
       </mat-radio-group>
     </div>
-    <p *ngIf="!apiLoaded">Loading youtube api...</p>
-    <youtube-player *ngIf="apiLoaded" [videoId]="video && video.id"></youtube-player>
+    <youtube-player [videoId]="video && video.id"></youtube-player>
   </section>
 </div>

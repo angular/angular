@@ -9,6 +9,7 @@ import {
   OnDestroy,
   Output,
   ViewChild,
+  OnInit,
 } from '@angular/core';
 
 import {
@@ -20,9 +21,11 @@ import {
   MonoTypeOperatorFunction,
   merge,
   OperatorFunction,
+  Subject,
 } from 'rxjs';
 
 import {
+  combineLatest as combineLatestOp,
   map,
   scan,
   withLatestFrom,
@@ -33,10 +36,15 @@ import {
   first,
   distinctUntilChanged,
   takeUntil,
+  take,
+  skipWhile,
 } from 'rxjs/operators';
 
 declare global {
-  interface Window { YT: typeof YT | undefined; }
+  interface Window {
+    YT: typeof YT | undefined;
+    onYouTubeIframeAPIReady: (() => void) | undefined;
+  }
 }
 
 export const DEFAULT_PLAYER_WIDTH = 640;
@@ -63,14 +71,16 @@ type UninitializedPlayer = Pick<Player, 'videoId' | 'destroy' | 'addEventListene
   // This div is *replaced* by the YouTube player embed.
   template: '<div #youtube_container></div>',
 })
-export class YouTubePlayer implements AfterViewInit, OnDestroy {
+export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   /** YouTube Video ID to view */
   @Input()
-  get videoId(): string | undefined { return this._player && this._player.videoId; }
+  get videoId(): string | undefined { return this._videoId; }
   set videoId(videoId: string | undefined) {
-    this._videoId.emit(videoId);
+    this._videoId = videoId;
+    this._videoIdObs.emit(videoId);
   }
-  private _videoId = new EventEmitter<string | undefined>();
+  private _videoId: string | undefined;
+  private _videoIdObs = new EventEmitter<string | undefined>();
 
   /** Height of video player */
   @Input()
@@ -110,6 +120,13 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
   }
   private _suggestedQuality = new EventEmitter<YT.SuggestedVideoQuality | undefined>();
 
+  /**
+   * Whether the iframe will attempt to load regardless of the status of the api on the
+   * page. Set this to true if you don't want the `onYouTubeIframeAPIReady` field to be
+   * set on the global window.
+   */
+  @Input() showBeforeIframeApiLoads: boolean | undefined;
+
   /** Outputs are direct proxies from the player itself. */
   @Output() ready = new EventEmitter<YT.PlayerEvent>();
   @Output() stateChange = new EventEmitter<YT.OnStateChangeEvent>();
@@ -125,13 +142,26 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
 
   private _player: Player | undefined;
 
-  constructor(private _ngZone: NgZone) {
+  constructor(private _ngZone: NgZone) {}
+
+  ngOnInit() {
+    let iframeApiAvailableObs: Observable<boolean> = observableOf(true);
     if (!window.YT) {
-      throw new Error('Namespace YT not found, cannot construct embedded youtube player. ' +
-          'Please install the YouTube Player API Reference for iframe Embeds: ' +
-          'https://developers.google.com/youtube/iframe_api_reference');
+      if (this.showBeforeIframeApiLoads) {
+        throw new Error('Namespace YT not found, cannot construct embedded youtube player. ' +
+            'Please install the YouTube Player API Reference for iframe Embeds: ' +
+            'https://developers.google.com/youtube/iframe_api_reference');
+      }
+
+      const iframeApiAvailableSubject = new Subject<boolean>();
+      window.onYouTubeIframeAPIReady = () => {
+        this._ngZone.run(() => iframeApiAvailableSubject.next(true));
+      };
+      iframeApiAvailableObs = iframeApiAvailableSubject.pipe(take(1), startWith(false));
     }
+
     // Add initial values to all of the inputs.
+    const videoIdObs = this._videoIdObs.pipe(startWith(this._videoId));
     const widthObs = this._widthObs.pipe(startWith(this._width));
     const heightObs = this._heightObs.pipe(startWith(this._height));
 
@@ -143,7 +173,8 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
     const playerObs =
       createPlayerObservable(
         this._youtubeContainer,
-        this._videoId,
+        videoIdObs,
+        iframeApiAvailableObs,
         widthObs,
         heightObs,
         this.createEventsBoundInZone(),
@@ -158,7 +189,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
 
     bindCueVideoCall(
       playerObs,
-      this._videoId,
+      videoIdObs,
       startSecondsObs,
       endSecondsObs,
       suggestedQualityObs,
@@ -192,6 +223,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
       return;
     }
     this._player.destroy();
+    window.onYouTubeIframeAPIReady = undefined;
     this._destroyed.emit();
   }
 
@@ -309,7 +341,11 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy {
   }
 
   /** See https://developers.google.com/youtube/iframe_api_reference#getPlayerState */
-  getPlayerState(): YT.PlayerState {
+  getPlayerState(): YT.PlayerState | undefined {
+    if (!window.YT) {
+      return undefined;
+    }
+
     if (!this._player) {
       return YT.PlayerState.UNSTARTED;
     }
@@ -432,6 +468,7 @@ function fromPlayerOnReady(player: UninitializedPlayer): Observable<Player> {
 function createPlayerObservable(
   youtubeContainer: Observable<HTMLElement>,
   videoIdObs: Observable<string | undefined>,
+  iframeApiAvailableObs: Observable<boolean>,
   widthObs: Observable<number>,
   heightObs: Observable<number>,
   events: YT.Events,
@@ -445,7 +482,18 @@ function createPlayerObservable(
     );
 
   return combineLatest(youtubeContainer, playerOptions)
-      .pipe(scan(syncPlayerState, undefined), distinctUntilChanged());
+      .pipe(
+        skipUntilRememberLatest(iframeApiAvailableObs),
+        scan(syncPlayerState, undefined),
+        distinctUntilChanged());
+}
+
+/** Skips the given observable until the other observable emits true, then emit the latest. */
+function skipUntilRememberLatest<T>(notifier: Observable<boolean>): MonoTypeOperatorFunction<T> {
+  return pipe(
+    combineLatestOp(notifier),
+    skipWhile(([_, doneSkipping]) => !doneSkipping),
+    map(([value]) => value));
 }
 
 /** Destroy the player if there are no options, or create the player if there are options. */
@@ -462,6 +510,7 @@ function syncPlayerState(
   if (player) {
     return player;
   }
+
   const newPlayer: UninitializedPlayer = new YT.Player(container, videoOptions);
   // Bind videoId for future use.
   newPlayer.videoId = videoOptions.videoId;
