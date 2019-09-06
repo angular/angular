@@ -31,6 +31,7 @@ declare class Client {
   frameType: ClientFrameType;
   id: string;
   url: string;
+  visibilityState?: WindowClientState;
   postMessage(message: any): void;
 }
 
