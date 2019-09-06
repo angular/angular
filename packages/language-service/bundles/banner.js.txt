@@ -8,7 +8,10 @@ var $reflect = {defineMetadata: function() {}, getOwnMetadata: function() {}};
 var Reflect = (typeof global !== 'undefined' ? global : {})['Reflect'] || {};
 Object.keys($reflect).forEach(function(key) { Reflect[key] = Reflect[key] || $reflect[key]; });
 var $deferred, $resolved, $provided;
-function $getModule(name) { return $provided[name] || require(name); }
+function $getModule(name) {
+  if (name === 'typescript/lib/tsserverlibrary') return $provided['typescript'] || require(name);
+  return $provided[name] || require(name);
+}
 function define(modules, cb) { $deferred = { modules: modules, cb: cb }; }
 module.exports = function(provided) {
   if ($resolved) return $resolved;
