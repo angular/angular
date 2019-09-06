@@ -4,7 +4,7 @@ yarn bazel build //packages/core/test/render3/perf:{name}.min_debug.es2015.js --
 
 ### Run 
 
-time node dist/bin/packages/core/test/render3/perf/{name}.min_debug.es2015.js
+node dist/bin/packages/core/test/render3/perf/{name}.min_debug.es2015.js
 
 ### Profile
 
@@ -19,4 +19,4 @@ The actual benchmark code has calls that will start (`console.profile`) and stop
 In all the above commands {name} should be replaced with the actual benchmark (folder) name, ex.:
 - build: `yarn bazel build //packages/core/test/render3/perf:noop_change_detection.min_debug.es2015.js --define=compile=aot`
 - run: `time node dist/bin/packages/core/test/render3/perf/noop_change_detection.min_debug.es2015.js`
-- profile: `node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/noop_change_detection.min_debug.es2015.js`
+- profile: `node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/noop_change_detection.min_debug.es2015.js profile`
