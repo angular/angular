@@ -20,10 +20,10 @@ describe('ViewContainerRef', () => {
 
   const TRANSLATIONS: any = {
     'Bar': 'o',
-    '{$startTagBefore}{$closeTagBefore}{$startTagDiv}{$startTagInside}{$closeTagInside}{$closeTagDiv}{$startTagAfter}{$closeTagAfter}':
-        'F{$startTagDiv}{$closeTagDiv}o',
-    '{$startTagBefore}{$closeTagBefore}{$startTagDiv}{$startTagIn}{$closeTagIn}{$closeTagDiv}{$startTagAfter}{$closeTagAfter}':
-        '{$startTagDiv}{$closeTagDiv}{$startTagBefore}{$closeTagBefore}'
+    '{$START_TAG_BEFORE}{$CLOSE_TAG_BEFORE}{$START_TAG_DIV}{$START_TAG_INSIDE}{$CLOSE_TAG_INSIDE}{$CLOSE_TAG_DIV}{$START_TAG_AFTER}{$CLOSE_TAG_AFTER}':
+        'F{$START_TAG_DIV}{$CLOSE_TAG_DIV}o',
+    '{$START_TAG_BEFORE}{$CLOSE_TAG_BEFORE}{$START_TAG_DIV}{$START_TAG_IN}{$CLOSE_TAG_IN}{$CLOSE_TAG_DIV}{$START_TAG_AFTER}{$CLOSE_TAG_AFTER}':
+        '{$START_TAG_DIV}{$CLOSE_TAG_DIV}{$START_TAG_BEFORE}{$CLOSE_TAG_BEFORE}'
   };
 
   /**

@@ -10,12 +10,12 @@ import {loadTranslations} from '@angular/localize/run_time';
 
 export const translations = {
   'What needs to be done?': `Qu'y a-t-il à faire ?`,
-  '{$startHeadingLevel1}todos{$closeHeadingLevel1}{$tagInput}':
-      '{$startHeadingLevel1}liste de tâches{$closeHeadingLevel1}{$tagInput}',
+  '{$START_HEADING_LEVEL1}todos{$CLOSE_HEADING_LEVEL1}{$TAG_INPUT}':
+      '{$START_HEADING_LEVEL1}liste de tâches{$CLOSE_HEADING_LEVEL1}{$TAG_INPUT}',
   '{VAR_PLURAL, plural, =1 {item left} other {items left}}':
       '{VAR_PLURAL, plural, =1 {tâche restante} other {tâches restantes}}',
-  '{$startTagStrong}{$interpolation}{$closeTagStrong}{$icu}':
-      '{$startTagStrong}{$interpolation}{$closeTagStrong} {$icu}',
+  '{$START_TAG_STRONG}{$INTERPOLATION}{$CLOSE_TAG_STRONG}{$ICU}':
+      '{$START_TAG_STRONG}{$INTERPOLATION}{$CLOSE_TAG_STRONG} {$ICU}',
   ' Clear completed ': ' Effacer terminés ',
   'Demonstrate Components': 'Démontrer les components',
   'Demonstrate Structural Directives': 'Démontrer les directives structurelles',

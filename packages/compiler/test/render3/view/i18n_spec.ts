@@ -232,6 +232,11 @@ describe('serializeI18nMessageForGetMsg', () => {
         .toEqual('Some text {$interpolation} and {$interpolation_1}');
   });
 
+  it('should serialize interpolation with named placeholder for `GetMsg()`', () => {
+    expect(serialize('{{ valueB + valueC // i18n(ph="PLACEHOLDER NAME") }}'))
+        .toEqual('{$placeholderName}');
+  });
+
   it('should serialize content with HTML tags for `GetMsg()`', () => {
     expect(serialize('A <span>B<div>C</div></span> D'))
         .toEqual('A {$startTagSpan}B{$startTagDiv}C{$closeTagDiv}{$closeTagSpan} D');
@@ -277,14 +282,14 @@ describe('serializeI18nMessageForLocalize', () => {
   it('should serialize text with interpolation for `$localize()`', () => {
     expect(serialize('Some text {{ valueA }} and {{ valueB + valueC }} done')).toEqual({
       messageParts: ['Some text ', ' and ', ' done'],
-      placeHolders: ['interpolation', 'interpolation_1']
+      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1']
     });
   });
 
   it('should serialize text with interpolation at start for `$localize()`', () => {
     expect(serialize('{{ valueA }} and {{ valueB + valueC }} done')).toEqual({
       messageParts: ['', ' and ', ' done'],
-      placeHolders: ['interpolation', 'interpolation_1']
+      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1']
     });
   });
 
@@ -292,21 +297,27 @@ describe('serializeI18nMessageForLocalize', () => {
   it('should serialize text with interpolation at end for `$localize()`', () => {
     expect(serialize('Some text {{ valueA }} and {{ valueB + valueC }}')).toEqual({
       messageParts: ['Some text ', ' and ', ''],
-      placeHolders: ['interpolation', 'interpolation_1']
+      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1']
     });
   });
 
 
   it('should serialize only interpolation for `$localize()`', () => {
     expect(serialize('{{ valueB + valueC }}'))
-        .toEqual({messageParts: ['', ''], placeHolders: ['interpolation']});
+        .toEqual({messageParts: ['', ''], placeHolders: ['INTERPOLATION']});
+  });
+
+
+  it('should serialize interpolation with named placeholder for `$localize()`', () => {
+    expect(serialize('{{ valueB + valueC // i18n(ph="PLACEHOLDER NAME") }}'))
+        .toEqual({messageParts: ['', ''], placeHolders: ['PLACEHOLDER_NAME']});
   });
 
 
   it('should serialize content with HTML tags for `$localize()`', () => {
     expect(serialize('A <span>B<div>C</div></span> D')).toEqual({
       messageParts: ['A ', 'B', 'C', '', ' D'],
-      placeHolders: ['startTagSpan', 'startTagDiv', 'closeTagDiv', 'closeTagSpan']
+      placeHolders: ['START_TAG_SPAN', 'START_TAG_DIV', 'CLOSE_TAG_DIV', 'CLOSE_TAG_SPAN']
     });
   });
 
@@ -346,7 +357,7 @@ describe('serializeI18nMessageForLocalize', () => {
             '{gender, select, male {male} female {female} other {other}}<div>{gender, select, male {male} female {female} other {other}}</div>'))
         .toEqual({
           messageParts: ['', '', '', '', ''],
-          placeHolders: ['icu', 'startTagDiv', 'icu', 'closeTagDiv']
+          placeHolders: ['ICU', 'START_TAG_DIV', 'ICU', 'CLOSE_TAG_DIV']
         });
   });
 });
