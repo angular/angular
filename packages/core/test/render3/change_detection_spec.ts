@@ -10,7 +10,7 @@ import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, DoCheck} from '../../src/core';
 import {whenRendered} from '../../src/render3/component';
-import {LifecycleHooksFeature, getRenderedText, ɵɵdefineComponent, ɵɵgetCurrentView, ɵɵproperty, ɵɵselect, ɵɵtextInterpolate1, ɵɵtextInterpolate2} from '../../src/render3/index';
+import {LifecycleHooksFeature, getRenderedText, ɵɵadvance, ɵɵdefineComponent, ɵɵgetCurrentView, ɵɵproperty, ɵɵtextInterpolate1, ɵɵtextInterpolate2} from '../../src/render3/index';
 import {detectChanges, markDirty, tick, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵlistener, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -38,7 +38,7 @@ describe('change detection', () => {
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            ɵɵselect(1);
+            ɵɵadvance(1);
             ɵɵtextInterpolate(ctx.value);
           }
         }
@@ -121,7 +121,6 @@ describe('change detection', () => {
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            ɵɵselect(0);
             ɵɵtextInterpolate2('', ctx.doCheckCount, ' - ', ctx.name, '');
           }
         },
@@ -165,7 +164,6 @@ describe('change detection', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵselect(0);
               ɵɵtextInterpolate2('', ctx.doCheckCount, ' - ', ctx.name, '');
             }
           },
@@ -189,7 +187,6 @@ describe('change detection', () => {
               ɵɵelement(0, 'manual-comp');
             }
             if (rf & RenderFlags.Update) {
-              ɵɵselect(0);
               ɵɵproperty('name', ctx.name);
             }
 
@@ -246,7 +243,6 @@ describe('change detection', () => {
                    ɵɵelement(1, 'manual-comp');
                  }
                  if (rf & RenderFlags.Update) {
-                   ɵɵselect(0);
                    ɵɵtextInterpolate1('', ctx.doCheckCount, ' - ');
                  }
                },
@@ -322,7 +318,6 @@ describe('change detection', () => {
             ɵɵtext(0);
           }
           if (rf & RenderFlags.Update) {
-            ɵɵselect(0);
             ɵɵtextInterpolate(ctx.value);
           }
         }
