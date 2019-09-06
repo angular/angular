@@ -25,6 +25,14 @@ interface BlocklistEntry {
  * migrated the broken tests.
  */
 export const testBlocklist: {[testName: string]: BlocklistEntry} = {
+  "GestureConfig should instantiate HammerJS": {
+    "error": "Unknown",
+    "notes": "Restore when Material has included HammerModule or removed dep on Hammer",
+  },
+  "GestureConfig should be able to pass options to HammerJS": {
+    "error": "Unknown",
+    "notes": "Restore when Material has included HammerModule or removed dep on Hammer",
+  },
   "MatSlideToggle without forms with dragging should not emit a change event when the value did not change": {
     "error": "Unknown",
     "notes": "Restore when Material has included HammerModule or removed dep on Hammer"
