@@ -16,6 +16,7 @@ import {Query} from '../../metadata/di';
 import {Component, Directive, Input} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
+import {initNgDevMode} from '../../util/ng_dev_mode';
 import {getBaseDef, getComponentDef, getDirectiveDef} from '../definition';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_FACTORY_DEF} from '../fields';
@@ -37,6 +38,10 @@ import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, tra
  * until the global queue has been resolved with a call to `resolveComponentResources`.
  */
 export function compileComponent(type: Type<any>, metadata: Component): void {
+  // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
+  // See the `initNgDevMode` docstring for more information.
+  typeof ngDevMode === 'undefined' && initNgDevMode();
+
   let ngComponentDef: any = null;
   let ngFactoryDef: any = null;
 
