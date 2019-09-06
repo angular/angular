@@ -763,6 +763,25 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
     }));
 
+    it('should handle the element and boundary dimensions changing between drag sequences',
+      fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        const boundary: HTMLElement = fixture.nativeElement.querySelector('.wrapper');
+        fixture.componentInstance.boundary = boundary;
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dragElementViaMouse(fixture, dragElement, 300, 300);
+        expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
+
+        // Bump the width and height of both the boundary and the drag element.
+        boundary.style.width = boundary.style.height = '300px';
+        dragElement.style.width = dragElement.style.height = '150px';
+
+        dragElementViaMouse(fixture, dragElement, 300, 300);
+        expect(dragElement.style.transform).toBe('translate3d(150px, 150px, 0px)');
+      }));
+
     it('should allow for the position constrain logic to be customized', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
       const spy = jasmine.createSpy('constrain position spy').and.returnValue({
