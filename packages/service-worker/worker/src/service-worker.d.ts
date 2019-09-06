@@ -31,7 +31,6 @@ declare class Client {
   frameType: ClientFrameType;
   id: string;
   url: string;
-  visibilityState: string;
   postMessage(message: any): void;
 }
 
@@ -46,7 +45,7 @@ interface ClientMatchOptions {
   type?: ClientMatchTypes;
 }
 
-interface WindowClient {
+interface WindowClient extends Client {
   focused: boolean;
   visibilityState: WindowClientState;
   focus(): Promise<WindowClient>;
