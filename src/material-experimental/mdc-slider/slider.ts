@@ -8,7 +8,7 @@
 
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
-import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
+import {normalizePassiveListenerOptions, Platform} from '@angular/cdk/platform';
 import {
   AfterViewInit,
   Attribute,
@@ -322,8 +322,11 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
   @ViewChild('trackMarker', {static: false}) _trackMarker: ElementRef<HTMLElement>;
 
   constructor(
-      private _elementRef: ElementRef<HTMLElement>, private _changeDetectorRef: ChangeDetectorRef,
-      private _ngZone: NgZone, @Optional() private _dir: Directionality,
+      private _elementRef: ElementRef<HTMLElement>,
+      private _changeDetectorRef: ChangeDetectorRef,
+      private _ngZone: NgZone,
+      private _platform: Platform,
+      @Optional() private _dir: Directionality,
       @Attribute('tabindex') tabIndex: string,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     this.tabIndex = parseInt(tabIndex) || 0;
@@ -342,19 +345,28 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
 
   ngAfterViewInit() {
     this._isInitialized = true;
-    this._foundation.init();
 
-    // The standard Angular Material slider is always using discrete values. We always
-    // want to enable discrete values and support ticks, but want to still provide
-    // non-discrete slider visual looks if thumb label is disabled.
-    // TODO(devversion): check if we can get a public API for this.
-    // Tracked with: https://github.com/material-components/material-components-web/issues/5020
-    (this._foundation as any).isDiscrete_ = true;
+    if (this._platform.isBrowser) {
+      // The MDC slider foundation accesses DOM globals, so we cannot initialize the
+      // foundation on the server. The foundation would be needed to move the thumb
+      // to the proper position and to render the ticks.
+      this._foundation.init();
 
-    this._syncStep();
-    this._syncValue();
-    this._syncMax();
-    this._syncMin();
+      // The standard Angular Material slider is always using discrete values. We always
+      // want to enable discrete values and support ticks, but want to still provide
+      // non-discrete slider visual looks if thumb label is disabled.
+      // TODO(devversion): check if we can get a public API for this.
+      // Tracked with: https://github.com/material-components/material-components-web/issues/5020
+      (this._foundation as any).isDiscrete_ = true;
+
+      // These bindings cannot be synced in the foundation, as the foundation is not
+      // initialized and they cause DOM globals to be accessed (to move the thumb)
+      this._syncStep();
+      this._syncValue();
+      this._syncMax();
+      this._syncMin();
+    }
+
     this._syncDisabled();
   }
 
@@ -385,7 +397,11 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
 
   ngOnDestroy() {
     this._dirChangeSubscription.unsubscribe();
-    this._foundation.destroy();
+    // The foundation cannot be destroyed on the server, as the foundation
+    // has not be initialized on the server.
+    if (this._platform.isBrowser) {
+      this._foundation.destroy();
+    }
   }
 
   /** Focuses the slider. */

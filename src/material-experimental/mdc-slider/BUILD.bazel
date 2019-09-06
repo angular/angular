@@ -13,6 +13,9 @@ ng_module(
     assets = [":slider_scss"] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-slider",
     deps = [
+        "//src/cdk/bidi",
+        "//src/cdk/coercion",
+        "//src/cdk/platform",
         "//src/material/core",
         "@npm//@angular/forms",
         "@npm//@material/slider",
