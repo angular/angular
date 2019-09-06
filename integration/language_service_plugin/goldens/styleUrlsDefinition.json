@@ -7,7 +7,7 @@
   "body": {
     "definitions": [
       {
-        "file": "/Users/hafiz/Code/Angular/angular/integration/language_service_plugin/project/app/style.css",
+        "file": "${PWD}/project/app/style.css",
         "start": {
           "line": 1,
           "offset": 1
