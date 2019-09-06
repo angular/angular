@@ -15,6 +15,7 @@ sass_library(
         "//src/material-experimental/mdc-menu:mdc_menu_scss_lib",
         "//src/material-experimental/mdc-radio:mdc_radio_scss_lib",
         "//src/material-experimental/mdc-slide-toggle:mdc_slide_toggle_scss_lib",
+        "//src/material-experimental/mdc-slider:mdc_slider_scss_lib",
         "//src/material-experimental/mdc-tabs:mdc_tabs_scss_lib",
     ],
 )
