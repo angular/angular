@@ -417,7 +417,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_2$ = $localize \`intro $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         var $I18N_3$;
         if (ngI18nClosureMode) {
@@ -432,7 +432,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_3$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c1$ = [
           "aria-roledescription", $I18N_1$,
@@ -453,9 +453,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_6$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation: and $` +
-          String.raw `{"\uFFFD1\uFFFD"}:interpolation_1: and again $` +
-          String.raw `{"\uFFFD2\uFFFD"}:interpolation_2:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: and $` +
+          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1: and again $` +
+          String.raw `{"\uFFFD2\uFFFD"}:INTERPOLATION_2:\`;
         }
         var $I18N_7$;
         if (ngI18nClosureMode) {
@@ -466,7 +466,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_7$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c3$ = [
           "title", $I18N_6$,
@@ -518,7 +518,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_1$ = $localize \`intro $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c3$ = ["title", $I18N_1$];
         …
@@ -561,7 +561,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_1$ = $localize \`different scope $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c2$ = ["title", $I18N_1$];
         function MyComponent_div_0_Template(rf, ctx) {
@@ -612,7 +612,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_1$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation: title\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: title\`;
         }
         const $_c3$ = ["title", $I18N_1$];
         …
@@ -675,7 +675,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_2$ = $localize \`intro $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         var $I18N_3$;
         if (ngI18nClosureMode) {
@@ -690,7 +690,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_3$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c1$ = [
           "aria-roledescription", $I18N_1$,
@@ -711,9 +711,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_6$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation: and $` +
-          String.raw `{"\uFFFD1\uFFFD"}:interpolation_1: and again $` +
-          String.raw `{"\uFFFD2\uFFFD"}:interpolation_2:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: and $` +
+          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1: and again $` +
+          String.raw `{"\uFFFD2\uFFFD"}:INTERPOLATION_2:\`;
         }
         var $I18N_7$;
         if (ngI18nClosureMode) {
@@ -724,7 +724,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_7$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c3$ = [
           "title", $I18N_6$,
@@ -779,7 +779,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_2$ = $localize \`different scope $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c4$ = ["title", $I18N_2$];
         function MyComponent_div_0_Template(rf, ctx) {
@@ -1033,8 +1033,8 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` Named interpolation: $` +
-          String.raw `{"\uFFFD0\uFFFD"}:phA: Named interpolation with spaces: $` +
-          String.raw `{"\uFFFD1\uFFFD"}:phB: \`;
+          String.raw `{"\uFFFD0\uFFFD"}:PH_A: Named interpolation with spaces: $` +
+          String.raw `{"\uFFFD1\uFFFD"}:PH_B: \`;
         }
         …
         consts: 2,
@@ -1071,7 +1071,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -1111,9 +1111,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation: $` +
-          String.raw `{"\uFFFD1\uFFFD"}:interpolation_1: $` +
-          String.raw `{"\uFFFD2\uFFFD"}:interpolation_2: \`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
+          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1: $` +
+          String.raw `{"\uFFFD2\uFFFD"}:INTERPOLATION_2: \`;
         }
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -1152,7 +1152,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \`My i18n block #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         var $I18N_1$;
         if (ngI18nClosureMode) {
@@ -1163,7 +1163,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_1$ = $localize \`My i18n block #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         var $I18N_2$;
         if (ngI18nClosureMode) {
@@ -1174,7 +1174,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_2$ = $localize \`My i18n block #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         …
         consts: 7,
@@ -1239,9 +1239,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` My i18n block #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation: $` +
-          String.raw `{"\uFFFD#2\uFFFD"}:startTagSpan:Plain text in nested element$` +
-          String.raw `{"\uFFFD/#2\uFFFD"}:closeTagSpan:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
+          String.raw `{"\uFFFD#2\uFFFD"}:START_TAG_SPAN:Plain text in nested element$` +
+          String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         var $I18N_1$;
         if (ngI18nClosureMode) {
@@ -1257,14 +1257,14 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_1$ = $localize \` My i18n block #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation: $` +
-          String.raw `{"[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]"}:startTagDiv:$` +
-          String.raw `{"[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]"}:startTagDiv:$` + String.raw
-      `{"\uFFFD#8\uFFFD"}:startTagSpan: More bindings in more nested element: $` +
-          String.raw `{"\uFFFD1\uFFFD"}:interpolation_1: $` +
-          String.raw `{"\uFFFD/#8\uFFFD"}:closeTagSpan:$` +
-          String.raw `{"[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"}:closeTagDiv:$` +
-          String.raw `{"[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"}:closeTagDiv:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
+          String.raw `{"[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]"}:START_TAG_DIV:$` +
+          String.raw `{"[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]"}:START_TAG_DIV:$` + String.raw
+      `{"\uFFFD#8\uFFFD"}:START_TAG_SPAN: More bindings in more nested element: $` +
+          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1: $` +
+          String.raw `{"\uFFFD/#8\uFFFD"}:CLOSE_TAG_SPAN:$` +
+          String.raw `{"[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"}:CLOSE_TAG_DIV:$` +
+          String.raw `{"[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"}:CLOSE_TAG_DIV:\`;
         }
         $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$);
         …
@@ -1330,8 +1330,8 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_2$ = $localize \`Span title $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation: and $` +
-          String.raw `{"\uFFFD1\uFFFD"}:interpolation_1:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: and $` +
+          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1:\`;
         }
         const $_c4$ = ["title", $I18N_2$];
         var $I18N_0$;
@@ -1345,9 +1345,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` My i18n block #1 with value: $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation: $` + String.raw
-      `{"\uFFFD#2\uFFFD"}:startTagSpan: Plain text in nested element (block #1) $` +
-          String.raw `{"\uFFFD/#2\uFFFD"}:closeTagSpan:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` + String.raw
+      `{"\uFFFD#2\uFFFD"}:START_TAG_SPAN: Plain text in nested element (block #1) $` +
+          String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         var $I18N_7$;
         if (ngI18nClosureMode) {
@@ -1358,7 +1358,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_7$ = $localize \`Span title $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c9$ = ["title", $I18N_7$];
         var $I18N_6$;
@@ -1372,9 +1372,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_6$ = $localize \` My i18n block #2 with value $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation: $` + String.raw
-      `{"\uFFFD#7\uFFFD"}:startTagSpan: Plain text in nested element (block #2) $` +
-          String.raw `{"\uFFFD/#7\uFFFD"}:closeTagSpan:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` + String.raw
+      `{"\uFFFD#7\uFFFD"}:START_TAG_SPAN: Plain text in nested element (block #2) $` +
+          String.raw `{"\uFFFD/#7\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         …
         consts: 9,
@@ -1444,10 +1444,10 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_1$ = $localize \` Some other content $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation: $` +
-          String.raw `{"\uFFFD#3\uFFFD"}:startTagDiv: More nested levels with bindings $` +
-          String.raw `{"\uFFFD1\uFFFD"}:interpolation_1: $` +
-          String.raw `{"\uFFFD/#3\uFFFD"}:closeTagDiv:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
+          String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_DIV: More nested levels with bindings $` +
+          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1: $` +
+          String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_DIV:\`;
         }
         …
         function MyComponent_div_2_Template(rf, ctx) {
@@ -1514,7 +1514,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_2$ = $localize \`App logo #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c4$ = ["title", $I18N_2$];
         function MyComponent_img_2_Template(rf, ctx) {
@@ -1630,29 +1630,29 @@ describe('i18n support in the template compiler', () => {
         else {
             $I18N_0$ = $localize \` Some content $` +
           String.raw
-      `{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:startTagDiv_2: Some other content $` +
-          String.raw `{"\uFFFD0:1\uFFFD"}:interpolation: $` + String.raw
-      `{"[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]"}:startTagDiv: More nested levels with bindings $` +
-          String.raw `{"\uFFFD1:1\uFFFD"}:interpolation_1: $` + String.raw
-      `{"\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD"}:startTagDiv_1: Content inside sub-template $` +
-          String.raw `{"\uFFFD0:2\uFFFD"}:interpolation_2: $` + String.raw
-      `{"[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]"}:startTagDiv: Bottom level element $` +
-          String.raw `{"\uFFFD1:2\uFFFD"}:interpolation_3: $` + String.raw
-      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:closeTagDiv:$` +
+      `{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_DIV_2: Some other content $` +
+          String.raw `{"\uFFFD0:1\uFFFD"}:INTERPOLATION: $` + String.raw
+      `{"[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]"}:START_TAG_DIV: More nested levels with bindings $` +
+          String.raw `{"\uFFFD1:1\uFFFD"}:INTERPOLATION_1: $` + String.raw
+      `{"\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD"}:START_TAG_DIV_1: Content inside sub-template $` +
+          String.raw `{"\uFFFD0:2\uFFFD"}:INTERPOLATION_2: $` + String.raw
+      `{"[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]"}:START_TAG_DIV: Bottom level element $` +
+          String.raw `{"\uFFFD1:2\uFFFD"}:INTERPOLATION_3: $` + String.raw
+      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:$` +
           String.raw
-      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:closeTagDiv:$` +
+      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:$` +
           String.raw
-      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:closeTagDiv:$` +
+      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:$` +
           String.raw
-      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:closeTagDiv:$` +
+      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:$` +
           String.raw
-      `{"\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD"}:startTagDiv_3: Some other content $` +
-          String.raw `{"\uFFFD0:3\uFFFD"}:interpolation_4: $` + String.raw
-      `{"[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]"}:startTagDiv: More nested levels with bindings $` +
-          String.raw `{"\uFFFD1:3\uFFFD"}:interpolation_5: $` + String.raw
-      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:closeTagDiv:$` +
+      `{"\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD"}:START_TAG_DIV_3: Some other content $` +
+          String.raw `{"\uFFFD0:3\uFFFD"}:INTERPOLATION_4: $` + String.raw
+      `{"[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]"}:START_TAG_DIV: More nested levels with bindings $` +
+          String.raw `{"\uFFFD1:3\uFFFD"}:INTERPOLATION_5: $` + String.raw
+      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:$` +
           String.raw
-      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:closeTagDiv:\`;
+      `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:\`;
         }
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$);
         function MyComponent_div_3_Template(rf, ctx) {
@@ -1712,9 +1712,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_1$ = $localize \`Some other content $` +
-          String.raw `{"\uFFFD#2\uFFFD"}:startTagSpan:$` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:$` +
-          String.raw `{"\uFFFD/#2\uFFFD"}:closeTagSpan:\`;
+          String.raw `{"\uFFFD#2\uFFFD"}:START_TAG_SPAN:$` +
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:$` +
+          String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         …
         function MyComponent_div_0_Template(rf, ctx) {
@@ -1945,7 +1945,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_0$ = $localize \`Some content: $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         …
         consts: 3,
@@ -1983,7 +1983,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \`Some content: $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation:\`;
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
@@ -2031,12 +2031,12 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_0$ = $localize \`$` +
-          String.raw `{"\uFFFD*2:1\uFFFD"}:startTagNgTemplate:Template content: $` +
-          String.raw `{"\uFFFD0:1\uFFFD"}:interpolation:$` +
-          String.raw `{"\uFFFD/*2:1\uFFFD"}:closeTagNgTemplate:$` +
-          String.raw `{"\uFFFD#3\uFFFD"}:startTagNgContainer:Container content: $` +
-          String.raw `{"\uFFFD0\uFFFD"}:interpolation_1:$` +
-          String.raw `{"\uFFFD/#3\uFFFD"}:closeTagNgContainer:\`;
+          String.raw `{"\uFFFD*2:1\uFFFD"}:START_TAG_NG_TEMPLATE:Template content: $` +
+          String.raw `{"\uFFFD0:1\uFFFD"}:INTERPOLATION:$` +
+          String.raw `{"\uFFFD/*2:1\uFFFD"}:CLOSE_TAG_NG_TEMPLATE:$` +
+          String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_NG_CONTAINER:Container content: $` +
+          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION_1:$` +
+          String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
         }
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
@@ -2185,17 +2185,17 @@ describe('i18n support in the template compiler', () => {
         else {
             $I18N_0$ = $localize \`$` +
           String.raw
-      `{"[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]"}:startTagNgTemplate: Template A: $` +
-          String.raw `{"\uFFFD0:1\uFFFD"}:interpolation: $` + String.raw
-      `{"[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]"}:startTagNgTemplate: Template B: $` +
-          String.raw `{"\uFFFD0:2\uFFFD"}:interpolation_1: $` + String.raw
-      `{"[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]"}:startTagNgTemplate: Template C: $` +
-          String.raw `{"\uFFFD0:3\uFFFD"}:interpolation_2: $` + String.raw
-      `{"[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]"}:closeTagNgTemplate:$` +
+      `{"[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]"}:START_TAG_NG_TEMPLATE: Template A: $` +
+          String.raw `{"\uFFFD0:1\uFFFD"}:INTERPOLATION: $` + String.raw
+      `{"[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]"}:START_TAG_NG_TEMPLATE: Template B: $` +
+          String.raw `{"\uFFFD0:2\uFFFD"}:INTERPOLATION_1: $` + String.raw
+      `{"[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]"}:START_TAG_NG_TEMPLATE: Template C: $` +
+          String.raw `{"\uFFFD0:3\uFFFD"}:INTERPOLATION_2: $` + String.raw
+      `{"[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]"}:CLOSE_TAG_NG_TEMPLATE:$` +
           String.raw
-      `{"[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]"}:closeTagNgTemplate:$` +
+      `{"[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]"}:CLOSE_TAG_NG_TEMPLATE:$` +
           String.raw
-      `{"[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]"}:closeTagNgTemplate:\`;
+      `{"[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]"}:CLOSE_TAG_NG_TEMPLATE:\`;
         }
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$);
         function MyComponent_ng_template_2_Template(rf, ctx) {
@@ -2309,7 +2309,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \`$` +
-          String.raw `{"\uFFFD#2\uFFFD\uFFFD/#2\uFFFD"}:tagImg: is my logo #1 \`;
+          String.raw `{"\uFFFD#2\uFFFD\uFFFD/#2\uFFFD"}:TAG_IMG: is my logo #1 \`;
         }
         var $I18N_2$;
         if (ngI18nClosureMode) {
@@ -2320,7 +2320,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_2$ = $localize \`$` +
-          String.raw `{"\uFFFD#1\uFFFD\uFFFD/#1\uFFFD"}:tagImg: is my logo #2 \`;
+          String.raw `{"\uFFFD#1\uFFFD\uFFFD/#1\uFFFD"}:TAG_IMG: is my logo #2 \`;
         }
         function MyComponent_ng_template_3_Template(rf, ctx) {
           if (rf & 1) {
@@ -2367,8 +2367,8 @@ describe('i18n support in the template compiler', () => {
         else {
             $I18N_0$ = $localize \` Root content $` +
           String.raw
-      `{"\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD"}:startTagNgContainer: Nested content $` +
-          String.raw `{"\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD"}:closeTagNgContainer:\`;
+      `{"\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_NG_CONTAINER: Nested content $` +
+          String.raw `{"\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
         }
         …
       `;
@@ -2423,8 +2423,8 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_0$ = $localize \` Hello $` +
-          String.raw `{"\uFFFD#2\uFFFD"}:startTagNgContainer:there$` +
-          String.raw `{"\uFFFD/#2\uFFFD"}:closeTagNgContainer:\`;
+          String.raw `{"\uFFFD#2\uFFFD"}:START_TAG_NG_CONTAINER:there$` +
+          String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
         }
         …
         consts: 3,
@@ -2459,10 +2459,10 @@ describe('i18n support in the template compiler', () => {
           }
           else {
             $I18N_0$ = $localize \` Hello $` +
-             String.raw `{"\uFFFD#2\uFFFD"}:startTagNgContainer:there $` +
-             String.raw `{"\uFFFD#3\uFFFD"}:startTagStrong:!$` +
-             String.raw `{"\uFFFD/#3\uFFFD"}:closeTagStrong:$` +
-             String.raw `{"\uFFFD/#2\uFFFD"}:closeTagNgContainer:\`;
+             String.raw `{"\uFFFD#2\uFFFD"}:START_TAG_NG_CONTAINER:there $` +
+             String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_STRONG:!$` +
+             String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_STRONG:$` +
+             String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
           }
           …
           consts: 4,
@@ -2505,8 +2505,8 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \`\n          Some text\n          $` +
-          String.raw `{"\uFFFD#3\uFFFD"}:startTagSpan:Text inside span$` +
-          String.raw `{"\uFFFD/#3\uFFFD"}:closeTagSpan:\n        \`;
+          String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_SPAN:Text inside span$` +
+          String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_SPAN:\n        \`;
         }
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -2805,13 +2805,13 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{$I18N_1$}:icu: $` +
-          String.raw `{"\uFFFD#2\uFFFD"}:startBoldText:Other content$` +
-          String.raw `{"\uFFFD/#2\uFFFD"}:closeBoldText:$` +
-          String.raw `{"\uFFFD#3\uFFFD"}:startTagDiv:$` +
-          String.raw `{"\uFFFD#4\uFFFD"}:startItalicText:Another content$` +
-          String.raw `{"\uFFFD/#4\uFFFD"}:closeItalicText:$` +
-          String.raw `{"\uFFFD/#3\uFFFD"}:closeTagDiv:\`;
+          String.raw `{$I18N_1$}:ICU: $` +
+          String.raw `{"\uFFFD#2\uFFFD"}:START_BOLD_TEXT:Other content$` +
+          String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_BOLD_TEXT:$` +
+          String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_DIV:$` +
+          String.raw `{"\uFFFD#4\uFFFD"}:START_ITALIC_TEXT:Another content$` +
+          String.raw `{"\uFFFD/#4\uFFFD"}:CLOSE_ITALIC_TEXT:$` +
+          String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_DIV:\`;
         }
         …
         consts: 5,
@@ -2917,7 +2917,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{$I18N_1$}:icu: $` + String.raw `{$I18N_2$}:icu_1: \`;
+          String.raw `{$I18N_1$}:ICU: $` + String.raw `{$I18N_2$}:ICU_1: \`;
         }
         …
         consts: 2,
@@ -2999,13 +2999,13 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{"\uFFFDI18N_EXP_ICU\uFFFD"}:icu: $` +
-          String.raw `{"\uFFFD#2\uFFFD"}:startTagDiv: $` +
-          String.raw `{"\uFFFDI18N_EXP_ICU\uFFFD"}:icu: $` + String.raw
-      `{"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:closeTagDiv:$` +
-          String.raw `{"\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD"}:startTagDiv_1: $` +
-          String.raw `{"\uFFFDI18N_EXP_ICU\uFFFD"}:icu: $` + String.raw
-      `{"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:closeTagDiv:\`;
+          String.raw `{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` +
+          String.raw `{"\uFFFD#2\uFFFD"}:START_TAG_DIV: $` +
+          String.raw `{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` + String.raw
+      `{"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:CLOSE_TAG_DIV:$` +
+          String.raw `{"\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_DIV_1: $` +
+          String.raw `{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` + String.raw
+      `{"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:CLOSE_TAG_DIV:\`;
         }
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "ICU": [$I18N_1$, $I18N_2$, $I18N_4$]
@@ -3080,7 +3080,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{$I18N_1$}:icu: \`;
+          String.raw `{$I18N_1$}:ICU: \`;
         }        …
         consts: 2,
         vars: 2,
@@ -3196,10 +3196,10 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{$I18N_1$}:icu: $` +
-          String.raw `{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:startTagSpan: $` +
-          String.raw `{$I18N_3$}:icu_1: $` +
-          String.raw `{"\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD"}:closeTagSpan:\`;
+          String.raw `{$I18N_1$}:ICU: $` +
+          String.raw `{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_SPAN: $` +
+          String.raw `{$I18N_3$}:ICU_1: $` +
+          String.raw `{"\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
@@ -3285,10 +3285,10 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{I18N_1}:icu: $` +
-          String.raw `{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:startTagSpan: $` +
-          String.raw `{I18N_4}:icu_1: $` +
-          String.raw `{"\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD"}:closeTagSpan:\`;
+          String.raw `{I18N_1}:ICU: $` +
+          String.raw `{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_SPAN: $` +
+          String.raw `{I18N_4}:ICU_1: $` +
+          String.raw `{"\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
