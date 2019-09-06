@@ -40,7 +40,7 @@ import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, tra
 export function compileComponent(type: Type<any>, metadata: Component): void {
   // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
   // See the `initNgDevMode` docstring for more information.
-  typeof ngDevMode === 'undefined' && initNgDevMode();
+  (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
   let ngComponentDef: any = null;
   let ngFactoryDef: any = null;

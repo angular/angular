@@ -18,7 +18,7 @@ export const EMPTY_OBJ: {} = {};
 export const EMPTY_ARRAY: any[] = [];
 
 // freezing the values prevents any code from accidentally inserting new values in
-if ((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode) {
+if ((typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode()) {
   // These property accesses can be ignored because ngDevMode will be set to false
   // when optimizing code and the whole if statement will be dropped.
   // tslint:disable-next-line:no-toplevel-property-access

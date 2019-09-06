@@ -124,7 +124,7 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
  * is defined for the entire instruction set.
  *
  * When using checking `ngDevMode` on toplevel, always init it before referencing it
- * (e.g. `((typeof ngDevMode === 'undefined' && initNgDevMode()) || ngDevMode)`), otherwise you can
+ * (e.g. `((typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode())`), otherwise you can
  *  get a `ReferenceError` like in https://github.com/angular/angular/issues/31595.
  *
  * Details on possible values for `ngDevMode` can be found on its docstring.
@@ -134,7 +134,11 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
  */
 export function initNgDevMode(): boolean {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    ngDevModeResetPerfCounters();
+    if (typeof ngDevMode !== 'object') {
+      // If the `ngDevMode` is not an object, then it means we have not created the perf counters
+      // yet.
+      ngDevModeResetPerfCounters();
+    }
     return !!ngDevMode;
   }
   return false;

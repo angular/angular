@@ -240,7 +240,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
 }): never {
   // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
   // See the `initNgDevMode` docstring for more information.
-  typeof ngDevMode === 'undefined' && initNgDevMode();
+  (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
   const type = componentDefinition.type;
   const typePrototype = type.prototype;
