@@ -158,6 +158,9 @@ export class DragRef<T = any> {
   /** Subscription to the viewport being scrolled. */
   private _scrollSubscription = Subscription.EMPTY;
 
+  /** Subscription to the viewport being resized. */
+  private _resizeSubscription = Subscription.EMPTY;
+
   /**
    * Time at which the last touch event occurred. Used to avoid firing the same
    * events multiple times on touch devices where the browser will fire a fake
@@ -351,6 +354,12 @@ export class DragRef<T = any> {
    */
   withBoundaryElement(boundaryElement: ElementRef<HTMLElement> | HTMLElement | null): this {
     this._boundaryElement = boundaryElement ? coerceElement(boundaryElement) : null;
+    this._resizeSubscription.unsubscribe();
+    if (boundaryElement) {
+      this._resizeSubscription = this._viewportRuler
+        .change(10)
+        .subscribe(() => this._containInsideBoundaryOnResize());
+    }
     return this;
   }
 
@@ -1085,6 +1094,57 @@ export class DragRef<T = any> {
   /** Cleans up any cached element dimensions that we don't need after dragging has stopped. */
   private _cleanupCachedDimensions() {
     this._boundaryRect = this._previewRect = undefined;
+  }
+
+  /**
+   * Checks whether the element is still inside its boundary after the viewport has been resized.
+   * If not, the position is adjusted so that the element fits again.
+   */
+  private _containInsideBoundaryOnResize() {
+    let {x, y} = this._passiveTransform;
+
+    if ((x === 0 && y === 0) || this.isDragging() || !this._boundaryElement) {
+      return;
+    }
+
+    const boundaryRect = this._boundaryElement.getBoundingClientRect();
+    const elementRect = this._rootElement.getBoundingClientRect();
+    const leftOverflow = boundaryRect.left - elementRect.left;
+    const rightOverflow = elementRect.right - boundaryRect.right;
+    const topOverflow = boundaryRect.top - elementRect.top;
+    const bottomOverflow = elementRect.bottom - boundaryRect.bottom;
+
+    // If the element has become wider than the boundary, we can't
+    // do much to make it fit so we just anchor it to the left.
+    if (boundaryRect.width > elementRect.width) {
+      if (leftOverflow > 0) {
+        x += leftOverflow;
+      }
+
+      if (rightOverflow > 0) {
+        x -= rightOverflow;
+      }
+    } else {
+      x = 0;
+    }
+
+    // If the element has become taller than the boundary, we can't
+    // do much to make it fit so we just anchor it to the top.
+    if (boundaryRect.height > elementRect.height) {
+      if (topOverflow > 0) {
+        y += topOverflow;
+      }
+
+      if (bottomOverflow > 0) {
+        y -= bottomOverflow;
+      }
+    } else {
+      y = 0;
+    }
+
+    if (x !== this._passiveTransform.x || y !== this._passiveTransform.y) {
+      this.setFreeDragPosition({y, x});
+    }
   }
 }
 

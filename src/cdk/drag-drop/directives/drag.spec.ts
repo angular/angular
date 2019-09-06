@@ -763,6 +763,24 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
     }));
 
+    it('should adjust the x offset if the boundary becomes narrower after a viewport resize',
+      fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        const boundary: HTMLElement = fixture.nativeElement.querySelector('.wrapper');
+        fixture.componentInstance.boundary = boundary;
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dragElementViaMouse(fixture, dragElement, 300, 300);
+        expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
+
+        boundary.style.width = '150px';
+        dispatchFakeEvent(window, 'resize');
+        tick(20);
+
+        expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+      }));
+
     it('should handle the element and boundary dimensions changing between drag sequences',
       fakeAsync(() => {
         const fixture = createComponent(StandaloneDraggable);
@@ -780,6 +798,60 @@ describe('CdkDrag', () => {
 
         dragElementViaMouse(fixture, dragElement, 300, 300);
         expect(dragElement.style.transform).toBe('translate3d(150px, 150px, 0px)');
+      }));
+
+    it('should adjust the y offset if the boundary becomes shorter after a viewport resize',
+      fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        const boundary: HTMLElement = fixture.nativeElement.querySelector('.wrapper');
+        fixture.componentInstance.boundary = boundary;
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dragElementViaMouse(fixture, dragElement, 300, 300);
+        expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
+
+        boundary.style.height = '150px';
+        dispatchFakeEvent(window, 'resize');
+        tick(20);
+
+        expect(dragElement.style.transform).toBe('translate3d(100px, 50px, 0px)');
+      }));
+
+    it('should reset the x offset if the boundary becomes narrower than the element ' +
+      'after a resize', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        const boundary: HTMLElement = fixture.nativeElement.querySelector('.wrapper');
+        fixture.componentInstance.boundary = boundary;
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dragElementViaMouse(fixture, dragElement, 300, 300);
+        expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
+
+        boundary.style.width = '50px';
+        dispatchFakeEvent(window, 'resize');
+        tick(20);
+
+        expect(dragElement.style.transform).toBe('translate3d(0px, 100px, 0px)');
+      }));
+
+    it('should reset the y offset if the boundary becomes shorter than the element after a resize',
+      fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        const boundary: HTMLElement = fixture.nativeElement.querySelector('.wrapper');
+        fixture.componentInstance.boundary = boundary;
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dragElementViaMouse(fixture, dragElement, 300, 300);
+        expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
+
+        boundary.style.height = '50px';
+        dispatchFakeEvent(window, 'resize');
+        tick(20);
+
+        expect(dragElement.style.transform).toBe('translate3d(100px, 0px, 0px)');
       }));
 
     it('should allow for the position constrain logic to be customized', fakeAsync(() => {
