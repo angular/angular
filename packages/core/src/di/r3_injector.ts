@@ -119,12 +119,12 @@ export class R3Injector {
     // Start off by creating Records for every provider declared in every InjectorType
     // included transitively in `def`.
     const dedupStack: InjectorType<any>[] = [];
-    deepForEach([def], injectorDef => this.processInjectorType(injectorDef, [], dedupStack));
 
     additionalProviders && deepForEach(
                                additionalProviders, provider => this.processProvider(
                                                         provider, def, additionalProviders));
 
+    deepForEach([def], injectorDef => this.processInjectorType(injectorDef, [], dedupStack));
 
     // Make sure the INJECTOR token provides this injector.
     this.records.set(INJECTOR, makeRecord(undefined, this));

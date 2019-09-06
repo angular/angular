@@ -7,7 +7,7 @@
  */
 
 import {CompilerConfig, ResourceLoader} from '@angular/compiler';
-import {CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, Inject, Injectable, InjectionToken, Injector, Input, NgModule, Optional, Pipe, SkipSelf, ɵstringify as stringify} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, Inject, Injectable, InjectionToken, Injector, Input, NgModule, Optional, Pipe, SkipSelf, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, fakeAsync, getTestBed, inject, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
@@ -418,6 +418,16 @@ const bTok = new InjectionToken<string>('b');
       });
 
       describe('overriding providers', () => {
+
+        describe('in core', () => {
+          it('ComponentFactoryResolver', () => {
+            const componentFactoryMock =
+                jasmine.createSpyObj('componentFactory', ['resolveComponentFactory']);
+            TestBed.overrideProvider(ComponentFactoryResolver, {useValue: componentFactoryMock});
+            expect(TestBed.get(ComponentFactoryResolver)).toEqual(componentFactoryMock);
+          });
+        });
+
         describe('in NgModules', () => {
 
           it('should support useValue', () => {
@@ -1039,3 +1049,13 @@ Did you run and wait for 'resolveComponentResources()'?` :
     });
   });
 }
+describe('override', () => {
+
+  it('defined in core - injectable providedIn', () => {
+    const sanitizerMock = jasmine.createSpyObj('sanitizer', ['sanitize']);
+    TestBed.overrideProvider(Sanitizer, {useValue: sanitizerMock});
+    expect(TestBed.get(Sanitizer)).toEqual(sanitizerMock);
+  });
+
+
+});
