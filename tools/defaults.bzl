@@ -133,7 +133,7 @@ def protractor_web_test_suite(flaky = True, **kwargs):
         **kwargs
     )
 
-def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
+def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], tags = [], **kwargs):
     # Always include a prebuilt theme in the test suite because otherwise tests, which depend on CSS
     # that is needed for measuring, will unexpectedly fail. Also always adding a prebuilt theme
     # reduces the amount of setup that is needed to create a test suite Bazel target. Note that the
@@ -184,5 +184,6 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
             "@npm//:node_modules/reflect-metadata/Reflect.js",
             "@npm//:node_modules/hammerjs/hammer.js",
         ] + bootstrap,
+        tags = ["native"] + tags,
         **kwargs
     )
