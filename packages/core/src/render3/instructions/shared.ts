@@ -471,6 +471,8 @@ export function renderComponentOrTemplate<T>(
   const rendererFactory = hostView[RENDERER_FACTORY];
   const normalExecutionPath = !getCheckNoChangesMode();
   const creationModeIsActive = isCreationMode(hostView);
+  const previousOrParentTNode = getPreviousOrParentTNode();
+  const isParent = getIsParent();
   try {
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.begin) {
       rendererFactory.begin();
@@ -484,6 +486,7 @@ export function renderComponentOrTemplate<T>(
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.end) {
       rendererFactory.end();
     }
+    setPreviousOrParentTNode(previousOrParentTNode, isParent);
   }
 }
 
@@ -1642,6 +1645,8 @@ export function tickRootContext(rootContext: RootContext) {
 
 export function detectChangesInternal<T>(view: LView, context: T) {
   const rendererFactory = view[RENDERER_FACTORY];
+  const previousOrParentTNode = getPreviousOrParentTNode();
+  const isParent = getIsParent();
 
   if (rendererFactory.begin) rendererFactory.begin();
   try {
@@ -1652,6 +1657,7 @@ export function detectChangesInternal<T>(view: LView, context: T) {
     throw error;
   } finally {
     if (rendererFactory.end) rendererFactory.end();
+    setPreviousOrParentTNode(previousOrParentTNode, isParent);
   }
 }
 

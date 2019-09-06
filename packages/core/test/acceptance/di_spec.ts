@@ -7,11 +7,12 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, Directive, ElementRef, EventEmitter, Host, HostBinding, INJECTOR, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, forwardRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, EventEmitter, Host, HostBinding, INJECTOR, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, forwardRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
 import {ɵINJECTOR_SCOPE} from '@angular/core/src/core';
 import {ViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
+import {BehaviorSubject} from 'rxjs';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -1118,6 +1119,69 @@ describe('di', () => {
            // the nativeElement should be a comment
            expect(directive.elementRef.nativeElement.nodeType).toEqual(Node.COMMENT_NODE);
          });
+
+      it('should be available if used in conjunction with other tokens', () => {
+        @Injectable()
+        class ServiceA {
+          subject: any;
+          constructor(protected zone: NgZone) {
+            this.subject = new BehaviorSubject<any>(1);
+            // trigger change detection
+            zone.run(() => { this.subject.next(2); });
+          }
+        }
+
+        @Directive({selector: '[dir]'})
+        class DirectiveA {
+          constructor(public service: ServiceA, public elementRef: ElementRef) {}
+        }
+
+        @Component({
+          selector: 'child',
+          template: `<div id="test-id" dir></div>`,
+        })
+        class ChildComp {
+          @ViewChild(DirectiveA, {static: false}) directive !: DirectiveA;
+        }
+
+        @Component({
+          selector: 'root',
+          template: '...',
+        })
+        class RootComp {
+          public childCompRef !: ComponentRef<ChildComp>;
+
+          constructor(
+              public factoryResolver: ComponentFactoryResolver, public vcr: ViewContainerRef) {}
+
+          create() {
+            const factory = this.factoryResolver.resolveComponentFactory(ChildComp);
+            this.childCompRef = this.vcr.createComponent(factory);
+            this.childCompRef.changeDetectorRef.detectChanges();
+          }
+        }
+
+        // this module is needed, so that View Engine can generate factory for ChildComp
+        @NgModule({
+          declarations: [DirectiveA, RootComp, ChildComp],
+          entryComponents: [RootComp, ChildComp],
+        })
+        class ModuleA {
+        }
+
+        TestBed.configureTestingModule({
+          imports: [ModuleA],
+          providers: [ServiceA],
+        });
+
+        const fixture = TestBed.createComponent(RootComp);
+        fixture.autoDetectChanges();
+
+        fixture.componentInstance.create();
+
+        const {elementRef} = fixture.componentInstance.childCompRef.instance.directive;
+        expect(elementRef.nativeElement.id).toBe('test-id');
+      });
     });
 
     describe('TemplateRef', () => {
