@@ -2021,13 +2021,15 @@ export function getTranslationDeclStmts(
     message: i18n.Message, variable: o.ReadVarExpr, closureVar: o.ReadVarExpr,
     params: {[name: string]: o.Expression} = {},
     transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Statement[] {
-  const formattedParams = i18nFormatPlaceholderNames(params, /* useCamelCase */ true);
   const statements: o.Statement[] = [
     declareI18nVariable(variable),
     o.ifStmt(
         o.variable(NG_I18N_CLOSURE_MODE),
-        createGoogleGetMsgStatements(variable, message, closureVar, formattedParams),
-        createLocalizeStatements(variable, message, formattedParams)),
+        createGoogleGetMsgStatements(
+            variable, message, closureVar,
+            i18nFormatPlaceholderNames(params, /* useCamelCase */ true)),
+        createLocalizeStatements(
+            variable, message, i18nFormatPlaceholderNames(params, /* useCamelCase */ false))),
   ];
 
   if (transformFn) {
