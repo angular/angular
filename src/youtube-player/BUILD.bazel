@@ -3,7 +3,6 @@ package(default_visibility = ["//visibility:public"])
 load("//:packages.bzl", "ROLLUP_GLOBALS")
 load(
     "//tools:defaults.bzl",
-    "markdown_to_html",
     "ng_module",
     "ng_package",
     "ng_test_library",
@@ -52,11 +51,6 @@ ng_test_library(
 ng_web_test_suite(
     name = "unit_tests",
     deps = [":unit_test_sources"],
-)
-
-markdown_to_html(
-    name = "overview",
-    srcs = [":youtube-player.md"],
 )
 
 filegroup(
