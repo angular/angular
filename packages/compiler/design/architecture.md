@@ -92,7 +92,7 @@ GreetComponent.ngComponentDef = i0.ɵɵdefineComponent({
             i0.ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-            i0.ɵɵselect(1);
+            i0.ɵɵadvance(1);
             i0.ɵɵtextInterpolate1('Hello ', ctx.name, '!');
         }
     }

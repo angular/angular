@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
 import {ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
-import {ɵɵselect} from '../../../../src/render3/instructions/select';
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {AttributeMarker} from '../../../../src/render3/interfaces/node';
@@ -74,43 +74,43 @@ function testTemplate(rf: RenderFlags, ctx: any) {
     ɵɵelementEnd();
   }
   if (rf & 2) {
-    ɵɵselect(1);
+    ɵɵadvance(1);
     ɵɵstyleProp('width', '0px');
     ɵɵclassProp('scale', true);
     ɵɵstylingApply();
-    ɵɵselect(2);
+    ɵɵadvance(1);
     ɵɵstyleProp('width', '100px');
     ɵɵclassProp('scale', true);
     ɵɵstylingApply();
-    ɵɵselect(3);
+    ɵɵadvance(1);
     ɵɵstyleProp('width', '200px');
     ɵɵclassProp('scale', true);
     ɵɵstylingApply();
-    ɵɵselect(4);
+    ɵɵadvance(1);
     ɵɵstyleProp('width', '300px');
     ɵɵclassProp('scale', true);
     ɵɵstylingApply();
-    ɵɵselect(5);
+    ɵɵadvance(1);
     ɵɵstyleProp('width', '400px');
     ɵɵclassProp('scale', true);
     ɵɵstylingApply();
-    ɵɵselect(6);
+    ɵɵadvance(1);
     ɵɵstyleProp('width', '500px');
     ɵɵclassProp('scale', true);
     ɵɵstylingApply();
-    ɵɵselect(7);
+    ɵɵadvance(1);
     ɵɵstyleProp('width', '600px');
     ɵɵclassProp('scale', true);
     ɵɵstylingApply();
-    ɵɵselect(8);
+    ɵɵadvance(1);
     ɵɵstyleProp('width', '700px');
     ɵɵclassProp('scale', true);
     ɵɵstylingApply();
-    ɵɵselect(9);
+    ɵɵadvance(1);
     ɵɵstyleProp('width', '800px');
     ɵɵclassProp('scale', true);
     ɵɵstylingApply();
-    ɵɵselect(10);
+    ɵɵadvance(1);
     ɵɵstyleProp('width', '900px');
     ɵɵclassProp('scale', true);
     ɵɵstylingApply();

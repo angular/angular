@@ -1248,7 +1248,7 @@
     "name": "searchTokensOnInjector"
   },
   {
-    "name": "selectInternal"
+    "name": "selectIndexInternal"
   },
   {
     "name": "selectView"
@@ -1395,6 +1395,9 @@
     "name": "wrapListener"
   },
   {
+    "name": "ɵɵadvance"
+  },
+  {
     "name": "ɵɵclassProp"
   },
   {
@@ -1435,9 +1438,6 @@
   },
   {
     "name": "ɵɵrestoreView"
-  },
-  {
-    "name": "ɵɵselect"
   },
   {
     "name": "ɵɵstyling"

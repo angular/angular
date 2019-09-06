@@ -8,8 +8,8 @@
 
 import {RendererType2} from '../../src/render/api';
 import {getLContext} from '../../src/render3/context_discovery';
-import {AttributeMarker, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵhostProperty, ɵɵproperty} from '../../src/render3/index';
-import {ɵɵallocHostVars, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
+import {AttributeMarker, ɵɵadvance, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵhostProperty, ɵɵproperty} from '../../src/render3/index';
+import {ɵɵallocHostVars, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -69,7 +69,6 @@ describe('render3 integration test', () => {
               ɵɵtext(0);
             }
             if (rf1 & RenderFlags.Update) {
-              ɵɵselect(0);
               ɵɵtextInterpolate(ctx.label);
             }
             ɵɵembeddedViewEnd();
@@ -160,7 +159,6 @@ describe('render3 integration test', () => {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵselect(0);
         ɵɵproperty('beforeTree', ctx.beforeTree);
         ɵɵproperty('afterTree', ctx.afterTree);
         ɵɵcontainerRefreshStart(1);
@@ -287,7 +285,6 @@ describe('component animations', () => {
             ɵɵelement(0, 'div', [AttributeMarker.Bindings, '@fooAnimation']);
           }
           if (rf & RenderFlags.Update) {
-            ɵɵselect(0);
             ɵɵattribute('@fooAnimation', ctx.animationValue);
           }
         }
@@ -494,7 +491,7 @@ describe('element discovery', () => {
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            ɵɵselect(1);
+            ɵɵadvance(1);
             ɵɵproperty('ngIf', true);
           }
         }
@@ -1085,7 +1082,6 @@ describe('sanitization', () => {
             ɵɵelement(0, 'a');
           }
           if (rf & RenderFlags.Update) {
-            ɵɵselect(0);
             ɵɵproperty('href', ctx.href, ɵɵsanitizeUrl);
           }
         }
@@ -1121,12 +1117,11 @@ describe('sanitization', () => {
       static ngDirectiveDef = ɵɵdefineDirective({
         type: UnsafeUrlHostBindingDir,
         selectors: [['', 'unsafeUrlHostBindingDir', '']],
-        hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
+        hostBindings: (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
             ɵɵallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            ɵɵselect(elementIndex);
             ɵɵhostProperty('cite', ctx.cite, ɵɵsanitizeUrl);
           }
         }

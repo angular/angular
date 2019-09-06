@@ -432,7 +432,7 @@
     "name": "resetStylingState"
   },
   {
-    "name": "selectInternal"
+    "name": "selectIndexInternal"
   },
   {
     "name": "selectView"

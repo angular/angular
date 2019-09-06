@@ -37,8 +37,8 @@ import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../ut
 import {getLViewParent} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
+import {selectIndexInternal} from './advance';
 import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeConstructor, TNodeInitialData, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLView, cloneToTViewData} from './lview_debug';
-import {selectInternal} from './select';
 
 
 
@@ -494,9 +494,9 @@ function executeTemplate<T>(
   try {
     setActiveHostElement(null);
     if (rf & RenderFlags.Update && lView.length > HEADER_OFFSET) {
-      // When we're updating, have an inherent ɵɵselect(0) so we don't have to generate that
-      // instruction for most update blocks
-      selectInternal(lView, 0, getCheckNoChangesMode());
+      // When we're updating, inherently select 0 so we don't
+      // have to generate that instruction for most update blocks.
+      selectIndexInternal(lView, 0, getCheckNoChangesMode());
     }
     templateFn(rf, context);
   } finally {

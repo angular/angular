@@ -97,7 +97,9 @@ export {
 
   ɵɵreference,
 
+  // TODO: remove `select` once we're refactored all of the tests not to use it.
   ɵɵselect,
+  ɵɵadvance,
   ɵɵstyleMap,
 
   ɵɵstyleProp,

@@ -677,6 +677,8 @@ export interface OutputDecorator {
     new (bindingPropertyName?: string): any;
 }
 
+export declare function ɵɵadvance(delta: number): void;
+
 export declare function ɵɵallocHostVars(count: number): void;
 
 export declare function ɵɵattribute(name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): TsickleIssue1009;
@@ -1033,6 +1035,7 @@ export declare function ɵɵsanitizeUrl(unsafeUrl: any): string;
 
 export declare function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any;
 
+/** @deprecated */
 export declare function ɵɵselect(index: number): void;
 
 export declare function ɵɵsetComponentScope(type: ComponentType<any>, directives: Type<any>[], pipes: Type<any>[]): void;

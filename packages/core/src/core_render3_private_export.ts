@@ -148,6 +148,7 @@ export {
   ɵɵelementHostAttrs,
 
   ɵɵselect,
+  ɵɵadvance,
   ɵɵtemplate,
   ɵɵembeddedViewEnd,
   store as ɵstore,

@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
 import {ɵɵproperty} from '../../../../src/render3/instructions/property';
-import {ɵɵselect} from '../../../../src/render3/instructions/select';
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TVIEW} from '../../../../src/render3/interfaces/view';
@@ -42,25 +42,25 @@ function TestInterpolationComponent_ng_template_0_Template(rf: RenderFlags, ctx:
     ɵɵelementEnd();
   }
   if (rf & 2) {
-    ɵɵselect(1);
+    ɵɵadvance(1);
     ɵɵproperty('title', 'title1');
-    ɵɵselect(2);
+    ɵɵadvance(1);
     ɵɵproperty('title', 'title2');
-    ɵɵselect(3);
+    ɵɵadvance(1);
     ɵɵproperty('title', 'title3');
-    ɵɵselect(4);
+    ɵɵadvance(1);
     ɵɵproperty('title', 'title4');
-    ɵɵselect(5);
+    ɵɵadvance(1);
     ɵɵproperty('title', 'title5');
-    ɵɵselect(6);
+    ɵɵadvance(1);
     ɵɵproperty('title', 'title6');
-    ɵɵselect(7);
+    ɵɵadvance(1);
     ɵɵproperty('title', 'title7');
-    ɵɵselect(8);
+    ɵɵadvance(1);
     ɵɵproperty('title', 'title8');
-    ɵɵselect(9);
+    ɵɵadvance(1);
     ɵɵproperty('title', 'title9');
-    ɵɵselect(10);
+    ɵɵadvance(1);
     ɵɵproperty('title', 'title10');
   }
 }

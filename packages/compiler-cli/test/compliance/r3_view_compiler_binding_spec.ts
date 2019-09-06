@@ -44,7 +44,7 @@ describe('compiler compliance: bindings', () => {
           $i0$.ɵɵelementEnd();
         }
         if (rf & 2) {
-          $r3$.ɵɵselect(1);
+          $r3$.ɵɵadvance(1);
           $i0$.ɵɵtextInterpolate1("Hello ", $ctx$.name, "");
         }
       }`;
@@ -360,9 +360,9 @@ describe('compiler compliance: bindings', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵproperty("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵproperty("id", 1)("title", "hello")("someProp", 1 + 2);
-              $r3$.ɵɵselect(2);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵproperty("prop", "one")("otherProp", 2);
             }
           }
@@ -397,7 +397,7 @@ describe('compiler compliance: bindings', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵproperty("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵproperty("id", 1)("title", "hello")("someProp", 1 + 2);
             }
           }
@@ -566,9 +566,9 @@ describe('compiler compliance: bindings', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵattribute("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵattribute("id", 1)("title", "hello")("some-attr", 1 + 2);
-              $r3$.ɵɵselect(2);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵattribute("some-attr", "one")("some-other-attr", 2);
             }
           }
@@ -603,7 +603,7 @@ describe('compiler compliance: bindings', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵattribute("title", ctx.myTitle)("id", ctx.buttonId)("tabindex", 1);
-              $r3$.ɵɵselect(1);
+              $r3$.ɵɵadvance(1);
               $r3$.ɵɵattribute("id", 1)("title", "hello")("some-attr", 1 + 2);
             }
           }
@@ -1173,23 +1173,23 @@ describe('compiler compliance: bindings', () => {
       …
         if (rf & 2) {
           i0.ɵɵpropertyInterpolateV("title", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
-          i0.ɵɵselect(1);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate8("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
-          i0.ɵɵselect(2);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate7("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h");
-          i0.ɵɵselect(3);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate6("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g");
-          i0.ɵɵselect(4);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate5("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f");
-          i0.ɵɵselect(5);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate4("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e");
-          i0.ɵɵselect(6);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate3("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
-          i0.ɵɵselect(7);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate2("title", "a", ctx.one, "b", ctx.two, "c");
-          i0.ɵɵselect(8);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate1("title", "a", ctx.one, "b");
-          i0.ɵɵselect(9);
+          i0.ɵɵadvance(1);
           i0.ɵɵpropertyInterpolate("title", ctx.one);
       }
       …
@@ -1217,23 +1217,23 @@ describe('compiler compliance: bindings', () => {
       …
         if (rf & 2) {
           i0.ɵɵattributeInterpolateV("title", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
-          i0.ɵɵselect(1);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate8("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
-          i0.ɵɵselect(2);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate7("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h");
-          i0.ɵɵselect(3);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate6("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g");
-          i0.ɵɵselect(4);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate5("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f");
-          i0.ɵɵselect(5);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate4("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e");
-          i0.ɵɵselect(6);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate3("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
-          i0.ɵɵselect(7);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate2("title", "a", ctx.one, "b", ctx.two, "c");
-          i0.ɵɵselect(8);
+          i0.ɵɵadvance(1);
           i0.ɵɵattributeInterpolate1("title", "a", ctx.one, "b");
-          i0.ɵɵselect(9);
+          i0.ɵɵadvance(1);
           i0.ɵɵattribute("title", ctx.one);
       }
       …
@@ -1267,7 +1267,7 @@ describe('compiler compliance: bindings', () => {
           }
           if (rf & 2) {
             const $_r0$ = $i0$.ɵɵreference(1);
-            $r3$.ɵɵselect(4);
+            $r3$.ɵɵadvance(4);
             $i0$.ɵɵtextInterpolate1(" ", $_r0$.id, " ");
           }
         }

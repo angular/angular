@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
 import {ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
-import {ɵɵselect} from '../../../../src/render3/instructions/select';
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {ɵɵtext} from '../../../../src/render3/instructions/text';
 import {ɵɵtextInterpolate} from '../../../../src/render3/instructions/text_interpolation';
@@ -63,25 +63,25 @@ function TestInterpolationComponent_ng_template_0_Template(rf: RenderFlags, ctx:
     ɵɵelementEnd();
   }
   if (rf & 2) {
-    ɵɵselect(2);
+    ɵɵadvance(2);
     ɵɵtextInterpolate('0');
-    ɵɵselect(4);
+    ɵɵadvance(2);
     ɵɵtextInterpolate('1');
-    ɵɵselect(6);
+    ɵɵadvance(2);
     ɵɵtextInterpolate('2');
-    ɵɵselect(8);
+    ɵɵadvance(2);
     ɵɵtextInterpolate('3');
-    ɵɵselect(10);
+    ɵɵadvance(2);
     ɵɵtextInterpolate('4');
-    ɵɵselect(12);
+    ɵɵadvance(2);
     ɵɵtextInterpolate('5');
-    ɵɵselect(14);
+    ɵɵadvance(2);
     ɵɵtextInterpolate('6');
-    ɵɵselect(16);
+    ɵɵadvance(2);
     ɵɵtextInterpolate('7');
-    ɵɵselect(18);
+    ɵɵadvance(2);
     ɵɵtextInterpolate('8');
-    ɵɵselect(20);
+    ɵɵadvance(2);
     ɵɵtextInterpolate('9');
   }
 }
