@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "build-dist": "../../scripts/build-packages-dist.sh && yarn install --check-files",
     "cleanup": "rm -rf ti-*.log tsserver.log",
     "golden": "yarn build && node generate.js",
     "test": "yarn cleanup && yarn build && jasmine test.js"

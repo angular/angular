@@ -7,9 +7,9 @@ To use the tests:
 
 - Use `yarn install` to install all dependencies in this directory and in the Angular repo root
     directory.
-- From the Angular repo root directory, build Angular in the `dist/packages-dist` folder with
-    `./scripts/build-packages-dist.sh`.
-- In this directory, run the tests with `yarn test`.
+- Build an Angular distribution with `yarn build-dist`. This needs to be done after changes to
+    Angular, but not after changes to integration tests. This is an expensive build.
+- In this directory, run the integration tests with `yarn test`.
 
 ## Update golden files
 
