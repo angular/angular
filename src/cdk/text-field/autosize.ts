@@ -239,7 +239,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   }
 
   /**
-   * Resets the textarea to it's original size
+   * Resets the textarea to its original size
    */
   reset() {
     // Do not try to change the textarea, if the initialHeight has not been determined yet
