@@ -11,6 +11,7 @@ import {ɵɵtext} from '../../../../src/render3/instructions/text';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TNodeType, TViewNode} from '../../../../src/render3/interfaces/node';
 import {resetComponentState} from '../../../../src/render3/state';
+import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
 
 `<div>
@@ -72,9 +73,17 @@ resetComponentState();
 // create view once so we don't profile first template pass
 createAndRenderLView(null, embeddedTView, viewTNode);
 
-// profile create views (run templates in creation mode)
-console.profile('create');
-for (let i = 0; i < 500000; i++) {
-  createAndRenderLView(null, embeddedTView, viewTNode);
+// scenario to benchmark
+const elementTextCreate = createBenchmark('element and text create', 500000, 20);
+const createTime = elementTextCreate('create');
+
+console.profile('element_text_create');
+while (createTime.run()) {
+  while (createTime()) {
+    createAndRenderLView(null, embeddedTView, viewTNode);
+  }
 }
 console.profileEnd();
+
+// report results
+elementTextCreate.report();
