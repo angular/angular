@@ -116,15 +116,16 @@ export class R3Injector {
   constructor(
       def: InjectorType<any>, additionalProviders: StaticProvider[]|null, readonly parent: Injector,
       source: string|null = null) {
-    // Start off by creating Records for every provider declared in every InjectorType
-    // included transitively in `def`.
     const dedupStack: InjectorType<any>[] = [];
-    deepForEach([def], injectorDef => this.processInjectorType(injectorDef, [], dedupStack));
 
+    // Start off by creating Records for every provider declared in every InjectorType
+    // included transitively in additional providers then do the same for `def`. This order is
+    // important because `def` may include providers that override ones in additionalProviders.
     additionalProviders && deepForEach(
                                additionalProviders, provider => this.processProvider(
                                                         provider, def, additionalProviders));
 
+    deepForEach([def], injectorDef => this.processInjectorType(injectorDef, [], dedupStack));
 
     // Make sure the INJECTOR token provides this injector.
     this.records.set(INJECTOR, makeRecord(undefined, this));
