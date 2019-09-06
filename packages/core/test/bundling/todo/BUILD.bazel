@@ -89,8 +89,13 @@ genrule(
 
 ts_devserver(
     name = "devserver",
-    entry_module = "angular/packages/core/test/bundling/todo/index",
-    serving_path = "/bundle.min.js",
+    entry_module = "@angular/core/test/bundling/todo",
+    scripts = [
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    # Use a serving_path that matches the common static index.html used
+    # in both devserver & prodserver
+    serving_path = "/bundle.min.js.br",
     static_files = [
         "index.html",
         ":tslib",
