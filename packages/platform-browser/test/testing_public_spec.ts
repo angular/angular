@@ -1049,13 +1049,3 @@ Did you run and wait for 'resolveComponentResources()'?` :
     });
   });
 }
-describe('override', () => {
-
-  it('defined in core - injectable providedIn', () => {
-    const sanitizerMock = jasmine.createSpyObj('sanitizer', ['sanitize']);
-    TestBed.overrideProvider(Sanitizer, {useValue: sanitizerMock});
-    expect(TestBed.get(Sanitizer)).toEqual(sanitizerMock);
-  });
-
-
-});
