@@ -3,7 +3,7 @@
 Injectors in Angular have rules that you can leverage to
 achieve the desired visibility of injectables in your apps.
 By understanding these rules, you can determine in which
-NgModule or component you should declare a provider.
+NgModule, Component or Directive you should declare a provider.
 
 ## Two injector hierarchies
 
@@ -592,7 +592,7 @@ its search at the `<#VIEW>` belonging to `<app-child>` (`<#VIEW>` is
 included because it is injected from `@Component()`) and ends with
 `<app-child>`. In this case, the `FlowerService` is resolved in the
 `<app-child>`'s `providers` array with sunflower 🌻. The injector doesn't
-have to look any further in the injector tree. It stops as soon as it as it
+have to look any further in the injector tree. It stops as soon as it
 finds the `FlowerService` and never sees the 🌺 (red hibiscus).
 
 
@@ -618,7 +618,7 @@ set it up on your own, skip ahead to [Modifying service availability](guide/hier
 The example app features a second service, the `AnimalService` to
 demonstrate `viewProviders`.
 
-First, create an `AnimalService` with an `emoji` property of whale 🐳:
+First, create an `AnimalService` with an `emoji` property of 🐳 (whale):
 
 <code-example path="providers-viewproviders/src/app/animal.service.ts" header="providers-viewproviders/src/app/animal.service.ts" region="animal-service">
 
@@ -795,7 +795,7 @@ The `AnimalService` in the logical tree would look like this:
 </app-root>
 ```
 
-The projected content of `<app-inspector>` sees the whale 🐳, not
+The projected content of `<app-inspector>` sees the 🐳 (whale), not
 the 🐶 (puppy), because the
 🐶 (puppy) is inside the `<app-child>` `<#VIEW>`. The `<app-inspector>` can
 only see the 🐶 (puppy)
