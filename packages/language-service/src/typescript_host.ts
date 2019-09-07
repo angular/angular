@@ -166,9 +166,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this.templateReferences = [];
     this.fileToComponent.clear();
     this.collectedErrors.clear();
-    // TODO: This is only temporary. When https://github.com/angular/angular/pull/32543
-    // is merged this is no longer necessary.
-    this._resolver = undefined;  // Invalidate the resolver
+    this.resolver.clearCache();
 
     const analyzeHost = {isSourceFile(filePath: string) { return true; }};
     const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
@@ -289,37 +287,37 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
    * Returns true if modules are up-to-date, false otherwise.
    * This should only be called by getAnalyzedModules().
    */
-  private upToDate() {
-    const program = this.program;
-    if (this.lastProgram === program) {
+  private upToDate(): boolean {
+    const {lastProgram, program} = this;
+    if (lastProgram === program) {
       return true;
     }
+    this.lastProgram = program;
 
     // Invalidate file that have changed in the static symbol resolver
     const seen = new Set<string>();
-    let hasChanges = false;
     for (const sourceFile of program.getSourceFiles()) {
       const fileName = sourceFile.fileName;
       seen.add(fileName);
       const version = this.tsLsHost.getScriptVersion(fileName);
       const lastVersion = this.fileVersions.get(fileName);
-      if (version !== lastVersion) {
-        hasChanges = true;
-        this.fileVersions.set(fileName, version);
-        this.staticSymbolResolver.invalidateFile(fileName);
+      this.fileVersions.set(fileName, version);
+      // Should not invalidate file on the first encounter or if file hasn't changed
+      if (lastVersion !== undefined && version !== lastVersion) {
+        const symbols = this.staticSymbolResolver.invalidateFile(fileName);
+        this.reflector.invalidateSymbols(symbols);
       }
     }
 
-    // Remove file versions that are no longer in the file and invalidate them.
+    // Remove file versions that are no longer in the program and invalidate them.
     const missing = Array.from(this.fileVersions.keys()).filter(f => !seen.has(f));
     missing.forEach(f => {
       this.fileVersions.delete(f);
-      this.staticSymbolResolver.invalidateFile(f);
+      const symbols = this.staticSymbolResolver.invalidateFile(f);
+      this.reflector.invalidateSymbols(symbols);
     });
 
-    this.lastProgram = program;
-
-    return missing.length === 0 && !hasChanges;
+    return false;
   }
 
   /**

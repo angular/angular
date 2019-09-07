@@ -51,22 +51,24 @@ describe('TypeScriptServiceHost', () => {
     expect(analyzedModules.files.length).toBe(0);
     expect(analyzedModules.ngModules.length).toBe(0);
     expect(analyzedModules.ngModuleByPipeOrDirective.size).toBe(0);
-    expect(analyzedModules.symbolsMissingModule).toBeUndefined();
+    expect(analyzedModules.symbolsMissingModule).toEqual([]);
   });
 
-  it('should clear the caches if program changes', () => {
+  it('should clear the caches if new script is added', () => {
     // First create a TypescriptHost with empty script names
     const tsLSHost = new MockTypescriptHost([]);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
-    expect(ngLSHost.getAnalyzedModules().ngModules).toEqual([]);
+    const oldModules = ngLSHost.getAnalyzedModules();
+    expect(oldModules.ngModules).toEqual([]);
     // Now add a script, this would change the program
     const fileName = '/app/main.ts';
     const content = tsLSHost.readFile(fileName) !;
     tsLSHost.addScript(fileName, content);
     // If the caches are not cleared, we would get back an empty array.
     // But if the caches are cleared then the analyzed modules will be non-empty.
-    expect(ngLSHost.getAnalyzedModules().ngModules.length).not.toEqual(0);
+    const newModules = ngLSHost.getAnalyzedModules();
+    expect(newModules.ngModules.length).toBeGreaterThan(0);
   });
 
   it('should throw if getSourceFile is called on non-TS file', () => {
