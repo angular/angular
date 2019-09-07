@@ -455,8 +455,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       bindings.forEach(binding => {
         chainBindings.push({sourceSpan: span, value: () => this.convertPropertyBinding(binding)});
       });
-      this.updateInstructionChain(index, R3.i18nExp, chainBindings);
-      this.updateInstruction(index, span, R3.i18nApply, [o.literal(index)]);
+      this.updateInstructionChain(R3.i18nExp, chainBindings);
+      this.updateInstruction(span, R3.i18nApply, [o.literal(index)]);
     }
     if (!selfClosing) {
       this.creationInstruction(span, R3.i18nEnd);
@@ -487,7 +487,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private interpolatedUpdateInstruction(
       instruction: o.ExternalReference, elementIndex: number, attrName: string,
       input: t.BoundAttribute, value: any, params: any[]) {
-    this.updateInstruction(
+    this.updateInstructionWithAdvance(
         elementIndex, input.sourceSpan, instruction,
         () => [o.literal(attrName), ...this.getUpdateInstructionArguments(value), ...params]);
   }
@@ -669,14 +669,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           }
         });
         if (bindings.length) {
-          this.updateInstructionChain(elementIndex, R3.i18nExp, bindings);
+          this.updateInstructionChain(R3.i18nExp, bindings);
         }
         if (i18nAttrArgs.length) {
           const index: o.Expression = o.literal(this.allocateDataSlot());
           const args = this.constantPool.getConstLiteral(o.literalArr(i18nAttrArgs), true);
           this.creationInstruction(element.sourceSpan, R3.i18nAttributes, [index, args]);
           if (hasBindings) {
-            this.updateInstruction(elementIndex, element.sourceSpan, R3.i18nApply, [index]);
+            this.updateInstruction(element.sourceSpan, R3.i18nApply, [index]);
           }
         }
       }
@@ -804,7 +804,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             }
           } else {
             // class prop
-            this.updateInstruction(elementIndex, input.sourceSpan, R3.classProp, () => {
+            this.updateInstructionWithAdvance(elementIndex, input.sourceSpan, R3.classProp, () => {
               return [
                 o.literal(elementIndex), o.literal(attrName), this.convertPropertyBinding(value),
                 ...params
@@ -816,11 +816,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     if (propertyBindings.length > 0) {
-      this.updateInstructionChain(elementIndex, R3.property, propertyBindings);
+      this.updateInstructionChainWithAdvance(elementIndex, R3.property, propertyBindings);
     }
 
     if (attributeBindings.length > 0) {
-      this.updateInstructionChain(elementIndex, R3.attribute, attributeBindings);
+      this.updateInstructionChainWithAdvance(elementIndex, R3.attribute, attributeBindings);
     }
 
     // Traverse element child nodes
@@ -952,7 +952,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.allocateBindingSlots(value);
 
     if (value instanceof Interpolation) {
-      this.updateInstruction(
+      this.updateInstructionWithAdvance(
           nodeIndex, text.sourceSpan, getTextInterpolationExpression(value),
           () => this.getUpdateInstructionArguments(value));
     } else {
@@ -1052,7 +1052,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     if (propertyBindings.length > 0) {
-      this.updateInstructionChain(templateIndex, R3.property, propertyBindings);
+      this.updateInstructionChainWithAdvance(templateIndex, R3.property, propertyBindings);
     }
   }
 
@@ -1077,14 +1077,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           return instruction.params(value => this.convertPropertyBinding(value)) as o.Expression[];
         });
       } else {
-        this.updateInstruction(elementIndex, instruction.sourceSpan, instruction.reference, () => {
-          return instruction
-              .params(value => {
-                return (instruction.supportsInterpolation && value instanceof Interpolation) ?
-                    this.getUpdateInstructionArguments(value) :
-                    this.convertPropertyBinding(value);
-              }) as o.Expression[];
-        });
+        this.updateInstructionWithAdvance(
+            elementIndex, instruction.sourceSpan, instruction.reference, () => {
+              return instruction
+                  .params(value => {
+                    return (instruction.supportsInterpolation && value instanceof Interpolation) ?
+                        this.getUpdateInstructionArguments(value) :
+                        this.convertPropertyBinding(value);
+                  }) as o.Expression[];
+            });
       }
     }
   }
@@ -1095,18 +1096,23 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.instructionFn(this._creationCodeFns, span, reference, paramsOrFn || [], prepend);
   }
 
-  private updateInstruction(
+  private updateInstructionWithAdvance(
       nodeIndex: number, span: ParseSourceSpan|null, reference: o.ExternalReference,
       paramsOrFn?: o.Expression[]|(() => o.Expression[])) {
     this.addAdvanceInstructionIfNecessary(nodeIndex, span);
+    this.updateInstruction(span, reference, paramsOrFn);
+  }
+
+  private updateInstruction(
+      span: ParseSourceSpan|null, reference: o.ExternalReference,
+      paramsOrFn?: o.Expression[]|(() => o.Expression[])) {
     this.instructionFn(this._updateCodeFns, span, reference, paramsOrFn || []);
   }
 
   private updateInstructionChain(
-      nodeIndex: number, reference: o.ExternalReference, bindings: ChainableBindingInstruction[]) {
+      reference: o.ExternalReference, bindings: ChainableBindingInstruction[]) {
     const span = bindings.length ? bindings[0].sourceSpan : null;
 
-    this.addAdvanceInstructionIfNecessary(nodeIndex, span);
     this._updateCodeFns.push(() => {
       const calls = bindings.map(property => {
         const fnParams = [property.value(), ...(property.params || [])];
@@ -1120,14 +1126,22 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
   }
 
+  private updateInstructionChainWithAdvance(
+      nodeIndex: number, reference: o.ExternalReference, bindings: ChainableBindingInstruction[]) {
+    this.addAdvanceInstructionIfNecessary(
+        nodeIndex, bindings.length ? bindings[0].sourceSpan : null);
+    this.updateInstructionChain(reference, bindings);
+  }
+
   private addAdvanceInstructionIfNecessary(nodeIndex: number, span: ParseSourceSpan|null) {
     if (nodeIndex !== this._currentIndex) {
       const delta = nodeIndex - this._currentIndex;
 
-      if (delta > 0) {
-        this.instructionFn(this._updateCodeFns, span, R3.advance, [o.literal(delta)]);
+      if (delta < 1) {
+        throw new Error('advance instruction can only go forwards');
       }
 
+      this.instructionFn(this._updateCodeFns, span, R3.advance, [o.literal(delta)]);
       this._currentIndex = nodeIndex;
     }
   }
