@@ -141,13 +141,6 @@ export function translateDiagnostic(
     return null;
   }
 
-  let messageText: string;
-  if (typeof diagnostic.messageText === 'string') {
-    messageText = diagnostic.messageText;
-  } else {
-    messageText = diagnostic.messageText.messageText;
-  }
-
   const mapping = resolver.getSourceMapping(sourceLocation.id);
   return makeTemplateDiagnostic(
       mapping, span, diagnostic.category, diagnostic.code, diagnostic.messageText);
