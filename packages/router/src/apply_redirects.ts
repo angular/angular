@@ -7,7 +7,7 @@
  */
 
 import {Injector, NgModuleRef} from '@angular/core';
-import {EmptyError, Observable, Observer, from, of } from 'rxjs';
+import {EmptyError, Observable, Observer, from, of, combineLatest } from 'rxjs';
 import {catchError, concatAll, every, first, map, mergeMap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
