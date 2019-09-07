@@ -180,67 +180,32 @@ export class ComponentDecoratorHandler implements
     let templateSourceMapping: TemplateSourceMapping;
     if (this.preanalyzeTemplateCache.has(node)) {
       // The template was parsed in preanalyze. Use it and delete it to save memory.
-      const template = this.preanalyzeTemplateCache.get(node) !;
+      const preanalyzed = this.preanalyzeTemplateCache.get(node) !;
       this.preanalyzeTemplateCache.delete(node);
 
-      parseTemplate = template.parseTemplate;
-
-      // A pre-analyzed template is always an external mapping.
-      templateSourceMapping = {
-        type: 'external',
-        componentClass: node,
-        node: component.get('templateUrl') !,
-        template: template.template,
-        templateUrl: template.templateUrl,
-      };
+      parseTemplate = preanalyzed.parseTemplate;
+      templateSourceMapping = preanalyzed.templateSourceMapping;
     } else {
       // The template was not already parsed. Either there's a templateUrl, or an inline template.
       if (component.has('templateUrl')) {
         const templateUrlExpr = component.get('templateUrl') !;
-        const evalTemplateUrl = this.evaluator.evaluate(templateUrlExpr);
-        if (typeof evalTemplateUrl !== 'string') {
+        const templateUrl = this.evaluator.evaluate(templateUrlExpr);
+        if (typeof templateUrl !== 'string') {
           throw new FatalDiagnosticError(
               ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
         }
-        const templateUrl = this.resourceLoader.resolve(evalTemplateUrl, containingFile);
-        const templateStr = this.resourceLoader.load(templateUrl);
-        this.resourceDependencies.recordResourceDependency(node.getSourceFile(), templateUrl);
+        const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
+        const external =
+            this._extractExternalTemplate(node, component, templateUrlExpr, resourceUrl);
 
-        parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
-            component, templateStr, sourceMapUrl(templateUrl), /* templateRange */ undefined,
-            /* escapedString */ false, options);
-        templateSourceMapping = {
-          type: 'external',
-          componentClass: node,
-          node: templateUrlExpr,
-          template: templateStr,
-          templateUrl: templateUrl,
-        };
+        parseTemplate = external.parseTemplate;
+        templateSourceMapping = external.templateSourceMapping;
       } else {
         // Expect an inline template to be present.
-        const inlineTemplate = this._extractInlineTemplate(component, containingFile);
-        if (inlineTemplate === null) {
-          throw new FatalDiagnosticError(
-              ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node,
-              'component is missing a template');
-        }
-        const {templateStr, templateUrl, templateRange, escapedString} = inlineTemplate;
-        parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
-            component, templateStr, templateUrl, templateRange, escapedString, options);
-        if (escapedString) {
-          templateSourceMapping = {
-            type: 'direct',
-            node:
-                component.get('template') !as(ts.StringLiteral | ts.NoSubstitutionTemplateLiteral),
-          };
-        } else {
-          templateSourceMapping = {
-            type: 'indirect',
-            node: component.get('template') !,
-            componentClass: node,
-            template: templateStr,
-          };
-        }
+        const inline = this._extractInlineTemplate(node, decorator, component, containingFile);
+
+        parseTemplate = inline.parseTemplate;
+        templateSourceMapping = inline.templateSourceMapping;
       }
     }
     const template = parseTemplate();
@@ -589,7 +554,7 @@ export class ComponentDecoratorHandler implements
   }
 
   private _preloadAndParseTemplate(
-      node: ts.Declaration, decorator: Decorator, component: Map<string, ts.Expression>,
+      node: ClassDeclaration, decorator: Decorator, component: Map<string, ts.Expression>,
       containingFile: string): Promise<ParsedTemplate|null> {
     if (component.has('templateUrl')) {
       // Extract the templateUrl and preload it.
@@ -606,50 +571,64 @@ export class ComponentDecoratorHandler implements
       // URLs to resolve.
       if (templatePromise !== undefined) {
         return templatePromise.then(() => {
-          const templateStr = this.resourceLoader.load(resourceUrl);
-          this.resourceDependencies.recordResourceDependency(node.getSourceFile(), resourceUrl);
-          const parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
-              component, templateStr, sourceMapUrl(resourceUrl),
-              /* templateRange */ undefined,
-              /* escapedString */ false, options);
+          const {parseTemplate, templateSourceMapping} =
+              this._extractExternalTemplate(node, component, templateUrlExpr, resourceUrl);
           const template = parseTemplate();
-          this.preanalyzeTemplateCache.set(node, {...template, parseTemplate});
+          this.preanalyzeTemplateCache.set(
+              node, {...template, parseTemplate, templateSourceMapping});
           return template;
         });
       } else {
         return Promise.resolve(null);
       }
     } else {
-      const inlineTemplate = this._extractInlineTemplate(component, containingFile);
-      if (inlineTemplate === null) {
-        throw new FatalDiagnosticError(
-            ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node,
-            'component is missing a template');
-      }
-
-      const {templateStr, templateUrl, escapedString, templateRange} = inlineTemplate;
-      const parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
-          component, templateStr, templateUrl, templateRange, escapedString, options);
+      const {parseTemplate, templateSourceMapping} =
+          this._extractInlineTemplate(node, decorator, component, containingFile);
       const template = parseTemplate();
-      this.preanalyzeTemplateCache.set(node, {...template, parseTemplate});
+      this.preanalyzeTemplateCache.set(node, {...template, parseTemplate, templateSourceMapping});
       return Promise.resolve(template);
     }
   }
 
-  private _extractInlineTemplate(component: Map<string, ts.Expression>, containingFile: string): {
-    templateStr: string,
-    templateUrl: string,
-    templateRange: LexerRange|undefined,
-    escapedString: boolean
-  }|null {
-    // If there is no inline template, then return null.
+  private _extractExternalTemplate(
+      node: ClassDeclaration, component: Map<string, ts.Expression>, templateUrlExpr: ts.Expression,
+      resourceUrl: string): {
+    parseTemplate: (options?: ParseTemplateOptions) => ParsedTemplate;
+    templateSourceMapping: TemplateSourceMapping
+  } {
+    const templateStr = this.resourceLoader.load(resourceUrl);
+    this.resourceDependencies.recordResourceDependency(node.getSourceFile(), resourceUrl);
+    const parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
+        component, templateStr, sourceMapUrl(resourceUrl),
+        /* templateRange */ undefined,
+        /* escapedString */ false, options);
+    const templateSourceMapping: TemplateSourceMapping = {
+      type: 'external',
+      componentClass: node,
+      node: templateUrlExpr,
+      template: templateStr,
+      templateUrl: resourceUrl,
+    };
+
+    return {parseTemplate, templateSourceMapping};
+  }
+
+  private _extractInlineTemplate(
+      node: ClassDeclaration, decorator: Decorator, component: Map<string, ts.Expression>,
+      containingFile: string): {
+    parseTemplate: (options?: ParseTemplateOptions) => ParsedTemplate;
+    templateSourceMapping: TemplateSourceMapping
+  } {
     if (!component.has('template')) {
-      return null;
+      throw new FatalDiagnosticError(
+          ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node, 'component is missing a template');
     }
     const templateExpr = component.get('template') !;
+
     let templateStr: string;
     let templateUrl: string = '';
     let templateRange: LexerRange|undefined = undefined;
+    let templateSourceMapping: TemplateSourceMapping;
     let escapedString = false;
     // We only support SourceMaps for inline templates that are simple string literals.
     if (ts.isStringLiteral(templateExpr) || ts.isNoSubstitutionTemplateLiteral(templateExpr)) {
@@ -660,6 +639,10 @@ export class ComponentDecoratorHandler implements
       templateStr = templateExpr.getSourceFile().text;
       templateUrl = containingFile;
       escapedString = true;
+      templateSourceMapping = {
+        type: 'direct',
+        node: templateExpr as(ts.StringLiteral | ts.NoSubstitutionTemplateLiteral),
+      };
     } else {
       const resolvedTemplate = this.evaluator.evaluate(templateExpr);
       if (typeof resolvedTemplate !== 'string') {
@@ -667,8 +650,18 @@ export class ComponentDecoratorHandler implements
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateExpr, 'template must be a string');
       }
       templateStr = resolvedTemplate;
+      templateSourceMapping = {
+        type: 'indirect',
+        node: templateExpr,
+        componentClass: node,
+        template: templateStr,
+      };
     }
-    return {templateStr, templateUrl, templateRange, escapedString};
+
+    const parseTemplate = (options?: ParseTemplateOptions) => this._parseTemplate(
+        component, templateStr, templateUrl, templateRange, escapedString, options);
+
+    return {parseTemplate, templateSourceMapping};
   }
 
   private _parseTemplate(
@@ -826,4 +819,5 @@ export interface ParsedTemplate {
 
 interface PreanalyzedTemplate extends ParsedTemplate {
   parseTemplate: (options?: ParseTemplateOptions) => ParsedTemplate;
+  templateSourceMapping: TemplateSourceMapping;
 }

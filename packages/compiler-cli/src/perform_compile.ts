@@ -283,7 +283,7 @@ export function performCompilation(
     return {diagnostics: allDiagnostics, program};
   }
 }
-function defaultGatherDiagnostics(program: api.Program): Diagnostics {
+export function defaultGatherDiagnostics(program: api.Program): Diagnostics {
   const allDiagnostics: Array<ts.Diagnostic|api.Diagnostic> = [];
 
   function checkDiagnostics(diags: Diagnostics | undefined) {

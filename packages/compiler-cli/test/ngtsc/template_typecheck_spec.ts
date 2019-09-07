@@ -469,9 +469,21 @@ export declare class CommonModule {
       });
     });
 
-    describe('error locations', () => {
-      it('should be correct for direct templates', () => {
-        env.write('test.ts', `
+    // Test both sync and async compilations, see https://github.com/angular/angular/issues/32538
+    ['sync', 'async'].forEach(mode => {
+      describe(`error locations [${mode}]`, () => {
+        let driveDiagnostics: () => Promise<ReadonlyArray<ts.Diagnostic>>;
+        beforeEach(() => {
+          if (mode === 'async') {
+            env.enablePreloading();
+            driveDiagnostics = () => env.driveDiagnosticsAsync();
+          } else {
+            driveDiagnostics = () => Promise.resolve(env.driveDiagnostics());
+          }
+        });
+
+        it('should be correct for direct templates', async() => {
+          env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
       
           @Component({
@@ -484,14 +496,14 @@ export declare class CommonModule {
             user: {name: string}[];
           }`);
 
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].file !.fileName).toBe(_('/test.ts'));
-        expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
-      });
+          const diags = await driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].file !.fileName).toBe(_('/test.ts'));
+          expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
+        });
 
-      it('should be correct for indirect templates', () => {
-        env.write('test.ts', `
+        it('should be correct for indirect templates', async() => {
+          env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
       
           const TEMPLATE = \`<p>
@@ -506,18 +518,18 @@ export declare class CommonModule {
             user: {name: string}[];
           }`);
 
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].file !.fileName).toBe(_('/test.ts') + ' (TestCmp template)');
-        expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
-        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation ![0])).toBe('TEMPLATE');
-      });
+          const diags = await driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].file !.fileName).toBe(_('/test.ts') + ' (TestCmp template)');
+          expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
+          expect(getSourceCodeForDiagnostic(diags[0].relatedInformation ![0])).toBe('TEMPLATE');
+        });
 
-      it('should be correct for external templates', () => {
-        env.write('template.html', `<p>
+        it('should be correct for external templates', async() => {
+          env.write('template.html', `<p>
           {{user.does_not_exist}}
         </p>`);
-        env.write('test.ts', `
+          env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
       
 
@@ -529,12 +541,13 @@ export declare class CommonModule {
             user: {name: string}[];
           }`);
 
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].file !.fileName).toBe(_('/template.html'));
-        expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
-        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation ![0]))
-            .toBe(`'./template.html'`);
+          const diags = await driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].file !.fileName).toBe(_('/template.html'));
+          expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
+          expect(getSourceCodeForDiagnostic(diags[0].relatedInformation ![0]))
+              .toBe(`'./template.html'`);
+        });
       });
     });
   });
