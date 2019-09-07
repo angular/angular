@@ -51,6 +51,15 @@ addTimestamp() {
   payloadData="$payloadData\"timestamp\": $timestamp, "
 }
 
+# Write the current CI build URL to global variable `$payloadData`.
+# This allows mapping the data stored in the database to the CI build job that generated it, which
+# might contain more info/context.
+#   $1: string - The CI build URL.
+addBuildUrl() {
+  buildUrl="$1"
+  payloadData="$payloadData\"buildUrl\": \"$buildUrl\", "
+}
+
 # Write the commit message for the current CI commit range to global variable `$payloadData`.
 #   $1: string - The commit range for this build (in `<SHA-1>...<SHA-2>` format).
 addMessage() {
@@ -142,6 +151,7 @@ trackPayloadSize() {
       addChangeType $CI_COMMIT_RANGE
     fi
     addTimestamp
+    addBuildUrl $CI_BUILD_URL
     addMessage $CI_COMMIT_RANGE
     uploadData $name
   fi
