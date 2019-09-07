@@ -71,11 +71,7 @@ function _find(control: AbstractControl, path: Array<string|number>|string, deli
 
 function coerceToValidator(validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|
                            null): ValidatorFn|null {
-  const validator =
-      (isOptionsObj(validatorOrOpts) ? (validatorOrOpts as AbstractControlOptions).validators :
-                                       validatorOrOpts) as ValidatorFn |
-      ValidatorFn[] | null;
-
+  const validator = isOptionsObj(validatorOrOpts) ? validatorOrOpts.validators : validatorOrOpts;
   return Array.isArray(validator) ? composeValidators(validator) : validator || null;
 }
 
@@ -84,10 +80,7 @@ function coerceToAsyncValidator(
     validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null): AsyncValidatorFn|
     null {
   const origAsyncValidator =
-      (isOptionsObj(validatorOrOpts) ? (validatorOrOpts as AbstractControlOptions).asyncValidators :
-                                       asyncValidator) as AsyncValidatorFn |
-      AsyncValidatorFn | null;
-
+      isOptionsObj(validatorOrOpts) ? validatorOrOpts.asyncValidators : asyncValidator;
   return Array.isArray(origAsyncValidator) ? composeAsyncValidators(origAsyncValidator) :
                                              origAsyncValidator || null;
 }
@@ -119,7 +112,7 @@ export interface AbstractControlOptions {
 
 
 function isOptionsObj(validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|
-                      null): boolean {
+                      null): validatorOrOpts is AbstractControlOptions {
   return validatorOrOpts != null && !Array.isArray(validatorOrOpts) &&
       typeof validatorOrOpts === 'object';
 }
@@ -914,8 +907,8 @@ export abstract class AbstractControl {
 
   /** @internal */
   _setUpdateStrategy(opts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null): void {
-    if (isOptionsObj(opts) && (opts as AbstractControlOptions).updateOn != null) {
-      this._updateOn = (opts as AbstractControlOptions).updateOn!;
+    if (isOptionsObj(opts) && opts.updateOn != null) {
+      this._updateOn = opts.updateOn!;
     }
   }
 
