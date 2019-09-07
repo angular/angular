@@ -1593,11 +1593,13 @@ export class FormGroup extends AbstractControl {
 
   /** @internal */
   _anyControls(condition: Function): boolean {
-    let res = false;
-    this._forEachChild((control: AbstractControl, name: string) => {
-      res = res || (this.contains(name) && condition(control));
-    });
-    return res;
+    for (const controlName of Object.keys(this.controls)) {
+      const control = this.controls[controlName];
+      if (this.contains(controlName) && condition(control)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** @internal */
