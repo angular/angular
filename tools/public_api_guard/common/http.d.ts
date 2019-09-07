@@ -5,7 +5,7 @@ export declare abstract class HttpBackend implements HttpHandler {
 }
 
 export declare class HttpClient {
-    constructor(handler: HttpHandler);
+    constructor(handler: HttpHandler, httpParamCodec?: HttpParameterCodec | undefined);
     delete<T>(url: string, options?: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1556,11 +1556,11 @@ export interface HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
 }
 
-export interface HttpParameterCodec {
-    decodeKey(key: string): string;
-    decodeValue(value: string): string;
-    encodeKey(key: string): string;
-    encodeValue(value: string): string;
+export declare abstract class HttpParameterCodec {
+    abstract decodeKey(key: string): string;
+    abstract decodeValue(value: string): string;
+    abstract encodeKey(key: string): string;
+    abstract encodeValue(value: string): string;
 }
 
 export declare class HttpParams {
@@ -1698,7 +1698,7 @@ export interface HttpUploadProgressEvent extends HttpProgressEvent {
     type: HttpEventType.UploadProgress;
 }
 
-export declare class HttpUrlEncodingCodec implements HttpParameterCodec {
+export declare class HttpUrlEncodingCodec extends HttpParameterCodec {
     decodeKey(key: string): string;
     decodeValue(value: string): string;
     encodeKey(key: string): string;
