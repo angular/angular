@@ -144,8 +144,7 @@ class ApplyRedirects {
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[],
       segments: UrlSegment[], outlet: string,
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
-    return of (...routes).pipe(
-        map((r: any) => {
+    return combineLatest(routes.map((r: any) => {
           const expanded$ = this.expandSegmentAgainstRoute(
               ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
           return expanded$.pipe(catchError((e: any) => {
@@ -156,8 +155,7 @@ class ApplyRedirects {
             }
             throw e;
           }));
-        }),
-        concatAll(), first((s: any) => !!s), catchError((e: any, _: any) => {
+        })).pipe(map(x => x.find((s: any) => !!s)), catchError((e: any, _: any) => {
           if (e instanceof EmptyError || e.name === 'EmptyError') {
             if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
               return of (new UrlSegmentGroup([], {}));
