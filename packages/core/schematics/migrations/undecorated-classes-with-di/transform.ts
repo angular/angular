@@ -280,7 +280,7 @@ export class UndecoratedClassesTransform {
         return [{
           node,
           message: `Class cannot be migrated as the inherited metadata from ` +
-              `${identifier.getText()} cannot be converted into a decorator. Please manually 
+              `${identifier.getText()} cannot be converted into a decorator. Please manually
             decorate the class.`,
         }];
       }
@@ -431,7 +431,7 @@ export class UndecoratedClassesTransform {
     // future calls to "StaticReflector#annotations" are based on metadata files.
     this.symbolResolver['_resolveSymbolFromSummary'] = () => null;
     this.symbolResolver['resolvedSymbols'].clear();
-    this.symbolResolver['resolvedFilePaths'].clear();
+    this.symbolResolver['symbolFromFile'].clear();
     this.compiler.reflector['annotationCache'].clear();
 
     // Original summary resolver used by the AOT compiler.
