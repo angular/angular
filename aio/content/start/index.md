@@ -254,7 +254,7 @@ We're going to create a new alert feature. The alert feature will take a product
 
     1. Open `product-list.component.html`.
     
-    1. To include the new component, use its selector (`app-product-alert`) as you would an HTML element. 
+    1. To include the new component, use its selector (`app-product-alerts`) as you would an HTML element. 
     
     1. Pass the current product as input to the component using property binding. 
 
