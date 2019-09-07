@@ -329,6 +329,48 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
       server.assertNoOtherRequests();
     });
 
+    it('initializes the service worker on fetch if it has not yet been initialized', async() => {
+      // Driver is initially uninitialized.
+      expect(driver.initialized).toBeNull();
+      expect(driver['latestHash']).toBeNull();
+
+      // Making a request initializes the driver (fetches assets).
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      expect(driver['latestHash']).toEqual(jasmine.any(String));
+      server.assertSawRequestFor('ngsw.json');
+      server.assertSawRequestFor('/foo.txt');
+      server.assertSawRequestFor('/bar.txt');
+      server.assertSawRequestFor('/redirected.txt');
+
+      // Once initialized, cached resources are served without network requests.
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
+      server.assertNoOtherRequests();
+    });
+
+    it('initializes the service worker on message if it has not yet been initialized', async() => {
+      // Driver is initially uninitialized.
+      expect(driver.initialized).toBeNull();
+      expect(driver['latestHash']).toBeNull();
+
+      // Pushing a message initializes the driver (fetches assets).
+      await scope.handleMessage({action: 'foo'}, 'someClient');
+      expect(driver['latestHash']).toEqual(jasmine.any(String));
+      server.assertSawRequestFor('ngsw.json');
+      server.assertSawRequestFor('/foo.txt');
+      server.assertSawRequestFor('/bar.txt');
+      server.assertSawRequestFor('/redirected.txt');
+
+      // Once initialized, pushed messages are handled without re-initializing.
+      await scope.handleMessage({action: 'bar'}, 'someClient');
+      server.assertNoOtherRequests();
+
+      // Once initialized, cached resources are served without network requests.
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
+      server.assertNoOtherRequests();
+    });
+
     it('handles non-relative URLs', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;

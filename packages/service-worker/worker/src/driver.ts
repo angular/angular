@@ -251,34 +251,23 @@ export class Driver implements Debuggable, UpdateSource {
       return;
     }
 
-    // Initialization is the only event which is sent directly from the SW to itself,
-    // and thus `event.source` is not a Client. Handle it here, before the check
-    // for Client sources.
-    if (data.action === 'INITIALIZE') {
-      // Only initialize if not already initialized (or initializing).
-      if (this.initialized === null) {
-        // Initialize the SW.
-        this.initialized = this.initialize();
-
-        // Wait until initialization is properly scheduled, then trigger idle
-        // events to allow it to complete (assuming the SW is idle).
-        event.waitUntil((async() => {
-          await this.initialized;
-          await this.idle.trigger();
-        })());
+    event.waitUntil((async() => {
+      // Initialization is the only event which is sent directly from the SW to itself, and thus
+      // `event.source` is not a `Client`. Handle it here, before the check for `Client` sources.
+      if (data.action === 'INITIALIZE') {
+        return this.ensureInitialized(event);
       }
 
-      return;
-    }
+      // Only messages from true clients are accepted past this point.
+      // This is essentially a typecast.
+      if (!this.adapter.isClient(event.source)) {
+        return;
+      }
 
-    // Only messages from true clients are accepted past this point (this is essentially
-    // a typecast).
-    if (!this.adapter.isClient(event.source)) {
-      return;
-    }
-
-    // Handle the message and keep the SW alive until it's handled.
-    event.waitUntil(this.handleMessage(data, event.source));
+      // Handle the message and keep the SW alive until it's handled.
+      await this.ensureInitialized(event);
+      await this.handleMessage(data, event.source);
+    })());
   }
 
   private onPush(msg: PushEvent): void {
@@ -294,6 +283,32 @@ export class Driver implements Debuggable, UpdateSource {
   private onClick(event: NotificationEvent): void {
     // Handle the click event and keep the SW alive until it's handled.
     event.waitUntil(this.handleClick(event.notification, event.action));
+  }
+
+  private async ensureInitialized(event: ExtendableEvent): Promise<void> {
+    // Since the SW may have just been started, it may or may not have been initialized already.
+    // `this.initialized` will be `null` if initialization has not yet been attempted, or will be a
+    // `Promise` which will resolve (successfully or unsuccessfully) if it has.
+    if (this.initialized !== null) {
+      return this.initialized;
+    }
+
+    // Initialization has not yet been attempted, so attempt it. This should only ever happen once
+    // per SW instantiation.
+    try {
+      this.initialized = this.initialize();
+      await this.initialized;
+    } catch (error) {
+      // If initialization fails, the SW needs to enter a safe state, where it declines to respond
+      // to network requests.
+      this.state = DriverReadyState.SAFE_MODE;
+      this.stateMessage = `Initialization failed due to error: ${errorToString(error)}`;
+
+      throw error;
+    } finally {
+      // Regardless if initialization succeeded, background tasks still need to happen.
+      event.waitUntil(this.idle.trigger());
+    }
   }
 
   private async handleMessage(msg: MsgAny&{action: string}, from: Client): Promise<void> {
@@ -384,28 +399,10 @@ export class Driver implements Debuggable, UpdateSource {
   }
 
   private async handleFetch(event: FetchEvent): Promise<Response> {
-    // Since the SW may have just been started, it may or may not have been initialized already.
-    // this.initialized will be `null` if initialization has not yet been attempted, or will be a
-    // Promise which will resolve (successfully or unsuccessfully) if it has.
-    if (this.initialized === null) {
-      // Initialization has not yet been attempted, so attempt it. This should only ever happen once
-      // per SW instantiation.
-      this.initialized = this.initialize();
-    }
-
-    // If initialization fails, the SW needs to enter a safe state, where it declines to respond to
-    // network requests.
     try {
-      // Wait for initialization.
-      await this.initialized;
-    } catch (e) {
-      // Initialization failed. Enter a safe state.
-      this.state = DriverReadyState.SAFE_MODE;
-      this.stateMessage = `Initialization failed due to error: ${errorToString(e)}`;
-
-      // Even though the driver entered safe mode, background tasks still need to happen.
-      event.waitUntil(this.idle.trigger());
-
+      // Ensure the SW instance has been initialized.
+      await this.ensureInitialized(event);
+    } catch {
       // Since the SW is already committed to responding to the currently active request,
       // respond with a network fetch.
       return this.safeFetch(event.request);
