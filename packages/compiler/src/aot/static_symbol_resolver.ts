@@ -63,7 +63,6 @@ export class StaticSymbolResolver {
   private metadataCache = new Map<string, {[key: string]: any}>();
   // Note: this will only contain StaticSymbols without members!
   private resolvedSymbols = new Map<StaticSymbol, ResolvedStaticSymbol>();
-  private resolvedFilePaths = new Set<string>();
   // Note: this will only contain StaticSymbols without members!
   private importAs = new Map<StaticSymbol, StaticSymbol>();
   private symbolResourcePaths = new Map<StaticSymbol, string>();
@@ -176,22 +175,24 @@ export class StaticSymbolResolver {
   }
 
   /**
-   * Invalidate all information derived from the given file.
+   * Invalidate all information derived from the given file and return the
+   * static symbols contained in the file.
    *
    * @param fileName the file to invalidate
    */
-  invalidateFile(fileName: string) {
+  invalidateFile(fileName: string): StaticSymbol[] {
     this.metadataCache.delete(fileName);
-    this.resolvedFilePaths.delete(fileName);
     const symbols = this.symbolFromFile.get(fileName);
-    if (symbols) {
-      this.symbolFromFile.delete(fileName);
-      for (const symbol of symbols) {
-        this.resolvedSymbols.delete(symbol);
-        this.importAs.delete(symbol);
-        this.symbolResourcePaths.delete(symbol);
-      }
+    if (!symbols) {
+      return [];
     }
+    this.symbolFromFile.delete(fileName);
+    for (const symbol of symbols) {
+      this.resolvedSymbols.delete(symbol);
+      this.importAs.delete(symbol);
+      this.symbolResourcePaths.delete(symbol);
+    }
+    return symbols;
   }
 
   /** @internal */
@@ -277,10 +278,9 @@ export class StaticSymbolResolver {
   }
 
   private _createSymbolsOf(filePath: string) {
-    if (this.resolvedFilePaths.has(filePath)) {
+    if (this.symbolFromFile.has(filePath)) {
       return;
     }
-    this.resolvedFilePaths.add(filePath);
     const resolvedSymbols: ResolvedStaticSymbol[] = [];
     const metadata = this.getModuleMetadata(filePath);
     if (metadata['importAs']) {

@@ -86,6 +86,22 @@ export class StaticReflector implements CompileReflector {
     return this.symbolResolver.getResourcePath(staticSymbol);
   }
 
+  /**
+   * Invalidate the specified `symbols` on program change.
+   * @param symbols
+   */
+  invalidateSymbols(symbols: StaticSymbol[]) {
+    for (const symbol of symbols) {
+      this.annotationCache.delete(symbol);
+      this.shallowAnnotationCache.delete(symbol);
+      this.propertyCache.delete(symbol);
+      this.parameterCache.delete(symbol);
+      this.methodCache.delete(symbol);
+      this.staticCache.delete(symbol);
+      this.conversionMap.delete(symbol);
+    }
+  }
+
   resolveExternalReference(ref: o.ExternalReference, containingFile?: string): StaticSymbol {
     let key: string|undefined = undefined;
     if (!containingFile) {
