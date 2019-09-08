@@ -913,7 +913,8 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵprojectionDef(['*', [['span', 'title', 'toFirst']], [['span', 'title', 'toSecond']]]);
+          // selectors are in lowercase once compiled
+          ɵɵprojectionDef(['*', [['span', 'title', 'tofirst']], [['span', 'title', 'tosecond']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
           { ɵɵprojection(1, 1); }
           ɵɵelementEnd();
@@ -957,9 +958,10 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
+          // selectors are in lowercase once compiled
           ɵɵprojectionDef([
-            '*', [['span', SelectorFlags.CLASS, 'toFirst']],
-            [['span', SelectorFlags.CLASS, 'toSecond']]
+            '*', [['span', SelectorFlags.CLASS, 'tofirst']],
+            [['span', SelectorFlags.CLASS, 'tosecond']]
           ]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
           { ɵɵprojection(1, 1); }
@@ -1004,9 +1006,10 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
+          // selectors are in lowercase once compiled
           ɵɵprojectionDef([
-            '*', [['span', SelectorFlags.CLASS, 'toFirst']],
-            [['span', SelectorFlags.CLASS, 'toSecond']]
+            '*', [['span', SelectorFlags.CLASS, 'tofirst']],
+            [['span', SelectorFlags.CLASS, 'tosecond']]
           ]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
           { ɵɵprojection(1, 1); }
@@ -1095,7 +1098,8 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵprojectionDef(['*', [['span', SelectorFlags.CLASS, 'toFirst']]]);
+          // selectors are in lowercase once compiled
+          ɵɵprojectionDef(['*', [['span', SelectorFlags.CLASS, 'tofirst']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
           { ɵɵprojection(1, 1); }
           ɵɵelementEnd();
@@ -1140,7 +1144,8 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵprojectionDef(['*', [['span', SelectorFlags.CLASS, 'toSecond']]]);
+          // selectors are in lowercase once compiled
+          ɵɵprojectionDef(['*', [['span', SelectorFlags.CLASS, 'tosecond']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
           { ɵɵprojection(1); }
           ɵɵelementEnd();
