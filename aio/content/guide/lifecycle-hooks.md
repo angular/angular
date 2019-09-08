@@ -716,7 +716,7 @@ Angular calls its `ngOnChanges()` method whenever it detects changes to ***input
 This example monitors the `OnChanges` hook.
 -->
 컴포넌트나 디렉티브의 ***입력 프로퍼티*** 값이 변경될 때마다 Angular는 `ngOnChanges()` 메소드를 실행합니다.
-`OnChagnes` 후킹 함수를 활용하는 간단한 방법은 다음과 같습니다.
+`OnChanges` 후킹 함수를 활용하는 간단한 방법은 다음과 같습니다.
 
 <code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="ng-on-changes" header="on-changes.component.ts (excerpt)" linenums="false"></code-example>
 
