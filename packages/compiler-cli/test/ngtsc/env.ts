@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CustomTransformers, Program} from '@angular/compiler-cli';
+import {CustomTransformers, Program, defaultGatherDiagnostics} from '@angular/compiler-cli';
 import * as api from '@angular/compiler-cli/src/transformers/api';
 import * as ts from 'typescript';
 
@@ -98,6 +98,15 @@ export class NgtscTestEnvironment {
     this.changedResources = new Set();
     this.multiCompileHostExt = new MultiCompileHostExt(this.fs);
     setWrapHostForTest(makeWrapHost(this.multiCompileHostExt));
+  }
+
+  /**
+   * Installs a compiler host that allows for asynchronous reading of resources by implementing the
+   * `CompilerHost.readResource` method. Note that only asynchronous compilations are affected, as
+   * synchronous compilations do not use the asynchronous resource loader.
+   */
+  enablePreloading(): void {
+    setWrapHostForTest(makeWrapHost(new ResourceLoadingCompileHost(this.fs)));
   }
 
   flushWrittenFileTracking(): void {
@@ -192,6 +201,16 @@ export class NgtscTestEnvironment {
     return mainDiagnosticsForTest(['-p', this.basePath]) as ts.Diagnostic[];
   }
 
+  async driveDiagnosticsAsync(): Promise<ReadonlyArray<ts.Diagnostic>> {
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(['-p', this.basePath]);
+    const host = createCompilerHost({options});
+    const program = createProgram({rootNames, host, options});
+    await program.loadNgStructureAsync();
+
+    // ngtsc only produces ts.Diagnostic messages.
+    return defaultGatherDiagnostics(program as api.Program) as ts.Diagnostic[];
+  }
+
   driveRoutes(entryPoint?: string): LazyRoute[] {
     const {rootNames, options} = readNgcCommandLineAndConfiguration(['-p', this.basePath]);
     const host = createCompilerHost({options});
@@ -249,6 +268,16 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
   getFilesWrittenSinceLastFlush(): Set<string> { return this.writtenFiles; }
 
   invalidate(fileName: string): void { this.cache.delete(fileName); }
+}
+
+class ResourceLoadingCompileHost extends AugmentedCompilerHost implements api.CompilerHost {
+  readResource(fileName: string): Promise<string>|string {
+    const resource = this.readFile(fileName);
+    if (resource === undefined) {
+      throw new Error(`Resource ${fileName} not found`);
+    }
+    return resource;
+  }
 }
 
 function makeWrapHost(wrapped: AugmentedCompilerHost): (host: ts.CompilerHost) => ts.CompilerHost {
