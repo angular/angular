@@ -50,7 +50,7 @@ export class HeroService {
 
   // #docregion getHeroNo404
   /** GET: id에 해당하는 히어로 데이터를 가져옵니다. 존재하지 않으면 `undefined`를 반환합니다. */
-  getHeroNo404<Data>(id: number): Observable<Hero> {
+  getHeroNo404<Hero>(id: number): Observable<Hero> {
     const url = `${this.heroesUrl}/?id=${id}`;
     return this.http.get<Hero[]>(url)
       .pipe(
