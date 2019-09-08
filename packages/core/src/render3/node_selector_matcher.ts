@@ -21,7 +21,10 @@ const NG_TEMPLATE_SELECTOR = 'ng-template';
 
 function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): boolean {
   const nodeClassesLen = nodeClassAttrVal.length;
-  const matchIndex = nodeClassAttrVal !.indexOf(cssClassToMatch);
+  // we lowercase the class attribute value to be able to match
+  // selectors without case-sensitivity
+  // (selectors are already in lowercase when generated)
+  const matchIndex = nodeClassAttrVal.toLowerCase().indexOf(cssClassToMatch);
   const matchEndIdx = matchIndex + cssClassToMatch.length;
   if (matchIndex === -1                                                  // no match
       || (matchIndex > 0 && nodeClassAttrVal ![matchIndex - 1] !== ' ')  // no space before
@@ -132,7 +135,10 @@ export function isNodeMatchingSelector(
           ngDevMode && assertNotEqual(
                            nodeAttrs[attrIndexInNode], AttributeMarker.NamespaceURI,
                            'We do not match directives on namespaced attributes');
-          nodeAttrValue = nodeAttrs[attrIndexInNode + 1] as string;
+          // we lowercase the attribute value to be able to match
+          // selectors without case-sensitivity
+          // (selectors are already in lowercase when generated)
+          nodeAttrValue = (nodeAttrs[attrIndexInNode + 1] as string).toLowerCase();
         }
 
         const compareAgainstClassName = mode & SelectorFlags.CLASS ? nodeAttrValue : null;
