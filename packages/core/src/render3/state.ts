@@ -13,7 +13,7 @@ import {assertLViewOrUndefined} from './assert';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
 import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW} from './interfaces/view';
-import {resetAllStylingState, resetStylingState} from './styling_next/state';
+import {resetStylingState} from './styling_next/state';
 
 
 /**
@@ -129,31 +129,38 @@ export function getLView(): LView {
  * The reason why this value is `1` instead of `0` is because the `0`
  * value is reserved for the template.
  */
-const MIN_DIRECTIVE_ID = 1;
-
-let activeDirectiveId = MIN_DIRECTIVE_ID;
+let activeDirectiveId = 0;
 
 /**
- * Position depth (with respect from leaf to root) in a directive sub-class inheritance chain.
+ * Flags used for an active element during change detection.
+ *
+ * These flags are used within other instructions to inform cleanup or
+ * exit operations to run when an element is being processed.
+ *
+ * Note that these flags are reset each time an element changes (whether it
+ * happens when `advance()` is run or when change detection exits out of a template
+ * function or when all host bindings are processed for an element).
  */
-let activeDirectiveSuperClassDepthPosition = 0;
+export const enum ActiveElementFlags {
+  Initial = 0b00,
+  RunExitFn = 0b01,
+  ResetStylesOnExit = 0b10,
+  Size = 2,
+}
 
 /**
- * Total count of how many directives are a part of an inheritance chain.
- *
- * When directives are sub-classed (extended) from one to another, Angular
- * needs to keep track of exactly how many were encountered so it can accurately
- * generate the next directive id (once the next directive id is visited).
- * Normally the next directive id just a single incremented value from the
- * previous one, however, if the previous directive is a part of an inheritance
- * chain (a series of sub-classed directives) then the incremented value must
- * also take into account the total amount of sub-classed values.
- *
- * Note that this value resets back to zero once the next directive is
- * visited (when `incrementActiveDirectiveId` or `setActiveHostElement`
- * is called).
+ * Determines whether or not a flag is currently set for the active element.
  */
-let activeDirectiveSuperClassHeight = 0;
+export function hasActiveElementFlag(flag: ActiveElementFlags) {
+  return (_selectedIndex & flag) === flag;
+}
+
+/**
+ * Sets a flag is for the active element.
+ */
+export function setActiveElementFlag(flag: ActiveElementFlags) {
+  _selectedIndex |= flag;
+}
 
 /**
  * Sets the active directive host element and resets the directive id value
@@ -163,12 +170,42 @@ let activeDirectiveSuperClassHeight = 0;
  *                     the directive/component instance lives
  */
 export function setActiveHostElement(elementIndex: number | null = null) {
-  if (_selectedIndex !== elementIndex) {
+  if (getSelectedIndex() !== elementIndex) {
+    if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
+      executeElementExitFn();
+    }
+    if (hasActiveElementFlag(ActiveElementFlags.ResetStylesOnExit)) {
+      resetStylingState();
+    }
     setSelectedIndex(elementIndex === null ? -1 : elementIndex);
-    activeDirectiveId = elementIndex === null ? 0 : MIN_DIRECTIVE_ID;
-    activeDirectiveSuperClassDepthPosition = 0;
-    activeDirectiveSuperClassHeight = 0;
+    activeDirectiveId = 0;
   }
+}
+
+let _elementExitFn: Function|null = null;
+export function executeElementExitFn() {
+  _elementExitFn !();
+  // TODO (matsko|misko): remove this unassignment once the state management of
+  //                      global variables are better managed.
+  _selectedIndex &= ~ActiveElementFlags.RunExitFn;
+}
+
+/**
+ * Queues a function to be run once the element is "exited" in CD.
+ *
+ * Change detection will focus on an element either when the `advance()`
+ * instruction is called or when the template or host bindings instruction
+ * code is invoked. The element is then "exited" when the next element is
+ * selected or when change detection for the template or host bindings is
+ * complete. When this occurs (the element change operation) then an exit
+ * function will be invoked if it has been set. This function can be used
+ * to assign that exit function.
+ *
+ * @param fn
+ */
+export function setElementExitFn(fn: Function): void {
+  setActiveElementFlag(ActiveElementFlags.RunExitFn);
+  _elementExitFn = fn;
 }
 
 /**
@@ -211,71 +248,12 @@ export function getActiveDirectiveId() {
  * different set of directives).
  */
 export function incrementActiveDirectiveId() {
-  activeDirectiveId += 1 + activeDirectiveSuperClassHeight;
-
-  // because we are dealing with a new directive this
-  // means we have exited out of the inheritance chain
-  activeDirectiveSuperClassDepthPosition = 0;
-  activeDirectiveSuperClassHeight = 0;
-}
-
-/**
- * Set the current super class (reverse inheritance) position depth for a directive.
- *
- * For example we have two directives: Child and Other (but Child is a sub-class of Parent)
- * <div child-dir other-dir></div>
- *
- * // increment
- * parentInstance->hostBindings() (depth = 1)
- * // decrement
- * childInstance->hostBindings() (depth = 0)
- * otherInstance->hostBindings() (depth = 0 b/c it's a different directive)
- *
- * Note that this is only active when `hostBinding` functions are being processed.
- */
-export function adjustActiveDirectiveSuperClassDepthPosition(delta: number) {
-  activeDirectiveSuperClassDepthPosition += delta;
-
-  // we keep track of the height value so that when the next directive is visited
-  // then Angular knows to generate a new directive id value which has taken into
-  // account how many sub-class directives were a part of the previous directive.
-  activeDirectiveSuperClassHeight =
-      Math.max(activeDirectiveSuperClassHeight, activeDirectiveSuperClassDepthPosition);
-}
-
-/**
- * Returns he current depth of the super/sub class inheritance chain.
- *
- * This will return how many inherited directive/component classes
- * exist in the current chain.
- *
- * ```typescript
- * @Directive({ selector: '[super-dir]' })
- * class SuperDir {}
- *
- * @Directive({ selector: '[sub-dir]' })
- * class SubDir extends SuperDir {}
- *
- * // if `<div sub-dir>` is used then the super class height is `1`
- * // if `<div super-dir>` is used then the super class height is `0`
- * ```
- */
-export function getActiveDirectiveSuperClassHeight() {
-  return activeDirectiveSuperClassHeight;
-}
-
-/**
- * Returns the current super class (reverse inheritance) depth for a directive.
- *
- * This is designed to help instruction code distinguish different hostBindings
- * calls from each other when a directive has extended from another directive.
- * Normally using the directive id value is enough, but with the case
- * of parent/sub-class directive inheritance more information is required.
- *
- * Note that this is only active when `hostBinding` functions are being processed.
- */
-export function getActiveDirectiveSuperClassDepth() {
-  return activeDirectiveSuperClassDepthPosition;
+  // Each directive gets a uniqueId value that is the same for both
+  // create and update calls when the hostBindings function is called. The
+  // directive uniqueId is not set anywhere--it is just incremented between
+  // each hostBindings call and is useful for helping instruction code
+  // uniquely determine which directive is currently active when executed.
+  activeDirectiveId += 1;
 }
 
 /**
@@ -447,10 +425,10 @@ export function resetComponentState() {
   elementDepthCount = 0;
   bindingsEnabled = true;
   setCurrentStyleSanitizer(null);
-  resetAllStylingState();
 }
 
-let _selectedIndex = -1;
+/* tslint:disable */
+let _selectedIndex = -1 << ActiveElementFlags.Size;
 
 /**
  * Gets the most recent index passed to {@link select}
@@ -459,7 +437,7 @@ let _selectedIndex = -1;
  * current `LView` to act on.
  */
 export function getSelectedIndex() {
-  return _selectedIndex;
+  return _selectedIndex >> ActiveElementFlags.Size;
 }
 
 /**
@@ -467,13 +445,12 @@ export function getSelectedIndex() {
  *
  * Used with {@link property} instruction (and more in the future) to identify the index in the
  * current `LView` to act on.
+ *
+ * (Note that if an "exit function" was set earlier (via `setElementExitFn()`) then that will be
+ * run if and when the provided `index` value is different from the current selected index value.)
  */
 export function setSelectedIndex(index: number) {
-  _selectedIndex = index;
-
-  // we have now jumped to another element
-  // therefore the state is stale
-  resetStylingState();
+  _selectedIndex = index << ActiveElementFlags.Size;
 }
 
 

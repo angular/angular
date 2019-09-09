@@ -120,7 +120,6 @@ export {
   ɵɵelementContainerStart,
   ɵɵelementContainerEnd,
   ɵɵelementContainer,
-  ɵɵstyling,
   ɵɵstyleMap,
   ɵɵstyleSanitizer,
   ɵɵclassMap,
@@ -143,7 +142,6 @@ export {
   ɵɵstylePropInterpolate7,
   ɵɵstylePropInterpolate8,
   ɵɵstylePropInterpolateV,
-  ɵɵstylingApply,
   ɵɵclassProp,
   ɵɵelementHostAttrs,
 
