@@ -423,6 +423,23 @@ describe('applyRedirects', () => {
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
           .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
     });
+
+    it('should load the configuration of empty root path if the entry point is an auxiliary outlet',
+       () => {
+         const loadedConfig =
+             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+         const loader = {load: (injector: any, p: any) => { return of (loadedConfig); }};
+
+         const config: Routes = [
+           {path: '', loadChildren: 'root'}, {path: 'modal', loadChildren: 'aux', outlet: 'popup'}
+         ];
+
+         applyRedirects(testModule.injector, <any>loader, serializer, tree('(popup:modal)'), config)
+             .forEach(r => {
+               expectTreeToBe(r, '/(popup:modal)');
+               expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+             });
+       });
   });
 
   describe('empty paths', () => {
