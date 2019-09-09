@@ -149,15 +149,12 @@ class ApplyRedirects {
                  ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
              return expanded$.pipe(catchError((e: any) => {
                if (e instanceof NoMatch) {
-                 // TODO(i): this return type doesn't match the declared Observable<UrlSegmentGroup>
-                 // -
-                 // talk to Jason
-                 return of (null) as any as Observable<UrlSegmentGroup>;
+                 return of (new UrlSegmentGroup([], {}));
                }
                throw e;
              }));
            }))
-        .pipe(map(x => x.find((s: any) => !!s) as UrlSegmentGroup), catchError((e: any, _: any) => {
+        .pipe(map(x => x.find((s: any) => !!s) || new UrlSegmentGroup([], {})), catchError((e: any, _: any) => {
                 if (e instanceof EmptyError || e.name === 'EmptyError') {
                   if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
                     return of (new UrlSegmentGroup([], {}));
