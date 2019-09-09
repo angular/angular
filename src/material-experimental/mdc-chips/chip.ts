@@ -155,7 +155,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   /** The value of the chip. Defaults to the content inside `<mat-chip>` tags. */
   @Input()
   get value(): any {
-    return this._value != undefined
+    return this._value !== undefined
       ? this._value
       : this._elementRef.nativeElement.textContent;
   }

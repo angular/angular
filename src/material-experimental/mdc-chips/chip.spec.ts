@@ -8,7 +8,7 @@ import {Subject} from 'rxjs';
 import {MatChip, MatChipEvent, MatChipSet, MatChipsModule} from './index';
 
 
-describe('Chips', () => {
+describe('MatChip', () => {
   let fixture: ComponentFixture<any>;
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
@@ -135,6 +135,24 @@ describe('Chips', () => {
     it('should not be focusable', () => {
       expect(chipNativeElement.getAttribute('tabindex')).toBeFalsy();
     });
+
+    it('should return the chip text if value is undefined', () => {
+      expect(chipInstance.value.trim()).toBe(fixture.componentInstance.name);
+    });
+
+    it('should return the chip value if defined', () => {
+      fixture.componentInstance.value = 123;
+      fixture.detectChanges();
+
+      expect(chipInstance.value).toBe(123);
+    });
+
+    it('should return the chip value if set to null', () => {
+      fixture.componentInstance.value = null;
+      fixture.detectChanges();
+
+      expect(chipInstance.value).toBeNull();
+    });
   });
 });
 
@@ -145,7 +163,7 @@ describe('Chips', () => {
         <mat-chip [removable]="removable"
                  [color]="color" [disabled]="disabled"
                  (focus)="chipFocus($event)" (destroyed)="chipDestroy($event)"
-                 (removed)="chipRemove($event)">
+                 (removed)="chipRemove($event)" [value]="value">
           {{name}}
         </mat-chip>
       </div>
@@ -158,6 +176,7 @@ class SingleChip {
   color: string = 'primary';
   removable: boolean = true;
   shouldShow: boolean = true;
+  value: any;
 
   chipFocus: (event?: MatChipEvent) => void = () => {};
   chipDestroy: (event?: MatChipEvent) => void = () => {};
