@@ -5,12 +5,13 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {unwrapSafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {ProceduralRenderer3, RElement, Renderer3} from '../interfaces/renderer';
 
 import {setStylingMapsSyncFn} from './bindings';
 import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex} from './interfaces';
-import {concatString, getBindingValue, getMapProp, getMapValue, getValuesCount, hyphenate, isStylingValueDefined, setMapValue} from './util';
+import {getBindingValue, getMapProp, getMapValue, getValue, getValuesCount, isStylingValueDefined} from './util';
 
 
 
@@ -22,6 +23,13 @@ import {concatString, getBindingValue, getMapProp, getMapValue, getValuesCount, 
  *
  * --------
  */
+
+/**
+ * Enables support for map-based styling bindings (e.g. `[style]` and `[class]` bindings).
+ */
+export function activateStylingMapFeature() {
+  setStylingMapsSyncFn(syncStylingMap);
+}
 
 /**
  * Used to apply styling values presently within any map-based bindings on an element.
@@ -53,7 +61,7 @@ import {concatString, getBindingValue, getMapProp, getMapValue, getValuesCount, 
  * value is marked as dirty.
  *
  * Styling values are applied once CD exits the element (which happens when
- * the `select(n)` instruction is called or the template function exits). When
+ * the `advance(n)` instruction is called or the template function exits). When
  * this occurs, all prop-based bindings are applied. If a map-based binding is
  * present then a special flushing function (called a sync function) is made
  * available and it will be called each time a styling property is flushed.
@@ -105,14 +113,14 @@ import {concatString, getBindingValue, getMapProp, getMapValue, getValuesCount, 
  */
 export const syncStylingMap: SyncStylingMapsFn =
     (context: TStylingContext, renderer: Renderer3 | ProceduralRenderer3 | null, element: RElement,
-     data: LStylingData, applyStylingFn: ApplyStylingFn, sanitizer: StyleSanitizeFn | null,
-     mode: StylingMapsSyncMode, targetProp?: string | null,
-     defaultValue?: string | null): boolean => {
+     data: LStylingData, sourceIndex: number, applyStylingFn: ApplyStylingFn,
+     sanitizer: StyleSanitizeFn | null, mode: StylingMapsSyncMode, targetProp?: string | null,
+     defaultValue?: string | boolean | null): boolean => {
       let targetPropValueWasApplied = false;
 
       // once the map-based styling code is activate it is never deactivated. For this reason a
       // check to see if the current styling context has any map based bindings is required.
-      const totalMaps = getValuesCount(context, TStylingContextIndex.MapBindingsPosition);
+      const totalMaps = getValuesCount(context);
       if (totalMaps) {
         let runTheSyncAlgorithm = true;
         const loopUntilEnd = !targetProp;
@@ -121,7 +129,7 @@ export const syncStylingMap: SyncStylingMapsFn =
         // hasn't been flagged to apply values (it only traverses values) then
         // there is no point in iterating over the array because nothing will
         // be applied to the element.
-        if (loopUntilEnd && (mode & ~StylingMapsSyncMode.ApplyAllValues)) {
+        if (loopUntilEnd && (mode & StylingMapsSyncMode.ApplyAllValues) === 0) {
           runTheSyncAlgorithm = false;
           targetPropValueWasApplied = true;
         }
@@ -129,7 +137,7 @@ export const syncStylingMap: SyncStylingMapsFn =
         if (runTheSyncAlgorithm) {
           targetPropValueWasApplied = innerSyncStylingMap(
               context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp || null,
-              0, defaultValue || null);
+              sourceIndex, defaultValue || null);
         }
 
         if (loopUntilEnd) {
@@ -153,81 +161,102 @@ function innerSyncStylingMap(
     context: TStylingContext, renderer: Renderer3 | ProceduralRenderer3 | null, element: RElement,
     data: LStylingData, applyStylingFn: ApplyStylingFn, sanitizer: StyleSanitizeFn | null,
     mode: StylingMapsSyncMode, targetProp: string | null, currentMapIndex: number,
-    defaultValue: string | null): boolean {
+    defaultValue: string | boolean | null): boolean {
+  const totalMaps = getValuesCount(context) - 1;  // maps have no default value
+  const mapsLimit = totalMaps - 1;
+  const recurseInnerMaps =
+      currentMapIndex < mapsLimit && (mode & StylingMapsSyncMode.RecurseInnerMaps) !== 0;
+  const checkValuesOnly = (mode & StylingMapsSyncMode.CheckValuesOnly) !== 0;
+
+  if (checkValuesOnly) {
+    // inner modes do not check values ever (that can only happen
+    // when sourceIndex === 0)
+    mode &= ~StylingMapsSyncMode.CheckValuesOnly;
+  }
+
   let targetPropValueWasApplied = false;
-  const totalMaps = getValuesCount(context, TStylingContextIndex.MapBindingsPosition);
-  if (currentMapIndex < totalMaps) {
-    const bindingIndex = getBindingValue(
-        context, TStylingContextIndex.MapBindingsPosition, currentMapIndex) as number;
-    const stylingMapArr = data[bindingIndex] as StylingMapArray;
-
+  if (currentMapIndex <= mapsLimit) {
     let cursor = getCurrentSyncCursor(currentMapIndex);
-    while (cursor < stylingMapArr.length) {
-      const prop = getMapProp(stylingMapArr, cursor);
-      const iteratedTooFar = targetProp && prop > targetProp;
-      const isTargetPropMatched = !iteratedTooFar && prop === targetProp;
-      const value = getMapValue(stylingMapArr, cursor);
-      const valueIsDefined = isStylingValueDefined(value);
+    const bindingIndex = getBindingValue(
+        context, TStylingContextIndex.ValuesStartPosition, currentMapIndex) as number;
+    const stylingMapArr = getValue<StylingMapArray>(data, bindingIndex);
 
-      // the recursive code is designed to keep applying until
-      // it reaches or goes past the target prop. If and when
-      // this happens then it will stop processing values, but
-      // all other map values must also catch up to the same
-      // point. This is why a recursive call is still issued
-      // even if the code has iterated too far.
-      const innerMode =
-          iteratedTooFar ? mode : resolveInnerMapMode(mode, valueIsDefined, isTargetPropMatched);
-      const innerProp = iteratedTooFar ? targetProp : prop;
-      let valueApplied = innerSyncStylingMap(
-          context, renderer, element, data, applyStylingFn, sanitizer, innerMode, innerProp,
-          currentMapIndex + 1, defaultValue);
+    if (stylingMapArr) {
+      while (cursor < stylingMapArr.length) {
+        const prop = getMapProp(stylingMapArr, cursor);
+        const iteratedTooFar = targetProp && prop > targetProp;
+        const isTargetPropMatched = !iteratedTooFar && prop === targetProp;
+        const value = getMapValue(stylingMapArr, cursor);
+        const valueIsDefined = isStylingValueDefined(value);
 
-      if (iteratedTooFar) {
-        if (!targetPropValueWasApplied) {
-          targetPropValueWasApplied = valueApplied;
+        // the recursive code is designed to keep applying until
+        // it reaches or goes past the target prop. If and when
+        // this happens then it will stop processing values, but
+        // all other map values must also catch up to the same
+        // point. This is why a recursive call is still issued
+        // even if the code has iterated too far.
+        const innerMode =
+            iteratedTooFar ? mode : resolveInnerMapMode(mode, valueIsDefined, isTargetPropMatched);
+
+        const innerProp = iteratedTooFar ? targetProp : prop;
+        let valueApplied = recurseInnerMaps ?
+            innerSyncStylingMap(
+                context, renderer, element, data, applyStylingFn, sanitizer, innerMode, innerProp,
+                currentMapIndex + 1, defaultValue) :
+            false;
+
+        if (iteratedTooFar) {
+          if (!targetPropValueWasApplied) {
+            targetPropValueWasApplied = valueApplied;
+          }
+          break;
         }
-        break;
+
+        if (!valueApplied && isValueAllowedToBeApplied(mode, isTargetPropMatched)) {
+          valueApplied = true;
+
+          if (!checkValuesOnly) {
+            const useDefault = isTargetPropMatched && !valueIsDefined;
+            const bindingIndexToApply = isTargetPropMatched ? bindingIndex : null;
+
+            let finalValue: any;
+            if (useDefault) {
+              finalValue = defaultValue;
+            } else {
+              finalValue = sanitizer ?
+                  sanitizer(prop, value, StyleSanitizeMode.ValidateAndSanitize) :
+                  unwrapSafeValue(value);
+            }
+
+            applyStylingFn(renderer, element, prop, finalValue, bindingIndexToApply);
+          }
+        }
+
+        targetPropValueWasApplied = valueApplied && isTargetPropMatched;
+        cursor += StylingMapArrayIndex.TupleSize;
       }
+      setCurrentSyncCursor(currentMapIndex, cursor);
 
-      if (!valueApplied && isValueAllowedToBeApplied(mode, isTargetPropMatched)) {
-        const useDefault = isTargetPropMatched && !valueIsDefined;
-        const valueToApply = useDefault ? defaultValue : value;
-        const bindingIndexToApply = useDefault ? bindingIndex : null;
-        const finalValue = sanitizer ?
-            sanitizer(prop, valueToApply, StyleSanitizeMode.ValidateAndSanitize) :
-            valueToApply;
-        applyStylingFn(renderer, element, prop, finalValue, bindingIndexToApply);
-        valueApplied = true;
+      // this is a fallback case in the event that the styling map is `null` for this
+      // binding but there are other map-based bindings that need to be evaluated
+      // afterwards. If the `prop` value is falsy then the intention is to cycle
+      // through all of the properties in the remaining maps as well. If the current
+      // styling map is too short then there are no values to iterate over. In either
+      // case the follow-up maps need to be iterated over.
+      if (recurseInnerMaps &&
+          (stylingMapArr.length === StylingMapArrayIndex.ValuesStartPosition || !targetProp)) {
+        targetPropValueWasApplied = innerSyncStylingMap(
+            context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp,
+            currentMapIndex + 1, defaultValue);
       }
-
-      targetPropValueWasApplied = valueApplied && isTargetPropMatched;
-      cursor += StylingMapArrayIndex.TupleSize;
-    }
-    setCurrentSyncCursor(currentMapIndex, cursor);
-
-    // this is a fallback case in the event that the styling map is `null` for this
-    // binding but there are other map-based bindings that need to be evaluated
-    // afterwards. If the `prop` value is falsy then the intention is to cycle
-    // through all of the properties in the remaining maps as well. If the current
-    // styling map is too short then there are no values to iterate over. In either
-    // case the follow-up maps need to be iterated over.
-    if (stylingMapArr.length === StylingMapArrayIndex.ValuesStartPosition || !targetProp) {
-      return innerSyncStylingMap(
+    } else if (recurseInnerMaps) {
+      targetPropValueWasApplied = innerSyncStylingMap(
           context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp,
           currentMapIndex + 1, defaultValue);
     }
   }
 
-
   return targetPropValueWasApplied;
-}
-
-
-/**
- * Enables support for map-based styling bindings (e.g. `[style]` and `[class]` bindings).
- */
-export function activateStylingMapFeature() {
-  setStylingMapsSyncFn(syncStylingMap);
 }
 
 /**
@@ -276,8 +305,8 @@ function resolveInnerMapMode(
  *    - But do not allow if the current prop is set to be skipped.
  *  2. Otherwise if the current prop is permitted then allow.
  */
-function isValueAllowedToBeApplied(mode: number, isTargetPropMatched: boolean) {
-  let doApplyValue = (mode & StylingMapsSyncMode.ApplyAllValues) > 0;
+function isValueAllowedToBeApplied(mode: StylingMapsSyncMode, isTargetPropMatched: boolean) {
+  let doApplyValue = (mode & StylingMapsSyncMode.ApplyAllValues) !== 0;
   if (!doApplyValue) {
     if (mode & StylingMapsSyncMode.ApplyTargetProp) {
       doApplyValue = isTargetPropMatched;
@@ -319,127 +348,4 @@ function getCurrentSyncCursor(mapIndex: number) {
  */
 function setCurrentSyncCursor(mapIndex: number, indexValue: number) {
   MAP_CURSORS[mapIndex] = indexValue;
-}
-
-/**
- * Used to convert a {key:value} map into a `StylingMapArray` array.
- *
- * This function will either generate a new `StylingMapArray` instance
- * or it will patch the provided `newValues` map value into an
- * existing `StylingMapArray` value (this only happens if `bindingValue`
- * is an instance of `StylingMapArray`).
- *
- * If a new key/value map is provided with an old `StylingMapArray`
- * value then all properties will be overwritten with their new
- * values or with `null`. This means that the array will never
- * shrink in size (but it will also not be created and thrown
- * away whenever the {key:value} map entries change).
- */
-export function normalizeIntoStylingMap(
-    bindingValue: null | StylingMapArray,
-    newValues: {[key: string]: any} | string | null | undefined,
-    normalizeProps?: boolean): StylingMapArray {
-  const stylingMapArr: StylingMapArray = Array.isArray(bindingValue) ? bindingValue : [null];
-  stylingMapArr[StylingMapArrayIndex.RawValuePosition] = newValues || null;
-
-  // because the new values may not include all the properties
-  // that the old ones had, all values are set to `null` before
-  // the new values are applied. This way, when flushed, the
-  // styling algorithm knows exactly what style/class values
-  // to remove from the element (since they are `null`).
-  for (let j = StylingMapArrayIndex.ValuesStartPosition; j < stylingMapArr.length;
-       j += StylingMapArrayIndex.TupleSize) {
-    setMapValue(stylingMapArr, j, null);
-  }
-
-  let props: string[]|null = null;
-  let map: {[key: string]: any}|undefined|null;
-  let allValuesTrue = false;
-  if (typeof newValues === 'string') {  // [class] bindings allow string values
-    if (newValues.length) {
-      props = newValues.split(/\s+/);
-      allValuesTrue = true;
-    }
-  } else {
-    props = newValues ? Object.keys(newValues) : null;
-    map = newValues;
-  }
-
-  if (props) {
-    for (let i = 0; i < props.length; i++) {
-      const prop = props[i] as string;
-      const newProp = normalizeProps ? hyphenate(prop) : prop;
-      const value = allValuesTrue ? true : map ![prop];
-      addItemToStylingMap(stylingMapArr, newProp, value, true);
-    }
-  }
-
-  return stylingMapArr;
-}
-
-/**
- * Inserts the provided item into the provided styling array at the right spot.
- *
- * The `StylingMapArray` type is a sorted key/value array of entries. This means
- * that when a new entry is inserted it must be placed at the right spot in the
- * array. This function figures out exactly where to place it.
- */
-export function addItemToStylingMap(
-    stylingMapArr: StylingMapArray, prop: string, value: string | boolean | null,
-    allowOverwrite?: boolean) {
-  for (let j = StylingMapArrayIndex.ValuesStartPosition; j < stylingMapArr.length;
-       j += StylingMapArrayIndex.TupleSize) {
-    const propAtIndex = getMapProp(stylingMapArr, j);
-    if (prop <= propAtIndex) {
-      let applied = false;
-      if (propAtIndex === prop) {
-        const valueAtIndex = stylingMapArr[j];
-        if (allowOverwrite || !isStylingValueDefined(valueAtIndex)) {
-          applied = true;
-          setMapValue(stylingMapArr, j, value);
-        }
-      } else {
-        applied = true;
-        stylingMapArr.splice(j, 0, prop, value);
-      }
-      return applied;
-    }
-  }
-
-  stylingMapArr.push(prop, value);
-  return true;
-}
-
-/**
- * Converts the provided styling map array into a string.
- *
- * Classes => `one two three`
- * Styles => `prop:value; prop2:value2`
- */
-export function stylingMapToString(map: StylingMapArray, isClassBased: boolean): string {
-  let str = '';
-  for (let i = StylingMapArrayIndex.ValuesStartPosition; i < map.length;
-       i += StylingMapArrayIndex.TupleSize) {
-    const prop = getMapProp(map, i);
-    const value = getMapValue(map, i) as string;
-    const attrValue = concatString(prop, isClassBased ? '' : value, ':');
-    str = concatString(str, attrValue, isClassBased ? ' ' : '; ');
-  }
-  return str;
-}
-
-/**
- * Converts the provided styling map array into a key value map.
- */
-export function stylingMapToStringMap(map: StylingMapArray | null): {[key: string]: any} {
-  let stringMap: {[key: string]: any} = {};
-  if (map) {
-    for (let i = StylingMapArrayIndex.ValuesStartPosition; i < map.length;
-         i += StylingMapArrayIndex.TupleSize) {
-      const prop = getMapProp(map, i);
-      const value = getMapValue(map, i) as string;
-      stringMap[prop] = value;
-    }
-  }
-  return stringMap;
 }
