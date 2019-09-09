@@ -12,8 +12,7 @@ import {assertDefined} from '../util/assert';
 import {assertLViewOrUndefined} from './assert';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
-import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW} from './interfaces/view';
-import {resetStylingState} from './styling_next/state';
+import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState} from './interfaces/view';
 
 
 /**
@@ -144,8 +143,7 @@ let activeDirectiveId = 0;
 export const enum ActiveElementFlags {
   Initial = 0b00,
   RunExitFn = 0b01,
-  ResetStylesOnExit = 0b10,
-  Size = 2,
+  Size = 1,
 }
 
 /**
@@ -173,9 +171,6 @@ export function setActiveHostElement(elementIndex: number | null = null) {
   if (getSelectedIndex() !== elementIndex) {
     if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
       executeElementExitFn();
-    }
-    if (hasActiveElementFlag(ActiveElementFlags.ResetStylesOnExit)) {
-      resetStylingState();
     }
     setSelectedIndex(elementIndex === null ? -1 : elementIndex);
     activeDirectiveId = 0;
@@ -390,6 +385,10 @@ export function setCurrentQueryIndex(value: number): void {
  * @returns the previously active lView;
  */
 export function selectView(newView: LView, hostTNode: TElementNode | TViewNode | null): LView {
+  if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
+    executeElementExitFn();
+  }
+
   ngDevMode && assertLViewOrUndefined(newView);
   const oldView = lView;
 

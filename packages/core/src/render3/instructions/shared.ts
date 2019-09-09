@@ -32,7 +32,6 @@ import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {ActiveElementFlags, executeElementExitFn, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getPreviousOrParentTNode, getSelectedIndex, hasActiveElementFlag, incrementActiveDirectiveId, namespaceHTMLInternal, selectView, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {renderStylingMap} from '../styling_next/bindings';
-import {resetStylingState} from '../styling_next/state';
 import {NO_CHANGE} from '../tokens';
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
@@ -504,9 +503,6 @@ function executeTemplate<T>(
   } finally {
     if (hasActiveElementFlag(ActiveElementFlags.RunExitFn)) {
       executeElementExitFn();
-    }
-    if (hasActiveElementFlag(ActiveElementFlags.ResetStylesOnExit)) {
-      resetStylingState();
     }
     setSelectedIndex(prevSelectedIndex);
   }
