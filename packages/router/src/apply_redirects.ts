@@ -7,7 +7,7 @@
  */
 
 import {Injector, NgModuleRef} from '@angular/core';
-import {EmptyError, Observable, Observer, from, of, combineLatest } from 'rxjs';
+import {EmptyError, Observable, Observer, combineLatest, from, of } from 'rxjs';
 import {catchError, concatAll, every, first, map, mergeMap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
@@ -145,25 +145,27 @@ class ApplyRedirects {
       segments: UrlSegment[], outlet: string,
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
     return combineLatest(routes.map((r: any) => {
-          const expanded$ = this.expandSegmentAgainstRoute(
-              ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
-          return expanded$.pipe(catchError((e: any) => {
-            if (e instanceof NoMatch) {
-              // TODO(i): this return type doesn't match the declared Observable<UrlSegmentGroup> -
-              // talk to Jason
-              return of (null) as any;
-            }
-            throw e;
-          }));
-        })).pipe(map(x => x.find((s: any) => !!s)), catchError((e: any, _: any) => {
-          if (e instanceof EmptyError || e.name === 'EmptyError') {
-            if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
-              return of (new UrlSegmentGroup([], {}));
-            }
-            throw new NoMatch(segmentGroup);
-          }
-          throw e;
-        }));
+             const expanded$ = this.expandSegmentAgainstRoute(
+                 ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
+             return expanded$.pipe(catchError((e: any) => {
+               if (e instanceof NoMatch) {
+                 // TODO(i): this return type doesn't match the declared Observable<UrlSegmentGroup>
+                 // -
+                 // talk to Jason
+                 return of (null) as any;
+               }
+               throw e;
+             }));
+           }))
+        .pipe(map(x => x.find((s: any) => !!s)), catchError((e: any, _: any) => {
+                if (e instanceof EmptyError || e.name === 'EmptyError') {
+                  if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
+                    return of (new UrlSegmentGroup([], {}));
+                  }
+                  throw new NoMatch(segmentGroup);
+                }
+                throw e;
+              }));
   }
 
   private noLeftoversInUrl(segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string):
