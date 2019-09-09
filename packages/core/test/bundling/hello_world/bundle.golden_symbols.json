@@ -135,6 +135,9 @@
     "name": "__window"
   },
   {
+    "name": "_elementExitFn"
+  },
+  {
     "name": "_global"
   },
   {
@@ -144,7 +147,7 @@
     "name": "_selectedIndex"
   },
   {
-    "name": "_stateStorage"
+    "name": "_state"
   },
   {
     "name": "addToViewTree"
@@ -208,6 +211,9 @@
   },
   {
     "name": "executeCheckHooks"
+  },
+  {
+    "name": "executeElementExitFn"
   },
   {
     "name": "executeInitAndCheckHooks"
@@ -315,6 +321,9 @@
     "name": "getSelectedIndex"
   },
   {
+    "name": "hasActiveElementFlag"
+  },
+  {
     "name": "hasParentInjector"
   },
   {
@@ -418,9 +427,6 @@
   },
   {
     "name": "renderView"
-  },
-  {
-    "name": "resetAllStylingState"
   },
   {
     "name": "resetComponentState"

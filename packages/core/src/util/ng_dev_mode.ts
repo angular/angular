@@ -45,8 +45,6 @@ declare global {
     flushStyling: number;
     classesApplied: number;
     stylesApplied: number;
-    stylingWritePersistedState: number;
-    stylingReadPersistedState: number;
   }
 }
 
@@ -87,8 +85,6 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     flushStyling: 0,
     classesApplied: 0,
     stylesApplied: 0,
-    stylingWritePersistedState: 0,
-    stylingReadPersistedState: 0,
   };
 
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
