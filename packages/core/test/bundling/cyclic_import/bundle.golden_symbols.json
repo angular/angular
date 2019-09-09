@@ -168,9 +168,6 @@
     "name": "_selectedIndex"
   },
   {
-    "name": "_state"
-  },
-  {
     "name": "addComponentLogic"
   },
   {
@@ -589,9 +586,6 @@
   },
   {
     "name": "resetPreOrderHookFlags"
-  },
-  {
-    "name": "resetStylingState"
   },
   {
     "name": "resolveDirectives"

@@ -11,7 +11,7 @@ import {setInputsForProperty} from '../instructions/shared';
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {BINDING_INDEX, LView, RENDERER} from '../interfaces/view';
-import {ActiveElementFlags, getActiveDirectiveId, getCurrentStyleSanitizer, getLView, getSelectedIndex, setActiveElementFlag, setCurrentStyleSanitizer, setElementExitFn} from '../state';
+import {getActiveDirectiveId, getCurrentStyleSanitizer, getLView, getSelectedIndex, setCurrentStyleSanitizer, setElementExitFn} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
@@ -186,10 +186,7 @@ function stylingProp(
           value as string | SafeValue | null, sanitizer);
     }
 
-    if (updated) {
-      setElementExitFn(applyStyling);
-    }
-    markStylingStateAsDirty();
+    setElementExitFn(stylingApply);
   }
 
   return updated;
@@ -331,6 +328,9 @@ function _stylingMap(
         renderer, context, native, lView, bindingIndex, stylingMapArr as StylingMapArray,
         isClassBased ? setClass : setStyle, sanitizer, valueHasChanged);
   } else {
+    updated = valueHasChanged;
+    activateStylingMapFeature();
+
     // Context Resolution (or first update) Case: save the map value
     // and defer to the context to flush and apply the style/class binding
     // value to the element.
@@ -344,15 +344,9 @@ function _stylingMap(
           valueHasChanged);
     }
 
-    if (valueHasChanged) {
-      updated = true;
-      setElementExitFn(applyStyling);
-    }
-
-    activateStylingMapFeature();
+    setElementExitFn(stylingApply);
   }
 
-  markStylingStateAsDirty();
   return updated;
 }
 
@@ -384,9 +378,9 @@ function updateDirectiveInputValue(
       const initialValue = getInitialStylingValue(context);
       const value = normalizeStylingDirectiveInputValue(initialValue, newValue, isClassBased);
       setInputsForProperty(lView, inputs, value);
+      setElementExitFn(stylingApply);
     }
     setValue(lView, bindingIndex, newValue);
-    setElementExitFn(applyStyling);
   }
 }
 
@@ -423,17 +417,17 @@ function normalizeStylingDirectiveInputValue(
  * in this file. When called it will flush all style and class bindings to the element
  * via the context resolution algorithm.
  */
-function applyStyling(): void {
-  const elementIndex = getSelectedIndex();
+function stylingApply(): void {
   const lView = getLView();
+  const elementIndex = getSelectedIndex();
   const tNode = getTNode(elementIndex, lView);
-  const renderer = getRenderer(tNode, lView);
   const native = getNativeByTNode(tNode, lView) as RElement;
+  const directiveIndex = getActiveDirectiveId();
+  const renderer = getRenderer(tNode, lView);
   const sanitizer = getCurrentStyleSanitizer();
   const classesContext = isStylingContext(tNode.classes) ? tNode.classes as TStylingContext : null;
   const stylesContext = isStylingContext(tNode.styles) ? tNode.styles as TStylingContext : null;
-  flushStyling(
-      renderer, lView, classesContext, stylesContext, native, getActiveDirectiveId(), sanitizer);
+  flushStyling(renderer, lView, classesContext, stylesContext, native, directiveIndex, sanitizer);
   setCurrentStyleSanitizer(null);
 }
 
@@ -536,10 +530,6 @@ function resolveStylePropValue(
     }
   }
   return resolvedValue;
-}
-
-function markStylingStateAsDirty(): void {
-  setActiveElementFlag(ActiveElementFlags.ResetStylesOnExit);
 }
 
 /**
