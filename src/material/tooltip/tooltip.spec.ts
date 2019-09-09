@@ -63,6 +63,7 @@ describe('MatTooltip', () => {
         DynamicTooltipsDemo,
         TooltipOnTextFields,
         TooltipOnDraggableElement,
+        DataBoundAriaLabelTooltip,
       ],
       providers: [
         {provide: Platform, useFactory: () => platform},
@@ -441,20 +442,31 @@ describe('MatTooltip', () => {
       expect(overlayContainerElement.textContent).toBe('');
     }));
 
-    it('should have an aria-described element with the tooltip message', () => {
+    it('should have an aria-described element with the tooltip message', fakeAsync(() => {
       const dynamicTooltipsDemoFixture = TestBed.createComponent(DynamicTooltipsDemo);
       const dynamicTooltipsComponent = dynamicTooltipsDemoFixture.componentInstance;
 
       dynamicTooltipsComponent.tooltips = ['Tooltip One', 'Tooltip Two'];
       dynamicTooltipsDemoFixture.detectChanges();
+      tick();
 
-      const buttons = dynamicTooltipsComponent.getButtons();
+      const buttons = dynamicTooltipsDemoFixture.nativeElement.querySelectorAll('button');
       const firstButtonAria = buttons[0].getAttribute('aria-describedby');
       expect(document.querySelector(`#${firstButtonAria}`)!.textContent).toBe('Tooltip One');
 
       const secondButtonAria = buttons[1].getAttribute('aria-describedby');
       expect(document.querySelector(`#${secondButtonAria}`)!.textContent).toBe('Tooltip Two');
-    });
+    }));
+
+    it('should not add an ARIA description for elements that have the same text as a' +
+      'data-bound aria-label', fakeAsync(() => {
+        const ariaLabelFixture = TestBed.createComponent(DataBoundAriaLabelTooltip);
+        ariaLabelFixture.detectChanges();
+        tick();
+
+        const button = ariaLabelFixture.nativeElement.querySelector('button');
+        expect(button.getAttribute('aria-describedby')).toBeFalsy();
+      }));
 
     it('should not try to dispose the tooltip when destroyed and done hiding', fakeAsync(() => {
       tooltipDirective.show();
@@ -1011,13 +1023,15 @@ class OnPushTooltipDemo {
 })
 class DynamicTooltipsDemo {
   tooltips: Array<string> = [];
-
-  constructor(private _elementRef: ElementRef<HTMLElement>) {}
-
-  getButtons() {
-    return this._elementRef.nativeElement.querySelectorAll('button');
-  }
 }
+
+@Component({
+  template: `<button [matTooltip]="message" [attr.aria-label]="message">Click me</button>`,
+})
+class DataBoundAriaLabelTooltip {
+  message = 'Hello there';
+}
+
 
 @Component({
   template: `
