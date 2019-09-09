@@ -158,7 +158,7 @@ class ApplyRedirects {
           const match = x.find((s: any) => !!s);
           if (!match) {
             if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
-              return of (new UrlSegmentGroup([], {}));
+              return new UrlSegmentGroup([], {});
             }
             throw new NoMatch(segmentGroup);
           }
