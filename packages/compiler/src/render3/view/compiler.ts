@@ -713,16 +713,6 @@ function createHostBindingsFunction(
   }
 
   if (styleBuilder.hasBindings) {
-    // singular style/class bindings (things like `[style.prop]` and `[class.name]`)
-    // MUST be registered on a given element within the component/directive
-    // templateFn/hostBindingsFn functions. The instruction below will figure out
-    // what all the bindings are and then generate the statements required to register
-    // those bindings to the element via `styling`.
-    const stylingInstruction = styleBuilder.buildStylingInstruction(null, constantPool);
-    if (stylingInstruction) {
-      createStatements.push(createStylingStmt(stylingInstruction, bindingContext, bindingFn));
-    }
-
     // finally each binding that was registered in the statement above will need to be added to
     // the update block of a component/directive templateFn/hostBindingsFn so that the bindings
     // are evaluated and updated for the element.
