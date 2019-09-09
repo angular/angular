@@ -1,6 +1,6 @@
 import {HarnessLoader} from '@angular/cdk-experimental/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk-experimental/testing/testbed';
-import {Component} from '@angular/core';
+import {Component, Type} from '@angular/core';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {MatMenuModule} from '@angular/material/menu';
 import {OverlayContainer} from '@angular/cdk/overlay';
@@ -16,18 +16,8 @@ let overlayContainer: OverlayContainer;
 describe('MatMenuHarness', () => {
   describe('non-MDC-based', () => {
     beforeEach(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatMenuModule],
-        declarations: [MenuHarnessTest],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MenuHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
+      await prepareTests(MatMenuModule, MenuHarnessTest);
       menuHarness = MatMenuHarness;
-      inject([OverlayContainer], (oc: OverlayContainer) => {
-        overlayContainer = oc;
-      })();
     });
 
     runTests();
@@ -35,14 +25,7 @@ describe('MatMenuHarness', () => {
 
   describe('MDC-based', () => {
     beforeEach(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatMdcMenuModule],
-        declarations: [MenuHarnessTest],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MenuHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
+      await prepareTests(MatMdcMenuModule, MenuHarnessTest);
       // Public APIs are the same as MatMenuHarness, but cast is necessary because of different
       // private fields.
       menuHarness = MatMdcMenuHarness as any;
@@ -52,11 +35,27 @@ describe('MatMenuHarness', () => {
   });
 });
 
+/** Shared test setup logic. */
+async function prepareTests(moduleType: Type<any>, fixtureType: Type<any>) {
+  await TestBed.configureTestingModule({
+    imports: [moduleType],
+    declarations: [fixtureType],
+  }).compileComponents();
+
+  fixture = TestBed.createComponent(fixtureType);
+  fixture.detectChanges();
+  loader = TestbedHarnessEnvironment.loader(fixture);
+  inject([OverlayContainer], (oc: OverlayContainer) => {
+    overlayContainer = oc;
+  })();
+}
+
 /** Shared tests to run on both the original and MDC-based menues. */
 function runTests() {
   afterEach(() => {
     // Angular won't call this for us so we need to do it ourselves to avoid leaks.
     overlayContainer.ngOnDestroy();
+    overlayContainer = null!;
   });
 
   it('should load all menu harnesses', async () => {

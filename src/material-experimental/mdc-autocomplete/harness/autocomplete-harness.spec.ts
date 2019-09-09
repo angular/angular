@@ -1,6 +1,6 @@
 import {HarnessLoader} from '@angular/cdk-experimental/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk-experimental/testing/testbed';
-import {Component} from '@angular/core';
+import {Component, Type} from '@angular/core';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {OverlayContainer} from '@angular/cdk/overlay';
@@ -16,18 +16,8 @@ let overlayContainer: OverlayContainer;
 describe('MatAutocompleteHarness', () => {
   describe('non-MDC-based', () => {
     beforeEach(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatAutocompleteModule],
-        declarations: [AutocompleteHarnessTest],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(AutocompleteHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
+      await prepareTests(MatAutocompleteModule, AutocompleteHarnessTest);
       harness = MatAutocompleteHarness;
-      inject([OverlayContainer], (oc: OverlayContainer) => {
-        overlayContainer = oc;
-      })();
     });
 
     runTests();
@@ -35,14 +25,7 @@ describe('MatAutocompleteHarness', () => {
 
   describe('MDC-based', () => {
     beforeEach(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatMdcAutocompleteModule],
-        declarations: [AutocompleteHarnessTest],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(AutocompleteHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
+      await prepareTests(MatMdcAutocompleteModule, AutocompleteHarnessTest);
       // Public APIs are the same as MatAutocompleteHarness, but cast
       // is necessary because of different private fields.
       harness = MatMdcAutocompleteHarness as any;
@@ -53,11 +36,27 @@ describe('MatAutocompleteHarness', () => {
   });
 });
 
+/** Shared test setup logic. */
+async function prepareTests(moduleType: Type<any>, fixtureType: Type<any>) {
+  await TestBed.configureTestingModule({
+    imports: [moduleType],
+    declarations: [fixtureType],
+  }).compileComponents();
+
+  fixture = TestBed.createComponent(fixtureType);
+  fixture.detectChanges();
+  loader = TestbedHarnessEnvironment.loader(fixture);
+  inject([OverlayContainer], (oc: OverlayContainer) => {
+    overlayContainer = oc;
+  })();
+}
+
 /** Shared tests to run on both the original and MDC-based autocomplete. */
 function runTests() {
   afterEach(() => {
     // Angular won't call this for us so we need to do it ourselves to avoid leaks.
     overlayContainer.ngOnDestroy();
+    overlayContainer = null!;
   });
 
   it('should load all autocomplete harnesses', async () => {
