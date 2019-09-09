@@ -514,9 +514,8 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
 
   /** Returns true if element is an input with no value. */
   private _isEmptyInput(element: HTMLElement): boolean {
-    if (element && element.nodeName.toLowerCase() === 'input') {
-      let input = element as HTMLInputElement;
-      return !input.value;
+    if (element && element.id === this._chipInput!.id) {
+      return this._chipInput.empty;
     }
 
     return false;
