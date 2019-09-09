@@ -226,7 +226,7 @@ export class MatTabLink extends _MatTabLinkMixinBase implements OnDestroy, CanDi
     super();
 
     this._tabLinkRipple = new RippleRenderer(this, ngZone, elementRef, platform);
-    this._tabLinkRipple.setupTriggerEvents(elementRef.nativeElement);
+    this._tabLinkRipple.setupTriggerEvents(elementRef);
     this.rippleConfig = globalRippleOptions || {};
     this.tabIndex = parseInt(tabIndex) || 0;
 

@@ -392,12 +392,12 @@ export declare class RippleRef {
 }
 
 export declare class RippleRenderer {
-    constructor(_target: RippleTarget, _ngZone: NgZone, elementRef: ElementRef<HTMLElement>, platform: Platform);
+    constructor(_target: RippleTarget, _ngZone: NgZone, elementOrElementRef: HTMLElement | ElementRef<HTMLElement>, platform: Platform);
     _removeTriggerEvents(): void;
     fadeInRipple(x: number, y: number, config?: RippleConfig): RippleRef;
     fadeOutAll(): void;
     fadeOutRipple(rippleRef: RippleRef): void;
-    setupTriggerEvents(element: HTMLElement): void;
+    setupTriggerEvents(elementOrElementRef: HTMLElement | ElementRef<HTMLElement>): void;
 }
 
 export declare enum RippleState {

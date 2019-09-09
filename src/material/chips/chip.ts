@@ -244,7 +244,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     this._addHostClassName();
 
     this._chipRipple = new RippleRenderer(this, _ngZone, _elementRef, platform);
-    this._chipRipple.setupTriggerEvents(_elementRef.nativeElement);
+    this._chipRipple.setupTriggerEvents(_elementRef);
     this.rippleConfig = globalRippleOptions || {};
     this._animationsDisabled = animationMode === 'NoopAnimations';
   }

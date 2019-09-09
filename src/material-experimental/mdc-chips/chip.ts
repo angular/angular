@@ -380,7 +380,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
     this._rippleRenderer =
       new RippleRenderer(this, this._ngZone, this._elementRef, this._platform);
-    this._rippleRenderer.setupTriggerEvents(this._elementRef.nativeElement);
+    this._rippleRenderer.setupTriggerEvents(this._elementRef);
   }
 
   /** Forwards interaction events to the MDC chip foundation. */

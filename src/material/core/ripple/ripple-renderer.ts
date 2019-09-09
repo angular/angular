@@ -8,6 +8,7 @@
 import {ElementRef, NgZone} from '@angular/core';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';
+import {coerceElement} from '@angular/cdk/coercion';
 import {RippleRef, RippleState} from './ripple-ref';
 
 export type RippleConfig = {
@@ -97,12 +98,12 @@ export class RippleRenderer {
 
   constructor(private _target: RippleTarget,
               private _ngZone: NgZone,
-              elementRef: ElementRef<HTMLElement>,
+              elementOrElementRef: HTMLElement | ElementRef<HTMLElement>,
               platform: Platform) {
 
     // Only do anything if we're on the browser.
     if (platform.isBrowser) {
-      this._containerElement = elementRef.nativeElement;
+      this._containerElement = coerceElement(elementOrElementRef);
 
       // Specify events which need to be registered on the trigger.
       this._triggerEvents
@@ -226,7 +227,9 @@ export class RippleRenderer {
   }
 
   /** Sets up the trigger event listeners */
-  setupTriggerEvents(element: HTMLElement) {
+  setupTriggerEvents(elementOrElementRef: HTMLElement | ElementRef<HTMLElement>) {
+    const element = coerceElement(elementOrElementRef);
+
     if (!element || element === this._triggerElement) {
       return;
     }
