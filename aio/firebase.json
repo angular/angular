@@ -60,7 +60,7 @@
 
       // `@angular/http` package was removed, and new `HttpClient` APIs are available under `@angular/common/http` package
       {"type": 301, "source": "/api/http", "destination": "/guide/deprecations#http"},
-      {"type": 301, "source": "/**/api/http", "destination": "/api/common/http"},
+      {"type": 301, "source": "/**/api/http", "destination": "/guide/deprecations#http"},
       {"type": 301, "source": "/**/api/http/BaseRequestOptions", "destination": "/api/common/http/HttpRequest"},
       {"type": 301, "source": "/**/api/http/BaseResponseOptions", "destination": "/api/common/http/HttpResponse"},
       {"type": 301, "source": "/**/api/http/BrowserXhr", "destination": "/api/common/http/BrowserXhr"},
