@@ -24,6 +24,7 @@ import {
 import {TestBed, ComponentFixture, fakeAsync, flush, tick} from '@angular/core/testing';
 import {DOCUMENT} from '@angular/common';
 import {ViewportRuler} from '@angular/cdk/scrolling';
+import {_supportsShadowDom} from '@angular/cdk/platform';
 import {of as observableOf} from 'rxjs';
 
 import {DragDropModule} from '../drag-drop-module';
@@ -4101,6 +4102,39 @@ describe('CdkDrag', () => {
       cleanup();
     }));
 
+    it('should be able to drop into a new container inside the Shadow DOM', fakeAsync(() => {
+      // This test is only relevant for Shadow DOM-supporting browsers.
+      if (!_supportsShadowDom()) {
+        return;
+      }
+
+      const fixture = createComponent(ConnectedDropZonesInsideShadowRoot);
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groupedDragItems;
+      const item = groups[0][1];
+      const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+      dragElementViaMouse(fixture, item.element.nativeElement,
+        targetRect.left + 1, targetRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      expect(event).toEqual({
+        previousIndex: 1,
+        currentIndex: 3,
+        item,
+        container: fixture.componentInstance.dropInstances.toArray()[1],
+        previousContainer: fixture.componentInstance.dropInstances.first,
+        isPointerOverContainer: true,
+        distance: {x: jasmine.any(Number), y: jasmine.any(Number)}
+      });
+    }));
+
   });
 
   describe('with nested drags', () => {
@@ -4480,65 +4514,68 @@ class DraggableInDropZoneWithCustomPlaceholder {
   renderPlaceholder = true;
 }
 
+const CONNECTED_DROP_ZONES_STYLES = [`
+  .cdk-drop-list {
+    display: block;
+    width: 100px;
+    min-height: ${ITEM_HEIGHT}px;
+    background: hotpink;
+  }
+
+  .cdk-drag {
+    display: block;
+    height: ${ITEM_HEIGHT}px;
+    background: red;
+  }
+`];
+
+const CONNECTED_DROP_ZONES_TEMPLATE = `
+  <div
+    cdkDropList
+    #todoZone="cdkDropList"
+    [cdkDropListData]="todo"
+    [cdkDropListConnectedTo]="[doneZone]"
+    (cdkDropListDropped)="droppedSpy($event)"
+    (cdkDropListEntered)="enteredSpy($event)">
+    <div
+      [cdkDragData]="item"
+      (cdkDragEntered)="itemEnteredSpy($event)"
+      *ngFor="let item of todo"
+      cdkDrag>{{item}}</div>
+  </div>
+
+  <div
+    cdkDropList
+    #doneZone="cdkDropList"
+    [cdkDropListData]="done"
+    [cdkDropListConnectedTo]="[todoZone]"
+    (cdkDropListDropped)="droppedSpy($event)"
+    (cdkDropListEntered)="enteredSpy($event)">
+    <div
+      [cdkDragData]="item"
+      (cdkDragEntered)="itemEnteredSpy($event)"
+      *ngFor="let item of done"
+      cdkDrag>{{item}}</div>
+  </div>
+
+  <div
+    cdkDropList
+    #extraZone="cdkDropList"
+    [cdkDropListData]="extra"
+    (cdkDropListDropped)="droppedSpy($event)"
+    (cdkDropListEntered)="enteredSpy($event)">
+    <div
+      [cdkDragData]="item"
+      (cdkDragEntered)="itemEnteredSpy($event)"
+      *ngFor="let item of extra"
+      cdkDrag>{{item}}</div>
+  </div>
+`;
 
 @Component({
   encapsulation: ViewEncapsulation.None,
-  styles: [`
-    .cdk-drop-list {
-      display: block;
-      width: 100px;
-      min-height: ${ITEM_HEIGHT}px;
-      background: hotpink;
-    }
-
-    .cdk-drag {
-      display: block;
-      height: ${ITEM_HEIGHT}px;
-      background: red;
-    }
-  `],
-  template: `
-    <div
-      cdkDropList
-      #todoZone="cdkDropList"
-      [cdkDropListData]="todo"
-      [cdkDropListConnectedTo]="[doneZone]"
-      (cdkDropListDropped)="droppedSpy($event)"
-      (cdkDropListEntered)="enteredSpy($event)">
-      <div
-        [cdkDragData]="item"
-        (cdkDragEntered)="itemEnteredSpy($event)"
-        *ngFor="let item of todo"
-        cdkDrag>{{item}}</div>
-    </div>
-
-    <div
-      cdkDropList
-      #doneZone="cdkDropList"
-      [cdkDropListData]="done"
-      [cdkDropListConnectedTo]="[todoZone]"
-      (cdkDropListDropped)="droppedSpy($event)"
-      (cdkDropListEntered)="enteredSpy($event)">
-      <div
-        [cdkDragData]="item"
-        (cdkDragEntered)="itemEnteredSpy($event)"
-        *ngFor="let item of done"
-        cdkDrag>{{item}}</div>
-    </div>
-
-    <div
-      cdkDropList
-      #extraZone="cdkDropList"
-      [cdkDropListData]="extra"
-      (cdkDropListDropped)="droppedSpy($event)"
-      (cdkDropListEntered)="enteredSpy($event)">
-      <div
-        [cdkDragData]="item"
-        (cdkDragEntered)="itemEnteredSpy($event)"
-        *ngFor="let item of extra"
-        cdkDrag>{{item}}</div>
-    </div>
-  `
+  styles: CONNECTED_DROP_ZONES_STYLES,
+  template: CONNECTED_DROP_ZONES_TEMPLATE
 })
 class ConnectedDropZones implements AfterViewInit {
   @ViewChildren(CdkDrag) rawDragItems: QueryList<CdkDrag>;
@@ -4562,6 +4599,15 @@ class ConnectedDropZones implements AfterViewInit {
     });
   }
 }
+
+@Component({
+  encapsulation: ViewEncapsulation.ShadowDom,
+  styles: CONNECTED_DROP_ZONES_STYLES,
+  template: CONNECTED_DROP_ZONES_TEMPLATE
+})
+class ConnectedDropZonesInsideShadowRoot extends ConnectedDropZones {
+}
+
 
 @Component({
   encapsulation: ViewEncapsulation.None,

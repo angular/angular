@@ -10,6 +10,7 @@ import {ElementRef, NgZone} from '@angular/core';
 import {Direction} from '@angular/cdk/bidi';
 import {coerceElement} from '@angular/cdk/coercion';
 import {ViewportRuler} from '@angular/cdk/scrolling';
+import {_supportsShadowDom} from '@angular/cdk/platform';
 import {Subject, Subscription, interval, animationFrameScheduler} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {moveItemInArray} from './drag-utils';
@@ -74,8 +75,6 @@ export interface DropListRefInternal extends DropListRef {}
  * @docs-private
  */
 export class DropListRef<T = any> {
-  private _document: Document;
-
   /** Element that the drop list is attached to. */
   element: HTMLElement | ElementRef<HTMLElement>;
 
@@ -201,6 +200,9 @@ export class DropListRef<T = any> {
   /** Used to signal to the current auto-scroll sequence when to stop. */
   private _stopScrollTimers = new Subject<void>();
 
+  /** Shadow root of the current element. Necessary for `elementFromPoint` to resolve correctly. */
+  private _shadowRoot: DocumentOrShadowRoot;
+
   constructor(
     element: ElementRef<HTMLElement> | HTMLElement,
     private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>,
@@ -211,9 +213,9 @@ export class DropListRef<T = any> {
      */
     private _ngZone?: NgZone,
     private _viewportRuler?: ViewportRuler) {
+    const nativeNode = this.element = coerceElement(element);
+    this._shadowRoot = getShadowRoot(nativeNode) || _document;
     _dragDropRegistry.registerDropContainer(this);
-    this._document = _document;
-    this.element = element instanceof ElementRef ? element.nativeElement : element;
   }
 
   /** Removes the drop list functionality from the DOM element. */
@@ -815,7 +817,7 @@ export class DropListRef<T = any> {
       return false;
     }
 
-    const elementFromPoint = this._document.elementFromPoint(x, y) as HTMLElement | null;
+    const elementFromPoint = this._shadowRoot.elementFromPoint(x, y) as HTMLElement | null;
 
     // If there's no element at the pointer position, then
     // the client rect is probably scrolled out of the view.
@@ -1048,4 +1050,17 @@ function getElementScrollDirections(element: HTMLElement, clientRect: ClientRect
   }
 
   return [verticalScrollDirection, horizontalScrollDirection];
+}
+
+/** Gets the shadow root of an element, if any. */
+function getShadowRoot(element: HTMLElement): DocumentOrShadowRoot | null {
+  if (_supportsShadowDom()) {
+    const rootNode = element.getRootNode ? element.getRootNode() : null;
+
+    if (rootNode instanceof ShadowRoot) {
+      return rootNode;
+    }
+  }
+
+  return null;
 }
