@@ -10,7 +10,7 @@
   }
 }
 
-// Only flat and stroked buttons (not raised, FABs or icon buttons) have a hover style.
+// Only basic and stroked buttons (not raised, FABs or icon buttons) have a hover style.
 // Use the same visual treatment for hover as for focus.
 .mat-button:hover,
 .mat-stroked-button:hover {
