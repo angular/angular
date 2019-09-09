@@ -22,6 +22,7 @@ describe('MatRadio', () => {
         InterleavedRadioGroup,
         TranscludingWrapper,
         RadioButtonWithPredefinedTabindex,
+        RadioButtonWithPredefinedAriaAttributes,
       ]
     });
 
@@ -778,6 +779,18 @@ describe('MatRadio', () => {
       expect(radioButtonEl.getAttribute('tabindex')).toBe('-1');
     });
 
+    it('should remove the aria attributes from the host element', () => {
+      const predefinedFixture = TestBed.createComponent(RadioButtonWithPredefinedAriaAttributes);
+      predefinedFixture.detectChanges();
+
+      const radioButtonEl =
+          predefinedFixture.debugElement.query(By.css('.mat-radio-button'))!.nativeElement;
+
+      expect(radioButtonEl.hasAttribute('aria-label')).toBe(false);
+      expect(radioButtonEl.hasAttribute('aria-describedby')).toBe(false);
+      expect(radioButtonEl.hasAttribute('aria-labelledby')).toBe(false);
+    });
+
   });
 
   describe('group interspersed with other tags', () => {
@@ -991,3 +1004,13 @@ class DefaultRadioButton {}
   template: `<mat-radio-button color="warn"></mat-radio-button>`
 })
 class RadioButtonWithColorBinding {}
+
+
+@Component({
+  template: `
+    <mat-radio-button
+      aria-label="Radio button"
+      aria-describedby="something"
+      aria-labelledby="something-else"></mat-radio-button>`
+})
+class RadioButtonWithPredefinedAriaAttributes {}

@@ -346,6 +346,9 @@ const _MatRadioButtonMixinBase:
     // Needs to be -1 so the `focus` event still fires.
     '[attr.tabindex]': '-1',
     '[attr.id]': 'id',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
+    '[attr.aria-describedby]': 'null',
     // Note: under normal conditions focus shouldn't land on this element, however it may be
     // programmatically set, for example inside of a focus trap, in this case we want to forward
     // the focus to the native element.
