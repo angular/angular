@@ -1,9 +1,10 @@
 import {HarnessLoader} from '@angular/cdk-experimental/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk-experimental/testing/testbed';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ReactiveFormsModule, FormControl, Validators} from '@angular/forms';
+import {OverlayContainer} from '@angular/cdk/overlay';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {MatSelectModule as MatMdcSelectModule} from '../index';
@@ -13,6 +14,7 @@ import {MatSelectHarness as MatMdcSelectHarness} from './mdc-select-harness';
 let fixture: ComponentFixture<SelectHarnessTest>;
 let loader: HarnessLoader;
 let harness: typeof MatSelectHarness;
+let overlayContainer: OverlayContainer;
 
 describe('MatSelectHarness', () => {
   describe('non-MDC-based', () => {
@@ -31,6 +33,9 @@ describe('MatSelectHarness', () => {
       fixture.detectChanges();
       loader = TestbedHarnessEnvironment.loader(fixture);
       harness = MatSelectHarness;
+      inject([OverlayContainer], (oc: OverlayContainer) => {
+        overlayContainer = oc;
+      })();
     });
 
     runTests();
@@ -63,6 +68,11 @@ describe('MatSelectHarness', () => {
 
 /** Shared tests to run on both the original and MDC-based select. */
 function runTests() {
+  afterEach(() => {
+    // Angular won't call this for us so we need to do it ourselves to avoid leaks.
+    overlayContainer.ngOnDestroy();
+  });
+
   it('should load all select harnesses', async () => {
     const selects = await loader.getAllHarnesses(harness);
     expect(selects.length).toBe(4);

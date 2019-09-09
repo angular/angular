@@ -1,8 +1,9 @@
 import {HarnessLoader} from '@angular/cdk-experimental/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk-experimental/testing/testbed';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {OverlayContainer} from '@angular/cdk/overlay';
 import {MatAutocompleteModule as MatMdcAutocompleteModule} from '../index';
 import {MatAutocompleteHarness} from './autocomplete-harness';
 import {MatAutocompleteHarness as MatMdcAutocompleteHarness} from './mdc-autocomplete-harness';
@@ -10,6 +11,7 @@ import {MatAutocompleteHarness as MatMdcAutocompleteHarness} from './mdc-autocom
 let fixture: ComponentFixture<AutocompleteHarnessTest>;
 let loader: HarnessLoader;
 let harness: typeof MatAutocompleteHarness;
+let overlayContainer: OverlayContainer;
 
 describe('MatAutocompleteHarness', () => {
   describe('non-MDC-based', () => {
@@ -23,6 +25,9 @@ describe('MatAutocompleteHarness', () => {
       fixture.detectChanges();
       loader = TestbedHarnessEnvironment.loader(fixture);
       harness = MatAutocompleteHarness;
+      inject([OverlayContainer], (oc: OverlayContainer) => {
+        overlayContainer = oc;
+      })();
     });
 
     runTests();
@@ -50,6 +55,11 @@ describe('MatAutocompleteHarness', () => {
 
 /** Shared tests to run on both the original and MDC-based autocomplete. */
 function runTests() {
+  afterEach(() => {
+    // Angular won't call this for us so we need to do it ourselves to avoid leaks.
+    overlayContainer.ngOnDestroy();
+  });
+
   it('should load all autocomplete harnesses', async () => {
     const inputs = await loader.getAllHarnesses(harness);
     expect(inputs.length).toBe(5);

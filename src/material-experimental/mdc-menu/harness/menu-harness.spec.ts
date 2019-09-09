@@ -1,8 +1,9 @@
 import {HarnessLoader} from '@angular/cdk-experimental/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk-experimental/testing/testbed';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {MatMenuModule} from '@angular/material/menu';
+import {OverlayContainer} from '@angular/cdk/overlay';
 import {MatMenuModule as MatMdcMenuModule} from '../index';
 import {MatMenuHarness as MatMdcMenuHarness} from './mdc-menu-harness';
 import {MatMenuHarness} from './menu-harness';
@@ -10,6 +11,7 @@ import {MatMenuHarness} from './menu-harness';
 let fixture: ComponentFixture<MenuHarnessTest>;
 let loader: HarnessLoader;
 let menuHarness: typeof MatMenuHarness;
+let overlayContainer: OverlayContainer;
 
 describe('MatMenuHarness', () => {
   describe('non-MDC-based', () => {
@@ -23,6 +25,9 @@ describe('MatMenuHarness', () => {
       fixture.detectChanges();
       loader = TestbedHarnessEnvironment.loader(fixture);
       menuHarness = MatMenuHarness;
+      inject([OverlayContainer], (oc: OverlayContainer) => {
+        overlayContainer = oc;
+      })();
     });
 
     runTests();
@@ -49,6 +54,11 @@ describe('MatMenuHarness', () => {
 
 /** Shared tests to run on both the original and MDC-based menues. */
 function runTests() {
+  afterEach(() => {
+    // Angular won't call this for us so we need to do it ourselves to avoid leaks.
+    overlayContainer.ngOnDestroy();
+  });
+
   it('should load all menu harnesses', async () => {
     const menues = await loader.getAllHarnesses(menuHarness);
     expect(menues.length).toBe(2);

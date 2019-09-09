@@ -67,6 +67,7 @@ ng_test_library(
         ":mdc-autocomplete",
         "//src/cdk-experimental/testing",
         "//src/cdk-experimental/testing/testbed",
+        "//src/cdk/overlay",
         "//src/cdk/platform",
         "//src/cdk/testing",
         "//src/material/autocomplete",

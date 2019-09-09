@@ -1,14 +1,16 @@
 import {HarnessLoader} from '@angular/cdk-experimental/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk-experimental/testing/testbed';
 import {Component, TemplateRef, ViewChild} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {MatDialog, MatDialogConfig, MatDialogModule} from '@angular/material/dialog';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {OverlayContainer} from '@angular/cdk/overlay';
 import {MatDialogHarness} from './dialog-harness';
 
 let fixture: ComponentFixture<DialogHarnessTest>;
 let loader: HarnessLoader;
 let dialogHarness: typeof MatDialogHarness;
+let overlayContainer: OverlayContainer;
 
 describe('MatDialogHarness', () => {
   describe('non-MDC-based', () => {
@@ -24,6 +26,9 @@ describe('MatDialogHarness', () => {
       fixture.detectChanges();
       loader = new TestbedHarnessEnvironment(document.body, fixture);
       dialogHarness = MatDialogHarness;
+      inject([OverlayContainer], (oc: OverlayContainer) => {
+        overlayContainer = oc;
+      })();
     });
 
     runTests();
@@ -44,6 +49,9 @@ function runTests() {
     // dialogs are left in the DOM.
     fixture.componentInstance.dialog.closeAll();
     fixture.detectChanges();
+
+    // Angular won't call this for us so we need to do it ourselves to avoid leaks.
+    overlayContainer.ngOnDestroy();
   });
 
   it('should load harness for dialog', async () => {

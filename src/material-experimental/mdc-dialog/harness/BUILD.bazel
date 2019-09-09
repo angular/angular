@@ -21,6 +21,7 @@ ng_test_library(
         ":harness",
         "//src/cdk-experimental/testing",
         "//src/cdk-experimental/testing/testbed",
+        "//src/cdk/overlay",
         "//src/material/dialog",
         "@npm//@angular/platform-browser",
     ],
