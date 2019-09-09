@@ -26,8 +26,7 @@ import {LView} from '../interfaces/view';
  * The `TStylingContext` unites all template styling bindings (i.e.
  * `[class]` and `[style]` bindings) as well as all host-level
  * styling bindings (for components and directives) together into
- * a single manifest. It is used each time there are one or more
- * styling bindings present for an element.
+ * a single manifest
  *
  * The styling context is stored on a `TNode` on and there are
  * two instances of it: one for classes and another for styles.
@@ -36,6 +35,10 @@ import {LView} from '../interfaces/view';
  * tNode.styles = [ ... a context only for styles ... ];
  * tNode.classes = [ ... a context only for classes ... ];
  * ```
+ *
+ * The styling context is created each time there are one or more
+ * styling bindings (style or class bindings) present for an element,
+ * but is only created once per `TNode`.
  *
  * `tNode.styles` and `tNode.classes` can be an instance of the following:
  *
@@ -62,36 +65,48 @@ import {LView} from '../interfaces/view';
  * storing actual styling binding values, the lView binding index values
  * are stored within the context. (static nature means it is more compact.)
  *
+ * The code below shows a breakdown of two instances of `TStylingContext`
+ * (one for `tNode.styles` and another for `tNode.classes`):
+ *
  * ```typescript
  * // <div [class.active]="c"  // lView binding index = 20
  * //      [style.width]="x"   // lView binding index = 21
  * //      [style.height]="y"> // lView binding index = 22
- * tNode.stylesContext = [
- *   [], // initial values array
- *   0, // the context config value
+ * //  ...
+ * // </div>
+ * tNode.styles = [
+ *   0,         // the context config value (see `TStylingContextConfig`)
+ *   1,         // the total amount of sources present (only `1` b/c there are only template
+ * bindings)
+ *   [null],    // initial values array (an instance of `StylingMapArray`)
  *
- *   0b001, // guard mask for width
- *   2, // total entries for width
- *   'width', // the property name
- *   21, // the binding location for the "x" binding in the lView
- *   null,
+ *   0,         // config entry for the property (see `TStylingContextPropConfigFlags`)
+ *   0b010,     // template guard mask for height
+ *   0,         // host bindings guard mask for height
+ *   'height',  // the property name
+ *   22,        // the binding location for the "y" binding in the lView
+ *   null,      // the default value for height
  *
- *   0b010, // guard mask for height
- *   2, // total entries for height
- *   'height', // the property name
- *   22, // the binding location for the "y" binding in the lView
- *   null,
+ *   0,         // config entry for the property (see `TStylingContextPropConfigFlags`)
+ *   0b001,     // template guard mask for width
+ *   0,         // host bindings guard mask for width
+ *   'width',   // the property name
+ *   21,        // the binding location for the "x" binding in the lView
+ *   null,      // the default value for width
  * ];
  *
- * tNode.classesContext = [
- *   [], // initial values array
- *   0, // the context config value
+ * tNode.classes = [
+ *   0,         // the context config value (see `TStylingContextConfig`)
+ *   1,         // the total amount of sources present (only `1` b/c there are only template
+ * bindings)
+ *   [null],    // initial values array (an instance of `StylingMapArray`)
  *
- *   0b001, // guard mask for active
- *   2, // total entries for active
- *   'active', // the property name
- *   20, // the binding location for the "c" binding in the lView
- *   null,
+ *   0,         // config entry for the property (see `TStylingContextPropConfigFlags`)
+ *   0b001,     // template guard mask for width
+ *   0,         // host bindings guard mask for width
+ *   'active',  // the property name
+ *   20,        // the binding location for the "c" binding in the lView
+ *   null,      // the default value for the `active` class
  * ];
  * ```
  *
@@ -100,19 +115,25 @@ import {LView} from '../interfaces/view';
  *
  * ```typescript
  * context = [
- *   CONFIG, // the styling context config value
  *   //...
- *   guardMask,
- *   totalEntries,
+ *   configValue,
+ *   templateGuardMask,
+ *   hostBindingsGuardMask,
  *   propName,
- *   bindingIndices...,
+ *   ...bindingIndices...,
  *   defaultValue
+ *   //...
  * ];
  * ```
  *
  * Below is a breakdown of each value:
  *
- * - **guardMask**:
+ * - **configValue**:
+ *   Property-specific configuration values. The only config setting
+ *   that is implemented right now is whether or not to sanitize the
+ *   value.
+ *
+ * - **templateGuardMask**:
  *   A numeric value where each bit represents a binding index
  *   location. Each binding index location is assigned based on
  *   a local counter value that increments each time an instruction
@@ -136,18 +157,23 @@ import {LView} from '../interfaces/view';
  *   efficient way to flip all bits on the mask when a special kind
  *   of caching scenario occurs or when there are more than 32 bindings).
  *
- * - **totalEntries**:
- *   Each property present in the contains various binding sources of
- *   where the styling data could come from. This includes template
- *   level bindings, directive/component host bindings as well as the
- *   default value (or static value) all writing to the same property.
- *   This value depicts how many binding source entries exist for the
- *   property.
+ * - **hostBindingsGuardMask**:
+ *   Another instance of a guard mask that is specific to host bindings.
+ *   This behaves exactly the same way as does the `templateGuardMask`,
+ *   but will not contain any binding information processed in the template.
+ *   The reason why there are two instances of guard masks (one for the
+ *   template and another for host bindings) is because the template bindings
+ *   are processed before host bindings and the state information is not
+ *   carried over into the host bindings code. As soon as host bindings are
+ *   processed for an element the counter and state-based bit mask values are
+ *   set to `0`.
  *
- *   The reason why the totalEntries value is needed is because the
- *   styling context is dynamic in size and it's not possible
- *   for the flushing or update algorithms to know when and where
- *   a property starts and ends without it.
+ * ```
+ * <div [style.width]="x"   // binding index = 21 (counter index = 0)
+ *      [style.height]="y"  // binding index = 22 (counter index = 1)
+ *      dir-that-sets-width  // binding index = 30 (counter index = 0)
+ *      dir-that-sets-width> // binding index = 31 (counter index = 1)
+ * ```
  *
  * - **propName**:
  *   The CSS property name or class name (e.g `width` or `active`).
@@ -165,15 +191,20 @@ import {LView} from '../interfaces/view';
  * - **defaultValue**:
  *   This is the default that will always be applied to the element if
  *   and when all other binding sources return a result that is null.
- *   Usually this value is null but it can also be a static value that
+ *   Usually this value is `null` but it can also be a static value that
  *   is intercepted when the tNode is first constructured (e.g.
  *   `<div style="width:200px">` has a default value of `200px` for
  *   the `width` property).
  *
  * Each time a new binding is encountered it is registered into the
  * context. The context then is continually updated until the first
- * styling apply call has been called (this is triggered by the
- * `stylingApply()` instruction for the active element).
+ * styling apply call has been called (which is automatically scheduled
+ * to be called once an element exits during change detection). Note that
+ * each entry in the context is stored in alphabetical order.
+ *
+ * Once styling has been flushed for the first time for an element the
+ * context will set as locked (this prevents bindings from being added
+ * to the context later on).
  *
  * # How Styles/Classes are Rendered
  * Each time a styling instruction (e.g. `[class.name]`, `[style.prop]`,
@@ -190,15 +221,24 @@ import {LView} from '../interfaces/view';
  * function updateStyleProp(prop: string, value: string) {
  *   const lView = getLView();
  *   const bindingIndex = BINDING_INDEX++;
- *   const indexForStyle = localStylesCounter++;
+ *
+ *   // update the local counter value
+ *   const indexForStyle = stylingState.stylesCount++;
  *   if (lView[bindingIndex] !== value) {
  *     lView[bindingIndex] = value;
- *     localBitMaskForStyles |= 1 << indexForStyle;
+ *
+ *     // tell the local state that we have updated a style value
+ *     // by updating the bit mask
+ *     stylingState.bitMaskForStyles |= 1 << indexForStyle;
  *   }
  * }
  * ```
  *
- * ## The Apply Algorithm
+ * Once all the bindings have updated a `bitMask` value will be populated.
+ * This `bitMask` value is used in the apply algorithm (which is called
+ * context resolution).
+ *
+ * ## The Apply Algorithm (Context Resolution)
  * As explained above, each time a binding updates its value, the resulting
  * value is stored in the `lView` array. These styling values have yet to
  * be flushed to the element.
@@ -283,94 +323,147 @@ import {LView} from '../interfaces/view';
  */
 export interface TStylingContext extends
     Array<number|string|number|boolean|null|StylingMapArray|{}> {
+  /** Configuration data for the context */
+  [TStylingContextIndex.ConfigPosition]: TStylingConfig;
+
+  /** The total amount of sources present in the context */
+  [TStylingContextIndex.TotalSourcesPosition]: number;
+
   /** Initial value position for static styles */
   [TStylingContextIndex.InitialStylingValuePosition]: StylingMapArray;
-
-  /** Configuration data for the context */
-  [TStylingContextIndex.ConfigPosition]: TStylingConfigFlags;
-
-  /** Temporary value used to track directive index entries until
-     the old styling code is fully removed. The reason why this
-     is required is to figure out which directive is last and,
-     when encountered, trigger a styling flush to happen */
-  [TStylingContextIndex.LastDirectiveIndexPosition]: number;
-
-  /** The bit guard value for all map-based bindings on an element */
-  [TStylingContextIndex.MapBindingsBitGuardPosition]: number;
-
-  /** The total amount of map-based bindings present on an element */
-  [TStylingContextIndex.MapBindingsValuesCountPosition]: number;
-
-  /** The prop value for map-based bindings (there actually isn't a
-   * value at all, but this is just used in the context to avoid
-   * having any special code to update the binding information for
-   * map-based entries). */
-  [TStylingContextIndex.MapBindingsPropPosition]: string;
 }
 
 /**
- * A series of flags used to configure the config value present within a
- * `TStylingContext` value.
+ * A series of flags used to configure the config value present within an instance of
+ * `TStylingContext`.
  */
-export const enum TStylingConfigFlags {
+export const enum TStylingConfig {
   /**
-   * The initial state of the styling context config
+   * The initial state of the styling context config.
    */
-  Initial = 0b0,
+  Initial = 0b0000000,
 
   /**
-   * A flag which marks the context as being locked.
+   * Whether or not there are prop-based bindings present.
    *
-   * The styling context is constructed across an element template
-   * function as well as any associated hostBindings functions. When
-   * this occurs, the context itself is open to mutation and only once
-   * it has been flushed once then it will be locked for good (no extra
-   * bindings can be added to it).
+   * Examples include:
+   * 1. `<div [style.prop]="x">`
+   * 2. `<div [class.prop]="x">`
+   * 3. `@HostBinding('style.prop') x`
+   * 4. `@HostBinding('class.prop') x`
    */
-  Locked = 0b1,
+  HasPropBindings = 0b0000001,
 
   /**
-   * Whether or not to store the state between updates in a global storage map.
+   * Whether or not there are map-based bindings present.
    *
-   * This flag helps the algorithm avoid storing all state values temporarily in
-   * a storage map (that lives in `state.ts`). The flag is only flipped to true if
-   * and when an element contains style/class bindings that exist both on the
-   * template-level as well as within host bindings on the same element. This is a
-   * rare case, and a storage map is required so that the state values can be restored
-   * between the template code running and the host binding code executing.
+   * Examples include:
+   * 1. `<div [style]="x">`
+   * 2. `<div [class]="x">`
+   * 3. `@HostBinding('style') x`
+   * 4. `@HostBinding('class') x`
    */
-  PersistStateValues = 0b10,
+  HasMapBindings = 0b0000010,
+
+  /**
+   * Whether or not there are map-based and prop-based bindings present.
+   *
+   * Examples include:
+   * 1. `<div [style]="x" [style.prop]="y">`
+   * 2. `<div [class]="x" [style.prop]="y">`
+   * 3. `<div [style]="x" dir-that-sets-some-prop>`
+   * 4. `<div [class]="x" dir-that-sets-some-class>`
+   */
+  HasPropAndMapBindings = 0b0000011,
+
+  /**
+   * Whether or not there are two or more sources for a single property in the context.
+   *
+   * Examples include:
+   * 1. prop + prop: `<div [style.width]="x" dir-that-sets-width>`
+   * 2. map + prop: `<div [style]="x" [style.prop]>`
+   * 3. map + map: `<div [style]="x" dir-that-sets-style>`
+   */
+  HasCollisions = 0b0000100,
+
+  /**
+   * Whether or not the context contains initial styling values.
+   *
+   * Examples include:
+   * 1. `<div style="width:200px">`
+   * 2. `<div class="one two three">`
+   * 3. `@Directive({ host: { 'style': 'width:200px' } })`
+   * 4. `@Directive({ host: { 'class': 'one two three' } })`
+   */
+  HasInitialStyling = 0b00001000,
+
+  /**
+   * Whether or not the context contains one or more template bindings.
+   *
+   * Examples include:
+   * 1. `<div [style]="x">`
+   * 2. `<div [style.width]="x">`
+   * 3. `<div [class]="x">`
+   * 4. `<div [class.name]="x">`
+   */
+  HasTemplateBindings = 0b00010000,
+
+  /**
+   * Whether or not the context contains one or more host bindings.
+   *
+   * Examples include:
+   * 1. `@HostBinding('style') x`
+   * 2. `@HostBinding('style.width') x`
+   * 3. `@HostBinding('class') x`
+   * 4. `@HostBinding('class.name') x`
+   */
+  HasHostBindings = 0b00100000,
+
+  /**
+   * Whether or not the template bindings are allowed to be registered in the context.
+   *
+   * This flag is after one or more template-based style/class bindings were
+   * set and processed for an element. Once the bindings are processed then a call
+   * to stylingApply is issued and the lock will be put into place.
+   *
+   * Note that this is only set once.
+   */
+  TemplateBindingsLocked = 0b01000000,
+
+  /**
+   * Whether or not the host bindings are allowed to be registered in the context.
+   *
+   * This flag is after one or more host-based style/class bindings were
+   * set and processed for an element. Once the bindings are processed then a call
+   * to stylingApply is issued and the lock will be put into place.
+   *
+   * Note that this is only set once.
+   */
+  HostBindingsLocked = 0b10000000,
 
   /** A Mask of all the configurations */
-  Mask = 0b11,
+  Mask = 0b11111111,
 
   /** Total amount of configuration bits used */
-  TotalBits = 2,
+  TotalBits = 8,
 }
 
 /**
- * An index of position and offset values used to natigate the `TStylingContext`.
+ * An index of position and offset values used to navigate the `TStylingContext`.
  */
 export const enum TStylingContextIndex {
-  InitialStylingValuePosition = 0,
-  ConfigPosition = 1,
-  LastDirectiveIndexPosition = 2,
-
-  // index/offset values for map-based entries (i.e. `[style]`
-  // and `[class]` bindings).
-  MapBindingsPosition = 3,
-  MapBindingsBitGuardPosition = 3,
-  MapBindingsValuesCountPosition = 4,
-  MapBindingsPropPosition = 5,
-  MapBindingsBindingsStartPosition = 6,
+  ConfigPosition = 0,
+  TotalSourcesPosition = 1,
+  InitialStylingValuePosition = 2,
+  ValuesStartPosition = 3,
 
   // each tuple entry in the context
-  // (mask, count, prop, ...bindings||default-value)
-  ConfigAndGuardOffset = 0,
-  ValuesCountOffset = 1,
-  PropOffset = 2,
-  BindingsStartOffset = 3,
-  MinTupleLength = 4,
+  // (config, templateBitGuard, hostBindingBitGuard, prop, ...bindings||default-value)
+  ConfigOffset = 0,
+  TemplateBitGuardOffset = 1,
+  HostBindingsBitGuardOffset = 2,
+  PropOffset = 3,
+  BindingsStartOffset = 4
 }
 
 /**
@@ -387,8 +480,8 @@ export const enum TStylingContextPropConfigFlags {
  * A function used to apply or remove styling from an element for a given property.
  */
 export interface ApplyStylingFn {
-  (renderer: Renderer3|ProceduralRenderer3|null, element: RElement, prop: string,
-   value: string|null, bindingIndex?: number|null): void;
+  (renderer: Renderer3|ProceduralRenderer3|null, element: RElement, prop: string, value: any,
+   bindingIndex?: number|null): void;
 }
 
 /**
@@ -419,11 +512,11 @@ export interface StylingMapArray extends Array<{}|string|number|null> {
  * An index of position and offset points for any data stored within a `StylingMapArray` instance.
  */
 export const enum StylingMapArrayIndex {
-  /** The location of the raw key/value map instance used last to populate the array entries */
-  RawValuePosition = 0,
-
   /** Where the values start in the array */
   ValuesStartPosition = 1,
+
+  /** The location of the raw key/value map instance used last to populate the array entries */
+  RawValuePosition = 0,
 
   /** The size of each property/value entry */
   TupleSize = 2,
@@ -458,8 +551,9 @@ export const enum StylingMapArrayIndex {
  */
 export interface SyncStylingMapsFn {
   (context: TStylingContext, renderer: Renderer3|ProceduralRenderer3|null, element: RElement,
-   data: LStylingData, applyStylingFn: ApplyStylingFn, sanitizer: StyleSanitizeFn|null,
-   mode: StylingMapsSyncMode, targetProp?: string|null, defaultValue?: string|null): boolean;
+   data: LStylingData, sourceIndex: number, applyStylingFn: ApplyStylingFn,
+   sanitizer: StyleSanitizeFn|null, mode: StylingMapsSyncMode, targetProp?: string|null,
+   defaultValue?: boolean|string|null): boolean;
 }
 
 /**
@@ -477,4 +571,10 @@ export const enum StylingMapsSyncMode {
 
   /** Skip applying the target prop/value entry */
   SkipTargetProp = 0b100,
+
+  /** Iterate over inner maps map values in the context */
+  RecurseInnerMaps = 0b1000,
+
+  /** Only check to see if a value was set somewhere in each map */
+  CheckValuesOnly = 0b10000,
 }
