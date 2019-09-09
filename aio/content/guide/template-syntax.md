@@ -721,7 +721,7 @@ In the following example, the `childItem` property of the `ItemDetailComponent` 
 <code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
 
 You can confirm this by looking in the `ItemDetailComponent` where the `@Input` type is set to a string:
-<code-example path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type" header="src/app/item-detail/item-detail.component.ts (setting the @Input() type"></code-example>
+<code-example path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type" header="src/app/item-detail/item-detail.component.ts (setting the @Input() type)"></code-example>
 
 As you can see here, the `parentItem` in `AppComponent` is a string, which the `ItemDetailComponent` expects:
 <code-example path="property-binding/src/app/app.component.ts" region="parent-data-type" header="src/app/app.component.ts"></code-example>
