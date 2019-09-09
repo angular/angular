@@ -9,7 +9,6 @@ import {assertDataInRange, assertGreaterThan} from '../../util/assert';
 import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
 import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TVIEW} from '../interfaces/view';
 import {ActiveElementFlags, executeElementExitFn, getCheckNoChangesMode, getLView, getSelectedIndex, hasActiveElementFlag, setSelectedIndex} from '../state';
-import {resetStylingState} from '../styling_next/state';
 
 
 
@@ -74,10 +73,6 @@ export function selectIndexInternal(lView: LView, index: number, checkNoChangesM
         executeInitAndCheckHooks(lView, preOrderHooks, InitPhaseState.OnInitHooksToBeRun, index);
       }
     }
-  }
-
-  if (hasActiveElementFlag(ActiveElementFlags.ResetStylesOnExit)) {
-    resetStylingState();
   }
 
   // We must set the selected index *after* running the hooks, because hooks may have side-effects

@@ -405,18 +405,22 @@ export function flushStyling(
     if (!isContextLocked(stylesContext, hostBindingsMode)) {
       lockAndFinalizeContext(stylesContext, hostBindingsMode);
     }
-    applyStylingViaContext(
-        stylesContext, renderer, element, data, state.stylesBitMask, setStyle, styleSanitizer,
-        hostBindingsMode);
+    if (state.stylesBitMask !== 0) {
+      applyStylingViaContext(
+          stylesContext, renderer, element, data, state.stylesBitMask, setStyle, styleSanitizer,
+          hostBindingsMode);
+    }
   }
 
   if (classesContext) {
     if (!isContextLocked(classesContext, hostBindingsMode)) {
       lockAndFinalizeContext(classesContext, hostBindingsMode);
     }
-    applyStylingViaContext(
-        classesContext, renderer, element, data, state.classesBitMask, setClass, null,
-        hostBindingsMode);
+    if (state.classesBitMask !== 0) {
+      applyStylingViaContext(
+          classesContext, renderer, element, data, state.classesBitMask, setClass, null,
+          hostBindingsMode);
+    }
   }
 
   resetStylingState();

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, HostBinding, Input, ViewChild} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, Directive, HostBinding, Input, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
 import {DebugNode, LViewDebug, toDebug} from '@angular/core/src/render3/instructions/lview_debug';
 import {loadLContextFromNode} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters as resetStylingCounters} from '@angular/core/src/util/ng_dev_mode';
@@ -1168,6 +1168,175 @@ describe('new styling integration', () => {
     expect(div.classList.contains('foo')).toBeTruthy();
     expect(div.classList.contains('bar')).toBeTruthy();
   });
+
+  it('should allow detectChanges to be run in a property change that causes additional styling to be rendered',
+     () => {
+       @Component({
+         selector: 'child',
+         template: `
+          <div [class.ready-child]="readyTpl"></div>
+        `,
+       })
+       class ChildCmp {
+         readyTpl = false;
+
+         @HostBinding('class.ready-host')
+         readyHost = false;
+       }
+
+       @Component({
+         selector: 'parent',
+         template: `
+        <div>
+          <div #template></div>
+          <p>{{prop}}</p>
+        </div>
+      `,
+         host: {
+           '[style.color]': 'color',
+         },
+       })
+       class ParentCmp {
+         private _prop = '';
+
+         @ViewChild('template', {read: ViewContainerRef, static: false})
+         vcr: ViewContainerRef = null !;
+
+         private child: ComponentRef<ChildCmp> = null !;
+
+         @Input()
+         set prop(value: string) {
+           this._prop = value;
+           if (this.child && value === 'go') {
+             this.child.instance.readyHost = true;
+             this.child.instance.readyTpl = true;
+             this.child.changeDetectorRef.detectChanges();
+           }
+         }
+
+         get prop() { return this._prop; }
+
+         ngAfterViewInit() {
+           const factory = this.componentFactoryResolver.resolveComponentFactory(ChildCmp);
+           this.child = this.vcr.createComponent(factory);
+         }
+
+         constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+       }
+
+       @Component({
+         template: `<parent [prop]="prop"></parent>`,
+       })
+       class App {
+         prop = 'a';
+       }
+
+       @NgModule({
+         entryComponents: [ChildCmp],
+         declarations: [ChildCmp],
+       })
+       class ChildCmpModule {
+       }
+
+       TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
+       const fixture = TestBed.createComponent(App);
+       fixture.detectChanges(false);
+
+       let readyHost = fixture.nativeElement.querySelector('.ready-host');
+       let readyChild = fixture.nativeElement.querySelector('.ready-child');
+
+       expect(readyHost).toBeFalsy();
+       expect(readyChild).toBeFalsy();
+
+       fixture.componentInstance.prop = 'go';
+       fixture.detectChanges(false);
+
+       readyHost = fixture.nativeElement.querySelector('.ready-host');
+       readyChild = fixture.nativeElement.querySelector('.ready-child');
+       expect(readyHost).toBeTruthy();
+       expect(readyChild).toBeTruthy();
+     });
+
+  it('should allow detectChanges to be run in a hook that causes additional styling to be rendered',
+     () => {
+       @Component({
+         selector: 'child',
+         template: `
+          <div [class.ready-child]="readyTpl"></div>
+        `,
+       })
+       class ChildCmp {
+         readyTpl = false;
+
+         @HostBinding('class.ready-host')
+         readyHost = false;
+       }
+
+       @Component({
+         selector: 'parent',
+         template: `
+          <div>
+            <div #template></div>
+            <p>{{prop}}</p>
+          </div>
+        `,
+       })
+       class ParentCmp {
+         updateChild = false;
+
+         @ViewChild('template', {read: ViewContainerRef, static: false})
+         vcr: ViewContainerRef = null !;
+
+         private child: ComponentRef<ChildCmp> = null !;
+
+         ngDoCheck() {
+           if (this.updateChild) {
+             this.child.instance.readyHost = true;
+             this.child.instance.readyTpl = true;
+             this.child.changeDetectorRef.detectChanges();
+           }
+         }
+
+         ngAfterViewInit() {
+           const factory = this.componentFactoryResolver.resolveComponentFactory(ChildCmp);
+           this.child = this.vcr.createComponent(factory);
+         }
+
+         constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+       }
+
+       @Component({
+         template: `<parent #parent></parent>`,
+       })
+       class App {
+         @ViewChild('parent', {static: true}) public parent: ParentCmp|null = null;
+       }
+
+       @NgModule({
+         entryComponents: [ChildCmp],
+         declarations: [ChildCmp],
+       })
+       class ChildCmpModule {
+       }
+
+       TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
+       const fixture = TestBed.createComponent(App);
+       fixture.detectChanges(false);
+
+       let readyHost = fixture.nativeElement.querySelector('.ready-host');
+       let readyChild = fixture.nativeElement.querySelector('.ready-child');
+       expect(readyHost).toBeFalsy();
+       expect(readyChild).toBeFalsy();
+
+       const parent = fixture.componentInstance.parent !;
+       parent.updateChild = true;
+       fixture.detectChanges(false);
+
+       readyHost = fixture.nativeElement.querySelector('.ready-host');
+       readyChild = fixture.nativeElement.querySelector('.ready-child');
+       expect(readyHost).toBeTruthy();
+       expect(readyChild).toBeTruthy();
+     });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {

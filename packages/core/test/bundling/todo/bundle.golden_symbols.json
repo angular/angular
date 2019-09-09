@@ -468,9 +468,6 @@
     "name": "applyProjectionRecursive"
   },
   {
-    "name": "applyStyling"
-  },
-  {
     "name": "applyStylingValue"
   },
   {
@@ -915,9 +912,6 @@
     "name": "hasConfig"
   },
   {
-    "name": "hasDirectives"
-  },
-  {
     "name": "hasParentInjector"
   },
   {
@@ -945,7 +939,7 @@
     "name": "initNodeFlags"
   },
   {
-    "name": "initializeTNodeInputs"
+    "name": "initializeInputAndOutputAliases"
   },
   {
     "name": "injectElementRef"
@@ -1105,9 +1099,6 @@
   },
   {
     "name": "markDirtyIfOnPush"
-  },
-  {
-    "name": "markStylingStateAsDirty"
   },
   {
     "name": "markViewDirty"
@@ -1354,6 +1345,9 @@
   },
   {
     "name": "stringifyForError"
+  },
+  {
+    "name": "stylingApply"
   },
   {
     "name": "stylingMapToString"

@@ -147,9 +147,6 @@
     "name": "_selectedIndex"
   },
   {
-    "name": "_state"
-  },
-  {
     "name": "addToViewTree"
   },
   {
@@ -433,9 +430,6 @@
   },
   {
     "name": "resetPreOrderHookFlags"
-  },
-  {
-    "name": "resetStylingState"
   },
   {
     "name": "selectIndexInternal"
