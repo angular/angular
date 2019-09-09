@@ -22,7 +22,7 @@ import {
   TemplateRef,
   OnDestroy,
 } from '@angular/core';
-import {take, takeUntil} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators';
 import {SimpleSnackBar} from './simple-snack-bar';
 import {MAT_SNACK_BAR_DATA, MatSnackBarConfig} from './snack-bar-config';
 import {MatSnackBarContainer} from './snack-bar-container';
@@ -185,14 +185,12 @@ export class MatSnackBar implements OnDestroy {
     // Subscribe to the breakpoint observer and attach the mat-snack-bar-handset class as
     // appropriate. This class is applied to the overlay element because the overlay must expand to
     // fill the width of the screen for full width snackbars.
-    this._breakpointObserver.observe(Breakpoints.Handset).pipe(
-      takeUntil(overlayRef.detachments().pipe(take(1)))
+    this._breakpointObserver.observe(Breakpoints.HandsetPortrait).pipe(
+      takeUntil(overlayRef.detachments())
     ).subscribe(state => {
-      if (state.matches) {
-        overlayRef.overlayElement.classList.add('mat-snack-bar-handset');
-      } else {
-        overlayRef.overlayElement.classList.remove('mat-snack-bar-handset');
-      }
+      const classList = overlayRef.overlayElement.classList;
+      const className = 'mat-snack-bar-handset';
+      state.matches ? classList.add(className) : classList.remove(className);
     });
 
     this._animateSnackBar(snackBarRef, config);
