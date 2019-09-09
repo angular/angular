@@ -76,7 +76,6 @@ interface MatSortHeaderColumnDef {
   host: {
     '(click)': '_handleClick()',
     '(mouseenter)': '_setIndicatorHintVisible(true)',
-    '(longpress)': '_setIndicatorHintVisible(true)',
     '(mouseleave)': '_setIndicatorHintVisible(false)',
     '[attr.aria-sort]': '_getAriaSortAttribute()',
     '[class.mat-sort-header-disabled]': '_isDisabled()',
