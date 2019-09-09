@@ -181,6 +181,25 @@ describe('MatMenu', () => {
     expect(document.activeElement).not.toBe(triggerEl);
   }));
 
+  it('should restore focus to the trigger immediately once the menu is closed', () => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+
+    // A click without a mousedown before it is considered a keyboard open.
+    triggerEl.click();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.querySelector('.mat-menu-panel')).toBeTruthy();
+
+    fixture.componentInstance.trigger.closeMenu();
+    fixture.detectChanges();
+    // Note: don't add a `tick` here since we're testing
+    // that focus is restored before the animation is done.
+
+    expect(document.activeElement).toBe(triggerEl);
+  });
+
   it('should be able to set a custom class on the backdrop', fakeAsync(() => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
 
