@@ -45,6 +45,13 @@ export const FAKE_SVGS = {
       </defs>
     </svg>
   `,
+  farmSet5: `
+    <svg>
+      <symbol id="duck" viewBox="0 0 13 37">
+        <path id="quack" name="quack"></path>
+      </symbol>
+    </svg>
+  `,
   arrows: `
     <svg>
       <defs>

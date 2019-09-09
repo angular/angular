@@ -433,6 +433,23 @@ describe('MatIcon', () => {
       expect((firstChild as HTMLElement).getAttribute('name')).toBe('quack');
     });
 
+    it('should copy over the attributes when unwrapping <symbol> nodes', () => {
+      iconRegistry.addSvgIconSetInNamespace('farm', trustUrl('farm-set-5.svg'));
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      const testComponent = fixture.componentInstance;
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+
+      testComponent.iconName = 'farm:duck';
+      fixture.detectChanges();
+      http.expectOne('farm-set-5.svg').flush(FAKE_SVGS.farmSet5);
+
+      const svgElement = verifyAndGetSingleSvgChild(matIconElement);
+      expect(svgElement.getAttribute('viewBox')).toBe('0 0 13 37');
+      expect(svgElement.getAttribute('id')).toBeFalsy();
+      expect(svgElement.querySelector('symbol')).toBeFalsy();
+    });
+
     it('should not wrap <svg> elements in icon sets in another svg tag', () => {
       iconRegistry.addSvgIconSet(trustUrl('arrow-set.svg'));
 
