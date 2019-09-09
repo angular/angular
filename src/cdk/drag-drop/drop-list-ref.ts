@@ -90,7 +90,7 @@ export class DropListRef<T = any> {
   disabled: boolean = false;
 
   /** Whether sorting items within the list is disabled. */
-  sortingDisabled: boolean = true;
+  sortingDisabled: boolean = false;
 
   /** Locks the position of the draggable elements inside the container along the specified axis. */
   lockAxis: 'x' | 'y';
