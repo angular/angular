@@ -2,7 +2,7 @@ export declare const MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS: InjectionToken<MatPro
 
 export declare function MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatProgressSpinnerDefaultOptions;
 
-export declare class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements CanColor {
+export declare class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements OnInit, CanColor {
     readonly _circleRadius: number;
     readonly _circleStrokeWidth: number;
     _elementRef: ElementRef<HTMLElement>;
@@ -15,6 +15,7 @@ export declare class MatProgressSpinner extends _MatProgressSpinnerMixinBase imp
     strokeWidth: number;
     value: number;
     constructor(_elementRef: ElementRef<HTMLElement>, platform: Platform, _document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
+    ngOnInit(): void;
 }
 
 export interface MatProgressSpinnerDefaultOptions {

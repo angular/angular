@@ -18,6 +18,7 @@ import {
   Input,
   Optional,
   ViewEncapsulation,
+  OnInit,
 } from '@angular/core';
 import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
@@ -123,7 +124,7 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements CanColor {
+export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements OnInit, CanColor {
   private _diameter = BASE_SIZE;
   private _value = 0;
   private _strokeWidth: number;
@@ -153,13 +154,9 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   set diameter(size: number) {
     this._diameter = coerceNumberProperty(size);
 
-    if (!this._fallbackAnimation) {
-      const trackedDiameters = MatProgressSpinner._diameters;
-      const diametersForElement = trackedDiameters.get(this._styleRoot);
-
-      if (!diametersForElement || !diametersForElement.has(this._diameter)) {
-        this._attachStyleNode();
-      }
+    // If this is set before `ngOnInit`, the style root may not have been resolved yet.
+    if (!this._fallbackAnimation && this._styleRoot) {
+      this._attachStyleNode();
     }
   }
 
@@ -201,7 +198,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
       trackedDiameters.set(_document.head, new Set<number>([BASE_SIZE]));
     }
 
-    this._styleRoot = _getShadowRoot(_elementRef.nativeElement, _document) || _document.head;
     this._fallbackAnimation = platform.EDGE || platform.TRIDENT;
     this._noopAnimations = animationMode === 'NoopAnimations' &&
         (!!defaults && !defaults._forceAnimations);
@@ -215,13 +211,23 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
         this.strokeWidth = defaults.strokeWidth;
       }
     }
+  }
+
+  ngOnInit() {
+    const element = this._elementRef.nativeElement;
+
+    // Note that we need to look up the root node in ngOnInit, rather than the constructor, because
+    // Angular seems to create the element outside the shadow root and then moves it inside, if the
+    // node is inside an `ngIf` and a ShadowDom-encapsulated component.
+    this._styleRoot = _getShadowRoot(element, this._document) || this._document.head;
+    this._attachStyleNode();
 
     // On IE and Edge, we can't animate the `stroke-dashoffset`
     // reliably so we fall back to a non-spec animation.
     const animationClass =
       `mat-progress-spinner-indeterminate${this._fallbackAnimation ? '-fallback' : ''}-animation`;
 
-    _elementRef.nativeElement.classList.add(animationClass);
+    element.classList.add(animationClass);
   }
 
   /** The radius of the spinner, adjusted for stroke width. */
@@ -261,22 +267,24 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 
   /** Dynamically generates a style tag containing the correct animation for this diameter. */
   private _attachStyleNode(): void {
-    const styleTag: HTMLStyleElement = this._document.createElement('style');
     const styleRoot = this._styleRoot;
     const currentDiameter = this._diameter;
     const diameters = MatProgressSpinner._diameters;
     let diametersForElement = diameters.get(styleRoot);
 
-    styleTag.setAttribute('mat-spinner-animation', currentDiameter + '');
-    styleTag.textContent = this._getAnimationText();
-    styleRoot.appendChild(styleTag);
+    if (!diametersForElement || !diametersForElement.has(currentDiameter)) {
+      const styleTag: HTMLStyleElement = this._document.createElement('style');
+      styleTag.setAttribute('mat-spinner-animation', currentDiameter + '');
+      styleTag.textContent = this._getAnimationText();
+      styleRoot.appendChild(styleTag);
 
-    if (!diametersForElement) {
-      diametersForElement = new Set<number>();
-      diameters.set(styleRoot, diametersForElement);
+      if (!diametersForElement) {
+        diametersForElement = new Set<number>();
+        diameters.set(styleRoot, diametersForElement);
+      }
+
+      diametersForElement.add(currentDiameter);
     }
-
-    diametersForElement.add(currentDiameter);
   }
 
   /** Generates animation styles adjusted for the spinner's diameter. */

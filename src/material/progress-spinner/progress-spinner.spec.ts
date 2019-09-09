@@ -1,7 +1,8 @@
 import {TestBed, async, inject} from '@angular/core/testing';
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component, ViewEncapsulation, ViewChild, ElementRef} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {Platform} from '@angular/cdk/platform';
+import {CommonModule} from '@angular/common';
 import {_getShadowRoot} from './progress-spinner';
 import {
   MatProgressSpinnerModule,
@@ -14,7 +15,7 @@ describe('MatProgressSpinner', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MatProgressSpinnerModule],
+      imports: [MatProgressSpinnerModule, CommonModule],
       declarations: [
         BasicProgressSpinner,
         IndeterminateProgressSpinner,
@@ -25,6 +26,7 @@ describe('MatProgressSpinner', () => {
         SpinnerWithColor,
         ProgressSpinnerWithStringValues,
         IndeterminateSpinnerInShadowDom,
+        IndeterminateSpinnerInShadowDomWithNgIf,
       ],
     }).compileComponents();
   }));
@@ -404,6 +406,28 @@ describe('MatProgressSpinner', () => {
     expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="61"]').length).toBe(1);
   });
 
+  it('should add the indeterminate animation style tag to the Shadow root if the element is ' +
+    'inside an ngIf', () => {
+      // The test is only relevant in browsers that support Shadow DOM.
+      if (!supportsShadowDom) {
+        return;
+      }
+
+      const fixture = TestBed.createComponent(IndeterminateSpinnerInShadowDomWithNgIf);
+      fixture.componentInstance.diameter = 27;
+      fixture.detectChanges();
+
+      const spinner = fixture.componentInstance.spinner.nativeElement;
+      const shadowRoot = _getShadowRoot(spinner, document) as HTMLElement;
+
+      expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
+
+      fixture.componentInstance.diameter = 15;
+      fixture.detectChanges();
+
+      expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
+    });
+
 });
 
 
@@ -454,3 +478,19 @@ class ProgressSpinnerWithStringValues { }
 class IndeterminateSpinnerInShadowDom {
   diameter: number;
 }
+
+@Component({
+  template: `
+    <div *ngIf="true">
+      <mat-progress-spinner mode="indeterminate" [diameter]="diameter"></mat-progress-spinner>
+    </div>
+  `,
+  encapsulation: ViewEncapsulation.ShadowDom,
+})
+class IndeterminateSpinnerInShadowDomWithNgIf {
+  @ViewChild(MatProgressSpinner, {read: ElementRef, static: false})
+  spinner: ElementRef<HTMLElement>;
+
+  diameter: number;
+}
+
