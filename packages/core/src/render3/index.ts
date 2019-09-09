@@ -114,8 +114,6 @@ export {
   ɵɵstylePropInterpolateV,
 
   ɵɵstyleSanitizer,
-  ɵɵstyling,
-  ɵɵstylingApply,
   ɵɵtemplate,
 
   ɵɵtext,
