@@ -64,11 +64,13 @@ describe('Undecorated classes with DI migration', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  function runMigration() {
-    runner.runSchematic('migration-v9-undecorated-classes-with-di', {}, tree);
+  async function runMigration() {
+    return runner.runSchematicAsync('migration-v9-undecorated-classes-with-di', {}, tree)
+        .toPromise();
   }
 
-  function writeFakeAngular() {
+  function
+  writeFakeAngular() {
     writeFile('/node_modules/@angular/core/index.d.ts', `
       export declare class PipeTransform {}
       export declare class NgZone {}
@@ -78,7 +80,7 @@ describe('Undecorated classes with DI migration', () => {
     `);
   }
 
-  it('should print a failure message base class is declared through type definition', () => {
+  it('should print a failure message base class is declared through type definition', async() => {
     writeFile('/node_modules/my-lib/package.json', JSON.stringify({
       version: '0.0.0',
       main: './index.js',
@@ -105,14 +107,14 @@ describe('Undecorated classes with DI migration', () => {
       export class MyModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(errorOutput.length).toBe(0);
     expect(warnOutput.length).toBe(1);
     expect(warnOutput[0]).toMatch(/Class needs to declare an explicit constructor./);
   });
 
-  it('should add @Directive() decorator to extended base class', () => {
+  it('should add @Directive() decorator to extended base class', async() => {
     writeFile('/index.ts', `
       import {Component, NgModule, NgZone} from '@angular/core';
       
@@ -134,13 +136,13 @@ describe('Undecorated classes with DI migration', () => {
       export class AppModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(tree.readContent('/index.ts')).toMatch(/@Directive\(\)\nexport class BaseClass {/);
     expect(tree.readContent('/index.ts')).toMatch(/@Directive\(\)\nexport class BaseClass2 {/);
   });
 
-  it('not decorated base class multiple times if extended multiple times', () => {
+  it('not decorated base class multiple times if extended multiple times', async() => {
     writeFile('/index.ts', dedent `
       import {Component, NgModule, NgZone} from '@angular/core';
       
@@ -158,7 +160,7 @@ describe('Undecorated classes with DI migration', () => {
       export class AppModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(tree.readContent('/index.ts')).toContain(dedent `
       
@@ -168,7 +170,7 @@ describe('Undecorated classes with DI migration', () => {
       }`);
   });
 
-  it('should add @Injectable() decorator to extended base class', () => {
+  it('should add @Injectable() decorator to extended base class', async() => {
     writeFile('/index.ts', `
       import {Injectable, NgModule, NgZone} from '@angular/core';
       
@@ -183,12 +185,12 @@ describe('Undecorated classes with DI migration', () => {
       export class AppModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(tree.readContent('/index.ts')).toMatch(/@Injectable\(\)\nexport class BaseClass {/);
   });
 
-  it('should not decorate base class for decorated pipe', () => {
+  it('should not decorate base class for decorated pipe', async() => {
     writeFile('/index.ts', dedent `
       import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';
             
@@ -199,7 +201,7 @@ describe('Undecorated classes with DI migration', () => {
       export class AppModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(errorOutput.length).toBe(0);
     expect(warnOutput.length).toBe(0);
@@ -209,7 +211,7 @@ describe('Undecorated classes with DI migration', () => {
       export class MyPipe extends PipeTransform {}`);
   });
 
-  it('should not decorate base class if no constructor is inherited', () => {
+  it('should not decorate base class if no constructor is inherited', async() => {
     writeFile('/index.ts', dedent `
       import {Component, NgModule, Directive} from '@angular/core';
 
@@ -227,7 +229,7 @@ describe('Undecorated classes with DI migration', () => {
       export class AppModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(tree.readContent('/index.ts')).toContain(dedent `
 
@@ -242,8 +244,9 @@ describe('Undecorated classes with DI migration', () => {
       export class MyPipe extends BaseClassWithoutCtor {}`);
   });
 
-  it('should not decorate base class if directive/component/provider defines a constructor', () => {
-    writeFile('/index.ts', dedent `
+  it('should not decorate base class if directive/component/provider defines a constructor',
+     async() => {
+       writeFile('/index.ts', dedent `
       import {Component, Injectable, NgModule, NgZone} from '@angular/core';
       
       export class BaseClass {
@@ -272,16 +275,16 @@ describe('Undecorated classes with DI migration', () => {
       export class AppModule {}
     `);
 
-    runMigration();
+       await runMigration();
 
-    expect(tree.readContent('/index.ts')).toContain(dedent `
+       expect(tree.readContent('/index.ts')).toContain(dedent `
 
       export class BaseClass {
         constructor(zone: NgZone) {}
       }`);
-  });
+     });
 
-  it('should not decorate base class if it already has decorator', () => {
+  it('should not decorate base class if it already has decorator', async() => {
     writeFile('/index.ts', dedent `
       import {Component, Directive, NgModule, NgZone} from '@angular/core';
       
@@ -300,7 +303,7 @@ describe('Undecorated classes with DI migration', () => {
       export class LibModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(tree.readContent('/index.ts')).toContain(dedent `
       
@@ -308,7 +311,7 @@ describe('Undecorated classes with DI migration', () => {
       export class BaseClass {`);
   });
 
-  it('should add a comment if the base class is declared through type definition', () => {
+  it('should add a comment if the base class is declared through type definition', async() => {
     writeFile('/node_modules/my-lib/package.json', JSON.stringify({
       version: '0.0.0',
       main: './index.js',
@@ -353,7 +356,7 @@ describe('Undecorated classes with DI migration', () => {
       export class MyModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(tree.readContent('/index.ts')).toContain(dedent `
       @Directive()
@@ -388,7 +391,7 @@ describe('Undecorated classes with DI migration', () => {
 
   it('should not add a comment if the base class is declared through type definition but is' +
          'decorated',
-     () => {
+     async() => {
        writeFakeLibrary();
        writeFile('/index.ts', dedent `
         import {Component, NgModule} from '@angular/core';
@@ -401,14 +404,14 @@ describe('Undecorated classes with DI migration', () => {
         export class MyModule {}
       `);
 
-       runMigration();
+       await runMigration();
 
        expect(tree.readContent('/index.ts')).toContain(dedent `
         @Component({template: ''})
         export class MyComponent extends BaseComponent {}`);
      });
 
-  it('should not decorate base class in typings if it misses an explicit constructor', () => {
+  it('should not decorate base class in typings if it misses an explicit constructor', async() => {
     writeFakeLibrary();
     writeFile('/index.ts', dedent `
         import {Component, NgModule} from '@angular/core';
@@ -421,7 +424,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyModule {}
       `);
 
-    runMigration();
+    await runMigration();
 
     expect(tree.readContent('/index.ts')).toContain(dedent `
         @Component({template: ''})
@@ -429,7 +432,7 @@ describe('Undecorated classes with DI migration', () => {
     expect(tree.readContent('/node_modules/my-lib/public-api.d.ts')).not.toContain('@Directive');
   });
 
-  it('should detect decorated classes by respecting summary files', () => {
+  it('should detect decorated classes by respecting summary files', async() => {
     writeSummaryOnlyThirdPartyLibrary();
 
     writeFile('/index.ts', dedent `
@@ -443,7 +446,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(warnOutput.length).toBe(0);
     expect(errorOutput.length).toBe(0);
@@ -452,7 +455,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyComponent extends BaseComponent {}`);
   });
 
-  it('should decorate all undecorated directives of inheritance chain', () => {
+  it('should decorate all undecorated directives of inheritance chain', async() => {
     writeFile('/index.ts', `
       import {Component, NgModule, NgZone} from '@angular/core';
       
@@ -469,14 +472,14 @@ describe('Undecorated classes with DI migration', () => {
       export class MyModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(tree.readContent('/index.ts')).toMatch(/@Directive\(\)\nexport class SuperBaseClass {/);
     expect(tree.readContent('/index.ts'))
         .toMatch(/}\s+@Directive\(\)\nexport class BaseClass extends SuperBaseClass {/);
   });
 
-  it('should decorate all undecorated providers of inheritance chain', () => {
+  it('should decorate all undecorated providers of inheritance chain', async() => {
     writeFile('/index.ts', `
       import {Injectable, NgModule, NgZone} from '@angular/core';
       
@@ -493,7 +496,7 @@ describe('Undecorated classes with DI migration', () => {
       export class MyModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(tree.readContent('/index.ts')).toMatch(/@Injectable\(\)\nexport class SuperBaseClass {/);
     expect(tree.readContent('/index.ts'))
@@ -501,7 +504,7 @@ describe('Undecorated classes with DI migration', () => {
   });
 
   it('should properly update import if @Directive can be accessed through existing namespace import',
-     () => {
+     async() => {
        writeFile('/index.ts', `
          import {Component, NgModule, NgZone} from '@angular/core';
          import {BaseClass} from './base';
@@ -521,13 +524,13 @@ describe('Undecorated classes with DI migration', () => {
          }
        `);
 
-       runMigration();
+       await runMigration();
 
        expect(tree.readContent('/base.ts')).toMatch(/@core.Directive\(\)\nexport class BaseClass/);
      });
 
   it('should properly update existing import with aliased specifier if identifier is already used',
-     () => {
+     async() => {
        writeFile('/index.ts', `
          import {Component, NgModule, NgZone} from '@angular/core';
          import {Directive} from './third_party_directive';
@@ -543,7 +546,7 @@ describe('Undecorated classes with DI migration', () => {
          export class AppModule {}
        `);
 
-       runMigration();
+       await runMigration();
 
        expect(tree.readContent(`/index.ts`))
            .toContain(`{ Component, NgModule, NgZone, Directive as Directive_1 }`);
@@ -551,7 +554,7 @@ describe('Undecorated classes with DI migration', () => {
      });
 
   it('should properly create new import with aliased specifier if identifier is already used',
-     () => {
+     async() => {
        writeFile('/index.ts', `
          import {Component, NgModule, NgZone} from '@angular/core';
          import {BaseClass} from './base';
@@ -573,14 +576,14 @@ describe('Undecorated classes with DI migration', () => {
          }
        `);
 
-       runMigration();
+       await runMigration();
 
        expect(tree.readContent('/base.ts')).toMatch(/@Directive_1\(\)\nexport class BaseClass/);
        expect(tree.readContent(`/base.ts`))
            .toContain(`{ Directive as Directive_1 } from "@angular/core";`);
      });
 
-  it('should use existing aliased import of @Directive instead of creating new import', () => {
+  it('should use existing aliased import of @Directive instead of creating new import', async() => {
     writeFile('/index.ts', `
       import {Component, NgModule} from '@angular/core';
       import {BaseClass} from './base';
@@ -600,14 +603,14 @@ describe('Undecorated classes with DI migration', () => {
       }
     `);
 
-    runMigration();
+    await runMigration();
 
     expect(tree.readContent('/base.ts')).toMatch(/@AliasedDir\(\)\nexport class BaseClass {/);
   });
 
-  describe('decorator copying', () => {
+  describe('decorator copying', async() => {
 
-    it('should be able to copy the "templateUrl" field', () => {
+    it('should be able to copy the "templateUrl" field', async() => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseClass} from './lib/base';
@@ -631,7 +634,7 @@ describe('Undecorated classes with DI migration', () => {
         export class LibModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`import { NgModule, Directive } from '@angular/core';`);
@@ -643,7 +646,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyDir extends BaseClass {}`);
     });
 
-    it('should be able to copy the "styleUrls" field', () => {
+    it('should be able to copy the "styleUrls" field', async() => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseClass} from './lib/base';
@@ -668,7 +671,7 @@ describe('Undecorated classes with DI migration', () => {
         export class LibModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts')).toContain(dedent `
         import {BaseClass} from './lib/base';
@@ -680,7 +683,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyDir extends BaseClass {}`);
     });
 
-    it('should be able to copy @Pipe decorator', () => {
+    it('should be able to copy @Pipe decorator', async() => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BasePipe} from './lib/base';
@@ -701,7 +704,7 @@ describe('Undecorated classes with DI migration', () => {
         export class LibModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`import { NgModule, Pipe } from '@angular/core';`);
@@ -710,7 +713,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyPipe extends BasePipe {}`);
     });
 
-    it('should be able to copy decorator in same source file', () => {
+    it('should be able to copy decorator in same source file', async() => {
       writeFile(
           '/node_modules/@angular/cdk/table/index.d.ts',
           `export declare const CDK_TABLE_TEMPLATE = '';`);
@@ -736,7 +739,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts')).toContain(dedent `
         @Component({
@@ -747,7 +750,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyDir extends BaseClass {}`);
     });
 
-    it('should be able to create new imports for copied identifier references', () => {
+    it('should be able to create new imports for copied identifier references', async() => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseClass} from './lib/base';
@@ -780,7 +783,7 @@ describe('Undecorated classes with DI migration', () => {
         export class LibModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`import { CDK_TABLE_TEMPLATE } from "@angular/cdk/table";`);
@@ -797,7 +800,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyDir extends BaseClass {}`);
     });
 
-    it('should copy decorator once if directive is referenced multiple times', () => {
+    it('should copy decorator once if directive is referenced multiple times', async() => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseClass} from './lib/base';
@@ -832,7 +835,7 @@ describe('Undecorated classes with DI migration', () => {
         export class LibModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts')).toContain(dedent `
         import {BaseClass} from './lib/base';
@@ -844,7 +847,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyComp extends BaseClass {}`);
     });
 
-    it('should create aliased imports to avoid collisions for referenced identifiers', () => {
+    it('should create aliased imports to avoid collisions for referenced identifiers', async() => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseClass} from './lib/base';
@@ -874,7 +877,7 @@ describe('Undecorated classes with DI migration', () => {
         export class LibModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`import { BaseClass, MY_TEMPLATE as MY_TEMPLATE_1 } from './lib/base';`);
@@ -886,7 +889,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyComp extends BaseClass {}`);
     });
 
-    it('should add comment for metadata fields which cannot be copied', () => {
+    it('should add comment for metadata fields which cannot be copied', async() => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseClass} from './lib/base';
@@ -914,7 +917,7 @@ describe('Undecorated classes with DI migration', () => {
         export class LibModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts')).toContain(dedent `
         @Component({
@@ -929,8 +932,9 @@ describe('Undecorated classes with DI migration', () => {
         export class MyComp extends BaseClass {}`);
     });
 
-    it('should add comment for metadata fields which are added through spread operator', () => {
-      writeFile('/index.ts', dedent `
+    it('should add comment for metadata fields which are added through spread operator',
+       async() => {
+         writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseClass} from './lib/base';
 
@@ -940,7 +944,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyModule {}
       `);
 
-      writeFile('/lib/base.ts', dedent `
+         writeFile('/lib/base.ts', dedent `
         import {Component, NgModule} from '@angular/core';
         
         export const metadataThroughVar = {
@@ -958,9 +962,9 @@ describe('Undecorated classes with DI migration', () => {
         export class LibModule {}
       `);
 
-      runMigration();
+         await runMigration();
 
-      expect(tree.readContent('/index.ts')).toContain(dedent `
+         expect(tree.readContent('/index.ts')).toContain(dedent `
         @Component({
             selector: 'my-dir',
             template: '',
@@ -971,9 +975,9 @@ describe('Undecorated classes with DI migration', () => {
             ...metadataThroughVar
         })
         export class MyComp extends BaseClass {}`);
-    });
+       });
 
-    it('should be able to copy fields specified through shorthand assignment', () => {
+    it('should be able to copy fields specified through shorthand assignment', async() => {
       writeFile('/hello.css', '');
       writeFile('/my-tmpl.html', '');
       writeFile('/index.ts', dedent `
@@ -1007,7 +1011,7 @@ describe('Undecorated classes with DI migration', () => {
         export class LibModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`import { BaseClass, templateUrl, host } from './lib/base';`);
@@ -1025,7 +1029,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyComp extends BaseClass {}`);
     });
 
-    it('should serialize metadata from base class without source code', () => {
+    it('should serialize metadata from base class without source code', async() => {
       writeFakeLibrary();
 
       writeFile('/index.ts', dedent `
@@ -1045,7 +1049,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(
@@ -1090,7 +1094,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyPipe extends BasePipe {}`);
     });
 
-    it('should serialize metadata with external references from class without source code', () => {
+    it('should serialize metadata with external references from class without source code', async() => {
       writeFakeLibrary({useImportedTemplate: true});
       writeFile(
           '/node_modules/@angular/cdk/table/index.d.ts',
@@ -1105,7 +1109,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(
@@ -1129,7 +1133,7 @@ describe('Undecorated classes with DI migration', () => {
     });
 
     it('should not throw if metadata from base class without source code is not serializable',
-       () => {
+       async() => {
          writeFakeLibrary({insertInvalidReference: true});
 
          writeFile('/index.ts', dedent `
@@ -1148,7 +1152,7 @@ describe('Undecorated classes with DI migration', () => {
          expect(errorOutput[0]).toMatch(/Could not resolve non-existent/);
        });
 
-    it('should not create imports for identifiers resolving to target source file', () => {
+    it('should not create imports for identifiers resolving to target source file', async() => {
       writeFile('/index.ts', dedent `
         import {NgModule} from '@angular/core';
         import {BaseClass} from './lib/base';
@@ -1179,7 +1183,7 @@ describe('Undecorated classes with DI migration', () => {
         export class LibModule {}
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`import { NgModule, Directive } from '@angular/core';`);
@@ -1378,7 +1382,7 @@ describe('Undecorated classes with DI migration', () => {
     }));
   }
 
-  it('should not run for test tsconfig files', () => {
+  it('should not run for test tsconfig files', async() => {
     writeFile('/src/tsconfig.spec.json', JSON.stringify({
       compilerOptions: {
         lib: ['es2015'],
@@ -1409,7 +1413,7 @@ describe('Undecorated classes with DI migration', () => {
       export class AppModule {}
     `);
 
-    runMigration();
+    await runMigration();
 
     // If the test project would run as part of the migration, there would be
     // error messages because test projects are not guaranteed to always contain
@@ -1419,8 +1423,8 @@ describe('Undecorated classes with DI migration', () => {
     expect(errorOutput.length).toBe(0);
   });
 
-  describe('diagnostics', () => {
-    it('should gracefully exit migration if project fails with structural diagnostic', () => {
+  describe('diagnostics', async() => {
+    it('should gracefully exit migration if project fails with structural diagnostic', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule} from '@angular/core';
         
@@ -1431,7 +1435,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyModule {}
     `);
 
-      runMigration();
+      await runMigration();
 
       expect(warnOutput.length).toBe(1);
       expect(warnOutput[0])
@@ -1441,12 +1445,12 @@ describe('Undecorated classes with DI migration', () => {
       expect(errorOutput[0]).toMatch(/Cannot determine the module for class TestComp/);
     });
 
-    it('should gracefully exit migration if project fails with syntactical diagnostic', () => {
+    it('should gracefully exit migration if project fails with syntactical diagnostic', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule} /* missing "from" */ '@angular/core';
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(warnOutput.length).toBe(1);
       expect(warnOutput[0])
