@@ -1,5 +1,5 @@
 /** Regular expression that matches version names and the individual version segments. */
-const versionNameRegex = /^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d)+)?$/;
+const versionNameRegex = /^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d+))?$/;
 
 export class Version {
   constructor(
@@ -44,7 +44,7 @@ export function parseVersionName(version: string): Version|null {
 
   return new Version(
       Number(matches[1]), Number(matches[2]), Number(matches[3]), matches[4] || null,
-      Number(matches[5]) || null);
+      matches[5] !== undefined ? Number(matches[5]) : null);
 }
 
 /** Serializes the specified version into a string. */
