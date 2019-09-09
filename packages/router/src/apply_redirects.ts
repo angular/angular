@@ -149,13 +149,20 @@ class ApplyRedirects {
                  ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
              return expanded$.pipe(catchError((e: any) => {
                if (e instanceof NoMatch) {
-                 return of (new UrlSegmentGroup([], {}));
+                 return of (null);
                }
                throw e;
              }));
            }))
         .pipe(
-            map(x => x.find((s: any) => !!s) || new UrlSegmentGroup([], {})),
+            map(x => {
+              const match = x.find((s: any) => !!s);
+              if (match) {
+                return match;
+              } else {
+                throw new EmptyError();
+              }
+            }),
             catchError((e: any, _: any) => {
               if (e instanceof EmptyError || e.name === 'EmptyError') {
                 if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
