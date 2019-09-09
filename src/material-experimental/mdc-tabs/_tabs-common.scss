@@ -1,0 +1,152 @@
+@import '@material/ripple/variables';
+@import '../../material/core/style/variables';
+@import '../../material/core/style/noop-animation';
+@import '../../material/core/style/vendor-prefixes';
+@import '../../cdk/a11y/a11y';
+
+$mat-tab-animation-duration: 500ms !default;
+
+@mixin mat-mdc-tab {
+  &.mdc-tab {
+    // MDC's tabs stretch to fit the header by default, whereas stretching on our current ones
+    // is an opt-in behavior. Also technically we don't need to combine the two classes, but
+    // we need the extra specificity to avoid issues with CSS insertion order.
+    flex-grow: 0;
+    min-width: 160px;
+  }
+
+  // Used to render out the background tint when hovered/focused. Usually this is done by
+  // MDC's ripple styles, however we're using our own ripples due to size concerns.
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  // We need to handle the hover and focus indication ourselves, because we don't use MDC's ripple.
+  &:hover::before {
+    opacity: map-get($mdc-ripple-dark-ink-opacities, hover);
+  }
+
+  &.cdk-program-focused,
+  &.cdk-keyboard-focused {
+    &::before {
+      opacity: map-get($mdc-ripple-dark-ink-opacities, focus);
+    }
+  }
+
+  .mat-ripple-element {
+    opacity: map-get($mdc-ripple-dark-ink-opacities, press);
+  }
+}
+
+@mixin mat-mdc-tab-ripple {
+  .mat-mdc-tab-ripple {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+  }
+}
+
+// Structural styles for a tab header. Used by both `mat-tab-header` and `mat-tab-nav-bar`.
+// We need this styles on top of MDC's, because MDC doesn't support pagination like ours.
+@mixin mat-mdc-paginated-tab-header {
+  .mat-mdc-tab-header {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .mat-mdc-tab-header-pagination {
+    @include user-select(none);
+    position: relative;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    min-width: 32px;
+    cursor: pointer;
+    z-index: 2;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+
+    .mat-ripple-element {
+      opacity: map-get($mdc-ripple-dark-ink-opacities, press);
+    }
+
+    .mat-mdc-tab-header-pagination-controls-enabled & {
+      display: flex;
+    }
+  }
+
+  // The pagination control that is displayed on the left side of the tab header.
+  .mat-mdc-tab-header-pagination-before,
+  .mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after {
+    padding-left: 4px;
+    .mat-mdc-tab-header-pagination-chevron {
+      transform: rotate(-135deg);
+    }
+  }
+
+  // The pagination control that is displayed on the right side of the tab header.
+  .mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before,
+  .mat-mdc-tab-header-pagination-after {
+    padding-right: 4px;
+    .mat-mdc-tab-header-pagination-chevron {
+      transform: rotate(45deg);
+    }
+  }
+
+  .mat-mdc-tab-header-pagination-chevron {
+    border-style: solid;
+    border-width: 2px 2px 0 0;
+    content: '';
+    height: 8px;
+    width: 8px;
+  }
+
+  .mat-mdc-tab-header-pagination-disabled {
+    box-shadow: none;
+    cursor: default;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .mat-mdc-tab-list {
+    flex-grow: 1;
+    position: relative;
+    transition: transform 500ms cubic-bezier(0.35, 0, 0.25, 1);
+  }
+}
+
+// Structural styles for the element that wraps the paginated header items.
+@mixin mat-mdc-paginated-tab-header-item-wrapper {
+  display: flex;
+  flex: 1 0 auto;
+
+  // Note that these are used as inputs so they shouldn't be changed to `mat-mdc-`.
+  [mat-align-tabs='center'] & {
+    justify-content: center;
+  }
+
+  [mat-align-tabs='end'] & {
+    justify-content: flex-end;
+  }
+}
+
+// Structural styles for the element that wraps the paginated container's content.
+@mixin mat-mdc-paginated-tab-header-container {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  z-index: 1;
+}

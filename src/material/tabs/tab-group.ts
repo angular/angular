@@ -37,7 +37,6 @@ import {
 } from '@angular/material/core';
 import {merge, Subscription} from 'rxjs';
 import {MatTab} from './tab';
-import {MatTabHeader} from './tab-header';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
@@ -66,40 +65,24 @@ export const MAT_TABS_CONFIG = new InjectionToken<MatTabsConfig>('MAT_TABS_CONFI
 
 // Boilerplate for applying mixins to MatTabGroup.
 /** @docs-private */
-class MatTabGroupBase {
+class MatTabGroupMixinBase {
   constructor(public _elementRef: ElementRef) {}
 }
-const _MatTabGroupMixinBase: CanColorCtor & CanDisableRippleCtor & typeof MatTabGroupBase =
-    mixinColor(mixinDisableRipple(MatTabGroupBase), 'primary');
+const _MatTabGroupMixinBase: CanColorCtor & CanDisableRippleCtor & typeof MatTabGroupMixinBase =
+    mixinColor(mixinDisableRipple(MatTabGroupMixinBase), 'primary');
 
-/**
- * Material design tab-group component.  Supports basic tab pairs (label + content) and includes
- * animated ink-bar, keyboard navigation, and screen reader.
- * See: https://material.io/design/components/tabs.html
- */
-@Component({
-  moduleId: module.id,
-  selector: 'mat-tab-group',
-  exportAs: 'matTabGroup',
-  templateUrl: 'tab-group.html',
-  styleUrls: ['tab-group.css'],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  inputs: ['color', 'disableRipple'],
-  host: {
-    'class': 'mat-tab-group',
-    '[class.mat-tab-group-dynamic-height]': 'dynamicHeight',
-    '[class.mat-tab-group-inverted-header]': 'headerPosition === "below"',
-  },
-})
-export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentInit,
+interface MatTabGroupBaseHeader {
+  _alignInkBarToSelectedTab: () => void;
+  focusIndex: number;
+}
+
+/** Base class with all of the `MatTabGroupBase` functionality. */
+// tslint:disable-next-line:class-name
+export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements AfterContentInit,
     AfterContentChecked, OnDestroy, CanColor, CanDisableRipple {
-
-  @ContentChildren(MatTab) _tabs: QueryList<MatTab>;
-
-  @ViewChild('tabBodyWrapper', {static: false}) _tabBodyWrapper: ElementRef;
-
-  @ViewChild('tabHeader', {static: false}) _tabHeader: MatTabHeader;
+  abstract _tabs: QueryList<MatTab>;
+  abstract _tabBodyWrapper: ElementRef;
+  abstract _tabHeader: MatTabGroupBaseHeader;
 
   /** The tab index that should be selected after the content has been checked. */
   private _indexToSelect: number | null = 0;
@@ -342,7 +325,7 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
   }
 
   /** Handle click events, setting new selected index if appropriate. */
-  _handleClick(tab: MatTab, tabHeader: MatTabHeader, index: number) {
+  _handleClick(tab: MatTab, tabHeader: MatTabGroupBaseHeader, index: number) {
     if (!tab.disabled) {
       this.selectedIndex = tabHeader.focusIndex = index;
     }
@@ -354,5 +337,38 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
       return null;
     }
     return this.selectedIndex === idx ? 0 : -1;
+  }
+}
+
+/**
+ * Material design tab-group component. Supports basic tab pairs (label + content) and includes
+ * animated ink-bar, keyboard navigation, and screen reader.
+ * See: https://material.io/design/components/tabs.html
+ */
+@Component({
+  moduleId: module.id,
+  selector: 'mat-tab-group',
+  exportAs: 'matTabGroup',
+  templateUrl: 'tab-group.html',
+  styleUrls: ['tab-group.css'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  inputs: ['color', 'disableRipple'],
+  host: {
+    'class': 'mat-tab-group',
+    '[class.mat-tab-group-dynamic-height]': 'dynamicHeight',
+    '[class.mat-tab-group-inverted-header]': 'headerPosition === "below"',
+  },
+})
+export class MatTabGroup extends _MatTabGroupBase {
+  @ContentChildren(MatTab) _tabs: QueryList<MatTab>;
+  @ViewChild('tabBodyWrapper', {static: false}) _tabBodyWrapper: ElementRef;
+  @ViewChild('tabHeader', {static: false}) _tabHeader: MatTabGroupBaseHeader;
+
+  constructor(elementRef: ElementRef,
+              changeDetectorRef: ChangeDetectorRef,
+              @Inject(MAT_TABS_CONFIG) @Optional() defaultConfig?: MatTabsConfig,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+    super(elementRef, changeDetectorRef, defaultConfig, animationMode);
   }
 }

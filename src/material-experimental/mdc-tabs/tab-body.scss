@@ -1,0 +1,34 @@
+@import '../../material/core/style/vendor-prefixes';
+@import '../../material/core/style/layout-common';
+
+// Wraps each tab body. We need to add these styles ourselves,
+// because MDC only provides styling for the tab header.
+.mat-mdc-tab-body {
+  @include mat-fill;
+  display: block;
+  overflow: hidden;
+
+  // Fix for auto content wrapping in IE11
+  flex-basis: 100%;
+
+  &.mat-mdc-tab-body-active {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 1;
+    flex-grow: 1;
+  }
+
+  .mat-mdc-tab-group.mat-mdc-tab-group-dynamic-height &.mat-mdc-tab-body-active {
+    overflow-y: hidden;
+  }
+}
+
+.mat-mdc-tab-body-content {
+  height: 100%;
+  overflow: auto;
+
+  .mat-mdc-tab-group-dynamic-height & {
+    overflow: hidden;
+  }
+}

@@ -1,0 +1,9 @@
+<div class="mat-mdc-tab-body-content" #content
+     [@translateTab]="{
+        value: _position,
+        params: {animationDuration: animationDuration}
+     }"
+     (@translateTab.start)="_onTranslateTabStarted($event)"
+     (@translateTab.done)="_translateTabComplete.next($event)">
+  <ng-template matTabBodyHost></ng-template>
+</div>

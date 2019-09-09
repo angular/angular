@@ -1,0 +1,47 @@
+@import '@material/tab/mixins';
+@import '@material/ripple/variables';
+@import '../../material/core/style/variables';
+@import '../../material/core/style/noop-animation';
+@import '../mdc-helpers/mdc-helpers';
+@import './tabs-common';
+
+@include mdc-tab-without-ripple($query: $mat-base-styles-query);
+@include mat-mdc-tab-ripple;
+
+.mat-mdc-tab {
+  @include mat-mdc-tab;
+
+  // Note that we only want to target direct descendant tabs. Also note that
+  // `mat-stretch-tabs` is part of the public API so it should not be changed to `mat-mdc-`.
+  .mat-mdc-tab-group[mat-stretch-tabs] > .mat-mdc-tab-header & {
+    flex-grow: 1;
+  }
+}
+
+// MDC doesn't support disabled tabs so we need to improvise.
+.mat-mdc-tab-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.mat-mdc-tab-group {
+  display: flex;
+  flex-direction: column;
+
+  &.mat-mdc-tab-group-inverted-header {
+    flex-direction: column-reverse;
+
+    .mdc-tab-indicator__content--underline {
+      align-self: flex-start;
+    }
+  }
+}
+
+// The bottom section of the view; contains the tab bodies
+.mat-mdc-tab-body-wrapper {
+  @include _noop-animation();
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  transition: height $mat-tab-animation-duration $ease-in-out-curve-function;
+}

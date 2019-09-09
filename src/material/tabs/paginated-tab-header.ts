@@ -25,7 +25,6 @@ import {FocusKeyManager, FocusableOption} from '@angular/cdk/a11y';
 import {END, ENTER, HOME, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
 import {merge, of as observableOf, Subject, timer, fromEvent} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {MatInkBar} from './ink-bar';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 
 
@@ -59,7 +58,7 @@ const HEADER_SCROLL_DELAY = 650;
 const HEADER_SCROLL_INTERVAL = 100;
 
 /** Item inside a paginated tab header. */
-type MatPaginatedTabHeaderItem = FocusableOption & {elementRef: ElementRef};
+export type MatPaginatedTabHeaderItem = FocusableOption & {elementRef: ElementRef};
 
 /**
  * Base class for a tab header that supported pagination.
@@ -67,7 +66,7 @@ type MatPaginatedTabHeaderItem = FocusableOption & {elementRef: ElementRef};
 export abstract class MatPaginatedTabHeader implements AfterContentChecked, AfterContentInit,
   AfterViewInit, OnDestroy {
   abstract _items: QueryList<MatPaginatedTabHeaderItem>;
-  abstract _inkBar: MatInkBar;
+  abstract _inkBar: {hide: () => void, alignToElement: (element: HTMLElement) => void};
   abstract _tabListContainer: ElementRef<HTMLElement>;
   abstract _tabList: ElementRef<HTMLElement>;
   abstract _nextPaginator: ElementRef<HTMLElement>;

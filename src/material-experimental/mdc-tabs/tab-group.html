@@ -1,0 +1,63 @@
+<mat-tab-header #tabHeader
+               [selectedIndex]="selectedIndex"
+               [disableRipple]="disableRipple"
+               (indexFocused)="_focusChanged($event)"
+               (selectFocusedIndex)="selectedIndex = $event">
+
+  <div class="mdc-tab mat-mdc-tab"
+       #tabNode
+       role="tab"
+       matTabLabelWrapper
+       cdkMonitorElementFocus
+       *ngFor="let tab of _tabs; let i = index"
+       [id]="_getTabLabelId(i)"
+       [attr.tabIndex]="_getTabIndex(tab, i)"
+       [attr.aria-posinset]="i + 1"
+       [attr.aria-setsize]="_tabs.length"
+       [attr.aria-controls]="_getTabContentId(i)"
+       [attr.aria-selected]="selectedIndex == i"
+       [attr.aria-label]="tab.ariaLabel || null"
+       [attr.aria-labelledby]="(!tab.ariaLabel && tab.ariaLabelledby) ? tab.ariaLabelledby : null"
+       [class.mdc-tab--active]="selectedIndex == i"
+       [disabled]="tab.disabled"
+       (click)="_handleClick(tab, tabHeader, i)">
+
+    <!-- Needs to be a separate element, because we can't put
+         `overflow: hidden` on tab due to the ink bar. -->
+    <div
+      class="mat-mdc-tab-ripple"
+      mat-ripple
+      [matRippleTrigger]="tabNode"
+      [matRippleDisabled]="tab.disabled || disableRipple"></div>
+
+    <span class="mdc-tab__content">
+      <span class="mdc-tab__text-label">
+        <!-- If there is a label template, use it. -->
+        <ng-template [ngIf]="tab.templateLabel">
+          <ng-template [cdkPortalOutlet]="tab.templateLabel"></ng-template>
+        </ng-template>
+
+        <!-- If there is not a label template, fall back to the text label. -->
+        <ng-template [ngIf]="!tab.templateLabel">{{tab.textLabel}}</ng-template>
+      </span>
+    </span>
+  </div>
+</mat-tab-header>
+
+<div
+  class="mat-mdc-tab-body-wrapper"
+  [class._mat-animation-noopable]="_animationMode === 'NoopAnimations'"
+  #tabBodyWrapper>
+  <mat-tab-body role="tabpanel"
+               *ngFor="let tab of _tabs; let i = index"
+               [id]="_getTabContentId(i)"
+               [attr.aria-labelledby]="_getTabLabelId(i)"
+               [class.mat-mdc-tab-body-active]="selectedIndex == i"
+               [content]="tab.content"
+               [position]="tab.position"
+               [origin]="tab.origin"
+               [animationDuration]="animationDuration"
+               (_onCentered)="_removeTabBodyWrapperHeight()"
+               (_onCentering)="_setTabBodyWrapperHeight($event)">
+  </mat-tab-body>
+</div>

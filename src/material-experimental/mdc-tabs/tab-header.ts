@@ -6,59 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directionality} from '@angular/cdk/bidi';
-import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
-  AfterContentChecked,
-  AfterContentInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  ContentChildren,
-  ElementRef,
-  NgZone,
-  OnDestroy,
-  Optional,
-  QueryList,
-  ViewChild,
   ViewEncapsulation,
-  AfterViewInit,
-  Input,
+  ContentChildren,
+  ViewChild,
+  ElementRef,
+  QueryList,
+  AfterContentInit,
+  Optional,
+  ChangeDetectorRef,
+  NgZone,
   Inject,
 } from '@angular/core';
-import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {MatInkBar} from './ink-bar';
-import {MatTabLabelWrapper} from './tab-label-wrapper';
+import {_MatTabHeaderBase} from '@angular/material/tabs';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Platform} from '@angular/cdk/platform';
-import {MatPaginatedTabHeader} from './paginated-tab-header';
-
-/** Base class with all of the `MatTabHeader` functionality. */
-// tslint:disable-next-line:class-name
-export abstract class _MatTabHeaderBase extends MatPaginatedTabHeader implements
-  AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy {
-
-  /** Whether the ripple effect is disabled or not. */
-  @Input()
-  get disableRipple() { return this._disableRipple; }
-  set disableRipple(value: any) { this._disableRipple = coerceBooleanProperty(value); }
-  private _disableRipple: boolean = false;
-
-  constructor(elementRef: ElementRef,
-              changeDetectorRef: ChangeDetectorRef,
-              viewportRuler: ViewportRuler,
-              @Optional() dir: Directionality,
-              ngZone: NgZone,
-              platform: Platform,
-              // @breaking-change 9.0.0 `_animationMode` parameter to be made required.
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
-    super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
-  }
-
-  protected _itemSelected(event: KeyboardEvent) {
-    event.preventDefault();
-  }
-}
+import {Directionality} from '@angular/cdk/bidi';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {MatTabLabelWrapper} from './tab-label-wrapper';
+import {MatInkBar} from './ink-bar';
 
 /**
  * The header of the tab group which displays a list of all the tabs in the tab group. Includes
@@ -77,18 +45,18 @@ export abstract class _MatTabHeaderBase extends MatPaginatedTabHeader implements
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'class': 'mat-tab-header',
-    '[class.mat-tab-header-pagination-controls-enabled]': '_showPaginationControls',
-    '[class.mat-tab-header-rtl]': "_getLayoutDirection() == 'rtl'",
+    'class': 'mat-mdc-tab-header',
+    '[class.mat-mdc-tab-header-pagination-controls-enabled]': '_showPaginationControls',
+    '[class.mat-mdc-tab-header-rtl]': "_getLayoutDirection() == 'rtl'",
   },
 })
-export class MatTabHeader extends _MatTabHeaderBase {
+export class MatTabHeader extends _MatTabHeaderBase implements AfterContentInit {
   @ContentChildren(MatTabLabelWrapper) _items: QueryList<MatTabLabelWrapper>;
-  @ViewChild(MatInkBar, {static: true}) _inkBar: MatInkBar;
   @ViewChild('tabListContainer', {static: true}) _tabListContainer: ElementRef;
   @ViewChild('tabList', {static: true}) _tabList: ElementRef;
   @ViewChild('nextPaginator', {static: false}) _nextPaginator: ElementRef<HTMLElement>;
   @ViewChild('previousPaginator', {static: false}) _previousPaginator: ElementRef<HTMLElement>;
+  _inkBar: MatInkBar;
 
   constructor(elementRef: ElementRef,
               changeDetectorRef: ChangeDetectorRef,
@@ -99,5 +67,10 @@ export class MatTabHeader extends _MatTabHeaderBase {
               // @breaking-change 9.0.0 `_animationMode` parameter to be made required.
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
+  }
+
+  ngAfterContentInit() {
+    this._inkBar = new MatInkBar(this._items);
+    super.ngAfterContentInit();
   }
 }

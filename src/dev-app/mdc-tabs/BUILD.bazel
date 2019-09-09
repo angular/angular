@@ -12,6 +12,7 @@ ng_module(
     ],
     deps = [
         "//src/material-experimental/mdc-tabs",
+        "//src/material/button-toggle",
         "@npm//@angular/router",
     ],
 )

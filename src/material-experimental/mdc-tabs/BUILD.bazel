@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
-load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
     name = "mdc-tabs",
@@ -10,12 +10,30 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    assets = [":tabs_scss"] + glob(["**/*.html"]),
+    assets = [
+        ":tabs_scss",
+        ":tab-body.css",
+        ":tab-header.css",
+        ":tab-group.css",
+        ":tab-nav-bar/tab-nav-bar.css",
+        ":tab-nav-bar/tab-link.css",
+    ] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-tabs",
     deps = [
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
+        "//src/cdk/coercion",
+        "//src/cdk/keycodes",
+        "//src/cdk/observers",
+        "//src/cdk/platform",
+        "//src/cdk/portal",
+        "//src/cdk/scrolling",
         "//src/material/core",
+        "//src/material/tabs",
+        "@npm//@angular/animations",
         "@npm//@angular/common",
         "@npm//@angular/core",
+        "@npm//@material/tab-indicator",
     ],
 )
 
@@ -30,21 +48,85 @@ sass_library(
 
 sass_binary(
     name = "tabs_scss",
-    src = "tabs.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
+    src = "_mdc-tabs.scss",
+    include_paths = ["external/npm/node_modules"],
     deps = [
+        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+    ],
+)
+
+sass_binary(
+    name = "mdc_tab_body_scss",
+    src = "tab-body.scss",
+    include_paths = ["external/npm/node_modules"],
+    deps = ["//src/material/core:core_scss_lib"],
+)
+
+sass_binary(
+    name = "mdc_tab_header_scss",
+    src = "tab-header.scss",
+    include_paths = ["external/npm/node_modules"],
+    deps = [":mdc_tabs_scss_lib"],
+)
+
+sass_binary(
+    name = "mdc_tab_group_scss",
+    src = "tab-group.scss",
+    include_paths = ["external/npm/node_modules"],
+    deps = [":mdc_tabs_scss_lib"],
+)
+
+sass_binary(
+    name = "mdc_tab_nav_bar_scss",
+    src = "tab-nav-bar/tab-nav-bar.scss",
+    include_paths = ["external/npm/node_modules"],
+    deps = [":mdc_tabs_scss_lib"],
+)
+
+sass_binary(
+    name = "mdc_tab_link_scss",
+    src = "tab-nav-bar/tab-link.scss",
+    include_paths = ["external/npm/node_modules"],
+    deps = [":mdc_tabs_scss_lib"],
+)
+
+ng_test_library(
+    name = "tabs_tests_lib",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":mdc-tabs",
+        "//src/cdk-experimental/testing",
+        "//src/cdk-experimental/testing/testbed",
+        "//src/cdk/bidi",
+        "//src/cdk/keycodes",
+        "//src/cdk/observers",
+        "//src/cdk/portal",
+        "//src/cdk/scrolling",
+        "//src/cdk/testing",
+        "//src/material/core",
+        "@npm//@angular/common",
+        "@npm//@angular/platform-browser",
+        "@npm//rxjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    static_files = ["@npm//:node_modules/@material/tab-indicator/dist/mdc.tabIndicator.js"],
+    deps = [
+        ":tabs_tests_lib",
+        "//src/material-experimental:mdc_require_config.js",
     ],
 )
 
 ng_e2e_test_library(
     name = "e2e_test_sources",
     srcs = glob(["**/*.e2e.spec.ts"]),
-    deps = [
-        "//src/cdk/private/testing/e2e",
-    ],
+    deps = ["//src/cdk/private/testing/e2e"],
 )
 
 e2e_test_suite(

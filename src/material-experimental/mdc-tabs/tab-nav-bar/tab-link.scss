@@ -1,0 +1,36 @@
+@import '@material/tab/mixins';
+@import '../../../material/core/style/variables';
+@import '../../mdc-helpers/mdc-helpers';
+@import '../tabs-common';
+
+@include mdc-tab-without-ripple($query: $mat-base-styles-query);
+@include mdc-tab-indicator-core-styles($query: $mat-base-styles-query);
+@include mat-mdc-tab-ripple;
+
+// Wraps each link in the header
+.mat-mdc-tab-link {
+  @include mat-mdc-tab;
+
+  &.mat-mdc-tab-disabled {
+    // We use `pointer-events` to make the element unclickable when it's disabled, rather than
+    // preventing the default action through JS, because we can't prevent the action reliably
+    // due to other directives potentially registering their events earlier. This shouldn't cause
+    // the user to click through, because we always have a `.mat-tab-links` behind the link.
+    pointer-events: none;
+
+    // MDC doesn't support disabled tabs so we need to improvise.
+    opacity: 0.4;
+  }
+
+  // Note that we only want to target direct descendant tabs. Also note that
+  // `mat-stretch-tabs` is part of the public API so it should not be changed to `mat-mdc-`.
+  .mat-mdc-tab-header[mat-stretch-tabs] & {
+    flex-grow: 1;
+  }
+}
+
+@media ($mat-xsmall) {
+  .mat-mdc-tab-link {
+    min-width: 72px;
+  }
+}

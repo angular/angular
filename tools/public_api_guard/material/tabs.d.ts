@@ -7,6 +7,85 @@ export interface _MatInkBarPositioner {
     };
 }
 
+export declare abstract class _MatTabBodyBase implements OnInit, OnDestroy {
+    readonly _afterLeavingCenter: EventEmitter<boolean>;
+    readonly _beforeCentering: EventEmitter<boolean>;
+    _content: TemplatePortal;
+    readonly _onCentered: EventEmitter<void>;
+    readonly _onCentering: EventEmitter<number>;
+    abstract _portalHost: PortalHostDirective;
+    _position: MatTabBodyPositionState;
+    _translateTabComplete: Subject<AnimationEvent>;
+    animationDuration: string;
+    origin: number;
+    position: number;
+    constructor(_elementRef: ElementRef<HTMLElement>, _dir: Directionality, changeDetectorRef: ChangeDetectorRef);
+    _getLayoutDirection(): Direction;
+    _isCenterPosition(position: MatTabBodyPositionState | string): boolean;
+    _onTranslateTabStarted(event: AnimationEvent): void;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+}
+
+export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements AfterContentInit, AfterContentChecked, OnDestroy, CanColor, CanDisableRipple {
+    _animationMode?: string | undefined;
+    abstract _tabBodyWrapper: ElementRef;
+    abstract _tabHeader: MatTabGroupBaseHeader;
+    abstract _tabs: QueryList<MatTab>;
+    readonly animationDone: EventEmitter<void>;
+    animationDuration: string;
+    backgroundColor: ThemePalette;
+    dynamicHeight: boolean;
+    readonly focusChange: EventEmitter<MatTabChangeEvent>;
+    headerPosition: MatTabHeaderPosition;
+    selectedIndex: number | null;
+    readonly selectedIndexChange: EventEmitter<number>;
+    readonly selectedTabChange: EventEmitter<MatTabChangeEvent>;
+    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatTabsConfig, _animationMode?: string | undefined);
+    _focusChanged(index: number): void;
+    _getTabContentId(i: number): string;
+    _getTabIndex(tab: MatTab, idx: number): number | null;
+    _getTabLabelId(i: number): string;
+    _handleClick(tab: MatTab, tabHeader: MatTabGroupBaseHeader, index: number): void;
+    _removeTabBodyWrapperHeight(): void;
+    _setTabBodyWrapperHeight(tabHeight: number): void;
+    ngAfterContentChecked(): void;
+    ngAfterContentInit(): void;
+    ngOnDestroy(): void;
+    realignInkBar(): void;
+}
+
+export declare abstract class _MatTabHeaderBase extends MatPaginatedTabHeader implements AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy {
+    disableRipple: any;
+    constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, dir: Directionality, ngZone: NgZone, platform: Platform, animationMode?: string);
+    protected _itemSelected(event: KeyboardEvent): void;
+}
+
+export declare class _MatTabLinkBase extends _MatTabLinkMixinBase implements OnDestroy, CanDisable, CanDisableRipple, HasTabIndex, RippleTarget, FocusableOption {
+    protected _isActive: boolean;
+    active: boolean;
+    elementRef: ElementRef;
+    rippleConfig: RippleConfig & RippleGlobalOptions;
+    readonly rippleDisabled: boolean;
+    constructor(_tabNavBar: _MatTabNavBase, elementRef: ElementRef, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor, animationMode?: string);
+    focus(): void;
+    ngOnDestroy(): void;
+}
+
+export declare abstract class _MatTabNavBase extends MatPaginatedTabHeader implements AfterContentChecked, AfterContentInit, OnDestroy {
+    abstract _items: QueryList<MatPaginatedTabHeaderItem & {
+        active: boolean;
+    }>;
+    backgroundColor: ThemePalette;
+    color: ThemePalette;
+    disableRipple: any;
+    constructor(elementRef: ElementRef, dir: Directionality, ngZone: NgZone, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler,
+    platform?: Platform, animationMode?: string);
+    protected _itemSelected(): void;
+    ngAfterContentInit(): void;
+    updateActiveLink(_element?: ElementRef): void;
+}
+
 export declare const MAT_TABS_CONFIG: InjectionToken<MatTabsConfig>;
 
 export declare class MatInkBar {
@@ -35,24 +114,9 @@ export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisab
     ngOnInit(): void;
 }
 
-export declare class MatTabBody implements OnInit, OnDestroy {
-    readonly _afterLeavingCenter: EventEmitter<boolean>;
-    readonly _beforeCentering: EventEmitter<boolean>;
-    _content: TemplatePortal;
-    readonly _onCentered: EventEmitter<void>;
-    readonly _onCentering: EventEmitter<number>;
+export declare class MatTabBody extends _MatTabBodyBase {
     _portalHost: PortalHostDirective;
-    _position: MatTabBodyPositionState;
-    _translateTabComplete: Subject<AnimationEvent>;
-    animationDuration: string;
-    origin: number;
-    position: number;
-    constructor(_elementRef: ElementRef<HTMLElement>, _dir: Directionality, changeDetectorRef: ChangeDetectorRef);
-    _getLayoutDirection(): Direction;
-    _isCenterPosition(position: MatTabBodyPositionState | string): boolean;
-    _onTranslateTabStarted(event: AnimationEvent): void;
-    ngOnDestroy(): void;
-    ngOnInit(): void;
+    constructor(elementRef: ElementRef<HTMLElement>, dir: Directionality, changeDetectorRef: ChangeDetectorRef);
 }
 
 export declare type MatTabBodyOriginState = 'left' | 'right';
@@ -75,44 +139,21 @@ export declare class MatTabContent {
     constructor(template: TemplateRef<any>);
 }
 
-export declare class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentInit, AfterContentChecked, OnDestroy, CanColor, CanDisableRipple {
-    _animationMode?: string | undefined;
+export declare class MatTabGroup extends _MatTabGroupBase {
     _tabBodyWrapper: ElementRef;
-    _tabHeader: MatTabHeader;
+    _tabHeader: MatTabGroupBaseHeader;
     _tabs: QueryList<MatTab>;
-    readonly animationDone: EventEmitter<void>;
-    animationDuration: string;
-    backgroundColor: ThemePalette;
-    dynamicHeight: boolean;
-    readonly focusChange: EventEmitter<MatTabChangeEvent>;
-    headerPosition: MatTabHeaderPosition;
-    selectedIndex: number | null;
-    readonly selectedIndexChange: EventEmitter<number>;
-    readonly selectedTabChange: EventEmitter<MatTabChangeEvent>;
-    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatTabsConfig, _animationMode?: string | undefined);
-    _focusChanged(index: number): void;
-    _getTabContentId(i: number): string;
-    _getTabIndex(tab: MatTab, idx: number): number | null;
-    _getTabLabelId(i: number): string;
-    _handleClick(tab: MatTab, tabHeader: MatTabHeader, index: number): void;
-    _removeTabBodyWrapperHeight(): void;
-    _setTabBodyWrapperHeight(tabHeight: number): void;
-    ngAfterContentChecked(): void;
-    ngAfterContentInit(): void;
-    ngOnDestroy(): void;
-    realignInkBar(): void;
+    constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatTabsConfig, animationMode?: string);
 }
 
-export declare class MatTabHeader extends MatPaginatedTabHeader implements AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy {
+export declare class MatTabHeader extends _MatTabHeaderBase {
     _inkBar: MatInkBar;
     _items: QueryList<MatTabLabelWrapper>;
     _nextPaginator: ElementRef<HTMLElement>;
     _previousPaginator: ElementRef<HTMLElement>;
     _tabList: ElementRef;
     _tabListContainer: ElementRef;
-    disableRipple: any;
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, dir: Directionality, ngZone: NgZone, platform: Platform, animationMode?: string);
-    protected _itemSelected(event: KeyboardEvent): void;
 }
 
 export declare type MatTabHeaderPosition = 'above' | 'below';
@@ -128,33 +169,20 @@ export declare class MatTabLabelWrapper extends _MatTabLabelWrapperMixinBase imp
     getOffsetWidth(): number;
 }
 
-export declare class MatTabLink extends _MatTabLinkMixinBase implements OnDestroy, CanDisable, CanDisableRipple, HasTabIndex, RippleTarget, FocusableOption {
-    protected _isActive: boolean;
-    protected _tabLinkRipple: RippleRenderer;
-    active: boolean;
-    elementRef: ElementRef;
-    rippleConfig: RippleConfig & RippleGlobalOptions;
-    readonly rippleDisabled: boolean;
-    constructor(_tabNavBar: MatTabNav, elementRef: ElementRef, ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor, animationMode?: string);
-    focus(): void;
+export declare class MatTabLink extends _MatTabLinkBase implements OnDestroy {
+    constructor(tabNavBar: MatTabNav, elementRef: ElementRef, ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, focusMonitor: FocusMonitor, animationMode?: string);
     ngOnDestroy(): void;
 }
 
-export declare class MatTabNav extends MatPaginatedTabHeader implements AfterContentChecked, AfterContentInit, OnDestroy {
+export declare class MatTabNav extends _MatTabNavBase {
     _inkBar: MatInkBar;
     _items: QueryList<MatTabLink>;
     _nextPaginator: ElementRef<HTMLElement>;
     _previousPaginator: ElementRef<HTMLElement>;
     _tabList: ElementRef;
     _tabListContainer: ElementRef;
-    backgroundColor: ThemePalette;
-    color: ThemePalette;
-    disableRipple: any;
     constructor(elementRef: ElementRef, dir: Directionality, ngZone: NgZone, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler,
     platform?: Platform, animationMode?: string);
-    protected _itemSelected(): void;
-    ngAfterContentInit(): void;
-    updateActiveLink(_element?: ElementRef): void;
 }
 
 export declare const matTabsAnimations: {

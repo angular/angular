@@ -98,24 +98,9 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
   }
 }
 
-/**
- * Wrapper for the contents of a tab.
- * @docs-private
- */
-@Component({
-  moduleId: module.id,
-  selector: 'mat-tab-body',
-  templateUrl: 'tab-body.html',
-  styleUrls: ['tab-body.css'],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [matTabsAnimations.translateTab],
-  host: {
-    'class': 'mat-tab-body',
-  },
-})
-export class MatTabBody implements OnInit, OnDestroy {
-
+/** Base class with all of the `MatTabBody` functionality. */
+// tslint:disable-next-line:class-name
+export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   /** Current position of the tab-body in the tab-group. Zero means that the tab is visible. */
   private _positionIndex: number;
 
@@ -141,7 +126,7 @@ export class MatTabBody implements OnInit, OnDestroy {
   @Output() readonly _onCentered: EventEmitter<void> = new EventEmitter<void>(true);
 
    /** The portal host inside of this container into which the tab body content will be loaded. */
-  @ViewChild(PortalHostDirective, {static: false}) _portalHost: PortalHostDirective;
+  abstract _portalHost: PortalHostDirective;
 
   /** The tab body content to display. */
   @Input('content') _content: TemplatePortal;
@@ -246,5 +231,31 @@ export class MatTabBody implements OnInit, OnDestroy {
     }
 
     return 'right-origin-center';
+  }
+}
+
+/**
+ * Wrapper for the contents of a tab.
+ * @docs-private
+ */
+@Component({
+  moduleId: module.id,
+  selector: 'mat-tab-body',
+  templateUrl: 'tab-body.html',
+  styleUrls: ['tab-body.css'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [matTabsAnimations.translateTab],
+  host: {
+    'class': 'mat-tab-body',
+  }
+})
+export class MatTabBody extends _MatTabBodyBase {
+  @ViewChild(PortalHostDirective, {static: false}) _portalHost: PortalHostDirective;
+
+  constructor(elementRef: ElementRef<HTMLElement>,
+              @Optional() dir: Directionality,
+              changeDetectorRef: ChangeDetectorRef) {
+    super(elementRef, dir, changeDetectorRef);
   }
 }

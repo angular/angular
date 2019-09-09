@@ -1,2 +1,113 @@
-<!-- TODO: copy in demo template from existing tabs demo. -->
-Not yet implemented.
+<div class="mat-typography">
+  <h2>Paginated tabs</h2>
+  <mat-tab-group>
+    <mat-tab [label]="tab" *ngFor="let tab of lotsOfTabs">Content</mat-tab>
+  </mat-tab-group>
+
+  <h2>Themed tabs</h2>
+  <mat-tab-group [color]="'primary'">
+    <mat-tab label="First">Content 1</mat-tab>
+    <mat-tab label="Second">Content 2</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+    <mat-tab label="Fourth" disabled>Content 4</mat-tab>
+  </mat-tab-group>
+
+  <mat-tab-group [color]="'accent'">
+    <mat-tab label="First">Content 1</mat-tab>
+    <mat-tab label="Second">Content 2</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+    <mat-tab label="Fourth" disabled>Content 4</mat-tab>
+  </mat-tab-group>
+
+  <mat-tab-group [color]="'warn'">
+    <mat-tab label="First">Content 1</mat-tab>
+    <mat-tab label="Second">Content 2</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+    <mat-tab label="Fourth" disabled>Content 4</mat-tab>
+  </mat-tab-group>
+
+  <h2>Stretched tabs</h2>
+  <mat-tab-group mat-stretch-tabs>
+    <mat-tab label="First">Content 1</mat-tab>
+    <mat-tab label="Second">Content 2</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+  </mat-tab-group>
+
+  <h2>Aligned tabs</h2>
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab label="First">Content 1</mat-tab>
+    <mat-tab label="Second">Content 2</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+  </mat-tab-group>
+
+  <mat-tab-group mat-align-tabs="center">
+    <mat-tab label="First">Content 1</mat-tab>
+    <mat-tab label="Second">Content 2</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+  </mat-tab-group>
+
+  <mat-tab-group mat-align-tabs="end">
+    <mat-tab label="First">Content 1</mat-tab>
+    <mat-tab label="Second">Content 2</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+  </mat-tab-group>
+
+  <h2>Inverted tabs</h2>
+  <mat-tab-group headerPosition="below">
+    <mat-tab label="First">Content 1</mat-tab>
+    <mat-tab label="Second">Content 2</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+  </mat-tab-group>
+
+  <h2>Tabs with background color</h2>
+  <div>
+    <mat-button-toggle-group #backgroundColorToggle="matButtonToggleGroup"
+                              value="primary"
+                              aria-label="Change color">
+      <mat-button-toggle value="primary">Primary</mat-button-toggle>
+      <mat-button-toggle value="accent">Accent</mat-button-toggle>
+      <mat-button-toggle value="warn">Warn</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <mat-tab-group [backgroundColor]="backgroundColorToggle.value">
+    <mat-tab [label]="tab" *ngFor="let tab of lotsOfTabs">Content</mat-tab>
+  </mat-tab-group>
+
+  <h2>Template labels</h2>
+
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>One</ng-template>
+      First tab's content
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>Two</ng-template>
+      Second tab's content
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>Three</ng-template>
+      Third tab's content
+    </mat-tab>
+  </mat-tab-group>
+
+  <h2>Lazy tabs</h2>
+  <mat-tab-group>
+    <mat-tab label="One">
+      Eager
+    </mat-tab>
+    <mat-tab label="Two">
+      <ng-template matTabContent>
+        <div class="child">Lazy</div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+
+  <h2>Tab nav bar</h2>
+  <nav mat-tab-nav-bar>
+    <a mat-tab-link *ngFor="let link of links"
+      (click)="activeLink = link"
+      [active]="activeLink == link">{{link}}</a>
+    <a mat-tab-link disabled>Disabled Link</a>
+  </nav>
+</div>

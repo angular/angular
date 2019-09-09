@@ -1,0 +1,31 @@
+<!-- TODO: this also had `mat-elevation-z4`. Figure out what we should do with it. -->
+<div class="mat-mdc-tab-header-pagination mat-mdc-tab-header-pagination-before"
+     #previousPaginator
+     aria-hidden="true"
+     mat-ripple [matRippleDisabled]="_disableScrollBefore || disableRipple"
+     [class.mat-mdc-tab-header-pagination-disabled]="_disableScrollBefore"
+     (click)="_handlePaginatorClick('before')"
+     (mousedown)="_handlePaginatorPress('before')"
+     (touchend)="_stopInterval()">
+  <div class="mat-mdc-tab-header-pagination-chevron"></div>
+</div>
+
+<div class="mat-mdc-tab-link-container" #tabListContainer (keydown)="_handleKeydown($event)">
+  <div class="mat-mdc-tab-list" #tabList (cdkObserveContent)="_onContentChanges()">
+    <div class="mat-mdc-tab-links">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
+
+<!-- TODO: this also had `mat-elevation-z4`. Figure out what we should do with it. -->
+<div class="mat-mdc-tab-header-pagination mat-mdc-tab-header-pagination-after"
+     #nextPaginator
+     aria-hidden="true"
+     mat-ripple [matRippleDisabled]="_disableScrollAfter || disableRipple"
+     [class.mat-mdc-tab-header-pagination-disabled]="_disableScrollAfter"
+     (mousedown)="_handlePaginatorPress('after')"
+     (click)="_handlePaginatorClick('after')"
+     (touchend)="_stopInterval()">
+  <div class="mat-mdc-tab-header-pagination-chevron"></div>
+</div>

@@ -1,1 +1,18 @@
-<!-- TODO: copy implementation from existing tabs e2e page. -->
+<section>
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>One</ng-template>
+      <mat-form-field>
+        <textarea matInput placeholder="Autosize textarea" cdkTextareaAutosize>This is an autosize textarea, it should adjust to the size of its content.</textarea>
+      </mat-form-field>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>Two</ng-template>
+      Second tab's content
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>Three</ng-template>
+      Third tab's content
+    </mat-tab>
+  </mat-tab-group>
+</section>

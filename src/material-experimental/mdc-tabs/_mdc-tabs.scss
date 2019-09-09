@@ -1,13 +1,93 @@
+@import '@material/theme/functions';
+@import '@material/tab-indicator/mixins';
+@import '@material/tab/mixins';
+@import '@material/tab/variables';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-tabs-theme-mdc($theme) {
+  // Save original values of MDC global variables. We need to save these so we can restore the
+  // variables to their original values and prevent unintended side effects from using this mixin.
+  $orig-mdc-tab-text-label-color-active: $mdc-tab-text-label-color-active;
+  $orig-mdc-tab-icon-color-active: $mdc-tab-icon-color-active;
+
   @include mat-using-mdc-theme($theme) {
-    // TODO: MDC theme styles here.
+    @include _mat-mdc-tabs-palette-styles($mdc-tab-text-label-color-active);
+
+    .mat-mdc-tab-group, .mat-mdc-tab-nav-bar {
+      &.mat-accent {
+        $mdc-tab-text-label-color-active: secondary !global;
+        $mdc-tab-icon-color-active: secondary !global;
+        @include _mat-mdc-tabs-palette-styles($mdc-tab-text-label-color-active);
+      }
+
+      &.mat-warn {
+        $mdc-tab-text-label-color-active: error !global;
+        $mdc-tab-icon-color-active: error !global;
+        @include _mat-mdc-tabs-palette-styles($mdc-tab-text-label-color-active);
+      }
+    }
+
+    .mat-mdc-tab-group {
+      &.mat-background-primary {
+        @include _mat-mdc-tabs-background(primary, on-primary);
+      }
+
+      &.mat-background-accent {
+        @include _mat-mdc-tabs-background(secondary, on-secondary);
+      }
+
+      &.mat-background-warn {
+        @include _mat-mdc-tabs-background(error, on-error);
+      }
+    }
+
+    .mat-mdc-tab-header-pagination-chevron {
+      @include mdc-theme-prop(border-color, on-surface);
+    }
+  }
+
+  // Restore original values of MDC global variables.
+  $mdc-tab-text-label-color-active: $orig-mdc-tab-text-label-color-active !global;
+  $mdc-tab-icon-color-active: $orig-mdc-tab-icon-color-active !global;
+}
+
+@mixin _mat-mdc-tabs-background($background-color, $foreground-color) {
+  .mat-mdc-tab-header, .mat-mdc-tab-links, .mat-mdc-tab-header-pagination {
+    // Set background color for the tab group
+    @include mdc-theme-prop(background-color, $background-color);
+  }
+
+  // Set labels to contrast against background
+  .mdc-tab__text-label, .mat-mdc-tab-link {
+    @include mdc-theme-prop(color, $foreground-color);
+  }
+
+  .mat-ripple-element, .mat-mdc-tab::before {
+    @include mdc-theme-prop(background-color, $foreground-color);
+  }
+
+  .mdc-tab-indicator__content--underline, .mat-mdc-tab-header-pagination-chevron {
+    @include mdc-theme-prop(border-color, $foreground-color);
+  }
+}
+
+@mixin _mat-mdc-tabs-palette-styles($color) {
+  @include mdc-tab-without-ripple($query: $mat-theme-styles-query);
+  @include mdc-tab-indicator-underline-color($color, $query: $mat-theme-styles-query);
+  @include mdc-tab-indicator-icon-color($color, $query: $mat-theme-styles-query);
+
+  .mat-mdc-tab::before,
+  .mat-mdc-tab-link::before,
+  .mat-mdc-tab .mat-ripple-element,
+  .mat-mdc-tab-header-pagination .mat-ripple-element,
+  .mat-mdc-tab-link .mat-ripple-element {
+    @include mdc-theme-prop(background-color, $color);
   }
 }
 
 @mixin mat-tabs-typography-mdc($config) {
   @include mat-using-mdc-typography($config) {
-    // TODO: MDC typography styles here.
+    @include mdc-tab-without-ripple($query: $mat-typography-styles-query);
+    @include mdc-tab-indicator-core-styles($query: $mat-typography-styles-query);
   }
 }
