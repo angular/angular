@@ -849,7 +849,7 @@ export class DragRef<T = any> {
     if (previewTemplate) {
       const viewRef = previewConfig!.viewContainer.createEmbeddedView(previewTemplate,
                                                                       previewConfig!.context);
-      preview = viewRef.rootNodes[0];
+      preview = getRootNode(viewRef, this._document);
       this._previewRef = viewRef;
       preview.style.transform =
           getTransform(this._pickupPositionOnPage.x, this._pickupPositionOnPage.y);
@@ -941,7 +941,7 @@ export class DragRef<T = any> {
         placeholderTemplate,
         placeholderConfig!.context
       );
-      placeholder = this._placeholderRef.rootNodes[0];
+      placeholder = getRootNode(this._placeholderRef, this._document);
     } else {
       placeholder = deepCloneNode(this._rootElement);
     }
@@ -1230,4 +1230,20 @@ function getPreviewInsertionPoint(documentRef: any): HTMLElement {
          documentRef.mozFullScreenElement ||
          documentRef.msFullscreenElement ||
          documentRef.body;
+}
+
+/**
+ * Gets the root HTML element of an embedded view.
+ * If the root is not an HTML element it gets wrapped in one.
+ */
+function getRootNode(viewRef: EmbeddedViewRef<any>, _document: Document): HTMLElement {
+  const rootNode: Node = viewRef.rootNodes[0];
+
+  if (rootNode.nodeType !== _document.ELEMENT_NODE) {
+    const wrapper = _document.createElement('div');
+    wrapper.appendChild(rootNode);
+    return wrapper;
+  }
+
+  return rootNode as HTMLElement;
 }
