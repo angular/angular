@@ -49,6 +49,7 @@ export declare class MatDialogClose implements OnInit, OnChanges {
     ariaLabel: string;
     dialogRef: MatDialogRef<any>;
     dialogResult: any;
+    type: 'submit' | 'button' | 'reset';
     constructor(dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnInit(): void;

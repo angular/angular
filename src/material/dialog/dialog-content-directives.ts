@@ -30,12 +30,15 @@ let dialogElementUid = 0;
   host: {
     '(click)': 'dialogRef.close(dialogResult)',
     '[attr.aria-label]': 'ariaLabel || null',
-    'type': 'button', // Prevents accidental form submits.
+    '[attr.type]': 'type',
   }
 })
 export class MatDialogClose implements OnInit, OnChanges {
   /** Screenreader label for the button. */
   @Input('aria-label') ariaLabel: string;
+
+  /** Default to "button" to prevents accidental form submits. */
+  @Input() type: 'submit' | 'button' | 'reset' = 'button';
 
   /** Dialog close input. */
   @Input('mat-dialog-close') dialogResult: any;

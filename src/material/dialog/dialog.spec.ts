@@ -1204,10 +1204,16 @@ describe('MatDialog', () => {
         expect(button.getAttribute('aria-label')).toBe('Best close button ever');
       }));
 
-      it('should override the "type" attribute of the close button', () => {
+      it('should set the "type" attribute of the close button if not set manually', () => {
         let button = overlayContainerElement.querySelector('button[mat-dialog-close]')!;
 
         expect(button.getAttribute('type')).toBe('button');
+      });
+
+      it('should not override type attribute of the close button if set manually', () => {
+        let button = overlayContainerElement.querySelector('button.with-submit')!;
+
+        expect(button.getAttribute('type')).toBe('submit');
       });
 
       it('should return the [mat-dialog-close] result when clicking the close button',
@@ -1557,6 +1563,7 @@ class PizzaMsg {
         aria-label="Best close button ever"
         [mat-dialog-close]="true"></button>
       <div mat-dialog-close>Should not close</div>
+      <button class="with-submit" type="submit" mat-dialog-close>Should have submit</button>
     </mat-dialog-actions>
   `
 })
@@ -1575,6 +1582,7 @@ class ContentElementDialog {}
           aria-label="Best close button ever"
           [mat-dialog-close]="true"></button>
         <div mat-dialog-close>Should not close</div>
+        <button class="with-submit" type="submit" mat-dialog-close>Should have submit</button>
       </mat-dialog-actions>
     </ng-template>
   `
