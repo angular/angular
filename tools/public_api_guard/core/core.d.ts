@@ -1076,10 +1076,6 @@ export declare function ɵɵstylePropInterpolateV(prop: string, values: any[], v
 
 export declare function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void;
 
-export declare function ɵɵstyling(): void;
-
-export declare function ɵɵstylingApply(): void;
-
 export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplate<any> | null, consts: number, vars: number, tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null, localRefExtractor?: LocalRefExtractor): void;
 
 export declare function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LView): ViewEngine_TemplateRef<unknown> | null;

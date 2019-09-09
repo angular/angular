@@ -69,8 +69,6 @@ export class Identifiers {
 
   static elementContainer: o.ExternalReference = {name: 'ɵɵelementContainer', moduleName: CORE};
 
-  static styling: o.ExternalReference = {name: 'ɵɵstyling', moduleName: CORE};
-
   static styleMap: o.ExternalReference = {name: 'ɵɵstyleMap', moduleName: CORE};
 
   static classMap: o.ExternalReference = {name: 'ɵɵclassMap', moduleName: CORE};
@@ -114,8 +112,6 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵstylePropInterpolate8', moduleName: CORE};
   static stylePropInterpolateV:
       o.ExternalReference = {name: 'ɵɵstylePropInterpolateV', moduleName: CORE};
-
-  static stylingApply: o.ExternalReference = {name: 'ɵɵstylingApply', moduleName: CORE};
 
   static styleSanitizer: o.ExternalReference = {name: 'ɵɵstyleSanitizer', moduleName: CORE};
 
