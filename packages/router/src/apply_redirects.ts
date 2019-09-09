@@ -154,15 +154,17 @@ class ApplyRedirects {
                throw e;
              }));
            }))
-        .pipe(map(x => x.find((s: any) => !!s) || new UrlSegmentGroup([], {})), catchError((e: any, _: any) => {
-                if (e instanceof EmptyError || e.name === 'EmptyError') {
-                  if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
-                    return of (new UrlSegmentGroup([], {}));
-                  }
-                  throw new NoMatch(segmentGroup);
+        .pipe(
+            map(x => x.find((s: any) => !!s) || new UrlSegmentGroup([], {})),
+            catchError((e: any, _: any) => {
+              if (e instanceof EmptyError || e.name === 'EmptyError') {
+                if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
+                  return of (new UrlSegmentGroup([], {}));
                 }
-                throw e;
-              }));
+                throw new NoMatch(segmentGroup);
+              }
+              throw e;
+            }));
   }
 
   private noLeftoversInUrl(segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string):
