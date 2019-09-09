@@ -5,12 +5,35 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {unwrapSafeValue} from '../../sanitization/bypass';
 import {TNode, TNodeFlags} from '../interfaces/node';
 import {NO_CHANGE} from '../tokens';
-import {StylingMapArray, StylingMapArrayIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
 
-const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
-const TEMPLATE_DIRECTIVE_INDEX = 0;
+import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingConfig, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
+
+export const MAP_BASED_ENTRY_PROP_NAME = '[MAP]';
+export const TEMPLATE_DIRECTIVE_INDEX = 0;
+
+/**
+ * Default fallback value for a styling binding.
+ *
+ * A value of `null` is used here which signals to the styling algorithm that
+ * the styling value is not present. This way if there are no other values
+ * detected then it will be removed once the style/class property is dirty and
+ * diffed within the styling algorithm present in `flushStyling`.
+ */
+export const DEFAULT_BINDING_VALUE = null;
+
+export const DEFAULT_BINDING_INDEX = 0;
+
+const DEFAULT_TOTAL_SOURCES = 1;
+
+// The first bit value reflects a map-based binding value's bit.
+// The reason why it's always activated for every entry in the map
+// is so that if any map-binding values update then all other prop
+// based bindings will pass the guard check automatically without
+// any extra code or flags.
+export const DEFAULT_GUARD_MASK_VALUE = 0b1;
 
 /**
  * Creates a new instance of the `TStylingContext`.
@@ -21,84 +44,83 @@ const TEMPLATE_DIRECTIVE_INDEX = 0;
  * `TStylingContext` with the initial values (see `interfaces.ts` for more info).
  */
 export function allocTStylingContext(initialStyling?: StylingMapArray | null): TStylingContext {
-  // because map-based bindings deal with a dynamic set of values, there
-  // is no way to know ahead of time whether or not sanitization is required.
-  // For this reason the configuration will always mark sanitization as active
-  // (this means that when map-based values are applied then sanitization will
-  // be checked against each property).
-  const mapBasedConfig = TStylingContextPropConfigFlags.SanitizationRequired;
+  initialStyling = initialStyling || allocStylingMapArray();
   return [
-    initialStyling || [''],  // empty initial-styling map value
-    TStylingConfigFlags.Initial,
-    TEMPLATE_DIRECTIVE_INDEX,
-    mapBasedConfig,
-    0,
-    MAP_BASED_ENTRY_PROP_NAME,
+    TStylingConfig.Initial,  // 1) config for the styling context
+    DEFAULT_TOTAL_SOURCES,   // 2) total amount of styling sources (template, directives, etc...)
+    initialStyling,          // 3) initial styling values
   ];
 }
 
-/**
- * Sets the provided directive as the last directive index in the provided `TStylingContext`.
- *
- * Styling in Angular can be applied from the template as well as multiple sources of
- * host bindings. This means that each binding function (the template function or the
- * hostBindings functions) will generate styling instructions as well as a styling
- * apply function (i.e. `stylingApply()`). Because host bindings functions and the
- * template function are independent from one another this means that the styling apply
- * function will be called multiple times. By tracking the last directive index (which
- * is what happens in this function) the styling algorithm knows exactly when to flush
- * styling (which is when the last styling apply function is executed).
- */
-export function updateLastDirectiveIndex(
-    context: TStylingContext, lastDirectiveIndex: number): void {
-  if (lastDirectiveIndex === TEMPLATE_DIRECTIVE_INDEX) {
-    const currentValue = context[TStylingContextIndex.LastDirectiveIndexPosition];
-    if (currentValue > TEMPLATE_DIRECTIVE_INDEX) {
-      // This means that a directive or two contained a host bindings function, but
-      // now the template function also contains styling. When this combination of sources
-      // comes up then we need to tell the context to store the state between updates
-      // (because host bindings evaluation happens after template binding evaluation).
-      markContextToPersistState(context);
-    }
-  } else {
-    context[TStylingContextIndex.LastDirectiveIndexPosition] = lastDirectiveIndex;
-  }
+export function allocStylingMapArray(): StylingMapArray {
+  return [''];
 }
 
-function getConfig(context: TStylingContext) {
+export function getConfig(context: TStylingContext) {
   return context[TStylingContextIndex.ConfigPosition];
 }
 
-export function setConfig(context: TStylingContext, value: number) {
+export function hasConfig(context: TStylingContext, flag: TStylingConfig) {
+  return (getConfig(context) & flag) !== 0;
+}
+
+/**
+ * Determines whether or not to apply styles/classes directly or via context resolution.
+ *
+ * There are three cases that are matched here:
+ * 1. context is locked for template or host bindings (depending on `hostBindingsMode`)
+ * 2. There are no collisions (i.e. properties with more than one binding)
+ * 3. There are only "prop" or "map" bindings present, but not both
+ */
+export function allowDirectStyling(context: TStylingContext, hostBindingsMode: boolean): boolean {
+  const config = getConfig(context);
+  return ((config & getLockedConfig(hostBindingsMode)) !== 0) &&
+      ((config & TStylingConfig.HasCollisions) === 0) &&
+      ((config & TStylingConfig.HasPropAndMapBindings) !== TStylingConfig.HasPropAndMapBindings);
+}
+
+export function setConfig(context: TStylingContext, value: TStylingConfig): void {
   context[TStylingContextIndex.ConfigPosition] = value;
 }
 
-export function getProp(context: TStylingContext, index: number) {
+export function patchConfig(context: TStylingContext, flag: TStylingConfig): void {
+  context[TStylingContextIndex.ConfigPosition] |= flag;
+}
+
+export function getProp(context: TStylingContext, index: number): string {
   return context[index + TStylingContextIndex.PropOffset] as string;
 }
 
 function getPropConfig(context: TStylingContext, index: number): number {
-  return (context[index + TStylingContextIndex.ConfigAndGuardOffset] as number) &
+  return (context[index + TStylingContextIndex.ConfigOffset] as number) &
       TStylingContextPropConfigFlags.Mask;
 }
 
-export function isSanitizationRequired(context: TStylingContext, index: number) {
-  return (getPropConfig(context, index) & TStylingContextPropConfigFlags.SanitizationRequired) > 0;
+export function isSanitizationRequired(context: TStylingContext, index: number): boolean {
+  return (getPropConfig(context, index) & TStylingContextPropConfigFlags.SanitizationRequired) !==
+      0;
 }
 
-export function getGuardMask(context: TStylingContext, index: number) {
-  const configGuardValue = context[index + TStylingContextIndex.ConfigAndGuardOffset] as number;
-  return configGuardValue >> TStylingContextPropConfigFlags.TotalBits;
+export function getGuardMask(
+    context: TStylingContext, index: number, isHostBinding: boolean): number {
+  const position = index + (isHostBinding ? TStylingContextIndex.HostBindingsBitGuardOffset :
+                                            TStylingContextIndex.TemplateBitGuardOffset);
+  return context[position] as number;
 }
 
-export function setGuardMask(context: TStylingContext, index: number, maskValue: number) {
-  const config = getPropConfig(context, index);
-  const guardMask = maskValue << TStylingContextPropConfigFlags.TotalBits;
-  context[index + TStylingContextIndex.ConfigAndGuardOffset] = config | guardMask;
+export function setGuardMask(
+    context: TStylingContext, index: number, maskValue: number, isHostBinding: boolean) {
+  const position = index + (isHostBinding ? TStylingContextIndex.HostBindingsBitGuardOffset :
+                                            TStylingContextIndex.TemplateBitGuardOffset);
+  context[position] = maskValue;
 }
 
-export function getValuesCount(context: TStylingContext, index: number) {
-  return context[index + TStylingContextIndex.ValuesCountOffset] as number;
+export function getValuesCount(context: TStylingContext): number {
+  return getTotalSources(context) + 1;
+}
+
+export function getTotalSources(context: TStylingContext): number {
+  return context[TStylingContextIndex.TotalSourcesPosition];
 }
 
 export function getBindingValue(context: TStylingContext, index: number, offset: number) {
@@ -106,39 +128,44 @@ export function getBindingValue(context: TStylingContext, index: number, offset:
 }
 
 export function getDefaultValue(context: TStylingContext, index: number): string|boolean|null {
-  const valuesCount = getValuesCount(context, index);
-  return context[index + TStylingContextIndex.BindingsStartOffset + valuesCount - 1] as string |
+  return context[index + TStylingContextIndex.BindingsStartOffset + getTotalSources(context)] as
+             string |
       boolean | null;
 }
 
-/**
- * Temporary function which determines whether or not a context is
- * allowed to be flushed based on the provided directive index.
- */
-export function allowStylingFlush(context: TStylingContext | null, index: number) {
-  return (context && index === context[TStylingContextIndex.LastDirectiveIndexPosition]) ? true :
-                                                                                           false;
+export function setDefaultValue(
+    context: TStylingContext, index: number, value: string | boolean | null) {
+  return context[index + TStylingContextIndex.BindingsStartOffset + getTotalSources(context)] =
+             value;
 }
 
-export function lockContext(context: TStylingContext) {
-  setConfig(context, getConfig(context) | TStylingConfigFlags.Locked);
+export function setValue(data: LStylingData, bindingIndex: number, value: any) {
+  data[bindingIndex] = value;
 }
 
-export function isContextLocked(context: TStylingContext): boolean {
-  return (getConfig(context) & TStylingConfigFlags.Locked) > 0;
+export function getValue<T = any>(data: LStylingData, bindingIndex: number): T|null {
+  return bindingIndex > 0 ? data[bindingIndex] as T : null;
 }
 
-export function stateIsPersisted(context: TStylingContext): boolean {
-  return (getConfig(context) & TStylingConfigFlags.PersistStateValues) > 0;
+export function lockContext(context: TStylingContext, hostBindingsMode: boolean): void {
+  patchConfig(context, getLockedConfig(hostBindingsMode));
 }
 
-export function markContextToPersistState(context: TStylingContext) {
-  setConfig(context, getConfig(context) | TStylingConfigFlags.PersistStateValues);
+export function isContextLocked(context: TStylingContext, hostBindingsMode: boolean): boolean {
+  return hasConfig(context, getLockedConfig(hostBindingsMode));
+}
+
+export function getLockedConfig(hostBindingsMode: boolean) {
+  return hostBindingsMode ? TStylingConfig.HostBindingsLocked :
+                            TStylingConfig.TemplateBindingsLocked;
 }
 
 export function getPropValuesStartPosition(context: TStylingContext) {
-  return TStylingContextIndex.MapBindingsBindingsStartPosition +
-      context[TStylingContextIndex.MapBindingsValuesCountPosition];
+  let startPosition = TStylingContextIndex.ValuesStartPosition;
+  if (hasConfig(context, TStylingConfig.HasMapBindings)) {
+    startPosition += TStylingContextIndex.BindingsStartOffset + getValuesCount(context);
+  }
+  return startPosition;
 }
 
 export function isMapBased(prop: string) {
@@ -197,15 +224,21 @@ export function getStylingMapArray(value: TStylingContext | StylingMapArray | nu
     StylingMapArray|null {
   return isStylingContext(value) ?
       (value as TStylingContext)[TStylingContextIndex.InitialStylingValuePosition] :
-      value;
+      value as StylingMapArray;
 }
 
 export function isStylingContext(value: TStylingContext | StylingMapArray | null): boolean {
   // the StylingMapArray is in the format of [initial, prop, string, prop, string]
   // and this is the defining value to distinguish between arrays
-  return Array.isArray(value) &&
-      value.length >= TStylingContextIndex.MapBindingsBindingsStartPosition &&
+  return Array.isArray(value) && value.length >= TStylingContextIndex.ValuesStartPosition &&
       typeof value[1] !== 'string';
+}
+
+export function isStylingMapArray(value: TStylingContext | StylingMapArray | null): boolean {
+  // the StylingMapArray is in the format of [initial, prop, string, prop, string]
+  // and this is the defining value to distinguish between arrays
+  return Array.isArray(value) &&
+      (typeof(value as StylingMapArray)[StylingMapArrayIndex.ValuesStartPosition] === 'string');
 }
 
 export function getInitialStylingValue(context: TStylingContext | StylingMapArray | null): string {
@@ -223,6 +256,13 @@ export function hasStyleInput(tNode: TNode) {
 
 export function getMapProp(map: StylingMapArray, index: number): string {
   return map[index + StylingMapArrayIndex.PropOffset] as string;
+}
+
+const MAP_DIRTY_VALUE =
+    typeof ngDevMode !== 'undefined' && ngDevMode ? {} : {MAP_DIRTY_VALUE: true};
+
+export function setMapAsDirty(map: StylingMapArray): void {
+  map[StylingMapArrayIndex.RawValuePosition] = MAP_DIRTY_VALUE;
 }
 
 export function setMapValue(
@@ -252,4 +292,131 @@ export function forceStylesAsString(styles: {[key: string]: any} | null | undefi
     }
   }
   return str;
+}
+
+export function isHostStylingActive(directiveOrSourceId: number): boolean {
+  return directiveOrSourceId !== TEMPLATE_DIRECTIVE_INDEX;
+}
+
+/**
+ * Converts the provided styling map array into a string.
+ *
+ * Classes => `one two three`
+ * Styles => `prop:value; prop2:value2`
+ */
+export function stylingMapToString(map: StylingMapArray, isClassBased: boolean): string {
+  let str = '';
+  for (let i = StylingMapArrayIndex.ValuesStartPosition; i < map.length;
+       i += StylingMapArrayIndex.TupleSize) {
+    const prop = getMapProp(map, i);
+    const value = getMapValue(map, i) as string;
+    const attrValue = concatString(prop, isClassBased ? '' : value, ':');
+    str = concatString(str, attrValue, isClassBased ? ' ' : '; ');
+  }
+  return str;
+}
+
+/**
+ * Converts the provided styling map array into a key value map.
+ */
+export function stylingMapToStringMap(map: StylingMapArray | null): {[key: string]: any} {
+  let stringMap: {[key: string]: any} = {};
+  if (map) {
+    for (let i = StylingMapArrayIndex.ValuesStartPosition; i < map.length;
+         i += StylingMapArrayIndex.TupleSize) {
+      const prop = getMapProp(map, i);
+      const value = getMapValue(map, i) as string;
+      stringMap[prop] = value;
+    }
+  }
+  return stringMap;
+}
+
+/**
+ * Inserts the provided item into the provided styling array at the right spot.
+ *
+ * The `StylingMapArray` type is a sorted key/value array of entries. This means
+ * that when a new entry is inserted it must be placed at the right spot in the
+ * array. This function figures out exactly where to place it.
+ */
+export function addItemToStylingMap(
+    stylingMapArr: StylingMapArray, prop: string, value: string | boolean | null,
+    allowOverwrite?: boolean) {
+  for (let j = StylingMapArrayIndex.ValuesStartPosition; j < stylingMapArr.length;
+       j += StylingMapArrayIndex.TupleSize) {
+    const propAtIndex = getMapProp(stylingMapArr, j);
+    if (prop <= propAtIndex) {
+      let applied = false;
+      if (propAtIndex === prop) {
+        const valueAtIndex = stylingMapArr[j];
+        if (allowOverwrite || !isStylingValueDefined(valueAtIndex)) {
+          applied = true;
+          setMapValue(stylingMapArr, j, value);
+        }
+      } else {
+        applied = true;
+        stylingMapArr.splice(j, 0, prop, value);
+      }
+      return applied;
+    }
+  }
+
+  stylingMapArr.push(prop, value);
+  return true;
+}
+
+/**
+ * Used to convert a {key:value} map into a `StylingMapArray` array.
+ *
+ * This function will either generate a new `StylingMapArray` instance
+ * or it will patch the provided `newValues` map value into an
+ * existing `StylingMapArray` value (this only happens if `bindingValue`
+ * is an instance of `StylingMapArray`).
+ *
+ * If a new key/value map is provided with an old `StylingMapArray`
+ * value then all properties will be overwritten with their new
+ * values or with `null`. This means that the array will never
+ * shrink in size (but it will also not be created and thrown
+ * away whenever the `{key:value}` map entries change).
+ */
+export function normalizeIntoStylingMap(
+    bindingValue: null | StylingMapArray,
+    newValues: {[key: string]: any} | string | null | undefined,
+    normalizeProps?: boolean): StylingMapArray {
+  const stylingMapArr: StylingMapArray = Array.isArray(bindingValue) ? bindingValue : [null];
+  stylingMapArr[StylingMapArrayIndex.RawValuePosition] = newValues || null;
+
+  // because the new values may not include all the properties
+  // that the old ones had, all values are set to `null` before
+  // the new values are applied. This way, when flushed, the
+  // styling algorithm knows exactly what style/class values
+  // to remove from the element (since they are `null`).
+  for (let j = StylingMapArrayIndex.ValuesStartPosition; j < stylingMapArr.length;
+       j += StylingMapArrayIndex.TupleSize) {
+    setMapValue(stylingMapArr, j, null);
+  }
+
+  let props: string[]|null = null;
+  let map: {[key: string]: any}|undefined|null;
+  let allValuesTrue = false;
+  if (typeof newValues === 'string') {  // [class] bindings allow string values
+    if (newValues.length) {
+      props = newValues.split(/\s+/);
+      allValuesTrue = true;
+    }
+  } else {
+    props = newValues ? Object.keys(newValues) : null;
+    map = newValues;
+  }
+
+  if (props) {
+    for (let i = 0; i < props.length; i++) {
+      const prop = props[i] as string;
+      const newProp = normalizeProps ? hyphenate(prop) : prop;
+      const value = allValuesTrue ? true : map ![prop];
+      addItemToStylingMap(stylingMapArr, newProp, value, true);
+    }
+  }
+
+  return stylingMapArr;
 }

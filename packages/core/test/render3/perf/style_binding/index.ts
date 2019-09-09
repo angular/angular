@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
-import {ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
+import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TVIEW} from '../../../../src/render3/interfaces/view';
-import {ɵɵstyleProp, ɵɵstyling, ɵɵstylingApply} from '../../../../src/render3/styling_next/instructions';
+import {ɵɵstyleProp} from '../../../../src/render3/styling_next/instructions';
 import {setupRootViewWithEmbeddedViews} from '../setup';
 
 `<ng-template>
@@ -30,69 +30,39 @@ import {setupRootViewWithEmbeddedViews} from '../setup';
 function testTemplate(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelementStart(0, 'div');
-    ɵɵelementStart(1, 'button');
-    ɵɵstyling();
-    ɵɵelementEnd();
-    ɵɵelementStart(2, 'button');
-    ɵɵstyling();
-    ɵɵelementEnd();
-    ɵɵelementStart(3, 'button');
-    ɵɵstyling();
-    ɵɵelementEnd();
-    ɵɵelementStart(4, 'button');
-    ɵɵstyling();
-    ɵɵelementEnd();
-    ɵɵelementStart(5, 'button');
-    ɵɵstyling();
-    ɵɵelementEnd();
-    ɵɵelementStart(6, 'button');
-    ɵɵstyling();
-    ɵɵelementEnd();
-    ɵɵelementStart(7, 'button');
-    ɵɵstyling();
-    ɵɵelementEnd();
-    ɵɵelementStart(8, 'button');
-    ɵɵstyling();
-    ɵɵelementEnd();
-    ɵɵelementStart(9, 'button');
-    ɵɵstyling();
-    ɵɵelementEnd();
-    ɵɵelementStart(10, 'button');
-    ɵɵstyling();
-    ɵɵelementEnd();
+    ɵɵelement(1, 'button');
+    ɵɵelement(2, 'button');
+    ɵɵelement(3, 'button');
+    ɵɵelement(4, 'button');
+    ɵɵelement(5, 'button');
+    ɵɵelement(6, 'button');
+    ɵɵelement(7, 'button');
+    ɵɵelement(8, 'button');
+    ɵɵelement(9, 'button');
+    ɵɵelement(10, 'button');
     ɵɵelementEnd();
   }
   if (rf & 2) {
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color1');
-    ɵɵstylingApply();
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color2');
-    ɵɵstylingApply();
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color3');
-    ɵɵstylingApply();
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color4');
-    ɵɵstylingApply();
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color5');
-    ɵɵstylingApply();
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color6');
-    ɵɵstylingApply();
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color7');
-    ɵɵstylingApply();
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color8');
-    ɵɵstylingApply();
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color9');
-    ɵɵstylingApply();
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color10');
-    ɵɵstylingApply();
   }
 }
 
