@@ -7,8 +7,8 @@
  */
 
 import {Injector, NgModuleRef} from '@angular/core';
-import {EmptyError, Observable, Observer, combineLatest, from, of } from 'rxjs';
-import {catchError, concatAll, every, first, map, mergeMap} from 'rxjs/operators';
+import {Observable, Observer, combineLatest, from, of } from 'rxjs';
+import {catchError, concatAll, every, map, mergeMap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {CanLoadFn} from './interfaces';
@@ -154,24 +154,16 @@ class ApplyRedirects {
                throw e;
              }));
            }))
-        .pipe(
-            map(x => {
-              const match = x.find((s: any) => !!s);
-              if (match) {
-                return match;
-              } else {
-                throw new EmptyError();
-              }
-            }),
-            catchError((e: any, _: any) => {
-              if (e instanceof EmptyError || e.name === 'EmptyError') {
-                if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
-                  return of (new UrlSegmentGroup([], {}));
-                }
-                throw new NoMatch(segmentGroup);
-              }
-              throw e;
-            }));
+        .pipe(map(x => {
+          const match = x.find((s: any) => !!s);
+          if (!match) {
+            if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
+              return of (new UrlSegmentGroup([], {}));
+            }
+            throw new NoMatch(segmentGroup);
+          }
+          return match;
+        }));
   }
 
   private noLeftoversInUrl(segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string):
