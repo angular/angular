@@ -867,6 +867,8 @@ export class DragRef<T = any> {
       // It's important that we disable the pointer events on the preview, because
       // it can throw off the `document.elementFromPoint` calls in the `CdkDropList`.
       pointerEvents: 'none',
+      // We have to reset the margin, because can throw off positioning relative to the viewport.
+      margin: '0',
       position: 'fixed',
       top: '0',
       left: '0',

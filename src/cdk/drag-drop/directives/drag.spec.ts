@@ -1765,6 +1765,8 @@ describe('CdkDrag', () => {
       expect(previewRect.height).toBe(itemRect.height, 'Expected preview height to match element');
       expect(preview.style.pointerEvents)
           .toBe('none', 'Expected pointer events to be disabled on the preview');
+      // Use a regex here since some browsers normalize 0 to 0px, but others don't.
+      expect(preview.style.margin).toMatch(/^0(px)?$/, 'Expected the preview margin to be reset.');
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
