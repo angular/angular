@@ -38,7 +38,7 @@ export interface RippleGlobalOptions {
   animation?: RippleAnimationConfig;
 
   /**
-   * Whether ripples should start fading out immediately after the mouse our touch is released. By
+   * Whether ripples should start fading out immediately after the mouse or touch is released. By
    * default, ripples will wait for the enter animation to complete and for mouse or touch release.
    */
   terminateOnPointerUp?: boolean;
