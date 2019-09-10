@@ -214,3 +214,12 @@ export function getDirectiveClassLike(node: ts.Node): DirectiveClassLike|undefin
     }
   }
 }
+
+export function findPropertyValueOfType<T extends ts.Node>(
+    startNode: ts.Node, propName: string, predicate: (node: ts.Node) => node is T): T|undefined {
+  if (ts.isPropertyAssignment(startNode) && startNode.name.getText() === propName) {
+    const {initializer} = startNode;
+    if (predicate(initializer)) return initializer;
+  }
+  return startNode.forEachChild(c => findPropertyValueOfType(c, propName, predicate));
+}

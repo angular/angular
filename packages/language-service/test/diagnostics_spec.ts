@@ -475,6 +475,40 @@ describe('diagnostics', () => {
             `Module '"../node_modules/@angular/core/core"' has no exported member 'OpaqueToken'.`);
   });
 
+  describe('URL diagnostics', () => {
+    it('should report errors for invalid templateUrls', () => {
+      const fileName = mockHost.addCode(`
+	      @Component({
+                templateUrl: '«notAFile»',
+	      })
+	      export class MyComponent {}`);
+
+      const marker = mockHost.getReferenceMarkerFor(fileName, 'notAFile');
+
+      const diagnostics = ngLS.getDiagnostics(fileName) !;
+      const urlDiagnostic =
+          diagnostics.find(d => d.messageText === 'URL does not point to a valid file');
+      expect(urlDiagnostic).toBeDefined();
+
+      const {start, length} = urlDiagnostic !;
+      expect(start).toBe(marker.start);
+      expect(length).toBe(marker.length);
+    });
+
+    it('should not report errors for valid templateUrls', () => {
+      const fileName = addCode(`
+	      @Component({
+                templateUrl: './test.ng',
+	      })
+	      export class MyComponent {}`);
+
+      const diagnostics = ngLS.getDiagnostics(fileName) !;
+      const urlDiagnostic =
+          diagnostics.find(d => d.messageText === 'URL does not point to a valid file');
+      expect(urlDiagnostic).toBeUndefined();
+    });
+  });
+
   // https://github.com/angular/vscode-ng-language-service/issues/235
   // There is no easy fix for this issue currently due to the way template
   // tokenization is done. In the example below, the whole string
