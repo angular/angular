@@ -13,7 +13,7 @@ import {
   npmLoginInteractive,
   npmPublish,
 } from './npm/npm-client';
-import {promptForNpmDistTag} from './prompt/npm-dist-tag-prompt';
+import {promptForNpmDistTag, promptForNpmOtp} from './prompt/npm-dist-tag-prompt';
 import {promptForUpstreamRemote} from './prompt/upstream-remote-prompt';
 import {releasePackages} from './release-output/release-packages';
 import {CHANGELOG_FILE_NAME} from './stage-release';
@@ -123,8 +123,12 @@ class PublishReleaseTask extends BaseReleaseTask {
     // the user to interactively confirm that the script should continue.
     await this._promptConfirmReleasePublish();
 
+    // Prompt for the OTP right before publishing so that it doesn't expire while building the
+    // packages.
+    const npmOtp = await promptForNpmOtp();
+
     for (let packageName of releasePackages) {
-      this._publishPackageToNpm(packageName, npmDistTag);
+      this._publishPackageToNpm(packageName, npmDistTag, npmOtp);
     }
 
     const newReleaseUrl = getGithubNewReleaseUrl({
@@ -237,10 +241,10 @@ class PublishReleaseTask extends BaseReleaseTask {
   }
 
   /** Publishes the specified package within the given NPM dist tag. */
-  private _publishPackageToNpm(packageName: string, npmDistTag: string) {
+  private _publishPackageToNpm(packageName: string, npmDistTag: string, npmOtp: string) {
     console.info(green(`  ⭮   Publishing "${packageName}"..`));
 
-    const errorOutput = npmPublish(join(this.releaseOutputPath, packageName), npmDistTag);
+    const errorOutput = npmPublish(join(this.releaseOutputPath, packageName), npmDistTag, npmOtp);
 
     if (errorOutput) {
       console.error(red(`  ✘   An error occurred while publishing "${packageName}".`));

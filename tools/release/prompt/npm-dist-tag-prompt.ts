@@ -25,6 +25,20 @@ export async function promptForNpmDistTag(version: Version): Promise<string> {
 }
 
 /**
+ * Prompts the current user-input interface for a npm one-time password (OTP). This is required
+ * to publish packages in the @angular namespace.
+ */
+export async function promptForNpmOtp(): Promise<string> {
+  const {otp} = await prompt<{otp: string}>({
+    type: 'text',
+    name: 'otp',
+    message: 'Enter the one-time password (OTP) for the angular npm account:',
+  });
+
+  return otp;
+}
+
+/**
  * Determines all allowed npm dist-tag choices for a specified version. For example,
  * a pre-release version should be never published to the "latest" tag.
  */

@@ -29,12 +29,13 @@ export function npmLoginInteractive(): boolean {
 }
 
 /** Runs NPM publish within a specified directory */
-export function npmPublish(packagePath: string, distTag: string): string | null {
-  const result = spawnSync('npm', ['publish', '--access', 'public', '--tag', distTag], {
-    cwd: packagePath,
-    shell: true,
-    env: npmClientEnvironment,
-  });
+export function npmPublish(packagePath: string, distTag: string, otp: string): string | null {
+  const result =
+      spawnSync('npm', ['publish', '--access', 'public', '--tag', distTag, '--otp', otp], {
+        cwd: packagePath,
+        shell: true,
+        env: npmClientEnvironment,
+      });
 
   // We only want to return an error if the exit code is not zero. NPM by default prints the
   // logging messages to "stdout" and therefore just checking for "stdout" is not reliable.
