@@ -49,9 +49,6 @@ class LanguageServiceImpl implements LanguageService {
     if (declarations && declarations.length) {
       results.push(...getDeclarationDiagnostics(declarations, analyzedModules));
     }
-    if (!results.length) {
-      return [];
-    }
     const sourceFile = fileName.endsWith('.ts') ? this.host.getSourceFile(fileName) : undefined;
     return uniqueBySpan(results).map(d => ngDiagnosticToTsDiagnostic(d, sourceFile));
   }
