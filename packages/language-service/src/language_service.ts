@@ -37,6 +37,7 @@ class LanguageServiceImpl implements LanguageService {
     const analyzedModules = this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const results: Diagnostic[] = [];
     const templates = this.host.getTemplates(fileName);
+
     for (const template of templates) {
       const astOrDiagnostic = this.host.getTemplateAst(template);
       if (isAstResult(astOrDiagnostic)) {
@@ -45,10 +46,12 @@ class LanguageServiceImpl implements LanguageService {
         results.push(astOrDiagnostic);
       }
     }
+
     const declarations = this.host.getDeclarations(fileName);
     if (declarations && declarations.length) {
-      results.push(...getDeclarationDiagnostics(declarations, analyzedModules));
+      results.push(...getDeclarationDiagnostics(declarations, analyzedModules, this.host));
     }
+
     const sourceFile = fileName.endsWith('.ts') ? this.host.getSourceFile(fileName) : undefined;
     return uniqueBySpan(results).map(d => ngDiagnosticToTsDiagnostic(d, sourceFile));
   }
