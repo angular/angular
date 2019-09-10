@@ -9,7 +9,7 @@
 export const toh = {
   'foo.ts': `export * from './app/app.component.ts';`,
   app: {
-    'app.component.ts': `import { Component } from '@angular/core';
+    'app.component.ts': `import { Component, NgModule } from '@angular/core';
 
 export class Hero {
   id: number;

@@ -475,7 +475,7 @@ describe('diagnostics', () => {
             `Module '"../node_modules/@angular/core/core"' has no exported member 'OpaqueToken'.`);
   });
 
-  describe('URL diagnostics', () => {
+  describe('templates', () => {
     it('should report errors for invalid templateUrls', () => {
       const fileName = mockHost.addCode(`
 	@Component({
@@ -506,6 +506,53 @@ describe('diagnostics', () => {
       const urlDiagnostic =
           diagnostics.find(d => d.messageText === 'URL does not point to a valid file');
       expect(urlDiagnostic).toBeUndefined();
+    });
+
+    it('should report diagnostic for missing template or templateUrl', () => {
+      const fileName = mockHost.addCode(`
+        @Component({
+          selector: 'app-example',
+        })
+        export class AppExample {}
+
+        @NgModule({
+          declarations: [AppExample],
+        })
+        export class AppModule {}`);
+      const diags = ngLS.getDiagnostics(fileName);
+      const missingTemplateError = diags.find(
+          d => d.messageText === `Component 'AppExample' must have a template or templateUrl`);
+      expect(missingTemplateError).toBeDefined();
+
+      const {start, length} = missingTemplateError !;
+      const content = mockHost.getFileContent(fileName) !;
+      expect(start).toBe(content.lastIndexOf('Component'));
+      expect(length).toBe('Component'.length);
+    });
+
+    it('should report diagnostic for both template and templateUrl', () => {
+      const fileName = mockHost.addCode(`
+        @Component({
+          selector: 'app-example',
+          template: '<div></div>',
+          templateUrl: './example.html',
+        })
+        export class AppExample {}
+
+        @NgModule({
+          declarations: [AppExample],
+        })
+        export class AppModule {}`);
+      const diags = ngLS.getDiagnostics(fileName);
+      const dupTemplateError = diags.find(
+          d => d.messageText ===
+              `Component 'AppExample' must not have both template and templateUrl`);
+      expect(dupTemplateError).toBeDefined();
+
+      const {start, length} = dupTemplateError !;
+      const content = mockHost.getFileContent(fileName) !;
+      expect(start).toBe(content.lastIndexOf('Component'));
+      expect(length).toBe('Component'.length);
     });
 
     it('should report errors for invalid styleUrls', () => {
