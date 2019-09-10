@@ -12,7 +12,7 @@ Follow the following instructions for setting up the YouTube player component:
 
 - First, follow the [instructions for installing the API script](https://developers.google.com/youtube/iframe_api_reference#Getting_Started).
 - Then make sure the API is available before bootstraping the YouTube Player component.
-- Provide find the video id by extracting it from the video URL.
+- Provide the video id by extracting it from the video URL.
 
 ## Example
 
