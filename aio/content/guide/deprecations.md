@@ -401,6 +401,11 @@ See the [dedicated migration guide for Renderer](guide/migration-renderer).
 ### Migrating undecorated classes
   See the [dedicated migration guide for undecorated classes](guide/migration-undecorated-classes).
 
+{@a flag-migration}
+### Dynamic queries flag migration
+
+ See the [dedicated migration guide for dynamic queries](guide/migration-dynamic-flag).
+
 {@a removed}
 ## Removed APIs
 
