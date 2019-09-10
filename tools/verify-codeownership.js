@@ -30,6 +30,7 @@
 'use strict';
 
 // Imports
+const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
@@ -46,10 +47,6 @@ const IGNORED_PKG_DIRS = new Set([
   // Examples are checked separately.
   'examples',
 ]);
-
-// Helpers
-const green = input => `\u001b[32m${input}\u001b[39m`;
-const red = input => `\u001b[31m${input}\u001b[39m`;
 
 // Run
 _main();
@@ -94,10 +91,10 @@ function _main() {
     reportDiff(aioExamplesDiff, expectedAioExamplesSrc, actualSrc);
 
     // tslint:disable-next-line: no-console
-    console.log(red('\nCode-ownership verification failed.'));
+    console.log(chalk.red('\nCode-ownership verification failed.'));
   } else {
     // tslint:disable-next-line: no-console
-    console.log(green('\nCode-ownership verification succeeded!'));
+    console.log(chalk.green('\nCode-ownership verification succeeded!'));
   }
 
   process.exit(hasDiff ? 1 : 0);
