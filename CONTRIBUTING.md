@@ -166,20 +166,36 @@ we use the git commit messages to **generate the Angular Material change log**.
 
 ### Commit Message Format
 Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
-format that includes a **type**, a **scope** and a **subject**:
+format that includes a **type**, a **package**, a **scope** and a **subject**:
 
 ```
-<type>(<scope>): <subject>
+<type>(<package>/<scope>): <subject>
 <BLANK LINE>
 <body>
 <BLANK LINE>
 <footer>
 ```
 
-The **header** is mandatory and the **scope** of the header is optional.
+The **header** is mandatory. For changes which are shown in the changelog (`fix`, `feat`,
+`perf` and `revert`), the **package** and **scope** fields are mandatory.
+
+The `package` and `scope` fields can be omitted if the change does not affect a specific
+package and is not displayed in the changelog (e.g. build changes or refactorings).
 
 Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
 to read on GitHub as well as in various git tools.
+
+Example:
+
+```
+fix(material/button): unable to disable button through binding
+
+Fixes a bug in the Angular Material `button` component where buttons
+cannot be disabled through an binding. This is because the `disabled`
+input did not set the `.mat-button-disabled` class on the host element.
+
+Fixes #1234 
+```
 
 ### Revert
 If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of
@@ -200,6 +216,10 @@ Must be one of the following:
 * **build**: Changes that affect the build system, CI configuration or external dependencies
             (example scopes: gulp, broccoli, npm)
 * **chore**: Other changes that don't modify `src` or `test` files
+
+### Package
+The commit message should specify which package is affected by the change. For example:
+`material`, `cdk-experimental`, etc.
 
 ### Scope
 The scope could be anything specifying place of the commit change. For example
