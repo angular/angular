@@ -37,23 +37,23 @@ export const formGroupNameProvider: any = {
  * Use nested form groups to validate a sub-group of a
  * form separately from the rest or to group the values of certain
  * controls into their own nested object.
- * 
+ *
  * @see [Reactive Forms Guide](guide/reactive-forms)
  *
  * @usageNotes
- * 
+ *
  * ### Access the group by name
- * 
- * The following example uses the {@link AbstractControl#get get} method to access the 
+ *
+ * The following example uses the {@link AbstractControl#get get} method to access the
  * associated `FormGroup`
  *
  * ```ts
  *   this.form.get('name');
  * ```
- * 
+ *
  * ### Access individual controls in the group
- * 
- * The following example uses the {@link AbstractControl#get get} method to access 
+ *
+ * The following example uses the {@link AbstractControl#get get} method to access
  * individual controls within the group using dot syntax.
  *
  * ```ts
@@ -61,7 +61,7 @@ export const formGroupNameProvider: any = {
  * ```
  *
  * ### Register a nested `FormGroup`.
- * 
+ *
  * The following example registers a nested *name* `FormGroup` within an existing `FormGroup`,
  * and provides methods to retrieve the nested `FormGroup` and individual controls.
  *
@@ -76,9 +76,13 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
    * @description
    * Tracks the name of the `FormGroup` bound to the directive. The name corresponds
    * to a key in the parent `FormGroup` or `FormArray`.
+   * Accepts a name as a string or a number.
+   * The name in the form of a string is useful for individual forms,
+   * while the numerical form allows for form groups to be bound
+   * to indices when iterating over groups in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formGroupName') name !: string;
+  @Input('formGroupName') name !: string | number | null;
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
@@ -114,7 +118,7 @@ export const formArrayNameProvider: any = {
  * It accepts the string name of the nested `FormArray` you want to link, and
  * will look for a `FormArray` registered with that name in the parent
  * `FormGroup` instance you passed into `FormGroupDirective`.
- * 
+ *
  * @see [Reactive Forms Guide](guide/reactive-forms)
  * @see `AbstractControl`
  *
@@ -142,9 +146,13 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @description
    * Tracks the name of the `FormArray` bound to the directive. The name corresponds
    * to a key in the parent `FormGroup` or `FormArray`.
+   * Accepts a name as a string or a number.
+   * The name in the form of a string is useful for individual forms,
+   * while the numerical form allows for form arrays to be bound
+   * to indices when iterating over arrays in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formArrayName') name !: string;
+  @Input('formArrayName') name !: string | number | null;
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
@@ -196,7 +204,9 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] { return controlPath(this.name, this._parent); }
+  get path(): string[] {
+    return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
+  }
 
   /**
    * @description
