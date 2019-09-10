@@ -91,7 +91,11 @@ function _main() {
     reportDiff(aioExamplesDiff, expectedAioExamplesSrc, actualSrc);
 
     // tslint:disable-next-line: no-console
-    console.log(chalk.red('\nCode-ownership verification failed.'));
+    console.log(chalk.red(
+      '\nCode-ownership verification failed.\n' +
+      'Please update \'.github/CODEOWNERS\' to ensure that all necessary files/directories have ' +
+      'code-owners and all patterns that appear in the file correspond to actual ' +
+      'files/directories in the repo.'));
   } else {
     // tslint:disable-next-line: no-console
     console.log(chalk.green('\nCode-ownership verification succeeded!'));
