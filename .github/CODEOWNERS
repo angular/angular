@@ -44,11 +44,11 @@
 #  alxhub - Alex Rickabaugh
 #  AndrewKushnir - Andrew Kushnir
 #  andrewseguin - Andrew Seguin
+#  atscott - Andrew Scott
 #  devversion - Paul Gschwendtner
 #  filipesilva - Filipe Silva
 #  gkalpak - George Kalpakas
 #  IgorMinar - Igor Minar
-#  jenniferfell - Jennifer Fell
 #  JiaLiPassion - Jia Li
 #  josephperrott - Joey Perrott
 #  kara - Kara Erickson
@@ -85,7 +85,6 @@
 #   - IgorMinar
 #   - kara
 #   - mhevery
-#   - alexeagle
 
 
 # ===========================================================
@@ -119,9 +118,9 @@
 #  @angular/tools-cli
 # ===========================================================
 #
-#   - alexeagle
 #   - filipesilva
 #   - mgechev
+#   - vikerman
 
 
 # ===========================================================
@@ -172,7 +171,7 @@
 #  @angular/fw-forms
 # ===========================================================
 #
-#   - kara
+#   - AndrewKushnir
 
 
 # ===========================================================
@@ -194,7 +193,7 @@
 #  @angular/fw-router
 # ===========================================================
 #
-# !!! No members !!!
+#   - atscott
 
 
 # ===========================================================
@@ -259,8 +258,8 @@
 #  @angular/fw-integration
 # ===========================================================
 #
-#   - alexeagle
 #   - IgorMinar
+#   - josephperrott
 #   - mhevery
 
 
@@ -277,7 +276,6 @@
 #  @angular/fw-docs-intro
 # ===========================================================
 #
-#   - jenniferfell
 #   - IgorMinar
 #   - stephenfluin
 
@@ -286,15 +284,15 @@
 #  @angular/fw-docs-observables
 # ===========================================================
 #
-# !!! No members !!!
+#   - alxhub
 
 
 # ===========================================================
 #  @angular/fw-docs-packaging
 # ===========================================================
 #
-#   - alexeagle
 #   - IgorMinar
+#   - vikerman
 
 
 # ===========================================================
@@ -302,9 +300,9 @@
 # ===========================================================
 #
 #   - alan-agius4
-#   - alexeagle
 #   - IgorMinar
 #   - mgechev
+#   - vikerman
 
 
 # ===========================================================
@@ -312,10 +310,9 @@
 # ===========================================================
 #
 #   - alan-agius4
-#   - alexeagle
 #   - IgorMinar
 #   - mgechev
-
+#   - vikerman
 
 
 # ===========================================================
