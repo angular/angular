@@ -46,6 +46,14 @@ ng_rollup_bundle(
 )
 
 ng_rollup_bundle(
+    name = "property_binding_update",
+    entry_point = ":property_binding_update/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_rollup_bundle(
     name = "style_binding",
     entry_point = ":style_binding/index.ts",
     deps = [
