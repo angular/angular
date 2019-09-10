@@ -187,6 +187,7 @@ jobs:
               (echo -e "\n.bzl files have lint errors. Please run ''yarn bazel:lint-fix''"; exit 1)'
 
       - run: yarn gulp lint
+      - run: node tools/verify-codeownership
 
   test:
     <<: *job_defaults
