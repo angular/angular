@@ -44,14 +44,10 @@
 #  alxhub - Alex Rickabaugh
 #  AndrewKushnir - Andrew Kushnir
 #  andrewseguin - Andrew Seguin
-#  benlesh - Ben Lesh
-#  brandonroberts - Brandon Roberts
 #  devversion - Paul Gschwendtner
 #  filipesilva - Filipe Silva
 #  gkalpak - George Kalpakas
-#  hansl - Hans Larsen
 #  IgorMinar - Igor Minar
-#  jasonaden - Jason Aden
 #  jenniferfell - Jennifer Fell
 #  JiaLiPassion - Jia Li
 #  josephperrott - Joey Perrott
@@ -60,7 +56,6 @@
 #  matsko - Matias Niemelä
 #  mgechev - Minko Gechev
 #  mhevery - Misko Hevery
-#  ocombe - Olivier Combe
 #  petebacondarwin - Pete Bacon Darwin
 #  pkozlowski-opensource - Pawel Kozlowski
 #  robwormald - Rob Wormald
@@ -99,7 +94,6 @@
 #  Used for approving minor documentation-only changes that don't require engineering review.
 #  (secret team to avoid review requests, it also doesn't inherit from @angular/framework because nested teams can't be secret)
 #
-#   - brandonroberts
 #   - gkalpak
 #   - petebacondarwin
 
@@ -127,7 +121,6 @@
 #
 #   - alexeagle
 #   - filipesilva
-#   - hansl
 #   - mgechev
 
 
@@ -180,7 +173,6 @@
 # ===========================================================
 #
 #   - kara
-#   - jasonaden
 
 
 # ===========================================================
@@ -202,7 +194,7 @@
 #  @angular/fw-router
 # ===========================================================
 #
-#   - jasonaden
+# !!! No members !!!
 
 
 # ===========================================================
@@ -220,7 +212,6 @@
 #
 #   - gkalpak
 #   - petebacondarwin
-#   - jasonaden
 
 
 # ===========================================================
@@ -277,7 +268,6 @@
 #  @angular/docs-infra
 # ===========================================================
 #
-#   - brandonroberts
 #   - gkalpak
 #   - IgorMinar
 #   - petebacondarwin
@@ -288,7 +278,6 @@
 # ===========================================================
 #
 #   - jenniferfell
-#   - brandonroberts
 #   - IgorMinar
 #   - stephenfluin
 
@@ -297,8 +286,7 @@
 #  @angular/fw-docs-observables
 # ===========================================================
 #
-#   - benlesh
-#   - jasonaden
+# !!! No members !!!
 
 
 # ===========================================================
@@ -315,7 +303,6 @@
 #
 #   - alan-agius4
 #   - alexeagle
-#   - hansl
 #   - IgorMinar
 #   - mgechev
 
@@ -326,7 +313,6 @@
 #
 #   - alan-agius4
 #   - alexeagle
-#   - hansl
 #   - IgorMinar
 #   - mgechev
 
