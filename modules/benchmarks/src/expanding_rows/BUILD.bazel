@@ -32,7 +32,7 @@ ts_library(
 
 ng_rollup_bundle(
     name = "bundle",
-    entry_point = ":index.ts",
+    entry_point = ":index_aot.ts",
     deps = [
         ":application_lib",
         "@npm//rxjs",
@@ -41,26 +41,30 @@ ng_rollup_bundle(
 
 ts_devserver(
     name = "prodserver",
+    index_html = "index.html",
+    port = 4200,
     static_files = [
-        ":bundle.min_debug.js",
-        ":bundle.min.js",
         "@npm//:node_modules/zone.js/dist/zone.js",
-        "index.html",
+    ],
+    deps = [
+        ":bundle.min.js",
     ],
 )
 
 ts_devserver(
     name = "devserver",
-    entry_module = "angular/modules/benchmarks/src/expanding_rows/index",
-    index_html = "index.html",
+    entry_module = "angular/modules/benchmarks/src/expanding_rows/index_aot",
+    # Uncomment this to run devserver. This is due to limitation of ts_devserver
+    # that produces `index.html` by default so there cannot be two ts_devserver
+    # rules in a single Bazel package.
+    # index_html = "index.html",
+    port = 4200,
     scripts = [
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
-    serving_path = "/index.js",
     static_files = [
         "@npm//:node_modules/zone.js/dist/zone.js",
-        "index.html",
     ],
     deps = [":application_lib"],
 )
