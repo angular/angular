@@ -23,7 +23,7 @@ export abstract class ControlContainer extends AbstractControlDirective {
    * The name for the control
    */
   // TODO(issue/24571): remove '!'.
-  name !: string;
+  name !: string | number | null;
 
   /**
    * @description
