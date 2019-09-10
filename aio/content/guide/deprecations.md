@@ -385,10 +385,16 @@ See the [dedicated migration guide for Renderer](guide/migration-renderer).
 
 {@a undecorated-classes}
 ### Migrating undecorated classes
-  See the [dedicated migration guide for undecorated classes](guide/migration-undecorated-classes).
+
+See the [dedicated migration guide for undecorated classes](guide/migration-undecorated-classes).
+
+{@a injectable}
+### Adding missing `@Injectable()` decorators
+
+See the [dedicated migration guide for adding missing `@Injectable` decorators](guide/migration-injectable).
 
 {@a flag-migration}
-### Dynamic queries flag migration
+### Migrating dynamic queries
 
  See the [dedicated migration guide for dynamic queries](guide/migration-dynamic-flag).
 
