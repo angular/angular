@@ -401,6 +401,11 @@ See the [dedicated migration guide for Renderer](guide/migration-renderer).
 ### Migrating undecorated classes
   See the [dedicated migration guide for undecorated classes](guide/migration-undecorated-classes).
 
+{@a field-decorators}
+### Undecorated directives (field decorators)
+
+ See the [dedicated migration guide for undecorated directives (field decorators)](guide/migration-field-decorators).
+
 {@a removed}
 ## Removed APIs
 
