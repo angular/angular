@@ -45,23 +45,23 @@ function testTemplate(rf: RenderFlags, ctx: any) {
   if (rf & 2) {
     ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color1');
-    ɵɵadvance(2);
+    ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color2');
-    ɵɵadvance(3);
+    ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color3');
-    ɵɵadvance(4);
+    ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color4');
-    ɵɵadvance(5);
+    ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color5');
-    ɵɵadvance(6);
+    ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color6');
-    ɵɵadvance(7);
+    ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color7');
-    ɵɵadvance(8);
+    ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color8');
-    ɵɵadvance(9);
+    ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color9');
-    ɵɵadvance(10);
+    ɵɵadvance(1);
     ɵɵstyleProp('background-color', 'color10');
   }
 }

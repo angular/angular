@@ -47,8 +47,9 @@ export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
     ɵɵelementEnd();
   }
   if (rf & ɵRenderFlags.Update) {
+    ɵɵadvance(1);
     ɵɵstyleProp('background-color', ctx.depth % 2 ? '' : 'grey');
-    ɵɵadvance(2);
+    ɵɵadvance(1);
     ɵɵtextInterpolate1(' ', ctx.value, ' ');
     ɵɵcontainerRefreshStart(3);
     {
