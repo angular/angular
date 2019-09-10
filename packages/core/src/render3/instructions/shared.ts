@@ -839,17 +839,23 @@ export function generatePropertyAliases(
 
 /**
  * Mapping between attributes names that don't correspond to their element property names.
+ *
+ * Performance note: this function is written as a series of if checks (instead of, say, a property
+ * object lookup) for performance reasons - the series of `if` checks seems to be the fastest way of
+ * mapping property names. Do NOT change without benchmarking.
+ *
  * Note: this mapping has to be kept in sync with the equally named mapping in the template
  * type-checking machinery of ngtsc.
  */
-const ATTR_TO_PROP: {[name: string]: string} = {
-  'class': 'className',
-  'for': 'htmlFor',
-  'formaction': 'formAction',
-  'innerHtml': 'innerHTML',
-  'readonly': 'readOnly',
-  'tabindex': 'tabIndex',
-};
+function mapPropName(name: string): string {
+  if (name === 'class') return 'className';
+  if (name === 'for') return 'htmlFor';
+  if (name === 'formaction') return 'formAction';
+  if (name === 'innerHtml') return 'innerHTML';
+  if (name === 'readonly') return 'readOnly';
+  if (name === 'tabindex') return 'tabIndex';
+  return name;
+}
 
 export function elementPropertyInternal<T>(
     index: number, propName: string, value: T, sanitizer?: SanitizerFn | null, nativeOnly?: boolean,
@@ -882,7 +888,7 @@ export function elementPropertyInternal<T>(
       }
     }
   } else if (tNode.type === TNodeType.Element) {
-    propName = ATTR_TO_PROP[propName] || propName;
+    propName = mapPropName(propName);
 
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
