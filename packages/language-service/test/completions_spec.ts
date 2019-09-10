@@ -48,7 +48,7 @@ describe('completions', () => {
   });
 
   it('should be able to infer the type of a ngForOf', () => {
-    addCode(
+    addCodeAndCallback(
         `
       interface Person {
         name: string,
@@ -63,7 +63,7 @@ describe('completions', () => {
   });
 
   it('should be able to infer the type of a ngForOf with an async pipe', () => {
-    addCode(
+    addCodeAndCallback(
         `
       interface Person {
         name: string,
@@ -142,13 +142,13 @@ describe('completions', () => {
 export class MyComponent {
 
 }`;
-        addCode(code, fileName => { contains(fileName, 'inside-template', 'h1'); });
+        addCodeAndCallback(code, fileName => { contains(fileName, 'inside-template', 'h1'); });
       }).not.toThrow();
     });
 
     it('should hot crash with an incomplete class', () => {
       expect(() => {
-        addCode('\nexport class', fileName => { ngHost.getAnalyzedModules(); });
+        addCodeAndCallback('\nexport class', fileName => { ngHost.getAnalyzedModules(); });
       }).not.toThrow();
     });
 
@@ -182,7 +182,7 @@ export class MyComponent {
   });
 
   it('should work with input and output', () => {
-    addCode(
+    addCodeAndCallback(
         `
       @Component({
         selector: 'foo-component',
@@ -202,14 +202,11 @@ export class MyComponent {
         });
   });
 
-  function addCode(code: string, cb: (fileName: string, content?: string) => void) {
-    const fileName = '/app/app.component.ts';
-    const originalContent = mockHost.getFileContent(fileName);
-    const newContent = originalContent + code;
-    mockHost.override(fileName, originalContent + code);
+  function addCodeAndCallback(code: string, cb: (fileName: string, content?: string) => void) {
+    const fileName = mockHost.addCode(code);
     ngHost.getAnalyzedModules();
     try {
-      cb(fileName, newContent);
+      cb(fileName, mockHost.getFileContent(fileName) !);
     } finally {
       mockHost.override(fileName, undefined !);
     }

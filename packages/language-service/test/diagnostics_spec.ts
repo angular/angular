@@ -15,7 +15,7 @@ import {MockTypescriptHost} from './test_utils';
 
 /**
  * Note: If we want to test that a specific diagnostic message is emitted, then
- * use the `addCode()` helper method to add code to an existing file and check
+ * use the `mockHost.addCode()` helper method to add code to an existing file and check
  * that the diagnostic messages contain the expected output.
  *
  * If the goal is to assert that there is no error in a specific file, then use
@@ -90,7 +90,7 @@ describe('diagnostics', () => {
   });
 
   it('should not crash with a incomplete *ngFor', () => {
-    const fileName = addCode(`
+    const fileName = mockHost.addCode(`
       @Component({
         template: '<div *ngFor></div> ~{after-div}'
       })
@@ -99,7 +99,7 @@ describe('diagnostics', () => {
   });
 
   it('should report a component not in a module', () => {
-    const fileName = addCode(`
+    const fileName = mockHost.addCode(`
       @Component({
         template: '<div></div>'
       })
@@ -132,7 +132,7 @@ describe('diagnostics', () => {
   });
 
   it('should not throw getting diagnostics for an index expression', () => {
-    const fileName = addCode(`
+    const fileName = mockHost.addCode(`
       @Component({
         template: '<a *ngIf="(auth.isAdmin | async) || (event.leads && event.leads[(auth.uid | async)])"></a>'
       })
@@ -141,7 +141,7 @@ describe('diagnostics', () => {
   });
 
   it('should not throw using a directive with no value', () => {
-    const fileName = addCode(`
+    const fileName = mockHost.addCode(`
       @Component({
         template: '<form><input [(ngModel)]="name" required /></form>'
       })
@@ -185,7 +185,7 @@ describe('diagnostics', () => {
   });
 
   it('should not throw for an invalid class', () => {
-    const fileName = addCode(`
+    const fileName = mockHost.addCode(`
       @Component({
         template: ''
       }) class`);
@@ -500,13 +500,5 @@ describe('diagnostics', () => {
     }
   });
   */
-
-  function addCode(code: string) {
-    const fileName = '/app/app.component.ts';
-    const originalContent = mockHost.getFileContent(fileName);
-    const newContent = originalContent + code;
-    mockHost.override(fileName, newContent);
-    return fileName;
-  }
 
 });
