@@ -44,23 +44,19 @@
 #  alxhub - Alex Rickabaugh
 #  AndrewKushnir - Andrew Kushnir
 #  andrewseguin - Andrew Seguin
-#  benlesh - Ben Lesh
-#  brandonroberts - Brandon Roberts
+#  atscott - Andrew Scott
 #  devversion - Paul Gschwendtner
 #  filipesilva - Filipe Silva
 #  gkalpak - George Kalpakas
-#  hansl - Hans Larsen
 #  IgorMinar - Igor Minar
-#  jasonaden - Jason Aden
-#  jenniferfell - Jennifer Fell
 #  JiaLiPassion - Jia Li
 #  josephperrott - Joey Perrott
+#  kapunahelewong - Kapunahele Wong
 #  kara - Kara Erickson
 #  kyliau - Keen Yee Liau
 #  matsko - Matias Niemelä
 #  mgechev - Minko Gechev
 #  mhevery - Misko Hevery
-#  ocombe - Olivier Combe
 #  petebacondarwin - Pete Bacon Darwin
 #  pkozlowski-opensource - Pawel Kozlowski
 #  robwormald - Rob Wormald
@@ -90,7 +86,6 @@
 #   - IgorMinar
 #   - kara
 #   - mhevery
-#   - alexeagle
 
 
 # ===========================================================
@@ -99,8 +94,8 @@
 #  Used for approving minor documentation-only changes that don't require engineering review.
 #  (secret team to avoid review requests, it also doesn't inherit from @angular/framework because nested teams can't be secret)
 #
-#   - brandonroberts
 #   - gkalpak
+#   - kapunahelewong
 #   - petebacondarwin
 
 
@@ -125,10 +120,9 @@
 #  @angular/tools-cli
 # ===========================================================
 #
-#   - alexeagle
 #   - filipesilva
-#   - hansl
 #   - mgechev
+#   - vikerman
 
 
 # ===========================================================
@@ -179,8 +173,7 @@
 #  @angular/fw-forms
 # ===========================================================
 #
-#   - kara
-#   - jasonaden
+#   - AndrewKushnir
 
 
 # ===========================================================
@@ -202,7 +195,7 @@
 #  @angular/fw-router
 # ===========================================================
 #
-#   - jasonaden
+#   - atscott
 
 
 # ===========================================================
@@ -220,7 +213,6 @@
 #
 #   - gkalpak
 #   - petebacondarwin
-#   - jasonaden
 
 
 # ===========================================================
@@ -268,8 +260,8 @@
 #  @angular/fw-integration
 # ===========================================================
 #
-#   - alexeagle
 #   - IgorMinar
+#   - josephperrott
 #   - mhevery
 
 
@@ -277,7 +269,6 @@
 #  @angular/docs-infra
 # ===========================================================
 #
-#   - brandonroberts
 #   - gkalpak
 #   - IgorMinar
 #   - petebacondarwin
@@ -287,8 +278,6 @@
 #  @angular/fw-docs-intro
 # ===========================================================
 #
-#   - jenniferfell
-#   - brandonroberts
 #   - IgorMinar
 #   - stephenfluin
 
@@ -297,16 +286,15 @@
 #  @angular/fw-docs-observables
 # ===========================================================
 #
-#   - benlesh
-#   - jasonaden
+#   - alxhub
 
 
 # ===========================================================
 #  @angular/fw-docs-packaging
 # ===========================================================
 #
-#   - alexeagle
 #   - IgorMinar
+#   - vikerman
 
 
 # ===========================================================
@@ -314,10 +302,9 @@
 # ===========================================================
 #
 #   - alan-agius4
-#   - alexeagle
-#   - hansl
 #   - IgorMinar
 #   - mgechev
+#   - vikerman
 
 
 # ===========================================================
@@ -325,11 +312,9 @@
 # ===========================================================
 #
 #   - alan-agius4
-#   - alexeagle
-#   - hansl
 #   - IgorMinar
 #   - mgechev
-
+#   - vikerman
 
 
 # ===========================================================
