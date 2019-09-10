@@ -221,7 +221,7 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setProperty(el: any, name: string, value: any): void {
-    checkNoSyntheticProp(name, 'property');
+    ngDevMode && checkNoSyntheticProp(name, 'property');
     el[name] = value;
   }
 
@@ -229,7 +229,7 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
       () => void {
-    checkNoSyntheticProp(event, 'listener');
+    ngDevMode && checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {
       return <() => void>this.eventManager.addGlobalEventListener(
           target, event, decoratePreventDefault(callback));
