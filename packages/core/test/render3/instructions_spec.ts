@@ -9,7 +9,7 @@
 import {NgForOfContext} from '@angular/common';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
+import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, unwrapSafeValue} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
@@ -20,7 +20,11 @@ import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
 
 describe('instructions', () => {
-  function createAnchor() { ɵɵelement(0, 'a'); }
+  function createAnchor() {
+    ɵɵelementStart(0, 'a');
+    ɵɵstyling();
+    ɵɵelementEnd();
+  }
 
   function createDiv(initialClasses?: string[] | null, initialStyles?: string[] | null) {
     const attrs: any[] = [];
@@ -30,7 +34,9 @@ describe('instructions', () => {
     if (initialStyles) {
       attrs.push(AttributeMarker.Styles, ...initialStyles);
     }
-    ɵɵelement(0, 'div', attrs);
+    ɵɵelementStart(0, 'div', attrs);
+    ɵɵstyling();
+    ɵɵelementEnd();
   }
 
   function createScript() { ɵɵelement(0, 'script'); }
@@ -150,6 +156,7 @@ describe('instructions', () => {
       t.update(() => {
         ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
         ɵɵstyleProp('background-image', 'url("http://server")');
+        ɵɵstylingApply();
       });
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
@@ -157,6 +164,7 @@ describe('instructions', () => {
       t.update(() => {
         ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
         ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('url("http://server2")'));
+        ɵɵstylingApply();
       });
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server2")');
@@ -165,12 +173,17 @@ describe('instructions', () => {
 
   describe('styleMap', () => {
     function createDivWithStyle() {
-      ɵɵelement(0, 'div', [AttributeMarker.Styles, 'height', '10px']);
+      ɵɵelementStart(0, 'div', [AttributeMarker.Styles, 'height', '10px']);
+      ɵɵstyling();
+      ɵɵelementEnd();
     }
 
     it('should add style', () => {
       const fixture = new TemplateFixture(createDivWithStyle, () => {}, 1);
-      fixture.update(() => { ɵɵstyleMap({'background-color': 'red'}); });
+      fixture.update(() => {
+        ɵɵstyleMap({'background-color': 'red'});
+        ɵɵstylingApply();
+      });
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
 
@@ -192,6 +205,7 @@ describe('instructions', () => {
           'filter': 'filter',
           'width': 'width'
         });
+        ɵɵstylingApply();
       });
 
       const props = detectedValues.sort();
@@ -202,11 +216,18 @@ describe('instructions', () => {
   });
 
   describe('elementClass', () => {
-    function createDivWithStyling() { ɵɵelement(0, 'div'); }
+    function createDivWithStyling() {
+      ɵɵelementStart(0, 'div');
+      ɵɵstyling();
+      ɵɵelementEnd();
+    }
 
     it('should add class', () => {
       const fixture = new TemplateFixture(createDivWithStyling, () => {}, 1);
-      fixture.update(() => { ɵɵclassMap('multiple classes'); });
+      fixture.update(() => {
+        ɵɵclassMap('multiple classes');
+        ɵɵstylingApply();
+      });
       expect(fixture.html).toEqual('<div class="classes multiple"></div>');
     });
   });

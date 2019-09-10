@@ -45,16 +45,13 @@
     "name": "DECLARATION_VIEW"
   },
   {
-    "name": "DEFAULT_BINDING_INDEX"
-  },
-  {
     "name": "DEFAULT_BINDING_VALUE"
   },
   {
     "name": "DEFAULT_GUARD_MASK_VALUE"
   },
   {
-    "name": "DEFAULT_TOTAL_SOURCES"
+    "name": "DEFAULT_SIZE_VALUE"
   },
   {
     "name": "DefaultIterableDiffer"
@@ -96,9 +93,6 @@
     "name": "HOST"
   },
   {
-    "name": "INDEX_START_VALUE"
-  },
-  {
     "name": "INJECTOR"
   },
   {
@@ -117,7 +111,7 @@
     "name": "MAP_BASED_ENTRY_PROP_NAME"
   },
   {
-    "name": "MAP_DIRTY_VALUE"
+    "name": "MIN_DIRECTIVE_ID"
   },
   {
     "name": "MONKEY_PATCH_KEY_NAME"
@@ -222,6 +216,9 @@
     "name": "STYLING_INDEX_FOR_MAP_BINDING"
   },
   {
+    "name": "STYLING_INDEX_START_VALUE"
+  },
+  {
     "name": "SWITCH_ELEMENT_REF_FACTORY"
   },
   {
@@ -229,9 +226,6 @@
   },
   {
     "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
-  },
-  {
-    "name": "SafeValueImpl"
   },
   {
     "name": "SkipSelf"
@@ -405,9 +399,6 @@
     "name": "_devMode"
   },
   {
-    "name": "_elementExitFn"
-  },
-  {
     "name": "_global"
   },
   {
@@ -417,13 +408,28 @@
     "name": "_selectedIndex"
   },
   {
-    "name": "_state"
+    "name": "_stateStorage"
+  },
+  {
+    "name": "_stylingElement"
+  },
+  {
+    "name": "_stylingProp"
+  },
+  {
+    "name": "_stylingState"
   },
   {
     "name": "_symbolIterator"
   },
   {
     "name": "activeDirectiveId"
+  },
+  {
+    "name": "activeDirectiveSuperClassDepthPosition"
+  },
+  {
+    "name": "activeDirectiveSuperClassHeight"
   },
   {
     "name": "addBindingIntoContext"
@@ -435,9 +441,6 @@
     "name": "addItemToStylingMap"
   },
   {
-    "name": "addNewSourceColumn"
-  },
-  {
     "name": "addRemoveViewFromContainer"
   },
   {
@@ -447,16 +450,13 @@
     "name": "addToViewTree"
   },
   {
-    "name": "allocStylingMapArray"
-  },
-  {
     "name": "allocTStylingContext"
   },
   {
     "name": "allocateNewContextEntry"
   },
   {
-    "name": "allowDirectStyling"
+    "name": "allowStylingFlush"
   },
   {
     "name": "appendChild"
@@ -472,15 +472,6 @@
   },
   {
     "name": "applyStyling"
-  },
-  {
-    "name": "applyStylingValue"
-  },
-  {
-    "name": "applyStylingValueDirectly"
-  },
-  {
-    "name": "applyStylingViaContext"
   },
   {
     "name": "applyToElementOrContainer"
@@ -535,6 +526,9 @@
   },
   {
     "name": "containerInternal"
+  },
+  {
+    "name": "contextHasUpdates"
   },
   {
     "name": "contextLView"
@@ -594,6 +588,18 @@
     "name": "defaultScheduler"
   },
   {
+    "name": "deferBindingRegistration"
+  },
+  {
+    "name": "deferStylingUpdate"
+  },
+  {
+    "name": "deferredBindingQueue"
+  },
+  {
+    "name": "deleteStylingStateFromStorage"
+  },
+  {
     "name": "destroyLView"
   },
   {
@@ -625,9 +631,6 @@
   },
   {
     "name": "executeContentQueries"
-  },
-  {
-    "name": "executeElementExitFn"
   },
   {
     "name": "executeInitAndCheckHooks"
@@ -666,10 +669,10 @@
     "name": "findExistingListener"
   },
   {
-    "name": "findInitialStylingValue"
+    "name": "findViaComponent"
   },
   {
-    "name": "findViaComponent"
+    "name": "flushDeferredBindings"
   },
   {
     "name": "flushStyling"
@@ -688,6 +691,15 @@
   },
   {
     "name": "getActiveDirectiveId"
+  },
+  {
+    "name": "getActiveDirectiveStylingIndex"
+  },
+  {
+    "name": "getActiveDirectiveSuperClassDepth"
+  },
+  {
+    "name": "getActiveDirectiveSuperClassHeight"
   },
   {
     "name": "getBeforeNodeForView"
@@ -738,9 +750,6 @@
     "name": "getDebugContext"
   },
   {
-    "name": "getDefaultValue"
-  },
-  {
     "name": "getDirectiveDef"
   },
   {
@@ -778,9 +787,6 @@
   },
   {
     "name": "getLViewParent"
-  },
-  {
-    "name": "getLockedConfig"
   },
   {
     "name": "getMapProp"
@@ -891,16 +897,10 @@
     "name": "getTViewCleanup"
   },
   {
-    "name": "getTotalSources"
-  },
-  {
     "name": "getTypeName"
   },
   {
     "name": "getTypeNameForDebugging"
-  },
-  {
-    "name": "getValue"
   },
   {
     "name": "getValuesCount"
@@ -909,13 +909,7 @@
     "name": "handleError"
   },
   {
-    "name": "hasActiveElementFlag"
-  },
-  {
     "name": "hasClassInput"
-  },
-  {
-    "name": "hasConfig"
   },
   {
     "name": "hasDirectives"
@@ -1023,12 +1017,6 @@
     "name": "isForwardRef"
   },
   {
-    "name": "isHostStyling"
-  },
-  {
-    "name": "isHostStylingActive"
-  },
-  {
     "name": "isJsObject"
   },
   {
@@ -1101,19 +1089,22 @@
     "name": "markAsComponentHost"
   },
   {
+    "name": "markContextToPersistState"
+  },
+  {
     "name": "markDirty"
   },
   {
     "name": "markDirtyIfOnPush"
   },
   {
-    "name": "markStylingStateAsDirty"
-  },
-  {
     "name": "markViewDirty"
   },
   {
     "name": "matchTemplateAttribute"
+  },
+  {
+    "name": "maybeApplyStyling"
   },
   {
     "name": "namespaceHTMLInternal"
@@ -1150,9 +1141,6 @@
   },
   {
     "name": "normalizeBitMaskValue"
-  },
-  {
-    "name": "patchConfig"
   },
   {
     "name": "postProcessBaseDirective"
@@ -1218,9 +1206,6 @@
     "name": "renderDetachView"
   },
   {
-    "name": "renderHostBindingsAsStale"
-  },
-  {
     "name": "renderInitialStyling"
   },
   {
@@ -1231,6 +1216,9 @@
   },
   {
     "name": "renderView"
+  },
+  {
+    "name": "resetAllStylingState"
   },
   {
     "name": "resetComponentState"
@@ -1266,9 +1254,6 @@
     "name": "selectView"
   },
   {
-    "name": "setActiveElementFlag"
-  },
-  {
     "name": "setActiveHostElement"
   },
   {
@@ -1281,6 +1266,9 @@
     "name": "setClass"
   },
   {
+    "name": "setConfig"
+  },
+  {
     "name": "setCurrentDirectiveDef"
   },
   {
@@ -1290,13 +1278,7 @@
     "name": "setCurrentStyleSanitizer"
   },
   {
-    "name": "setDefaultValue"
-  },
-  {
     "name": "setDirectiveStylingInput"
-  },
-  {
-    "name": "setElementExitFn"
   },
   {
     "name": "setGuardMask"
@@ -1320,9 +1302,6 @@
     "name": "setIsNotParent"
   },
   {
-    "name": "setMapAsDirty"
-  },
-  {
     "name": "setMapValue"
   },
   {
@@ -1341,13 +1320,16 @@
     "name": "setUpAttributes"
   },
   {
-    "name": "setValue"
-  },
-  {
     "name": "shouldSearchParent"
   },
   {
+    "name": "stateIsPersisted"
+  },
+  {
     "name": "storeCleanupFn"
+  },
+  {
+    "name": "storeStylingState"
   },
   {
     "name": "stringify"
@@ -1357,9 +1339,6 @@
   },
   {
     "name": "stylingMapToString"
-  },
-  {
-    "name": "stylingProp"
   },
   {
     "name": "syncViewWithBlueprint"
@@ -1383,22 +1362,25 @@
     "name": "unwrapRNode"
   },
   {
-    "name": "unwrapSafeValue"
-  },
-  {
     "name": "updateBindingData"
   },
   {
-    "name": "updateClassViaContext"
+    "name": "updateClassBinding"
   },
   {
     "name": "updateInitialStylingOnContext"
   },
   {
+    "name": "updateLastDirectiveIndex"
+  },
+  {
+    "name": "updateLastDirectiveIndex"
+  },
+  {
     "name": "updateRawValueOnContext"
   },
   {
-    "name": "updateStyleViaContext"
+    "name": "updateStyleBinding"
   },
   {
     "name": "viewAttachedToChangeDetector"
@@ -1456,6 +1438,12 @@
   },
   {
     "name": "ɵɵrestoreView"
+  },
+  {
+    "name": "ɵɵstyling"
+  },
+  {
+    "name": "ɵɵstylingApply"
   },
   {
     "name": "ɵɵtemplate"
