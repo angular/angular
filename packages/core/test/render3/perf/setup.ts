@@ -23,8 +23,8 @@ export function createAndRenderLView(
 }
 
 export function setupRootViewWithEmbeddedViews(
-    templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
-    noOfViews: number): LView {
+    templateFn: ComponentTemplate<any>| null, consts: number, vars: number, noOfViews: number,
+    embeddedViewContext: any = {}): LView {
   // Create a root view with a container
   const rootTView = createTView(-1, null, 1, 0, null, null, null, null);
   const tContainerNode = getOrCreateTNode(rootTView, null, 0, TNodeType.Container, null, null);
@@ -44,7 +44,7 @@ export function setupRootViewWithEmbeddedViews(
   // create embedded views and add them to the container
   for (let i = 0; i < noOfViews; i++) {
     const embeddedLView = createLView(
-        rootLView, embeddedTView, {}, LViewFlags.CheckAlways, null, viewTNode,
+        rootLView, embeddedTView, embeddedViewContext, LViewFlags.CheckAlways, null, viewTNode,
         new NoopRendererFactory(), new NoopRenderer());
     renderView(embeddedLView, embeddedTView, null);
     insertView(embeddedLView, lContainer, i);
