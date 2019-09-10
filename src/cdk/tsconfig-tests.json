@@ -14,7 +14,6 @@
     }
   },
   "files": [
-    "./testing/index.ts",
     "./index.ts",
     "typings.d.ts"
   ],
@@ -24,20 +23,25 @@
     "emitDecoratorMetadata": true,
     "fullTemplateTypeCheck": true,
 
-    // Unset options inherited from tsconfig-build
+    // Unset options inherited from tsconfig-build.
     "annotateForClosureCompiler": false,
     "flatModuleOutFile": null,
     "flatModuleId": null
   },
   "include": [
-    // Include the index.ts for each secondary entry-point
+    // Include the index.ts for each secondary entry-point.
     "./*/index.ts",
+    // Include the "private/testing" internal entry-point.
+    "./private/testing/",
+    // Include all spec files of the CDK.
     "**/*.spec.ts"
   ],
   "exclude": [
     "**/schematics/**/*.ts",
-    // Exclude end-to-end tests and utilities
+    // Exclude end-to-end tests and utilities.
     "**/*.e2e.spec.ts",
-    "./testing/e2e/**"
+    // Exclude internal e2e testing utilities. These are not needed by tests
+    // which execute through gulp.
+    "./private/testing/e2e/**"
   ]
 }
