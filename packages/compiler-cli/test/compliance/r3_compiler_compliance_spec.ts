@@ -483,11 +483,14 @@ describe('compiler compliance', () => {
             vars: 2,
             template: function MyComponent_Template(rf,ctx){
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "div");
+                $r3$.ɵɵelementStart(0, "div");
+                $r3$.ɵɵstyling();
+                $r3$.ɵɵelementEnd();
               }
               if (rf & 2) {
                 $r3$.ɵɵstyleProp("background-color", ctx.color);
                 $r3$.ɵɵclassProp("error", ctx.error);
+                $r3$.ɵɵstylingApply();
               }
             },
             encapsulation: 2
