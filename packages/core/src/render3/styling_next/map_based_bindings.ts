@@ -225,7 +225,7 @@ function innerSyncStylingMap(
             } else {
               finalValue = sanitizer ?
                   sanitizer(prop, value, StyleSanitizeMode.ValidateAndSanitize) :
-                  unwrapSafeValue(value);
+                  (value ? unwrapSafeValue(value) : null);
             }
 
             applyStylingFn(renderer, element, prop, finalValue, bindingIndexToApply);

@@ -87,10 +87,10 @@ class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
   getTypeName() { return BypassType.ResourceUrl; }
 }
 
-export function unwrapSafeValue(value: any): string {
+export function unwrapSafeValue(value: string | SafeValue): string {
   return value instanceof SafeValueImpl ?
       (value as SafeValueImpl).changingThisBreaksApplicationSecurity :
-      value;
+      (value as string);
 }
 
 
