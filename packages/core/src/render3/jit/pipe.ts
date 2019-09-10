@@ -25,7 +25,8 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
         if (ngFactoryDef === null) {
           const metadata = getPipeMetadata(type, meta);
           ngFactoryDef = getCompilerFacade().compileFactory(
-              angularCoreEnv, `ng:///${metadata.name}/ngFactoryDef.js`, metadata, true);
+              angularCoreEnv, `ng:///${metadata.name}/ngFactoryDef.js`,
+              {...metadata, injectFn: 'directiveInject'}, true);
         }
         return ngFactoryDef;
       },
@@ -55,7 +56,6 @@ function getPipeMetadata(type: Type<any>, meta: Pipe): R3PipeMetadataFacade {
     name: type.name,
     deps: reflectDependencies(type),
     pipeName: meta.name,
-    pure: meta.pure !== undefined ? meta.pure : true,
-    injectFn: 'directiveInject'
+    pure: meta.pure !== undefined ? meta.pure : true
   };
 }

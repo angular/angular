@@ -167,7 +167,8 @@ function addDirectiveFactoryDef(type: Type<any>, metadata: Directive | Component
         if (ngFactoryDef === null) {
           const meta = getDirectiveMetadata(type, metadata);
           ngFactoryDef = getCompilerFacade().compileFactory(
-              angularCoreEnv, `ng:///${type.name}/ngFactoryDef.js`, meta.metadata);
+              angularCoreEnv, `ng:///${type.name}/ngFactoryDef.js`,
+              {...meta.metadata, injectFn: 'directiveInject'});
         }
         return ngFactoryDef;
       },
@@ -205,8 +206,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: extractExportAs(metadata.exportAs),
     providers: metadata.providers || null,
-    viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
-    injectFn: 'directiveInject'
+    viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery)
   };
 }
 

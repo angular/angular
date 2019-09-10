@@ -7,7 +7,7 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, R3BaseMetadataFacade, R3ComponentMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, R3BaseMetadataFacade, R3ComponentMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {HostBinding, HostListener, Input, Output, Type} from './core';
 import {Identifiers} from './identifiers';
@@ -155,20 +155,13 @@ export class CompilerFacadeImpl implements CompilerFacade {
   }
 
   compileFactory(
-      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3PipeMetadataFacade|
-      R3DirectiveMetadataFacade|R3ComponentMetadataFacade|R3InjectableMetadataFacade,
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade,
       isPipe = false) {
     const factoryRes = compileFactoryFromMetadata({
       name: meta.name,
       type: new WrappedNodeExpr(meta.type),
       typeArgumentCount: meta.typeArgumentCount,
-      deps: convertR3DependencyMetadataArray(
-          (meta as R3InjectableMetadataFacade).ctorDeps ||
-          (meta as R3PipeMetadataFacade | R3DirectiveMetadataFacade | R3ComponentMetadataFacade)
-              .deps),
-      // TODO(crisbeto): passing in the identifiers as string feels dirty and should not be in the
-      // final changes, but I couldn't figure out how to access the identifiers inside `jit`.
-      // Bring this up during code review.
+      deps: convertR3DependencyMetadataArray(meta.deps),
       injectFn:
           meta.injectFn === 'directiveInject' ? Identifiers.directiveInject : Identifiers.inject,
       isPipe

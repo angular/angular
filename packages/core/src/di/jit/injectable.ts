@@ -46,9 +46,15 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
     Object.defineProperty(type, NG_FACTORY_DEF, {
       get: () => {
         if (ngFactoryDef === null) {
+          const metadata = getInjectableMetadata(type, srcMeta);
           ngFactoryDef = getCompilerFacade().compileFactory(
-              angularCoreDiEnv, `ng:///${type.name}/ngFactoryDef.js`,
-              getInjectableMetadata(type, srcMeta));
+              angularCoreDiEnv, `ng:///${type.name}/ngFactoryDef.js`, {
+                name: metadata.name,
+                type: metadata.type,
+                typeArgumentCount: metadata.typeArgumentCount,
+                deps: metadata.ctorDeps,
+                injectFn: 'inject'
+              });
         }
         return ngFactoryDef;
       },
@@ -87,7 +93,6 @@ function getInjectableMetadata(type: Type<any>, srcMeta?: Injectable): R3Injecta
     providedIn: meta.providedIn,
     ctorDeps: reflectDependencies(type),
     userDeps: undefined,
-    injectFn: 'inject'
   };
   if ((isUseClassProvider(meta) || isUseFactoryProvider(meta)) && meta.deps !== undefined) {
     compilerMeta.userDeps = convertDependencies(meta.deps);
