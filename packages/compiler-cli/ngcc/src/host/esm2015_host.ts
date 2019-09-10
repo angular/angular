@@ -191,7 +191,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   protected createClassSymbol(
       outerDeclaration: ClassDeclaration, innerDeclaration: ClassDeclaration|null): NgccClassSymbol
       |undefined {
-    const declarationSymbol = this.checker.getSymbolAtLocation(outerDeclaration.name);
+    const declarationSymbol =
+        this.checker.getSymbolAtLocation(outerDeclaration.name) as ClassSymbol | undefined;
     if (declarationSymbol === undefined) {
       return undefined;
     }
@@ -205,7 +206,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     return {
       name: declarationSymbol.name,
-      declaration: declarationSymbol as ClassSymbol,
+      declaration: declarationSymbol,
       implementation: implementationSymbol,
     };
   }

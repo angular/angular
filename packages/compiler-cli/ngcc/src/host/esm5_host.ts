@@ -8,12 +8,11 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, TsHelperFn, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
-import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, Parameter, TsHelperFn, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getNameText, hasNameIdentifier, stripDollarSuffix} from '../utils';
 
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
-import {ClassSymbol, NgccClassSymbol} from './ngcc_host';
+import {NgccClassSymbol} from './ngcc_host';
 
 
 
@@ -92,16 +91,16 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * whose value is assigned to a variable (which represents the class to the rest of the program).
    * So we might need to dig around to get hold of the "class" declaration.
    *
-   * This method extracts a `NgccClassSymbol` if `node` is the outer variable which is assigned the
-   * result of the IIFE. Otherwise, undefined is returned.
+   * This method extracts a `NgccClassSymbol` if `declaration` is the outer variable which is
+   * assigned the result of the IIFE. Otherwise, undefined is returned.
    *
    * @param declaration the declaration whose symbol we are finding.
    * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
   protected getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
-    const superSymbol = super.getClassSymbolFromOuterDeclaration(declaration);
-    if (superSymbol !== undefined) {
-      return superSymbol;
+    const classSymbol = super.getClassSymbolFromOuterDeclaration(declaration);
+    if (classSymbol !== undefined) {
+      return classSymbol;
     }
 
     if (!isNamedVariableDeclaration(declaration)) {
@@ -121,16 +120,16 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * whose value is assigned to a variable (which represents the class to the rest of the program).
    * So we might need to dig around to get hold of the "class" declaration.
    *
-   * This method extracts a `NgccClassSymbol` if `node` is the function declaration inside the IIFE.
-   * Otherwise, undefined is returned.
+   * This method extracts a `NgccClassSymbol` if `declaration` is the function declaration inside
+   * the IIFE. Otherwise, undefined is returned.
    *
    * @param declaration the declaration whose symbol we are finding.
    * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
   protected getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
-    const superSymbol = super.getClassSymbolFromInnerDeclaration(declaration);
-    if (superSymbol !== undefined) {
-      return superSymbol;
+    const classSymbol = super.getClassSymbolFromInnerDeclaration(declaration);
+    if (classSymbol !== undefined) {
+      return classSymbol;
     }
 
     if (!ts.isFunctionDeclaration(declaration) || !hasNameIdentifier(declaration)) {

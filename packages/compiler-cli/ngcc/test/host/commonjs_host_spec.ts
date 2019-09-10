@@ -13,8 +13,7 @@ import {ClassMemberKind, CtorParameter, Import, InlineDeclaration, isNamedClassD
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {Esm5ReflectionHost, getIifeBody} from '../../src/host/esm5_host';
+import {getIifeBody} from '../../src/host/esm5_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestBundleProgram, makeTestDtsBundleProgram} from '../helpers/utils';
 
