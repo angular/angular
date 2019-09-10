@@ -6,5 +6,4 @@ export const releasePackages = [
   'cdk-experimental',
   'material-experimental',
   'material-moment-adapter',
-  'google-maps',
 ];
