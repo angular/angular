@@ -638,7 +638,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected getStaticProperty(symbol: NgccClassSymbol, propertyName: ts.__String): ts.Symbol
       |undefined {
-    return symbol.implementation.exports && symbol.implementation.exports.get(propertyName);
+    return symbol.declaration.exports && symbol.declaration.exports.get(propertyName);
   }
 
   /**
