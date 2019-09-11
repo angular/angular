@@ -2516,7 +2516,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
       `;
-      verify(input, output, {verbose: true});
+      verify(input, output);
     });
   });
 
