@@ -7,21 +7,12 @@ load(
     "MATERIAL_TARGETS",
     "ROLLUP_GLOBALS",
 )
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_package", "ts_library")
 load("//tools:sass_bundle.bzl", "sass_bundle")
 
-# Root "@angular/material" entry-point.
-ng_module(
+ts_library(
     name = "material",
-    srcs = glob(
-        ["*.ts"],
-        exclude = ["**/*.spec.ts"],
-    ),
-    module_name = "@angular/material",
-    deps = ["//src/material/%s" % p for p in MATERIAL_PACKAGES] + [
-        "@npm//@angular/forms",
-        "@npm//@angular/animations",
-    ],
+    srcs = ["index.ts"],
 )
 
 sass_bundle(
@@ -51,7 +42,7 @@ ng_package(
         "//src/material/prebuilt-themes:pink-bluegrey",
         "//src/material/prebuilt-themes:purple-green",
     ],
-    entry_point = ":public-api.ts",
+    entry_point = ":index.ts",
     entry_point_name = "material",
     globals = ROLLUP_GLOBALS,
     packages = ["//src/material/schematics:npm_package"],
