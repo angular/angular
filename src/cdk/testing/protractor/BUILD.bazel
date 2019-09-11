@@ -8,9 +8,8 @@ ts_library(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/cdk-experimental/testing/protractor",
+    module_name = "@angular/cdk/testing/protractor",
     deps = [
-        "//src/cdk-experimental/testing",
         "//src/cdk/testing",
         "@npm//protractor",
     ],

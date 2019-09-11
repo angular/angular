@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, TestElement} from '@angular/cdk-experimental/testing';
+import {ComponentHarness, HarnessPredicate, TestElement} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
 

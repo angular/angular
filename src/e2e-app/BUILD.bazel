@@ -27,10 +27,10 @@ ng_module(
     deps = [
         "//src/cdk-experimental/dialog",
         "//src/cdk-experimental/scrolling",
-        "//src/cdk-experimental/testing/tests:test_components",
         "//src/cdk/drag-drop",
         "//src/cdk/overlay",
         "//src/cdk/scrolling",
+        "//src/cdk/testing/tests:test_components",
         "//src/material-examples:examples",
         "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-card",

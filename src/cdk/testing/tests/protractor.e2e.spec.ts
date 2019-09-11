@@ -1,38 +1,23 @@
-import {HarnessLoader} from '@angular/cdk-experimental/testing';
-import {TestbedHarnessEnvironment} from '@angular/cdk-experimental/testing/testbed';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {ProtractorHarnessEnvironment} from '@angular/cdk/testing/protractor';
+import {browser} from 'protractor';
 import {MainComponentHarness} from './harnesses/main-component-harness';
 import {SubComponentHarness} from './harnesses/sub-component-harness';
-import {TestComponentsModule} from './test-components-module';
-import {TestMainComponent} from './test-main-component';
 
-function activeElementText() {
-  return document.activeElement && (document.activeElement as HTMLElement).innerText || '';
-}
-
-describe('TestbedHarnessEnvironment', () => {
-  let fixture: ComponentFixture<{}>;
-
+describe('ProtractorHarnessEnvironment', () => {
   beforeEach(async () => {
-    await TestBed.configureTestingModule({imports: [TestComponentsModule]}).compileComponents();
-    fixture = TestBed.createComponent(TestMainComponent);
+    await browser.get('/component-harness');
   });
 
   describe('HarnessLoader', () => {
     let loader: HarnessLoader;
 
     beforeEach(() => {
-      loader = TestbedHarnessEnvironment.loader(fixture);
+      loader = ProtractorHarnessEnvironment.loader();
     });
 
-    it('should create HarnessLoader from fixture', () => {
+    it('should create HarnessLoader', () => {
       expect(loader).not.toBeNull();
-    });
-
-    it('should create ComponentHarness for fixture', async () => {
-      const harness =
-        await TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness);
-      expect(harness).not.toBeNull();
     });
 
     it('should find required HarnessLoader for child element', async () => {
@@ -83,8 +68,7 @@ describe('TestbedHarnessEnvironment', () => {
     let harness: MainComponentHarness;
 
     beforeEach(async () => {
-      harness =
-        await TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness);
+      harness = await ProtractorHarnessEnvironment.loader().getHarness(MainComponentHarness);
     });
 
     it('should locate a required element based on CSS selector', async () => {
@@ -172,11 +156,8 @@ describe('TestbedHarnessEnvironment', () => {
     });
 
     it('can get elements outside of host', async () => {
-      const subcomponents = await harness.allLists();
-      expect(subcomponents[0]).not.toBeNull();
-      const globalEl = await subcomponents[0]!.globalElement();
-      expect(globalEl).not.toBeNull();
-      expect(await globalEl.text()).toBe('Hello Yi from Angular 2!');
+      const globalEl = await harness.globalEl();
+      expect(await globalEl.text()).toBe('I am a sibling!');
     });
 
     it('should send enter key', async () => {
@@ -189,6 +170,105 @@ describe('TestbedHarnessEnvironment', () => {
       const specialKey = await harness.specaialKey();
       await harness.sendAltJ();
       expect(await specialKey.text()).toBe('alt-j');
+    });
+  });
+
+  describe('TestElement', () => {
+    let harness: MainComponentHarness;
+
+    beforeEach(async () => {
+      harness = await ProtractorHarnessEnvironment.loader().getHarness(MainComponentHarness);
+    });
+
+    it('should be able to clear', async () => {
+      const input = await harness.input();
+      await input.sendKeys('Yi');
+      expect(await input.getProperty('value')).toBe('Yi');
+
+      await input.clear();
+      expect(await input.getProperty('value')).toBe('');
+    });
+
+    it('should be able to click', async () => {
+      const counter = await harness.counter();
+      expect(await counter.text()).toBe('0');
+      await harness.increaseCounter(3);
+      expect(await counter.text()).toBe('3');
+    });
+
+    it('should be able to click at a specific position within an element', async () => {
+      const clickTest = await harness.clickTest();
+      const clickTestResult = await harness.clickTestResult();
+      await clickTest.click(50, 50);
+      expect(await clickTestResult.text()).toBe('50-50');
+    });
+
+    it('should be able to send key', async () => {
+      const input = await harness.input();
+      const value = await harness.value();
+      await input.sendKeys('Yi');
+
+      expect(await input.getProperty('value')).toBe('Yi');
+      expect(await value.text()).toBe('Input: Yi');
+    });
+
+    it('focuses the element before sending key', async () => {
+      const input = await harness.input();
+      await input.sendKeys('Yi');
+      expect(await input.getAttribute('id'))
+        .toBe(await browser.driver.switchTo().activeElement().getAttribute('id'));
+    });
+
+    it('should be able to retrieve dimensions', async () => {
+      const dimensions = await (await harness.title()).getDimensions();
+      expect(dimensions).toEqual(jasmine.objectContaining({height: 100, width: 200}));
+    });
+
+    it('should be able to hover', async () => {
+      const host = await harness.host();
+      let classAttr = await host.getAttribute('class');
+      expect(classAttr).not.toContain('hovering');
+      await host.hover();
+      classAttr = await host.getAttribute('class');
+      expect(classAttr).toContain('hovering');
+    });
+
+    it('should be able to getAttribute', async () => {
+      const memoStr = `
+        This is an example that shows how to use component harness
+        You should use getAttribute('value') to retrieve the text in textarea
+      `;
+      const memo = await harness.memo();
+      await memo.sendKeys(memoStr);
+      expect(await memo.getProperty('value')).toBe(memoStr);
+    });
+
+    it('should be able to getCssValue', async () => {
+      const title = await harness.title();
+      expect(await title.getCssValue('height')).toBe('100px');
+    });
+
+    it('should focus and blur element', async () => {
+      let button = await harness.button();
+      expect(await (await browser.switchTo().activeElement()).getText())
+          .not.toBe(await button.text());
+      await button.focus();
+      expect(await (await browser.switchTo().activeElement()).getText()).toBe(await button.text());
+      await button.blur();
+      expect(await (await browser.switchTo().activeElement()).getText())
+          .not.toBe(await button.text());
+    });
+
+    it('should be able to get the value of a property', async () => {
+      const input = await harness.input();
+      await input.sendKeys('Hello');
+      expect(await input.getProperty('value')).toBe('Hello');
+    });
+
+    it('should check if selector matches', async () => {
+      const button = await harness.button();
+      expect(await button.matchesSelector('button:not(.fake-class)')).toBe(true);
+      expect(await button.matchesSelector('button:disabled')).toBe(false);
     });
 
     it('should load required harness with ancestor selector restriction', async () => {
@@ -243,109 +323,11 @@ describe('TestbedHarnessEnvironment', () => {
     });
   });
 
-  describe('TestElement', () => {
-    let harness: MainComponentHarness;
-
-    beforeEach(async () => {
-      harness =
-          await TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness);
-    });
-
-    it('should be able to clear', async () => {
-      const input = await harness.input();
-      await input.sendKeys('Yi');
-      expect(await input.getProperty('value')).toBe('Yi');
-
-      await input.clear();
-      expect(await input.getProperty('value')).toBe('');
-    });
-
-    it('should be able to click', async () => {
-      const counter = await harness.counter();
-      expect(await counter.text()).toBe('0');
-      await harness.increaseCounter(3);
-      expect(await counter.text()).toBe('3');
-    });
-
-    it('should be able to click at a specific position within an element', async () => {
-      const clickTest = await harness.clickTest();
-      const clickTestResult = await harness.clickTestResult();
-      await clickTest.click(50, 50);
-      expect(await clickTestResult.text()).toBe('50-50');
-    });
-
-    it('should be able to send key', async () => {
-      const input = await harness.input();
-      const value = await harness.value();
-      await input.sendKeys('Yi');
-
-      expect(await input.getProperty('value')).toBe('Yi');
-      expect(await value.text()).toBe('Input: Yi');
-    });
-
-    it('focuses the element before sending key', async () => {
-      const input = await harness.input();
-      await input.sendKeys('Yi');
-      expect(await input.getAttribute('id')).toBe(document.activeElement!.id);
-    });
-
-    it('should be able to retrieve dimensions', async () => {
-      const dimensions = await (await harness.title()).getDimensions();
-      expect(dimensions).toEqual(jasmine.objectContaining({height: 100, width: 200}));
-    });
-
-    it('should be able to hover', async () => {
-      const host = await harness.host();
-      let classAttr = await host.getAttribute('class');
-      expect(classAttr).not.toContain('hovering');
-      await host.hover();
-      classAttr = await host.getAttribute('class');
-      expect(classAttr).toContain('hovering');
-    });
-
-    it('should be able to getAttribute', async () => {
-      const memoStr = `
-        This is an example that shows how to use component harness
-        You should use getAttribute('value') to retrieve the text in textarea
-      `;
-      const memo = await harness.memo();
-      await memo.sendKeys(memoStr);
-      expect(await memo.getProperty('value')).toBe(memoStr);
-    });
-
-    it('should be able to getCssValue', async () => {
-      const title = await harness.title();
-      expect(await title.getCssValue('height')).toBe('100px');
-    });
-
-    it('should focus and blur element', async () => {
-      const button = await harness.button();
-      expect(activeElementText()).not.toBe(await button.text());
-      await button.focus();
-      expect(activeElementText()).toBe(await button.text());
-      await button.blur();
-      expect(activeElementText()).not.toBe(await button.text());
-    });
-
-    it('should be able to get the value of a property', async () => {
-      const input = await harness.input();
-      await input.sendKeys('Hello');
-      expect(await input.getProperty('value')).toBe('Hello');
-    });
-
-    it('should check if selector matches', async () => {
-      const button = await harness.button();
-      expect(await button.matchesSelector('button:not(.fake-class)')).toBe(true);
-      expect(await button.matchesSelector('button:disabled')).toBe(false);
-    });
-  });
-
   describe('HarnessPredicate', () => {
     let harness: MainComponentHarness;
 
     beforeEach(async () => {
-      harness =
-          await TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness);
+      harness = await ProtractorHarnessEnvironment.loader().getHarness(MainComponentHarness);
     });
 
     it('should find subcomponents with specific item count', async () => {

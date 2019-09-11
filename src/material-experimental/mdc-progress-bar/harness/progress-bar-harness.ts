@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness} from '@angular/cdk-experimental/testing';
+import {ComponentHarness} from '@angular/cdk/testing';
 import {coerceNumberProperty} from '@angular/cdk/coercion';
 
 /**

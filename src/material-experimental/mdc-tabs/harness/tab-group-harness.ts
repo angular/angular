@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk-experimental/testing';
+import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {TabGroupHarnessFilters} from './tab-group-harness-filters';
 import {MatTabHarness} from './tab-harness';
 

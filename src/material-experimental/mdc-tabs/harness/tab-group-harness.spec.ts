@@ -1,5 +1,5 @@
-import {HarnessLoader} from '@angular/cdk-experimental/testing';
-import {TestbedHarnessEnvironment} from '@angular/cdk-experimental/testing/testbed';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatTabsModule} from '@angular/material/tabs';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk-experimental/testing';
+import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MatMenuItemHarness} from './mdc-menu-item-harness';
 import {MenuHarnessFilters} from './menu-harness-filters';

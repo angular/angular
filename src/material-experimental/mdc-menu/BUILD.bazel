@@ -32,8 +32,8 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
-        "//src/cdk-experimental/testing",
         "//src/cdk/coercion",
+        "//src/cdk/testing",
     ],
 )
 
@@ -67,8 +67,6 @@ ng_test_library(
     deps = [
         ":harness",
         ":mdc-menu",
-        "//src/cdk-experimental/testing",
-        "//src/cdk-experimental/testing/testbed",
         "//src/cdk/a11y",
         "//src/cdk/bidi",
         "//src/cdk/keycodes",
@@ -76,6 +74,7 @@ ng_test_library(
         "//src/cdk/private/testing",
         "//src/cdk/scrolling",
         "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/core",
         "//src/material/menu",
         "@npm//@angular/platform-browser",

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, TestElement} from '@angular/cdk-experimental/testing';
+import {ComponentHarness, TestElement} from '@angular/cdk/testing';
 
 /**
  * Harness for interacting with a standard Angular Material tab-label in tests.

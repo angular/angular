@@ -1,5 +1,5 @@
-import {HarnessLoader} from '@angular/cdk-experimental/testing';
-import {TestbedHarnessEnvironment} from '@angular/cdk-experimental/testing/testbed';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Platform, PlatformModule} from '@angular/cdk/platform';
 import {Component} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';

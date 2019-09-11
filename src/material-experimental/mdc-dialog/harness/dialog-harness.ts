@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk-experimental/testing';
+import {ComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing';
 import {DialogRole} from '@angular/material/dialog';
 import {DialogHarnessFilters} from './dialog-harness-filters';
 

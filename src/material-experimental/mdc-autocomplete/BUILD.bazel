@@ -29,8 +29,8 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
-        "//src/cdk-experimental/testing",
         "//src/cdk/coercion",
+        "//src/cdk/testing",
     ],
 )
 
@@ -65,11 +65,10 @@ ng_test_library(
     deps = [
         ":harness",
         ":mdc-autocomplete",
-        "//src/cdk-experimental/testing",
-        "//src/cdk-experimental/testing/testbed",
         "//src/cdk/overlay",
         "//src/cdk/platform",
         "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/autocomplete",
         "@npm//@angular/platform-browser",
     ],

@@ -1,5 +1,5 @@
-import {HarnessLoader} from '@angular/cdk-experimental/testing';
-import {TestbedHarnessEnvironment} from '@angular/cdk-experimental/testing/testbed';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, Type} from '@angular/core';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {MatMenuModule} from '@angular/material/menu';

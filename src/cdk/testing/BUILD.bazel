@@ -1,15 +1,28 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
+load("//tools:defaults.bzl", "ng_module", "ng_web_test_suite")
 
 ng_module(
     name = "testing",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = [
+            "**/*.spec.ts",
+        ],
     ),
     module_name = "@angular/cdk/testing",
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    deps = ["//src/cdk/testing/tests:unit_test_sources"],
+)
+
+e2e_test_suite(
+    name = "e2e_tests",
     deps = [
-        "@npm//@angular/core",
+        "//src/cdk/testing/tests:e2e_test_sources",
+        "@npm//protractor",
     ],
 )

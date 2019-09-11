@@ -33,7 +33,7 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
-        "//src/cdk-experimental/testing",
+        "//src/cdk/testing",
     ],
 )
 
@@ -68,14 +68,13 @@ ng_test_library(
     deps = [
         ":harness",
         ":mdc-chips",
-        "//src/cdk-experimental/testing",
-        "//src/cdk-experimental/testing/testbed",
         "//src/cdk/a11y",
         "//src/cdk/bidi",
         "//src/cdk/keycodes",
         "//src/cdk/platform",
         "//src/cdk/private/testing",
         "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/core",
         "//src/material/form-field",
         "//src/material/input",
