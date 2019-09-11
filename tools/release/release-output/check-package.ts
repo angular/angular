@@ -11,7 +11,7 @@ import {
 } from './output-validations';
 
 /** Glob that matches all JavaScript bundle files within a release package. */
-const releaseBundlesGlob = '+(esm5|esm2015|bundles)/*.js';
+const releaseBundlesGlob = '+(fesm5|fesm2015|esm5|esm2015|bundles)/*.js';
 
 /** Glob that matches all TypeScript definition files within a release package. */
 const releaseTypeDefinitionsGlob = '**/*.d.ts';
@@ -32,7 +32,11 @@ export function checkReleasePackage(releasesPath: string, packageName: string): 
   const packagePath = join(releasesPath, packageName);
   const failures = new Map() as PackageFailures;
   const addFailure = (message, filePath?) => {
-    failures.set(message, (failures.get(message) || []).concat(filePath));
+    const filePaths = failures.get(message) || [];
+    if (filePath) {
+      filePaths.push(filePath);
+    }
+    failures.set(message, filePaths);
   };
 
   const bundlePaths = glob(releaseBundlesGlob, {cwd: packagePath, absolute: true});

@@ -4,6 +4,7 @@ load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_librar
 
 ng_module(
     name = "test_components",
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = [
@@ -12,7 +13,6 @@ ng_module(
         ],
     ),
     assets = glob(["**/*.html"]),
-    module_name = "@angular/cdk/testing/tests",
     deps = [
         "//src/cdk/keycodes",
         "@npm//@angular/forms",

@@ -53,7 +53,6 @@ ng_package(
     srcs = ["package.json"],
     entry_point = ":public-api.ts",
     globals = ROLLUP_GLOBALS,
-    # TODO(devversion): re-enable once we have set up the proper compiler for the ng_package
-    tags = ["manual"],
+    tags = ["release-package"],
     deps = [":material-moment-adapter"],
 )

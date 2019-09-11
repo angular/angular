@@ -1,5 +1,5 @@
 import {bold, green, italic, red, yellow} from 'chalk';
-import {execSync} from 'child_process';
+import {spawnSync} from 'child_process';
 import {readFileSync} from 'fs';
 import {join} from 'path';
 import {BaseReleaseTask} from './base-release-task';
@@ -171,14 +171,12 @@ class PublishReleaseTask extends BaseReleaseTask {
 
   /** Builds all release packages that should be published. */
   private _buildReleasePackages() {
-    const binDir = join(this.projectDir, 'node_modules/.bin');
-    const spawnOptions = {cwd: binDir, stdio: 'inherit'};
+    const buildScript = join(this.projectDir, 'scripts/build-packages-dist.sh');
 
     // TODO(devversion): I'd prefer disabling the output for those, but it might be only
     // worth if we consider adding some terminal spinner library (like "ora").
-    execSync('gulp clean', spawnOptions);
-    execSync(`gulp ${releasePackages.map(name => `${name}:build-release`).join(' ')}`,
-      spawnOptions);
+    return spawnSync('bash', [buildScript],
+      {cwd: this.projectDir, stdio: 'inherit', shell: true}).status === 0;
   }
 
   /**

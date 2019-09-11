@@ -4,6 +4,7 @@ load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
     name = "testing",
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     module_name = "@angular/material/testing",
     deps = [

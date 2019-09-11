@@ -80,7 +80,7 @@ MATERIAL_PACKAGES = [
     "tree",
 ]
 
-MATERIAL_TARGETS = ["//src/material:material"] + ["//src/material/%s" % p for p in MATERIAL_PACKAGES]
+MATERIAL_TARGETS = ["//src/material"] + ["//src/material/%s" % p for p in MATERIAL_PACKAGES]
 
 # List that references the sass libraries for each Material package. This can be used to create
 # the theming scss-bundle or to specify dependencies for the all-theme.scss file.
@@ -131,6 +131,38 @@ ROLLUP_GLOBALS = {
     "@angular/material": "ng.material",
     "@angular/material-experimental": "ng.materialExperimental",
     "@angular/youtube-player": "ng.youtubePlayer",
+
+    # MDC Web
+    "@material/animation": "mdc.animation",
+    "@material/auto-init": "mdc.autoInit",
+    "@material/base": "mdc.base",
+    "@material/checkbox": "mdc.checkbox",
+    "@material/chips": "mdc.chips",
+    "@material/dialog": "mdc.dialog",
+    "@material/dom": "mdc.dom",
+    "@material/drawer": "mdc.drawer",
+    "@material/floating-label": "mdc.floatingLabel",
+    "@material/form-field": "mdc.formField",
+    "@material/grid-list": "mdc.gridList",
+    "@material/icon-button": "mdc.iconButton",
+    "@material/line-ripple": "mdc.lineRipple",
+    "@material/linear-progress": "mdc.linearProgress",
+    "@material/list": "mdc.list",
+    "@material/menu": "mdc.menu",
+    "@material/menu-surface": "mdc.menuSurface",
+    "@material/notched-outline": "mdc.notchedOutline",
+    "@material/radio": "mdc.radio",
+    "@material/ripple": "mdc.ripple",
+    "@material/select": "mdc.select",
+    "@material/slider": "mdc.slider",
+    "@material/snackbar": "mdc.snackbar",
+    "@material/switch": "mdc.switch",
+    "@material/tab": "mdc.tab",
+    "@material/tab-bar": "mdc.tabBar",
+    "@material/tab-indicator": "mdc.tabIndicator",
+    "@material/tab-scroller": "mdc.tabScroller",
+    "@material/text-field": "mdc.textField",
+    "@material/top-app-bar": "mdc.topAppBar",
     "moment": "moment",
     "tslib": "tslib",
 }
@@ -154,13 +186,14 @@ ROLLUP_GLOBALS.update({
     for p in MATERIAL_PACKAGES
 })
 
-# Rollup globals for material experiemental subpackages, e.g., {"@angular/material-experimental/list": "ng.materialExperimental.list"}
+# Rollup globals for material experimental subpackages, e.g.,
+# {"@angular/material-experimental/list": "ng.materialExperimental.list"}
 ROLLUP_GLOBALS.update({
-    "@angular/material-experiemntal/%s" % p: "ng.materialExperimental.%s" % p
+    "@angular/material-experimental/%s" % p: "ng.materialExperimental.%s" % p
     for p in MATERIAL_EXPERIMENTAL_PACKAGES
 })
 
-# UMD bundles for Angular packages and subpackges we depend on for development and testing.
+# UMD bundles for Angular packages and subpackages we depend on for development and testing.
 ANGULAR_LIBRARY_UMDS = [
     "@npm//:node_modules/@angular/animations/bundles/animations-browser.umd.js",
     "@npm//:node_modules/@angular/animations/bundles/animations.umd.js",

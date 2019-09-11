@@ -32,6 +32,7 @@ ng_package(
     entry_point = ":public-api.ts",
     entry_point_name = "youtube-player",
     globals = ROLLUP_GLOBALS,
+    tags = ["release-package"],
     deps = [":youtube-player"],
 )
 

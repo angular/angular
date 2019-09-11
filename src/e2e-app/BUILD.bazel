@@ -13,6 +13,7 @@ exports_files([
 
 ng_module(
     name = "e2e-app",
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = ["test-util/**"],
@@ -87,6 +88,7 @@ sass_binary(
 
 ts_devserver(
     name = "devserver",
+    testonly = True,
     # Root paths can be used simplify the loading of files from external Bazel repositories
     # (such as the Bazel managed deps repository called "npm")
     additional_root_paths = [

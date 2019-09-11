@@ -11,6 +11,3 @@ task('ci:test', ['test:single-run'], () => process.exit(0));
  * release output to be built already.
  */
 task('ci:aot', ['build-aot:no-release-build']);
-
-/** Task that builds all release packages. */
-task('ci:build-release-packages', ['build-release-packages']);

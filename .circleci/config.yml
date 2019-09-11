@@ -155,7 +155,9 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      - run: bazel build src/...
+      # Exclude release and docs packages here as those will be built within
+      # the "build_release_packages" and "publish_snapshots" jobs.
+      - run: bazel build src/... --build_tag_filters=-docs-package,-release-package
 
   # --------------------------------------------------------------------------------------------
   # Job that runs ts-api-guardian against our API goldens in "tools/public_api_guard".
@@ -272,19 +274,24 @@ jobs:
       - *save_cache
 
   # -------------------------------------------------------------------------------------------
-  # Job that builds all release packages with Gulp. The built packages can be then used in the
-  # same workflow to publish snapshot builds or test the dev-app with the release packages.
+  # Job that builds all release packages. The built packages can be then used in the same
+  # workflow to publish snapshot builds.
   # -------------------------------------------------------------------------------------------
   build_release_packages:
     <<: *job_defaults
     resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
       - *checkout_code
       - *restore_cache
+      - *setup_bazel_ci_config
+      - *setup_bazel_remote_execution
       - *yarn_download
       - *yarn_install
+      - *setup_bazel_binary
 
-      - run: yarn gulp ci:build-release-packages
+      - run: ./scripts/build-packages-dist.sh
       - run: yarn check-release-output
 
       # TODO(devversion): replace this with bazel tests that run Madge. This is

@@ -19,7 +19,7 @@
     }
   },
   "files": [
-    "public-api.ts",
+    "index.ts",
     "typings.d.ts"
   ],
   "angularCompilerOptions": {
