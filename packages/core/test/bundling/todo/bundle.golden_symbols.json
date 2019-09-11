@@ -936,7 +936,7 @@
     "name": "initNodeFlags"
   },
   {
-    "name": "initializeTNodeInputs"
+    "name": "initializeInputAndOutputAliases"
   },
   {
     "name": "injectElementRef"
