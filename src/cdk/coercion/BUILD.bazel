@@ -1,17 +1,14 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "karma_web_test_suite", "markdown_to_html", "ts_library")
+load("//tools:defaults.bzl", "karma_web_test_suite", "markdown_to_html", "ng_module", "ts_library")
 
-ts_library(
+ng_module(
     name = "coercion",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
     module_name = "@angular/cdk/coercion",
-    deps = [
-        "@npm//@angular/core",
-    ],
 )
 
 ts_library(
