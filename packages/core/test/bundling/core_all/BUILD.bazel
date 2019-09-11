@@ -32,10 +32,14 @@ js_size_tracking_test(
         ":bundle",
         ":bundle.golden_size_map.json",
     ],
-    goldenFile = "angular/packages/core/test/bundling/core_all/bundle.golden_size_map.json",
-    maxByteDiff = 250,
-    maxPercentageDiff = 15,
-    sourceMap = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
+    golden_file = "angular/packages/core/test/bundling/core_all/bundle.golden_size_map.json",
+    max_byte_diff = 250,
+    max_percentage_diff = 15,
+    # Ensures that this target runs with "--define=compile=aot" (aka Ivy). This is necessary
+    # because we don't run this test on CI currently, but if we run it manually, we need to
+    # ensure that it runs with Ivy for proper size comparisons.
+    required_compile_mode = "aot",
+    source_map = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
     tags = [
         "ivy-only",
         "manual",
