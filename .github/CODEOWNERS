@@ -739,7 +739,6 @@ testing/**                                                      @angular/fw-test
 /packages/compiler/src/i18n/**                                  @angular/fw-i18n @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /packages/compiler/src/render3/view/i18n/**                     @angular/fw-i18n @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /packages/compiler-cli/src/extract_i18n.ts                      @angular/fw-i18n @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/packages/localize/**                                           @angular/fw-i18n @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/i18n.md                                      @angular/fw-i18n @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/i18n/**                                   @angular/fw-i18n @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
