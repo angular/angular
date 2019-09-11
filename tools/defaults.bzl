@@ -70,14 +70,24 @@ def ng_module(deps = [], tsconfig = None, testonly = False, **kwargs):
         **kwargs
     )
 
-def ng_package(name, readme_md = None, **kwargs):
+def ng_package(name, data = [], readme_md = None, **kwargs):
     # If no readme file has been specified explicitly, use the default readme for
     # release packages from "src/README.md".
     if not readme_md:
         readme_md = "//src:README.md"
 
+    # We need a genrule that copies the license into the current package. This
+    # allows us to include the license in the "ng_package".
+    native.genrule(
+        name = "license_copied",
+        srcs = ["//:LICENSE"],
+        outs = ["LICENSE"],
+        cmd = "cp $< $@",
+    )
+
     _ng_package(
         name = name,
+        data = data + [":license_copied"],
         readme_md = readme_md,
         replacements = VERSION_PLACEHOLDER_REPLACEMENTS,
         **kwargs
