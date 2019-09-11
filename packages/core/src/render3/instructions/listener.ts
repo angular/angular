@@ -17,8 +17,7 @@ import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TVIEW} from '../interfaces/
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {getLView, getPreviousOrParentTNode} from '../state';
 import {getComponentViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
-
-import {BindingDirection, generatePropertyAliases, getCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
+import {getCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
 
 /**
  * Adds an event listener to the current node.
@@ -186,36 +185,28 @@ function listenerInternal(
   }
 
   // subscribe to directive outputs
-  if (isTNodeDirectiveHost && processOutputs) {
-    let outputs = tNode.outputs;
-    if (outputs === undefined) {
-      // if we create TNode here, inputs must be undefined so we know they still need to be
-      // checked
-      outputs = tNode.outputs = generatePropertyAliases(tView, tNode, BindingDirection.Output);
-    }
+  const outputs = tNode.outputs;
+  let props: PropertyAliasValue|undefined;
+  if (processOutputs && outputs != null && (props = outputs[eventName])) {
+    const propsLength = props.length;
+    if (propsLength) {
+      const lCleanup = getCleanup(lView);
+      for (let i = 0; i < propsLength; i += 3) {
+        const index = props[i] as number;
+        ngDevMode && assertDataInRange(lView, index);
+        const minifiedName = props[i + 2];
+        const directiveInstance = lView[index];
+        const output = directiveInstance[minifiedName];
 
-    let props: PropertyAliasValue|undefined;
-    if (outputs !== null && (props = outputs[eventName])) {
-      const propsLength = props.length;
-      if (propsLength) {
-        const lCleanup = getCleanup(lView);
-        for (let i = 0; i < propsLength; i += 3) {
-          const index = props[i] as number;
-          ngDevMode && assertDataInRange(lView, index);
-          const minifiedName = props[i + 2];
-          const directiveInstance = lView[index];
-          const output = directiveInstance[minifiedName];
-
-          if (ngDevMode && !isObservable(output)) {
-            throw new Error(
-                `@Output ${minifiedName} not initialized in '${directiveInstance.constructor.name}'.`);
-          }
-
-          const subscription = output.subscribe(listenerFn);
-          const idx = lCleanup.length;
-          lCleanup.push(listenerFn, subscription);
-          tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
+        if (ngDevMode && !isObservable(output)) {
+          throw new Error(
+              `@Output ${minifiedName} not initialized in '${directiveInstance.constructor.name}'.`);
         }
+
+        const subscription = output.subscribe(listenerFn);
+        const idx = lCleanup.length;
+        lCleanup.push(listenerFn, subscription);
+        tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
       }
     }
   }
