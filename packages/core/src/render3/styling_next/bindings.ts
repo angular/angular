@@ -246,13 +246,14 @@ export function registerBinding(
   let found = false;
   prop = prop || MAP_BASED_ENTRY_PROP_NAME;
 
-  const total = getTotalSources(context);
+  let totalSources = getTotalSources(context);
 
   // if a new source is detected then a new column needs to be allocated into
   // the styling context. The column is basically a new allocation of binding
   // sources that will be available to each property.
-  if (sourceIndex >= total) {
+  while (totalSources <= sourceIndex) {
     addNewSourceColumn(context);
+    totalSources++;
   }
 
   const isBindingIndexValue = typeof bindingValue === 'number';

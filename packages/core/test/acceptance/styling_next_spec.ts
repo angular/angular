@@ -1147,6 +1147,27 @@ describe('new styling integration', () => {
     expect(div.style.height).toEqual('200px');
     expect(div.style.opacity).toEqual('1');
   });
+
+  it('should allow [ngStyle] and [ngClass] to be used together', () => {
+    @Component({
+      template: `
+            <div [ngClass]="c" [ngStyle]="s"></div>
+          `
+    })
+    class Cmp {
+      c: any = 'foo bar';
+      s: any = {width: '200px'};
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const div = fixture.nativeElement.querySelector('div');
+    expect(div.style.width).toEqual('200px');
+    expect(div.classList.contains('foo')).toBeTruthy();
+    expect(div.classList.contains('bar')).toBeTruthy();
+  });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
