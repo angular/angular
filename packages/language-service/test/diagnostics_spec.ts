@@ -510,8 +510,6 @@ describe('diagnostics', () => {
 
     it('should report diagnostic for missing template or templateUrl', () => {
       const fileName = mockHost.addCode(`
-        import { Component, NgModule } from '@angular/core';
-
         @Component({
           selector: 'app-example',
         })
@@ -534,8 +532,6 @@ describe('diagnostics', () => {
 
     it('should report diagnostic for both template and templateUrl', () => {
       const fileName = mockHost.addCode(`
-        import { Component, NgModule } from '@angular/core';
-
         @Component({
           selector: 'app-example',
           template: '<div></div>',
