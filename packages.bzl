@@ -117,7 +117,7 @@ MATERIAL_EXPERIMENTAL_SCSS_LIBS = [
 # all in-sync. This map is passed to each ng_package rule to stamp out the appropriate
 # version for the placeholders.
 ANGULAR_PACKAGE_VERSION = "^8.0.0 || ^9.0.0-0"
-MDC_PACKAGE_VERSION = "^1.1.0"
+MDC_PACKAGE_VERSION = "^4.0.0-alpha.0"
 VERSION_PLACEHOLDER_REPLACEMENTS = {
     "0.0.0-MDC": MDC_PACKAGE_VERSION,
     "0.0.0-NG": ANGULAR_PACKAGE_VERSION,
