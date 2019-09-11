@@ -67,13 +67,13 @@ function getBuildOrder(node: BuildNode): BuildNode[] {
     return [];
   }
 
+  node.visited = true;
   let buildOrder: BuildNode[] = [];
   for (const dep of node.deps) {
     buildOrder = [...buildOrder, ...getBuildOrder(dep)];
     node.depth = node.deps.reduce((maxDepth, d) => Math.max(d.depth + 1, maxDepth), -1);
   }
 
-  node.visited = true;
   return [...buildOrder, node];
 }
 
