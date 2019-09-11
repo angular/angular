@@ -29,3 +29,9 @@ shelljs.sed(
     '-i', '@npm//@bazel/typescript/bin:tsc_wrapped',
     '@angular_material//tools/bazel:tsc_wrapped_with_tsickle',
     'node_modules/@angular/bazel/src/esm5.bzl');
+
+// Workaround for https://github.com/angular/angular/issues/32603. Note that we don't
+// want to apply the patch if it has been applied already.
+if (!shelljs.test('-f', 'node_modules/@angular/bazel/src/ng_package/rollup_bin.js')) {
+  shelljs.cat(path.join(__dirname, './rollup_windows_arguments.patch')).exec('patch -p0');
+}
