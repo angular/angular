@@ -1,3 +1,56 @@
+<a name="9.0.0-next.6"></a>
+# [9.0.0-next.6](https://github.com/angular/angular/compare/9.0.0-next.5...9.0.0-next.6) (2019-09-11)
+
+
+### Bug Fixes
+
+* **core:** improve the "missing `$localize`" error message ([#32491](https://github.com/angular/angular/issues/32491)) ([a9ff48e](https://github.com/angular/angular/commit/a9ff48e))
+* **ivy:** capture template source mapping details during preanalysis ([#32544](https://github.com/angular/angular/issues/32544)) ([a64eded](https://github.com/angular/angular/commit/a64eded)), closes [#32538](https://github.com/angular/angular/issues/32538)
+* **ivy:** handle expressions in i18n attributes properly ([#32309](https://github.com/angular/angular/issues/32309)) ([f00d033](https://github.com/angular/angular/commit/f00d033))
+* **ivy:** i18n - do not generate jsdoc comments for `$localize` ([#32473](https://github.com/angular/angular/issues/32473)) ([a731119](https://github.com/angular/angular/commit/a731119))
+* **ivy:** maintain coalesced listeners order ([#32484](https://github.com/angular/angular/issues/32484)) ([098feec](https://github.com/angular/angular/commit/098feec))
+* **ivy:** match class and attribute value without case-sensitivity ([#32548](https://github.com/angular/angular/issues/32548)) ([ded5724](https://github.com/angular/angular/commit/ded5724))
+* **ivy:** node placed in incorrect order inside ngFor with ng-container ([#32324](https://github.com/angular/angular/issues/32324)) ([da42a76](https://github.com/angular/angular/commit/da42a76))
+* **ivy:** restore global state after running refreshView ([#32521](https://github.com/angular/angular/issues/32521)) ([a1beba4](https://github.com/angular/angular/commit/a1beba4))
+* **ivy:** template compiler should render correct $localize placeholder names ([#32509](https://github.com/angular/angular/issues/32509)) ([ea6a2e9](https://github.com/angular/angular/commit/ea6a2e9))
+* **ivy:** unable to bind to properties that start with class or style ([#32421](https://github.com/angular/angular/issues/32421)) ([62d92f8](https://github.com/angular/angular/commit/62d92f8)), closes [#32310](https://github.com/angular/angular/issues/32310)
+* **ivy:** unable to override ComponentFactoryResolver provider in tests ([#32512](https://github.com/angular/angular/issues/32512)) ([2124588](https://github.com/angular/angular/commit/2124588))
+* **ivy:** warn instead of throwing for unknown properties ([#32463](https://github.com/angular/angular/issues/32463)) ([bc061b7](https://github.com/angular/angular/commit/bc061b7))
+* **language-service:** Return empty external files during project initialization ([#32519](https://github.com/angular/angular/issues/32519)) ([a65d3fa](https://github.com/angular/angular/commit/a65d3fa))
+* **language-service:** Use module resolution cache ([#32479](https://github.com/angular/angular/issues/32479)) ([6052b12](https://github.com/angular/angular/commit/6052b12))
+* **ngcc:** only back up the original `prepublishOnly` script and not the overwritten one ([#32427](https://github.com/angular/angular/issues/32427)) ([38359b1](https://github.com/angular/angular/commit/38359b1))
+* **service-worker:** keep serving clients on older versions if latest is invalidated ([#31865](https://github.com/angular/angular/issues/31865)) ([bda2b4e](https://github.com/angular/angular/commit/bda2b4e))
+
+
+### Code Refactoring
+
+* **bazel:** remove [@angular](https://github.com/angular)/bazel protractor rule now provided by [@bazel](https://github.com/bazel)/protractor ([#32485](https://github.com/angular/angular/issues/32485)) ([9448828](https://github.com/angular/angular/commit/9448828))
+
+
+### Features
+
+* **language-service:** add definitions for styleUrls ([#32464](https://github.com/angular/angular/issues/32464)) ([a391aeb](https://github.com/angular/angular/commit/a391aeb))
+* **language-service:** add script to rebuild, refresh Angular dist ([#32515](https://github.com/angular/angular/issues/32515)) ([1716b91](https://github.com/angular/angular/commit/1716b91))
+* **service-worker:** recover from `EXISTING_CLIENTS_ONLY` mode when there is a valid update ([#31865](https://github.com/angular/angular/issues/31865)) ([094538c](https://github.com/angular/angular/commit/094538c)), closes [#31109](https://github.com/angular/angular/issues/31109)
+
+
+### Performance Improvements
+
+* **ivy:** check for animation synthetic props in dev mode only ([#32578](https://github.com/angular/angular/issues/32578)) ([7280710](https://github.com/angular/angular/commit/7280710))
+* **ivy:** introduce a node-based micro-benchmarks harness ([#32510](https://github.com/angular/angular/issues/32510)) ([2895edc](https://github.com/angular/angular/commit/2895edc))
+* **ivy:** replace select instruction with advance ([#32516](https://github.com/angular/angular/issues/32516)) ([664e001](https://github.com/angular/angular/commit/664e001))
+* **ivy:** run tree benchmark with bundles and ngDevMode off ([#32558](https://github.com/angular/angular/issues/32558)) ([c3a1ef2](https://github.com/angular/angular/commit/c3a1ef2))
+* **ngcc:** process tasks in parallel in async mode ([#32427](https://github.com/angular/angular/issues/32427)) ([e36e6c8](https://github.com/angular/angular/commit/e36e6c8))
+
+
+### BREAKING CHANGES
+
+* **bazel:** Angular bazel users using protractor_web_test_suite from @angular/bazel npm package should now switch to the @bazel/protractor npm package.
+
+This should impact very few users and the user's that are impacted have a very easy upgrade path to switch to fetching the protractor_web_test_suite rule via the @bazel/protractor npm package.
+
+
+
 <a name="8.2.6"></a>
 ## [8.2.6](https://github.com/angular/angular/compare/8.2.5...8.2.6) (2019-09-11)
 
