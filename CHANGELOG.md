@@ -54,6 +54,8 @@ This should impact very few users and the user's that are impacted have a very e
 <a name="8.2.6"></a>
 ## [8.2.6](https://github.com/angular/angular/compare/8.2.5...8.2.6) (2019-09-11)
 
+This release contains various API docs improvements.
+
 
 
 <a name="9.0.0-next.5"></a>
@@ -114,13 +116,6 @@ API surface going forward.
 * **core:** Injector.get now accepts abstract classes to return
 type-safe values. Previous implementation returned `any` through the
 deprecated implementation.
-
-
-
-<a name="8.2.6"></a>
-## [8.2.6](https://github.com/angular/angular/compare/8.2.5...8.2.6) (2019-09-11)
-
-This release contains various API docs improvements.
 
 
 
