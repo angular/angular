@@ -23,7 +23,7 @@ import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../styling_n
 import {setUpAttributes} from '../util/attrs_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
-import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
+import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
 
 
 
@@ -84,13 +84,14 @@ export function ɵɵelementStart(
     ngDevMode && ngDevMode.firstTemplatePass++;
     resolveDirectives(tView, lView, tNode, localRefs || null);
 
-    const inputData = initializeTNodeInputs(tView, tNode);
-    if (inputData && inputData.hasOwnProperty('class')) {
-      tNode.flags |= TNodeFlags.hasClassInput;
-    }
-
-    if (inputData && inputData.hasOwnProperty('style')) {
-      tNode.flags |= TNodeFlags.hasStyleInput;
+    const inputData = tNode.inputs;
+    if (inputData != null) {
+      if (inputData.hasOwnProperty('class')) {
+        tNode.flags |= TNodeFlags.hasClassInput;
+      }
+      if (inputData.hasOwnProperty('style')) {
+        tNode.flags |= TNodeFlags.hasStyleInput;
+      }
     }
 
     if (tView.queries !== null) {
