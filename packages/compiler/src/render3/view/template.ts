@@ -199,12 +199,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     variables.forEach(v => this.registerContextVariables(v));
 
     // Initiate i18n context in case:
-    // - this template has parent i18n context
-    // - or the template has i18n meta associated with it,
-    //   but it's not initiated by the Element (e.g. <ng-template i18n>)
-    const initI18nContext =
-        this.i18nContext || (isI18nRootNode(i18n) && !isSingleI18nIcu(i18n) &&
-                             !(isSingleElementTemplate(nodes) && nodes[0].i18n === i18n));
+    // - it's *not* a template-only content
+    // - this template has parent i18n context (i.e. it's inside i18n block) or the template has
+    // i18n meta associated with it, but it's not initiated by the Element (e.g. <ng-template i18n>)
+    const initI18nContext = !isSingleTemplateNode(nodes) &&
+        (this.i18nContext || (isI18nRootNode(i18n) && !isSingleI18nIcu(i18n) &&
+                              !(isSingleElementNode(nodes) && nodes[0].i18n === i18n)));
     const selfClosingI18nInstruction = hasTextChildrenOnly(nodes);
     if (initI18nContext) {
       this.i18nStart(null, i18n !, selfClosingI18nInstruction);
@@ -1984,8 +1984,12 @@ export function resolveSanitizationFn(context: core.SecurityContext, isAttribute
   }
 }
 
-function isSingleElementTemplate(children: t.Node[]): children is[t.Element] {
+function isSingleElementNode(children: t.Node[]): children is[t.Element] {
   return children.length === 1 && children[0] instanceof t.Element;
+}
+
+function isSingleTemplateNode(children: t.Node[]): children is[t.Template] {
+  return children.length === 1 && children[0] instanceof t.Template;
 }
 
 function isTextNode(node: t.Node): boolean {
