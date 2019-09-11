@@ -38,7 +38,7 @@ import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, tra
  * until the global queue has been resolved with a call to `resolveComponentResources`.
  */
 export function compileComponent(type: Type<any>, metadata: Component): void {
-  // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
+  // Initialize ngDevMode. This must be the first statement in compileComponent.
   // See the `initNgDevMode` docstring for more information.
   (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 

@@ -133,10 +133,12 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
  * - changes to the `ngDevMode` name must be synced with `compiler-cli/src/tooling.ts`.
  */
 export function initNgDevMode(): boolean {
+  // The below checks are to ensure that calling `initNgDevMode` multiple times does not
+  // reset the counters.
+  // If the `ngDevMode` is not an object, then it means we have not created the perf counters
+  // yet.
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (typeof ngDevMode !== 'object') {
-      // If the `ngDevMode` is not an object, then it means we have not created the perf counters
-      // yet.
       ngDevModeResetPerfCounters();
     }
     return !!ngDevMode;
