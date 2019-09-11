@@ -1,3 +1,8 @@
+<a name="8.2.6"></a>
+## [8.2.6](https://github.com/angular/angular/compare/8.2.5...8.2.6) (2019-09-11)
+
+
+
 <a name="8.2.5"></a>
 ## [8.2.5](https://github.com/angular/angular/compare/8.2.4...8.2.5) (2019-09-04)
 
