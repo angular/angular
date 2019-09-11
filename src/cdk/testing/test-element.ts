@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ModifierKeys} from '@angular/cdk/testing';
 import {ElementDimensions} from './element-dimensions';
+import {ModifierKeys} from './event-objects';
 
 /** An enum of non-text keys that can be used with the `sendKeys` method. */
 // NOTE: This is a separate enum from `@angular/cdk/keycodes` because we don't necessarily want to
