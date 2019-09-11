@@ -18,7 +18,7 @@ import {PreparsedElementType, preparseElement} from '../template_parser/template
 import {syntaxError} from '../util';
 
 import * as t from './r3_ast';
-import {I18N_ICU_VAR_PREFIX} from './view/i18n/util';
+import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util';
 
 const BIND_NAME_REGEXP =
     /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
@@ -205,12 +205,18 @@ class HtmlAstToIvyAst implements html.Visitor {
             outputs: parsedElement.outputs,
           } :
           {attributes: [], inputs: [], outputs: []};
+
+      // For <ng-template>s with structural directives on them, avoid passing i18n information to
+      // the wrapping template to prevent unnecessary i18n instructions from being generated. The
+      // necessary i18n meta information will be extracted from child elements.
+      const i18n = isTemplateElement && isI18nRootNode(element.i18n) ? undefined : element.i18n;
+
       // TODO(pk): test for this case
       parsedElement = new t.Template(
           (parsedElement as t.Element).name, hoistedAttrs.attributes, hoistedAttrs.inputs,
           hoistedAttrs.outputs, templateAttrs, [parsedElement], [/* no references */],
           templateVariables, element.sourceSpan, element.startSourceSpan, element.endSourceSpan,
-          element.i18n);
+          i18n);
     }
     return parsedElement;
   }
