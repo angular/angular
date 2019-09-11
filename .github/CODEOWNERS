@@ -916,6 +916,7 @@ testing/**                                                      @angular/fw-test
 /tools/npm_workspace/**                                         @angular/dev-infra-framework
 /tools/public_api_guard/**                                      @angular/dev-infra-framework
 /tools/rxjs/**                                                  @angular/dev-infra-framework
+/tools/size-tracking/**                                         @angular/dev-infra-framework
 /tools/source-map-test/**                                       @angular/dev-infra-framework
 /tools/symbol-extractor/**                                      @angular/dev-infra-framework
 /tools/testing/**                                               @angular/dev-infra-framework
