@@ -301,6 +301,17 @@ onlyInIvy('Ivy i18n logic')
               expect(element).toHaveText('Bonjour Angular');
             });
 
+            // Note: applying structural directives to <ng-template> is typically user error, but it
+            // is technically allowed, so we need to support it.
+            it('should handle structural directives on ng-template', () => {
+              loadTranslations({'Hello {$INTERPOLATION}': 'Bonjour {$INTERPOLATION}'});
+              const fixture = initWithTemplate(
+                  AppComp, `<ng-template *ngIf="name" i18n tplRef>Hello {{ name }}</ng-template>`);
+
+              const element = fixture.nativeElement;
+              expect(element).toHaveText('Bonjour Angular');
+            });
+
             it('should be able to act as child elements inside i18n block (plain text content)', () => {
               loadTranslations({
 
