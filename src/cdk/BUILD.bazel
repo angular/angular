@@ -62,6 +62,7 @@ ng_package(
     ] in rerootedStyles],
     entry_point = ":public-api.ts",
     globals = ROLLUP_GLOBALS,
+    packages = ["//src/cdk/schematics:npm_package"],
     tags = ["release-package"],
     deps = CDK_TARGETS,
 )
