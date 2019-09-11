@@ -363,6 +363,13 @@
             "title": "Material Community Components",
             "url": "https://github.com/tiaguinho/material-community-components"
           },
+          "mdc": {
+            "desc": "Incorporating Google Material Components for a faithful and accurate representation of Material Design as envisioned on the web platform",
+            "logo": "",
+            "rev": true,
+            "title": "Material Web Components for Angular",
+            "url": "https://github.com/trimox/angular-mdc-web"
+          },
           "mosaic": {
             "desc": "Positive Technologies UI components based on Angular",
             "logo": "https://i.ibb.co/fQNPgv6/logo-png-200.png",
