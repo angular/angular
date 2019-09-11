@@ -639,6 +639,30 @@ class TestCmptWithPropInterpolation {
       it('when searching for elements by their properties', () => {
         expect(() => el.query(e => e.properties['any prop'] === 'any value')).not.toThrow();
       });
+
+      it('when searching by componentInstance', () => {
+        expect(() => el.query(e => e.componentInstance === null)).not.toThrow();
+      });
+
+      it('when searching by context', () => {
+        expect(() => el.query(e => e.context === null)).not.toThrow();
+      });
+
+      it('when searching by listeners', () => {
+        expect(() => el.query(e => e.listeners.length === 0)).not.toThrow();
+      });
+
+      it('when searching by references', () => {
+        expect(() => el.query(e => e.references === null)).not.toThrow();
+      });
+
+      it('when searching by providerTokens', () => {
+        expect(() => el.query(e => e.providerTokens.length === 0)).not.toThrow();
+      });
+
+      it('when searching by injector', () => {
+        expect(() => el.query(e => e.injector === null)).not.toThrow();
+      });
     });
 
     it('DebugElement.queryAll should pick up both elements inserted via the view and through Renderer2',

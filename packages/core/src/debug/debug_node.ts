@@ -19,7 +19,7 @@ import {isStylingContext} from '../render3/styling_next/util';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
 import {findComponentView} from '../render3/util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
+import {getComponentViewByIndex, getNativeByTNodeOrNull, readPatchedData} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
 
@@ -88,6 +88,7 @@ export interface DebugElement extends DebugNode {
   queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[];
   triggerEventHandler(eventName: string, eventObj: any): void;
 }
+
 export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements DebugElement {
   readonly name !: string;
   readonly properties: {[key: string]: any} = {};
@@ -207,6 +208,7 @@ function _queryNodeChildren(
     });
   }
 }
+
 class DebugNode__POST_R3__ implements DebugNode {
   readonly nativeNode: Node;
 
@@ -217,24 +219,39 @@ class DebugNode__POST_R3__ implements DebugNode {
     return parent ? new DebugElement__POST_R3__(parent) : null;
   }
 
-  get injector(): Injector { return getInjector(this.nativeNode); }
+  get injector(): Injector {
+    return this.hasPatchedData(this.nativeNode) ? getInjector(this.nativeNode) : Injector.NULL;
+  }
 
   get componentInstance(): any {
     const nativeElement = this.nativeNode;
-    return nativeElement &&
-        (getComponent(nativeElement as Element) || getViewComponent(nativeElement));
+    return this.hasPatchedData(nativeElement) ?
+        (getComponent(nativeElement as Element) || getViewComponent(nativeElement)) :
+        null;
   }
+
   get context(): any {
-    return getComponent(this.nativeNode as Element) || getContext(this.nativeNode as Element);
+    return this.hasPatchedData(this.nativeNode) ?
+        getComponent(this.nativeNode as Element) || getContext(this.nativeNode as Element) :
+        null;
   }
 
   get listeners(): DebugEventListener[] {
-    return getListeners(this.nativeNode as Element).filter(isBrowserEvents);
+    return this.hasPatchedData(this.nativeNode) ?
+        getListeners(this.nativeNode as Element).filter(isBrowserEvents) :
+        [];
   }
 
-  get references(): {[key: string]: any;} { return getLocalRefs(this.nativeNode); }
+  get references(): {[key: string]: any;} {
+    return this.hasPatchedData(this.nativeNode) ? getLocalRefs(this.nativeNode) : {};
+  }
 
-  get providerTokens(): any[] { return getInjectionTokens(this.nativeNode as Element); }
+  get providerTokens(): any[] {
+    return this.hasPatchedData(this.nativeNode) ? getInjectionTokens(this.nativeNode as Element) :
+                                                  [];
+  }
+
+  private hasPatchedData(target: any) { return target && readPatchedData(target) !== null; }
 }
 
 class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugElement {

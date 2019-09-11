@@ -151,7 +151,7 @@ export function getComponentViewByIndex(nodeIndex: number, hostView: LView): LVi
  */
 export function readPatchedData(target: any): LView|LContext|null {
   ngDevMode && assertDefined(target, 'Target expected');
-  return target[MONKEY_PATCH_KEY_NAME];
+  return target[MONKEY_PATCH_KEY_NAME] || null;
 }
 
 export function readPatchedLView(target: any): LView|null {
