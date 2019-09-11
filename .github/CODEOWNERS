@@ -51,6 +51,7 @@
 #  IgorMinar - Igor Minar
 #  JiaLiPassion - Jia Li
 #  josephperrott - Joey Perrott
+#  kapunahelewong - Kapunahele Wong
 #  kara - Kara Erickson
 #  kyliau - Keen Yee Liau
 #  matsko - Matias Niemelä
@@ -94,6 +95,7 @@
 #  (secret team to avoid review requests, it also doesn't inherit from @angular/framework because nested teams can't be secret)
 #
 #   - gkalpak
+#   - kapunahelewong
 #   - petebacondarwin
 
 
