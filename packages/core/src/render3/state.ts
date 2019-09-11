@@ -185,6 +185,9 @@ export function setActiveHostElement(elementIndex: number | null = null) {
 let _elementExitFn: Function|null = null;
 export function executeElementExitFn() {
   _elementExitFn !();
+  // TODO (matsko|misko): remove this unassignment once the state management of
+  //                      global variables are better managed.
+  _selectedIndex &= ~ActiveElementFlags.RunExitFn;
 }
 
 /**
