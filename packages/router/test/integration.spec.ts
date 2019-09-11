@@ -1994,6 +1994,36 @@ describe('Integration', () => {
          expect(() => buttons[1].click()).not.toThrow();
        }));
 
+    it('should not throw when some command is null', fakeAsync(() => {
+         @Component({
+           selector: 'someCmp',
+           template:
+               `<router-outlet></router-outlet><a [routerLink]="[null]">Link</a><button [routerLink]="[null]">Button</button>`
+         })
+         class CmpWithLink {
+         }
+
+         TestBed.configureTestingModule({declarations: [CmpWithLink]});
+         const router: Router = TestBed.inject(Router);
+
+         expect(() => createRoot(router, CmpWithLink)).not.toThrow();
+       }));
+
+    it('should not throw when some command is undefined', fakeAsync(() => {
+         @Component({
+           selector: 'someCmp',
+           template:
+               `<router-outlet></router-outlet><a [routerLink]="[undefined]">Link</a><button [routerLink]="[undefined]">Button</button>`
+         })
+         class CmpWithLink {
+         }
+
+         TestBed.configureTestingModule({declarations: [CmpWithLink]});
+         const router: Router = TestBed.inject(Router);
+
+         expect(() => createRoot(router, CmpWithLink)).not.toThrow();
+       }));
+
     it('should update hrefs when query params or fragment change', fakeAsync(() => {
          @Component({
            selector: 'someRoot',

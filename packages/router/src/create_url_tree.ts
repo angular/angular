@@ -186,9 +186,11 @@ function getPath(command: any): any {
 }
 
 function getOutlets(commands: any[]): {[k: string]: any[]} {
-  if (!(typeof commands[0] === 'object')) return {[PRIMARY_OUTLET]: commands};
-  if (commands[0].outlets === undefined) return {[PRIMARY_OUTLET]: commands};
-  return commands[0].outlets;
+  if (typeof commands[0] === 'object' && commands[0] !== null && commands[0].outlets) {
+    return commands[0].outlets;
+  }
+
+  return {[PRIMARY_OUTLET]: commands};
 }
 
 function updateSegmentGroup(
@@ -274,7 +276,8 @@ function createNewSegmentGroup(
 
   let i = 0;
   while (i < commands.length) {
-    if (typeof commands[i] === 'object' && commands[i].outlets !== undefined) {
+    if (typeof commands[i] === 'object' && commands[i] !== null &&
+        commands[i].outlets !== undefined) {
       const children = createNewSegmentChildren(commands[i].outlets);
       return new UrlSegmentGroup(paths, children);
     }
