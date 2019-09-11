@@ -2462,6 +2462,64 @@ describe('i18n support in the template compiler', () => {
          verify(input, output);
        });
 
+    // Note: applying structural directives to <ng-template> is typically user error, but it is
+    // technically allowed, so we need to support it.
+    it('should handle structural directives', () => {
+      const input = `
+        <ng-template *ngIf="someFlag" i18n>Content A</ng-template>
+        <ng-container *ngIf="someFlag" i18n>Content B</ng-container>
+      `;
+
+      const output = String.raw `
+        const $_c0$ = [4, "ngIf"];
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_3308216566145348998$$APP_SPEC_TS___2$ = goog.getMsg("Content A");
+            $I18N_1$ = $MSG_EXTERNAL_3308216566145348998$$APP_SPEC_TS___2$;
+        } else {
+            $I18N_1$ = $localize \`Content A\`;
+        }
+        function MyComponent_0_ng_template_0_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵi18n(0, $I18N_1$);
+          }
+        }
+        function MyComponent_0_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵtemplate(0, MyComponent_0_ng_template_0_Template, 1, 0, "ng-template");
+          }
+        }
+        var $I18N_3$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_8349021389088127654$$APP_SPEC_TS__4$ = goog.getMsg("Content B");
+            $I18N_3$ = $MSG_EXTERNAL_8349021389088127654$$APP_SPEC_TS__4$;
+        } else {
+            $I18N_3$ = $localize \`Content B\`;
+        }
+        function MyComponent_ng_container_1_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵelementContainerStart(0);
+            $r3$.ɵɵi18n(1, $I18N_3$);
+            $r3$.ɵɵelementContainerEnd();
+          }
+        }
+        …
+        consts: 2,
+        vars: 2,
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, undefined, $_c0$);
+            $r3$.ɵɵtemplate(1, MyComponent_ng_container_1_Template, 2, 0, "ng-container", $_c0$);
+          }
+          if (rf & 2) {
+            $r3$.ɵɵproperty("ngIf", ctx.someFlag);
+            $r3$.ɵɵadvance(1);
+            $r3$.ɵɵproperty("ngIf", ctx.someFlag);
+          }
+        }
+      `;
+      verify(input, output);
+    });
   });
 
   describe('whitespace preserving mode', () => {
