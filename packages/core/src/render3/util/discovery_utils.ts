@@ -42,7 +42,10 @@ import {unwrapRNode} from './view_utils';
  * @publicApi
  */
 export function getComponent<T = {}>(element: Element): T|null {
-  const context = loadLContextFromNode(element);
+  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
+  const context = loadLContext(element, false);
+  if (context === null) return null;
+
 
   if (context.component === undefined) {
     context.component = getComponentAtNodeIndex(context.nodeIndex, context.lView);
@@ -72,7 +75,10 @@ export function getComponent<T = {}>(element: Element): T|null {
  * @publicApi
  */
 export function getContext<T = {}>(element: Element): T|null {
-  const context = loadLContextFromNode(element) !;
+  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
+  const context = loadLContext(element, false);
+  if (context === null) return null;
+
   return context.lView[CONTEXT] as T;
 }
 
@@ -97,7 +103,9 @@ export function getContext<T = {}>(element: Element): T|null {
  * @publicApi
  */
 export function getViewComponent<T = {}>(element: Element | {}): T|null {
-  const context = loadLContext(element) !;
+  const context = loadLContext(element, false);
+  if (context === null) return null;
+
   let lView = context.lView;
   let parent: LView|null;
   ngDevMode && assertLView(lView);
@@ -129,7 +137,9 @@ export function getRootComponents(target: {}): any[] {
  * @publicApi
  */
 export function getInjector(target: {}): Injector {
-  const context = loadLContext(target);
+  const context = loadLContext(target, false);
+  if (context === null) return Injector.NULL;
+
   const tNode = context.lView[TVIEW].data[context.nodeIndex] as TElementNode;
   return new NodeInjector(tNode, context.lView);
 }
@@ -142,7 +152,7 @@ export function getInjector(target: {}): Injector {
  */
 export function getInjectionTokens(element: Element): any[] {
   const context = loadLContext(element, false);
-  if (!context) return [];
+  if (context === null) return [];
   const lView = context.lView;
   const tView = lView[TVIEW];
   const tNode = tView.data[context.nodeIndex] as TNode;
@@ -207,7 +217,8 @@ export function loadLContext(target: {}, throwOnNotFound: boolean = true): LCont
  * @publicApi
  */
 export function getLocalRefs(target: {}): {[key: string]: any} {
-  const context = loadLContext(target) !;
+  const context = loadLContext(target, false);
+  if (context === null) return {};
 
   if (context.localRefs === undefined) {
     context.localRefs = discoverLocalRefs(context.lView, context.nodeIndex);
@@ -285,7 +296,10 @@ export function isBrowserEvents(listener: Listener): boolean {
  * @publicApi
  */
 export function getListeners(element: Element): Listener[] {
-  const lContext = loadLContextFromNode(element);
+  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
+  const lContext = loadLContext(element, false);
+  if (lContext === null) return [];
+
   const lView = lContext.lView;
   const tView = lView[TVIEW];
   const lCleanup = lView[CLEANUP];
