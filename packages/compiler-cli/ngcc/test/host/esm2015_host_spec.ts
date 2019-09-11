@@ -132,9 +132,13 @@ runInEachFileSystem(() => {
       CLASS_EXPRESSION_FILE = {
         name: _('/class_expression.js'),
         contents: `
+    import {Directive} from '@angular/core';
     var AliasedClass_1;
     let EmptyClass = class EmptyClass {};
     let AliasedClass = AliasedClass_1 = class AliasedClass {}
+    AliasedClass.decorators = [
+      { type: Directive, args: [{ selector: '[someDirective]' },] }
+    ];
     let usageOfAliasedClass = AliasedClass_1;
   `,
       };
@@ -695,6 +699,25 @@ runInEachFileSystem(() => {
         const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
+        const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+        expect(decorators).toBeDefined();
+        expect(decorators.length).toEqual(1);
+
+        const decorator = decorators[0];
+        expect(decorator.name).toEqual('Directive');
+        expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+        expect(decorator.args !.map(arg => arg.getText())).toEqual([
+          '{ selector: \'[someDirective]\' }',
+        ]);
+      });
+
+      it('should find the decorators on an aliased class', () => {
+        loadTestFiles([CLASS_EXPRESSION_FILE]);
+        const {program} = makeTestBundleProgram(CLASS_EXPRESSION_FILE.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode = getDeclaration(
+            program, CLASS_EXPRESSION_FILE.name, 'AliasedClass', isNamedVariableDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators).toBeDefined();
