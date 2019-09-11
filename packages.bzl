@@ -20,6 +20,15 @@ CDK_PACKAGES = [
     "tree",
 ]
 
+# Within the CDK, only a few targets have sass libraries which need to be
+# part of the release package. This list declares all CDK targets with sass
+# libraries that need to be included and re-exported at the package root.
+CDK_TARGETS_WITH_STYLES = [
+    "a11y",
+    "overlay",
+    "text-field",
+]
+
 CDK_TARGETS = ["//src/cdk"] + ["//src/cdk/%s" % p for p in CDK_PACKAGES]
 
 CDK_EXPERIMENTAL_PACKAGES = [
