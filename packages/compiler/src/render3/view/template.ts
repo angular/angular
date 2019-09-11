@@ -623,10 +623,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const hasChildren = (!isI18nRootElement && this.i18n) ? !hasTextChildrenOnly(element.children) :
                                                             element.children.length > 0;
 
-    const createSelfClosingInstruction = !stylingBuilder.hasBindingsWithPipes &&
+    const createSelfClosingInstruction = !stylingBuilder.hasBindings &&
         element.outputs.length === 0 && i18nAttrs.length === 0 && !hasChildren;
-    const createSelfClosingI18nInstruction =
-        !createSelfClosingInstruction && hasTextChildrenOnly(element.children);
+
+    const createSelfClosingI18nInstruction = !createSelfClosingInstruction &&
+        !stylingBuilder.hasBindings && hasTextChildrenOnly(element.children);
 
     if (createSelfClosingInstruction) {
       this.creationInstruction(
@@ -679,6 +680,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           }
         }
       }
+
+      // The style bindings code is placed into two distinct blocks within the template function AOT
+      // code: creation and update. The creation code contains the `styling` instructions
+      // which will apply the collected binding values to the element. `styling` is
+      // designed to run inside of `elementStart` and `elementEnd`. The update instructions
+      // (things like `styleProp`, `classProp`, etc..) are applied later on in this
+      // file
+      this.processStylingInstruction(
+          elementIndex,
+          stylingBuilder.buildStylingInstruction(element.sourceSpan, this.constantPool), true);
 
       // Generate Listeners (outputs)
       element.outputs.forEach((outputAst: t.BoundEvent) => {
