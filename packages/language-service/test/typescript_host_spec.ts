@@ -12,35 +12,47 @@ import * as ts from 'typescript';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
-import {MockTypescriptHost} from './test_utils';
+import {MockTypescriptHost, findDirectiveMetadataByName} from './test_utils';
 
 
 describe('TypeScriptServiceHost', () => {
-  it('should be able to create a typescript host', () => {
-    const tsLSHost = new MockTypescriptHost(['/app/main.ts'], toh);
-    const tsLS = ts.createLanguageService(tsLSHost);
-    expect(() => new TypeScriptServiceHost(tsLSHost, tsLS)).not.toThrow();
-  });
-
-  it('should be able to analyze modules', () => {
+  it('should be able to create a typescript host and analyze modules', () => {
     const tsLSHost = new MockTypescriptHost(['/app/main.ts'], toh);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
-    expect(ngLSHost.getAnalyzedModules()).toBeDefined();
+    const analyzedModules = ngLSHost.getAnalyzedModules();
+    expect(analyzedModules.files.length).toBeGreaterThan(0);
+    expect(analyzedModules.ngModules.length).toBeGreaterThan(0);
+    expect(analyzedModules.ngModuleByPipeOrDirective.size).toBeGreaterThan(0);
+    expect(analyzedModules.symbolsMissingModule).toEqual([]);
+    // NgClass is defined in @angular/common, which is imported in main.ts
+    const ngClass = findDirectiveMetadataByName(analyzedModules, 'NgClass');
+    expect(ngClass).toBeDefined();
+    // AppComponent is defined in app.component.ts
+    const appComp = findDirectiveMetadataByName(analyzedModules, 'AppComponent');
+    expect(appComp).toBeDefined();
   });
 
   it('should be able to analyze modules without a tsconfig.json file', () => {
     const tsLSHost = new MockTypescriptHost(['foo.ts'], toh);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
-    expect(ngLSHost.getAnalyzedModules()).toBeDefined();
+    const analyzedModules = ngLSHost.getAnalyzedModules();
+    expect(analyzedModules.files.length).toBeGreaterThan(0);
+    expect(analyzedModules.ngModules.length).toBe(0);
+    expect(analyzedModules.ngModuleByPipeOrDirective.size).toBe(0);
+    expect(analyzedModules.symbolsMissingModule).toEqual([]);
   });
 
   it('should not throw if there is no script names', () => {
     const tsLSHost = new MockTypescriptHost([], toh);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
-    expect(() => ngLSHost.getAnalyzedModules()).not.toThrow();
+    const analyzedModules = ngLSHost.getAnalyzedModules();
+    expect(analyzedModules.files.length).toBe(0);
+    expect(analyzedModules.ngModules.length).toBe(0);
+    expect(analyzedModules.ngModuleByPipeOrDirective.size).toBe(0);
+    expect(analyzedModules.symbolsMissingModule).toBeUndefined();
   });
 
   it('should clear the caches if program changes', () => {
