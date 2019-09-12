@@ -1,15 +1,14 @@
-name: Lock issues that are closed and inactive
+name: Lock Inactive Issues
 
 on:
   schedule:
-    # Run at the top of every hour
-    - cron: '0 * * * *'
+    # Run at 00:00 every day
+    - cron: '0 0 * * *'
 
 jobs:
   lock_closed:
     runs-on: ubuntu-latest
     steps:
-      - uses: angular/dev-infra/github-actions/lock-closed@152478b
+      - uses: angular/dev-infra/github-actions/lock-closed@a4fd924
         with:
           lock-bot-key: ${{ secrets.LOCK_BOT_PRIVATE_KEY }}
-          locks-per-execution: 100
