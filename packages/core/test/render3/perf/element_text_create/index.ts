@@ -74,14 +74,12 @@ resetComponentState();
 createAndRenderLView(null, embeddedTView, viewTNode);
 
 // scenario to benchmark
-const elementTextCreate = createBenchmark('element and text create', 500000, 20);
+const elementTextCreate = createBenchmark('element and text create');
 const createTime = elementTextCreate('create');
 
 console.profile('element_text_create');
-while (createTime.run()) {
-  while (createTime()) {
-    createAndRenderLView(null, embeddedTView, viewTNode);
-  }
+while (createTime()) {
+  createAndRenderLView(null, embeddedTView, viewTNode);
 }
 console.profileEnd();
 

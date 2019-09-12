@@ -85,15 +85,13 @@ resetComponentState();
 // create view once so we don't profile first template pass
 createAndRenderLView(null, embeddedTView, viewTNode);
 
-const listenersCreate = createBenchmark('listeners create', 500000, 20);
+const listenersCreate = createBenchmark('listeners create');
 const createTime = listenersCreate('create');
 
 // profile create views (run templates in creation mode)
 console.profile('create listeners');
-while (createTime.run()) {
-  while (createTime()) {
-    createAndRenderLView(null, embeddedTView, viewTNode);
-  }
+while (createTime()) {
+  createAndRenderLView(null, embeddedTView, viewTNode);
 }
 console.profileEnd();
 
