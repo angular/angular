@@ -144,7 +144,7 @@ describe('styling', () => {
 
     TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    const sanitizer: DomSanitizer = TestBed.get(DomSanitizer);
+    const sanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
 
     fixture.componentInstance.image = sanitizer.bypassSecurityTrustStyle('url("#test")');
     fixture.detectChanges();
@@ -187,7 +187,7 @@ describe('styling', () => {
 
     TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    const sanitizer: DomSanitizer = TestBed.get(DomSanitizer);
+    const sanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
 
     fixture.componentInstance.path = sanitizer.bypassSecurityTrustStyle('url("#test")');
     fixture.detectChanges();

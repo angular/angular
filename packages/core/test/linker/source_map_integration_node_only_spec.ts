@@ -201,7 +201,7 @@ describe('jit source mapping', () => {
                const comp = compileAndCreateComponent(MyComp);
 
                let error: any;
-               const errorHandler = TestBed.get(ErrorHandler);
+               const errorHandler = TestBed.inject(ErrorHandler);
                spyOn(errorHandler, 'handleError').and.callFake((e: any) => error = e);
                comp.debugElement.children[0].children[0].triggerEventHandler('click', 'EVENT');
                expect(error).toBeTruthy();
@@ -381,7 +381,7 @@ describe('jit source mapping', () => {
            const comp = resolveCompileAndCreateComponent(MyComp, template);
 
            let error: any;
-           const errorHandler = TestBed.get(ErrorHandler);
+           const errorHandler = TestBed.inject(ErrorHandler);
            spyOn(errorHandler, 'handleError').and.callFake((e: any) => error = e);
            try {
              comp.debugElement.children[0].children[0].triggerEventHandler('click', 'EVENT');

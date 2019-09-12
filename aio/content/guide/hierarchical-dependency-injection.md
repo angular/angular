@@ -1,9 +1,9 @@
 # Hierarchical injectors
 
 Injectors in Angular have rules that you can leverage to
-achieve the desired visibility in your apps.
+achieve the desired visibility of injectables in your apps.
 By understanding these rules, you can determine in which
-provider you should declare a provider.
+NgModule or component you should declare a provider.
 
 ## Two injector hierarchies
 
@@ -146,14 +146,6 @@ in the `providers` list of the `AppModule`.
 
 Angular creates `ElementInjector`s implicitly for each DOM element.
 
-<div class="alert is-helpful">
-
-**Note:** Specifically, `ElementInjector` is more nunaced
-in that they are created _sparsely_. For a mental model
-though, assume that each DOM element gets an `ElementInjector`.
-
-</div>
-
 Providing a service in the `@Component()` decorator using
 its `providers` or `viewProviders`
 property configures an `ElementInjector`.
@@ -171,10 +163,10 @@ export class TestComponent
 
 <div class="alert is-helpful">
 
-**Note:** `ModuleInjector` is not a parent of `ElementInjector`.
-In theory, each element can have a different `ModuleInjector`.
-Think of it as `ModuleInjector` is plan-b when the
-`ElementInjector` hierarchy can't resolve it.
+**Note:** Please see the
+[resolution rules](guide/hierarchical-dependency-injection#resolution-rules)
+section to understand the relationship between the `ModuleInjector` tree and
+the `ElementInjector` tree.
 
 </div>
 
@@ -546,7 +538,7 @@ In the example case, the constraints are:
   - The ending location just happens to be the same as the component
   itself, because it is the topmost component in this application.
 
-2. The `MyAppModule` acts as the fallback injector when the
+2. The `AppModule` acts as the fallback injector when the
 injection token can't be found in the `ElementInjector`s.
 
 ### Using the `providers` array
@@ -570,7 +562,7 @@ The next step is to add a binding to the `ChildComponent` template.
 </code-example>
 
 To render the new values, add `<app-child>` to the bottom of
-the`MyAppComponent` template so the view also displays the sunflower:
+the`AppComponent` template so the view also displays the sunflower:
 
 ```
 Child Component
@@ -580,7 +572,7 @@ Emoji from FlowerService: 🌻
 In the logical tree, this would be represented as follows:
 
 ```
-<app-root @NgModule(MyAppModule)
+<app-root @NgModule(AppModule)
         @Inject(FlowerService) flower=>"🌺">
   <#VIEW>
     <p>Emoji from FlowerService: {{flower.emoji}} (🌺)</p>
@@ -656,7 +648,7 @@ it has a value of 🐶 (puppy).
 
 </code-example>
 
-Add bindings to the `ChildComponent` and the `MyAppComponent` templates.
+Add bindings to the `ChildComponent` and the `AppComponent` templates.
 In the `ChildComponent` template, add the following binding:
 
 <code-example path="providers-viewproviders/src/app/child/child.component.html" header="providers-viewproviders/src/app/child.component.html" region="animal-binding">
@@ -848,7 +840,7 @@ Emoji from FlowerService: 🌺
 In a logical tree, this same idea might look like this:
 
 ```
-<app-root @NgModule(MyAppModule)
+<app-root @NgModule(AppModule)
         @Inject(FlowerService) flower=>"🌺">
   <#VIEW>
     <app-child @Provide(FlowerService="🌻")>
@@ -871,7 +863,7 @@ because `@Host()` limits the upper bound of the search to the
 `<#VIEW>`. Here's the idea in the logical tree:
 
 ```
-<app-root @NgModule(MyAppModule)
+<app-root @NgModule(AppModule)
         @Inject(FlowerService) flower=>"🌺">
   <#VIEW> <!-- end search here with null-->
     <app-child @Provide(FlowerService="🌻")> <!-- start search here -->
@@ -902,7 +894,7 @@ for the `AnimalService`, it never sees the 🐳 (whale).
 
 Just as in the `FlowerService` example, if you add `@SkipSelf()`
 to the constructor for the `AnimalService`, the injector won't
-look in the current `<app-parent>`'s `ElementInjector` for the
+look in the current `<app-child>`'s `ElementInjector` for the
 `AnimalService`.
 
 ```typescript=
@@ -914,7 +906,7 @@ export class ChildComponent {
 }
 ```
 
-Instead, the injector will begin at the `<app-child>`
+Instead, the injector will begin at the `<app-root>`
 `ElementInjector`. Remember that the `<app-child>` class
 provides the `AnimalService` in the `viewProviders` array
 with a value of 🐶 (puppy):
@@ -931,7 +923,7 @@ with a value of 🐶 (puppy):
 The logical tree looks like this with `@SkipSelf()` in `<app-child>`:
 
 ```
-  <app-root @NgModule(MyAppModule)
+  <app-root @NgModule(AppModule)
           @Inject(AnimalService=>"🐳")>
     <#VIEW><!-- search begins here -->
       <app-child>
@@ -985,9 +977,21 @@ export class ChildComponent {
   </app-root>
 ```
 
-However, if you use `@Host()` and `@SkipSelf()` for the `AnimalService`
-as follows, you'll get 🐶 (puppy) because that's the value in the
-`<app-child>`. Here are `@Host()` and `@SkipSelf()` in the `<app-child>`
+Add a `viewProviders` array with a third animal, 🦔 (hedgehog), to the
+`app.component.ts` `@Component()` metadata:
+
+```typescript
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: [ './app.component.css' ],
+  viewProviders: [{ provide: AnimalService, useValue: { emoji: '🦔' } }]
+})
+```
+
+Next, add `@SkipSelf()` along with `@Host()` to the constructor for the
+`Animal Service` in `child.component.ts`. Here are `@Host()`
+and `@SkipSelf()` in the `<app-child>`
 constructor :
 
 ```ts
@@ -1007,15 +1011,16 @@ which is in the `providers` array, the result was `null` because
 `FlowerService` is visible in `<app-child>`, not its `<#VIEW>`.
 
 However, the `AnimalService`, which is provided in the
-`ParentComponent` `viewProviders` array, is visible.
+`AppComponent` `viewProviders` array, is visible.
 
 The logical tree representation shows why this is:
 
 ```html
-<app-root @NgModule(MyAppModule)
+<app-root @NgModule(AppModule)
         @Inject(AnimalService=>"🐳")>
-  <#VIEW>
-    <!-- ^^@Host()+@SkipSelf() stop here^^ -->
+  <#VIEW @Provide(AnimalService="🦔")
+         @Inject(AnimalService, @SkipSelf, @Host, @Optional)=>"🦔">
+    <!-- ^^@SkipSelf() starts here,  @Host() stops here^^ -->
     <app-child>
       <#VIEW @Provide(AnimalService="🐶")
              @Inject(AnimalService, @SkipSelf, @Host, @Optional)=>"🐶">
@@ -1030,8 +1035,8 @@ The logical tree representation shows why this is:
 the `AnimalService` at the `<app-root>`, not the `<app-child>`,
 where the request originates, and `@Host()` stops the search
 at the `<app-root>` `<#VIEW>`. Since `AnimalService` is
-provided via the `viewProviders` array, the injector finds 🐶
-(puppy) in the `<#VIEW>`.
+provided via the `viewProviders` array, the injector finds 🦔
+(hedgehog) in the `<#VIEW>`.
 
 
 {@a component-injectors}

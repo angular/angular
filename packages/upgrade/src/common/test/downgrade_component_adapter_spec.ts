@@ -170,8 +170,8 @@ withEachNg1Version(() => {
       }
 
       beforeEach(() => {
-        compiler = TestBed.get(Compiler);
-        registry = TestBed.get(TestabilityRegistry);
+        compiler = TestBed.inject(Compiler);
+        registry = TestBed.inject(TestabilityRegistry);
         adapter = getAdaptor();
       });
       beforeEach(() => registry.unregisterAllApplications());
@@ -179,7 +179,7 @@ withEachNg1Version(() => {
 
       it('should add testabilities hook when creating components', () => {
 
-        let registry = TestBed.get(TestabilityRegistry);
+        let registry = TestBed.inject(TestabilityRegistry);
         adapter.createComponent([]);
         expect(registry.getAllTestabilities().length).toEqual(1);
 
@@ -189,7 +189,7 @@ withEachNg1Version(() => {
       });
 
       it('should remove the testability hook when destroy a component', () => {
-        const registry = TestBed.get(TestabilityRegistry);
+        const registry = TestBed.inject(TestabilityRegistry);
         expect(registry.getAllTestabilities().length).toEqual(0);
         adapter.createComponent([]);
         expect(registry.getAllTestabilities().length).toEqual(1);

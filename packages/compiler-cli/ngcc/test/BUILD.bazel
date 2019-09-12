@@ -24,6 +24,7 @@ ts_library(
         "//packages/compiler-cli/test/helpers",
         "@npm//@types/convert-source-map",
         "@npm//convert-source-map",
+        "@npm//dependency-graph",
         "@npm//magic-string",
         "@npm//typescript",
     ],

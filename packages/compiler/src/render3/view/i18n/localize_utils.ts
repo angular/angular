@@ -9,7 +9,6 @@ import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
 
 import {serializeIcuNode} from './icu_serializer';
-import {i18nMetaToDocStmt, metaFromI18nMessage} from './meta';
 import {formatI18nPlaceholderName} from './util';
 
 export function createLocalizeStatements(
@@ -37,7 +36,7 @@ class MessagePiece {
 }
 class LiteralPiece extends MessagePiece {}
 class PlaceholderPiece extends MessagePiece {
-  constructor(name: string) { super(formatI18nPlaceholderName(name)); }
+  constructor(name: string) { super(formatI18nPlaceholderName(name, /* useCamelCase */ false)); }
 }
 
 /**

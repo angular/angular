@@ -275,12 +275,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
     // Invalidate file that have changed in the static symbol resolver
     const seen = new Set<string>();
+    let hasChanges = false;
     for (const sourceFile of program.getSourceFiles()) {
       const fileName = sourceFile.fileName;
       seen.add(fileName);
       const version = this.tsLsHost.getScriptVersion(fileName);
       const lastVersion = this.fileVersions.get(fileName);
       if (version !== lastVersion) {
+        hasChanges = true;
         this.fileVersions.set(fileName, version);
         this.staticSymbolResolver.invalidateFile(fileName);
       }
@@ -295,7 +297,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
     this.lastProgram = program;
 
-    return false;
+    return missing.length === 0 && !hasChanges;
   }
 
   /**

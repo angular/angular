@@ -203,9 +203,9 @@ One solution is to provide the full URL to your application on the server, and w
 value and prepend it to the request URL. If you're using the `ngExpressEngine`, as shown in the example in this guide, half
 the work is already done. We'll assume this is the case, but it's trivial to provide the same functionality.
 
-Start by creating an [HttpInterceptor](api/common/http/HttpInterceptor):
+Start by creating an [HttpInterceptor](api/common/http/HttpInterceptor).
 
-<code-example language="typescript">
+<code-example language="typescript" header="universal-interceptor.ts">
 
 import {Injectable, Inject, Optional} from '@angular/core';
 import {HttpInterceptor, HttpHandler, HttpRequest, HttpHeaders} from '@angular/common/http';
@@ -233,9 +233,9 @@ export class UniversalInterceptor implements HttpInterceptor {
 
 </code-example>
 
-Next, provide the interceptor in the providers for the server `AppModule` (app.server.module.ts):
+Next, provide the interceptor in the providers for the server `AppModule`.
 
-<code-example language="typescript">
+<code-example language="typescript" header="app.server.module.ts">
 
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {UniversalInterceptor} from './universal-interceptor';

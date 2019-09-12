@@ -1318,7 +1318,7 @@ export class TransitionAnimationEngine {
       const previousPlayers = this._getPreviousPlayers(
           element, isQueriedElement, targetNameSpaceId, targetTriggerName, instruction.toState);
       previousPlayers.forEach(player => {
-        const realPlayer = player.getRealPlayer() as any;
+        const realPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as any;
         if (realPlayer.beforeDestroy) {
           realPlayer.beforeDestroy();
         }

@@ -8,6 +8,28 @@
 import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../src/ngtsc/file_system';
 
+/**
+ * A list (`Array`) of partially ordered `T` items.
+ *
+ * The items in the list are partially ordered in the sense that any element has either the same or
+ * higher precedence than any element which appears later in the list. What "higher precedence"
+ * means and how it is determined is implementation-dependent.
+ *
+ * See [PartiallyOrderedSet](https://en.wikipedia.org/wiki/Partially_ordered_set) for more details.
+ * (Refraining from using the term "set" here, to avoid confusion with JavaScript's
+ * [Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set).)
+ *
+ * NOTE: A plain `Array<T>` is not assignable to a `PartiallyOrderedList<T>`, but a
+ *       `PartiallyOrderedList<T>` is assignable to an `Array<T>`.
+ */
+export interface PartiallyOrderedList<T> extends Array<T> {
+  _partiallyOrdered: true;
+
+  map<U>(callbackfn: (value: T, index: number, array: PartiallyOrderedList<T>) => U, thisArg?: any):
+      PartiallyOrderedList<U>;
+  slice(...args: Parameters<Array<T>['slice']>): PartiallyOrderedList<T>;
+}
+
 export function getOriginalSymbol(checker: ts.TypeChecker): (symbol: ts.Symbol) => ts.Symbol {
   return function(symbol: ts.Symbol) {
     return ts.SymbolFlags.Alias & symbol.flags ? checker.getAliasedSymbol(symbol) : symbol;

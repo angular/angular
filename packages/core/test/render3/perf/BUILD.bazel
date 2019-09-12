@@ -9,6 +9,7 @@ ts_library(
     ),
     deps = [
         "//packages/core",
+        "@npm//@types/node",
     ],
 )
 
@@ -39,6 +40,14 @@ ng_rollup_bundle(
 ng_rollup_bundle(
     name = "property_binding",
     entry_point = ":property_binding/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "property_binding_update",
+    entry_point = ":property_binding_update/index.ts",
     deps = [
         ":perf_lib",
     ],

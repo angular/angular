@@ -11,12 +11,14 @@
 # needed for jobs that run tests without Bazel. Bazel runs tests with browsers that will be
 # fetched by the Webtesting rules. Therefore for jobs that run tests with Bazel, we don't need a
 # docker image with browsers pre-installed.
-# **NOTE 1**: If you change the version of the `*-browsers` docker image, make sure the
+# **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
+#             (Using the tag in not necessary when pinning by ID, but include it anyway for documentation purposes.)
+# **NOTE 2**: If you change the version of the docker images, also change the `cache_key` suffix.
+# **NOTE 3**: If you change the version of the `*-browsers` docker image, make sure the
 #             `CI_CHROMEDRIVER_VERSION_ARG` env var (in `.circleci/env.sh`) points to a ChromeDriver
 #             version that is compatible with the Chrome version in the image.
-# **NOTE 2**: If you change the version of the docker images, also change the `cache_key` suffix.
-var_1: &default_docker_image circleci/node:10.16
-var_2: &browsers_docker_image circleci/node:10.16-browsers
+var_1: &default_docker_image circleci/node:10.16@sha256:75c05084fff4afa3683a03c5a04a4a3ad95c536ff2439d8fe14e7e1f5c58b09a
+var_2: &browsers_docker_image circleci/node:10.16-browsers@sha256:d2a96fe1cbef51257ee626b5f645e64dade3e886f00ba9cb7e8ea65b4efe8db1
 # We don't want to include the current branch name in the cache key because that would prevent
 # PRs from being able to restore the cache since the branch names are always different for PRs.
 # The cache key should only consist of dynamic values that change whenever something in the
@@ -190,7 +192,7 @@ var_14: &notify_dev_infra_on_fail
 
 # Cache key for the Material unit tests job. **Note** when updating the SHA in the cache keys,
 # also update the SHA for the "MATERIAL_REPO_COMMIT" environment variable.
-var_15: &material_unit_tests_cache_key v4-angular-material-18b9ef3f5529f0fa8f034944681486447af7b879
+var_15: &material_unit_tests_cache_key v4-angular-material-2817c9e2faa4140342336987a692d5dd30bf24c2
 var_16: &material_unit_tests_cache_key_short v4-angular-material
 
 version: 2
@@ -234,6 +236,7 @@ jobs:
               (echo -e "\n.bzl files have lint errors. Please run ''yarn bazel:lint-fix''"; exit 1)'
 
       - run: yarn gulp lint
+      - run: node tools/verify-codeownership
 
   test:
     <<: *job_defaults

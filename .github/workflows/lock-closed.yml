@@ -2,16 +2,16 @@ name: Lock issues that are closed and inactive
 
 on:
   schedule:
-    # Run at the 20th minute of every hour, we are running with high frequency
-    # while clearing the backlog of inactive locked issues/prs.  Long term we
-    # will run this task once per day.
-    - cron: '20 * * * *'
+    # Run at the 20th and 50th minute of every hour, we are running with high
+    # frequency while clearing the backlog of inactive locked issues/prs.  Long
+    # term we will run this task once per day.
+    - cron: '20,50 * * * *'
 
 jobs:
   lock_closed:
     runs-on: ubuntu-latest
     steps:
-      - uses: angular/dev-infra/github-actions/lock-closed@7f7ef07
+      - uses: angular/dev-infra/github-actions/lock-closed@a4fd924
         with:
           lock-bot-key: ${{ secrets.LOCK_BOT_PRIVATE_KEY }}
           locks-per-execution: 100

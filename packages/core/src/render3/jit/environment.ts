@@ -132,6 +132,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵstylingApply': r3.ɵɵstylingApply,
        'ɵɵclassProp': r3.ɵɵclassProp,
        'ɵɵselect': r3.ɵɵselect,
+       'ɵɵadvance': r3.ɵɵadvance,
        'ɵɵtemplate': r3.ɵɵtemplate,
        'ɵɵtext': r3.ɵɵtext,
        'ɵɵtextInterpolate': r3.ɵɵtextInterpolate,

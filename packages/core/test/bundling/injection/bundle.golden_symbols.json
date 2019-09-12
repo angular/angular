@@ -1,8 +1,5 @@
 [
   {
-    "name": "INJECTOR_SCOPE"
-  },
-  {
     "name": "CIRCULAR"
   },
   {
@@ -13,6 +10,9 @@
   },
   {
     "name": "INJECTOR"
+  },
+  {
+    "name": "INJECTOR_SCOPE"
   },
   {
     "name": "Inject"

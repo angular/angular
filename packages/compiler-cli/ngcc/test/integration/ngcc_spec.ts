@@ -5,13 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+/// <reference types="node" />
+
+import * as os from 'os';
+
 import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, join} from '../../../src/ngtsc/file_system';
-import {Folder, MockFileSystem, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {Folder, MockFileSystem, TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
 import {mainNgcc} from '../../src/main';
 import {markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {Transformer} from '../../src/packages/transformer';
+import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLogger} from '../helpers/mock_logger';
+
 
 const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
 
@@ -19,11 +27,16 @@ runInEachFileSystem(() => {
   describe('ngcc main()', () => {
     let _: typeof absoluteFrom;
     let fs: FileSystem;
+    let pkgJsonUpdater: PackageJsonUpdater;
 
     beforeEach(() => {
       _ = absoluteFrom;
       fs = getFileSystem();
+      pkgJsonUpdater = new DirectPackageJsonUpdater(fs);
       initMockFileSystem(fs, testFiles);
+
+      // Force single-process execution in unit tests by mocking available CPUs to 1.
+      spyOn(os, 'cpus').and.returnValue([{model: 'Mock CPU'}]);
     });
 
     it('should run ngcc without errors for esm2015', () => {
@@ -50,6 +63,117 @@ runInEachFileSystem(() => {
       expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
         es2015: '0.0.0-PLACEHOLDER',
         typings: '0.0.0-PLACEHOLDER',
+      });
+    });
+
+    it('should throw, if some of the entry-points are unprocessable', () => {
+      const createEntryPoint = (name: string, prop: EntryPointJsonProperty): TestFile[] => {
+        return [
+          {
+            name: _(`/dist/${name}/package.json`),
+            contents: `{"name": "${name}", "typings": "./index.d.ts", "${prop}": "./index.js"}`,
+          },
+          {name: _(`/dist/${name}/index.js`), contents: 'var DUMMY_DATA = true;'},
+          {name: _(`/dist/${name}/index.d.ts`), contents: 'export type DummyData = boolean;'},
+          {name: _(`/dist/${name}/index.metadata.json`), contents: 'DUMMY DATA'},
+        ];
+      };
+
+      loadTestFiles([
+        ...createEntryPoint('processable-1', 'es2015'),
+        ...createEntryPoint('unprocessable-2', 'main'),
+        ...createEntryPoint('unprocessable-3', 'main'),
+      ]);
+
+      expect(() => mainNgcc({
+               basePath: '/dist',
+               propertiesToConsider: ['es2015', 'fesm5', 'module'],
+               logger: new MockLogger(),
+             }))
+          .toThrowError(
+              'Unable to process any formats for the following entry-points (tried es2015, fesm5, module): \n' +
+              `  - ${_('/dist/unprocessable-2')}\n` +
+              `  - ${_('/dist/unprocessable-3')}`);
+    });
+
+    it('should throw, if an error happens during processing', () => {
+      spyOn(Transformer.prototype, 'transform').and.throwError('Test error.');
+
+      expect(() => mainNgcc({
+               basePath: '/dist',
+               targetEntryPointPath: 'local-package',
+               propertiesToConsider: ['main', 'es2015'],
+               logger: new MockLogger(),
+             }))
+          .toThrowError(`Test error.`);
+
+      expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
+      expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toBeUndefined();
+    });
+
+    describe('in async mode', () => {
+      it('should run ngcc without errors for fesm2015', async() => {
+        const promise = mainNgcc({
+          basePath: '/node_modules',
+          propertiesToConsider: ['fesm2015'],
+          async: true,
+        });
+
+        expect(promise).toEqual(jasmine.any(Promise));
+        await promise;
+      });
+
+      it('should reject, if some of the entry-points are unprocessable', async() => {
+        const createEntryPoint = (name: string, prop: EntryPointJsonProperty): TestFile[] => {
+          return [
+            {
+              name: _(`/dist/${name}/package.json`),
+              contents: `{"name": "${name}", "typings": "./index.d.ts", "${prop}": "./index.js"}`,
+            },
+            {name: _(`/dist/${name}/index.js`), contents: 'var DUMMY_DATA = true;'},
+            {name: _(`/dist/${name}/index.d.ts`), contents: 'export type DummyData = boolean;'},
+            {name: _(`/dist/${name}/index.metadata.json`), contents: 'DUMMY DATA'},
+          ];
+        };
+
+        loadTestFiles([
+          ...createEntryPoint('processable-1', 'es2015'),
+          ...createEntryPoint('unprocessable-2', 'main'),
+          ...createEntryPoint('unprocessable-3', 'main'),
+        ]);
+
+        const promise = mainNgcc({
+          basePath: '/dist',
+          propertiesToConsider: ['es2015', 'fesm5', 'module'],
+          logger: new MockLogger(),
+          async: true,
+        });
+
+        await promise.then(
+            () => Promise.reject('Expected promise to be rejected.'),
+            err => expect(err).toEqual(new Error(
+                'Unable to process any formats for the following entry-points (tried es2015, fesm5, module): \n' +
+                `  - ${_('/dist/unprocessable-2')}\n` +
+                `  - ${_('/dist/unprocessable-3')}`)));
+      });
+
+      it('should reject, if an error happens during processing', async() => {
+        spyOn(Transformer.prototype, 'transform').and.throwError('Test error.');
+
+        const promise = mainNgcc({
+          basePath: '/dist',
+          targetEntryPointPath: 'local-package',
+          propertiesToConsider: ['main', 'es2015'],
+          logger: new MockLogger(),
+          async: true,
+        });
+
+        await promise.then(
+            () => Promise.reject('Expected promise to be rejected.'),
+            err => expect(err).toEqual(new Error('Test error.')));
+
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toBeUndefined();
       });
     });
 
@@ -195,7 +319,8 @@ runInEachFileSystem(() => {
       const basePath = _('/node_modules');
       const targetPackageJsonPath = join(basePath, packagePath, 'package.json');
       const targetPackage = loadPackage(packagePath);
-      markAsProcessed(fs, targetPackage, targetPackageJsonPath, ['typings', ...properties]);
+      markAsProcessed(
+          pkgJsonUpdater, targetPackage, targetPackageJsonPath, ['typings', ...properties]);
     }
 
 
@@ -286,7 +411,6 @@ runInEachFileSystem(() => {
           propertiesToConsider: ['module', 'fesm5', 'esm5'],
           compileAllFormats: false,
           logger: new MockLogger(),
-
         });
         // * In the Angular packages fesm5 and module have the same underlying format,
         //   so both are marked as compiled.

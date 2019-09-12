@@ -128,7 +128,7 @@ describe('projection', () => {
     }
 
     TestBed.configureTestingModule({imports: [MyModule]});
-    const injector: Injector = TestBed.get(Injector);
+    const injector: Injector = TestBed.inject(Injector);
 
     const componentFactoryResolver: ComponentFactoryResolver =
         injector.get(ComponentFactoryResolver);
@@ -168,7 +168,7 @@ describe('projection', () => {
         }
 
         TestBed.configureTestingModule({imports: [MyModule]});
-        const injector: Injector = TestBed.get(Injector);
+        const injector: Injector = TestBed.inject(Injector);
 
         const componentFactoryResolver: ComponentFactoryResolver =
             injector.get(ComponentFactoryResolver);

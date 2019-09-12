@@ -355,7 +355,12 @@ array of the services that you'll test or mock.
   header="app/demo/demo.testbed.spec.ts (provide ValueService in beforeEach">
 </code-example>
 
-Then inject it inside a test by calling `TestBed.get()` with the service class as the argument.
+Then inject it inside a test by calling `TestBed.inject()` with the service class as the argument.
+
+**Note:** We used to have `TestBed.get()` instead of `TestBed.inject()`.
+The `get` method wasn't type safe, it always returned `any`, and this is error prone.
+We decided to migrate to a new function instead of updating the existing one given
+the large scale use that would have an immense amount of breaking changes.
 
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
@@ -472,8 +477,7 @@ which covers testing with the `HttpClientTestingModule` in detail.
 
 A component, unlike all other parts of an Angular application,
 combines an HTML template and a TypeScript class.
-The component truly is the template and the class _working together_.
-and to adequately test a component, you should test that they work together
+The component truly is the template and the class _working together_. To adequately test a component, you should test that they work together
 as intended.
 
 Such tests require creating the component's host element in the browser DOM,
@@ -1063,14 +1067,14 @@ The component injector is a property of the fixture's `DebugElement`.
 
 {@a testbed-get}
 
-#### _TestBed.get()_
+#### _TestBed.inject()_
 
-You _may_ also be able to get the service from the root injector via `TestBed.get()`.
+You _may_ also be able to get the service from the root injector via `TestBed.inject()`.
 This is easier to remember and less verbose.
 But it only works when Angular injects the component with the service instance in the test's root injector.
 
 In this test suite, the _only_ provider of `UserService` is the root testing module,
-so it is safe to call `TestBed.get()` as follows:
+so it is safe to call `TestBed.inject()` as follows:
 
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
@@ -1080,7 +1084,7 @@ so it is safe to call `TestBed.get()` as follows:
 
 <div class="alert is-helpful">
 
-For a use case in which `TestBed.get()` does not work,
+For a use case in which `TestBed.inject()` does not work,
 see the [_Override component providers_](#component-override) section that
 explains when and why you must get the service from the component's injector instead.
 
@@ -1102,7 +1106,7 @@ a clone of the provided `userServiceStub`.
 
 #### Final setup and tests
 
-Here's the complete `beforeEach()`, using `TestBed.get()`:
+Here's the complete `beforeEach()`, using `TestBed.inject()`:
 
 <code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="setup" header="app/welcome/welcome.component.spec.ts"></code-example>
 
@@ -1115,7 +1119,7 @@ The first is a sanity test; it confirms that the stubbed `UserService` is called
 <div class="alert is-helpful">
 
 The second parameter to the Jasmine matcher (e.g., `'expected name'`) is an optional failure label.
-If the expectation fails, Jasmine displays appends this label to the expectation failure message.
+If the expectation fails, Jasmine appends this label to the expectation failure message.
 In a spec with multiple expectations, it can help clarify what went wrong and which expectation failed.
 
 </div>
@@ -1138,7 +1142,7 @@ The `TwainComponent` displays Mark Twain quotes.
   region="template"
   header="app/twain/twain.component.ts (template)"></code-example>
 
-Note that value of the component's `quote` property passes through an `AsyncPipe`.
+Note that the value of the component's `quote` property passes through an `AsyncPipe`.
 That means the property returns either a `Promise` or an `Observable`.
 
 In this example, the `TwainComponent.getQuote()` method tells you that
@@ -1151,7 +1155,7 @@ the `quote` property returns an `Observable`.
 
 The `TwainComponent` gets quotes from an injected `TwainService`.
 The component starts the returned `Observable` with a placeholder value (`'...'`),
-before the service can returns its first quote.
+before the service can return its first quote.
 
 The `catchError` intercepts service errors, prepares an error message,
 and returns the placeholder value on the success channel.
@@ -1246,9 +1250,9 @@ XHR calls within a test are rare, but if you need to call XHR, see [`async()`](#
 You do have to call `tick()` to advance the (virtual) clock.
 
 Calling `tick()` simulates the passage of time until all pending asynchronous activities finish.
-In this case, it waits for the error handler's `setTimeout()`;
+In this case, it waits for the error handler's `setTimeout()`.
 
-The `tick()` function accepts milliseconds as parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
+The `tick()` function accepts milliseconds as a parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
@@ -1272,7 +1276,7 @@ It's a companion to `fakeAsync()` and you can only call it within a `fakeAsync()
 Jasmine also provides a `clock` feature to mock dates. Angular automatically runs tests that are run after
 `jasmine.clock().install()` is called inside a `fakeAsync()` method until `jasmine.clock().uninstall()` is called. `fakeAsync()` is not needed and throws an error if nested.
 
-By default, this feature is disabled. To enable it, set a global flag before import `zone-testing`.
+By default, this feature is disabled. To enable it, set a global flag before importing `zone-testing`.
 
 If you use the Angular CLI, configure this flag in `src/test.ts`.
 
@@ -1317,7 +1321,7 @@ If you run other `macroTask` such as `HTMLCanvasElement.toBlob()`, `Unknown macr
   </code-pane>
 </code-tabs>
 
-If you want to support such case, you need to define the `macroTask` you want to support in `beforeEach()`.
+If you want to support such a case, you need to define the `macroTask` you want to support in `beforeEach()`.
 For example:
 
 ```javascript
@@ -1346,7 +1350,7 @@ it('toBlob should be able to run in fakeAsync', fakeAsync(() => {
 
 You might be satisfied with the test coverage of these tests.
 
-But you might be troubled by the fact that the real service doesn't quite behave this way.
+However, you might be troubled by the fact that the real service doesn't quite behave this way.
 The real service sends requests to a remote server.
 A server takes time to respond and the response certainly won't be available immediately
 as in the previous two tests.
@@ -1361,9 +1365,8 @@ from the `getQuote()` spy like this.
 
 #### Async observable helpers
 
-The async observable was produced by an `asyncData` helper
-The `asyncData` helper is a utility function that you'll have to write yourself.
-Or you can copy this one from the sample code.
+The async observable was produced by an `asyncData` helper.
+The `asyncData` helper is a utility function that you'll have to write yourself, or you can copy this one from the sample code.
 
 <code-example
   path="testing/src/testing/async-observable-helpers.ts"
@@ -1475,8 +1478,7 @@ is `undefined`.
 
 Now you are responsible for chaining promises, handling errors, and calling `done()` at the appropriate moments.
 
-Writing test functions with `done()`, is more cumbersome than `async()`and `fakeAsync()`.
-But it is occasionally necessary when code involves the `intervalTimer()` like `setInterval`.
+Writing test functions with `done()`, is more cumbersome than `async()`and `fakeAsync()`, but it is occasionally necessary when code involves the `intervalTimer()` like `setInterval`.
 
 Here are two more versions of the previous test, written with `done()`.
 The first one subscribes to the `Observable` exposed to the template by the component's `quote` property.
@@ -1958,7 +1960,7 @@ You'll take a different approach with `ActivatedRoute` because
 - `paramMap` returns an `Observable` that can emit more than one value
   during a test.
 - You need the router helper function, `convertToParamMap()`, to create a `ParamMap`.
-- Other _routed components_ tests need a test double for `ActivatedRoute`.
+- Other _routed component_ tests need a test double for `ActivatedRoute`.
 
 These differences argue for a re-usable stub class.
 
@@ -2758,7 +2760,7 @@ Debug specs in the browser in the same way that you debug an application.
 
 1. Reveal the Karma browser window (hidden earlier).
 1. Click the **DEBUG** button; it opens a new browser tab and re-runs the tests.
-1. Open the browser's “Developer Tools” (`Ctrl-Shift-I` on windows; `Command-Option-I` in OSX).
+1. Open the browser's “Developer Tools” (`Ctrl-Shift-I` on Windows; `Command-Option-I` in macOS).
 1. Pick the "sources" section.
 1. Open the `1st.spec.ts` test file (Control/Command-P, then start typing the name of the file).
 1. Set a breakpoint in the test.
@@ -3090,13 +3092,13 @@ Here are the most important static methods, in order of likely utility.
 
       What if the service is optional?
 
-      The `TestBed.get()` method takes an optional second parameter,
+      The `TestBed.inject()` method takes an optional second parameter,
       the object to return if Angular can't find the provider
       (`null` in this example):
 
       <code-example path="testing/src/app/demo/demo.testbed.spec.ts" region="testbed-get-w-null" header="app/demo/demo.testbed.spec.ts"></code-example>
 
-      After calling `get`, the `TestBed` configuration is frozen for the duration of the current spec.
+      After calling `TestBed.inject`, the `TestBed` configuration is frozen for the duration of the current spec.
 
     </td>
   </tr>
@@ -3254,7 +3256,7 @@ Here are the most useful methods for testers.
       Angular can't see that you've changed `personComponent.name` and won't update the `name`
       binding until you call `detectChanges`.
 
-      Runs `checkNoChanges`afterwards to confirm that there are no circular updates unless
+      Runs `checkNoChanges` afterwards to confirm that there are no circular updates unless
       called as `detectChanges(false)`;
 
     </td>

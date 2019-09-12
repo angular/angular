@@ -62,9 +62,9 @@ export interface TestBed {
       token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
       |null;
 
-  /** TODO(goodwine): Mark as deprecated from v9.0.0 use TestBed.inject */
+  /** @deprecated from v9.0.0 use TestBed.inject */
   get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
-  /** TODO(goodwine): Mark as deprecated from v9.0.0 use TestBed.inject */
+  /** @deprecated from v9.0.0 use TestBed.inject */
   get(token: any, notFoundValue?: any): any;
 
   execute(tokens: any[], fn: Function, context?: any): any;
@@ -226,14 +226,14 @@ export class TestBedViewEngine implements TestBed {
     return _getTestBedViewEngine().inject(token, notFoundValue, flags);
   }
 
-  /** TODO(goodwine): Mark as deprecated from v9.0.0 use TestBed.inject */
+  /** @deprecated from v9.0.0 use TestBed.inject */
   static get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
   /**
-   * TODO(goodwine): Mark as deprecated from v9.0.0 use TestBed.inject
+   * @deprecated from v9.0.0 use TestBed.inject
    * @suppress {duplicate}
    */
   static get(token: any, notFoundValue?: any): any;
-  /** TODO(goodwine): Mark as deprecated from v9.0.0 use TestBed.inject */
+  /** @deprecated from v9.0.0 use TestBed.inject */
   static get(
       token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
       flags: InjectFlags = InjectFlags.Default): any {
@@ -483,11 +483,11 @@ export class TestBedViewEngine implements TestBed {
     return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue, flags) : result;
   }
 
-  /** TODO(goodwine): Mark as deprecated from v9.0.0 use TestBed.inject */
+  /** @deprecated from v9.0.0 use TestBed.inject */
   get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
-  /** TODO(goodwine): Mark as deprecated from v9.0.0 use TestBed.inject */
+  /** @deprecated from v9.0.0 use TestBed.inject */
   get(token: any, notFoundValue?: any): any;
-  /** TODO(goodwine): Mark as deprecated from v9.0.0 use TestBed.inject */
+  /** @deprecated from v9.0.0 use TestBed.inject */
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
       flags: InjectFlags = InjectFlags.Default): any {
     return this.inject(token, notFoundValue, flags);

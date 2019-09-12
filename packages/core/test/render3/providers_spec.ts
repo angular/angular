@@ -9,11 +9,12 @@
 import {Component as _Component, ComponentFactoryResolver, ElementRef, InjectFlags, Injectable as _Injectable, InjectionToken, InjectorType, Provider, RendererFactory2, ViewContainerRef, ɵNgModuleDef as NgModuleDef, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵinject} from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
 import {createInjector} from '../../src/di/r3_injector';
-import {injectComponentFactoryResolver, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵselect, ɵɵtextInterpolate1} from '../../src/render3/index';
+import {injectComponentFactoryResolver, ɵɵProvidersFeature, ɵɵadvance, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {getInjector} from '../../src/render3/util/discovery_utils';
+
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture} from './render_util';
 
@@ -880,9 +881,8 @@ describe('providers', () => {
               ɵɵtext(1);
             }
             if (fs & RenderFlags.Update) {
-              ɵɵselect(0);
               ɵɵtextInterpolate(ctx.s);
-              ɵɵselect(1);
+              ɵɵadvance(1);
               ɵɵtextInterpolate(ctx.n);
             }
           }
@@ -967,9 +967,8 @@ describe('providers', () => {
               ɵɵtext(1);
             }
             if (fs & RenderFlags.Update) {
-              ɵɵselect(0);
               ɵɵtextInterpolate(ctx.s);
-              ɵɵselect(1);
+              ɵɵadvance(1);
               ɵɵtextInterpolate(ctx.n);
             }
           },
@@ -1050,7 +1049,6 @@ describe('providers', () => {
             ɵɵtext(0);
           }
           if (rf & RenderFlags.Update) {
-            ɵɵselect(0);
             ɵɵtextInterpolate1('', cmp.s, '');
           }
         }

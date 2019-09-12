@@ -594,7 +594,7 @@
     "name": "saveResolvedLocalsInData"
   },
   {
-    "name": "selectInternal"
+    "name": "selectIndexInternal"
   },
   {
     "name": "selectView"

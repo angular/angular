@@ -7,6 +7,7 @@ ls_rollup_bundle(
         "fs": "fs",
         "path": "path",
         "typescript": "ts",
+        "typescript/lib/tsserverlibrary": "tss",
     },
     license_banner = "banner.js.txt",
     visibility = ["//packages/language-service:__pkg__"],
