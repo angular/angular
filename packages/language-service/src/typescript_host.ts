@@ -9,6 +9,7 @@
 import {AotSummaryResolver, CompileDirectiveSummary, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
 import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as ts from 'typescript';
+import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult, isAstResult} from './common';
 import {createLanguageService} from './language_service';
@@ -523,6 +524,45 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         span:
             e.fileName === fileName && template.query.getSpanAt(e.line, e.column) || template.span,
       };
+    }
+  }
+
+  /**
+   * Log the specified `msg` to file at INFO level. If logging is not enabled
+   * this method is a no-op.
+   * @param msg Log message
+   */
+  log(msg: string) {
+    if (this.tsLsHost.log) {
+      this.tsLsHost.log(msg);
+    }
+  }
+
+  /**
+   * Log the specified `msg` to file at ERROR level. If logging is not enabled
+   * this method is a no-op.
+   * @param msg error message
+   */
+  error(msg: string) {
+    if (this.tsLsHost.error) {
+      this.tsLsHost.error(msg);
+    }
+  }
+
+  /**
+   * Log debugging info to file at INFO level, only if verbose setting is turned
+   * on. Otherwise, this method is a no-op.
+   * @param msg debugging message
+   */
+  debug(msg: string) {
+    const project = this.tsLsHost as tss.server.Project;
+    if (!project.projectService) {
+      // tsLsHost is not a Project
+      return;
+    }
+    const {logger} = project.projectService;
+    if (logger.hasLevel(tss.server.LogLevel.verbose)) {
+      logger.info(msg);
     }
   }
 }
