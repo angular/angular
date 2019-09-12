@@ -6,8 +6,9 @@ ng_module(
     name = "flat_module",
     srcs = [
         "export.ts",
-        "index.ts",
+        "public-api.ts",
     ],
+    flat_module_entry_point = "public-api.ts",
     module_name = "flat_module",
     tsconfig = ":tsconfig.json",
     deps = [

@@ -117,7 +117,10 @@ export class NgtscProgram implements api.Program {
 
     let entryPoint: AbsoluteFsPath|null = null;
     if (options.flatModuleOutFile != null && options.flatModuleOutFile !== '') {
-      entryPoint = findFlatIndexEntryPoint(normalizedRootNames);
+      const flatModuleEntryPointOpt = this.options._flatModuleEntryPoint;
+      entryPoint = flatModuleEntryPointOpt != null ?
+          findFlatIndexEntryPoint(normalizedRootNames, this.rootDirs, flatModuleEntryPointOpt) :
+          findFlatIndexEntryPoint(normalizedRootNames);
       if (entryPoint === null) {
         // This error message talks specifically about having a single .ts file in "files". However
         // the actual logic is a bit more permissive. If a single file exists, that will be taken,

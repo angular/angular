@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
+import {findFlatIndexEntryPoint} from '../ngtsc/entry_point';
+import {AbsoluteFsPath} from '../ngtsc/file_system';
+import {getRootDirs} from '../ngtsc/util/src/typescript';
 import {CompilerOptions} from '../transformers/api';
 import {MetadataCache} from '../transformers/metadata_cache';
+import {createDiagnostic} from '../transformers/util';
 
 import {CompilerHostAdapter, MetadataBundler} from './bundler';
 import {privateEntriesToIndex} from './index_writer';
@@ -65,34 +68,23 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
     ngOptions: CompilerOptions, rootFiles: ReadonlyArray<string>, host: H,
     getMetadataCache: () =>
         MetadataCache): {host: H, indexName?: string, errors?: ts.Diagnostic[]} {
-  const files = rootFiles.filter(f => !DTS.test(f));
-  let indexFile: string|undefined;
-  if (files.length === 1) {
-    indexFile = files[0];
-  } else {
-    for (const f of files) {
-      // Assume the shortest file path called index.ts is the entry point. Note that we
-      // need to use the posix path delimiter here because TypeScript internally only
-      // passes posix paths.
-      if (f.endsWith('/index.ts')) {
-        if (!indexFile || indexFile.length > f.length) {
-          indexFile = f;
-        }
-      }
-    }
-  }
-  if (!indexFile) {
+  const files = rootFiles.filter(f => !DTS.test(f)) as AbsoluteFsPath[];
+  const flatModuleEntryPoint = ngOptions._flatModuleEntryPoint;
+  const indexFile: string|null = flatModuleEntryPoint ?
+      findFlatIndexEntryPoint(files, getRootDirs(host, ngOptions), flatModuleEntryPoint) :
+      findFlatIndexEntryPoint(files);
+
+  if (indexFile === null) {
     return {
       host,
-      errors: [{
-        file: null as any as ts.SourceFile,
-        start: null as any as number,
-        length: null as any as number,
-        messageText:
-            'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
-        category: ts.DiagnosticCategory.Error,
-        code: 0
-      }]
+      errors: [
+        flatModuleEntryPoint ?
+            createDiagnostic(
+                'Could not find specified flat module entry-point.', ts.DiagnosticCategory.Error) :
+            createDiagnostic(
+                'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
+                ts.DiagnosticCategory.Error)
+      ]
     };
   }
 

@@ -118,6 +118,15 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // behavior between Bazel and Blaze.
   _useHostForImportGeneration?: boolean;
 
+  // File which will be used as entry-point for the flat module bundle if enabled. File
+  // path should be relative to root directories. The reason for having such an internal
+  // option is that with Bazel it's not possible to only include a single source file in
+  // the "files" array of the TypeScript configuration. NGC by default determines the flat
+  // module entry-point by expecting a single file in the "files" array. Since this does not
+  // work with Bazel, consumers of the Bazel "ng_module" rule should have an option to
+  // specify a specific entry-point file for the flat module bundling.
+  _flatModuleEntryPoint?: string;
+
   // Insert JSDoc type annotations needed by Closure Compiler
   annotateForClosureCompiler?: boolean;
 

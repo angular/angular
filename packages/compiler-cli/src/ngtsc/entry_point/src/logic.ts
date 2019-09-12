@@ -6,16 +6,40 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath, getFileSystem} from '../../file_system';
+import * as path from 'path';
+import * as ts from 'typescript';
+
+import {AbsoluteFsPath, absoluteFrom, getFileSystem} from '../../file_system';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 export function findFlatIndexEntryPoint(rootFiles: ReadonlyArray<AbsoluteFsPath>): AbsoluteFsPath|
-    null {
-  // There are two ways for a file to be recognized as the flat module index:
+    null;
+export function findFlatIndexEntryPoint(
+    rootFiles: ReadonlyArray<AbsoluteFsPath>, rootDirs: AbsoluteFsPath[],
+    entryPointFile: string): AbsoluteFsPath|null;
+export function findFlatIndexEntryPoint(
+    rootFiles: ReadonlyArray<AbsoluteFsPath>, rootDirs?: AbsoluteFsPath[],
+    explicitEntryPoint?: string): AbsoluteFsPath|null {
+  // There are three ways for a file to be recognized as the flat module index:
   // 1) if it's the only file!!!!!!
   // 2) (deprecated) if it's named 'index.ts' and has the shortest path of all such files.
+  // 3) (bazel internal) if the entry-point file is explicitly specified
   const tsFiles = rootFiles.filter(file => isNonDeclarationTsPath(file));
   let resolvedEntryPoint: AbsoluteFsPath|null = null;
+
+  if (explicitEntryPoint) {
+    for (const rootDir of rootDirs !) {
+      const filePath = absoluteFrom(path.posix.join(rootDir, explicitEntryPoint));
+      if (tsFiles.indexOf(filePath) !== -1) {
+        resolvedEntryPoint = filePath;
+      }
+    }
+    // In case an explicit flat module entry-point file has been specified, we
+    // exit if we didn't find it. We don't want to try the other strategies.
+    if (resolvedEntryPoint === undefined) {
+      return null;
+    }
+  }
 
   if (tsFiles.length === 1) {
     // There's only one file - this is the flat module index.

@@ -16,8 +16,8 @@ describe('flat_module ng_module', () => {
   let flatModuleOutFile: string;
 
   beforeAll(() => {
-    packageOutput =
-        dirname(require.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.js'));
+    packageOutput = dirname(
+        require.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/public-api.js'));
     flatModuleOutFile = join(packageOutput, 'flat_module.js');
   });
 

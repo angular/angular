@@ -299,6 +299,8 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     else:
         expected_outs = outs.closure_js
 
+    flat_module_entry_point = ctx.file.flat_module_entry_point
+
     angular_compiler_options = {
         "enableResourceInlining": ctx.attr.inline_resources,
         "generateCodeForLibraries": False,
@@ -320,6 +322,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         # FIXME: wrong place to de-dupe
         "expectedOut": depset([o.path for o in expected_outs]).to_list(),
         "_useHostForImportGeneration": (not _is_bazel()),
+        "_flatModuleEntryPoint": flat_module_entry_point.path if flat_module_entry_point else "",
     }
 
     if _should_produce_flat_module_outs(ctx):
@@ -733,6 +736,11 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     # See the flatModuleOutFile documentation in
     # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/transformers/api.ts
     "flat_module_out_file": attr.string(),
+    # Allows overwriting the entry-point of the flat module bundle. By default if flat
+    # module bundling is enabled, the entry-point will be determined by looking for a file
+    # called "index.ts" in the specified sources. If only one source file is specified, that
+    # file will be used as entry-point.
+    "flat_module_entry_point": attr.label(allow_single_file = True),
     "bundle_dts": attr.bool(default = False),
     "api_extractor": attr.label(
         default = Label(DEFAULT_API_EXTRACTOR),

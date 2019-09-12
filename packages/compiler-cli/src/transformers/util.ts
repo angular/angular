@@ -31,15 +31,21 @@ export function userError(msg: string): never {
   throw syntaxError(msg);
 }
 
-export function createMessageDiagnostic(messageText: string): ts.Diagnostic&Diagnostic {
+export function createDiagnostic(text: string, category: ts.DiagnosticCategory): ts.Diagnostic&
+    Diagnostic {
   return {
     file: undefined,
     start: undefined,
     length: undefined,
-    category: ts.DiagnosticCategory.Message, messageText,
+    category: category,
+    messageText: text,
     code: DEFAULT_ERROR_CODE,
     source: SOURCE,
   };
+}
+
+export function createMessageDiagnostic(messageText: string): ts.Diagnostic&Diagnostic {
+  return createDiagnostic(messageText, ts.DiagnosticCategory.Message);
 }
 
 export function isInRootDir(fileName: string, options: CompilerOptions) {

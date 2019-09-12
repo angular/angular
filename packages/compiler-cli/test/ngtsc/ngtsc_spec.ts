@@ -2958,6 +2958,22 @@ runInEachFileSystem(os => {
                 'Should detect the "index.ts" file as flat module entry-point.');
       });
 
+      it('should support specifying flat module entry-point file', () => {
+        env.tsconfig({
+          'flatModuleOutFile': 'flat.js',
+          '_flatModuleEntryPoint': 'public-api.ts',
+        });
+        env.write('ignored.ts', 'export const TEST = "this is ignored";');
+        env.write('public-api.ts', 'export const ENTRY = "this is the entry";');
+
+        env.driveMain();
+        const jsContents = env.getContents('flat.js');
+        expect(jsContents)
+            .toContain(
+                'export * from \'./public-api\';',
+                'Should detect the "public-api.ts" file as flat module entry-point.');
+      });
+
       it('should generate a flat module with an id', () => {
         env.tsconfig({
           'flatModuleOutFile': 'flat.js',

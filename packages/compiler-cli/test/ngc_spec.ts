@@ -1065,6 +1065,27 @@ describe('ngc transformer command-line', () => {
       shouldExist('index.metadata.json');
     });
 
+    it('should be able to specify a flat module entry-point file', () => {
+      writeFlatModule('index.js');
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "flatModuleId": "flat_module",
+          "flatModuleOutFile": "index.js",
+          "_flatModuleEntryPoint": "public-api.ts",
+          "skipTemplateCodegen": true,
+          "enableResourceInlining": true
+        },
+        "files": ["public-api.ts", "src/flat.module.ts"]
+      }`);
+
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      expect(exitCode).toEqual(0);
+
+      shouldExist('index.js');
+      shouldExist('index.metadata.json');
+    });
+
     it('should downlevel templates in flat module metadata', () => {
       writeFlatModule('index.js');
 
