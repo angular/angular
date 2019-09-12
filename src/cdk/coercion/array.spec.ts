@@ -17,7 +17,7 @@ describe('coerceArray', () => {
     expect(coerceArray(objectVal)).toEqual([objectVal]);
   });
 
-  it('should wrap a null vall in an array', () => {
+  it('should wrap a null value in an array', () => {
     let nullVal = null;
     expect(coerceArray(nullVal)).toEqual([nullVal]);
   });
