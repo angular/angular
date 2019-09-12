@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {ClassMemberKind, CtorParameter, Import, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, CtorParameter, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
@@ -1556,6 +1556,30 @@ exports.ExternalModule = ExternalModule;
           expect(identifier).not.toBe(null);
           const importOfIdent = host.getImportOfIdentifier(identifier !);
           expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
+        });
+
+        it('should find the import of an identifier in a declaration file', () => {
+          loadTestFiles([
+            {
+              name: _('/index.d.ts'),
+              contents: `
+                import {MyClass} from './myclass.d.ts';
+                export declare const a: MyClass;`
+            },
+            {
+              name: _('/myclass.d.ts'),
+              contents: `export declare class MyClass {}`,
+            }
+          ]);
+          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.d.ts'));
+          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const variableNode =
+              getDeclaration(program, _('/index.d.ts'), 'a', isNamedVariableDeclaration);
+          const identifier =
+              ((variableNode.type as ts.TypeReferenceNode).typeName as ts.Identifier);
+
+          const importOfIdent = host.getImportOfIdentifier(identifier !);
+          expect(importOfIdent).toEqual({name: 'MyClass', from: './myclass.d.ts'});
         });
 
         it('should return null if the identifier was not imported', () => {

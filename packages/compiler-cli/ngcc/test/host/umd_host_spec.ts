@@ -13,7 +13,6 @@ import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/test
 import {ClassMemberKind, CtorParameter, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {getIifeBody} from '../../src/host/esm5_host';
 import {UmdReflectionHost} from '../../src/host/umd_host';
 import {MockLogger} from '../helpers/mock_logger';
@@ -1656,6 +1655,30 @@ runInEachFileSystem(() => {
           expect(identifier).not.toBe(null);
           const importOfIdent = host.getImportOfIdentifier(identifier !);
           expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
+        });
+
+        it('should find the import of an identifier in a declaration file', () => {
+          loadTestFiles([
+            {
+              name: _('/index.d.ts'),
+              contents: `
+                import {MyClass} from './myclass.d.ts';
+                export declare const a: MyClass;`
+            },
+            {
+              name: _('/myclass.d.ts'),
+              contents: `export declare class MyClass {}`,
+            }
+          ]);
+          const {program, host: compilerHost} = makeTestBundleProgram(_('/index.d.ts'));
+          const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+          const variableNode =
+              getDeclaration(program, _('/index.d.ts'), 'a', isNamedVariableDeclaration);
+          const identifier =
+              ((variableNode.type as ts.TypeReferenceNode).typeName as ts.Identifier);
+
+          const importOfIdent = host.getImportOfIdentifier(identifier !);
+          expect(importOfIdent).toEqual({name: 'MyClass', from: './myclass.d.ts'});
         });
 
         it('should return null if the identifier was not imported', () => {

@@ -25,6 +25,11 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {
+    const superImport = super.getImportOfIdentifier(id);
+    if (superImport !== null) {
+      return superImport;
+    }
+
     const importParameter = this.findUmdImportParameter(id);
     const from = importParameter && this.getUmdImportPath(importParameter);
     return from !== null ? {from, name: id.text} : null;
