@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CompileNgModuleMetadata, NgAnalyzedModules} from '@angular/compiler';
 import {setup} from '@angular/compiler-cli/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -402,4 +403,19 @@ function getReferenceMarkers(value: string): ReferenceResult {
 
 function removeReferenceMarkers(value: string): string {
   return value.replace(referenceMarker, (match, text) => text.replace(/ᐱ/g, ''));
+}
+
+/**
+ * Find the StaticSymbol that has the specified `directiveName` and return its
+ * Angular metadata, if any.
+ * @param ngModules analyzed modules
+ * @param directiveName
+ */
+export function findDirectiveMetadataByName(
+    ngModules: NgAnalyzedModules, directiveName: string): CompileNgModuleMetadata|undefined {
+  for (const [key, value] of ngModules.ngModuleByPipeOrDirective) {
+    if (key.name === directiveName) {
+      return value;
+    }
+  }
 }
