@@ -56,10 +56,10 @@ function missingDirective(name: string, isComponent: boolean) {
 }
 
 /**
- * Creates an error for an impossible state with a certain message.
+ * Logs an error for an impossible state with a certain message.
  */
-function impossibleState(message: string): Error {
-  return new Error(`Impossible state: ${message}`);
+function logImpossibleState(message: string) {
+  console.error(`Impossible state: ${message}`);
 }
 
 /**
@@ -87,13 +87,15 @@ export function getDeclarationDiagnostics(
 
     const sf = host.getSourceFile(type.filePath);
     if (!sf) {
-      throw impossibleState(`directive ${type.name} exists but has no source file`);
+      logImpossibleState(`directive ${type.name} exists but has no source file`);
+      return [];
     }
     // TypeScript identifier of the directive declaration annotation (e.g. "Component" or
     // "Directive") on a directive class.
     const directiveIdentifier = findTightestNode(sf, declarationSpan.start);
     if (!directiveIdentifier) {
-      throw impossibleState(`directive ${type.name} exists but has no identifier`);
+      logImpossibleState(`directive ${type.name} exists but has no identifier`);
+      return [];
     }
 
     for (const error of errors) {
@@ -138,8 +140,8 @@ export function getDeclarationDiagnostics(
         const templateUrlNode = findPropertyValueOfType(
             directiveIdentifier.parent, 'templateUrl', ts.isStringLiteralLike);
         if (!templateUrlNode) {
-          throw impossibleState(
-              `templateUrl ${templateUrl} exists but its TypeScript node doesn't`);
+          logImpossibleState(`templateUrl ${templateUrl} exists but its TypeScript node doesn't`);
+          return [];
         }
 
         results.push(...validateUrls([templateUrlNode], host.tsLsHost));

@@ -478,10 +478,10 @@ describe('diagnostics', () => {
   describe('URL diagnostics', () => {
     it('should report errors for invalid templateUrls', () => {
       const fileName = mockHost.addCode(`
-	      @Component({
-                templateUrl: '«notAFile»',
-	      })
-	      export class MyComponent {}`);
+	@Component({
+          templateUrl: '«notAFile»',
+        })
+        export class MyComponent {}`);
 
       const marker = mockHost.getReferenceMarkerFor(fileName, 'notAFile');
 
@@ -497,10 +497,10 @@ describe('diagnostics', () => {
 
     it('should not report errors for valid templateUrls', () => {
       const fileName = addCode(`
-	      @Component({
-                templateUrl: './test.ng',
-	      })
-	      export class MyComponent {}`);
+	@Component({
+          templateUrl: './test.ng',
+	})
+	export class MyComponent {}`);
 
       const diagnostics = ngLS.getDiagnostics(fileName) !;
       const urlDiagnostic =

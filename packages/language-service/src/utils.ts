@@ -215,6 +215,15 @@ export function getDirectiveClassLike(node: ts.Node): DirectiveClassLike|undefin
   }
 }
 
+/**
+ * Finds the value of a property assignment that is nested in a TypeScript node and is of a certain
+ * type T.
+ *
+ * @param startNode node to start searching for nested property assignment from
+ * @param propName property assignment name
+ * @param predicate function to verify that a node is of type T.
+ * @return node property assignment value of type T, or undefined if none is found
+ */
 export function findPropertyValueOfType<T extends ts.Node>(
     startNode: ts.Node, propName: string, predicate: (node: ts.Node) => node is T): T|undefined {
   if (ts.isPropertyAssignment(startNode) && startNode.name.getText() === propName) {
