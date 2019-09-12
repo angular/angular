@@ -51,13 +51,11 @@ describe('reflector_host_spec', () => {
 
     const tsLS = ts.createLanguageService(mockHost);
 
-    // First count is due to the instantiation of StaticReflector, which
-    // performs resolutions of core Angular symbols, like `NgModule`.
-    // TODO: Reduce this count to zero doing lazy instantiation.
+    // First count is zero due to lazy instantiation of the StaticReflector
+    // and MetadataResolver.
     const ngLSHost = new TypeScriptServiceHost(mockHost, tsLS);
     const firstCount = spy.calls.count();
-    expect(firstCount).toBeGreaterThan(20);
-    expect(firstCount).toBeLessThan(50);
+    expect(firstCount).toBe(0);
     spy.calls.reset();
 
     // Second count is due to resolution of the Tour of Heroes (toh) project.
