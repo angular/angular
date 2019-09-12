@@ -26,6 +26,11 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {
+    const superImport = super.getImportOfIdentifier(id);
+    if (superImport !== null) {
+      return superImport;
+    }
+
     const requireCall = this.findCommonJsImport(id);
     if (requireCall === null) {
       return null;
