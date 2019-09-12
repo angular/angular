@@ -18,6 +18,10 @@ CDK_PACKAGES = [
     "table",
     "text-field",
     "tree",
+
+    # NOTE: "testing" should not be listed here as it will be treated as its own
+    # package. This is because we don't want to include "testing the testing utilities
+    # in the release output.
 ]
 
 # Within the CDK, only a few targets have sass libraries which need to be

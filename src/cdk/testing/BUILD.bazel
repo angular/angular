@@ -1,9 +1,10 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
-load("//tools:defaults.bzl", "markdown_to_html", "ng_module", "ng_web_test_suite")
+load("//tools:defaults.bzl", "markdown_to_html", "ng_web_test_suite", "ts_library")
 
-ng_module(
+ts_library(
     name = "testing",
     srcs = glob(
         ["**/*.ts"],
@@ -12,6 +13,25 @@ ng_module(
         ],
     ),
     module_name = "@angular/cdk/testing",
+)
+
+npm_package(
+    name = "npm_package",
+    deps = [
+        ":testing",
+        "//src/cdk/testing/protractor",
+        "//src/cdk/testing/testbed",
+    ],
+)
+
+markdown_to_html(
+    name = "overview",
+    srcs = ["testing.md"],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )
 
 ng_web_test_suite(
@@ -25,14 +45,4 @@ e2e_test_suite(
         "//src/cdk/testing/tests:e2e_test_sources",
         "@npm//protractor",
     ],
-)
-
-markdown_to_html(
-    name = "overview",
-    srcs = ["testing.md"],
-)
-
-filegroup(
-    name = "source-files",
-    srcs = glob(["**/*.ts"]),
 )
