@@ -3,9 +3,13 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Experimental components for Angular Material",
   "main": "./bundles/material-experimental.umd.js",
-  "module": "./esm5/material-experimental.es5.js",
-  "es2015": "./esm2015/material-experimental.js",
-  "typings": "./material-experimental.d.ts",
+  "fesm5": "./fesm5/material-experimental.js",
+  "fesm2015": "./fesm2015/material-experimental.js",
+  "esm5": "./esm5/material-experimental_public_index.js",
+  "esm2015": "./esm2015/material-experimental_public_index.js",
+  "typings": "./material-experimental_public_index.d.ts",
+  "module": "./fesm5/material-experimental.js",
+  "es2015": "./fesm2015/material-experimental.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/components.git"
