@@ -3,6 +3,7 @@
 @import '@material/fab/mixins';
 @import '@material/ripple/mixins';
 @import '@material/icon-button/mixins';
+@import '../../material/core/ripple/ripple';
 @import '../mdc-helpers/mdc-helpers';
 
 // Applies the disabled theme color to the text color.
@@ -21,6 +22,17 @@
   &[disabled][disabled] {
     @content;
   }
+}
+
+// The MDC button's ripple ink color is based on the theme color, not on the foreground base
+// which is what the ripple mixin uses. This creates a new theme that sets the color to the
+// foreground base to appropriately color the ink.
+@mixin _mat-button-ripple-ink-color($mdcColor) {
+  @include mat-ripple-theme((
+    foreground: (
+      base: mdc-theme-prop-value($mdcColor)
+    ),
+  ));
 }
 
 // Applies the disabled theme background color for raised buttons. Value is taken from
@@ -48,16 +60,19 @@
       &.mat-primary {
         @include mdc-button-ink-color(primary, $query: $mat-theme-styles-query);
         @include mdc-states-base-color(primary, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(primary);
       }
 
       &.mat-accent {
         @include mdc-button-ink-color(secondary, $query: $mat-theme-styles-query);
         @include mdc-states-base-color(secondary, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(secondary);
       }
 
       &.mat-warn {
         @include mdc-button-ink-color(error, $query: $mat-theme-styles-query);
         @include mdc-states-base-color(error, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(error);
       }
     }
 
@@ -74,18 +89,21 @@
         @include mdc-button-container-fill-color(primary, $query: $mat-theme-styles-query);
         @include mdc-button-ink-color(on-primary, $query: $mat-theme-styles-query);
         @include mdc-states-base-color(on-primary, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(on-primary);
       }
 
       &.mat-accent {
         @include mdc-button-container-fill-color(secondary, $query: $mat-theme-styles-query);
         @include mdc-button-ink-color(on-secondary, $query: $mat-theme-styles-query);
         @include mdc-states-base-color(on-secondary, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(on-secondary);
       }
 
       &.mat-warn {
         @include mdc-button-container-fill-color(error, $query: $mat-theme-styles-query);
         @include mdc-button-ink-color(on-error, $query: $mat-theme-styles-query);
         @include mdc-states-base-color(on-error, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(on-error);
       }
 
       @include _mat-button-apply-disabled-style() {
@@ -153,18 +171,21 @@
         @include mdc-states-base-color(on-primary, $query: $mat-theme-styles-query);
         @include mdc-fab-container-color(primary, $query: $mat-theme-styles-query);
         @include mdc-fab-ink-color(on-primary, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(on-primary);
       }
 
       &.mat-accent {
         @include mdc-states-base-color(on-secondary, $query: $mat-theme-styles-query);
         @include mdc-fab-container-color(secondary, $query: $mat-theme-styles-query);
         @include mdc-fab-ink-color(on-secondary, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(on-secondary);
       }
 
       &.mat-warn {
         @include mdc-states-base-color(on-error, $query: $mat-theme-styles-query);
         @include mdc-fab-container-color(error, $query: $mat-theme-styles-query);
         @include mdc-fab-ink-color(on-error, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(on-error);
       }
 
       @include _mat-button-apply-disabled-style() {
@@ -197,16 +218,19 @@
       &.mat-primary {
         @include mdc-states-base-color(primary, $query: $mat-theme-styles-query);
         @include mdc-icon-button-ink-color(primary, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(primary);
       }
 
       &.mat-accent {
         @include mdc-states-base-color(secondary, $query: $mat-theme-styles-query);
         @include mdc-icon-button-ink-color(secondary, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(secondary);
       }
 
       &.mat-warn {
         @include mdc-states-base-color(error, $query: $mat-theme-styles-query);
         @include mdc-icon-button-ink-color(error, $query: $mat-theme-styles-query);
+        @include _mat-button-ripple-ink-color(error);
       }
 
       @include _mat-button-apply-disabled-style() {
