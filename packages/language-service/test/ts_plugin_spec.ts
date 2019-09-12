@@ -36,129 +36,131 @@ describe('plugin', () => {
   });
 
   it('should be able to get entity completions',
-     () => { contains('app/app.component.ts', 'entity-amp', '&amp;', '&gt;', '&lt;', '&iota;'); });
+     () => { contains('/app/app.component.ts', 'entity-amp', '&amp;', '&gt;', '&lt;', '&iota;'); });
 
   it('should be able to return html elements', () => {
     let htmlTags = ['h1', 'h2', 'div', 'span'];
     let locations = ['empty', 'start-tag-h1', 'h1-content', 'start-tag', 'start-tag-after-h'];
     for (let location of locations) {
-      contains('app/app.component.ts', location, ...htmlTags);
+      contains('/app/app.component.ts', location, ...htmlTags);
     }
   });
 
   it('should be able to return element directives',
-     () => { contains('app/app.component.ts', 'empty', 'my-app'); });
+     () => { contains('/app/app.component.ts', 'empty', 'my-app'); });
 
-  it('should be able to return h1 attributes',
-     () => { contains('app/app.component.ts', 'h1-after-space', 'id', 'dir', 'lang', 'onclick'); });
+  it('should be able to return h1 attributes', () => {
+    contains('/app/app.component.ts', 'h1-after-space', 'id', 'dir', 'lang', 'onclick');
+  });
 
   it('should be able to find common angular attributes', () => {
-    contains('app/app.component.ts', 'div-attributes', '(click)', '[ngClass]', '*ngIf', '*ngFor');
+    contains('/app/app.component.ts', 'div-attributes', '(click)', '[ngClass]', '*ngIf', '*ngFor');
   });
 
   it('should be able to return attribute names with an incompete attribute',
-     () => { contains('app/parsing-cases.ts', 'no-value-attribute', 'id', 'dir', 'lang'); });
+     () => { contains('/app/parsing-cases.ts', 'no-value-attribute', 'id', 'dir', 'lang'); });
 
   it('should be able to return attributes of an incomplete element', () => {
-    contains('app/parsing-cases.ts', 'incomplete-open-lt', 'a');
-    contains('app/parsing-cases.ts', 'incomplete-open-a', 'a');
-    contains('app/parsing-cases.ts', 'incomplete-open-attr', 'id', 'dir', 'lang');
+    contains('/app/parsing-cases.ts', 'incomplete-open-lt', 'a');
+    contains('/app/parsing-cases.ts', 'incomplete-open-a', 'a');
+    contains('/app/parsing-cases.ts', 'incomplete-open-attr', 'id', 'dir', 'lang');
   });
 
   it('should be able to return completions with a missing closing tag',
-     () => { contains('app/parsing-cases.ts', 'missing-closing', 'h1', 'h2'); });
+     () => { contains('/app/parsing-cases.ts', 'missing-closing', 'h1', 'h2'); });
 
   it('should be able to return common attributes of an unknown tag',
-     () => { contains('app/parsing-cases.ts', 'unknown-element', 'id', 'dir', 'lang'); });
+     () => { contains('/app/parsing-cases.ts', 'unknown-element', 'id', 'dir', 'lang'); });
 
   it('should be able to get the completions at the beginning of an interpolation',
-     () => { contains('app/app.component.ts', 'h2-hero', 'hero', 'title'); });
+     () => { contains('/app/app.component.ts', 'h2-hero', 'hero', 'title'); });
 
   it('should not include private members of a class',
-     () => { contains('app/app.component.ts', 'h2-hero', '-internal'); });
+     () => { contains('/app/app.component.ts', 'h2-hero', '-internal'); });
 
   it('should be able to get the completions at the end of an interpolation',
-     () => { contains('app/app.component.ts', 'sub-end', 'hero', 'title'); });
+     () => { contains('/app/app.component.ts', 'sub-end', 'hero', 'title'); });
 
   it('should be able to get the completions in a property',
-     () => { contains('app/app.component.ts', 'h2-name', 'name', 'id'); });
+     () => { contains('/app/app.component.ts', 'h2-name', 'name', 'id'); });
 
   it('should be able to get a list of pipe values', () => {
-    contains('app/parsing-cases.ts', 'before-pipe', 'lowercase', 'uppercase');
-    contains('app/parsing-cases.ts', 'in-pipe', 'lowercase', 'uppercase');
-    contains('app/parsing-cases.ts', 'after-pipe', 'lowercase', 'uppercase');
+    contains('/app/parsing-cases.ts', 'before-pipe', 'lowercase', 'uppercase');
+    contains('/app/parsing-cases.ts', 'in-pipe', 'lowercase', 'uppercase');
+    contains('/app/parsing-cases.ts', 'after-pipe', 'lowercase', 'uppercase');
   });
 
   it('should be able to get completions in an empty interpolation',
-     () => { contains('app/parsing-cases.ts', 'empty-interpolation', 'title', 'subTitle'); });
+     () => { contains('/app/parsing-cases.ts', 'empty-interpolation', 'title', 'subTitle'); });
 
   describe('with attributes', () => {
     it('should be able to complete property value',
-       () => { contains('app/parsing-cases.ts', 'property-binding-model', 'test'); });
+       () => { contains('/app/parsing-cases.ts', 'property-binding-model', 'test'); });
     it('should be able to complete an event',
-       () => { contains('app/parsing-cases.ts', 'event-binding-model', 'modelChanged'); });
+       () => { contains('/app/parsing-cases.ts', 'event-binding-model', 'modelChanged'); });
     it('should be able to complete a two-way binding',
-       () => { contains('app/parsing-cases.ts', 'two-way-binding-model', 'test'); });
+       () => { contains('/app/parsing-cases.ts', 'two-way-binding-model', 'test'); });
   });
 
   describe('with a *ngFor', () => {
     it('should include a let for empty attribute',
-       () => { contains('app/parsing-cases.ts', 'for-empty', 'let'); });
+       () => { contains('/app/parsing-cases.ts', 'for-empty', 'let'); });
     it('should suggest NgForRow members for let initialization expression', () => {
       contains(
-          'app/parsing-cases.ts', 'for-let-i-equal', 'index', 'count', 'first', 'last', 'even',
+          '/app/parsing-cases.ts', 'for-let-i-equal', 'index', 'count', 'first', 'last', 'even',
           'odd');
     });
-    it('should include a let', () => { contains('app/parsing-cases.ts', 'for-let', 'let'); });
-    it('should include an "of"', () => { contains('app/parsing-cases.ts', 'for-of', 'of'); });
+    it('should include a let', () => { contains('/app/parsing-cases.ts', 'for-let', 'let'); });
+    it('should include an "of"', () => { contains('/app/parsing-cases.ts', 'for-of', 'of'); });
     it('should include field reference',
-       () => { contains('app/parsing-cases.ts', 'for-people', 'people'); });
+       () => { contains('/app/parsing-cases.ts', 'for-people', 'people'); });
     it('should include person in the let scope',
-       () => { contains('app/parsing-cases.ts', 'for-interp-person', 'person'); });
+       () => { contains('/app/parsing-cases.ts', 'for-interp-person', 'person'); });
     // TODO: Enable when we can infer the element type of the ngFor
     // it('should include determine person\'s type as Person', () => {
-    //   contains('app/parsing-cases.ts', 'for-interp-name', 'name', 'age');
-    //   contains('app/parsing-cases.ts', 'for-interp-age', 'name', 'age');
+    //   contains('/app/parsing-cases.ts', 'for-interp-name', 'name', 'age');
+    //   contains('/app/parsing-cases.ts', 'for-interp-age', 'name', 'age');
     // });
   });
 
   describe('for pipes', () => {
     it('should be able to resolve lowercase',
-       () => { contains('app/expression-cases.ts', 'string-pipe', 'substring'); });
+       () => { contains('/app/expression-cases.ts', 'string-pipe', 'substring'); });
   });
 
   describe('with references', () => {
     it('should list references',
-       () => { contains('app/parsing-cases.ts', 'test-comp-content', 'test1', 'test2', 'div'); });
+       () => { contains('/app/parsing-cases.ts', 'test-comp-content', 'test1', 'test2', 'div'); });
     it('should reference the component',
-       () => { contains('app/parsing-cases.ts', 'test-comp-after-test', 'name'); });
+       () => { contains('/app/parsing-cases.ts', 'test-comp-after-test', 'name'); });
     // TODO: Enable when we have a flag that indicates the project targets the DOM
     // it('should reference the element if no component', () => {
-    //   contains('app/parsing-cases.ts', 'test-comp-after-div', 'innerText');
+    //   contains('/app/parsing-cases.ts', 'test-comp-after-div', 'innerText');
     // });
   });
 
   describe('for semantic errors', () => {
     it('should report access to an unknown field', () => {
       expectSemanticError(
-          'app/expression-cases.ts', 'foo',
+          '/app/expression-cases.ts', 'foo',
           'Identifier \'foo\' is not defined. The component declaration, template variable declarations, and element references do not contain such a member');
     });
     it('should report access to an unknown sub-field', () => {
       expectSemanticError(
-          'app/expression-cases.ts', 'nam',
+          '/app/expression-cases.ts', 'nam',
           'Identifier \'nam\' is not defined. \'Person\' does not contain such a member');
     });
     it('should report access to a private member', () => {
       expectSemanticError(
-          'app/expression-cases.ts', 'myField',
+          '/app/expression-cases.ts', 'myField',
           'Identifier \'myField\' refers to a private member of the component');
     });
-    it('should report numeric operator errors',
-       () => { expectSemanticError('app/expression-cases.ts', 'mod', 'Expected a numeric type'); });
+    it('should report numeric operator errors', () => {
+      expectSemanticError('/app/expression-cases.ts', 'mod', 'Expected a numeric type');
+    });
     describe('in ngFor', () => {
       function expectError(locationMarker: string, message: string) {
-        expectSemanticError('app/ng-for-cases.ts', locationMarker, message);
+        expectSemanticError('/app/ng-for-cases.ts', locationMarker, message);
       }
       it('should report an unknown field', () => {
         expectError(
@@ -176,7 +178,7 @@ describe('plugin', () => {
     });
     describe('in ngIf', () => {
       function expectError(locationMarker: string, message: string) {
-        expectSemanticError('app/ng-if-cases.ts', locationMarker, message);
+        expectSemanticError('/app/ng-if-cases.ts', locationMarker, message);
       }
       it('should report an implicit context reference', () => {
         expectError('implicit', 'The template context does not define a member called \'unknown\'');
@@ -197,7 +199,7 @@ describe('plugin', () => {
       });
 
       it('should be able to get entity completions', () => {
-        const fileName = 'app/app.component.ts';
+        const fileName = '/app/app.component.ts';
         const marker = 'entity-amp';
         const position = getMarkerLocation(fileName, marker);
         const results = ngLS.getCompletionsAtPosition(fileName, position, {} /* options */);
@@ -207,7 +209,7 @@ describe('plugin', () => {
 
       it('should report template diagnostics', () => {
         // TODO(kyliau): Rename these to end with '-error.ts'
-        const fileName = 'app/expression-cases.ts';
+        const fileName = '/app/expression-cases.ts';
         const diagnostics = ngLS.getSemanticDiagnostics(fileName);
         expect(diagnostics.map(d => d.messageText)).toEqual([
           `Identifier 'foo' is not defined. The component declaration, template variable declarations, and element references do not contain such a member`,

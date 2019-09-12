@@ -27,9 +27,20 @@ const tsxfile = /\.tsx$/;
 
 /* The missing cache does two things. First it improves performance of the
    tests as it reduces the number of OS calls made during testing. Also it
-   improves debugging experience as fewer exceptions are raised allow you
+   improves debugging experience as fewer exceptions are raised to allow you
    to use stopping on all exceptions. */
-const missingCache = new Map<string, boolean>();
+const missingCache = new Set<string>([
+  '/node_modules/@angular/core.d.ts',
+  '/node_modules/@angular/animations.d.ts',
+  '/node_modules/@angular/platform-browser/animations.d.ts',
+  '/node_modules/@angular/common.d.ts',
+  '/node_modules/@angular/forms.d.ts',
+  '/node_modules/@angular/core/src/di/provider.metadata.json',
+  '/node_modules/@angular/core/src/change_detection/pipe_transform.metadata.json',
+  '/node_modules/@angular/core/src/reflection/types.metadata.json',
+  '/node_modules/@angular/core/src/reflection/platform_reflection_capabilities.metadata.json',
+  '/node_modules/@angular/forms/src/directives/form_interface.metadata.json',
+]);
 const cacheUsed = new Set<string>();
 const reportedMissing = new Set<string>();
 
@@ -39,7 +50,7 @@ const reportedMissing = new Set<string>();
 export function validateCache(): {exists: string[], unused: string[], reported: string[]} {
   const exists: string[] = [];
   const unused: string[] = [];
-  for (const fileName of iterableToArray(missingCache.keys())) {
+  for (const fileName of missingCache) {
     if (fs.existsSync(fileName)) {
       exists.push(fileName);
     }
@@ -47,37 +58,72 @@ export function validateCache(): {exists: string[], unused: string[], reported: 
       unused.push(fileName);
     }
   }
-  return {exists, unused, reported: iterableToArray(reportedMissing.keys())};
+  return {
+    exists,
+    unused,
+    reported: Array.from(reportedMissing),
+  };
 }
 
-missingCache.set('/node_modules/@angular/core.d.ts', true);
-missingCache.set('/node_modules/@angular/animations.d.ts', true);
-missingCache.set('/node_modules/@angular/platform-browser/animations.d.ts', true);
-missingCache.set('/node_modules/@angular/common.d.ts', true);
-missingCache.set('/node_modules/@angular/forms.d.ts', true);
-missingCache.set('/node_modules/@angular/core/src/di/provider.metadata.json', true);
-missingCache.set(
-    '/node_modules/@angular/core/src/change_detection/pipe_transform.metadata.json', true);
-missingCache.set('/node_modules/@angular/core/src/reflection/types.metadata.json', true);
-missingCache.set(
-    '/node_modules/@angular/core/src/reflection/platform_reflection_capabilities.metadata.json',
-    true);
-missingCache.set('/node_modules/@angular/forms/src/directives/form_interface.metadata.json', true);
+function isFile(path: string) {
+  return fs.statSync(path).isFile();
+}
+
+/**
+ * Return a Map with key = directory / file path, value = file content.
+ * [
+ *   /app => [[directory]]
+ *   /app/main.ts => ...
+ *   /app/app.component.ts => ...
+ *   /app/expression-cases.ts => ...
+ *   /app/ng-for-cases.ts => ...
+ *   /app/ng-if-cases.ts => ...
+ *   /app/parsing-cases.ts => ...
+ *   /app/test.css => ...
+ *   /app/test.ng => ...
+ * ]
+ */
+function loadTourOfHeroes(): ReadonlyMap<string, string> {
+  const {TEST_SRCDIR} = process.env;
+  const root =
+      path.join(TEST_SRCDIR !, 'angular', 'packages', 'language-service', 'test', 'project');
+  const dirs = [root];
+  const files = new Map<string, string>();
+  while (dirs.length) {
+    const dirPath = dirs.pop() !;
+    for (const filePath of fs.readdirSync(dirPath)) {
+      const absPath = path.join(dirPath, filePath);
+      if (isFile(absPath)) {
+        const key = path.join('/', path.relative(root, absPath));
+        const value = fs.readFileSync(absPath, 'utf8');
+        files.set(key, value);
+      } else {
+        const key = path.join('/', filePath);
+        files.set(key, '[[directory]]');
+        dirs.push(absPath);
+      }
+    }
+  }
+  return files;
+}
+
+const TOH = loadTourOfHeroes();
 
 export class MockTypescriptHost implements ts.LanguageServiceHost {
-  private angularPath: string|undefined;
-  private nodeModulesPath: string;
-  private scriptVersion = new Map<string, number>();
-  private overrides = new Map<string, string>();
+  private angularPath?: string;
+  private readonly nodeModulesPath: string;
+  private readonly scriptVersion = new Map<string, number>();
+  private readonly overrides = new Map<string, string>();
   private projectVersion = 0;
   private options: ts.CompilerOptions;
-  private overrideDirectory = new Set<string>();
-  private existsCache = new Map<string, boolean>();
-  private fileCache = new Map<string, string|undefined>();
+  private readonly overrideDirectory = new Set<string>();
+  private readonly existsCache = new Map<string, boolean>();
+  private readonly fileCache = new Map<string, string|undefined>();
 
   constructor(
-      private scriptNames: string[], private data: MockData,
-      private node_modules: string = 'node_modules', private myPath: typeof path = path) {
+      private readonly scriptNames: string[], _: MockData,
+      private readonly node_modules: string = 'node_modules',
+      private readonly myPath: typeof path = path) {
     const support = setup();
     this.nodeModulesPath = path.posix.join(support.basePath, 'node_modules');
     this.angularPath = path.posix.join(this.nodeModulesPath, '@angular');
@@ -143,14 +189,14 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
 
   directoryExists(directoryName: string): boolean {
     if (this.overrideDirectory.has(directoryName)) return true;
-    let effectiveName = this.getEffectiveName(directoryName);
+    const effectiveName = this.getEffectiveName(directoryName);
     if (effectiveName === directoryName) {
-      return directoryExists(directoryName, this.data);
-    } else if (effectiveName == '/' + this.node_modules) {
-      return true;
-    } else {
-      return this.pathExists(effectiveName);
+      return TOH.has(directoryName);
     }
+    if (effectiveName === '/' + this.node_modules) {
+      return true;
+    }
+    return this.pathExists(effectiveName);
   }
 
   fileExists(fileName: string): boolean { return this.getRawFileContent(fileName) != null; }
@@ -184,29 +230,28 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     if (/^lib.*\.d\.ts$/.test(basename)) {
       let libPath = ts.getDefaultLibFilePath(this.getCompilationSettings());
       return fs.readFileSync(this.myPath.join(path.dirname(libPath), basename), 'utf8');
-    } else {
-      if (missingCache.has(fileName)) {
-        cacheUsed.add(fileName);
-        return undefined;
-      }
+    }
+    if (missingCache.has(fileName)) {
+      cacheUsed.add(fileName);
+      return undefined;
+    }
 
-      const effectiveName = this.getEffectiveName(fileName);
-      if (effectiveName === fileName) {
-        return open(fileName, this.data);
-      } else if (
-          !fileName.match(angularts) && !fileName.match(rxjsts) && !fileName.match(rxjsmetadata) &&
-          !fileName.match(tsxfile)) {
-        if (this.fileCache.has(effectiveName)) {
-          return this.fileCache.get(effectiveName);
-        } else if (this.pathExists(effectiveName)) {
-          const content = fs.readFileSync(effectiveName, 'utf8');
-          this.fileCache.set(effectiveName, content);
-          return content;
-        } else {
-          missingCache.set(fileName, true);
-          reportedMissing.add(fileName);
-          cacheUsed.add(fileName);
-        }
+    const effectiveName = this.getEffectiveName(fileName);
+    if (effectiveName === fileName) {
+      return TOH.get(fileName);
+    }
+    if (!fileName.match(angularts) && !fileName.match(rxjsts) && !fileName.match(rxjsmetadata) &&
+        !fileName.match(tsxfile)) {
+      if (this.fileCache.has(effectiveName)) {
+        return this.fileCache.get(effectiveName);
+      } else if (this.pathExists(effectiveName)) {
+        const content = fs.readFileSync(effectiveName, 'utf8');
+        this.fileCache.set(effectiveName, content);
+        return content;
+      } else {
+        missingCache.add(fileName);
+        reportedMissing.add(fileName);
+        cacheUsed.add(fileName);
       }
     }
   }
@@ -311,43 +356,6 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
       length: end - start,
     };
   }
-}
-
-function iterableToArray<T>(iterator: IterableIterator<T>) {
-  const result: T[] = [];
-  while (true) {
-    const next = iterator.next();
-    if (next.done) break;
-    result.push(next.value);
-  }
-  return result;
-}
-
-function find(fileName: string, data: MockData): MockData|undefined {
-  let names = fileName.split('/');
-  if (names.length && !names[0].length) names.shift();
-  let current = data;
-  for (let name of names) {
-    if (typeof current === 'string')
-      return undefined;
-    else
-      current = (<MockDirectory>current)[name] !;
-    if (!current) return undefined;
-  }
-  return current;
-}
-
-function open(fileName: string, data: MockData): string|undefined {
-  let result = find(fileName, data);
-  if (typeof result === 'string') {
-    return result;
-  }
-  return undefined;
-}
-
-function directoryExists(dirname: string, data: MockData): boolean {
-  let result = find(dirname, data);
-  return !!result && typeof result !== 'string';
 }
 
 const locationMarker = /\~\{(\w+(-\w+)*)\}/g;
