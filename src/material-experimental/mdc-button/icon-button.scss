@@ -13,4 +13,5 @@
   border-radius: 50%;
 
   @include _mat-button-disabled();
+  @include _mat-button-ripple-position();
 }

@@ -9,6 +9,7 @@
 .mat-mdc-fab, .mat-mdc-mini-fab {
   @include _mat-button-interactive();
   @include _mat-button-disabled();
+  @include _mat-button-ripple-position();
 }
 
 .mat-mdc-fab, .mat-mdc-mini-fab {
