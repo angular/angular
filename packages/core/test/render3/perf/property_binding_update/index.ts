@@ -76,17 +76,15 @@ const rootTView = rootLView[TVIEW];
 
 
 // scenario to benchmark
-const propertyBindingBenchmark = createBenchmark('property binding', 2000, 20);
+const propertyBindingBenchmark = createBenchmark('property binding');
 const updateTime = propertyBindingBenchmark('update');
 
 // run change detection where each binding value changes
 console.profile('element property update');
-while (updateTime.run()) {
-  let i = 0;
-  while (updateTime()) {
-    ctx.value = `value${i++}`;
-    refreshView(rootLView, rootTView, null, ctx);
-  }
+let i = 0;
+while (updateTime()) {
+  ctx.value = `value${i++}`;
+  refreshView(rootLView, rootTView, null, ctx);
 }
 console.profileEnd();
 
