@@ -45,7 +45,7 @@ sass_binary(
     deps = [
         "//src/material-experimental/mdc-theming:all_themes",
         "//src/material-experimental/mdc-typography:all_typography",
-        "//src/material/core:all_themes",
+        "//src/material/core:theming_scss_lib",
     ],
 )
 

@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "MATERIAL_EXPERIMENTAL_TARGETS", "ROLLUP_GLOBALS")
+load("//:packages.bzl", "MATERIAL_EXPERIMENTAL_SCSS_LIBS", "MATERIAL_EXPERIMENTAL_TARGETS", "ROLLUP_GLOBALS")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 exports_files(["mdc_require_config.js"])
@@ -20,6 +20,7 @@ ng_module(
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
+    data = MATERIAL_EXPERIMENTAL_SCSS_LIBS,
     entry_point = ":public-api.ts",
     globals = ROLLUP_GLOBALS,
     tags = ["release-package"],

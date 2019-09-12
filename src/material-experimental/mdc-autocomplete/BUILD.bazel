@@ -26,8 +26,6 @@ sass_library(
     srcs = glob(["**/_*.scss"]),
     deps = [
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-        "//src/material/core:core_scss_lib",
     ],
 )
 
@@ -37,11 +35,7 @@ sass_binary(
     include_paths = [
         "external/npm/node_modules",
     ],
-    deps = [
-        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-        "//src/material/core:all_themes",
-    ],
+    deps = [],
 )
 
 ng_e2e_test_library(

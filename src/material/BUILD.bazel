@@ -8,22 +8,10 @@ load(
     "ROLLUP_GLOBALS",
 )
 load("//tools:defaults.bzl", "ng_package", "ts_library")
-load("//tools:sass_bundle.bzl", "sass_bundle")
 
 ts_library(
     name = "material",
     srcs = ["index.ts"],
-)
-
-sass_bundle(
-    name = "theming_bundle",
-    srcs = [
-        "//src/cdk/a11y:a11y_scss_lib",
-        "//src/cdk/overlay:overlay_scss_lib",
-        "//src/cdk/text-field:text_field_scss_lib",
-    ] + MATERIAL_SCSS_LIBS,
-    entry_point = "//src/material/core:theming/_all-theme.scss",
-    output_name = "_theming.scss",
 )
 
 filegroup(
@@ -34,14 +22,17 @@ filegroup(
 # Creates the @angular/material package published to npm.
 ng_package(
     name = "npm_package",
-    srcs = ["package.json"],
+    srcs = [
+        "_theming.scss",
+        "package.json",
+    ],
     data = [
-        ":theming_bundle",
+        "//src/material/core:theming_scss_lib",
         "//src/material/prebuilt-themes:deeppurple-amber",
         "//src/material/prebuilt-themes:indigo-pink",
         "//src/material/prebuilt-themes:pink-bluegrey",
         "//src/material/prebuilt-themes:purple-green",
-    ],
+    ] + MATERIAL_SCSS_LIBS,
     entry_point = ":index.ts",
     entry_point_name = "material",
     globals = ROLLUP_GLOBALS,

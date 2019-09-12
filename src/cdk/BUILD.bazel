@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "CDK_PACKAGES", "CDK_TARGETS", "CDK_TARGETS_WITH_STYLES", "ROLLUP_GLOBALS")
+load("//:packages.bzl", "CDK_PACKAGES", "CDK_SCSS_LIBS", "CDK_TARGETS", "CDK_TARGETS_WITH_STYLES", "ROLLUP_GLOBALS")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 # Root "@angular/cdk" entry-point that does not re-export individual entry-points.
@@ -56,10 +56,7 @@ rerootedStyleTargets = ["%s_rerooted" % file for [
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    data = ["%s_rerooted" % file for [
-        file,
-        _,
-    ] in rerootedStyles],
+    data = rerootedStyleTargets + CDK_SCSS_LIBS,
     entry_point = ":public-api.ts",
     globals = ROLLUP_GLOBALS,
     packages = [

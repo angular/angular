@@ -82,7 +82,7 @@ sass_binary(
         "//src/material-experimental/mdc-radio:mdc_radio_scss_lib",
         "//src/material-experimental/mdc-slide-toggle:mdc_slide_toggle_scss_lib",
         "//src/material-experimental/mdc-tabs:mdc_tabs_scss_lib",
-        "//src/material/core:all_themes",
+        "//src/material/core:theming_scss_lib",
     ],
 )
 

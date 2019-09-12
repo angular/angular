@@ -33,6 +33,11 @@ CDK_TARGETS_WITH_STYLES = [
     "text-field",
 ]
 
+CDK_SCSS_LIBS = [
+    "//src/cdk/%s:%s_scss_lib" % (p, p.replace("-", "_"))
+    for p in CDK_TARGETS_WITH_STYLES
+]
+
 CDK_TARGETS = ["//src/cdk"] + ["//src/cdk/%s" % p for p in CDK_PACKAGES]
 
 CDK_EXPERIMENTAL_PACKAGES = [

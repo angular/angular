@@ -1,5 +1,3 @@
-// We can use relative imports for imports from the cdk because we bundle everything
-// up into a single flat scss file for material.
 @import '../../cdk/overlay/overlay';
 @import '../../cdk/a11y/a11y';
 @import '../../cdk/text-field/text-field';
