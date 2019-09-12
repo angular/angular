@@ -156,7 +156,14 @@ describe('definitions', () => {
     expect(def.fileName).toBe(refFileName);
     expect(def.name).toBe('TestComponent');
     expect(def.kind).toBe('component');
-    expect(def.textSpan).toEqual(mockHost.getLocationMarkerFor(refFileName, 'test-comp'));
+    const content = mockHost.getFileContent(refFileName) !;
+    const begin = '/*BeginTestComponent*/ ';
+    const start = content.indexOf(begin) + begin.length;
+    const end = content.indexOf(' /*EndTestComponent*/');
+    expect(def.textSpan).toEqual({
+      start,
+      length: end - start,
+    });
   });
 
   it('should be able to find an event provider', () => {
@@ -186,7 +193,12 @@ describe('definitions', () => {
     expect(def.fileName).toBe(refFileName);
     expect(def.name).toBe('testEvent');
     expect(def.kind).toBe('event');
-    expect(def.textSpan).toEqual(mockHost.getDefinitionMarkerFor(refFileName, 'test'));
+    const content = mockHost.getFileContent(refFileName) !;
+    const ref = `@Output('test') testEvent = new EventEmitter();`;
+    expect(def.textSpan).toEqual({
+      start: content.indexOf(ref),
+      length: ref.length,
+    });
   });
 
   it('should be able to find an input provider', () => {
@@ -219,7 +231,12 @@ describe('definitions', () => {
     expect(def.fileName).toBe(refFileName);
     expect(def.name).toBe('name');
     expect(def.kind).toBe('property');
-    expect(def.textSpan).toEqual(mockHost.getDefinitionMarkerFor(refFileName, 'tcName'));
+    const content = mockHost.getFileContent(refFileName) !;
+    const ref = `@Input('tcName') name = 'test';`;
+    expect(def.textSpan).toEqual({
+      start: content.indexOf(ref),
+      length: ref.length,
+    });
   });
 
   it('should be able to find a pipe', () => {
