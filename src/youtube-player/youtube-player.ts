@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -7,37 +15,38 @@ import {
   Input,
   NgZone,
   OnDestroy,
+  OnInit,
   Output,
   ViewChild,
-  OnInit,
+  ViewEncapsulation,
 } from '@angular/core';
 
 import {
   combineLatest,
-  of as observableOf,
-  Observable,
   ConnectableObservable,
-  pipe,
-  MonoTypeOperatorFunction,
   merge,
+  MonoTypeOperatorFunction,
+  Observable,
+  of as observableOf,
   OperatorFunction,
+  pipe,
   Subject,
 } from 'rxjs';
 
 import {
   combineLatest as combineLatestOp,
-  map,
-  scan,
-  withLatestFrom,
-  flatMap,
-  filter,
-  startWith,
-  publish,
-  first,
   distinctUntilChanged,
-  takeUntil,
-  take,
+  filter,
+  first,
+  flatMap,
+  map,
+  publish,
+  scan,
   skipWhile,
+  startWith,
+  take,
+  takeUntil,
+  withLatestFrom,
 } from 'rxjs/operators';
 
 declare global {
@@ -66,8 +75,10 @@ type UninitializedPlayer = Pick<Player, 'videoId' | 'destroy' | 'addEventListene
  * @see https://developers.google.com/youtube/iframe_api_reference
  */
 @Component({
+  moduleId: module.id,
   selector: 'youtube-player',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   // This div is *replaced* by the YouTube player embed.
   template: '<div #youtube_container></div>',
 })

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,7 +13,8 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  Output
+  Output,
+  ViewEncapsulation
 } from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
@@ -23,9 +32,11 @@ export const DEFAULT_MARKER_OPTIONS = {
  * @see developers.google.com/maps/documentation/javascript/reference/marker
  */
 @Component({
+  moduleId: module.id,
   selector: 'map-marker',
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MapMarker implements OnInit, OnDestroy {
   @Input()

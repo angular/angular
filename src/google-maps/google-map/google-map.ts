@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -11,6 +19,7 @@ import {
   OnInit,
   Output,
   QueryList,
+  ViewEncapsulation,
 } from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, shareReplay, take, takeUntil} from 'rxjs/operators';
@@ -47,9 +56,11 @@ export const DEFAULT_WIDTH = '500px';
  * @see https://developers.google.com/maps/documentation/javascript/reference/
  */
 @Component({
+  moduleId: module.id,
   selector: 'google-map',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<div class="map-container"></div><ng-content></ng-content>',
+  encapsulation: ViewEncapsulation.None,
 })
 export class GoogleMap implements OnChanges, OnInit, AfterContentInit, OnDestroy {
   @Input() height = DEFAULT_HEIGHT;

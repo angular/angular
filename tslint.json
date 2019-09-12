@@ -126,15 +126,15 @@
         "!host": "\\[class\\]"
       },
       "NgModule": "^(?!\\s*$).+"
-    }, "src/+(material|cdk|material-experimental|cdk-experimental)/**/!(*.spec).ts"],
+    }, "src/!(a11y-demo|e2e-app|material-examples|universal-app|dev-app)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
-      "src/+(material|cdk|material-experimental|cdk-experimental|dev-app)/**/!(*.spec).ts"
+      "src/!(a11y-demo|e2e-app|material-examples|universal-app)/**/!(*.spec).ts"
     ],
     "missing-rollup-globals": [
       true,
       "./tools/package-tools/rollup-globals.ts",
-      "src/+(material|cdk|material-examples|material-experimental|cdk-experimental)/!(schematics)**/*.ts"
+      "src/!(a11y-demo|e2e-app|material-examples|universal-app|dev-app)/!(schematics)**/*.ts"
     ],
     "file-name-casing": [true, {
       // Exclude custom lint rule files since they have to always be camel-cased and end
