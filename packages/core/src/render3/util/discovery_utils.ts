@@ -42,6 +42,7 @@ import {unwrapRNode} from './view_utils';
  * @publicApi
  */
 export function getComponent<T = {}>(element: Element): T|null {
+  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
   const context = loadLContext(element, false);
   if (context === null) return null;
 
@@ -74,6 +75,7 @@ export function getComponent<T = {}>(element: Element): T|null {
  * @publicApi
  */
 export function getContext<T = {}>(element: Element): T|null {
+  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
   const context = loadLContext(element, false);
   if (context === null) return null;
 
@@ -294,6 +296,7 @@ export function isBrowserEvents(listener: Listener): boolean {
  * @publicApi
  */
 export function getListeners(element: Element): Listener[] {
+  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
   const lContext = loadLContext(element, false);
   if (lContext === null) return [];
 
