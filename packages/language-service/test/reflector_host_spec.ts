@@ -44,10 +44,9 @@ describe('reflector_host_spec', () => {
   it('should use module resolution cache', () => {
     const mockHost = new MockTypescriptHost(['/app/main.ts'], toh);
     // TypeScript relies on `ModuleResolutionHost.fileExists()` to perform
-    // module resolution, and ReflectorHost uses
-    // `LanguageServiceHost.getScriptSnapshot()` to implement `fileExists()`,
-    // so spy on this method to determine how many times it's called.
-    const spy = spyOn(mockHost, 'getScriptSnapshot').and.callThrough();
+    // module resolution, so spy on this method to determine how many times
+    // it's called.
+    const spy = spyOn(mockHost, 'fileExists').and.callThrough();
 
     const tsLS = ts.createLanguageService(mockHost);
 
@@ -62,16 +61,16 @@ describe('reflector_host_spec', () => {
     // This resolves all Angular directives in the project.
     ngLSHost.getAnalyzedModules();
     const secondCount = spy.calls.count();
-    expect(secondCount).toBeGreaterThan(500);
-    expect(secondCount).toBeLessThan(600);
+    expect(secondCount).toBeGreaterThan(700);
+    expect(secondCount).toBeLessThan(800);
     spy.calls.reset();
 
     // Third count is due to recompution after the program changes.
     mockHost.addCode('');  // this will mark project as dirty
     ngLSHost.getAnalyzedModules();
     const thirdCount = spy.calls.count();
-    expect(thirdCount).toBeGreaterThan(50);
-    expect(thirdCount).toBeLessThan(100);
+    expect(thirdCount).toBeGreaterThan(0);
+    expect(thirdCount).toBeLessThan(10);
 
     // Summary
     // |               | First Count | Second Count | Third Count |
