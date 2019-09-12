@@ -154,11 +154,6 @@ export function readPatchedData(target: any): LView|LContext|null {
   return target[MONKEY_PATCH_KEY_NAME] || null;
 }
 
-/** Checks whether a target has monkey-patched LView or LContext data. */
-export function hasPatchedData(target: any): boolean {
-  return !!target && target.hasOwnProperty[MONKEY_PATCH_KEY_NAME];
-}
-
 export function readPatchedLView(target: any): LView|null {
   const value = readPatchedData(target);
   if (value) {
