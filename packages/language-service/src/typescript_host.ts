@@ -57,7 +57,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private readonly summaryResolver: AotSummaryResolver;
   private readonly reflectorHost: ReflectorHost;
   private readonly staticSymbolResolver: StaticSymbolResolver;
-  private resolver: CompileMetadataResolver;
 
   private readonly staticSymbolCache = new StaticSymbolCache();
   private readonly fileToComponent = new Map<string, StaticSymbol>();
@@ -86,14 +85,23 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this.staticSymbolResolver = new StaticSymbolResolver(
         this.reflectorHost, this.staticSymbolCache, this.summaryResolver,
         (e, filePath) => this.collectError(e, filePath));
-    this.resolver = this.createMetadataResolver();
   }
 
+  // The resolver is instantiated lazily and should not be accessed directly.
+  // Instead, call the resolver getter. The instantiation of the resolver also
+  // requires instantiation of the StaticReflector, and the latter requires
+  // resolution of core Angular symbols. Module resolution should not be done
+  // during instantiation to avoid cyclic dependency between the plugin and the
+  // containing Project, so the Singleton pattern is used here.
+  private _resolver: CompileMetadataResolver|undefined;
+
   /**
-   * Creates a new metadata resolver. This is needed whenever the program
-   * changes.
+   * Return the singleton instance of the MetadataResolver.
    */
-  private createMetadataResolver(): CompileMetadataResolver {
+  private get resolver(): CompileMetadataResolver {
+    if (this._resolver) {
+      return this._resolver;
+    }
     // StaticReflector keeps its own private caches that are not clearable.
     // We have no choice but to create a new instance to invalidate the caches.
     // TODO: Revisit this when language service gets rewritten for Ivy.
@@ -119,11 +127,20 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     });
     const directiveNormalizer =
         new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
-    return new CompileMetadataResolver(
+    this._resolver = new CompileMetadataResolver(
         config, htmlParser, moduleResolver, directiveResolver, pipeResolver,
         new JitSummaryResolver(), elementSchemaRegistry, directiveNormalizer, new Console(),
         this.staticSymbolCache, staticReflector,
         (error, type) => this.collectError(error, type && type.filePath));
+    return this._resolver;
+  }
+
+  /**
+   * Return the singleton instance of the StaticReflector hosted in the
+   * MetadataResolver.
+   */
+  private get reflector(): StaticReflector {
+    return this.resolver.getReflector() as StaticReflector;
   }
 
   getTemplateReferences(): string[] { return [...this.templateReferences]; }
@@ -144,7 +161,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this.templateReferences = [];
     this.fileToComponent.clear();
     this.collectedErrors.clear();
-    this.resolver = this.createMetadataResolver();
+    // TODO: This is only temporary. When https://github.com/angular/angular/pull/32543
+    // is merged this is no longer necessary.
+    this._resolver = undefined;  // Invalidate the resolver
 
     const analyzeHost = {isSourceFile(filePath: string) { return true; }};
     const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
@@ -259,8 +278,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
     return program;
   }
-
-  get reflector(): StaticReflector { return this.resolver.getReflector() as StaticReflector; }
 
   /**
    * Checks whether the program has changed, and invalidate caches if it has.
