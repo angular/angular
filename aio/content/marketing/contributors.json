@@ -819,9 +819,9 @@
   },
   "martinakraus": {
     "name": "Martina Kraus",
-    "picture": "martina-kraus.jpg",
+    "picture": "martinakraus.jpg",
     "twitter": "MartinaKraus11",
-    "website": "http://http://martina-kraus.io",
+    "website": "http://martina-kraus.io",
     "bio": "Martina is a software engineer and an Angular enthusiast. As a trainer, mentor and speaker she loves sharing knowledge about Web Technologies and Angular. She is Organizer of ngGirls and the local Angular Meetup",
     "groups": ["GDE"]
   }
