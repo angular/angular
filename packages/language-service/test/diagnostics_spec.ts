@@ -496,7 +496,7 @@ describe('diagnostics', () => {
     });
 
     it('should not report errors for valid templateUrls', () => {
-      const fileName = addCode(`
+      const fileName = mockHost.addCode(`
 	@Component({
           templateUrl: './test.ng',
 	})
