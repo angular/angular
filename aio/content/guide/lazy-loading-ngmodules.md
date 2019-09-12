@@ -33,7 +33,7 @@ Navigate into the project by issuing the command `cd customer-app`.
 ## Create a feature module with routing
 
 Next, you’ll need a feature module with a component to route to.
-To make one, enter the following command in the terminal, where `customers` is the name of the features module, and `customer-list` is the route path for loading the `customers` component:
+To make one, enter the following command in the terminal, where `customers` is the name of the feature module, and `customer-list` is the route path for loading the `customers` component:
 
 <code-example language="bash">
 ng generate module customers --route customer-list --module app.module
