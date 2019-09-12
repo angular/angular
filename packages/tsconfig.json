@@ -44,6 +44,7 @@
     // Http doesn't need to built since it is no longer maintained and
     // will be removed eventually. See: FW-1392.
     "http/**",
+    "language-service/test/project",
     "platform-server/integrationtest",
     // The webworker packages have deprecated and are not made compatible with the
     // strict flag. Until these packages are removed, we exclude them here.
