@@ -3,7 +3,11 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(
+        include = ["**/*.ts"],
+        exclude = ["project/**/*"],
+    ),
+    data = glob(["project/**/*"]),
     deps = [
         "//packages:types",
         "//packages/compiler",
