@@ -4,6 +4,7 @@
     // packages like the native "http" module are resolved to the Angular "http" package.
     "baseUrl": "..",
     "declaration": true,
+    "downlevelIteration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
