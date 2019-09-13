@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TargetMessage} from '@angular/localize/src/utils/messages';
+import {TargetMessage, computeMsgId} from '../../src/utils/messages';
 import {ParsedTranslation, makeTemplateObject, parseTranslation, translate} from '../../src/utils/translations';
 
 describe('utils', () => {
@@ -151,7 +151,8 @@ describe('utils', () => {
         Record<string, ParsedTranslation> {
       const parsedTranslations: Record<string, ParsedTranslation> = {};
       Object.keys(translations).forEach(key => {
-        parsedTranslations[key] = parseTranslation(translations[key]);
+
+        parsedTranslations[computeMsgId(key, '')] = parseTranslation(translations[key]);
       });
       return parsedTranslations;
     }
