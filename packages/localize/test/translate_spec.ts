@@ -5,19 +5,22 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+// Ensure that `$localize` is loaded to the global scope.
 import '@angular/localize/init';
+
 import {clearTranslations, loadTranslations} from '../src/translate';
+import {MessageId, TargetMessage, computeMsgId} from '../src/utils/messages';
 
 describe('$localize tag with translations', () => {
   describe('identities', () => {
     beforeEach(() => {
-      loadTranslations({
+      loadTranslations(computeIds({
         'abc': 'abc',
         'abc{$ph_1}': 'abc{$ph_1}',
         'abc{$ph_1}def': 'abc{$ph_1}def',
         'abc{$ph_1}def{$ph_2}': 'abc{$ph_1}def{$ph_2}',
         'Hello, {$ph_1}!': 'Hello, {$ph_1}!',
-      });
+      }));
     });
     afterEach(() => { clearTranslations(); });
 
@@ -33,13 +36,13 @@ describe('$localize tag with translations', () => {
 
   describe('to upper-case messageParts', () => {
     beforeEach(() => {
-      loadTranslations({
+      loadTranslations(computeIds({
         'abc': 'ABC',
         'abc{$ph_1}': 'ABC{$ph_1}',
         'abc{$ph_1}def': 'ABC{$ph_1}DEF',
         'abc{$ph_1}def{$ph_2}': 'ABC{$ph_1}DEF{$ph_2}',
         'Hello, {$ph_1}!': 'HELLO, {$ph_1}!',
-      });
+      }));
     });
     afterEach(() => { clearTranslations(); });
 
@@ -55,9 +58,9 @@ describe('$localize tag with translations', () => {
 
   describe('to reverse expressions', () => {
     beforeEach(() => {
-      loadTranslations({
+      loadTranslations(computeIds({
         'abc{$ph_1}def{$ph_2} - Hello, {$ph_3}!': 'abc{$ph_3}def{$ph_2} - Hello, {$ph_1}!',
-      });
+      }));
     });
     afterEach(() => { clearTranslations(); });
 
@@ -70,9 +73,9 @@ describe('$localize tag with translations', () => {
 
   describe('to remove expressions', () => {
     beforeEach(() => {
-      loadTranslations({
+      loadTranslations(computeIds({
         'abc{$ph_1}def{$ph_2} - Hello, {$ph_3}!': 'abc{$ph_1} - Hello, {$ph_3}!',
-      });
+      }));
     });
     afterEach(() => { clearTranslations(); });
 
@@ -83,3 +86,10 @@ describe('$localize tag with translations', () => {
     });
   });
 });
+
+function computeIds(translations: Record<MessageId, TargetMessage>):
+    Record<MessageId, TargetMessage> {
+  const processed: Record<MessageId, TargetMessage> = {};
+  Object.keys(translations).forEach(key => processed[computeMsgId(key, '')] = translations[key]);
+  return processed;
+}

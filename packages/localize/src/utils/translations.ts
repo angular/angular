@@ -33,7 +33,7 @@ export type ParsedTranslations = Record<MessageId, ParsedTranslation>;
  * `substitutions`.
  * The translation may reorder (or remove) substitutions as appropriate.
  *
- * If no translation matches then the original `messageParts` and `substitutions` are returned
+ * If no translation matches then an error is thrown.
  */
 export function translate(
     translations: Record<string, ParsedTranslation>, messageParts: TemplateStringsArray,
@@ -46,7 +46,8 @@ export function translate(
       translation.placeholderNames.map(placeholder => message.substitutions[placeholder])
     ];
   } else {
-    return [messageParts, substitutions];
+    throw new Error(
+        `No translation found for "${message.messageId}" ("${message.messageString}").`);
   }
 }
 

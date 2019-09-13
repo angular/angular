@@ -19,3 +19,26 @@
  * ```
  */
 export const BLOCK_MARKER = ':';
+
+/**
+ * The marker used to separate a message's "meaning" from its "description" in a metadata block.
+ *
+ * For example:
+ *
+ * ```ts
+ * $localize `:correct|Indicates that the user got the answer correct: Right!`;
+ * $localize `:movement|Button label for moving to the right: Right!`;
+ * ```
+ */
+export const MEANING_SEPARATOR = '|';
+
+/**
+ * The marker used to separate a message's custom "id" from its "description" in a metadata block.
+ *
+ * For example:
+ *
+ * ```ts
+ * $localize `:A welcome message on the home page@@myApp-homepage-welcome: Welcome!`;
+ * ```
+ */
+export const ID_SEPARATOR = '@@';
