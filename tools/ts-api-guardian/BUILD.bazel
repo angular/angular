@@ -80,7 +80,6 @@ jasmine_node_test(
         # TODO: remove this once the boostrap.js workaround has been removed.
         ":package.json",
     ],
-    tags = ["local"],
 )
 # END-INTERNAL
 
