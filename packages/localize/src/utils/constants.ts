@@ -7,13 +7,15 @@
  */
 
 /**
- * The character used to mark the start and end of a placeholder name in a `$localize` tagged
- * string.
+ * The character used to mark the start and end of a "block" in a `$localize` tagged string.
+ * A block can indicate metadata about the message or specify a name of a placeholder for a
+ * substitution expressions.
  *
  * For example:
  *
- * ```
+ * ```ts
  * $localize`Hello, ${title}:title:!`;
+ * $localize`:meaning|description@@id:source message text`;
  * ```
  */
-export const PLACEHOLDER_NAME_MARKER = ':';
+export const BLOCK_MARKER = ':';
