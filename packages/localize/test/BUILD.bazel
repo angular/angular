@@ -4,7 +4,7 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(
-        ["*_spec.ts"],
+        ["**/*_spec.ts"],
     ),
     deps = [
         "//packages:types",
