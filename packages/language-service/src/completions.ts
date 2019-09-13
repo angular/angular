@@ -31,20 +31,20 @@ const hiddenHtmlElements = {
 export function getTemplateCompletions(
     templateInfo: AstResult, position: number): ts.CompletionEntry[] {
   let result: ts.CompletionEntry[] = [];
-  let {htmlAst, template} = templateInfo;
+  const {htmlAst, template} = templateInfo;
   // The templateNode starts at the delimiter character so we add 1 to skip it.
-  let templatePosition = position - template.span.start;
-  let path = findNode(htmlAst, templatePosition);
-  let mostSpecific = path.tail;
+  const templatePosition = position - template.span.start;
+  const path = findNode(htmlAst, templatePosition);
+  const mostSpecific = path.tail;
   if (path.empty || !mostSpecific) {
     result = elementCompletions(templateInfo, path);
   } else {
-    let astPosition = templatePosition - mostSpecific.sourceSpan.start.offset;
+    const astPosition = templatePosition - mostSpecific.sourceSpan.start.offset;
     mostSpecific.visit(
         {
           visitElement(ast) {
-            let startTagSpan = spanOf(ast.sourceSpan);
-            let tagLen = ast.name.length;
+            const startTagSpan = spanOf(ast.sourceSpan);
+            const tagLen = ast.name.length;
             // + 1 for the opening angle bracket
             if (templatePosition <= startTagSpan.start + tagLen + 1) {
               // If we are in the tag then return the element completions.
@@ -69,9 +69,9 @@ export function getTemplateCompletions(
             if (result.length) return result;
             result = interpolationCompletions(templateInfo, templatePosition);
             if (result.length) return result;
-            let element = path.first(Element);
+            const element = path.first(Element);
             if (element) {
-              let definition = getHtmlTagDefinition(element.name);
+              const definition = getHtmlTagDefinition(element.name);
               if (definition.contentType === TagContentType.PARSABLE_DATA) {
                 result = voidElementAttributeCompletions(templateInfo, path);
                 if (!result.length) {
@@ -97,7 +97,7 @@ export function getTemplateCompletions(
 }
 
 function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.CompletionEntry[] {
-  let item = path.tail instanceof Element ? path.tail : path.parentOf(path.tail);
+  const item = path.tail instanceof Element ? path.tail : path.parentOf(path.tail);
   if (item instanceof Element) {
     return attributeCompletionsForElement(info, item.name, item);
   }
@@ -123,27 +123,27 @@ function attributeCompletionsForElement(
 
 function getAttributeInfosForElement(
     info: AstResult, elementName: string, element?: Element): AttrInfo[] {
-  let attributes: AttrInfo[] = [];
+  const attributes: AttrInfo[] = [];
 
   // Add html attributes
-  let htmlAttributes = attributeNames(elementName) || [];
+  const htmlAttributes = attributeNames(elementName) || [];
   if (htmlAttributes) {
     attributes.push(...htmlAttributes.map<AttrInfo>(name => ({name, fromHtml: true})));
   }
 
   // Add html properties
-  let htmlProperties = propertyNames(elementName);
+  const htmlProperties = propertyNames(elementName);
   if (htmlProperties) {
     attributes.push(...htmlProperties.map<AttrInfo>(name => ({name, input: true})));
   }
 
   // Add html events
-  let htmlEvents = eventNames(elementName);
+  const htmlEvents = eventNames(elementName);
   if (htmlEvents) {
     attributes.push(...htmlEvents.map<AttrInfo>(name => ({name, output: true})));
   }
 
-  let {selectors, map: selectorMap} = getSelectors(info);
+  const {selectors, map: selectorMap} = getSelectors(info);
   if (selectors && selectors.length) {
     // All the attributes that are selectable should be shown.
     const applicableSelectors =
@@ -168,14 +168,14 @@ function getAttributeInfosForElement(
     });
 
     // All input and output properties of the matching directives should be added.
-    let elementSelector = element ?
+    const elementSelector = element ?
         createElementCssSelector(element) :
         createElementCssSelector(new Element(elementName, [], [], null !, null, null));
 
-    let matcher = new SelectorMatcher();
+    const matcher = new SelectorMatcher();
     matcher.addSelectables(selectors);
     matcher.match(elementSelector, selector => {
-      let directive = selectorMap.get(selector);
+      const directive = selectorMap.get(selector);
       if (directive) {
         const {inputs, outputs} = directive;
         attrs.push(...Object.keys(inputs).map(name => ({name: inputs[name], input: true})));
@@ -217,14 +217,14 @@ function attributeValueCompletions(
 }
 
 function elementCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.CompletionEntry[] {
-  let htmlNames = elementNames().filter(name => !(name in hiddenHtmlElements));
+  const htmlNames = elementNames().filter(name => !(name in hiddenHtmlElements));
 
   // Collect the elements referenced by the selectors
-  let directiveElements = getSelectors(info)
-                              .selectors.map(selector => selector.element)
-                              .filter(name => !!name) as string[];
+  const directiveElements = getSelectors(info)
+                                .selectors.map(selector => selector.element)
+                                .filter(name => !!name) as string[];
 
-  let components = directiveElements.map(name => {
+  const components = directiveElements.map(name => {
     return {
       name,
       // Need to cast to unknown because Angular's CompletionKind includes HTML
@@ -233,7 +233,7 @@ function elementCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.Complet
       sortText: name,
     };
   });
-  let htmlElements = htmlNames.map(name => {
+  const htmlElements = htmlNames.map(name => {
     return {
       name,
       // Need to cast to unknown because Angular's CompletionKind includes HTML
@@ -292,7 +292,7 @@ function interpolationCompletions(info: AstResult, position: number): ts.Complet
   if (!templatePath.tail) {
     return [];
   }
-  let visitor = new ExpressionVisitor(
+  const visitor = new ExpressionVisitor(
       info, position, undefined,
       () => getExpressionScope(diagnosticInfoFromTemplateInfo(info), templatePath, false));
   templatePath.tail.visit(visitor, null);
@@ -307,9 +307,9 @@ function interpolationCompletions(info: AstResult, position: number): ts.Complet
 // if it is not.
 function voidElementAttributeCompletions(
     info: AstResult, path: AstPath<HtmlAst>): ts.CompletionEntry[] {
-  let tail = path.tail;
+  const tail = path.tail;
   if (tail instanceof Text) {
-    let match = tail.value.match(/<(\w(\w|\d|-)*:)?(\w(\w|\d|-)*)\s/);
+    const match = tail.value.match(/<(\w(\w|\d|-)*:)?(\w(\w|\d|-)*)\s/);
     // The position must be after the match, otherwise we are still in a place where elements
     // are expected (such as `<|a` or `<a|`; we only want attributes for `<a |` or after).
     if (match &&
@@ -474,7 +474,7 @@ function nameOfAttr(attr: AttrInfo): string {
     name = removeSuffix(name, 'Events');
     name = removeSuffix(name, 'Changed');
   }
-  let result = [name];
+  const result = [name];
   if (attr.input) {
     result.unshift('[');
     result.push(']');
@@ -492,13 +492,13 @@ function nameOfAttr(attr: AttrInfo): string {
 const templateAttr = /^(\w+:)?(template$|^\*)/;
 function createElementCssSelector(element: Element): CssSelector {
   const cssSelector = new CssSelector();
-  let elNameNoNs = splitNsName(element.name)[1];
+  const elNameNoNs = splitNsName(element.name)[1];
 
   cssSelector.setElement(elNameNoNs);
 
-  for (let attr of element.attrs) {
+  for (const attr of element.attrs) {
     if (!attr.name.match(templateAttr)) {
-      let [_, attrNameNoNs] = splitNsName(attr.name);
+      const [_, attrNameNoNs] = splitNsName(attr.name);
       cssSelector.addAttribute(attrNameNoNs, attr.value);
       if (attr.name.toLowerCase() == 'class') {
         const classes = attr.value.split(/s+/g);
@@ -510,27 +510,27 @@ function createElementCssSelector(element: Element): CssSelector {
 }
 
 function foldAttrs(attrs: AttrInfo[]): AttrInfo[] {
-  let inputOutput = new Map<string, AttrInfo>();
-  let templates = new Map<string, AttrInfo>();
-  let result: AttrInfo[] = [];
+  const inputOutput = new Map<string, AttrInfo>();
+  const templates = new Map<string, AttrInfo>();
+  const result: AttrInfo[] = [];
   attrs.forEach(attr => {
     if (attr.fromHtml) {
       return attr;
     }
     if (attr.template) {
-      let duplicate = templates.get(attr.name);
+      const duplicate = templates.get(attr.name);
       if (!duplicate) {
         result.push({name: attr.name, template: true});
         templates.set(attr.name, attr);
       }
     }
     if (attr.input || attr.output) {
-      let duplicate = inputOutput.get(attr.name);
+      const duplicate = inputOutput.get(attr.name);
       if (duplicate) {
         duplicate.input = duplicate.input || attr.input;
         duplicate.output = duplicate.output || attr.output;
       } else {
-        let cloneAttr: AttrInfo = {name: attr.name};
+        const cloneAttr: AttrInfo = {name: attr.name};
         if (attr.input) cloneAttr.input = true;
         if (attr.output) cloneAttr.output = true;
         result.push(cloneAttr);
