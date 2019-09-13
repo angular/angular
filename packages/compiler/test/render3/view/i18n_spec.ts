@@ -5,8 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {I18nMeta, parseI18nMeta} from '@angular/compiler/src/render3/view/i18n/meta';
-
 import {AST} from '../../../src/expression_parser/ast';
 import {Lexer} from '../../../src/expression_parser/lexer';
 import {Parser} from '../../../src/expression_parser/parser';
@@ -17,6 +15,7 @@ import {I18nContext} from '../../../src/render3/view/i18n/context';
 import {serializeI18nMessageForGetMsg} from '../../../src/render3/view/i18n/get_msg_utils';
 import {serializeIcuNode} from '../../../src/render3/view/i18n/icu_serializer';
 import {serializeI18nMessageForLocalize} from '../../../src/render3/view/i18n/localize_utils';
+import {I18nMeta, parseI18nMeta, serializeI18nMeta} from '../../../src/render3/view/i18n/meta';
 import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util';
 
 import {parseR3 as parse} from './util';
@@ -200,10 +199,8 @@ describe('Utils', () => {
         ([input, output]) => { expect(formatI18nPlaceholderName(input)).toEqual(output); });
   });
 
-  it('parseI18nMeta', () => {
-    const meta = (id?: string, meaning?: string, description?: string) =>
-        ({id, meaning, description});
-    const cases = [
+  describe('metadata serialization', () => {
+    const metadataCases: [string, I18nMeta][] = [
       ['', meta()],
       ['desc', meta('', '', 'desc')],
       ['desc@@id', meta('id', '', 'desc')],
@@ -211,9 +208,20 @@ describe('Utils', () => {
       ['meaning|desc@@id', meta('id', 'meaning', 'desc')],
       ['@@id', meta('id', '', '')],
     ];
-    cases.forEach(([input, output]) => {
-      expect(parseI18nMeta(input as string)).toEqual(output as I18nMeta, input);
+
+    it('parseI18nMeta()', () => {
+      metadataCases.forEach(
+          ([input, output]) => { expect(parseI18nMeta(input)).toEqual(output, input); });
     });
+
+    it('serializeI18nMeta()', () => {
+      metadataCases.forEach(
+          ([output, input]) => { expect(serializeI18nMeta(input)).toEqual(output, input); });
+    });
+
+    function meta(id?: string, meaning?: string, description?: string): I18nMeta {
+      return {id, meaning, description};
+    }
   });
 });
 

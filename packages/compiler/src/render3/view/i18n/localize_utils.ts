@@ -9,6 +9,7 @@ import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
 
 import {serializeIcuNode} from './icu_serializer';
+import {metaFromI18nMessage, serializeI18nMeta} from './meta';
 import {formatI18nPlaceholderName} from './util';
 
 export function createLocalizeStatements(
@@ -16,15 +17,13 @@ export function createLocalizeStatements(
     params: {[name: string]: o.Expression}): o.Statement[] {
   const statements = [];
 
-  // TODO: re-enable these comments when we have a plan on how to make them work so that Closure
-  // compiler doesn't complain about the JSDOC comments.
-
-  // const jsdocComment = i18nMetaToDocStmt(metaFromI18nMessage(message));
-  // if (jsdocComment !== null) {
-  //   statements.push(jsdocComment);
-  // }
+  const metaBlock = serializeI18nMeta(metaFromI18nMessage(message));
 
   const {messageParts, placeHolders} = serializeI18nMessageForLocalize(message);
+
+  // Update first message part with metadata
+  messageParts[0] = `:${metaBlock}:${messageParts[0]}`;
+
   statements.push(new o.ExpressionStatement(variable.set(
       o.localizedString(messageParts, placeHolders, placeHolders.map(ph => params[ph])))));
 
