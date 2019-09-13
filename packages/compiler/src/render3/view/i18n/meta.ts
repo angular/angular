@@ -178,6 +178,23 @@ export function parseI18nMeta(meta?: string): I18nMeta {
   return {id, meaning, description};
 }
 
+/**
+ * Serialize the given `meta` into a string that can be used in a `$localize` tagged string metadata
+ * block. The format is the same as that parsed by `parseI18nMeta()`.
+ *
+ * @param meta The metadata to serialize
+ */
+export function serializeI18nMeta(meta: I18nMeta): string {
+  let metaBlock = meta.description || '';
+  if (meta.meaning) {
+    metaBlock = `${meta.meaning}|${metaBlock}`;
+  }
+  if (meta.id) {
+    metaBlock = `${metaBlock}@@${meta.id}`;
+  }
+  return metaBlock;
+}
+
 // Converts i18n meta information for a message (id, description, meaning)
 // to a JsDoc statement formatted as expected by the Closure compiler.
 export function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
