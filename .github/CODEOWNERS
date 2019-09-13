@@ -84,6 +84,7 @@
 #  (secret team to avoid review requests, it also doesn't inherit from @angular/framework because nested teams can't be secret)
 #
 #   - IgorMinar
+#   - josephperrott
 #   - kara
 #   - mhevery
 
