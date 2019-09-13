@@ -21,24 +21,24 @@ describe('completions', () => {
   let ngService = createLanguageService(ngHost);
 
   it('should be able to get entity completions',
-     () => { contains('/app/test.ng', 'entity-amp', '&amp;', '&gt;', '&lt;', '&iota;'); });
+     () => { expectContains('/app/test.ng', 'entity-amp', '&amp;', '&gt;', '&lt;', '&iota;'); });
 
   it('should be able to return html elements', () => {
     let htmlTags = ['h1', 'h2', 'div', 'span'];
     let locations = ['empty', 'start-tag-h1', 'h1-content', 'start-tag', 'start-tag-after-h'];
     for (let location of locations) {
-      contains('/app/test.ng', location, ...htmlTags);
+      expectContains('/app/test.ng', location, ...htmlTags);
     }
   });
 
   it('should be able to return element diretives',
-     () => { contains('/app/test.ng', 'empty', 'my-app'); });
+     () => { expectContains('/app/test.ng', 'empty', 'my-app'); });
 
   it('should be able to return h1 attributes',
-     () => { contains('/app/test.ng', 'h1-after-space', 'id', 'dir', 'lang', 'onclick'); });
+     () => { expectContains('/app/test.ng', 'h1-after-space', 'id', 'dir', 'lang', 'onclick'); });
 
   it('should be able to find common angular attributes',
-     () => { contains('/app/test.ng', 'div-attributes', '(click)', '[ngClass]'); });
+     () => { expectContains('/app/test.ng', 'div-attributes', '(click)', '[ngClass]'); });
 
   it('should be able to get completions in some random garbage', () => {
     const fileName = '/app/test.ng';
@@ -48,8 +48,7 @@ describe('completions', () => {
   });
 
   it('should be able to infer the type of a ngForOf', () => {
-    addCodeAndCallback(
-        `
+    const fileName = mockHost.addCode(`
       interface Person {
         name: string,
         street: string
@@ -58,13 +57,12 @@ describe('completions', () => {
       @Component({template: '<div *ngFor="let person of people">{{person.~{name}name}}</div'})
       export class MyComponent {
         people: Person[]
-      }`,
-        () => { contains('/app/app.component.ts', 'name', 'name', 'street'); });
+      }`);
+    expectContains(fileName, 'name', 'name', 'street');
   });
 
   it('should be able to infer the type of a ngForOf with an async pipe', () => {
-    addCodeAndCallback(
-        `
+    const fileName = mockHost.addCode(`
       interface Person {
         name: string,
         street: string
@@ -73,8 +71,8 @@ describe('completions', () => {
       @Component({template: '<div *ngFor="let person of people | async">{{person.~{name}name}}</div'})
       export class MyComponent {
         people: Promise<Person[]>;
-      }`,
-        () => { contains('/app/app.component.ts', 'name', 'name', 'street'); });
+      }`);
+    expectContains(fileName, 'name', 'name', 'street');
   });
 
   it('should be able to complete every character in the file', () => {
@@ -135,20 +133,22 @@ describe('completions', () => {
   describe('with regression tests', () => {
     it('should not crash with an incomplete component', () => {
       expect(() => {
-        const code = `
-@Component({
-  template: '~{inside-template}'
-})
-export class MyComponent {
+        const fileName = mockHost.addCode(`
+          @Component({
+            template: '~{inside-template}'
+          })
+          export class MyComponent {
+          
+          }`);
 
-}`;
-        addCodeAndCallback(code, fileName => { contains(fileName, 'inside-template', 'h1'); });
+        expectContains(fileName, 'inside-template', 'h1');
       }).not.toThrow();
     });
 
     it('should hot crash with an incomplete class', () => {
       expect(() => {
-        addCodeAndCallback('\nexport class', fileName => { ngHost.getAnalyzedModules(); });
+        mockHost.addCode('\nexport class');
+        ngHost.getAnalyzedModules();
       }).not.toThrow();
     });
 
@@ -178,12 +178,11 @@ export class MyComponent {
       }
     `);
     ngHost.getAnalyzedModules();
-    contains('/app/my.component.ts', 'tree', 'children');
+    expectContains('/app/my.component.ts', 'tree', 'children');
   });
 
   it('should work with input and output', () => {
-    addCodeAndCallback(
-        `
+    const fileName = mockHost.addCode(`
       @Component({
         selector: 'foo-component',
         template: \`
@@ -195,24 +194,12 @@ export class MyComponent {
         text: string;
         value: number;
       }
-    `,
-        (fileName) => {
-          contains(fileName, 'stringMarker', '[model]', '(model)');
-          contains(fileName, 'numberMarker', '[inputAlias]', '(outputAlias)');
-        });
+    `);
+    expectContains(fileName, 'stringMarker', '[model]', '(model)');
+    expectContains(fileName, 'numberMarker', '[inputAlias]', '(outputAlias)');
   });
 
-  function addCodeAndCallback(code: string, cb: (fileName: string, content?: string) => void) {
-    const fileName = mockHost.addCode(code);
-    ngHost.getAnalyzedModules();
-    try {
-      cb(fileName, mockHost.getFileContent(fileName) !);
-    } finally {
-      mockHost.override(fileName, undefined !);
-    }
-  }
-
-  function contains(fileName: string, locationMarker: string, ...names: string[]) {
+  function expectContains(fileName: string, locationMarker: string, ...names: string[]) {
     let location = mockHost.getMarkerLocations(fileName) ![locationMarker];
     if (location == null) {
       throw new Error(`No marker ${locationMarker} found.`);
