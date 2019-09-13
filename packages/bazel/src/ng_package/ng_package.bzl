@@ -33,6 +33,11 @@ load("//packages/bazel/src:external.bzl", "FLAT_DTS_FILE_SUFFIX")
 load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 load("//packages/bazel/src/ng_package:collect-type-definitions.bzl", "collect_type_definitions")
 
+# Prints a debug message if "--define=VERBOSE_LOGS=true" is specified.
+def _debug(vars, *args):
+    if "VERBOSE_LOGS" in vars.keys():
+        print("[ng_package.bzl]", *args)
+
 _DEFAULT_NG_PACKAGER = "@npm//@angular/bazel/bin:packager"
 
 # Convert from some-dash-case to someCamelCase
@@ -254,6 +259,11 @@ def _ng_package_impl(ctx):
             typings_path = ng_module_metadata.typings_file.path
             metadata_file = ng_module_metadata.metadata_file
             guessed_paths = False
+            _debug(
+                ctx.var,
+                "entry-point %s is built using a flat module bundle." % dep,
+                "using %s as main file of the entry-point" % index_file,
+            )
         else:
             # In case the dependency is built through the "ts_library" rule, or the "ng_module"
             # rule does not generate a flat module bundle, we determine the index file and
@@ -273,6 +283,11 @@ def _ng_package_impl(ctx):
             typings_path = "%s/index.d.ts" % output_dir
             metadata_file = None
             guessed_paths = True
+            _debug(
+                ctx.var,
+                "entry-point %s does not have flat module metadata." % dep,
+                "guessing %s as main file of the entry-point" % index_file,
+            )
 
         # Store the collected entry point in a list of all entry-points. This
         # can be later passed to the packager as a manifest.
