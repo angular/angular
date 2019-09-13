@@ -183,7 +183,7 @@ describe('url serializer', () => {
   it('should parse empty fragment', () => {
     const tree = url.parse('/one#');
     expect(tree.fragment).toEqual('');
-    expect(url.serialize(tree)).toEqual('/one#');
+    expect(url.serialize(tree)).toEqual('/one');
   });
 
   describe('encoding/decoding', () => {
