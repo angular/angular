@@ -24,8 +24,18 @@ export interface Profile {
   noImprovementCount: number;
 }
 
+let emptyLoopCost_ms = -1;
+
 export function createBenchmark(benchmarkName: string): Benchmark {
   const profiles: Profile[] = [];
+
+  if (emptyLoopCost_ms === -1) {
+    emptyLoopCost_ms = 0;  // prevent infinite loop
+    const noop = createBenchmark('empty')('noop');
+    while (noop()) {
+    }
+    emptyLoopCost_ms = noop.bestTime;
+  }
 
   const benchmark = function Benchmark(profileName: string): Profile {
     let iterationCounter: number = 0;
@@ -38,12 +48,12 @@ export function createBenchmark(benchmarkName: string): Benchmark {
           // this is the first time we are executing
           iterationCounter = profile.iterationCount;
           runAgain = true;
-          // console.log('profiling', profileName, '...');
         } else {
           profile.sampleCount++;
           // we came to an end of a sample, compute the time.
           const duration_ms = performance.now() - timestamp;
-          const iterationTime_ms = duration_ms / profile.iterationCount;
+          const iterationTime_ms =
+              Math.max((duration_ms / profile.iterationCount) - emptyLoopCost_ms, 0);
           if (profile.bestTime > iterationTime_ms) {
             profile.bestTime = iterationTime_ms;
             profile.noImprovementCount = 0;
@@ -53,14 +63,16 @@ export function createBenchmark(benchmarkName: string): Benchmark {
           }
           if (duration_ms < MIN_SAMPLE_DURATION) {
             // we have not ran for long enough so increase the iteration count.
-            profile.iterationCount <<= 1;
+            profile.iterationCount = Math.max(
+                // As a sanity if duration_ms is 0 just double the count.
+                profile.iterationCount << 1,
+                // Otherwise try to guess how many iterations we have to do to get the right time.
+                Math.round(MIN_SAMPLE_DURATION / duration_ms * profile.iterationCount));
             profile.noImprovementCount = 0;
             runAgain = true;
           }
-          if (!runAgain) {
-            // console.log('   Sample count:', profile.sampleCount, 'iterations',
-            // profile.iterationCount, 'time (ms):',  iterationTime_ms);
-          }
+          // console.log('   Sample count:', profile.sampleCount, 'iterations',
+          // profile.iterationCount, 'time (ms):',  iterationTime_ms);
         }
         iterationCounter = profile.iterationCount;
         timestamp = performance.now();
