@@ -5,22 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PLACEHOLDER_NAME_MARKER} from './constants';
-import {SourceMessage, parseMessage} from './messages';
-
-/**
- * A key used to lookup a `TargetMessage` in a hash map.
- */
-export type TranslationKey = SourceMessage;
-
-/**
- * A string containing a translation target message.
- *
- * I.E. the message that indicates what will be translated to.
- *
- * Uses `{$placeholder-name}` to indicate a placeholder.
- */
-export type TargetMessage = string;
+import {BLOCK_MARKER} from './constants';
+import {MessageId, TargetMessage, parseMessage} from './messages';
 
 /**
  * A translation message that has been processed to extract the message parts and placeholders.
@@ -33,14 +19,14 @@ export interface ParsedTranslation {
 /**
  * The internal structure used by the runtime localization to translate messages.
  */
-export type ParsedTranslations = Record<TranslationKey, ParsedTranslation>;
+export type ParsedTranslations = Record<MessageId, ParsedTranslation>;
 
 
 /**
  * Translate the text of the `$localize` tagged-string (i.e. `messageParts` and
  * `substitutions`) using the given `translations`.
  *
- * The tagged-string is parsed to extract its `translationKey` which is used to find an appropriate
+ * The tagged-string is parsed to extract its `messageId` which is used to find an appropriate
  * `ParsedTranslation`.
  *
  * If one is found then it is used to translate the message into a new set of `messageParts` and
@@ -53,7 +39,7 @@ export function translate(
     translations: Record<string, ParsedTranslation>, messageParts: TemplateStringsArray,
     substitutions: readonly any[]): [TemplateStringsArray, readonly any[]] {
   const message = parseMessage(messageParts, substitutions);
-  const translation = translations[message.translationKey];
+  const translation = translations[message.messageId];
   if (translation !== undefined) {
     return [
       translation.messageParts,
@@ -81,7 +67,7 @@ export function parseTranslation(message: TargetMessage): ParsedTranslation {
     messageParts.push(`${parts[i + 1]}`);
   }
   const rawMessageParts =
-      messageParts.map(part => part.charAt(0) === PLACEHOLDER_NAME_MARKER ? '\\' + part : part);
+      messageParts.map(part => part.charAt(0) === BLOCK_MARKER ? '\\' + part : part);
   return {messageParts: makeTemplateObject(messageParts, rawMessageParts), placeholderNames};
 }
 

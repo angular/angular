@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ParsedTranslation, TargetMessage, TranslationKey, makeTemplateObject, parseTranslation, translate} from '../../src/utils/translations';
+import {TargetMessage} from '@angular/localize/src/utils/messages';
+import {ParsedTranslation, makeTemplateObject, parseTranslation, translate} from '../../src/utils/translations';
 
 describe('utils', () => {
   describe('makeTemplateObject', () => {
@@ -146,7 +147,7 @@ describe('utils', () => {
       return [messageParts, substitutions];
     }
 
-    function parseTranslations(translations: Record<TranslationKey, TargetMessage>):
+    function parseTranslations(translations: Record<string, TargetMessage>):
         Record<string, ParsedTranslation> {
       const parsedTranslations: Record<string, ParsedTranslation> = {};
       Object.keys(translations).forEach(key => {
@@ -156,7 +157,7 @@ describe('utils', () => {
     }
 
     function doTranslate(
-        translations: Record<string, string>,
+        translations: Record<string, TargetMessage>,
         message: [TemplateStringsArray, any[]]): [TemplateStringsArray, readonly any[]] {
       return translate(parseTranslations(translations), message[0], message[1]);
     }

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {LocalizeFn} from './localize';
-import {ParsedTranslation, TargetMessage, TranslationKey, parseTranslation, translate as _translate} from './utils/translations';
+import {MessageId, TargetMessage} from './utils/messages';
+import {ParsedTranslation, parseTranslation, translate as _translate} from './utils/translations';
 
 /**
  * We augment the `$localize` object to also store the translations.
@@ -24,7 +25,7 @@ declare const $localize: LocalizeFn&{TRANSLATIONS: Record<string, ParsedTranslat
  *
  * @publicApi
  */
-export function loadTranslations(translations: Record<TranslationKey, TargetMessage>) {
+export function loadTranslations(translations: Record<MessageId, TargetMessage>) {
   // Ensure the translate function exists
   if (!$localize.translate) {
     $localize.translate = translate;

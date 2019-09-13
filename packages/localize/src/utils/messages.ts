@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PLACEHOLDER_NAME_MARKER} from './constants';
-import {TranslationKey} from './translations';
+import {BLOCK_MARKER} from './constants';
 
 /**
  * A string containing a translation source message.
@@ -16,6 +15,20 @@ import {TranslationKey} from './translations';
  * Uses `{$placeholder-name}` to indicate a placeholder.
  */
 export type SourceMessage = string;
+
+/**
+ * A string containing a translation target message.
+ *
+ * I.E. the message that indicates what will be translated to.
+ *
+ * Uses `{$placeholder-name}` to indicate a placeholder.
+ */
+export type TargetMessage = string;
+
+/**
+ * A string that uniquely identifies a message, to be used for matching translations.
+ */
+export type MessageId = string;
 
 /**
  * Information parsed from a `$localize` tagged string that is used to translate it.
@@ -31,7 +44,7 @@ export type SourceMessage = string;
  *
  * ```
  * {
- *   translationKey: 'Hello {$title}!',
+ *   messageId: '6998194507597730591',
  *   substitutions: { title: 'Jo Bloggs' },
  * }
  * ```
@@ -40,7 +53,7 @@ export interface ParsedMessage {
   /**
    * The key used to look up the appropriate translation target.
    */
-  translationKey: TranslationKey;
+  messageId: MessageId;
   /**
    * A mapping of placeholder names to substitution values.
    */
@@ -55,7 +68,7 @@ export interface ParsedMessage {
 export function parseMessage(
     messageParts: TemplateStringsArray, expressions: readonly any[]): ParsedMessage {
   const replacements: {[placeholderName: string]: any} = {};
-  let translationKey = messageParts[0];
+  let messageId = messageParts[0];
   for (let i = 1; i < messageParts.length; i++) {
     const messagePart = messageParts[i];
     const expression = expressions[i - 1];
@@ -66,16 +79,16 @@ export function parseMessage(
     // This should be OK because synthesized nodes only come from the template compiler and they
     // will always contain placeholder name information.
     // So there will be no escaped placeholder marker character (`:`) directly after a substitution.
-    if ((messageParts.raw[i] || messagePart).charAt(0) === PLACEHOLDER_NAME_MARKER) {
-      const endOfPlaceholderName = messagePart.indexOf(PLACEHOLDER_NAME_MARKER, 1);
+    if ((messageParts.raw[i] || messagePart).charAt(0) === BLOCK_MARKER) {
+      const endOfPlaceholderName = messagePart.indexOf(BLOCK_MARKER, 1);
       const placeholderName = messagePart.substring(1, endOfPlaceholderName);
-      translationKey += `{$${placeholderName}}${messagePart.substring(endOfPlaceholderName + 1)}`;
+      messageId += `{$${placeholderName}}${messagePart.substring(endOfPlaceholderName + 1)}`;
       replacements[placeholderName] = expression;
     } else {
       const placeholderName = `ph_${i}`;
-      translationKey += `{$${placeholderName}}${messagePart}`;
+      messageId += `{$${placeholderName}}${messagePart}`;
       replacements[placeholderName] = expression;
     }
   }
-  return {translationKey, substitutions: replacements};
+  return {messageId: messageId, substitutions: replacements};
 }
