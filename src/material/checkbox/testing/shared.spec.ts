@@ -4,56 +4,30 @@ import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatCheckboxModule as MatMdcCheckboxModule} from '../index';
-import {MatCheckboxHarness} from './checkbox-harness';
-import {MatCheckboxHarness as MatMdcCheckboxHarness} from './mdc-checkbox-harness';
+import {MatCheckboxHarness} from '@angular/material/checkbox/testing/checkbox-harness';
 
-let fixture: ComponentFixture<CheckboxHarnessTest>;
-let loader: HarnessLoader;
-let checkboxHarness: typeof MatCheckboxHarness;
+/**
+ * Function that can be used to run the shared checkbox harness tests for either the non-MDC or
+ * MDC based checkbox harness.
+ */
+export function runTests(
+    checkboxModule: typeof MatCheckboxModule, checkboxHarness: typeof MatCheckboxHarness) {
+  let fixture: ComponentFixture<CheckboxHarnessTest>;
+  let loader: HarnessLoader;
 
-describe('MatCheckboxHarness', () => {
-  describe('non-MDC-based', () => {
-    beforeEach(async () => {
-      await TestBed
-          .configureTestingModule({
-            imports: [MatCheckboxModule, ReactiveFormsModule],
-            declarations: [CheckboxHarnessTest],
-          })
-          .compileComponents();
+  beforeEach(async () => {
+    await TestBed
+        .configureTestingModule({
+          imports: [checkboxModule, ReactiveFormsModule],
+          declarations: [CheckboxHarnessTest],
+        })
+        .compileComponents();
 
-      fixture = TestBed.createComponent(CheckboxHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-      checkboxHarness = MatCheckboxHarness;
-    });
-
-    runTests();
+    fixture = TestBed.createComponent(CheckboxHarnessTest);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
-  describe('MDC-based', () => {
-    beforeEach(async () => {
-      await TestBed
-          .configureTestingModule({
-            imports: [MatMdcCheckboxModule, ReactiveFormsModule],
-            declarations: [CheckboxHarnessTest],
-          })
-          .compileComponents();
-
-      fixture = TestBed.createComponent(CheckboxHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-      // Public APIs are the same as MatCheckboxHarness, but cast is necessary because of different
-      // private fields.
-      checkboxHarness = MatMdcCheckboxHarness as any;
-    });
-
-    runTests();
-  });
-});
-
-/** Shared tests to run on both the original and MDC-based checkboxes. */
-function runTests() {
   it('should load all checkbox harnesses', async () => {
     const checkboxes = await loader.getAllHarnesses(checkboxHarness);
     expect(checkboxes.length).toBe(2);

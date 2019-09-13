@@ -8,7 +8,7 @@
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {CheckboxHarnessFilters} from './checkbox-harness-filters';
+import {CheckboxHarnessFilters} from '@angular/material/checkbox/testing';
 
 /**
  * Harness for interacting with a MDC-based mat-checkbox in tests.

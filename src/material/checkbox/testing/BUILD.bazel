@@ -1,0 +1,47 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
+
+ng_module(
+    name = "testing",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/material/checkbox/testing",
+    deps = [
+        "//src/cdk/coercion",
+        "//src/cdk/testing",
+    ],
+)
+
+ng_test_library(
+    name = "shared_unit_tests",
+    srcs = ["shared.spec.ts"],
+    deps = [
+        ":testing",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
+        "//src/material/checkbox",
+        "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+    ],
+)
+
+ng_test_library(
+    name = "unit_tests_lib",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["shared.spec.ts"],
+    ),
+    deps = [
+        ":shared_unit_tests",
+        ":testing",
+        "//src/material/checkbox",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    deps = [":unit_tests_lib"],
+)

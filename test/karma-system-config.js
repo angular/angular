@@ -102,6 +102,8 @@ System.config({
     '@angular/material/button-toggle': 'dist/packages/material/button-toggle/index.js',
     '@angular/material/card': 'dist/packages/material/card/index.js',
     '@angular/material/checkbox': 'dist/packages/material/checkbox/index.js',
+    '@angular/material/checkbox/testing': 'dist/packages/material/checkbox/testing/index.js',
+    '@angular/material/checkbox/testing/shared.spec': 'dist/packages/material/checkbox/testing/shared.spec.js',
     '@angular/material/chips': 'dist/packages/material/chips/index.js',
     '@angular/material/core': 'dist/packages/material/core/index.js',
     '@angular/material/datepicker': 'dist/packages/material/datepicker/index.js',
@@ -138,6 +140,8 @@ System.config({
         'dist/packages/material-experimental/mdc-card/index.js',
     '@angular/material-experimental/mdc-checkbox':
         'dist/packages/material-experimental/mdc-checkbox/index.js',
+    '@angular/material-experimental/mdc-checkbox/testing':
+        'dist/packages/material-experimental/mdc-checkbox/testing/index.js',
     '@angular/material-experimental/mdc-chips':
         'dist/packages/material-experimental/mdc-chips/index.js',
     '@angular/material-experimental/mdc-helpers':
