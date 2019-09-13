@@ -116,7 +116,7 @@ export function getDeclarationDiagnostics(
           span: declarationSpan,
         });
       }
-      const {template, templateUrl} = metadata.template !;
+      const {template, templateUrl, styleUrls} = metadata.template !;
       if (template === null && !templateUrl) {
         results.push({
           kind: ng.DiagnosticKind.Error,
@@ -138,13 +138,26 @@ export function getDeclarationDiagnostics(
         // TODO: We should create an enum of the various properties a directive can have to use
         // instead of string literals. We can then perform a mass migration of all literal usages.
         const templateUrlNode = findPropertyValueOfType(
-            directiveIdentifier.parent, 'templateUrl', ts.isStringLiteralLike);
+            directiveIdentifier.parent, 'templateUrl', ts.isLiteralExpression);
         if (!templateUrlNode) {
           logImpossibleState(`templateUrl ${templateUrl} exists but its TypeScript node doesn't`);
           return [];
         }
 
         results.push(...validateUrls([templateUrlNode], host.tsLsHost));
+      }
+
+      if (styleUrls.length > 0) {
+        // Find styleUrls value from the directive call expression, which is the parent of the
+        // directive identifier.
+        const styleUrlsNode = findPropertyValueOfType(
+            directiveIdentifier.parent, 'styleUrls', ts.isArrayLiteralExpression);
+        if (!styleUrlsNode) {
+          logImpossibleState(`styleUrls property exists but its TypeScript node doesn't'`);
+          return [];
+        }
+
+        results.push(...validateUrls(styleUrlsNode.elements, host.tsLsHost));
       }
     } else if (!directives.has(declaration.type)) {
       results.push({
@@ -168,7 +181,7 @@ export function getDeclarationDiagnostics(
  * @return diagnosed url errors, if any
  */
 function validateUrls(
-    urls: ts.StringLiteralLike[], tsLsHost: Readonly<ts.LanguageServiceHost>): ng.Diagnostic[] {
+    urls: ArrayLike<ts.Expression>, tsLsHost: Readonly<ts.LanguageServiceHost>): ng.Diagnostic[] {
   if (!tsLsHost.fileExists) {
     return [];
   }
@@ -176,7 +189,13 @@ function validateUrls(
   const allErrors: ng.Diagnostic[] = [];
   // TODO(ayazhafiz): most of this logic can be unified with the logic in
   // definitions.ts#getUrlFromProperty. Create a utility function to be used by both.
-  for (const urlNode of urls) {
+  for (let i = 0; i < urls.length; ++i) {
+    const urlNode = urls[i];
+    if (!ts.isStringLiteralLike(urlNode)) {
+      // If a non-string value is assigned to a URL node (like `templateUrl`), a type error will be
+      // picked up by the TS Language Server.
+      continue;
+    }
     const curPath = urlNode.getSourceFile().fileName;
     const url = path.join(path.dirname(curPath), urlNode.text);
     if (tsLsHost.fileExists(url)) continue;

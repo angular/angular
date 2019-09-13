@@ -507,6 +507,38 @@ describe('diagnostics', () => {
           diagnostics.find(d => d.messageText === 'URL does not point to a valid file');
       expect(urlDiagnostic).toBeUndefined();
     });
+
+    it('should report errors for invalid styleUrls', () => {
+      const fileName = mockHost.addCode(`
+	@Component({
+          styleUrls: ['«notAFile»'],
+        })
+        export class MyComponent {}`);
+
+      const marker = mockHost.getReferenceMarkerFor(fileName, 'notAFile');
+
+      const diagnostics = ngLS.getDiagnostics(fileName) !;
+      const urlDiagnostic =
+          diagnostics.find(d => d.messageText === 'URL does not point to a valid file');
+      expect(urlDiagnostic).toBeDefined();
+
+      const {start, length} = urlDiagnostic !;
+      expect(start).toBe(marker.start);
+      expect(length).toBe(marker.length);
+    });
+
+    it('should not report errors for valid styleUrls', () => {
+      const fileName = mockHost.addCode(`
+	@Component({
+          styleUrls: ['./test.css', './test.css'],
+	})
+	export class MyComponent {}`);
+
+      const diagnostics = ngLS.getDiagnostics(fileName) !;
+      const urlDiagnostic =
+          diagnostics.find(d => d.messageText === 'URL does not point to a valid file');
+      expect(urlDiagnostic).toBeUndefined();
+    });
   });
 
   // https://github.com/angular/vscode-ng-language-service/issues/235
