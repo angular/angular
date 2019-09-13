@@ -19,6 +19,16 @@ describe('$localize tag', () => {
       expect($localize `Hello, ${getName()}!`).toEqual('Hello, World!');
     });
 
+    it('should strip metadata block from message parts', () => {
+      expect($localize.translate).toBeUndefined();
+      expect($localize `:meaning|description@@custom-id:abcdef`).toEqual('abcdef');
+    });
+
+    it('should ignore escaped metadata block marker', () => {
+      expect($localize.translate).toBeUndefined();
+      expect($localize `\:abc:def`).toEqual(':abc:def');
+    });
+
     it('should strip placeholder names from message parts', () => {
       expect($localize.translate).toBeUndefined();
       expect($localize `abc${1 + 2 + 3}:ph1:def${4 + 5 + 6}:ph2:`).toEqual('abc6def15');

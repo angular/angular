@@ -23,6 +23,22 @@ declare global {
    * $localize `some string to localize`
    * ```
    *
+   * **Providing meaning, description and id**
+   *
+   * You can optionally specify one or more of `meaning`, `description` and `id` for a localized
+   * string by pre-pending it with a colon delimited block of the form:
+   *
+   * ```ts
+   * $localize`:meaning|description@@id:source message text`;
+   *
+   * $localize`:meaning|:source message text`;
+   * $localize`:description:source message text`;
+   * $localize`:@@id:source message text`;
+   * ```
+   *
+   * This format is the same as that used for `i18n` markers in Angular templates. See the
+   * [Angular 18n guide](guide/i18n#template-translations).
+   *
    * **Naming placeholders**
    *
    * If the template literal string contains expressions then you can optionally name the
@@ -37,14 +53,25 @@ declare global {
    * $localize `There are ${item.length}:itemCount: items`;
    * ```
    *
-   * If you need to use a `:` character directly an expression you must either provide a name or you
-   * can escape the `:` by preceding it with a backslash:
+   * **Escaping colon markers**
+   *
+   * If you need to use a `:` character directly at the start of a tagged string that has no
+   * metadata block, or directly after a substitution expression that has no name you must escape
+   * the `:` by preceding it with a backslash:
    *
    * For example:
    *
    * ```ts
+   * // message has a metadata block so no need to escape colon
+   * $localize `:some description::this message starts with a colon (:)`;
+   * // no metadata block so the colon must be escaped
+   * $localize `\:this message starts with a colon (:)`;
+   * ```
+   *
+   * ```ts
+   * // named substitution so no need to escape colon
    * $localize `${label}:label:: ${}`
-   * // or
+   * // anonymous substitution so colon must be escaped
    * $localize `${label}\: ${}`
    * ```
    *
@@ -53,20 +80,17 @@ declare global {
    * There are three scenarios:
    *
    * * **compile-time inlining**: the `$localize` tag is transformed at compile time by a
-   * transpiler,
-   * removing the tag and replacing the template literal string with a translated literal string
-   * from a collection of translations provided to the transpilation tool.
+   * transpiler, removing the tag and replacing the template literal string with a translated
+   * literal string from a collection of translations provided to the transpilation tool.
    *
    * * **run-time evaluation**: the `$localize` tag is a run-time function that replaces and
-   * reorders
-   * the parts (static strings and expressions) of the template literal string with strings from a
-   * collection of translations loaded at run-time.
+   * reorders the parts (static strings and expressions) of the template literal string with strings
+   * from a collection of translations loaded at run-time.
    *
    * * **pass-through evaluation**: the `$localize` tag is a run-time function that simply evaluates
    * the original template literal string without applying any translations to the parts. This
-   * version
-   * is used during development or where there is no need to translate the localized template
-   * literals.
+   * version is used during development or where there is no need to translate the localized
+   * template literals.
    *
    * @param messageParts a collection of the static parts of the template string.
    * @param expressions a collection of the values of each placeholder in the template string.
