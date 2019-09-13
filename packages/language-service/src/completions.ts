@@ -69,7 +69,7 @@ export function getTemplateCompletions(
             if (result.length) return result;
             result = interpolationCompletions(templateInfo, templatePosition);
             if (result.length) return result;
-            let element = path.first(Element);
+            const element = path.first(Element);
             if (element) {
               let definition = getHtmlTagDefinition(element.name);
               if (definition.contentType === TagContentType.PARSABLE_DATA) {
