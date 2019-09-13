@@ -6,7 +6,7 @@ export declare abstract class AbstractControl {
     get enabled(): boolean;
     readonly errors: ValidationErrors | null;
     get invalid(): boolean;
-    get parent(): FormGroup | FormArray;
+    get parent(): FormGroup | FormArray | null;
     get pending(): boolean;
     readonly pristine: boolean;
     get root(): AbstractControl;

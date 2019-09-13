@@ -173,8 +173,7 @@ export abstract class AbstractControl {
   // TODO(issue/24571): remove '!'.
   _updateOn!: FormHooks;
 
-  // TODO(issue/24571): remove '!'.
-  private _parent!: FormGroup|FormArray;
+  private _parent: FormGroup|FormArray|null = null;
   private _asyncValidationSubscription: any;
 
   /**
@@ -267,7 +266,7 @@ export abstract class AbstractControl {
   /**
    * The parent control.
    */
-  get parent(): FormGroup|FormArray {
+  get parent(): FormGroup|FormArray|null {
     return this._parent;
   }
 
@@ -1018,7 +1017,7 @@ export abstract class AbstractControl {
    */
   private _parentMarkedDirty(onlySelf?: boolean): boolean {
     const parentDirty = this._parent && this._parent.dirty;
-    return !onlySelf && parentDirty && !this._parent._anyControlsDirty();
+    return !onlySelf && !!parentDirty && !this._parent!._anyControlsDirty();
   }
 }
 
