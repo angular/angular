@@ -19,6 +19,63 @@ function isAbstractControlOptions(options: AbstractControlOptions | {[key: strin
 }
 
 /**
+ * The various ways a control can be built via the `FormBuilder#group`
+ */
+export type FormBuilderControlArgs<T = any> = AbstractControl<T>|
+    [
+      T |
+          {
+            value: T;
+            disabled?: boolean
+          },
+      ValidatorFn | ValidatorFn[] | null, AsyncValidatorFn | AsyncValidatorFn[] | null
+    ] |
+    [
+      T |
+          {
+            value: T;
+            disabled?: boolean
+          },
+      ValidatorFn | ValidatorFn[] | AbstractControlOptions | null
+    ] |
+    [T | {
+                                                value: T;
+                                                disabled?: boolean
+                                              }] | {
+  value: T;
+  disabled?: boolean
+}
+|T;
+
+/**
+ * Convert FormBuilderControlArgs into an AbstractControl type
+ */
+export type FormBuilderControlArgsToControl<T> =
+    // return T if it's an abstract control
+    T extends AbstractControl ? T : T extends {
+  value: infer U;
+  disabled?: boolean
+}
+? FormControl<U>:
+  T extends Array<infer V>?
+  (V extends {
+    value: infer W;
+    disabled?: boolean
+  } ?
+       FormControl<W>:
+       // Any other expected control arguments must resolve to never
+       V extends | ValidatorFn | ValidatorFn[] | AsyncValidatorFn | AsyncValidatorFn[] |
+               (AbstractControlOptions | {
+                 updateOn: string
+               })  // updateOn is typed to 'blur' | ... but will be inferred as a string
+           ?
+       never :
+       // Must be the value
+           FormControl<V>) :
+  // Argument is a straight value
+        FormControl<T>;
+
+/**
  * @description
  * Creates an `AbstractControl` from a user-specified configuration.
  *
@@ -53,10 +110,27 @@ export class FormBuilder {
    * * `asyncValidator`: A single async validator or array of async validator functions
    *
    */
-  group(
-      controlsConfig: {[key: string]: any},
-      options: AbstractControlOptions|{[key: string]: any}|null = null): FormGroup {
-    const controls = this._reduceControls(controlsConfig);
+  /**
+   * @deprecated
+   */
+  group<TGroupConfig extends{[key: string]: FormBuilderControlArgs}>(
+      controlsConfig: TGroupConfig, options: {
+        validator?: ValidatorFn | ValidatorFn[];
+        asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]
+      }): FormGroup<{[K in keyof TGroupConfig]: FormBuilderControlArgsToControl<TGroupConfig[K]>}>;
+  group<TGroupConfig extends{[key: string]: FormBuilderControlArgs}>(
+      controlsConfig: TGroupConfig, options?: AbstractControlOptions|null):
+      FormGroup<{[K in keyof TGroupConfig]: FormBuilderControlArgsToControl<TGroupConfig[K]>}>;
+  group<TGroupConfig extends{[key: string]: FormBuilderControlArgs}>(
+      controlsConfig: TGroupConfig, options:
+                                        AbstractControlOptions|{
+                                          validator?: ValidatorFn|ValidatorFn[];
+                                          asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]
+                                        }|null = null):
+      FormGroup<{[K in keyof TGroupConfig]: FormBuilderControlArgsToControl<TGroupConfig[K]>}> {
+    const controls =
+        <{[K in keyof TGroupConfig]: FormBuilderControlArgsToControl<TGroupConfig[K]>}>this
+            ._reduceControls(controlsConfig);
 
     let validators: ValidatorFn|ValidatorFn[]|null = null;
     let asyncValidators: AsyncValidatorFn|AsyncValidatorFn[]|null = null;
@@ -101,10 +175,15 @@ export class FormBuilder {
    * <code-example path="forms/ts/formBuilder/form_builder_example.ts" region="disabled-control">
    * </code-example>
    */
-  control(
-      formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl {
-    return new FormControl(formState, validatorOrOpts, asyncValidator);
+  control<T>(
+      formState:
+          T|{
+            value?: T|null;
+            disabled?: boolean
+          }|null,
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl<T> {
+    return new FormControl<T>(formState, validatorOrOpts, asyncValidator);
   }
 
   /**
@@ -121,11 +200,13 @@ export class FormBuilder {
    * @param asyncValidator A single async validator or array of async validator
    * functions.
    */
-  array(
-      controlsConfig: any[],
+  array<TControlConfig extends FormBuilderControlArgs>(
+      controlsConfig: TControlConfig[],
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray {
-    const controls = controlsConfig.map(c => this._createControl(c));
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|
+      null): FormArray<FormBuilderControlArgsToControl<TControlConfig>> {
+    const controls = <Array<FormBuilderControlArgsToControl<TControlConfig>>>controlsConfig.map(
+        c => this._createControl(c));
     return new FormArray(controls, validatorOrOpts, asyncValidator);
   }
 
