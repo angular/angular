@@ -11,8 +11,8 @@ import '@angular/localize/init';
 import {loadTranslations} from '@angular/localize';
 
 const translations = {
-  'Hello World!': 'Bonjour Monde!',
-  'Hello Title!': 'Bonjour Titre!',
+  '6947830843539421219': 'Bonjour Monde!',
+  '6935800796474951272': 'Bonjour Titre!',
 };
 
 loadTranslations(translations);
