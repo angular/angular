@@ -2462,6 +2462,8 @@ describe('i18n support in the template compiler', () => {
          verify(input, output);
        });
 
+    // Note: applying structural directives to <ng-template> is typically user error, but it is
+    // technically allowed, so we need to support it.
     it('should handle structural directives', () => {
       const input = `
         <ng-template *ngIf="someFlag" i18n>Content A</ng-template>
