@@ -37,7 +37,7 @@ export function ɵɵproperty<T>(
   const bindingIndex = lView[BINDING_INDEX]++;
   if (bindingUpdated(lView, bindingIndex, value)) {
     const nodeIndex = getSelectedIndex();
-    elementPropertyInternal(nodeIndex, propName, value, sanitizer);
+    elementPropertyInternal(lView, nodeIndex, propName, value, sanitizer);
     ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵproperty;
