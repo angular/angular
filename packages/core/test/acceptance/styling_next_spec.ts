@@ -1240,7 +1240,7 @@ describe('new styling integration', () => {
 
        TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
        const fixture = TestBed.createComponent(App);
-       fixture.detectChanges();
+       fixture.detectChanges(false);
 
        let readyHost = fixture.nativeElement.querySelector('.ready-host');
        let readyChild = fixture.nativeElement.querySelector('.ready-child');
@@ -1249,7 +1249,7 @@ describe('new styling integration', () => {
        expect(readyChild).toBeFalsy();
 
        fixture.componentInstance.prop = 'go';
-       fixture.detectChanges();
+       fixture.detectChanges(false);
 
        readyHost = fixture.nativeElement.querySelector('.ready-host');
        readyChild = fixture.nativeElement.querySelector('.ready-child');
@@ -1321,7 +1321,7 @@ describe('new styling integration', () => {
 
        TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
        const fixture = TestBed.createComponent(App);
-       fixture.detectChanges();
+       fixture.detectChanges(false);
 
        let readyHost = fixture.nativeElement.querySelector('.ready-host');
        let readyChild = fixture.nativeElement.querySelector('.ready-child');
@@ -1330,7 +1330,7 @@ describe('new styling integration', () => {
 
        const parent = fixture.componentInstance.parent !;
        parent.updateChild = true;
-       fixture.detectChanges();
+       fixture.detectChanges(false);
 
        readyHost = fixture.nativeElement.querySelector('.ready-host');
        readyChild = fixture.nativeElement.querySelector('.ready-child');
