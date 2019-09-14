@@ -843,7 +843,7 @@ function readUpdateOpCodes(
               case I18nUpdateOpCode.Attr:
                 const propName = updateOpCodes[++j] as string;
                 const sanitizeFn = updateOpCodes[++j] as SanitizerFn | null;
-                elementPropertyInternal(nodeIndex, propName, value, sanitizeFn);
+                elementPropertyInternal(viewData, nodeIndex, propName, value, sanitizeFn);
                 break;
               case I18nUpdateOpCode.Text:
                 textBindingInternal(viewData, nodeIndex, value);
