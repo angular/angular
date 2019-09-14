@@ -36,7 +36,7 @@ function _main() {
   writeFileSync(tsConfigPath, newTsConfigStr);
 
   // Run ngcc.
-  const ngccArgs = '--loglevel debug --properties es2015 module';
+  const ngccArgs = '--loglevel debug --properties es2015';
   console.log(`\nRunning ngcc (with args: ${ngccArgs})...`);
   exec(`yarn ivy-ngcc ${ngccArgs}`);
 
