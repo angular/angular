@@ -33,7 +33,7 @@ export function ɵɵhostProperty<T>(
   const bindingIndex = lView[BINDING_INDEX]++;
   if (bindingUpdated(lView, bindingIndex, value)) {
     const nodeIndex = getSelectedIndex();
-    elementPropertyInternal(nodeIndex, propName, value, sanitizer, true);
+    elementPropertyInternal(lView, nodeIndex, propName, value, sanitizer, true);
     ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵhostProperty;
@@ -67,7 +67,8 @@ export function ɵɵupdateSyntheticHostBinding<T>(
   const bindingIndex = lView[BINDING_INDEX]++;
   if (bindingUpdated(lView, bindingIndex, value)) {
     const nodeIndex = getSelectedIndex();
-    elementPropertyInternal(nodeIndex, propName, value, sanitizer, true, loadComponentRenderer);
+    elementPropertyInternal(
+        lView, nodeIndex, propName, value, sanitizer, true, loadComponentRenderer);
     ngDevMode && storePropertyBindingMetadata(lView[TVIEW].data, nodeIndex, propName, bindingIndex);
   }
   return ɵɵupdateSyntheticHostBinding;
