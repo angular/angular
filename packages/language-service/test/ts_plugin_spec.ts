@@ -180,7 +180,7 @@ describe('plugin', () => {
             'Identifier \'people_1\' is not defined. The component declaration, template variable declarations, and element references do not contain such a member');
       });
       it('should report an unknown context reference', () => {
-        expectError('even_1', 'The template context does not defined a member called \'even_1\'');
+        expectError('even_1', 'The template context does not define a member called \'even_1\'');
       });
       it('should report an unknown value in a key expression', () => {
         expectError(
@@ -193,8 +193,7 @@ describe('plugin', () => {
         expectSemanticError('app/ng-if-cases.ts', locationMarker, message);
       }
       it('should report an implicit context reference', () => {
-        expectError(
-            'implicit', 'The template context does not defined a member called \'unknown\'');
+        expectError('implicit', 'The template context does not define a member called \'unknown\'');
       });
     });
   });
