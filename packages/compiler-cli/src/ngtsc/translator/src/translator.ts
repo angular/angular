@@ -17,7 +17,7 @@ export class Context {
 
   get withExpressionMode(): Context { return this.isStatement ? new Context(false) : this; }
 
-  get withStatementMode(): Context { return this.isStatement ? new Context(true) : this; }
+  get withStatementMode(): Context { return !this.isStatement ? new Context(true) : this; }
 }
 
 const BINARY_OPERATORS = new Map<BinaryOperator, ts.BinaryOperator>([
