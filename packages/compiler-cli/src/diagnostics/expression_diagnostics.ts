@@ -238,7 +238,7 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
               'The template context does not have an implicit value', spanOf(ast.sourceSpan));
         } else {
           this.reportError(
-              `The template context does not defined a member called '${ast.value}'`,
+              `The template context does not define a member called '${ast.value}'`,
               spanOf(ast.sourceSpan));
         }
       }
