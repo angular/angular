@@ -13,8 +13,3 @@ test --flaky_test_attempts=2
 
 # More details on failures
 build --verbose_failures=true
-
-# Utilize remote strategy for AngularTemplateCompile and TypeScriptCompile to take
-# advantage of caching of outputs
-build --strategy=AngularTemplateCompile=remote
-build --strategy=TypeScriptCompile=remote
