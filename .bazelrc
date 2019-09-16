@@ -146,11 +146,6 @@ build --incompatible_list_based_execution_strategy_selection=false
 test --incompatible_list_based_execution_strategy_selection=false
 run --incompatible_list_based_execution_strategy_selection=false
 
-# Use workers for tsc and ngc when building locally.
-# This config is overwritten on CI to as the worker strategy causes flakes on CI.
-build --strategy=AngularTemplateCompile=worker
-build --strategy=TypeScriptCompile=worker
-
 ####################################################
 # User bazel configuration
 # NOTE: This needs to be the *last* entry in the config.
