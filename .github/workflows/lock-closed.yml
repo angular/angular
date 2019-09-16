@@ -1,4 +1,4 @@
-name: Lock Inactive Issues
+name: Lock closed inactive issues
 
 on:
   schedule:
