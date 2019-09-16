@@ -12,6 +12,7 @@ import {ɵɵtext} from '../../../../src/render3/instructions/text';
 import {ɵɵtextInterpolate} from '../../../../src/render3/instructions/text_interpolation';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TVIEW} from '../../../../src/render3/interfaces/view';
+import {createBenchmark} from '../micro_bench';
 import {setupRootViewWithEmbeddedViews} from '../setup';
 
 `<div>
@@ -91,9 +92,16 @@ const rootLView =
     setupRootViewWithEmbeddedViews(TestInterpolationComponent_ng_template_0_Template, 21, 10, 1000);
 const rootTView = rootLView[TVIEW];
 
+// scenario to benchmark
+const interpolationRefresh = createBenchmark('interpolation refresh');
+const refreshTime = interpolationRefresh('refresh');
+
 // run change detection in the update mode
-console.profile('update');
-for (let i = 0; i < 5000; i++) {
+console.profile('interpolation_refresh');
+while (refreshTime()) {
   refreshView(rootLView, rootTView, null, null);
 }
 console.profileEnd();
+
+// report results
+interpolationRefresh.report();

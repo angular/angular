@@ -11,6 +11,7 @@ import {ɵɵproperty} from '../../../../src/render3/instructions/property';
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TVIEW} from '../../../../src/render3/interfaces/view';
+import {createBenchmark} from '../micro_bench';
 import {setupRootViewWithEmbeddedViews} from '../setup';
 
 `<div>
@@ -70,9 +71,16 @@ const rootLView =
     setupRootViewWithEmbeddedViews(TestInterpolationComponent_ng_template_0_Template, 11, 10, 1000);
 const rootTView = rootLView[TVIEW];
 
+// scenario to benchmark
+const propertyBindingRefresh = createBenchmark('property binding refresh');
+const refreshTime = propertyBindingRefresh('refresh');
+
 // run change detection in the update mode
-console.profile('update');
-for (let i = 0; i < 5000; i++) {
+console.profile('property_binding_refresh');
+while (refreshTime()) {
   refreshView(rootLView, rootTView, null, null);
 }
 console.profileEnd();
+
+// report results
+propertyBindingRefresh.report();
