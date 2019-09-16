@@ -8,7 +8,7 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/material/checkbox/testing",
+    module_name = "@angular/material/autocomplete/testing",
     deps = [
         "//src/cdk/coercion",
         "//src/cdk/testing",
@@ -20,9 +20,10 @@ ng_test_library(
     srcs = ["shared.spec.ts"],
     deps = [
         ":testing",
+        "//src/cdk/overlay",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
-        "//src/material/checkbox",
+        "//src/material/autocomplete",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
     ],
@@ -37,7 +38,7 @@ ng_test_library(
     deps = [
         ":harness_tests_lib",
         ":testing",
-        "//src/material/checkbox",
+        "//src/material/autocomplete",
     ],
 )
 

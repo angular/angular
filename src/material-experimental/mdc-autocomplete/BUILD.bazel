@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
-load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module")
 
 ng_module(
     name = "mdc-autocomplete",
@@ -10,7 +10,6 @@ ng_module(
         ["**/*.ts"],
         exclude = [
             "**/*.spec.ts",
-            "harness/**",
         ],
     ),
     assets = [
@@ -19,18 +18,6 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-autocomplete",
     deps = [
         "//src/material/core",
-    ],
-)
-
-ts_library(
-    name = "harness",
-    srcs = glob(
-        ["harness/**/*.ts"],
-        exclude = ["**/*.spec.ts"],
-    ),
-    deps = [
-        "//src/cdk/coercion",
-        "//src/cdk/testing",
     ],
 )
 
@@ -54,31 +41,6 @@ sass_binary(
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
         "//src/material/core:all_themes",
-    ],
-)
-
-ng_test_library(
-    name = "autocomplete_tests_lib",
-    srcs = [
-        "harness/autocomplete-harness.spec.ts",
-    ],
-    deps = [
-        ":harness",
-        ":mdc-autocomplete",
-        "//src/cdk/overlay",
-        "//src/cdk/platform",
-        "//src/cdk/testing",
-        "//src/cdk/testing/testbed",
-        "//src/material/autocomplete",
-        "@npm//@angular/platform-browser",
-    ],
-)
-
-ng_web_test_suite(
-    name = "unit_tests",
-    deps = [
-        ":autocomplete_tests_lib",
-        "//src/material-experimental:mdc_require_config.js",
     ],
 )
 

@@ -22,7 +22,7 @@ ng_test_library(
     deps = [
         ":testing",
         "//src/material-experimental/mdc-checkbox",
-        "//src/material/checkbox/testing:shared_unit_tests",
+        "//src/material/checkbox/testing:harness_tests_lib",
     ],
 )
 

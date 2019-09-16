@@ -1,58 +1,36 @@
+import {OverlayContainer} from '@angular/cdk/overlay';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {Component, Type} from '@angular/core';
-import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
+import {Component} from '@angular/core';
+import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {OverlayContainer} from '@angular/cdk/overlay';
-import {MatAutocompleteModule as MatMdcAutocompleteModule} from '../index';
-import {MatAutocompleteHarness} from './autocomplete-harness';
-import {MatAutocompleteHarness as MatMdcAutocompleteHarness} from './mdc-autocomplete-harness';
+import {MatAutocompleteHarness} from '@angular/material/autocomplete/testing';
 
-let fixture: ComponentFixture<AutocompleteHarnessTest>;
-let loader: HarnessLoader;
-let harness: typeof MatAutocompleteHarness;
-let overlayContainer: OverlayContainer;
+/**
+ * Function that can be used to run the shared autocomplete harness tests for either the non-MDC or
+ * MDC based checkbox harness.
+ */
+export function runHarnessTests(
+    autocompleteModule: typeof MatAutocompleteModule,
+    autocompleteHarness: typeof MatAutocompleteHarness) {
+  let fixture: ComponentFixture<AutocompleteHarnessTest>;
+  let loader: HarnessLoader;
+  let overlayContainer: OverlayContainer;
 
-describe('MatAutocompleteHarness', () => {
-  describe('non-MDC-based', () => {
-    beforeEach(async () => {
-      await prepareTests(MatAutocompleteModule, AutocompleteHarnessTest);
-      harness = MatAutocompleteHarness;
-    });
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [autocompleteModule],
+      declarations: [AutocompleteHarnessTest],
+    }).compileComponents();
 
-    runTests();
+    fixture = TestBed.createComponent(AutocompleteHarnessTest);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+    inject([OverlayContainer], (oc: OverlayContainer) => {
+      overlayContainer = oc;
+    })();
   });
 
-  describe('MDC-based', () => {
-    beforeEach(async () => {
-      await prepareTests(MatMdcAutocompleteModule, AutocompleteHarnessTest);
-      // Public APIs are the same as MatAutocompleteHarness, but cast
-      // is necessary because of different private fields.
-      harness = MatMdcAutocompleteHarness as any;
-    });
-
-    // TODO: enable after MDC autocomplete is implemented
-    // runTests();
-  });
-});
-
-/** Shared test setup logic. */
-async function prepareTests(moduleType: Type<any>, fixtureType: Type<any>) {
-  await TestBed.configureTestingModule({
-    imports: [moduleType],
-    declarations: [fixtureType],
-  }).compileComponents();
-
-  fixture = TestBed.createComponent(fixtureType);
-  fixture.detectChanges();
-  loader = TestbedHarnessEnvironment.loader(fixture);
-  inject([OverlayContainer], (oc: OverlayContainer) => {
-    overlayContainer = oc;
-  })();
-}
-
-/** Shared tests to run on both the original and MDC-based autocomplete. */
-function runTests() {
   afterEach(() => {
     // Angular won't call this for us so we need to do it ourselves to avoid leaks.
     overlayContainer.ngOnDestroy();
@@ -60,25 +38,25 @@ function runTests() {
   });
 
   it('should load all autocomplete harnesses', async () => {
-    const inputs = await loader.getAllHarnesses(harness);
+    const inputs = await loader.getAllHarnesses(autocompleteHarness);
     expect(inputs.length).toBe(5);
   });
 
   it('should be able to get text inside the input', async () => {
-    const input = await loader.getHarness(harness.with({selector: '#prefilled'}));
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#prefilled'}));
     expect(await input.getText()).toBe('Prefilled value');
   });
 
   it('should get disabled state', async () => {
-    const enabled = await loader.getHarness(harness.with({selector: '#plain'}));
-    const disabled = await loader.getHarness(harness.with({selector: '#disabled'}));
+    const enabled = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
+    const disabled = await loader.getHarness(autocompleteHarness.with({selector: '#disabled'}));
 
     expect(await enabled.isDisabled()).toBe(false);
     expect(await disabled.isDisabled()).toBe(true);
   });
 
   it('should focus and blur an input', async () => {
-    const input = await loader.getHarness(harness.with({selector: '#plain'}));
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
     expect(getActiveElementId()).not.toBe('plain');
     await input.focus();
     expect(getActiveElementId()).toBe('plain');
@@ -87,19 +65,19 @@ function runTests() {
   });
 
   it('should be able to type in an input', async () => {
-    const input = await loader.getHarness(harness.with({selector: '#plain'}));
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
     await input.enterText('Hello there');
     expect(await input.getText()).toBe('Hello there');
   });
 
   it('should be able to get the autocomplete panel', async () => {
-    const input = await loader.getHarness(harness.with({selector: '#plain'}));
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
     await input.focus();
     expect(await input.getPanel()).toBeTruthy();
   });
 
   it('should be able to get the autocomplete panel options', async () => {
-    const input = await loader.getHarness(harness.with({selector: '#plain'}));
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
     await input.focus();
     const options = await input.getOptions();
 
@@ -108,7 +86,7 @@ function runTests() {
   });
 
   it('should be able to get the autocomplete panel groups', async () => {
-    const input = await loader.getHarness(harness.with({selector: '#grouped'}));
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#grouped'}));
     await input.focus();
     const groups = await input.getOptionGroups();
     const options = await input.getOptions();
@@ -122,19 +100,18 @@ function runTests() {
     fixture.componentInstance.states = [];
     fixture.detectChanges();
 
-    const input = await loader.getHarness(harness.with({selector: '#plain'}));
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
     await input.focus();
     expect(await input.isPanelVisible()).toBe(false);
   });
 
   it('should be able to get whether the autocomplete is open', async () => {
-    const input = await loader.getHarness(harness.with({selector: '#plain'}));
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
 
     expect(await input.isOpen()).toBe(false);
     await input.focus();
     expect(await input.isOpen()).toBe(true);
   });
-
 }
 
 function getActiveElementId() {
@@ -192,4 +169,3 @@ class AutocompleteHarnessTest {
     }
   ];
 }
-

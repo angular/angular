@@ -10,7 +10,7 @@ import {MatCheckboxHarness} from '@angular/material/checkbox/testing/checkbox-ha
  * Function that can be used to run the shared checkbox harness tests for either the non-MDC or
  * MDC based checkbox harness.
  */
-export function runTests(
+export function runHarnessTests(
     checkboxModule: typeof MatCheckboxModule, checkboxHarness: typeof MatCheckboxHarness) {
   let fixture: ComponentFixture<CheckboxHarnessTest>;
   let loader: HarnessLoader;

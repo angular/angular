@@ -96,6 +96,8 @@ System.config({
     '@angular/cdk-experimental/scrolling': 'dist/packages/cdk-experimental/scrolling/index.js',
 
     '@angular/material/autocomplete': 'dist/packages/material/autocomplete/index.js',
+    '@angular/material/autocomplete/testing': 'dist/packages/material/autocomplete/testing/index.js',
+    '@angular/material/autocomplete/testing/shared.spec': 'dist/packages/material/autocomplete/testing/shared.spec.js',
     '@angular/material/badge': 'dist/packages/material/badge/index.js',
     '@angular/material/bottom-sheet': 'dist/packages/material/bottom-sheet/index.js',
     '@angular/material/button': 'dist/packages/material/button/index.js',
@@ -134,14 +136,14 @@ System.config({
     '@angular/material/tooltip': 'dist/packages/material/tooltip/index.js',
     '@angular/material/tree': 'dist/packages/material/tree/index.js',
 
+    '@angular/material-experimental/mdc-autocomplete':
+        'dist/packages/material-experimental/mdc-autocomplete/index.js',
     '@angular/material-experimental/mdc-button':
         'dist/packages/material-experimental/mdc-button/index.js',
     '@angular/material-experimental/mdc-card':
         'dist/packages/material-experimental/mdc-card/index.js',
     '@angular/material-experimental/mdc-checkbox':
         'dist/packages/material-experimental/mdc-checkbox/index.js',
-    '@angular/material-experimental/mdc-checkbox/testing':
-        'dist/packages/material-experimental/mdc-checkbox/testing/index.js',
     '@angular/material-experimental/mdc-chips':
         'dist/packages/material-experimental/mdc-chips/index.js',
     '@angular/material-experimental/mdc-helpers':
