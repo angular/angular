@@ -37,6 +37,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSortModule} from '@angular/material/sort';
 import {MatStepperModule} from '@angular/material/stepper';
+import {YouTubePlayerModule} from '@angular/youtube-player';
 import {Observable, of as observableOf} from 'rxjs';
 
 export class TableDataSource extends DataSource<any> {
@@ -136,6 +137,9 @@ export class KitchenSink {
     // CDK Modules
     CdkTableModule,
     DragDropModule,
+
+    // Other modules
+    YouTubePlayerModule,
   ],
   declarations: [KitchenSink, TestEntryComponent],
   exports: [KitchenSink, TestEntryComponent],

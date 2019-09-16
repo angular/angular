@@ -18,6 +18,7 @@ ng_module(
     ],
     deps = [
         "@npm//@angular/platform-server",
+        "//src/youtube-player",
     ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_TARGETS + MATERIAL_EXPERIMENTAL_TARGETS,
 )
 
