@@ -44,7 +44,6 @@ export const NUMBER_VALUE_ACCESSOR: any = {
   selector:
       'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]',
   host: {
-    '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
     '(blur)': 'onTouched()'
   },
