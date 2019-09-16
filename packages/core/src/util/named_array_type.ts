@@ -30,7 +30,7 @@ export function createNamedArrayType(name: string): typeof Array {
     try {
       // We need to do it this way so that TypeScript does not down-level the below code.
       const FunctionConstructor: any = createNamedArrayType.constructor;
-      return (new FunctionConstructor('Array', `return class ABC extends Array{}`))(Array);
+      return (new FunctionConstructor('Array', `return class ${name} extends Array{}`))(Array);
     } catch (e) {
       // If it does not work just give up and fall back to regular Array.
       return Array;
