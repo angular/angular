@@ -20,15 +20,11 @@ If your video is found at https://www.youtube.com/watch?v=PRQCAL_RMVo, then your
 
 ```typescript
 // example-module.ts
-import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {YouTubePlayerModule} from '@angular/youtube-player';
-import {YoutubePlayerExample} from './example-component';
 
 @NgModule({
   imports: [
-    // Needed for ngIf directive.
-    CommonModule,
     YouTubePlayerModule,
   ],
   declarations: [YoutubePlayerExample],
