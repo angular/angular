@@ -7,14 +7,22 @@
  */
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {TVIEW} from '../../../../src/render3/interfaces/view';
+import {createBenchmark} from '../micro_bench';
 import {setupRootViewWithEmbeddedViews} from '../setup';
 
 const rootLView = setupRootViewWithEmbeddedViews(null, 0, 0, 1000);
 const rootTView = rootLView[TVIEW];
 
+// scenario to benchmark
+const noopChangeDetection = createBenchmark('noop change detection');
+const refreshTime = noopChangeDetection('refresh');
+
 // run change detection in the update mode
-console.profile('update');
-for (let i = 0; i < 20000; i++) {
+console.profile('noop_refresh');
+while (refreshTime()) {
   refreshView(rootLView, rootTView, null, null);
 }
 console.profileEnd();
+
+// report results
+noopChangeDetection.report();
