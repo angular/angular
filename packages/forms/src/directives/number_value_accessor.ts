@@ -43,10 +43,7 @@ export const NUMBER_VALUE_ACCESSOR: any = {
 @Directive({
   selector:
       'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]',
-  host: {
-    '(input)': 'onChange($event.target.value)',
-    '(blur)': 'onTouched()'
-  },
+  host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [NUMBER_VALUE_ACCESSOR]
 })
 export class NumberValueAccessor implements ControlValueAccessor {
