@@ -323,6 +323,10 @@ Now that your app can retrieve shipping data, you'll create a shipping component
 
     <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.1.ts"></code-example>
 
+1. In `app.module.ts`, add an import for ShippingComponent. 
+
+```import { ShippingComponent } from './shipping/shipping.component';```
+
 1. In `app.module.ts`, add a route for shipping. Specify a `path` of `shipping` and a component of `ShippingComponent`.
 
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="shipping-route"></code-example>
