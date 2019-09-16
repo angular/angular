@@ -28,14 +28,3 @@ test --flaky_test_attempts=2
 
 # More details on failures
 build --verbose_failures=true
-
-# We have seen some flakiness in using TS workers on CircleCI
-# https://angular-team.slack.com/archives/C07DT5M6V/p1562693245183400
-# > failures like `ERROR: /home/circleci/ng/packages/core/test/BUILD.bazel:5:1:
-# > Compiling TypeScript (devmode) //packages/core/test:test_lib failed: Worker process did not return a WorkResponse:`
-# > I saw that issue a couple times today.
-# > Example job: https://circleci.com/gh/angular/angular/385517
-# We expect that TypeScript compilations will parallelize wider than the number of local cores anyway
-# so we should saturate remote workers with TS compilations
-build --strategy=AngularTemplateCompile=local
-build --strategy=TypeScriptCompile=local

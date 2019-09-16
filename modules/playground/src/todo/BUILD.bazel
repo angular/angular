@@ -6,7 +6,10 @@ package(default_visibility = ["//modules/playground:__subpackages__"])
 ng_module(
     name = "todo",
     srcs = glob(["**/*.ts"]),
-    assets = ["todo.html"],
+    assets = [
+        "todo.html",
+        "css/base.css",
+    ],
     tsconfig = "//modules/playground:tsconfig-build.json",
     # TODO: FW-1004 Type checking is currently not complete.
     type_check = False,
