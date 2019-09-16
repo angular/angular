@@ -2,14 +2,13 @@
 
 This guide explains how to setup your Angular project to begin using Angular Material. It includes information on prerequisites, installing Angular Material, and optionally displaying a sample material component in your application to verify your setup.
 
-### New to Angular ?
+*Angular Resources*
 
 If you are new to Angular or getting started with a new Angular application, see [Angular's full Getting Started Guide](https://angular.io/start) and [Setting up your environment](https://angular.io/guide/setup-local).
 
-For existing applications, follow the steps below to begin using Angular Material:
+For existing applications, follow the steps below to begin using Angular Material.
 
-
-### Step 1: Install Angular Material npm packages
+### Install Angular Material
 
 Use the Angular CLI's install [schematic](https://material.angular.io/guide/schematics) to set up your Angular Material project by running the following command:
 
@@ -27,7 +26,8 @@ The `ng add` command will install Angular Material, the [Component Dev Kit (CDK)
 
    [HammerJS](http://hammerjs.github.io/) provides gesture recognition capabilities required by some components (`mat-slide-toggle`, `mat-slider`, `matToolTip`).
 
-   Please note, if you choose not to install HammerJS it can be installed later (see Appendix).
+   Please note, if you choose not to install HammerJS it can be installed later
+   (see [Appendix](#installing-hammerjs)).
 
 3. Set up browser animations for Angular Material:
 
@@ -46,7 +46,7 @@ The `ng add` command will additionally perform the following configurations:
 You're done! Angular Material is now configured to be used in your application.
 
 
-### Step 2: Display an example Angular Material component
+### Display a component
 
 Let's display a slider component in your app and verify that everything works.
 
@@ -81,9 +81,11 @@ You should see the material slider component on the page.
 In addition to the install schematic, Angular Material comes with [several schematics](https://material.angular.io/guide/schematics) (like nav, table, address-form, etc.) that can be used to easily generate pre-built components in your application.
 
 
-### Appendix: Installing [HammerJS](http://hammerjs.github.io/)
+### Appendix
 
-HammerJS can be installed using the following npm command:
+#### Installing HammerJS
+
+[HammerJS](http://hammerjs.github.io/) can be installed using the following npm command:
 
    ```bash
    npm install --save hammerjs
@@ -92,5 +94,5 @@ HammerJS can be installed using the following npm command:
    After installing, import it on your app's entry point (e.g. `src/main.ts`).
 
    ```ts
-   import 'hammer.js';
+   import 'hammerjs';
    ```
