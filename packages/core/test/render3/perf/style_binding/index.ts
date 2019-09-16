@@ -11,6 +11,7 @@ import {refreshView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TVIEW} from '../../../../src/render3/interfaces/view';
 import {ɵɵstyleProp, ɵɵstyling, ɵɵstylingApply} from '../../../../src/render3/styling_next/instructions';
+import {createBenchmark} from '../micro_bench';
 import {setupRootViewWithEmbeddedViews} from '../setup';
 
 `<ng-template>
@@ -100,9 +101,16 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 const rootLView = setupRootViewWithEmbeddedViews(testTemplate, 11, 10, 1000);
 const rootTView = rootLView[TVIEW];
 
+// scenario to benchmark
+const styleBindingBenchmark = createBenchmark('style binding');
+const refreshTime = styleBindingBenchmark('refresh');
+
 // run change detection in the update mode
-console.profile('update');
-for (let i = 0; i < 5000; i++) {
+console.profile('style_binding_refresh');
+while (refreshTime()) {
   refreshView(rootLView, rootTView, null, null);
 }
 console.profileEnd();
+
+// report results
+styleBindingBenchmark.report();
