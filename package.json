@@ -24,7 +24,7 @@
     "e2e": "bazel test //src/... --test_tag_filters=e2e",
     "deploy": "echo 'Not supported yet. Tracked with COMP-230'",
     "webdriver-manager": "webdriver-manager",
-    "breaking-changes": "gulp breaking-changes",
+    "breaking-changes": "ts-node --project scripts scripts/breaking-changes.ts",
     "gulp": "gulp",
     "stage-release": "ts-node --project tools/release/ tools/release/stage-release.ts",
     "publish-release": "ts-node --project tools/release/ tools/release/publish-release.ts",

@@ -21,7 +21,6 @@ createPackageBuildTasks(momentAdapterPackage);
 createPackageBuildTasks(youTubePlayerPackage);
 createPackageBuildTasks(googleMapsPackage);
 
-import './tasks/breaking-changes';
 import './tasks/ci';
 import './tasks/clean';
 import './tasks/default';
