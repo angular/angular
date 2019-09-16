@@ -1,56 +1,29 @@
+import {Platform, PlatformModule} from '@angular/cdk/platform';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {Platform, PlatformModule} from '@angular/cdk/platform';
 import {Component} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {MatButtonModule} from '@angular/material/button';
-import {MatButtonModule as MatMdcButtonModule} from '../index';
-import {MatButtonHarness} from './button-harness';
-import {MatButtonHarness as MatMdcButtonHarness} from './mdc-button-harness';
-
-let fixture: ComponentFixture<ButtonHarnessTest>;
-let loader: HarnessLoader;
-let buttonHarness: typeof MatButtonHarness;
-let platform: Platform;
-
-describe('MatButtonHarness', () => {
-  describe('non-MDC-based', () => {
-    beforeEach(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatButtonModule, PlatformModule],
-        declarations: [ButtonHarnessTest],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(ButtonHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-      buttonHarness = MatButtonHarness;
-    });
-
-    runTests();
-  });
-
-  describe('MDC-based', () => {
-    beforeEach(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatMdcButtonModule],
-        declarations: [ButtonHarnessTest],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(ButtonHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-      // Public APIs are the same as MatButtonHarness, but cast is necessary because of different
-      // private fields.
-      buttonHarness = MatMdcButtonHarness as any;
-    });
-
-    runTests();
-  });
-});
+import {MatButtonHarness} from '@angular/material/button/testing/button-harness';
 
 /** Shared tests to run on both the original and MDC-based buttons. */
-function runTests() {
+export function runHarnessTests(
+    buttonModule: typeof MatButtonModule, buttonHarness: typeof MatButtonHarness) {
+  let fixture: ComponentFixture<ButtonHarnessTest>;
+  let loader: HarnessLoader;
+  let platform: Platform;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [buttonModule, PlatformModule],
+      declarations: [ButtonHarnessTest],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ButtonHarnessTest);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
   beforeEach(inject([Platform], (p: Platform) => {
     platform = p;
   }));
