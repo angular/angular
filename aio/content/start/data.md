@@ -311,8 +311,6 @@ Learn more: See the [HttpClient guide](guide/http "HttpClient guide") for more i
 </div>
 
 
-
-
 ## Define the shipping page
 
 Now that your app can retrieve shipping data, you'll create a shipping component and associated template.
@@ -325,7 +323,7 @@ Now that your app can retrieve shipping data, you'll create a shipping component
 
 1. In `app.module.ts`, add an import for ShippingComponent. 
 
-```import { ShippingComponent } from './shipping/shipping.component';```
+    ```import { ShippingComponent } from './shipping/shipping.component';```
 
 1. In `app.module.ts`, add a route for shipping. Specify a `path` of `shipping` and a component of `ShippingComponent`.
 
