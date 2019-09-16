@@ -100,6 +100,13 @@ export declare class GestureConfig extends HammerGestureConfig {
     buildHammer(element: HTMLElement): HammerInstance;
 }
 
+export interface GranularSanityChecks {
+    doctype: boolean;
+    hammer: boolean;
+    theme: boolean;
+    version: boolean;
+}
+
 export interface HammerInput {
     center: {
         x: number;
@@ -190,7 +197,7 @@ export declare const MAT_OPTION_PARENT_COMPONENT: InjectionToken<MatOptionParent
 export declare const MAT_RIPPLE_GLOBAL_OPTIONS: InjectionToken<RippleGlobalOptions>;
 
 export declare class MatCommonModule {
-    constructor(_sanityChecksEnabled: boolean, _hammerLoader?: HammerLoader | undefined);
+    constructor(sanityChecks: any, _hammerLoader?: HammerLoader | undefined);
     _checkHammerIsAvailable(): void;
 }
 
@@ -206,7 +213,7 @@ export declare type MatDateFormats = {
     };
 };
 
-export declare const MATERIAL_SANITY_CHECKS: InjectionToken<boolean>;
+export declare const MATERIAL_SANITY_CHECKS: InjectionToken<SanityChecks>;
 
 export declare class MatLine {
 }
@@ -411,6 +418,8 @@ export interface RippleTarget {
     rippleConfig: RippleConfig;
     rippleDisabled: boolean;
 }
+
+export declare type SanityChecks = boolean | GranularSanityChecks;
 
 export declare const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9, NOV = 10, DEC = 11;
 

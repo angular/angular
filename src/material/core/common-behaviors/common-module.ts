@@ -18,15 +18,29 @@ import {VERSION as CDK_VERSION} from '@angular/cdk';
 const VERSION = new Version('0.0.0-PLACEHOLDER');
 
 /** @docs-private */
-export function MATERIAL_SANITY_CHECKS_FACTORY(): boolean {
+export function MATERIAL_SANITY_CHECKS_FACTORY(): SanityChecks {
   return true;
 }
 
 /** Injection token that configures whether the Material sanity checks are enabled. */
-export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('mat-sanity-checks', {
+export const MATERIAL_SANITY_CHECKS = new InjectionToken<SanityChecks>('mat-sanity-checks', {
   providedIn: 'root',
   factory: MATERIAL_SANITY_CHECKS_FACTORY,
 });
+
+/**
+ * Possible sanity checks that can be enabled. If set to
+ * true/false, all checks will be enabled/disabled.
+ */
+export type SanityChecks = boolean | GranularSanityChecks;
+
+/** Object that can be used to configure the sanity checks granularly. */
+export interface GranularSanityChecks {
+  doctype: boolean;
+  theme: boolean;
+  version: boolean;
+  hammer: boolean;
+}
 
 /**
  * Module that captures anything that should be loaded and/or run for *all* Angular Material
@@ -51,11 +65,18 @@ export class MatCommonModule {
   /** Reference to the global 'window' object. */
   private _window = typeof window === 'object' && window ? window : null;
 
+  /** Configured sanity checks. */
+  private _sanityChecks: SanityChecks;
+
   constructor(
-    @Optional() @Inject(MATERIAL_SANITY_CHECKS) private _sanityChecksEnabled: boolean,
+    @Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any,
     @Optional() @Inject(HAMMER_LOADER) private _hammerLoader?: HammerLoader) {
 
-    if (this._areChecksEnabled() && !this._hasDoneGlobalChecks) {
+    // Note that `_sanityChecks` is typed to `any`, because AoT
+    // throws an error if we use the `SanityChecks` type directly.
+    this._sanityChecks = sanityChecks;
+
+    if (!this._hasDoneGlobalChecks) {
       this._checkDoctypeIsDefined();
       this._checkThemeIsPresent();
       this._checkCdkVersionMatch();
@@ -63,9 +84,9 @@ export class MatCommonModule {
     }
   }
 
-  /** Whether any sanity checks are enabled */
-  private _areChecksEnabled(): boolean {
-    return this._sanityChecksEnabled && isDevMode() && !this._isTestEnv();
+  /** Whether any sanity checks are enabled. */
+  private _checksAreEnabled(): boolean {
+    return isDevMode() && !this._isTestEnv();
   }
 
   /** Whether the code is running in tests. */
@@ -75,7 +96,10 @@ export class MatCommonModule {
   }
 
   private _checkDoctypeIsDefined(): void {
-    if (this._document && !this._document.doctype) {
+    const isEnabled = this._checksAreEnabled() &&
+      (this._sanityChecks === true || (this._sanityChecks as GranularSanityChecks).doctype);
+
+    if (isEnabled && this._document && !this._document.doctype) {
       console.warn(
         'Current document does not have a doctype. This may cause ' +
         'some Angular Material components not to behave as expected.'
@@ -86,7 +110,11 @@ export class MatCommonModule {
   private _checkThemeIsPresent(): void {
     // We need to assert that the `body` is defined, because these checks run very early
     // and the `body` won't be defined if the consumer put their scripts in the `head`.
-    if (!this._document || !this._document.body || typeof getComputedStyle !== 'function') {
+    const isDisabled = !this._checksAreEnabled() ||
+      (this._sanityChecks === false || !(this._sanityChecks as GranularSanityChecks).theme);
+
+    if (isDisabled || !this._document || !this._document.body ||
+        typeof getComputedStyle !== 'function') {
       return;
     }
 
@@ -113,7 +141,10 @@ export class MatCommonModule {
 
   /** Checks whether the material version matches the cdk version */
   private _checkCdkVersionMatch(): void {
-    if (VERSION.full !== CDK_VERSION.full) {
+    const isEnabled = this._checksAreEnabled() &&
+      (this._sanityChecks === true || (this._sanityChecks as GranularSanityChecks).version);
+
+    if (isEnabled && VERSION.full !== CDK_VERSION.full) {
       console.warn(
           'The Angular Material version (' + VERSION.full + ') does not match ' +
           'the Angular CDK version (' + CDK_VERSION.full + ').\n' +
@@ -128,7 +159,10 @@ export class MatCommonModule {
       return;
     }
 
-    if (this._areChecksEnabled() && !(this._window as any)['Hammer'] && !this._hammerLoader) {
+    const isEnabled = this._checksAreEnabled() &&
+      (this._sanityChecks === true || (this._sanityChecks as GranularSanityChecks).hammer);
+
+    if (isEnabled && !(this._window as any)['Hammer'] && !this._hammerLoader) {
       console.warn(
         'Could not find HammerJS. Certain Angular Material components may not work correctly.');
     }
