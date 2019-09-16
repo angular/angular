@@ -12,19 +12,24 @@ import {TargetVersion} from '../update-tool/target-version';
 import {cdkUpgradeData} from './upgrade-data';
 import {createUpgradeRule} from './upgrade-rules';
 
-/** Entry point for the migration schematics with target of Angular Material 6.0.0 */
+/** Entry point for the migration schematics with target of Angular CDK 6.0.0 */
 export function updateToV6(): Rule {
   return createUpgradeRule(TargetVersion.V6, [], cdkUpgradeData, onMigrationComplete);
 }
 
-/** Entry point for the migration schematics with target of Angular Material 7.0.0 */
+/** Entry point for the migration schematics with target of Angular CDK 7.0.0 */
 export function updateToV7(): Rule {
   return createUpgradeRule(TargetVersion.V7, [], cdkUpgradeData, onMigrationComplete);
 }
 
-/** Entry point for the migration schematics with target of Angular Material 8.0.0 */
+/** Entry point for the migration schematics with target of Angular CDK 8.0.0 */
 export function updateToV8(): Rule {
   return createUpgradeRule(TargetVersion.V8, [], cdkUpgradeData, onMigrationComplete);
+}
+
+/** Entry point for the migration schematics with target of Angular CDK 9.0.0 */
+export function updateToV9(): Rule {
+  return createUpgradeRule(TargetVersion.V9, [], cdkUpgradeData, onMigrationComplete);
 }
 
 /** Function that will be called when the migration completed. */

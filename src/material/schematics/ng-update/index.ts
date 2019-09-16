@@ -49,6 +49,12 @@ export function updateToV8(): Rule {
       TargetVersion.V8, materialMigrationRules, materialUpgradeData, onMigrationComplete);
 }
 
+/** Entry point for the migration schematics with target of Angular Material v9 */
+export function updateToV9(): Rule {
+  return createUpgradeRule(
+      TargetVersion.V9, materialMigrationRules, materialUpgradeData, onMigrationComplete);
+}
+
 /** Function that will be called when the migration completed. */
 function onMigrationComplete(targetVersion: TargetVersion, hasFailures: boolean) {
   console.log();
