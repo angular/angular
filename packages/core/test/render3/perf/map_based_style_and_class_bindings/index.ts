@@ -10,7 +10,7 @@ import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/ren
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TVIEW} from '../../../../src/render3/interfaces/view';
-import {ɵɵclassMap, ɵɵstyleMap} from '../../../../src/render3/styling_next/instructions';
+import {ɵɵclassMap, ɵɵstyleMap} from '../../../../src/render3/styling/instructions';
 import {createBenchmark} from '../micro_bench';
 import {setupRootViewWithEmbeddedViews} from '../setup';
 

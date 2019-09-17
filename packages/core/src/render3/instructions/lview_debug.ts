@@ -19,9 +19,9 @@ import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
-import {TStylingContext} from '../styling_next/interfaces';
-import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling_next/styling_debug';
-import {isStylingContext} from '../styling_next/util';
+import {TStylingContext} from '../styling/interfaces';
+import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling/styling_debug';
+import {isStylingContext} from '../styling/util';
 import {attachDebugObject} from '../util/debug_utils';
 import {getTNode, unwrapRNode} from '../util/view_utils';
 

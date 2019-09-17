@@ -287,7 +287,7 @@ import {LView} from '../interfaces/view';
  * For the algorithm to apply styling values efficiently, the
  * styling map entries must be applied in sync (property by property)
  * with prop-based bindings. (The map-based algorithm is described
- * more inside of the `render3/styling_next/map_based_bindings.ts` file.)
+ * more inside of the `render3/styling/map_based_bindings.ts` file.)
  *
  * ## Sanitization
  * Sanitization is used to prevent invalid style values from being applied to

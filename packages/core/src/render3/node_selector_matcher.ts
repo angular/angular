@@ -12,7 +12,7 @@ import {assertDefined, assertNotEqual} from '../util/assert';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
-import {getInitialStylingValue} from './styling_next/util';
+import {getInitialStylingValue} from './styling/util';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
