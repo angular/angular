@@ -10,7 +10,6 @@ import {ApplicationRef, Component, DoCheck, NgModule, OnInit, TestabilityRegistr
 import {getTestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
-
 import {NgModuleFactory} from '../src/render3/ng_module_ref';
 
 ivyEnabled && describe('ApplicationRef bootstrap', () => {
@@ -58,4 +57,13 @@ ivyEnabled && describe('ApplicationRef bootstrap', () => {
        registry.unregisterAllApplications();
      }));
 
+  it('should expose the `window.ng` global utilities',
+     withBody('<hello-world></hello-world>', async() => {
+       const MyAppModuleFactory = new NgModuleFactory(MyAppModule);
+       const moduleRef =
+           await getTestBed().platform.bootstrapModuleFactory(MyAppModuleFactory, {ngZone: 'noop'});
+
+       const ngUtils = (global as any).ng;
+       expect(ngUtils.getComponent).toBeTruthy();
+     }));
 });
