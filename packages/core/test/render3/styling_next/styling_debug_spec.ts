@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {registerBinding} from '@angular/core/src/render3/styling_next/bindings';
-import {NodeStylingDebug, attachStylingDebugObject} from '@angular/core/src/render3/styling_next/styling_debug';
-import {allocTStylingContext} from '@angular/core/src/render3/styling_next/util';
+import {registerBinding} from '@angular/core/src/render3/styling/bindings';
+import {NodeStylingDebug, attachStylingDebugObject} from '@angular/core/src/render3/styling/styling_debug';
+import {allocTStylingContext} from '@angular/core/src/render3/styling/util';
 
 describe('styling debugging tools', () => {
   describe('NodeStylingDebug', () => {

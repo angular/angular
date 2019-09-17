@@ -12,9 +12,9 @@ import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
 import {LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
-import {StylingMapArray, TStylingContext} from '../render3/styling_next/interfaces';
-import {NodeStylingDebug} from '../render3/styling_next/styling_debug';
-import {isStylingContext, stylingMapToStringMap} from '../render3/styling_next/util';
+import {StylingMapArray, TStylingContext} from '../render3/styling/interfaces';
+import {NodeStylingDebug} from '../render3/styling/styling_debug';
+import {isStylingContext, stylingMapToStringMap} from '../render3/styling/util';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
 import {findComponentView} from '../render3/util/view_traversal_utils';

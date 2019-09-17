@@ -514,7 +514,7 @@ function updateInitialStylingOnContext(
  * map-based bindings up to sync with the application of prop-based
  * bindings.
  *
- * Visit `styling_next/map_based_bindings.ts` to learn more about how the
+ * Visit `styling/map_based_bindings.ts` to learn more about how the
  * algorithm works for map-based styling bindings.
  *
  * Note that this function is not designed to be called in isolation (use
