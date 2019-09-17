@@ -9,11 +9,10 @@
 import 'reflect-metadata';
 import * as ts from 'typescript';
 import {create} from '../src/ts_plugin';
-import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 describe('plugin', () => {
-  const mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
+  const mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
   const service = ts.createLanguageService(mockHost);
   const program = service.getProgram();
   const plugin = createPlugin(service, mockHost);

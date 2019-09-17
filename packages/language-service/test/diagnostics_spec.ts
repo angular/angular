@@ -10,7 +10,6 @@ import * as ts from 'typescript';
 import {createLanguageService} from '../src/language_service';
 import * as ng from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
-import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 /**
@@ -32,7 +31,7 @@ describe('diagnostics', () => {
   let ngLS: ng.LanguageService;
 
   beforeEach(() => {
-    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
+    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
     tsLS = ts.createLanguageService(mockHost);
     ngHost = new TypeScriptServiceHost(mockHost, tsLS);
     ngLS = createLanguageService(ngHost);
