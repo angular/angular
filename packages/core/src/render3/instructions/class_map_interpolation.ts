@@ -7,8 +7,9 @@
  */
 
 import {getLView, getSelectedIndex} from '../state';
-import {classMapInternal} from './styling';
+
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
+import {classMapInternal} from './styling';
 
 
 
