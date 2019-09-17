@@ -442,6 +442,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   /**
+   * Gets a StaticSymbol from a file and symbol name.
+   * @return Angular StaticSymbol matching the file and name, if any
+   */
+  getStaticSymbol(file: string, name: string): StaticSymbol|undefined {
+    return this.reflector.getStaticSymbol(file, name);
+  }
+
+  /**
    * Find the NgModule which the directive associated with the `classSymbol`
    * belongs to, then return its schema and transitive directives and pipes.
    * @param classSymbol Angular Symbol that defines a directive
