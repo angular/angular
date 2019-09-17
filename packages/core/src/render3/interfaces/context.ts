@@ -7,8 +7,11 @@
  */
 
 
+import {DebugNode} from '../instructions/lview_debug';
+
 import {RNode} from './renderer';
 import {LView} from './view';
+
 
 /**
  * This property will be monkey-patched on elements, components and directives

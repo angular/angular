@@ -10,15 +10,15 @@ import {Injector} from '../../di/injector';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
 import {NodeInjector} from '../di';
-import {DebugNode, LViewDebug, toDebug} from '../instructions/lview_debug';
+import {DebugNode, buildDebugNode} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
-import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW} from '../interfaces/view';
+import {CLEANUP, CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, TVIEW} from '../interfaces/view';
 
 import {stringifyForError} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
-import {unwrapRNode} from './view_utils';
+import {getTNode, unwrapRNode} from './view_utils';
 
 
 
@@ -353,14 +353,22 @@ function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
  * @publicApi
  */
 export function getDebugNode(element: Node): DebugNode|null {
+  let debugNode: DebugNode|null = null;
+
   const lContext = loadLContextFromNode(element);
-  const lViewDebug = toDebug(lContext.lView) as LViewDebug;
-  const debugNodes = lViewDebug.nodes || [];
-  for (let i = 0; i < debugNodes.length; i++) {
-    const n = debugNodes[i];
-    if (n.native === element) {
-      return n;
+  const lView = lContext.lView;
+  let nodeIndex = -1;
+  for (let i = HEADER_OFFSET; i < lView.length; i++) {
+    if (lView[i] === element) {
+      nodeIndex = i - HEADER_OFFSET;
+      break;
     }
   }
-  return null;
+
+  if (nodeIndex !== -1) {
+    const tNode = getTNode(nodeIndex, lView);
+    debugNode = buildDebugNode(tNode, lView);
+  }
+
+  return debugNode;
 }
