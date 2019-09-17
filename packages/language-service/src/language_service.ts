@@ -12,7 +12,7 @@ import {isAstResult} from './common';
 import {getTemplateCompletions} from './completions';
 import {getDefinitionAndBoundSpan, getTsDefinitionAndBoundSpan} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic, uniqueBySpan} from './diagnostics';
-import {getHover} from './hover';
+import {getHover, getTsHover} from './hover';
 import {Diagnostic, LanguageService} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
@@ -96,6 +96,15 @@ class LanguageServiceImpl implements LanguageService {
     const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getHover(templateInfo, position);
+    }
+
+    // Attempt to get Angular-specific hover information in a TypeScript file, the NgModule a
+    // directive belongs to.
+    if (fileName.endsWith('.ts')) {
+      const sf = this.host.getSourceFile(fileName);
+      if (sf) {
+        return getTsHover(sf, position, this.host);
+      }
     }
   }
 }
