@@ -120,6 +120,8 @@ System.config({
     '@angular/material/input': 'dist/packages/material/input/index.js',
     '@angular/material/list': 'dist/packages/material/list/index.js',
     '@angular/material/menu': 'dist/packages/material/menu/index.js',
+    '@angular/material/menu/testing': 'dist/packages/material/menu/testing/index.js',
+    '@angular/material/menu/testing/shared.spec': 'dist/packages/material/menu/testing/shared.spec.js',
     '@angular/material/paginator': 'dist/packages/material/paginator/index.js',
     '@angular/material/progress-bar': 'dist/packages/material/progress-bar/index.js',
     '@angular/material/progress-spinner': 'dist/packages/material/progress-spinner/index.js',

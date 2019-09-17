@@ -8,7 +8,7 @@
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {MenuItemHarnessFilters} from './menu-harness-filters';
+import {MenuItemHarnessFilters} from '@angular/material/menu/testing/menu-harness-filters';
 
 
 /**
@@ -26,7 +26,7 @@ export class MatMenuItemHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: MenuItemHarnessFilters = {}): HarnessPredicate<MatMenuItemHarness> {
-    return new HarnessPredicate(MatMenuItemHarness, options);
+    return new HarnessPredicate(MatMenuItemHarness, options); // TODO: add options here
   }
 
   /** Gets a boolean promise indicating if the menu is disabled. */

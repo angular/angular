@@ -1,7 +1,7 @@
+import {MatMenuModule} from '@angular/material/menu';
 import {runHarnessTests} from '@angular/material/menu/testing/shared.spec';
-import {MatMenuModule} from '../index';
 import {MatMenuHarness} from './menu-harness';
 
-describe('MDC-based MatMenuHarness', () => {
+describe('Non-MDC-based MatMenuHarness', () => {
   runHarnessTests(MatMenuModule, MatMenuHarness);
 });
