@@ -192,7 +192,7 @@
             "pure_function.ts": 1274,
             "query.ts": 5226,
             "state.ts": 1312,
-            "styling_next/": {
+            "styling/": {
               "size": 8202,
               "bindings.ts": 2430,
               "instructions.ts": 1821,

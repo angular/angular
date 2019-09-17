@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {StylingMapArray, TStylingContext} from '../styling_next/interfaces';
+import {StylingMapArray, TStylingContext} from '../styling/interfaces';
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {LView, TView} from './view';
