@@ -6,7 +6,7 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {RElement} from '../interfaces/renderer';
-import {TEMPLATE_DIRECTIVE_INDEX} from './util';
+import {TEMPLATE_DIRECTIVE_INDEX} from '../util/styling_utils';
 
 /**
  * --------
