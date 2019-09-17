@@ -347,6 +347,10 @@ function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
 
 /**
  * Returns the attached `DebugNode` instance for an element in the DOM.
+ *
+ * @param element DOM element which is owned by an existing component's view.
+ *
+ * @publicApi
  */
 export function getDebugNode(element: Node): DebugNode|null {
   const lContext = loadLContextFromNode(element);
