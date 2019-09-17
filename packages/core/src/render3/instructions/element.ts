@@ -17,7 +17,7 @@ import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../i
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {registerInitialStylingOnTNode} from '../styling/instructions';
+import {registerInitialStylingOnTNode} from './styling';
 import {StylingMapArray, TStylingContext} from '../styling/interfaces';
 import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../styling/util';
 import {setUpAttributes} from '../util/attrs_utils';

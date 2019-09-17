@@ -8,10 +8,10 @@
 import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
 import {refreshView} from '../../../../src/render3/instructions/shared';
+import {ɵɵclassProp, ɵɵstyleProp} from '../../../../src/render3/instructions/styling';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {AttributeMarker} from '../../../../src/render3/interfaces/node';
 import {TVIEW} from '../../../../src/render3/interfaces/view';
-import {ɵɵclassProp, ɵɵstyleProp} from '../../../../src/render3/styling/instructions';
 import {createBenchmark} from '../micro_bench';
 import {setupRootViewWithEmbeddedViews} from '../setup';
 
