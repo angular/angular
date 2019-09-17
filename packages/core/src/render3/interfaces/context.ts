@@ -7,8 +7,6 @@
  */
 
 
-import {DebugNode} from '../instructions/lview_debug';
-
 import {RNode} from './renderer';
 import {LView} from './view';
 
