@@ -109,7 +109,7 @@ function main(args: string[]): number {
    * @param inputPath Path to the file in the input tree.
    * @param fileContent Content of the file.
    */
-  function writeFileFromInputPath(inputPath: string, fileContent: string) {
+  function writeFileFromInputPath(inputPath: string, fileContent: string | Buffer) {
     // We want the relative path from the given file to its ancestor "root" directory.
     // This root depends on whether the file lives in the source tree (srcDir) as a basic file
     // input to ng_package, the bin output tree (binDir) as the output of another rule, or
@@ -127,7 +127,7 @@ function main(args: string[]): number {
 
     // Always ensure that the target directory exists.
     shx.mkdir('-p', path.dirname(outputPath));
-    fs.writeFileSync(outputPath, fileContent, 'utf-8');
+    fs.writeFileSync(outputPath, fileContent);
   }
 
   /**
@@ -135,7 +135,7 @@ function main(args: string[]): number {
    * @param inputPath a path relative to the binDir, typically from a file in the deps[]
    */
   function copyFileFromInputPath(inputPath: string) {
-    writeFileFromInputPath(inputPath, fs.readFileSync(inputPath, 'utf-8'));
+    writeFileFromInputPath(inputPath, fs.readFileSync(inputPath));
   }
 
   /**

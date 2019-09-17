@@ -42,6 +42,7 @@ fesm5
   fesm5/secondary.js.map
   fesm5/waffels.js
   fesm5/waffels.js.map
+logo.png
 package.json
 secondary
   secondary/package.json
@@ -986,6 +987,10 @@ var MyModule = /** @class */ (function () {
 export { MyModule };
 //# sourceMappingURL=waffels.js.map
 
+
+--- logo.png ---
+
+9db278d630f5fabd8e7ba16c2e329a3a
 
 --- package.json ---
 
