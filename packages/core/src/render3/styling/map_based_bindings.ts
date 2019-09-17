@@ -9,9 +9,9 @@ import {unwrapSafeValue} from '../../sanitization/bypass';
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {ProceduralRenderer3, RElement, Renderer3} from '../interfaces/renderer';
 import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex} from '../interfaces/styling';
+import {getBindingValue, getMapProp, getMapValue, getValue, getValuesCount, isStylingValueDefined} from '../util/styling_utils';
 
 import {setStylingMapsSyncFn} from './bindings';
-import {getBindingValue, getMapProp, getMapValue, getValue, getValuesCount, isStylingValueDefined} from './util';
 
 
 

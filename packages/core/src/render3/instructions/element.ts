@@ -18,8 +18,8 @@ import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../i
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../styling/util';
 import {setUpAttributes} from '../util/attrs_utils';
+import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../util/styling_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
 import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';

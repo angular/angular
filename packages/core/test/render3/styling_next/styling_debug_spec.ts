@@ -7,7 +7,7 @@
  */
 import {registerBinding} from '@angular/core/src/render3/styling/bindings';
 import {NodeStylingDebug, attachStylingDebugObject} from '@angular/core/src/render3/styling/styling_debug';
-import {allocTStylingContext} from '@angular/core/src/render3/styling/util';
+import {allocTStylingContext} from '@angular/core/src/render3/util/styling_utils';
 
 describe('styling debugging tools', () => {
   describe('NodeStylingDebug', () => {

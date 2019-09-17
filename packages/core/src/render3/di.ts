@@ -24,10 +24,10 @@ import {isComponentDef, isComponentHost} from './interfaces/type_checks';
 import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
-import {getInitialStylingValue} from './styling/util';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {stringifyForError} from './util/misc_utils';
+import {getInitialStylingValue} from './util/styling_utils';
 import {findComponentView} from './util/view_traversal_utils';
 
 
