@@ -11,11 +11,10 @@ import * as ts from 'typescript';
 import {createLanguageService} from '../src/language_service';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
-import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 describe('service without angular', () => {
-  let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
+  let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
   mockHost.forgetAngular();
   let service = ts.createLanguageService(mockHost);
   let ngHost = new TypeScriptServiceHost(mockHost, service);

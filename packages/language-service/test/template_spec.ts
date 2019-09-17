@@ -8,7 +8,6 @@
 
 import * as ts from 'typescript';
 import {getClassDeclFromDecoratorProp} from '../src/template';
-import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 describe('getClassDeclFromTemplateNode', () => {
@@ -35,7 +34,7 @@ describe('getClassDeclFromTemplateNode', () => {
 
 
   it('should return class declaration for AppComponent', () => {
-    const host = new MockTypescriptHost(['/app/app.component.ts'], toh);
+    const host = new MockTypescriptHost(['/app/app.component.ts']);
     const tsLS = ts.createLanguageService(host);
     const sourceFile = tsLS.getProgram() !.getSourceFile('/app/app.component.ts');
     expect(sourceFile).toBeTruthy();
