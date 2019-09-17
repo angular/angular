@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
-load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_web_test_suite")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module")
 
 ng_module(
     name = "mdc-radio",
@@ -28,15 +28,6 @@ sass_library(
 sass_binary(
     name = "radio_scss",
     src = "radio.scss",
-)
-
-ng_web_test_suite(
-    name = "unit_tests",
-    static_files = ["@npm//:node_modules/@material/radio/dist/mdc.radio.js"],
-    deps = [
-        "//src/material-experimental:mdc_require_config.js",
-        "//src/material-experimental/mdc-radio/harness:harness_tests",
-    ],
 )
 
 ng_e2e_test_library(

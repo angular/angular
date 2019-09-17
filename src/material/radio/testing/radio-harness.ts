@@ -8,7 +8,7 @@
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {RadioButtonHarnessFilters, RadioGroupHarnessFilters} from './radio-harness-filters';
+import {RadioButtonHarnessFilters, RadioGroupHarnessFilters} from '@angular/material/radio/testing/radio-harness-filters';
 
 /**
  * Harness for interacting with a standard mat-radio-group in tests.
