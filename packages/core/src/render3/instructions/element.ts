@@ -12,18 +12,18 @@ import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
+import {StylingMapArray, TStylingContext} from '../interfaces/styling';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {registerInitialStylingOnTNode} from './styling';
-import {StylingMapArray, TStylingContext} from '../styling/interfaces';
 import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../styling/util';
 import {setUpAttributes} from '../util/attrs_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
 import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, renderInitialStyling, resolveDirectives, saveResolvedLocalsInData, setInputsForProperty} from './shared';
+import {registerInitialStylingOnTNode} from './styling';
 
 
 

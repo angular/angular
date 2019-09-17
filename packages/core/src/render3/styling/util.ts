@@ -5,11 +5,9 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {unwrapSafeValue} from '../../sanitization/bypass';
 import {TNode, TNodeFlags} from '../interfaces/node';
+import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingConfig, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from '../interfaces/styling';
 import {NO_CHANGE} from '../tokens';
-
-import {LStylingData, StylingMapArray, StylingMapArrayIndex, TStylingConfig, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
 
 export const MAP_BASED_ENTRY_PROP_NAME = '[MAP]';
 export const TEMPLATE_DIRECTIVE_INDEX = 0;

@@ -10,17 +10,16 @@ import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {setInputsForProperty} from '../instructions/shared';
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
+import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from '../interfaces/styling';
 import {BINDING_INDEX, LView, RENDERER} from '../interfaces/view';
 import {getActiveDirectiveId, getCurrentStyleSanitizer, getLView, getSelectedIndex, setCurrentStyleSanitizer, setElementExitFn} from '../state';
-import {NO_CHANGE} from '../tokens';
-import {renderStringify} from '../util/misc_utils';
-import {getNativeByTNode, getTNode} from '../util/view_utils';
-
 import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
-import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from '../styling/interfaces';
 import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
 import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, hasClassInput, hasStyleInput, hasValueChanged, isContextLocked, isHostStylingActive, isStylingContext, normalizeIntoStylingMap, setValue, stylingMapToString} from '../styling/util';
+import {NO_CHANGE} from '../tokens';
+import {renderStringify} from '../util/misc_utils';
+import {getNativeByTNode, getTNode} from '../util/view_utils';
 
 
 

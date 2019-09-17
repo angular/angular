@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {getLView, getSelectedIndex} from '../state';
-import {stylePropInternal} from './styling';
+
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
 import {TsickleIssue1009} from './shared';
+import {stylePropInternal} from './styling';
+
 
 
 /**
