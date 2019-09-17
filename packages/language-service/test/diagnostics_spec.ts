@@ -510,7 +510,7 @@ describe('diagnostics', () => {
 
     it('should report errors for invalid styleUrls', () => {
       const fileName = mockHost.addCode(`
-	@Component({
+        @Component({
           styleUrls: ['«notAFile»'],
         })
         export class MyComponent {}`);
@@ -528,16 +528,15 @@ describe('diagnostics', () => {
     });
 
     it('should not report errors for valid styleUrls', () => {
-      const fileName = mockHost.addCode(`
-	@Component({
+      const fileName = '/app/app.component.ts';
+      mockHost.override(fileName, `
+        @Component({
           styleUrls: ['./test.css', './test.css'],
-	})
-	export class MyComponent {}`);
+        })
+        export class MyComponent {}`);
 
       const diagnostics = ngLS.getDiagnostics(fileName) !;
-      const urlDiagnostic =
-          diagnostics.find(d => d.messageText === 'URL does not point to a valid file');
-      expect(urlDiagnostic).toBeUndefined();
+      expect(diagnostics.length).toBe(0);
     });
   });
 
