@@ -10,6 +10,7 @@ import {Injector} from '../../di/injector';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
 import {NodeInjector} from '../di';
+import {DebugNode, LViewDebug, toDebug} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
@@ -342,4 +343,20 @@ function sortListeners(a: Listener, b: Listener) {
  */
 function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
   return obj.type !== undefined && obj.template !== undefined && obj.declaredInputs !== undefined;
+}
+
+/**
+ * Returns the attached `DebugNode` instance for an element in the DOM.
+ */
+export function getDebugNode(element: Node): DebugNode|null {
+  const lContext = loadLContextFromNode(element);
+  const lViewDebug = toDebug(lContext.lView) as LViewDebug;
+  const debugNodes = lViewDebug.nodes || [];
+  for (let i = 0; i < debugNodes.length; i++) {
+    const n = debugNodes[i];
+    if (n.native === element) {
+      return n;
+    }
+  }
+  return null;
 }
