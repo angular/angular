@@ -5,41 +5,27 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-
 import {MatInputHarness} from './input-harness';
 
-let fixture: ComponentFixture<InputHarnessTest>;
-let loader: HarnessLoader;
-let inputHarness: typeof MatInputHarness;
+/** Shared tests to run on both the original and MDC-based input's. */
+export function runHarnessTests(
+    inputModule: typeof MatInputModule, inputHarness: typeof MatInputHarness) {
+  let fixture: ComponentFixture<InputHarnessTest>;
+  let loader: HarnessLoader;
 
-describe('MatInputHarness', () => {
-  describe('non-MDC-based', () => {
-    beforeEach(async () => {
-      await TestBed
-          .configureTestingModule({
-            imports: [NoopAnimationsModule, MatInputModule, ReactiveFormsModule],
-            declarations: [InputHarnessTest],
-          })
-          .compileComponents();
+  beforeEach(async () => {
+    await TestBed
+        .configureTestingModule({
+          imports: [NoopAnimationsModule, inputModule, ReactiveFormsModule],
+          declarations: [InputHarnessTest],
+        })
+        .compileComponents();
 
-      fixture = TestBed.createComponent(InputHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-      inputHarness = MatInputHarness;
-    });
-
-    runTests();
+    fixture = TestBed.createComponent(InputHarnessTest);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
-  describe(
-      'MDC-based',
-      () => {
-          // TODO: run tests for MDC based input once implemented.
-      });
-});
-
-/** Shared tests to run on both the original and MDC-based input's. */
-function runTests() {
   it('should load all input harnesses', async () => {
     const inputs = await loader.getAllHarnesses(inputHarness);
     expect(inputs.length).toBe(3);
