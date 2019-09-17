@@ -37,6 +37,20 @@ import {
 import {TableTextColumnExample} from './table-text-column/table-text-column-example';
 import {TableWrappedExample, WrapperTable} from './table-wrapped/table-wrapped-example';
 
+export {
+  TableBasicExample,          TableBasicFlexExample,
+  TableDynamicColumnsExample, TableExpandableRowsExample,
+  TableFilteringExample,      TableFooterRowExample,
+  TableHttpExample,           TableMultipleHeaderFooterExample,
+  TableOverviewExample,       TablePaginationExample,
+  TableRowContextExample,     TableSelectionExample,
+  TableSortingExample,        TableStickyColumnsExample,
+  TableStickyComplexExample,  TableStickyComplexFlexExample,
+  TableStickyFooterExample,   TableStickyHeaderExample,
+  TableTextColumnExample,     TableTextColumnAdvancedExample,
+  TableWrappedExample,        WrapperTable,
+};
+
 const EXAMPLES = [
   TableBasicExample,          TableBasicFlexExample,
   TableDynamicColumnsExample, TableExpandableRowsExample,

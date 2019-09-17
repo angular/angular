@@ -12,6 +12,11 @@ import {
   ProgressSpinnerOverviewExample
 } from './progress-spinner-overview/progress-spinner-overview-example';
 
+export {
+  ProgressSpinnerConfigurableExample,
+  ProgressSpinnerOverviewExample,
+};
+
 const EXAMPLES = [
   ProgressSpinnerConfigurableExample,
   ProgressSpinnerOverviewExample,

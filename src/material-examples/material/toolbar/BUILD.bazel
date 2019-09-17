@@ -9,6 +9,7 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
+    module_name = "@angular/material-examples/material/toolbar",
     deps = [
         "//src/material/icon",
         "//src/material/toolbar",

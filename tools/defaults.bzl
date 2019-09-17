@@ -43,7 +43,7 @@ def ts_library(tsconfig = None, deps = [], testonly = False, **kwargs):
         **kwargs
     )
 
-def ng_module(deps = [], tsconfig = None, testonly = False, **kwargs):
+def ng_module(deps = [], tsconfig = None, module_name = None, testonly = False, **kwargs):
     if not tsconfig:
         tsconfig = _getDefaultTsConfig(testonly)
 
@@ -64,6 +64,7 @@ def ng_module(deps = [], tsconfig = None, testonly = False, **kwargs):
 
     _ng_module(
         type_check = _ENABLE_NG_TYPE_CHECKING,
+        module_name = module_name,
         deps = local_deps,
         tsconfig = tsconfig,
         testonly = testonly,

@@ -6,6 +6,11 @@ import {
   CustomStepper
 } from './cdk-custom-stepper-without-form/cdk-custom-stepper-without-form-example';
 
+export {
+  CdkCustomStepperWithoutFormExample,
+  CustomStepper,
+};
+
 const EXAMPLES = [
   CdkCustomStepperWithoutFormExample,
   CustomStepper,

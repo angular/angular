@@ -9,6 +9,12 @@ import {
 } from './button-toggle-exclusive/button-toggle-exclusive-example';
 import {ButtonToggleOverviewExample} from './button-toggle-overview/button-toggle-overview-example';
 
+export {
+  ButtonToggleAppearanceExample,
+  ButtonToggleExclusiveExample,
+  ButtonToggleOverviewExample,
+};
+
 const EXAMPLES = [
   ButtonToggleAppearanceExample,
   ButtonToggleExclusiveExample,

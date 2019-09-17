@@ -14,6 +14,16 @@ import {InputHintExample} from './input-hint/input-hint-example';
 import {InputOverviewExample} from './input-overview/input-overview-example';
 import {InputPrefixSuffixExample} from './input-prefix-suffix/input-prefix-suffix-example';
 
+export {
+  InputClearableExample,
+  InputErrorStateMatcherExample,
+  InputErrorsExample,
+  InputFormExample,
+  InputHintExample,
+  InputOverviewExample,
+  InputPrefixSuffixExample,
+};
+
 const EXAMPLES = [
   InputClearableExample,
   InputErrorStateMatcherExample,

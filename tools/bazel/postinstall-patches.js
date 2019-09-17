@@ -30,6 +30,25 @@ shelljs.sed(
     '@angular_material//tools/bazel:tsc_wrapped_with_tsickle',
     'node_modules/@angular/bazel/src/esm5.bzl');
 
+// Workaround for: https://github.com/angular/angular/issues/32651. We just do not
+// generate re-exports for secondary entry-points. Similar to what "ng-packagr" does.
+shelljs.sed('-i', /(?!function\s+)createMetadataReexportFile\([^)]+\);/,
+    '', 'node_modules/@angular/bazel/src/ng_package/packager.js');
+shelljs.sed('-i', /(?!function\s+)createTypingsReexportFile\([^)]+\);/,
+    '', 'node_modules/@angular/bazel/src/ng_package/packager.js');
+
+// Workaround for: https://github.com/angular/angular/pull/32650
+shelljs.sed('-i', 'var indexFile;', `
+  var publicApiFile = files.find(f => f.endsWith('/public-api.ts'));
+  var moduleFile = files.find(f => f.endsWith('/module.ts'));
+  var indexFile = publicApiFile || moduleFile;
+`, 'node_modules/@angular/compiler-cli/src/metadata/bundle_index_host.js');
+shelljs.sed('-i', 'var resolvedEntryPoint = null;', `
+  var publicApiFile = tsFiles.find(f => f.endsWith('/public-api.ts'));
+  var moduleFile = tsFiles.find(f => f.endsWith('/module.ts'));
+  var resolvedEntryPoint = publicApiFile || moduleFile || null;
+`, 'node_modules/@angular/compiler-cli/src/ngtsc/entry_point/src/logic.js');
+
 // Workaround for https://github.com/angular/angular/issues/32603. Note that we don't
 // want to apply the patch if it has been applied already.
 if (!shelljs.test('-f', 'node_modules/@angular/bazel/src/ng_package/rollup_bin.js')) {

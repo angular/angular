@@ -39,6 +39,25 @@ import {
 } from './cdk-drag-drop-root-element/cdk-drag-drop-root-element-example';
 import {CdkDragDropSortingExample} from './cdk-drag-drop-sorting/cdk-drag-drop-sorting-example';
 
+export {
+  CdkDragDropAxisLockExample,
+  CdkDragDropBoundaryExample,
+  CdkDragDropConnectedSortingExample,
+  CdkDragDropConnectedSortingGroupExample,
+  CdkDragDropCustomPlaceholderExample,
+  CdkDragDropCustomPreviewExample,
+  CdkDragDropDelayExample,
+  CdkDragDropDisabledExample,
+  CdkDragDropDisabledSortingExample,
+  CdkDragDropEnterPredicateExample,
+  CdkDragDropFreeDragPositionExample,
+  CdkDragDropHandleExample,
+  CdkDragDropHorizontalSortingExample,
+  CdkDragDropOverviewExample,
+  CdkDragDropRootElementExample,
+  CdkDragDropSortingExample,
+};
+
 const EXAMPLES = [
   CdkDragDropAxisLockExample,
   CdkDragDropBoundaryExample,

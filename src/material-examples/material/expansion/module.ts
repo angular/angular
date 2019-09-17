@@ -9,6 +9,12 @@ import {
 import {ExpansionOverviewExample} from './expansion-overview/expansion-overview-example';
 import {ExpansionStepsExample} from './expansion-steps/expansion-steps-example';
 
+export {
+  ExpansionExpandCollapseAllExample,
+  ExpansionOverviewExample,
+  ExpansionStepsExample,
+};
+
 const EXAMPLES = [
   ExpansionExpandCollapseAllExample,
   ExpansionOverviewExample,

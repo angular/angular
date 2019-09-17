@@ -9,6 +9,7 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
+    module_name = "@angular/material-examples/material/radio",
     deps = [
         "//src/material/radio",
         "@npm//@angular/forms",

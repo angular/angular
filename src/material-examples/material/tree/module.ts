@@ -12,6 +12,14 @@ import {TreeFlatOverviewExample} from './tree-flat-overview/tree-flat-overview-e
 import {TreeLoadmoreExample} from './tree-loadmore/tree-loadmore-example';
 import {TreeNestedOverviewExample} from './tree-nested-overview/tree-nested-overview-example';
 
+export {
+  TreeChecklistExample,
+  TreeDynamicExample,
+  TreeFlatOverviewExample,
+  TreeLoadmoreExample,
+  TreeNestedOverviewExample,
+};
+
 const EXAMPLES = [
   TreeChecklistExample,
   TreeDynamicExample,

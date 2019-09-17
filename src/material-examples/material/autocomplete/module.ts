@@ -17,6 +17,16 @@ import {
 } from './autocomplete-plain-input/autocomplete-plain-input-example';
 import {AutocompleteSimpleExample} from './autocomplete-simple/autocomplete-simple-example';
 
+export {
+  AutocompleteAutoActiveFirstOptionExample,
+  AutocompleteDisplayExample,
+  AutocompleteFilterExample,
+  AutocompleteOptgroupExample,
+  AutocompleteOverviewExample,
+  AutocompletePlainInputExample,
+  AutocompleteSimpleExample,
+};
+
 const EXAMPLES = [
   AutocompleteAutoActiveFirstOptionExample,
   AutocompleteDisplayExample,

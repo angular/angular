@@ -8,6 +8,11 @@ import {
 } from './paginator-configurable/paginator-configurable-example';
 import {PaginatorOverviewExample} from './paginator-overview/paginator-overview-example';
 
+export {
+  PaginatorConfigurableExample,
+  PaginatorOverviewExample,
+};
+
 const EXAMPLES = [
   PaginatorConfigurableExample,
   PaginatorOverviewExample,

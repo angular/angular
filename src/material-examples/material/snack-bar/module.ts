@@ -11,6 +11,13 @@ import {
 import {SnackBarOverviewExample} from './snack-bar-overview/snack-bar-overview-example';
 import {SnackBarPositionExample} from './snack-bar-position/snack-bar-position-example';
 
+export {
+  SnackBarComponentExample,
+  SnackBarOverviewExample,
+  SnackBarPositionExample,
+  PizzaPartyComponent,
+};
+
 const EXAMPLES = [
   SnackBarComponentExample,
   SnackBarOverviewExample,

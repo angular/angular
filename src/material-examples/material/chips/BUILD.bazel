@@ -9,6 +9,7 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
+    module_name = "@angular/material-examples/material/chips",
     deps = [
         "//src/cdk/drag-drop",
         "//src/material/autocomplete",

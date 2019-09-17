@@ -17,6 +17,13 @@ import {
   PopoverEditTabOutMatTableExample
 } from './popover-edit-tab-out-mat-table/popover-edit-tab-out-mat-table-example';
 
+export {
+  PopoverEditCellSpanMatTableExample,
+  PopoverEditMatTableExample,
+  PopoverEditMatTableFlexExample,
+  PopoverEditTabOutMatTableExample,
+};
+
 const EXAMPLES = [
   PopoverEditCellSpanMatTableExample,
   PopoverEditMatTableExample,

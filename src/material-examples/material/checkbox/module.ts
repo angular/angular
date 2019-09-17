@@ -6,6 +6,11 @@ import {MatRadioModule} from '@angular/material/radio';
 import {CheckboxConfigurableExample} from './checkbox-configurable/checkbox-configurable-example';
 import {CheckboxOverviewExample} from './checkbox-overview/checkbox-overview-example';
 
+export {
+  CheckboxConfigurableExample,
+  CheckboxOverviewExample,
+};
+
 const EXAMPLES = [
   CheckboxConfigurableExample,
   CheckboxOverviewExample,

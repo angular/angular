@@ -6,6 +6,11 @@ import {
   BottomSheetOverviewExampleSheet
 } from './bottom-sheet-overview/bottom-sheet-overview-example';
 
+export {
+  BottomSheetOverviewExample,
+  BottomSheetOverviewExampleSheet,
+};
+
 const EXAMPLES = [
   BottomSheetOverviewExample,
   BottomSheetOverviewExampleSheet,

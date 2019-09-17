@@ -30,6 +30,27 @@ import {
   DatepickerViewsSelectionExample
 } from './datepicker-views-selection/datepicker-views-selection-example';
 
+export {
+  DatepickerApiExample,
+  DatepickerColorExample,
+  DatepickerCustomHeaderExample,
+  DatepickerCustomIconExample,
+  DatepickerDateClassExample,
+  DatepickerDisabledExample,
+  DatepickerEventsExample,
+  DatepickerFilterExample,
+  DatepickerFormatsExample,
+  DatepickerLocaleExample,
+  DatepickerMinMaxExample,
+  DatepickerMomentExample,
+  DatepickerOverviewExample,
+  DatepickerStartViewExample,
+  DatepickerTouchExample,
+  DatepickerValueExample,
+  DatepickerViewsSelectionExample,
+  ExampleHeader,
+};
+
 const EXAMPLES = [
   DatepickerApiExample,
   DatepickerColorExample,

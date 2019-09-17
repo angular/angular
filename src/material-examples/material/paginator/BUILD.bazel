@@ -9,6 +9,7 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
+    module_name = "@angular/material-examples/material/paginator",
     deps = [
         "//src/material/input",
         "//src/material/paginator",

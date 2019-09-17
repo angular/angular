@@ -9,6 +9,12 @@ import {SliderConfigurableExample} from './slider-configurable/slider-configurab
 import {SliderFormattingExample} from './slider-formatting/slider-formatting-example';
 import {SliderOverviewExample} from './slider-overview/slider-overview-example';
 
+export {
+  SliderConfigurableExample,
+  SliderFormattingExample,
+  SliderOverviewExample,
+};
+
 const EXAMPLES = [
   SliderConfigurableExample,
   SliderFormattingExample,

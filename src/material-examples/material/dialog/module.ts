@@ -18,6 +18,17 @@ import {
   DialogOverviewExampleDialog
 } from './dialog-overview/dialog-overview-example';
 
+export {
+  DialogContentExample,
+  DialogContentExampleDialog,
+  DialogDataExample,
+  DialogDataExampleDialog,
+  DialogElementsExample,
+  DialogElementsExampleDialog,
+  DialogOverviewExample,
+  DialogOverviewExampleDialog,
+};
+
 const EXAMPLES = [
   DialogContentExample,
   DialogContentExampleDialog,

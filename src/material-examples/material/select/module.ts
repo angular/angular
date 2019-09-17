@@ -19,6 +19,21 @@ import {SelectPanelClassExample} from './select-panel-class/select-panel-class-e
 import {SelectResetExample} from './select-reset/select-reset-example';
 import {SelectValueBindingExample} from './select-value-binding/select-value-binding-example';
 
+export {
+  SelectCustomTriggerExample,
+  SelectDisabledExample,
+  SelectErrorStateMatcherExample,
+  SelectFormExample,
+  SelectHintErrorExample,
+  SelectMultipleExample,
+  SelectNoRippleExample,
+  SelectOptgroupExample,
+  SelectOverviewExample,
+  SelectPanelClassExample,
+  SelectResetExample,
+  SelectValueBindingExample,
+};
+
 const EXAMPLES = [
   SelectCustomTriggerExample,
   SelectDisabledExample,

@@ -13,6 +13,12 @@ import {
   TextFieldAutosizeTextareaExample
 } from './text-field-autosize-textarea/text-field-autosize-textarea-example';
 
+export {
+  TextFieldAutofillDirectiveExample,
+  TextFieldAutofillMonitorExample,
+  TextFieldAutosizeTextareaExample,
+};
+
 const EXAMPLES = [
   TextFieldAutofillDirectiveExample,
   TextFieldAutofillMonitorExample,

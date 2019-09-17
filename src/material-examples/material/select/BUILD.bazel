@@ -9,6 +9,7 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
+    module_name = "@angular/material-examples/material/select",
     deps = [
         "//src/material/checkbox",
         "//src/material/input",

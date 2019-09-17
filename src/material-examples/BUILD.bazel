@@ -107,7 +107,7 @@ ng_package(
     entry_point = ":public-api.ts",
     globals = ROLLUP_GLOBALS,
     tags = ["docs-package"],
-    deps = [":examples"],
+    deps = [":examples"] + EXAMPLE_PACKAGES,
 )
 
 genrule(

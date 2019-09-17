@@ -11,10 +11,11 @@ interface ExampleMetadata {
   additionalComponents: string[];
   additionalFiles: string[];
   selectorName: string[];
+  importPath: string|null;
 }
 
 interface ExampleModule {
-  sourcePath: string;
+  packagePath: string;
   name: string;
 }
 
@@ -26,7 +27,7 @@ interface AnalyzedExamples {
 /** Creates an import declaration for the given symbols from the specified file. */
 function createImportDeclaration(relativePath: string, symbols: string[]): string {
   const posixRelativePath = relativePath.replace(/\\/g, '/').replace('.ts', '');
-  return `import {${symbols.join(',')}} from './${posixRelativePath}';`;
+  return `import {${symbols.join(',')}} from '@angular/material-examples/${posixRelativePath}';`;
 }
 
 /** Inlines the example module template with the specified parsed data. */
@@ -37,9 +38,9 @@ function inlineExampleModuleTemplate(parsedData: AnalyzedExamples): string {
   // Blocked on https://github.com/angular/angular/issues/30259
   const exampleImports = [
     ...exampleMetadata
-      .map(({additionalComponents, component, sourcePath}) =>
-        createImportDeclaration(sourcePath, additionalComponents.concat(component))),
-    ...exampleModules.map(({name, sourcePath}) => createImportDeclaration(sourcePath, [name])),
+      .map(({additionalComponents, component, importPath}) =>
+        createImportDeclaration(importPath!, additionalComponents.concat(component))),
+    ...exampleModules.map(({name, packagePath}) => createImportDeclaration(packagePath, [name])),
   ].join('');
   const quotePlaceholder = '◬';
   const exampleList = exampleMetadata.reduce((result, data) => {
@@ -89,8 +90,8 @@ function analyzeExamples(sourceFiles: string[], baseFile: string): AnalyzedExamp
     // Collect all individual example modules.
     if (path.basename(sourceFile) === 'module.ts') {
       exampleModules.push(...parseExampleModuleFile(sourceFile).map(name => ({
-        name,
-        sourcePath: relativePath,
+        name: name,
+        packagePath: path.dirname(relativePath),
       })));
       continue;
     }
@@ -113,7 +114,10 @@ function analyzeExamples(sourceFiles: string[], baseFile: string): AnalyzedExamp
         title: primaryComponent.title.trim(),
         additionalComponents: [],
         additionalFiles: [],
-        selectorName: []
+        selectorName: [],
+        // Import path will be determined later once all example modules have
+        // been analyzed.
+        importPath: null,
       };
 
       if (secondaryComponents.length) {
@@ -140,6 +144,21 @@ function analyzeExamples(sourceFiles: string[], baseFile: string): AnalyzedExamp
                     `Ensure that there's a component with an @title annotation.`);
     }
   }
+
+  // Walk through all collected examples and find their parent example module. This is
+  // necessary as we want to import the examples through the package entry-point. Directly
+  // importing files of secondary entry-points from the primary entry-point is not supported
+  // by the Angular package format.
+  exampleMetadata.forEach(example => {
+    const parentModule = exampleModules
+      .find(module => example.sourcePath.startsWith(module.packagePath));
+
+    if (!parentModule) {
+      throw Error(`Could not determine example module for: ${example.id}`);
+    }
+
+    example.importPath = parentModule.packagePath;
+  });
 
   return {exampleMetadata, exampleModules};
 }

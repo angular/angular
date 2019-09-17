@@ -3,6 +3,8 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import {DividerOverviewExample} from './divider-overview/divider-overview-example';
 
+export {DividerOverviewExample};
+
 const EXAMPLES = [
   DividerOverviewExample,
 ];

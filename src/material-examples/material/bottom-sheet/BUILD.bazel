@@ -9,6 +9,7 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
+    module_name = "@angular/material-examples/material/bottom-sheet",
     deps = [
         "//src/material/bottom-sheet",
         "//src/material/list",

@@ -22,6 +22,19 @@ import {SidenavOverviewExample} from './sidenav-overview/sidenav-overview-exampl
 import {SidenavPositionExample} from './sidenav-position/sidenav-position-example';
 import {SidenavResponsiveExample} from './sidenav-responsive/sidenav-responsive-example';
 
+export {
+  SidenavAutosizeExample,
+  SidenavBackdropExample,
+  SidenavDisableCloseExample,
+  SidenavDrawerOverviewExample,
+  SidenavFixedExample,
+  SidenavModeExample,
+  SidenavOpenCloseExample,
+  SidenavOverviewExample,
+  SidenavPositionExample,
+  SidenavResponsiveExample,
+};
+
 const EXAMPLES = [
   SidenavAutosizeExample,
   SidenavBackdropExample,

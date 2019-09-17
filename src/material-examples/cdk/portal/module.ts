@@ -5,6 +5,8 @@ import {
   ComponentPortalExample
 } from './cdk-portal-overview/cdk-portal-overview-example';
 
+export {CdkPortalOverviewExample, ComponentPortalExample};
+
 const EXAMPLES = [
   CdkPortalOverviewExample,
   ComponentPortalExample,

@@ -22,6 +22,21 @@ import {TabGroupStretchedExample} from './tab-group-stretched/tab-group-stretche
 import {TabGroupThemeExample} from './tab-group-theme/tab-group-theme-example';
 import {TabNavBarBasicExample} from './tab-nav-bar-basic/tab-nav-bar-basic-example';
 
+export {
+  TabGroupAlignExample,
+  TabGroupAnimationsExample,
+  TabGroupAsyncExample,
+  TabGroupBasicExample,
+  TabGroupCustomLabelExample,
+  TabGroupDynamicExample,
+  TabGroupDynamicHeightExample,
+  TabGroupHeaderBelowExample,
+  TabGroupLazyLoadedExample,
+  TabGroupStretchedExample,
+  TabGroupThemeExample,
+  TabNavBarBasicExample,
+};
+
 const EXAMPLES = [
   TabGroupAlignExample,
   TabGroupAnimationsExample,

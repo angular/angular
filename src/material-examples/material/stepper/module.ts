@@ -14,6 +14,16 @@ import {StepperOverviewExample} from './stepper-overview/stepper-overview-exampl
 import {StepperStatesExample} from './stepper-states/stepper-states-example';
 import {StepperVerticalExample} from './stepper-vertical/stepper-vertical-example';
 
+export {
+  StepperEditableExample,
+  StepperErrorsExample,
+  StepperLabelPositionBottomExample,
+  StepperOptionalExample,
+  StepperOverviewExample,
+  StepperStatesExample,
+  StepperVerticalExample,
+};
+
 const EXAMPLES = [
   StepperEditableExample,
   StepperErrorsExample,

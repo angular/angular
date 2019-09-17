@@ -3,6 +3,8 @@ import {MatBadgeModule} from '@angular/material/badge';
 import {MatIconModule} from '@angular/material/icon';
 import {BadgeOverviewExample} from './badge-overview/badge-overview-example';
 
+export {BadgeOverviewExample};
+
 const EXAMPLES = [
   BadgeOverviewExample,
 ];

@@ -23,6 +23,17 @@ import {
   CdkVirtualScrollTemplateCacheExample
 } from './cdk-virtual-scroll-template-cache/cdk-virtual-scroll-template-cache-example';
 
+export {
+  CdkVirtualScrollContextExample,
+  CdkVirtualScrollCustomStrategyExample,
+  CdkVirtualScrollDataSourceExample,
+  CdkVirtualScrollDlExample,
+  CdkVirtualScrollFixedBufferExample,
+  CdkVirtualScrollHorizontalExample,
+  CdkVirtualScrollOverviewExample,
+  CdkVirtualScrollTemplateCacheExample,
+};
+
 const EXAMPLES = [
   CdkVirtualScrollContextExample,
   CdkVirtualScrollCustomStrategyExample,

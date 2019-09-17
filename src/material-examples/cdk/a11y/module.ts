@@ -9,6 +9,8 @@ import {
 } from './focus-monitor-focus-via/focus-monitor-focus-via-example';
 import {FocusMonitorOverviewExample} from './focus-monitor-overview/focus-monitor-overview-example';
 
+export {FocusMonitorDirectivesExample, FocusMonitorFocusViaExample, FocusMonitorOverviewExample};
+
 const EXAMPLES = [
   FocusMonitorDirectivesExample,
   FocusMonitorFocusViaExample,
@@ -25,3 +27,4 @@ const EXAMPLES = [
 })
 export class CdkA11yExamplesModule {
 }
+

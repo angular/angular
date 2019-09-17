@@ -22,6 +22,18 @@ import {
 } from './form-field-prefix-suffix/form-field-prefix-suffix-example';
 import {FormFieldThemingExample} from './form-field-theming/form-field-theming-example';
 
+export {
+  FormFieldAppearanceExample,
+  FormFieldCustomControlExample,
+  FormFieldErrorExample,
+  FormFieldHintExample,
+  FormFieldLabelExample,
+  FormFieldOverviewExample,
+  FormFieldPrefixSuffixExample,
+  FormFieldThemingExample,
+  MyTelInput,
+};
+
 const EXAMPLES = [
   FormFieldAppearanceExample,
   FormFieldCustomControlExample,

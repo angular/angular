@@ -202,6 +202,18 @@ ROLLUP_GLOBALS.update({
     for p in MATERIAL_EXPERIMENTAL_PACKAGES
 })
 
+# Rollup globals the examples package. Since individual examples are
+# grouped by package and component, the primary entry-point imports
+# from entry-points which should be treated as external imports.
+ROLLUP_GLOBALS.update({
+    "@angular/material-examples/cdk/%s" % p: "ng.materialExamples.cdk.%s" % p
+    for p in CDK_PACKAGES + CDK_EXPERIMENTAL_PACKAGES
+})
+ROLLUP_GLOBALS.update({
+    "@angular/material-examples/material/%s" % p: "ng.materialExamples.material.%s" % p
+    for p in MATERIAL_PACKAGES + MATERIAL_EXPERIMENTAL_PACKAGES
+})
+
 # UMD bundles for Angular packages and subpackages we depend on for development and testing.
 ANGULAR_LIBRARY_UMDS = [
     "@npm//:node_modules/@angular/animations/bundles/animations-browser.umd.js",

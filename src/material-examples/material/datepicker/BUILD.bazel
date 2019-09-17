@@ -10,6 +10,7 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
+    module_name = "@angular/material-examples/material/datepicker",
     tsconfig = ":tsconfig",
     deps = [
         "//src/material-moment-adapter",

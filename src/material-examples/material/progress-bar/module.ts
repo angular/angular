@@ -17,6 +17,14 @@ import {
 } from './progress-bar-indeterminate/progress-bar-indeterminate-example';
 import {ProgressBarQueryExample} from './progress-bar-query/progress-bar-query-example';
 
+export {
+  ProgressBarBufferExample,
+  ProgressBarConfigurableExample,
+  ProgressBarDeterminateExample,
+  ProgressBarIndeterminateExample,
+  ProgressBarQueryExample,
+};
+
 const EXAMPLES = [
   ProgressBarBufferExample,
   ProgressBarConfigurableExample,

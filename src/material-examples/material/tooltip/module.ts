@@ -18,6 +18,18 @@ import {
 import {TooltipOverviewExample} from './tooltip-overview/tooltip-overview-example';
 import {TooltipPositionExample} from './tooltip-position/tooltip-position-example';
 
+export {
+  TooltipAutoHideExample,
+  TooltipCustomClassExample,
+  TooltipDelayExample,
+  TooltipDisabledExample,
+  TooltipManualExample,
+  TooltipMessageExample,
+  TooltipModifiedDefaultsExample,
+  TooltipOverviewExample,
+  TooltipPositionExample,
+};
+
 const EXAMPLES = [
   TooltipAutoHideExample,
   TooltipCustomClassExample,
