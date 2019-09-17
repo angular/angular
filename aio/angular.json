@@ -69,7 +69,6 @@
           },
           "configurations": {
             "fast": {
-
               "optimization": false
             },
             "next": {
