@@ -57,6 +57,7 @@ sass_binary(
 ng_test_library(
     name = "sidenav_tests_lib",
     srcs = [
+        "harness/drawer-harness.spec.ts",
         "harness/sidenav-harness.spec.ts",
     ],
     deps = [
