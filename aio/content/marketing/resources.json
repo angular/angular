@@ -364,10 +364,10 @@
             "url": "https://github.com/tiaguinho/material-community-components"
           },
           "mdc": {
-            "desc": "Incorporating Google Material Components for a faithful and accurate representation of Material Design as envisioned on the web platform",
+            "desc": "A fully-featured library that wraps Material Components for the web (MDC Web) in an idiomatic Angular API",
             "logo": "",
             "rev": true,
-            "title": "Material Web Components for Angular",
+            "title": "Angular MDC",
             "url": "https://github.com/trimox/angular-mdc-web"
           },
           "mosaic": {
