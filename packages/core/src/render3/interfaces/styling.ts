@@ -6,8 +6,8 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {ProceduralRenderer3, RElement, Renderer3} from '../interfaces/renderer';
-import {LView} from '../interfaces/view';
+import {ProceduralRenderer3, RElement, Renderer3} from './renderer';
+import {LView} from './view';
 
 /**
  * --------
