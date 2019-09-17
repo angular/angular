@@ -32,7 +32,7 @@ The context also defines a *merge strategy* that determines how changes are merg
 When you create a new blank schematic with the [Schematics CLI](#cli), the generated entry function is a *rule factory*.
 A `RuleFactory`object defines a higher-order function that creates a `Rule`.
 
-<code-example language="TypeScript">
+<code-example language="TypeScript" header="index.ts">
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 
 // You don't have to export the function as default.
@@ -49,7 +49,7 @@ You need a rule, for example, to define how a template in the schematic is to be
 
 Rules can make use of utilities provided with the `@schematics/angular` package. Look for helper functions for working with modules, dependencies, TypeScript, AST, JSON, Angular CLI workspaces and projects, and more.
 
-<code-example language="none">
+<code-example language="TypeScript" header="index.ts">
 
 import {
   JsonAstObject,
@@ -69,7 +69,190 @@ Rules can collect option values from the caller and inject them into templates.
 The options available to your rules, with their allowed values and defaults, are defined in the schematic's JSON schema file, `<schematic>/schema.json`.
 You can define variable or enumerated data types for the schema using TypeScript interfaces.
 
+The schema defines the types and default values of variables used in the schematic.
+For example, the hypothetical "Hello World" schematic might have the following schema.
+
+<code-example language="json" header="src/hello-world/schema.json">
+
+{
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "default": "world"
+        },
+        "useColor": {
+            "type": "boolean"
+        }
+    }
+}
+</code-example>
+
+
 You can see examples of schema files for the Angular CLI command schematics in [`@schematics/angular`](https://github.com/angular/angular-cli/blob/7.0.x/packages/schematics/angular/application/schema.json).
+
+### Schematic prompts
+
+Schematic *prompts* introduce user interaction into schematic execution.
+You can configure schematic options to display a customizable question to the user.
+The prompts are displayed before the execution of the schematic, which then uses the response as the value for the option.
+This allows users to direct the operation of the schematic without requiring in-depth knowledge of the full spectrum of available options.
+
+The "Hello World" schematic might, for example, ask the user for their name, and display that name in place of the default name "world". To define such a prompt, add an `x-prompt` property to the schema for the `name` variable.
+
+Similarly, you can add a prompt to allow the user to decide whether the schematic will use color when executing its hello action. The schema with both prompts would be as follows.
+
+<code-example language="json" header="src/hello-world/schema.json">
+
+{
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "default": "world",
+            "x-prompt": "What is your name?"
+        },
+        "useColor": {
+            "type": "boolean",
+            "x-prompt": "Would you like the response in color?"
+        }
+    }
+}
+</code-example>
+
+#### Prompt short-form syntax
+
+These examples use a shorthand form of the prompt syntax, supplying only the text of the question.
+In most cases, this is all that is required.
+Notice however, that the two prompts expect different types of input.
+When using the shorthand form, the most appropriate type is automatically selected based on the property's schema.
+In the example, the `name` prompt uses the `input` type because it it is a string property.
+The `useColor` prompt uses a `confirmation` type because it is a Boolean property.
+In this case, "yes" corresponds to `true` and "no" corresponds to `false`.
+
+There are three supported input types.
+
+| Input type | Description |
+| :----------- | :-------------------|
+| confirmation | A yes or no question; ideal for Boolean options. |
+| input | Textual input; ideal for string or number options. |
+| list | A predefined set of allowed values. |
+
+In the short form, the type is inferred from the property's type and constraints.
+
+| Property Schema |	Prompt Type |
+| :--------------- | :------------- |
+| "type": "boolean" |	confirmation ("yes"=`true`, "no"=`false`) |
+| "type": "string"  |	input |
+| "type": "number"  |	input (only valid numbers accepted) |
+| "type": "integer" |	input (only valid numbers accepted) |
+| "enum": [...]   	| list 	(enum members become list selections) |
+
+In the following example, the property takes an enumerated value, so the schematic automatically chooses the list type, and creates a menu from the possible values.
+
+<code-example language="json" header="schema.json">
+
+    "style": {
+      "description": "The file extension or preprocessor to use for style files.",
+      "type": "string",
+      "default": "css",
+      "enum": [
+        "css",
+        "scss",
+        "sass",
+        "less",
+        "styl"
+      ],
+      "x-prompt": "Which stylesheet format would you like to use?"
+    }
+
+</code-example>
+
+The prompt runtime automatically validates the provided response against the constraints provided in the JSON schema.
+If the value is not acceptable, the user is prompted for a new value.
+This ensures that any values passed to the schematic meet the expectations of the schematic's implementation, so that you do not need to add additional checks within the schematic's code.
+
+#### Prompt long-form syntax
+
+The `x-prompt` field syntax supports a long form for cases where you require additional customization and control over the prompt.
+In this form, the `x-prompt` field value is a JSON object with subfields that customize the behavior of the prompt.
+
+| Field |	Data Value |
+| :----------- | :------ |
+| type    | `confirmation`, `input`, or `list` (selected automatically in short form) |
+| message |	string (required) |
+| items   |	string and/or label/value object pair (only valid with type `list`) |
+
+The following example of the long form is from the JSON schema for the schematic that the CLI uses to [generate applications](https://github.com/angular/angular-cli/blob/ba8a6ea59983bb52a6f1e66d105c5a77517f062e/packages/schematics/angular/application/schema.json#L56).
+It defines the prompt that allows users to choose which style preprocessor they want to use for the application being created.
+By using the long form, the schematic can provide more explicit formatting of the menu choices.
+
+<code-example language="json" header="package/schematics/angular/application/schema.json">
+
+    "style": {
+      "description": "The file extension or preprocessor to use for style files.",
+      "type": "string",
+      "default": "css",
+      "enum": [
+        "css",
+        "scss",
+        "sass",
+        "less",
+        "styl"
+      ],
+      "x-prompt": {
+        "message": "Which stylesheet format would you like to use?",
+        "type": "list",
+        "items": [
+          { "value": "css",  "label": "CSS" },
+          { "value": "scss", "label": "SCSS   [ https://sass-lang.com/documentation/syntax#scss                ]" },
+          { "value": "sass", "label": "Sass   [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]" },
+          { "value": "less", "label": "Less   [ http://lesscss.org                                             ]" },
+          { "value": "styl", "label": "Stylus [ http://stylus-lang.com                                         ]" }
+        ]
+      },
+    },
+</code-example>
+
+#### x-prompt schema
+
+The JSON schema that defines a schematic's options supports extensions to allow the declarative definition of prompts and their respective behavior.
+No additional logic or changes are required to the code of a schematic to support the prompts.
+The following JSON schema is a complete description of the long-form syntax for the `x-prompt` field.
+
+<code-example language="json" header="x-prompt schema">
+
+{
+    "oneOf": [
+        { "type": "string" },
+        {
+            "type": "object",
+            "properties": {
+                "type": { "type": "string" },
+                "message": { "type": "string" },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            { "type": "string" },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "label": { "type": "string" },
+                                    "value": { }
+                                },
+                                "required": [ "value" ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "required": [ "message" ]
+        }
+    ]
+}
+
+</code-example>
 
 {@a cli}
 
