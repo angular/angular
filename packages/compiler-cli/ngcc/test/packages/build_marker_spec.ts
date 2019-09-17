@@ -178,8 +178,12 @@ runInEachFileSystem(() => {
 
     describe('hasBeenProcessed', () => {
       let entryPointPath: AbsoluteFsPath;
+      let nodeModulesPath: AbsoluteFsPath;
 
-      beforeEach(() => entryPointPath = _('/node_modules/test'));
+      beforeEach(() => {
+        entryPointPath = _('/node_modules/test');
+        nodeModulesPath = _('/node_modules');
+      });
 
       it('should return true if the marker exists for the given format property', () => {
         expect(hasBeenProcessed(
@@ -187,14 +191,17 @@ runInEachFileSystem(() => {
                    'fesm2015', entryPointPath))
             .toBe(true);
       });
+
       it('should return false if the marker does not exist for the given format property', () => {
         expect(hasBeenProcessed(
                    {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}},
                    'module', entryPointPath))
             .toBe(false);
       });
+
       it('should return false if no markers exist',
          () => { expect(hasBeenProcessed({name: 'test'}, 'module', entryPointPath)).toBe(false); });
+
       it('should throw an Error if the format has been compiled with a different version.', () => {
         expect(
             () => hasBeenProcessed(
@@ -202,8 +209,9 @@ runInEachFileSystem(() => {
                 entryPointPath))
             .toThrowError(
                 'The ngcc compiler has changed since the last ngcc build.\n' +
-                `Please completely remove the "node_modules" folder containing "${entryPointPath}" and try again.`);
+                `Please remove "${nodeModulesPath}" and try again.`);
       });
+
       it('should throw an Error if any format has been compiled with a different version.', () => {
         expect(
             () => hasBeenProcessed(
@@ -211,7 +219,7 @@ runInEachFileSystem(() => {
                 entryPointPath))
             .toThrowError(
                 'The ngcc compiler has changed since the last ngcc build.\n' +
-                `Please completely remove the "node_modules" folder containing "${entryPointPath}" and try again.`);
+                `Please remove "${nodeModulesPath}" and try again.`);
         expect(
             () => hasBeenProcessed(
                 {
@@ -221,7 +229,7 @@ runInEachFileSystem(() => {
                 'module', entryPointPath))
             .toThrowError(
                 'The ngcc compiler has changed since the last ngcc build.\n' +
-                `Please completely remove the "node_modules" folder containing "${entryPointPath}" and try again.`);
+                `Please remove "${nodeModulesPath}" and try again.`);
         expect(
             () => hasBeenProcessed(
                 {
@@ -231,8 +239,35 @@ runInEachFileSystem(() => {
                 'fesm2015', entryPointPath))
             .toThrowError(
                 'The ngcc compiler has changed since the last ngcc build.\n' +
-                `Please completely remove the "node_modules" folder containing "${entryPointPath}" and try again.`);
+                `Please remove "${nodeModulesPath}" and try again.`);
       });
+
+      it('should throw an Error, with the appropriate path to remove, if the format has been compiled with a different version',
+         () => {
+           expect(
+               () => hasBeenProcessed(
+                   {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}}, 'fesm2015',
+                   _('/node_modules/test')))
+               .toThrowError(
+                   'The ngcc compiler has changed since the last ngcc build.\n' +
+                   `Please remove "${_('/node_modules')}" and try again.`);
+
+           expect(
+               () => hasBeenProcessed(
+                   {name: 'nested', __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}}, 'fesm2015',
+                   _('/node_modules/test/node_modules/nested')))
+               .toThrowError(
+                   'The ngcc compiler has changed since the last ngcc build.\n' +
+                   `Please remove "${_('/node_modules/test/node_modules')}" and try again.`);
+
+           expect(
+               () => hasBeenProcessed(
+                   {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}}, 'fesm2015',
+                   _('/dist/test')))
+               .toThrowError(
+                   'The ngcc compiler has changed since the last ngcc build.\n' +
+                   `Please remove "${_('/dist/test')}" and try again.`);
+         });
     });
   });
 });
