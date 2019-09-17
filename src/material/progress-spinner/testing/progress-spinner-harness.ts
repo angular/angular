@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness} from '@angular/cdk/testing';
-import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
 import {coerceNumberProperty} from '@angular/cdk/coercion';
+import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
+import {ProgressSpinnerHarnessFilters} from './progress-spinner-harness-filters';
 
 /**
  * Harness for interacting with a standard mat-progress-spinner in tests.
@@ -16,6 +17,15 @@ import {coerceNumberProperty} from '@angular/cdk/coercion';
  */
 export class MatProgressSpinnerHarness extends ComponentHarness {
   static hostSelector = 'mat-progress-spinner';
+
+  /**
+   * Gets a `HarnessPredicate` that can be used to search for a progress bar with specific
+   * attributes.
+   */
+  static with(options: ProgressSpinnerHarnessFilters = {}):
+      HarnessPredicate<MatProgressSpinnerHarness> {
+    return new HarnessPredicate(MatProgressSpinnerHarness, options);
+  }
 
   /** Gets a promise for the progress spinner's value. */
   async getValue(): Promise<number|null> {

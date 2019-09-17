@@ -3,14 +3,13 @@ import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
-
 import {MatProgressBarHarness} from './progress-bar-harness';
 
-let fixture: ComponentFixture<ProgressBarHarnessTest>;
-let loader: HarnessLoader;
-let progressBarHarness: typeof MatProgressBarHarness;
+export function runHarnessTests(progressBarModule: typeof MatProgressBarModule,
+                                progressBarHarness: typeof MatProgressBarHarness) {
+  let fixture: ComponentFixture<ProgressBarHarnessTest>;
+  let loader: HarnessLoader;
 
-describe('MatProgressBarHarness', () => {
   beforeEach(async () => {
     await TestBed
         .configureTestingModule({
@@ -22,13 +21,8 @@ describe('MatProgressBarHarness', () => {
     fixture = TestBed.createComponent(ProgressBarHarnessTest);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);
-    progressBarHarness = MatProgressBarHarness;
   });
 
-  runTests();
-});
-
-function runTests() {
   it('should load all progress bar harnesses', async () => {
     const progressBars = await loader.getAllHarnesses(progressBarHarness);
     expect(progressBars.length).toBe(2);

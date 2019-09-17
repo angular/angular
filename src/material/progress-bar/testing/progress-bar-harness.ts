@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness} from '@angular/cdk/testing';
 import {coerceNumberProperty} from '@angular/cdk/coercion';
+import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ProgressBarHarnessFilters} from './progress-bar-harness-filters';
 
 /**
  * Harness for interacting with a standard mat-progress-bar in tests.
@@ -15,6 +16,14 @@ import {coerceNumberProperty} from '@angular/cdk/coercion';
  */
 export class MatProgressBarHarness extends ComponentHarness {
   static hostSelector = 'mat-progress-bar';
+
+  /**
+   * Gets a `HarnessPredicate` that can be used to search for a progress bar with specific
+   * attributes.
+   */
+  static with(options: ProgressBarHarnessFilters = {}): HarnessPredicate<MatProgressBarHarness> {
+    return new HarnessPredicate(MatProgressBarHarness, options);
+  }
 
   /** Gets a promise for the progress bar's value. */
   async getValue(): Promise<number|null> {

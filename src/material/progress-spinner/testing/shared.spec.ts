@@ -3,14 +3,13 @@ import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatProgressSpinnerModule, ProgressSpinnerMode} from '@angular/material/progress-spinner';
-
 import {MatProgressSpinnerHarness} from './progress-spinner-harness';
 
-let fixture: ComponentFixture<ProgressSpinnerHarnessTest>;
-let loader: HarnessLoader;
-let progressSpinnerHarness: typeof MatProgressSpinnerHarness;
+export function runHarnessTests(progressSpinnerModule: typeof MatProgressSpinnerModule,
+                                progressSpinnerHarness: typeof MatProgressSpinnerHarness) {
+  let fixture: ComponentFixture<ProgressSpinnerHarnessTest>;
+  let loader: HarnessLoader;
 
-describe('MatProgressSpinnerHarness', () => {
   beforeEach(async () => {
     await TestBed
         .configureTestingModule({
@@ -22,13 +21,8 @@ describe('MatProgressSpinnerHarness', () => {
     fixture = TestBed.createComponent(ProgressSpinnerHarnessTest);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);
-    progressSpinnerHarness = MatProgressSpinnerHarness;
   });
 
-  runTests();
-});
-
-function runTests() {
   it('should load all progress spinner harnesses', async () => {
     const progressSpinners = await loader.getAllHarnesses(progressSpinnerHarness);
     expect(progressSpinners.length).toBe(2);
