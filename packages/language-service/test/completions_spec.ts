@@ -11,14 +11,15 @@ import * as ts from 'typescript';
 import {createLanguageService} from '../src/language_service';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
-import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 describe('completions', () => {
-  let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
+  let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
   let service = ts.createLanguageService(mockHost);
   let ngHost = new TypeScriptServiceHost(mockHost, service);
   let ngService = createLanguageService(ngHost);
+
+  beforeEach(() => { mockHost.reset(); });
 
   it('should be able to get entity completions',
      () => { expectContains('/app/test.ng', 'entity-amp', '&amp;', '&gt;', '&lt;', '&iota;'); });
@@ -44,7 +45,6 @@ describe('completions', () => {
     const fileName = '/app/test.ng';
     mockHost.override(fileName, ' > {{tle<\n  {{retl  ><bel/beled}}di>\n   la</b  </d    &a  ');
     expect(() => ngService.getCompletionsAt(fileName, 31)).not.toThrow();
-    mockHost.override(fileName, undefined !);
   });
 
   it('should be able to infer the type of a ngForOf', () => {
@@ -68,7 +68,7 @@ describe('completions', () => {
         street: string
       }
 
-      @Component({template: '<div *ngFor="let person of people | async">{{person.~{name}name}}</div'})
+      @Component({template: '<div *ngFor="let person of people | async">{{person.~{name}name}}</div>'})
       export class MyComponent {
         people: Promise<Person[]>;
       }`);
@@ -92,41 +92,38 @@ describe('completions', () => {
           throw e;
         }
       }
-      try {
-        const originalContent = mockHost.getFileContent(fileName) !;
 
-        // For each character in the file, add it to the file and request a completion after it.
-        for (let index = 0, len = originalContent.length; index < len; index++) {
-          const content = originalContent.substr(0, index);
-          mockHost.override(fileName, content);
-          tryCompletionsAt(index);
-        }
+      const originalContent = mockHost.getFileContent(fileName) !;
 
-        // For the complete file, try to get a completion at every character.
-        mockHost.override(fileName, originalContent);
-        for (let index = 0, len = originalContent.length; index < len; index++) {
-          tryCompletionsAt(index);
-        }
-
-        // Delete random characters in the file until we get an empty file.
-        let content = originalContent;
-        while (content.length > 0) {
-          const deleteIndex = Math.floor(Math.random() * content.length);
-          content = content.slice(0, deleteIndex - 1) + content.slice(deleteIndex + 1);
-          mockHost.override(fileName, content);
-
-          const requestIndex = Math.floor(Math.random() * content.length);
-          tryCompletionsAt(requestIndex);
-        }
-
-        // Build up the string from zero asking for a completion after every char
-        buildUp(originalContent, (text, position) => {
-          mockHost.override(fileName, text);
-          tryCompletionsAt(position);
-        });
-      } finally {
-        mockHost.override(fileName, undefined !);
+      // For each character in the file, add it to the file and request a completion after it.
+      for (let index = 0, len = originalContent.length; index < len; index++) {
+        const content = originalContent.substr(0, index);
+        mockHost.override(fileName, content);
+        tryCompletionsAt(index);
       }
+
+      // For the complete file, try to get a completion at every character.
+      mockHost.override(fileName, originalContent);
+      for (let index = 0, len = originalContent.length; index < len; index++) {
+        tryCompletionsAt(index);
+      }
+
+      // Delete random characters in the file until we get an empty file.
+      let content = originalContent;
+      while (content.length > 0) {
+        const deleteIndex = Math.floor(Math.random() * content.length);
+        content = content.slice(0, deleteIndex - 1) + content.slice(deleteIndex + 1);
+        mockHost.override(fileName, content);
+
+        const requestIndex = Math.floor(Math.random() * content.length);
+        tryCompletionsAt(requestIndex);
+      }
+
+      // Build up the string from zero asking for a completion after every char
+      buildUp(originalContent, (text, position) => {
+        mockHost.override(fileName, text);
+        tryCompletionsAt(position);
+      });
     }).not.toThrow();
   });
 
@@ -138,7 +135,7 @@ describe('completions', () => {
             template: '~{inside-template}'
           })
           export class MyComponent {
-          
+
           }`);
 
         expectContains(fileName, 'inside-template', 'h1');

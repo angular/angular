@@ -14,12 +14,6 @@ import * as ts from 'typescript';
 
 import {Span} from '../src/types';
 
-export type MockData = string | MockDirectory;
-
-export type MockDirectory = {
-  [name: string]: MockData | undefined;
-};
-
 const angularts = /@angular\/(\w|\/|-)+\.tsx?$/;
 const rxjsts = /rxjs\/(\w|\/)+\.tsx?$/;
 const rxjsmetadata = /rxjs\/(\w|\/)+\.metadata\.json?$/;
@@ -41,29 +35,6 @@ const missingCache = new Set<string>([
   '/node_modules/@angular/core/src/reflection/platform_reflection_capabilities.metadata.json',
   '/node_modules/@angular/forms/src/directives/form_interface.metadata.json',
 ]);
-const cacheUsed = new Set<string>();
-const reportedMissing = new Set<string>();
-
-/**
- * The cache is valid if all the returned entries are empty.
- */
-export function validateCache(): {exists: string[], unused: string[], reported: string[]} {
-  const exists: string[] = [];
-  const unused: string[] = [];
-  for (const fileName of missingCache) {
-    if (fs.existsSync(fileName)) {
-      exists.push(fileName);
-    }
-    if (!cacheUsed.has(fileName)) {
-      unused.push(fileName);
-    }
-  }
-  return {
-    exists,
-    unused,
-    reported: Array.from(reportedMissing),
-  };
-}
 
 function isFile(path: string) {
   return fs.statSync(path).isFile();
@@ -121,7 +92,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   private readonly fileCache = new Map<string, string|undefined>();
 
   constructor(
-      private readonly scriptNames: string[], _: MockData,
+      private readonly scriptNames: string[],
       private readonly node_modules: string = 'node_modules',
       private readonly myPath: typeof path = path) {
     const support = setup();
@@ -222,6 +193,14 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     if (content) return removeReferenceMarkers(removeLocationMarkers(content));
   }
 
+  /**
+   * Reset the project to its original state, effectively removing all overrides.
+   */
+  reset() {
+    this.overrides.clear();
+    this.overrideDirectory.clear();
+  }
+
   private getRawFileContent(fileName: string): string|undefined {
     if (this.overrides.has(fileName)) {
       return this.overrides.get(fileName);
@@ -232,7 +211,6 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
       return fs.readFileSync(this.myPath.join(path.dirname(libPath), basename), 'utf8');
     }
     if (missingCache.has(fileName)) {
-      cacheUsed.add(fileName);
       return undefined;
     }
 
@@ -250,8 +228,6 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
         return content;
       } else {
         missingCache.add(fileName);
-        reportedMissing.add(fileName);
-        cacheUsed.add(fileName);
       }
     }
   }
