@@ -16,11 +16,11 @@ import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
-import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from './bindings';
-import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from './interfaces';
-import {activateStylingMapFeature} from './map_based_bindings';
-import {attachStylingDebugObject} from './styling_debug';
-import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, hasClassInput, hasStyleInput, hasValueChanged, isContextLocked, isHostStylingActive, isStylingContext, normalizeIntoStylingMap, setValue, stylingMapToString} from './util';
+import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
+import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from '../styling/interfaces';
+import {activateStylingMapFeature} from '../styling/map_based_bindings';
+import {attachStylingDebugObject} from '../styling/styling_debug';
+import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, hasClassInput, hasStyleInput, hasValueChanged, isContextLocked, isHostStylingActive, isStylingContext, normalizeIntoStylingMap, setValue, stylingMapToString} from '../styling/util';
 
 
 
