@@ -251,6 +251,7 @@ jobs:
       - *attach_workspace
       - *init_environment
       - *setup_circleci_bazel_config
+      - *setup_bazel_remote_execution
       - run:
           name: Run Bazel tests in saucelabs
           # All web tests are contained within a single //:test_web_all target for Saucelabs
