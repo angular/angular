@@ -170,4 +170,24 @@ describe('TypeScriptServiceHost', () => {
     const newModules = ngLSHost.getAnalyzedModules();
     expect(newModules).toBe(oldModules);
   });
+
+  it('should get the correct StaticSymbol for a Directive', () => {
+    const tsLSHost = new MockTypescriptHost(['/app/app.component.ts', '/app/main.ts'], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    ngLSHost.getAnalyzedModules();  // modules are analyzed lazily
+    const sf = ngLSHost.getSourceFile('/app/app.component.ts');
+    expect(sf).toBeDefined();
+    const directiveDecl = sf !.forEachChild(n => {
+      if (ts.isClassDeclaration(n) && n.name && n.name.text === 'AppComponent') return n;
+    });
+
+    expect(directiveDecl).toBeDefined();
+    expect(directiveDecl !.name).toBeDefined();
+    const fileName = directiveDecl !.getSourceFile().fileName;
+    const symbolName = directiveDecl !.name !.getText();
+    const directiveSymbol = ngLSHost.getStaticSymbol(fileName, symbolName);
+    expect(directiveSymbol).toBeDefined();
+    expect(directiveSymbol !.name).toBe('AppComponent');
+  });
 });
