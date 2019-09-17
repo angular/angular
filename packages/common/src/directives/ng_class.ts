@@ -24,23 +24,25 @@ import {NgClassImpl, NgClassImplProvider} from './ng_class_impl';
  */
 
 // used when the VE is present
-export const ngClassDirectiveDef__PRE_R3__ = undefined;
+export const ngClassDirectiveDef__PRE_R3__ = () => {};
 
 // used when the VE is not present (note the directive will
 // never be instantiated normally because it is apart of a
 // base class)
-export const ngClassDirectiveDef__POST_R3__ = ɵɵdefineDirective({
-  type: function() {} as any,
-  selectors: null as any,
-  hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
-    if (rf & ɵRenderFlags.Create) {
-      ɵɵallocHostVars(1);
+export function ngClassDirectiveDef__POST_R3__() {
+  return ɵɵdefineDirective({
+    type: function() {} as any,
+    selectors: null as any,
+    hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
+      if (rf & ɵRenderFlags.Create) {
+        ɵɵallocHostVars(1);
+      }
+      if (rf & ɵRenderFlags.Update) {
+        ɵɵclassMap(ctx.getValue());
+      }
     }
-    if (rf & ɵRenderFlags.Update) {
-      ɵɵclassMap(ctx.getValue());
-    }
-  }
-});
+  });
+}
 
 export const ngClassDirectiveDef = ngClassDirectiveDef__PRE_R3__;
 
@@ -63,7 +65,7 @@ export const ngClassFactoryDef = ngClassFactoryDef__PRE_R3__;
  * @publicApi
  */
 export class NgClassBase {
-  static ɵdir: any = ngClassDirectiveDef;
+  static ɵdir: any = ngClassDirectiveDef();
   static ɵfac: any = ngClassFactoryDef;
 
   constructor(protected _delegate: NgClassImpl) {}

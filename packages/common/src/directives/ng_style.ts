@@ -24,24 +24,26 @@ import {NgStyleImpl, NgStyleImplProvider} from './ng_style_impl';
  */
 
 // used when the VE is present
-export const ngStyleDirectiveDef__PRE_R3__ = undefined;
+export const ngStyleDirectiveDef__PRE_R3__ = () => {};
 export const ngStyleFactoryDef__PRE_R3__ = undefined;
 
 // used when the VE is not present (note the directive will
 // never be instantiated normally because it is apart of a
 // base class)
-export const ngStyleDirectiveDef__POST_R3__ = ɵɵdefineDirective({
-  type: function() {} as any,
-  selectors: null as any,
-  hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
-    if (rf & ɵRenderFlags.Create) {
-      ɵɵallocHostVars(1);
+export function ngStyleDirectiveDef__POST_R3__() {
+  return ɵɵdefineDirective({
+    type: function() {} as any,
+    selectors: null as any,
+    hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
+      if (rf & ɵRenderFlags.Create) {
+        ɵɵallocHostVars(1);
+      }
+      if (rf & ɵRenderFlags.Update) {
+        ɵɵstyleMap(ctx.getValue());
+      }
     }
-    if (rf & ɵRenderFlags.Update) {
-      ɵɵstyleMap(ctx.getValue());
-    }
-  }
-});
+  });
+}
 
 export const ngStyleFactoryDef__POST_R3__ = function() {};
 
@@ -63,7 +65,7 @@ export const ngStyleFactoryDef = ngStyleDirectiveDef__PRE_R3__;
  * @publicApi
  */
 export class NgStyleBase {
-  static ɵdir: any = ngStyleDirectiveDef;
+  static ɵdir: any = ngStyleDirectiveDef();
   static ɵfac: any = ngStyleFactoryDef;
 
   constructor(protected _delegate: NgStyleImpl) {}
