@@ -6,6 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
- import {BaseHarnessFilters} from '@angular/cdk/testing';
-
-export interface DialogHarnessFilters extends BaseHarnessFilters {}
+export * from './dialog-harness';
+export * from './dialog-harness-filters';

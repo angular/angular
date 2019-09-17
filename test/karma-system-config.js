@@ -112,6 +112,8 @@ System.config({
     '@angular/material/core': 'dist/packages/material/core/index.js',
     '@angular/material/datepicker': 'dist/packages/material/datepicker/index.js',
     '@angular/material/dialog': 'dist/packages/material/dialog/index.js',
+    '@angular/material/dialog/testing': 'dist/packages/material/dialog/testing/index.js',
+    '@angular/material/dialog/testing/shared.spec': 'dist/packages/material/dialog/testing/shared.spec.js',
     '@angular/material/divider': 'dist/packages/material/divider/index.js',
     '@angular/material/expansion': 'dist/packages/material/expansion/index.js',
     '@angular/material/form-field': 'dist/packages/material/form-field/index.js',

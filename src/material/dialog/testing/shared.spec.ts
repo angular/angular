@@ -7,42 +7,29 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {MatDialogHarness} from './dialog-harness';
 
-let fixture: ComponentFixture<DialogHarnessTest>;
-let loader: HarnessLoader;
-let dialogHarness: typeof MatDialogHarness;
-let overlayContainer: OverlayContainer;
+/** Shared tests to run on both the original and MDC-based radio-button's. */
+export function runHarnessTests(
+    dialogModule: typeof MatDialogModule, dialogHarness: typeof MatDialogHarness) {
+  let fixture: ComponentFixture<DialogHarnessTest>;
+  let loader: HarnessLoader;
+  let overlayContainer: OverlayContainer;
 
-describe('MatDialogHarness', () => {
-  describe('non-MDC-based', () => {
-    beforeEach(async () => {
-      await TestBed
-          .configureTestingModule({
-            imports: [MatDialogModule, NoopAnimationsModule],
-            declarations: [DialogHarnessTest],
-          })
-          .compileComponents();
+  beforeEach(async () => {
+    await TestBed
+        .configureTestingModule({
+          imports: [MatDialogModule, NoopAnimationsModule],
+          declarations: [DialogHarnessTest],
+        })
+        .compileComponents();
 
-      fixture = TestBed.createComponent(DialogHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
-      dialogHarness = MatDialogHarness;
-      inject([OverlayContainer], (oc: OverlayContainer) => {
-        overlayContainer = oc;
-      })();
-    });
-
-    runTests();
+    fixture = TestBed.createComponent(DialogHarnessTest);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+    inject([OverlayContainer], (oc: OverlayContainer) => {
+      overlayContainer = oc;
+    })();
   });
 
-  describe(
-      'MDC-based',
-      () => {
-          // TODO: run tests for MDC based radio-button once implemented.
-      });
-});
-
-/** Shared tests to run on both the original and MDC-based radio-button's. */
-function runTests() {
   afterEach(() => {
     // Close all dialogs upon test exit. This is necessary because the "MatDialog"
     // service is not destroyed in TestBed automatically, and it could mean that
