@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, dirname} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, basename, dirname, isRoot} from '../../../src/ngtsc/file_system';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
 import {EntryPointPackageJson, PackageJsonFormatProperties} from './entry_point';
 
@@ -31,9 +31,13 @@ export function hasBeenProcessed(
   }
   if (Object.keys(packageJson.__processed_by_ivy_ngcc__)
           .some(property => packageJson.__processed_by_ivy_ngcc__ ![property] !== NGCC_VERSION)) {
+    let nodeModulesFolderPath = entryPointPath;
+    while (!isRoot(nodeModulesFolderPath) && basename(nodeModulesFolderPath) !== 'node_modules') {
+      nodeModulesFolderPath = dirname(nodeModulesFolderPath);
+    }
     throw new Error(
-        'The ngcc compiler has changed since the last ngcc build.\n' +
-        `Please completely remove the "node_modules" folder containing "${entryPointPath}" and try again.`);
+        `The ngcc compiler has changed since the last ngcc build.\n` +
+        `Please remove "${isRoot(nodeModulesFolderPath) ? entryPointPath : nodeModulesFolderPath}" and try again.`);
   }
 
   return packageJson.__processed_by_ivy_ngcc__[format] === NGCC_VERSION;
