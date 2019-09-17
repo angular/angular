@@ -148,6 +148,25 @@ describe('hover', () => {
     const quickInfo = ngLS.getHoverAt(fileName, marker.start);
     expect(quickInfo).toBeUndefined();
   });
+
+  it('should be able to find a directive module', () => {
+    const fileName = '/app/app.component.ts';
+    mockHost.override(fileName, `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<div></div>'
+      })
+      export class «AppComponent» {
+        name: string;
+      }`);
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'AppComponent');
+    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    expect(quickInfo).toBeTruthy();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual(marker);
+    expect(toText(displayParts)).toBe('(directive) AppModule.AppComponent: class');
+  });
 });
 
 function toText(displayParts?: ts.SymbolDisplayPart[]): string {
