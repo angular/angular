@@ -21,8 +21,8 @@ import {RComment, RElement, RNode} from '../interfaces/renderer';
 import {TStylingContext} from '../interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
 import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling/styling_debug';
-import {isStylingContext} from '../styling/util';
 import {attachDebugObject} from '../util/debug_utils';
+import {isStylingContext} from '../util/styling_utils';
 import {getTNode, unwrapRNode} from '../util/view_utils';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());

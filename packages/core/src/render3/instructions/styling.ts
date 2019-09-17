@@ -16,9 +16,9 @@ import {getActiveDirectiveId, getCurrentStyleSanitizer, getLView, getSelectedInd
 import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
 import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
-import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, hasClassInput, hasStyleInput, hasValueChanged, isContextLocked, isHostStylingActive, isStylingContext, normalizeIntoStylingMap, setValue, stylingMapToString} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
+import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, hasClassInput, hasStyleInput, hasValueChanged, isContextLocked, isHostStylingActive, isStylingContext, normalizeIntoStylingMap, setValue, stylingMapToString} from '../util/styling_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
 
