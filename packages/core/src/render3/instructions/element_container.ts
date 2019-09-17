@@ -15,7 +15,7 @@ import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfac
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {registerInitialStylingOnTNode} from '../styling/instructions';
+import {registerInitialStylingOnTNode} from './styling';
 
 import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
