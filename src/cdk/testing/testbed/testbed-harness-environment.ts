@@ -14,13 +14,21 @@ import {UnitTestElement} from './unit-test-element';
 
 /** A `HarnessEnvironment` implementation for Angular's Testbed. */
 export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
-  constructor(rawRootElement: Element, private _fixture: ComponentFixture<unknown>) {
+  protected constructor(rawRootElement: Element, private _fixture: ComponentFixture<unknown>) {
     super(rawRootElement);
   }
 
   /** Creates a `HarnessLoader` rooted at the given fixture's root element. */
   static loader(fixture: ComponentFixture<unknown>): HarnessLoader {
     return new TestbedHarnessEnvironment(fixture.nativeElement, fixture);
+  }
+
+  /**
+   * Creates a `HarnessLoader` at the document root. This can be used if harnesses are
+   * located outside of a fixture (e.g. overlays appended to the document body).
+   */
+  static documentRootLoader(fixture: ComponentFixture<unknown>): HarnessLoader {
+    return new TestbedHarnessEnvironment(document.body, fixture);
   }
 
   /**

@@ -12,6 +12,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  OnDestroy,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
@@ -29,7 +30,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class TestMainComponent {
+export class TestMainComponent implements OnDestroy {
   username: string;
   counter: number;
   asyncCounter: number;
@@ -43,6 +44,8 @@ export class TestMainComponent {
   relativeY = 0;
 
   @ViewChild('clickTestElement', {static: false}) clickTestElement: ElementRef<HTMLElement>;
+
+  private _fakeOverlayElement: HTMLElement;
 
   onMouseOver() {
     this._isHovering = true;
@@ -63,6 +66,15 @@ export class TestMainComponent {
       this.asyncCounter = 5;
       this._cdr.markForCheck();
     }, 1000);
+
+    this._fakeOverlayElement = document.createElement('div');
+    this._fakeOverlayElement.classList.add('fake-overlay');
+    this._fakeOverlayElement.innerText = 'This is a fake overlay.';
+    document.body.appendChild(this._fakeOverlayElement);
+  }
+
+  ngOnDestroy() {
+    document.body.removeChild(this._fakeOverlayElement);
   }
 
   click() {

@@ -24,7 +24,7 @@ describe('MatDialogHarness', () => {
 
       fixture = TestBed.createComponent(DialogHarnessTest);
       fixture.detectChanges();
-      loader = new TestbedHarnessEnvironment(document.body, fixture);
+      loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
       dialogHarness = MatDialogHarness;
       inject([OverlayContainer], (oc: OverlayContainer) => {
         overlayContainer = oc;

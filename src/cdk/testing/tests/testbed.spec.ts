@@ -1,6 +1,7 @@
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {FakeOverlayHarness} from './harnesses/fake-overlay-harness';
 import {MainComponentHarness} from './harnesses/main-component-harness';
 import {SubComponentHarness} from './harnesses/sub-component-harness';
 import {TestComponentsModule} from './test-components-module';
@@ -76,6 +77,16 @@ describe('TestbedHarnessEnvironment', () => {
     it('should get all matching components for all harnesses', async () => {
       const harnesses = await loader.getAllHarnesses(SubComponentHarness);
       expect(harnesses.length).toBe(4);
+    });
+
+    it('should be able to load harness through document root loader', async () => {
+      const documentRootHarnesses =
+          await TestbedHarnessEnvironment.documentRootLoader(fixture).getAllHarnesses(
+              FakeOverlayHarness);
+      const fixtureHarnesses = await loader.getAllHarnesses(FakeOverlayHarness);
+      expect(fixtureHarnesses.length).toBe(0);
+      expect(documentRootHarnesses.length).toBe(1);
+      expect(await documentRootHarnesses[0].getDescription()).toBe('This is a fake overlay.');
     });
   });
 
