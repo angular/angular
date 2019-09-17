@@ -10,14 +10,15 @@ import {Injector} from '../../di/injector';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
 import {NodeInjector} from '../di';
+import {DebugNode, buildDebugNode} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
-import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW} from '../interfaces/view';
+import {CLEANUP, CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, TVIEW} from '../interfaces/view';
 
 import {stringifyForError} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
-import {unwrapRNode} from './view_utils';
+import {getTNode, unwrapRNode} from './view_utils';
 
 
 
@@ -342,4 +343,32 @@ function sortListeners(a: Listener, b: Listener) {
  */
 function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
   return obj.type !== undefined && obj.template !== undefined && obj.declaredInputs !== undefined;
+}
+
+/**
+ * Returns the attached `DebugNode` instance for an element in the DOM.
+ *
+ * @param element DOM element which is owned by an existing component's view.
+ *
+ * @publicApi
+ */
+export function getDebugNode(element: Node): DebugNode|null {
+  let debugNode: DebugNode|null = null;
+
+  const lContext = loadLContextFromNode(element);
+  const lView = lContext.lView;
+  let nodeIndex = -1;
+  for (let i = HEADER_OFFSET; i < lView.length; i++) {
+    if (lView[i] === element) {
+      nodeIndex = i - HEADER_OFFSET;
+      break;
+    }
+  }
+
+  if (nodeIndex !== -1) {
+    const tNode = getTNode(nodeIndex, lView);
+    debugNode = buildDebugNode(tNode, lView);
+  }
+
+  return debugNode;
 }

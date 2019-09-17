@@ -11,7 +11,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {onlyInIvy} from '@angular/private/testing';
 
 import {getHostElement, markDirty} from '../../src/render3/index';
-import {getComponent, getContext, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent, loadLContext} from '../../src/render3/util/discovery_utils';
+import {getComponent, getContext, getDebugNode, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent, loadLContext} from '../../src/render3/util/discovery_utils';
 
 onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -401,6 +401,33 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils deprecated', () =>
       const localRefs = getLocalRefs(divEl);
 
       expect(localRefs.elRef.tagName.toLowerCase()).toBe('div');
+    });
+  });
+
+  describe('getDebugNode()', () => {
+    it('should create an instance of `DebugNode` when called for a specific element', () => {
+      @Component({
+        template: `
+          <div class="parent">
+            <div class="child"></div>
+          </div>
+        `
+      })
+      class Comp {
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp]});
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      const parent = fixture.nativeElement.querySelector('.parent') !;
+      const child = fixture.nativeElement.querySelector('.child') !;
+
+      const parentDebug = getDebugNode(parent) !;
+      const childDebug = getDebugNode(child) !;
+
+      expect(parentDebug.native).toBe(parent);
+      expect(childDebug.native).toBe(child);
     });
   });
 });

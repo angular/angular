@@ -358,27 +358,31 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
     const debugNodes: DebugNode[] = [];
     let tNodeCursor: TNode|null = tNode;
     while (tNodeCursor) {
-      const rawValue = lView[tNode.index];
-      const native = unwrapRNode(rawValue);
-      const componentLViewDebug = toDebug(readLViewValue(rawValue));
-      const styles = isStylingContext(tNode.styles) ?
-          new NodeStylingDebug(tNode.styles as any as TStylingContext, lView) :
-          null;
-      const classes = isStylingContext(tNode.classes) ?
-          new NodeStylingDebug(tNode.classes as any as TStylingContext, lView, true) :
-          null;
-      debugNodes.push({
-        html: toHtml(native),
-        native: native as any, styles, classes,
-        nodes: toDebugNodes(tNode.child, lView),
-        component: componentLViewDebug,
-      });
+      debugNodes.push(buildDebugNode(tNodeCursor, lView));
       tNodeCursor = tNodeCursor.next;
     }
     return debugNodes;
   } else {
     return null;
   }
+}
+
+export function buildDebugNode(tNode: TNode, lView: LView): DebugNode {
+  const rawValue = lView[tNode.index];
+  const native = unwrapRNode(rawValue);
+  const componentLViewDebug = toDebug(readLViewValue(rawValue));
+  const styles = isStylingContext(tNode.styles) ?
+      new NodeStylingDebug(tNode.styles as any as TStylingContext, lView) :
+      null;
+  const classes = isStylingContext(tNode.classes) ?
+      new NodeStylingDebug(tNode.classes as any as TStylingContext, lView, true) :
+      null;
+  return {
+    html: toHtml(native),
+    native: native as any, styles, classes,
+    nodes: toDebugNodes(tNode.child, lView),
+    component: componentLViewDebug,
+  };
 }
 
 export class LContainerDebug {
