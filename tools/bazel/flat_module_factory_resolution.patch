@@ -1,0 +1,36 @@
+diff --git node_modules/@angular/compiler/bundles/compiler.umd.js node_modules/@angular/compiler/bundles/compiler.umd.js
+index 640c42f..832f8db 100644
+--- node_modules/@angular/compiler/bundles/compiler.umd.js
++++ node_modules/@angular/compiler/bundles/compiler.umd.js
+@@ -21006,7 +21006,10 @@
+         };
+         CompileMetadataResolver.prototype.getGeneratedClass = function (dirType, name) {
+             if (dirType instanceof StaticSymbol) {
+-                return this._staticSymbolCache.get(ngfactoryFilePath(dirType.filePath), name);
++                // resolve symbol to the original file path. i.e. symbols resolved through
++                // flat module bundle will be resolved back through the "origins" field.
++                var originalPath = this._reflector.symbolResolver.getResourcePath(dirType);
++                return this._staticSymbolCache.get(ngfactoryFilePath(originalPath), name);
+             }
+             else {
+                 return this._createProxyClass(dirType, name);
+@@ -21027,7 +21030,8 @@
+         };
+         CompileMetadataResolver.prototype.getRendererType = function (dirType) {
+             if (dirType instanceof StaticSymbol) {
+-                return this._staticSymbolCache.get(ngfactoryFilePath(dirType.filePath), rendererTypeName(dirType));
++                var originalPath = this._reflector.symbolResolver.getResourcePath(dirType);
++                return this._staticSymbolCache.get(ngfactoryFilePath(originalPath), rendererTypeName(dirType));
+             }
+             else {
+                 // returning an object as proxy,
+@@ -21037,7 +21041,8 @@
+         };
+         CompileMetadataResolver.prototype.getComponentFactory = function (selector, dirType, inputs, outputs) {
+             if (dirType instanceof StaticSymbol) {
+-                return this._staticSymbolCache.get(ngfactoryFilePath(dirType.filePath), componentFactoryName(dirType));
++                var originalPath = this._reflector.symbolResolver.getResourcePath(dirType);
++                return this._staticSymbolCache.get(ngfactoryFilePath(originalPath), componentFactoryName(dirType));
+             }
+             else {
+                 var hostView = this.getHostComponentViewClass(dirType);
