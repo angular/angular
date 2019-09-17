@@ -204,13 +204,19 @@ function isAmdConditional(value: ts.Node): value is AmdConditional {
  */
 function isGlobalFactoryCall(value: ts.Node): value is ts.CallExpression {
   if (ts.isCallExpression(value) && !!value.parent) {
+    // Be resilient to the value being part of a comma list
+    value = isCommaExpression(value.parent) ? value.parent : value;
     // Be resilient to the value being inside parentheses
-    const expression = ts.isParenthesizedExpression(value.parent) ? value.parent : value;
-    return !!expression.parent && ts.isConditionalExpression(expression.parent) &&
-        expression.parent.whenFalse === expression;
+    value = ts.isParenthesizedExpression(value.parent) ? value.parent : value;
+    return !!value.parent && ts.isConditionalExpression(value.parent) &&
+        value.parent.whenFalse === value;
   } else {
     return false;
   }
+}
+
+function isCommaExpression(value: ts.Node): value is ts.BinaryExpression {
+  return ts.isBinaryExpression(value) && value.operatorToken.kind === ts.SyntaxKind.CommaToken;
 }
 
 function getGlobalIdentifier(i: Import) {
