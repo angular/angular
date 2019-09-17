@@ -12,7 +12,6 @@ import {createLanguageService} from '../src/language_service';
 import {LanguageService} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
-import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 describe('references', () => {
@@ -23,7 +22,7 @@ describe('references', () => {
   let ngService: LanguageService = createLanguageService(undefined !);
 
   beforeEach(() => {
-    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
+    mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts']);
     service = ts.createLanguageService(mockHost, documentRegistry);
     ngHost = new TypeScriptServiceHost(mockHost, service);
     ngService = createLanguageService(ngHost);

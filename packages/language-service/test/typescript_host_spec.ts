@@ -11,13 +11,12 @@ import * as ts from 'typescript';
 
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
-import {toh} from './test_data';
 import {MockTypescriptHost, findDirectiveMetadataByName} from './test_utils';
 
 
 describe('TypeScriptServiceHost', () => {
   it('should be able to create a typescript host and analyze modules', () => {
-    const tsLSHost = new MockTypescriptHost(['/app/main.ts'], toh);
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts']);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const analyzedModules = ngLSHost.getAnalyzedModules();
@@ -34,7 +33,7 @@ describe('TypeScriptServiceHost', () => {
   });
 
   it('should be able to analyze modules without a tsconfig.json file', () => {
-    const tsLSHost = new MockTypescriptHost(['foo.ts'], toh);
+    const tsLSHost = new MockTypescriptHost(['foo.ts']);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const analyzedModules = ngLSHost.getAnalyzedModules();
@@ -45,7 +44,7 @@ describe('TypeScriptServiceHost', () => {
   });
 
   it('should not throw if there is no script names', () => {
-    const tsLSHost = new MockTypescriptHost([], toh);
+    const tsLSHost = new MockTypescriptHost([]);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const analyzedModules = ngLSHost.getAnalyzedModules();
@@ -57,7 +56,7 @@ describe('TypeScriptServiceHost', () => {
 
   it('should clear the caches if program changes', () => {
     // First create a TypescriptHost with empty script names
-    const tsLSHost = new MockTypescriptHost([], toh);
+    const tsLSHost = new MockTypescriptHost([]);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     expect(ngLSHost.getAnalyzedModules().ngModules).toEqual([]);
@@ -71,7 +70,7 @@ describe('TypeScriptServiceHost', () => {
   });
 
   it('should throw if getSourceFile is called on non-TS file', () => {
-    const tsLSHost = new MockTypescriptHost([], toh);
+    const tsLSHost = new MockTypescriptHost([]);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     expect(() => {
@@ -80,7 +79,7 @@ describe('TypeScriptServiceHost', () => {
   });
 
   it('should be able to find a single inline template', () => {
-    const tsLSHost = new MockTypescriptHost(['/app/app.component.ts'], toh);
+    const tsLSHost = new MockTypescriptHost(['/app/app.component.ts']);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const templates = ngLSHost.getTemplates('/app/app.component.ts');
@@ -90,7 +89,7 @@ describe('TypeScriptServiceHost', () => {
   });
 
   it('should be able to find multiple inline templates', () => {
-    const tsLSHost = new MockTypescriptHost(['/app/parsing-cases.ts'], toh);
+    const tsLSHost = new MockTypescriptHost(['/app/parsing-cases.ts']);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const templates = ngLSHost.getTemplates('/app/parsing-cases.ts');
@@ -98,7 +97,7 @@ describe('TypeScriptServiceHost', () => {
   });
 
   it('should be able to find external template', () => {
-    const tsLSHost = new MockTypescriptHost(['/app/main.ts'], toh);
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts']);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     ngLSHost.getAnalyzedModules();
@@ -110,7 +109,7 @@ describe('TypeScriptServiceHost', () => {
 
   // https://github.com/angular/angular/issues/32301
   it('should clear caches when program changes', () => {
-    const tsLSHost = new MockTypescriptHost(['/app/main.ts'], toh);
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts']);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const fileName = '/app/app.component.ts';
@@ -162,7 +161,7 @@ describe('TypeScriptServiceHost', () => {
   });
 
   it('should not clear caches when external template changes', () => {
-    const tsLSHost = new MockTypescriptHost(['/app/main.ts'], toh);
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts']);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     const oldModules = ngLSHost.getAnalyzedModules();
@@ -172,7 +171,7 @@ describe('TypeScriptServiceHost', () => {
   });
 
   it('should get the correct StaticSymbol for a Directive', () => {
-    const tsLSHost = new MockTypescriptHost(['/app/app.component.ts', '/app/main.ts'], toh);
+    const tsLSHost = new MockTypescriptHost(['/app/app.component.ts', '/app/main.ts']);
     const tsLS = ts.createLanguageService(tsLSHost);
     const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
     ngLSHost.getAnalyzedModules();  // modules are analyzed lazily

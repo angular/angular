@@ -9,11 +9,9 @@
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {createLanguageService} from '../src/language_service';
 import {ReflectorHost} from '../src/reflector_host';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
-import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
 
 describe('reflector_host_spec', () => {
@@ -23,7 +21,7 @@ describe('reflector_host_spec', () => {
     const originalJoin = path.join;
     const originalPosixJoin = path.posix.join;
     const mockHost =
-        new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh, 'node_modules', {
+        new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], 'node_modules', {
           ...path,
           join: (...args: string[]) => originalJoin.apply(path, args),
           posix:
@@ -42,7 +40,7 @@ describe('reflector_host_spec', () => {
   });
 
   it('should use module resolution cache', () => {
-    const mockHost = new MockTypescriptHost(['/app/main.ts'], toh);
+    const mockHost = new MockTypescriptHost(['/app/main.ts']);
     // TypeScript relies on `ModuleResolutionHost.fileExists()` to perform
     // module resolution, so spy on this method to determine how many times
     // it's called.
