@@ -47,7 +47,7 @@ ts_devserver(
         "@npm//:node_modules/zone.js/dist/zone.js",
     ],
     deps = [
-        ":bundle.min.js",
+        ":bundle.min_debug.es2015.js",
     ],
 )
 
