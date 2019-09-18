@@ -1,13 +1,3 @@
-import {TNode, TNodeType} from '../render3/interfaces/node';
-import {isComponentHost} from '../render3/interfaces/type_checks';
-import {CONTEXT, LView} from '../render3/interfaces/view';
-import {getLView, getPreviousOrParentTNode} from '../render3/state';
-import {findComponentView} from '../render3/util/view_traversal_utils';
-import {getComponentViewByIndex} from '../render3/util/view_utils';
-import {ViewRef} from '../render3/view_ref';
-
-
-
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -15,6 +5,14 @@ import {ViewRef} from '../render3/view_ref';
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {TNode, TNodeType} from '../render3/interfaces/node';
+import {isComponentHost} from '../render3/interfaces/type_checks';
+import {CONTEXT, LView} from '../render3/interfaces/view';
+import {getLView, getPreviousOrParentTNode} from '../render3/state';
+import {findComponentView} from '../render3/util/view_traversal_utils';
+import {getComponentViewByIndex} from '../render3/util/view_utils';
+import {ViewRef} from '../render3/view_ref';
 
 /**
  * Base class for Angular Views, provides change detection functionality.
