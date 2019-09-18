@@ -8,6 +8,8 @@
 @include mdc-button-without-ripple($query: $mat-base-styles-query);
 
 .mat-mdc-button, .mat-mdc-unelevated-button, .mat-mdc-raised-button, .mat-mdc-outlined-button {
+  @include mdc-button-density(0, $mat-base-styles-query);
+
   // Add an outline to make buttons more visible in high contrast mode. Stroked buttons
   // don't need a special look in high-contrast mode, because those already have an outline.
   @include cdk-high-contrast {

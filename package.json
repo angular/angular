@@ -51,7 +51,7 @@
     "@types/youtube": "^0.0.38",
     "@webcomponents/custom-elements": "^1.1.0",
     "core-js": "^2.6.1",
-    "material-components-web": "^4.0.0-alpha.0",
+    "material-components-web": "^4.0.0-canary.e851d4f40.0",
     "rxjs": "^6.5.2",
     "systemjs": "0.19.43",
     "tsickle": "^0.35.0",

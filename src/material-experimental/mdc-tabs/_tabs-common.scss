@@ -1,13 +1,20 @@
 @import '@material/ripple/variables';
+@import '@material/tab/variables';
+@import '@material/tab/mixins';
 @import '../../material/core/style/variables';
 @import '../../material/core/style/noop-animation';
 @import '../../material/core/style/vendor-prefixes';
 @import '../../cdk/a11y/a11y';
+@import '../mdc-helpers/mdc-helpers';
 
 $mat-tab-animation-duration: 500ms !default;
 
 @mixin mat-mdc-tab {
   &.mdc-tab {
+    // This is usually included by MDC's tab bar, however we don't
+    // use it because we implement our own pagination.
+    @include mdc-tab-height($mdc-tab-height, $mat-base-styles-query);
+
     // MDC's tabs stretch to fit the header by default, whereas stretching on our current ones
     // is an opt-in behavior. Also technically we don't need to combine the two classes, but
     // we need the extra specificity to avoid issues with CSS insertion order.
