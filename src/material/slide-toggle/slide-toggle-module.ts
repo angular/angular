@@ -8,8 +8,7 @@
 
 import {ObserversModule} from '@angular/cdk/observers';
 import {NgModule} from '@angular/core';
-import {GestureConfig, MatCommonModule, MatRippleModule} from '@angular/material/core';
-import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatSlideToggle} from './slide-toggle';
 import {MatSlideToggleRequiredValidator} from './slide-toggle-required-validator';
 
@@ -35,8 +34,5 @@ export class _MatSlideToggleRequiredValidatorModule {
     MatCommonModule
   ],
   declarations: [MatSlideToggle],
-  providers: [
-    {provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}
-  ],
 })
 export class MatSlideToggleModule {}

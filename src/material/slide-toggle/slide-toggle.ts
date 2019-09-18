@@ -32,7 +32,6 @@ import {
   CanColor, CanColorCtor,
   CanDisable, CanDisableCtor,
   CanDisableRipple, CanDisableRippleCtor,
-  HammerInput,
   HasTabIndex, HasTabIndexCtor,
   mixinColor,
   mixinDisabled,
@@ -112,18 +111,6 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   private _required: boolean = false;
   private _checked: boolean = false;
 
-  /** Whether the thumb is currently being dragged. */
-  private _dragging = false;
-
-  /** Previous checked state before drag started. */
-  private _previousChecked: boolean;
-
-  /** Width of the thumb bar of the slide-toggle. */
-  private _thumbBarWidth: number;
-
-  /** Percentage of the thumb while dragging. Percentage as fraction of 100. */
-  private _dragPercentage: number;
-
   /** Reference to the thumb HTMLElement. */
   @ViewChild('thumbContainer', {static: false}) _thumbEl: ElementRef;
 
@@ -164,8 +151,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   /**
    * An event will be dispatched each time the slide-toggle input is toggled.
    * This event is always emitted when the user toggles the slide toggle, but this does not mean
-   * the slide toggle's value has changed. The event does not fire when the user drags to change
-   * the slide toggle value.
+   * the slide toggle's value has changed.
    */
   @Output() readonly toggleChange: EventEmitter<void> = new EventEmitter<void>();
 
@@ -174,6 +160,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
    * This event is always emitted when the user drags the slide toggle to make a change greater
    * than 50%. It does not mean the slide toggle's value is changed. The event is not emitted when
    * the user toggles the slide toggle to change its value.
+   * @deprecated No longer being used. To be removed.
+   * @breaking-change 10.0.0
    */
   @Output() readonly dragChange: EventEmitter<void> = new EventEmitter<void>();
 
@@ -187,11 +175,15 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Attribute('tabindex') tabIndex: string,
-              private _ngZone: NgZone,
+                /**
+                 * @deprecated `_ngZone` and `_dir` parameters to be removed.
+                 * @breaking-change 10.0.0
+                 */
+              _ngZone: NgZone,
               @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
                   public defaults: MatSlideToggleDefaultOptions,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
-              @Optional() private _dir?: Directionality) {
+              @Optional() _dir?: Directionality) {
     super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
   }
@@ -221,16 +213,12 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
     // Otherwise the change event, from the input element, will bubble up and
     // emit its event object to the component's `change` output.
     event.stopPropagation();
+    this.toggleChange.emit();
 
-    if (!this._dragging) {
-      this.toggleChange.emit();
-    }
-    // Releasing the pointer over the `<label>` element while dragging triggers another
-    // click event on the `<label>` element. This means that the checked state of the underlying
-    // input changed unintentionally and needs to be changed back. Or when the slide toggle's config
-    // disabled toggle change event by setting `disableToggleValue: true`, the slide toggle's value
-    // does not change, and the checked state of the underlying input needs to be changed back.
-    if (this._dragging || this.defaults.disableToggleValue) {
+    // When the slide toggle's config disables toggle change event by setting
+    // `disableToggleValue: true`, the slide toggle's value does not change, and the
+    // checked state of the underlying input needs to be changed back.
+    if (this.defaults.disableToggleValue) {
       this._inputElement.nativeElement.checked = this.checked;
       return;
     }
@@ -293,66 +281,6 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   private _emitChangeEvent() {
     this._onChange(this.checked);
     this.change.emit(new MatSlideToggleChange(this, this.checked));
-  }
-
-  /** Retrieves the percentage of thumb from the moved distance. Percentage as fraction of 100. */
-  private _getDragPercentage(distance: number) {
-    let percentage = (distance / this._thumbBarWidth) * 100;
-
-    // When the toggle was initially checked, then we have to start the drag at the end.
-    if (this._previousChecked) {
-      percentage += 100;
-    }
-
-    return Math.max(0, Math.min(percentage, 100));
-  }
-
-  _onDragStart() {
-    if (!this.disabled && !this._dragging) {
-      const thumbEl = this._thumbEl.nativeElement;
-      this._thumbBarWidth = this._thumbBarEl.nativeElement.clientWidth - thumbEl.clientWidth;
-      thumbEl.classList.add('mat-dragging');
-
-      this._previousChecked = this.checked;
-      this._dragging = true;
-    }
-  }
-
-  _onDrag(event: HammerInput) {
-    if (this._dragging) {
-      const direction = this._dir && this._dir.value === 'rtl' ? -1 : 1;
-      this._dragPercentage = this._getDragPercentage(event.deltaX * direction);
-      // Calculate the moved distance based on the thumb bar width.
-      const dragX = (this._dragPercentage / 100) * this._thumbBarWidth * direction;
-      this._thumbEl.nativeElement.style.transform = `translate3d(${dragX}px, 0, 0)`;
-    }
-  }
-
-  _onDragEnd() {
-    if (this._dragging) {
-      const newCheckedValue = this._dragPercentage > 50;
-
-      if (newCheckedValue !== this.checked) {
-        this.dragChange.emit();
-        if (!this.defaults.disableDragValue) {
-          this.checked = newCheckedValue;
-          this._emitChangeEvent();
-        }
-      }
-
-      // The drag should be stopped outside of the current event handler, otherwise the
-      // click event will be fired before it and will revert the drag change.
-      this._ngZone.runOutsideAngular(() => setTimeout(() => {
-        if (this._dragging) {
-          this._dragging = false;
-          this._thumbEl.nativeElement.classList.remove('mat-dragging');
-
-          // Reset the transform because the component will take care
-          // of the thumb position after drag.
-          this._thumbEl.nativeElement.style.transform = '';
-        }
-      }));
-    }
   }
 
   /** Method being called whenever the label text changes. */

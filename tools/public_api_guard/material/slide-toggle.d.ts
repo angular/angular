@@ -24,11 +24,9 @@ export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements 
     name: string | null;
     required: boolean;
     readonly toggleChange: EventEmitter<void>;
-    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, tabIndex: string, _ngZone: NgZone, defaults: MatSlideToggleDefaultOptions, _animationMode?: string | undefined, _dir?: Directionality | undefined);
+    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, tabIndex: string,
+    _ngZone: NgZone, defaults: MatSlideToggleDefaultOptions, _animationMode?: string | undefined, _dir?: Directionality);
     _onChangeEvent(event: Event): void;
-    _onDrag(event: HammerInput): void;
-    _onDragEnd(): void;
-    _onDragStart(): void;
     _onInputClick(event: Event): void;
     _onLabelTextChange(): void;
     focus(options?: FocusOptions): void;

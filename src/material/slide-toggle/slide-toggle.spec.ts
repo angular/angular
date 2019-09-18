@@ -11,13 +11,11 @@ import {
   tick,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
-import {TestGestureConfig} from '@angular/material/testing';
-import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+import {By} from '@angular/platform-browser';
 import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
 import {MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS} from './slide-toggle-config';
 
 describe('MatSlideToggle without forms', () => {
-  let gestureConfig: TestGestureConfig;
   let mutationObserverCallbacks: Function[];
   let flushMutationObserver = () => mutationObserverCallbacks.forEach(callback => callback());
 
@@ -34,7 +32,6 @@ describe('MatSlideToggle without forms', () => {
         TextBindingComponent,
       ],
       providers: [
-        {provide: HAMMER_GESTURE_CONFIG, useFactory: () => gestureConfig = new TestGestureConfig()},
         {
           provide: MutationObserverFactory,
           useValue: {
@@ -396,10 +393,6 @@ describe('MatSlideToggle without forms', () => {
           imports: [MatSlideToggleModule],
           declarations: [SlideToggleBasic],
           providers: [
-            {
-              provide: HAMMER_GESTURE_CONFIG,
-              useFactory: () => gestureConfig = new TestGestureConfig()
-            },
             {provide: MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS, useValue: {disableToggleValue: true}},
           ]
         });
@@ -432,271 +425,6 @@ describe('MatSlideToggle without forms', () => {
       expect(testComponent.dragTriggered).toBe(0);
     });
 
-    it('should not change value on dragging when drag action is noop', fakeAsync(() => {
-      TestBed
-        .resetTestingModule()
-        .configureTestingModule({
-          imports: [MatSlideToggleModule],
-          declarations: [SlideToggleBasic],
-          providers: [
-            {
-              provide: HAMMER_GESTURE_CONFIG,
-              useFactory: () => gestureConfig = new TestGestureConfig()
-            },
-            {provide: MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS, useValue: {disableDragValue: true}},
-          ]
-        });
-      const fixture = TestBed.createComponent(SlideToggleBasic);
-      fixture.detectChanges();
-
-      const testComponent = fixture.debugElement.componentInstance;
-      const slideToggleDebug = fixture.debugElement.query(By.css('mat-slide-toggle'))!;
-      const thumbContainerDebug = slideToggleDebug
-        .query(By.css('.mat-slide-toggle-thumb-container'))!;
-
-      const slideThumbContainer = thumbContainerDebug.nativeElement;
-      const slideToggle = slideToggleDebug.componentInstance;
-
-      expect(testComponent.toggleTriggered).toBe(0);
-      expect(testComponent.dragTriggered).toBe(0);
-      expect(slideToggle.checked).toBe(false);
-
-      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
-      tick();
-
-      expect(slideThumbContainer.classList).toContain('mat-dragging');
-
-      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
-        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
-      });
-
-      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
-
-      // Flush the timeout for the slide ending.
-      tick();
-
-      expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-      expect(testComponent.lastEvent).toBeUndefined();
-      expect(testComponent.toggleTriggered).toBe(0);
-      expect(testComponent.dragTriggered).toBe(1, 'Expect drag once');
-    }));
-  });
-
-  describe('with dragging', () => {
-    let fixture: ComponentFixture<any>;
-
-    let testComponent: SlideToggleBasic;
-    let slideToggle: MatSlideToggle;
-    let slideToggleElement: HTMLElement;
-    let slideThumbContainer: HTMLElement;
-    let inputElement: HTMLInputElement;
-
-    beforeEach(fakeAsync(() => {
-      fixture = TestBed.createComponent(SlideToggleBasic);
-      fixture.detectChanges();
-
-      const slideToggleDebug = fixture.debugElement.query(By.css('mat-slide-toggle'))!;
-      const thumbContainerDebug = slideToggleDebug
-          .query(By.css('.mat-slide-toggle-thumb-container'))!;
-
-      testComponent = fixture.debugElement.componentInstance;
-      slideToggle = slideToggleDebug.componentInstance;
-      slideToggleElement = slideToggleDebug.nativeElement;
-      slideThumbContainer = thumbContainerDebug.nativeElement;
-
-      inputElement = slideToggleElement.querySelector('input')!;
-    }));
-
-    it('should drag from start to end', fakeAsync(() => {
-      expect(slideToggle.checked).toBe(false);
-
-      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
-
-      expect(slideThumbContainer.classList).toContain('mat-dragging');
-
-      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
-        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
-      });
-
-      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
-
-      // Flush the timeout for the slide ending.
-      tick();
-
-      expect(slideToggle.checked).toBe(true);
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-    }));
-
-    it('should drag from start to end in RTL', fakeAsync(() => {
-      testComponent.direction = 'rtl';
-      fixture.detectChanges();
-
-      expect(slideToggle.checked).toBe(false);
-
-      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
-
-      expect(slideThumbContainer.classList).toContain('mat-dragging');
-
-      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
-        deltaX: -200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
-      });
-
-      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
-
-      // Flush the timeout for the slide ending.
-      tick();
-
-      expect(slideToggle.checked).toBe(true);
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-    }));
-
-    it('should drag from end to start', fakeAsync(() => {
-      slideToggle.checked = true;
-
-      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
-
-      expect(slideThumbContainer.classList).toContain('mat-dragging');
-
-      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
-        deltaX: -200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
-      });
-
-      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
-
-      // Flush the timeout for the slide ending.
-      tick();
-
-      expect(slideToggle.checked).toBe(false);
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-    }));
-
-    it('should drag from end to start in RTL', fakeAsync(() => {
-      testComponent.direction = 'rtl';
-      fixture.detectChanges();
-
-      slideToggle.checked = true;
-
-      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
-
-      expect(slideThumbContainer.classList).toContain('mat-dragging');
-
-      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
-        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
-      });
-
-      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
-
-      // Flush the timeout for the slide ending.
-      tick();
-
-      expect(slideToggle.checked).toBe(false);
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-    }));
-
-    it('should not drag when disabled', fakeAsync(() => {
-      slideToggle.disabled = true;
-
-      expect(slideToggle.checked).toBe(false);
-
-      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
-
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-
-      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
-        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
-      });
-
-      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
-
-      // Flush the timeout for the slide ending.
-      tick();
-
-      expect(slideToggle.checked).toBe(false);
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-    }));
-
-    it('should emit a change event after drag', fakeAsync(() => {
-      expect(slideToggle.checked).toBe(false);
-
-      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
-
-      expect(slideThumbContainer.classList).toContain('mat-dragging');
-
-      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
-        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
-      });
-
-      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
-
-      // Flush the timeout for the slide ending.
-      tick();
-
-      expect(slideToggle.checked).toBe(true);
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-      expect(testComponent.lastEvent.checked).toBe(true);
-    }));
-
-    it('should not emit a change event when the value did not change', fakeAsync(() => {
-      expect(slideToggle.checked).toBe(false);
-
-      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
-      gestureConfig.emitEventForElement('slide', slideThumbContainer, { deltaX: 0 });
-      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
-
-      // Flush the timeout for the slide ending.
-      tick();
-
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-      expect(slideToggle.checked).toBe(false);
-      expect(testComponent.lastEvent)
-          .toBeFalsy('Expected the slide-toggle to not emit a change event.');
-    }));
-
-    it('should ignore clicks on the label element while dragging', fakeAsync(() => {
-      expect(slideToggle.checked).toBe(false);
-
-      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
-      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
-        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
-      });
-      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
-
-      expect(slideToggle.checked).toBe(true);
-
-      // Fake a change event that has been fired after dragging through the click on pointer
-      // release (noticeable on IE11, Edge)
-      inputElement.checked = false;
-      dispatchFakeEvent(inputElement, 'change');
-
-      // Flush the timeout for the slide ending.
-      tick();
-
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-      expect(slideToggle.checked).toBe(true);
-    }));
-
-    it('should update the checked property of the input', fakeAsync(() => {
-      expect(inputElement.checked).toBe(false);
-
-      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
-
-      expect(slideThumbContainer.classList).toContain('mat-dragging');
-
-      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
-        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
-      });
-
-      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
-      fixture.detectChanges();
-
-      expect(inputElement.checked).toBe(true);
-
-      // Flush the timeout for the slide ending.
-      tick();
-
-      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
-    }));
   });
 
   describe('without label', () => {

@@ -1,6 +1,5 @@
 @import '../core/style/variables';
 @import '../core/ripple/ripple';
-@import '../core/style/vendor-prefixes';
 @import '../core/style/list-common';
 @import '../../cdk/a11y/a11y';
 
@@ -22,10 +21,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   line-height: $mat-slide-toggle-height;
   white-space: nowrap;
   outline: none;
-
-  // Disable user selection to ensure that dragging is smooth without grabbing
-  // some elements accidentally.
-  @include user-select(none);
 
   -webkit-tap-highlight-color: transparent;
 
@@ -57,7 +52,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   flex-direction: row;
   align-items: center;
   height: inherit;
-
   cursor: pointer;
 }
 
@@ -92,7 +86,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   margin-right: 0;
 }
 
-// The thumb container is responsible for the dragging functionality.
 // The container includes the visual thumb and the ripple container element.
 .mat-slide-toggle-thumb-container {
   $thumb-bar-vertical-padding: ($mat-slide-toggle-thumb-size - $mat-slide-toggle-bar-height) / 2;
@@ -108,18 +101,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   transform: translate3d(0, 0, 0);
   transition: $swift-linear;
   transition-property: transform;
-
-  @include cursor-grab;
-
-  // Once the thumb container is being dragged around, we remove the transition duration to
-  // make the drag feeling fast and not delayed.
-  &.mat-dragging {
-    transition-duration: 0ms;
-  }
-
-  &:active {
-    @include cursor-grabbing;
-  }
 
   ._mat-animation-noopable & {
     transition: none;
