@@ -662,9 +662,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            }));
 
         it('should throw when trying to assign to a local', fakeAsync(() => {
-             expect(() => {
-               _bindSimpleProp('(event)="$event=1"');
-             }).toThrowError(new RegExp('Cannot assign to a reference or variable!'));
+             expect(() => { _bindSimpleProp('(event)="$event=1"'); })
+                 .toThrowError(new RegExp(
+                     'Cannot assign value (.*) to template variable (.*). Template variables are read-only.'));
            }));
 
         it('should support short-circuiting', fakeAsync(() => {
