@@ -7,18 +7,11 @@
 # To validate changes, use an online parser, eg.
 # http://yaml-online-parser.appspot.com/
 
-# Note that the browser docker image comes with Chrome and Firefox preinstalled. This is just
-# needed for jobs that run tests without Bazel. Bazel runs tests with browsers that will be
-# fetched by the Webtesting rules. Therefore for jobs that run tests with Bazel, we don't need a
-# docker image with browsers pre-installed.
-# **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
-#             (Using the tag in not necessary when pinning by ID, but include it anyway for documentation purposes.)
-# **NOTE 2**: If you change the version of the docker images, also change the `cache_key` suffix.
-# **NOTE 3**: If you change the version of the `*-browsers` docker image, make sure the
-#             `CI_CHROMEDRIVER_VERSION_ARG` env var (in `.circleci/env.sh`) points to a ChromeDriver
-#             version that is compatible with the Chrome version in the image.
-var_1: &default_docker_image circleci/node:10.16@sha256:75c05084fff4afa3683a03c5a04a4a3ad95c536ff2439d8fe14e7e1f5c58b09a
-var_2: &browsers_docker_image circleci/node:10.16-browsers@sha256:d2a96fe1cbef51257ee626b5f645e64dade3e886f00ba9cb7e8ea65b4efe8db1
+# CircleCI configuration version
+# Version 2.1 allows for extra config reuse features
+# https://circleci.com/docs/2.0/reusing-config/#getting-started-with-config-reuse
+version: 2.1
+
 # We don't want to include the current branch name in the cache key because that would prevent
 # PRs from being able to restore the cache since the branch names are always different for PRs.
 # The cache key should only consist of dynamic values that change whenever something in the
@@ -57,7 +50,6 @@ var_4_win: &init_environment_win
     name: Setup windows node environment
     command: ./.circleci/windows-env.ps1
 
-
 var_5: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
@@ -68,30 +60,6 @@ var_5: &setup_bazel_remote_execution
       openssl aes-256-cbc -d -in .circleci/gcp_token -md md5 -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials
       echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV
       ./.circleci/setup-rbe.sh .bazelrc.user
-
-# Settings common to each job
-var_6: &job_defaults
-  working_directory: ~/ng
-  docker:
-  - image: *default_docker_image
-var_6_win: &job_defaults_win
-  working_directory: ~/ng
-  resource_class: windows.medium
-  # CircleCI windows VMs do have the GitBash shell available:
-  # https://github.com/CircleCI-Public/windows-preview-docs#shells
-  # But in this specific case we really should not use it because Bazel must not be ran from
-  # GitBash. These issues discuss why:
-  # https://github.com/bazelbuild/bazel/issues/5751
-  # https://github.com/bazelbuild/bazel/issues/5724#issuecomment-410194038
-  # https://github.com/bazelbuild/bazel/issues/6339#issuecomment-441600879
-  shell: powershell.exe -ExecutionPolicy Bypass
-  machine:
-    # Preview image that includes the following:
-    # - Visual Studio 2019 build tools
-    # - Node 12
-    # - yarn 1.17
-    # - Python 3 3.7.4
-    image: windows-server-2019-vs2019:201908-02
 
 # After checkout, rebase on top of target branch.
 var_7: &post_checkout
@@ -195,10 +163,62 @@ var_14: &notify_dev_infra_on_fail
 var_15: &material_unit_tests_cache_key v4-angular-material-2817c9e2faa4140342336987a692d5dd30bf24c2
 var_16: &material_unit_tests_cache_key_short v4-angular-material
 
-version: 2
+
+# Executor Definitions
+# https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
+# **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
+#             (Using the tag in not necessary when pinning by ID, but include it anyway for documentation purposes.)
+# **NOTE 2**: If you change the version of the docker images, also change the `cache_key` suffix.
+# **NOTE 3**: If you change the version of the `*-browsers` docker image, make sure the
+#             `CI_CHROMEDRIVER_VERSION_ARG` env var (in `.circleci/env.sh`) points to a ChromeDriver
+#             version that is compatible with the Chrome version in the image.
+executors:
+  action-executor:
+    parameters:
+      resource_class:
+        type: string
+        default: medium
+    docker:
+      - image: circleci/node:10.16@sha256:75c05084fff4afa3683a03c5a04a4a3ad95c536ff2439d8fe14e7e1f5c58b09a
+    resource_class: << parameters.resource_class >>
+    working_directory: ~/ng
+
+  browsers-executor:
+    parameters:
+      resource_class:
+        type: string
+        default: medium
+    docker:
+      # The browser docker image comes with Chrome and Firefox preinstalled. This is just
+      # needed for jobs that run tests without Bazel. Bazel runs tests with browsers that will be
+      # fetched by the Webtesting rules. Therefore for jobs that run tests with Bazel, we don't need a
+      # docker image with browsers pre-installed.
+      - image: circleci/node:10.16-browsers@sha256:d2a96fe1cbef51257ee626b5f645e64dade3e886f00ba9cb7e8ea65b4efe8db1
+    resource_class: << parameters.resource_class >>
+    working_directory: ~/ng
+
+  windows-executor:
+    working_directory: ~/ng
+    resource_class: windows.medium
+    # CircleCI windows VMs do have the GitBash shell available:
+    # https://github.com/CircleCI-Public/windows-preview-docs#shells
+    # But in this specific case we really should not use it because Bazel must not be ran from
+    # GitBash. These issues discuss why:
+    # https://github.com/bazelbuild/bazel/issues/5751
+    # https://github.com/bazelbuild/bazel/issues/5724#issuecomment-410194038
+    # https://github.com/bazelbuild/bazel/issues/6339#issuecomment-441600879
+    shell: powershell.exe -ExecutionPolicy Bypass
+    machine:
+      # Windows preview image that includes the following:
+      # - Visual Studio 2019 build tools
+      # - Node 12
+      # - yarn 1.17
+      # - Python 3 3.7.4
+      image: windows-server-2019-vs2019:201908-02
+
 jobs:
   setup:
-    <<: *job_defaults
+    executor: action-executor
     steps:
       - checkout
       - *post_checkout
@@ -224,7 +244,7 @@ jobs:
             - ./bazel_repository_cache
 
   lint:
-    <<: *job_defaults
+    executor: action-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -239,8 +259,9 @@ jobs:
       - run: node tools/verify-codeownership
 
   test:
-    <<: *job_defaults
-    resource_class: xlarge
+    executor:
+      name: action-executor
+      resource_class: xlarge
     steps:
       - *attach_workspace
       - *init_environment
@@ -253,8 +274,9 @@ jobs:
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
-    <<: *job_defaults
-    resource_class: xlarge
+    executor:
+      name: action-executor
+      resource_class: xlarge
     steps:
       - *attach_workspace
       - *init_environment
@@ -293,11 +315,12 @@ jobs:
   #
   # NOTE: This is currently limited to master builds only. See the `default_workflow` configuration.
   test_saucelabs_bazel:
-    <<: *job_defaults
-    # In order to avoid the bottleneck of having a slow host machine, we acquire a better
-    # container for this job. This is necessary because we launch a lot of browsers concurrently
-    # and therefore the tunnel and Karma need to process a lot of file requests and tests.
-    resource_class: xlarge
+    executor:
+      name: action-executor
+      # In order to avoid the bottleneck of having a slow host machine, we acquire a better
+      # container for this job. This is necessary because we launch a lot of browsers concurrently
+      # and therefore the tunnel and Karma need to process a lot of file requests and tests.
+      resource_class: xlarge
     steps:
       - *attach_workspace
       - *init_environment
@@ -321,10 +344,8 @@ jobs:
       - *notify_dev_infra_on_fail
 
   test_aio:
-    <<: *job_defaults
-    docker:
-      # Needed because the AIO tests and the PWA score test depend on Chrome being available.
-      - image: *browsers_docker_image
+    # Needed because the AIO tests and the PWA score test depend on Chrome being available.
+    executor: browsers-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -346,10 +367,8 @@ jobs:
       - run: yarn --cwd aio redirects-test
 
   deploy_aio:
-    <<: *job_defaults
-    docker:
     # Needed because before deploying the deploy-production script runs the PWA score tests.
-    - image: *browsers_docker_image
+    executor: browsers-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -358,10 +377,8 @@ jobs:
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
-    <<: *job_defaults
-    docker:
-      # Needed because the AIO tests and the PWA score test depend on Chrome being available.
-      - image: *browsers_docker_image
+    # Needed because the AIO tests and the PWA score test depend on Chrome being available.
+    executor: browsers-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -377,10 +394,8 @@ jobs:
       - run: yarn --cwd aio payload-size aio-local
 
   test_aio_local_ivy:
-    <<: *job_defaults
-    docker:
-      # Needed because the AIO tests and the PWA score test depend on Chrome being available.
-      - image: *browsers_docker_image
+    # Needed because the AIO tests and the PWA score test depend on Chrome being available.
+    executor: browsers-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -396,7 +411,7 @@ jobs:
       - run: yarn --cwd aio payload-size aio-local-ivy
 
   test_aio_tools:
-    <<: *job_defaults
+    executor: action-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -408,12 +423,11 @@ jobs:
       - run: ./aio/aio-builds-setup/scripts/test.sh
 
   test_docs_examples:
-    <<: *job_defaults
-    docker:
+    executor:
       # Needed because the example e2e tests depend on Chrome.
-      - image: *browsers_docker_image
+      name: browsers-executor
+      resource_class: xlarge
     parallelism: 4
-    resource_class: xlarge
     steps:
       - *attach_workspace
       - *init_environment
@@ -425,11 +439,10 @@ jobs:
       - run: yarn --cwd aio example-e2e --setup --local --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --retry 2
 
   test_docs_examples_ivy:
-    <<: *job_defaults
-    docker:
+    executor:
       # Needed because the example e2e tests depend on Chrome.
-      - image: *browsers_docker_image
-    resource_class: xlarge
+      name: browsers-executor
+      resource_class: xlarge
     # We increase the parallelism here to five while the "test_docs_examples" job runs with
     # a parallelism of four. This is necessary because this job also need to run NGCC which
     # takes up more time and we don't want these jobs to impact the overall CI turnaround.
@@ -452,7 +465,7 @@ jobs:
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
-    <<: *job_defaults
+    executor: action-executor
     environment:
        AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
@@ -468,10 +481,8 @@ jobs:
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   test_aio_preview:
-    <<: *job_defaults
-    docker:
-      # Needed because the test-preview script runs e2e tests and the PWA score test with Chrome.
-      - image: *browsers_docker_image
+    # Needed because the test-preview script runs e2e tests and the PWA score test with Chrome.
+    executor: browsers-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -490,8 +501,9 @@ jobs:
 
   # Build the view engine npm packages. No new jobs should depend on this.
   build-npm-packages:
-    <<: *job_defaults
-    resource_class: xlarge
+    executor:
+      name: action-executor
+      resource_class: xlarge
     steps:
       - *attach_workspace
       - *init_environment
@@ -516,8 +528,9 @@ jobs:
 
   # Build the ivy npm packages.
   build-ivy-npm-packages:
-    <<: *job_defaults
-    resource_class: xlarge
+    executor:
+      name: action-executor
+      resource_class: xlarge
     steps:
       - *attach_workspace
       - *init_environment
@@ -539,15 +552,14 @@ jobs:
   # need to re-run manually should be alleviated.
   # See comments inside the integration/run_tests.sh script.
   integration_test:
-    <<: *job_defaults
-    parallelism: 4
-    docker:
+    executor:
       # Needed because the integration tests expect Chrome to be installed (e.g cli-hello-world)
-      - image: *browsers_docker_image
-    # Note: we run Bazel in one of the integration tests, and it can consume >2G
-    # of memory. Together with the system under test, this can exhaust the RAM
-    # on a 4G worker so we use a larger machine here too.
-    resource_class: xlarge
+      name: browsers-executor
+      # Note: we run Bazel in one of the integration tests, and it can consume >2G
+      # of memory. Together with the system under test, this can exhaust the RAM
+      # on a 4G worker so we use a larger machine here too.
+      resource_class: xlarge
+    parallelism: 4
     steps:
       - *attach_workspace
       - *init_environment
@@ -558,7 +570,7 @@ jobs:
   # This job updates the content of repos like github.com/angular/core-builds
   # for every green build on angular/angular.
   publish_snapshot:
-    <<: *job_defaults
+    executor: action-executor
     steps:
       # See below - ideally this job should not trigger for non-upstream builds.
       # But since it does, we have to check this condition.
@@ -587,11 +599,9 @@ jobs:
       - run: ./scripts/ci/publish-build-artifacts.sh
 
   aio_monitoring_stable:
-    <<: *job_defaults
-    docker:
-      # This job needs Chrome to be globally installed because the tests run with Protractor
-      # which does not load the browser through the Bazel webtesting rules.
-      - image: *browsers_docker_image
+    # This job needs Chrome to be globally installed because the tests run with Protractor
+    # which does not load the browser through the Bazel webtesting rules.
+    executor: browsers-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -608,11 +618,9 @@ jobs:
       - *notify_dev_infra_on_fail
 
   aio_monitoring_next:
-    <<: *job_defaults
-    docker:
-      # This job needs Chrome to be globally installed because the tests run with Protractor
-      # which does not load the browser through the Bazel webtesting rules.
-      - image: *browsers_docker_image
+    # This job needs Chrome to be globally installed because the tests run with Protractor
+    # which does not load the browser through the Bazel webtesting rules.
+    executor: browsers-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -623,11 +631,12 @@ jobs:
       - *notify_dev_infra_on_fail
 
   legacy-unit-tests-saucelabs:
-    <<: *job_defaults
-    # In order to avoid the bottleneck of having a slow host machine, we acquire a better
-    # container for this job. This is necessary because we launch a lot of browsers concurrently
-    # and therefore the tunnel and Karma need to process a lot of file requests and tests.
-    resource_class: xlarge
+    executor:
+      name: action-executor
+      # In order to avoid the bottleneck of having a slow host machine, we acquire a better
+      # container for this job. This is necessary because we launch a lot of browsers concurrently
+      # and therefore the tunnel and Karma need to process a lot of file requests and tests.
+      resource_class: xlarge
     steps:
       - *attach_workspace
       - *init_environment
@@ -649,7 +658,7 @@ jobs:
       - run: ./scripts/saucelabs/stop-tunnel.sh
 
   legacy-misc-tests:
-    <<: *job_defaults
+    executor: action-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -661,10 +670,9 @@ jobs:
   # Job to run unit tests from angular/material2. Needs a browser since all
   # component unit tests assume they're running in the browser environment.
   material-unit-tests:
-    <<: *job_defaults
-    resource_class: xlarge
-    docker:
-      - image: *browsers_docker_image
+    executor:
+      name: browsers-executor
+      resource_class: xlarge
     steps:
       - *attach_workspace
       - *init_environment
@@ -700,7 +708,7 @@ jobs:
           command: ./scripts/ci/run_angular_material_unit_tests.sh
 
   test_zonejs:
-    <<: *job_defaults
+    executor: action-executor
     steps:
       - *attach_workspace
       - *init_environment
@@ -722,7 +730,7 @@ jobs:
   # - windows needs its own cache key because binaries in node_modules are different.
   # - windows might need its own workspace for the same reason.
   test_win:
-    <<: *job_defaults_win
+    executor: windows-executor
     steps:
       - checkout
       - *init_environment_win
@@ -748,7 +756,7 @@ jobs:
       #       - "node_modules"
       #       - "C:/Users/circleci/bazel_repository_cache"
   test_ivy_aot_win:
-    <<: *job_defaults_win
+    executor: windows-executor
     steps:
       - checkout
       - *init_environment_win
