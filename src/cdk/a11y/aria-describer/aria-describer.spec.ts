@@ -226,6 +226,18 @@ describe('AriaDescriber', () => {
         'Expected description node to still be in the DOM after it is no longer being used.');
   });
 
+  it('should remove the aria-describedby attribute if there are no more messages', () => {
+    const element = component.element1;
+
+    expect(element.hasAttribute('aria-describedby')).toBe(false);
+
+    ariaDescriber.describe(component.element1, 'Message');
+    expect(element.hasAttribute('aria-describedby')).toBe(true);
+
+    ariaDescriber.removeDescription(component.element1, 'Message');
+    expect(element.hasAttribute('aria-describedby')).toBe(false);
+  });
+
 });
 
 function getMessagesContainer() {

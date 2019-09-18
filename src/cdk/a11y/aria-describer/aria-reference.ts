@@ -29,7 +29,11 @@ export function removeAriaReferencedId(el: Element, attr: string, id: string) {
   const ids = getAriaReferenceIds(el, attr);
   const filteredIds = ids.filter(val => val != id.trim());
 
-  el.setAttribute(attr, filteredIds.join(ID_DELIMINATOR));
+  if (filteredIds.length) {
+    el.setAttribute(attr, filteredIds.join(ID_DELIMINATOR));
+  } else {
+    el.removeAttribute(attr);
+  }
 }
 
 /**

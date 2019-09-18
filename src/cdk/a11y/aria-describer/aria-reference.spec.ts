@@ -62,7 +62,8 @@ describe('AriaReference', () => {
    * value
    */
   function expectIds(attr: string, ids: string[]) {
+    const value = testElement!.getAttribute(attr);
     expect(getAriaReferenceIds(testElement!, attr)).toEqual(ids);
-    expect(testElement!.getAttribute(attr)).toBe(ids.length ? ids.join(' ') : '');
+    ids.length ? expect(value).toBe(ids.join(' ')) : expect(value).toBeFalsy();
   }
 });
