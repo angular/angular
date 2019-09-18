@@ -136,6 +136,8 @@ System.config({
     '@angular/material/radio/testing/shared.spec': 'dist/packages/material/radio/testing/shared.spec.js',
     '@angular/material/select': 'dist/packages/material/select/index.js',
     '@angular/material/sidenav': 'dist/packages/material/sidenav/index.js',
+    '@angular/material/sidenav/testing': 'dist/packages/material/sidenav/testing/index.js',
+    '@angular/material/sidenav/testing/shared.spec': 'dist/packages/material/sidenav/testing/shared.spec.js',
     '@angular/material/slide-toggle': 'dist/packages/material/slide-toggle/index.js',
     '@angular/material/slide-toggle/testing': 'dist/packages/material/slide-toggle/testing/index.js',
     '@angular/material/slide-toggle/testing/shared.spec': 'dist/packages/material/slide-toggle/testing/shared.spec.js',
