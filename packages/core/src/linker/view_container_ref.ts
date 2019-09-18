@@ -18,7 +18,6 @@ import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
 
 
-
 /**
  * Represents a container where one or more views can be attached to a component.
  *
