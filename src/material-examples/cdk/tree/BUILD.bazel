@@ -12,6 +12,7 @@ ng_module(
     module_name = "@angular/material-examples/cdk/tree",
     deps = [
         "//src/cdk/tree",
+        "//src/material/button",
         "//src/material/icon",
     ],
 )

@@ -11,6 +11,7 @@ ng_module(
     ]),
     module_name = "@angular/material-examples/material/expansion",
     deps = [
+        "//src/material/button",
         "//src/material/datepicker",
         "//src/material/expansion",
         "//src/material/icon",
