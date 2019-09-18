@@ -533,7 +533,7 @@ function getContext(tNode: TNode, isClassBased: boolean): TStylingContext {
     const hasDirectives = isDirectiveHost(tNode);
     context = allocTStylingContext(context as StylingMapArray | null, hasDirectives);
     if (ngDevMode) {
-      attachStylingDebugObject(context as TStylingContext);
+      attachStylingDebugObject(context as TStylingContext, isClassBased);
     }
 
     if (isClassBased) {
