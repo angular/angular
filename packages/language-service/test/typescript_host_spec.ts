@@ -184,7 +184,9 @@ describe('TypeScriptServiceHost', () => {
 
     expect(directiveDecl).toBeDefined();
     expect(directiveDecl !.name).toBeDefined();
-    const directiveSymbol = ngLSHost.getNodeStaticSymbol(directiveDecl !.name !);
+    const fileName = directiveDecl !.getSourceFile().fileName;
+    const symbolName = directiveDecl !.name !.getText();
+    const directiveSymbol = ngLSHost.getStaticSymbol(fileName, symbolName);
     expect(directiveSymbol).toBeDefined();
     expect(directiveSymbol !.name).toBe('AppComponent');
   });

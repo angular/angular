@@ -442,12 +442,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   /**
-   * Gets the StaticSymbol of a TypeScript node.
-   * @param node TypeScript node to get static symbol of
-   * @return Angular StaticSymbol of the TypeScript node, if any
+   * Gets a StaticSymbol from a file and symbol name.
+   * @return Angular StaticSymbol matching the file and name, if any
    */
-  getNodeStaticSymbol(node: ts.Node): StaticSymbol|undefined {
-    return this.reflector.getStaticSymbol(node.getSourceFile().fileName, node.getText());
+  getStaticSymbol(file: string, name: string): StaticSymbol|undefined {
+    return this.reflector.getStaticSymbol(file, name);
   }
 
   /**
