@@ -144,7 +144,7 @@ export const CURRENCIES_EN:
       'XAF': ['FCFA', undefined, 0],
       'XCD': ['EC$', '$'],
       'XOF': ['CFA', undefined, 0],
-      'XPF': ['CFPF', undefined, 0],
+      'XPF': ['CFPF', '₣', 0],
       'YER': [undefined, undefined, 0],
       'ZAR': [undefined, 'R'],
       'ZMK': [undefined, undefined, 0],
