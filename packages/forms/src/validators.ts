@@ -190,6 +190,10 @@ export class Validators {
   /**
    * @description
    * Validator that requires the control's value pass an email validation test.
+   * Tests the value using a `regex` pattern optimized for general usage, based on the standard
+   * [WHATWG HTML specification](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address).
+   *
+   * Use `pattern()` to validate against a different pattern.
    *
    * @usageNotes
    *
