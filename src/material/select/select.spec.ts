@@ -3905,7 +3905,10 @@ describe('MatSelect', () => {
   });
 
   describe('with multiple selection', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([MultiSelect])));
+    beforeEach(async(() => configureMatSelectTestingModule([
+      MultiSelect,
+      MultiSelectWithLotsOfOptions
+    ])));
 
     let fixture: ComponentFixture<MultiSelect>;
     let testInstance: MultiSelect;
@@ -4285,6 +4288,18 @@ describe('MatSelect', () => {
       expect(options.some(option => option.selected)).toBe(false);
       expect(testInstance.control.value).toEqual([]);
     });
+
+    it('should not throw when selecting a large amount of options', fakeAsync(() => {
+      fixture.destroy();
+
+      const lotsOfOptionsFixture = TestBed.createComponent(MultiSelectWithLotsOfOptions);
+
+      expect(() => {
+        lotsOfOptionsFixture.componentInstance.checkAll();
+        lotsOfOptionsFixture.detectChanges();
+        flush();
+      }).not.toThrow();
+    }));
 
   });
 });
@@ -5061,4 +5076,26 @@ class SelectWithFormFieldLabel {
 })
 class SelectWithNgIfAndLabel {
   showSelect = true;
+}
+
+@Component({
+  template: `
+    <mat-form-field>
+      <mat-select multiple [ngModel]="value">
+        <mat-option *ngFor="let item of items" [value]="item">{{item}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  `
+})
+class MultiSelectWithLotsOfOptions {
+  items = new Array(1000).fill(0).map((_, i) => i);
+  value: number[] = [];
+
+  checkAll() {
+    this.value = [...this.items];
+  }
+
+  uncheckAll() {
+    this.value = [];
+  }
 }
