@@ -135,6 +135,8 @@ commands:
             curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
 # Job definitions
+# Jobs can include parameters that are passed in the workflow job invocation.
+# https://circleci.com/docs/2.0/reusing-config/#authoring-parameterized-jobs
 jobs:
   setup:
     executor: action-executor
@@ -312,13 +314,17 @@ jobs:
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
+    parameters:
+      ivy:
+        type: boolean
+        default: false
     # Needed because the AIO tests and the PWA score test depend on Chrome being available.
     executor: browsers-executor
     steps:
       - custom_attach_workspace
       - init_environment
         # Build aio (with local Angular packages)
-      - run: yarn --cwd aio build-local-ci
+      - run: yarn --cwd aio build-local<<# parameters.ivy >>-with-ivy<</ parameters.ivy >>-ci
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
@@ -326,24 +332,7 @@ jobs:
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size aio-local
-
-  test_aio_local_ivy:
-    # Needed because the AIO tests and the PWA score test depend on Chrome being available.
-    executor: browsers-executor
-    steps:
-      - custom_attach_workspace
-      - init_environment
-        # Build aio with Ivy (using local Angular packages)
-      - run: yarn --cwd aio build-with-ivy-ci
-        # Run unit tests
-      - run: yarn --cwd aio test --progress=false --watch=false
-        # Run e2e tests
-      - run: yarn --cwd aio e2e --configuration=ci
-        # Run PWA-score tests
-      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
-        # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size aio-local-ivy
+      - run: yarn --cwd aio payload-size aio-local<<# parameters.ivy >>-ivy<</ parameters.ivy >>
 
   test_aio_tools:
     executor: action-executor
@@ -358,45 +347,33 @@ jobs:
       - run: ./aio/aio-builds-setup/scripts/test.sh
 
   test_docs_examples:
+    parameters:
+      ivy:
+        type: boolean
+        default: false
     executor:
       # Needed because the example e2e tests depend on Chrome.
       name: browsers-executor
       resource_class: xlarge
-    parallelism: 4
-    steps:
-      - custom_attach_workspace
-      - init_environment
-        # Install aio
-      - run: yarn --cwd aio install --frozen-lockfile --non-interactive
-        # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
-        # Since the parallelism is set to "3", there will be three parallel CircleCI containers
-        # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --retry 2
-
-  test_docs_examples_ivy:
-    executor:
-      # Needed because the example e2e tests depend on Chrome.
-      name: browsers-executor
-      resource_class: xlarge
-    # We increase the parallelism here to five while the "test_docs_examples" job runs with
-    # a parallelism of four. This is necessary because this job also need to run NGCC which
-    # takes up more time and we don't want these jobs to impact the overall CI turnaround.
     parallelism: 5
     steps:
       - custom_attach_workspace
       - init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
-        # Rename the Ivy packages dist folder to "dist/packages-dist" as the AIO
-        # package installer picks up the locally built packages from that location.
-        # *Note*: We could also adjust the packages installer, but given we won't have
-        # two different folders of Angular distributions in the future, we should keep
-        # the packages installer unchanged.
-      - run: mv dist/packages-dist-ivy-aot dist/packages-dist
-        # Run examples tests with ivy. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
-        # Since the parallelism is set to "3", there will be three parallel CircleCI containers
-        # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local --ivy --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --retry 2
+      - when:
+          condition: << parameters.ivy >>
+          steps:
+              # Rename the Ivy packages dist folder to "dist/packages-dist" as the AIO
+              # package installer picks up the locally built packages from that location.
+              # *Note*: We could also adjust the packages installer, but given we won't have
+              # two different folders of Angular distributions in the future, we should keep
+              # the packages installer unchanged.
+            - run: mv dist/packages-dist-ivy-aot dist/packages-dist
+        # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
+        # Since the parallelism is set to "5", there will be five parallel CircleCI containers.
+        # with either "0", "1", etc as node index. This can be passed to the "--shard" argument.
+      - run: yarn --cwd aio example-e2e --setup --local <<# parameters.ivy >>--ivy<</ parameters.ivy >> --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --retry 2
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
@@ -705,7 +682,9 @@ workflows:
       - test_aio_local:
           requires:
             - build-npm-packages
-      - test_aio_local_ivy:
+      - test_aio_local:
+          name: test_aio_local_ivy
+          ivy: true
           requires:
             - build-npm-packages
       - test_aio_tools:
@@ -714,7 +693,9 @@ workflows:
       - test_docs_examples:
           requires:
             - build-npm-packages
-      - test_docs_examples_ivy:
+      - test_docs_examples:
+          name: test_docs_examples_ivy
+          ivy: true
           requires:
             - build-ivy-npm-packages
       - aio_preview:
