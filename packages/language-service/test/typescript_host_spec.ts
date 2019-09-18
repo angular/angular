@@ -171,40 +171,21 @@ describe('TypeScriptServiceHost', () => {
     expect(newModules).toBe(oldModules);
   });
 
-  describe('getting the NgModule of a Directive', () => {
-    it('should get the correct NgModule for a Directive StaticSymbol', () => {
-      const tsLSHost = new MockTypescriptHost(['/app/app.component.ts', '/app/main.ts'], toh);
-      const tsLS = ts.createLanguageService(tsLSHost);
-      const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
-      ngLSHost.getAnalyzedModules();  // modules are analyzed lazily
-      const declarations = ngLSHost.getDeclarations('/app/app.component.ts');
-
-      const directive = declarations.find(d => d.type.name === 'AppComponent');
-      expect(directive).toBeDefined();
-      const ngModule = ngLSHost.getDirectiveModule(directive !.type);
-      expect(ngModule).toBeDefined();
-      const ngModuleRef = ngModule !.type.reference;
-      expect(ngModuleRef.constructor.name).toBe('StaticSymbol');
-      expect(ngModuleRef.name).toBe('AppModule');
+  it('should get the correct StaticSymbol for a Directive', () => {
+    const tsLSHost = new MockTypescriptHost(['/app/app.component.ts', '/app/main.ts'], toh);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    ngLSHost.getAnalyzedModules();  // modules are analyzed lazily
+    const sf = ngLSHost.getSourceFile('/app/app.component.ts');
+    expect(sf).toBeDefined();
+    const directiveDecl = sf !.forEachChild(n => {
+      if (ts.isClassDeclaration(n) && n.name && n.name.text === 'AppComponent') return n;
     });
 
-    it('should get the correct NgModule for a Directive class declaration', () => {
-      const tsLSHost = new MockTypescriptHost(['/app/app.component.ts', '/app/main.ts'], toh);
-      const tsLS = ts.createLanguageService(tsLSHost);
-      const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
-      ngLSHost.getAnalyzedModules();  // modules are analyzed lazily
-      const sf = ngLSHost.getSourceFile('/app/app.component.ts');
-      expect(sf).toBeDefined();
-      const directiveDecl = sf !.forEachChild(n => {
-        if (ts.isClassDeclaration(n) && n.name && n.name.text === 'AppComponent') return n;
-      });
-
-      expect(directiveDecl).toBeDefined();
-      const ngModule = ngLSHost.getDirectiveModule(directiveDecl !);
-      expect(ngModule).toBeDefined();
-      const ngModuleRef = ngModule !.type.reference;
-      expect(ngModuleRef.constructor.name).toBe('StaticSymbol');
-      expect(ngModuleRef.name).toBe('AppModule');
-    });
+    expect(directiveDecl).toBeDefined();
+    expect(directiveDecl !.name).toBeDefined();
+    const directiveSymbol = ngLSHost.getNodeStaticSymbol(directiveDecl !.name !);
+    expect(directiveSymbol).toBeDefined();
+    expect(directiveSymbol !.name).toBe('AppComponent');
   });
 });

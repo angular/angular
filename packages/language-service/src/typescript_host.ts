@@ -442,18 +442,12 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   /**
-   * Gets the NgModule of a Directive.
-   * @param directive directive TypeScript declaration or Angular StaticSymbol
-   * @return NgModule the directive belongs to, if any
+   * Gets the StaticSymbol of a TypeScript node.
+   * @param node TypeScript node to get static symbol of
+   * @return Angular StaticSymbol of the TypeScript node, if any
    */
-  getDirectiveModule(directive: ts.ClassDeclaration|StaticSymbol): CompileNgModuleMetadata
-      |undefined {
-    if (!(directive instanceof StaticSymbol)) {
-      if (!directive.name) return;
-      directive =
-          this.reflector.getStaticSymbol(directive.getSourceFile().fileName, directive.name.text);
-    }
-    return this.analyzedModules.ngModuleByPipeOrDirective.get(directive);
+  getNodeStaticSymbol(node: ts.Node): StaticSymbol|undefined {
+    return this.reflector.getStaticSymbol(node.getSourceFile().fileName, node.getText());
   }
 
   /**
@@ -468,8 +462,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       schemas: [] as SchemaMetadata[],
     };
     // First find which NgModule the directive belongs to.
-    const ngModule =
-        this.getDirectiveModule(classSymbol) || findSuitableDefaultModule(this.analyzedModules);
+    const ngModule = this.analyzedModules.ngModuleByPipeOrDirective.get(classSymbol) ||
+        findSuitableDefaultModule(this.analyzedModules);
     if (!ngModule) {
       return result;
     }
