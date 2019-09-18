@@ -535,11 +535,11 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     const receiver: o.Expression = this._visit(ast.receiver, _Mode.Expression);
     const prevUsesImplicitReceiver = this.usesImplicitReceiver;
 
-    let varExpr: o.ReadPropExpr|null = null;
+    let varExpr: o.ReadPropExpr|o.ReadVarExpr|null = null;
     if (receiver === this._implicitReceiver) {
       const localExpr = this._getLocal(ast.name);
       if (localExpr) {
-        if (localExpr instanceof o.ReadPropExpr) {
+        if (localExpr instanceof o.ReadPropExpr || localExpr instanceof o.ReadVarExpr) {
           // If the local variable is a property read expression, it's a reference
           // to a 'context.property' value and will be used as the target of the
           // write expression.
