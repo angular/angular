@@ -8,7 +8,7 @@
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {SlideToggleHarnessFilters} from './slide-toggle-harness-filters';
+import {SlideToggleHarnessFilters} from '@angular/material/slide-toggle/testing';
 
 
 /**

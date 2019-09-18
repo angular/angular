@@ -4,53 +4,26 @@ import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {MatSlideToggleModule as MatMdcSlideToggleModule} from '../index';
-import {MatSlideToggleHarness} from './slide-toggle-harness';
-import {MatSlideToggleHarness as MatMdcSlideToggleHarness} from './mdc-slide-toggle-harness';
-
-
-let fixture: ComponentFixture<SlideToggleHarnessTest>;
-let loader: HarnessLoader;
-let slideToggleHarness: typeof MatSlideToggleHarness;
-
-describe('MatSlideToggleHarness', () => {
-  describe('non-MDC-based', () => {
-    beforeEach(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatSlideToggleModule, ReactiveFormsModule],
-        declarations: [SlideToggleHarnessTest],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(SlideToggleHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-      slideToggleHarness = MatSlideToggleHarness;
-    });
-
-    runTests();
-  });
-
-  describe('MDC-based', () => {
-    beforeEach(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatMdcSlideToggleModule, ReactiveFormsModule],
-        declarations: [SlideToggleHarnessTest],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(SlideToggleHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-      // Public APIs are the same as MatSlideToggleHarness, but cast is necessary because of
-      // different private fields.
-      slideToggleHarness = MatMdcSlideToggleHarness as any;
-    });
-
-    runTests();
-  });
-});
+import {MatSlideToggleHarness} from '@angular/material/slide-toggle/testing/slide-toggle-harness';
 
 /** Shared tests to run on both the original and MDC-based slide-toggles. */
-function runTests() {
+export function runHarnessTests(
+    slideToggleModule: typeof MatSlideToggleModule,
+    slideToggleHarness: typeof MatSlideToggleHarness) {
+  let fixture: ComponentFixture<SlideToggleHarnessTest>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [slideToggleModule, ReactiveFormsModule],
+      declarations: [SlideToggleHarnessTest],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SlideToggleHarnessTest);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
   it('should load all slide-toggle harnesses', async () => {
     const slideToggles = await loader.getAllHarnesses(slideToggleHarness);
     expect(slideToggles.length).toBe(2);
