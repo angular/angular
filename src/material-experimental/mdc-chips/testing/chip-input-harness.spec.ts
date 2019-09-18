@@ -3,7 +3,7 @@ import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '../index';
-import {MatChipInputHarness} from './chip-input';
+import {MatChipInputHarness} from './chip-input-harness';
 
 let fixture: ComponentFixture<ChipInputHarnessTest>;
 let loader: HarnessLoader;

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ChipListboxHarnessFilters} from './chip-harness-filters';
 import {MatChipOptionHarness} from './chip-option-harness';
 
 /**
@@ -15,6 +16,14 @@ import {MatChipOptionHarness} from './chip-option-harness';
  */
 export class MatChipListboxHarness extends ComponentHarness {
   static hostSelector = 'mat-chip-listbox';
+
+  /**
+   * Gets a `HarnessPredicate` that can be used to search for a chip listbox with specific
+   * attributes.
+   */
+  static with(options: ChipListboxHarnessFilters = {}): HarnessPredicate<MatChipListboxHarness> {
+    return new HarnessPredicate(MatChipListboxHarness, options);
+  }
 
   private _options = this.locatorForAll(MatChipOptionHarness);
 

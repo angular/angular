@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
     name = "mdc-chips",
@@ -9,7 +9,6 @@ ng_module(
         ["**/*.ts"],
         exclude = [
             "**/*.spec.ts",
-            "harness/**",
         ],
     ),
     assets = [":chips_scss"] + glob(["**/*.html"]),
@@ -23,17 +22,6 @@ ng_module(
         "@npm//@angular/forms",
         "@npm//@material/chips",
         "@npm//@material/ripple",
-    ],
-)
-
-ts_library(
-    name = "harness",
-    srcs = glob(
-        ["harness/**/*.ts"],
-        exclude = ["**/*.spec.ts"],
-    ),
-    deps = [
-        "//src/cdk/testing",
     ],
 )
 
@@ -66,7 +54,6 @@ ng_test_library(
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
-        ":harness",
         ":mdc-chips",
         "//src/cdk/a11y",
         "//src/cdk/bidi",
@@ -74,7 +61,6 @@ ng_test_library(
         "//src/cdk/platform",
         "//src/cdk/private/testing",
         "//src/cdk/testing",
-        "//src/cdk/testing/testbed",
         "//src/material/core",
         "//src/material/form-field",
         "//src/material/input",

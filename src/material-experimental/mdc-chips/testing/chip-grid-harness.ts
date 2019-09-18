@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ChipGridHarnessFilters} from './chip-harness-filters';
+import {MatChipInputHarness} from './chip-input-harness';
 import {MatChipRowHarness} from './chip-row-harness';
-import {MatChipInputHarness} from './chip-input';
 
 /**
  * Harness for interacting with a mat-chip-grid in tests.
@@ -16,6 +17,13 @@ import {MatChipInputHarness} from './chip-input';
  */
 export class MatChipGridHarness extends ComponentHarness {
   static hostSelector = 'mat-chip-grid';
+
+  /**
+   * Gets a `HarnessPredicate` that can be used to search for a chip grid with specific attributes.
+   */
+  static with(options: ChipGridHarnessFilters = {}): HarnessPredicate<MatChipGridHarness> {
+    return new HarnessPredicate(MatChipGridHarness, options);
+  }
 
   private _rows = this.locatorForAll(MatChipRowHarness);
   private _input = this.locatorFor(MatChipInputHarness);

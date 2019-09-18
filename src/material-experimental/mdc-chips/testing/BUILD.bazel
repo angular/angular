@@ -1,0 +1,39 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
+
+ng_module(
+    name = "testing",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/material-experimental/mdc-chips/testing",
+    deps = [
+        "//src/cdk/coercion",
+        "//src/cdk/testing",
+    ],
+)
+
+ng_test_library(
+    name = "unit_tests_lib",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":testing",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
+        "//src/material-experimental/mdc-chips",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    static_files = [
+        "@npm//:node_modules/@material/chips/dist/mdc.chips.js",
+        "@npm//:node_modules/@material/ripple/dist/mdc.ripple.js",
+    ],
+    deps = [
+        ":unit_tests_lib",
+        "//src/material-experimental:mdc_require_config.js",
+    ],
+)
