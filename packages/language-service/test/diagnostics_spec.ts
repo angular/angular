@@ -509,49 +509,41 @@ describe('diagnostics', () => {
     });
 
     it('should report diagnostic for missing template or templateUrl', () => {
-      const fileName = mockHost.addCode(`
+      const fileName = '/app/app.component.ts';
+      const content = mockHost.override(fileName, `
+        import {Component} from '@angular/core';
+
         @Component({
           selector: 'app-example',
         })
-        export class AppExample {}
-
-        @NgModule({
-          declarations: [AppExample],
-        })
-        export class AppModule {}`);
+        export class AppComponent {}`);
       const diags = ngLS.getDiagnostics(fileName);
-      const missingTemplateError = diags.find(
-          d => d.messageText === `Component 'AppExample' must have a template or templateUrl`);
-      expect(missingTemplateError).toBeDefined();
-
-      const {start, length} = missingTemplateError !;
-      const content = mockHost.getFileContent(fileName) !;
-      expect(start).toBe(content.lastIndexOf('Component'));
+      expect(diags.length).toBe(1);
+      const {file, messageText, start, length} = diags[0];
+      expect(file !.fileName).toBe(fileName);
+      expect(messageText).toBe(`Component 'AppComponent' must have a template or templateUrl`);
+      expect(start).toBe(content.indexOf(`@Component`) + 1);
       expect(length).toBe('Component'.length);
     });
 
     it('should report diagnostic for both template and templateUrl', () => {
-      const fileName = mockHost.addCode(`
+      const fileName = '/app/app.component.ts';
+      const content = mockHost.override(fileName, `
+        import {Component} from '@angular/core';
+
         @Component({
           selector: 'app-example',
           template: '<div></div>',
-          templateUrl: './example.html',
+          templateUrl: './test.ng',
         })
-        export class AppExample {}
-
-        @NgModule({
-          declarations: [AppExample],
-        })
-        export class AppModule {}`);
+        export class AppComponent {}`);
       const diags = ngLS.getDiagnostics(fileName);
-      const dupTemplateError = diags.find(
-          d => d.messageText ===
-              `Component 'AppExample' must not have both template and templateUrl`);
-      expect(dupTemplateError).toBeDefined();
-
-      const {start, length} = dupTemplateError !;
-      const content = mockHost.getFileContent(fileName) !;
-      expect(start).toBe(content.lastIndexOf('Component'));
+      expect(diags.length).toBe(1);
+      const {file, messageText, start, length} = diags[0];
+      expect(file !.fileName).toBe(fileName);
+      expect(messageText)
+          .toBe(`Component 'AppComponent' must not have both template and templateUrl`);
+      expect(start).toBe(content.indexOf(`@Component`) + 1);
       expect(length).toBe('Component'.length);
     });
 
