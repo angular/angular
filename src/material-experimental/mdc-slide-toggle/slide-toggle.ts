@@ -62,6 +62,8 @@ export class MatSlideToggleChange {
     'class': 'mat-mdc-slide-toggle',
     '[id]': 'id',
     '[attr.tabindex]': 'null',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
     '[class.mat-primary]': 'color == "primary"',
     '[class.mat-accent]': 'color == "accent"',
     '[class.mat-warn]': 'color == "warn"',

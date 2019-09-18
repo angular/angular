@@ -86,6 +86,8 @@ const _MatSlideToggleMixinBase:
     '[id]': 'id',
     // Needs to be `-1` so it can still receive programmatic focus.
     '[attr.tabindex]': 'disabled ? null : -1',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
     '[class.mat-checked]': 'checked',
     '[class.mat-disabled]': 'disabled',
     '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
