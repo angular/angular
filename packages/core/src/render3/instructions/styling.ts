@@ -498,7 +498,7 @@ function getContext(tNode: TNode, isClassBased: boolean): TStylingContext {
   if (!isStylingContext(context)) {
     context = allocTStylingContext(context as StylingMapArray | null);
     if (ngDevMode) {
-      attachStylingDebugObject(context as TStylingContext);
+      attachStylingDebugObject(context as TStylingContext, isClassBased);
     }
     if (isClassBased) {
       tNode.classes = context;

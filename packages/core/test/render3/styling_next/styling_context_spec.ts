@@ -12,7 +12,7 @@ import {DEFAULT_GUARD_MASK_VALUE, allocTStylingContext} from '../../../src/rende
 
 describe('styling context', () => {
   it('should register a series of entries into the context', () => {
-    const debug = makeContextWithDebug();
+    const debug = makeContextWithDebug(false);
     const context = debug.context;
     expect(debug.entries).toEqual({});
 
@@ -52,7 +52,7 @@ describe('styling context', () => {
   });
 
   it('should only register the same binding index once per property', () => {
-    const debug = makeContextWithDebug();
+    const debug = makeContextWithDebug(false);
     const context = debug.context;
     expect(debug.entries).toEqual({});
 
@@ -70,7 +70,7 @@ describe('styling context', () => {
   });
 
   it('should overwrite a default value for an entry only if it is non-null', () => {
-    const debug = makeContextWithDebug();
+    const debug = makeContextWithDebug(false);
     const context = debug.context;
 
     registerBinding(context, 1, 0, 'width', null);
@@ -109,9 +109,9 @@ describe('styling context', () => {
   });
 });
 
-function makeContextWithDebug() {
+function makeContextWithDebug(isClassBased: boolean) {
   const ctx = allocTStylingContext();
-  return attachStylingDebugObject(ctx);
+  return attachStylingDebugObject(ctx, isClassBased);
 }
 
 function buildGuardMask(...bindingIndices: number[]) {
