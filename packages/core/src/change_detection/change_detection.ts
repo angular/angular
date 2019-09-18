@@ -13,7 +13,6 @@ import {KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs
 
 export {WrappedValue, devModeEqual} from './change_detection_util';
 export {ChangeDetectorRef} from './change_detector_ref';
-debugger;
 export {ChangeDetectionStrategy, ChangeDetectorStatus, isDefaultChangeDetectionStrategy} from './constants';
 export {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
 export {DefaultIterableDiffer} from './differs/default_iterable_differ';
