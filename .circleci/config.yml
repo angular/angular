@@ -27,58 +27,35 @@ var_4: &cache_key_fallback v3-angular-node-10.16-
 var_3_win: &cache_key_win v4-angular-win-node-12.0-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
 var_4_win: &cache_key_win_fallback v4-angular-win-node-12.0-
 
-# Initializes the CI environment by setting up common environment variables.
-var_5: &init_environment
-  run:
-    name: Initializing environment (setting up variables, overwriting Yarn)
-    # Overwrite the yarn installed in the docker container with our own version.
-    command: |
-      ./.circleci/env.sh
-      ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.17.3/bin/yarn.js)
-      sudo chmod a+x $ourYarn
-      sudo ln -fs $ourYarn /usr/local/bin/yarn
-      echo "Yarn version: $(yarn --version)"
+# Cache key for the Material unit tests job. **Note** when updating the SHA in the cache keys,
+# also update the SHA for the "MATERIAL_REPO_COMMIT" environment variable.
+var_5: &material_unit_tests_cache_key v4-angular-material-2817c9e2faa4140342336987a692d5dd30bf24c2
+var_6: &material_unit_tests_cache_key_fallback v4-angular-material-
 
-      # Add GitHub to known hosts.
-      mkdir -p ~/.ssh
-      echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+# Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
+# `build-ivy-npm-packages`.
+# https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
+# https://circleci.com/blog/deep-diving-into-circleci-workspaces/
+var_7: &workspace_location ~/
 
-      # use git+ssh instead of https
-      git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
-      git config --global gc.auto 0 || true
+# Branch filter that can be specified for jobs that should only run on publish branches
+# (e.g. master or the patch branch)
+var_8: &publish_branches_filter
+  branches:
+    only:
+      - master
+      # e.g. 7.0.x, 7.1.x, etc.
+      - /\d+\.\d+\.x/
 
-var_4_win: &init_environment_win
-  run:
-    # Install Bazel pre-requisites that aren't in the preconfigured CircleCI Windows VM.
-    name: Setup windows node environment
-    command: ./.circleci/windows-env.ps1
+# Filter to ignore pull requests on a given job.
+var_9: &ignore_pull_requests
+  filters:
+    branches:
+      ignore:
+        - /pull\/.*/
 
-var_6: &setup_bazel_remote_execution
-  run:
-    name: "Setup bazel RBE remote execution"
-    command: |
-      # We need ensure that the same default digest is used for encoding and decoding
-      # with openssl. Openssl versions might have different default digests which can
-      # cause decryption failures based on the openssl version. https://stackoverflow.com/a/39641378/4317734
-      openssl aes-256-cbc -d -in .circleci/gcp_token -md md5 -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials
-      echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV
-      ./.circleci/setup-rbe.sh .bazelrc.user
-
-# After checkout, rebase on top of target branch.
-var_7: &post_checkout
-  run:
-    name: Rebase PR on target branch
-    command: >
-      if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
-        # User is required for rebase.
-        git config user.name "angular-ci"
-        git config user.email "angular-ci"
-        # Rebase PR on top of target branch.
-        node tools/rebase-pr.js angular/angular ${CIRCLE_PR_NUMBER}
-      else
-        echo "This build is not over a PR, nothing to do."
-      fi
-var_7_win: &post_checkout_win
+# TODO: move these anchors into a windows setup job when CircleCI fixes cache/workflows on win.
+var_8_win: &post_checkout_win
   run:
     name: Rebase PR on target branch
     command: >
@@ -90,79 +67,11 @@ var_7_win: &post_checkout_win
         echo "This build is not over a PR, nothing to do."
       }
 
-var_8: &yarn_install
-  run:
-    name: Running Yarn install
-    command: |
-      # Yarn's requests sometimes take more than 10mins to complete.
-      # Print something to stdout, to prevent CircleCI from failing due to not output.
-      while true; do sleep 60; echo "[`date`] Keeping alive..."; done &
-      KEEP_ALIVE_PID=$!
-      yarn install --frozen-lockfile --non-interactive
-      kill $KEEP_ALIVE_PID
-
-var_9: &setup_circleci_bazel_config
-  run:
-    name: Setting up CircleCI bazel configuration
-    command: sudo cp .circleci/bazel.linux.rc $HOME/.bazelrc
-
-var_9_win: &setup_circleci_bazel_config_win
-  run:
-    name: Setting up CircleCI bazel configuration
-    command: copy .circleci\bazel.windows.rc $env:USERPROFILE\.bazelrc
-
-var_10: &restore_cache
-  restore_cache:
-    keys:
-      - *cache_key
-      - *cache_key_fallback
 var_10_win: &restore_cache_win
   restore_cache:
     keys:
       - *cache_key_win
       - *cache_key_fallback_win
-
-# Branch filter that can be specified for jobs that should only run on publish branches
-# (e.g. master or the patch branch)
-var_11: &publish_branches_filter
-  branches:
-    only:
-      - master
-      # e.g. 7.0.x, 7.1.x, etc.
-      - /\d+\.\d+\.x/
-
-# Workspace initially persisted by the `install` job, and then enhanced by `test_aio` and
-# `build-npm-packages`.
-# https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
-# https://circleci.com/blog/deep-diving-into-circleci-workspaces/
-var_12: &attach_workspace
-  attach_workspace:
-    at: ~/
-
-var_13: &notify_caretaker_on_fail
-  run:
-    when: on_fail
-    name: Notify caretaker about failure
-    # `$SLACK_CARETAKER_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
-    # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
-    command: |
-      notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job for $CIRCLE_BRANCH branch failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
-      curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_CARETAKER_WEBHOOK_URL
-
-var_14: &notify_dev_infra_on_fail
-  run:
-    when: on_fail
-    name: Notify dev-infra about failure
-    # `$SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
-    # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
-    command: |
-      notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job for $CIRCLE_BRANCH branch failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
-      curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
-
-# Cache key for the Material unit tests job. **Note** when updating the SHA in the cache keys,
-# also update the SHA for the "MATERIAL_REPO_COMMIT" environment variable.
-var_15: &material_unit_tests_cache_key v4-angular-material-2817c9e2faa4140342336987a692d5dd30bf24c2
-var_16: &material_unit_tests_cache_key_short v4-angular-material
 
 
 # Executor Definitions
@@ -217,16 +126,114 @@ executors:
       # - Python 3 3.7.4
       image: windows-server-2019-vs2019:201908-02
 
+# Command Definitions
+# https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-commands
+commands:
+  custom_attach_workspace:
+    description: Attach workspace at a predefined location
+    steps:
+      - attach_workspace:
+          at: *workspace_location
+
+  # Initializes the CI environment by setting up common environment variables.
+  init_environment:
+    description: Initializing environment (setting up variables, overwriting Yarn)
+    steps:
+      - run: ./.circleci/env.sh
+      # Overwrite the yarn installed in the docker container with our own version.
+      - run: |
+          ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.17.3/bin/yarn.js)
+          sudo chmod a+x $ourYarn
+          sudo ln -fs $ourYarn /usr/local/bin/yarn
+      - run: echo "Yarn version $(yarn --version)"
+      # Configure git as the CircleCI `checkout` command does.
+      # This is needed because we only checkout on the setup job.
+      # Add GitHub to known hosts
+      - run: mkdir -p ~/.ssh
+      - run: echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+      - run: git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
+      - run: git config --global gc.auto 0 || true
+
+  init_environment_win:
+    description: Setup windows node environment
+    steps:
+      # Install Bazel pre-requisites that aren't in the preconfigured CircleCI Windows VM.
+      - run: ./.circleci/windows-env.ps1
+      - run: node --version
+      - run: yarn --version
+
+  setup_circleci_bazel_config:
+    description: Set up CircleCI bazel configuration on Linux
+    steps:
+      - run: sudo cp .circleci/bazel.linux.rc $HOME/.bazelrc
+
+  setup_circleci_bazel_config_win:
+    description: Set up CircleCI bazel configuration on Windows
+    steps:
+      - run: copy .circleci\bazel.windows.rc $env:USERPROFILE\.bazelrc
+
+  setup_bazel_rbe:
+    description: Setup bazel RBE remote execution
+    steps:
+      # We need ensure that the same default digest is used for encoding and decoding
+      # with openssl. Openssl versions might have different default digests which can
+      # cause decryption failures based on the openssl version. https://stackoverflow.com/a/39641378/4317734
+      - run: openssl aes-256-cbc -d -in .circleci/gcp_token -md md5 -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials
+      - run: echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV
+      - run: ./.circleci/setup-rbe.sh .bazelrc.user
+
+  notify_caretaker_on_fail:
+    description: Notify caretaker about failure
+    steps:
+      - run:
+          when: on_fail
+          # `$SLACK_CARETAKER_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
+          # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
+          command: |
+            notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job for $CIRCLE_BRANCH branch failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
+            curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_CARETAKER_WEBHOOK_URL
+
+  notify_dev_infra_on_fail:
+    description: Notify dev-infra about failure
+    steps:
+      - run:
+          when: on_fail
+          # `$SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
+          # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
+          command: |
+            notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job for $CIRCLE_BRANCH branch failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
+            curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
+
+# Job definitions
 jobs:
   setup:
     executor: action-executor
     steps:
       - checkout
-      - *post_checkout
+      - run:
+          name: Rebase PR on target branch
+          # After checkout, rebase on top of target branch.
+          command: >
+            if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
+              # User is required for rebase.
+              git config user.name "angular-ci"
+              git config user.email "angular-ci"
+              # Rebase PR on top of target branch.
+              node tools/rebase-pr.js angular/angular ${CIRCLE_PR_NUMBER}
+            else
+              echo "This build is not over a PR, nothing to do."
+            fi
       # This cache is saved in the build-npm-packages so that Bazel cache is also included.
-      - *restore_cache
-      - *init_environment
-      - *yarn_install
+      - restore_cache:
+          keys:
+            - *cache_key
+            - *cache_key_fallback
+      - init_environment
+      - run:
+          name: Running Yarn install
+          command: yarn install --frozen-lockfile --non-interactive
+          # Yarn's requests sometimes take more than 10mins to complete.
+          no_output_timeout: 45m
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       # Make the bazel directories and add a file to them if they don't exist already so that
       # persist_to_workspace does not fail.
@@ -236,10 +243,9 @@ jobs:
             touch ~/bazel_repository_cache/MARKER
           fi
       # Persist any changes at this point to be reused by further jobs.
-      # **NOTE 1 **: Folders persisted here should be kept in sync with `var_13: &attach_workspace`.
-      # **NOTE 2 **: To add new content to the workspace, always persist on the same root.
+      # **NOTE**: To add new content to the workspace, always persist on the same root.
       - persist_to_workspace:
-          root: ~/
+          root: *workspace_location
           paths:
             - ./ng
             - ./bazel_repository_cache
@@ -247,8 +253,8 @@ jobs:
   lint:
     executor: action-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
 
       - run: 'yarn bazel:format -mode=check ||
               (echo "BUILD files not formatted. Please run ''yarn bazel:format''" ; exit 1)'
@@ -264,11 +270,11 @@ jobs:
       name: action-executor
       resource_class: xlarge
     steps:
-      - *attach_workspace
-      - *init_environment
-      - *setup_circleci_bazel_config
+      - custom_attach_workspace
+      - init_environment
+      - setup_circleci_bazel_config
       # Setup remote execution and run RBE-compatible tests.
-      - *setup_bazel_remote_execution
+      - setup_bazel_rbe
       - run:
           command: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
           no_output_timeout: 20m
@@ -279,10 +285,10 @@ jobs:
       name: action-executor
       resource_class: xlarge
     steps:
-      - *attach_workspace
-      - *init_environment
-      - *setup_circleci_bazel_config
-      - *setup_bazel_remote_execution
+      - custom_attach_workspace
+      - init_environment
+      - setup_circleci_bazel_config
+      - setup_bazel_rbe
 
         # We need to explicitly specify the --symlink_prefix option because otherwise we would
         # not be able to easily find the output bin directory when uploading artifacts for size
@@ -323,10 +329,10 @@ jobs:
       # and therefore the tunnel and Karma need to process a lot of file requests and tests.
       resource_class: xlarge
     steps:
-      - *attach_workspace
-      - *init_environment
-      - *setup_circleci_bazel_config
-      - *setup_bazel_remote_execution
+      - custom_attach_workspace
+      - init_environment
+      - setup_circleci_bazel_config
+      - setup_bazel_rbe
       - run:
           name: Run Bazel tests in saucelabs
           # All web tests are contained within a single //:test_web_all target for Saucelabs
@@ -342,14 +348,14 @@ jobs:
               --key $(echo $SAUCE_ACCESS_KEY | rev) \
               yarn bazel test //:test_web_all
           no_output_timeout: 20m
-      - *notify_dev_infra_on_fail
+      - notify_dev_infra_on_fail
 
   test_aio:
     # Needed because the AIO tests and the PWA score test depend on Chrome being available.
     executor: browsers-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
         # Build aio
       - run: yarn --cwd aio build --progress=false
         # Lint the code
@@ -371,8 +377,8 @@ jobs:
     # Needed because before deploying the deploy-production script runs the PWA score tests.
     executor: browsers-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
         # Deploy angular.io to production (if necessary)
       - run: setPublicVar_CI_STABLE_BRANCH
       - run: yarn --cwd aio deploy-production
@@ -381,8 +387,8 @@ jobs:
     # Needed because the AIO tests and the PWA score test depend on Chrome being available.
     executor: browsers-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local-ci
         # Run unit tests
@@ -398,8 +404,8 @@ jobs:
     # Needed because the AIO tests and the PWA score test depend on Chrome being available.
     executor: browsers-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
         # Build aio with Ivy (using local Angular packages)
       - run: yarn --cwd aio build-with-ivy-ci
         # Run unit tests
@@ -414,8 +420,8 @@ jobs:
   test_aio_tools:
     executor: action-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
         # Install
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run: yarn --cwd aio extract-cli-command-docs
@@ -430,8 +436,8 @@ jobs:
       resource_class: xlarge
     parallelism: 4
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
@@ -449,8 +455,8 @@ jobs:
     # takes up more time and we don't want these jobs to impact the overall CI turnaround.
     parallelism: 5
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Rename the Ivy packages dist folder to "dist/packages-dist" as the AIO
@@ -470,8 +476,8 @@ jobs:
     environment:
        AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
       - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
       - store_artifacts:
           path: *aio_preview_artifact_path
@@ -485,8 +491,8 @@ jobs:
     # Needed because the test-preview script runs e2e tests and the PWA score test with Chrome.
     executor: browsers-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run:
           name: Wait for preview and run tests
@@ -506,16 +512,16 @@ jobs:
       name: action-executor
       resource_class: xlarge
     steps:
-      - *attach_workspace
-      - *init_environment
-      - *setup_circleci_bazel_config
-      - *setup_bazel_remote_execution
+      - custom_attach_workspace
+      - init_environment
+      - setup_circleci_bazel_config
+      - setup_bazel_rbe
 
       - run: scripts/build-packages-dist.sh
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
-          root: ~/
+          root: *workspace_location
           paths:
             - ng/dist/packages-dist
 
@@ -533,16 +539,16 @@ jobs:
       name: action-executor
       resource_class: xlarge
     steps:
-      - *attach_workspace
-      - *init_environment
-      - *setup_circleci_bazel_config
-      - *setup_bazel_remote_execution
+      - custom_attach_workspace
+      - init_environment
+      - setup_circleci_bazel_config
+      - setup_bazel_rbe
 
       - run: scripts/build-ivy-npm-packages.sh
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
-          root: ~/
+          root: *workspace_location
           paths:
             - ng/dist/packages-dist-ivy-aot
 
@@ -562,8 +568,8 @@ jobs:
       resource_class: xlarge
     parallelism: 4
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
       # amount of container nodes for this job is controlled by the "parallelism" option.
       - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
@@ -585,8 +591,8 @@ jobs:
                 [[ "$CIRCLE_PROJECT_REPONAME" != "angular" ]]; then
               circleci step halt
             fi
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
       # CircleCI has a config setting to force SSH for all github connections
       # This is not compatible with our mechanism of using a Personal Access Token
       # Clear the global setting
@@ -604,8 +610,8 @@ jobs:
     # which does not load the browser through the Bazel webtesting rules.
     executor: browsers-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
       - run: setPublicVar_CI_STABLE_BRANCH
       - run:
           name: Check out `aio/` from the stable branch
@@ -615,21 +621,21 @@ jobs:
       - run:
           name: Run tests against https://angular.io/
           command: ./aio/scripts/test-production.sh https://angular.io/ $CI_AIO_MIN_PWA_SCORE
-      - *notify_caretaker_on_fail
-      - *notify_dev_infra_on_fail
+      - notify_caretaker_on_fail
+      - notify_dev_infra_on_fail
 
   aio_monitoring_next:
     # This job needs Chrome to be globally installed because the tests run with Protractor
     # which does not load the browser through the Bazel webtesting rules.
     executor: browsers-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
       - run:
           name: Run tests against https://next.angular.io/
           command: ./aio/scripts/test-production.sh https://next.angular.io/ $CI_AIO_MIN_PWA_SCORE
-      - *notify_caretaker_on_fail
-      - *notify_dev_infra_on_fail
+      - notify_caretaker_on_fail
+      - notify_dev_infra_on_fail
 
   legacy-unit-tests-saucelabs:
     executor:
@@ -639,8 +645,8 @@ jobs:
       # and therefore the tunnel and Karma need to process a lot of file requests and tests.
       resource_class: xlarge
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
       - run:
           name: Preparing environment for running tests on Saucelabs.
           command: |
@@ -661,8 +667,8 @@ jobs:
   legacy-misc-tests:
     executor: action-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
       - run: yarn gulp check-cycle
       # TODO: disabled because the Bazel packages-dist does not seem to have map files for
       # the ESM5/ES2015 output. See: https://github.com/angular/angular/issues/27966
@@ -675,18 +681,18 @@ jobs:
       name: browsers-executor
       resource_class: xlarge
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
       # Although RBE is configured below for the Material repo, also setup RBE in the Angular repo
       # to provision Angular's GCP token into the environment variables.
-      - *setup_bazel_remote_execution
+      - setup_bazel_rbe
       # Restore the cache before cloning the repository because the clone script re-uses
       # the restored repository if present. This reduces the amount of times the components
       # repository needs to be cloned (this is slow and increases based on commits in the repo).
       - restore_cache:
           keys:
             - *material_unit_tests_cache_key
-            - *material_unit_tests_cache_key_short
+            - *material_unit_tests_cache_key_fallback
       - run:
           name: "Fetching Material repository"
           command: ./scripts/ci/clone_angular_material_repo.sh
@@ -711,8 +717,8 @@ jobs:
   test_zonejs:
     executor: action-executor
     steps:
-      - *attach_workspace
-      - *init_environment
+      - custom_attach_workspace
+      - init_environment
         # Install
       - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
         # Run zone.js tools tests
@@ -734,12 +740,12 @@ jobs:
     executor: windows-executor
     steps:
       - checkout
-      - *init_environment_win
+      - init_environment_win
       - *post_checkout_win
       # TODO: windows cache restoration is currently failing. Re-enable when it's fixed.
       # Example failure: https://circleci.com/gh/angular/angular/423738
       # - *restore_cache_win
-      - *setup_circleci_bazel_config_win
+      - setup_circleci_bazel_config_win
       - run: yarn install --frozen-lockfile --non-interactive
       # Install @bazel/bazel globally and use that for the first run.
       # Workaround for https://github.com/bazelbuild/rules_nodejs/issues/894
@@ -760,10 +766,10 @@ jobs:
     executor: windows-executor
     steps:
       - checkout
-      - *init_environment_win
+      - init_environment_win
       - *post_checkout_win
       # - *restore_cache_win
-      - *setup_circleci_bazel_config_win
+      - setup_circleci_bazel_config_win
       - run: yarn install --frozen-lockfile --non-interactive
       - run: yarn global add @bazel/bazel@$env:BAZEL_VERSION
       - run: bazel info
@@ -878,19 +884,13 @@ workflows:
       # This isn't strictly necessary as there is no artifact dependency, but helps economize
       # CI resources by not attempting to build when we know should fail.
       - test_win:
+          <<: *ignore_pull_requests
           requires:
             - test
-          filters:
-            branches:
-              ignore:
-                - /pull\/.*/
       - test_ivy_aot_win:
+          <<: *ignore_pull_requests
           requires:
             - test_ivy_aot
-          filters:
-            branches:
-              ignore:
-                - /pull\/.*/
 
   aio_monitoring:
     jobs:
