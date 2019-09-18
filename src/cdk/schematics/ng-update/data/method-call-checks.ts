@@ -16,6 +16,16 @@ export interface MethodCallUpgradeData {
 }
 
 export const methodCallChecks: VersionChanges<MethodCallUpgradeData> = {
+  [TargetVersion.V9]: [{
+    pr: 'https://github.com/angular/components/pull/17084',
+    changes: [{
+      className: 'DropListRef',
+      method: 'drop',
+      invalidArgCounts: [{count: 4, message: 'The "distance" parameter is required'}]
+    }]
+  }],
+  [TargetVersion.V8]: [],
+  [TargetVersion.V7]: [],
   [TargetVersion.V6]: [{
     pr: 'https://github.com/angular/components/pull/10325',
     changes: [{

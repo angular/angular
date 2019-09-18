@@ -17,6 +17,15 @@ export interface ClassNameUpgradeData {
 }
 
 export const classNames: VersionChanges<ClassNameUpgradeData> = {
+  [TargetVersion.V9]: [{
+    pr: 'https://github.com/angular/components/pull/17084',
+    changes: [
+      {replace: 'CDK_DROP_LIST_CONTAINER', replaceWith: 'CDK_DROP_LIST'},
+      {replace: 'CdkDragConfig', replaceWith: 'DragRefConfig'}
+    ]
+  }],
+  [TargetVersion.V8]: [],
+  [TargetVersion.V7]: [],
   [TargetVersion.V6]: [
     {
       pr: 'https://github.com/angular/components/pull/10161',

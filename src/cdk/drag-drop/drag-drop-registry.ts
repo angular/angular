@@ -26,7 +26,7 @@ const activeCapturingEventOptions = normalizePassiveListenerOptions({
 // to avoid circular imports. If we were to reference them here, importing the registry into the
 // classes that are registering themselves will introduce a circular import.
 @Injectable({providedIn: 'root'})
-export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
+export class DragDropRegistry<I, C> implements OnDestroy {
   private _document: Document;
 
   /** Registered drop container instances. */
@@ -68,10 +68,6 @@ export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
   /** Adds a drop container to the registry. */
   registerDropContainer(drop: C) {
     if (!this._dropInstances.has(drop)) {
-      if (this.getDropContainer(drop.id)) {
-        throw Error(`Drop instance with id "${drop.id}" has already been registered.`);
-      }
-
       this._dropInstances.add(drop);
     }
   }
@@ -171,15 +167,6 @@ export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
   /** Gets whether a drag item instance is currently being dragged. */
   isDragging(drag: I) {
     return this._activeDragInstances.has(drag);
-  }
-
-  /**
-   * Gets a drop container by its id.
-   * @deprecated No longer being used. To be removed.
-   * @breaking-change 8.0.0
-   */
-  getDropContainer(id: string): C | undefined {
-    return Array.from(this._dropInstances).find(instance => instance.id === id);
   }
 
   ngOnDestroy() {

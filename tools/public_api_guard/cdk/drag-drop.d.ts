@@ -2,9 +2,7 @@ export declare const CDK_DRAG_CONFIG: InjectionToken<DragRefConfig>;
 
 export declare function CDK_DRAG_CONFIG_FACTORY(): DragRefConfig;
 
-export declare const CDK_DROP_LIST: InjectionToken<CdkDropListContainer<any>>;
-
-export declare const CDK_DROP_LIST_CONTAINER: InjectionToken<CdkDropListContainer<any>>;
+export declare const CDK_DROP_LIST: InjectionToken<CdkDropList>;
 
 export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     _dragRef: DragRef<CdkDrag<T>>;
@@ -12,7 +10,6 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     _placeholderTemplate: CdkDragPlaceholder;
     _previewTemplate: CdkDragPreview;
     boundaryElement: string | ElementRef<HTMLElement> | HTMLElement;
-    boundaryElementSelector: string;
     constrainPosition?: (point: Point, dragRef: DragRef) => Point;
     data: T;
     disabled: boolean;
@@ -45,9 +42,6 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     reset(): void;
-}
-
-export interface CdkDragConfig extends DragRefConfig {
 }
 
 export interface CdkDragDrop<T, O = T> {
@@ -135,7 +129,7 @@ export interface CdkDragStart<T = any> {
     source: CdkDrag<T>;
 }
 
-export declare class CdkDropList<T = any> implements CdkDropListContainer, AfterContentInit, OnDestroy {
+export declare class CdkDropList<T = any> implements AfterContentInit, OnDestroy {
     _draggables: QueryList<CdkDrag>;
     _dropListRef: DropListRef<CdkDropList<T>>;
     autoScrollDisabled: boolean;
@@ -154,39 +148,12 @@ export declare class CdkDropList<T = any> implements CdkDropListContainer, After
     sortingDisabled: boolean;
     constructor(
     element: ElementRef<HTMLElement>, dragDrop: DragDrop, _changeDetectorRef: ChangeDetectorRef, _dir?: Directionality | undefined, _group?: CdkDropListGroup<CdkDropList<any>> | undefined);
-    _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDropListContainer | null;
-    _isOverContainer(x: number, y: number): boolean;
-    _sortItem(item: CdkDrag, pointerX: number, pointerY: number, pointerDelta: {
-        x: number;
-        y: number;
-    }): void;
-    drop(item: CdkDrag, currentIndex: number, previousContainer: Partial<CdkDropListContainer>, isPointerOverContainer: boolean): void;
+    drop(item: CdkDrag, currentIndex: number, previousContainer: CdkDropList, isPointerOverContainer: boolean): void;
     enter(item: CdkDrag, pointerX: number, pointerY: number): void;
     exit(item: CdkDrag): void;
     getItemIndex(item: CdkDrag): number;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-    start(): void;
-}
-
-export interface CdkDropListContainer<T = any> {
-    _draggables: QueryList<CdkDrag>;
-    data: T;
-    disabled: boolean;
-    element: ElementRef<HTMLElement>;
-    id: string;
-    lockAxis: 'x' | 'y';
-    orientation: 'horizontal' | 'vertical';
-    _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDropListContainer | null;
-    _isOverContainer(x: number, y: number): boolean;
-    _sortItem(item: CdkDrag, pointerX: number, pointerY: number, delta: {
-        x: number;
-        y: number;
-    }): void;
-    drop(item: CdkDrag, currentIndex: number, previousContainer: Partial<CdkDropListContainer>, isPointerOverContainer: boolean): void;
-    enter(item: CdkDrag, pointerX: number, pointerY: number): void;
-    exit(item: CdkDrag): void;
-    getItemIndex(item: CdkDrag): number;
     start(): void;
 }
 
@@ -207,14 +174,11 @@ export declare class DragDrop {
 export declare class DragDropModule {
 }
 
-export declare class DragDropRegistry<I, C extends {
-    id: string;
-}> implements OnDestroy {
+export declare class DragDropRegistry<I, C> implements OnDestroy {
     readonly pointerMove: Subject<TouchEvent | MouseEvent>;
     readonly pointerUp: Subject<TouchEvent | MouseEvent>;
     readonly scroll: Subject<Event>;
     constructor(_ngZone: NgZone, _document: any);
-    getDropContainer(id: string): C | undefined;
     isDragging(drag: I): boolean;
     ngOnDestroy(): void;
     registerDragItem(drag: I): void;
@@ -323,7 +287,6 @@ export declare class DropListRef<T = any> {
         item: DragRef;
         container: DropListRef<any>;
     }>;
-    id: string;
     lockAxis: 'x' | 'y';
     sorted: Subject<{
         previousIndex: number;
@@ -332,8 +295,7 @@ export declare class DropListRef<T = any> {
         item: DragRef;
     }>;
     sortingDisabled: boolean;
-    constructor(element: ElementRef<HTMLElement> | HTMLElement, _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>, _document: any,
-    _ngZone?: NgZone | undefined, _viewportRuler?: ViewportRuler | undefined);
+    constructor(element: ElementRef<HTMLElement> | HTMLElement, _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>, _document: any, _ngZone: NgZone, _viewportRuler: ViewportRuler);
     _canReceive(item: DragRef, x: number, y: number): boolean;
     _getSiblingContainerFromPosition(item: DragRef, x: number, y: number): DropListRef | undefined;
     _isOverContainer(x: number, y: number): boolean;
@@ -347,7 +309,7 @@ export declare class DropListRef<T = any> {
     _stopScrolling(): void;
     connectedTo(connectedTo: DropListRef[]): this;
     dispose(): void;
-    drop(item: DragRef, currentIndex: number, previousContainer: DropListRef, isPointerOverContainer: boolean, distance?: Point): void;
+    drop(item: DragRef, currentIndex: number, previousContainer: DropListRef, isPointerOverContainer: boolean, distance: Point): void;
     enter(item: DragRef, pointerX: number, pointerY: number): void;
     exit(item: DragRef): void;
     getItemIndex(item: DragRef): number;

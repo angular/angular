@@ -186,10 +186,6 @@ describe('DragDropRegistry', () => {
     pointerMoveSubscription.unsubscribe();
   });
 
-  it('should not throw when trying to register the same container again', () => {
-    expect(() => registry.registerDropContainer(testComponent.dropInstances.first)).not.toThrow();
-  });
-
   it('should not prevent the default `touchmove` actions when nothing is being dragged', () => {
     expect(dispatchTouchEvent(document, 'touchmove').defaultPrevented).toBe(false);
   });

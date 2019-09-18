@@ -45,11 +45,16 @@ import {
 import {CdkDragHandle} from './drag-handle';
 import {CdkDragPlaceholder} from './drag-placeholder';
 import {CdkDragPreview} from './drag-preview';
-import {CDK_DROP_LIST} from '../drop-list-container';
 import {CDK_DRAG_PARENT} from '../drag-parent';
 import {DragRef, DragRefConfig, Point} from '../drag-ref';
 import {CdkDropListInternal as CdkDropList} from './drop-list';
 import {DragDrop} from '../drag-drop';
+
+/**
+ * Injection token that is used to provide a CdkDropList instance to CdkDrag.
+ * Used for avoiding circular imports.
+ */
+export const CDK_DROP_LIST = new InjectionToken<CdkDropList>('CDK_DROP_LIST');
 
 /** Injection token that can be used to configure the behavior of `CdkDrag`. */
 export const CDK_DRAG_CONFIG = new InjectionToken<DragRefConfig>('CDK_DRAG_CONFIG', {
@@ -108,20 +113,6 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
    * has been found.
    */
   @Input('cdkDragBoundary') boundaryElement: string | ElementRef<HTMLElement> | HTMLElement;
-
-  /**
-   * Selector that will be used to determine the element to which the draggable's position will
-   * be constrained. Matching starts from the element's parent and goes up the DOM until a matching
-   * element has been found
-   * @deprecated Use `boundaryElement` instead.
-   * @breaking-change 9.0.0
-   */
-  get boundaryElementSelector(): string {
-    return typeof this.boundaryElement === 'string' ? this.boundaryElement : undefined!;
-  }
-  set boundaryElementSelector(selector: string) {
-    this.boundaryElement = selector;
-  }
 
   /**
    * Amount of milliseconds to wait after the user has put their

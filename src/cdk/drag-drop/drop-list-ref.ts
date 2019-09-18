@@ -17,9 +17,6 @@ import {moveItemInArray} from './drag-utils';
 import {DragDropRegistry} from './drag-drop-registry';
 import {DragRefInternal as DragRef, Point} from './drag-ref';
 
-/** Counter used to generate unique ids for drop refs. */
-let _uniqueIdCounter = 0;
-
 /**
  * Proximity, as a ratio to width/height, at which a
  * dragged item will affect the drop container.
@@ -77,13 +74,6 @@ export interface DropListRefInternal extends DropListRef {}
 export class DropListRef<T = any> {
   /** Element that the drop list is attached to. */
   element: HTMLElement | ElementRef<HTMLElement>;
-
-  /**
-   * Unique ID for the drop list.
-   * @deprecated No longer being used. To be removed.
-   * @breaking-change 8.0.0
-   */
-  id = `cdk-drop-list-ref-${_uniqueIdCounter++}`;
 
   /** Whether starting a dragging sequence from this container is disabled. */
   disabled: boolean = false;
@@ -207,12 +197,8 @@ export class DropListRef<T = any> {
     element: ElementRef<HTMLElement> | HTMLElement,
     private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>,
     _document: any,
-    /**
-     * @deprecated _ngZone and _viewportRuler parameters to be made required.
-     * @breaking-change 9.0.0
-     */
-    private _ngZone?: NgZone,
-    private _viewportRuler?: ViewportRuler) {
+    private _ngZone: NgZone,
+    private _viewportRuler: ViewportRuler) {
     const nativeNode = this.element = coerceElement(element);
     this._shadowRoot = getShadowRoot(nativeNode) || _document;
     _dragDropRegistry.registerDropContainer(this);
@@ -246,18 +232,8 @@ export class DropListRef<T = any> {
     this._cacheItems();
     this._siblings.forEach(sibling => sibling._startReceiving(this));
     this._removeListeners();
-
-    // @breaking-change 9.0.0 Remove check for _ngZone once it's marked as a required param.
-    if (this._ngZone) {
-      this._ngZone.runOutsideAngular(() => element.addEventListener('scroll', this._handleScroll));
-    } else {
-      element.addEventListener('scroll', this._handleScroll);
-    }
-
-    // @breaking-change 9.0.0 Remove check for _viewportRuler once it's marked as a required param.
-    if (this._viewportRuler) {
-      this._listenToScrollEvents();
-    }
+    this._ngZone.runOutsideAngular(() => element.addEventListener('scroll', this._handleScroll));
+    this._listenToScrollEvents();
   }
 
   /**
@@ -334,10 +310,9 @@ export class DropListRef<T = any> {
    * @param isPointerOverContainer Whether the user's pointer was over the
    *    container when the item was dropped.
    * @param distance Distance the user has dragged since the start of the dragging sequence.
-   * @breaking-change 9.0.0 `distance` parameter to become required.
    */
   drop(item: DragRef, currentIndex: number, previousContainer: DropListRef,
-    isPointerOverContainer: boolean, distance: Point = {x: 0, y: 0}): void {
+    isPointerOverContainer: boolean, distance: Point): void {
     this._reset();
     this.dropped.next({
       item,
@@ -524,9 +499,8 @@ export class DropListRef<T = any> {
       }
     }
 
-    // @breaking-change 9.0.0 Remove null check for _viewportRuler once it's a required parameter.
     // Otherwise check if we can start scrolling the viewport.
-    if (this._viewportRuler && !verticalScrollDirection && !horizontalScrollDirection) {
+    if (!verticalScrollDirection && !horizontalScrollDirection) {
       const {width, height} = this._viewportRuler.getViewportSize();
       const clientRect = {width, height, top: 0, right: width, bottom: height, left: 0};
       verticalScrollDirection = getVerticalScrollDirection(clientRect, pointerY);
@@ -542,12 +516,7 @@ export class DropListRef<T = any> {
       this._scrollNode = scrollNode;
 
       if ((verticalScrollDirection || horizontalScrollDirection) && scrollNode) {
-        // @breaking-change 9.0.0 Remove null check for `_ngZone` once it is made required.
-        if (this._ngZone) {
-          this._ngZone.runOutsideAngular(this._startScrollInterval);
-        } else {
-          this._startScrollInterval();
-        }
+        this._ngZone.runOutsideAngular(this._startScrollInterval);
       } else {
         this._stopScrolling();
       }
