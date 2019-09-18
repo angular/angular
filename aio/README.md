@@ -18,7 +18,7 @@ Here are the most important tasks you might need to use:
 
 * `yarn build` - create a production build of the application (after installing dependencies, boilerplate, etc).
 * `yarn build-local` - same as `build`, but use `setup-local` instead of `setup`.
-* `yarn build-with-ivy` - same as `build-local`, but in addition also turns on `ivy` mode in aio.
+* `yarn build-local-with-ivy` - same as `build-local`, but in addition also turns on `ivy` mode in aio.
                           (Note: To turn on `ivy` mode in examples, see `yarn boilerplate:add` below.)
 
 * `yarn start` - run a development web server that watches the files; then builds the doc-viewer and reloads the page, as necessary.
