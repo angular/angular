@@ -18,13 +18,15 @@ version: 2.1
 # cache changes. For example:
 # 1) yarn lock file changes --> cached "node_modules" are different.
 # 2) bazel repository definitions change --> cached bazel repositories are different.
-# **NOTE 1 **: If you change the cache key prefix, also sync the restore_cache fallback to match.
+# Windows needs its own cache key because binaries in node_modules are different.
+# **NOTE 1 **: If you change the cache key prefix, also sync the cache_key_fallback to match.
 # **NOTE 2 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
 var_3: &cache_key v3-angular-node-10.16-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_4: &cache_key_fallback v3-angular-node-10.16-
 
 # Initializes the CI environment by setting up common environment variables.
-var_4: &init_environment
+var_5: &init_environment
   run:
     name: Initializing environment (setting up variables, overwriting Yarn)
     # Overwrite the yarn installed in the docker container with our own version.
@@ -44,7 +46,7 @@ var_4: &init_environment
       git config --global gc.auto 0 || true
 
 
-var_5: &setup_bazel_remote_execution
+var_6: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
     command: |
@@ -90,8 +92,7 @@ var_10: &restore_cache
   restore_cache:
     keys:
       - *cache_key
-      # This fallback should be the cache_key without variables.
-      - v3-angular-node-10.16-
+      - *cache_key_fallback
 
 # Branch filter that can be specified for jobs that should only run on publish branches
 # (e.g. master or the patch branch)
