@@ -551,7 +551,10 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
           this.usesImplicitReceiver = prevUsesImplicitReceiver;
         } else {
           // Otherwise it's an error.
-          throw new Error('Cannot assign to a reference or variable!');
+          const receiver = ast.name;
+          const value = (ast.value instanceof cdAst.PropertyRead) ? ast.value.name : undefined;
+          throw new Error(
+              `Cannot assign value "${value}" to template variable "${receiver}". Template variables are read-only.`);
         }
       }
     }
