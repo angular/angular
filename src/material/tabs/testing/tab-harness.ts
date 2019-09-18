@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, TestElement} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate, TestElement} from '@angular/cdk/testing';
+import {TabHarnessFilters} from './tab-harness-filters';
 
 /**
  * Harness for interacting with a standard Angular Material tab-label in tests.
@@ -14,6 +15,13 @@ import {ComponentHarness, TestElement} from '@angular/cdk/testing';
  */
 export class MatTabHarness extends ComponentHarness {
   static hostSelector = '.mat-tab-label';
+
+  /**
+   * Gets a `HarnessPredicate` that can be used to search for a tab with specific attributes.
+   */
+  static with(options: TabHarnessFilters = {}): HarnessPredicate<MatTabHarness> {
+    return new HarnessPredicate(MatTabHarness, options);
+  }
 
   private _rootLocatorFactory = this.documentRootLocatorFactory();
 

@@ -7,7 +7,7 @@
  */
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
-import {TabGroupHarnessFilters} from './tab-group-harness-filters';
+import {TabGroupHarnessFilters} from './tab-harness-filters';
 import {MatTabHarness} from './tab-harness';
 
 /**

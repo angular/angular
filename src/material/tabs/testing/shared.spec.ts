@@ -6,38 +6,26 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatTabGroupHarness} from './tab-group-harness';
 
-let fixture: ComponentFixture<TabGroupHarnessTest>;
-let loader: HarnessLoader;
-let tabGroupHarness: typeof MatTabGroupHarness;
+/** Shared tests to run on both the original and MDC-based tab-group's. */
+export function runHarnessTests(
+    tabsModule: typeof MatTabsModule,
+    tabGroupHarness: typeof MatTabGroupHarness) {
+  let fixture: ComponentFixture<TabGroupHarnessTest>;
+  let loader: HarnessLoader;
 
-describe('MatTabGroupHarness', () => {
-  describe('non-MDC-based', () => {
-    beforeEach(async () => {
-      await TestBed
-          .configureTestingModule({
-            imports: [MatTabsModule, NoopAnimationsModule],
-            declarations: [TabGroupHarnessTest],
-          })
-          .compileComponents();
+  beforeEach(async () => {
+    await TestBed
+        .configureTestingModule({
+          imports: [tabsModule, NoopAnimationsModule],
+          declarations: [TabGroupHarnessTest],
+        })
+        .compileComponents();
 
-      fixture = TestBed.createComponent(TabGroupHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-      tabGroupHarness = MatTabGroupHarness;
-    });
-
-    runTests();
+    fixture = TestBed.createComponent(TabGroupHarnessTest);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
-  describe(
-      'MDC-based',
-      () => {
-          // TODO: run tests for MDC based tab-group once implemented.
-      });
-});
-
-/** Shared tests to run on both the original and MDC-based tab-group's. */
-function runTests() {
   it('should load harness for tab-group', async () => {
     const tabGroups = await loader.getAllHarnesses(tabGroupHarness);
     expect(tabGroups.length).toBe(1);

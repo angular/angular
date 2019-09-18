@@ -147,6 +147,8 @@ System.config({
     '@angular/material/stepper': 'dist/packages/material/stepper/index.js',
     '@angular/material/table': 'dist/packages/material/table/index.js',
     '@angular/material/tabs': 'dist/packages/material/tabs/index.js',
+    '@angular/material/tabs/testing': 'dist/packages/material/tabs/testing/index.js',
+    '@angular/material/tabs/testing/shared.spec': 'dist/packages/material/tabs/testing/shared.spec.js',
     '@angular/material/testing': 'dist/packages/material/testing/index.js',
     '@angular/material/toolbar': 'dist/packages/material/toolbar/index.js',
     '@angular/material/tooltip': 'dist/packages/material/tooltip/index.js',
