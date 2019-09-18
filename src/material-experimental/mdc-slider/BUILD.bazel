@@ -69,7 +69,6 @@ ng_web_test_suite(
     deps = [
         ":slider_tests_lib",
         "//src/material-experimental:mdc_require_config.js",
-        "//src/material-experimental/mdc-slider/harness:tests_lib",
     ],
 )
 

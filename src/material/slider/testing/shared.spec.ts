@@ -3,40 +3,28 @@ import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatSliderModule} from '@angular/material/slider';
-import {MatSliderHarness} from './slider-harness';
-
-let fixture: ComponentFixture<SliderHarnessTest>;
-let loader: HarnessLoader;
-let sliderHarness: typeof MatSliderHarness;
-
-describe('MatSliderHarness', () => {
-  describe('non-MDC-based', () => {
-    beforeEach(async () => {
-      await TestBed
-          .configureTestingModule({
-            imports: [MatSliderModule],
-            declarations: [SliderHarnessTest],
-          })
-          .compileComponents();
-
-      fixture = TestBed.createComponent(SliderHarnessTest);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-      sliderHarness = MatSliderHarness;
-    });
-
-    runTests();
-  });
-
-  describe(
-      'MDC-based',
-      () => {
-          // TODO: run tests for MDC based slider once implemented.
-      });
-});
+import {MatSliderHarness} from '@angular/material/slider/testing/slider-harness';
 
 /** Shared tests to run on both the original and MDC-based sliders. */
-function runTests() {
+export function runHarnessTests(
+    sliderModule: typeof MatSliderModule,
+    sliderHarness: typeof MatSliderHarness) {
+  let fixture: ComponentFixture<SliderHarnessTest>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    await TestBed
+        .configureTestingModule({
+          imports: [sliderModule],
+          declarations: [SliderHarnessTest],
+        })
+        .compileComponents();
+
+    fixture = TestBed.createComponent(SliderHarnessTest);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
   it('should load all slider harnesses', async () => {
     const sliders = await loader.getAllHarnesses(sliderHarness);
     expect(sliders.length).toBe(3);
