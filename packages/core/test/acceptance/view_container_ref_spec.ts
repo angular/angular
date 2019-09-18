@@ -1179,11 +1179,10 @@ describe('ViewContainerRef', () => {
 
       @Component({
         selector: 'comp',
-        template: '<ng-template #ref></ng-template>',
+        template: '',
       })
       class Comp {
-        @ViewChild('ref', {read: ViewContainerRef, static: true})
-        viewContainerRef?: ViewContainerRef;
+        constructor(private viewContainerRef: ViewContainerRef) {}
 
         ngOnInit() { this.viewContainerRef !.createComponent(Child); }
       }
@@ -1193,7 +1192,8 @@ describe('ViewContainerRef', () => {
       const fixture = TestBed.createComponent(Comp);
       if (ivyEnabled) {
         fixture.detectChanges();
-        expect(fixture.debugElement.nativeElement.innerHTML).toContain('Child Component');
+        const native = fixture.debugElement.nativeElement as Element;
+        expect((native.parentNode as Element).textContent).toContain('Child Component');
       } else {
         expect(() => fixture.detectChanges()).toThrowError(/ViewEngine does not support Type/);
       }

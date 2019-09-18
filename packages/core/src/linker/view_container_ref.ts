@@ -90,7 +90,7 @@ export abstract class ViewContainerRef {
   /**
    * Instantiates a single component and inserts its host view into this container.
    *
-   * @param componentFactory The factory to use.
+   * @param componentFactoryOrType The factory to use. (In ivy this can be the Type directly).
    * @param index The index at which to insert the new component's host view into this container.
    * If not specified, appends the new view as the last entry.
    * @param injector The injector to use as the parent for the new component.
@@ -101,7 +101,7 @@ export abstract class ViewContainerRef {
    *
    */
   abstract createComponent<C>(
-      componentFactory: ComponentFactory<C>|Type<C>, index?: number, injector?: Injector,
+      componentFactoryOrType: ComponentFactory<C>|Type<C>, index?: number, injector?: Injector,
       projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
 
   /**
