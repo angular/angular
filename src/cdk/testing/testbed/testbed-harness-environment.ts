@@ -14,8 +14,11 @@ import {UnitTestElement} from './unit-test-element';
 
 /** A `HarnessEnvironment` implementation for Angular's Testbed. */
 export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
+  private _destroyed = false;
+
   protected constructor(rawRootElement: Element, private _fixture: ComponentFixture<unknown>) {
     super(rawRootElement);
+    _fixture.componentRef.onDestroy(() => this._destroyed = true);
   }
 
   /** Creates a `HarnessLoader` rooted at the given fixture's root element. */
@@ -62,6 +65,10 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
   }
 
   private async _stabilize(): Promise<void> {
+    if (this._destroyed) {
+      throw Error('Harness is attempting to use a fixture that has already been destroyed.');
+    }
+
     this._fixture.detectChanges();
     await this._fixture.whenStable();
   }
