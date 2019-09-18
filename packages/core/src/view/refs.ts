@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {type} from 'os';
+
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
@@ -19,6 +21,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
 import {Renderer as RendererV1, Renderer2} from '../render/api';
+import {assertEqual} from '../util/assert';
 import {stringify} from '../util/stringify';
 import {VERSION} from '../version';
 
@@ -179,9 +182,14 @@ class ViewContainerRef_ implements ViewContainerData {
   }
 
   createComponent<C>(
-      componentFactory: ComponentFactory<C>, index?: number, injector?: Injector,
+      componentFactoryOrType: ComponentFactory<C>|Type<C>, index?: number, injector?: Injector,
       projectableNodes?: any[][], ngModuleRef?: NgModuleRef<any>): ComponentRef<C> {
+    ngDevMode &&
+        assertEqual(
+            typeof componentFactoryOrType !== 'function', true,
+            'ViewEngine does not support Type as an argument for \'componentFactoryOrType\'');
     const contextInjector = injector || this.parentInjector;
+    const componentFactory = componentFactoryOrType as ComponentFactory<C>;
     if (!ngModuleRef && !(componentFactory instanceof ComponentFactoryBoundToModule)) {
       ngModuleRef = contextInjector.get(NgModuleRef);
     }

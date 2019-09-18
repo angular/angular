@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
@@ -19,19 +19,20 @@ import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 
 import {assertLContainer} from './assert';
+import {ComponentFactory as r3_ComponentFactory} from './component_ref';
+import {getComponentDef} from './definition';
 import {NodeInjector, getParentInjectorLocation} from './di';
 import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
-import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
+import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CONTEXT, DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
-import {findComponentView} from './util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByTNode, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 import {ViewRef} from './view_ref';
 
@@ -220,9 +221,13 @@ export function createContainerRef(
       }
 
       createComponent<C>(
-          componentFactory: viewEngine_ComponentFactory<C>, index?: number|undefined,
+          componentFactoryOrType: viewEngine_ComponentFactory<C>|Type<C>, index?: number|undefined,
           injector?: Injector|undefined, projectableNodes?: any[][]|undefined,
           ngModuleRef?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
+        const componentFactory: viewEngine_ComponentFactory<C> =
+            isComponentFactory(componentFactoryOrType) ?
+            componentFactoryOrType as viewEngine_ComponentFactory<C>:
+            new r3_ComponentFactory(getComponentDef(componentFactoryOrType) !);
         const contextInjector = injector || this.parentInjector;
         if (!ngModuleRef && (componentFactory as any).ngModule == null && contextInjector) {
           ngModuleRef = contextInjector.get(viewEngine_NgModuleRef, null);
@@ -355,34 +360,11 @@ export function createContainerRef(
   return new R3ViewContainerRef(lContainer, hostTNode, hostView);
 }
 
-
-/** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
-export function injectChangeDetectorRef(isPipe = false): ViewEngine_ChangeDetectorRef {
-  return createViewRef(getPreviousOrParentTNode(), getLView(), isPipe);
+function isComponentFactory(value: viewEngine_ComponentFactory<any>| Type<any>):
+    value is viewEngine_ComponentFactory<any> {
+  return value && typeof value !== 'function';
 }
 
-/**
- * Creates a ViewRef and stores it on the injector as ChangeDetectorRef (public alias).
- *
- * @param hostTNode The node that is requesting a ChangeDetectorRef
- * @param hostView The view to which the node belongs
- * @param isPipe Whether the view is being injected into a pipe.
- * @returns The ChangeDetectorRef to use
- */
-function createViewRef(
-    hostTNode: TNode, hostView: LView, isPipe: boolean): ViewEngine_ChangeDetectorRef {
-  if (isComponentHost(hostTNode) && !isPipe) {
-    const componentIndex = hostTNode.directiveStart;
-    const componentView = getComponentViewByIndex(hostTNode.index, hostView);
-    return new ViewRef(componentView, null, componentIndex);
-  } else if (
-      hostTNode.type === TNodeType.Element || hostTNode.type === TNodeType.Container ||
-      hostTNode.type === TNodeType.ElementContainer) {
-    const hostComponentView = findComponentView(hostView);
-    return new ViewRef(hostComponentView, hostComponentView[CONTEXT], -1);
-  }
-  return null !;
-}
 
 /** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
 function getOrCreateRenderer2(view: LView): Renderer2 {

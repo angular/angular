@@ -1472,7 +1472,7 @@ export declare abstract class ViewContainerRef {
     abstract readonly length: number;
     /** @deprecated */ abstract readonly parentInjector: Injector;
     abstract clear(): void;
-    abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
+    abstract createComponent<C>(componentFactory: ComponentFactory<C> | Type<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
     abstract detach(index?: number): ViewRef | null;
     abstract get(index: number): ViewRef | null;

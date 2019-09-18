@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Optional, SkipSelf, StaticProvider, ɵɵdefineInjectable} from '../../di';
+import {Optional, SkipSelf, StaticProvider} from '../../di';
+import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ';
 
 

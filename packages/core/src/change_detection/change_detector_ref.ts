@@ -1,3 +1,13 @@
+import {TNode, TNodeType} from '../render3/interfaces/node';
+import {isComponentHost} from '../render3/interfaces/type_checks';
+import {CONTEXT, LView} from '../render3/interfaces/view';
+import {getLView, getPreviousOrParentTNode} from '../render3/state';
+import {findComponentView} from '../render3/util/view_traversal_utils';
+import {getComponentViewByIndex} from '../render3/util/view_utils';
+import {ViewRef} from '../render3/view_ref';
+
+
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -5,8 +15,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {injectChangeDetectorRef as render3InjectChangeDetectorRef} from '../render3/view_engine_compatibility';
 
 /**
  * Base class for Angular Views, provides change detection functionality.
@@ -116,7 +124,34 @@ export abstract class ChangeDetectorRef {
 
 
 
-export const SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ = render3InjectChangeDetectorRef;
+export const SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ = injectChangeDetectorRef;
 const SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__ = (...args: any[]): any => {};
-const SWITCH_CHANGE_DETECTOR_REF_FACTORY: typeof render3InjectChangeDetectorRef =
+const SWITCH_CHANGE_DETECTOR_REF_FACTORY: typeof injectChangeDetectorRef =
     SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__;
+
+/** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
+export function injectChangeDetectorRef(isPipe = false): ChangeDetectorRef {
+  return createViewRef(getPreviousOrParentTNode(), getLView(), isPipe);
+}
+
+/**
+ * Creates a ViewRef and stores it on the injector as ChangeDetectorRef (public alias).
+ *
+ * @param hostTNode The node that is requesting a ChangeDetectorRef
+ * @param hostView The view to which the node belongs
+ * @param isPipe Whether the view is being injected into a pipe.
+ * @returns The ChangeDetectorRef to use
+ */
+function createViewRef(hostTNode: TNode, hostView: LView, isPipe: boolean): ChangeDetectorRef {
+  if (isComponentHost(hostTNode) && !isPipe) {
+    const componentIndex = hostTNode.directiveStart;
+    const componentView = getComponentViewByIndex(hostTNode.index, hostView);
+    return new ViewRef(componentView, null, componentIndex);
+  } else if (
+      hostTNode.type === TNodeType.Element || hostTNode.type === TNodeType.Container ||
+      hostTNode.type === TNodeType.ElementContainer) {
+    const hostComponentView = findComponentView(hostView);
+    return new ViewRef(hostComponentView, hostComponentView[CONTEXT], -1);
+  }
+  return null !;
+}

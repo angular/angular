@@ -36,6 +36,18 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "ComponentFactory"
+  },
+  {
+    "name": "ComponentFactory"
+  },
+  {
+    "name": "ComponentRef"
+  },
+  {
+    "name": "ComponentRef"
+  },
+  {
     "name": "DECLARATION_LCONTAINER"
   },
   {
@@ -111,6 +123,9 @@
     "name": "IterableDiffers"
   },
   {
+    "name": "LifecycleHooksFeature"
+  },
+  {
     "name": "MAP_BASED_ENTRY_PROP_NAME"
   },
   {
@@ -151,6 +166,9 @@
   },
   {
     "name": "NOT_FOUND"
+  },
+  {
+    "name": "NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR"
   },
   {
     "name": "NO_CHANGE"
@@ -210,7 +228,13 @@
     "name": "RecordViewTuple"
   },
   {
+    "name": "RendererFactory2"
+  },
+  {
     "name": "RendererStyleFlags3"
+  },
+  {
+    "name": "RootViewRef"
   },
   {
     "name": "SANITIZER"
@@ -229,6 +253,9 @@
   },
   {
     "name": "SafeValueImpl"
+  },
+  {
+    "name": "Sanitizer"
   },
   {
     "name": "SkipSelf"
@@ -277,6 +304,9 @@
   },
   {
     "name": "UnsubscriptionErrorImpl"
+  },
+  {
+    "name": "VERSION"
   },
   {
     "name": "VIEW_REFS"
@@ -486,6 +516,9 @@
     "name": "assertTemplate"
   },
   {
+    "name": "assignTViewNodeToLView"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -513,6 +546,9 @@
     "name": "callHooks"
   },
   {
+    "name": "checkNoChangesInRootView"
+  },
+  {
     "name": "checkNoChangesInternal"
   },
   {
@@ -532,6 +568,9 @@
   },
   {
     "name": "contextLView"
+  },
+  {
+    "name": "createChainedInjector"
   },
   {
     "name": "createContainerRef"
@@ -598,6 +637,9 @@
   },
   {
     "name": "detachView"
+  },
+  {
+    "name": "detectChangesInRootView"
   },
   {
     "name": "detectChangesInternal"
@@ -987,6 +1029,9 @@
     "name": "isComponentDef"
   },
   {
+    "name": "isComponentFactory"
+  },
+  {
     "name": "isComponentHost"
   },
   {
@@ -1366,6 +1411,9 @@
   },
   {
     "name": "tickRootContext"
+  },
+  {
+    "name": "toRefArray"
   },
   {
     "name": "trackByIdentity"

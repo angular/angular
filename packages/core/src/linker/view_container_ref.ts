@@ -7,6 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
+import {Type} from '../interface/type';
 import {injectViewContainerRef as render3InjectViewContainerRef} from '../render3/view_engine_compatibility';
 import {noop} from '../util/noop';
 
@@ -15,6 +16,7 @@ import {ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
+
 
 
 /**
@@ -100,7 +102,7 @@ export abstract class ViewContainerRef {
    *
    */
   abstract createComponent<C>(
-      componentFactory: ComponentFactory<C>, index?: number, injector?: Injector,
+      componentFactory: ComponentFactory<C>|Type<C>, index?: number, injector?: Injector,
       projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
 
   /**
