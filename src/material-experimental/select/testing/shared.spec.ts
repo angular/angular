@@ -1,68 +1,40 @@
+import {OverlayContainer} from '@angular/cdk/overlay';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {Component, Type} from '@angular/core';
-import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {ReactiveFormsModule, FormControl, Validators} from '@angular/forms';
-import {OverlayContainer} from '@angular/cdk/overlay';
+import {Component} from '@angular/core';
+import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
-import {MatSelectModule as MatMdcSelectModule} from '../index';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatSelectHarness} from './select-harness';
-import {MatSelectHarness as MatMdcSelectHarness} from './mdc-select-harness';
-
-let fixture: ComponentFixture<SelectHarnessTest>;
-let loader: HarnessLoader;
-let harness: typeof MatSelectHarness;
-let overlayContainer: OverlayContainer;
-
-describe('MatSelectHarness', () => {
-  describe('non-MDC-based', () => {
-    beforeEach(async () => {
-      await prepareTests(MatSelectModule, SelectHarnessTest);
-      harness = MatSelectHarness;
-    });
-
-    runTests();
-  });
-
-  describe('MDC-based', () => {
-    beforeEach(async () => {
-      await prepareTests(MatMdcSelectModule, SelectHarnessTest);
-      // Public APIs are the same as MatSelectHarness, but cast
-      // is necessary because of different private fields.
-      harness = MatMdcSelectHarness as any;
-    });
-
-    // TODO: enable after MDC select is implemented
-    // runTests();
-  });
-});
-
-/** Shared test setup logic. */
-async function prepareTests(moduleType: Type<any>, fixtureType: Type<any>) {
-  await TestBed.configureTestingModule({
-    imports: [
-      moduleType,
-      MatFormFieldModule,
-      NoopAnimationsModule,
-      ReactiveFormsModule,
-    ],
-    declarations: [fixtureType],
-  }).compileComponents();
-
-  fixture = TestBed.createComponent(fixtureType);
-  fixture.detectChanges();
-  loader = TestbedHarnessEnvironment.loader(fixture);
-  inject([OverlayContainer], (oc: OverlayContainer) => {
-    overlayContainer = oc;
-  })();
-}
-
-
 
 /** Shared tests to run on both the original and MDC-based select. */
-function runTests() {
+export function runHarnessTests(
+    selectModule: typeof MatSelectModule, selectHarness: typeof MatSelectHarness) {
+  let fixture: ComponentFixture<SelectHarnessTest>;
+  let loader: HarnessLoader;
+  let overlayContainer: OverlayContainer;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        selectModule,
+        MatFormFieldModule,
+        NoopAnimationsModule,
+        ReactiveFormsModule,
+      ],
+      declarations: [SelectHarnessTest],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SelectHarnessTest);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+    inject([OverlayContainer], (oc: OverlayContainer) => {
+      overlayContainer = oc;
+    })();
+  });
+
   afterEach(() => {
     // Angular won't call this for us so we need to do it ourselves to avoid leaks.
     overlayContainer.ngOnDestroy();
@@ -70,23 +42,23 @@ function runTests() {
   });
 
   it('should load all select harnesses', async () => {
-    const selects = await loader.getAllHarnesses(harness);
+    const selects = await loader.getAllHarnesses(selectHarness);
     expect(selects.length).toBe(4);
   });
 
   it('should be able to check whether a select is in multi-selection mode', async () => {
-    const singleSelection = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const singleSelection = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
     const multipleSelection =
-        await loader.getHarness(harness.with({selector: '#multiple-selection'}));
+        await loader.getHarness(selectHarness.with({selector: '#multiple-selection'}));
 
     expect(await singleSelection.isMultiple()).toBe(false);
     expect(await multipleSelection.isMultiple()).toBe(true);
   });
 
   it('should get disabled state', async () => {
-    const singleSelection = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const singleSelection = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
     const multipleSelection =
-        await loader.getHarness(harness.with({selector: '#multiple-selection'}));
+        await loader.getHarness(selectHarness.with({selector: '#multiple-selection'}));
 
     expect(await singleSelection.isDisabled()).toBe(false);
     expect(await multipleSelection.isDisabled()).toBe(false);
@@ -99,9 +71,9 @@ function runTests() {
   });
 
   it('should get required state', async () => {
-    const singleSelection = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const singleSelection = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
     const multipleSelection =
-        await loader.getHarness(harness.with({selector: '#multiple-selection'}));
+        await loader.getHarness(selectHarness.with({selector: '#multiple-selection'}));
 
     expect(await singleSelection.isRequired()).toBe(false);
     expect(await multipleSelection.isRequired()).toBe(false);
@@ -114,15 +86,15 @@ function runTests() {
   });
 
   it('should get valid state', async () => {
-    const singleSelection = await loader.getHarness(harness.with({selector: '#single-selection'}));
-    const withFormControl = await loader.getHarness(harness.with({selector: '#with-form-control'}));
+    const singleSelection = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
+    const withFormControl = await loader.getHarness(selectHarness.with({selector: '#with-form-control'}));
 
     expect(await singleSelection.isValid()).toBe(true);
     expect(await withFormControl.isValid()).toBe(false);
   });
 
   it('should focus and blur a select', async () => {
-    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
     expect(getActiveElementId()).not.toBe('single-selection');
     await select.focus();
     expect(getActiveElementId()).toBe('single-selection');
@@ -131,7 +103,7 @@ function runTests() {
   });
 
   it('should be able to open and close a single-selection select', async () => {
-    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
 
     expect(await select.isOpen()).toBe(false);
 
@@ -143,7 +115,7 @@ function runTests() {
   });
 
   it('should be able to open and close a multi-selection select', async () => {
-    const select = await loader.getHarness(harness.with({selector: '#multiple-selection'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#multiple-selection'}));
 
     expect(await select.isOpen()).toBe(false);
 
@@ -155,13 +127,13 @@ function runTests() {
   });
 
   it('should be able to get the select panel', async () => {
-    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
     await select.open();
     expect(await select.getPanel()).toBeTruthy();
   });
 
   it('should be able to get the select options', async () => {
-    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
     await select.open();
     const options = await select.getOptions();
 
@@ -170,7 +142,7 @@ function runTests() {
   });
 
   it('should be able to get the select panel groups', async () => {
-    const select = await loader.getHarness(harness.with({selector: '#grouped'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#grouped'}));
     await select.open();
     const groups = await select.getOptionGroups();
     const options = await select.getOptions();
@@ -180,7 +152,7 @@ function runTests() {
   });
 
   it('should be able to get the value text from a single-selection select', async () => {
-    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
     await select.open();
     const options = await select.getOptions();
 
@@ -190,7 +162,7 @@ function runTests() {
   });
 
   it('should be able to get the value text from a multi-selection select', async () => {
-    const select = await loader.getHarness(harness.with({selector: '#multiple-selection'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#multiple-selection'}));
     await select.open();
     const options = await select.getOptions();
 
@@ -201,7 +173,7 @@ function runTests() {
   });
 
   it('should be able to get whether a single-selection select is empty', async () => {
-    const select = await loader.getHarness(harness.with({selector: '#single-selection'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#single-selection'}));
 
     expect(await select.isEmpty()).toBe(true);
 
@@ -213,7 +185,7 @@ function runTests() {
   });
 
   it('should be able to get whether a multi-selection select is empty', async () => {
-    const select = await loader.getHarness(harness.with({selector: '#multiple-selection'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#multiple-selection'}));
 
     expect(await select.isEmpty()).toBe(true);
 
@@ -227,7 +199,7 @@ function runTests() {
 
   it('should be able to click an option', async () => {
     const control = fixture.componentInstance.formControl;
-    const select = await loader.getHarness(harness.with({selector: '#with-form-control'}));
+    const select = await loader.getHarness(selectHarness.with({selector: '#with-form-control'}));
 
     expect(control.value).toBeFalsy();
 
