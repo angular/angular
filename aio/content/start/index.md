@@ -2,13 +2,12 @@
 
 Welcome to Angular!
 
-This tutorial introduces you to the essentials of Angular.
-It leverages what you already know about HTML and JavaScript&mdash;plus some useful Angular features&mdash;to build a simple online store application, with a catalog, shopping cart, and check-out form.
-You don't need to install anything: you'll build the app using the [StackBlitz](https://stackblitz.com/ "StackBlitz web site") online development environment.
+This tutorial introduces you to the essentials of Angular by walking you through building a simple e-commerce site with a catalog, shopping cart, and check-out form. It uses the [StackBlitz](https://stackblitz.com/ "StackBlitz website") online development environment so you can get started right away.
+
 
 <div class="alert is-helpful">
 
-We are using the StackBlitz Generator to show you a ready-made, simple application that you can examine and play with interactively. In actual development you will typically use the [Angular CLI](guide/glossary#command-line-interface-cli), a powerful command-line tool that lets you generate and modify applications. For more information, see the [CLI Overview](cli).
+This guide uses the StackBlitz Generator to show you a ready-made, simple application that you can examine and play with interactively. In actual development you will typically use the [Angular CLI](guide/glossary#command-line-interface-cli), a powerful command-line tool that lets you generate and modify applications. For more information, see the [CLI Overview](cli).
 
 </div>
 
@@ -16,7 +15,7 @@ We are using the StackBlitz Generator to show you a ready-made, simple applicati
 <header>New to web development?</header>
 
 
-You'll find many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codecademy](https://www.codecademy.com/ "Codeacademy online courses"), also cover web development basics.
+ There are many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codecademy](https://www.codecademy.com/ "Codeacademy online courses"), also cover web development basics.
 
 
 </div>
@@ -64,25 +63,29 @@ behavior will be the same.
 ## Template syntax
 
 Angular's template syntax extends HTML and JavaScript.
-In this section, you'll learn about template syntax by enhancing the "Products" area.
+This section introduces template syntax by enhancing the "Products" area.
 
-(So that you can focus on the template syntax, the following steps use predefined product data and methods from the `product-list.component.ts` file.)
+<div class="alert is-helpful">
+
+To help you get going, the following steps use predefined product data and methods from the `product-list.component.ts` file.
+
+</div>
 
 1. In the `product-list` folder, open the template
 file `product-list.component.html`.
 
 1. Modify the product list template to display a list of product names.
 
-    1. Each product in the list will be displayed the same way, one after the other on the page. To iterate over the predefined list of products, put the `*ngFor` directive on a `<div>`, as follows:
+    1. Each product in the list displays the same way, one after another on the page. To iterate over the predefined list of products, put the `*ngFor` directive on a `<div>`, as follows:
 
       <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.2.html" region="ngfor">
       </code-example>
 
-      `*ngFor` causes the `<div>` to be repeated for each product in the list.
+      With `*ngFor`, the `<div>` repeats for each product in the list.
 
       <div class="alert is-helpful">
 
-      `*ngFor` is a "structural directive". Structural directives shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Any directive with an `*` is a structural directive.
+      `*ngFor` is a "structural directive". Structural directives shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Any directive with an asterisk, `*`, is a structural directive.
 
       </div>
 
@@ -97,18 +100,15 @@ file `product-list.component.html`.
         <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
       </figure>
 
-1. To make each product name a link to product details, add the anchor and set the anchor's title to be the product's name by using the property binding `[ ]` syntax, as follows:
+1. To make each product name a link to product details, add the `<a>` element and set its title to be the product's name by using the property binding `[ ]` syntax, as follows:
 
     <code-example path="getting-started/src/app/product-list/product-list.component.2.html" header="src/app/product-list/product-list.component.html">
     </code-example>
 
-    <!--
-    To do: Description and code don't match exactly. Do we want to just use product name as the anchor hover text to show a simple property or append "details" to show an expression? Also affects screen shot.
-    -->
-
-    In the preview pane, hover over the displayed product
+    In the preview pane, hold the pointer over a product
     name to see the bound name property value, which is
-    the same. Interpolation `{{ }}` lets you render the
+    the product name plus the word "details".
+    Interpolation `{{ }}` lets you render the
     property value as text; property binding `[ ]` lets you
     use the property value in a template expression.
 
@@ -117,18 +117,18 @@ file `product-list.component.html`.
     </figure>
 
 
-1. Add the product descriptions. On the `<p>` tag, use an `*ngIf` directive so that Angular only creates the `<p>` element if the current product has a description.
+1. Add the product descriptions. On the `<p>` element, use an `*ngIf` directive so that Angular only creates the `<p>` element if the current product has a description.
 
     <code-example path="getting-started/src/app/product-list/product-list.component.3.html" header="src/app/product-list/product-list.component.html">
     </code-example>
 
-    The app now displays the name and description of each product in the list. Notice that the final product does not have a description paragraph. Because the product's description property is empty, the `<p>` element&mdash;including the word "Description"&mdash;is not created.
+    The app now displays the name and description of each product in the list. Notice that the final product does not have a description paragraph. Because the product's description property is empty, Angular doesn't create the `<p>` element&mdash;including the word "Description".
 
     <figure>
       <img src="generated/images/guide/start/template-syntax-product-description.png" alt="Product descriptions added to list">
     </figure>
 
-1. Add a button so users can share a product with friends. Bind the button's `click` event to the `share()` method (in `product-list.component.ts`). Event binding uses a set of parentheses, `( )`, around the event, as in the following `<button>` tag:
+1. Add a button so users can share a product with friends. Bind the button's `click` event to the `share()` method (in `product-list.component.ts`). Event binding uses a set of parentheses, `( )`, around the event, as in the following `<button>` element:
 
     <code-example path="getting-started/src/app/product-list/product-list.component.4.html" header="src/app/product-list/product-list.component.html">
     </code-example>
@@ -157,7 +157,7 @@ In the process, you've learned to use five common features of Angular's template
 <div class="alert is-helpful">
 
 For more information about the full capabilities of Angular's
-template syntax, see the [Template Syntax guide](guide/template-syntax "Template Syntax").
+template syntax, see [Template Syntax](guide/template-syntax "Template Syntax").
 
 </div>
 
@@ -165,12 +165,12 @@ template syntax, see the [Template Syntax guide](guide/template-syntax "Template
 {@a components}
 ## Components
 
-*Components* define areas of responsibility in the user interface (UI)
+*Components* define areas of responsibility in the user interface, or UI,
 that let you reuse sets of UI functionality.
 You've already built one with the product list component.
 
 A component consists of three things:
-* **A component class** that handles data and functionality. In the previous section, the product data and the `share()` method in the component class handle data and functionality respectively.
+* **A component class** that handles data and functionality. In the previous section, the product data and the `share()` method in the component class handle data and functionality, respectively.
 * **An HTML template** that determines the UI. In the previous section, the product list's HTML template displays the name, description, and a "Share" button for each product.
 * **Component-specific styles** that define the look and feel.
 Though product list does not define any styles, this is where component CSS
@@ -222,7 +222,7 @@ For more information about components and how they interact with templates, see 
 Currently, the product list displays the name and description of each product.
 The product list component also defines a `products` property that contains imported data for each product from the `products` array in `products.ts`.
 
-The next step is to create a new alert feature that takes a product as an input. It will then check the product's price, and, if the price is greater than $700, it will display a "Notify Me" button that lets users sign up for notifications when the product goes on sale.
+The next step is to create a new alert feature that takes a product as an input. The alert checks the product's price, and, if the price is greater than $700, displays a "Notify Me" button that lets users sign up for notifications when the product goes on sale.
 
 1. Create a new product alerts component.
 
@@ -241,35 +241,35 @@ The next step is to create a new alert feature that takes a product as an input.
 
     <code-example header="src/app/product-alerts/product-alerts.component.ts" path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="as-generated"></code-example>
 
-    1. Notice the `@Component` decorator. This indicates that the following class is a component. It provides metadata about the component, including its templates, styles, and a selector.
+    1. Notice the `@Component()` decorator. This indicates that the following class is a component. It provides metadata about the component, including its selector, templates, and styles.
 
-        * The `selector` is used to identify the component. The selector is the name you give the Angular component when it is rendered as an HTML element on the page. By convention, Angular component selectors begin with the prefix `app-`, followed by the component name.
+        * The `selector` identifies the component. The selector is the name you give the Angular component when it is rendered as an HTML element on the page. By convention, Angular component selectors begin with the prefix `app-`, followed by the component name.
 
-        * The template and style filenames. These reference the other two files generated for you.
+        * The template and style filenames reference the HTML and CSS files that StackBlitz generates.
 
-    1. The component definition also includes an exported class (`ProductAlertsComponent`), which handles functionality for the component.
+    1. The component definition also exports the class, `ProductAlertsComponent`, which handles functionality for the component.
 
 1. Set up the new product alerts component to receive a product as input:
 
     1. Import `Input` from `@angular/core`.
 
-        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="imports"></code-example>
+        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="imports" header="src/app/product-list/product-alerts.component.ts"></code-example>
 
-    1. In the `ProductAlertsComponent` class definition, define a property named `product` with an `@Input` decorator. The `@Input` decorator indicates that the property value will be passed in from the component's parent (in this case, the product list component).
+    1. In the `ProductAlertsComponent` class definition, define a property named `product` with an `@Input()` decorator. The `@Input()` decorator indicates that the property value passes in from the component's parent, the product list component.
 
-        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="input-decorator"></code-example>
+        <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="input-decorator" header="src/app/product-list/product-alerts.component.ts"></code-example>
 
 1. Define the view for the new product alert component.
 
-    Open the `product-alerts.component.html` template and replace the placeholder paragraph with a "Notify Me" button that appears if the product price is over $700.
+    1. Open the `product-alerts.component.html` template and replace the placeholder paragraph with a "Notify Me" button that appears if the product price is over $700.
 
     <code-example header="src/app/product-alerts/product-alerts.component.html" path="getting-started/src/app/product-alerts/product-alerts.component.1.html"></code-example>
 
-1. Display the new product alert component as part of (a child of) the product list.
+1. Display the new product alert component as a child of the product list.
 
     1. Open `product-list.component.html`.
 
-    1. To include the new component, use its selector (`app-product-alert`) as you would an HTML element.
+    1. To include the new component, use its selector, `app-product-alert`, as you would an HTML element.
 
     1. Pass the current product as input to the component using property binding.
 
@@ -284,7 +284,7 @@ The new product alert component takes a product as input from the product list. 
 
 <div class="alert is-helpful">
 
-Learn more: See [Component Interaction](guide/component-interaction "Components & Templates > Component Interaction") for more information about passing data from a parent to child component, intercepting and acting upon a value from the parent, and detecting and acting on changes to input property values.
+See [Component Interaction](guide/component-interaction "Components & Templates > Component Interaction") for more information about passing data from a parent to child component, intercepting and acting upon a value from the parent, and detecting and acting on changes to input property values.
 
 </div>
 
@@ -292,7 +292,10 @@ Learn more: See [Component Interaction](guide/component-interaction "Components 
 {@a output}
 ## Output
 
-The "Notify Me" button doesn't do anything yet. In this section, you'll set up the product alert component so that it emits an event up to the product list component when the user clicks "Notify Me". You'll define the notification behavior in the product list component.
+To make the "Notify Me" button work, you need to configure two things:
+
+  - the product alert component to emit an event when the user clicks "Notify Me"
+  - the product list component to act on that event
 
 1. Open `product-alerts.component.ts`.
 
@@ -300,15 +303,15 @@ The "Notify Me" button doesn't do anything yet. In this section, you'll set up t
 
     <code-example header="src/app/product-alerts/product-alerts.component.ts" path="getting-started/src/app/product-alerts/product-alerts.component.ts" region="imports"></code-example>
 
-1. In the component class, define a property named `notify` with an `@Output` decorator and an instance of event emitter. This makes it possible for the product alert component to emit an event when the value of the notify property changes.
+1. In the component class, define a property named `notify` with an `@Output()` decorator and an instance of `EventEmitter()`. This allows the product alert component to emit an event when the value of the notify property changes.
 
-    <code-example path="getting-started/src/app/product-alerts/product-alerts.component.ts" region="input-output"></code-example>
+    <code-example path="getting-started/src/app/product-alerts/product-alerts.component.ts" header="src/app/product-alerts/product-alerts.component.ts" region="input-output"></code-example>
 
-1. In the product alert template (`product-alerts.component.html`), update the "Notify Me" button with an event binding to call the `notify.emit()` method.
+1. In the product alert template, `product-alerts.component.html`, update the "Notify Me" button with an event binding to call the `notify.emit()` method.
 
     <code-example header="src/app/product-alerts/product-alerts.component.html" path="getting-started/src/app/product-alerts/product-alerts.component.html"></code-example>
 
-1. Next, define the behavior that should happen when the button is clicked. Recall that it's the parent (product list component)&mdash;not the product alerts component&mdash;that's going to take the action. In the `product-list.component.ts` file, define an `onNotify()` method, similar to the `share()` method:
+1. Next, define the behavior that should happen when the user clicks the button. Recall that it's the parent, product list component&mdash;not the product alerts component&mdash;that's acts when the child raises the event. In  `product-list.component.ts`, define an `onNotify()` method, similar to the `share()` method:
 
     <code-example header="src/app/product-list/product-list.component.ts" path="getting-started/src/app/product-list/product-list.component.ts" region="on-notify"></code-example>
 
@@ -318,7 +321,7 @@ The "Notify Me" button doesn't do anything yet. In this section, you'll set up t
 
     <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.6.html" region="on-notify"></code-example>
 
-1. Try out the "Notify Me" button:
+1. Try the "Notify Me" button:
 
     <figure>
       <img src="generated/images/guide/start/product-alert-notification.png" alt="Product alert notification confirmation dialog">
@@ -327,7 +330,7 @@ The "Notify Me" button doesn't do anything yet. In this section, you'll set up t
 
 <div class="alert is-helpful">
 
-Learn more: See [Component Interaction](guide/component-interaction "Components & Templates > Component Interaction") for more information about listening for events from child components, reading child properties or invoking child methods, and using a service for bi-directional communication within the family.
+See [Component Interaction](guide/component-interaction "Components & Templates > Component Interaction") for more information about listening for events from child components, reading child properties or invoking child methods, and using a service for bi-directional communication between components.
 
 </div>
 
@@ -337,7 +340,7 @@ Learn more: See [Component Interaction](guide/component-interaction "Components 
 
 Congratulations! You've completed your first Angular app!
 
-You have a basic online store catalog, with a product list, "Share" button, and "Notify Me" button.
+You have a basic online store catalog with a product list, "Share" button, and "Notify Me" button.
 You've learned about the foundation of Angular: components and template syntax.
 You've also learned how the component class and template interact, and how components communicate with each other.
 
