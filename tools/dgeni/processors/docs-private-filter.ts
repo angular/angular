@@ -9,6 +9,7 @@ import {getDocsPublicTag, isPublicDoc} from '../common/private-docs';
 export class DocsPrivateFilter implements Processor {
   name = 'docs-private-filter';
   $runBefore = ['categorizer'];
+  $runAfter = ['merge-inherited-properties'];
 
   $process(docs: DocCollection) {
     return docs.filter(doc => {
