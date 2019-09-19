@@ -14,7 +14,6 @@ import {getBindingValue, getMapProp, getMapValue, getValue, getValuesCount, isSt
 import {setStylingMapsSyncFn} from './bindings';
 
 
-
 /**
  * --------
  *
@@ -267,19 +266,31 @@ function innerSyncStylingMap(
  *
  * - value is being applied:
  *   if the value is being applied from this current styling
- *   map then there is no need to apply it in a deeper map.
+ *   map then there is no need to apply it in a deeper map
+ *   (i.e. the `SkipTargetProp` flag is set)
  *
  * - value is being not applied:
  *   apply the value if it is found in a deeper map.
+ *   (i.e. the `SkipTargetProp` flag is unset)
  *
  * When these reasons are encountered the flags will for the
  * inner map mode will be configured.
  */
 function resolveInnerMapMode(
-    currentMode: number, valueIsDefined: boolean, isExactMatch: boolean): number {
+    currentMode: number, valueIsDefined: boolean, isTargetPropMatched: boolean): number {
   let innerMode = currentMode;
-  if (!valueIsDefined && !(currentMode & StylingMapsSyncMode.SkipTargetProp) &&
-      (isExactMatch || (currentMode & StylingMapsSyncMode.ApplyAllValues))) {
+
+  // the statements below figure out whether or not an inner styling map
+  // is allowed to apply its value or not. The main thing to keep note
+  // of is that if the target prop isn't matched then its expected that
+  // all values before it are allowed to be applied so long as "apply all values"
+  // is set to true.
+  const applyAllValues = currentMode & StylingMapsSyncMode.ApplyAllValues;
+  const applyTargetProp = currentMode & StylingMapsSyncMode.ApplyTargetProp;
+  const allowInnerApply =
+      !valueIsDefined && (isTargetPropMatched ? applyTargetProp : applyAllValues);
+
+  if (allowInnerApply) {
     // case 1: set the mode to apply the targeted prop value if it
     // ends up being encountered in another map value
     innerMode |= StylingMapsSyncMode.ApplyTargetProp;

@@ -152,7 +152,7 @@ function updateBindingData(
     const doSetValuesAsStale = (getConfig(context) & TStylingConfig.HasHostBindings) &&
         !hostBindingsMode && (prop ? !value : true);
     if (doSetValuesAsStale) {
-      renderHostBindingsAsStale(context, data, prop, !prop);
+      renderHostBindingsAsStale(context, data, prop);
     }
   }
   return changed;
@@ -170,28 +170,32 @@ function updateBindingData(
  * binding changes.
  */
 function renderHostBindingsAsStale(
-    context: TStylingContext, data: LStylingData, prop: string | null, isMapBased: boolean): void {
+    context: TStylingContext, data: LStylingData, prop: string | null): void {
   const valuesCount = getValuesCount(context);
 
-  if (hasConfig(context, TStylingConfig.HasPropBindings)) {
+  if (prop && hasConfig(context, TStylingConfig.HasPropBindings)) {
     const itemsPerRow = TStylingContextIndex.BindingsStartOffset + valuesCount;
 
     let i = TStylingContextIndex.ValuesStartPosition;
+    let found = false;
     while (i < context.length) {
       if (getProp(context, i) === prop) {
+        found = true;
         break;
       }
       i += itemsPerRow;
     }
 
-    const bindingsStart = i + TStylingContextIndex.BindingsStartOffset;
-    const valuesStart = bindingsStart + 1;  // the first column is template bindings
-    const valuesEnd = bindingsStart + valuesCount - 1;
+    if (found) {
+      const bindingsStart = i + TStylingContextIndex.BindingsStartOffset;
+      const valuesStart = bindingsStart + 1;  // the first column is template bindings
+      const valuesEnd = bindingsStart + valuesCount - 1;
 
-    for (let i = valuesStart; i < valuesEnd; i++) {
-      const bindingIndex = context[i] as number;
-      if (bindingIndex !== 0) {
-        setValue(data, bindingIndex, null);
+      for (let i = valuesStart; i < valuesEnd; i++) {
+        const bindingIndex = context[i] as number;
+        if (bindingIndex !== 0) {
+          setValue(data, bindingIndex, null);
+        }
       }
     }
   }
@@ -575,9 +579,18 @@ export function applyStylingViaContext(
           // determine whether or not to apply the target property or to skip it
           let mode = mapsMode | (valueApplied ? StylingMapsSyncMode.SkipTargetProp :
                                                 StylingMapsSyncMode.ApplyTargetProp);
+
+          // the first column in the context (when `j == 0`) is special-cased for
+          // template bindings. If and when host bindings are being processed then
+          // the first column will still be iterated over, but the values will only
+          // be checked against (not applied). If and when this happens we need to
+          // notify the map-based syncing code to know not to apply the values it
+          // comes across in the very first map-based binding (which is also located
+          // in column zero).
           if (hostBindingsMode && j === 0) {
             mode |= StylingMapsSyncMode.CheckValuesOnly;
           }
+
           const valueAppliedWithinMap = stylingMapsSyncFn(
               context, renderer, element, bindingData, j, applyStylingFn, sanitizer, mode, prop,
               defaultValue);
