@@ -166,27 +166,14 @@ export function getPropValuesStartPosition(context: TStylingContext) {
   return startPosition;
 }
 
-export function isMapBased(prop: string) {
-  return prop === MAP_BASED_ENTRY_PROP_NAME;
-}
-
 export function hasValueChanged(
     a: NO_CHANGE | StylingMapArray | number | String | string | null | boolean | undefined | {},
     b: NO_CHANGE | StylingMapArray | number | String | string | null | boolean | undefined |
         {}): boolean {
   if (b === NO_CHANGE) return false;
 
-  let compareValueA = Array.isArray(a) ? a[StylingMapArrayIndex.RawValuePosition] : a;
-  let compareValueB = Array.isArray(b) ? b[StylingMapArrayIndex.RawValuePosition] : b;
-
-  // these are special cases for String based values (which are created as artifacts
-  // when sanitization is bypassed on a particular value)
-  if (compareValueA instanceof String) {
-    compareValueA = compareValueA.toString();
-  }
-  if (compareValueB instanceof String) {
-    compareValueB = compareValueB.toString();
-  }
+  const compareValueA = Array.isArray(a) ? a[StylingMapArrayIndex.RawValuePosition] : a;
+  const compareValueB = Array.isArray(b) ? b[StylingMapArrayIndex.RawValuePosition] : b;
   return !Object.is(compareValueA, compareValueB);
 }
 
