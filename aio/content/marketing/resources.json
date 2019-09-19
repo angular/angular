@@ -667,6 +667,13 @@
             "rev": true,
             "title": "MDB Angular Boilerplate",
             "url": "https://github.com/mdbootstrap/Angular-Bootstrap-Boilerplate"
+          },
+          "dotnettricks": {
+            "desc": "Online videos and training for Angular.",
+            "logo": "",
+            "rev": true,
+            "title": "DotNetTricks",
+            "url": "https://www.dotnettricks.com/courses/angular"
           }
         }
       },
