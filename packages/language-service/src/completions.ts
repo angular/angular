@@ -28,6 +28,8 @@ const hiddenHtmlElements = {
   link: true,
 };
 
+const angularPseudoElements = ['ng-container', 'ng-content', 'ng-template'];
+
 export function getTemplateCompletions(
     templateInfo: AstResult, position: number): ts.CompletionEntry[] {
   let result: ts.CompletionEntry[] = [];
@@ -242,9 +244,18 @@ function elementCompletions(info: AstResult, path: AstPath<HtmlAst>): ts.Complet
       sortText: name,
     };
   });
+  const pseudoElements = angularPseudoElements.map(name => {
+    return {
+      name,
+      // Need to cast to unknown because Angular's CompletionKind includes HTML
+      // entites.
+      kind: CompletionKind.COMPONENT as unknown as ts.ScriptElementKind,
+      sortText: name,
+    };
+  });
 
   // Return components and html elements
-  return uniqueByName(htmlElements.concat(components));
+  return uniqueByName([...htmlElements, ...components, ...pseudoElements]);
 }
 
 /**

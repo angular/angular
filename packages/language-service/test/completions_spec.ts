@@ -51,6 +51,16 @@ describe('completions', () => {
     ]);
   });
 
+  it('should be able to return angular pseudo elements', () => {
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'empty');
+    const completions = ngLS.getCompletionsAt(APP_COMPONENT, marker.start);
+    expectContain(completions, CompletionKind.ANGULAR_ELEMENT, [
+      'ng-container',
+      'ng-content',
+      'ng-template',
+    ]);
+  });
+
   it('should be able to return h1 attributes', () => {
     const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'h1-after-space');
     const completions = ngLS.getCompletionsAt(APP_COMPONENT, marker.start);
