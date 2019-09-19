@@ -1,3 +1,4 @@
+import {Platform} from '@angular/cdk/platform';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
@@ -10,6 +11,7 @@ import {MatRadioButtonHarness, MatRadioGroupHarness} from './radio-harness';
 export function runHarnessTests(radioModule: typeof MatRadioModule,
                                 radioGroupHarness: typeof MatRadioGroupHarness,
                                 radioButtonHarness: typeof MatRadioButtonHarness) {
+  const platform = new Platform();
   let fixture: ComponentFixture<MultipleRadioButtonsHarnessTest>;
   let loader: HarnessLoader;
 
@@ -225,6 +227,13 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
     });
 
     it('should not be able to check disabled radio-button', async () => {
+      if (platform.FIREFOX) {
+        // do run this test on firefox as click events on the label of the underlying
+        // input checkbox cause the value to be changed. Read more in the bug report:
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=1540995
+        return;
+      }
+
       fixture.componentInstance.disableAll = true;
       fixture.detectChanges();
 

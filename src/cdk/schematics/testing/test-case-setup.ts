@@ -81,6 +81,15 @@ export async function createTestCaseSetup(migrationName: string, collectionPath:
     writeFile(relativePath, inputContent);
   });
 
+  const testAppTsconfigPath = 'projects/cdk-testing/tsconfig.app.json';
+  const testAppTsconfig = JSON.parse(appTree.readContent(testAppTsconfigPath));
+
+  // include all TypeScript files in the project. Otherwise all test input
+  // files won't be part of the program and cannot be migrated.
+  testAppTsconfig.include.push('src/**/*.ts');
+
+  writeFile(testAppTsconfigPath, JSON.stringify(testAppTsconfig, null, 2));
+
   const runFixers = async function() {
     // Switch to the new temporary directory to simulate that "ng update" is ran
     // from within the project.

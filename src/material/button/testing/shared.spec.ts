@@ -83,9 +83,11 @@ export function runHarnessTests(
 
   it('should not click a disabled button', async () => {
     // Older versions of Edge have a bug where `disabled` buttons are still clickable if
-    // they contain child elements. We skip this check on Edge.
-    // See https://stackoverflow.com/questions/32377026/disabled-button-is-clickable-on-edge-browser
-    if (platform.EDGE) {
+    // they contain child elements. Also new versions of Firefox (starting v65) do not
+    // cancel dispatched click events on disabled buttons. We skip this check on Edge and Firefox.
+    // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1582570 and:
+    // https://stackoverflow.com/questions/32377026/disabled-button-is-clickable-on-edge-browser
+    if (platform.EDGE || platform.FIREFOX) {
       return;
     }
 

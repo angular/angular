@@ -5,11 +5,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules (explicitly used for sass bundle rules)
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "3356c6b767403392bab018ce91625f6d15ff8f11c6d772dc84bc9cada01c669a",
-    # Note that we cannot update to rules_nodejs#0.36.2 as it contains a bug where
-    # node output binaries cannot be launched on windows. We can update once the
-    # fix is released: https://github.com/bazelbuild/rules_nodejs/pull/1104.
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.36.1/rules_nodejs-0.36.1.tar.gz"],
+    sha256 = "da217044d24abd16667324626a33581f3eaccabf80985b2688d6a08ed2f864be",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.37.1/rules_nodejs-0.37.1.tar.gz"],
 )
 
 # Add sass rules
@@ -76,9 +73,12 @@ load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories"
 
 web_test_repositories()
 
-load("@npm_bazel_karma//:browser_repositories.bzl", "browser_repositories")
+load("@io_bazel_rules_webtesting//web/versioned:browsers-0.3.2.bzl", "browser_repositories")
 
-browser_repositories()
+browser_repositories(
+    chromium = True,
+    firefox = True,
+)
 
 # Fetch transitive dependencies which are needed to use the Sass rules.
 load("@io_bazel_rules_sass//:package.bzl", "rules_sass_dependencies")
