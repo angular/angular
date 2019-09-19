@@ -304,7 +304,7 @@ Configure the Angular Router to defer loading of all other modules (and their as
 or by [_lazy loading_](guide/router#asynchronous-routing "Lazy loading")
 them on demand.
 
-<div class="callout is-helpful>
+<div class="callout is-helpful">
 
 <header>Don't eagerly import something from a lazy-loaded module</header>
 
