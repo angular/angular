@@ -358,7 +358,7 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
     const debugNodes: DebugNode[] = [];
     let tNodeCursor: TNode|null = tNode;
     while (tNodeCursor) {
-      debugNodes.push(buildDebugNode(tNodeCursor, lView));
+      debugNodes.push(buildDebugNode(tNodeCursor, lView, tNodeCursor.index));
       tNodeCursor = tNodeCursor.next;
     }
     return debugNodes;
@@ -367,8 +367,8 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
   }
 }
 
-export function buildDebugNode(tNode: TNode, lView: LView): DebugNode {
-  const rawValue = lView[tNode.index];
+export function buildDebugNode(tNode: TNode, lView: LView, nodeIndex: number): DebugNode {
+  const rawValue = lView[nodeIndex];
   const native = unwrapRNode(rawValue);
   const componentLViewDebug = toDebug(readLViewValue(rawValue));
   const styles = isStylingContext(tNode.styles) ?

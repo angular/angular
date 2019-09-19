@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {Component, Directive, InjectionToken, ViewChild} from '@angular/core';
+import {Component, Directive, HostBinding, InjectionToken, ViewChild} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {onlyInIvy} from '@angular/private/testing';
 
@@ -428,6 +428,40 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils deprecated', () =>
 
       expect(parentDebug.native).toBe(parent);
       expect(childDebug.native).toBe(child);
+    });
+
+    it('should be able to pull debug information for a component host element', () => {
+      @Component({
+        selector: 'child-comp',
+        template: `
+          child comp
+        `
+      })
+      class ChildComp {
+        @HostBinding('style') public styles = {width: '200px', height: '400px'};
+      }
+
+      @Component({
+        template: `
+          <child-comp></child-comp>
+        `
+      })
+      class Comp {
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp, ChildComp]});
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      const child = fixture.nativeElement.querySelector('child-comp') !;
+      const childDebug = getDebugNode(child) !;
+
+      expect(childDebug.native).toBe(child);
+      expect(childDebug.styles).toBeTruthy();
+
+      const styles = childDebug.styles !.values;
+      expect(styles['width']).toEqual('200px');
+      expect(styles['height']).toEqual('400px');
     });
   });
 });

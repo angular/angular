@@ -14,7 +14,8 @@ import {DebugNode, buildDebugNode} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
-import {CLEANUP, CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, TVIEW} from '../interfaces/view';
+import {isLView} from '../interfaces/type_checks';
+import {CLEANUP, CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, TVIEW, T_HOST} from '../interfaces/view';
 
 import {stringifyForError} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
@@ -357,17 +358,14 @@ export function getDebugNode(element: Node): DebugNode|null {
 
   const lContext = loadLContextFromNode(element);
   const lView = lContext.lView;
-  let nodeIndex = -1;
-  for (let i = HEADER_OFFSET; i < lView.length; i++) {
-    if (lView[i] === element) {
-      nodeIndex = i - HEADER_OFFSET;
-      break;
-    }
-  }
-
+  const nodeIndex = lContext.nodeIndex;
   if (nodeIndex !== -1) {
-    const tNode = getTNode(nodeIndex, lView);
-    debugNode = buildDebugNode(tNode, lView);
+    const valueInLView = lView[nodeIndex];
+    // this means that value in the lView is a component with its own
+    // data. In this situation the TNode is not accessed at the same spot.
+    const tNode = isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) :
+                                          getTNode(nodeIndex - HEADER_OFFSET, lView);
+    debugNode = buildDebugNode(tNode, lView, nodeIndex);
   }
 
   return debugNode;
