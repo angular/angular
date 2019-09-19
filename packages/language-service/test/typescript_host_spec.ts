@@ -189,4 +189,31 @@ describe('TypeScriptServiceHost', () => {
     expect(directiveSymbol).toBeDefined();
     expect(directiveSymbol !.name).toBe('AppComponent');
   });
+
+  it('should allow for retreiving analyzedModules in synchronized mode', () => {
+    const fileName = '/app/app.component.ts';
+    const tsLSHost = new MockTypescriptHost([fileName]);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+
+    // Get initial state
+    const originalModules = ngLSHost.getAnalyzedModules();
+
+    // Override app.component.ts with a different component
+    tsLSHost.override(fileName, `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<div>Hello!</div>',
+      })
+      export class HelloComponent {}
+    `);
+    // Make sure synchronized modules match the original state
+    const syncModules = ngLSHost.getAnalyzedModules(true);
+    expect(originalModules).toEqual(syncModules);
+
+    // Now, get modules for the updated project, which should not be synchronized
+    const updatedModules = ngLSHost.getAnalyzedModules();
+    expect(updatedModules).not.toEqual(syncModules);
+  });
 });
