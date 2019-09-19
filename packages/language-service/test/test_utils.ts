@@ -149,7 +149,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   }
 
   getScriptSnapshot(fileName: string): ts.IScriptSnapshot|undefined {
-    const content = this.getFileContent(fileName);
+    const content = this.readFile(fileName);
     if (content) return ts.ScriptSnapshot.fromString(content);
     return undefined;
   }
@@ -172,7 +172,12 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
 
   fileExists(fileName: string): boolean { return this.getRawFileContent(fileName) != null; }
 
-  readFile(path: string): string|undefined { return this.getRawFileContent(path); }
+  readFile(fileName: string): string|undefined {
+    const content = this.getRawFileContent(fileName);
+    if (content) {
+      return removeReferenceMarkers(removeLocationMarkers(content));
+    }
+  }
 
   getMarkerLocations(fileName: string): {[name: string]: number}|undefined {
     let content = this.getRawFileContent(fileName);
@@ -186,11 +191,6 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     if (content) {
       return getReferenceMarkers(content);
     }
-  }
-
-  getFileContent(fileName: string): string|undefined {
-    const content = this.getRawFileContent(fileName);
-    if (content) return removeReferenceMarkers(removeLocationMarkers(content));
   }
 
   /**
@@ -269,7 +269,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
    */
   addCode(code: string) {
     const fileName = '/app/app.component.ts';
-    const originalContent = this.getFileContent(fileName);
+    const originalContent = this.readFile(fileName);
     const newContent = originalContent + code;
     this.override(fileName, newContent);
     return fileName;
