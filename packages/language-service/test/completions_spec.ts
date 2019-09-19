@@ -88,12 +88,12 @@ describe('completions', () => {
         } catch (e) {
           // Emit enough diagnostic information to reproduce the error.
           console.error(
-              `Position: ${position}\nContent: "${mockHost.getFileContent(fileName)}"\nStack:\n${e.stack}`);
+              `Position: ${position}\nContent: "${mockHost.readFile(fileName)}"\nStack:\n${e.stack}`);
           throw e;
         }
       }
 
-      const originalContent = mockHost.getFileContent(fileName) !;
+      const originalContent = mockHost.readFile(fileName) !;
 
       // For each character in the file, add it to the file and request a completion after it.
       for (let index = 0, len = originalContent.length; index < len; index++) {

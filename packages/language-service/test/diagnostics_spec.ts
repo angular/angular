@@ -109,7 +109,7 @@ describe('diagnostics', () => {
     expect(messageText)
         .toBe(
             `Component 'MyComponent' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration.`);
-    const content = mockHost.getFileContent(fileName) !;
+    const content = mockHost.readFile(fileName) !;
     const keyword = '@Component';
     expect(start).toBe(content.lastIndexOf(keyword) + 1);  // exclude leading '@'
     expect(length).toBe(keyword.length - 1);               // exclude leading '@'
