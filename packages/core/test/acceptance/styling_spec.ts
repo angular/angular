@@ -1995,6 +1995,46 @@ describe('styling', () => {
        expect(readyHost).toBeTruthy();
        expect(readyChild).toBeTruthy();
      });
+
+  onlyInIvy('only ivy allows for multiple styles/classes to be balanaced across directives')
+      .it('should allow various duplicate properties to be defined in various styling maps within the template and directive styling bindings',
+          () => {
+            @Component({
+              template: `
+           <div [style.width]="w"
+                [style.height]="h"
+                [style]="s1"
+                [dir-with-styling]="s2">
+         `
+            })
+            class Cmp {
+              h = '100px';
+              w = '100px';
+              s1: any = {border: '10px solid black', width: '200px'};
+              s2: any = {border: '10px solid red', width: '300px'};
+            }
+
+            @Directive({selector: '[dir-with-styling]'})
+            class DirectiveExpectingStyling {
+              @Input('dir-with-styling') @HostBinding('style') public styles: any = null;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirectiveExpectingStyling]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            const element = fixture.nativeElement.querySelector('div');
+            expect(element.style.border).toEqual('10px solid black');
+            expect(element.style.width).toEqual('100px');
+            expect(element.style.height).toEqual('100px');
+
+            fixture.componentInstance.s1 = null;
+            fixture.detectChanges();
+
+            expect(element.style.border).toEqual('10px solid red');
+            expect(element.style.width).toEqual('100px');
+            expect(element.style.height).toEqual('100px');
+          });
 });
 
 function getDebugNode(element: Node): DebugNode|null {
