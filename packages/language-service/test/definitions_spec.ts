@@ -155,7 +155,7 @@ describe('definitions', () => {
     expect(def.fileName).toBe(refFileName);
     expect(def.name).toBe('TestComponent');
     expect(def.kind).toBe('component');
-    const content = mockHost.getFileContent(refFileName) !;
+    const content = mockHost.readFile(refFileName) !;
     const begin = '/*BeginTestComponent*/ ';
     const start = content.indexOf(begin) + begin.length;
     const end = content.indexOf(' /*EndTestComponent*/');
@@ -192,7 +192,7 @@ describe('definitions', () => {
     expect(def.fileName).toBe(refFileName);
     expect(def.name).toBe('testEvent');
     expect(def.kind).toBe('event');
-    const content = mockHost.getFileContent(refFileName) !;
+    const content = mockHost.readFile(refFileName) !;
     const ref = `@Output('test') testEvent = new EventEmitter();`;
     expect(def.textSpan).toEqual({
       start: content.indexOf(ref),
@@ -230,7 +230,7 @@ describe('definitions', () => {
     expect(def.fileName).toBe(refFileName);
     expect(def.name).toBe('name');
     expect(def.kind).toBe('property');
-    const content = mockHost.getFileContent(refFileName) !;
+    const content = mockHost.readFile(refFileName) !;
     const ref = `@Input('tcName') name = 'test';`;
     expect(def.textSpan).toEqual({
       start: content.indexOf(ref),
