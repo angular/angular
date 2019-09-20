@@ -8,6 +8,8 @@
 
 import {global} from './global';
 
+// goog.define
+
 declare global {
   const ngI18nClosureMode: boolean;
 }
