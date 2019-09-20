@@ -130,7 +130,7 @@ describe('TypeScriptServiceHost', () => {
       import {Component} from '@angular/core';
 
       @Component({
-        template: '<div>Hello</div>
+        template: '<div>Hello</div>',
       })
       export class HelloComponent {}
     `);
