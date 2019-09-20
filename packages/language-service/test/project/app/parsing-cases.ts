@@ -49,21 +49,21 @@ export class NoValueAttribute {
   template: '<h1 model="~{attribute-binding-model}test"></h1>',
 })
 export class AttributeBinding {
-  test: string;
+  test: string = 'test';
 }
 
 @Component({
   template: '<h1 [model]="~{property-binding-model}test"></h1>',
 })
 export class PropertyBinding {
-  test: string;
+  test: string = 'test';
 }
 
 @Component({
   template: '<h1 (model)="~{event-binding-model}modelChanged()"></h1>',
 })
 export class EventBinding {
-  test: string;
+  test: string = 'test';
 
   modelChanged() {}
 }
@@ -72,23 +72,23 @@ export class EventBinding {
   template: '<h1 [(model)]="~{two-way-binding-model}test"></h1>',
 })
 export class TwoWayBinding {
-  test: string;
+  test: string = 'test';
 }
 
 @Directive({
   selector: '[string-model]',
 })
 export class StringModel {
-  @Input() model: string;
-  @Output() modelChanged: EventEmitter<string>;
+  @Input() model: string = 'model';
+  @Output() modelChanged: EventEmitter<string> = new EventEmitter();
 }
 
 @Directive({
   selector: '[number-model]',
 })
 export class NumberModel {
-  @Input('inputAlias') model: number;
-  @Output('outputAlias') modelChanged: EventEmitter<number>;
+  @Input('inputAlias') model: number = 0;
+  @Output('outputAlias') modelChanged: EventEmitter<number> = new EventEmitter();
 }
 
 interface Person {
@@ -122,7 +122,7 @@ export class ForLetIEqual {
     </div>`,
 })
 export class ForUsingComponent {
-  people: Person[];
+  people: Person[] = [];
 }
 
 @Component({

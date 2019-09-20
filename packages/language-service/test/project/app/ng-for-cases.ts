@@ -29,7 +29,7 @@ export class UnknownPeople {
     </div>`,
 })
 export class UnknownEven {
-  people: Person[];
+  people: Person[] = [];
 }
 
 @Component({
@@ -39,5 +39,5 @@ export class UnknownEven {
     </div>`,
 })
 export class UnknownTrackBy {
-  people: Person[];
+  people: Person[] = [];
 }

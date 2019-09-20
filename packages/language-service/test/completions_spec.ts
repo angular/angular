@@ -152,10 +152,9 @@ describe('completions', () => {
   });
 
   it('should respect paths configuration', () => {
-    mockHost.overrideOptions(options => {
-      options.baseUrl = '/app';
-      options.paths = {'bar/*': ['foo/bar/*']};
-      return options;
+    mockHost.overrideOptions({
+      baseUrl: '/app',
+      paths: {'bar/*': ['foo/bar/*']},
     });
     mockHost.addScript('/app/foo/bar/shared.ts', `
       export interface Node {
