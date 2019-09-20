@@ -209,7 +209,7 @@ describe('TypeScriptServiceHost', () => {
       export class HelloComponent {}
     `);
     // Make sure synchronized modules match the original state
-    const syncModules = ngLSHost.getAnalyzedModules(true);
+    const syncModules = ngLSHost.getAnalyzedModules(false);
     expect(originalModules).toEqual(syncModules);
 
     // Now, get modules for the updated project, which should not be synchronized
