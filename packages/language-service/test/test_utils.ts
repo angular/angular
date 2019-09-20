@@ -79,6 +79,17 @@ function loadTourOfHeroes(): ReadonlyMap<string, string> {
 }
 
 const TOH = loadTourOfHeroes();
+const COMPILER_OPTIONS: Readonly<ts.CompilerOptions> = {
+  target: ts.ScriptTarget.ES5,
+  module: ts.ModuleKind.CommonJS,
+  moduleResolution: ts.ModuleResolutionKind.NodeJs,
+  emitDecoratorMetadata: true,
+  experimentalDecorators: true,
+  removeComments: false,
+  noImplicitAny: false,
+  lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
+  strict: true,
+};
 
 export class MockTypescriptHost implements ts.LanguageServiceHost {
   private angularPath?: string;
@@ -98,16 +109,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     const support = setup();
     this.nodeModulesPath = path.posix.join(support.basePath, 'node_modules');
     this.angularPath = path.posix.join(this.nodeModulesPath, '@angular');
-    this.options = {
-      target: ts.ScriptTarget.ES5,
-      module: ts.ModuleKind.CommonJS,
-      moduleResolution: ts.ModuleResolutionKind.NodeJs,
-      emitDecoratorMetadata: true,
-      experimentalDecorators: true,
-      removeComments: false,
-      noImplicitAny: false,
-      lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
-    };
+    this.options = COMPILER_OPTIONS;
   }
 
   override(fileName: string, content: string) {
@@ -133,12 +135,12 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
 
   forgetAngular() { this.angularPath = undefined; }
 
-  overrideOptions(cb: (options: ts.CompilerOptions) => ts.CompilerOptions) {
-    this.options = cb((Object as any).assign({}, this.options));
+  overrideOptions(options: Partial<ts.CompilerOptions>) {
+    this.options = {...this.options, ...options};
     this.projectVersion++;
   }
 
-  getCompilationSettings(): ts.CompilerOptions { return this.options; }
+  getCompilationSettings(): ts.CompilerOptions { return {...this.options}; }
 
   getProjectVersion(): string { return this.projectVersion.toString(); }
 
@@ -199,6 +201,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   reset() {
     this.overrides.clear();
     this.overrideDirectory.clear();
+    this.options = COMPILER_OPTIONS;
   }
 
   private getRawFileContent(fileName: string): string|undefined {
