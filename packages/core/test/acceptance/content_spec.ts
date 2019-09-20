@@ -1025,6 +1025,36 @@ describe('projection', () => {
     expect(fixture.nativeElement.textContent).not.toContain('Title content');
   });
 
+  it('should preserve ngProjectAs and other attributes on projected element', () => {
+    @Component({
+      selector: 'projector',
+      template: `<ng-content select="projectMe"></ng-content>`,
+    })
+    class Projector {
+    }
+
+    @Component({
+      template: `
+        <projector>
+          <div ngProjectAs="projectMe" title="some title"></div>
+        </projector>
+      `
+    })
+    class Root {
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [Root, Projector],
+    });
+    const fixture = TestBed.createComponent(Root);
+    fixture.detectChanges();
+
+    const projectedElement = fixture.debugElement.query(By.css('div'));
+    const {ngProjectAs, title} = projectedElement.attributes;
+    expect(ngProjectAs).toBe('projectMe');
+    expect(title).toBe('some title');
+  });
+
   describe('on inline templates (e.g.  *ngIf)', () => {
     it('should work when matching the element name', () => {
       let divDirectives = 0;

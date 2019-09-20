@@ -497,17 +497,23 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const projectionSlotIdx = this._ngContentSelectorsOffset + this._ngContentReservedSlots.length;
     const parameters: o.Expression[] = [o.literal(slot)];
     const attributes: o.Expression[] = [];
+    let ngProjectAsAttr: t.TextAttribute|undefined;
 
     this._ngContentReservedSlots.push(ngContent.selector);
 
     ngContent.attributes.forEach((attribute) => {
       const {name, value} = attribute;
       if (name === NG_PROJECT_AS_ATTR_NAME) {
-        attributes.push(...getNgProjectAsLiteral(attribute));
-      } else if (name.toLowerCase() !== NG_CONTENT_SELECT_ATTR) {
+        ngProjectAsAttr = attribute;
+      }
+      if (name.toLowerCase() !== NG_CONTENT_SELECT_ATTR) {
         attributes.push(o.literal(name), o.literal(value));
       }
     });
+
+    if (ngProjectAsAttr) {
+      attributes.push(...getNgProjectAsLiteral(ngProjectAsAttr));
+    }
 
     if (attributes.length > 0) {
       parameters.push(o.literal(projectionSlotIdx), o.literalArr(attributes));
@@ -535,6 +541,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const i18nAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
     const outputAttrs: t.TextAttribute[] = [];
+    let ngProjectAsAttr: t.TextAttribute|undefined;
 
     const [namespaceKey, elementName] = splitNsName(element.name);
     const isNgContainer = checkIsNgContainer(element.name);
@@ -549,6 +556,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       } else if (name === 'class') {
         stylingBuilder.registerClassAttr(value);
       } else {
+        if (attr.name === NG_PROJECT_AS_ATTR_NAME) {
+          ngProjectAsAttr = attr;
+        }
         if (attr.i18n) {
           // Place attributes into a separate array for i18n processing, but also keep such
           // attributes in the main list to make them available for directive matching at runtime.
@@ -590,16 +600,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     outputAttrs.forEach(attr => {
-      if (attr.name === NG_PROJECT_AS_ATTR_NAME) {
-        attributes.push(...getNgProjectAsLiteral(attr));
-      } else {
-        attributes.push(...getAttributeNameLiterals(attr.name), o.literal(attr.value));
-      }
+      attributes.push(...getAttributeNameLiterals(attr.name), o.literal(attr.value));
     });
 
     // add attributes for directive and projection matching purposes
     attributes.push(...this.prepareNonRenderAttrs(
-        allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs));
+        allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs, ngProjectAsAttr));
     parameters.push(this.toAttrsParam(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -1206,6 +1212,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    *   STYLES, style1, value1, style2, value2,
    *   BINDINGS, name1, name2, name3,
    *   TEMPLATE, name4, name5, name6,
+   *   PROJECT_AS, selector,
    *   I18N, name7, name8, ...]
    * ```
    *
@@ -1215,7 +1222,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private prepareNonRenderAttrs(
       inputs: t.BoundAttribute[], outputs: t.BoundEvent[], styles?: StylingBuilder,
       templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
-      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
+      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
+      ngProjectAsAttr?: t.TextAttribute): o.Expression[] {
     const alreadySeen = new Set<string>();
     const attrExprs: o.Expression[] = [];
 
@@ -1269,6 +1277,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (templateAttrs.length) {
       attrExprs.push(o.literal(core.AttributeMarker.Template));
       templateAttrs.forEach(attr => addAttrExpr(attr.name));
+    }
+
+    if (ngProjectAsAttr) {
+      attrExprs.push(...getNgProjectAsLiteral(ngProjectAsAttr));
     }
 
     if (i18nAttrs.length) {
