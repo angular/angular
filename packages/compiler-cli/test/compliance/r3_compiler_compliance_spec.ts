@@ -1376,7 +1376,7 @@ describe('compiler compliance', () => {
         const SimpleComponentDefinition = `
           const $_c0$ = [[["", "title", ""]]];
           const $_c1$ = ["[title]"];
-          const $_c2$ = [5, ["", "title", ""]];
+          const $_c2$ = ["ngProjectAs", "[title]", 5, ["", "title", ""]];
           …
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyApp,
@@ -1428,7 +1428,7 @@ describe('compiler compliance', () => {
         const SimpleComponentDefinition = `
           const $_c0$ = [[["", "title", ""]]];
           const $_c1$ = ["[title]"];
-          const $_c2$ = [5, ["", "title", ""]];
+          const $_c2$ = ["ngProjectAs", "[title],[header]", 5, ["", "title", ""]];
           …
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyApp,
