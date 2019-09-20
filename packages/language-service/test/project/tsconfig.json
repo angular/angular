@@ -1,0 +1,11 @@
+{
+  "//00": "This file is used for IDE only, actual compilation options is in MockTypescriptHost in test_utils.ts",
+  "compilerOptions": {
+    "strict": true,
+    "experimentalDecorators": true,
+    "baseUrl": "../../../..",
+    "paths": {
+      "@angular/*": ["packages/*"]
+    }
+  }
+}

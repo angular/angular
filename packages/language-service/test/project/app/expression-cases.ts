@@ -44,5 +44,5 @@ export class ExpectNumericType {
   template: '{{ (name | lowercase).~{string-pipe}substring }}',
 })
 export class LowercasePipe {
-  name: string;
+  name: string = 'name';
 }

@@ -191,7 +191,7 @@ describe('diagnostics', () => {
     expect(() => ngLS.getDiagnostics(fileName)).not.toThrow();
   });
 
-  it('should not report an error for sub-types of string', () => {
+  it('should not report an error for sub-types of string in non-strict mode', () => {
     const fileName = '/app/app.component.ts';
     mockHost.override(fileName, `
       import { Component } from '@angular/core';
@@ -202,13 +202,16 @@ describe('diagnostics', () => {
       export class AppComponent {
         something: 'foo' | 'bar';
       }`);
+    mockHost.overrideOptions({
+      strict: false,  // TODO: this test fails in strict mode
+    });
     const tsDiags = tsLS.getSemanticDiagnostics(fileName);
     expect(tsDiags).toEqual([]);
     const ngDiags = ngLS.getDiagnostics(fileName);
     expect(ngDiags).toEqual([]);
   });
 
-  it('should not report an error for sub-types of number', () => {
+  it('should not report an error for sub-types of number in non-strict mode', () => {
     const fileName = '/app/app.component.ts';
     mockHost.override(fileName, `
       import { Component } from '@angular/core';
@@ -219,6 +222,9 @@ describe('diagnostics', () => {
       export class AppComponent {
         something: 123 | 456;
       }`);
+    mockHost.overrideOptions({
+      strict: false,  // TODO: This test fails in strict mode
+    });
     const tsDiags = tsLS.getSemanticDiagnostics(fileName);
     expect(tsDiags).toEqual([]);
     const ngDiags = ngLS.getDiagnostics(fileName);
@@ -233,7 +239,7 @@ describe('diagnostics', () => {
       @Component({
         template: '<div (click)="onClick"></div>'
       })
-      export class MyComponent {
+      export class AppComponent {
         onClick() { }
       }`);
     const diagnostics = ngLS.getDiagnostics(fileName) !;
@@ -245,7 +251,7 @@ describe('diagnostics', () => {
   });
 
   // #13412
-  it('should not report an error for using undefined', () => {
+  it('should not report an error for using undefined under non-strict mode', () => {
     const fileName = '/app/app.component.ts';
     mockHost.override(fileName, `
       import { Component } from '@angular/core';
@@ -256,6 +262,9 @@ describe('diagnostics', () => {
       export class AppComponent {
         something = 'foo';
       }`);
+    mockHost.overrideOptions({
+      strict: false,  // TODO: This test fails in strict mode
+    });
     const tsDiags = tsLS.getSemanticDiagnostics(fileName);
     expect(tsDiags).toEqual([]);
     const ngDiags = ngLS.getDiagnostics(fileName);
@@ -342,7 +351,10 @@ describe('diagnostics', () => {
       })
       export class AppComponent {}`);
     const tsDiags = tsLS.getSemanticDiagnostics(fileName);
-    expect(tsDiags).toEqual([]);
+    expect(tsDiags.length).toBe(1);
+    const msgText = ts.flattenDiagnosticMessageText(tsDiags[0].messageText, '\n');
+    expect(msgText).toBe(
+        `Type 'null[]' is not assignable to type 'Provider[]'.\n  Type 'null' is not assignable to type 'Provider'.`);
     const ngDiags = ngLS.getDiagnostics(fileName);
     expect(ngDiags.length).toBe(1);
     const {messageText, start, length} = ngDiags[0];
@@ -391,7 +403,7 @@ describe('diagnostics', () => {
         \`
       })
       export class AppComponent {
-        fieldCount: number;
+        fieldCount: number = 0;
       }`);
     const tsDiags = tsLS.getSemanticDiagnostics(fileName);
     expect(tsDiags).toEqual([]);
@@ -401,9 +413,8 @@ describe('diagnostics', () => {
 
   // Issue #15885
   it('should be able to remove null and undefined from a type', () => {
-    mockHost.overrideOptions(options => {
-      options.strictNullChecks = true;
-      return options;
+    mockHost.overrideOptions({
+      strictNullChecks: true,
     });
     const fileName = '/app/app.component.ts';
     mockHost.override(fileName, `
@@ -441,9 +452,8 @@ describe('diagnostics', () => {
         onSubmit(form: NgForm) {}
       }`);
     mockHost.addScript('/other/files/app/server.ts', 'export class Server {}');
-    mockHost.overrideOptions(options => {
-      options.baseUrl = '/other/files';
-      return options;
+    mockHost.overrideOptions({
+      baseUrl: '/other/files',
     });
     const tsDiags = tsLS.getSemanticDiagnostics(fileName);
     expect(tsDiags).toEqual([]);
@@ -568,10 +578,13 @@ describe('diagnostics', () => {
     it('should not report errors for valid styleUrls', () => {
       const fileName = '/app/app.component.ts';
       mockHost.override(fileName, `
+        import {Component} from '@angular/core';
+
         @Component({
+          template: '<div></div>',
           styleUrls: ['./test.css', './test.css'],
         })
-        export class MyComponent {}`);
+        export class AppComponent {}`);
 
       const diagnostics = ngLS.getDiagnostics(fileName) !;
       expect(diagnostics.length).toBe(0);

@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 
-export class Hero {
+export interface Hero {
   id: number;
   name: string;
 }
@@ -30,5 +30,5 @@ export class Hero {
 export class AppComponent {
   title = 'Tour of Heroes';
   hero: Hero = {id: 1, name: 'Windstorm'};
-  private internal: string;
+  private internal: string = 'internal';
 }
