@@ -90,8 +90,16 @@ The product details component handles the display of each product. The Angular R
     <code-example path="getting-started/src/app/product-details/product-details.component.1.ts" region="get-product">
     </code-example>
 
+    Angular calls `ngOnInit()` shortly after creating a component.
+
     The route parameters correspond to the path variables defined in the route. The `productId` is provided from
-    the URL that was matched to the route. You use the `productId` to display the details for each unique product. 
+    the URL that was matched to the route. You use the `productId` to display the details for each unique product.
+
+    <div class="alert is-helpful">
+
+    For more information on `ngOnInit()`, see [Lifecycle hooks](guide/lifecycle-hooks).
+    
+    </div>
 
 1. Update the template to display product details information inside an `*ngIf`.
 
