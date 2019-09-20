@@ -18,8 +18,11 @@ if [[ ! -z "RUNFILES_DIR" ]]; then
   export RUNFILES_MANIFEST_ONLY="1"
 fi
 
-# Resolve the path of the dev-server binary.
-devserverBin=$(rlocation "angular_material/tools/dev-server/dev-server_bin")
+# Resolve the path of the dev-server binary. Note: usually we either need to
+# resolve the "nodejs_binary" executable with different file extensions on
+# windows, but since we already run this launcher as part of a "sh_binary", we
+# can safely execute another shell script from the current shell.
+devserverBin=$(rlocation "angular_material/tools/dev-server/dev-server_bin.sh")
 
 # Start the devserver with the given arguments. The arguments will be
 # substituted based on the rule attributes.
