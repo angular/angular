@@ -274,6 +274,7 @@ export enum CompletionKind {
   REFERENCE = 'reference',
   TYPE = 'type',
   VARIABLE = 'variable',
+  PSEUDO_ELEMENT = 'pseudo element'
 }
 
 /**
