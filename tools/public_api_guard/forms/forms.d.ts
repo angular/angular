@@ -12,6 +12,7 @@ export declare abstract class AbstractControl {
     readonly status: string;
     readonly statusChanges: Observable<any>;
     readonly touched: boolean;
+    readonly touchedStateChanges: Observable<any>;
     readonly untouched: boolean;
     readonly updateOn: FormHooks;
     readonly valid: boolean;
