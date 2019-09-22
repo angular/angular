@@ -310,6 +310,11 @@ export abstract class AbstractControl {
   public readonly statusChanges !: Observable<any>;
 
   /**
+   * A multicasting observable that emits an event every time the control is touched or untouched
+   */
+  public readonly touchedStateChanges !: Observable<any>;
+
+  /**
    * Reports the update strategy of the `AbstractControl` (meaning
    * the event on which the control updates itself).
    * Possible values: `'change'` | `'blur'` | `'submit'`
@@ -376,6 +381,7 @@ export abstract class AbstractControl {
    */
   markAsTouched(opts: {onlySelf?: boolean} = {}): void {
     (this as{touched: boolean}).touched = true;
+    (this.touchedStateChanges as EventEmitter<any>).emit(this.touched);
 
     if (this._parent && !opts.onlySelf) {
       this._parent.markAsTouched(opts);
@@ -410,6 +416,7 @@ export abstract class AbstractControl {
   markAsUntouched(opts: {onlySelf?: boolean} = {}): void {
     (this as{touched: boolean}).touched = false;
     this._pendingTouched = false;
+    (this.touchedStateChanges as EventEmitter<any>).emit(this.touched);
 
     this._forEachChild(
         (control: AbstractControl) => { control.markAsUntouched({onlySelf: true}); });
@@ -804,6 +811,7 @@ export abstract class AbstractControl {
   _initObservables() {
     (this as{valueChanges: Observable<any>}).valueChanges = new EventEmitter();
     (this as{statusChanges: Observable<any>}).statusChanges = new EventEmitter();
+    (this as{touchedStateChanges: Observable<any>}).touchedStateChanges = new EventEmitter();
   }
 
 

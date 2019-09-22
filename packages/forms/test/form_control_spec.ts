@@ -452,6 +452,35 @@ import {FormArray} from '@angular/forms/src/model';
       });
     });
 
+    describe('touchedChanges', () => {
+      let g: FormGroup, c: FormControl, logger: any[];
+      beforeEach(() => {
+        c = new FormControl('oldValue');
+        g = new FormGroup({'one': c});
+        logger = [];
+      });
+
+      it('should emit true when touched', () => {
+        c.touchedStateChanges.subscribe((arg) => logger.push(arg));
+        c.markAsTouched();
+        expect(logger).toEqual([true]);
+      });
+
+      it('should emit true when touched and false when untouched', () => {
+        c.touchedStateChanges.subscribe((arg) => logger.push(arg));
+        c.markAsTouched();
+        c.markAsUntouched();
+        expect(logger).toEqual([true, false]);
+      });
+
+      it('should emit true as child when parent is touched', () => {
+        c.touchedStateChanges.subscribe((arg) => logger.push(arg));
+        g.markAllAsTouched();
+        expect(logger).toEqual([true]);
+      });
+
+    });
+
     describe('setValue', () => {
       let g: FormGroup, c: FormControl;
       beforeEach(() => {
