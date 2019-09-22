@@ -1709,7 +1709,7 @@ Create a new `app.component.ts` file with the following `AppComponent` class:
 <code-example path="upgrade-phonecat-3-final/app/app.component.ts" header="app/app.component.ts">
 </code-example>
 
-It has a simple template that only includes the `<router-outlet>.
+It has a simple template that only includes the `<router-outlet>`.
 This component just renders the contents of the active route and nothing else.
 
 The selector tells Angular to plug this root component into the `<phonecat-app>`
