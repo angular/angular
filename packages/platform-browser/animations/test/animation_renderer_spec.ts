@@ -79,6 +79,16 @@ import {el} from '../../testing/src/browser_util';
       expect(engine.captures['setProperty'].pop()).toEqual([element, 'prop', 'value']);
     });
 
+    // https://github.com/angular/angular/issues/32794
+    it('should support nested animation triggers', () => {
+      makeRenderer([[trigger('myAnimation', [])]]);
+
+      const {triggers} = TestBed.inject(AnimationEngine) as MockAnimationEngine;
+
+      expect(triggers.length).toEqual(1);
+      expect(triggers[0].name).toEqual('myAnimation');
+    });
+
     describe('listen', () => {
       it('should hook into the engine\'s listen call if the property begins with `@`', () => {
         const renderer = makeRenderer();
@@ -320,8 +330,10 @@ class MockAnimationEngine extends InjectableAnimationEngine {
     data.push(args);
   }
 
-  registerTrigger(componentId: string, namespaceId: string, trigger: AnimationTriggerMetadata) {
-    this.triggers.push(trigger);
+  registerTrigger(
+      componentId: string, namespaceId: string, hostElement: any, name: string,
+      metadata: AnimationTriggerMetadata): void {
+    this.triggers.push(metadata);
   }
 
   onInsert(namespaceId: string, element: any): void { this._capture('onInsert', [element]); }
