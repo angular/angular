@@ -9,7 +9,7 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/material-examples/material/popover-edit",
+    module_name = "@angular/material-examples/material-experimental/popover-edit",
     deps = [
         "//src/material-experimental/popover-edit",
         "//src/material/button",

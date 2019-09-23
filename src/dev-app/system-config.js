@@ -102,16 +102,15 @@ MATERIAL_PACKAGES.forEach(function(pkgName) {
 configureEntryPoint('google-maps');
 configureEntryPoint('youtube-player');
 
-/** Configures the specified package and its entry-point. */
+/** Configures the specified package, its entry-point and its examples. */
 function configureEntryPoint(pkgName, entryPoint) {
-  if (entryPoint === undefined) {
-    pathMapping['@angular/' + pkgName] = srcRunfilePath + '/' + pkgName;
-    packagesConfig[srcRunfilePath + '/' + pkgName] = {main: 'index.js'};
-  } else {
-    pathMapping['@angular/' + pkgName + '/' + entryPoint] =
-        srcRunfilePath + '/' + pkgName + '/' + entryPoint;
-    packagesConfig[srcRunfilePath + '/' + pkgName + '/' + entryPoint] = {main: 'index.js'};
-  }
+  var name = entryPoint ? pkgName + '/' + entryPoint : pkgName;
+  var examplesName = 'material-examples/' + name;
+
+  pathMapping['@angular/' + name] = srcRunfilePath + '/' + name;
+  pathMapping['@angular/' + examplesName] = srcRunfilePath + '/' + examplesName;
+  packagesConfig[srcRunfilePath + '/' + name] =
+      packagesConfig[srcRunfilePath + '/' + examplesName] = {main: 'index.js'};
 }
 
 var map = Object.assign({

@@ -207,11 +207,19 @@ ROLLUP_GLOBALS.update({
 # from entry-points which should be treated as external imports.
 ROLLUP_GLOBALS.update({
     "@angular/material-examples/cdk/%s" % p: "ng.materialExamples.cdk.%s" % p
-    for p in CDK_PACKAGES + CDK_EXPERIMENTAL_PACKAGES
+    for p in CDK_PACKAGES
+})
+ROLLUP_GLOBALS.update({
+    "@angular/material-examples/cdk-experimental/%s" % p: "ng.materialExamples.cdkExperimental.%s" % p
+    for p in CDK_EXPERIMENTAL_PACKAGES
 })
 ROLLUP_GLOBALS.update({
     "@angular/material-examples/material/%s" % p: "ng.materialExamples.material.%s" % p
-    for p in MATERIAL_PACKAGES + MATERIAL_EXPERIMENTAL_PACKAGES
+    for p in MATERIAL_PACKAGES
+})
+ROLLUP_GLOBALS.update({
+    "@angular/material-examples/material-experimental/%s" % p: "ng.materialExamples.materialExperimental.%s" % p
+    for p in MATERIAL_EXPERIMENTAL_PACKAGES
 })
 
 # UMD bundles for Angular packages and subpackages we depend on for development and testing.
