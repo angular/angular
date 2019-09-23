@@ -12,6 +12,9 @@ import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, Re
 const ANIMATION_PREFIX = '@';
 const DISABLE_ANIMATIONS_FLAG = '@.disabled';
 
+type NestedAnimationTriggerMetadata = AnimationTriggerMetadata | RecursiveAnimationTriggerMetadata;
+interface RecursiveAnimationTriggerMetadata extends Array<NestedAnimationTriggerMetadata> {}
+
 @Injectable()
 export class AnimationRendererFactory implements RendererFactory2 {
   private _currentId: number = 0;
@@ -55,10 +58,17 @@ export class AnimationRendererFactory implements RendererFactory2 {
     this._currentId++;
 
     this.engine.register(namespaceId, hostElement);
-    const animationTriggers = type.data['animation'] as AnimationTriggerMetadata[];
-    animationTriggers.forEach(
-        trigger => this.engine.registerTrigger(
-            componentId, namespaceId, hostElement, trigger.name, trigger));
+
+    const registerTrigger = (trigger: NestedAnimationTriggerMetadata) => {
+      if (Array.isArray(trigger)) {
+        trigger.forEach(registerTrigger);
+      } else {
+        this.engine.registerTrigger(componentId, namespaceId, hostElement, trigger.name, trigger);
+      }
+    };
+    const animationTriggers = type.data['animation'] as NestedAnimationTriggerMetadata[];
+    animationTriggers.forEach(registerTrigger);
+
     return new AnimationRenderer(this, namespaceId, delegate, this.engine);
   }
 
