@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
+import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -306,6 +306,42 @@ describe('TestBed', () => {
 
     const fixture = TestBed.createComponent(MyComp);
     expect(fixture.componentInstance.myProviders).toEqual([{value: 'new provider'}]);
+  });
+
+  describe('allow to override provider with multiple calls to applyProviderOverrides', () => {
+    @Injectable()
+    class Service {
+      id: undefined|number;
+    }
+
+    @Component({template: '', providers: [Service]})
+    class Comp {
+      constructor(readonly service: Service) {}
+    }
+
+    @NgModule({declarations: [Comp]})
+    class MyModule {
+    }
+
+    let instance = 0;
+    let comp: Comp;
+    let mock: Service;
+    beforeEach(async() => {
+      mock = new Service();
+      mock.id = ++instance;
+      TestBed.configureTestingModule({imports: [MyModule]});
+      TestBed.overrideProvider(Service, {useValue: mock});
+      // This call triggers applyProviderOverrides
+      const compiler = TestBed.inject(Compiler);
+      // This call triggers applyProviderOverrides a second time
+      await compiler.compileModuleAsync(MyModule);
+      comp = TestBed.createComponent(Comp).componentInstance;
+    });
+
+    it('in initial run', () => { expect(comp.service.id).toEqual(instance); });
+
+    it('in subsequent runs (providers are reset correctly after first run)',
+       () => { expect(comp.service.id).toEqual(instance); });
   });
 
   it('should resolve components that are extended by other components', () => {
