@@ -7,10 +7,12 @@
             (mapMousemove)="handleMove($event)"
             (mapRightclick)="handleRightclick()">
   <map-marker></map-marker>
-  <map-marker *ngFor="let markerPosition of markerPositions"
-                     [position]="markerPosition"
-                     [options]="markerOptions"
-                     (mapClick)="clickMarker($event)"></map-marker>
+  <map-marker #marker
+              *ngFor="let markerPosition of markerPositions"
+              [position]="markerPosition"
+              [options]="markerOptions"
+              (mapClick)="clickMarker(marker)"></map-marker>
+  <map-info-window [position]="infoWindowPosition">Testing 1 2 3</map-info-window>
 </google-map>
 
 <div>Latitude: {{display?.lat}}</div>

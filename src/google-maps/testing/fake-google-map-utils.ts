@@ -14,6 +14,7 @@ export interface TestingWindow extends Window {
     maps: {
       Map?: jasmine.Spy;
       Marker?: jasmine.Spy;
+      InfoWindow?: jasmine.Spy;
     };
   };
 }
@@ -73,4 +74,34 @@ export function createMarkerConstructorSpy(markerSpy: jasmine.SpyObj<google.maps
     },
   };
   return markerConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for a google.maps.InfoWindow */
+export function createInfoWindowSpy(options: google.maps.InfoWindowOptions):
+    jasmine.SpyObj<google.maps.InfoWindow> {
+  const infoWindowSpy = jasmine.createSpyObj(
+      'google.maps.InfoWindow',
+      ['addListener', 'close', 'getContent', 'getPosition', 'getZIndex', 'open']);
+  infoWindowSpy.addListener.and.returnValue({remove: () => {}});
+  return infoWindowSpy;
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of a google.maps.InfoWindow */
+export function createInfoWindowConstructorSpy(
+    infoWindowSpy: jasmine.SpyObj<google.maps.InfoWindow>): jasmine.Spy {
+  const infoWindowConstructorSpy =
+      jasmine.createSpy('InfoWindow constructor', (_options: google.maps.InfoWindowOptions) => {
+        return infoWindowSpy;
+      });
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['InfoWindow'] = infoWindowConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'InfoWindow': infoWindowConstructorSpy,
+      },
+    };
+  }
+  return infoWindowConstructorSpy;
 }

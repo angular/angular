@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {GoogleMap} from './google-map/index';
-export {MapInfoWindow} from './map-info-window/index';
-export {MapMarker} from './map-marker/index';
-export * from './google-maps-module';
+import {NgModule} from '@angular/core';
+import {MapInfoWindow} from './map-info-window';
+
+@NgModule({
+  exports: [MapInfoWindow],
+  declarations: [MapInfoWindow],
+})
+export class MapInfoWindowModule {
+}

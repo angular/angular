@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {Component, ViewChild} from '@angular/core';
+import {MapInfoWindow, MapMarker} from '@angular/google-maps';
 
 /** Demo Component for @angular/google-maps/map */
 @Component({
@@ -16,11 +17,14 @@ import {HttpClient} from '@angular/common/http';
   templateUrl: 'google-map-demo.html',
 })
 export class GoogleMapDemo {
+  @ViewChild(MapInfoWindow, {static: false}) infoWindow: MapInfoWindow;
+
   isReady = false;
 
   center = {lat: 24, lng: 12};
   markerOptions = {draggable: false};
   markerPositions: google.maps.LatLngLiteral[] = [];
+  infoWindowPosition: google.maps.LatLngLiteral;
   zoom = 4;
   display?: google.maps.LatLngLiteral;
 
@@ -39,9 +43,8 @@ export class GoogleMapDemo {
     this.display = event.latLng.toJSON();
   }
 
-  clickMarker(event: google.maps.MouseEvent) {
-    console.log(this.markerOptions);
-    this.markerOptions = {draggable: true};
+  clickMarker(marker: MapMarker) {
+    this.infoWindow.open(marker);
   }
 
   handleRightclick() {

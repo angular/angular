@@ -191,7 +191,7 @@ export class GoogleMap implements OnChanges, OnInit, AfterContentInit, OnDestroy
   @ContentChildren(MapMarker) _markers: QueryList<MapMarker>;
 
   private _mapEl: HTMLElement;
-  private _googleMap!: UpdatedGoogleMap;
+  _googleMap!: UpdatedGoogleMap;
 
   private _googleMapChanges!: Observable<google.maps.Map>;
 

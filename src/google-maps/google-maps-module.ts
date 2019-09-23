@@ -8,16 +8,19 @@
 
 import {NgModule} from '@angular/core';
 
-import {MapMarker, MapMarkerModule} from './map-marker/index';
 import {GoogleMap, GoogleMapModule} from './google-map/index';
+import {MapInfoWindow, MapInfoWindowModule} from './map-info-window/index';
+import {MapMarker, MapMarkerModule} from './map-marker/index';
 
 @NgModule({
   imports: [
     GoogleMapModule,
+    MapInfoWindowModule,
     MapMarkerModule,
   ],
   exports: [
     GoogleMap,
+    MapInfoWindow,
     MapMarker,
   ],
 })

@@ -13,6 +13,7 @@ ng_module(
     deps = [
         "@npm//@angular/core",
         "@npm//@types/googlemaps",
+        "@npm//rxjs",
     ],
 )
 
