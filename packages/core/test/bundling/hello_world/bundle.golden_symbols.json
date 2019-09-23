@@ -36,9 +36,6 @@
     "name": "EMPTY_OBJ"
   },
   {
-    "name": "EmptyErrorImpl"
-  },
-  {
     "name": "FLAGS"
   },
   {
@@ -87,9 +84,6 @@
     "name": "NodeInjectorFactory"
   },
   {
-    "name": "ObjectUnsubscribedErrorImpl"
-  },
-  {
     "name": "PARENT"
   },
   {
@@ -115,9 +109,6 @@
   },
   {
     "name": "T_HOST"
-  },
-  {
-    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "ViewEncapsulation"
