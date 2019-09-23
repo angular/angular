@@ -1,1 +1,12 @@
-<!-- TODO: MDC template here. -->
+<div class="mdc-form-field">
+  <div class="mdc-radio">
+    <input class="mdc-radio__native-control" type="radio" [id]="inputId">
+    <div class="mdc-radio__background">
+      <div class="mdc-radio__outer-circle"></div>
+      <div class="mdc-radio__inner-circle"></div>
+    </div>
+  </div>
+  <label [for]="inputId" #label>
+    <ng-content></ng-content>
+  </label>
+</div>
