@@ -328,6 +328,36 @@ const DEFAULT_COMPONENT_ID = '1';
         ]);
       });
 
+      // https://github.com/angular/angular/issues/32794
+      it('should support nested animation triggers', () => {
+        const REUSABLE_ANIMATION = [trigger(
+            'myAnimation',
+            [transition(
+                'void => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])];
+
+        @Component({
+          selector: 'if-cmp',
+          template: `
+          <div @myAnimation></div>
+        `,
+          animations: [REUSABLE_ANIMATION],
+        })
+        class Cmp {
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.inject(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().length).toEqual(1);
+        expect(getLog().pop() !.keyframes).toEqual([
+          {offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}
+        ]);
+      });
+
       it('should allow a transition to use a function to determine what method to run', () => {
         let valueToMatch = '';
         let capturedElement: any;
