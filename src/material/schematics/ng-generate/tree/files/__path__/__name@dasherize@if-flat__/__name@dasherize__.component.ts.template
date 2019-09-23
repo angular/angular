@@ -1,6 +1,5 @@
 import { Component<% if (!!viewEncapsulation) { %>, ViewEncapsulation<% }%><% if (changeDetection !== 'Default') { %>, ChangeDetectionStrategy<% }%> } from '@angular/core';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { of as observableOf } from 'rxjs';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { files } from './example-data';
 
@@ -84,7 +83,7 @@ export class <%= classify(name) %>Component {
   }
 
   /** Get the children for the node. */
-  getChildren(node: FileNode) {
-    return observableOf(node.children);
+  getChildren(node: FileNode): FileNode[] | null | undefined {
+    return node.children;
   }
 }
