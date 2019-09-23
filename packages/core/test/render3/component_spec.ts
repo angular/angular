@@ -26,7 +26,7 @@ describe('component', () => {
       type: CounterComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['counter']],
-      consts: 1,
+      decls: 1,
       vars: 1,
       template: function(rf: RenderFlags, ctx: CounterComponent) {
         if (rf & RenderFlags.Create) {
@@ -76,7 +76,7 @@ describe('component', () => {
         type: MyComponent,
         encapsulation: ViewEncapsulation.None,
         selectors: [['my-component']],
-        consts: 1,
+        decls: 1,
         vars: 1,
         template: function(fs: RenderFlags, ctx: MyComponent) {
           if (fs & RenderFlags.Create) {
@@ -119,7 +119,7 @@ describe('component', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
-        consts: 1,
+        decls: 1,
         vars: 1,
         template: (rf: RenderFlags, ctx: Comp) => {
           if (rf & RenderFlags.Create) {
@@ -178,9 +178,10 @@ it('should not invoke renderer destroy method for embedded views', () => {
     static ngComponentDef = ɵɵdefineComponent({
       type: Comp,
       selectors: [['comp']],
-      consts: 3,
+      decls: 3,
       vars: 1,
       directives: [NgIf],
+      consts: [[AttributeMarker.Template, 'ngIf']],
       /**
        *  <div>Root view</div>
        *  <div *ngIf="visible">Child view</div>
@@ -190,8 +191,7 @@ it('should not invoke renderer destroy method for embedded views', () => {
           ɵɵelementStart(0, 'div');
           ɵɵtext(1, 'Root view');
           ɵɵelementEnd();
-          ɵɵtemplate(
-              2, MyComponent_div_Template_2, 2, 0, 'div', [AttributeMarker.Template, 'ngIf']);
+          ɵɵtemplate(2, MyComponent_div_Template_2, 2, 0, 'div', 0);
         }
         if (rf & RenderFlags.Update) {
           ɵɵadvance(2);
@@ -252,7 +252,7 @@ describe('component with a container', () => {
       type: WrapperComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['wrapper']],
-      consts: 1,
+      decls: 1,
       vars: 0,
       template: function ChildComponentTemplate(rf: RenderFlags, ctx: {items: string[]}) {
         if (rf & RenderFlags.Create) {
@@ -329,7 +329,7 @@ describe('recursive components', () => {
       type: TreeComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['tree-comp']],
-      consts: 3,
+      decls: 3,
       vars: 1,
       template: (rf: RenderFlags, ctx: TreeComponent) => {
         if (rf & RenderFlags.Create) {
@@ -395,18 +395,14 @@ describe('recursive components', () => {
       type: NgIfTree,
       encapsulation: ViewEncapsulation.None,
       selectors: [['ng-if-tree']],
-      consts: 3,
+      decls: 3,
       vars: 3,
+      consts: [[AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']],
       template: (rf: RenderFlags, ctx: NgIfTree) => {
-
         if (rf & RenderFlags.Create) {
           ɵɵtext(0);
-          ɵɵtemplate(
-              1, IfTemplate, 1, 1, 'ng-if-tree',
-              [AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']);
-          ɵɵtemplate(
-              2, IfTemplate2, 1, 1, 'ng-if-tree',
-              [AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']);
+          ɵɵtemplate(1, IfTemplate, 1, 1, 'ng-if-tree', 0);
+          ɵɵtemplate(2, IfTemplate2, 1, 1, 'ng-if-tree', 0);
         }
         if (rf & RenderFlags.Update) {
           ɵɵtextInterpolate(ctx.data.value);
@@ -415,7 +411,6 @@ describe('recursive components', () => {
           ɵɵadvance(1);
           ɵɵproperty('ngIf', ctx.data.right);
         }
-
       },
       inputs: {data: 'data'},
     });
@@ -543,7 +538,7 @@ describe('recursive components', () => {
         encapsulation: ViewEncapsulation.None,
         selectors: [['test-inputs']],
         inputs: {minifiedName: 'unminifiedName'},
-        consts: 0,
+        decls: 0,
         vars: 0,
         template: function(rf: RenderFlags, ctx: TestInputsComponent): void {
           // Template not needed for this test

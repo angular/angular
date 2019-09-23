@@ -53,10 +53,10 @@ export function ɵɵcontainer(index: number): void {
  *
  * @param index The index of the container in the data array
  * @param templateFn Inline template
- * @param consts The number of nodes, local refs, and pipes for this template
+ * @param decls The number of nodes, local refs, and pipes for this template
  * @param vars The number of bindings for this template
  * @param tagName The name of the container element, if applicable
- * @param attrs The attrs attached to the container, if applicable
+ * @param constsIndex Index of template in the `consts` array.
  * @param localRefs A set of local reference bindings on the element.
  * @param localRefExtractor A function which extracts local-refs values from the template.
  *        Defaults to the current element associated with the local-ref.
@@ -64,22 +64,25 @@ export function ɵɵcontainer(index: number): void {
  * @codeGenApi
  */
 export function ɵɵtemplate(
-    index: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
-    tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null,
+    index: number, templateFn: ComponentTemplate<any>| null, decls: number, vars: number,
+    tagName?: string | null, constsIndex?: number | null, localRefs?: string[] | null,
     localRefExtractor?: LocalRefExtractor) {
   const lView = getLView();
   const tView = lView[TVIEW];
+  const tViewConsts = tView.consts;
 
   // TODO: consider a separate node type for templates
-  const tContainerNode = containerInternal(lView, index, tagName || null, attrs || null);
+  const tContainerNode = containerInternal(
+      lView, index, tagName || null,
+      tViewConsts === null || constsIndex == null ? null : tViewConsts[constsIndex]);
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
     resolveDirectives(tView, lView, tContainerNode, localRefs || null);
     registerPostOrderHooks(tView, tContainerNode);
 
     const embeddedTView = tContainerNode.tViews = createTView(
-        -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null,
-        tView.schemas);
+        -1, templateFn, decls, vars, tView.directiveRegistry, tView.pipeRegistry, null,
+        tView.schemas, tViewConsts);
     const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
     embeddedTViewNode.injectorIndex = tContainerNode.injectorIndex;
     embeddedTView.node = embeddedTViewNode;

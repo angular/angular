@@ -189,7 +189,7 @@ runInEachFileSystem(() => {
         const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
         expect(addDefinitionsSpy.calls.first().args[2])
             .toEqual(`A.ngFactoryDef = function A_Factory(t) { return new (t || A)(); };
-A.ngComponentDef = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], consts: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
+A.ngComponentDef = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵtext(0);
     } if (rf & 2) {
         ɵngcc0.ɵɵtextInterpolate(ctx.person.name);
