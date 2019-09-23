@@ -1,0 +1,10 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "control",
+    srcs = glob(["**/*.ts"]),
+    module_name = "@angular/material-experimental/form-field/testing/control",
+    deps = ["//src/cdk/testing"],
+)

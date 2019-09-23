@@ -7,7 +7,13 @@
     "importHelpers": false,
     "module": "commonjs",
     "target": "es5",
-    "types": ["jasmine"]
+    "types": ["jasmine"],
+    "paths": {
+      "@angular/cdk/*": ["../../dist/packages/cdk/*"],
+      "@angular/cdk-experimental/*": ["../../dist/packages/cdk-experimental/*"],
+      "@angular/material/*": ["../../dist/packages/material/*"],
+      "@angular/material-experimental/*": ["./*"]
+    }
   },
   "angularCompilerOptions": {
     "strictMetadataEmit": true,

@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, TestElement} from '@angular/cdk/testing';
+import {HarnessPredicate, TestElement} from '@angular/cdk/testing';
+import {
+  MatFormFieldControlHarness
+} from '@angular/material-experimental/form-field/testing/control';
 import {SelectHarnessFilters} from './select-harness-filters';
 
 /** Selector for the select panel. */
@@ -16,7 +19,7 @@ const PANEL_SELECTOR = '.mat-select-panel';
  * Harness for interacting with a standard mat-select in tests.
  * @dynamic
  */
-export class MatSelectHarness extends ComponentHarness {
+export class MatSelectHarness extends MatFormFieldControlHarness {
   private _documentRootLocator = this.documentRootLocatorFactory();
   private _panel = this._documentRootLocator.locatorFor(PANEL_SELECTOR);
   private _backdrop = this._documentRootLocator.locatorFor('.cdk-overlay-backdrop');

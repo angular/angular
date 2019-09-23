@@ -6,14 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {HarnessPredicate} from '@angular/cdk/testing';
+import {
+  MatFormFieldControlHarness
+} from '@angular/material-experimental/form-field/testing/control';
 import {InputHarnessFilters} from './input-harness-filters';
 
 /**
  * Harness for interacting with a standard Material inputs in tests.
  * @dynamic
  */
-export class MatInputHarness extends ComponentHarness {
+export class MatInputHarness extends MatFormFieldControlHarness {
   static hostSelector = '[matInput]';
 
   /**
