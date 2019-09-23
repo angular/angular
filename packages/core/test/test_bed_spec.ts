@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
+import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -698,6 +698,36 @@ describe('TestBed', () => {
              // The providers for the module should have been restored to the original array, with
              // no trace of the overridden providers.
              expect((Module as any).ngInjectorDef.providers).toEqual([Token]);
+           });
+
+        it('should clean up overridden providers on components whose modules are compiled more than once',
+           async() => {
+             @Injectable()
+             class SomeInjectable {
+               id: string|undefined;
+             }
+
+             @Component({providers: [SomeInjectable]})
+             class ComponentWithProvider {
+               constructor(readonly injectable: SomeInjectable) {}
+             }
+
+             @NgModule({declarations: [ComponentWithProvider]})
+             class MyModule {
+             }
+
+             TestBed.configureTestingModule({imports: [MyModule]});
+             const originalResolver =
+                 (ComponentWithProvider as any).ngComponentDef.providersResolver;
+             TestBed.overrideProvider(SomeInjectable, {useValue: {id: 'fake'}});
+
+             const compiler = TestBed.inject(Compiler);
+             await compiler.compileModuleAsync(MyModule);
+             compiler.compileModuleSync(MyModule);
+
+             TestBed.resetTestingModule();
+             expect((ComponentWithProvider as any).ngComponentDef.providersResolver)
+                 .toEqual(originalResolver);
            });
       });
 });
