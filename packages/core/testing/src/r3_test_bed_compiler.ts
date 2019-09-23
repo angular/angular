@@ -515,10 +515,9 @@ export class R3TestBedCompiler {
   restoreOriginalState(): void {
     // Process cleanup ops in reverse order so the field's original value is restored correctly (in
     // case there were multiple overrides for the same field).
-    for (let i = this.defCleanupOps.length - 1; i >= 0; i--) {
-      const op = this.defCleanupOps[i];
+    forEachRight(this.defCleanupOps, (op: CleanupOperation) => {
       op.def[op.field] = op.original;
-    }
+    });
     // Restore initial component/directive/pipe defs
     this.initialNgDefs.forEach(
         (value: [string, PropertyDescriptor | undefined], type: Type<any>) => {
