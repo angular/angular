@@ -55,3 +55,26 @@ Not yet implemented.
 <mat-slider value="50"></mat-slider>
 <mat-slider tickInterval="1" min="1" max="10" value="5" thumbLabel></mat-slider>
 <mat-slider disabled></mat-slider>
+
+<h2>Tabs</h2>
+
+<!--
+  Note that we set the `selectedIndex` here to hit the code path
+  where we might need to do some measurements.
+-->
+<mat-tab-group [selectedIndex]="1">
+  <mat-tab label="Overview">
+    The overview
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      API docs
+    </ng-template>
+    The API docs
+  </mat-tab>
+</mat-tab-group>
+
+<nav mat-tab-nav-bar>
+ <a mat-tab-link href="https://google.com">Google</a>
+ <a mat-tab-link href="https://google.com" active>Also Google</a>
+</nav>

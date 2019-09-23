@@ -82,7 +82,8 @@ export class MatInkBarFoundation {
       this._indicatorContent.style.setProperty(propName, value);
     },
     computeContentClientRect: () => {
-      return this._destroyed ? {
+      // `getBoundingClientRect` isn't available on the server.
+      return this._destroyed || !this._indicatorContent.getBoundingClientRect ? {
         width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0
       } : this._indicatorContent.getBoundingClientRect();
     }
