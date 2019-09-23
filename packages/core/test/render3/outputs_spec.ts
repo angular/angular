@@ -80,7 +80,7 @@ describe('outputs', () => {
             ɵɵembeddedViewEnd();
           } else {
             if (ɵɵembeddedViewStart(1, 1, 0)) {
-              ɵɵelementStart(0, 'div', ['otherDir', '']);
+              ɵɵelementStart(0, 'div', 0);
               {
                 ɵɵlistener('change', function() { return ctx.onChange(); });
               }
@@ -95,13 +95,14 @@ describe('outputs', () => {
 
     let counter = 0;
     const ctx = {condition: true, onChange: () => counter++, onClick: () => {}};
-    renderToHtml(Template, ctx, 3, 0, deps);
+    const attrs = [['otherDir', '']];
+    renderToHtml(Template, ctx, 3, 0, deps, null, null, false, attrs);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
 
     ctx.condition = false;
-    renderToHtml(Template, ctx, 3, 0, deps);
+    renderToHtml(Template, ctx, 3, 0, deps, null, null, false, attrs);
     expect(counter).toEqual(1);
 
     otherDir !.changeStream.next();

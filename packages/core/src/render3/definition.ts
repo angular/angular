@@ -18,6 +18,7 @@ import {stringify} from '../util/stringify';
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_FACTORY_DEF, NG_LOCALE_ID_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction, ɵɵBaseDef} from './interfaces/definition';
+import {TAttributes} from './interfaces/node';
 // while SelectorFlags is unused here, it's required so that types don't get resolved lazily
 // see: https://github.com/Microsoft/web-build-tools/issues/1050
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
@@ -171,6 +172,9 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    */
   template: ComponentTemplate<T>;
 
+  /** Attributes for all of the nodes inside the component template. Used during creation. */
+  attrs?: TAttributes[];
+
   /**
    * An array of `ngContent[selector]` values that were found in the template.
    */
@@ -252,6 +256,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     vars: componentDefinition.vars,
     factory: null,
     template: componentDefinition.template || null !,
+    attrs: componentDefinition.attrs || null,
     ngContentSelectors: componentDefinition.ngContentSelectors,
     hostBindings: componentDefinition.hostBindings || null,
     contentQueries: componentDefinition.contentQueries || null,

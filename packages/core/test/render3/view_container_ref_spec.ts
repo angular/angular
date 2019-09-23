@@ -108,11 +108,12 @@ describe('ViewContainerRef', () => {
                selectors: [['test-cmp']],
                consts: 4,
                vars: 0,
+               attrs: [['testdir', '']],
                template: (rf: RenderFlags, cmp: TestComponent) => {
                  if (rf & RenderFlags.Create) {
                    ɵɵtext(0, 'before|');
-                   ɵɵtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', ['testdir', '']);
-                   ɵɵtemplate(2, EmbeddedTemplateB, 1, 0, 'ng-template', ['testdir', '']);
+                   ɵɵtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', 0);
+                   ɵɵtemplate(2, EmbeddedTemplateB, 1, 0, 'ng-template', 0);
                    ɵɵtext(3, '|after');
                  }
                },
@@ -179,10 +180,11 @@ describe('ViewContainerRef', () => {
                selectors: [['test-cmp']],
                consts: 4,
                vars: 0,
+               attrs: [['testdir', '']],
                template: (rf: RenderFlags, cmp: TestComponent) => {
                  if (rf & RenderFlags.Create) {
                    ɵɵtext(0, 'before|');
-                   ɵɵtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', ['testdir', '']);
+                   ɵɵtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', 0);
                    ɵɵcontainer(2);
                    ɵɵtext(3, '|after');
                  }
@@ -320,11 +322,13 @@ describe('ViewContainerRef', () => {
     describe('getters', () => {
       it('should work on elements', () => {
         function createTemplate() {
-          ɵɵelement(0, 'header', ['vcref', '']);
+          ɵɵelement(0, 'header', 0);
           ɵɵelement(1, 'footer');
         }
 
-        new TemplateFixture(createTemplate, undefined, 2, 0, [DirectiveWithVCRef]);
+        new TemplateFixture(
+            createTemplate, undefined, 2, 0, [DirectiveWithVCRef], null, null, undefined,
+            [['vcref', '']]);
 
         expect(directiveInstance !.vcref.element.nativeElement.tagName.toLowerCase())
             .toEqual('header');
@@ -339,11 +343,13 @@ describe('ViewContainerRef', () => {
             createComponent('header-cmp', function(rf: RenderFlags, ctx: any) {});
 
         function createTemplate() {
-          ɵɵelement(0, 'header-cmp', ['vcref', '']);
+          ɵɵelement(0, 'header-cmp', 0);
           ɵɵelement(1, 'footer');
         }
 
-        new TemplateFixture(createTemplate, undefined, 2, 0, [HeaderComponent, DirectiveWithVCRef]);
+        new TemplateFixture(
+            createTemplate, undefined, 2, 0, [HeaderComponent, DirectiveWithVCRef], null, null,
+            undefined, [['vcref', '']]);
 
         expect(directiveInstance !.vcref.element.nativeElement.tagName.toLowerCase())
             .toEqual('header-cmp');
@@ -435,9 +441,10 @@ describe('ViewContainerRef', () => {
           selectors: [['dynamic-cmpt-with-view-queries']],
           consts: 2,
           vars: 0,
+          attrs: [['bar', '']],
           template: (rf: RenderFlags, ctx: DynamicCompWithViewQueries) => {
             if (rf & RenderFlags.Create) {
-              ɵɵelement(0, 'div', ['bar', ''], ['foo', '']);
+              ɵɵelement(0, 'div', 0, ['foo', '']);
             }
             // testing only
             fooEl = getNativeByIndex(0, getLView()) as RElement;

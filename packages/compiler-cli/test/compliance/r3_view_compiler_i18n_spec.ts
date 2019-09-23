@@ -196,7 +196,6 @@ describe('i18n support in the template compiler', () => {
         else {
           $I18N_0$ = $localize \`:meaningA|descA@@idA:Content A\`;
         }
-        const $_c2$ = [${AttributeMarker.I18n}, "title"];
         var $I18N_3$;
         if (ngI18nClosureMode) {
             /**
@@ -269,32 +268,33 @@ describe('i18n support in the template compiler', () => {
         }
         const $_c25$ = ["title", $I18N_23$];
         …
+        attrs: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵi18n(1, $I18N_0$);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(2, "div", $_c2$);
+            $r3$.ɵɵelementStart(2, "div", 0);
             $r3$.ɵɵi18nAttributes(3, $_c5$);
             $r3$.ɵɵtext(4, "Content B");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(5, "div", $_c6$);
+            $r3$.ɵɵelementStart(5, "div", 0);
             $r3$.ɵɵi18nAttributes(6, $_c9$);
             $r3$.ɵɵtext(7, "Content C");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(8, "div", $_c10$);
+            $r3$.ɵɵelementStart(8, "div", 0);
             $r3$.ɵɵi18nAttributes(9, $_c13$);
             $r3$.ɵɵtext(10, "Content D");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(11, "div", $_c14$);
+            $r3$.ɵɵelementStart(11, "div", 0);
             $r3$.ɵɵi18nAttributes(12, $_c17$);
             $r3$.ɵɵtext(13, "Content E");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(14, "div", $_c18$);
+            $r3$.ɵɵelementStart(14, "div", 0);
             $r3$.ɵɵi18nAttributes(15, $_c21$);
             $r3$.ɵɵtext(16, "Content F");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(17, "div", $_c22$);
+            $r3$.ɵɵelementStart(17, "div", 0);
             $r3$.ɵɵi18nAttributes(18, $_c25$);
             $r3$.ɵɵtext(19, "Content G");
             $r3$.ɵɵelementEnd();
@@ -311,11 +311,11 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = `
-        const $_c0$ = ["id", "static", "title", ""];
         …
+        attrs: [["id", "static", "title", ""]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelement(0, "div", $_c0$);
+            $r3$.ɵɵelement(0, "div", 0);
           }
         }
       `;
@@ -332,11 +332,11 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = `
-        const $_c0$ = [3, "title"];
         …
+        attrs: [[3, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelement(0, "div", $_c0$);
+            $r3$.ɵɵelement(0, "div", 0);
           }
           if (rf & 2) {
             $r3$.ɵɵproperty("title", ctx.title);
@@ -354,7 +354,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = ["id", "static", ${AttributeMarker.I18n}, "title"];
         var $I18N_1$;
         if (ngI18nClosureMode) {
           /**
@@ -369,9 +368,10 @@ describe('i18n support in the template compiler', () => {
         }
         const $_c1$ = ["title", $I18N_1$];
         …
+        attrs: [["id", "static", ${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵi18nAttributes(1, $_c1$);
             $r3$.ɵɵelementEnd();
           }
@@ -395,7 +395,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = ["id", "dynamic-1", ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"];
         var $I18N_1$;
         if (ngI18nClosureMode) {
           const $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$ = goog.getMsg("static text");
@@ -439,7 +438,6 @@ describe('i18n support in the template compiler', () => {
           "title", $I18N_2$,
           "aria-label", $I18N_3$
         ];
-        const $_c2$ = ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"];
         var $I18N_6$;
         if (ngI18nClosureMode) {
             /**
@@ -475,13 +473,14 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 5,
         vars: 8,
+        attrs: [["id", "dynamic-1", ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"], ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵpipe(1, "uppercase");
             $r3$.ɵɵi18nAttributes(2, $_c1$);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(3, "div", $_c2$);
+            $r3$.ɵɵelementStart(3, "div", 1);
             $r3$.ɵɵi18nAttributes(4, $_c3$);
             $r3$.ɵɵelementEnd();
           }
@@ -503,7 +502,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.I18n}, "title"];
         var $I18N_1$;
         if (ngI18nClosureMode) {
             /**
@@ -521,9 +519,10 @@ describe('i18n support in the template compiler', () => {
         }
         const $_c3$ = ["title", $I18N_1$];
         …
+        attrs: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵpipe(1, "uppercase");
             $r3$.ɵɵi18nAttributes(2, $_c3$);
             $r3$.ɵɵelementEnd();
@@ -545,8 +544,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
-        const $_c1$ = [${AttributeMarker.I18n}, "title"];
         var $I18N_1$;
         if (ngI18nClosureMode) {
             /**
@@ -566,7 +563,7 @@ describe('i18n support in the template compiler', () => {
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵelementStart(1, "div", $_c1$);
+            $r3$.ɵɵelementStart(1, "div", 1);
             $r3$.ɵɵpipe(2, "uppercase");
             $r3$.ɵɵi18nAttributes(3, $_c2$);
             $r3$.ɵɵelementEnd();
@@ -581,9 +578,10 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 1,
         vars: 1,
+        attrs: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
+            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
           }
           if (rf & 2) {
             $r3$.ɵɵproperty("ngForOf", ctx.items);
@@ -600,7 +598,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.I18n}, "title"];
         var $I18N_1$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_3462388422673575127$$APP_SPEC_TS_2$ = goog.getMsg("{$interpolation} title", {
@@ -616,9 +613,10 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 2,
         vars: 1,
+        attrs: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵi18nAttributes(1, $_c3$);
             $r3$.ɵɵelementEnd();
           }
@@ -648,10 +646,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [
-          "id", "dynamic-1",
-          ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"
-        ];
         var $I18N_1$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$ = goog.getMsg("static text");
@@ -695,7 +689,6 @@ describe('i18n support in the template compiler', () => {
           "title", $I18N_2$,
           "aria-label", $I18N_3$
         ];
-        const $_c2$ = ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"];
         var $I18N_6$;
         if (ngI18nClosureMode) {
             /**
@@ -731,13 +724,17 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 5,
         vars: 8,
+        attrs: [[
+          "id", "dynamic-1",
+          ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"
+        ], ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵpipe(1, "uppercase");
             $r3$.ɵɵi18nAttributes(2, $_c1$);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(3, "div", $_c2$);
+            $r3$.ɵɵelementStart(3, "div", 1);
             $r3$.ɵɵi18nAttributes(4, $_c3$);
             $r3$.ɵɵelementEnd();
           }
@@ -761,8 +758,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
-        const $_c1$ = [${AttributeMarker.I18n}, "title"];
         var $I18N_2$;
         if (ngI18nClosureMode) {
             /**
@@ -782,7 +777,7 @@ describe('i18n support in the template compiler', () => {
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵelementStart(1, "div", $_c1$);
+            $r3$.ɵɵelementStart(1, "div", 1);
             $r3$.ɵɵpipe(2, "uppercase");
             $r3$.ɵɵi18nAttributes(3, $_c4$);
             $r3$.ɵɵelementEnd();
@@ -797,9 +792,10 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 1,
         vars: 1,
+        attrs: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
+            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
           }
           if (rf & 2) {
             $r3$.ɵɵproperty("ngForOf", ctx.items);
@@ -816,7 +812,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.I18n}, "title"];
         var $I18N_0$;
         if (ngI18nClosureMode) {
             /**
@@ -839,9 +834,10 @@ describe('i18n support in the template compiler', () => {
             $I18N_2$ = $localize \`Some content\`;
         }
         …
+        attrs: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵi18nAttributes(1, $_c1$);
             $r3$.ɵɵi18n(2, $I18N_2$);
             $r3$.ɵɵelementEnd();
@@ -1307,7 +1303,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c1$ = [${AttributeMarker.I18n}, "title"];
         var $I18N_2$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_4782264005467235841$$APP_SPEC_TS_3$ = goog.getMsg("Span title {$interpolation} and {$interpolation_1}", {
@@ -1367,11 +1362,12 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 9,
         vars: 7,
+        attrs: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵi18nStart(1, $I18N_0$);
-            $r3$.ɵɵelementStart(2, "span", $_c1$);
+            $r3$.ɵɵelementStart(2, "span", 0);
             $r3$.ɵɵi18nAttributes(3, $_c4$);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵi18nEnd();
@@ -1379,7 +1375,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementStart(4, "div");
             $r3$.ɵɵi18nStart(5, $I18N_6$);
             $r3$.ɵɵpipe(6, "uppercase");
-            $r3$.ɵɵelementStart(7, "span", $_c1$);
+            $r3$.ɵɵelementStart(7, "span", 0);
             $r3$.ɵɵi18nAttributes(8, $_c9$);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵi18nEnd();
@@ -1417,7 +1413,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
         var $I18N_1$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$ = goog.getMsg(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
@@ -1456,11 +1451,12 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 3,
         vars: 1,
+        attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵtext(1, " Some content ");
-            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 5, 4, "div", $_c0$);
+            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 5, 4, "div", 0);
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
@@ -1481,15 +1477,11 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = ["src", "logo.png"];
-        const $_c1$ = ["src", "logo.png", ${AttributeMarker.Template}, "ngIf"];
-        const $_c2$ = ["src", "logo.png", ${AttributeMarker.Bindings}, "title", ${AttributeMarker.Template}, "ngIf"];
         function MyComponent_img_1_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelement(0, "img", $_c0$);
+            $r3$.ɵɵelement(0, "img", 0);
           }
         }
-        const $_c3$ = ["src", "logo.png", ${AttributeMarker.I18n}, "title"];
         var $I18N_2$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_2367729185105559721$$APP_SPEC_TS__2$ = goog.getMsg("App logo #{$interpolation}", {
@@ -1504,7 +1496,7 @@ describe('i18n support in the template compiler', () => {
         const $_c4$ = ["title", $I18N_2$];
         function MyComponent_img_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "img", $_c3$);
+            $r3$.ɵɵelementStart(0, "img", 3);
             $r3$.ɵɵi18nAttributes(1, $_c4$);
             $r3$.ɵɵelementEnd();
           }
@@ -1517,11 +1509,12 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 3,
         vars: 2,
+        attrs: [["src", "logo.png"], ["src", "logo.png", ${AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${AttributeMarker.Bindings}, "title", ${AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelement(0, "img", $_c0$);
-            $r3$.ɵɵtemplate(1, MyComponent_img_1_Template, 1, 0, "img", $_c1$);
-            $r3$.ɵɵtemplate(2, MyComponent_img_2_Template, 2, 1, "img", $_c2$);
+            $r3$.ɵɵelement(0, "img", 0);
+            $r3$.ɵɵtemplate(1, MyComponent_img_1_Template, 1, 0, "img", 1);
+            $r3$.ɵɵtemplate(2, MyComponent_img_2_Template, 2, 1, "img", 2);
           }
           if (rf & 2) {
             $r3$.ɵɵadvance(1);
@@ -1561,7 +1554,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
         function MyComponent_div_2_div_4_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18nStart(0, $I18N_0$, 2);
@@ -1582,7 +1574,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementStart(1, "div");
             $r3$.ɵɵelementStart(2, "div");
             $r3$.ɵɵpipe(3, "uppercase");
-            $r3$.ɵɵtemplate(4, MyComponent_div_2_div_4_Template, 3, 2, "div", $_c1$);
+            $r3$.ɵɵtemplate(4, MyComponent_div_2_div_4_Template, 3, 2, "div", 0);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵi18nEnd();
@@ -1658,12 +1650,13 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 4,
         vars: 2,
+        attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵi18nStart(1, $I18N_0$);
-            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 5, 5, "div", $_c1$);
-            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 4, "div", $_c1$);
+            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 5, 5, "div", 0);
+            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 4, "div", 0);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
           }
@@ -1685,7 +1678,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
         var $I18N_1$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$ = goog.getMsg("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
@@ -1719,9 +1711,10 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 1,
         vars: 1,
+        attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 1, "div", $_c0$);
+            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 1, "div", 0);
           }
           if (rf & 2) {
             $r3$.ɵɵproperty("ngIf", ctx.visible);
@@ -1738,7 +1731,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.Bindings}, "click"];
         var $I18N_1$;
         if (ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS_2$ = goog.getMsg("Hello");
@@ -1748,9 +1740,10 @@ describe('i18n support in the template compiler', () => {
             $I18N_1$ = $localize \`Hello\`;
         }
         …
+        attrs: [[${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵlistener("click", function MyComponent_Template_div_click_0_listener($event) { return ctx.onClick(); });
             $r3$.ɵɵi18n(1, $I18N_1$);
             $r3$.ɵɵelementEnd();
@@ -1875,7 +1868,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.Classes}, "myClass"];
         var $I18N_1$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_1$ = goog.getMsg("Text #1");
@@ -1884,7 +1876,6 @@ describe('i18n support in the template compiler', () => {
         else {
             $I18N_1$ = $localize \`Text #1\`;
         }
-        const $_c2$ = [${AttributeMarker.Styles}, "padding", "10px"];
         var $I18N_3$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_3$ = goog.getMsg("Text #2");
@@ -1896,12 +1887,13 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 4,
         vars: 0,
+        attrs: [[${AttributeMarker.Classes}, "myClass"], [${AttributeMarker.Styles}, "padding", "10px"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "span", $_c0$);
+            $r3$.ɵɵelementStart(0, "span", 0);
             $r3$.ɵɵi18n(1, $I18N_1$);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(2, "span", $_c1$);
+            $r3$.ɵɵelementStart(2, "span", 1);
             $r3$.ɵɵi18n(3, $I18N_3$);
             $r3$.ɵɵelementEnd();
           }
@@ -2278,7 +2270,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = ["src", "logo.png", "title", "Logo"];
         var $I18N_0$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$ = goog.getMsg("{$tagImg} is my logo #1 ", {
@@ -2304,16 +2295,17 @@ describe('i18n support in the template compiler', () => {
         function MyComponent_ng_template_3_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18nStart(0, $I18N_2$);
-            $r3$.ɵɵelement(1, "img", $_c0$);
+            $r3$.ɵɵelement(1, "img", 0);
             $r3$.ɵɵi18nEnd();
           }
         }
         …
+        attrs: [["src", "logo.png", "title", "Logo"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementContainerStart(0);
             $r3$.ɵɵi18nStart(1, $I18N_0$);
-            $r3$.ɵɵelement(2, "img", $_c0$);
+            $r3$.ɵɵelement(2, "img", 0);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementContainerEnd();
             $r3$.ɵɵtemplate(3, MyComponent_ng_template_3_Template, 2, 0, "ng-template");
@@ -2471,7 +2463,6 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [4, "ngIf"];
         var $I18N_1$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_3308216566145348998$$APP_SPEC_TS___2$ = goog.getMsg("Content A");
@@ -2506,10 +2497,11 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 2,
         vars: 2,
+        attrs: [[4, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, undefined, $_c0$);
-            $r3$.ɵɵtemplate(1, MyComponent_ng_container_1_Template, 2, 0, "ng-container", $_c0$);
+            $r3$.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, undefined, 0);
+            $r3$.ɵɵtemplate(1, MyComponent_ng_container_1_Template, 2, 0, "ng-container", 0);
           }
           if (rf & 2) {
             $r3$.ɵɵproperty("ngIf", ctx.someFlag);
@@ -2679,9 +2671,6 @@ describe('i18n support in the template compiler', () => {
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c0$ = ["title", "icu only", ${AttributeMarker.Template}, "ngIf"];
-        const $_c1$ = ["title", "icu and text", ${AttributeMarker.Template}, "ngIf"];
-        const $_c2$ = ["title", "icu only"];
         var $I18N_3$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
@@ -2695,7 +2684,7 @@ describe('i18n support in the template compiler', () => {
         });
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c2$);
+            $r3$.ɵɵelementStart(0, "div", 2);
             $r3$.ɵɵtext(1, " ");
             $r3$.ɵɵi18n(2, $I18N_3$);
             $r3$.ɵɵtext(3, " ");
@@ -2707,7 +2696,6 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵi18nApply(2);
           }
         }
-        const $_c3$ = ["title", "icu and text"];
         var $I18N_5$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = goog.getMsg("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{INTERPOLATION} emails}}");
@@ -2722,7 +2710,7 @@ describe('i18n support in the template compiler', () => {
         });
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c3$);
+            $r3$.ɵɵelementStart(0, "div", 3);
             $r3$.ɵɵtext(1, " You have ");
             $r3$.ɵɵi18n(2, $I18N_5$);
             $r3$.ɵɵtext(3, ". ");
@@ -2737,13 +2725,14 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 4,
         vars: 3,
+        attrs: [["title", "icu only", ${AttributeMarker.Template}, "ngIf"], ["title", "icu and text", ${AttributeMarker.Template}, "ngIf"], ["title", "icu only"], ["title", "icu and text"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵi18n(1, $I18N_0$);
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 4, 1, "div", $_c0$);
-            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c1$);
+            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 4, 1, "div", 0);
+            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", 1);
           }
           if (rf & 2) {
             $r3$.ɵɵi18nExp(ctx.gender);
@@ -2821,7 +2810,6 @@ describe('i18n support in the template compiler', () => {
           "START_TAG_DIV": "<div class=\"other\">",
           "CLOSE_TAG_DIV": "</div>"
         });
-        const $_c2$ = [1, "other"];
         var $I18N_0$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$ = goog.getMsg(" {$icu} {$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
@@ -2848,12 +2836,13 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 5,
         vars: 1,
+        attrs: [[1, "other"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵi18nStart(1, $I18N_0$);
             $r3$.ɵɵelement(2, "b");
-            $r3$.ɵɵelementStart(3, "div", $_c2$);
+            $r3$.ɵɵelementStart(3, "div", 0);
             $r3$.ɵɵelement(4, "i");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵi18nEnd();
@@ -3004,7 +2993,6 @@ describe('i18n support in the template compiler', () => {
         $I18N_2$ = $r3$.ɵɵi18nPostprocess($I18N_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
-        const $_c3$ = [${AttributeMarker.Template}, "ngIf"];
         var $I18N_4$;
         if (ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS__4$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
@@ -3054,12 +3042,13 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 4,
         vars: 3,
+        attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵi18nStart(1, $I18N_0$);
             $r3$.ɵɵelement(2, "div");
-            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 2, 1, "div", $_c3$);
+            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 2, 1, "div", 0);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
           }
@@ -3199,7 +3188,6 @@ describe('i18n support in the template compiler', () => {
         $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c2$ = [${AttributeMarker.Template}, "ngIf"];
         var $I18N_3$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
@@ -3243,11 +3231,12 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 3,
         vars: 2,
+        attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵi18nStart(1, $I18N_0$);
-            $r3$.ɵɵtemplate(2, MyComponent_span_2_Template, 2, 1, "span", $_c2$);
+            $r3$.ɵɵtemplate(2, MyComponent_span_2_Template, 2, 1, "span", 0);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
           }
@@ -3287,16 +3276,15 @@ describe('i18n support in the template compiler', () => {
           "INTERPOLATION": "\uFFFD1\uFFFD",
           "INTERPOLATION_1": "\uFFFD2\uFFFD"
         });
-        const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
-        var $I18N_4$;
+        var $I18N_3$;
         if (ngI18nClosureMode) {
             const $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {INTERPOLATION}}}");
-            $I18N_4$ = $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$;
+            $I18N_3$ = $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$;
         }
         else {
             $I18N_4$ = $localize \`{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {INTERPOLATION}}}\`;
         }
-        $I18N_4$ = $r3$.ɵɵi18nPostprocess($I18N_4$, {
+        $I18N_3$ = $r3$.ɵɵi18nPostprocess($I18N_3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD",
           "INTERPOLATION": "\uFFFD1:1\uFFFD"
         });
@@ -3306,7 +3294,7 @@ describe('i18n support in the template compiler', () => {
               "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
               "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
               "icu": $I18N_1$,
-              "icu_1": $I18N_4$
+              "icu_1": $I18N_3$
             });
             $I18N_0$ = $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$;
         }
@@ -3314,7 +3302,7 @@ describe('i18n support in the template compiler', () => {
             $I18N_0$ = $localize \` $` +
           String.raw `{I18N_1}:ICU: $` +
           String.raw `{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_SPAN: $` +
-          String.raw `{I18N_4}:ICU_1: $` +
+          String.raw `{I18N_3}:ICU_1: $` +
           String.raw `{"\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         function MyComponent_span_2_Template(rf, ctx) {
@@ -3332,11 +3320,12 @@ describe('i18n support in the template compiler', () => {
         …
         consts: 3,
         vars: 4,
+        attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵi18nStart(1, $I18N_0$);
-            $r3$.ɵɵtemplate(2, MyComponent_span_2_Template, 2, 2, "span", $_c2$);
+            $r3$.ɵɵtemplate(2, MyComponent_span_2_Template, 2, 2, "span", 0);
             $r3$.ɵɵi18nEnd();
             $r3$.ɵɵelementEnd();
           }

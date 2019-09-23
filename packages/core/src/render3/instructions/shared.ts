@@ -570,7 +570,7 @@ export function saveResolvedLocalsInData(
 export function getOrCreateTView(def: ComponentDef<any>): TView {
   return def.tView || (def.tView = createTView(
                            -1, def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs,
-                           def.viewQuery, def.schemas));
+                           def.viewQuery, def.schemas, def.attrs));
 }
 
 
@@ -584,11 +584,13 @@ export function getOrCreateTView(def: ComponentDef<any>): TView {
  * @param pipes Registry of pipes for this view
  * @param viewQuery View queries for this view
  * @param schemas Schemas for this view
+ * @param attrs Attributes for tis view
  */
 export function createTView(
     viewIndex: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
-    viewQuery: ViewQueriesFunction<any>| null, schemas: SchemaMetadata[] | null): TView {
+    viewQuery: ViewQueriesFunction<any>| null, schemas: SchemaMetadata[] | null,
+    attrs: TAttributes[] | null): TView {
   ngDevMode && ngDevMode.tView++;
   const bindingStartIndex = HEADER_OFFSET + consts;
   // This length does not yet contain host bindings from child directives because at this point,
@@ -627,7 +629,7 @@ export function createTView(
              typeof pipes === 'function' ? pipes() : pipes,  // pipeRegistry: PipeDefList|null,
              null,                                           // firstChild: TNode|null,
              schemas,                                        // schemas: SchemaMetadata[]|null,
-             ) :
+             attrs) :                                        // attrs: TAttributes[]
       {
         id: viewIndex,
         blueprint: blueprint,
@@ -656,6 +658,7 @@ export function createTView(
         pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
         firstChild: null,
         schemas: schemas,
+        attrs: attrs,
       };
 }
 

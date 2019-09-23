@@ -48,15 +48,14 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
-        const $c2$ = ["cx", "20", "cy", "30", "r", "50"];
         …
+        attrs: [["title", "Hello", ${AttributeMarker.Classes}, "my-app"], ["cx", "20", "cy", "30", "r", "50"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $c1$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵnamespaceSVG();
             $r3$.ɵɵelementStart(1, "svg");
-            $r3$.ɵɵelement(2, "circle", $c2$);
+            $r3$.ɵɵelement(2, "circle", 1);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵnamespaceHTML();
             $r3$.ɵɵelementStart(3, "p");
@@ -98,11 +97,11 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
         …
+        attrs: [["title", "Hello", ${AttributeMarker.Classes}, "my-app"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $c1$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵnamespaceMathML();
             $r3$.ɵɵelementStart(1, "math");
             $r3$.ɵɵelement(2, "infinity");
@@ -146,11 +145,11 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
         …
+        attrs: [["title", "Hello", ${AttributeMarker.Classes}, "my-app"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $c1$);
+            $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵtext(1, "Hello ");
             $r3$.ɵɵelementStart(2, "b");
             $r3$.ɵɵtext(3, "World");
@@ -170,7 +169,7 @@ describe('compiler compliance', () => {
 
     // TODO(https://github.com/angular/angular/issues/24426): We need to support the parser actually
     // building the proper attributes based off of xmlns attributes.
-    xit('should support namspaced attributes', () => {
+    xit('should support namespaced attributes', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -194,11 +193,11 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-          const $e0_attrs$ = ["class", "my-app", 0, "http://someuri/foo", "foo:bar", "baz", "title", "Hello", 0, "http://someuri/foo", "foo:qux", "quacks"];
           …
+          attrs: [["class", "my-app", 0, "http://someuri/foo", "foo:bar", "baz", "title", "Hello", 0, "http://someuri/foo", "foo:qux", "quacks"]],
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelementStart(0, "div", $e0_attrs$);
+              $r3$.ɵɵelementStart(0, "div", 0);
               $r3$.ɵɵtext(1, "Hello ");
               $r3$.ɵɵelementStart(2, "b");
               $r3$.ɵɵtext(3, "World");
@@ -308,11 +307,11 @@ describe('compiler compliance', () => {
       const factory =
           'MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
-        const $e0_attrs$ = [${AttributeMarker.Bindings}, "id"];
         …
+        attrs: [[${AttributeMarker.Bindings}, "id"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelement(0, "div", $e0_attrs$);
+            $r3$.ɵɵelement(0, "div", 0);
           }
           if (rf & 2) {
             $r3$.ɵɵproperty("id", ctx.id);
@@ -365,7 +364,7 @@ describe('compiler compliance', () => {
       const template = `
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelement(0, "div", $e0_attrs$);
+            $r3$.ɵɵelement(0, "div", 0);
             $r3$.ɵɵpipe(1,"pipe");
           }
           if (rf & 2) {
@@ -501,6 +500,45 @@ describe('compiler compliance', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    it('should de-duplicate attribute arrays', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`
+                  <div title="hi"></div>
+                  <span title="hi"></span>
+                \`
+              })
+              export class MyComponent {
+              }
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const template = `
+        …
+        attrs: [["title", "hi"]],
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵelement(0, "div", 0);
+            $r3$.ɵɵelement(1, "span", 0);
+          }
+          …
+        }
+      `;
+
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
   });
 
   describe('components & directives', () => {
@@ -556,16 +594,16 @@ describe('compiler compliance', () => {
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
-        const $c1$ = ["some-directive", ""];
         …
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
           consts: 2,
           vars: 0,
+          attrs: [["some-directive", ""]],
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelement(0, "child", $c1$);
+              $r3$.ɵɵelement(0, "child", 0);
               $r3$.ɵɵtext(1, "!");
             }
           },
@@ -761,7 +799,6 @@ describe('compiler compliance', () => {
 
       const MyComponentDefinition = `
         const $c1$ = ["foo", ""];
-        const $c2$ = [${AttributeMarker.Template}, "if"];
         function MyComponent_li_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "li");
@@ -781,10 +818,11 @@ describe('compiler compliance', () => {
           selectors: [["my-component"]],
           consts: 3,
           vars: 0,
+          attrs: [[${AttributeMarker.Template}, "if"]],
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "ul", null, $c1$);
-              $r3$.ɵɵtemplate(2, MyComponent_li_2_Template, 2, 2, "li", $c2$);
+              $r3$.ɵɵtemplate(2, MyComponent_li_2_Template, 2, 2, "li", 0);
               $r3$.ɵɵelementEnd();
             }
           },
@@ -840,7 +878,6 @@ describe('compiler compliance', () => {
         };
 
         const MyAppDeclaration = `
-          const $e0_attrs$ = [${AttributeMarker.Bindings}, "names"];
           const $e0_ff$ = function ($v$) { return ["Nancy", $v$]; };
           …
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
@@ -848,9 +885,10 @@ describe('compiler compliance', () => {
             selectors: [["my-app"]],
             consts: 1,
             vars: 3,
+            attrs: [[${AttributeMarker.Bindings}, "names"]],
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "my-comp", $e0_attrs$);
+                $r3$.ɵɵelement(0, "my-comp", 0);
               }
               if (rf & 2) {
                 $r3$.ɵɵproperty("names", $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.customName));
@@ -919,7 +957,6 @@ describe('compiler compliance', () => {
         };
 
         const MyAppDefinition = `
-          const $e0_attr$ = [${AttributeMarker.Bindings}, "names"];
           const $e0_ff$ = function ($v0$, $v1$, $v2$, $v3$, $v4$, $v5$, $v6$, $v7$, $v8$) {
             return ["start-", $v0$, $v1$, $v2$, $v3$, $v4$, "-middle-", $v5$, $v6$, $v7$, $v8$, "-end"];
           }
@@ -929,9 +966,10 @@ describe('compiler compliance', () => {
             selectors: [["my-app"]],
             consts: 1,
             vars: 11,
+            attrs: [[${AttributeMarker.Bindings}, "names"]],
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "my-comp", $e0_attr$);
+                $r3$.ɵɵelement(0, "my-comp", 0);
               }
               if (rf & 2) {
                 $r3$.ɵɵproperty("names",
@@ -983,7 +1021,6 @@ describe('compiler compliance', () => {
         };
 
         const MyAppDefinition = `
-          const $e0_attrs$ = [${AttributeMarker.Bindings}, "config"];
           const $e0_ff$ = function ($v$) { return {"duration": 500, animation: $v$}; };
           …
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
@@ -991,9 +1028,10 @@ describe('compiler compliance', () => {
             selectors: [["my-app"]],
             consts: 1,
             vars: 3,
+            attrs: [[${AttributeMarker.Bindings}, "config"]],
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "object-comp", $e0_attrs$);
+                $r3$.ɵɵelement(0, "object-comp", 0);
               }
               if (rf & 2) {
                 $r3$.ɵɵproperty("config", $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.name));
@@ -1047,7 +1085,6 @@ describe('compiler compliance', () => {
         };
 
         const MyAppDefinition = `
-          const $e0_attrs$ = [${AttributeMarker.Bindings}, "config"];
           const $c0$ = {opacity: 0, duration: 0};
           const $e0_ff$ = function ($v$) { return {opacity: 1, duration: $v$}; };
           const $e0_ff_1$ = function ($v$) { return [$c0$, $v$]; };
@@ -1058,9 +1095,10 @@ describe('compiler compliance', () => {
             selectors: [["my-app"]],
             consts: 1,
             vars: 8,
+            attrs: [[${AttributeMarker.Bindings}, "config"]],
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "nested-comp", $e0_attrs$);
+                $r3$.ɵɵelement(0, "nested-comp", 0);
               }
               if (rf & 2) {
                 $r3$.ɵɵproperty(
@@ -1131,23 +1169,22 @@ describe('compiler compliance', () => {
           });`;
 
         const ComplexComponentDefinition = `
-          const $c3$ = ["id","first"];
-          const $c4$ = ["id","second"];
           const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
           …
           ComplexComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: ComplexComponent,
             selectors: [["complex"]],
-            ngContentSelectors: _c4,
+            ngContentSelectors: $c2$,
             consts: 4,
             vars: 0,
+            attrs: [["id","first"], ["id","second"]],
             template:  function ComplexComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵprojectionDef($c1$);
-                $r3$.ɵɵelementStart(0, "div", $c3$);
+                $r3$.ɵɵelementStart(0, "div", 0);
                 $r3$.ɵɵprojection(1);
                 $r3$.ɵɵelementEnd();
-                $r3$.ɵɵelementStart(2, "div", $c4$);
+                $r3$.ɵɵelementStart(2, "div", 1);
                 $r3$.ɵɵprojection(3, 1);
                 $r3$.ɵɵelementEnd();
               }
@@ -1239,18 +1276,14 @@ describe('compiler compliance', () => {
           }
         };
         const output = `
-          const $_c0$ = ["id", "second", ${AttributeMarker.Template}, "ngIf"];
-          const $_c1$ = ["id", "third", ${AttributeMarker.Template}, "ngIf"];
-          const $_c2$ = ["id", "second"];
           function Cmp_div_0_Template(rf, ctx) { if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c2$);
+            $r3$.ɵɵelementStart(0, "div", 2);
             $r3$.ɵɵprojection(1);
             $r3$.ɵɵelementEnd();
           } }
-          const $_c3$ = ["id", "third"];
           function Cmp_div_1_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelementStart(0, "div", $_c3$);
+              $r3$.ɵɵelementStart(0, "div", 3);
               $r3$.ɵɵtext(1, " No ng-content, no instructions generated. ");
               $r3$.ɵɵelementEnd();
             }
@@ -1263,11 +1296,12 @@ describe('compiler compliance', () => {
           }
           const $_c4$ = [[["span", "title", "tofirst"]], "*"];
           …
+          attrs: [["id", "second", ${AttributeMarker.Template}, "ngIf"], ["id", "third", ${AttributeMarker.Template}, "ngIf"], ["id", "second"], ["id", "third"]],
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵprojectionDef($_c4$);
-              $r3$.ɵɵtemplate(0, Cmp_div_0_Template, 2, 0, "div", $_c0$);
-              $r3$.ɵɵtemplate(1, Cmp_div_1_Template, 2, 0, "div", $_c1$);
+              $r3$.ɵɵtemplate(0, Cmp_div_0_Template, 2, 0, "div", 0);
+              $r3$.ɵɵtemplate(1, Cmp_div_1_Template, 2, 0, "div", 1);
               $r3$.ɵɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
             }
             if (rf & 2) {
@@ -1376,17 +1410,17 @@ describe('compiler compliance', () => {
         const SimpleComponentDefinition = `
           const $_c0$ = [[["", "title", ""]]];
           const $_c1$ = ["[title]"];
-          const $_c2$ = ["ngProjectAs", "[title]", 5, ["", "title", ""]];
           …
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             consts: 2,
             vars: 0,
+            attrs: ["ngProjectAs", "[title]", 5, ["", "title", ""]],
             template: function MyApp_Template(rf, ctx) {
                 if (rf & 1) {
                     $r3$.ɵɵelementStart(0, "simple");
-                    $r3$.ɵɵelement(1, "h1", $_c2$);
+                    $r3$.ɵɵelement(1, "h1", 0);
                     $r3$.ɵɵelementEnd();
                 }
             },
@@ -1428,17 +1462,17 @@ describe('compiler compliance', () => {
         const SimpleComponentDefinition = `
           const $_c0$ = [[["", "title", ""]]];
           const $_c1$ = ["[title]"];
-          const $_c2$ = ["ngProjectAs", "[title],[header]", 5, ["", "title", ""]];
           …
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             consts: 2,
             vars: 0,
+            attrs: ["ngProjectAs", "[title],[header]", 5, ["", "title", ""]],
             template: function MyApp_Template(rf, ctx) {
                 if (rf & 1) {
                     $r3$.ɵɵelementStart(0, "simple");
-                    $r3$.ɵɵelement(1, "h1", $_c2$);
+                    $r3$.ɵɵelement(1, "h1", 0);
                     $r3$.ɵɵelementEnd();
                 }
             },
@@ -1491,7 +1525,6 @@ describe('compiler compliance', () => {
         };
 
         const ViewQueryComponentDefinition = `
-          const $e0_attrs$ = ["someDir",""];
           …
           ViewQueryComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: ViewQueryComponent,
@@ -1509,9 +1542,10 @@ describe('compiler compliance', () => {
             },
             consts: 1,
             vars: 0,
+            attrs: [["someDir",""]],
             template:  function ViewQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "div", $e0_attrs$);
+                $r3$.ɵɵelement(0, "div", 0);
               }
             },
             directives: function () { return [SomeDirective]; },
@@ -1601,7 +1635,6 @@ describe('compiler compliance', () => {
 
         const ViewQueryComponentDefinition = `
           const $refs$ = ["foo"];
-          const $e0_attrs$ = ["someDir",""];
           …
           ViewQueryComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: ViewQueryComponent,
@@ -1619,9 +1652,10 @@ describe('compiler compliance', () => {
             },
             consts: 1,
             vars: 0,
+            attrs: [["someDir",""]],
             template:  function ViewQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "div", $e0_attrs$);
+                $r3$.ɵɵelement(0, "div", 0);
               }
             },
             directives: function () { return [SomeDirective]; },
@@ -2261,7 +2295,6 @@ describe('compiler compliance', () => {
 
       const MyComponentDefinition = `
         const $c1$ = ["foo", ""];
-        const $c2$ = [${AttributeMarker.Template}, "if"];
         const $c3$ = ["baz", ""];
         const $c4$ = ["bar", ""];
         function MyComponent_div_3_span_2_Template(rf, ctx) {
@@ -2284,7 +2317,7 @@ describe('compiler compliance', () => {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
             $r3$.ɵɵtext(1);
-            $r3$.ɵɵtemplate(2, MyComponent_div_3_span_2_Template, 2, 3, "span", $c2$);
+            $r3$.ɵɵtemplate(2, MyComponent_div_3_span_2_Template, 2, 3, "span", 0);
             $r3$.ɵɵelement(3, "span", null, $c4$);
             $r3$.ɵɵelementEnd();
           }
@@ -2302,11 +2335,12 @@ describe('compiler compliance', () => {
           selectors: [["my-component"]],
           consts: 6,
           vars: 1,
+          attrs: [[${AttributeMarker.Template}, "if"]],
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵelement(0, "div", null, $c1$);
               $r3$.ɵɵtext(2);
-              $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 5, 2, "div", $c2$);
+              $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 5, 2, "div", 0);
               $r3$.ɵɵelement(4, "div", null, $c3$);
             }
             if (rf & 2) {
@@ -2349,9 +2383,7 @@ describe('compiler compliance', () => {
       };
 
       const template = `
-      const $c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
       const $c1$ = ["foo", ""];
-      const $c2$ = [${AttributeMarker.Template}, "ngIf"];
 
       function MyComponent_div_0_span_3_Template(rf, ctx) {
         if (rf & 1) {
@@ -2371,7 +2403,7 @@ describe('compiler compliance', () => {
         if (rf & 1) {
           $i0$.ɵɵelementStart(0, "div");
           $i0$.ɵɵelement(1, "div", null, $c1$);
-          $i0$.ɵɵtemplate(3, MyComponent_div_0_span_3_Template, 2, 2, "span", $c2$);
+          $i0$.ɵɵtemplate(3, MyComponent_div_0_span_3_Template, 2, 2, "span", 1);
           $i0$.ɵɵelementEnd();
         }
         if (rf & 2) {
@@ -2382,9 +2414,10 @@ describe('compiler compliance', () => {
       }
 
       // ...
+      attrs: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Template}, "ngIf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 1, "div", $c0$);
+          $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 1, "div", 0);
         }
         if (rf & 2) {
           $i0$.ɵɵproperty("ngForOf", ctx.items);
@@ -2459,10 +2492,11 @@ describe('compiler compliance', () => {
             selectors: [["simple-layout"]],
             consts: 2,
             vars: 2,
+            attrs: [[3, "name"]],
             template:  function SimpleLayout_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "lifecycle-comp", $e0_attrs$);
-                $r3$.ɵɵelement(1, "lifecycle-comp", $e1_attrs$);
+                $r3$.ɵɵelement(0, "lifecycle-comp", 0);
+                $r3$.ɵɵelement(1, "lifecycle-comp", 0);
               }
               if (rf & 2) {
                 $r3$.ɵɵproperty("name", ctx.name1);
@@ -2576,7 +2610,6 @@ describe('compiler compliance', () => {
           };`;
 
         const MyComponentDefinition = `
-              const $t1_attrs$ = [${AttributeMarker.Template}, "for", "forOf"];
               function MyComponent__svg_g_1_Template(rf, ctx) {
                 if (rf & 1) {
                   $r3$.ɵɵnamespaceSVG();
@@ -2591,11 +2624,12 @@ describe('compiler compliance', () => {
                 selectors: [["my-component"]],
                 consts: 2,
                 vars: 1,
+                attrs: [[${AttributeMarker.Template}, "for", "forOf"]],
                 template:  function MyComponent_Template(rf, ctx){
                   if (rf & 1) {
                     $r3$.ɵɵnamespaceSVG();
                     $r3$.ɵɵelementStart(0,"svg");
-                    $r3$.ɵɵtemplate(1, MyComponent__svg_g_1_Template, 2, 0, "g", $t1_attrs$);
+                    $r3$.ɵɵtemplate(1, MyComponent__svg_g_1_Template, 2, 0, "g", 0);
                     $r3$.ɵɵelementEnd();
                   }
                   if (rf & 2) {
@@ -2658,7 +2692,6 @@ describe('compiler compliance', () => {
         `;
 
         const MyComponentDefinition = `
-          const $t1_attrs$ = [${AttributeMarker.Template}, "for", "forOf"];
           function MyComponent_li_1_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "li");
@@ -2677,10 +2710,11 @@ describe('compiler compliance', () => {
             selectors: [["my-component"]],
             consts: 2,
             vars: 1,
+            attrs: [[${AttributeMarker.Template}, "for", "forOf"]],
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵelementStart(0, "ul");
-                $r3$.ɵɵtemplate(1, MyComponent_li_1_Template, 2, 1, "li", $t1_attrs$);
+                $r3$.ɵɵtemplate(1, MyComponent_li_1_Template, 2, 1, "li", 0);
                 $r3$.ɵɵelementEnd();
               }
               if (rf & 2) {
@@ -2740,7 +2774,6 @@ describe('compiler compliance', () => {
         };
 
         const MyComponentDefinition = `
-          const $t4_attrs$ = [${AttributeMarker.Template}, "for", "forOf"];
           function MyComponent_li_1_li_4_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "li");
@@ -2762,7 +2795,7 @@ describe('compiler compliance', () => {
               $r3$.ɵɵtext(2);
               $r3$.ɵɵelementEnd();
               $r3$.ɵɵelementStart(3, "ul");
-              $r3$.ɵɵtemplate(4, MyComponent_li_1_li_4_Template, 2, 2, "li", $t4_attrs$);
+              $r3$.ɵɵtemplate(4, MyComponent_li_1_li_4_Template, 2, 2, "li", 0);
               $r3$.ɵɵelementEnd();
               $r3$.ɵɵelementEnd();
             }
@@ -2781,10 +2814,11 @@ describe('compiler compliance', () => {
             selectors: [["my-component"]],
             consts: 2,
             vars: 1,
+            attrs: [[${AttributeMarker.Template}, "for", "forOf"]],
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵelementStart(0, "ul");
-                $r3$.ɵɵtemplate(1, MyComponent_li_1_Template, 5, 2, "li", $c1$);
+                $r3$.ɵɵtemplate(1, MyComponent_li_1_Template, 5, 2, "li", 0);
                 $r3$.ɵɵelementEnd();
               }
               if (rf & 2) {

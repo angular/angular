@@ -31,18 +31,17 @@ import {setupRootViewWithEmbeddedViews} from '../setup';
 </ng-template>`;
 function testTemplate(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
-    ɵɵelementStart(0, 'div', [AttributeMarker.Classes, 'list']);
-    ɵɵelement(1, 'div', [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']);
-    ɵɵelement(2, 'div', [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']);
-    ɵɵelement(3, 'div', [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']);
-    ɵɵelement(4, 'div', [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']);
-    ɵɵelement(5, 'div', [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']);
-    ɵɵelement(6, 'div', [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']);
-    ɵɵelement(7, 'div', [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']);
-    ɵɵelement(8, 'div', [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']);
-    ɵɵelement(9, 'div', [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']);
-    ɵɵelement(
-        10, 'div', [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']);
+    ɵɵelementStart(0, 'div', 0);
+    ɵɵelement(1, 'div', 1);
+    ɵɵelement(2, 'div', 1);
+    ɵɵelement(3, 'div', 1);
+    ɵɵelement(4, 'div', 1);
+    ɵɵelement(5, 'div', 1);
+    ɵɵelement(6, 'div', 1);
+    ɵɵelement(7, 'div', 1);
+    ɵɵelement(8, 'div', 1);
+    ɵɵelement(9, 'div', 1);
+    ɵɵelement(10, 'div', 1);
     ɵɵelementEnd();
   }
   if (rf & 2) {
@@ -80,7 +79,10 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 
-const rootLView = setupRootViewWithEmbeddedViews(testTemplate, 11, 10, 1000);
+const rootLView = setupRootViewWithEmbeddedViews(testTemplate, 11, 10, 1000, undefined, [
+  [AttributeMarker.Classes, 'list'],
+  [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']
+]);
 const rootTView = rootLView[TVIEW];
 
 // scenario to benchmark

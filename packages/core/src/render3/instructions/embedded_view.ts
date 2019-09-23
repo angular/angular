@@ -89,7 +89,8 @@ function getOrCreateEmbeddedTView(
   ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     containerTViews[viewIndex] = createTView(
-        viewIndex, null, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null, null);
+        viewIndex, null, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null, null,
+        tView.attrs);
   }
   return containerTViews[viewIndex];
 }

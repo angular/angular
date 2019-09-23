@@ -246,6 +246,12 @@ export function compileComponentFromMetadata(
   // e.g. `vars: 2`
   definitionMap.set('vars', o.literal(templateBuilder.getVarCount()));
 
+  // e.g. `attrs: [['one', 'two'], ['three', 'four']]
+  const attrs = templateBuilder.getAttributes();
+  if (attrs.length > 0) {
+    definitionMap.set('attrs', o.literalArr(attrs));
+  }
+
   definitionMap.set('template', templateFunctionExpression);
 
   // e.g. `directives: [MyDirective]`

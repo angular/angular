@@ -26,7 +26,7 @@ import {registerInitialStylingOnTNode} from './styling';
  * The instruction must later be followed by `elementContainerEnd()` call.
  *
  * @param index Index of the element in the LView array
- * @param attrs Set of attributes to be used when matching directives.
+ * @param attrsIndex Index of the container in the attributes array.
  * @param localRefs A set of local reference bindings on the element.
  *
  * Even if this instruction accepts a set of attributes no actual attribute values are propagated to
@@ -36,11 +36,13 @@ import {registerInitialStylingOnTNode} from './styling';
  * @codeGenApi
  */
 export function ɵɵelementContainerStart(
-    index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void {
+    index: number, attrsIndex?: number | null, localRefs?: string[] | null): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   const renderer = lView[RENDERER];
   const tagName = 'ng-container';
+  const tViewAttrs = tView.attrs;
+  const attrs = tViewAttrs === null || attrsIndex == null ? null : tViewAttrs[attrsIndex];
   ngDevMode && assertEqual(
                    lView[BINDING_INDEX], tView.bindingStartIndex,
                    'element containers should be created before any bindings');
@@ -50,9 +52,8 @@ export function ɵɵelementContainerStart(
   const native = lView[index + HEADER_OFFSET] = renderer.createComment(ngDevMode ? tagName : '');
 
   ngDevMode && assertDataInRange(lView, index - 1);
-  const tNode = getOrCreateTNode(
-      tView, lView[T_HOST], index, TNodeType.ElementContainer, tagName, attrs || null);
-
+  const tNode =
+      getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.ElementContainer, tagName, attrs);
 
   if (attrs && tView.firstTemplatePass) {
     // While ng-container doesn't necessarily support styling, we use the style context to identify
@@ -113,13 +114,13 @@ export function ɵɵelementContainerEnd(): void {
  * and {@link elementContainerEnd}
  *
  * @param index Index of the element in the LView array
- * @param attrs Set of attributes to be used when matching directives.
+ * @param attrsIndex Index of the container in the attributes array.
  * @param localRefs A set of local reference bindings on the element.
  *
  * @codeGenApi
  */
 export function ɵɵelementContainer(
-    index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void {
-  ɵɵelementContainerStart(index, attrs, localRefs);
+    index: number, attrsIndex?: number | null, localRefs?: string[] | null): void {
+  ɵɵelementContainerStart(index, attrsIndex, localRefs);
   ɵɵelementContainerEnd();
 }

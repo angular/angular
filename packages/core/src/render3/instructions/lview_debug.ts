@@ -14,7 +14,7 @@ import {initNgDevMode} from '../../util/ng_dev_mode';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
-import {PropertyAliases, TContainerNode, TElementNode, TNode as ITNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
+import {PropertyAliases, TAttributes, TContainerNode, TElementNode, TNode as ITNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {TQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
@@ -102,6 +102,7 @@ export const TViewConstructor = class TView implements ITView {
       public pipeRegistry: PipeDefList|null,                 //
       public firstChild: TNode|null,                         //
       public schemas: SchemaMetadata[]|null,                 //
+      public attrs: TAttributes[]|null,                      //
       ) {}
 
   get template_(): string {

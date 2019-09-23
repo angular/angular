@@ -13,7 +13,7 @@ import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {Renderer2} from '@angular/core/src/render/api';
 import {createLView, createTView, getOrCreateTNode, getOrCreateTView, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
-import {TNodeType} from '@angular/core/src/render3/interfaces/node';
+import {TAttributes, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {getLView, resetComponentState, selectView} from '@angular/core/src/render3/state';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -103,7 +103,7 @@ export class TemplateFixture extends BaseFixture {
       private createBlock: () => void, private updateBlock: () => void = noop, consts: number = 0,
       private vars: number = 0, directives?: DirectiveTypesOrFactory|null,
       pipes?: PipeTypesOrFactory|null, sanitizer?: Sanitizer|null,
-      rendererFactory?: RendererFactory3) {
+      rendererFactory?: RendererFactory3, private _attrs?: TAttributes[]) {
     super();
     this._directiveDefs = toDefs(directives, extractDirectiveDef);
     this._pipeDefs = toDefs(pipes, extractPipeDef);
@@ -120,7 +120,7 @@ export class TemplateFixture extends BaseFixture {
           }
         },
         consts, vars, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs,
-        sanitizer);
+        sanitizer, this._attrs);
   }
 
   /**
@@ -131,7 +131,8 @@ export class TemplateFixture extends BaseFixture {
   update(updateBlock?: () => void): void {
     renderTemplate(
         this.hostElement, updateBlock || this.updateBlock, 0, this.vars, null !,
-        this._rendererFactory, this.hostView, this._directiveDefs, this._pipeDefs, this._sanitizer);
+        this._rendererFactory, this.hostView, this._directiveDefs, this._pipeDefs, this._sanitizer,
+        this._attrs);
   }
 
   destroy(): void {
@@ -247,13 +248,13 @@ export function renderTemplate<T>(
     hostNode: RElement, templateFn: ComponentTemplate<T>, consts: number, vars: number, context: T,
     providedRendererFactory: RendererFactory3, componentView: LView | null,
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
-    sanitizer?: Sanitizer | null): LView {
+    sanitizer?: Sanitizer | null, attrs?: TAttributes[]): LView {
   if (componentView === null) {
     resetComponentState();
     const renderer = providedRendererFactory.createRenderer(null, null);
 
     // We need to create a root view so it's possible to look up the host element through its index
-    const tView = createTView(-1, null, 1, 0, null, null, null, null);
+    const tView = createTView(-1, null, 1, 0, null, null, null, null, null);
     const hostLView = createLView(
         null, tView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
         providedRendererFactory, renderer);
@@ -265,6 +266,7 @@ export function renderTemplate<T>(
       template: templateFn,
       consts: consts,
       vars: vars,
+      attrs: attrs,
     });
     def.directiveDefs = directives || null;
     def.pipeDefs = pipes || null;
@@ -287,10 +289,12 @@ export function renderTemplate<T>(
 export function renderToHtml(
     template: ComponentTemplate<any>, ctx: any, consts: number = 0, vars: number = 0,
     directives?: DirectiveTypesOrFactory | null, pipes?: PipeTypesOrFactory | null,
-    providedRendererFactory?: RendererFactory3 | null, keepNgReflect = false) {
+    providedRendererFactory?: RendererFactory3 | null, keepNgReflect = false,
+    attrs?: TAttributes[]) {
   hostView = renderTemplate(
       containerEl, template, consts, vars, ctx, providedRendererFactory || testRendererFactory,
-      hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
+      hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef), null,
+      attrs);
   return toHtml(containerEl, keepNgReflect);
 }
 
@@ -365,7 +369,8 @@ export function createComponent(
     name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
     directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
     viewQuery: ComponentTemplate<any>| null = null, providers: Provider[] = [],
-    viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>): ComponentType<any> {
+    viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>,
+    attrs: TAttributes[] = []): ComponentType<any> {
   return class Component {
     value: any;
     static ngFactoryDef = () => new Component;
@@ -379,7 +384,8 @@ export function createComponent(
       directives: directives, hostBindings,
       pipes: pipes,
       features: (providers.length > 0 || viewProviders.length > 0)?
-      [ɵɵProvidersFeature(providers || [], viewProviders || [])]: []
+      [ɵɵProvidersFeature(providers || [], viewProviders || [])]: [],
+      attrs: attrs,
     });
   };
 }

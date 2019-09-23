@@ -74,11 +74,11 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-      const $e0_attrs$ = [${AttributeMarker.Bindings}, "title"];
       …
+      attrs: [[${AttributeMarker.Bindings}, "title"]],
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
-          $i0$.ɵɵelement(0, "a", $e0_attrs$);
+          $i0$.ɵɵelement(0, "a", 0);
         }
         if (rf & 2) {
           $i0$.ɵɵproperty("title", $ctx$.title);
@@ -108,11 +108,11 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-      const $e0_attrs$ = [${AttributeMarker.Bindings}, "title"];
       …
+      attrs: [[${AttributeMarker.Bindings}, "title"]],
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
-          $i0$.ɵɵelement(0, "a", $e0_attrs$);
+          $i0$.ɵɵelement(0, "a", 0);
         }
         if (rf & 2) {
           $i0$.ɵɵpropertyInterpolate1("title", "Hello ", $ctx$.name, "");
@@ -162,13 +162,13 @@ describe('compiler compliance: bindings', () => {
          };
 
          const template = `
-      const $c0$ = [${AttributeMarker.Bindings}, "for"];
+      attrs: [[${AttributeMarker.Bindings}, "for"]]
 
       // ...
 
       function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-            $i0$.ɵɵelement(0, "label", _c0);
+            $i0$.ɵɵelement(0, "label", 0);
         }
         if (rf & 2) {
             $i0$.ɵɵproperty("for", ctx.forValue);
@@ -640,7 +640,7 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-        const $e0_attrs$ = ["target", "_blank", "aria-label", "link", ${AttributeMarker.Bindings}, "title", "id", "customEvent"];
+        attrs: [["target", "_blank", "aria-label", "link", ${AttributeMarker.Bindings}, "title", "id", "customEvent"]],
         …
       `;
       const result = compile(files, angularFiles);
@@ -1251,12 +1251,12 @@ describe('compiler compliance: bindings', () => {
       `);
 
       const template = `
-        const $_c0$ = ["id", "my-id"];
         const $_c1$ = ["myRef", ""];
         …
+        attrs: [["id", "my-id"]],
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
-            $i0$.ɵɵelementStart(0, "b", $_c0$, $_c1$);
+            $i0$.ɵɵelementStart(0, "b", 0, $_c1$);
             $i0$.ɵɵdisableBindings();
             $i0$.ɵɵelementStart(2, "i");
             $i0$.ɵɵtext(3, "Hello {{ name }}!");
@@ -1284,13 +1284,13 @@ describe('compiler compliance: bindings', () => {
       `);
 
       const template = `
-        const $_c0$ = ["value", "one", "#myInput", ""];
         …
+        attrs: [["value", "one", "#myInput", ""]],
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵɵelementStart(0, "div");
             $i0$.ɵɵdisableBindings();
-            $i0$.ɵɵelement(1, "input", $_c0$);
+            $i0$.ɵɵelement(1, "input", 0);
             $i0$.ɵɵtext(2, " {{ myInput.value }} ");
             $i0$.ɵɵenableBindings();
             $i0$.ɵɵelementEnd();
@@ -1308,13 +1308,13 @@ describe('compiler compliance: bindings', () => {
       `);
 
       const template = `
-        const $_c0$ = ["[id]", "my-id", "(click)", "onclick"];
         …
+        attrs: [["[id]", "my-id", "(click)", "onclick"]],
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵɵelementStart(0, "div");
             $i0$.ɵɵdisableBindings();
-            $i0$.ɵɵelement(1, "div", $_c0$);
+            $i0$.ɵɵelement(1, "div", 0);
             $i0$.ɵɵenableBindings();
             $i0$.ɵɵelementEnd();
         }

@@ -280,9 +280,10 @@ describe('component animations', () => {
         consts: 1,
         vars: 1,
         selectors: [['foo']],
+        attrs: [[AttributeMarker.Bindings, '@fooAnimation']],
         template: (rf: RenderFlags, ctx: AnimComp) => {
           if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'div', [AttributeMarker.Bindings, '@fooAnimation']);
+            ɵɵelement(0, 'div', 0);
           }
           if (rf & RenderFlags.Update) {
             ɵɵattribute('@fooAnimation', ctx.animationValue);
@@ -316,9 +317,10 @@ describe('component animations', () => {
            consts: 1,
            vars: 1,
            selectors: [['foo']],
+           attrs: [['@fooAnimation', '']],
            template: (rf: RenderFlags, ctx: AnimComp) => {
              if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div', ['@fooAnimation', '']);
+               ɵɵelement(0, 'div', 0);
              }
            }
          });
@@ -477,6 +479,7 @@ describe('element discovery', () => {
         directives: [NgIf],
         consts: 2,
         vars: 1,
+        attrs: [['ngIf', '']],
         template: (rf: RenderFlags, ctx: StructuredComp) => {
           if (rf & RenderFlags.Create) {
             ɵɵelementStart(0, 'section');
@@ -487,7 +490,7 @@ describe('element discovery', () => {
                 ɵɵelementEnd();
                 ɵɵelement(2, 'div');
               }
-            }, 3, 0, 'ng-template', ['ngIf', '']);
+            }, 3, 0, 'ng-template', 0);
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -858,10 +861,11 @@ describe('element discovery', () => {
            directives: [MyDir1, MyDir2, MyDir3],
            consts: 2,
            vars: 0,
+           attrs: [['my-dir-1', '', 'my-dir-2', ''], ['my-dir-3']],
            template: (rf: RenderFlags, ctx: StructuredComp) => {
              if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div', ['my-dir-1', '', 'my-dir-2', '']);
-               ɵɵelement(1, 'div', ['my-dir-3']);
+               ɵɵelement(0, 'div', 0);
+               ɵɵelement(1, 'div', 1);
              }
            }
          });
@@ -950,9 +954,10 @@ describe('element discovery', () => {
            directives: [ChildComp, MyDir1, MyDir2],
            consts: 1,
            vars: 0,
+           attrs: [['my-dir-1', '', 'my-dir-2', '']],
            template: (rf: RenderFlags, ctx: ParentComp) => {
              if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'child-comp', ['my-dir-1', '', 'my-dir-2', '']);
+               ɵɵelement(0, 'child-comp', 0);
              }
            }
          });
@@ -1130,9 +1135,10 @@ describe('sanitization', () => {
         selectors: [['sanitize-this']],
         consts: 1,
         vars: 0,
+        attrs: [['unsafeUrlHostBindingDir', '']],
         template: (rf: RenderFlags, ctx: SimpleComp) => {
           if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'blockquote', ['unsafeUrlHostBindingDir', '']);
+            ɵɵelement(0, 'blockquote', 0);
           }
         },
         directives: [UnsafeUrlHostBindingDir]

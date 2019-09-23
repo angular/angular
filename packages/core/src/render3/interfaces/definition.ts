@@ -9,6 +9,8 @@
 import {SchemaMetadata, ViewEncapsulation} from '../../core';
 import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
+
+import {TAttributes} from './node';
 import {CssSelectorList} from './projection';
 import {TView} from './view';
 
@@ -240,6 +242,9 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * The View template of the component.
    */
   readonly template: ComponentTemplate<T>;
+
+  /** Attributes for all of the nodes in the component's view */
+  readonly attrs: TAttributes[]|null;
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.

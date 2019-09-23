@@ -22,16 +22,7 @@ import {ComponentFixture, TemplateFixture} from './render_util';
 describe('instructions', () => {
   function createAnchor() { ɵɵelement(0, 'a'); }
 
-  function createDiv(initialClasses?: string[] | null, initialStyles?: string[] | null) {
-    const attrs: any[] = [];
-    if (initialClasses) {
-      attrs.push(AttributeMarker.Classes, ...initialClasses);
-    }
-    if (initialStyles) {
-      attrs.push(AttributeMarker.Styles, ...initialStyles);
-    }
-    ɵɵelement(0, 'div', attrs);
-  }
+  function createDiv() { ɵɵelement(0, 'div', 0); }
 
   function createScript() { ɵɵelement(0, 'script'); }
 
@@ -85,8 +76,8 @@ describe('instructions', () => {
   describe('element', () => {
     it('should create an element with the correct perf counters', () => {
       const t = new TemplateFixture(() => {
-        ɵɵelement(0, 'div', ['id', 'test', 'title', 'Hello']);
-      }, () => {}, 1);
+        ɵɵelement(0, 'div', 0);
+      }, () => {}, 1, 0, null, null, null, undefined, [['id', 'test', 'title', 'Hello']]);
 
       const div = (t.hostElement as HTMLElement).querySelector('div') !;
       expect(div.id).toEqual('test');
@@ -164,12 +155,13 @@ describe('instructions', () => {
   });
 
   describe('styleMap', () => {
-    function createDivWithStyle() {
-      ɵɵelement(0, 'div', [AttributeMarker.Styles, 'height', '10px']);
-    }
+    const attrs = [[AttributeMarker.Styles, 'height', '10px']];
+
+    function createDivWithStyle() { ɵɵelement(0, 'div', 0); }
 
     it('should add style', () => {
-      const fixture = new TemplateFixture(createDivWithStyle, () => {}, 1);
+      const fixture = new TemplateFixture(
+          createDivWithStyle, () => {}, 1, 0, null, null, null, undefined, attrs);
       fixture.update(() => { ɵɵstyleMap({'background-color': 'red'}); });
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
@@ -213,13 +205,10 @@ describe('instructions', () => {
 
   describe('performance counters', () => {
     it('should create tViews only once for each nested level', () => {
-      const _c0 = [AttributeMarker.Template, 'ngFor', 'ngForOf'];
-      const _c1 = [AttributeMarker.Template, 'ngFor', 'ngForOf'];
-
       function ToDoAppComponent_NgForOf_Template_0(rf: RenderFlags, ctx0: NgForOfContext<any>) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'ul');
-          ɵɵtemplate(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', _c1);
+          ɵɵtemplate(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', 0);
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -257,9 +246,10 @@ describe('instructions', () => {
           selectors: [['nested-loops']],
           consts: 1,
           vars: 1,
+          attrs: [[AttributeMarker.Template, 'ngFor', 'ngForOf']],
           template: function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
             if (rf & RenderFlags.Create) {
-              ɵɵtemplate(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, 'ul', _c0);
+              ɵɵtemplate(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, 'ul', 0);
             }
             if (rf & RenderFlags.Update) {
               ɵɵproperty('ngForOf', ctx.rows);

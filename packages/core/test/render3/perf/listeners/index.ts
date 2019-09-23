@@ -28,47 +28,46 @@ import {createAndRenderLView} from '../setup';
   <button (click)="clickListener()" (input)="inputListener()"></button>
 </div>
 `;
-const _c0 = [3, 'click', 'input'];
 function testTemplate(rf: RenderFlags, ctx: any) {
   if (rf & 1) {
     ɵɵelementStart(0, 'div');
-    ɵɵelementStart(1, 'button', _c0);
+    ɵɵelementStart(1, 'button', 0);
     ɵɵlistener('click', function clickListener() {});
     ɵɵlistener('input', function inputListener() {});
     ɵɵelementEnd();
-    ɵɵelementStart(2, 'button', _c0);
+    ɵɵelementStart(2, 'button', 0);
     ɵɵlistener('click', function clickListener() {});
     ɵɵlistener('input', function inputListener() {});
     ɵɵelementEnd();
-    ɵɵelementStart(3, 'button', _c0);
+    ɵɵelementStart(3, 'button', 0);
     ɵɵlistener('click', function clickListener() {});
     ɵɵlistener('input', function inputListener() {});
     ɵɵelementEnd();
-    ɵɵelementStart(4, 'button', _c0);
+    ɵɵelementStart(4, 'button', 0);
     ɵɵlistener('click', function clickListener() {});
     ɵɵlistener('input', function inputListener() {});
     ɵɵelementEnd();
-    ɵɵelementStart(5, 'button', _c0);
+    ɵɵelementStart(5, 'button', 0);
     ɵɵlistener('click', function clickListener() {});
     ɵɵlistener('input', function inputListener() {});
     ɵɵelementEnd();
-    ɵɵelementStart(6, 'button', _c0);
+    ɵɵelementStart(6, 'button', 0);
     ɵɵlistener('click', function clickListener() {});
     ɵɵlistener('input', function inputListener() {});
     ɵɵelementEnd();
-    ɵɵelementStart(7, 'button', _c0);
+    ɵɵelementStart(7, 'button', 0);
     ɵɵlistener('click', function clickListener() {});
     ɵɵlistener('input', function inputListener() {});
     ɵɵelementEnd();
-    ɵɵelementStart(8, 'button', _c0);
+    ɵɵelementStart(8, 'button', 0);
     ɵɵlistener('click', function clickListener() {});
     ɵɵlistener('input', function inputListener() {});
     ɵɵelementEnd();
-    ɵɵelementStart(9, 'button', _c0);
+    ɵɵelementStart(9, 'button', 0);
     ɵɵlistener('click', function clickListener() {});
     ɵɵlistener('input', function inputListener() {});
     ɵɵelementEnd();
-    ɵɵelementStart(10, 'button', _c0);
+    ɵɵelementStart(10, 'button', 0);
     ɵɵlistener('click', function clickListener() {});
     ɵɵlistener('input', function inputListener() {});
     ɵɵelementEnd();
@@ -77,7 +76,8 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
-const embeddedTView = createTView(-1, testTemplate, 11, 0, null, null, null, null);
+const embeddedTView =
+    createTView(-1, testTemplate, 11, 0, null, null, null, null, [[3, 'click', 'input']]);
 
 // initialize global state
 resetComponentState();

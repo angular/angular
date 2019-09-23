@@ -65,7 +65,7 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
-const embeddedTView = createTView(-1, testTemplate, 21, 0, null, null, null, null);
+const embeddedTView = createTView(-1, testTemplate, 21, 0, null, null, null, null, null);
 
 // initialize global state
 resetComponentState();

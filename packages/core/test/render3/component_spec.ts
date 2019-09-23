@@ -181,6 +181,7 @@ it('should not invoke renderer destroy method for embedded views', () => {
       consts: 3,
       vars: 1,
       directives: [NgIf],
+      attrs: [[AttributeMarker.Template, 'ngIf']],
       /**
        *  <div>Root view</div>
        *  <div *ngIf="visible">Child view</div>
@@ -190,8 +191,7 @@ it('should not invoke renderer destroy method for embedded views', () => {
           ɵɵelementStart(0, 'div');
           ɵɵtext(1, 'Root view');
           ɵɵelementEnd();
-          ɵɵtemplate(
-              2, MyComponent_div_Template_2, 2, 0, 'div', [AttributeMarker.Template, 'ngIf']);
+          ɵɵtemplate(2, MyComponent_div_Template_2, 2, 0, 'div', 0);
         }
         if (rf & RenderFlags.Update) {
           ɵɵadvance(2);
@@ -397,16 +397,12 @@ describe('recursive components', () => {
       selectors: [['ng-if-tree']],
       consts: 3,
       vars: 3,
+      attrs: [[AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']],
       template: (rf: RenderFlags, ctx: NgIfTree) => {
-
         if (rf & RenderFlags.Create) {
           ɵɵtext(0);
-          ɵɵtemplate(
-              1, IfTemplate, 1, 1, 'ng-if-tree',
-              [AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']);
-          ɵɵtemplate(
-              2, IfTemplate2, 1, 1, 'ng-if-tree',
-              [AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']);
+          ɵɵtemplate(1, IfTemplate, 1, 1, 'ng-if-tree', 0);
+          ɵɵtemplate(2, IfTemplate2, 1, 1, 'ng-if-tree', 0);
         }
         if (rf & RenderFlags.Update) {
           ɵɵtextInterpolate(ctx.data.value);
@@ -415,7 +411,6 @@ describe('recursive components', () => {
           ɵɵadvance(1);
           ɵɵproperty('ngIf', ctx.data.right);
         }
-
       },
       inputs: {data: 'data'},
     });

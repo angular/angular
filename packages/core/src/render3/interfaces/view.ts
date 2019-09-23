@@ -15,7 +15,7 @@ import {Sanitizer} from '../../sanitization/sanitizer';
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n} from './i18n';
-import {TElementNode, TNode, TViewNode} from './node';
+import {TAttributes, TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
@@ -561,6 +561,12 @@ export interface TView {
    * Set of schemas that declare elements to be allowed inside the view.
    */
   schemas: SchemaMetadata[]|null;
+
+  /**
+   * Array of attributes for all of the elements in the view. Used
+   * for directive matching and attribute bindings.
+   */
+  attrs: TAttributes[]|null;
 }
 
 export const enum RootContextFlags {Empty = 0b00, DetectChanges = 0b01, FlushPlayers = 0b10}
