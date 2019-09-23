@@ -131,7 +131,7 @@ describe('compiler compliance: styling', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors:[["my-component"]],
-          consts: 0,
+          decls: 0,
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
           },
@@ -170,7 +170,7 @@ describe('compiler compliance: styling', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors:[["my-component"]],
-          consts: 0,
+          decls: 0,
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
           },
@@ -211,7 +211,7 @@ describe('compiler compliance: styling', () => {
         …
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           …
-          consts: 3,
+          decls: 3,
           vars: 3,
           template:  function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
@@ -272,7 +272,7 @@ describe('compiler compliance: styling', () => {
         …
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           …
-          consts: 1,
+          decls: 1,
           vars: 1,
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
@@ -435,7 +435,7 @@ describe('compiler compliance: styling', () => {
 
          const template = `
         …
-          consts: 1,
+          decls: 1,
           vars: 2,
           template: function MyComponentWithInterpolation_Template(rf, $ctx$) {
             if (rf & 1) {
@@ -446,7 +446,7 @@ describe('compiler compliance: styling', () => {
             }
           }
         …
-          consts: 1,
+          decls: 1,
           vars: 3,
           template: function MyComponentWithMuchosInterpolation_Template(rf, $ctx$) {
             if (rf & 1) {
@@ -457,7 +457,7 @@ describe('compiler compliance: styling', () => {
             }
           }
         …
-          consts: 1,
+          decls: 1,
           vars: 1,
           template: function MyComponentWithoutInterpolation_Template(rf, $ctx$) {
             if (rf & 1) {
@@ -501,16 +501,16 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const $_c0$ = [${AttributeMarker.Styles}, "opacity", "1"];
           …
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
-              consts: 1,
+              decls: 1,
               vars: 4,
+              consts: [[${AttributeMarker.Styles}, "opacity", "1"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵɵelement(0, "div", $_c0$);
+                  $r3$.ɵɵelement(0, "div", 0);
                 }
                 if (rf & 2) {
                   $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
@@ -553,7 +553,7 @@ describe('compiler compliance: styling', () => {
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyComponent,
             selectors: [["my-component"]],
-            consts: 1,
+            decls: 1,
             vars: 1,
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
@@ -695,16 +695,16 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const $e0_attrs$ = [${AttributeMarker.Classes}, "grape"];
           …
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
-              consts: 1,
+              decls: 1,
               vars: 4,
+              consts: [[${AttributeMarker.Classes}, "grape"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵɵelement(0, "div", $e0_attrs$);
+                  $r3$.ɵɵelement(0, "div", 0);
                 }
                 if (rf & 2) {
                   $r3$.ɵɵclassMap($ctx$.myClassExp);
@@ -744,16 +744,16 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const $e0_attrs$ = [${AttributeMarker.Classes}, "foo", ${AttributeMarker.Styles}, "width", "100px"];
           …
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
-              consts: 1,
+              decls: 1,
               vars: 2,
+              consts: [[${AttributeMarker.Classes}, "foo", ${AttributeMarker.Styles}, "width", "100px"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵɵelement(0, "div", $e0_attrs$);
+                  $r3$.ɵɵelement(0, "div", 0);
                 }
                 if (rf & 2) {
                   $r3$.ɵɵattribute("class", "round")("style", "height:100px", $r3$.ɵɵsanitizeStyle);
@@ -1029,7 +1029,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵclassProp("foo", ctx.myFooClass);
             }
           },
-          consts: 0,
+          decls: 0,
           vars: 0,
           `;
 
@@ -1089,7 +1089,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵclassProp("foo", ctx.myFooClass);
             }
           },
-          consts: 0,
+          decls: 0,
           vars: 0,
           `;
 

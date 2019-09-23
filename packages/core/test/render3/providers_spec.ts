@@ -873,7 +873,7 @@ describe('providers', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: Repeated,
           selectors: [['repeated']],
-          consts: 2,
+          decls: 2,
           vars: 2,
           template: function(fs: RenderFlags, ctx: Repeated) {
             if (fs & RenderFlags.Create) {
@@ -904,7 +904,7 @@ describe('providers', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: ComponentWithProviders,
           selectors: [['component-with-providers']],
-          consts: 2,
+          decls: 2,
           vars: 0,
           template: function(fs: RenderFlags, ctx: ComponentWithProviders) {
             if (fs & RenderFlags.Create) {
@@ -959,7 +959,7 @@ describe('providers', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: Repeated,
           selectors: [['repeated']],
-          consts: 2,
+          decls: 2,
           vars: 2,
           template: function(fs: RenderFlags, ctx: Repeated) {
             if (fs & RenderFlags.Create) {
@@ -993,7 +993,7 @@ describe('providers', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: ComponentWithProviders,
           selectors: [['component-with-providers']],
-          consts: 2,
+          decls: 2,
           vars: 0,
           template: function(fs: RenderFlags, ctx: ComponentWithProviders) {
             if (fs & RenderFlags.Create) {
@@ -1042,7 +1042,7 @@ describe('providers', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: EmbeddedComponent,
         selectors: [['embedded-cmp']],
-        consts: 1,
+        decls: 1,
         vars: 1,
         template: (rf: RenderFlags, cmp: EmbeddedComponent) => {
           if (rf & RenderFlags.Create) {
@@ -1065,7 +1065,7 @@ describe('providers', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: HostComponent,
             selectors: [['host-cmp']],
-            consts: 1,
+            decls: 1,
             vars: 0,
             template: (rf: RenderFlags, cmp: HostComponent) => {
               if (rf & RenderFlags.Create) {
@@ -1089,7 +1089,7 @@ describe('providers', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: AppComponent,
         selectors: [['app-cmp']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: (rf: RenderFlags, cmp: AppComponent) => {
           if (rf & RenderFlags.Create) {
@@ -1251,7 +1251,7 @@ describe('providers', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-cmp']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: (rf: RenderFlags, cmp: MyComponent) => {
           if (rf & RenderFlags.Create) {
@@ -1278,7 +1278,7 @@ describe('providers', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: AppComponent,
         selectors: [['app-cmp']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: (rf: RenderFlags, cmp: AppComponent) => {
           if (rf & RenderFlags.Create) {
@@ -1343,7 +1343,7 @@ describe('providers', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: MyComponent,
           selectors: [['my-comp']],
-          consts: 1,
+          decls: 1,
           vars: 0,
           template: (rf: RenderFlags, ctx: MyComponent) => {
             if (rf & RenderFlags.Create) {
@@ -1370,7 +1370,7 @@ describe('providers', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: App,
           selectors: [['app-cmp']],
-          consts: 2,
+          decls: 2,
           vars: 0,
           template: (rf: RenderFlags, ctx: App) => {
             if (rf & RenderFlags.Create) {
@@ -1445,7 +1445,7 @@ function expectProvidersScenario(defs: {
     static ngComponentDef = ɵɵdefineComponent({
       type: ViewChildComponent,
       selectors: [['view-child']],
-      consts: 1,
+      decls: 1,
       vars: 0,
       template: function(fs: RenderFlags, ctx: ViewChildComponent) {
         if (fs & RenderFlags.Create) {
@@ -1473,7 +1473,7 @@ function expectProvidersScenario(defs: {
     static ngComponentDef = ɵɵdefineComponent({
       type: ContentChildComponent,
       selectors: [['content-child']],
-      consts: 1,
+      decls: 1,
       vars: 0,
       template: function(fs: RenderFlags, ctx: ParentComponent) {
         if (fs & RenderFlags.Create) {
@@ -1504,7 +1504,7 @@ function expectProvidersScenario(defs: {
     static ngComponentDef = ɵɵdefineComponent({
       type: ParentComponent,
       selectors: [['parent']],
-      consts: 1,
+      decls: 1,
       vars: 0,
       template: function(fs: RenderFlags, ctx: ParentComponent) {
         if (fs & RenderFlags.Create) {
@@ -1541,7 +1541,7 @@ function expectProvidersScenario(defs: {
     static ngComponentDef = ɵɵdefineComponent({
       type: App,
       selectors: [['app']],
-      consts: 2,
+      decls: 2,
       vars: 0,
       template: function(fs: RenderFlags, ctx: App) {
         if (fs & RenderFlags.Create) {

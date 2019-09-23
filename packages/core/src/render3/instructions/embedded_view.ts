@@ -28,8 +28,7 @@ import {assignTViewNodeToLView, createLView, createTView, refreshView, renderVie
  *
  * @codeGenApi
  */
-export function ɵɵembeddedViewStart(
-    viewBlockId: number, consts: number, vars: number): RenderFlags {
+export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: number): RenderFlags {
   const lView = getLView();
   const previousOrParentTNode = getPreviousOrParentTNode();
   // The previous node can be a view node if we are processing an inline for loop
@@ -47,9 +46,8 @@ export function ɵɵembeddedViewStart(
   } else {
     // When we create a new LView, we always reset the state of the instructions.
     viewToRender = createLView(
-        lView,
-        getOrCreateEmbeddedTView(viewBlockId, consts, vars, containerTNode as TContainerNode), null,
-        LViewFlags.CheckAlways, null, null);
+        lView, getOrCreateEmbeddedTView(viewBlockId, decls, vars, containerTNode as TContainerNode),
+        null, LViewFlags.CheckAlways, null, null);
 
     const tParentNode = getIsParent() ? previousOrParentTNode :
                                         previousOrParentTNode && previousOrParentTNode.parent;
@@ -75,13 +73,13 @@ export function ɵɵembeddedViewStart(
  * it with the same index (since it's in the same template).
  *
  * @param viewIndex The index of the TView in TNode.tViews
- * @param consts The number of nodes, local refs, and pipes in this template
+ * @param decls The number of nodes, local refs, and pipes in this template
  * @param vars The number of bindings and pure function bindings in this template
  * @param container The parent container in which to look for the view's static data
  * @returns TView
  */
 function getOrCreateEmbeddedTView(
-    viewIndex: number, consts: number, vars: number, parent: TContainerNode): TView {
+    viewIndex: number, decls: number, vars: number, parent: TContainerNode): TView {
   const tView = getLView()[TVIEW];
   ngDevMode && assertNodeType(parent, TNodeType.Container);
   const containerTViews = parent.tViews as TView[];
@@ -89,7 +87,8 @@ function getOrCreateEmbeddedTView(
   ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     containerTViews[viewIndex] = createTView(
-        viewIndex, null, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null, null);
+        viewIndex, null, decls, vars, tView.directiveRegistry, tView.pipeRegistry, null, null,
+        tView.consts);
   }
   return containerTViews[viewIndex];
 }

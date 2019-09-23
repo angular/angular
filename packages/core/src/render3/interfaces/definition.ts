@@ -9,6 +9,8 @@
 import {SchemaMetadata, ViewEncapsulation} from '../../core';
 import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
+
+import {TAttributes} from './node';
 import {CssSelectorList} from './projection';
 import {TView} from './view';
 
@@ -241,6 +243,9 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    */
   readonly template: ComponentTemplate<T>;
 
+  /** Constants associated with the component's view. */
+  readonly consts: TAttributes[]|null;
+
   /**
    * An array of `ngContent[selector]` values that were found in the template.
    */
@@ -258,7 +263,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * can pre-fill the array and set the binding start index.
    */
   // TODO(kara): remove queries from this count
-  readonly consts: number;
+  readonly decls: number;
 
   /**
    * The number of bindings in this component template (including pure fn bindings).

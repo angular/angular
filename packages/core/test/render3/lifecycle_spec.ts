@@ -46,7 +46,7 @@ describe('lifecycles', () => {
     }, 1);
 
     function createOnInitComponent(
-        name: string, template: ComponentTemplate<any>, consts: number, vars: number = 0,
+        name: string, template: ComponentTemplate<any>, decls: number, vars: number = 0,
         directives: any[] = []) {
       return class Component {
         val: string = '';
@@ -59,7 +59,7 @@ describe('lifecycles', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: Component,
           selectors: [[name]],
-          consts: consts,
+          decls: decls,
           vars: vars,
           inputs: {val: 'val'}, template,
           directives: directives

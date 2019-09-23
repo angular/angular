@@ -23,7 +23,7 @@ describe('object literals', () => {
     static ngComponentDef = ɵɵdefineComponent({
       type: ObjectComp,
       selectors: [['object-comp']],
-      consts: 0,
+      decls: 0,
       vars: 1,
       template: function ObjectComp_Template() {},
       inputs: {config: 'config'}
