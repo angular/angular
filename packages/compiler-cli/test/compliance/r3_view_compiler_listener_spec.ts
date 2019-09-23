@@ -198,7 +198,7 @@ describe('compiler compliance: listen()', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
-          consts: 4,
+          decls: 4,
           vars: 0,
           attrs: [[${AttributeMarker.Bindings}, "click"]],
           template:  function MyComponent_Template(rf, ctx) {

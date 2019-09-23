@@ -121,7 +121,7 @@ describe('di', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['my-comp']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: function(rf: RenderFlags, ctx: MyComp) {
           if (rf & RenderFlags.Create) {

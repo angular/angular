@@ -23,7 +23,7 @@ export function createAndRenderLView(
 }
 
 export function setupRootViewWithEmbeddedViews(
-    templateFn: ComponentTemplate<any>| null, consts: number, vars: number, noOfViews: number,
+    templateFn: ComponentTemplate<any>| null, decls: number, vars: number, noOfViews: number,
     embeddedViewContext: any = {}, attrs: TAttributes[] | null = null): LView {
   // Create a root view with a container
   const rootTView = createTView(-1, null, 1, 0, null, null, null, null, attrs);
@@ -38,7 +38,7 @@ export function setupRootViewWithEmbeddedViews(
 
 
   // create test embedded views
-  const embeddedTView = createTView(-1, templateFn, consts, vars, null, null, null, null, null);
+  const embeddedTView = createTView(-1, templateFn, decls, vars, null, null, null, null, null);
   const viewTNode = createTNode(rootTView, null, TNodeType.View, -1, null, null) as TViewNode;
 
   // create embedded views and add them to the container

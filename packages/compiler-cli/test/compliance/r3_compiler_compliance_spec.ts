@@ -478,7 +478,7 @@ describe('compiler compliance', () => {
           'MyComponent.ngFactoryDef = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
         MyComponent.ngComponentDef = i0.ɵɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
-            consts: 1,
+            decls: 1,
             vars: 2,
             template: function MyComponent_Template(rf,ctx){
               if (rf & 1) {
@@ -568,7 +568,7 @@ describe('compiler compliance', () => {
         ChildComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: ChildComponent,
           selectors: [["child"]],
-          consts: 1,
+          decls: 1,
           vars: 0,
           template:  function ChildComponent_Template(rf, ctx) {
             if (rf & 1) {
@@ -598,7 +598,7 @@ describe('compiler compliance', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
-          consts: 2,
+          decls: 2,
           vars: 0,
           attrs: [["some-directive", ""]],
           template:  function MyComponent_Template(rf, ctx) {
@@ -696,7 +696,7 @@ describe('compiler compliance', () => {
         EmptyOutletComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: EmptyOutletComponent,
           selectors: [["ng-component"]],
-          consts: 1,
+          decls: 1,
           vars: 0,
           template: function EmptyOutletComponent_Template(rf, ctx) {
             if (rf & 1) {
@@ -745,7 +745,7 @@ describe('compiler compliance', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
-          consts: 0,
+          decls: 0,
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {},
           encapsulation: 2
@@ -816,7 +816,7 @@ describe('compiler compliance', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
-          consts: 3,
+          decls: 3,
           vars: 0,
           attrs: [[${AttributeMarker.Template}, "if"]],
           template:  function MyComponent_Template(rf, ctx) {
@@ -883,7 +883,7 @@ describe('compiler compliance', () => {
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
-            consts: 1,
+            decls: 1,
             vars: 3,
             attrs: [[${AttributeMarker.Bindings}, "names"]],
             template:  function MyApp_Template(rf, ctx) {
@@ -964,7 +964,7 @@ describe('compiler compliance', () => {
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
-            consts: 1,
+            decls: 1,
             vars: 11,
             attrs: [[${AttributeMarker.Bindings}, "names"]],
             template:  function MyApp_Template(rf, ctx) {
@@ -1026,7 +1026,7 @@ describe('compiler compliance', () => {
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
-            consts: 1,
+            decls: 1,
             vars: 3,
             attrs: [[${AttributeMarker.Bindings}, "config"]],
             template:  function MyApp_Template(rf, ctx) {
@@ -1093,7 +1093,7 @@ describe('compiler compliance', () => {
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
-            consts: 1,
+            decls: 1,
             vars: 8,
             attrs: [[${AttributeMarker.Bindings}, "config"]],
             template:  function MyApp_Template(rf, ctx) {
@@ -1155,7 +1155,7 @@ describe('compiler compliance', () => {
             type: SimpleComponent,
             selectors: [["simple"]],
             ngContentSelectors: $c0$,
-            consts: 2,
+            decls: 2,
             vars: 0,
             template:  function SimpleComponent_Template(rf, ctx) {
               if (rf & 1) {
@@ -1175,7 +1175,7 @@ describe('compiler compliance', () => {
             type: ComplexComponent,
             selectors: [["complex"]],
             ngContentSelectors: $c2$,
-            consts: 4,
+            decls: 4,
             vars: 0,
             attrs: [["id","first"], ["id","second"]],
             template:  function ComplexComponent_Template(rf, ctx) {
@@ -1231,7 +1231,7 @@ describe('compiler compliance', () => {
             type: Cmp,
             selectors: [["ng-component"]],
             ngContentSelectors: $c1$,
-            consts: 3,
+            decls: 3,
             vars: 0,
             template: function Cmp_Template(rf, ctx) {
               if (rf & 1) {
@@ -1414,7 +1414,7 @@ describe('compiler compliance', () => {
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
-            consts: 2,
+            decls: 2,
             vars: 0,
             attrs: ["ngProjectAs", "[title]", 5, ["", "title", ""]],
             template: function MyApp_Template(rf, ctx) {
@@ -1466,7 +1466,7 @@ describe('compiler compliance', () => {
           MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
-            consts: 2,
+            decls: 2,
             vars: 0,
             attrs: ["ngProjectAs", "[title],[header]", 5, ["", "title", ""]],
             template: function MyApp_Template(rf, ctx) {
@@ -1540,7 +1540,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.someDirs = $tmp$);
               }
             },
-            consts: 1,
+            decls: 1,
             vars: 0,
             attrs: [["someDir",""]],
             template:  function ViewQueryComponent_Template(rf, ctx) {
@@ -1650,7 +1650,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadQuery())) && (ctx.foo = $tmp$.first);
               }
             },
-            consts: 1,
+            decls: 1,
             vars: 0,
             attrs: [["someDir",""]],
             template:  function ViewQueryComponent_Template(rf, ctx) {
@@ -1778,7 +1778,7 @@ describe('compiler compliance', () => {
               }
             },
             ngContentSelectors: _c0,
-            consts: 2,
+            decls: 2,
             vars: 0,
             template:  function ContentQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
@@ -1897,7 +1897,7 @@ describe('compiler compliance', () => {
               }
             },
             ngContentSelectors: $_c1$,
-            consts: 2,
+            decls: 2,
             vars: 0,
             template:  function ContentQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
@@ -2048,7 +2048,7 @@ describe('compiler compliance', () => {
             MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
               type: MyApp,
               selectors: [["my-app"]],
-              consts: 7,
+              decls: 7,
               vars: 20,
               template:  function MyApp_Template(rf, ctx) {
                 if (rf & 1) {
@@ -2115,7 +2115,7 @@ describe('compiler compliance', () => {
             MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
               type: MyApp,
               selectors: [["my-app"]],
-              consts: 6,
+              decls: 6,
               vars: 27,
               template:  function MyApp_Template(rf, ctx) {
                 if (rf & 1) {
@@ -2238,7 +2238,7 @@ describe('compiler compliance', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
-          consts: 3,
+          decls: 3,
           vars: 1,
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
@@ -2333,7 +2333,7 @@ describe('compiler compliance', () => {
         MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
-          consts: 6,
+          decls: 6,
           vars: 1,
           attrs: [[${AttributeMarker.Template}, "if"]],
           template:  function MyComponent_Template(rf, ctx) {
@@ -2480,7 +2480,7 @@ describe('compiler compliance', () => {
             selectors: [["lifecycle-comp"]],
             inputs: {nameMin: ["name", "nameMin"]},
             features: [$r3$.ɵɵNgOnChangesFeature()],
-            consts: 0,
+            decls: 0,
             vars: 0,
             template:  function LifecycleComp_Template(rf, ctx) {},
             encapsulation: 2
@@ -2490,7 +2490,7 @@ describe('compiler compliance', () => {
           SimpleLayout.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: SimpleLayout,
             selectors: [["simple-layout"]],
-            consts: 2,
+            decls: 2,
             vars: 2,
             attrs: [[3, "name"]],
             template:  function SimpleLayout_Template(rf, ctx) {
@@ -2622,7 +2622,7 @@ describe('compiler compliance', () => {
               MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
-                consts: 2,
+                decls: 2,
                 vars: 1,
                 attrs: [[${AttributeMarker.Template}, "for", "forOf"]],
                 template:  function MyComponent_Template(rf, ctx){
@@ -2708,7 +2708,7 @@ describe('compiler compliance', () => {
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyComponent,
             selectors: [["my-component"]],
-            consts: 2,
+            decls: 2,
             vars: 1,
             attrs: [[${AttributeMarker.Template}, "for", "forOf"]],
             template:  function MyComponent_Template(rf, ctx) {
@@ -2812,7 +2812,7 @@ describe('compiler compliance', () => {
           MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
             type: MyComponent,
             selectors: [["my-component"]],
-            consts: 2,
+            decls: 2,
             vars: 1,
             attrs: [[${AttributeMarker.Template}, "for", "forOf"]],
             template:  function MyComponent_Template(rf, ctx) {

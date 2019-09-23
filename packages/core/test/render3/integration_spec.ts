@@ -121,7 +121,7 @@ describe('render3 integration test', () => {
       static ngComponentDef = ɵɵdefineComponent({
         selectors: [['child']],
         type: ChildComponent,
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: function ChildComponentTemplate(
             rf: RenderFlags, ctx: {beforeTree: Tree, afterTree: Tree}) {
@@ -203,7 +203,7 @@ describe('component styles', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: StyledComp,
         styles: ['div { color: red; }'],
-        consts: 1,
+        decls: 1,
         vars: 0,
         encapsulation: 100,
         selectors: [['foo']],
@@ -230,7 +230,7 @@ describe('component animations', () => {
       static ngFactoryDef = () => new AnimComp();
       static ngComponentDef = ɵɵdefineComponent({
         type: AnimComp,
-        consts: 0,
+        decls: 0,
         vars: 0,
         data: {
           animation: [
@@ -257,7 +257,7 @@ describe('component animations', () => {
       static ngFactoryDef = () => new AnimComp();
       static ngComponentDef = ɵɵdefineComponent({
         type: AnimComp,
-        consts: 0,
+        decls: 0,
         vars: 0,
         data: {
           animation: [],
@@ -277,7 +277,7 @@ describe('component animations', () => {
       static ngFactoryDef = () => new AnimComp();
       static ngComponentDef = ɵɵdefineComponent({
         type: AnimComp,
-        consts: 1,
+        decls: 1,
         vars: 1,
         selectors: [['foo']],
         attrs: [[AttributeMarker.Bindings, '@fooAnimation']],
@@ -314,7 +314,7 @@ describe('component animations', () => {
          static ngFactoryDef = () => new AnimComp();
          static ngComponentDef = ɵɵdefineComponent({
            type: AnimComp,
-           consts: 1,
+           decls: 1,
            vars: 1,
            selectors: [['foo']],
            attrs: [['@fooAnimation', '']],
@@ -363,7 +363,7 @@ describe('component animations', () => {
   //       static ngFactoryDef = () => new ParentComp();
   //       static ngComponentDef = ɵɵdefineComponent({
   //         type: ParentComp,
-  //         consts: 1,
+  //         decls: 1,
   //         vars: 1,
   //         selectors: [['foo']],
   //         template: (rf: RenderFlags, ctx: ParentComp) => {
@@ -394,7 +394,7 @@ describe('element discovery', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        consts: 2,
+        decls: 2,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {
           if (rf & RenderFlags.Create) {
@@ -426,7 +426,7 @@ describe('element discovery', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: ChildComp,
         selectors: [['child-comp']],
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: (rf: RenderFlags, ctx: ChildComp) => {
           if (rf & RenderFlags.Create) {
@@ -444,7 +444,7 @@ describe('element discovery', () => {
         type: ParentComp,
         selectors: [['parent-comp']],
         directives: [ChildComp],
-        consts: 2,
+        decls: 2,
         vars: 0,
         template: (rf: RenderFlags, ctx: ParentComp) => {
           if (rf & RenderFlags.Create) {
@@ -477,7 +477,7 @@ describe('element discovery', () => {
         type: StructuredComp,
         selectors: [['structured-comp']],
         directives: [NgIf],
-        consts: 2,
+        decls: 2,
         vars: 1,
         attrs: [['ngIf', '']],
         template: (rf: RenderFlags, ctx: StructuredComp) => {
@@ -527,7 +527,7 @@ describe('element discovery', () => {
         type: StructuredComp,
         selectors: [['structured-comp']],
         directives: [NgIf],
-        consts: 2,
+        decls: 2,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {
           if (rf & RenderFlags.Create) {
@@ -564,7 +564,7 @@ describe('element discovery', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {
           if (rf & RenderFlags.Create) {
@@ -596,7 +596,7 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           consts: 2,
+           decls: 2,
            vars: 0,
            template: (rf: RenderFlags, ctx: StructuredComp) => {
              if (rf & RenderFlags.Create) {
@@ -629,7 +629,7 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           consts: 1,
+           decls: 1,
            vars: 0,
            template: (rf: RenderFlags, ctx: StructuredComp) => {
              if (rf & RenderFlags.Create) {
@@ -677,7 +677,7 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: ProjectorComp,
            selectors: [['projector-comp']],
-           consts: 4,
+           decls: 4,
            vars: 0,
            template: (rf: RenderFlags, ctx: ProjectorComp) => {
              if (rf & RenderFlags.Create) {
@@ -701,7 +701,7 @@ describe('element discovery', () => {
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ProjectorComp],
-           consts: 5,
+           decls: 5,
            vars: 0,
            template: (rf: RenderFlags, ctx: ParentComp) => {
              if (rf & RenderFlags.Create) {
@@ -774,7 +774,7 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           consts: 1,
+           decls: 1,
            vars: 0,
            template: (rf: RenderFlags, ctx: StructuredComp) => {
              if (rf & RenderFlags.Create) {
@@ -801,7 +801,7 @@ describe('element discovery', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        consts: 0,
+        decls: 0,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {}
       });
@@ -859,7 +859,7 @@ describe('element discovery', () => {
            type: StructuredComp,
            selectors: [['structured-comp']],
            directives: [MyDir1, MyDir2, MyDir3],
-           consts: 2,
+           decls: 2,
            vars: 0,
            attrs: [['my-dir-1', '', 'my-dir-2', ''], ['my-dir-3']],
            template: (rf: RenderFlags, ctx: StructuredComp) => {
@@ -936,7 +936,7 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: ChildComp,
            selectors: [['child-comp']],
-           consts: 1,
+           decls: 1,
            vars: 0,
            template: (rf: RenderFlags, ctx: ChildComp) => {
              if (rf & RenderFlags.Create) {
@@ -952,7 +952,7 @@ describe('element discovery', () => {
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ChildComp, MyDir1, MyDir2],
-           consts: 1,
+           decls: 1,
            vars: 0,
            attrs: [['my-dir-1', '', 'my-dir-2', '']],
            template: (rf: RenderFlags, ctx: ParentComp) => {
@@ -1014,7 +1014,7 @@ describe('element discovery', () => {
          static ngComponentDef = ɵɵdefineComponent({
            type: ChildComp,
            selectors: [['child-comp']],
-           consts: 3,
+           decls: 3,
            vars: 0,
            template: (rf: RenderFlags, ctx: ChildComp) => {
              if (rf & RenderFlags.Create) {
@@ -1032,7 +1032,7 @@ describe('element discovery', () => {
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ChildComp],
-           consts: 2,
+           decls: 2,
            vars: 0,
            template: (rf: RenderFlags, ctx: ParentComp) => {
              if (rf & RenderFlags.Create) {
@@ -1075,7 +1075,7 @@ describe('sanitization', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: SanitizationComp,
         selectors: [['sanitize-this']],
-        consts: 1,
+        decls: 1,
         vars: 1,
         template: (rf: RenderFlags, ctx: SanitizationComp) => {
           if (rf & RenderFlags.Create) {
@@ -1133,7 +1133,7 @@ describe('sanitization', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: SimpleComp,
         selectors: [['sanitize-this']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         attrs: [['unsafeUrlHostBindingDir', '']],
         template: (rf: RenderFlags, ctx: SimpleComp) => {

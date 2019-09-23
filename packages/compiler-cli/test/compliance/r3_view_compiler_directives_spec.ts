@@ -41,7 +41,7 @@ describe('compiler compliance: directives', () => {
             MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
-                consts: 1,
+                decls: 1,
                 vars: 0,
                 template: function MyComponent_Template(rf, ctx) {
                     if (rf & 1) {
@@ -91,7 +91,7 @@ describe('compiler compliance: directives', () => {
             MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
-                consts: 1,
+                decls: 1,
                 vars: 0,
                 template: function MyComponent_Template(rf, ctx) {
                     if (rf & 1) {

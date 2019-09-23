@@ -387,7 +387,7 @@ export interface TView {
   /**
    * The index where the "expando" section of `LView` begins. The expando
    * section contains injectors, directive instances, and host binding values.
-   * Unlike the "consts" and "vars" sections of `LView`, the length of this
+   * Unlike the "decls" and "vars" sections of `LView`, the length of this
    * section cannot be calculated at compile-time because directives are matched
    * at runtime to preserve locality.
    *

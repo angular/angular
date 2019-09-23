@@ -252,7 +252,7 @@ describe('query', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
-            consts: 1,
+            decls: 1,
             vars: 0,
             attrs: [['myDir']],
             template: function App_Template(rf: RenderFlags, ctx: App) {
@@ -298,7 +298,7 @@ describe('query', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
-            consts: 1,
+            decls: 1,
             vars: 0,
             attrs: [['myDir']],
             template: function App_Template(rf: RenderFlags, ctx: App) {
@@ -842,7 +842,7 @@ describe('query', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: Child,
             selectors: [['child']],
-            consts: 0,
+            decls: 0,
             vars: 0,
             template: (rf: RenderFlags, ctx: Child) => {},
             exportAs: ['child']
@@ -2045,7 +2045,7 @@ describe('query', () => {
               ɵɵelement(4, 'span', 4);
             }
           },
-          consts: 5,
+          decls: 5,
           vars: 0,
           viewQuery: function(rf: RenderFlags, ctx: ViewQueryComponent) {
             let tmp: any;

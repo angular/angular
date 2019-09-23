@@ -29,7 +29,7 @@ describe('change detection', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
-        consts: 2,
+        decls: 2,
         vars: 1,
         template: (rf: RenderFlags, ctx: MyComponent) => {
           if (rf & RenderFlags.Create) {
@@ -105,7 +105,7 @@ describe('change detection', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
-        consts: 2,
+        decls: 2,
         vars: 2,
         /**
          * {{ doCheckCount }} - {{ name }}
@@ -143,7 +143,7 @@ describe('change detection', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: ManualComponent,
           selectors: [['manual-comp']],
-          consts: 2,
+          decls: 2,
           vars: 2,
           /**
            * {{ doCheckCount }} - {{ name }}
@@ -179,7 +179,7 @@ describe('change detection', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: ManualApp,
           selectors: [['manual-app']],
-          consts: 1,
+          decls: 1,
           vars: 1,
           /** <manual-comp [name]="name"></manual-comp> */
           template: (rf: RenderFlags, ctx: ManualApp) => {
@@ -234,7 +234,7 @@ describe('change detection', () => {
              static ngComponentDef = ɵɵdefineComponent({
                type: ButtonParent,
                selectors: [['button-parent']],
-               consts: 2,
+               decls: 2,
                vars: 1,
                /** {{ doCheckCount }} - <manual-comp></manual-comp> */
                template: (rf: RenderFlags, ctx: ButtonParent) => {
@@ -311,7 +311,7 @@ describe('change detection', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
-        consts: 1,
+        decls: 1,
         vars: 1,
         template: (rf: RenderFlags, ctx: MyComponent) => {
           if (rf & RenderFlags.Create) {

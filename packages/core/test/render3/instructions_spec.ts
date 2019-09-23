@@ -244,7 +244,7 @@ describe('instructions', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: NestedLoops,
           selectors: [['nested-loops']],
-          consts: 1,
+          decls: 1,
           vars: 1,
           attrs: [[AttributeMarker.Template, 'ngFor', 'ngForOf']],
           template: function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
@@ -488,6 +488,6 @@ function stripStyleWsCharacters(value: string): string {
 }
 
 function createTemplateFixtureWithSanitizer(
-    buildFn: () => any, consts: number, sanitizer: Sanitizer) {
-  return new TemplateFixture(buildFn, () => {}, consts, 0, null, null, sanitizer);
+    buildFn: () => any, decls: number, sanitizer: Sanitizer) {
+  return new TemplateFixture(buildFn, () => {}, decls, 0, null, null, sanitizer);
 }

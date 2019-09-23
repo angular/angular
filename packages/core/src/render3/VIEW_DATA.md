@@ -28,7 +28,7 @@ Mostly information such as parent `LView`, `Sanitizer`, `TView`, and many more b
 ## `CONSTS`
 
 `CONSTS` contain the DOM elements, pipe instances, and local refs.
-The size of the `CONSTS` section is declared in the property `consts` of the component definition.
+The size of the `CONSTS` section is declared in the property `decls` of the component definition.
 
 ```typescript
 @Component({
@@ -38,7 +38,7 @@ class MyApp {
 
   static ngComponentDef = ɵɵdefineComponent({
     ...,
-    consts: 5,
+    decls: 5,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'div');
@@ -89,7 +89,7 @@ class MyApp {
 
   static ngComponentDef = ɵɵdefineComponent({
     ...,
-    consts: 2, // Two DOM Elements.
+    decls: 2, // Two DOM Elements.
     vars: 2,   // Two bindings.
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
@@ -142,7 +142,7 @@ class MyApp {
 
   static ngComponentDef = ɵɵdefineComponent({
     ...,
-    consts: 1,
+    decls: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         ɵɵelement(0, 'child', ['tooltip', null]);
@@ -276,7 +276,7 @@ class MyApp {
 
   static ngComponentDef = ɵɵdefineComponent({
     ...,
-    consts: 1,
+    decls: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         ɵɵelement(0, 'child');

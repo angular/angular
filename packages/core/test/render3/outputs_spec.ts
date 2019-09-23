@@ -26,7 +26,7 @@ describe('outputs', () => {
       type: ButtonToggle,
       selectors: [['button-toggle']],
       template: function(rf: RenderFlags, ctx: any) {},
-      consts: 0,
+      decls: 0,
       vars: 0,
       outputs: {change: 'change', resetStream: 'reset'}
     });

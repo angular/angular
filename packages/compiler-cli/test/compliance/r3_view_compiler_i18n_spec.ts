@@ -471,7 +471,7 @@ describe('i18n support in the template compiler', () => {
           "aria-roledescription", $I18N_7$
         ];
         …
-        consts: 5,
+        decls: 5,
         vars: 8,
         attrs: [["id", "dynamic-1", ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"], ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -576,7 +576,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 1,
+        decls: 1,
         vars: 1,
         attrs: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -611,7 +611,7 @@ describe('i18n support in the template compiler', () => {
         }
         const $_c3$ = ["title", $I18N_1$];
         …
-        consts: 2,
+        decls: 2,
         vars: 1,
         attrs: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -722,7 +722,7 @@ describe('i18n support in the template compiler', () => {
           "aria-roledescription", $I18N_7$
         ];
         …
-        consts: 5,
+        decls: 5,
         vars: 8,
         attrs: [[
           "id", "dynamic-1",
@@ -790,7 +790,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 1,
+        decls: 1,
         vars: 1,
         attrs: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -1029,7 +1029,7 @@ describe('i18n support in the template compiler', () => {
           String.raw `{"\uFFFD1\uFFFD"}:PH_B: \`;
         }
         …
-        consts: 2,
+        decls: 2,
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1166,7 +1166,7 @@ describe('i18n support in the template compiler', () => {
           String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         …
-        consts: 7,
+        decls: 7,
         vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1254,7 +1254,7 @@ describe('i18n support in the template compiler', () => {
         }
         $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$);
         …
-        consts: 9,
+        decls: 9,
         vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1360,7 +1360,7 @@ describe('i18n support in the template compiler', () => {
           String.raw `{"\uFFFD/#7\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         …
-        consts: 9,
+        decls: 9,
         vars: 7,
         attrs: [[${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -1449,7 +1449,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 3,
+        decls: 3,
         vars: 1,
         attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -1507,7 +1507,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 3,
+        decls: 3,
         vars: 2,
         attrs: [["src", "logo.png"], ["src", "logo.png", ${AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${AttributeMarker.Bindings}, "title", ${AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -1648,7 +1648,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 4,
+        decls: 4,
         vars: 2,
         attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -1709,7 +1709,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 1,
+        decls: 1,
         vars: 1,
         attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -1801,7 +1801,7 @@ describe('i18n support in the template compiler', () => {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
-        consts: 2,
+        decls: 2,
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1885,7 +1885,7 @@ describe('i18n support in the template compiler', () => {
             $I18N_3$ = $localize \`Text #2\`;
         }
         …
-        consts: 4,
+        decls: 4,
         vars: 0,
         attrs: [[${AttributeMarker.Classes}, "myClass"], [${AttributeMarker.Styles}, "padding", "10px"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -1923,7 +1923,7 @@ describe('i18n support in the template compiler', () => {
           String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         …
-        consts: 3,
+        decls: 3,
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1970,7 +1970,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -2024,7 +2024,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 5,
+        decls: 5,
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -2086,7 +2086,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 3,
+        decls: 3,
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -2184,7 +2184,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -2240,7 +2240,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 3,
+        decls: 3,
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -2398,7 +2398,7 @@ describe('i18n support in the template compiler', () => {
           String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
         }
         …
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -2436,7 +2436,7 @@ describe('i18n support in the template compiler', () => {
              String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
           }
           …
-          consts: 4,
+          decls: 4,
           vars: 0,
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
@@ -2495,7 +2495,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 2,
+        decls: 2,
         vars: 2,
         attrs: [[4, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -2574,7 +2574,7 @@ describe('i18n support in the template compiler', () => {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
-        consts: 2,
+        decls: 2,
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -2632,7 +2632,7 @@ describe('i18n support in the template compiler', () => {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
-        consts: 1,
+        decls: 1,
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -2723,7 +2723,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 4,
+        decls: 4,
         vars: 3,
         attrs: [["title", "icu only", ${AttributeMarker.Template}, "ngIf"], ["title", "icu and text", ${AttributeMarker.Template}, "ngIf"], ["title", "icu only"], ["title", "icu and text"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -2834,7 +2834,7 @@ describe('i18n support in the template compiler', () => {
           String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_DIV:\`;
         }
         …
-        consts: 5,
+        decls: 5,
         vars: 1,
         attrs: [[1, "other"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -2877,7 +2877,7 @@ describe('i18n support in the template compiler', () => {
           "INTERPOLATION": "\uFFFD1\uFFFD"
         });
         …
-        consts: 2,
+        decls: 2,
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -2939,7 +2939,7 @@ describe('i18n support in the template compiler', () => {
           String.raw `{$I18N_1$}:ICU: $` + String.raw `{$I18N_2$}:ICU_1: \`;
         }
         …
-        consts: 2,
+        decls: 2,
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -3040,7 +3040,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 4,
+        decls: 4,
         vars: 3,
         attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -3100,7 +3100,7 @@ describe('i18n support in the template compiler', () => {
             $I18N_0$ = $localize \` $` +
           String.raw `{$I18N_1$}:ICU: \`;
         }        …
-        consts: 2,
+        decls: 2,
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -3148,7 +3148,7 @@ describe('i18n support in the template compiler', () => {
           "INTERPOLATION": "\uFFFD2\uFFFD"
         });
         …
-        consts: 2,
+        decls: 2,
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -3229,7 +3229,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 3,
+        decls: 3,
         vars: 2,
         attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -3318,7 +3318,7 @@ describe('i18n support in the template compiler', () => {
           }
         }
         …
-        consts: 3,
+        decls: 3,
         vars: 4,
         attrs: [[${AttributeMarker.Template}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -3368,7 +3368,7 @@ describe('i18n support in the template compiler', () => {
           "PH_WITH_SPACES": "\uFFFD3\uFFFD"
         });
         …
-        consts: 2,
+        decls: 2,
         vars: 4,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {

@@ -53,7 +53,7 @@ export function ɵɵcontainer(index: number): void {
  *
  * @param index The index of the container in the data array
  * @param templateFn Inline template
- * @param consts The number of nodes, local refs, and pipes for this template
+ * @param decls The number of nodes, local refs, and pipes for this template
  * @param vars The number of bindings for this template
  * @param tagName The name of the container element, if applicable
  * @param attrsIndex Index of template in the attributes array.
@@ -64,7 +64,7 @@ export function ɵɵcontainer(index: number): void {
  * @codeGenApi
  */
 export function ɵɵtemplate(
-    index: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
+    index: number, templateFn: ComponentTemplate<any>| null, decls: number, vars: number,
     tagName?: string | null, attrsIndex?: number | null, localRefs?: string[] | null,
     localRefExtractor?: LocalRefExtractor) {
   const lView = getLView();
@@ -81,7 +81,7 @@ export function ɵɵtemplate(
     registerPostOrderHooks(tView, tContainerNode);
 
     const embeddedTView = tContainerNode.tViews = createTView(
-        -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null,
+        -1, templateFn, decls, vars, tView.directiveRegistry, tView.pipeRegistry, null,
         tView.schemas, tViewAttrs);
     const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
     embeddedTViewNode.injectorIndex = tContainerNode.injectorIndex;

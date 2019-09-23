@@ -569,7 +569,7 @@ export function saveResolvedLocalsInData(
  */
 export function getOrCreateTView(def: ComponentDef<any>): TView {
   return def.tView || (def.tView = createTView(
-                           -1, def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs,
+                           -1, def.template, def.decls, def.vars, def.directiveDefs, def.pipeDefs,
                            def.viewQuery, def.schemas, def.attrs));
 }
 
@@ -579,7 +579,7 @@ export function getOrCreateTView(def: ComponentDef<any>): TView {
  *
  * @param viewIndex The viewBlockId for inline views, or -1 if it's a component/dynamic
  * @param templateFn Template function
- * @param consts The number of nodes, local refs, and pipes in this template
+ * @param decls The number of nodes, local refs, and pipes in this template
  * @param directives Registry of directives for this view
  * @param pipes Registry of pipes for this view
  * @param viewQuery View queries for this view
@@ -587,12 +587,12 @@ export function getOrCreateTView(def: ComponentDef<any>): TView {
  * @param attrs Attributes for tis view
  */
 export function createTView(
-    viewIndex: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
+    viewIndex: number, templateFn: ComponentTemplate<any>| null, decls: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
     viewQuery: ViewQueriesFunction<any>| null, schemas: SchemaMetadata[] | null,
     attrs: TAttributes[] | null): TView {
   ngDevMode && ngDevMode.tView++;
-  const bindingStartIndex = HEADER_OFFSET + consts;
+  const bindingStartIndex = HEADER_OFFSET + decls;
   // This length does not yet contain host bindings from child directives because at this point,
   // we don't know which directives are active on this template. As soon as a directive is matched
   // that has a host binding, we will update the blueprint with that def's hostVars count.

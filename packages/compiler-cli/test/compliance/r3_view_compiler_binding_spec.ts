@@ -725,7 +725,7 @@ describe('compiler compliance: bindings', () => {
               $r3$.ɵɵhostProperty("id", $r3$.ɵɵpureFunction1(1, $ff$, ctx.id));
             }
           },
-          consts: 0,
+          decls: 0,
           vars: 0,
           template: function HostBindingComp_Template(rf, ctx) {},
           encapsulation: 2

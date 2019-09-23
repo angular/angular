@@ -106,7 +106,7 @@ describe('ViewContainerRef', () => {
                type: TestComponent,
                encapsulation: ViewEncapsulation.None,
                selectors: [['test-cmp']],
-               consts: 4,
+               decls: 4,
                vars: 0,
                attrs: [['testdir', '']],
                template: (rf: RenderFlags, cmp: TestComponent) => {
@@ -178,7 +178,7 @@ describe('ViewContainerRef', () => {
                type: TestComponent,
                encapsulation: ViewEncapsulation.None,
                selectors: [['test-cmp']],
-               consts: 4,
+               decls: 4,
                vars: 0,
                attrs: [['testdir', '']],
                template: (rf: RenderFlags, cmp: TestComponent) => {
@@ -250,7 +250,7 @@ describe('ViewContainerRef', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: AppComp,
             selectors: [['app-comp']],
-            consts: 0,
+            decls: 0,
             vars: 0,
             template: (rf: RenderFlags, cmp: AppComp) => {}
           });
@@ -266,7 +266,7 @@ describe('ViewContainerRef', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: DynamicComp,
             selectors: [['dynamic-comp']],
-            consts: 0,
+            decls: 0,
             vars: 0,
             template: (rf: RenderFlags, cmp: DynamicComp) => {}
           });
@@ -371,7 +371,7 @@ describe('ViewContainerRef', () => {
               static ngComponentDef = ɵɵdefineComponent({
                 type: AppCmpt,
                 selectors: [['app']],
-                consts: 0,
+                decls: 0,
                 vars: 0,
                 template: (rf: RenderFlags, cmp: AppCmpt) => {}
               });
@@ -439,7 +439,7 @@ describe('ViewContainerRef', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: DynamicCompWithViewQueries,
           selectors: [['dynamic-cmpt-with-view-queries']],
-          consts: 2,
+          decls: 2,
           vars: 0,
           attrs: [['bar', '']],
           template: (rf: RenderFlags, ctx: DynamicCompWithViewQueries) => {
@@ -488,7 +488,7 @@ describe('ViewContainerRef', () => {
               static ngComponentDef = ɵɵdefineComponent({
                 type: CompWithListenerThatDestroysItself,
                 selectors: [['comp-with-listener-and-on-destroy']],
-                consts: 2,
+                decls: 2,
                 vars: 0,
                 /** <button (click)="onClick()"> Click me </button> */
                 template: function CompTemplate(rf: RenderFlags, ctx: any) {

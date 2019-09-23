@@ -263,7 +263,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * can pre-fill the array and set the binding start index.
    */
   // TODO(kara): remove queries from this count
-  readonly consts: number;
+  readonly decls: number;
 
   /**
    * The number of bindings in this component template (including pure fn bindings).

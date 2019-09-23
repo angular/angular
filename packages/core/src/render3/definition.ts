@@ -57,7 +57,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    * can pre-fill the array and set the binding start index.
    */
   // TODO(kara): remove queries from this count
-  consts: number;
+  decls: number;
 
   /**
    * The number of bindings in this component template (including pure fn bindings).
@@ -252,7 +252,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
   const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
     type: type,
     providersResolver: null,
-    consts: componentDefinition.consts,
+    decls: componentDefinition.decls,
     vars: componentDefinition.vars,
     factory: null,
     template: componentDefinition.template || null !,

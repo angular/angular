@@ -37,7 +37,7 @@ describe('event listeners', () => {
     static ngComponentDef = ɵɵdefineComponent({
       type: MyComp,
       selectors: [['comp']],
-      consts: 2,
+      decls: 2,
       vars: 0,
       /** <button (click)="onClick()"> Click me </button> */
       template: function CompTemplate(rf: RenderFlags, ctx: any) {
@@ -70,7 +70,7 @@ describe('event listeners', () => {
     static ngComponentDef = ɵɵdefineComponent({
       type: MyCompWithGlobalListeners,
       selectors: [['comp']],
-      consts: 1,
+      decls: 1,
       vars: 0,
       template: function CompTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
@@ -138,7 +138,7 @@ describe('event listeners', () => {
     static ngComponentDef = ɵɵdefineComponent({
       type: PreventDefaultComp,
       selectors: [['prevent-default-comp']],
-      consts: 2,
+      decls: 2,
       vars: 0,
       /** <button (click)="onClick($event)">Click</button> */
       template: (rf: RenderFlags, ctx: PreventDefaultComp) => {
@@ -329,7 +329,7 @@ describe('event listeners', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: AppComp,
         selectors: [['app-comp']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
@@ -390,7 +390,7 @@ describe('event listeners', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: AppComp,
         selectors: [['app-comp']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
@@ -454,7 +454,7 @@ describe('event listeners', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: AppComp,
         selectors: [['app-comp']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
@@ -533,7 +533,7 @@ describe('event listeners', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['comp']],
-        consts: 1,
+        decls: 1,
         vars: 0,
         template: function CompTemplate(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
@@ -636,7 +636,7 @@ describe('event listeners', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['comp']],
-        consts: 2,
+        decls: 2,
         vars: 0,
         /** <button (click)="onClick(data.a, data.b)"> Click me </button> */
         template: function CompTemplate(rf: RenderFlags, ctx: any) {
@@ -917,7 +917,7 @@ describe('event listeners', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: (rf: RenderFlags, ctx: App) => {
           if (rf & RenderFlags.Create) {
