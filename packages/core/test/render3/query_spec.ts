@@ -113,7 +113,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['child', '']);
+                ɵɵelement(0, 'div', 0);
                 elToQuery = getNativeByIndex(0, getLView());
               }
             },
@@ -127,7 +127,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child', '']]);
 
         const cmptInstance = renderComponent(Cmpt);
         const qList = (cmptInstance.query as QueryList<any>);
@@ -150,7 +151,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelementStart(0, 'div', ['child', '', 'otherChild', '']);
+                ɵɵelementStart(0, 'div', 0);
                 { otherChildInstance = getDirectiveOnNode(0, 1); }
                 ɵɵelementEnd();
               }
@@ -165,7 +166,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child', '', 'otherChild', '']]);
 
         const cmptInstance = renderComponent(Cmpt);
         const qList = (cmptInstance.query as QueryList<any>);
@@ -186,7 +188,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['child', '']);
+                ɵɵelement(0, 'div', 0);
               }
             },
             1, 0, [Child, OtherChild], [],
@@ -199,7 +201,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child', '']]);
 
         const cmptInstance = renderComponent(Cmpt);
         const qList = (cmptInstance.query as QueryList<any>);
@@ -249,11 +252,12 @@ describe('query', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
-            consts: 1,
+            decls: 1,
             vars: 0,
+            consts: [['myDir']],
             template: function App_Template(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['myDir']);
+                ɵɵelement(0, 'div', 0);
               }
             },
             viewQuery: function(rf: RenderFlags, ctx: App) {
@@ -294,11 +298,12 @@ describe('query', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: App,
             selectors: [['app']],
-            consts: 1,
+            decls: 1,
             vars: 0,
+            consts: [['myDir']],
             template: function App_Template(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['myDir']);
+                ɵɵelement(0, 'div', 0);
               }
             },
             viewQuery: function(rf: RenderFlags, ctx: App) {
@@ -837,7 +842,7 @@ describe('query', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: Child,
             selectors: [['child']],
-            consts: 0,
+            decls: 0,
             vars: 0,
             template: (rf: RenderFlags, ctx: Child) => {},
             exportAs: ['child']
@@ -890,7 +895,7 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   ɵɵelement(0, 'div', ['child', ''], ['foo', 'child']);
+                   ɵɵelement(0, 'div', 0, ['foo', 'child']);
                  }
                  if (rf & RenderFlags.Update) {
                    childInstance = getDirectiveOnNode(0);
@@ -906,7 +911,8 @@ describe('query', () => {
                    ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                        (ctx.query = tmp as QueryList<any>);
                  }
-               });
+               },
+               [], [], undefined, [['child', '']]);
 
            const cmptInstance = renderComponent(Cmpt);
            const qList = (cmptInstance.query as QueryList<any>);
@@ -929,8 +935,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(
-                    0, 'div', ['child1', '', 'child2', ''], ['foo', 'child1', 'bar', 'child2']);
+                ɵɵelement(0, 'div', 0, ['foo', 'child1', 'bar', 'child2']);
               }
               if (rf & RenderFlags.Update) {
                 child1Instance = getDirectiveOnNode(0, 0);
@@ -947,7 +952,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child1', '', 'child2', '']]);
 
         const cmptInstance = renderComponent(Cmpt);
         const qList = (cmptInstance.query as QueryList<any>);
@@ -971,7 +977,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['child', ''], ['foo', 'child', 'bar', 'child']);
+                ɵɵelement(0, 'div', 0, ['foo', 'child', 'bar', 'child']);
               }
               if (rf & RenderFlags.Update) {
                 childInstance = getDirectiveOnNode(0);
@@ -990,7 +996,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.barQuery = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child', '']]);
 
         const cmptInstance = renderComponent(Cmpt);
 
@@ -1017,7 +1024,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['child', ''], ['foo', 'child']);
+                ɵɵelement(0, 'div', 0, ['foo', 'child']);
                 div = getNativeByIndex(0, getLView());
               }
             },
@@ -1031,7 +1038,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child', '']]);
 
         const cmptInstance = renderComponent(Cmpt);
         const qList = (cmptInstance.query as QueryList<any>);
@@ -1053,7 +1061,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['child', ''], ['foo', '', 'bar', 'child']);
+                ɵɵelement(0, 'div', 0, ['foo', '', 'bar', 'child']);
                 div = getNativeByIndex(0, getLView());
               }
               if (rf & RenderFlags.Update) {
@@ -1070,7 +1078,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child', '']]);
 
         const cmptInstance = renderComponent(Cmpt);
         const qList = (cmptInstance.query as QueryList<any>);
@@ -1092,7 +1101,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['foo', '']);
+                ɵɵelement(0, 'div', 0);
               }
             },
             2, 0, [Child], [],
@@ -1105,7 +1114,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['foo', '']]);
 
         const {component} = new ComponentFixture(Cmpt);
         const qList = component.query;
@@ -1126,7 +1136,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['child', '']);
+                ɵɵelement(0, 'div', 0);
               }
             },
             1, 0, [Child, OtherChild], [],
@@ -1139,7 +1149,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child', '']]);
 
         const {component} = new ComponentFixture(Cmpt);
         const qList = component.query;
@@ -1160,7 +1171,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['child', '']);
+                ɵɵelement(0, 'div', 0);
               }
             },
             1, 0, [Child, OtherChild], [],
@@ -1173,7 +1184,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child', '']]);
 
         const {component} = new ComponentFixture(Cmpt);
         const qList = component.query;
@@ -1224,7 +1236,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['child', ''], ['foo', '']);
+                ɵɵelement(0, 'div', 0, ['foo', '']);
               }
             },
             2, 0, [Child], [],
@@ -1237,7 +1249,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child', '']]);
 
         const {component} = new ComponentFixture(Cmpt);
         const qList = component.query;
@@ -1258,7 +1271,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', ['child', '']);
+                ɵɵelement(0, 'div', 0);
               }
             },
             1, 0, [Child], [],
@@ -1271,7 +1284,8 @@ describe('query', () => {
                 ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
-            });
+            },
+            [], [], undefined, [['child', '']]);
 
         const {component} = new ComponentFixture(Cmpt);
         const qList = component.query;
@@ -1429,8 +1443,7 @@ describe('query', () => {
         'app',
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            ɵɵtemplate(
-                0, AppComponent_Template_1, 1, 0, 'div', [AttributeMarker.Template, 'someDir']);
+            ɵɵtemplate(0, AppComponent_Template_1, 1, 0, 'div', 0);
             ɵɵelement(1, 'div', null, ['foo', '']);
           }
         },
@@ -1444,7 +1457,8 @@ describe('query', () => {
             ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                 (ctx.query = tmp as QueryList<any>);
           }
-        });
+        },
+        [], [], undefined, [[AttributeMarker.Template, 'someDir']]);
 
     const fixture = new ComponentFixture(AppComponent);
     expect(fixture.component.query.length).toBe(1);
@@ -1489,13 +1503,17 @@ describe('query', () => {
        *   <span #foo></span>
        * </div>
        */
-      const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          ɵɵelementStart(0, 'div', [AttributeMarker.Bindings, 'with-content']);
-          { ɵɵelement(1, 'span', null, ['foo', '']); }
-          ɵɵelementEnd();
-        }
-      }, 3, 0, [WithContentDirective]);
+      const AppComponent = createComponent(
+          'app-component',
+          function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              ɵɵelementStart(0, 'div', 0);
+              { ɵɵelement(1, 'span', null, ['foo', '']); }
+              ɵɵelementEnd();
+            }
+          },
+          3, 0, [WithContentDirective], [], null, [], [], undefined,
+          [[AttributeMarker.Bindings, 'with-content']]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(withContentInstance !.foos.length)
@@ -1520,27 +1538,31 @@ describe('query', () => {
        *   </div>
        * % }
        */
-      const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          ɵɵcontainer(0);
-        }
-        if (rf & RenderFlags.Update) {
-          ɵɵcontainerRefreshStart(0);
-          {
-            for (let i = 0; i < 3; i++) {
-              let rf = ɵɵembeddedViewStart(1, 3, 0);
-              if (rf & RenderFlags.Create) {
-                ɵɵelementStart(0, 'div', [AttributeMarker.Bindings, 'with-content']);
-                { ɵɵelement(1, 'span', null, ['foo', '']); }
-                ɵɵelementEnd();
-              }
-              ɵɵembeddedViewEnd();
+      const AppComponent = createComponent(
+          'app-component',
+          function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              ɵɵcontainer(0);
             }
-          }
+            if (rf & RenderFlags.Update) {
+              ɵɵcontainerRefreshStart(0);
+              {
+                for (let i = 0; i < 3; i++) {
+                  let rf = ɵɵembeddedViewStart(1, 3, 0);
+                  if (rf & RenderFlags.Create) {
+                    ɵɵelementStart(0, 'div', 0);
+                    { ɵɵelement(1, 'span', null, ['foo', '']); }
+                    ɵɵelementEnd();
+                  }
+                  ɵɵembeddedViewEnd();
+                }
+              }
 
-          ɵɵcontainerRefreshEnd();
-        }
-      }, 1, 0, [WithContentDirective]);
+              ɵɵcontainerRefreshEnd();
+            }
+          },
+          1, 0, [WithContentDirective], [], null, [], [], undefined,
+          [[AttributeMarker.Bindings, 'with-content']]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(withContentInstance !.foos.length)
@@ -1564,9 +1586,9 @@ describe('query', () => {
        */
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵelement(0, 'div', ['with-content', ''], ['foo', '']);
+          ɵɵelement(0, 'div', 0, ['foo', '']);
         }
-      }, 2, 0, [WithContentDirective]);
+      }, 2, 0, [WithContentDirective], [], null, [], [], undefined, [['with-content', '']]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(withContentInstance !.foos.length)
@@ -1588,10 +1610,10 @@ describe('query', () => {
           'app-component',
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              ɵɵelementStart(0, 'div', ['with-content', '']);
+              ɵɵelementStart(0, 'div', 0);
               { ɵɵelement(1, 'div', null, ['foo', '']); }
               ɵɵelementEnd();
-              ɵɵelement(3, 'div', ['id', 'after'], ['bar', '']);
+              ɵɵelement(3, 'div', 1, ['bar', '']);
             }
           },
           5, 0, [WithContentDirective], [],
@@ -1604,7 +1626,8 @@ describe('query', () => {
               ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                   (ctx.foos = tmp as QueryList<any>);
             }
-          });
+          },
+          [], [], undefined, [['with-content', ''], ['id', 'after']]);
 
       const fixture = new ComponentFixture(AppComponent);
       const viewQList = fixture.component.foos;
@@ -1629,8 +1652,8 @@ describe('query', () => {
           'app-component',
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              ɵɵelementStart(0, 'div', ['with-content', '']);
-              { ɵɵelement(1, 'div', ['id', 'yes'], ['foo', '']); }
+              ɵɵelementStart(0, 'div', 0);
+              { ɵɵelement(1, 'div', 1, ['foo', '']); }
               ɵɵelementEnd();
               ɵɵelement(3, 'div', null, ['foo', '']);
             }
@@ -1645,7 +1668,8 @@ describe('query', () => {
               ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
                   (ctx.bars = tmp as QueryList<any>);
             }
-          });
+          },
+          [], [], undefined, [['with-content', ''], ['id', 'yes']]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(withContentInstance !.foos.length).toBe(1);
@@ -1690,13 +1714,13 @@ describe('query', () => {
            */
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              ɵɵelementStart(0, 'div', [AttributeMarker.Bindings, 'query'], ['out', 'query']);
+              ɵɵelementStart(0, 'div', 0, ['out', 'query']);
               {
-                ɵɵelement(2, 'span', ['id', 'foo'], ['foo', '']);
-                ɵɵelementStart(4, 'div', [AttributeMarker.Bindings, 'query'], ['in', 'query']);
-                { ɵɵelement(6, 'span', ['id', 'bar'], ['bar', '']); }
+                ɵɵelement(2, 'span', 1, ['foo', '']);
+                ɵɵelementStart(4, 'div', 0, ['in', 'query']);
+                { ɵɵelement(6, 'span', 2, ['bar', '']); }
                 ɵɵelementEnd();
-                ɵɵelement(8, 'span', ['id', 'baz'], ['baz', '']);
+                ɵɵelement(8, 'span', 3, ['baz', '']);
               }
               ɵɵelementEnd();
             }
@@ -1706,7 +1730,8 @@ describe('query', () => {
               inInstance = load<QueryDirective>(lView, 5);
             }
           },
-          10, 0, [QueryDirective]);
+          10, 0, [QueryDirective], [], null, [], [], undefined,
+          [[AttributeMarker.Bindings, 'query'], ['id', 'foo'], ['id', 'bar'], ['id', 'baz']]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(outInstance !.fooBars.length).toBe(3);
@@ -1750,10 +1775,10 @@ describe('query', () => {
            */
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              ɵɵelementStart(0, 'div', ['query', ''], ['out', 'query']);
+              ɵɵelementStart(0, 'div', 0, ['out', 'query']);
               {
-                ɵɵelementStart(2, 'div', ['query', ''], ['in', 'query', 'foo', '']);
-                { ɵɵelement(5, 'span', ['id', 'bar'], ['foo', '']); }
+                ɵɵelementStart(2, 'div', 0, ['in', 'query', 'foo', '']);
+                { ɵɵelement(5, 'span', 1, ['foo', '']); }
                 ɵɵelementEnd();
               }
               ɵɵelementEnd();
@@ -1764,7 +1789,7 @@ describe('query', () => {
               inInstance = load<QueryDirective>(lView, 3);
             }
           },
-          7, 0, [QueryDirective]);
+          7, 0, [QueryDirective], [], null, [], [], undefined, [['query', ''], ['id', 'bar']]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(outInstance !.fooBars.length).toBe(1);
@@ -1807,10 +1832,10 @@ describe('query', () => {
            */
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              ɵɵelementStart(0, 'div', ['query', ''], ['out', 'query']);
+              ɵɵelementStart(0, 'div', 0, ['out', 'query']);
               {
-                ɵɵelementStart(2, 'div', ['query', ''], ['in', 'query', 'foo', '']);
-                { ɵɵelement(5, 'span', ['id', 'bar'], ['foo', '']); }
+                ɵɵelementStart(2, 'div', 0, ['in', 'query', 'foo', '']);
+                { ɵɵelement(5, 'span', 1, ['foo', '']); }
                 ɵɵelementEnd();
               }
               ɵɵelementEnd();
@@ -1821,7 +1846,7 @@ describe('query', () => {
               inInstance = load<QueryDirective>(lView, 3);
             }
           },
-          7, 0, [QueryDirective]);
+          7, 0, [QueryDirective], [], null, [], [], undefined, [['query', ''], ['id', 'bar']]);
 
       const fixture1 = new ComponentFixture(AppComponent);
       expect(outInstance !.fooBars.length).toBe(1);
@@ -1893,9 +1918,7 @@ describe('query', () => {
               */
              function(rf: RenderFlags, ctx: any) {
                if (rf & RenderFlags.Create) {
-                 ɵɵelementStart(
-                     0, 'div', [AttributeMarker.Bindings, 'shallow-query', 'deep-query'],
-                     ['shallow', 'shallow-query', 'deep', 'deep-query']);
+                 ɵɵelementStart(0, 'div', 0, ['shallow', 'shallow-query', 'deep', 'deep-query']);
                  {
                    ɵɵelement(3, 'span', null, ['foo', '']);
                    ɵɵelementStart(5, 'div');
@@ -1910,7 +1933,8 @@ describe('query', () => {
                  deepInstance = load<DeepQueryDirective>(lView, 2);
                }
              },
-             8, 0, [ShallowQueryDirective, DeepQueryDirective]);
+             8, 0, [ShallowQueryDirective, DeepQueryDirective], [], null, [], [], undefined,
+             [[AttributeMarker.Bindings, 'shallow-query', 'deep-query']]);
 
          const fixture = new ComponentFixture(AppComponent);
          expect(shallowInstance !.foos.length).toBe(1);
@@ -1967,20 +1991,23 @@ describe('query', () => {
           */
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              ɵɵelementStart(0, 'div', ['content-query']);
+              ɵɵelementStart(0, 'div', 0);
               {
-                ɵɵelement(1, 'span', ['text', 'A']);
-                ɵɵelementStart(2, 'div', ['text', 'B']);
-                ɵɵelementStart(3, 'span', ['text', 'C']);
-                { ɵɵelement(4, 'span', ['text', 'D']); }
+                ɵɵelement(1, 'span', 1);
+                ɵɵelementStart(2, 'div', 2);
+                ɵɵelementStart(3, 'span', 3);
+                { ɵɵelement(4, 'span', 4); }
                 ɵɵelementEnd();
                 ɵɵelementEnd();
-                ɵɵelement(5, 'span', ['text', 'E']);
+                ɵɵelement(5, 'span', 5);
               }
               ɵɵelementEnd();
             }
           },
-          6, 0, [TextDirective, ContentQueryDirective]);
+          6, 0, [TextDirective, ContentQueryDirective], [], null, [], [], undefined, [
+            ['content-query'], ['text', 'A'], ['text', 'B'], ['text', 'C'], ['text', 'D'],
+            ['text', 'E']
+          ]);
 
       new ComponentFixture(AppComponent);
       expect(contentQueryDirective !.texts.map(item => item.value)).toEqual([
@@ -2006,18 +2033,19 @@ describe('query', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: ViewQueryComponent,
           selectors: [['view-query']],
+          consts: [['text', 'A'], ['text', 'B'], ['text', 'C'], ['text', 'D'], ['text', 'E']],
           template: function(rf: RenderFlags, ctx: ViewQueryComponent) {
             if (rf & RenderFlags.Create) {
-              ɵɵelement(0, 'span', ['text', 'A']);
-              ɵɵelementStart(1, 'div', ['text', 'B']);
-              ɵɵelementStart(2, 'span', ['text', 'C']);
-              { ɵɵelement(3, 'span', ['text', 'D']); }
+              ɵɵelement(0, 'span', 0);
+              ɵɵelementStart(1, 'div', 1);
+              ɵɵelementStart(2, 'span', 2);
+              { ɵɵelement(3, 'span', 3); }
               ɵɵelementEnd();
               ɵɵelementEnd();
-              ɵɵelement(4, 'span', ['text', 'E']);
+              ɵɵelement(4, 'span', 4);
             }
           },
-          consts: 5,
+          decls: 5,
           vars: 0,
           viewQuery: function(rf: RenderFlags, ctx: ViewQueryComponent) {
             let tmp: any;

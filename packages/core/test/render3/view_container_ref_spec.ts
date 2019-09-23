@@ -106,13 +106,14 @@ describe('ViewContainerRef', () => {
                type: TestComponent,
                encapsulation: ViewEncapsulation.None,
                selectors: [['test-cmp']],
-               consts: 4,
+               decls: 4,
                vars: 0,
+               consts: [['testdir', '']],
                template: (rf: RenderFlags, cmp: TestComponent) => {
                  if (rf & RenderFlags.Create) {
                    ɵɵtext(0, 'before|');
-                   ɵɵtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', ['testdir', '']);
-                   ɵɵtemplate(2, EmbeddedTemplateB, 1, 0, 'ng-template', ['testdir', '']);
+                   ɵɵtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', 0);
+                   ɵɵtemplate(2, EmbeddedTemplateB, 1, 0, 'ng-template', 0);
                    ɵɵtext(3, '|after');
                  }
                },
@@ -177,12 +178,13 @@ describe('ViewContainerRef', () => {
                type: TestComponent,
                encapsulation: ViewEncapsulation.None,
                selectors: [['test-cmp']],
-               consts: 4,
+               decls: 4,
                vars: 0,
+               consts: [['testdir', '']],
                template: (rf: RenderFlags, cmp: TestComponent) => {
                  if (rf & RenderFlags.Create) {
                    ɵɵtext(0, 'before|');
-                   ɵɵtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', ['testdir', '']);
+                   ɵɵtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', 0);
                    ɵɵcontainer(2);
                    ɵɵtext(3, '|after');
                  }
@@ -248,7 +250,7 @@ describe('ViewContainerRef', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: AppComp,
             selectors: [['app-comp']],
-            consts: 0,
+            decls: 0,
             vars: 0,
             template: (rf: RenderFlags, cmp: AppComp) => {}
           });
@@ -264,7 +266,7 @@ describe('ViewContainerRef', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: DynamicComp,
             selectors: [['dynamic-comp']],
-            consts: 0,
+            decls: 0,
             vars: 0,
             template: (rf: RenderFlags, cmp: DynamicComp) => {}
           });
@@ -320,11 +322,13 @@ describe('ViewContainerRef', () => {
     describe('getters', () => {
       it('should work on elements', () => {
         function createTemplate() {
-          ɵɵelement(0, 'header', ['vcref', '']);
+          ɵɵelement(0, 'header', 0);
           ɵɵelement(1, 'footer');
         }
 
-        new TemplateFixture(createTemplate, undefined, 2, 0, [DirectiveWithVCRef]);
+        new TemplateFixture(
+            createTemplate, undefined, 2, 0, [DirectiveWithVCRef], null, null, undefined,
+            [['vcref', '']]);
 
         expect(directiveInstance !.vcref.element.nativeElement.tagName.toLowerCase())
             .toEqual('header');
@@ -339,11 +343,13 @@ describe('ViewContainerRef', () => {
             createComponent('header-cmp', function(rf: RenderFlags, ctx: any) {});
 
         function createTemplate() {
-          ɵɵelement(0, 'header-cmp', ['vcref', '']);
+          ɵɵelement(0, 'header-cmp', 0);
           ɵɵelement(1, 'footer');
         }
 
-        new TemplateFixture(createTemplate, undefined, 2, 0, [HeaderComponent, DirectiveWithVCRef]);
+        new TemplateFixture(
+            createTemplate, undefined, 2, 0, [HeaderComponent, DirectiveWithVCRef], null, null,
+            undefined, [['vcref', '']]);
 
         expect(directiveInstance !.vcref.element.nativeElement.tagName.toLowerCase())
             .toEqual('header-cmp');
@@ -365,7 +371,7 @@ describe('ViewContainerRef', () => {
               static ngComponentDef = ɵɵdefineComponent({
                 type: AppCmpt,
                 selectors: [['app']],
-                consts: 0,
+                decls: 0,
                 vars: 0,
                 template: (rf: RenderFlags, cmp: AppCmpt) => {}
               });
@@ -433,11 +439,12 @@ describe('ViewContainerRef', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: DynamicCompWithViewQueries,
           selectors: [['dynamic-cmpt-with-view-queries']],
-          consts: 2,
+          decls: 2,
           vars: 0,
+          consts: [['bar', '']],
           template: (rf: RenderFlags, ctx: DynamicCompWithViewQueries) => {
             if (rf & RenderFlags.Create) {
-              ɵɵelement(0, 'div', ['bar', ''], ['foo', '']);
+              ɵɵelement(0, 'div', 0, ['foo', '']);
             }
             // testing only
             fooEl = getNativeByIndex(0, getLView()) as RElement;
@@ -481,7 +488,7 @@ describe('ViewContainerRef', () => {
               static ngComponentDef = ɵɵdefineComponent({
                 type: CompWithListenerThatDestroysItself,
                 selectors: [['comp-with-listener-and-on-destroy']],
-                consts: 2,
+                decls: 2,
                 vars: 0,
                 /** <button (click)="onClick()"> Click me </button> */
                 template: function CompTemplate(rf: RenderFlags, ctx: any) {

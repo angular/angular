@@ -7,7 +7,7 @@
  */
 import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, renderView} from '../../../src/render3/instructions/shared';
 import {ComponentTemplate} from '../../../src/render3/interfaces/definition';
-import {TNodeType, TViewNode} from '../../../src/render3/interfaces/node';
+import {TAttributes, TNodeType, TViewNode} from '../../../src/render3/interfaces/node';
 import {RComment} from '../../../src/render3/interfaces/renderer';
 import {LView, LViewFlags, TView} from '../../../src/render3/interfaces/view';
 import {insertView} from '../../../src/render3/node_manipulation';
@@ -23,10 +23,10 @@ export function createAndRenderLView(
 }
 
 export function setupRootViewWithEmbeddedViews(
-    templateFn: ComponentTemplate<any>| null, consts: number, vars: number, noOfViews: number,
-    embeddedViewContext: any = {}): LView {
+    templateFn: ComponentTemplate<any>| null, decls: number, vars: number, noOfViews: number,
+    embeddedViewContext: any = {}, consts: TAttributes[] | null = null): LView {
   // Create a root view with a container
-  const rootTView = createTView(-1, null, 1, 0, null, null, null, null);
+  const rootTView = createTView(-1, null, 1, 0, null, null, null, null, consts);
   const tContainerNode = getOrCreateTNode(rootTView, null, 0, TNodeType.Container, null, null);
   const rootLView = createLView(
       null, rootTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
@@ -38,7 +38,7 @@ export function setupRootViewWithEmbeddedViews(
 
 
   // create test embedded views
-  const embeddedTView = createTView(-1, templateFn, consts, vars, null, null, null, null);
+  const embeddedTView = createTView(-1, templateFn, decls, vars, null, null, null, null, null);
   const viewTNode = createTNode(rootTView, null, TNodeType.View, -1, null, null) as TViewNode;
 
   // create embedded views and add them to the container

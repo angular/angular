@@ -148,7 +148,7 @@ describe('compiler compliance: providers', () => {
     MyComponent.ngComponentDef = i0.ɵɵdefineComponent({
       type: MyComponent,
       selectors: [["my-component"]],
-      consts: 1,
+      decls: 1,
       vars: 0,
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {

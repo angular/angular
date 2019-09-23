@@ -702,7 +702,7 @@ describe('JS control flow', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
-        consts: 0,
+        decls: 0,
         vars: 0,
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
@@ -716,7 +716,7 @@ describe('JS control flow', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
@@ -772,7 +772,7 @@ describe('JS control flow', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
-        consts: 0,
+        decls: 0,
         vars: 0,
         template: function(rf: RenderFlags, ctx: Comp) {}
       });
@@ -786,7 +786,7 @@ describe('JS control flow', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
-        consts: 3,
+        decls: 3,
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {

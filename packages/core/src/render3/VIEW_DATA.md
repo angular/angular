@@ -14,7 +14,7 @@ The layout is as such:
 | Section    | `LView`                                                  | `TView.data`
 | ---------- | ------------------------------------------------------------ | --------------------------------------------------
 | `HEADER`   | contextual data                                              |  mostly `null`
-| `CONSTS`   | DOM, pipe, and local ref instances                           |
+| `DECLS`    | DOM, pipe, and local ref instances                           |
 | `VARS`     | binding values                                               |  property names
 | `EXPANDO`  | host bindings; directive instances; providers; dynamic nodes | host prop names; directive tokens; provider tokens; `null`
 
@@ -25,10 +25,10 @@ The layout is as such:
 Mostly information such as parent `LView`, `Sanitizer`, `TView`, and many more bits of information needed for template rendering.
 
 
-## `CONSTS`
+## `DECLS`
 
-`CONSTS` contain the DOM elements, pipe instances, and local refs.
-The size of the `CONSTS` section is declared in the property `consts` of the component definition.
+`DECLS` contain the DOM elements, pipe instances, and local refs.
+The size of the `DECLS` section is declared in the property `decls` of the component definition.
 
 ```typescript
 @Component({
@@ -38,7 +38,7 @@ class MyApp {
 
   static ngComponentDef = ɵɵdefineComponent({
     ...,
-    consts: 5,
+    decls: 5,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'div');
@@ -89,7 +89,7 @@ class MyApp {
 
   static ngComponentDef = ɵɵdefineComponent({
     ...,
-    consts: 2, // Two DOM Elements.
+    decls: 2, // Two DOM Elements.
     vars: 2,   // Two bindings.
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
@@ -142,7 +142,7 @@ class MyApp {
 
   static ngComponentDef = ɵɵdefineComponent({
     ...,
-    consts: 1,
+    decls: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         ɵɵelement(0, 'child', ['tooltip', null]);
@@ -276,7 +276,7 @@ class MyApp {
 
   static ngComponentDef = ɵɵdefineComponent({
     ...,
-    consts: 1,
+    decls: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         ɵɵelement(0, 'child');

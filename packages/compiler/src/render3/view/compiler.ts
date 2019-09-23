@@ -240,11 +240,17 @@ export function compileComponentFromMetadata(
     definitionMap.set('ngContentSelectors', ngContentSelectors);
   }
 
-  // e.g. `consts: 2`
-  definitionMap.set('consts', o.literal(templateBuilder.getConstCount()));
+  // e.g. `decls: 2`
+  definitionMap.set('decls', o.literal(templateBuilder.getConstCount()));
 
   // e.g. `vars: 2`
   definitionMap.set('vars', o.literal(templateBuilder.getVarCount()));
+
+  // e.g. `consts: [['one', 'two'], ['three', 'four']]
+  const consts = templateBuilder.getConsts();
+  if (consts.length > 0) {
+    definitionMap.set('consts', o.literalArr(consts));
+  }
 
   definitionMap.set('template', templateFunctionExpression);
 

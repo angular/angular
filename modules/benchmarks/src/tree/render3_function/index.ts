@@ -24,7 +24,7 @@ export class TreeFunction {
   static ngComponentDef = ɵɵdefineComponent({
     type: TreeFunction,
     selectors: [['tree']],
-    consts: 5,
+    decls: 5,
     vars: 1,
     template: function(rf: ɵRenderFlags, ctx: TreeFunction) {
       // bit of a hack

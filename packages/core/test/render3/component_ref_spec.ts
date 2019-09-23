@@ -24,7 +24,7 @@ describe('ComponentFactory', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: TestComponent,
           selectors: [['test', 'foo'], ['bar']],
-          consts: 0,
+          decls: 0,
           vars: 0,
           template: () => undefined,
         });
@@ -46,7 +46,7 @@ describe('ComponentFactory', () => {
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['test', 'foo'], ['bar']],
-          consts: 0,
+          decls: 0,
           vars: 0,
           template: () => undefined,
           ngContentSelectors: ['*', 'a', 'b'],
@@ -94,7 +94,7 @@ describe('ComponentFactory', () => {
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['test']],
-          consts: 0,
+          decls: 0,
           vars: 0,
           template: () => undefined,
         });

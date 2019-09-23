@@ -37,7 +37,7 @@ describe('iv perf test', () => {
           static ngComponentDef = ɵɵdefineComponent({
             type: Component,
             selectors: [['div']],
-            consts: 1,
+            decls: 1,
             vars: 0,
             template: function Template(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {

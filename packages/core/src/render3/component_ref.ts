@@ -161,7 +161,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     }
 
     // Create the root view. Uses empty TView and ContentTemplate.
-    const rootTView = createTView(-1, null, 1, 0, null, null, null, null);
+    const rootTView = createTView(-1, null, 1, 0, null, null, null, null, null);
     const rootLView = createLView(
         null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, sanitizer,
         rootViewInjector);

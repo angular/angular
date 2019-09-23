@@ -509,7 +509,7 @@ describe('TestBed', () => {
             static ngComponentDef = defineComponent({
               type: ComponentClass,
               selectors: [['comp']],
-              consts: 1,
+              decls: 1,
               vars: 0,
               template: (rf: any, ctx: any) => {
                 if (rf & 1) {

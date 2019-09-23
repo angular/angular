@@ -128,7 +128,7 @@ export function renderComponent<T>(
   const rootContext = createRootContext(opts.scheduler, opts.playerHandler);
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
-  const rootTView = createTView(-1, null, 1, 0, null, null, null, null);
+  const rootTView = createTView(-1, null, 1, 0, null, null, null, null, null);
   const rootView: LView = createLView(
       null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, undefined,
       opts.injector || null);
