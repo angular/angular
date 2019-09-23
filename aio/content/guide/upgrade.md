@@ -1622,7 +1622,7 @@ There are several notable changes here:
 * You're using the property binding syntax around `ng-class`. Though Angular
   does have [a very similar `ngClass`](guide/template-syntax#directives)
   as AngularJS does, its value is not magically evaluated as an expression.
-  In Angular, you always specify  in the template when an attribute's value is
+  In Angular, you always specify in the template when an attribute's value is
   a property expression, as opposed to a literal string.
 
 * You've replaced `ng-repeat`s with `*ngFor`s.
