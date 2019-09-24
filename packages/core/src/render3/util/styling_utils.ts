@@ -212,7 +212,7 @@ export function getStylingMapArray(value: TStylingContext | StylingMapArray | nu
       value as StylingMapArray;
 }
 
-export function isStylingContext(value: any): boolean {
+export function isStylingContext(value: TStylingContext | StylingMapArray | null): boolean {
   // the StylingMapArray is in the format of [initial, prop, string, prop, string]
   // and this is the defining value to distinguish between arrays
   return Array.isArray(value) && value.length >= TStylingContextIndex.ValuesStartPosition &&
