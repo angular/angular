@@ -13,10 +13,10 @@ describe('styling debugging tools', () => {
   describe('NodeStylingDebug', () => {
     it('should list out each of the values in the context paired together with the provided data',
        () => {
-         const debug = makeContextWithDebug(false);
+         const debug = makeContextWithDebug();
          const context = debug.context;
          const data: any[] = [];
-         const d = new NodeStylingDebug(context, data, false);
+         const d = new NodeStylingDebug(context, data);
 
          registerBinding(context, 0, 0, 'width', null);
          expect(d.summary).toEqual({
@@ -63,7 +63,7 @@ describe('styling debugging tools', () => {
   });
 });
 
-function makeContextWithDebug(isClassBased: boolean) {
+function makeContextWithDebug() {
   const ctx = allocTStylingContext();
-  return attachStylingDebugObject(ctx, isClassBased);
+  return attachStylingDebugObject(ctx);
 }
