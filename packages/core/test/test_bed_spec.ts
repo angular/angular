@@ -700,7 +700,8 @@ describe('TestBed', () => {
              expect((Module as any).ngInjectorDef.providers).toEqual([Token]);
            });
 
-        it('should clean up overridden providers on components whose modules are compiled more than once', async() => {
+        it('should clean up overridden providers on components whose modules are compiled more than once',
+           async() => {
              @Injectable()
              class SomeInjectable {
                id: string|undefined;
