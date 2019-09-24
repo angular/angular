@@ -345,12 +345,42 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return attributes;
   }
 
-  get styles(): {[key: string]: string | null;} {
-    return _getStylingDebugInfo(this.nativeElement, false);
+  get styles(): {[key: string]: string | null} {
+    if (this.nativeElement && (this.nativeElement as HTMLElement).style) {
+      return (this.nativeElement as HTMLElement).style as{[key: string]: any};
+    }
+    return {};
   }
 
+  private _classesProxy !: {};
   get classes(): {[key: string]: boolean;} {
-    return _getStylingDebugInfo(this.nativeElement, true);
+    if (!this._classesProxy) {
+      const element = this.nativeElement;
+
+      // we use a proxy here because VE code expects `.classes` to keep
+      // track of which classes have been added and removed. Because we
+      // do not make use of a debug renderer anymore, the return value
+      // must always be `false` in the event that a class does not exist
+      // on the element (even if it wasn't added and removed beforehand).
+      this._classesProxy = new Proxy({}, {
+        get(target: {}, prop: string) {
+          return element ? element.classList.contains(prop) : false;
+        },
+        set(target: {}, prop: string, value: any) {
+          return element ? element.classList.toggle(prop, !!value) : false;
+        },
+        ownKeys() { return element ? element.className.split(/\s+/).sort() : []; },
+        getOwnPropertyDescriptor(k) {
+          // we use a special property descriptor here so that enumeration operations
+          // such as `Object.keys` will work on this proxy.
+          return {
+            enumerable: true,
+            configurable: true,
+          };
+        },
+      });
+    }
+    return this._classesProxy;
   }
 
   get childNodes(): DebugNode[] {
@@ -415,26 +445,6 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
         return invokedListeners.indexOf(unwrappedListener) === -1 && unwrappedListener(eventObj);
       });
     }
-  }
-}
-
-function _getStylingDebugInfo(element: any, isClassBased: boolean) {
-  const context = loadLContext(element, false);
-  if (!context) {
-    return {};
-  }
-
-  const lView = context.lView;
-  const tData = lView[TVIEW].data;
-  const tNode = tData[context.nodeIndex] as TNode;
-  if (isClassBased) {
-    return isStylingContext(tNode.classes) ?
-        new NodeStylingDebug(tNode.classes as TStylingContext, lView, true).values :
-        stylingMapToStringMap(tNode.classes as StylingMapArray | null);
-  } else {
-    return isStylingContext(tNode.styles) ?
-        new NodeStylingDebug(tNode.styles as TStylingContext, lView, false).values :
-        stylingMapToStringMap(tNode.styles as StylingMapArray | null);
   }
 }
 
