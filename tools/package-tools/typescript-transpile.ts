@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 /** Reads a input file and transpiles it into a new file. */
 export function transpileFile(inputPath: string, outputPath: string, options: ts.CompilerOptions) {

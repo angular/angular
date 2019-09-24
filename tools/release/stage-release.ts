@@ -1,5 +1,5 @@
 import * as OctokitApi from '@octokit/rest';
-import {bold, cyan, green, italic, red, yellow} from 'chalk';
+import chalk from 'chalk';
 import {readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
 import {BaseReleaseTask} from './base-release-task';
@@ -56,9 +56,9 @@ class StageReleaseTask extends BaseReleaseTask {
     this.currentVersion = parseVersionName(this.packageJson.version)!;
 
     if (!this.currentVersion) {
-      console.error(
-          red(`Cannot parse current version in ${italic('package.json')}. Please ` +
-              `make sure "${this.packageJson.version}" is a valid Semver version.`));
+      console.error(chalk.red(
+          `Cannot parse current version in ${chalk.italic('package.json')}. Please ` +
+          `make sure "${this.packageJson.version}" is a valid Semver version.`));
       process.exit(1);
     }
 
@@ -67,9 +67,9 @@ class StageReleaseTask extends BaseReleaseTask {
 
   async run() {
     console.log();
-    console.log(cyan('-----------------------------------------'));
-    console.log(cyan('  Angular Material stage release script'));
-    console.log(cyan('-----------------------------------------'));
+    console.log(chalk.cyan('-----------------------------------------'));
+    console.log(chalk.cyan('  Angular Material stage release script'));
+    console.log(chalk.cyan('-----------------------------------------'));
     console.log();
 
     const newVersion = await promptForNewVersion(this.currentVersion);
@@ -92,33 +92,34 @@ class StageReleaseTask extends BaseReleaseTask {
     await this._verifyPassingGithubStatus(publishBranch);
 
     if (!this.git.checkoutNewBranch(stagingBranch)) {
-      console.error(red(`Could not create release staging branch: ${stagingBranch}. Aborting...`));
+      console.error(
+          chalk.red(`Could not create release staging branch: ${stagingBranch}. Aborting...`));
       process.exit(1);
     }
 
     if (needsVersionBump) {
       this._updatePackageJsonVersion(newVersionName);
 
-      console.log(green(
-          `  ✓   Updated the version to "${bold(newVersionName)}" inside of the ` +
-          `${italic('package.json')}`));
+      console.log(chalk.green(
+          `  ✓   Updated the version to "${chalk.bold(newVersionName)}" inside of the ` +
+          `${chalk.italic('package.json')}`));
       console.log();
     }
 
     await promptAndGenerateChangelog(join(this.projectDir, CHANGELOG_FILE_NAME));
 
     console.log();
-    console.log(green(
+    console.log(chalk.green(
         `  ✓   Updated the changelog in ` +
-        `"${bold(CHANGELOG_FILE_NAME)}"`));
-    console.log(yellow(
+        `"${chalk.bold(CHANGELOG_FILE_NAME)}"`));
+    console.log(chalk.yellow(
         `  ⚠   Please review CHANGELOG.md and ensure that the log contains only changes ` +
         `that apply to the public library release. When done, proceed to the prompt below.`));
     console.log();
 
     if (!await this.promptConfirm('Do you want to proceed and commit the changes?')) {
       console.log();
-      console.log(yellow('Aborting release staging...'));
+      console.log(chalk.yellow('Aborting release staging...'));
       process.exit(0);
     }
 
@@ -133,8 +134,8 @@ class StageReleaseTask extends BaseReleaseTask {
     }
 
     console.info();
-    console.info(green(`  ✓   Created the staging commit for: "${newVersionName}".`));
-    console.info(green(`  ✓   Please push the changes and submit a PR on GitHub.`));
+    console.info(chalk.green(`  ✓   Created the staging commit for: "${newVersionName}".`));
+    console.info(chalk.green(`  ✓   Please push the changes and submit a PR on GitHub.`));
     console.info();
 
     // TODO(devversion): automatic push and PR open URL shortcut.
@@ -158,24 +159,24 @@ class StageReleaseTask extends BaseReleaseTask {
                     })).data;
 
     if (state === 'failure') {
-      console.error(
-          red(`  ✘   Cannot stage release. Commit "${commitRef}" does not pass all github ` +
-              `status checks. Please make sure this commit passes all checks before re-running.`));
-      console.error(red(`      Please have a look at: ${githubCommitsUrl}`));
+      console.error(chalk.red(
+          `  ✘   Cannot stage release. Commit "${commitRef}" does not pass all github ` +
+          `status checks. Please make sure this commit passes all checks before re-running.`));
+      console.error(chalk.red(`      Please have a look at: ${githubCommitsUrl}`));
       if (await this.promptConfirm('Do you want to ignore the Github status and proceed?')) {
-        console.info(green(
+        console.info(chalk.green(
             `  ⚠   Upstream commit is failing CI checks, but status has been ` +
             `forcibly ignored.`));
         return;
       }
       process.exit(1);
     } else if (state === 'pending') {
-      console.error(
-          red(`  ✘   Commit "${commitRef}" still has pending github statuses that ` +
-              `need to succeed before staging a release.`));
-      console.error(red(`      Please have a look at: ${githubCommitsUrl}`));
+      console.error(chalk.red(
+          `  ✘   Commit "${commitRef}" still has pending github statuses that ` +
+          `need to succeed before staging a release.`));
+      console.error(chalk.red(`      Please have a look at: ${githubCommitsUrl}`));
       if (await this.promptConfirm('Do you want to ignore the Github status and proceed?')) {
-        console.info(green(
+        console.info(chalk.green(
             `  ⚠   Upstream commit is pending CI, but status has been ` +
             `forcibly ignored.`));
         return;
@@ -183,7 +184,7 @@ class StageReleaseTask extends BaseReleaseTask {
       process.exit(0);
     }
 
-    console.info(green(`  ✓   Upstream commit is passing all github status checks.`));
+    console.info(chalk.green(`  ✓   Upstream commit is passing all github status checks.`));
   }
 }
 

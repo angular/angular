@@ -16,7 +16,7 @@ import {
 } from '@angular/cdk/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import {bold, red, yellow} from 'chalk';
+import chalk from 'chalk';
 import {join} from 'path';
 import {Schema} from '../schema';
 import {createCustomTheme} from './create-custom-theme';
@@ -71,8 +71,8 @@ function insertCustomTheme(project: WorkspaceProject, projectName: string, host:
     const customThemePath = normalize(join(project.sourceRoot, defaultCustomThemeFilename));
 
     if (host.exists(customThemePath)) {
-      console.warn(yellow(`Cannot create a custom Angular Material theme because
-          ${bold(customThemePath)} already exists. Skipping custom theme generation.`));
+      console.warn(chalk.yellow(`Cannot create a custom Angular Material theme because
+          ${chalk.bold(customThemePath)} already exists. Skipping custom theme generation.`));
       return;
     }
 
@@ -125,10 +125,11 @@ function addThemeStyleToTarget(project: WorkspaceProject, targetName: 'test' | '
       // theme because these files can contain custom styles, while prebuilt themes are
       // always packaged and considered replaceable.
       if (stylePath.includes(defaultCustomThemeFilename)) {
-        console.warn(red(`Could not add the selected theme to the CLI project configuration ` +
-            `because there is already a custom theme file referenced.`));
-        console.warn(red(`Please manually add the following style file to your configuration:`));
-        console.warn(yellow(`    ${bold(assetPath)}`));
+        console.warn(chalk.red(`Could not add the selected theme to the CLI project ` +
+            `configuration because there is already a custom theme file referenced.`));
+        console.warn(chalk.red(
+            `Please manually add the following style file to your configuration:`));
+        console.warn(chalk.yellow(`    ${chalk.bold(assetPath)}`));
         return;
       } else if (stylePath.includes(prebuiltThemePathSegment)) {
         targetOptions.styles.splice(index, 1);

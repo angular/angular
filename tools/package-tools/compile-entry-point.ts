@@ -1,7 +1,7 @@
 import {join} from 'path';
 import {writeFileSync, readFileSync} from 'fs';
 import {sync as glob} from 'glob';
-import {red} from 'chalk';
+import chalk from 'chalk';
 import {BuildPackage} from './build-package';
 import {tsCompile} from './ts-compile';
 
@@ -20,7 +20,8 @@ export async function compileEntryPoint(buildPackage: BuildPackage, tsconfigName
   }
 
   return tsCompile('ngc', ngcFlags).catch(() => {
-    const error = red(`Failed to compile ${secondaryEntryPoint} using ${entryPointTsconfigPath}`);
+    const error = chalk.red(
+        `Failed to compile ${secondaryEntryPoint} using ${entryPointTsconfigPath}`);
     console.error(error);
     return Promise.reject(error);
   });

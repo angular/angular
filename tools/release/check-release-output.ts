@@ -1,4 +1,4 @@
-import {green, red} from 'chalk';
+import chalk from 'chalk';
 import {join} from 'path';
 import {checkReleasePackage} from './release-output/check-package';
 import {releasePackages} from './release-output/release-packages';
@@ -19,12 +19,12 @@ export function checkReleaseOutput(releaseOutputDir: string) {
   // In case any release validation did not pass, abort the publishing because
   // the issues need to be resolved before publishing.
   if (hasFailed) {
-    console.error(red(`  ✘   Release output does not pass all release validations. Please fix ` +
-      `all failures or reach out to the team.`));
+    console.error(chalk.red(`  ✘   Release output does not pass all release validations. ` +
+      `Please fix all failures or reach out to the team.`));
     process.exit(1);
   }
 
-  console.info(green(`  ✓   Release output passed validation checks.`));
+  console.info(chalk.green(`  ✓   Release output passed validation checks.`));
 }
 
 

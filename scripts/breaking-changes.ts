@@ -1,6 +1,6 @@
 import {join, relative} from 'path';
 import {readFileSync} from 'fs';
-import {bold, red, green} from 'chalk';
+import chalk from 'chalk';
 import * as ts from 'typescript';
 import * as tsutils from 'tsutils';
 
@@ -47,12 +47,12 @@ parsedConfig.fileNames.forEach(fileName => {
 // Go through the summary and log out all of the breaking changes.
 Object.keys(summary).forEach(version => {
   const isExpired = hasExpired(packageVersion, version);
-  const status = isExpired ? red('(expired)') : green('(not expired)');
-  const header = bold(`Breaking changes for ${version} ${status}:`);
+  const status = isExpired ? chalk.red('(expired)') : chalk.green('(not expired)');
+  const header = chalk.bold(`Breaking changes for ${version} ${status}:`);
   const messages = summary[version].join('\n');
 
-  console.log(isExpired ? red(header) : header);
-  console.log(isExpired ? red(messages) : messages, '\n');
+  console.log(isExpired ? chalk.red(header) : header);
+  console.log(isExpired ? chalk.red(messages) : messages, '\n');
 });
 
 /**

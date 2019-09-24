@@ -1,4 +1,4 @@
-import {bold, green, yellow} from 'chalk';
+import chalk from 'chalk';
 import {createReadStream, createWriteStream, readFileSync} from 'fs';
 import {prompt} from 'inquirer';
 import {join} from 'path';
@@ -115,7 +115,7 @@ function createChangelogWriterOptions(changelogPath: string) {
           // Filter out duplicate commits. Note that we cannot compare the SHA because the commits
           // will have a different SHA if they are being cherry-picked into a different branch.
           if (existingChangelogContent.includes(commit.subject)) {
-            console.log(yellow(`  ↺   Skipping duplicate: "${bold(commit.header)}"`));
+            console.log(chalk.yellow(`  ↺   Skipping duplicate: "${chalk.bold(commit.header)}"`));
             return false;
           }
 
@@ -206,6 +206,6 @@ function getTypeOfCommitGroupDescription(description: string): string {
 /** Entry-point for generating the changelog when called through the CLI. */
 if (require.main === module) {
   promptAndGenerateChangelog(join(__dirname, '../../CHANGELOG.md')).then(() => {
-    console.log(green('  ✓   Successfully updated the changelog.'));
+    console.log(chalk.green('  ✓   Successfully updated the changelog.'));
   });
 }

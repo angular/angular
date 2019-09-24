@@ -1,5 +1,5 @@
 import {PullsGetResponse} from '@octokit/rest';
-import {cyan} from 'chalk';
+import chalk from 'chalk';
 
 /** Outputs the information of the pull requests to be cherry-picked and the commands to run. */
 export function outputResults(pullRequests: PullsGetResponse[]) {
@@ -9,9 +9,9 @@ export function outputResults(pullRequests: PullsGetResponse[]) {
   }
 
   console.log();
-  console.log(cyan('------------------------'));
-  console.log(cyan('  Results '));
-  console.log(cyan('------------------------'));
+  console.log(chalk.cyan('------------------------'));
+  console.log(chalk.cyan('  Results '));
+  console.log(chalk.cyan('------------------------'));
   console.log();
 
   pullRequests.forEach(p => {
@@ -20,9 +20,9 @@ export function outputResults(pullRequests: PullsGetResponse[]) {
   });
 
   console.log();
-  console.log(cyan('------------------------'));
-  console.log(cyan('  Cherry Pick Commands'));
-  console.log(cyan('------------------------'));
+  console.log(chalk.cyan('------------------------'));
+  console.log(chalk.cyan('  Cherry Pick Commands'));
+  console.log(chalk.cyan('------------------------'));
 
   pullRequests.forEach((pr, index) => {
     if (index % 5 === 0) {

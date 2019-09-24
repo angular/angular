@@ -1,4 +1,4 @@
-import {red} from 'chalk';
+import chalk from 'chalk';
 import {readdirSync, readFileSync, statSync} from 'fs';
 import {task} from 'gulp';
 import {IMinimatch, Minimatch} from 'minimatch';
@@ -62,7 +62,7 @@ task('ownerslint', () => {
         // Report an error for any files that didn't match any owned paths.
         .filter(path => {
           if (statSync(path).isFile()) {
-            console.log(red(`No code owner found for "${path}".`));
+            console.log(chalk.red(`No code owner found for "${path}".`));
             errors++;
             return false;
           }

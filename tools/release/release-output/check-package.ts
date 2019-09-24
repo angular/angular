@@ -1,4 +1,4 @@
-import {bold, red, yellow} from 'chalk';
+import chalk from 'chalk';
 import {existsSync} from 'fs';
 import {sync as glob} from 'glob';
 import {join} from 'path';
@@ -91,12 +91,14 @@ export function checkReleasePackage(releasesPath: string, packageName: string): 
 
 /** Prints the grouped failures for a specified package. */
 function printGroupedFailures(packageName: string, failures: PackageFailures) {
-  console.error(red(bold(`  ⚠   Package: "${packageName}" has failures:`)));
+  console.error(chalk.red(chalk.bold(`  ⚠   Package: "${packageName}" has failures:`)));
   failures.forEach((affectedFiles, failureMessage) => {
-    console.error(yellow(`  ⮑   ${failureMessage}`));
+    console.error(chalk.yellow(`  ⮑   ${failureMessage}`));
 
     if (affectedFiles.length) {
-      affectedFiles.forEach(affectedFile => console.error(yellow(`        ${affectedFile}`)));
+      affectedFiles.forEach(affectedFile => {
+        console.error(chalk.yellow(`        ${affectedFile}`));
+      });
     }
 
     // Add an extra line so that subsequent failure message groups are clearly separated.
