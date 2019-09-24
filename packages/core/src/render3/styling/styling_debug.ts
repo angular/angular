@@ -10,7 +10,7 @@ import {RElement} from '../interfaces/renderer';
 import {ApplyStylingFn, LStylingData, TStylingConfig, TStylingContext, TStylingContextIndex} from '../interfaces/styling';
 import {getCurrentStyleSanitizer} from '../state';
 import {attachDebugObject} from '../util/debug_utils';
-import {MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, allowDirectStyling as _allowDirectStyling, getBindingValue, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValuesCount, hasConfig, isContextLocked, isSanitizationRequired, isStylingContext} from '../util/styling_utils';
+import {allowDirectStyling as _allowDirectStyling, getDefaultValue, getGuardMask, getProp, getPropValuesStartPosition, getValuesCount, hasConfig, isContextLocked, isSanitizationRequired, isStylingContext} from '../util/styling_utils';
 
 import {applyStylingViaContext} from './bindings';
 import {activateStylingMapFeature} from './map_based_bindings';
@@ -41,12 +41,6 @@ export interface DebugStylingContext {
 
   /** The associated TStylingContext instance */
   entries: {[prop: string]: DebugStylingContextEntry};
-
-  /** A status report of all the sources within the context */
-  printSources(): void;
-
-  /** A status report of all the entire context as a table */
-  printTable(): void;
 }
 
 
@@ -69,10 +63,10 @@ export interface DebugStylingConfig {
  * A debug/testing-oriented summary of all styling entries within a `TStylingContext`.
  */
 export interface DebugStylingContextEntry {
-  /** The property (style or class property) that this entry represents */
+  /** The property (style or class property) that this tuple represents */
   prop: string;
 
-  /** The total amount of styling entries a part of this entry */
+  /** The total amount of styling entries a part of this tuple */
   valuesCount: number;
 
   /**
@@ -151,8 +145,8 @@ export interface DebugNodeStylingEntry {
 /**
  * Instantiates and attaches an instance of `TStylingContextDebug` to the provided context
  */
-export function attachStylingDebugObject(context: TStylingContext, isClassBased: boolean) {
-  const debug = new TStylingContextDebug(context, isClassBased);
+export function attachStylingDebugObject(context: TStylingContext) {
+  const debug = new TStylingContextDebug(context);
   attachDebugObject(context, debug);
   return debug;
 }
@@ -164,14 +158,14 @@ export function attachStylingDebugObject(context: TStylingContext, isClassBased:
  * application has `ngDevMode` activated.
  */
 class TStylingContextDebug implements DebugStylingContext {
-  constructor(public readonly context: TStylingContext, private _isClassBased: boolean) {}
+  constructor(public readonly context: TStylingContext) {}
 
   get config(): DebugStylingConfig { return buildConfig(this.context); }
 
   /**
    * Returns a detailed summary of each styling entry in the context.
    *
-   * See `DebugStylingContextEntry`.
+   * See `TStylingTupleSummary`.
    */
   get entries(): {[prop: string]: DebugStylingContextEntry} {
     const context = this.context;
@@ -208,137 +202,6 @@ class TStylingContextDebug implements DebugStylingContext {
     }
     return entries;
   }
-
-  /**
-   * Prints a detailed summary of each styling source grouped together with each binding index in
-   * the context.
-   */
-  printSources(): void {
-    let output = '\n';
-
-    const context = this.context;
-    const prefix = this._isClassBased ? 'class' : 'style';
-    const bindingsBySource: {
-      type: string,
-      entries: {binding: string, bindingIndex: number, value: any, bitMask: number}[]
-    }[] = [];
-
-    const totalColumns = getValuesCount(context);
-    const itemsPerRow = TStylingContextIndex.BindingsStartOffset + totalColumns;
-
-    for (let i = 0; i < totalColumns; i++) {
-      const isDefaultColumn = i === totalColumns - 1;
-      const hostBindingsMode = i !== TEMPLATE_DIRECTIVE_INDEX;
-      const type = getTypeFromColumn(i, totalColumns);
-      const entries: {binding: string, value: any, bindingIndex: number, bitMask: number}[] = [];
-
-      let j = TStylingContextIndex.ValuesStartPosition;
-      while (j < context.length) {
-        const value = getBindingValue(context, j, i);
-        if (isDefaultColumn || value > 0) {
-          const bitMask = getGuardMask(context, j, hostBindingsMode);
-          const bindingIndex = isDefaultColumn ? -1 : value as number;
-          const prop = getProp(context, j);
-          const isMapBased = prop === MAP_BASED_ENTRY_PROP_NAME;
-          const binding = `${prefix}${isMapBased ? '' : '.' + prop}`;
-          entries.push({binding, value, bindingIndex, bitMask});
-        }
-        j += itemsPerRow;
-      }
-
-      bindingsBySource.push(
-          {type, entries: entries.sort((a, b) => a.bindingIndex - b.bindingIndex)});
-    }
-
-    bindingsBySource.forEach(entry => {
-      output += `[${entry.type.toUpperCase()}]\n`;
-      output += repeat('-', entry.type.length + 2) + '\n';
-
-      let tab = '  ';
-      entry.entries.forEach(entry => {
-        const isDefault = typeof entry.value !== 'number';
-        const value = entry.value;
-        if (!isDefault || value !== null) {
-          output += `${tab}[${entry.binding}] = \`${value}\``;
-          output += '\n';
-        }
-      });
-      output += '\n';
-    });
-
-    /* tslint:disable */
-    console.log(output);
-  }
-
-  /**
-   * Prints a detailed table of the entire styling context.
-   */
-  printTable(): void {
-    // IE (not Edge) is the only browser that doesn't support this feature. Because
-    // these debugging tools are not apart of the core of Angular (they are just
-    // extra tools) we can skip-out on older browsers.
-    if (!console.table) {
-      throw new Error('This feature is not supported in your browser');
-    }
-
-    const context = this.context;
-    const table: any[] = [];
-    const totalColumns = getValuesCount(context);
-    const itemsPerRow = TStylingContextIndex.BindingsStartOffset + totalColumns;
-    const totalProps = Math.floor(context.length / itemsPerRow);
-
-    let i = TStylingContextIndex.ValuesStartPosition;
-    while (i < context.length) {
-      const prop = getProp(context, i);
-      const isMapBased = prop === MAP_BASED_ENTRY_PROP_NAME;
-      const entry: {[key: string]: any} = {
-        prop,
-        'tpl mask': generateBitString(getGuardMask(context, i, false), isMapBased, totalProps),
-        'host mask': generateBitString(getGuardMask(context, i, true), isMapBased, totalProps),
-      };
-
-      for (let j = 0; j < totalColumns; j++) {
-        const key = getTypeFromColumn(j, totalColumns);
-        const value = getBindingValue(context, i, j);
-        entry[key] = value;
-      }
-
-      i += itemsPerRow;
-      table.push(entry);
-    }
-
-    /* tslint:disable */
-    console.table(table);
-  }
-}
-
-function generateBitString(value: number, isMapBased: boolean, totalProps: number) {
-  if (isMapBased || value > 1) {
-    return `0b${leftPad(value.toString(2), totalProps, '0')}`;
-  }
-  return null;
-}
-
-function leftPad(value: string, max: number, pad: string) {
-  return repeat(pad, max - value.length) + value;
-}
-
-function getTypeFromColumn(index: number, totalColumns: number) {
-  if (index === TEMPLATE_DIRECTIVE_INDEX) {
-    return 'template';
-  } else if (index === totalColumns - 1) {
-    return 'defaults';
-  } else {
-    return `dir #${index}`;
-  }
-}
-
-function repeat(c: string, times: number) {
-  let s = '';
-  for (let i = 0; i < times; i++) {
-    s += c;
-  }
-  return s;
 }
 
 /**
@@ -353,9 +216,9 @@ export class NodeStylingDebug implements DebugNodeStyling {
 
   constructor(
       context: TStylingContext|DebugStylingContext, private _data: LStylingData,
-      private _isClassBased: boolean) {
+      private _isClassBased?: boolean) {
     this._debugContext = isStylingContext(context) ?
-        new TStylingContextDebug(context as TStylingContext, _isClassBased) :
+        new TStylingContextDebug(context as TStylingContext) :
         (context as DebugStylingContext);
   }
 
