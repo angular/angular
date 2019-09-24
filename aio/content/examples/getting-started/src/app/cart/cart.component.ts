@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion imports
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 
 import { CartService } from '../cart.service';
@@ -12,7 +12,7 @@ import { CartService } from '../cart.service';
   styleUrls: ['./cart.component.css']
 })
 // #docregion props-services, submit, inject-form-builder, checkout-form, checkout-form-group
-export class CartComponent {
+export class CartComponent implements OnInit {
   items;
 // #enddocregion inject-form-builder
   checkoutForm;
@@ -24,13 +24,15 @@ export class CartComponent {
     private formBuilder: FormBuilder,
   ) {
 // #enddocregion inject-form-builder
-    this.items = this.cartService.getItems();
-
     this.checkoutForm = this.formBuilder.group({
       name: '',
       address: ''
     });
 // #docregion inject-form-builder
+  }
+
+  ngOnInit() {
+    this.items = this.cartService.getItems();
   }
 // #enddocregion inject-form-builder, checkout-form-group
 
