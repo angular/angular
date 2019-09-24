@@ -1,0 +1,9 @@
+{
+  "schematics": {
+    "migration-v9-dynamic-queries": {
+      "version": "9-beta",
+      "description": "Removes the `static` flag from dynamic queries.",
+      "factory": "../migrations/dynamic-queries/index"
+    }
+  }
+}
