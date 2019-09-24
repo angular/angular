@@ -15,6 +15,7 @@ import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
+import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 
 import {createNgcProgram} from './create_ngc_program';
 import {NgDeclarationCollector} from './ng_declaration_collector';
@@ -146,21 +147,8 @@ function gracefullyCreateProgram(
     tree: Tree, basePath: string, tsconfigPath: string,
     logger: logging.LoggerApi): {compiler: AotCompiler, program: ts.Program}|null {
   try {
-    const {ngcProgram, host, program, compiler} = createNgcProgram((options) => {
-      const host = ts.createCompilerHost(options, true);
-
-      // We need to overwrite the host "readFile" method, as we want the TypeScript
-      // program to be based on the file contents in the virtual file tree.
-      host.readFile = fileName => {
-        const buffer = tree.read(relative(basePath, fileName));
-        // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
-        // which breaks the CLI UpdateRecorder.
-        // See: https://github.com/angular/angular/pull/30719
-        return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
-      };
-
-      return host;
-    }, tsconfigPath);
+    const {ngcProgram, host, program, compiler} = createNgcProgram(
+        (options) => createMigrationCompilerHost(tree, options, basePath), tsconfigPath);
     const syntacticDiagnostics = ngcProgram.getTsSyntacticDiagnostics();
     const structuralDiagnostics = ngcProgram.getNgStructuralDiagnostics();
 
