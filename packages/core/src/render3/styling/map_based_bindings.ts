@@ -280,7 +280,7 @@ function resolveInnerMapMode(
     currentMode: number, valueIsDefined: boolean, isTargetPropMatched: boolean): number {
   let innerMode = currentMode;
 
-  // the statements below figure out whether or not an inner styling map
+  // the statements below figures out whether or not an inner styling map
   // is allowed to apply its value or not. The main thing to keep note
   // of is that if the target prop isn't matched then its expected that
   // all values before it are allowed to be applied so long as "apply all values"

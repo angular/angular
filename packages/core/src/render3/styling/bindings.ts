@@ -173,7 +173,7 @@ function renderHostBindingsAsStale(
     context: TStylingContext, data: LStylingData, prop: string | null): void {
   const valuesCount = getValuesCount(context);
 
-  if (prop && hasConfig(context, TStylingConfig.HasPropBindings)) {
+  if (prop !== null && hasConfig(context, TStylingConfig.HasPropBindings)) {
     const itemsPerRow = TStylingContextIndex.BindingsStartOffset + valuesCount;
 
     let i = TStylingContextIndex.ValuesStartPosition;
