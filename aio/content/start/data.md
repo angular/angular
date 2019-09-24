@@ -4,6 +4,7 @@ At the end of [Routing](start/routing "Getting Started: Routing"), the online st
 Users can click on a product name from the list to see details in a new view, with a distinct URL, or route.
 
 This page guides you through creating the shopping cart in three phases:
+
 * Update the product details page to include a "Buy" button, which adds the current product to a list of products that a cart service manages.
 * Add a cart component, which displays the items in the cart.
 * Add a shipping component, which retrieves shipping prices for the items in the cart by using Angular's `HttpClient` to retrieve shipping data from a `.json` file.
@@ -31,6 +32,8 @@ about products in the cart.
 Later, the [Forms](start/forms "Getting Started: Forms") part of
 this tutorial guides you through accessing this cart service
 from the page where the user checks out.
+
+Later, the [Forms](start/forms "Getting Started: Forms") part of this tutorial guides you through accessing this cart service from the page where the user checks out.
 
 </div>
 

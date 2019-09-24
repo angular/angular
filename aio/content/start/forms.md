@@ -2,15 +2,15 @@
 
 At the end of [Managing Data](start/data "Getting Started: Managing Data"), the online store application has a product catalog and a shopping cart.
 
-In this section, you'll finish the app by adding a form-based checkout feature. You'll create a form to collect user information as part of checkout.
+This section walks you through adding a form-based checkout feature to collect user information as part of checkout.
 
 ## Forms in Angular
 
-Forms in Angular take the standard capabilities of the HTML based forms and add an orchestration layer to help with creating custom form controls, and to supply great validation experiences. There are two parts to an Angular Reactive form, the objects that live in the component to store and manage the form, and the visualization of the form that lives in the template.
+Forms in Angular build upon the standard HTML forms to help you create custom form controls and easy validation experiences. There are two parts to an Angular Reactive form: the objects that live in the component to store and manage the form, and the visualization of the form that lives in the template.
 
 ## Define the checkout form model
 
-First, you'll set up the checkout form model. The form model is the source of truth for the status of the form and is defined in the component class.
+First, set up the checkout form model. Defined in the component class, the form model is the source of truth for the status of the form.
 
 1. Open `cart.component.ts`.
 
@@ -21,40 +21,39 @@ First, you'll set up the checkout form model. The form model is the source of tr
       <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts" region="imports">
       </code-example>
 
-      The `FormBuilder` service is provided by the `ReactiveFormsModule`, which is already defined in the `AppModule` you modified previously (in `app.module.ts`).
+      The `ReactiveFormsModule` provides the `FormBuilder` service, which `AppModule` (in `app.module.ts`) already imports.
 
     1. Inject the `FormBuilder` service.
 
       <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts" region="inject-form-builder">
       </code-example>
 
-1. In the `CartComponent` class, define the `checkoutForm` property to store the form model.
+1. Still in the `CartComponent` class, define the `checkoutForm` property to store the form model.
 
     <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts" region="checkout-form">
     </code-example>
 
-1. During checkout, the app will prompt the user for a name and address. So that you can gather that information later, set the `checkoutForm` property with a form model containing `name` and `address` fields, using the `FormBuilder#group()` method.
+1. To gather the user's name and address, set the `checkoutForm` property with a form model containing `name` and `address` fields, using the `FormBuilder` `group()` method. Add this between the curly braces, `{}`,
+of the constructor.
 
     <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts" region="checkout-form-group"></code-example>
 
-1. For the checkout process, users need to be able to submit the form data (their name and address). When the order is submitted, the form should reset and the cart should clear.
+1. For the checkout process, users need to submit their name and address. When they submit their order, the form should reset and the cart should clear.
 
-    In `cart.component.ts`, define an `onSubmit()` method to process the form. Use the `CartService#clearCart()` method to empty the cart items and reset the form after it is submitted. (In a real-world app, this method also would submit the data to an external server.)
-
-    The entire cart component is shown below:
+    1. In `cart.component.ts`, define an `onSubmit()` method to process the form. Use the `CartService` `clearCart()` method to empty the cart items and reset the form after it is submission. In a real-world app, this method would also submit the data to an external server. The entire cart component class is as follows:
 
     <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts">
     </code-example>
 
-The form model is defined in the component class. To reflect the model in the view, you'll need a checkout form.
+Now that you've defined the form model in the component class, you need a checkout form to reflect the model in the view.
 
 ## Create the checkout form
 
-Next, you'll add a checkout form at the bottom of the "Cart" page.
+Use the following steps to add a checkout form at the bottom of the "Cart" page.
 
 1. Open `cart.component.html`.
 
-1. At the bottom of the template, add an empty HTML form to capture user information.
+1. At the bottom of the template, add an HTML form to capture user information.
 
 1. Use a `formGroup` property binding to bind the `checkoutForm` to the `form` tag in the template. Also include a "Purchase" button to submit the form.
 
@@ -63,20 +62,21 @@ Next, you'll add a checkout form at the bottom of the "Cart" page.
 
 1. On the `form` tag, use an `ngSubmit` event binding to listen for the form submission and call the `onSubmit()` method with the `checkoutForm` value.
 
-  <code-example path="getting-started/src/app/cart/cart.component.html" region="checkout-form-1">
+  <code-example path="getting-started/src/app/cart/cart.component.html" header="src/app/cart/cart.component.html (cart component template detail)" region="checkout-form-1">
   </code-example>
 
-1. Add input fields for `name` and `address`. Use the `formControlName` attribute binding to bind the `checkoutForm` form controls for `name` and `address` to their input fields. The final complete component is shown below:
+1. Add input fields for `name` and `address`.  Use the `formControlName` attribute binding to bind the `checkoutForm` form controls for `name` and `address` to their input fields. The final complete component is as follows:
 
-  <code-example path="getting-started/src/app/cart/cart.component.html" region="checkout-form-2">
+  <code-example path="getting-started/src/app/cart/cart.component.html" header="src/app/cart/cart.component.html" region="checkout-form-2">
   </code-example>
 
-After putting a few items in the cart, users can now review their items, enter name and address, and submit their purchase:
+After putting a few items in the cart, users can now review their items, enter their name and address, and submit their purchase:
 
 <div class="lightbox">
   <img src='generated/images/guide/start/cart-with-items-and-form.png' alt="Cart page with checkout form">
 </div>
 
+To confirm submission, open the console where you should see an object containing the name and address you submitted.
 
 ## Next steps
 
