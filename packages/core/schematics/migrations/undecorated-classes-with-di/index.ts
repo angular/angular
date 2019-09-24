@@ -148,10 +148,8 @@ function gracefullyCreateProgram(
     tree: Tree, basePath: string, tsconfigPath: string,
     logger: logging.LoggerApi): {compiler: AotCompiler, program: ts.Program}|null {
   try {
-    const {ngcProgram, host, program, compiler} = createNgcProgram((options) => {
-      const tsHost = createMigrationCompilerHost(tree, options, basePath);
-      return createCompilerHost({options, tsHost});
-    }, tsconfigPath);
+    const {ngcProgram, host, program, compiler} = createNgcProgram(
+        (options) => createMigrationCompilerHost(tree, options, basePath), tsconfigPath);
     const syntacticDiagnostics = ngcProgram.getTsSyntacticDiagnostics();
     const structuralDiagnostics = ngcProgram.getNgStructuralDiagnostics();
 

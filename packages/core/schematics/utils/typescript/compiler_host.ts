@@ -15,8 +15,8 @@ export function createMigrationCompilerHost(
 
   // We need to overwrite the host "readFile" method, as we want the TypeScript
   // program to be based on the file contents in the virtual file tree. Otherwise
-  // if we run the migration for multiple tsconfig files which have intersecting
-  // source files, it can end up updating query definitions multiple times.
+  // if we run multiple migrations we might have intersecting changes and
+  // source files.
   host.readFile = fileName => {
     const buffer = tree.read(relative(basePath, fileName));
     // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
