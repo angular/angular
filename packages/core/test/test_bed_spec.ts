@@ -308,42 +308,6 @@ describe('TestBed', () => {
     expect(fixture.componentInstance.myProviders).toEqual([{value: 'new provider'}]);
   });
 
-  describe('allow to override provider with multiple calls to applyProviderOverrides', () => {
-    @Injectable()
-    class Service {
-      id: undefined|number;
-    }
-
-    @Component({template: '', providers: [Service]})
-    class Comp {
-      constructor(readonly service: Service) {}
-    }
-
-    @NgModule({declarations: [Comp]})
-    class MyModule {
-    }
-
-    let instance = 0;
-    let comp: Comp;
-    let mock: Service;
-    beforeEach(async() => {
-      mock = new Service();
-      mock.id = ++instance;
-      TestBed.configureTestingModule({imports: [MyModule]});
-      TestBed.overrideProvider(Service, {useValue: mock});
-      // This call triggers applyProviderOverrides
-      const compiler = TestBed.inject(Compiler);
-      // This call triggers applyProviderOverrides a second time
-      await compiler.compileModuleAsync(MyModule);
-      comp = TestBed.createComponent(Comp).componentInstance;
-    });
-
-    it('in initial run', () => { expect(comp.service.id).toEqual(instance); });
-
-    it('in subsequent runs (providers are reset correctly after first run)',
-       () => { expect(comp.service.id).toEqual(instance); });
-  });
-
   it('should resolve components that are extended by other components', () => {
     // SimpleApp uses SimpleCmp in its template, which is extended by InheritedCmp
     const simpleApp = TestBed.createComponent(SimpleApp);
@@ -734,6 +698,35 @@ describe('TestBed', () => {
              // The providers for the module should have been restored to the original array, with
              // no trace of the overridden providers.
              expect((Module as any).ngInjectorDef.providers).toEqual([Token]);
+           });
+
+        it('should clean up overridden providers on components whose modules are compiled more than once', async() => {
+             @Injectable()
+             class SomeInjectable {
+               id: string|undefined;
+             }
+
+             @Component({providers: [SomeInjectable]})
+             class ComponentWithProvider {
+               constructor(readonly injectable: SomeInjectable) {}
+             }
+
+             @NgModule({declarations: [ComponentWithProvider]})
+             class MyModule {
+             }
+
+             TestBed.configureTestingModule({imports: [MyModule]});
+             const originalResolver =
+                 (ComponentWithProvider as any).ngComponentDef.providersResolver;
+             TestBed.overrideProvider(SomeInjectable, {useValue: {id: 'fake'}});
+
+             const compiler = TestBed.inject(Compiler);
+             await compiler.compileModuleAsync(MyModule);
+             compiler.compileModuleSync(MyModule);
+
+             TestBed.resetTestingModule();
+             expect((ComponentWithProvider as any).ngComponentDef.providersResolver)
+                 .toEqual(originalResolver);
            });
       });
 });
