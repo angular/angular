@@ -9,10 +9,9 @@
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {dirname, relative} from 'path';
 import * as ts from 'typescript';
-
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
+import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
-
 import {NgModuleCollector} from './module_collector';
 import {MissingInjectableTransform} from './transform';
 import {UpdateRecorder} from './update_recorder';
@@ -49,19 +48,8 @@ export default function(): Rule {
 function runMissingInjectableMigration(
     tree: Tree, tsconfigPath: string, basePath: string): string[] {
   const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = ts.createCompilerHost(parsed.options, true);
+  const host = createMigrationCompilerHost(tree, parsed.options, basePath);
   const failures: string[] = [];
-
-  // We need to overwrite the host "readFile" method, as we want the TypeScript
-  // program to be based on the file contents in the virtual file tree.
-  host.readFile = fileName => {
-    const buffer = tree.read(relative(basePath, fileName));
-    // Strip BOM because TypeScript respects this character and it ultimately
-    // results in shifted offsets since the CLI UpdateRecorder tries to
-    // automatically account for the BOM character.
-    // https://github.com/angular/angular-cli/issues/14558
-    return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
-  };
 
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
