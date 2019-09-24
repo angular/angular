@@ -9,6 +9,7 @@
 import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {AotCompiler} from '@angular/compiler';
+import {createCompilerHost} from '@angular/compiler-cli';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {relative} from 'path';
@@ -147,8 +148,10 @@ function gracefullyCreateProgram(
     tree: Tree, basePath: string, tsconfigPath: string,
     logger: logging.LoggerApi): {compiler: AotCompiler, program: ts.Program}|null {
   try {
-    const {ngcProgram, host, program, compiler} = createNgcProgram(
-        (options) => createMigrationCompilerHost(tree, options, basePath), tsconfigPath);
+    const {ngcProgram, host, program, compiler} = createNgcProgram((options) => {
+      const tsHost = createMigrationCompilerHost(tree, options, basePath);
+      return createCompilerHost({options, tsHost});
+    }, tsconfigPath);
     const syntacticDiagnostics = ngcProgram.getTsSyntacticDiagnostics();
     const structuralDiagnostics = ngcProgram.getNgStructuralDiagnostics();
 

@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Tree} from '@angular-devkit/schematics';
-import {CompilerHost, createCompilerHost} from '@angular/compiler-cli';
 import {relative} from 'path';
 import * as ts from 'typescript';
 
 export function createMigrationCompilerHost(
-    tree: Tree, options: ts.CompilerOptions, basePath: string): CompilerHost {
-  const host = createCompilerHost({options});
+    tree: Tree, options: ts.CompilerOptions, basePath: string): ts.CompilerHost {
+  const host = ts.createCompilerHost(options, true);
 
   // We need to overwrite the host "readFile" method, as we want the TypeScript
   // program to be based on the file contents in the virtual file tree. Otherwise
