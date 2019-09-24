@@ -822,7 +822,7 @@ describe('styling', () => {
             const node = getDebugNode(element) !;
 
             const styles = node.styles !;
-            const config = styles.context.config;
+            const config = styles.config;
             expect(config.hasCollisions).toBeFalsy();
             expect(config.hasMapBindings).toBeFalsy();
             expect(config.hasPropBindings).toBeTruthy();
