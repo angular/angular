@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, HostBinding, Input, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
-import {DebugNode, LViewDebug, toDebug} from '@angular/core/src/render3/instructions/lview_debug';
-import {loadLContextFromNode} from '@angular/core/src/render3/util/discovery_utils';
+import {getDebugNode} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
@@ -2036,19 +2035,6 @@ describe('styling', () => {
             expect(element.style.height).toEqual('100px');
           });
 });
-
-function getDebugNode(element: Node): DebugNode|null {
-  const lContext = loadLContextFromNode(element);
-  const lViewDebug = toDebug(lContext.lView) as LViewDebug;
-  const debugNodes = lViewDebug.nodes || [];
-  for (let i = 0; i < debugNodes.length; i++) {
-    const n = debugNodes[i];
-    if (n.native === element) {
-      return n;
-    }
-  }
-  return null;
-}
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
   expect(ngDevMode !.rendererSetStyle).toEqual(countForSet);
