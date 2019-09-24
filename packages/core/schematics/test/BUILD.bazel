@@ -5,6 +5,7 @@ ts_library(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     data = [
+        "test-migrations.json",
         "//packages/core/schematics:migrations.json",
     ],
     deps = [
