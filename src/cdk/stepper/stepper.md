@@ -1,4 +1,4 @@
-CDK stepper provides a foundation upon which more concrete stepper varities can be built. A
+CDK stepper provides a foundation upon which more concrete stepper varieties can be built. A
 stepper is a wizard-like workflow that divides content into logical steps
 
 ### Behavior captured by CdkStepper
