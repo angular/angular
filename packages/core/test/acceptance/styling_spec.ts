@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, HostBinding, Input, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, HostBinding, Input, NgModule, Renderer2, ViewChild, ViewContainerRef} from '@angular/core';
 import {getDebugNode} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
@@ -2034,6 +2034,47 @@ describe('styling', () => {
             expect(element.style.width).toEqual('100px');
             expect(element.style.height).toEqual('100px');
           });
+
+  it('should retrieve styles set via Renderer2', () => {
+    let dirInstance: any;
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      constructor(public elementRef: ElementRef, public renderer: Renderer2) { dirInstance = this; }
+
+      setStyles() {
+        this.renderer.setStyle(
+            this.elementRef.nativeElement, 'transform', 'translate3d(0px, 0px, 0px)');
+        this.renderer.addClass(this.elementRef.nativeElement, 'my-class');
+      }
+    }
+
+    @Component({template: `<div dir></div>`})
+    class App {
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    dirInstance.setStyles();
+
+    const div = fixture.debugElement.children[0];
+    expect(div.styles.transform).toMatch(/translate3d\(0px\s*,\s*0px\s*,\s*0px\)/);
+    expect(div.classes['my-class']).toBe(true);
+
+    div.classes['other-class'] = true;
+    div.styles['width'] = '200px';
+    expect(div.styles.width).toEqual('200px');
+    expect(div.classes['other-class']).toBe(true);
+
+    if (ivyEnabled) {
+      expect(div.nativeElement.classList.contains('other-class')).toBeTruthy();
+      expect(div.nativeElement.style['width']).toEqual('200px');
+    }
+  });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
