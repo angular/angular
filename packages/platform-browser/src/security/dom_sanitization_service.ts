@@ -7,25 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {
-  Inject,
-  Injectable,
-  Injector,
-  Sanitizer,
-  SecurityContext,
-  forwardRef,
-  ɵ_sanitizeHtml as _sanitizeHtml,
-  ɵ_sanitizeStyle as _sanitizeStyle,
-  ɵ_sanitizeUrl as _sanitizeUrl,
-  ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow,
-  ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml,
-  ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl,
-  ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript,
-  ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle,
-  ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl,
-  ɵunwrapSafeValue as unwrapSafeValue,
-} from '@angular/core';
-import {TrustedTypePolicyAdapter} from './trusted_types_policy';
+import {Inject, Injectable, Injector, Sanitizer, SecurityContext, TrustedTypePolicyAdapter, forwardRef, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵBypassType as BypassType, ɵunwrapSafeValue as unwrapSafeValue,} from '@angular/core';
 
 export {SecurityContext};
 

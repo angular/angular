@@ -229,15 +229,8 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setProperty(el: any, name: string, value: any): void {
-<<<<<<< HEAD
     NG_DEV_MODE && checkNoSyntheticProp(name, 'property');
-    let newValue = this._policyAdapter.maybeCreateTrustedValueForAttribute(el, name, value);
-    // let newValue = value
-    el[name] = newValue;
-=======
-    checkNoSyntheticProp(name, 'property');
     el[name] = value;
->>>>>>> feat(common): First configurable prototype
   }
 
   setValue(node: any, value: string): void { node.nodeValue = value; }

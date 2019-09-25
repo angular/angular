@@ -728,10 +728,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/trusted-types@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-1.0.1.tgz#e517bd4496e0fc75a8c88047c5bb437942148993"
-  integrity sha512-+T99Y+JC3wc1e0BTBC8l60Pk4FNs5ynCWPZidAIbN07f2LjYRmlmoT5n0JybL9X0ghSFL/oUiYm3+YNR8WXPPA==
+"@types/trusted-types@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-1.0.3.tgz#feab52180571a39691551b2439e9ca75e746a601"
+  integrity sha512-3+OlHDR48pbw4TlyidbVWlf0a5eSMBn0xGlfGPeQlXM5aEz4/IB9OyAftPZk+CiFAEUhvMgmXZ/py5DBbn9ymg==
 
 "@types/yargs@^11.1.1":
   version "11.1.1"

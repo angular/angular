@@ -8,7 +8,6 @@
 
 import {TrustedTypePolicyAdapter} from '../security/trusted_types_policy';
 import {isDevMode} from '../util/is_dev_mode';
-
 import {InertBodyHelper} from './inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
 

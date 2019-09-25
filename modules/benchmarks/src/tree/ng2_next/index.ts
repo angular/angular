@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {enableProdMode} from '@angular/core';
+import {TrustedTypePolicyAdapterImpl, enableProdMode} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
 import {buildTree, emptyTree} from '../util';
@@ -40,7 +40,7 @@ function noop() {}
 const numberOfChecksEl = document.getElementById('numberOfChecks');
 
 enableProdMode();
-appMod = new AppModule();
+appMod = new AppModule(new TrustedTypePolicyAdapterImpl(undefined));
 appMod.bootstrap();
 tree = appMod.componentRef.instance;
 

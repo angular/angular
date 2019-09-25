@@ -46,11 +46,14 @@ export class TrustedTypePolicyAdapterImpl extends TrustedTypePolicyAdapter {
   // TODO: update TS type after https://github.com/WICG/trusted-types/pull/204 is merged and types
   // are updated
   private policy: Omit<TrustedTypePolicy, 'createURL'>|undefined;
+  private tt: TrustedTypePolicyFactory|undefined;
+
   constructor(@Optional() @Inject(DOM_SANITIZATION_POLICY_NAME) private policyName: string|
               undefined) {
     super();
-    if (typeof TrustedTypes !== 'undefined' && TrustedTypes.createPolicy) {
-      this.policy = TrustedTypes.createPolicy(this.policyName || 'angular-sanitization', {
+    this.tt = window.trustedTypes || (window as any).TrustedTypes;
+    if (this.tt && this.tt.createPolicy) {
+      this.policy = this.tt.createPolicy(this.policyName || 'angular-sanitization', {
         createScriptURL: (s: string) => s,
         createScript: (s: string) => s,
         createHTML: (s: string) => s
@@ -60,25 +63,25 @@ export class TrustedTypePolicyAdapterImpl extends TrustedTypePolicyAdapter {
 
   supportsTrustedTypes(): boolean { return Boolean(this.policy); }
 
-  isHTML(obj: any): boolean { return this.policy ? TrustedTypes.isHTML(obj) : false; }
+  isHTML(obj: any): boolean { return this.policy ? this.tt !.isHTML(obj) : false; }
 
-  isScript(obj: any): boolean { return this.policy ? TrustedTypes.isScript(obj) : false; }
+  isScript(obj: any): boolean { return this.policy ? this.tt !.isScript(obj) : false; }
 
-  isScriptURL(obj: any): boolean { return this.policy ? TrustedTypes.isScriptURL(obj) : false; }
+  isScriptURL(obj: any): boolean { return this.policy ? this.tt !.isScriptURL(obj) : false; }
 
-  maybeCreateTrustedHTML(s: string): string {
+  maybeCreateTrustedHTML(value: string): string {
     // TS doesn't support trusted types yet (https://github.com/microsoft/TypeScript/issues/30024).
-    return this.policy ? this.policy.createHTML(s) as unknown as string : s;
+    return this.policy ? this.policy.createHTML(value) as unknown as string : value;
   }
 
-  maybeCreateTrustedScriptURL(s: string): string {
+  maybeCreateTrustedScriptURL(value: string): string {
     // TS doesn't support trusted types yet (https://github.com/microsoft/TypeScript/issues/30024).
-    return this.policy ? this.policy.createScriptURL(s) as unknown as string : s;
+    return this.policy ? this.policy.createScriptURL(value) as unknown as string : value;
   }
 
-  maybeCreateTrustedScript(s: string): string {
+  maybeCreateTrustedScript(value: string): string {
     // TS doesn't support trusted types yet (https://github.com/microsoft/TypeScript/issues/30024).
-    return this.policy ? this.policy.createScript(s) as unknown as string : s;
+    return this.policy ? this.policy.createScript(value) as unknown as string : value;
   }
 
   dangerouslyCreateTrustedValueForAttribute(
@@ -86,8 +89,7 @@ export class TrustedTypePolicyAdapterImpl extends TrustedTypePolicyAdapter {
     if (!this.policy || !(el instanceof Element)) {
       return value;
     }
-    const type =
-        (TrustedTypes as any).getAttributeType(el.tagName.toLocaleLowerCase(), name, namespace);
+    const type = this.tt !.getAttributeType(el.tagName.toLocaleLowerCase(), name, namespace);
     if (type === 'TrustedHTML') {
       return this.maybeCreateTrustedHTML(value);
     } else if (type === 'TrustedScriptURL') {

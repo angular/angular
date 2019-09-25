@@ -60,15 +60,8 @@ export interface SafeUrl extends SafeValue {}
 export interface SafeResourceUrl extends SafeValue {}
 
 
-<<<<<<< HEAD
-abstract class SafeValueImpl implements SafeValue {
-  constructor(public changingThisBreaksApplicationSecurity: string) {}
-=======
 abstract class SafeValueImpl<T> implements SafeValue {
-  constructor(public changingThisBreaksApplicationSecurity: string|T) {
-    // empty
-  }
->>>>>>> feat: Fix PR issues
+  constructor(public changingThisBreaksApplicationSecurity: string|T) {}
 
   abstract getTypeName(): string;
 
@@ -96,13 +89,8 @@ class SafeResourceUrlImpl extends SafeValueImpl<TrustedScriptURL> implements Saf
 
 export function unwrapSafeValue(value: string | SafeValue): string {
   return value instanceof SafeValueImpl ?
-<<<<<<< HEAD
-      (value as SafeValueImpl).changingThisBreaksApplicationSecurity :
-      (value as string);
-=======
       (value as SafeValueImpl<any>).changingThisBreaksApplicationSecurity :
-      '';
->>>>>>> feat: Fix PR issues
+      (value as string);
 }
 
 

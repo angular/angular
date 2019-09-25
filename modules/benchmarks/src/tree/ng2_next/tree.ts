@@ -91,7 +91,7 @@ export class AppModule implements Injector, NgModuleRef<any> {
 
   componentRef: ComponentRef<TreeComponent>;
 
-  constructor(private policyAdapter: TrustedTypePolicyAdapter) {
+  constructor(policyAdapter: TrustedTypePolicyAdapter) {
     initServicesIfNeeded();
     this.sanitizer = new DomSanitizerImpl(document, policyAdapter);
     this.renderer2 = new DomRendererFactory2(null, null, null, policyAdapter);

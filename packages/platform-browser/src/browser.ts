@@ -27,17 +27,19 @@ export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: DOCUMENT, useFactory: _document, deps: []},
 ];
 
+const TRUSTED_TYPE_POLICY_ADAPTER_PROVIDER: StaticProvider[] = [{
+  provide: TrustedTypePolicyAdapter,
+  useClass: TrustedTypePolicyAdapterImpl,
+  deps: [[new Optional(), DOM_SANITIZATION_POLICY_NAME]]
+}];
+
 const BROWSER_SANITIZATION_PROVIDERS__PRE_R3__: StaticProvider[] = [
+  TRUSTED_TYPE_POLICY_ADAPTER_PROVIDER,
   {provide: Sanitizer, useExisting: DomSanitizer},
   {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [DOCUMENT, TrustedTypePolicyAdapter]},
-  {
-    provide: TrustedTypePolicyAdapter,
-    useClass: TrustedTypePolicyAdapterImpl,
-    deps: [[new Optional(), DOM_SANITIZATION_POLICY_NAME]]
-  },
 ];
 
-export const BROWSER_SANITIZATION_PROVIDERS__POST_R3__ = [];
+export const BROWSER_SANITIZATION_PROVIDERS__POST_R3__ = [TRUSTED_TYPE_POLICY_ADAPTER_PROVIDER];
 
 /**
  * @security Replacing built-in sanitization providers exposes the application to XSS risks.
@@ -123,6 +125,7 @@ export class BrowserModule {
       providers: [
         {provide: APP_ID, useValue: params.appId},
         {provide: TRANSITION_ID, useExisting: APP_ID},
+        TRUSTED_TYPE_POLICY_ADAPTER_PROVIDER,
         SERVER_TRANSITION_PROVIDERS,
       ],
     };
