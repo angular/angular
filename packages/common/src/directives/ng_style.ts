@@ -24,13 +24,13 @@ import {NgStyleImpl, NgStyleImplProvider} from './ng_style_impl';
  */
 
 // used when the VE is present
-export const ngStyleDirectiveDef__PRE_R3__ = () => {};
-export const ngStyleFactoryDef__PRE_R3__ = undefined;
+const ngStyleDirectiveDef__PRE_R3__ = () => {};
+const ngStyleFactoryDef__PRE_R3__ = undefined;
 
 // used when the VE is not present (note the directive will
 // never be instantiated normally because it is apart of a
 // base class)
-export function ngStyleDirectiveDef__POST_R3__() {
+function ngStyleDirectiveDef__POST_R3__() {
   return ɵɵdefineDirective({
     type: function() {} as any,
     selectors: null as any,
@@ -45,10 +45,9 @@ export function ngStyleDirectiveDef__POST_R3__() {
   });
 }
 
-export const ngStyleFactoryDef__POST_R3__ = function() {};
-
-export const ngStyleDirectiveDef = ngStyleDirectiveDef__PRE_R3__;
-export const ngStyleFactoryDef = ngStyleDirectiveDef__PRE_R3__;
+const ngStyleFactoryDef__POST_R3__ = function() {};
+const ngStyleDirectiveDef = ngStyleDirectiveDef__PRE_R3__;
+const ngStyleFactoryDef = ngStyleDirectiveDef__PRE_R3__;
 
 /**
  * Serves as the base non-VE container for NgStyle.

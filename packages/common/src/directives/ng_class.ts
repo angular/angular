@@ -24,12 +24,12 @@ import {NgClassImpl, NgClassImplProvider} from './ng_class_impl';
  */
 
 // used when the VE is present
-export const ngClassDirectiveDef__PRE_R3__ = () => {};
+const ngClassDirectiveDef__PRE_R3__ = () => {};
 
 // used when the VE is not present (note the directive will
 // never be instantiated normally because it is apart of a
 // base class)
-export function ngClassDirectiveDef__POST_R3__() {
+function ngClassDirectiveDef__POST_R3__() {
   return ɵɵdefineDirective({
     type: function() {} as any,
     selectors: null as any,
@@ -44,11 +44,10 @@ export function ngClassDirectiveDef__POST_R3__() {
   });
 }
 
-export const ngClassDirectiveDef = ngClassDirectiveDef__PRE_R3__;
-
-export const ngClassFactoryDef__PRE_R3__ = undefined;
-export const ngClassFactoryDef__POST_R3__ = function() {};
-export const ngClassFactoryDef = ngClassFactoryDef__PRE_R3__;
+const ngClassFactoryDef__PRE_R3__ = undefined;
+const ngClassFactoryDef__POST_R3__ = function() {};
+const ngClassFactoryDef = ngClassFactoryDef__PRE_R3__;
+const ngClassDirectiveDef = ngClassDirectiveDef__PRE_R3__;
 
 /**
  * Serves as the base non-VE container for NgClass.
