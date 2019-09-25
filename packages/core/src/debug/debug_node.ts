@@ -21,6 +21,7 @@ import {findComponentView} from '../render3/util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
+import {createProxy} from './proxy';
 
 
 
@@ -362,7 +363,9 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       // do not make use of a debug renderer anymore, the return value
       // must always be `false` in the event that a class does not exist
       // on the element (even if it wasn't added and removed beforehand).
-      this._classesProxy = new Proxy({}, {
+
+      // tslint:disable-next-line no-any
+      this._classesProxy = createProxy({
         get(target: {}, prop: string) {
           return element ? element.classList.contains(prop) : false;
         },
@@ -370,7 +373,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
           return element ? element.classList.toggle(prop, !!value) : false;
         },
         ownKeys() { return element ? element.className.split(/\s+/).sort() : []; },
-        getOwnPropertyDescriptor(k) {
+        getOwnPropertyDescriptor(k: any) {
           // we use a special property descriptor here so that enumeration operations
           // such as `Object.keys` will work on this proxy.
           return {
