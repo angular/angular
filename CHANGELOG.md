@@ -1,3 +1,24 @@
+<a name="9.0.0-next.8"></a>
+# [9.0.0-next.8](https://github.com/angular/angular/compare/9.0.0-next.7...9.0.0-next.8) (2019-09-25)
+
+
+### Bug Fixes
+
+* **ivy:** ensure `window.ng.getDebugNode` returns debug info for component elements ([#32780](https://github.com/angular/angular/issues/32780)) ([5651fa3](https://github.com/angular/angular/commit/5651fa3))
+* **ivy:** ensure multiple map-based bindings do not skip intermediate values ([#32774](https://github.com/angular/angular/issues/32774)) ([86fd571](https://github.com/angular/angular/commit/86fd571))
+
+
+### Features
+
+* **language-service:** expose determining the NgModule of a Directive ([#32710](https://github.com/angular/angular/issues/32710)) ([2846505](https://github.com/angular/angular/commit/2846505)), closes [#32565](https://github.com/angular/angular/issues/32565)
+
+
+### Performance Improvements
+
+* **ivy:** remove extra SafeStyle detection code ([#32775](https://github.com/angular/angular/issues/32775)) ([52552b0](https://github.com/angular/angular/commit/52552b0))
+
+
+
 <a name="8.2.8"></a>
 ## [8.2.8](https://github.com/angular/angular/compare/8.2.7...8.2.8) (2019-09-25)
 
