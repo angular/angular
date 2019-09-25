@@ -1,8 +1,12 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "karma_web_test_suite", "markdown_to_html", "ts_library")
+load("//tools:defaults.bzl", "karma_web_test_suite", "markdown_to_html", "ng_module", "ts_library")
 
-ts_library(
+# We need to use "ng_module" here since we want metadata to be generated for keycode
+# constants. This is necessary because some of these constants are statically used in
+# component/directive metadata (e.g. chips) and NGC needs to be able to evaluate these
+# at compile time.
+ng_module(
     name = "keycodes",
     srcs = glob(
         ["**/*.ts"],
