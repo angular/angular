@@ -20,7 +20,7 @@ Services are the place where you share data between parts of your application. F
 
 Up to this point, users can view product information, and simulate sharing and being notified about product changes. They cannot, however, buy products.
 
-In this section, you'll add a "Buy" button the product details page.
+In this section, you'll add a "Buy" button to the product details page.
 You'll also set up a cart service to store information about products in the cart.
 
 <div class="alert is-helpful">
