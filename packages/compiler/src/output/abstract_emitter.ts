@@ -7,6 +7,7 @@
  */
 
 import {ParseSourceSpan} from '../parse_util';
+import {serializeI18nHead, serializeI18nTemplatePart} from '../render3/view/i18n/meta';
 
 import * as o from './output_ast';
 import {SourceMapGenerator} from './source_map';
@@ -362,13 +363,14 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
 
   visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
-    ctx.print(ast, '$localize `' + ast.messageParts[0]);
+    const head = serializeI18nHead(ast.metaBlock, ast.messageParts[0]);
+    ctx.print(ast, '$localize `' + escapeBackticks(head));
     for (let i = 1; i < ast.messageParts.length; i++) {
       ctx.print(ast, '${');
       ast.expressions[i - 1].visitExpression(this, ctx);
-      // Add the placeholder name annotation to support runtime inlining
-      ctx.print(ast, `}:${ast.placeHolderNames[i - 1]}:`);
-      ctx.print(ast, ast.messageParts[i]);
+      ctx.print(
+          ast,
+          `}${escapeBackticks(serializeI18nTemplatePart(ast.placeHolderNames[i - 1], ast.messageParts[i]))}`);
     }
     ctx.print(ast, '`');
     return null;
@@ -557,4 +559,8 @@ function _createIndent(count: number): string {
     res += _INDENT_WITH;
   }
   return res;
+}
+
+function escapeBackticks(str: string): string {
+  return str.replace(/`/g, '\\`');
 }
