@@ -2,6 +2,15 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import {computeMsgId} from '@angular/compiler';
+import {loadTranslations} from '@angular/localize';
+
+// Load some runtime translations!
+loadTranslations({
+  [computeMsgId(' Hello {$INTERPOLATION}! ')]: 'Bonjour {$INTERPOLATION}!',
+  [computeMsgId('Welcome to the i18n app.')]: 'Bienvenue sur l\'application i18n.',
+});
+
 export const environment = {
   production: false
 };
