@@ -70,6 +70,10 @@ export interface ParsedMessage {
    * A human readable rendering of the message
    */
   messageString: string;
+  /**
+   * The meaning of the `message`, used to distinguish identical `messageString`s.
+   */
+  meaning: string;
 }
 
 /**
@@ -94,6 +98,7 @@ export function parseMessage(
     messageId: metadata.id || computeMsgId(messageString, metadata.meaning || ''),
     substitutions,
     messageString,
+    meaning: metadata.meaning || '',
   };
 }
 
