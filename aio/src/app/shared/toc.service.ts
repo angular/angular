@@ -65,10 +65,10 @@ export class TocService {
     div.innerHTML = heading.innerHTML;
 
     // Remove any `.github-links` or `.header-link` elements (along with their content).
-    div.querySelectorAll('.github-links, .header-link').forEach(removeNode);
+    querySelectorAll(div, '.github-links, .header-link').forEach(removeNode);
 
     // Remove any remaining `a` elements (but keep their content).
-    div.querySelectorAll('a').forEach(anchorLink => {
+    querySelectorAll(div, 'a').forEach(anchorLink => {
       // We want to keep the content of this anchor, so move it into its parent.
       const parent = anchorLink.parentNode!;
       while (anchorLink.childNodes.length) {
@@ -88,10 +88,11 @@ export class TocService {
   }
 
   private findTocHeadings(docElement: Element): HTMLHeadingElement[] {
-    const headings = docElement.querySelectorAll('h1,h2,h3');
+    // const headings = querySelectorAll(docElement, 'h1,h2,h3');
+    const headings = querySelectorAll<HTMLHeadingElement>(docElement, 'h1,h2,h3');
     const skipNoTocHeadings = (heading: HTMLHeadingElement) => !/(?:no-toc|notoc)/i.test(heading.className);
 
-    return Array.prototype.filter.call(headings, skipNoTocHeadings);
+    return headings.filter(skipNoTocHeadings);
   }
 
   private resetScrollSpyInfo() {
@@ -127,6 +128,16 @@ export class TocService {
 }
 
 // Helpers
+function querySelectorAll<K extends keyof HTMLElementTagNameMap>(parent: Element, selector: K): HTMLElementTagNameMap[K][];
+function querySelectorAll<K extends keyof SVGElementTagNameMap>(parent: Element, selector: K): SVGElementTagNameMap[K][];
+function querySelectorAll<E extends Element = Element>(parent: Element, selector: string): E[];
+function querySelectorAll(parent: Element, selector: string) {
+  // Wrap the `NodeList` as a regular `Array` to have access to array methods.
+  // NOTE: IE11 does not even support some methods of `NodeList`, such as
+  //       [NodeList#forEach()](https://developer.mozilla.org/en-US/docs/Web/API/NodeList/forEach).
+  return Array.from(parent.querySelectorAll(selector));
+}
+
 function removeNode(node: Node): void {
   if (node.parentNode !== null) {
     // We cannot use `Node.remove()` because of IE11.
