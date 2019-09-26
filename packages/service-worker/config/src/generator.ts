@@ -45,26 +45,13 @@ export class Generator {
       Promise<Object[]> {
     const seenMap = new Set<string>();
     return Promise.all((config.assetGroups || []).map(async(group) => {
-      if (group.resources.versionedFiles) {
-        console.warn(
-            `Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option.\n` +
-            'As of v6 \'versionedFiles\' and \'files\' options have the same behavior. ' +
-            'Use \'files\' instead.');
-      }
-
       const fileMatcher = globListToMatcher(group.resources.files || []);
-      const versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
-
       const allFiles = await this.fs.list('/');
 
-      const plainFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file));
-      plainFiles.forEach(file => seenMap.add(file));
-
-      const versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
-      versionedFiles.forEach(file => seenMap.add(file));
+      const matchedFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file)).sort();
+      matchedFiles.forEach(file => seenMap.add(file));
 
       // Add the hashes.
-      const matchedFiles = [...plainFiles, ...versionedFiles].sort();
       await matchedFiles.reduce(async(previous, file) => {
         await previous;
         const hash = await this.fs.hash(file);

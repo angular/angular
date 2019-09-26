@@ -52,7 +52,6 @@ v8 - v11
 | `@angular/upgrade` | [`setAngularLib`](#upgrade-static) | <!--v8--> v9 |
 | template syntax | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector) | <!--v7--> unspecified |
 | template syntax | [`<template`>](#template-tag) | <!--v7--> v9 |
-| service worker | [`versionedFiles` setting](#sw-versionedfiles)| v9 |
 | polyfills | [reflect-metadata](#reflect-metadata) | <!--v8--> v9 |
 | `@angular/core` | [`defineInjectable`](#core) | v11 |
 | `@angular/router` | [`loadChildren` string syntax](#loadChildren) | v11 |
@@ -209,14 +208,6 @@ The [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) directive is sole
 Support for using the `ngModel` input property and `ngModelChange` event with reactive form directives was deprecated in version 6.
 
 For more information, see the usage notes for [`FormControlDirective`](api/forms/FormControlDirective#use-with-ngmodel) and [`FormControlName`](api/forms/FormControlName#use-with-ngmodel).
-
-
-{@a sw-versionedfiles}
-### Service worker versionedFiles
-
-In the service worker configuration file `ngsw-config.json`, `versionedFiles` and `files` have the same behavior. As of v6, `versionedFiles` is deprecated; use `files` instead.
-
-For more information, see [Service Worker Configuration](guide/service-worker-config#assetgroups).
 
 
 {@a reflectiveinjector}
