@@ -36,6 +36,7 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
+  NgZone,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -43,7 +44,6 @@ import {
   CanColorCtor,
   CanDisable,
   CanDisableCtor,
-  HammerInput,
   HasTabIndex,
   HasTabIndexCtor,
   mixinColor,
@@ -51,7 +51,10 @@ import {
   mixinTabIndex,
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {Subscription} from 'rxjs';
+
+const activeEventOptions = normalizePassiveListenerOptions({passive: false});
 
 /**
  * Visually, a 30px separation between tick marks looks best. This is very subjective but it is
@@ -88,7 +91,6 @@ export class MatSliderChange {
   value: number | null;
 }
 
-
 // Boilerplate for applying mixins to MatSlider.
 /** @docs-private */
 class MatSliderBase {
@@ -113,13 +115,10 @@ const _MatSliderMixinBase:
   host: {
     '(focus)': '_onFocus()',
     '(blur)': '_onBlur()',
-    '(mousedown)': '_onMousedown($event)',
     '(keydown)': '_onKeydown($event)',
     '(keyup)': '_onKeyup()',
     '(mouseenter)': '_onMouseenter()',
-    '(slide)': '_onSlide($event)',
-    '(slideend)': '_onSlideEnd()',
-    '(slidestart)': '_onSlideStart($event)',
+
     // On Safari starting to slide temporarily triggers text selection mode which
     // show the wrong cursor. We prevent it by stopping the `selectstart` event.
     '(selectstart)': '$event.preventDefault()',
@@ -452,6 +451,9 @@ export class MatSlider extends _MatSliderMixinBase
   /** The value of the slider when the slide start event fires. */
   private _valueOnSlideStart: number | null;
 
+  /** Position of the pointer when the dragging started. */
+  private _pointerPositionOnStart: {x: number, y: number} | null;
+
   /** Reference to the inner slider wrapper element. */
   @ViewChild('sliderWrapper', {static: false}) private _sliderWrapper: ElementRef;
 
@@ -474,10 +476,18 @@ export class MatSlider extends _MatSliderMixinBase
               @Optional() private _dir: Directionality,
               @Attribute('tabindex') tabIndex: string,
               // @breaking-change 8.0.0 `_animationMode` parameter to be made required.
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+              // @breaking-change 9.0.0 `_ngZone` parameter to be made required.
+              private _ngZone?: NgZone) {
     super(elementRef);
 
     this.tabIndex = parseInt(tabIndex) || 0;
+
+    this._runOutsizeZone(() => {
+      const element = elementRef.nativeElement;
+      element.addEventListener('mousedown', this._pointerDown, activeEventOptions);
+      element.addEventListener('touchstart', this._pointerDown, activeEventOptions);
+    });
   }
 
   ngOnInit() {
@@ -495,6 +505,10 @@ export class MatSlider extends _MatSliderMixinBase
   }
 
   ngOnDestroy() {
+    const element = this._elementRef.nativeElement;
+    element.removeEventListener('mousedown', this._pointerDown, activeEventOptions);
+    element.removeEventListener('touchstart', this._pointerDown, activeEventOptions);
+    this._removeGlobalEvents();
     this._focusMonitor.stopMonitoring(this._elementRef);
     this._dirChangeSubscription.unsubscribe();
   }
@@ -508,75 +522,6 @@ export class MatSlider extends _MatSliderMixinBase
     // ticks and determine where on the slider click and slide events happen.
     this._sliderDimensions = this._getSliderDimensions();
     this._updateTickIntervalPercent();
-  }
-
-  _onMousedown(event: MouseEvent) {
-    // Don't do anything if the slider is disabled or the
-    // user is using anything other than the main mouse button.
-    if (this.disabled || event.button !== 0) {
-      return;
-    }
-
-    const oldValue = this.value;
-    this._isSliding = false;
-    this._focusHostElement();
-    this._updateValueFromPosition({x: event.clientX, y: event.clientY});
-
-    // Emit a change and input event if the value changed.
-    if (oldValue != this.value) {
-      this._emitInputEvent();
-      this._emitChangeEvent();
-    }
-  }
-
-  _onSlide(event: HammerInput) {
-    if (this.disabled) {
-      return;
-    }
-
-    // The slide start event sometimes fails to fire on iOS, so if we're not already in the sliding
-    // state, call the slide start handler manually.
-    if (!this._isSliding) {
-      this._onSlideStart(null);
-    }
-
-    // Prevent the slide from selecting anything else.
-    event.preventDefault();
-
-    let oldValue = this.value;
-    this._updateValueFromPosition({x: event.center.x, y: event.center.y});
-
-    // Native range elements always emit `input` events when the value changed while sliding.
-    if (oldValue != this.value) {
-      this._emitInputEvent();
-    }
-  }
-
-  _onSlideStart(event: HammerInput | null) {
-    if (this.disabled || this._isSliding) {
-      return;
-    }
-
-    // Simulate mouseenter in case this is a mobile device.
-    this._onMouseenter();
-
-    this._isSliding = true;
-    this._focusHostElement();
-    this._valueOnSlideStart = this.value;
-
-    if (event) {
-      this._updateValueFromPosition({x: event.center.x, y: event.center.y});
-      event.preventDefault();
-    }
-  }
-
-  _onSlideEnd() {
-    this._isSliding = false;
-
-    if (this._valueOnSlideStart != this.value && !this.disabled) {
-      this._emitChangeEvent();
-    }
-    this._valueOnSlideStart = null;
   }
 
   _onFocus() {
@@ -647,6 +592,97 @@ export class MatSlider extends _MatSliderMixinBase
 
   _onKeyup() {
     this._isSliding = false;
+  }
+
+  /** Called when the user has put their pointer down on the slider. */
+  private _pointerDown = (event: TouchEvent | MouseEvent) => {
+    // Don't do anything if the slider is disabled or the
+    // user is using anything other than the main mouse button.
+    if (this.disabled || this._isSliding || (!isTouchEvent(event) && event.button !== 0)) {
+      return;
+    }
+
+    this._runInsideZone(() => {
+      const oldValue = this.value;
+      const pointerPosition = getPointerPositionOnPage(event);
+      this._isSliding = true;
+      event.preventDefault();
+      this._focusHostElement();
+      this._onMouseenter(); // Simulate mouseenter in case this is a mobile device.
+      this._bindGlobalEvents(event);
+      this._focusHostElement();
+      this._updateValueFromPosition(pointerPosition);
+      this._valueOnSlideStart = this.value;
+      this._pointerPositionOnStart = pointerPosition;
+
+      // Emit a change and input event if the value changed.
+      if (oldValue != this.value) {
+        this._emitInputEvent();
+        this._emitChangeEvent();
+      }
+    });
+  }
+
+  /**
+   * Called when the user has moved their pointer after
+   * starting to drag. Bound on the document level.
+   */
+  private _pointerMove = (event: TouchEvent | MouseEvent) => {
+    if (this._isSliding) {
+      // Prevent the slide from selecting anything else.
+      event.preventDefault();
+      const oldValue = this.value;
+      this._updateValueFromPosition(getPointerPositionOnPage(event));
+
+      // Native range elements always emit `input` events when the value changed while sliding.
+      if (oldValue != this.value) {
+        this._emitInputEvent();
+      }
+    }
+  }
+
+  /** Called when the user has lifted their pointer. Bound on the document level. */
+  private _pointerUp = (event: TouchEvent | MouseEvent) => {
+    if (this._isSliding) {
+      const pointerPositionOnStart = this._pointerPositionOnStart;
+      const currentPointerPosition = getPointerPositionOnPage(event);
+
+      event.preventDefault();
+      this._removeGlobalEvents();
+      this._valueOnSlideStart = this._pointerPositionOnStart = null;
+      this._isSliding = false;
+
+      if (this._valueOnSlideStart != this.value && !this.disabled &&
+          pointerPositionOnStart && (pointerPositionOnStart.x !== currentPointerPosition.x ||
+          pointerPositionOnStart.y !== currentPointerPosition.y)) {
+        this._emitChangeEvent();
+      }
+    }
+  }
+
+  /**
+   * Binds our global move and end events. They're bound at the document level and only while
+   * dragging so that the user doesn't have to keep their pointer exactly over the slider
+   * as they're swiping across the screen.
+   */
+  private _bindGlobalEvents(triggerEvent: TouchEvent | MouseEvent) {
+    if (typeof document !== 'undefined' && document) {
+      const isTouch = isTouchEvent(triggerEvent);
+      const moveEventName = isTouch ? 'touchmove' : 'mousemove';
+      const endEventName = isTouch ? 'touchend' : 'mouseup';
+      document.body.addEventListener(moveEventName, this._pointerMove, activeEventOptions);
+      document.body.addEventListener(endEventName, this._pointerUp, activeEventOptions);
+    }
+  }
+
+  /** Removes any global event listeners that we may have added. */
+  private _removeGlobalEvents() {
+    if (typeof document !== 'undefined' && document) {
+      document.body.removeEventListener('mousemove', this._pointerMove, activeEventOptions);
+      document.body.removeEventListener('mouseup', this._pointerUp, activeEventOptions);
+      document.body.removeEventListener('touchmove', this._pointerMove, activeEventOptions);
+      document.body.removeEventListener('touchend', this._pointerUp, activeEventOptions);
+    }
   }
 
   /** Increments the slider by the given number of steps (negative number decrements). */
@@ -767,6 +803,18 @@ export class MatSlider extends _MatSliderMixinBase
     this._elementRef.nativeElement.blur();
   }
 
+  /** Runs a callback inside of the NgZone, if possible. */
+  private _runInsideZone(fn: () => any) {
+    // @breaking-change 9.0.0 Remove this function once `_ngZone` is a required parameter.
+    this._ngZone ? this._ngZone.run(fn) : fn();
+  }
+
+  /** Runs a callback outside of the NgZone, if possible. */
+  private _runOutsizeZone(fn: () => any) {
+    // @breaking-change 9.0.0 Remove this function once `_ngZone` is a required parameter.
+    this._ngZone ? this._ngZone.runOutsideAngular(fn) : fn();
+  }
+
   /**
    * Sets the model value. Implemented as part of ControlValueAccessor.
    * @param value
@@ -801,4 +849,19 @@ export class MatSlider extends _MatSliderMixinBase
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }
+}
+
+/** Returns whether an event is a touch event. */
+function isTouchEvent(event: MouseEvent | TouchEvent): event is TouchEvent {
+  // This function is called for every pixel that the user has dragged so we need it to be
+  // as fast as possible. Since we only bind mouse events and touch events, we can assume
+  // that if the event's name starts with `t`, it's a touch event.
+  return event.type[0] === 't';
+}
+
+/** Gets the coordinates of a touch or mouse event relative to the viewport. */
+function getPointerPositionOnPage(event: MouseEvent | TouchEvent) {
+  // `touches` will be empty for start/end events so we have to fall back to `changedTouches`.
+  const point = isTouchEvent(event) ? (event.touches[0] || event.changedTouches[0]) : event;
+  return {x: point.clientX, y: point.clientY};
 }

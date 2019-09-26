@@ -37,16 +37,12 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     value: number | null;
     readonly valueChange: EventEmitter<number | null>;
     vertical: boolean;
-    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, tabIndex: string, _animationMode?: string | undefined);
+    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, tabIndex: string, _animationMode?: string | undefined, _ngZone?: NgZone | undefined);
     _onBlur(): void;
     _onFocus(): void;
     _onKeydown(event: KeyboardEvent): void;
     _onKeyup(): void;
-    _onMousedown(event: MouseEvent): void;
     _onMouseenter(): void;
-    _onSlide(event: HammerInput): void;
-    _onSlideEnd(): void;
-    _onSlideStart(event: HammerInput | null): void;
     _shouldInvertMouseCoords(): boolean;
     blur(): void;
     focus(options?: FocusOptions): void;

@@ -8,8 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {GestureConfig, MatCommonModule} from '@angular/material/core';
-import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+import {MatCommonModule} from '@angular/material/core';
 import {MatSlider} from './slider';
 
 
@@ -17,6 +16,5 @@ import {MatSlider} from './slider';
   imports: [CommonModule, MatCommonModule],
   exports: [MatSlider, MatCommonModule],
   declarations: [MatSlider],
-  providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]
 })
 export class MatSliderModule {}
