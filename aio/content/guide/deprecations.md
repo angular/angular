@@ -52,7 +52,6 @@ v8 - v11
 | `@angular/upgrade` | [`setAngularLib`](#upgrade-static) | <!--v8--> v9 |
 | template syntax | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector) | <!--v7--> unspecified |
 | template syntax | [`<template`>](#template-tag) | <!--v7--> v9 |
-| service worker | [`versionedFiles` setting](#sw-versionedfiles)| v9 |
 | polyfills | [reflect-metadata](#reflect-metadata) | <!--v8--> v9 |
 | `@angular/core` | [`defineInjectable`](#core) | v11 |
 | `@angular/router` | [`loadChildren` string syntax](#loadChildren) | v11 |
@@ -209,14 +208,6 @@ The [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) directive is sole
 Support for using the `ngModel` input property and `ngModelChange` event with reactive form directives was deprecated in version 6.
 
 For more information, see the usage notes for [`FormControlDirective`](api/forms/FormControlDirective#use-with-ngmodel) and [`FormControlName`](api/forms/FormControlName#use-with-ngmodel).
-
-
-{@a sw-versionedfiles}
-### Service worker versionedFiles
-
-In the service worker configuration file `ngsw-config.json`, `versionedFiles` and `files` have the same behavior. As of v6, `versionedFiles` is deprecated; use `files` instead.
-
-For more information, see [Service Worker Configuration](guide/service-worker-config#assetgroups).
 
 
 {@a reflectiveinjector}
@@ -418,7 +409,7 @@ The following APIs have been removed starting with version 8.0.0:
 | `@angular/platform-browser` | [`DOCUMENT`](https://v7.angular.io/api/platform-browser/DOCUMENT) | [`DOCUMENT` in `@angular/common`](api/common/DOCUMENT) | Updating to version 8 with [`ng update`](cli/update) changes this automatically.  |
 | `@angular/core/testing` | [`TestBed.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBed#deprecatedoverrideprovider) | [`TestBed.overrideProvider()`](api/core/testing/TestBed#overrideprovider) | none |
 | `@angular/core/testing` | [`TestBedStatic.deprecatedOverrideProvider()`](https://v7.angular.io/api/core/testing/TestBedStatic#deprecatedoverrideprovider) | [`TestBedStatic.overrideProvider()`](api/core/testing/TestBedStatic#overrideprovider) | none |
-
+| `@angular/service-worker` | `versionedFiles` | `files` | In the service worker configuration file `ngsw-config.json`, replace `versionedFiles` with `files`. See [Service Worker Configuration](guide/service-worker-config#assetgroups). |
 
 
 <!-- The following anchor is used by redirects from the removed API pages. Do not change or remove. -->

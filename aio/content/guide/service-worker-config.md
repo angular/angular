@@ -71,8 +71,6 @@ interface AssetGroup {
   updateMode?: 'prefetch' | 'lazy';
   resources: {
     files?: string[];
-    /** @deprecated As of v6 `versionedFiles` and `files` options have the same behavior. Use `files` instead. */
-    versionedFiles?: string[];
     urls?: string[];
   };
 }
@@ -104,11 +102,9 @@ Defaults to the value `installMode` is set to.
 
 ### `resources`
 
-This section describes the resources to cache, broken up into three groups.
+This section describes the resources to cache, broken up into the following groups:
 
 * `files` lists patterns that match files in the distribution directory. These can be single files or glob-like patterns that match a number of files.
-
-* `versionedFiles` has been deprecated. As of v6 `versionedFiles` and `files` options have the same behavior. Use `files` instead.
 
 * `urls` includes both URLs and URL patterns that will be matched at runtime. These resources are not fetched directly and do not have content hashes, but they will be cached according to their HTTP headers. This is most useful for CDNs such as the Google Fonts service.<br>
   _(Negative glob patterns are not supported and `?` will be matched literally; i.e. it will not match any character other than `?`.)_
