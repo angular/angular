@@ -1,6 +1,15 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "codeowners", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
+
+codeowners(team = "@angular/fw-core")
+
+codeowners(
+    name = "OWNERS.security",
+    no_parent = True,
+    pattern = "src/security/**",
+    team = "@angular/fw-security",
+)
 
 ng_module(
     name = "platform-browser",

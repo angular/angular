@@ -1,6 +1,11 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "codeowners", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
+
+codeowners(
+    no_docs_parent = True,
+    team = "@angular/fw-ngcc",
+)
 
 ts_library(
     name = "ngcc",

@@ -1,1 +1,5 @@
+load("//tools:defaults.bzl", "codeowners")
+
 package(default_visibility = ["//visibility:public"])
+
+codeowners(team = "@angular/fw-http")

@@ -161,6 +161,7 @@
     "tslint-eslint-rules": "4.1.1",
     "tslint-no-toplevel-property-access": "0.0.2",
     "tsutils": "2.27.2",
+    "unidiff": "^1.0.2",
     "universal-analytics": "0.4.15",
     "vlq": "0.2.2",
     "vrsource-tslint-rules": "5.1.1",

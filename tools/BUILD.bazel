@@ -1,6 +1,45 @@
 package(default_visibility = ["//visibility:public"])
 
+load("//tools:defaults.bzl", "codeowners")
 load("@npm_bazel_typescript//:index.bzl", "ts_config")
+
+codeowners(
+    no_parent = True,
+    patterns = [
+        "build/**",
+        "cjs-jasmine/**",
+        "gulp-tasks/**",
+        "ngcontainer/**",
+        "npm/**",
+        "npm_workspace/**",
+        "public_api_guard/**",
+        "rxjs/**",
+        "size-tracking/**",
+        "source-map-test/**",
+        "symbol-extractor/**",
+        "testing/**",
+        "ts-api-guardian/**",
+        "tslint/**",
+        "validate-commit-message/**",
+        "yarn/**",
+        "*",
+    ],
+    team = "@angular/dev-infra-framework",
+)
+
+codeowners(
+    name = "OWNERS.core",
+    no_docs_parent = True,
+    pattern = "material-ci/**",
+    team = "@angular/fw-core",
+)
+
+codeowners(
+    name = "OWNERS.public-api",
+    no_parent = True,
+    pattern = "public_api_guard/**",
+    team = "@angular/fw-public-api",
+)
 
 exports_files([
     "tsconfig.json",

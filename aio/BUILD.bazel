@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "codeowners")
+
+codeowners(
+    no_docs_parent = True,
+    patterns = [
+        "*",
+        "aio-builds-setup/**",
+        "content/examples/*",
+        "scripts/**",
+        "src/**",
+        "tests/**",
+        "tools/**",
+    ],
+    team = "@angular/docs-infra",
+)

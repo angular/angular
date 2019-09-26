@@ -885,7 +885,6 @@ testing/**                                                      @angular/fw-test
 # ================================================
 
 /*                                                              @angular/dev-infra-framework
-/.buildkite/**                                                  @angular/dev-infra-framework
 /.circleci/**                                                   @angular/dev-infra-framework
 /.devcontainer/**                                               @angular/dev-infra-framework
 /.github/**                                                     @angular/dev-infra-framework

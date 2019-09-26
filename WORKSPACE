@@ -155,3 +155,14 @@ rbe_autoconfig(
     # a specific Linux kernel that comes with "libx11" in order to run headless browser tests.
     repository = "google/rbe-ubuntu16-04-webtest",
 )
+
+RULES_CODEOWNERS_VERSION = "56e551f5ae6d37975889291ab26e4aa2494468db"
+
+RULES_CODEOWNERS_SHA = "be8280b139df5237e85942a606b3f532d9b7cf506a47fc8f5e9bb62fc2c2b24e"
+
+http_archive(
+    name = "rules_codeowners",
+    sha256 = RULES_CODEOWNERS_SHA,
+    strip_prefix = "rules_codeowners-%s" % RULES_CODEOWNERS_VERSION,
+    url = "https://github.com/zegl/rules_codeowners/archive/%s.zip" % RULES_CODEOWNERS_VERSION,
+)

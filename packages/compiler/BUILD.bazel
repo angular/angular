@@ -1,6 +1,24 @@
-load("//tools:defaults.bzl", "ng_package", "ts_library")
+load("//tools:defaults.bzl", "codeowners", "ng_package", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
+
+codeowners(team = "@angular/fw-compiler")
+
+codeowners(
+    name = "OWNERS.i18n",
+    patterns = [
+        "src/i18n/**",
+        "src/render3/view/i18n/**",
+    ],
+    team = "@angular/fw-i18n",
+)
+
+codeowners(
+    name = "OWNERS.security",
+    no_parent = True,
+    pattern = "src/schema/**",
+    team = "@angular/fw-security",
+)
 
 ts_library(
     name = "compiler",

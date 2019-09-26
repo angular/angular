@@ -1,6 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "codeowners", "ts_library")
+
+codeowners(
+    no_parent = True,
+    team = "@angular/dev-infra-framework",
+)
 
 ts_library(
     name = "test-utils",

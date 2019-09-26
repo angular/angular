@@ -1,3 +1,7 @@
+load("//tools:defaults.bzl", "codeowners")
+
+codeowners(team = "@angular/fw-upgrade")
+
 exports_files([
     "tsconfig-build.json",
     "start-server.js",

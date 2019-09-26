@@ -1,6 +1,8 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "codeowners", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
+
+codeowners(team = "@angular/fw-http")
 
 ng_module(
     name = "http",

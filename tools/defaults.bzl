@@ -6,6 +6,7 @@ load("@npm_bazel_karma//:index.bzl", _karma_web_test = "karma_web_test", _karma_
 load("@npm_bazel_typescript//:index.bzl", _ts_library = "ts_library")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
+load("@rules_codeowners//tools:codeowners.bzl", "generate_codeowners", _codeowners = "codeowners")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
@@ -318,3 +319,48 @@ def rollup_bundle(**kwargs):
         enable_code_splitting = False,
         **kwargs
     )
+
+_GLOBAL_OWNERS = "@angular/framework-global-approvers"
+_GLOBAL_DOCS_OWNERS = "@angular/framework-global-approvers-for-docs-only-changes"
+
+def codeowners(name = "OWNERS", no_parent = False, no_docs_parent = False, **kwargs):
+    """Convenience macro to set some defaults
+
+    Args:
+        no_parent: Mimic the google3 OWNERS file which allows a .no-parent rule to avoid inheriting global approvers, see http://go/owners#noparent
+        **kwargs: see codeowners rule docs
+    """
+    pkg = native.package_name()
+    teams = [kwargs.pop("team")] if "team" in kwargs.keys() else kwargs.pop("teams", [])
+    patterns = kwargs.pop("patterns") if "patterns" in kwargs.keys() else [kwargs.pop("pattern", "**")]
+
+    if pkg.startswith("."):
+        print(pkg, name)
+
+    # This is here to exactly match the legacy content
+    # in the CODEOWNERS file while moving it to bazel-generated.
+    # Some places don't permit docs-only-changes approval.
+    # see http://go/owners#noparent
+    if no_docs_parent:
+        teams.append(_GLOBAL_OWNERS)
+    elif not no_parent:
+        teams.append(_GLOBAL_OWNERS)
+        teams.append(_GLOBAL_DOCS_OWNERS)
+
+    [
+        _codeowners(
+            name = name + (str(idx) if len(patterns) > 1 else ""),
+            pattern = pattern,
+            teams = teams,
+            visibility = ["//.github:__pkg__"],
+            **kwargs
+        )
+        for idx, pattern in enumerate(patterns)
+    ]
+
+    if len(patterns) > 1:
+        generate_codeowners(
+            name = name,
+            owners = [name + str(idx) for idx in range(0, len(patterns))],
+            visibility = ["//.github:__pkg__"],
+        )

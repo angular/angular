@@ -1,0 +1,139 @@
+load("//tools:defaults.bzl", "codeowners")
+load("@rules_codeowners//tools:codeowners.bzl", "generate_codeowners")
+load("@build_bazel_rules_nodejs//internal/golden_file_test:golden_file_test.bzl", "golden_file_test")
+
+codeowners(
+    no_parent = True,
+    team = "@angular/dev-infra-framework",
+)
+
+codeowners(
+    name = "OWNERS.CODEOWNERS",
+    no_docs_parent = True,
+    pattern = "CODEOWNERS",
+    teams = [
+        "@IgorMinar",
+    ],
+)
+
+generate_codeowners(
+    name = "generate_codeowners",
+    # do not sort
+    owners = [
+        "//:OWNERS",
+        "//packages/animations:OWNERS",
+        "//packages/platform-browser/animations:OWNERS",
+        "//aio/content:OWNERS.animations",
+        "//packages/bazel:OWNERS",
+        "//aio/content:OWNERS.bazel",
+        "//packages/compiler:OWNERS",
+        "//packages/examples/compiler:OWNERS",
+        "//packages/compiler-cli:OWNERS",
+        "//aio/content:OWNERS.compiler",
+        "//packages/compiler-cli/ngcc:OWNERS",
+        "//packages/compiler-cli:OWNERS.ngtools",
+        "//aio/content:OWNERS.cli",
+        "//packages/core:OWNERS",
+        "//packages/examples/core:OWNERS",
+        "//packages/common:OWNERS",
+        "//packages/platform-browser:OWNERS",
+        "//packages/examples/platform-browser:OWNERS",
+        "//packages/platform-browser-dynamic:OWNERS",
+        "//packages/platform-webworker:OWNERS",
+        "//packages/platform-webworker-dynamic:OWNERS",
+        "//packages/examples/common:OWNERS",
+        "//packages/docs:OWNERS",
+        "//aio/content:OWNERS.core",
+        "//packages/common/http:OWNERS",
+        "//packages/http:OWNERS",
+        "//packages/examples/http:OWNERS",
+        "//aio/content:OWNERS.http",
+        "//packages/elements:OWNERS",
+        "//aio/content:OWNERS.elements",
+        "//packages/forms:OWNERS",
+        "//packages/examples/forms:OWNERS",
+        "//aio/content:OWNERS.forms",
+        "//packages/language-service:OWNERS",
+        "//aio/content:OWNERS.language-service",
+        "//packages/platform-server:OWNERS",
+        "//aio/content:OWNERS.server",
+        "//packages/router:OWNERS",
+        "//packages/examples/router:OWNERS",
+        "//aio/content:OWNERS.router",
+        "//packages/service-worker:OWNERS",
+        "//packages/examples/service-worker:OWNERS",
+        "//aio/content:OWNERS.service-worker",
+        "//packages/upgrade:OWNERS",
+        "//packages/common/upgrade:OWNERS",
+        "//packages/examples/upgrade:OWNERS",
+        "//aio/content:OWNERS.upgrade",
+        "//:OWNERS.testing",
+        "//aio/content:OWNERS.testing",
+        "//packages/core:OWNERS.i18n",
+        "//packages/common:OWNERS.i18n",
+        "//packages/compiler:OWNERS.i18n",
+        "//packages/compiler-cli:OWNERS.i18n",
+        "//packages/localize:OWNERS",
+        "//aio/content:OWNERS.i18n",
+        "//packages/core:OWNERS.security",
+        "//packages/compiler:OWNERS.security",
+        "//packages/platform-browser:OWNERS.security",
+        "//aio/content:OWNERS.security",
+        "//packages/zone.js:OWNERS",
+        "//packages/benchpress:OWNERS",
+        "//integration:OWNERS",
+        "//aio:OWNERS",
+        "//aio/content:OWNERS.docs-infra",
+        "//aio/content:OWNERS.docs-intro",
+        "//aio/content:OWNERS.docs-observables",
+        "//aio/content:OWNERS.docs-packaging",
+        "//aio/content:OWNERS.docs-libraries",
+        "//aio/content:OWNERS.docs-schematics",
+        "//aio/content:OWNERS.docs-marketing",
+        "//:OWNERS.star",
+        "//.circleci:OWNERS",
+        "//:OWNERS.devcontainer",
+        ":OWNERS",
+        "//:OWNERS.vscode",
+        "//:OWNERS.bazel",
+        "//packages:OWNERS",
+        "//packages/examples/test-utils:OWNERS",
+        "//packages/private:OWNERS",
+        "//scripts:OWNERS",
+        "//third_party:OWNERS",
+        "//tools:OWNERS",
+        "//:OWNERS.bzl",
+        "//tools:OWNERS.core",
+        "//tools:OWNERS.public-api",
+        "//aio/content:OWNERS.public-api",
+        "//aio/content:OWNERS.static-query",
+        ":OWNERS.CODEOWNERS",
+    ],
+)
+
+# Normalize unimportant formatting
+# - remove comments
+# - remove blank lines
+# - collapse multiple whitespace to one
+# This is useful while getting to zero-delta
+_SCRUB_CMD = "grep -v \"^#\" $< | awk 'NF' | tr -s ' ' > $@"
+
+genrule(
+    name = "scrub_golden",
+    srcs = ["CODEOWNERS"],
+    outs = ["CODEOWNERS.scrubbed"],
+    cmd = _SCRUB_CMD,
+)
+
+genrule(
+    name = "scrub_actual",
+    srcs = ["generate_codeowners"],
+    outs = ["codeowners.gen"],
+    cmd = _SCRUB_CMD,
+)
+
+golden_file_test(
+    name = "test",
+    actual = "scrub_actual",
+    golden = "scrub_golden",
+)

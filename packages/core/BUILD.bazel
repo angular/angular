@@ -1,6 +1,29 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "codeowners", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
+
+codeowners(team = "@angular/fw-core")
+
+codeowners(
+    name = "OWNERS.i18n",
+    patterns = [
+        "src/i18n/**",
+        "src/render3/i18n.ts",
+        "src/render3/i18n.md",
+        "src/render3/interfaces/i18n.ts",
+    ],
+    team = "@angular/fw-i18n",
+)
+
+codeowners(
+    name = "OWNERS.security",
+    no_parent = True,
+    patterns = [
+        "src/sanitization/**",
+        "test/linker/security_integration_spec.ts",
+    ],
+    team = "@angular/fw-security",
+)
 
 ng_module(
     name = "core",

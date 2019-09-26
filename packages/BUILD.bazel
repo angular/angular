@@ -6,7 +6,13 @@ exports_files([
 ])
 
 load("@npm_bazel_typescript//:index.bzl", "ts_config")
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "codeowners", "ts_library")
+
+codeowners(
+    no_parent = True,
+    pattern = "*",
+    team = "@angular/dev-infra-framework",
+)
 
 ts_library(
     name = "types",

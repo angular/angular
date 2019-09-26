@@ -1,0 +1,3 @@
+load("//tools:defaults.bzl", "codeowners")
+
+codeowners(team = "@angular/fw-service-worker")

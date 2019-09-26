@@ -1,6 +1,8 @@
+load("//tools:defaults.bzl", "codeowners", "ng_module")
+
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+codeowners(team = "@angular/fw-compiler")
 
 ng_module(
     name = "compiler_examples",

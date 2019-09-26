@@ -1,0 +1,396 @@
+load("//tools:defaults.bzl", "codeowners")
+
+codeowners(
+    name = "OWNERS.animations",
+    patterns = [
+        "guide/animations.md",
+        "examples/animations/**",
+        "images/guide/animations/**",
+        "guide/complex-animation-sequences.md",
+        "guide/reusable-animations.md",
+        "guide/route-animations.md",
+        "guide/transition-and-triggers.md",
+    ],
+    team = "@angular/fw-animations",
+)
+
+codeowners(
+    name = "OWNERS.bazel",
+    pattern = "guide/bazel.md",
+    team = "@angular/tools-bazel",
+)
+
+codeowners(
+    name = "OWNERS.compiler",
+    patterns = [
+        "guide/angular-compiler-options.md",
+        "guide/aot-compiler.md",
+        "guide/aot-metadata-errors.md",
+    ],
+    team = "@angular/fw-compiler",
+)
+
+codeowners(
+    name = "OWNERS.cli",
+    patterns = [
+        "guide/cli-builder.md",
+        "guide/ivy.md",
+        "guide/web-worker.md",
+    ],
+    team = "@angular/tools-cli",
+)
+
+codeowners(
+    name = "OWNERS.core",
+    patterns = [
+        "guide/accessibility.md",
+        "examples/accessibility/**",
+        "guide/architecture-components.md",
+        "guide/architecture-modules.md",
+        "guide/architecture-next-steps.md",
+        "guide/architecture-services.md",
+        "guide/architecture.md",
+        "examples/architecture/**",
+        "images/guide/architecture/**",
+        "guide/attribute-directives.md",
+        "examples/attribute-directives/**",
+        "images/guide/attribute-directives/**",
+        "guide/bootstrapping.md",
+        "examples/bootstrapping/**",
+        "guide/cheatsheet.md",
+        "guide/component-interaction.md",
+        "examples/component-interaction/**",
+        "images/guide/component-interaction/**",
+        "guide/component-styles.md",
+        "examples/component-styles/**",
+        "guide/dependency-injection.md",
+        "examples/dependency-injection/**",
+        "images/guide/dependency-injection/**",
+        "guide/dependency-injection-in-action.md",
+        "examples/dependency-injection-in-action/**",
+        "images/guide/dependency-injection-in-action/**",
+        "guide/dependency-injection-navtree.md",
+        "guide/dependency-injection-providers.md",
+        "guide/displaying-data.md",
+        "examples/displaying-data/**",
+        "images/guide/displaying-data/**",
+        "guide/dynamic-component-loader.md",
+        "examples/dynamic-component-loader/**",
+        "images/guide/dynamic-component-loader/**",
+        "guide/entry-components.md",
+        "guide/feature-modules.md",
+        "examples/feature-modules/**",
+        "images/guide/feature-modules/**",
+        "guide/frequent-ngmodules.md",
+        "images/guide/frequent-ngmodules/**",
+        "guide/hierarchical-dependency-injection.md",
+        "examples/hierarchical-dependency-injection/**",
+        "examples/providers-viewproviders/**",
+        "examples/resolution-modifiers/**",
+        "guide/lazy-loading-ngmodules.md",
+        "examples/lazy-loading-ngmodules/**",
+        "images/guide/lazy-loading-ngmodules/**",
+        "guide/lifecycle-hooks.md",
+        "examples/lifecycle-hooks/**",
+        "images/guide/lifecycle-hooks/**",
+        "examples/ngcontainer/**",
+        "guide/ngmodules.md",
+        "examples/ngmodules/**",
+        "guide/ngmodule-api.md",
+        "guide/ngmodule-faq.md",
+        "examples/ngmodule-faq/**",
+        "guide/ngmodule-vs-jsmodule.md",
+        "guide/module-types.md",
+        "guide/template-syntax.md",
+        "examples/built-in-template-functions/**",
+        "examples/event-binding/**",
+        "examples/interpolation/**",
+        "examples/template-syntax/**",
+        "images/guide/template-syntax/**",
+        "examples/binding-syntax/**",
+        "examples/property-binding/**",
+        "examples/attribute-binding/**",
+        "examples/two-way-binding/**",
+        "examples/built-in-directives/**",
+        "images/guide/built-in-directives/**",
+        "examples/template-reference-variables/**",
+        "examples/inputs-outputs/**",
+        "images/guide/inputs-outputs/**",
+        "examples/template-expression-operators/**",
+        "guide/pipes.md",
+        "examples/pipes/**",
+        "images/guide/pipes/**",
+        "guide/providers.md",
+        "examples/providers/**",
+        "guide/singleton-services.md",
+        "guide/set-document-title.md",
+        "examples/set-document-title/**",
+        "images/guide/set-document-title/**",
+        "guide/sharing-ngmodules.md",
+        "guide/structural-directives.md",
+        "examples/structural-directives/**",
+        "images/guide/structural-directives/**",
+        "guide/user-input.md",
+        "examples/user-input/**",
+        "images/guide/user-input/**",
+    ],
+    team = "@angular/fw-core",
+)
+
+codeowners(
+    name = "OWNERS.http",
+    patterns = [
+        "guide/http.md",
+        "examples/http/**",
+        "images/guide/http/**",
+    ],
+    team = "@angular/fw-http",
+)
+
+codeowners(
+    name = "OWNERS.elements",
+    patterns = [
+        "examples/elements/**",
+        "images/guide/elements/**",
+        "guide/elements.md",
+    ],
+    team = "@angular/fw-elements",
+)
+
+codeowners(
+    name = "OWNERS.forms",
+    patterns = [
+        "guide/forms.md",
+        "examples/forms/**",
+        "images/guide/forms/**",
+        "guide/forms-overview.md",
+        "examples/forms-overview/**",
+        "images/guide/forms-overview/**",
+        "guide/form-validation.md",
+        "examples/form-validation/**",
+        "images/guide/form-validation/**",
+        "guide/dynamic-form.md",
+        "examples/dynamic-form/**",
+        "images/guide/dynamic-form/**",
+        "guide/reactive-forms.md",
+        "examples/reactive-forms/**",
+        "images/guide/reactive-forms/**",
+    ],
+    team = "@angular/fw-forms",
+)
+
+codeowners(
+    name = "OWNERS.language-service",
+    patterns = [
+        "guide/language-service.md",
+        "images/guide/language-service/**",
+    ],
+    team = "@angular/tools-language-service",
+)
+
+codeowners(
+    name = "OWNERS.server",
+    patterns = [
+        "guide/universal.md",
+        "examples/universal/**",
+    ],
+    team = "@angular/fw-server",
+)
+
+codeowners(
+    name = "OWNERS.router",
+    patterns = [
+        "guide/router.md",
+        "examples/router/**",
+        "images/guide/router/**",
+    ],
+    team = "@angular/fw-router",
+)
+
+codeowners(
+    name = "OWNERS.service-worker",
+    patterns = [
+        "guide/service-worker-getting-started.md",
+        "examples/service-worker-getting-started/**",
+        "guide/app-shell.md",
+        "guide/service-worker-communications.md",
+        "guide/service-worker-config.md",
+        "guide/service-worker-devops.md",
+        "guide/service-worker-intro.md",
+        "images/guide/service-worker/**",
+    ],
+    team = "@angular/fw-service-worker",
+)
+
+codeowners(
+    name = "OWNERS.upgrade",
+    patterns = [
+        "guide/upgrade.md",
+        "examples/upgrade-lazy-load-ajs/**",
+        "examples/upgrade-module/**",
+        "images/guide/upgrade/**",
+        "examples/upgrade-phonecat-1-typescript/**",
+        "examples/upgrade-phonecat-2-hybrid/**",
+        "examples/upgrade-phonecat-3-final/**",
+        "guide/upgrade-performance.md",
+        "guide/upgrade-setup.md",
+        "guide/ajs-quick-reference.md",
+        "examples/ajs-quick-reference/**",
+    ],
+    team = "@angular/fw-upgrade",
+)
+
+codeowners(
+    name = "OWNERS.testing",
+    patterns = [
+        "guide/testing.md",
+        "examples/testing/**",
+        "images/guide/testing/**",
+    ],
+    team = "@angular/fw-testing",
+)
+
+codeowners(
+    name = "OWNERS.i18n",
+    patterns = [
+        "guide/i18n.md",
+        "examples/i18n/**",
+    ],
+    team = "@angular/fw-i18n",
+)
+
+codeowners(
+    name = "OWNERS.security",
+    patterns = [
+        "guide/security.md",
+        "examples/security/**",
+        "images/guide/security/**",
+    ],
+    team = "@angular/fw-security",
+)
+
+codeowners(
+    name = "OWNERS.docs-infra",
+    no_docs_parent = True,
+    patterns = [
+        "guide/docs-style-guide.md",
+        "examples/docs-style-guide/**",
+        "images/guide/docs-style-guide/**",
+        "guide/visual-studio-2015.md",
+        "examples/visual-studio-2015/**",
+    ],
+    team = "@angular/docs-infra",
+)
+
+codeowners(
+    name = "OWNERS.docs-intro",
+    patterns = [
+        "guide/setup-local.md",
+        "images/guide/setup-local/**",
+        "tutorial/**",
+        "images/guide/toh/**",
+        "examples/toh-pt0/**",
+        "examples/toh-pt1/**",
+        "examples/toh-pt2/**",
+        "examples/toh-pt3/**",
+        "examples/toh-pt4/**",
+        "examples/toh-pt5/**",
+        "examples/toh-pt6/**",
+        "examples/getting-started-v0/**",
+        "examples/getting-started/**",
+        "start/**",
+        "images/guide/start/**",
+    ],
+    team = "@angular/fw-docs-intro",
+)
+
+codeowners(
+    name = "OWNERS.docs-observables",
+    patterns = [
+        "guide/observables.md",
+        "examples/observables/**",
+        "guide/comparing-observables.md",
+        "guide/observables-in-angular.md",
+        "examples/observables-in-angular/**",
+        "guide/practical-observable-usage.md",
+        "examples/practical-observable-usage/**",
+        "guide/rx-library.md",
+        "examples/rx-library/**",
+    ],
+    team = "@angular/fw-docs-observables",
+)
+
+codeowners(
+    name = "OWNERS.docs-packaging",
+    patterns = [
+        "guide/npm-packages.md",
+        "guide/browser-support.md",
+        "guide/typescript-configuration.md",
+        "examples/setup/**",
+        "guide/build.md",
+        "images/guide/build/**",
+        "guide/deployment.md",
+        "images/guide/deployment/**",
+        "guide/file-structure.md",
+        "guide/releases.md",
+        "guide/updating.md",
+        "guide/workspace-config.md",
+        "guide/deprecations.md",
+        "guide/migration-renderer.md",
+        "guide/migration-undecorated-classes.md",
+        "guide/migration-dynamic-flag.md",
+    ],
+    team = "@angular/fw-docs-packaging",
+)
+
+codeowners(
+    name = "OWNERS.docs-libraries",
+    patterns = [
+        "guide/creating-libraries.md",
+        "guide/libraries.md",
+        "guide/using-libraries.md",
+    ],
+    team = "@angular/tools-docs-libraries",
+)
+
+codeowners(
+    name = "OWNERS.docs-schematics",
+    patterns = [
+        "guide/schematics.md",
+        "guide/schematics-authoring.md",
+        "guide/schematics-for-libraries.md",
+        "images/guide/schematics/**",
+        "examples/schematics-for-libraries/**",
+    ],
+    team = "@angular/tools-docs-schematics",
+)
+
+codeowners(
+    name = "OWNERS.docs-marketing",
+    patterns = [
+        "marketing/**",
+        "images/bios/**",
+        "images/marketing/**",
+        "navigation.json",
+        "license.md",
+    ],
+    team = "@angular/fw-docs-marketing",
+)
+
+codeowners(
+    name = "OWNERS.public-api",
+    no_parent = True,
+    patterns = [
+        "guide/glossary.md",
+        "guide/styleguide.md",
+        "examples/styleguide/**",
+        "images/guide/styleguide/**",
+    ],
+    team = "@angular/fw-public-api",
+)
+
+codeowners(
+    name = "OWNERS.static-query",
+    pattern = "guide/static-query-migration.md",
+    team = "@kara",
+)

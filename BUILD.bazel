@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "karma_web_test")
+load("//tools:defaults.bzl", "codeowners", "karma_web_test")
 
 exports_files([
     "LICENSE",
@@ -8,6 +8,53 @@ exports_files([
     "karma-js.conf.js",
     "browser-providers.conf.js",
 ])
+
+codeowners(
+    no_docs_parent = True,
+    pattern = "*",
+    team = "@IgorMinar",
+)
+
+codeowners(
+    name = "OWNERS.star",
+    no_parent = True,
+    pattern = "/*",
+    team = "@angular/dev-infra-framework",
+)
+
+codeowners(
+    name = "OWNERS.vscode",
+    no_parent = True,
+    pattern = "/.vscode/**",
+    team = "@angular/dev-infra-framework",
+)
+
+codeowners(
+    name = "OWNERS.bazel",
+    no_parent = True,
+    pattern = "/docs/BAZEL.md",
+    team = "@angular/dev-infra-framework",
+)
+
+codeowners(
+    name = "OWNERS.testing",
+    pattern = "testing/**",
+    team = "@angular/fw-testing",
+)
+
+codeowners(
+    name = "OWNERS.bzl",
+    no_parent = True,
+    pattern = "*.bzl",
+    team = "@angular/dev-infra-framework",
+)
+
+codeowners(
+    name = "OWNERS.devcontainer",
+    no_parent = True,
+    pattern = "/.devcontainer/**",
+    team = "@angular/dev-infra-framework",
+)
 
 alias(
     name = "tsconfig.json",

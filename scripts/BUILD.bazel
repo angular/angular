@@ -1,0 +1,6 @@
+load("//tools:defaults.bzl", "codeowners")
+
+codeowners(
+    no_parent = True,
+    team = "@angular/dev-infra-framework",
+)

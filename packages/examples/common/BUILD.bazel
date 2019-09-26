@@ -1,8 +1,10 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "ts_library")
+load("//tools:defaults.bzl", "codeowners", "ng_module", "ts_library")
 load("@npm_bazel_protractor//:index.bzl", "protractor_web_test_suite")
 load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+
+codeowners(team = "@angular/fw-core")
 
 ng_module(
     name = "common_examples",

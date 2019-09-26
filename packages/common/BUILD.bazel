@@ -1,6 +1,21 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "codeowners", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
+
+codeowners(team = "@angular/fw-core")
+
+codeowners(
+    name = "OWNERS.i18n",
+    patterns = [
+        "locales/**",
+        "src/i18n/**",
+        "src/pipes/date_pipe.ts",
+        "src/pipes/i18n_plural_pipe.ts",
+        "src/pipes/i18n_select_pipe.ts",
+        "src/pipes/number_pipe.ts",
+    ],
+    team = "@angular/fw-i18n",
+)
 
 ng_module(
     name = "common",

@@ -1,7 +1,22 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "npm_package", "ts_library")
+load("//tools:defaults.bzl", "codeowners", "npm_package", "ts_library")
 load("@npm_bazel_typescript//:index.bzl", "ts_config")
+
+codeowners(team = "@angular/fw-compiler")
+
+codeowners(
+    name = "OWNERS.i18n",
+    pattern = "src/extract_i18n.ts",
+    team = "@angular/fw-i18n",
+)
+
+codeowners(
+    name = "OWNERS.ngtools",
+    no_docs_parent = True,
+    pattern = "src/ngtools/**",
+    team = "@angular/tools-cli",
+)
 
 ts_config(
     name = "tsconfig",

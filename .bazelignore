@@ -1,7 +1,6 @@
 .git
 node_modules
 dist
-aio/content
 aio/node_modules
 aio/tools/examples/shared/node_modules
 integration/bazel

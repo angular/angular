@@ -1,6 +1,8 @@
-load("//tools:defaults.bzl", "npm_package", "ts_library")
+load("//tools:defaults.bzl", "codeowners", "npm_package", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
+
+codeowners(team = "@angular/tools-benchpress")
 
 ts_library(
     name = "benchpress",

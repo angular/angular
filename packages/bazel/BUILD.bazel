@@ -1,4 +1,6 @@
-load("//tools:defaults.bzl", "npm_package")
+load("//tools:defaults.bzl", "codeowners", "npm_package")
+
+codeowners(team = "@angular/tools-bazel")
 
 npm_package(
     name = "npm_package",

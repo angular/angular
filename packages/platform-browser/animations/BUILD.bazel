@@ -1,8 +1,10 @@
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "codeowners", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
+
+codeowners(team = "@angular/fw-animations")
 
 ng_module(
     name = "animations",

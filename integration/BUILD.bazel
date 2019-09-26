@@ -1,0 +1,6 @@
+load("//tools:defaults.bzl", "codeowners")
+
+codeowners(
+    no_docs_parent = True,
+    team = "@angular/fw-integration",
+)
