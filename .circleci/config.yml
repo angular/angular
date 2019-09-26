@@ -45,7 +45,7 @@ var_7: &workspace_location ~/
 #             `CI_CHROMEDRIVER_VERSION_ARG` env var (in `.circleci/env.sh`) points to a ChromeDriver
 #             version that is compatible with the Chrome version in the image.
 executors:
-  action-executor:
+  default-executor:
     parameters:
       resource_class:
         type: string
@@ -112,34 +112,26 @@ commands:
       - run: echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV
       - run: ./.circleci/setup-rbe.sh .bazelrc.user
 
-  notify_caretaker_on_fail:
-    description: Notify caretaker about failure
+  notify_webhook_on_fail:
+    description: Notify a webhook about failure
+    parameters:
+      # `webhook_url_env_var` are secret env vars defined in CircleCI project settings.
+      # The URLs come from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
+      webhook_url_env_var:
+        type: env_var_name
     steps:
       - run:
           when: on_fail
-          # `$SLACK_CARETAKER_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
-          # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
           command: |
             notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job for $CIRCLE_BRANCH branch failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
-            curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_CARETAKER_WEBHOOK_URL
-
-  notify_dev_infra_on_fail:
-    description: Notify dev-infra about failure
-    steps:
-      - run:
-          when: on_fail
-          # `$SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
-          # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
-          command: |
-            notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job for $CIRCLE_BRANCH branch failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
-            curl --request POST --header "Content-Type: application/json" --data "$notificationJson" $SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
+            curl --request POST --header "Content-Type: application/json" --data "$notificationJson" ${<< parameters.webhook_url_env_var >>}
 
 # Job definitions
 # Jobs can include parameters that are passed in the workflow job invocation.
 # https://circleci.com/docs/2.0/reusing-config/#authoring-parameterized-jobs
 jobs:
   setup:
-    executor: action-executor
+    executor: default-executor
     steps:
       - checkout
       - run:
@@ -183,7 +175,7 @@ jobs:
             - ./bazel_repository_cache
 
   lint:
-    executor: action-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
@@ -199,7 +191,7 @@ jobs:
 
   test:
     executor:
-      name: action-executor
+      name: default-executor
       resource_class: xlarge
     steps:
       - custom_attach_workspace
@@ -214,7 +206,7 @@ jobs:
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
     executor:
-      name: action-executor
+      name: default-executor
       resource_class: xlarge
     steps:
       - custom_attach_workspace
@@ -253,7 +245,7 @@ jobs:
   # NOTE: This is currently limited to master builds only. See the `default_workflow` configuration.
   test_saucelabs_bazel:
     executor:
-      name: action-executor
+      name: default-executor
       # In order to avoid the bottleneck of having a slow host machine, we acquire a better
       # container for this job. This is necessary because we launch a lot of browsers concurrently
       # and therefore the tunnel and Karma need to process a lot of file requests and tests.
@@ -278,7 +270,8 @@ jobs:
               --key $(echo $SAUCE_ACCESS_KEY | rev) \
               yarn bazel test //:test_web_all
           no_output_timeout: 20m
-      - notify_dev_infra_on_fail
+      - notify_webhook_on_fail:
+          webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   test_aio:
     # Needed because the AIO tests and the PWA score test depend on Chrome being available.
@@ -335,7 +328,7 @@ jobs:
       - run: yarn --cwd aio payload-size aio-local<<# parameters.ivy >>-ivy<</ parameters.ivy >>
 
   test_aio_tools:
-    executor: action-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
@@ -377,7 +370,7 @@ jobs:
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
-    executor: action-executor
+    executor: default-executor
     environment:
        AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
@@ -414,7 +407,7 @@ jobs:
   # Build the view engine npm packages. No new jobs should depend on this.
   build-npm-packages:
     executor:
-      name: action-executor
+      name: default-executor
       resource_class: xlarge
     steps:
       - custom_attach_workspace
@@ -441,7 +434,7 @@ jobs:
   # Build the ivy npm packages.
   build-ivy-npm-packages:
     executor:
-      name: action-executor
+      name: default-executor
       resource_class: xlarge
     steps:
       - custom_attach_workspace
@@ -482,7 +475,7 @@ jobs:
   # This job updates the content of repos like github.com/angular/core-builds
   # for every green build on angular/angular.
   publish_snapshot:
-    executor: action-executor
+    executor: default-executor
     steps:
       # See below - ideally this job should not trigger for non-upstream builds.
       # But since it does, we have to check this condition.
@@ -526,8 +519,10 @@ jobs:
       - run:
           name: Run tests against https://angular.io/
           command: ./aio/scripts/test-production.sh https://angular.io/ $CI_AIO_MIN_PWA_SCORE
-      - notify_caretaker_on_fail
-      - notify_dev_infra_on_fail
+      - notify_webhook_on_fail:
+          webhook_url_env_var: SLACK_CARETAKER_WEBHOOK_URL
+      - notify_webhook_on_fail:
+          webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   aio_monitoring_next:
     # This job needs Chrome to be globally installed because the tests run with Protractor
@@ -539,12 +534,14 @@ jobs:
       - run:
           name: Run tests against https://next.angular.io/
           command: ./aio/scripts/test-production.sh https://next.angular.io/ $CI_AIO_MIN_PWA_SCORE
-      - notify_caretaker_on_fail
-      - notify_dev_infra_on_fail
+      - notify_webhook_on_fail:
+          webhook_url_env_var: SLACK_CARETAKER_WEBHOOK_URL
+      - notify_webhook_on_fail:
+          webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   legacy-unit-tests-saucelabs:
     executor:
-      name: action-executor
+      name: default-executor
       # In order to avoid the bottleneck of having a slow host machine, we acquire a better
       # container for this job. This is necessary because we launch a lot of browsers concurrently
       # and therefore the tunnel and Karma need to process a lot of file requests and tests.
@@ -570,7 +567,7 @@ jobs:
       - run: ./scripts/saucelabs/stop-tunnel.sh
 
   legacy-misc-tests:
-    executor: action-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
@@ -620,7 +617,7 @@ jobs:
           command: ./scripts/ci/run_angular_material_unit_tests.sh
 
   test_zonejs:
-    executor: action-executor
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
