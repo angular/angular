@@ -372,17 +372,14 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
  * into multiple bundles and loading them on demand.
  * To use lazy loading, provide the `loadChildren` property  instead of the `children` property.
  *
- * Given the following example route, the router uses the registered
- * `NgModuleFactoryLoader` to fetch an NgModule associated with 'team'.
- * It then extracts the set of routes defined in that NgModule,
- * and transparently adds those routes to the main configuration.
+ * Given the following example route, the router will lazy load
+ * the associated module on demand using the browser native import system.
  *
  * ```
  * [{
- *   path: 'team/:id',
- *   component: Team,
- *   loadChildren: 'team'
- * }]
+ *   path: 'lazy',
+ *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
+ * }];
  * ```
  *
  * @publicApi
