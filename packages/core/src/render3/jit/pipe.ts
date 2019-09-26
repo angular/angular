@@ -18,22 +18,19 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
   let ngPipeDef: any = null;
   let ngFactoryDef: any = null;
 
-  // if NG_FACTORY_DEF is already defined on this class then don't overwrite it
-  if (!type.hasOwnProperty(NG_FACTORY_DEF)) {
-    Object.defineProperty(type, NG_FACTORY_DEF, {
-      get: () => {
-        if (ngFactoryDef === null) {
-          const metadata = getPipeMetadata(type, meta);
-          ngFactoryDef = getCompilerFacade().compileFactory(
-              angularCoreEnv, `ng:///${metadata.name}/ngFactoryDef.js`,
-              {...metadata, injectFn: 'directiveInject'}, true);
-        }
-        return ngFactoryDef;
-      },
-      // Make the property configurable in dev mode to allow overriding in tests
-      configurable: !!ngDevMode,
-    });
-  }
+  Object.defineProperty(type, NG_FACTORY_DEF, {
+    get: () => {
+      if (ngFactoryDef === null) {
+        const metadata = getPipeMetadata(type, meta);
+        ngFactoryDef = getCompilerFacade().compileFactory(
+            angularCoreEnv, `ng:///${metadata.name}/ngFactoryDef.js`,
+            {...metadata, injectFn: 'directiveInject', isPipe: true});
+      }
+      return ngFactoryDef;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
+  });
 
   Object.defineProperty(type, NG_PIPE_DEF, {
     get: () => {

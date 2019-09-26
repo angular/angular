@@ -16,7 +16,7 @@ import {Type} from '../interface/type';
 import {assertDefined, assertEqual} from '../util/assert';
 
 import {getFactoryDef} from './definition';
-import {NG_ELEMENT_ID} from './fields';
+import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
@@ -655,7 +655,7 @@ export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
  */
 export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
   const proto = Object.getPrototypeOf(type.prototype).constructor as Type<any>;
-  const factory = ɵɵgetFactoryOf<T>(proto);
+  const factory = (proto as any)[NG_FACTORY_DEF] || ɵɵgetFactoryOf<T>(proto);
   if (factory !== null) {
     return factory;
   } else {

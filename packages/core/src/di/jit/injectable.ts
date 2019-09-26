@@ -10,6 +10,7 @@ import {R3InjectableMetadataFacade, getCompilerFacade} from '../../compiler/comp
 import {Type} from '../../interface/type';
 import {NG_FACTORY_DEF} from '../../render3/fields';
 import {getClosureSafeProperty} from '../../util/property';
+import {resolveForwardRef} from '../forward_ref';
 import {Injectable} from '../injectable';
 import {NG_INJECTABLE_DEF} from '../interface/defs';
 import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, ValueProvider, ValueSansProvider} from '../interface/provider';
@@ -52,12 +53,15 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
                 name: metadata.name,
                 type: metadata.type,
                 typeArgumentCount: metadata.typeArgumentCount,
-                deps: metadata.ctorDeps,
-                injectFn: 'inject'
+                deps: reflectDependencies(type),
+                injectFn: 'inject',
+                isPipe: false
               });
         }
         return ngFactoryDef;
       },
+      // Leave this configurable so that the factories from directives or pipes can take precedence.
+      configurable: true
     });
   }
 }
@@ -91,7 +95,6 @@ function getInjectableMetadata(type: Type<any>, srcMeta?: Injectable): R3Injecta
     type: type,
     typeArgumentCount: 0,
     providedIn: meta.providedIn,
-    ctorDeps: reflectDependencies(type),
     userDeps: undefined,
   };
   if ((isUseClassProvider(meta) || isUseFactoryProvider(meta)) && meta.deps !== undefined) {
@@ -99,16 +102,16 @@ function getInjectableMetadata(type: Type<any>, srcMeta?: Injectable): R3Injecta
   }
   if (isUseClassProvider(meta)) {
     // The user explicitly specified useClass, and may or may not have provided deps.
-    compilerMeta.useClass = meta.useClass;
+    compilerMeta.useClass = resolveForwardRef(meta.useClass);
   } else if (isUseValueProvider(meta)) {
     // The user explicitly specified useValue.
-    compilerMeta.useValue = meta.useValue;
+    compilerMeta.useValue = resolveForwardRef(meta.useValue);
   } else if (isUseFactoryProvider(meta)) {
     // The user explicitly specified useFactory.
     compilerMeta.useFactory = meta.useFactory;
   } else if (isUseExistingProvider(meta)) {
     // The user explicitly specified useExisting.
-    compilerMeta.useExisting = meta.useExisting;
+    compilerMeta.useExisting = resolveForwardRef(meta.useExisting);
   }
   return compilerMeta;
 }

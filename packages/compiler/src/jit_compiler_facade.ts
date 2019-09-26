@@ -60,7 +60,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
       useFactory: wrapExpression(facade, USE_FACTORY),
       useValue: wrapExpression(facade, USE_VALUE),
       useExisting: wrapExpression(facade, USE_EXISTING),
-      ctorDeps: convertR3DependencyMetadataArray(facade.ctorDeps),
       userDeps: convertR3DependencyMetadataArray(facade.userDeps) || undefined,
     });
 
@@ -155,16 +154,15 @@ export class CompilerFacadeImpl implements CompilerFacade {
   }
 
   compileFactory(
-      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade,
-      isPipe = false) {
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade) {
     const factoryRes = compileFactoryFromMetadata({
       name: meta.name,
       type: new WrappedNodeExpr(meta.type),
       typeArgumentCount: meta.typeArgumentCount,
       deps: convertR3DependencyMetadataArray(meta.deps),
-      injectFn:
-          meta.injectFn === 'directiveInject' ? Identifiers.directiveInject : Identifiers.inject,
-      isPipe
+      injectFn: meta.injectFn === 'directiveInject' ? Identifiers.directiveInject :
+                                                      Identifiers.inject,
+      isPipe: meta.isPipe
     });
     return this.jitExpression(
         factoryRes.factory, angularCoreEnv, sourceMapUrl, factoryRes.statements);

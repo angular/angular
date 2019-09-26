@@ -135,10 +135,10 @@ runInEachFileSystem(os => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ngInjectableDef =');
-      expect(jsContents).toContain('(r = new t());');
-      expect(jsContents).toContain('(r = (function () { return new Service(); })());');
-      expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
-      expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
+      expect(jsContents)
+          .toContain('factory: function () { return (function () { return new Service(); })(); }');
+      expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
+      expect(jsContents).toContain(', providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ngInjectableDef: i0.ɵɵInjectableDef<Service>;');
@@ -164,7 +164,7 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ngInjectableDef =');
       expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
-      expect(jsContents).toContain('(r = new t(i0.ɵɵinject(Dep)));');
+      expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
       expect(jsContents)
           .toContain('(r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep)));');
       expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
@@ -1291,7 +1291,7 @@ runInEachFileSystem(os => {
 
              env.driveMain();
              const jsContents = env.getContents('test.js');
-             expect(jsContents).toMatch(/if \(t\).*throw new Error.* else .* '42'/ms);
+             expect(jsContents).toMatch(/function Test_Factory\(t\) { throw new Error\(/ms);
            });
       });
 

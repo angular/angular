@@ -161,21 +161,19 @@ function getDirectiveMetadata(type: Type<any>, metadata: Directive) {
 function addDirectiveFactoryDef(type: Type<any>, metadata: Directive | Component) {
   let ngFactoryDef: any = null;
 
-  if (!type.hasOwnProperty(NG_FACTORY_DEF)) {
-    Object.defineProperty(type, NG_FACTORY_DEF, {
-      get: () => {
-        if (ngFactoryDef === null) {
-          const meta = getDirectiveMetadata(type, metadata);
-          ngFactoryDef = getCompilerFacade().compileFactory(
-              angularCoreEnv, `ng:///${type.name}/ngFactoryDef.js`,
-              {...meta.metadata, injectFn: 'directiveInject'});
-        }
-        return ngFactoryDef;
-      },
-      // Make the property configurable in dev mode to allow overriding in tests
-      configurable: !!ngDevMode,
-    });
-  }
+  Object.defineProperty(type, NG_FACTORY_DEF, {
+    get: () => {
+      if (ngFactoryDef === null) {
+        const meta = getDirectiveMetadata(type, metadata);
+        ngFactoryDef = getCompilerFacade().compileFactory(
+            angularCoreEnv, `ng:///${type.name}/ngFactoryDef.js`,
+            {...meta.metadata, injectFn: 'directiveInject', isPipe: false});
+      }
+      return ngFactoryDef;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
+  });
 }
 
 export function extendsDirectlyFromObject(type: Type<any>): boolean {
