@@ -480,7 +480,8 @@ export class TestBedViewEngine implements TestBed {
     // Tests can inject things from the ng module and from the compiler,
     // but the ng module can't inject things from the compiler and vice versa.
     const result = this._moduleRef.injector.get(token, UNDEFINED, flags);
-    return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue, flags) : result;
+    return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue, flags) as any :
+                                  result;
   }
 
   /** @deprecated from v9.0.0 use TestBed.inject */

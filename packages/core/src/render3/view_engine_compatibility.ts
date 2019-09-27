@@ -225,7 +225,9 @@ export function createContainerRef(
           ngModuleRef?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
         const contextInjector = injector || this.parentInjector;
         if (!ngModuleRef && (componentFactory as any).ngModule == null && contextInjector) {
-          ngModuleRef = contextInjector.get(viewEngine_NgModuleRef, null);
+          // FIXME: ngModuleRef is optional, so its type allows "undefined", whereas the code
+          // below is passing null for the default/absent value.
+          ngModuleRef = contextInjector.get(viewEngine_NgModuleRef, null as any as undefined);
         }
 
         const componentRef =
