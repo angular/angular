@@ -64,6 +64,6 @@ describe('styling debugging tools', () => {
 });
 
 function makeContextWithDebug() {
-  const ctx = allocTStylingContext();
+  const ctx = allocTStylingContext(null, false);
   return attachStylingDebugObject(ctx);
 }

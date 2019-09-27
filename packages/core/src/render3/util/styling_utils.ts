@@ -41,12 +41,20 @@ export const DEFAULT_GUARD_MASK_VALUE = 0b1;
  * tNode for styles and for classes. This function allocates a new instance of a
  * `TStylingContext` with the initial values (see `interfaces.ts` for more info).
  */
-export function allocTStylingContext(initialStyling?: StylingMapArray | null): TStylingContext {
+export function allocTStylingContext(
+    initialStyling: StylingMapArray | null, hasDirectives: boolean): TStylingContext {
   initialStyling = initialStyling || allocStylingMapArray();
+  let config = TStylingConfig.Initial;
+  if (hasDirectives) {
+    config |= TStylingConfig.HasDirectives;
+  }
+  if (initialStyling.length > StylingMapArrayIndex.ValuesStartPosition) {
+    config |= TStylingConfig.HasInitialStyling;
+  }
   return [
-    TStylingConfig.Initial,  // 1) config for the styling context
-    DEFAULT_TOTAL_SOURCES,   // 2) total amount of styling sources (template, directives, etc...)
-    initialStyling,          // 3) initial styling values
+    config,                 // 1) config for the styling context
+    DEFAULT_TOTAL_SOURCES,  // 2) total amount of styling sources (template, directives, etc...)
+    initialStyling,         // 3) initial styling values
   ];
 }
 
@@ -66,15 +74,34 @@ export function hasConfig(context: TStylingContext, flag: TStylingConfig) {
  * Determines whether or not to apply styles/classes directly or via context resolution.
  *
  * There are three cases that are matched here:
- * 1. context is locked for template or host bindings (depending on `hostBindingsMode`)
- * 2. There are no collisions (i.e. properties with more than one binding)
- * 3. There are only "prop" or "map" bindings present, but not both
+ * 1. there are no directives present AND ngDevMode is falsy
+ * 2. context is locked for template or host bindings (depending on `hostBindingsMode`)
+ * 3. There are no collisions (i.e. properties with more than one binding) across multiple
+ *    sources (i.e. template + directive, directive + directive, directive + component)
  */
 export function allowDirectStyling(context: TStylingContext, hostBindingsMode: boolean): boolean {
+  let allow = false;
   const config = getConfig(context);
-  return ((config & getLockedConfig(hostBindingsMode)) !== 0) &&
-      ((config & TStylingConfig.HasCollisions) === 0) &&
-      ((config & TStylingConfig.HasPropAndMapBindings) !== TStylingConfig.HasPropAndMapBindings);
+  const contextIsLocked = (config & getLockedConfig(hostBindingsMode)) !== 0;
+  const hasNoDirectives = (config & TStylingConfig.HasDirectives) === 0;
+
+  // if no directives are present then we do not need populate a context at all. This
+  // is because duplicate prop bindings cannot be registered through the template. If
+  // and when this happens we can safely apply the value directly without context
+  // resolution...
+  if (hasNoDirectives) {
+    // `ngDevMode` is required to be checked here because tests/debugging rely on the context being
+    // populated. If things are in production mode then there is no need to build a context
+    // therefore the direct apply can be allowed (even on the first update).
+    allow = ngDevMode ? contextIsLocked : true;
+  } else if (contextIsLocked) {
+    const hasNoCollisions = (config & TStylingConfig.HasCollisions) === 0;
+    const hasOnlyMapsOrOnlyProps =
+        (config & TStylingConfig.HasPropAndMapBindings) !== TStylingConfig.HasPropAndMapBindings;
+    allow = hasNoCollisions && hasOnlyMapsOrOnlyProps;
+  }
+
+  return allow;
 }
 
 export function setConfig(context: TStylingContext, value: TStylingConfig): void {

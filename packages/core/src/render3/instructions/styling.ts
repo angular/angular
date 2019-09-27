@@ -10,7 +10,8 @@ import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {setInputsForProperty} from '../instructions/shared';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {StylingMapArray, StylingMapArrayIndex, TStylingContext} from '../interfaces/styling';
+import {StylingMapArray, StylingMapArrayIndex, TStylingConfig, TStylingContext} from '../interfaces/styling';
+import {isDirectiveHost} from '../interfaces/type_checks';
 import {BINDING_INDEX, LView, RENDERER} from '../interfaces/view';
 import {getActiveDirectiveId, getCurrentStyleSanitizer, getLView, getSelectedIndex, setCurrentStyleSanitizer, setElementExitFn} from '../state';
 import {applyStylingMapDirectly, applyStylingValueDirectly, flushStyling, setClass, setStyle, updateClassViaContext, updateStyleViaContext} from '../styling/bindings';
@@ -18,7 +19,7 @@ import {activateStylingMapFeature} from '../styling/map_based_bindings';
 import {attachStylingDebugObject} from '../styling/styling_debug';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
-import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, hasClassInput, hasStyleInput, hasValueChanged, isContextLocked, isHostStylingActive, isStylingContext, normalizeIntoStylingMap, setValue, stylingMapToString} from '../util/styling_utils';
+import {addItemToStylingMap, allocStylingMapArray, allocTStylingContext, allowDirectStyling, concatString, forceClassesAsString, forceStylesAsString, getInitialStylingValue, getStylingMapArray, hasClassInput, hasStyleInput, hasValueChanged, isContextLocked, isHostStylingActive, isStylingContext, normalizeIntoStylingMap, patchConfig, setValue, stylingMapToString} from '../util/styling_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
 
@@ -163,12 +164,19 @@ function stylingProp(
   const context = isClassBased ? getClassesContext(tNode) : getStylesContext(tNode);
   const sanitizer = isClassBased ? null : getCurrentStyleSanitizer();
 
+  // we check for this in the instruction code so that the context can be notified
+  // about prop or map bindings so that the direct apply check can decide earlier
+  // if it allows for context resolution to be bypassed.
+  if (!isContextLocked(context, hostBindingsMode)) {
+    patchConfig(context, TStylingConfig.HasPropBindings);
+  }
+
   // Direct Apply Case: bypass context resolution and apply the
   // style/class value directly to the element
   if (allowDirectStyling(context, hostBindingsMode)) {
     const renderer = getRenderer(tNode, lView);
     updated = applyStylingValueDirectly(
-        renderer, context, native, lView, bindingIndex, prop, value,
+        renderer, context, native, lView, bindingIndex, prop, value, isClassBased,
         isClassBased ? setClass : setStyle, sanitizer);
   } else {
     // Context Resolution (or first update) Case: save the value
@@ -315,6 +323,13 @@ function _stylingMap(
   const hostBindingsMode = isHostStyling();
   const sanitizer = getCurrentStyleSanitizer();
 
+  // we check for this in the instruction code so that the context can be notified
+  // about prop or map bindings so that the direct apply check can decide earlier
+  // if it allows for context resolution to be bypassed.
+  if (!isContextLocked(context, hostBindingsMode)) {
+    patchConfig(context, TStylingConfig.HasMapBindings);
+  }
+
   const valueHasChanged = hasValueChanged(oldValue, value);
   const stylingMapArr =
       value === NO_CHANGE ? NO_CHANGE : normalizeIntoStylingMap(oldValue, value, !isClassBased);
@@ -325,7 +340,7 @@ function _stylingMap(
     const renderer = getRenderer(tNode, lView);
     updated = applyStylingMapDirectly(
         renderer, context, native, lView, bindingIndex, stylingMapArr as StylingMapArray,
-        isClassBased ? setClass : setStyle, sanitizer, valueHasChanged);
+        isClassBased, isClassBased ? setClass : setStyle, sanitizer, valueHasChanged);
   } else {
     updated = valueHasChanged;
     activateStylingMapFeature();
@@ -500,10 +515,12 @@ function getClassesContext(tNode: TNode): TStylingContext {
 function getContext(tNode: TNode, isClassBased: boolean): TStylingContext {
   let context = isClassBased ? tNode.classes : tNode.styles;
   if (!isStylingContext(context)) {
-    context = allocTStylingContext(context as StylingMapArray | null);
+    const hasDirectives = isDirectiveHost(tNode);
+    context = allocTStylingContext(context as StylingMapArray | null, hasDirectives);
     if (ngDevMode) {
       attachStylingDebugObject(context as TStylingContext);
     }
+
     if (isClassBased) {
       tNode.classes = context;
     } else {
