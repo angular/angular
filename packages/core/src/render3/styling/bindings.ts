@@ -10,7 +10,7 @@ import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanit
 import {ProceduralRenderer3, RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingConfig, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from '../interfaces/styling';
 import {NO_CHANGE} from '../tokens';
-import {DEFAULT_BINDING_INDEX, DEFAULT_BINDING_VALUE, DEFAULT_GUARD_MASK_VALUE, MAP_BASED_ENTRY_PROP_NAME, getBindingValue, getConfig, getDefaultValue, getGuardMask, getMapProp, getMapValue, getProp, getPropValuesStartPosition, getStylingMapArray, getTotalSources, getValue, getValuesCount, hasConfig, hasValueChanged, isContextLocked, isHostStylingActive, isSanitizationRequired, isStylingValueDefined, lockContext, patchConfig, setDefaultValue, setGuardMask, setMapAsDirty, setValue} from '../util/styling_utils';
+import {DEFAULT_BINDING_INDEX, DEFAULT_BINDING_VALUE, DEFAULT_GUARD_MASK_VALUE, MAP_BASED_ENTRY_PROP_NAME, TEMPLATE_DIRECTIVE_INDEX, getBindingValue, getConfig, getDefaultValue, getGuardMask, getInitialStylingValue, getMapProp, getMapValue, getProp, getPropValuesStartPosition, getStylingMapArray, getTotalSources, getValue, getValuesCount, hasConfig, hasValueChanged, isContextLocked, isHostStylingActive, isSanitizationRequired, isStylingValueDefined, lockContext, patchConfig, setDefaultValue, setGuardMask, setMapAsDirty, setValue} from '../util/styling_utils';
 
 import {getStylingState, resetStylingState} from './state';
 
@@ -143,7 +143,6 @@ function updateBindingData(
     patchConfig(
         context,
         hostBindingsMode ? TStylingConfig.HasHostBindings : TStylingConfig.HasTemplateBindings);
-    patchConfig(context, prop ? TStylingConfig.HasPropBindings : TStylingConfig.HasMapBindings);
   }
 
   const changed = forceUpdate || hasValueChanged(data[bindingIndex], value);
@@ -629,22 +628,58 @@ export function applyStylingViaContext(
  * automatically. This function is intended to be used for performance reasons in the
  * event that there is no need to apply styling via context resolution.
  *
- * See `allowDirectStylingApply`.
+ * This function has three different cases that can occur (for each item in the map):
+ *
+ * - Case 1: Attempt to apply the current value in the map to the element (if it's `non null`).
+ *
+ * - Case 2: If a map value fails to be applied then the algorithm will find a matching entry in
+ *           the initial values present in the context and attempt to apply that.
+ *
+ * - Default Case: If the initial value cannot be applied then a default value of `null` will be
+ *                 applied (which will remove the style/class value from the element).
+ *
+ * See `allowDirectStylingApply` to learn the logic used to determine whether any style/class
+ * bindings can be directly applied.
  *
  * @returns whether or not the styling map was applied to the element.
  */
 export function applyStylingMapDirectly(
     renderer: any, context: TStylingContext, element: RElement, data: LStylingData,
-    bindingIndex: number, map: StylingMapArray, applyFn: ApplyStylingFn,
+    bindingIndex: number, map: StylingMapArray, isClassBased: boolean, applyFn: ApplyStylingFn,
     sanitizer?: StyleSanitizeFn | null, forceUpdate?: boolean): boolean {
   if (forceUpdate || hasValueChanged(data[bindingIndex], map)) {
     setValue(data, bindingIndex, map);
+    const initialStyles =
+        hasConfig(context, TStylingConfig.HasInitialStyling) ? getStylingMapArray(context) : null;
+
     for (let i = StylingMapArrayIndex.ValuesStartPosition; i < map.length;
          i += StylingMapArrayIndex.TupleSize) {
       const prop = getMapProp(map, i);
       const value = getMapValue(map, i);
-      applyStylingValue(renderer, context, element, prop, value, applyFn, bindingIndex, sanitizer);
+
+      // case 1: apply the map value (if it exists)
+      let applied =
+          applyStylingValue(renderer, element, prop, value, applyFn, bindingIndex, sanitizer);
+
+      // case 2: apply the initial value (if it exists)
+      if (!applied && initialStyles) {
+        applied = findAndApplyMapValue(
+            renderer, element, applyFn, initialStyles, prop, bindingIndex, sanitizer);
+      }
+
+      // default case: apply `null` to remove the value
+      if (!applied) {
+        applyFn(renderer, element, prop, null, bindingIndex);
+      }
     }
+
+    const state = getStylingState(element, TEMPLATE_DIRECTIVE_INDEX);
+    if (isClassBased) {
+      state.lastDirectClassMap = map;
+    } else {
+      state.lastDirectStyleMap = map;
+    }
+
     return true;
   }
   return false;
@@ -657,47 +692,95 @@ export function applyStylingMapDirectly(
  * automatically. This function is intended to be used for performance reasons in the
  * event that there is no need to apply styling via context resolution.
  *
- * See `allowDirectStylingApply`.
+ * This function has four different cases that can occur:
+ *
+ * - Case 1: Apply the provided prop/value (style or class) entry to the element
+ *           (if it is `non null`).
+ *
+ * - Case 2: If value does not get applied (because its `null` or `undefined`) then the algorithm
+ *           will check to see if a styling map value was applied to the element as well just
+ *           before this (via `styleMap` or `classMap`). If and when a map is present then the
+  *          algorithm will find the matching property in the map and apply its value.
+  *
+ * - Case 3: If a map value fails to be applied then the algorithm will check to see if there
+ *           are any initial values present and attempt to apply a matching value based on
+ *           the target prop.
+ *
+ * - Default Case: If a matching initial value cannot be applied then a default value
+ *                 of `null` will be applied (which will remove the style/class value
+ *                 from the element).
+ *
+ * See `allowDirectStylingApply` to learn the logic used to determine whether any style/class
+ * bindings can be directly applied.
  *
  * @returns whether or not the prop/value styling was applied to the element.
  */
 export function applyStylingValueDirectly(
     renderer: any, context: TStylingContext, element: RElement, data: LStylingData,
-    bindingIndex: number, prop: string, value: any, applyFn: ApplyStylingFn,
+    bindingIndex: number, prop: string, value: any, isClassBased: boolean, applyFn: ApplyStylingFn,
     sanitizer?: StyleSanitizeFn | null): boolean {
+  let applied = false;
   if (hasValueChanged(data[bindingIndex], value)) {
     setValue(data, bindingIndex, value);
-    applyStylingValue(renderer, context, element, prop, value, applyFn, bindingIndex, sanitizer);
+
+    // case 1: apply the provided value (if it exists)
+    applied = applyStylingValue(renderer, element, prop, value, applyFn, bindingIndex, sanitizer);
+
+    // case 2: find the matching property in a styling map and apply the detected value
+    if (!applied && hasConfig(context, TStylingConfig.HasMapBindings)) {
+      const state = getStylingState(element, TEMPLATE_DIRECTIVE_INDEX);
+      const map = isClassBased ? state.lastDirectClassMap : state.lastDirectStyleMap;
+      applied = map ?
+          findAndApplyMapValue(renderer, element, applyFn, map, prop, bindingIndex, sanitizer) :
+          false;
+    }
+
+    // case 3: apply the initial value (if it exists)
+    if (!applied && hasConfig(context, TStylingConfig.HasInitialStyling)) {
+      const map = getStylingMapArray(context);
+      applied =
+          map ? findAndApplyMapValue(renderer, element, applyFn, map, prop, bindingIndex) : false;
+    }
+
+    // default case: apply `null` to remove the value
+    if (!applied) {
+      applyFn(renderer, element, prop, null, bindingIndex);
+    }
+  }
+  return applied;
+}
+
+function applyStylingValue(
+    renderer: any, element: RElement, prop: string, value: any, applyFn: ApplyStylingFn,
+    bindingIndex: number, sanitizer?: StyleSanitizeFn | null): boolean {
+  let valueToApply: string|null = unwrapSafeValue(value);
+  if (isStylingValueDefined(valueToApply)) {
+    valueToApply =
+        sanitizer ? sanitizer(prop, value, StyleSanitizeMode.SanitizeOnly) : valueToApply;
+    applyFn(renderer, element, prop, valueToApply, bindingIndex);
     return true;
   }
   return false;
 }
 
-function applyStylingValue(
-    renderer: any, context: TStylingContext, element: RElement, prop: string, value: any,
-    applyFn: ApplyStylingFn, bindingIndex: number, sanitizer?: StyleSanitizeFn | null) {
-  let valueToApply: string|null = unwrapSafeValue(value);
-  if (isStylingValueDefined(valueToApply)) {
-    valueToApply =
-        sanitizer ? sanitizer(prop, value, StyleSanitizeMode.SanitizeOnly) : valueToApply;
-  } else if (hasConfig(context, TStylingConfig.HasInitialStyling)) {
-    const initialStyles = getStylingMapArray(context);
-    if (initialStyles) {
-      valueToApply = findInitialStylingValue(initialStyles, prop);
-    }
-  }
-  applyFn(renderer, element, prop, valueToApply, bindingIndex);
-}
-
-function findInitialStylingValue(map: StylingMapArray, prop: string): string|null {
+function findAndApplyMapValue(
+    renderer: any, element: RElement, applyFn: ApplyStylingFn, map: StylingMapArray, prop: string,
+    bindingIndex: number, sanitizer?: StyleSanitizeFn | null) {
   for (let i = StylingMapArrayIndex.ValuesStartPosition; i < map.length;
        i += StylingMapArrayIndex.TupleSize) {
     const p = getMapProp(map, i);
-    if (p >= prop) {
-      return p === prop ? getMapValue(map, i) : null;
+    if (p === prop) {
+      let valueToApply = getMapValue(map, i);
+      valueToApply =
+          sanitizer ? sanitizer(prop, valueToApply, StyleSanitizeMode.SanitizeOnly) : valueToApply;
+      applyFn(renderer, element, prop, valueToApply, bindingIndex);
+      return true;
+    }
+    if (p > prop) {
+      break;
     }
   }
-  return null;
+  return false;
 }
 
 function normalizeBitMaskValue(value: number | boolean): number {
