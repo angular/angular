@@ -30,7 +30,7 @@ ESM5Info = provider(
 )
 
 def _map_closure_path(file):
-    result = file.short_path[:-len(".closure.js")]
+    result = file.short_path[:-len(".mjs")]
 
     # short_path is meant to be used when accessing runfiles in a binary, where
     # the CWD is inside the current repo. Therefore files in external repo have a

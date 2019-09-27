@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ng_rollup_bundle", "ts_library")
 load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
-load("@build_bazel_rules_nodejs//:defs.bzl", "http_server")
+load("@npm//http-server:index.bzl", "http_server")
 
 ng_module(
     name = "hello_world",

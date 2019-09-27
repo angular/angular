@@ -1,7 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@npm_angular_bazel//:index.bzl", "ng_module")
-load("@build_bazel_rules_nodejs//:defs.bzl", "http_server", "rollup_bundle")
+load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle")
+load("@npm//http-server:index.bzl", "http_server")
 load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
 load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 

@@ -758,10 +758,10 @@ rule and the `ts_dev_server` sources move to `ng_experimental_iv_srcs`.
 #### `ng_module` ivy output
 
 The `ng_module` is able to provide the ivy version of the `.js` files which
-will be generated with as `.ivy.js` for the development sources and `.ivy.closure.js`
+will be generated with as `.ivy.js` for the development sources and `.ivy.mjs`
 for the production sources.
 
-The `ng_module` rule will also generate a `angular.back_patch.js` and `.closure.js`
+The `ng_module` rule will also generate a `angular.back_patch.js` and `.mjs`
 files and a `module_scope.json` file. The type of the `module_scope.json` file will
 be:
 
