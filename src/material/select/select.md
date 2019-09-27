@@ -53,7 +53,7 @@ In some cases that `<mat-form-field>` may use the placeholder as the label (see 
 ### Disabling the select or individual options
 
 It is possible to disable the entire select or individual options in the select by using the
-disabled property on the `<select>` or `<mat-select>` and the `<option>` or <mat-option>` elements respectively.
+disabled property on the `<select>` or `<mat-select>` and the `<option>` or `<mat-option>` elements respectively.
 
 <!-- example(select-disabled) -->
 
