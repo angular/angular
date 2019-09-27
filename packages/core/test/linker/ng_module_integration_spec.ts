@@ -294,7 +294,8 @@ function declareTests(config?: {useJit: boolean}) {
     describe('id', () => {
       const token = 'myid';
 
-      // Ivy TestBed clears module registry in resetTestingModule so this afterEach is not needed for Ivy
+      // Ivy TestBed clears module registry in resetTestingModule so this afterEach is not needed
+      // for Ivy
       if (!ivyEnabled) {
         afterEach(() => clearModuleRegistry());
       }
