@@ -639,6 +639,9 @@
     "name": "extractPipeDef"
   },
   {
+    "name": "findAndApplyMapValue"
+  },
+  {
     "name": "findAttrIndexInNode"
   },
   {
@@ -649,9 +652,6 @@
   },
   {
     "name": "findExistingListener"
-  },
-  {
-    "name": "findInitialStylingValue"
   },
   {
     "name": "findViaComponent"

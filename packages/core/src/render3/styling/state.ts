@@ -6,6 +6,7 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {RElement} from '../interfaces/renderer';
+import {StylingMapArray} from '../interfaces/styling';
 import {TEMPLATE_DIRECTIVE_INDEX} from '../util/styling_utils';
 
 /**
@@ -57,6 +58,26 @@ export interface StylingState {
 
   /** The styles update bit index value that is processed during each style binding */
   stylesIndex: number;
+
+  /**
+   * The last class map that was applied (i.e. `[class]="x"`).
+   *
+   * Note that this property is only populated when direct class values are applied
+   * (i.e. context resolution is not used).
+   *
+   * See `allowDirectStyling` for more info.
+  */
+  lastDirectClassMap: StylingMapArray|null;
+
+  /**
+   * The last style map that was applied (i.e. `[style]="x"`)
+   *
+   * Note that this property is only populated when direct style values are applied
+   * (i.e. context resolution is not used).
+   *
+   * See `allowDirectStyling` for more info.
+  */
+  lastDirectStyleMap: StylingMapArray|null;
 }
 
 // these values will get filled in the very first time this is accessed...
@@ -68,6 +89,8 @@ const _state: StylingState = {
   classesIndex: -1,
   stylesBitMask: -1,
   stylesIndex: -1,
+  lastDirectClassMap: null,
+  lastDirectStyleMap: null,
 };
 
 const BIT_MASK_START_VALUE = 0;
@@ -99,6 +122,8 @@ export function getStylingState(element: RElement, directiveIndex: number): Styl
     _state.classesIndex = INDEX_START_VALUE;
     _state.stylesBitMask = BIT_MASK_START_VALUE;
     _state.stylesIndex = INDEX_START_VALUE;
+    _state.lastDirectClassMap = null;
+    _state.lastDirectStyleMap = null;
   } else if (_state.directiveIndex !== directiveIndex) {
     _state.directiveIndex = directiveIndex;
     _state.sourceIndex++;

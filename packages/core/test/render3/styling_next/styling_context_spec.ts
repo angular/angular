@@ -110,7 +110,7 @@ describe('styling context', () => {
 });
 
 function makeContextWithDebug() {
-  const ctx = allocTStylingContext();
+  const ctx = allocTStylingContext(null, false);
   return attachStylingDebugObject(ctx);
 }
 
