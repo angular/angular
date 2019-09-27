@@ -74,27 +74,29 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
   if (!transformDecorators && !transformTypesToClosure) {
     return undefined;
   }
-  if (transformDecorators) {
-    // This is needed as a workaround for https://github.com/angular/tsickle/issues/635
-    // Otherwise tsickle might emit references to non imported values
-    // as TypeScript elided the import.
-    options.emitDecoratorMetadata = true;
-  }
-  const tsickleHost: Pick<
-      tsickle.TsickleHost, 'shouldSkipTsickleProcessing'|'pathToModuleName'|
-      'shouldIgnoreWarningsForPath'|'fileNameToModuleId'|'googmodule'|'untyped'|
-      'convertIndexImportShorthand'|'transformDecorators'|'transformTypesToClosure'> = {
-    shouldSkipTsickleProcessing: (fileName) =>
-                                     /\.d\.ts$/.test(fileName) || GENERATED_FILES.test(fileName),
-    pathToModuleName: (context, importPath) => '',
-    shouldIgnoreWarningsForPath: (filePath) => false,
-    fileNameToModuleId: (fileName) => fileName,
-    googmodule: false,
-    untyped: true,
-    convertIndexImportShorthand: false, transformDecorators, transformTypesToClosure,
-  };
 
   if (options.annotateForClosureCompiler || options.annotationsAs === 'static fields') {
+    if (transformDecorators) {
+      // This is needed as a workaround for https://github.com/angular/tsickle/issues/635
+      // Otherwise tsickle might emit references to non imported values
+      // as TypeScript elided the import.
+      options.emitDecoratorMetadata = true;
+    }
+
+    const tsickleHost: Pick<
+        tsickle.TsickleHost, 'shouldSkipTsickleProcessing'|'pathToModuleName'|
+        'shouldIgnoreWarningsForPath'|'fileNameToModuleId'|'googmodule'|'untyped'|
+        'convertIndexImportShorthand'|'transformDecorators'|'transformTypesToClosure'> = {
+      shouldSkipTsickleProcessing: (fileName) =>
+                                       /\.d\.ts$/.test(fileName) || GENERATED_FILES.test(fileName),
+      pathToModuleName: (_context, _importPath) => '',
+      shouldIgnoreWarningsForPath: (_filePath) => false,
+      fileNameToModuleId: (fileName) => fileName,
+      googmodule: false,
+      untyped: true,
+      convertIndexImportShorthand: false, transformDecorators, transformTypesToClosure,
+    };
+
     return ({
              program,
              targetSourceFile,
@@ -112,19 +114,9 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
               beforeTs: customTransformers.before,
               afterTs: customTransformers.after,
             });
-  } else {
-    return ({
-             program,
-             targetSourceFile,
-             writeFile,
-             cancellationToken,
-             emitOnlyDtsFiles,
-             customTransformers = {},
-           }) =>
-               program.emit(
-                   targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles,
-                   {after: customTransformers.after, before: customTransformers.before});
   }
+
+  return undefined;
 }
 
 export interface NgcParsedConfiguration extends ParsedConfiguration { watch?: boolean; }

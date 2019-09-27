@@ -614,6 +614,38 @@ describe('ngc transformer command-line', () => {
         expect(mymoduleSource).toContain(`__metadata("design:paramtypes", [AClass])`);
       });
 
+      it('should not add metadata when emitDecoratorMetadata and annotateForClosureCompiler are false',
+         () => {
+           writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "compilerOptions": {
+            "emitDecoratorMetadata": false
+          },
+          "angularCompilerOptions": {
+            "annotateForClosureCompiler": false
+          },
+          "files": ["mymodule.ts"]
+        }`);
+           write('aclass.ts', `export class AClass {}`);
+           write('mymodule.ts', `
+          import {NgModule} from '@angular/core';
+          import {AClass} from './aclass';
+
+          @NgModule({declarations: []})
+          export class MyModule {
+            constructor(importedClass: AClass) {}
+          }
+        `);
+
+           const exitCode = main(['-p', basePath], errorSpy);
+           expect(exitCode).toEqual(0);
+
+           const mymodulejs = path.resolve(outDir, 'mymodule.js');
+           const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+           expect(mymoduleSource).toContain('MyModule = __decorate([');
+           expect(mymoduleSource).not.toContain('__metadata');
+         });
+
       it('should add metadata as static fields', () => {
         // Note: Don't specify emitDecoratorMetadata here on purpose,
         // as regression test for https://github.com/angular/angular/issues/19916.
@@ -1442,7 +1474,6 @@ describe('ngc transformer command-line', () => {
       });
     });
   });
-
 
   describe('expression lowering', () => {
     const shouldExist = (fileName: string) => {
