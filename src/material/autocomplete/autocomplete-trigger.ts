@@ -500,14 +500,21 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
     const labelCount = _countGroupLabelsBeforeOption(index,
         this.autocomplete.options, this.autocomplete.optionGroups);
 
-    const newScrollPosition = _getOptionScrollPosition(
-      index + labelCount,
-      AUTOCOMPLETE_OPTION_HEIGHT,
-      this.autocomplete._getScrollTop(),
-      AUTOCOMPLETE_PANEL_HEIGHT
-    );
+    if (index === 0 && labelCount === 1) {
+      // If we've got one group label before the option and we're at the top option,
+      // scroll the list to the top. This is better UX than scrolling the list to the
+      // top of the option, because it allows the user to read the top group's label.
+      this.autocomplete._setScrollTop(0);
+    } else {
+      const newScrollPosition = _getOptionScrollPosition(
+        index + labelCount,
+        AUTOCOMPLETE_OPTION_HEIGHT,
+        this.autocomplete._getScrollTop(),
+        AUTOCOMPLETE_PANEL_HEIGHT
+      );
 
-    this.autocomplete._setScrollTop(newScrollPosition);
+      this.autocomplete._setScrollTop(newScrollPosition);
+    }
   }
 
   /**

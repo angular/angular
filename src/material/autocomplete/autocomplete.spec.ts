@@ -1323,6 +1323,28 @@ describe('MatAutocomplete', () => {
       expect(container.scrollTop)
           .toBe(96, 'Expected panel to scroll up when option is above panel.');
     }));
+
+    it('should scroll back to the top when reaching the first option with preceding group label',
+      fakeAsync(() => {
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        tick();
+        fixture.detectChanges();
+        expect(container.scrollTop).toBe(0, 'Expected the panel not to scroll.');
+
+        // Press the down arrow five times.
+        [1, 2, 3, 4, 5].forEach(() => {
+          fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+          tick();
+        });
+
+        // Press the up arrow five times.
+        [1, 2, 3, 4, 5].forEach(() => {
+          fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
+          tick();
+        });
+
+        expect(container.scrollTop).toBe(0, 'Expected panel to be scrolled to the top.');
+      }));
   });
 
   describe('aria', () => {
