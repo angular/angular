@@ -2059,12 +2059,21 @@ describe('styling', () => {
     });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
-
     dirInstance.setStyles();
 
     const div = fixture.debugElement.children[0];
     expect(div.styles.transform).toMatch(/translate3d\(0px\s*,\s*0px\s*,\s*0px\)/);
     expect(div.classes['my-class']).toBe(true);
+
+    div.classes['other-class'] = true;
+    div.styles['width'] = '200px';
+    expect(div.styles.width).toEqual('200px');
+    expect(div.classes['other-class']).toBe(true);
+
+    if (ivyEnabled) {
+      expect(div.nativeElement.classList.contains('other-class')).toBeTruthy();
+      expect(div.nativeElement.style['width']).toEqual('200px');
+    }
   });
 });
 

@@ -7,14 +7,24 @@
  */
 import {global} from '../util/global';
 
+/**
+ * Used to inform TS about the `Proxy` class existing globally.
+ */
 interface GlobalWithProxy {
   Proxy: typeof Proxy;
 }
 
-export function createProxy(definition: ProxyHandler<any>): {} {
+/**
+ * Creates an instance of a `Proxy` and creates with an empty target object and binds it to the
+ * provided handler.
+ *
+ * The reason why this function exists is because IE doesn't support
+ * the `Proxy` class. For this reason an error must be thrown.
+ */
+export function createProxy(handler: ProxyHandler<any>): {} {
   const g = global as any as GlobalWithProxy;
   if (!g.Proxy) {
     throw new Error('Proxy is not supported in this browser');
   }
-  return new g.Proxy({}, definition);
+  return new g.Proxy({}, handler);
 }
