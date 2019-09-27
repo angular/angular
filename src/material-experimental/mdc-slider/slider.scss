@@ -1,5 +1,6 @@
 @import '@material/slider/mixins';
 @import '../mdc-helpers/mdc-helpers';
+@import '../../cdk/a11y/a11y';
 
 $mat-slider-min-size: 128px !default;
 $mat-slider-horizontal-margin: 8px !default;
@@ -24,6 +25,21 @@ $mat-slider-horizontal-margin: 8px !default;
   // the slider to automatically expand horizontally for backwards compatibility.
   width: auto;
   min-width: $mat-slider-min-size - (2 * $mat-slider-horizontal-margin);
+
+  @include cdk-high-contrast {
+    // The slider track isn't visible in high contrast mode so we work
+    // around it by setting an outline and removing the height to make it look solid.
+    .mdc-slider__track-container {
+      height: 0;
+      outline: solid 2px;
+      margin-top: 1px;
+    }
+
+    // Adds an outline around the thumb label so it doesn't just float on top of the slider.
+    .mdc-slider__pin-value-marker {
+      outline: solid 1px;
+    }
+  }
 }
 
 // In order to make it possible for developers to disable animations for a  slider,
