@@ -9,12 +9,12 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {MatRadio} from './radio';
+import {MatRadioButton} from './radio';
 
 @NgModule({
   imports: [MatCommonModule, CommonModule],
-  exports: [MatRadio, MatCommonModule],
-  declarations: [MatRadio],
+  exports: [MatRadioButton, MatCommonModule],
+  declarations: [MatRadioButton],
 })
 export class MatRadioModule {
 }

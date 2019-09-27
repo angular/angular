@@ -23,18 +23,18 @@ let nextUniqueId = 0;
 
 @Component({
   moduleId: module.id,
-  selector: 'mat-radio',
+  selector: 'mat-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],
   host: {
     'class': 'mat-mdc-radio',
     '[attr.id]': 'id',
   },
-  exportAs: 'matRadio',
+  exportAs: 'matRadioButton',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatRadio implements AfterViewInit, OnDestroy {
+export class MatRadioButton implements AfterViewInit, OnDestroy {
 
   private _uniqueId: string = `mat-radio-${++nextUniqueId}`;
 
