@@ -237,7 +237,7 @@ def _expected_outs(ctx):
             continue
 
         filter_summaries = ctx.attr.filter_summaries
-        closure_js = [f.replace(".js", ".closure.js") for f in devmode_js if not filter_summaries or not f.endswith(".ngsummary.js")]
+        closure_js = [f.replace(".js", ".mjs") for f in devmode_js if not filter_summaries or not f.endswith(".ngsummary.js")]
         declarations = [f.replace(".js", ".d.ts") for f in devmode_js]
 
         devmode_js_files += [ctx.actions.declare_file(basename + ext) for ext in devmode_js]
@@ -262,7 +262,7 @@ def _expected_outs(ctx):
     if _should_produce_flat_module_outs(ctx):
         flat_module_out = _flat_module_out_file(ctx)
         devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out))
-        closure_js_files.append(ctx.actions.declare_file("%s.closure.js" % flat_module_out))
+        closure_js_files.append(ctx.actions.declare_file("%s.mjs" % flat_module_out))
         bundle_index_typings = ctx.actions.declare_file("%s.d.ts" % flat_module_out)
         declaration_files.append(bundle_index_typings)
         if is_legacy_ngc:
