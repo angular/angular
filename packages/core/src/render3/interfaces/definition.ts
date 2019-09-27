@@ -81,7 +81,9 @@ export interface DirectiveType<T> extends Type<T> {
   ngFactoryDef: () => T;
 }
 
-export const enum DirectiveDefFlags {ContentQuery = 0b10}
+export enum DirectiveDefFlags {
+  ContentQuery = 0b10
+}
 
 /**
  * A subclass of `Type` which has a static `ngPipeDef`:`PipeDef` field making it
