@@ -149,7 +149,7 @@ export class MatTableDataSource<T> extends DataSource<T> {
       let valueB = this.sortingDataAccessor(b, active);
 
       // If both valueA and valueB exist (truthy), then compare the two. Otherwise, check if
-      // one value exists while the other doesn't. In this case, existing value should come first.
+      // one value exists while the other doesn't. In this case, existing value should come last.
       // This avoids inconsistent results when comparing values to undefined/null.
       // If neither value exists, return 0 (equal).
       let comparatorResult = 0;
