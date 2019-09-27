@@ -457,8 +457,8 @@ export class MetadataCollector {
                   left: {
                     __symbolic: 'select',
                     expression: recordEntry({__symbolic: 'reference', name: enumName}, node), name
-                  } as any,
-                };
+                  },
+                } as any;
               } else {
                 nextDefaultValue =
                     recordEntry(errorSym('Unsupported enum member name', member.name), node);
