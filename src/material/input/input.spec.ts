@@ -1448,6 +1448,61 @@ describe('MatInput with appearance', () => {
     expect(outlineFixture.componentInstance.formField.updateOutlineGap).toHaveBeenCalled();
   }));
 
+  it('should update the outline gap correctly if the direction changes multiple times',
+    fakeAsync(() => {
+      fixture.destroy();
+      TestBed.resetTestingModule();
+
+      let zone: MockNgZone;
+      const fakeDirectionality = {change: new Subject<Direction>(), value: 'ltr'};
+      const outlineFixture = createComponent(MatInputWithAppearanceAndLabel, [
+        {
+          provide: Directionality,
+          useValue: fakeDirectionality
+        },
+        {
+          provide: NgZone,
+          useFactory: () => zone = new MockNgZone()
+        }
+      ]);
+
+      outlineFixture.componentInstance.appearance = 'outline';
+      outlineFixture.detectChanges();
+      zone!.simulateZoneExit();
+      flush();
+      outlineFixture.detectChanges();
+
+      spyOn(outlineFixture.componentInstance.formField, 'updateOutlineGap');
+
+      fakeDirectionality.value = 'rtl';
+      fakeDirectionality.change.next('rtl');
+      outlineFixture.detectChanges();
+      flush();
+      outlineFixture.detectChanges();
+
+      let wrapperElement = outlineFixture.nativeElement;
+      let outlineStart = wrapperElement.querySelector('.mat-form-field-outline-start');
+      // outlineGapPadding 5px + containerRect margin/padding in worst case 3px
+      const maxOutlineStart = '8px';
+
+      expect(outlineFixture.componentInstance.formField.updateOutlineGap).toHaveBeenCalled();
+      expect(parseInt(outlineStart.style.width)).toBeLessThan(parseInt(maxOutlineStart));
+
+      fakeDirectionality.value = 'ltr';
+      fakeDirectionality.change.next('ltr');
+      outlineFixture.detectChanges();
+      flush();
+      outlineFixture.detectChanges();
+
+      wrapperElement = outlineFixture.nativeElement;
+      outlineStart = wrapperElement.querySelector('.mat-form-field-outline-start');
+
+      expect(outlineFixture.componentInstance.formField.updateOutlineGap).toHaveBeenCalled();
+      expect(parseInt(outlineStart.style.width)).toBeLessThan(parseInt(maxOutlineStart));
+
+    }));
+
+
 
 
 });
