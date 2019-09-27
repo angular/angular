@@ -9,6 +9,7 @@
 import {ComponentHarness, HarnessPredicate, TestElement} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
+import {MatAutocompleteOptionHarness, MatAutocompleteOptionGroupHarness} from './option-harness';
 
 /** Selector for the autocomplete panel. */
 const PANEL_SELECTOR = '.mat-autocomplete-panel';
@@ -21,8 +22,8 @@ export class MatAutocompleteHarness extends ComponentHarness {
   private _documentRootLocator = this.documentRootLocatorFactory();
   private _panel = this._documentRootLocator.locatorFor(PANEL_SELECTOR);
   private _optionalPanel = this._documentRootLocator.locatorForOptional(PANEL_SELECTOR);
-  private _options = this._documentRootLocator.locatorForAll(`${PANEL_SELECTOR} .mat-option`);
-  private _groups = this._documentRootLocator.locatorForAll(`${PANEL_SELECTOR} .mat-optgroup`);
+  private _options = this._documentRootLocator.locatorForAll(MatAutocompleteOptionHarness);
+  private _groups = this._documentRootLocator.locatorForAll(MatAutocompleteOptionGroupHarness);
 
   static hostSelector = '.mat-autocomplete-trigger';
 
@@ -73,12 +74,12 @@ export class MatAutocompleteHarness extends ComponentHarness {
   }
 
   /** Gets the options inside the autocomplete panel. */
-  async getOptions(): Promise<TestElement[]> {
+  async getOptions(): Promise<MatAutocompleteOptionHarness[]> {
     return this._options();
   }
 
   /** Gets the groups of options inside the panel. */
-  async getOptionGroups(): Promise<TestElement[]> {
+  async getOptionGroups(): Promise<MatAutocompleteOptionGroupHarness[]> {
     return this._groups();
   }
 

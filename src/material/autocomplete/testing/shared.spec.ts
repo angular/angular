@@ -82,7 +82,7 @@ export function runHarnessTests(
     const options = await input.getOptions();
 
     expect(options.length).toBe(11);
-    expect(await options[5].text()).toBe('New York');
+    expect(await options[5].getText()).toBe('New York');
   });
 
   it('should be able to get the autocomplete panel groups', async () => {
