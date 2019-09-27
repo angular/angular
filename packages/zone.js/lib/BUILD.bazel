@@ -1,4 +1,4 @@
-load("@npm_bazel_typescript//:defs.bzl", "ts_library")
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
 
 package(default_visibility = ["//packages/zone.js:__pkg__"])
 
