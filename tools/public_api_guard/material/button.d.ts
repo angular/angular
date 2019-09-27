@@ -13,7 +13,7 @@ export declare class MatButton extends _MatButtonMixinBase implements OnDestroy,
     _getHostElement(): any;
     _hasHostAttributes(...attributes: string[]): boolean;
     _isRippleDisabled(): boolean;
-    focus(_origin?: FocusOrigin, options?: FocusOptions): void;
+    focus(origin?: FocusOrigin, options?: FocusOptions): void;
     ngOnDestroy(): void;
 }
 
