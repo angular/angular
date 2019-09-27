@@ -150,6 +150,24 @@ describe('MatSelectionList without forms', () => {
         .toBe(true);
     });
 
+    it('should explicitly set the `accent` color', () => {
+      const classList = listOptions[0].nativeElement.classList;
+
+      fixture.componentInstance.firstOptionColor = 'primary';
+      fixture.detectChanges();
+
+      expect(classList).toContain('mat-primary');
+      expect(classList).not.toContain('mat-accent');
+      expect(classList).not.toContain('mat-warn');
+
+      fixture.componentInstance.firstOptionColor = 'accent';
+      fixture.detectChanges();
+
+      expect(classList).not.toContain('mat-primary');
+      expect(classList).toContain('mat-accent');
+      expect(classList).not.toContain('mat-warn');
+    });
+
     it('should be able to deselect an option', () => {
       let testListItem = listOptions[2].injector.get<MatListOption>(MatListOption);
       let selectList =
