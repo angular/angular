@@ -1,6 +1,5 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "ROLLUP_GLOBALS")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 load("//tools/highlight-files:index.bzl", "highlight_files")
 load("//tools/package-docs-content:index.bzl", "package_docs_content")
@@ -105,7 +104,6 @@ ng_package(
     srcs = ["package.json"],
     data = [":docs-content"],
     entry_point = ":public-api.ts",
-    globals = ROLLUP_GLOBALS,
     tags = ["docs-package"],
     deps = [":examples"] + EXAMPLE_PACKAGES,
 )

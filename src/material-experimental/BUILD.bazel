@@ -1,20 +1,23 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "MATERIAL_EXPERIMENTAL_SCSS_LIBS", "MATERIAL_EXPERIMENTAL_TARGETS", "ROLLUP_GLOBALS")
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load(
+    "//src/material-experimental:config.bzl",
+    "MATERIAL_EXPERIMENTAL_SCSS_LIBS",
+    "MATERIAL_EXPERIMENTAL_TARGETS",
+    "MATERIAL_EXPERIMENTAL_TESTING_TARGETS",
+)
+load("//tools:defaults.bzl", "ng_package", "ts_library")
 
 exports_files(["mdc_require_config.js"])
 
-ng_module(
+ts_library(
     name = "material-experimental",
     srcs = glob(
         ["*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
     module_name = "@angular/material-experimental",
-    deps = [
-        "@npm//@angular/forms",
-    ],
+    deps = ["@npm//@angular/core"],
 )
 
 ng_package(
@@ -22,7 +25,6 @@ ng_package(
     srcs = ["package.json"],
     data = MATERIAL_EXPERIMENTAL_SCSS_LIBS,
     entry_point = ":public-api.ts",
-    globals = ROLLUP_GLOBALS,
     tags = ["release-package"],
-    deps = MATERIAL_EXPERIMENTAL_TARGETS,
+    deps = MATERIAL_EXPERIMENTAL_TARGETS + MATERIAL_EXPERIMENTAL_TESTING_TARGETS,
 )

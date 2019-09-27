@@ -1,28 +1,22 @@
 package(default_visibility = ["//visibility:public"])
 
-load(
-    "//:packages.bzl",
-    "CDK_EXPERIMENTAL_PACKAGES",
-    "CDK_EXPERIMENTAL_TARGETS",
-    "ROLLUP_GLOBALS",
-)
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_TARGETS")
+load("//tools:defaults.bzl", "ng_package", "ts_library")
 
-ng_module(
+ts_library(
     name = "cdk-experimental",
     srcs = glob(
         ["*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
     module_name = "@angular/cdk-experimental",
-    deps = ["//src/cdk-experimental/%s" % p for p in CDK_EXPERIMENTAL_PACKAGES],
+    deps = ["@npm//@angular/core"],
 )
 
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
     entry_point = ":public-api.ts",
-    globals = ROLLUP_GLOBALS,
     tags = ["release-package"],
     deps = CDK_EXPERIMENTAL_TARGETS,
 )

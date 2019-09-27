@@ -1,11 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
 load(
-    "//:packages.bzl",
-    "MATERIAL_PACKAGES",
+    "//src/material:config.bzl",
+    "MATERIAL_ENTRYPOINTS",
     "MATERIAL_SCSS_LIBS",
     "MATERIAL_TARGETS",
-    "ROLLUP_GLOBALS",
+    "MATERIAL_TESTING_TARGETS",
 )
 load("//tools:defaults.bzl", "ng_package", "ts_library")
 
@@ -16,7 +16,7 @@ ts_library(
 
 filegroup(
     name = "overviews",
-    srcs = ["//src/material/%s:overview" % name for name in MATERIAL_PACKAGES],
+    srcs = ["//src/material/%s:overview" % name for name in MATERIAL_ENTRYPOINTS],
 )
 
 # Creates the @angular/material package published to npm.
@@ -35,8 +35,7 @@ ng_package(
     ] + MATERIAL_SCSS_LIBS,
     entry_point = ":index.ts",
     entry_point_name = "material",
-    globals = ROLLUP_GLOBALS,
     packages = ["//src/material/schematics:npm_package"],
     tags = ["release-package"],
-    deps = MATERIAL_TARGETS,
+    deps = MATERIAL_TARGETS + MATERIAL_TESTING_TARGETS,
 )

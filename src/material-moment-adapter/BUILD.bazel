@@ -1,6 +1,5 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "ROLLUP_GLOBALS")
 load("//tools:defaults.bzl", "ng_module", "ng_package", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
@@ -52,7 +51,6 @@ ng_package(
     name = "npm_package",
     srcs = ["package.json"],
     entry_point = ":public-api.ts",
-    globals = ROLLUP_GLOBALS,
     tags = ["release-package"],
     deps = [":material-moment-adapter"],
 )

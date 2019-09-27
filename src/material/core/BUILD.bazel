@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
-load("//:packages.bzl", "MATERIAL_SCSS_LIBS")
+load("//src/material:config.bzl", "MATERIAL_SCSS_LIBS")
 load(
     "//tools:defaults.bzl",
     "markdown_to_html",

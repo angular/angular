@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS")
+load("//src/cdk:config.bzl", "CDK_TARGETS")
+load("//src/material:config.bzl", "MATERIAL_TARGETS")
 load("//tools:defaults.bzl", "ng_module")
 load("//tools:sass_generate_binaries.bzl", "sass_generate_binaries")
 

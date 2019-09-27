@@ -1,26 +1,23 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "CDK_PACKAGES", "CDK_SCSS_LIBS", "CDK_TARGETS", "CDK_TARGETS_WITH_STYLES", "ROLLUP_GLOBALS")
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS", "CDK_ENTRYPOINTS_WITH_STYLES", "CDK_SCSS_LIBS", "CDK_TARGETS")
+load("//tools:defaults.bzl", "ng_package", "ts_library")
 
-# Root "@angular/cdk" entry-point that does not re-export individual entry-points.
-ng_module(
+ts_library(
     name = "cdk",
     srcs = glob(
         ["*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
     module_name = "@angular/cdk",
-    deps = [
-        "@npm//@angular/core",
-    ],
+    deps = ["@npm//@angular/core"],
 )
 
 # List of style files that need to be copied to the root of the CDK package. We do this
 # to make it easier for developers to import these styles without needing to know about
 # deep imports in the release output. Note that this is done for backwards compatibility
 # with the Gulp release output. TODO(devversion): consider removing this in the future.
-rerootedStyles = [file for target in CDK_TARGETS_WITH_STYLES for file in [
+rerootedStyles = [file for target in CDK_ENTRYPOINTS_WITH_STYLES for file in [
     [
         "_%s.scss" % target,
         target,
@@ -58,7 +55,6 @@ ng_package(
     srcs = ["package.json"],
     data = rerootedStyleTargets + CDK_SCSS_LIBS,
     entry_point = ":public-api.ts",
-    globals = ROLLUP_GLOBALS,
     packages = [
         "//src/cdk/schematics:npm_package",
         "//src/cdk/testing:npm_package",
@@ -69,5 +65,5 @@ ng_package(
 
 filegroup(
     name = "overviews",
-    srcs = ["//src/cdk/%s:overview" % name for name in CDK_PACKAGES],
+    srcs = ["//src/cdk/%s:overview" % name for name in CDK_ENTRYPOINTS],
 )

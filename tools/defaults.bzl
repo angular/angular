@@ -6,6 +6,7 @@ load("@npm_bazel_karma//:defs.bzl", _karma_web_test_suite = "karma_web_test_suit
 load("@npm_bazel_protractor//:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm_bazel_typescript//:defs.bzl", _ts_library = "ts_library")
 load("//:packages.bzl", "ANGULAR_LIBRARY_UMDS", "VERSION_PLACEHOLDER_REPLACEMENTS")
+load("//:rollup-globals.bzl", "ROLLUP_GLOBALS")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
 
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
@@ -95,7 +96,7 @@ def ng_module(
         **kwargs
     )
 
-def ng_package(name, data = [], readme_md = None, **kwargs):
+def ng_package(name, data = [], globals = ROLLUP_GLOBALS, readme_md = None, **kwargs):
     # If no readme file has been specified explicitly, use the default readme for
     # release packages from "src/README.md".
     if not readme_md:
@@ -112,6 +113,7 @@ def ng_package(name, data = [], readme_md = None, **kwargs):
 
     _ng_package(
         name = name,
+        globals = globals,
         data = data + [":license_copied"],
         readme_md = readme_md,
         replacements = VERSION_PLACEHOLDER_REPLACEMENTS,

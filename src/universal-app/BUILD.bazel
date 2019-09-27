@@ -2,7 +2,10 @@ package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//:packages.bzl", "CDK_EXPERIMENTAL_TARGETS", "CDK_TARGETS", "MATERIAL_EXPERIMENTAL_TARGETS", "MATERIAL_TARGETS")
+load("//src/cdk:config.bzl", "CDK_TARGETS")
+load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_TARGETS")
+load("//src/material:config.bzl", "MATERIAL_TARGETS")
+load("//src/material-experimental:config.bzl", "MATERIAL_EXPERIMENTAL_TARGETS")
 load("//tools:defaults.bzl", "ng_module", "ts_library")
 
 ng_module(

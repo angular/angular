@@ -5,9 +5,9 @@
   "main": "./bundles/material-experimental.umd.js",
   "fesm5": "./fesm5/material-experimental.js",
   "fesm2015": "./fesm2015/material-experimental.js",
-  "esm5": "./esm5/material-experimental_public_index.js",
-  "esm2015": "./esm2015/material-experimental_public_index.js",
-  "typings": "./material-experimental_public_index.d.ts",
+  "esm5": "./esm5/index.js",
+  "esm2015": "./esm2015/index.js",
+  "typings": "./index.d.ts",
   "module": "./fesm5/material-experimental.js",
   "es2015": "./fesm2015/material-experimental.js",
   "repository": {
