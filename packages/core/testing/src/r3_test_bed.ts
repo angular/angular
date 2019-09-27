@@ -35,6 +35,7 @@ import {MetadataOverride} from './metadata_override';
 import {TestBed} from './test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 import {R3TestBedCompiler} from './r3_test_bed_compiler';
+import {clearModuleRegistry} from '../../src/linker/ng_module_factory_registration';
 
 let _nextRootElementId = 0;
 
@@ -229,6 +230,7 @@ export class TestBedRender3 implements TestBed {
   }
 
   resetTestingModule(): void {
+    clearModuleRegistry();
     this.checkGlobalCompilationFinished();
     resetCompiledComponents();
     if (this._compiler !== null) {
