@@ -103,6 +103,18 @@ describe('MatMonthView', () => {
         expect(table.getAttribute('role')).toBe('presentation');
       });
 
+      it('should set the correct scope on the table headers', () => {
+        const nonDividerHeaders = monthViewNativeElement.querySelectorAll(
+            '.mat-calendar-table-header th:not(.mat-calendar-table-header-divider)');
+        const dividerHeader =
+            monthViewNativeElement.querySelector('.mat-calendar-table-header-divider')!;
+
+        expect(Array.from(nonDividerHeaders).every(header => {
+          return header.getAttribute('scope') === 'col';
+        })).toBe(true);
+        expect(dividerHeader.hasAttribute('scope')).toBe(false);
+      });
+
       describe('calendar body', () => {
         let calendarBodyEl: HTMLElement;
         let calendarInstance: StandardMonthView;
