@@ -99,7 +99,7 @@ describe(
 
       xit('should ensure that Promise this is instanceof Promise', () => {
         expect(() => {
-          Promise.call({}, () => null);
+          Promise.call({} as any, () => null);
         }).toThrowError('Must be an instanceof Promise.');
       });
 
