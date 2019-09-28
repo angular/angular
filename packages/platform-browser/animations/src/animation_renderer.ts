@@ -12,6 +12,9 @@ import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, Re
 const ANIMATION_PREFIX = '@';
 const DISABLE_ANIMATIONS_FLAG = '@.disabled';
 
+// Define a recursive type to allow for nested arrays of `AnimationTriggerMetadata`. Note that an
+// interface declaration is used as TypeScript prior to 3.7 does not support recursive type
+// references, see https://github.com/microsoft/TypeScript/pull/33050 for details.
 type NestedAnimationTriggerMetadata = AnimationTriggerMetadata | RecursiveAnimationTriggerMetadata;
 interface RecursiveAnimationTriggerMetadata extends Array<NestedAnimationTriggerMetadata> {}
 
