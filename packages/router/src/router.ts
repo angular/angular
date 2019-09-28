@@ -1075,6 +1075,10 @@ export class Router {
         lastNavigation.rawUrl.toString() === rawUrl.toString()) {
       return Promise.resolve(true);  // return value is not used
     }
+    // Fix issue 16710 (https://github.com/angular/angular/issues/16710)
+    if (source !== 'imperative' && this.location.path(true) !== rawUrl.toString()) {
+      return Promise.resolve(true);  // return value is not used
+    }
 
     let resolve: any = null;
     let reject: any = null;

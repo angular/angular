@@ -924,7 +924,7 @@ describe('Integration', () => {
          // - the first location change gets canceled, the URL gets reset to '/'
          // - the second location change gets finished, the URL should be reset to '/simple'
          (<any>location).simulateUrlPop('/simple');
-         (<any>location).simulateUrlPop('/simple');
+         (<any>location).simulateHashChange('/simple');
 
          tick(2000);
          advance(fixture);
