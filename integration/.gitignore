@@ -1,6 +1,7 @@
 built/
 dist/
 vendor/
+translations/
 */src/*.d.ts
 */src/*.js
 !karma.conf.js
