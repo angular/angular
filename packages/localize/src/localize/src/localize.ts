@@ -143,22 +143,52 @@ const BLOCK_MARKER = ':';
  * escaped with a backslash, `\:`. This function checks for this by looking at the `raw`
  * messagePart, which should still contain the backslash.
  *
- * If the template literal was synthesized, rather than appearing in original source code, then its
- * raw array will only contain empty strings. This is because the current TypeScript compiler use
+ * ---
+ *
+ * If the template literal was synthesized and downleveled by TypeScript to ES5 then its
+ * raw array will only contain empty strings. This is because the current TypeScript compiler uses
  * the original source code to find the raw text and in the case of synthesized AST nodes, there is
  * no source code to draw upon.
  *
  * The workaround in this function is to assume that the template literal did not contain an escaped
- * placeholder name, and fall back on checking the cooked array instead. This should be OK because
- * synthesized nodes (from the Angular template compiler) will always provide explicit delimited
- * blocks and so will never need to escape placeholder name markers.
+ * placeholder name, and fall back on checking the cooked array instead.
+ * This is a limitation if compiling to ES5 in TypeScript but is not a problem if the TypeScript
+ * output is ES2015 and the code is downleveled by a separate tool as happens in the Angular CLI.
  *
  * @param messagePart The cooked message part to process.
  * @param rawMessagePart The raw message part to check.
  * @returns the message part with the placeholder name stripped, if found.
+ * @throws an error if the block is unterminated
  */
 function stripBlock(messagePart: string, rawMessagePart: string) {
-  return (rawMessagePart || messagePart).charAt(0) === BLOCK_MARKER ?
-      messagePart.substring(messagePart.indexOf(BLOCK_MARKER, 1) + 1) :
+  rawMessagePart = rawMessagePart || messagePart;
+  return rawMessagePart.charAt(0) === BLOCK_MARKER ?
+      messagePart.substring(findEndOfBlock(messagePart, rawMessagePart) + 1) :
       messagePart;
+}
+
+/**
+ * Find the end of a "marked block" indicated by the first non-escaped colon.
+ *
+ * This function is repeated in `src/utils/messages.ts` and the two should be kept in sync.
+ * See that file for more explanation of why.
+ * The reason is that this file is marked as having side-effects, and if we import `messages.ts`
+ * into it, the whole of `src/utils` will be included in this bundle and none of the functions will
+ * be tree shaken.
+ *
+ * @param cooked The cooked string (where escaped chars have been processed)
+ * @param raw The raw string (where escape sequences are still in place)
+ *
+ * @returns the index of the end of block marker
+ * @throws an error if the block is unterminated
+ */
+function findEndOfBlock(cooked: string, raw: string): number {
+  for (let cookedIndex = 1, rawIndex = 1; cookedIndex < cooked.length; cookedIndex++, rawIndex++) {
+    if (raw[rawIndex] === '\\') {
+      rawIndex++;
+    } else if (cooked[cookedIndex] === BLOCK_MARKER) {
+      return cookedIndex;
+    }
+  }
+  throw new Error(`Unterminated $localize metadata block in "${raw}".`);
 }

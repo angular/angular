@@ -172,7 +172,7 @@ const verify = (input: string, output: string, extra: any = {}): void => {
 describe('i18n support in the template compiler', () => {
 
   describe('element attributes', () => {
-    it('should add the meaning and description as JsDoc comments', () => {
+    it('should add the meaning and description as JsDoc comments and metadata blocks', () => {
       const input = `
         <div i18n="meaningA|descA@@idA">Content A</div>
         <div i18n-title="meaningB|descB@@idB" title="Title B">Content B</div>
@@ -265,7 +265,7 @@ describe('i18n support in the template compiler', () => {
             $I18N_23$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$;
         }
         else {
-          $I18N_23$ = $localize \`:[BACKUP_MESSAGE_ID:idH]desc@@idG:Title G\`;
+          $I18N_23$ = $localize \`:[BACKUP_MESSAGE_ID\\:idH]desc@@idG:Title G\`;
         }
         const $_c25$ = ["title", $I18N_23$];
         …
@@ -2361,9 +2361,9 @@ describe('i18n support in the template compiler', () => {
         <div i18n>Test</div>
       `;
 
-      // TODO(FW-635): currently we generate unique consts for each i18n block even though it might
-      // contain the same content. This should be optimized by translation statements caching, that
-      // can be implemented in the future within FW-635.
+      // TODO(FW-635): currently we generate unique consts for each i18n block even though it
+      // might contain the same content. This should be optimized by translation statements caching,
+      // that can be implemented in the future within FW-635.
       const output = String.raw `
         var $I18N_0$;
         if (ngI18nClosureMode) {
