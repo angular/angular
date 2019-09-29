@@ -33,20 +33,20 @@ Navigate into the project by issuing the command `cd customer-app`.
 ## Create a feature module with routing
 
 Next, you’ll need a feature module with a component to route to.
-To make one, enter the following command in the terminal, where `customers` is the name of the feature module, and `customer-list` is the route path for loading the `customers` component:
+To make one, enter the following command in the terminal, where `customers` is the name of the feature module, and `customers` is the route path for loading the `customers` component:
 
 <code-example language="bash">
-ng generate module customers --route customer-list --module app.module
+ng generate module customers --route customers --module app.module
 </code-example>
 
 This creates a `customers` folder with the new lazy-loadable module `CustomersModule` defined in the file `customers.module.ts`. The command automatically adds the `CustomerComponent` to the new feature module.
 
 Because the new module is meant to be lazy-loaded, the command does NOT add a reference for the new feature module to the root application's module file, `app.module.ts`.
-Instead, it adds the declared route, `customer-list` to the `Routes` array declared in the module provided as the `--module` option.
+Instead, it adds the declared route, `customers` to the `Routes` array declared in the module provided as the `--module` option.
 
 <code-example language="typescript" header="src/app/app-routing.module.ts">
 const routes: Routes = [
-    { path: 'customer-list',
+    { path: 'customers',
       loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) }
     ];
 </code-example>
@@ -59,17 +59,17 @@ The import path is the relative path to the module.
 Use the same command to create a second lazy-loaded feature module with routing, along with its stub component.
 
 <code-example language="bash">
-ng generate module orders --route order-list --module app.module
+ng generate module orders --route orders --module app.module
 </code-example>
 
 This creates a new folder called `orders` containing an `OrdersModule` and `OrdersRoutingModule`, along with the new `OrderComponent` source files.
-The `order-list` route is added to the `Routes` array in `app-routing.module.ts`, using the lazy-loading syntax.
+The `orders` route is added to the `Routes` array in `app-routing.module.ts`, using the lazy-loading syntax.
 
 <code-example language="typescript" header="src/app/app-routing.module.ts">
 const routes: Routes = [
-    { path: 'customer-list',
+    { path: 'customers',
       loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) },
-    { path: 'order-list',
+    { path: 'orders',
       loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule) }
     ];
 </code-example>
