@@ -660,6 +660,26 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (decoratorInfo === null) {
       // If none were present, use the `__decorate` helper calls instead.
       decoratorInfo = this.computeDecoratorInfoFromHelperCalls(classSymbol);
+    } else {
+      // If there was decorator information in static properties, it may be the case that only
+      // constructor parameters (`ctorParameters`) were present as static property and additional
+      // decorator info is represented using `__decorate` helper calls. Therefore, also inspect
+      // `__decorate` helpers and attach the class and member decorators it may contain to the
+      // computed decorator info.
+      //
+      // Note that the helper calls may also provide information about constructor parameters, if
+      // `emitDecoratorMetadata` was enabled for the published library. We can safely disregard this
+      // information from the helper calls, as the extracted information from the `ctorParameters`
+      // static property is fully complete by itself.
+      //
+      // Refer to https://github.com/ng-packagr/ng-packagr/pull/1401 where the static property
+      // transform of constructor parameters was ported from tsickle to ng-packagr.
+      if (decoratorInfo.classDecorators === null && decoratorInfo.memberDecorators.size === 0) {
+        const helperCallInfo = this.computeDecoratorInfoFromHelperCalls(classSymbol);
+
+        decoratorInfo.classDecorators = helperCallInfo.classDecorators;
+        decoratorInfo.memberDecorators = helperCallInfo.memberDecorators;
+      }
     }
 
     this.decoratorCache.set(decl, decoratorInfo);

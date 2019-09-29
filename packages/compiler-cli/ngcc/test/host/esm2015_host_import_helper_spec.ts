@@ -65,6 +65,36 @@ runInEachFileSystem(() => {
   `,
         },
         {
+          name: _('/some_directive_ctor_parameters.js'),
+          contents: `
+  import * as tslib_1 from 'tslib';
+  import { Directive, Inject, InjectionToken, Input } from '@angular/core';
+  const INJECTED_TOKEN = new InjectionToken('injected');
+  class ViewContainerRef {
+  }
+  class TemplateRef {
+  }
+  let SomeDirective = class SomeDirective {
+      constructor(_viewContainer, _template, injected) {
+          this.input1 = '';
+      }
+  };
+  SomeDirective.ctorParameters = () => [
+    { type: ViewContainerRef, },
+    { type: TemplateRef, },
+    { type: undefined, decorators: [{ type: Inject, args: [INJECTED_TOKEN,] },] },
+  ];
+  tslib_1.__decorate([
+      Input(),
+  ], SomeDirective.prototype, "input1", void 0);
+  SomeDirective = tslib_1.__decorate([
+      Directive({ selector: '[someDirective]' }),
+      tslib_1.__param(2, Inject(INJECTED_TOKEN)),
+  ], SomeDirective);
+  export { SomeDirective };
+  `,
+        },
+        {
           name: _('/node_modules/@angular/core/some_directive.js'),
           contents: `
   import * as tslib_1 from 'tslib';
@@ -152,6 +182,28 @@ runInEachFileSystem(() => {
             ]);
           });
 
+          it('should find the decorators on a class when mixing `ctorParameters` and `__decorate`',
+             () => {
+               const {program} = makeTestBundleProgram(_('/some_directive_ctor_parameters.js'));
+               const host =
+                   new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+               const classNode = getDeclaration(
+                   program, _('/some_directive_ctor_parameters.js'), 'SomeDirective',
+                   isNamedVariableDeclaration);
+               const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+               expect(decorators).toBeDefined();
+               expect(decorators.length).toEqual(1);
+
+               const decorator = decorators[0];
+               expect(decorator.name).toEqual('Directive');
+               expect(decorator.identifier.getText()).toEqual('Directive');
+               expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+               expect(decorator.args !.map(arg => arg.getText())).toEqual([
+                 '{ selector: \'[someDirective]\' }',
+               ]);
+             });
+
           it('should support decorators being used inside @angular/core', () => {
             const {program} =
                 makeTestBundleProgram(_('/node_modules/@angular/core/some_directive.js'));
@@ -194,6 +246,22 @@ runInEachFileSystem(() => {
             expect(input2.isStatic).toEqual(false);
             expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
           });
+
+          it('should find decorated members on a class when mixing `ctorParameters` and `__decorate`',
+             () => {
+               const {program} = makeTestBundleProgram(_('/some_directive_ctor_parameters.js'));
+               const host =
+                   new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+               const classNode = getDeclaration(
+                   program, _('/some_directive_ctor_parameters.js'), 'SomeDirective',
+                   isNamedVariableDeclaration);
+               const members = host.getMembersOfClass(classNode);
+
+               const input1 = members.find(member => member.name === 'input1') !;
+               expect(input1.kind).toEqual(ClassMemberKind.Property);
+               expect(input1.isStatic).toEqual(false);
+               expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
+             });
 
           it('should find non decorated properties on a class', () => {
             const {program} = makeTestBundleProgram(_('/some_directive.js'));
@@ -291,6 +359,27 @@ runInEachFileSystem(() => {
               'String',
             ]);
           });
+
+          it('should find the decorated constructor parameters when mixing `ctorParameters` and `__decorate`',
+             () => {
+               const {program} = makeTestBundleProgram(_('/some_directive_ctor_parameters.js'));
+               const host =
+                   new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+               const classNode = getDeclaration(
+                   program, _('/some_directive_ctor_parameters.js'), 'SomeDirective',
+                   isNamedVariableDeclaration);
+               const parameters = host.getConstructorParameters(classNode);
+
+               expect(parameters).toBeDefined();
+               expect(parameters !.map(parameter => parameter.name)).toEqual([
+                 '_viewContainer', '_template', 'injected'
+               ]);
+               expectTypeValueReferencesForParameters(parameters !, [
+                 'ViewContainerRef',
+                 'TemplateRef',
+                 null,
+               ]);
+             });
 
           describe('(returned parameters `decorators`)', () => {
             it('should use `getImportOfIdentifier()` to retrieve import info', () => {
