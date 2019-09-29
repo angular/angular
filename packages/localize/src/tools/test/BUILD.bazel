@@ -8,9 +8,11 @@ ts_library(
     ),
     deps = [
         "//packages:types",
-        "//packages/localize",
-        "//packages/localize/init",
+        "//packages/compiler",
+        "//packages/localize/src/tools",
         "//packages/localize/src/utils",
+        "@npm//@babel/types",
+        "@npm//@types/glob",
     ],
 )
 
@@ -22,5 +24,6 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//tools/testing:node_no_angular",
+        "@npm//glob",
     ],
 )

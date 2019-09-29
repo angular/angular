@@ -1,0 +1,42 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "npm_package", "ts_library")
+load("@npm_bazel_typescript//:index.bzl", "ts_config")
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig-build.json",
+    deps = ["//packages:tsconfig-build.json"],
+)
+
+ts_library(
+    name = "tools",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    tsconfig = ":tsconfig",
+    deps = [
+        "//packages/compiler",
+        "//packages/localize",
+        "@npm//@babel/core",
+        "@npm//@babel/types",
+        "@npm//@types/glob",
+        "@npm//@types/node",
+        "@npm//@types/yargs",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+    ],
+    deps = [
+        ":tools",
+        "@npm//@babel/core",
+        "@npm//@babel/types",
+        "@npm//glob",
+        "@npm//yargs",
+    ],
+)

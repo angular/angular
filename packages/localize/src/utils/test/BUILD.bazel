@@ -8,8 +8,6 @@ ts_library(
     ),
     deps = [
         "//packages:types",
-        "//packages/localize",
-        "//packages/localize/init",
         "//packages/localize/src/utils",
     ],
 )

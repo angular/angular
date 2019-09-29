@@ -8,19 +8,25 @@ ts_library(
     ),
     deps = [
         "//packages:types",
-        "//packages/localize",
-        "//packages/localize/init",
-        "//packages/localize/src/utils",
+        "//packages/localize/src/tools",
     ],
 )
 
 jasmine_node_test(
-    name = "test",
+    name = "integration",
     bootstrap = [
         "angular/tools/testing/init_node_no_angular_spec.js",
     ],
+    data = glob(
+        [
+            "locales/**",
+            "test_files/**",
+        ],
+    ),
     deps = [
         ":test_lib",
         "//tools/testing:node_no_angular",
+        "@npm//glob",
+        "@npm//yargs",
     ],
 )

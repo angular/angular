@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {LocalizeFn} from './localize';
-import {MessageId, TargetMessage} from './utils/messages';
-import {ParsedTranslation, parseTranslation, translate as _translate} from './utils/translations';
+import {MessageId, ParsedTranslation, TargetMessage, parseTranslation, translate as _translate} from './utils';
 
 /**
  * We augment the `$localize` object to also store the translations.

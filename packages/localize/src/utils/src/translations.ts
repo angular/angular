@@ -81,6 +81,17 @@ export function parseTranslation(message: TargetMessage): ParsedTranslation {
 }
 
 /**
+ * Create a `ParsedTranslation` from a set of `messageParts` and `placeholderNames`.
+ *
+ * @param messageParts The message parts to appear in the ParsedTranslation.
+ * @param placeholderNames The names of the placeholders to intersperse between the `messageParts`.
+ */
+export function makeParsedTranslation(
+    messageParts: string[], placeholderNames: string[] = []): ParsedTranslation {
+  return {messageParts: makeTemplateObject(messageParts, messageParts), placeholderNames};
+}
+
+/**
  * Create the specialized array that is passed to tagged-string tag functions.
  *
  * @param cooked The message parts with their escape codes processed.

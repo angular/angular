@@ -10,6 +10,9 @@
   "fesm5": "./fesm5/localize.js",
   "fesm2015": "./fesm2015/localize.js",
   "typings": "./index.d.ts",
+  "bin": {
+    "localize-translate": "./src/tools/src/translate/main.js"
+  },
   "author": "angular",
   "license": "MIT",
   "repository": {
@@ -26,5 +29,10 @@
   ],
   "engines": {
     "node": ">=8.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.5.5",
+    "glob": "7.1.2",
+    "yargs": "13.1.0"
   }
 }
