@@ -24,7 +24,7 @@ runInEachFileSystem(() => {
       let _: typeof absoluteFrom;
       let analyses: ModuleWithProvidersAnalyses;
       let program: ts.Program;
-      let dtsProgram: BundleProgram|null;
+      let dtsProgram: BundleProgram;
       let referencesRegistry: NgccReferencesRegistry;
 
       beforeEach(() => {
@@ -333,7 +333,7 @@ runInEachFileSystem(() => {
             'test-package', 'esm2015', false, getRootFiles(TEST_PROGRAM),
             getRootFiles(TEST_DTS_PROGRAM));
         program = bundle.src.program;
-        dtsProgram = bundle.dts;
+        dtsProgram = bundle.dts !;
         const host = new Esm2015ReflectionHost(
             new MockLogger(), false, program.getTypeChecker(), dtsProgram);
         referencesRegistry = new NgccReferencesRegistry(host);
@@ -412,7 +412,7 @@ runInEachFileSystem(() => {
 
       function getAnalysisDescription(
           analyses: ModuleWithProvidersAnalyses, fileName: AbsoluteFsPath) {
-        const file = getSourceFileOrError(dtsProgram !.program, fileName);
+        const file = getSourceFileOrError(dtsProgram.program, fileName);
         const analysis = analyses.get(file);
         return analysis ?
             analysis.map(
@@ -422,6 +422,146 @@ runInEachFileSystem(() => {
                      info.ngModule.viaModule]) :
             [];
       }
+    });
+  });
+
+  describe('tracking references when generic types already present', () => {
+    let _: typeof absoluteFrom;
+    let analyses: ModuleWithProvidersAnalyses;
+    let program: ts.Program;
+    let dtsProgram: BundleProgram;
+    let referencesRegistry: NgccReferencesRegistry;
+
+    beforeEach(() => {
+      _ = absoluteFrom;
+
+      const TEST_PROGRAM: TestFile[] = [
+        {
+          name: _('/node_modules/test-package/src/entry-point.js'),
+          contents: `
+          export * from './explicit';
+          export * from './module';
+        `
+        },
+        {
+          name: _('/node_modules/test-package/src/explicit.js'),
+          contents: `
+          import {ExternalModule} from './module';
+          import {LibraryModule} from 'some-library';
+          export class ExplicitInternalModule {}
+          export class ExplicitClass {
+            static explicitInternalMethod() {
+              return {
+                ngModule: ExplicitInternalModule,
+                providers: []
+              };
+            }
+            static explicitExternalMethod() {
+              return {
+                ngModule: ExternalModule,
+                providers: []
+              };
+            }
+            static explicitLibraryMethod() {
+              return {
+                ngModule: LibraryModule,
+                providers: []
+              };
+            }
+          }
+          `
+        },
+        {
+          name: _('/node_modules/test-package/src/module.js'),
+          contents: `
+          export class ExternalModule {}
+          `
+        },
+        {
+          name: _('/node_modules/some-library/index.d.ts'),
+          contents: 'export declare class LibraryModule {}'
+        },
+      ];
+      const TEST_DTS_PROGRAM: TestFile[] = [
+        {
+          name: _('/node_modules/test-package/typings/entry-point.d.ts'),
+          contents: `
+          export * from './explicit';
+          export * from './module';
+        `
+        },
+        {
+          name: _('/node_modules/test-package/typings/explicit.d.ts'),
+          contents: `
+          import {ModuleWithProviders} from './core';
+          import {ExternalModule} from './module';
+          import {LibraryModule} from 'some-library';
+          export declare class ExplicitInternalModule {}
+          export declare class ExplicitClass {
+            static explicitInternalMethod(): ModuleWithProviders<ExplicitInternalModule>;
+            static explicitExternalMethod(): ModuleWithProviders<ExternalModule>;
+            static explicitLibraryMethod(): ModuleWithProviders<LibraryModule>;
+          }
+          `
+        },
+        {
+          name: _('/node_modules/test-package/typings/module.d.ts'),
+          contents: `
+          export declare class ExternalModule {}
+          `
+        },
+        {
+          name: _('/node_modules/test-package/typings/core.d.ts'),
+          contents: `
+
+          export declare interface Type<T> {
+            new (...args: any[]): T
+          }
+          export declare type Provider = any;
+          export declare interface ModuleWithProviders<T> {
+            ngModule: Type<T>
+            providers?: Provider[]
+          }
+        `
+        },
+        {
+          name: _('/node_modules/some-library/index.d.ts'),
+          contents: 'export declare class LibraryModule {}'
+        },
+      ];
+      loadTestFiles(TEST_PROGRAM);
+      loadTestFiles(TEST_DTS_PROGRAM);
+      const bundle = makeTestEntryPointBundle(
+          'test-package', 'esm2015', false, getRootFiles(TEST_PROGRAM),
+          getRootFiles(TEST_DTS_PROGRAM));
+      program = bundle.src.program;
+      dtsProgram = bundle.dts !;
+      const host =
+          new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dtsProgram);
+      referencesRegistry = new NgccReferencesRegistry(host);
+
+      const analyzer = new ModuleWithProvidersAnalyzer(host, referencesRegistry);
+      analyses = analyzer.analyzeProgram(program);
+    });
+
+    it('should track references even when nothing needs to be updated', () => {
+      const file = getSourceFileOrError(
+          dtsProgram.program, _('/node_modules/test-package/typings/explicit.d.ts'));
+      expect(analyses.has(file)).toBe(false);
+
+      const declarations = referencesRegistry.getDeclarationMap();
+      const explicitInternalModuleDeclaration = getDeclaration(
+          program, absoluteFrom('/node_modules/test-package/src/explicit.js'),
+          'ExplicitInternalModule', ts.isClassDeclaration);
+      const externalModuleDeclaration = getDeclaration(
+          program, absoluteFrom('/node_modules/test-package/src/module.js'), 'ExternalModule',
+          ts.isClassDeclaration);
+      const libraryModuleDeclaration = getDeclaration(
+          program, absoluteFrom('/node_modules/some-library/index.d.ts'), 'LibraryModule',
+          ts.isClassDeclaration);
+      expect(declarations.has(explicitInternalModuleDeclaration.name !)).toBe(true);
+      expect(declarations.has(externalModuleDeclaration.name !)).toBe(true);
+      expect(declarations.has(libraryModuleDeclaration.name !)).toBe(false);
     });
   });
 });
