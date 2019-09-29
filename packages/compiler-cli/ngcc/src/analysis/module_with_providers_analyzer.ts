@@ -38,30 +38,18 @@ export class ModuleWithProvidersAnalyzer {
     rootFiles.forEach(f => {
       const fns = this.host.getModuleWithProvidersFunctions(f);
       fns && fns.forEach(fn => {
+        // Resolve the function's ngModule reference to its declaration, preferring type
+        // declarations over value declaration for internal module references. Note that if the
+        // resolved declaration is an internal module reference, it gets added to the references
+        // registry as it may need to be added as public export. Therefore, this call must be
+        // executed even though the returned ngModule is not always used.
+        const ngModule = this.resolveNgModuleReference(fn);
+
         const dtsFn = this.getDtsDeclarationForFunction(fn);
         const typeParam = dtsFn.type && ts.isTypeReferenceNode(dtsFn.type) &&
                 dtsFn.type.typeArguments && dtsFn.type.typeArguments[0] ||
             null;
         if (!typeParam || isAnyKeyword(typeParam)) {
-          // Either we do not have a parameterized type or the type is `any`.
-          let ngModule = fn.ngModule;
-          // For internal (non-library) module references, redirect the module's value declaration
-          // to its type declaration.
-          if (ngModule.viaModule === null) {
-            const dtsNgModule = this.host.getDtsDeclaration(ngModule.node);
-            if (!dtsNgModule) {
-              throw new Error(
-                  `No typings declaration can be found for the referenced NgModule class in ${fn.declaration.getText()}.`);
-            }
-            if (!ts.isClassDeclaration(dtsNgModule) || !hasNameIdentifier(dtsNgModule)) {
-              throw new Error(
-                  `The referenced NgModule in ${fn.declaration.getText()} is not a named class declaration in the typings program; instead we get ${dtsNgModule.getText()}`);
-            }
-            // Record the usage of the internal module as it needs to become an exported symbol
-            this.referencesRegistry.add(ngModule.node, new Reference(ngModule.node));
-
-            ngModule = {node: dtsNgModule, viaModule: null};
-          }
           const dtsFile = dtsFn.getSourceFile();
           const analysis = analyses.has(dtsFile) ? analyses.get(dtsFile) : [];
           analysis.push({declaration: dtsFn, ngModule});
@@ -99,6 +87,33 @@ export class ModuleWithProvidersAnalyzer {
           `Matching type declaration for ${fn.declaration.getText()} is not a function: ${dtsFn.getText()}`);
     }
     return dtsFn;
+  }
+
+  private resolveNgModuleReference(fn: ModuleWithProvidersFunction):
+      ConcreteDeclaration<ClassDeclaration> {
+    const ngModule = fn.ngModule;
+
+    // For external module references, use the declaration as is.
+    if (ngModule.viaModule !== null) {
+      return ngModule;
+    }
+
+    // For internal (non-library) module references, redirect the module's value declaration
+    // to its type declaration.
+    const dtsNgModule = this.host.getDtsDeclaration(ngModule.node);
+    if (!dtsNgModule) {
+      throw new Error(
+          `No typings declaration can be found for the referenced NgModule class in ${fn.declaration.getText()}.`);
+    }
+    if (!ts.isClassDeclaration(dtsNgModule) || !hasNameIdentifier(dtsNgModule)) {
+      throw new Error(
+          `The referenced NgModule in ${fn.declaration.getText()} is not a named class declaration in the typings program; instead we get ${dtsNgModule.getText()}`);
+    }
+
+    // Record the usage of the internal module as it needs to become an exported symbol
+    this.referencesRegistry.add(ngModule.node, new Reference(ngModule.node));
+
+    return {node: dtsNgModule, viaModule: null};
   }
 }
 
