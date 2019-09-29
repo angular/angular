@@ -10,17 +10,12 @@ import {AUTO_STYLE, AnimationEvent, AnimationPlayer, NoopAnimationPlayer, ɵAnim
 import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {AnimationDriver} from '../../src/render/animation_driver';
 
-// We don't include ambient node types here since @angular/animations/browser
-// is meant to target the browser so technically it should not depend on node
-// types. `process` is just declared locally here as a result.
-declare const process: any;
-
 export function isBrowser() {
   return (typeof window !== 'undefined' && typeof window.document !== 'undefined');
 }
 
 export function isNode() {
-  return (typeof process !== 'undefined');
+  return !isBrowser();
 }
 
 export function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer {
