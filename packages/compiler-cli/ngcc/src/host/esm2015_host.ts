@@ -655,12 +655,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return this.decoratorCache.get(decl) !;
     }
 
-    // First attempt extracting decorators from static properties.
-    let decoratorInfo = this.computeDecoratorInfoFromStaticProperties(classSymbol);
-    if (decoratorInfo === null) {
-      // If none were present, use the `__decorate` helper calls instead.
-      decoratorInfo = this.computeDecoratorInfoFromHelperCalls(classSymbol);
-    }
+    // Extract decorators from static properties and `__decorate` helper calls, then merge them
+    // together where the information from the static properties is preferred.
+    const staticProps = this.computeDecoratorInfoFromStaticProperties(classSymbol);
+    const helperCalls = this.computeDecoratorInfoFromHelperCalls(classSymbol);
+
+    const decoratorInfo: DecoratorInfo = {
+      classDecorators: staticProps.classDecorators || helperCalls.classDecorators,
+      memberDecorators: staticProps.memberDecorators || helperCalls.memberDecorators,
+      constructorParamInfo: staticProps.constructorParamInfo || helperCalls.constructorParamInfo,
+    };
 
     this.decoratorCache.set(decl, decoratorInfo);
     return decoratorInfo;
@@ -676,8 +680,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns All information on the decorators as extracted from static properties, or `null` if
    * none of the static properties exist.
    */
-  protected computeDecoratorInfoFromStaticProperties(classSymbol: NgccClassSymbol): DecoratorInfo
-      |null {
+  protected computeDecoratorInfoFromStaticProperties(classSymbol: NgccClassSymbol): {
+    classDecorators: Decorator[] | null; memberDecorators: Map<string, Decorator[]>| null;
+    constructorParamInfo: ParamInfo[] | null;
+  } {
     let classDecorators: Decorator[]|null = null;
     let memberDecorators: Map<string, Decorator[]>|null = null;
     let constructorParamInfo: ParamInfo[]|null = null;
@@ -697,16 +703,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       constructorParamInfo = this.getParamInfoFromStaticProperty(constructorParamsProperty);
     }
 
-    // If none of the static properties were present, no decorator info could be computed.
-    if (classDecorators === null && memberDecorators === null && constructorParamInfo === null) {
-      return null;
-    }
-
-    return {
-      classDecorators,
-      memberDecorators: memberDecorators || new Map<string, Decorator[]>(),
-      constructorParamInfo: constructorParamInfo || [],
-    };
+    return {classDecorators, memberDecorators, constructorParamInfo};
   }
 
   /**
