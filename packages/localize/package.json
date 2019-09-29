@@ -11,7 +11,8 @@
   "fesm2015": "./fesm2015/localize.js",
   "typings": "./index.d.ts",
   "bin": {
-    "localize-translate": "./src/tools/src/translate/main.js"
+    "localize-translate": "./src/tools/src/translate/main.js",
+    "localize-extract": "./src/tools/src/extract/main.js"
   },
   "author": "angular",
   "license": "MIT",

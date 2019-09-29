@@ -4,26 +4,28 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(
-        ["**/*.ts"],
+        ["**/*_spec.ts"],
     ),
     deps = [
         "//packages:types",
-        "//packages/compiler",
         "//packages/localize/src/tools",
-        "//packages/localize/src/utils",
-        "@npm//@babel/types",
-        "@npm//@types/glob",
     ],
 )
 
 jasmine_node_test(
-    name = "test",
+    name = "integration",
     bootstrap = [
         "angular/tools/testing/init_node_no_angular_spec.js",
     ],
+    data = glob(
+        [
+            "test_files/**",
+        ],
+    ),
     deps = [
         ":test_lib",
         "//tools/testing:node_no_angular",
         "@npm//glob",
+        "@npm//yargs",
     ],
 )
