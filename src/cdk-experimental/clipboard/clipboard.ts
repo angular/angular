@@ -70,11 +70,14 @@ export class PendingCopy {
 
   constructor(text: string, private readonly _document: Document) {
     const textarea = this._textarea = this._document.createElement('textarea');
+    const styles = textarea.style;
 
-    // Hide the element for display and accessibility.
-    textarea.setAttribute('style', 'opacity: 0;');
+    // Hide the element for display and accessibility. Set an
+    // absolute position so the page layout isn't affected.
+    styles.opacity = '0';
+    styles.position = 'absolute';
+    styles.left = styles.top = '-999em';
     textarea.setAttribute('aria-hidden', 'true');
-
     textarea.value = text;
     this._document.body.appendChild(textarea);
   }
@@ -86,13 +89,13 @@ export class PendingCopy {
 
     try {  // Older browsers could throw if copy is not supported.
       if (textarea) {
-        const currentFocus = document.activeElement;
+        const currentFocus = this._document.activeElement;
 
         textarea.select();
         textarea.setSelectionRange(0, textarea.value.length);
         successful = this._document.execCommand('copy');
 
-        if (currentFocus instanceof HTMLElement) {
+        if (currentFocus && currentFocus instanceof HTMLElement) {
           currentFocus.focus();
         }
       }
@@ -106,8 +109,13 @@ export class PendingCopy {
 
   /** Cleans up DOM changes used to perform the copy operation. */
   destroy() {
-    if (this._textarea) {
-      this._document.body.removeChild(this._textarea);
+    const textarea = this._textarea;
+
+    if (textarea) {
+      if (textarea.parentNode) {
+        textarea.parentNode.removeChild(textarea);
+      }
+
       this._textarea = undefined;
     }
   }
