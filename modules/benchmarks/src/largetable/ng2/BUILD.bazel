@@ -32,6 +32,16 @@ ng_rollup_bundle(
 )
 
 ts_devserver(
+    name = "devserver",
+    index_html = "index.html",
+    port = 4200,
+    static_files = [
+        ":bundle.es2015.js",
+        "@npm//:node_modules/zone.js/dist/zone.js",
+    ],
+)
+
+ts_devserver(
     name = "prodserver",
     index_html = "index.html",
     port = 4200,
