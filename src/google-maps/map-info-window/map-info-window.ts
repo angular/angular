@@ -18,8 +18,8 @@ import {
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 
-import {GoogleMap} from '../google-map/index';
-import {MapMarker} from '../map-marker/index';
+import {GoogleMap} from '../google-map/google-map';
+import {MapMarker} from '../map-marker/map-marker';
 
 /**
  * Angular component that renders a Google Maps info window via the Google Maps JavaScript API.

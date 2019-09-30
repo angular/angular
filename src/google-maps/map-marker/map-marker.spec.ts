@@ -8,12 +8,13 @@ import {
   TestingWindow
 } from '../testing/fake-google-map-utils';
 
-import {DEFAULT_MARKER_OPTIONS, MapMarker, MapMarkerModule} from './index';
+import {GoogleMapsModule} from '../google-maps-module';
+import {DEFAULT_MARKER_OPTIONS, MapMarker} from './map-marker';
 
 describe('MapMarker', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MapMarkerModule],
+      imports: [GoogleMapsModule],
       declarations: [TestApp],
     });
   }));

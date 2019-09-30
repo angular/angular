@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UpdatedGoogleMap} from '../google-map/index';
+import {UpdatedGoogleMap} from '../google-map/google-map';
 
 /** Window interface for testing */
 export interface TestingWindow extends Window {

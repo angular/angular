@@ -2,21 +2,20 @@ import {Component} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
-import {MapMarker, MapMarkerModule} from '../map-marker/index';
+import {GoogleMapsModule} from '../google-maps-module';
+import {MapMarker} from '../map-marker/map-marker';
 import {
   createMapConstructorSpy,
   createMapSpy,
   TestingWindow
 } from '../testing/fake-google-map-utils';
-
 import {
   DEFAULT_HEIGHT,
   DEFAULT_OPTIONS,
   DEFAULT_WIDTH,
   GoogleMap,
-  GoogleMapModule,
   UpdatedGoogleMap
-} from './index';
+} from './google-map';
 
 /** Represents boundaries of a map to be used in tests. */
 const testBounds: google.maps.LatLngBoundsLiteral = {
@@ -39,8 +38,7 @@ describe('GoogleMap', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        GoogleMapModule,
-        MapMarkerModule,
+        GoogleMapsModule,
       ],
       declarations: [TestApp],
     });
