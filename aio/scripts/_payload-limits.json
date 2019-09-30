@@ -16,8 +16,8 @@
       "uncompressed": {
         "runtime-es5": 3091,
         "runtime-es2015": 3097,
-        "main-es5": 480508,
-        "main-es2015": 435180,
+        "main-es5": 481663,
+        "main-es2015": 436411,
         "polyfills-es5": 142239,
         "polyfills-es2015": 52503
       }
@@ -28,8 +28,8 @@
       "uncompressed": {
         "runtime-es5": 2981,
         "runtime-es2015": 2987,
-        "main-es5": 540416,
-        "main-es2015": 494744,
+        "main-es5": 541663,
+        "main-es2015": 496036,
         "polyfills-es5": 142239,
         "polyfills-es2015": 52503
       }
