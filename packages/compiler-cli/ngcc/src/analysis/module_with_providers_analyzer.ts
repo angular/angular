@@ -38,18 +38,17 @@ export class ModuleWithProvidersAnalyzer {
     rootFiles.forEach(f => {
       const fns = this.host.getModuleWithProvidersFunctions(f);
       fns && fns.forEach(fn => {
-        // Resolve the function's ngModule reference to its declaration, preferring type
-        // declarations over value declaration for internal module references. Note that if the
-        // resolved declaration is an internal module reference, it gets added to the references
-        // registry as it may need to be added as public export. Therefore, this call must be
-        // executed even though the returned ngModule is not always used.
-        const ngModule = this.resolveNgModuleReference(fn);
+        if (fn.ngModule.viaModule === null) {
+          // Record the usage of an internal module as it needs to become an exported symbol
+          this.referencesRegistry.add(fn.ngModule.node, new Reference(fn.ngModule.node));
+        }
 
         const dtsFn = this.getDtsDeclarationForFunction(fn);
         const typeParam = dtsFn.type && ts.isTypeReferenceNode(dtsFn.type) &&
                 dtsFn.type.typeArguments && dtsFn.type.typeArguments[0] ||
             null;
         if (!typeParam || isAnyKeyword(typeParam)) {
+          const ngModule = this.resolveNgModuleReference(fn);
           const dtsFile = dtsFn.getSourceFile();
           const analysis = analyses.has(dtsFile) ? analyses.get(dtsFile) : [];
           analysis.push({declaration: dtsFn, ngModule});
@@ -109,9 +108,6 @@ export class ModuleWithProvidersAnalyzer {
       throw new Error(
           `The referenced NgModule in ${fn.declaration.getText()} is not a named class declaration in the typings program; instead we get ${dtsNgModule.getText()}`);
     }
-
-    // Record the usage of the internal module as it needs to become an exported symbol
-    this.referencesRegistry.add(ngModule.node, new Reference(ngModule.node));
 
     return {node: dtsNgModule, viaModule: null};
   }

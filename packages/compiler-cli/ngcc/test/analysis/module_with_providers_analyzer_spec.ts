@@ -24,7 +24,7 @@ runInEachFileSystem(() => {
       let _: typeof absoluteFrom;
       let analyses: ModuleWithProvidersAnalyses;
       let program: ts.Program;
-      let dtsProgram: BundleProgram|null;
+      let dtsProgram: BundleProgram;
       let referencesRegistry: NgccReferencesRegistry;
 
       beforeEach(() => {
@@ -333,7 +333,7 @@ runInEachFileSystem(() => {
             'test-package', 'esm2015', false, getRootFiles(TEST_PROGRAM),
             getRootFiles(TEST_DTS_PROGRAM));
         program = bundle.src.program;
-        dtsProgram = bundle.dts;
+        dtsProgram = bundle.dts !;
         const host = new Esm2015ReflectionHost(
             new MockLogger(), false, program.getTypeChecker(), dtsProgram);
         referencesRegistry = new NgccReferencesRegistry(host);
@@ -412,7 +412,7 @@ runInEachFileSystem(() => {
 
       function getAnalysisDescription(
           analyses: ModuleWithProvidersAnalyses, fileName: AbsoluteFsPath) {
-        const file = getSourceFileOrError(dtsProgram !.program, fileName);
+        const file = getSourceFileOrError(dtsProgram.program, fileName);
         const analysis = analyses.get(file);
         return analysis ?
             analysis.map(
@@ -429,7 +429,7 @@ runInEachFileSystem(() => {
     let _: typeof absoluteFrom;
     let analyses: ModuleWithProvidersAnalyses;
     let program: ts.Program;
-    let dtsProgram: BundleProgram|null;
+    let dtsProgram: BundleProgram;
     let referencesRegistry: NgccReferencesRegistry;
 
     beforeEach(() => {
@@ -535,7 +535,7 @@ runInEachFileSystem(() => {
           'test-package', 'esm2015', false, getRootFiles(TEST_PROGRAM),
           getRootFiles(TEST_DTS_PROGRAM));
       program = bundle.src.program;
-      dtsProgram = bundle.dts;
+      dtsProgram = bundle.dts !;
       const host =
           new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dtsProgram);
       referencesRegistry = new NgccReferencesRegistry(host);
@@ -546,7 +546,7 @@ runInEachFileSystem(() => {
 
     it('should track references even when nothing needs to be updated', () => {
       const file = getSourceFileOrError(
-          dtsProgram !.program, _('/node_modules/test-package/typings/explicit.d.ts'));
+          dtsProgram.program, _('/node_modules/test-package/typings/explicit.d.ts'));
       expect(analyses.has(file)).toBe(false);
 
       const declarations = referencesRegistry.getDeclarationMap();
