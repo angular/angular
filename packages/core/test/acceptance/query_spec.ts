@@ -265,6 +265,42 @@ describe('query logic', () => {
       expect(fixture.componentInstance.foo.length).toBe(2);
     });
 
+    it('should support ViewChild query where template is inserted in child component', () => {
+      @Directive({selector: '[required]'})
+      class Required {
+      }
+
+      @Component({
+        selector: 'insertion',
+        template: `<ng-container [ngTemplateOutlet]="content"></ng-container>`
+      })
+      class Insertion {
+        @Input() content!: TemplateRef<{}>;
+      }
+
+      @Component({
+        template: `
+          <ng-template #findMe>
+            <div required>required</div>
+          </ng-template>
+          <insertion [content]="findMe"></insertion>
+          `
+      })
+      class App {
+        @ViewChild(Required, {static: false}) requiredEl !: Required;
+
+        ngAfterViewInit() {
+          if (this.requiredEl === undefined) {
+            throw Error('can\'t find required element');
+          }
+        }
+      }
+
+      const fixture = TestBed.configureTestingModule({declarations: [App, Insertion, Required]})
+                          .createComponent(App);
+      expect(() => fixture.detectChanges()).not.toThrow();
+    });
+
   });
 
   describe('content queries', () => {
