@@ -347,6 +347,10 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
+        # Compile dependencies to ivy
+        # Running `ngcc` here (instead of implicitly via `ng build`) allows us to take advantage of
+        # the parallel, async mode speed-up (~20-25s on CI).
+      - run: yarn --cwd aio ivy-ngcc --properties es2015
         # Build aio
       - run: yarn --cwd aio build --progress=false
         # Lint the code
@@ -376,7 +380,7 @@ jobs:
 
   test_aio_local:
     parameters:
-      ivy:
+      viewengine:
         type: boolean
         default: false
     # Needed because the AIO tests and the PWA score test depend on Chrome being available.
@@ -385,7 +389,7 @@ jobs:
       - custom_attach_workspace
       - init_environment
         # Build aio (with local Angular packages)
-      - run: yarn --cwd aio build-local<<# parameters.ivy >>-with-ivy<</ parameters.ivy >>-ci
+      - run: yarn --cwd aio build-local<<# parameters.viewengine >>-with-viewengine<</ parameters.viewengine >>-ci
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
@@ -393,7 +397,7 @@ jobs:
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size aio-local<<# parameters.ivy >>-ivy<</ parameters.ivy >>
+      - run: yarn --cwd aio payload-size aio-local<<# parameters.viewengine >>-viewengine<</ parameters.viewengine >>
 
   test_aio_tools:
     executor: default-executor
@@ -776,8 +780,8 @@ workflows:
           requires:
             - build-npm-packages
       - test_aio_local:
-          name: test_aio_local_ivy
-          ivy: true
+          name: test_aio_local_viewengine
+          viewengine: true
           requires:
             - build-npm-packages
       - test_aio_tools:
@@ -816,7 +820,7 @@ workflows:
             - integration_test
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
-            - test_aio_local_ivy
+            - test_aio_local_viewengine
             - test_docs_examples
             - test_docs_examples_ivy
             # Get the artifacts to publish from the build-packages-dist job
