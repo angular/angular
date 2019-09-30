@@ -239,9 +239,7 @@ describe('site App', function() {
       /* tslint:disable:max-line-length */
       expect(page.ghLinks.get(0).getAttribute('href'))
         .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/aio\/content\/guide\/http\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
-    // TODO(gkalpak): This test often times out with Ivy (because loading `guide/http` takes a lot of time).
-    //                Remove the timeout once the performance issues have been fixed.
-    }, 60000);
+    });
 
     it('should not be present on top level pages', () => {
       page.navigateTo('features');
