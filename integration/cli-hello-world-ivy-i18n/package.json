@@ -12,7 +12,8 @@
     "pretest": "ng version",
     "test": "ng test --progress=false --watch=false && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production",
     "pretranslate": "yarn build",
-    "translate": "localize-translate -r \"dist/\" -s \"**/*\" -t \"locales/**\" -o \"translations/{{LOCALE}}\""
+    "translate": "localize-translate -r \"dist/\" -s \"**/*\" -t \"locales/**\" -o \"translations/{{LOCALE}}\"",
+    "extract": "localize-extract -s \"dist/**/*.js\" -f xliff2 -o \"dist/messages.en.xlf\""
   },
   "private": true,
   "dependencies": {
