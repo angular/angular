@@ -430,15 +430,18 @@ export function refreshView<T>(
 
     setHostBindings(tView, lView);
 
-    const viewQuery = tView.viewQuery;
-    if (viewQuery !== null) {
-      executeViewQueryFn(RenderFlags.Update, viewQuery, context);
-    }
-
     // Refresh child component views.
     const components = tView.components;
     if (components !== null) {
       refreshChildComponents(lView, components);
+    }
+
+    // View queries must execute after refreshing child components because a template in this view
+    // could be inserted in a child component. If the view query executes before child component
+    // refresh, the template might not yet be inserted.
+    const viewQuery = tView.viewQuery;
+    if (viewQuery !== null) {
+      executeViewQueryFn(RenderFlags.Update, viewQuery, context);
     }
 
     // execute view hooks (AfterViewInit, AfterViewChecked)

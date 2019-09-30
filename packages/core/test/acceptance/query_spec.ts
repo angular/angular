@@ -265,6 +265,42 @@ describe('query logic', () => {
       expect(fixture.componentInstance.foo.length).toBe(2);
     });
 
+    it('should support ViewChild query where template is inserted in child component', () => {
+      @Component({selector: 'required', template: ''})
+      class Required {
+      }
+
+      @Component({
+        selector: 'insertion',
+        template: `<ng-container [ngTemplateOutlet]="content"></ng-container>`
+      })
+      class Insertion {
+        @Input() content !: TemplateRef<{}>;
+      }
+
+      @Component({
+        template: `
+          <ng-template #template>
+            <required></required>
+          </ng-template>
+          <insertion [content]="template"></insertion>
+          `
+      })
+      class App {
+        @ViewChild(Required, {static: false}) requiredEl !: Required;
+        viewChildAvailableInAfterViewInit?: boolean;
+
+        ngAfterViewInit() {
+          this.viewChildAvailableInAfterViewInit = this.requiredEl !== undefined;
+        }
+      }
+
+      const fixture = TestBed.configureTestingModule({declarations: [App, Insertion, Required]})
+                          .createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.viewChildAvailableInAfterViewInit).toBe(true);
+    });
+
   });
 
   describe('content queries', () => {
