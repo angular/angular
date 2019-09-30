@@ -1,0 +1,87 @@
+diff --git node_modules/@bazel/typescript/internal/build_defs.bzl node_modules/@bazel/typescript/internal/build_defs.bzl
+index 7fef44c..4e25ed7 100644
+--- node_modules/@bazel/typescript/internal/build_defs.bzl
++++ node_modules/@bazel/typescript/internal/build_defs.bzl
+@@ -93,25 +93,23 @@ def _filter_ts_inputs(all_inputs):
+         if f.path.endswith(".js") or f.path.endswith(".ts") or f.path.endswith(".json")
+     ]
+
++def _filter_compile_outputs(all_outputs):
++    return [
++        f
++        for f in all_outputs
++        if not f.basename.endswith(".externs.js") and not f.basename.endswith(".es5.MF")
++    ]
++
+ def _compile_action(ctx, inputs, outputs, tsconfig_file, node_opts, description = "prodmode"):
+     externs_files = []
+     action_inputs = inputs
+-    action_outputs = []
+-    for output in outputs:
+-        if output.basename.endswith(".externs.js"):
+-            externs_files.append(output)
+-        elif output.basename.endswith(".es5.MF"):
+-            ctx.actions.write(output, content = "")
+-        else:
+-            action_outputs.append(output)
+-
+-    # TODO(plf): For now we mock creation of files other than {name}.js.
+-    for externs_file in externs_files:
+-        ctx.actions.write(output = externs_file, content = "")
++    compile_outputs = _filter_compile_outputs(outputs)
+
+     # A ts_library that has only .d.ts inputs will have no outputs,
+     # therefore there are no actions to execute
+-    if not action_outputs:
++    if not compile_outputs:
++        for file in [f for f in outputs if not f in compile_outputs]:
++          ctx.actions.write(output = file, content = "")
+         return None
+
+     action_inputs.extend(_filter_ts_inputs(ctx.files.node_modules))
+@@ -146,7 +142,7 @@ def _compile_action(ctx, inputs, outputs, tsconfig_file, node_opts, description
+         progress_message = "Compiling TypeScript (%s) %s" % (description, ctx.label),
+         mnemonic = mnemonic,
+         inputs = action_inputs,
+-        outputs = action_outputs,
++        outputs = outputs,
+         # Use the built-in shell environment
+         # Allow for users who set a custom shell that can locate standard binaries like tr and uname
+         # See https://github.com/NixOS/nixpkgs/issues/43955#issuecomment-407546331
+@@ -163,7 +159,7 @@ def _compile_action(ctx, inputs, outputs, tsconfig_file, node_opts, description
+         label = ctx.label,
+         tsconfig = tsconfig_file,
+         inputs = action_inputs,
+-        outputs = action_outputs,
++        outputs = compile_outputs,
+         compiler = ctx.executable.compiler,
+     )
+
+diff --git node_modules/@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js node_modules/@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js
+index 0346123..3d9bc64 100644
+--- node_modules/@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js
++++ node_modules/@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js
+@@ -307,6 +307,23 @@
+         }
+         else {
+             diagnostics = emitWithTypescript(program, compilationTargets, transforms);
++            if (bazelOpts.manifest) {
++                fs.writeFileSync(bazelOpts.manifest, "");
++            }
++            if (bazelOpts.tsickleExternsPath) {
++                fs.writeFileSync(bazelOpts.tsickleExternsPath, "");
++                if (bazelOpts.tsickleGenerateExterns && compilerHost.provideExternalModuleDtsNamespace) {
++                    for (const extern of compilationTargets) {
++                        if (!extern.isDeclarationFile)
++                            continue;
++                        const outputBaseDir = options.outDir;
++                        const relativeOutputPath = compilerHost.relativeOutputPath(extern.fileName);
++                        mkdirp(outputBaseDir, path.dirname(relativeOutputPath));
++                        const outputPath = path.join(outputBaseDir, relativeOutputPath);
++                        fs.writeFileSync(outputPath, "");
++                    }
++                }
++            }
+         }
+         if (diagnostics.length > 0) {
+             console.error(bazelDiagnostics.format(bazelOpts.target, diagnostics));

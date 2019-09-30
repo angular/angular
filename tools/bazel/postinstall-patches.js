@@ -29,9 +29,6 @@ shelljs.exec('ngc -p angular-tsconfig.json');
 searchAndReplace(
     /(this\.transformTypesToClosure) = bazelOpts\.tsickle;/, '$1 = false;',
     'node_modules/@bazel/typescript/internal/tsc_wrapped/compiler_host.js');
-searchAndReplace(
-    'bazelOpts\.tsickleExternsPath', 'null',
-    'node_modules/@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js');
 
 // Workaround for https://github.com/angular/angular/issues/32389. We need to ensure
 // that tsickle is available for esm5 output re-compilations.
@@ -98,6 +95,9 @@ searchAndReplace(
     /("metadata": outs.metadata),/,
     `$1 + [m for dep in ctx.attr.deps if hasattr(dep, "angular") for m in dep.angular.metadata],`,
     'node_modules/@angular/bazel/src/ng_module.bzl');
+
+// Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1208.
+shelljs.cat(path.join(__dirname, './manifest_externs_hermeticity.patch')).exec('patch -p0');
 
 /**
  * Reads the specified file and replaces matches of the search expression
