@@ -268,6 +268,16 @@ Style strings added to the `@Component.styles` array _must be written in CSS_ be
 
 </div>
 
+<div class="alert is-helpful">
+
+By default, Angular processes resources for non-CSS style files. However, it is possible to bypass this behavior by using a leading caret `^` in the path, for example, `background: url("^../foo.png")`.
+
+This is useful for resources not resolvable at build time but rather at run time. For example:
+* Having global styles (styles.css) loaded from a CDN where resources are relative to the file itself
+* Referencing resources outside of the project root
+
+</div>
+
 {@a view-encapsulation}
 
 ## View encapsulation
