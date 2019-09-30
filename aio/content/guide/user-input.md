@@ -6,7 +6,7 @@ This page explains how to bind those events to component event handlers using th
 event binding syntax.
 
 Run the <live-example></live-example>.
-
+hhhggh
 
 ## Binding to user input events
 
