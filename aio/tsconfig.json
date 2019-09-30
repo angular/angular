@@ -33,7 +33,4 @@
     "scripts",
     "tools"
   ],
-  "angularCompilerOptions": {
-    "enableIvy": false,
-  },
 }
