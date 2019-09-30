@@ -266,7 +266,7 @@ describe('query logic', () => {
     });
 
     it('should support ViewChild query where template is inserted in child component', () => {
-      @Directive({selector: '[required]'})
+      @Component({selector: 'required', template: ''})
       class Required {
       }
 
@@ -275,15 +275,15 @@ describe('query logic', () => {
         template: `<ng-container [ngTemplateOutlet]="content"></ng-container>`
       })
       class Insertion {
-        @Input() content!: TemplateRef<{}>;
+        @Input() content !: TemplateRef<{}>;
       }
 
       @Component({
         template: `
-          <ng-template #findMe>
-            <div required>required</div>
+          <ng-template #template>
+            <required></required>
           </ng-template>
-          <insertion [content]="findMe"></insertion>
+          <insertion [content]="template"></insertion>
           `
       })
       class App {
