@@ -2,10 +2,10 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "runtime-es5": 3091,
-        "runtime-es2015": 3097,
-        "main-es5": 480426,
-        "main-es2015": 434851,
+        "runtime-es5": 2981,
+        "runtime-es2015": 2987,
+        "main-es5": 540068,
+        "main-es2015": 494141,
         "polyfills-es5": 142239,
         "polyfills-es2015": 52503
       }
@@ -14,22 +14,22 @@
   "aio-local": {
     "master": {
       "uncompressed": {
-        "runtime-es5": 3091,
-        "runtime-es2015": 3097,
-        "main-es5": 481663,
-        "main-es2015": 436411,
+        "runtime-es5": 2981,
+        "runtime-es2015": 2987,
+        "main-es5": 541663,
+        "main-es2015": 496036,
         "polyfills-es5": 142239,
         "polyfills-es2015": 52503
       }
     }
   },
-  "aio-local-ivy": {
+  "aio-local-viewengine": {
     "master": {
       "uncompressed": {
-        "runtime-es5": 2981,
-        "runtime-es2015": 2987,
-        "main-es5": 541663,
-        "main-es2015": 496036,
+        "runtime-es5": 3091,
+        "runtime-es2015": 3097,
+        "main-es5": 481663,
+        "main-es2015": 436411,
         "polyfills-es5": 142239,
         "polyfills-es2015": 52503
       }
