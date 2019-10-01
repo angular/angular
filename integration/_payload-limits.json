@@ -2,36 +2,36 @@
   "cli-hello-world": {
     "master": {
       "uncompressed": {
-        "runtime": 1497,
-        "main": 154699,
-        "polyfills": 45399
+        "runtime": 1542,
+        "main": 154385,
+        "polyfills": 45541
       }
     }
   },
   "cli-hello-world-ivy-minimal": {
     "master": {
       "uncompressed": {
-        "runtime": 1440,
-        "main": 14228,
-        "polyfills": 45340
+        "runtime": 1485,
+        "main": 14213,
+        "polyfills": 45482
       }
     }
   },
   "cli-hello-world-ivy-compat": {
     "master": {
       "uncompressed": {
-        "runtime": 1440,
-        "main": 125674,
-        "polyfills": 45340
+        "runtime": 1485,
+        "main": 125495,
+        "polyfills": 45482
       }
     }
   },
   "cli-hello-world-ivy-i18n": {
     "master": {
       "uncompressed": {
-        "runtime": 1440,
-        "main": 141209,
-        "polyfills": 45949
+        "runtime": 1485,
+        "main": 128254,
+        "polyfills": 42102
       }
     }
   },

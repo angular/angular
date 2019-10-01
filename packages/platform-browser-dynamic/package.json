@@ -17,7 +17,7 @@
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "tslib": "^1.9.0"
+    "tslib": "^1.10.0"
   },
   "repository": {
     "type": "git",

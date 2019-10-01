@@ -230,11 +230,11 @@ describe('diagnostics', () => {
     const firstPart = messageText as ts.DiagnosticMessageChain;
     expect(firstPart.messageText).toBe(`Error during template compile of 'AppComponent'`);
     const secondPart = firstPart.next !;
-    expect(secondPart.messageText).toBe('Function expressions are not supported in decorators');
-    const thirdPart = secondPart.next !;
-    expect(thirdPart.messageText)
+    expect(secondPart[0].messageText).toBe('Function expressions are not supported in decorators');
+    const thirdPart = secondPart[0].next !;
+    expect(thirdPart[0].messageText)
         .toBe('Consider changing the function expression into an exported function');
-    expect(thirdPart.next).toBeFalsy();
+    expect(thirdPart[0].next).toBeFalsy();
   });
 
   it('should not throw for an invalid class', () => {

@@ -4,7 +4,7 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../dist/typings_test_ts34/",
+    "outDir": "../../dist/typings_test_ts36/",
     "rootDir": ".",
     "target": "es5",
     "lib": [

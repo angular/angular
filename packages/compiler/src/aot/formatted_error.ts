@@ -17,7 +17,7 @@ export interface Position {
 export interface FormattedMessageChain {
   message: string;
   position?: Position;
-  next?: FormattedMessageChain;
+  next?: FormattedMessageChain[];
 }
 
 export type FormattedError = Error & {
@@ -41,9 +41,15 @@ function formatChain(chain: FormattedMessageChain | undefined, indent: number = 
       '';
   const prefix = position && indent === 0 ? `${position}: ` : '';
   const postfix = position && indent !== 0 ? ` at ${position}` : '';
-  const message = `${prefix}${chain.message}${postfix}`;
+  let message = `${prefix}${chain.message}${postfix}`;
 
-  return `${indentStr(indent)}${message}${(chain.next && ('\n' + formatChain(chain.next, indent + 2))) || ''}`;
+  if (chain.next) {
+    for (const kid of chain.next) {
+      message += '\n' + formatChain(kid, indent + 2);
+    }
+  }
+
+  return `${indentStr(indent)}${message}`;
 }
 
 export function formattedError(chain: FormattedMessageChain): FormattedError {
