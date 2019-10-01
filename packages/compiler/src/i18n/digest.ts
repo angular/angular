@@ -10,15 +10,31 @@ import {newArray, utf8Encode} from '../util';
 
 import * as i18n from './i18n_ast';
 
+/**
+ * Return the message id or compute it using the XLIFF1 digest.
+ */
 export function digest(message: i18n.Message): string {
-  return message.id || sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
+  return message.id || computeDigest(message);
 }
 
-export function decimalDigest(message: i18n.Message): string {
-  if (message.id) {
-    return message.id;
-  }
+/**
+ * Compute the message id using the XLIFF1 digest.
+ */
+export function computeDigest(message: i18n.Message): string {
+  return sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
+}
 
+/**
+ * Return the message id or compute it using the XLIFF2/XMB/$localize digest.
+ */
+export function decimalDigest(message: i18n.Message): string {
+  return message.id || computeDecimalDigest(message);
+}
+
+/**
+ * Compute the message id using the XLIFF2/XMB/$localize digest.
+ */
+export function computeDecimalDigest(message: i18n.Message): string {
   const visitor = new _SerializerIgnoreIcuExpVisitor();
   const parts = message.nodes.map(a => a.visit(visitor, null));
   return computeMsgId(parts.join(''), message.meaning);

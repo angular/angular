@@ -52,8 +52,9 @@ export class ComponentDecoratorHandler implements
       private scopeReader: ComponentScopeReader, private scopeRegistry: LocalModuleScopeRegistry,
       private isCore: boolean, private resourceLoader: ResourceLoader, private rootDirs: string[],
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
-      private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
-      private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
+      private i18nLegacyMessageIdFormat: string, private moduleResolver: ModuleResolver,
+      private cycleAnalyzer: CycleAnalyzer, private refEmitter: ReferenceEmitter,
+      private defaultImportRecorder: DefaultImportRecorder,
       private resourceDependencies:
           ResourceDependencyRecorder = new NoopResourceDependencyRecorder()) {}
 
@@ -697,7 +698,8 @@ export class ComponentDecoratorHandler implements
       ...parseTemplate(templateStr, templateUrl, {
         preserveWhitespaces,
         interpolationConfig: interpolation,
-        range: templateRange, escapedString, ...options,
+        range: templateRange, escapedString,
+        i18nLegacyMessageIdFormat: this.i18nLegacyMessageIdFormat, ...options,
       }),
       template: templateStr, templateUrl,
       isInline: component.has('template'),
