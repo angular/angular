@@ -219,7 +219,7 @@ function chainDiagnostics(chain: ng.DiagnosticMessageChain): ts.DiagnosticMessag
     messageText: chain.message,
     category: ts.DiagnosticCategory.Error,
     code: 0,
-    next: chain.next ? chainDiagnostics(chain.next) : undefined
+    next: chain.next ? chain.next.map(chainDiagnostics) : undefined
   };
 }
 

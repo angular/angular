@@ -2533,9 +2533,12 @@ describe('i18n support in the template compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $localize \`\n          Some text\n          $` +
+            $I18N_0$ = $localize \`
+          Some text
+          $` +
           String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_SPAN:Text inside span$` +
-          String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_SPAN:\n        \`;
+          String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_SPAN:
+        \`;
         }
         …
         template: function MyComponent_Template(rf, ctx) {

@@ -83,10 +83,6 @@ export interface DirectiveType<T> extends Type<T> {
   ɵfac: () => T;
 }
 
-export enum DirectiveDefFlags {
-  ContentQuery = 0b10
-}
-
 /**
  * A subclass of `Type` which has a static `ɵpipe`:`PipeDef` field making it
  * consumable for rendering.

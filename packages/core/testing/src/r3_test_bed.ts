@@ -39,7 +39,6 @@ import {clearRegisteredModuleState} from '../../src/linker/ng_module_factory_reg
 
 let _nextRootElementId = 0;
 
-const UNDEFINED: Symbol = Symbol('UNDEFINED');
 
 /**
  * @description
@@ -268,7 +267,8 @@ export class TestBedRender3 implements TestBed {
     if (token as unknown === TestBedRender3) {
       return this as any;
     }
-    const result = this.testModuleRef.injector.get(token, UNDEFINED as{}, flags);
+    const UNDEFINED = {};
+    const result = this.testModuleRef.injector.get(token, UNDEFINED, flags);
     return result === UNDEFINED ? this.compiler.injector.get(token, notFoundValue, flags) as any :
                                   result;
   }

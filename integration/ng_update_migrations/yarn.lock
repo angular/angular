@@ -113,9 +113,7 @@
     rxjs "6.5.3"
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "9.0.0-next.3"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.11"
 
 "@angular/cli@^9.0.0-next.9":
   version "9.0.0-next.11"
@@ -143,12 +141,10 @@
     uuid "^3.3.2"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "9.0.0-next.3"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.11"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "9.0.0-next.3"
+  version "9.0.0-next.11"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^2.1.1"
@@ -157,42 +153,30 @@
     magic-string "^0.25.0"
     minimist "^1.2.0"
     reflect-metadata "^0.1.2"
+    semver "^6.3.0"
     source-map "^0.6.1"
-    tslib "^1.9.0"
     yargs "13.1.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "9.0.0-next.3"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.11"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "9.0.0-next.3"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.11"
 
 "@angular/forms@file:../../dist/packages-dist/forms":
-  version "9.0.0-next.3"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.11"
 
 "@angular/language-service@file:../../dist/packages-dist/language-service":
-  version "9.0.0-next.3"
+  version "9.0.0-next.11"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "9.0.0-next.3"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.11"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "9.0.0-next.3"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.11"
 
 "@angular/router@file:../../dist/packages-dist/router":
-  version "9.0.0-next.3"
-  dependencies:
-    tslib "^1.9.0"
+  version "9.0.0-next.11"
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.5.5":
   version "7.5.5"
@@ -7136,7 +7120,7 @@ tslib@1.10.0, tslib@^1.9.0:
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
 "tslib@file:../../node_modules/tslib":
-  version "1.9.3"
+  version "1.10.0"
 
 tty-browserify@0.0.0:
   version "0.0.0"
@@ -7179,7 +7163,7 @@ typescript@3.6.4:
   integrity sha512-unoCll1+l+YK4i4F8f22TaNVPRHcD9PA3yCuZ8g5e0qGqlVlJ/8FSateOLLSagn+Yg5+ZwuPkL8LFUc0Jcvksg==
 
 "typescript@file:../../node_modules/typescript":
-  version "3.5.3"
+  version "3.6.4"
 
 ultron@~1.1.0:
   version "1.1.1"

@@ -803,7 +803,7 @@ export declare const ɵɵdefineDirective: <T>(directiveDefinition: {
     type: Type<T>;
     selectors: (string | SelectorFlags)[][];
     inputs?: { [P in keyof T]?: string | [string, string] | undefined; } | undefined;
-    outputs?: { [P in keyof T]?: string | undefined; } | undefined;
+    outputs?: { [P_1 in keyof T]?: string | undefined; } | undefined;
     features?: DirectiveDefFeature[] | undefined;
     hostBindings?: HostBindingsFunction<T> | undefined;
     contentQueries?: ContentQueriesFunction<T> | undefined;
