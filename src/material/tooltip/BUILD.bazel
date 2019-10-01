@@ -31,7 +31,6 @@ ng_module(
         "@npm//@angular/animations",
         "@npm//@angular/common",
         "@npm//@angular/core",
-        "@npm//@angular/platform-browser",
         "@npm//rxjs",
     ],
 )

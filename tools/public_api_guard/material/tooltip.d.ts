@@ -25,7 +25,9 @@ export declare class MatTooltip implements OnDestroy, OnInit {
     tooltipClass: string | string[] | Set<string> | {
         [key: string]: any;
     };
-    constructor(_overlay: Overlay, _elementRef: ElementRef<HTMLElement>, _scrollDispatcher: ScrollDispatcher, _viewContainerRef: ViewContainerRef, _ngZone: NgZone, platform: Platform, _ariaDescriber: AriaDescriber, _focusMonitor: FocusMonitor, scrollStrategy: any, _dir: Directionality, _defaultOptions: MatTooltipDefaultOptions, hammerLoader?: HammerLoader);
+    touchGestures: TooltipTouchGestures;
+    constructor(_overlay: Overlay, _elementRef: ElementRef<HTMLElement>, _scrollDispatcher: ScrollDispatcher, _viewContainerRef: ViewContainerRef, _ngZone: NgZone, _platform: Platform, _ariaDescriber: AriaDescriber, _focusMonitor: FocusMonitor, scrollStrategy: any, _dir: Directionality, _defaultOptions: MatTooltipDefaultOptions,
+    _hammerLoader?: any);
     _getOrigin(): {
         main: OriginConnectionPosition;
         fallback: OriginConnectionPosition;
@@ -35,7 +37,6 @@ export declare class MatTooltip implements OnDestroy, OnInit {
         fallback: OverlayConnectionPosition;
     };
     _handleKeydown(e: KeyboardEvent): void;
-    _handleTouchend(): void;
     _isTooltipVisible(): boolean;
     hide(delay?: number): void;
     ngOnDestroy(): void;
@@ -52,6 +53,7 @@ export interface MatTooltipDefaultOptions {
     hideDelay: number;
     position?: TooltipPosition;
     showDelay: number;
+    touchGestures?: TooltipTouchGestures;
     touchendHideDelay: number;
 }
 
@@ -84,5 +86,7 @@ export declare class TooltipComponent implements OnDestroy {
 }
 
 export declare type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
+
+export declare type TooltipTouchGestures = 'auto' | 'on' | 'off';
 
 export declare type TooltipVisibility = 'initial' | 'visible' | 'hidden';

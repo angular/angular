@@ -38,6 +38,7 @@ import {
   SCROLL_THROTTLE_MS,
   TOOLTIP_PANEL_CLASS,
   MAT_TOOLTIP_DEFAULT_OPTIONS,
+  TooltipTouchGestures,
 } from './index';
 
 
@@ -895,33 +896,175 @@ describe('MatTooltip', () => {
     }));
   });
 
-  describe('special cases', () => {
-
-    it('should clear the `user-select` when a tooltip is set on a text field', () => {
-      const fixture = TestBed.createComponent(TooltipOnTextFields);
-      const instance = fixture.componentInstance;
-
-      fixture.detectChanges();
-
-      expect(instance.input.nativeElement.style.userSelect).toBeFalsy();
-      expect(instance.input.nativeElement.style.webkitUserSelect).toBeFalsy();
-      expect(instance.input.nativeElement.style.msUserSelect).toBeFalsy();
-
-      expect(instance.textarea.nativeElement.style.userSelect).toBeFalsy();
-      expect(instance.textarea.nativeElement.style.webkitUserSelect).toBeFalsy();
-      expect(instance.textarea.nativeElement.style.msUserSelect).toBeFalsy();
+  describe('touch gestures', () => {
+    beforeEach(() => {
+      platform.ANDROID = true;
     });
 
-    it('should clear the `-webkit-user-drag` on draggable elements', () => {
-      const fixture = TestBed.createComponent(TooltipOnDraggableElement);
+    it('should have a delay when showing on touchstart', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.detectChanges();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
 
+      dispatchFakeEvent(button, 'touchstart');
+      fixture.detectChanges();
+      tick(250); // Halfway through the delay.
+
+      assertTooltipInstance(fixture.componentInstance.tooltip, false);
+
+      tick(250); // Finish the delay.
+      fixture.detectChanges();
+      tick(500); // Finish the animation.
+
+      assertTooltipInstance(fixture.componentInstance.tooltip, true);
+    }));
+
+    it('should be able to disable opening on touch', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.componentInstance.touchGestures = 'off';
+      fixture.detectChanges();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+      dispatchFakeEvent(button, 'touchstart');
+      fixture.detectChanges();
+      tick(500); // Finish the delay.
+      fixture.detectChanges();
+      tick(500); // Finish the animation.
+
+      assertTooltipInstance(fixture.componentInstance.tooltip, false);
+    }));
+
+    it('should not prevent the default action on touchstart', () => {
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.detectChanges();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+      const event = dispatchFakeEvent(button, 'touchstart');
+      fixture.detectChanges();
+
+      expect(event.defaultPrevented).toBe(false);
+    });
+
+    it('should close on touchend with a delay', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.detectChanges();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+      dispatchFakeEvent(button, 'touchstart');
+      fixture.detectChanges();
+      tick(500); // Finish the open delay.
+      fixture.detectChanges();
+      tick(500); // Finish the animation.
+      assertTooltipInstance(fixture.componentInstance.tooltip, true);
+
+      dispatchFakeEvent(button, 'touchend');
+      fixture.detectChanges();
+      tick(1000); // 2/3 through the delay
+      assertTooltipInstance(fixture.componentInstance.tooltip, true);
+
+      tick(500); // Finish the delay.
+      fixture.detectChanges();
+      tick(500); // Finish the exit animation.
+
+      assertTooltipInstance(fixture.componentInstance.tooltip, false);
+    }));
+
+    it('should close on touchcancel with a delay', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.detectChanges();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+      dispatchFakeEvent(button, 'touchstart');
+      fixture.detectChanges();
+      tick(500); // Finish the open delay.
+      fixture.detectChanges();
+      tick(500); // Finish the animation.
+      assertTooltipInstance(fixture.componentInstance.tooltip, true);
+
+      dispatchFakeEvent(button, 'touchcancel');
+      fixture.detectChanges();
+      tick(1000); // 2/3 through the delay
+      assertTooltipInstance(fixture.componentInstance.tooltip, true);
+
+      tick(500); // Finish the delay.
+      fixture.detectChanges();
+      tick(500); // Finish the exit animation.
+
+      assertTooltipInstance(fixture.componentInstance.tooltip, false);
+    }));
+
+    it('should disable native touch interactions', () => {
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.detectChanges();
+
+      const styles = fixture.nativeElement.querySelector('button').style;
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBe('none');
+    });
+
+    it('should allow native touch interactions if touch gestures are turned off', () => {
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.componentInstance.touchGestures = 'off';
+      fixture.detectChanges();
+
+      const styles = fixture.nativeElement.querySelector('button').style;
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBeFalsy();
+    });
+
+    it('should allow text selection on inputs when gestures are set to auto', () => {
+      const fixture = TestBed.createComponent(TooltipOnTextFields);
+      fixture.detectChanges();
+
+      const inputStyle = fixture.componentInstance.input.nativeElement.style;
+      const textareaStyle = fixture.componentInstance.textarea.nativeElement.style;
+
+      expect(inputStyle.userSelect).toBeFalsy();
+      expect(inputStyle.webkitUserSelect).toBeFalsy();
+      expect(inputStyle.msUserSelect).toBeFalsy();
+      expect((inputStyle as any).MozUserSelect).toBeFalsy();
+
+      expect(textareaStyle.userSelect).toBeFalsy();
+      expect(textareaStyle.webkitUserSelect).toBeFalsy();
+      expect(textareaStyle.msUserSelect).toBeFalsy();
+      expect((textareaStyle as any).MozUserSelect).toBeFalsy();
+    });
+
+    it('should disable text selection on inputs when gestures are set to on', () => {
+      const fixture = TestBed.createComponent(TooltipOnTextFields);
+      fixture.componentInstance.touchGestures = 'on';
+      fixture.detectChanges();
+
+      const inputStyle = fixture.componentInstance.input.nativeElement.style;
+      const inputUserSelect = inputStyle.userSelect || inputStyle.webkitUserSelect ||
+                              inputStyle.msUserSelect || (inputStyle as any).MozUserSelect;
+      const textareaStyle = fixture.componentInstance.textarea.nativeElement.style;
+      const textareaUserSelect = textareaStyle.userSelect || textareaStyle.webkitUserSelect ||
+                                 textareaStyle.msUserSelect || (textareaStyle as any).MozUserSelect;
+
+      expect(inputUserSelect).toBe('none');
+      expect(textareaUserSelect).toBe('none');
+    });
+
+    it('should allow native dragging on draggable elements when gestures are set to auto', () => {
+      const fixture = TestBed.createComponent(TooltipOnDraggableElement);
       fixture.detectChanges();
 
       expect(fixture.componentInstance.button.nativeElement.style.webkitUserDrag).toBeFalsy();
     });
 
+    it('should disable native dragging on draggable elements when gestures are set to on', () => {
+      const fixture = TestBed.createComponent(TooltipOnDraggableElement);
+      fixture.componentInstance.touchGestures = 'on';
+      fixture.detectChanges();
+
+      const styles = fixture.componentInstance.button.nativeElement.style;
+
+      if ('webkitUserDrag' in styles) {
+        expect(styles.webkitUserDrag).toBe('none');
+      }
+    });
+
     it('should not open on `mouseenter` on iOS', () => {
       platform.IOS = true;
+      platform.ANDROID = false;
 
       const fixture = TestBed.createComponent(BasicTooltipDemo);
 
@@ -934,6 +1077,7 @@ describe('MatTooltip', () => {
 
     it('should not open on `mouseenter` on Android', () => {
       platform.ANDROID = true;
+      platform.IOS = false;
 
       const fixture = TestBed.createComponent(BasicTooltipDemo);
 
@@ -943,7 +1087,6 @@ describe('MatTooltip', () => {
 
       assertTooltipInstance(fixture.componentInstance.tooltip, false);
     });
-
   });
 
 });
@@ -955,7 +1098,8 @@ describe('MatTooltip', () => {
             *ngIf="showButton"
             [matTooltip]="message"
             [matTooltipPosition]="position"
-            [matTooltipClass]="{'custom-one': showTooltipClass, 'custom-two': showTooltipClass }">
+            [matTooltipClass]="{'custom-one': showTooltipClass, 'custom-two': showTooltipClass }"
+            [matTooltipTouchGestures]="touchGestures">
       Button
     </button>`
 })
@@ -964,6 +1108,7 @@ class BasicTooltipDemo {
   message: any = initialTooltipMessage;
   showButton: boolean = true;
   showTooltipClass = false;
+  touchGestures: TooltipTouchGestures = 'auto';
   @ViewChild(MatTooltip, {static: false}) tooltip: MatTooltip;
   @ViewChild('button', {static: false}) button: ElementRef<HTMLButtonElement>;
 }
@@ -1037,31 +1182,33 @@ class DataBoundAriaLabelTooltip {
   template: `
     <input
       #input
-      style="user-select: none; -webkit-user-select: none"
-      matTooltip="Something">
+      matTooltip="Something"
+      [matTooltipTouchGestures]="touchGestures">
 
     <textarea
       #textarea
-      style="user-select: none; -webkit-user-select: none"
-      matTooltip="Another thing"></textarea>
+      matTooltip="Another thing"
+      [matTooltipTouchGestures]="touchGestures"></textarea>
   `,
 })
 class TooltipOnTextFields {
   @ViewChild('input', {static: false}) input: ElementRef<HTMLInputElement>;
   @ViewChild('textarea', {static: false}) textarea: ElementRef<HTMLTextAreaElement>;
+  touchGestures: TooltipTouchGestures = 'auto';
 }
 
 @Component({
   template: `
     <button
       #button
-      style="-webkit-user-drag: none;"
       draggable="true"
-      matTooltip="Drag me"></button>
+      matTooltip="Drag me"
+      [matTooltipTouchGestures]="touchGestures"></button>
   `,
 })
 class TooltipOnDraggableElement {
   @ViewChild('button', {static: false}) button: ElementRef;
+  touchGestures: TooltipTouchGestures = 'auto';
 }
 
 @Component({

@@ -10,8 +10,7 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {A11yModule} from '@angular/cdk/a11y';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {GestureConfig, MatCommonModule} from '@angular/material/core';
-import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+import {MatCommonModule} from '@angular/material/core';
 import {
   MatTooltip,
   TooltipComponent,
@@ -28,9 +27,6 @@ import {
   exports: [MatTooltip, TooltipComponent, MatCommonModule],
   declarations: [MatTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
-  providers: [
-    MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER,
-    {provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig},
-  ]
+  providers: [MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER]
 })
 export class MatTooltipModule {}

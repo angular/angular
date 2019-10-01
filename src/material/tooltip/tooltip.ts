@@ -21,7 +21,7 @@ import {
   ScrollStrategy,
   VerticalConnectionPos,
 } from '@angular/cdk/overlay';
-import {Platform} from '@angular/cdk/platform';
+import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
@@ -40,20 +40,38 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
-import {HAMMER_LOADER, HammerLoader} from '@angular/platform-browser';
 import {Observable, Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 
 import {matTooltipAnimations} from './tooltip-animations';
 
 
+/** Possible positions for a tooltip. */
 export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
+
+/**
+ * Options for how the tooltip trigger should handle touch gestures.
+ * See `MatTooltip.touchGestures` for more information.
+ */
+export type TooltipTouchGestures = 'auto' | 'on' | 'off';
+
+/** Possible visibility states of a tooltip. */
+export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
 
 /** Time in ms to throttle repositioning after scroll events. */
 export const SCROLL_THROTTLE_MS = 20;
 
 /** CSS class that will be attached to the overlay panel. */
 export const TOOLTIP_PANEL_CLASS = 'mat-tooltip-panel';
+
+/** Options used to bind passive event listeners. */
+const passiveListenerOptions = normalizePassiveListenerOptions({passive: true});
+
+/**
+ * Time between the user putting the pointer on a tooltip
+ * trigger and the long press event being fired.
+ */
+const LONGPRESS_DELAY = 500;
 
 /**
  * Creates an error to be thrown if the user supplied an invalid tooltip position.
@@ -84,6 +102,7 @@ export interface MatTooltipDefaultOptions {
   showDelay: number;
   hideDelay: number;
   touchendHideDelay: number;
+  touchGestures?: TooltipTouchGestures;
   position?: TooltipPosition;
 }
 
@@ -113,9 +132,7 @@ export function MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY(): MatTooltipDefaultOptions 
   selector: '[matTooltip]',
   exportAs: 'matTooltip',
   host: {
-    '(longpress)': 'show()',
     '(keydown)': '_handleKeydown($event)',
-    '(touchend)': '_handleTouchend()',
   },
 })
 export class MatTooltip implements OnDestroy, OnInit {
@@ -165,7 +182,21 @@ export class MatTooltip implements OnDestroy, OnInit {
   /** The default delay in ms before hiding the tooltip after hide is called */
   @Input('matTooltipHideDelay') hideDelay = this._defaultOptions.hideDelay;
 
-  private _message = '';
+  /**
+   * How touch gestures should be handled by the tooltip. On touch devices the tooltip directive
+   * uses a long press gesture to show and hide, however it can conflict with the native browser
+   * gestures. To work around the conflict, Angular Material disables native gestures on the
+   * trigger, but that might not be desirable on particular elements (e.g. inputs and draggable
+   * elements). The different values for this option configure the touch event handling as follows:
+   * - `auto` - Enables touch gestures for all elements, but tries to avoid conflicts with native
+   *   browser gestures on particular elements. In particular, it allows text selection on inputs
+   *   and textareas, and preserves the native browser dragging on elements marked as `draggable`.
+   * - `on` - Enables touch gestures for all elements and disables native
+   *   browser gestures with no exceptions.
+   * - `off` - Disables touch gestures. Note that this will prevent the tooltip from
+   *   showing on touch devices.
+   */
+  @Input('matTooltipTouchGestures') touchGestures: TooltipTouchGestures = 'auto';
 
   /** The message to be displayed in the tooltip */
   @Input('matTooltip')
@@ -191,6 +222,7 @@ export class MatTooltip implements OnDestroy, OnInit {
       });
     }
   }
+  private _message = '';
 
   /** Classes to be passed to the tooltip. Supports the same syntax as `ngClass`. */
   @Input('matTooltipClass')
@@ -202,7 +234,11 @@ export class MatTooltip implements OnDestroy, OnInit {
     }
   }
 
-  private _manualListeners = new Map<string, EventListenerOrEventListenerObject>();
+  /** Manually-bound passive event listeners. */
+  private _passiveListeners = new Map<string, EventListenerOrEventListenerObject>();
+
+  /** Timer started at the last `touchstart` event. */
+  private _touchstartTimeout: number;
 
   /** Emits when the component is destroyed. */
   private readonly _destroyed = new Subject<void>();
@@ -213,85 +249,68 @@ export class MatTooltip implements OnDestroy, OnInit {
     private _scrollDispatcher: ScrollDispatcher,
     private _viewContainerRef: ViewContainerRef,
     private _ngZone: NgZone,
-    platform: Platform,
+    private _platform: Platform,
     private _ariaDescriber: AriaDescriber,
     private _focusMonitor: FocusMonitor,
     @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() private _dir: Directionality,
     @Optional() @Inject(MAT_TOOLTIP_DEFAULT_OPTIONS)
       private _defaultOptions: MatTooltipDefaultOptions,
-    @Optional() @Inject(HAMMER_LOADER) hammerLoader?: HammerLoader) {
+      /**
+       * @deprecated _hammerLoader parameter to be removed.
+       * @breaking-change 9.0.0
+       */
+      // Note that we need to give Angular something to inject here so it doesn't throw.
+      @Inject(ElementRef) _hammerLoader?: any) {
 
     this._scrollStrategy = scrollStrategy;
-    const element: HTMLElement = _elementRef.nativeElement;
-    const hasGestures = typeof window === 'undefined' || (window as any).Hammer || hammerLoader;
 
-    // The mouse events shouldn't be bound on mobile devices, because they can prevent the
-    // first tap from firing its click event or can cause the tooltip to open for clicks.
-    if (!platform.IOS && !platform.ANDROID) {
-      this._manualListeners
-        .set('mouseenter', () => this.show())
-        .set('mouseleave', () => this.hide());
-    } else if (!hasGestures) {
-      // If Hammerjs isn't loaded, fall back to showing on `touchstart`, otherwise
-      // there's no way for the user to trigger the tooltip on a touch device.
-      this._manualListeners.set('touchstart', () => this.show());
-    }
-
-    this._manualListeners.forEach((listener, event) => element.addEventListener(event, listener));
-
-    _focusMonitor.monitor(_elementRef).pipe(takeUntil(this._destroyed)).subscribe(origin => {
-      // Note that the focus monitor runs outside the Angular zone.
-      if (!origin) {
-        _ngZone.run(() => this.hide(0));
-      } else if (origin === 'keyboard') {
-        _ngZone.run(() => this.show());
+    if (_defaultOptions) {
+      if (_defaultOptions.position) {
+        this.position = _defaultOptions.position;
       }
-    });
 
-    if (_defaultOptions && _defaultOptions.position) {
-      this.position = _defaultOptions.position;
+      if (_defaultOptions.touchGestures) {
+        this.touchGestures = _defaultOptions.touchGestures;
+      }
     }
+
+    _focusMonitor.monitor(_elementRef)
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(origin => {
+        // Note that the focus monitor runs outside the Angular zone.
+        if (!origin) {
+          _ngZone.run(() => this.hide(0));
+        } else if (origin === 'keyboard') {
+          _ngZone.run(() => this.show());
+        }
+    });
   }
 
   /**
    * Setup styling-specific things
    */
   ngOnInit() {
-    const element = this._elementRef.nativeElement;
-    const elementStyle = element.style as CSSStyleDeclaration & {webkitUserDrag: string};
-
-    if (element.nodeName === 'INPUT' || element.nodeName === 'TEXTAREA') {
-      // When we bind a gesture event on an element (in this case `longpress`), HammerJS
-      // will add some inline styles by default, including `user-select: none`. This is
-      // problematic on iOS and in Safari, because it will prevent users from typing in inputs.
-      // Since `user-select: none` is not needed for the `longpress` event and can cause unexpected
-      // behavior for text fields, we always clear the `user-select` to avoid such issues.
-      elementStyle.webkitUserSelect = elementStyle.userSelect = elementStyle.msUserSelect = '';
-    }
-
-    // Hammer applies `-webkit-user-drag: none` on all elements by default,
-    // which breaks the native drag&drop. If the consumer explicitly made
-    // the element draggable, clear the `-webkit-user-drag`.
-    if (element.draggable && elementStyle.webkitUserDrag === 'none') {
-      elementStyle.webkitUserDrag = '';
-    }
+    // This needs to happen in `ngOnInit` so the initial values for all inputs have been set.
+    this._setupPointerEvents();
   }
 
   /**
    * Dispose the tooltip when destroyed.
    */
   ngOnDestroy() {
+    clearTimeout(this._touchstartTimeout);
+
     if (this._overlayRef) {
       this._overlayRef.dispose();
       this._tooltipInstance = null;
     }
 
     // Clean up the event listeners set in the constructor
-    this._manualListeners.forEach((listener, event) => {
-      this._elementRef.nativeElement.removeEventListener(event, listener);
+    this._passiveListeners.forEach((listener, event) => {
+      this._elementRef.nativeElement.removeEventListener(event, listener, passiveListenerOptions);
     });
-    this._manualListeners.clear();
+    this._passiveListeners.clear();
 
     this._destroyed.next();
     this._destroyed.complete();
@@ -344,11 +363,6 @@ export class MatTooltip implements OnDestroy, OnInit {
       e.stopPropagation();
       this.hide(0);
     }
-  }
-
-  /** Handles the touchend events on the host element. */
-  _handleTouchend() {
-    this.hide(this._defaultOptions.touchendHideDelay);
   }
 
   /** Create the overlay config and position strategy */
@@ -526,9 +540,63 @@ export class MatTooltip implements OnDestroy, OnInit {
 
     return {x, y};
   }
-}
 
-export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
+  /** Binds the pointer events to the tooltip trigger. */
+  private _setupPointerEvents() {
+    // The mouse events shouldn't be bound on mobile devices, because they can prevent the
+    // first tap from firing its click event or can cause the tooltip to open for clicks.
+    if (!this._platform.IOS && !this._platform.ANDROID) {
+      this._passiveListeners
+        .set('mouseenter', () => this.show())
+        .set('mouseleave', () => this.hide());
+    } else if (this.touchGestures !== 'off') {
+      this._disableNativeGesturesIfNecessary();
+      const touchendListener = () => {
+        clearTimeout(this._touchstartTimeout);
+        this.hide(this._defaultOptions.touchendHideDelay);
+      };
+
+      this._passiveListeners
+        .set('touchend', touchendListener)
+        .set('touchcancel', touchendListener)
+        .set('touchstart', () => {
+          // Note that it's important that we don't `preventDefault` here,
+          // because it can prevent click events from firing on the element.
+          clearTimeout(this._touchstartTimeout);
+          this._touchstartTimeout = setTimeout(() => this.show(), LONGPRESS_DELAY);
+        });
+    }
+
+    this._passiveListeners.forEach((listener, event) => {
+      this._elementRef.nativeElement.addEventListener(event, listener, passiveListenerOptions);
+    });
+  }
+
+  /** Disables the native browser gestures, based on how the tooltip has been configured. */
+  private _disableNativeGesturesIfNecessary() {
+    const element = this._elementRef.nativeElement;
+    const style = element.style;
+    const gestures = this.touchGestures;
+
+    if (gestures !== 'off') {
+      // If gestures are set to `auto`, we don't disable text selection on inputs and
+      // textareas, because it prevents the user from typing into them on iOS Safari.
+      if (gestures === 'on' || (element.nodeName !== 'INPUT' && element.nodeName !== 'TEXTAREA')) {
+        style.userSelect = style.msUserSelect = style.webkitUserSelect =
+            (style as any).MozUserSelect = 'none';
+      }
+
+      // If we have `auto` gestures and the element uses native HTML dragging,
+      // we don't set `-webkit-user-drag` because it prevents the native behavior.
+      if (gestures === 'on' || !element.draggable) {
+        (style as any).webkitUserDrag = 'none';
+      }
+
+      style.touchAction = 'none';
+      style.webkitTapHighlightColor = 'transparent';
+    }
+  }
+}
 
 /**
  * Internal component that wraps the tooltip's content.

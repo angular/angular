@@ -25,16 +25,14 @@ the positions `before` and `after` should be used instead of `left` and `right`,
 ### Showing and hiding
 
 By default, the tooltip will be immediately shown when the user's mouse hovers over the tooltip's
-trigger element and immediately hides when the user's mouse leaves. 
+trigger element and immediately hides when the user's mouse leaves.
 
 On mobile, the tooltip is displayed when the user longpresses the element and hides after a
-delay of 1500ms. The longpress behavior requires HammerJS to be loaded on the page. To learn more
-about adding HammerJS to your app, check out the Gesture Support section of the Getting Started 
-guide.
+delay of 1500ms.
 
 #### Show and hide delays
 
-To add a delay before showing or hiding the tooltip, you can use the inputs `matTooltipShowDelay` 
+To add a delay before showing or hiding the tooltip, you can use the inputs `matTooltipShowDelay`
 and `matTooltipHideDelay` to provide a delay time in milliseconds.
 
 The following example has a tooltip that waits one second to display after the user
@@ -58,7 +56,7 @@ which both accept a number in milliseconds to delay before applying the display 
 
 #### Disabling the tooltip from showing
 
-To completely disable a tooltip, set `matTooltipDisabled`. While disabled, a tooltip will never be 
+To completely disable a tooltip, set `matTooltipDisabled`. While disabled, a tooltip will never be
 shown.
 
 ### Accessibility
