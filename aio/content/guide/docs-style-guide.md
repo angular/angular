@@ -322,6 +322,7 @@ The <code class="no-auto-link">item</code> property is `true`.
 
 For block code snippets, we generally prefer to display code with
 the Angular documentation _code-example_ component represented by the `<code-example>` tag.
+The `<code-example>` tag has a `header` attribute that you use to identify the file that the example comes from. The header should be used whenever possible to establish the context of the example.
 See [Code snippets and code examples](guide/docs-style-guide#code-snippets-and-code-samples) for more details.
 
 <h3 class="no-toc">Inline code-snippets</h3>
@@ -347,6 +348,8 @@ user input in a command shell or the _output_ of some process.
 
 **Do not write inline code snippets** unless you have a good reason and the editor's permission to do so.
 In all other cases, code snippets should be generated automatically from tested code samples.
+
+For hypothetical examples such as illustrations of configuration options in a JSON file, you should still use The `<code-example>` tag with the `header` attribute to identify the context.
 
 {@a from-code-samples}
 
