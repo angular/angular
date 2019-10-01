@@ -25,6 +25,7 @@ import {
   AfterViewInit,
   Input,
   Inject,
+  Directive,
 } from '@angular/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
@@ -33,7 +34,14 @@ import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {Platform} from '@angular/cdk/platform';
 import {MatPaginatedTabHeader} from './paginated-tab-header';
 
-/** Base class with all of the `MatTabHeader` functionality. */
+/**
+ * Base class with all of the `MatTabHeader` functionality.
+ * @docs-private
+ */
+@Directive({
+  // TODO(crisbeto): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-mat-tab-header-base'
+})
 // tslint:disable-next-line:class-name
 export abstract class _MatTabHeaderBase extends MatPaginatedTabHeader implements
   AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy {

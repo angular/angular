@@ -25,6 +25,7 @@ import {
   Optional,
   Inject,
   InjectionToken,
+  Directive,
 } from '@angular/core';
 import {
   CanColor,
@@ -76,7 +77,14 @@ interface MatTabGroupBaseHeader {
   focusIndex: number;
 }
 
-/** Base class with all of the `MatTabGroupBase` functionality. */
+/**
+ * Base class with all of the `MatTabGroupBase` functionality.
+ * @docs-private
+ */
+@Directive({
+  // TODO(crisbeto): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-mat-tab-group-base'
+})
 // tslint:disable-next-line:class-name
 export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements AfterContentInit,
     AfterContentChecked, OnDestroy, CanColor, CanDisableRipple {

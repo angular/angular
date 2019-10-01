@@ -98,7 +98,14 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
   }
 }
 
-/** Base class with all of the `MatTabBody` functionality. */
+/**
+ * Base class with all of the `MatTabBody` functionality.
+ * @docs-private
+ */
+@Directive({
+  // TODO(crisbeto): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-mat-tab-body-base'
+})
 // tslint:disable-next-line:class-name
 export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   /** Current position of the tab-body in the tab-group. Zero means that the tab is visible. */

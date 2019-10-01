@@ -48,7 +48,14 @@ import {MatInkBar} from '../ink-bar';
 import {MatPaginatedTabHeader, MatPaginatedTabHeaderItem} from '../paginated-tab-header';
 import {startWith, takeUntil} from 'rxjs/operators';
 
-/** Base class with all of the `MatTabNav` functionality. */
+/**
+ * Base class with all of the `MatTabNav` functionality.
+ * @docs-private
+ */
+@Directive({
+  // TODO(crisbeto): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-mat-tab-nav-base'
+})
 // tslint:disable-next-line:class-name
 export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements AfterContentChecked,
   AfterContentInit, OnDestroy {

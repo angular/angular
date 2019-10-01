@@ -17,6 +17,8 @@ import {
   AfterContentInit,
   AfterViewInit,
   OnDestroy,
+  Directive,
+  Inject,
 } from '@angular/core';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {coerceNumberProperty} from '@angular/cdk/coercion';
@@ -26,6 +28,7 @@ import {END, ENTER, HOME, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
 import {merge, of as observableOf, Subject, timer, fromEvent} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 /** Config used to bind passive event listeners */
@@ -62,7 +65,12 @@ export type MatPaginatedTabHeaderItem = FocusableOption & {elementRef: ElementRe
 
 /**
  * Base class for a tab header that supported pagination.
+ * @docs-private
  */
+@Directive({
+  // TODO(crisbeto): this selector can be removed when we update to Angular 9.0.
+  selector: 'do-not-use-abstract-mat-paginated-tab-header'
+})
 export abstract class MatPaginatedTabHeader implements AfterContentChecked, AfterContentInit,
   AfterViewInit, OnDestroy {
   abstract _items: QueryList<MatPaginatedTabHeaderItem>;
@@ -140,7 +148,7 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
                * parameters to become required.
                */
               private _platform?: Platform,
-              public _animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
 
     // Bind the `mouseleave` event on the outside since it doesn't change anything in the view.
     _ngZone.runOutsideAngular(() => {
