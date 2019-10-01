@@ -1905,6 +1905,19 @@ export interface ParseTemplateOptions {
    * included in source-map segments.  A common example is whitespace.
    */
   leadingTriviaChars?: string[];
+
+  /**
+   * Render `$localize` message ids with the specified legacy format (xlf, xlf2 or xmb).
+   *
+   * Use this option when use are using the `$localize` based localization messages but
+   * have not migrated the translation files to use the new `$localize` message id format.
+   *
+   * @deprecated
+   * `i18nLegacyMessageIdFormat` should only be used while migrating from legacy message id
+   * formatted translation files and will be removed at the same time as ViewEngine support is
+   * removed.
+   */
+  i18nLegacyMessageIdFormat?: string;
 }
 
 /**
@@ -1917,7 +1930,7 @@ export interface ParseTemplateOptions {
 export function parseTemplate(
     template: string, templateUrl: string, options: ParseTemplateOptions = {}):
     {errors?: ParseError[], nodes: t.Node[], styleUrls: string[], styles: string[]} {
-  const {interpolationConfig, preserveWhitespaces} = options;
+  const {interpolationConfig, preserveWhitespaces, i18nLegacyMessageIdFormat} = options;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(
@@ -1934,8 +1947,9 @@ export function parseTemplate(
   // before we run whitespace removal process, because existing i18n
   // extraction process (ng xi18n) relies on a raw content to generate
   // message ids
-  rootNodes =
-      html.visitAll(new I18nMetaVisitor(interpolationConfig, !preserveWhitespaces), rootNodes);
+  rootNodes = html.visitAll(
+      new I18nMetaVisitor(interpolationConfig, !preserveWhitespaces, i18nLegacyMessageIdFormat),
+      rootNodes);
 
   if (!preserveWhitespaces) {
     rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
