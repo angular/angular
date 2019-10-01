@@ -2,36 +2,36 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "runtime-es5": 2981,
-        "runtime-es2015": 2987,
-        "main-es5": 540068,
-        "main-es2015": 494141,
-        "polyfills-es5": 142239,
-        "polyfills-es2015": 52503
+        "runtime-es5": 2990,
+        "runtime-es2015": 2996,
+        "main-es5": 500653,
+        "main-es2015": 457297,
+        "polyfills-es5": 142383,
+        "polyfills-es2015": 52608
       }
     }
   },
   "aio-local": {
     "master": {
       "uncompressed": {
-        "runtime-es5": 2981,
-        "runtime-es2015": 2987,
-        "main-es5": 541663,
-        "main-es2015": 496036,
-        "polyfills-es5": 142239,
-        "polyfills-es2015": 52503
+        "runtime-es5": 2990,
+        "runtime-es2015": 2996,
+        "main-es5": 501393,
+        "main-es2015": 458422,
+        "polyfills-es5": 142383,
+        "polyfills-es2015": 52608
       }
     }
   },
   "aio-local-viewengine": {
     "master": {
       "uncompressed": {
-        "runtime-es5": 3091,
-        "runtime-es2015": 3097,
-        "main-es5": 481663,
-        "main-es2015": 436411,
-        "polyfills-es5": 142239,
-        "polyfills-es2015": 52503
+        "runtime-es5": 3100,
+        "runtime-es2015": 3106,
+        "main-es5": 482744,
+        "main-es2015": 448708,
+        "polyfills-es5": 142383,
+        "polyfills-es2015": 52608
       }
     }
   }
