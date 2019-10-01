@@ -77,11 +77,7 @@ export class MatSliderChange {
   templateUrl: 'slider.html',
   styleUrls: ['slider.css'],
   host: {
-    // The standard Angular Material slider has the capability to dynamically toggle
-    // whether tick markers should show or not. Therefore we need to make sure that
-    // the MDC slider foundation is able to render tick markers. We dynamically toggle
-    // them based on the specified "tickInterval" input.
-    'class': 'mat-mdc-slider mdc-slider mdc-slider--display-markers',
+    'class': 'mat-mdc-slider mdc-slider',
     'role': 'slider',
     'aria-orientation': 'horizontal',
     // The tabindex if the slider turns disabled is managed by the MDC foundation which
@@ -89,6 +85,7 @@ export class MatSliderChange {
     '[attr.tabindex]': 'tabIndex || 0',
     '[class.mdc-slider--discrete]': 'thumbLabel',
     '[class.mat-slider-has-ticks]': 'tickInterval !== 0',
+    '[class.mdc-slider--display-markers]': 'tickInterval !== 0',
     '[class.mat-slider-thumb-label-showing]': 'thumbLabel',
     '[class.mat-slider-disabled]': 'disabled',
     '[class.mat-primary]': 'color == "primary"',
@@ -464,6 +461,11 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
 
   /** Method that ensures that track markers are refreshed. */
   private _refreshTrackMarkers() {
+    // MDC only checks whether the slider has markers once on init by looking for the
+    // `mdc-slider--display-markers` class in the DOM, whereas we support changing and hiding
+    // the markers dynamically. This is a workaround until we can get a public API for it. See:
+    // https://github.com/material-components/material-components-web/issues/5020
+    (this._foundation as any).hasTrackMarker_ = this.tickInterval !== 0;
     this._foundation.setupTrackMarker();
   }
 
