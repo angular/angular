@@ -33,14 +33,12 @@ function setI18nRefs(html: html.Node & {i18n?: i18n.AST}, i18n: i18n.Node) {
  * stored with other element's and attribute's information.
  */
 export class I18nMetaVisitor implements html.Visitor {
-  private _createI18nMessage: any;
+  // i18n message generation factory
+  private _createI18nMessage = createI18nMessageFactory(this.interpolationConfig);
 
   constructor(
       private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-      private keepI18nAttrs: boolean = false) {
-    // i18n message generation factory
-    this._createI18nMessage = createI18nMessageFactory(interpolationConfig);
-  }
+      private keepI18nAttrs: boolean = false, private i18nLegacyMessageIdFormat: string = '') {}
 
   private _generateI18nMessage(
       nodes: html.Node[], meta: string|i18n.AST = '',
