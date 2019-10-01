@@ -197,12 +197,14 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], tags = [], **k
             output_to_bindir = True,
             cmd = """
         files=($(locations %s))
-        css_content=$$(cat $${files[0]})
-        js_template="var cssElement = document.createElement('style'); \
-                    cssElement.type = 'text/css'; \
-                    cssElement.innerHTML = '$$css_content'; \
-                    document.head.appendChild(cssElement);"
-
+        # Escape all double-quotes so that the content can be safely inlined into the
+        # JS template. Note that it needs to be escaped a second time because the string
+        # will be evaluated first in Bash and will then be stored in the JS output.
+        css_content=$$(cat $${files[0]} | sed 's/"/\\\\"/g')
+        js_template='var cssElement = document.createElement("style"); \
+                    cssElement.type = "text/css"; \
+                    cssElement.innerHTML = "'"$$css_content"'"; \
+                    document.head.appendChild(cssElement);'
          echo $$js_template > $@
       """ % css_label,
         )
