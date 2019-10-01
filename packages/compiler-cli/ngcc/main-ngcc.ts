@@ -50,7 +50,14 @@ if (require.main === module) {
                 'If specified then new `*_ivy_ngcc` entry-points will be added to package.json rather than modifying the ones in-place.\n' +
                 'For this to work you need to have custom resolution set up (e.g. in webpack) to look for these new entry-points.\n' +
                 'The Angular CLI does this already, so it is safe to use this option if the project is being built via the CLI.',
-            type: 'boolean'
+            type: 'boolean',
+          })
+          .option('async', {
+            describe:
+                'Whether to compile asynchronously. This is enabled by default as it allows compilations to be parallelized.\n' +
+                'Disabling asynchronous compilation may be useful for debugging.',
+            type: 'boolean',
+            default: true,
           })
           .option('l', {
             alias: 'loglevel',
@@ -86,7 +93,7 @@ if (require.main === module) {
         compileAllFormats,
         createNewEntryPointFormats,
         logger,
-        async: true,
+        async: options['async'],
       });
 
       if (logger) {
