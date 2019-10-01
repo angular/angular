@@ -25,7 +25,7 @@
     "angular-route": "1.7.8",
     "core-js": "^2.5.4",
     "rxjs": "^6.5.1",
-    "tslib": "^1.9.0",
+    "tslib": "^1.10.0",
     "web-animations-js": "^2.3.1",
     "zone.js": "~0.10.2"
   },

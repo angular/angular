@@ -32,14 +32,13 @@ export interface ShimGenerator {
 export class GeneratedShimsHostWrapper implements ts.CompilerHost {
   constructor(private delegate: ts.CompilerHost, private shimGenerators: ShimGenerator[]) {
     if (delegate.resolveModuleNames !== undefined) {
-      // FIXME: TypeScript 3.6 adds an "options" argument that the code below passes on, but which
-      // still makes the method incompatible with TS3.5. Remove the "as any" cast once fully on 3.6.
-      ((this as ts.CompilerHost) as any).resolveModuleNames =
-          (moduleNames: string[], containingFile: string, reusedNames: (string[] | undefined),
-           redirectedReference: (ts.ResolvedProjectReference | undefined), options: any) =>
-              (delegate as any)
-                  .resolveModuleNames !(
-                      moduleNames, containingFile, reusedNames, redirectedReference, options);
+      this.resolveModuleNames =
+          (moduleNames: string[], containingFile: string, reusedNames: string[],
+           redirectedReference: ts.ResolvedProjectReference, options?: ts.CompilerOptions) =>
+              // FIXME: Additional parameters are required in TS3.6, but ignored in 3.5.
+          // Remove the any cast once google3 is fully on TS3.6.
+          (delegate.resolveModuleNames as any) !(
+              moduleNames, containingFile, reusedNames, redirectedReference, options);
     }
     if (delegate.resolveTypeReferenceDirectives) {
       // Backward compatibility with TypeScript 2.9 and older since return
@@ -58,6 +57,13 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
       this.getDirectories = (path: string) => delegate.getDirectories !(path);
     }
   }
+
+  // FIXME: Additional options param is needed in TS3.6, but not alloowed in 3.5.
+  // Make the options param non-optional once google3 is fully on TS3.6.
+  resolveModuleNames?:
+      (moduleNames: string[], containingFile: string, reusedNames: string[],
+       redirectedReference: ts.ResolvedProjectReference,
+       options?: ts.CompilerOptions) => (ts.ResolvedModule | undefined)[];
 
   resolveTypeReferenceDirectives?:
       (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];

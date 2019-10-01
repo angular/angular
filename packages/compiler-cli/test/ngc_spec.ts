@@ -154,8 +154,8 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledWith(
-          'test.ts(3,9): error TS2349: Cannot invoke an expression whose type lacks a call signature. ' +
-          'Type \'String\' has no compatible call signatures.\n');
+          'test.ts(3,9): error TS2349: This expression is not callable.\n' +
+          '  Type \'String\' has no call signatures.\n');
       expect(exitCode).toEqual(1);
     });
 

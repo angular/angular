@@ -15,7 +15,7 @@
     "@angular/router": "file:../../dist/packages-dist/router",
     "reflect-metadata": "0.1.12",
     "rxjs": "6.5.3",
-    "tslib": "1.9.3",
+    "tslib": "file:../../node_modules/tslib",
     "zone.js": "0.10.2"
   },
   "devDependencies": {
@@ -28,7 +28,7 @@
     "@bazel/typescript": "0.38.3",
     "@types/jasmine": "2.8.8",
     "http-server": "^0.11.1",
-    "typescript": "3.4.2"
+    "typescript": "3.6.4"
   },
   "scripts": {
     "test": "bazel build ... --noshow_progress && bazel test ...",

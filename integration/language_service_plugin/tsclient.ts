@@ -13,7 +13,7 @@ export class Client {
   constructor(private readonly server: ChildProcess) {}
 
   listen() {
-    this.server.stdout.on('data', (data: Buffer) => {
+    this.server.stdout!.on('data', (data: Buffer) => {
       this.data = this.data ? Buffer.concat([this.data, data]) : data;
       // tsserver could batch multiple responses together so we have to go
       // through the entire buffer to keep looking for messages.
@@ -62,7 +62,7 @@ export class Client {
       command,
       arguments: params
     };
-    this.server.stdin.write(JSON.stringify(request) + '\r\n');
+    this.server.stdin!.write(JSON.stringify(request) + '\r\n');
     return new Promise((resolve, reject) => {
       this.responseEmitter.once(`${seq}`, resolve);
       this.responseEmitter.once('error', reject);

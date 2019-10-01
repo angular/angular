@@ -115,6 +115,16 @@
         "sortText": "normalize"
       },
       {
+        "name": "padEnd",
+        "kind": "method",
+        "sortText": "padEnd"
+      },
+      {
+        "name": "padStart",
+        "kind": "method",
+        "sortText": "padStart"
+      },
+      {
         "name": "repeat",
         "kind": "method",
         "sortText": "repeat"

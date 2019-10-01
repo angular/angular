@@ -36,23 +36,30 @@ export function formatDiagnosticPosition(
 }
 
 export function flattenDiagnosticMessageChain(
-    chain: api.DiagnosticMessageChain, host: ts.FormatDiagnosticsHost = defaultFormatHost): string {
-  let result = chain.messageText;
-  let indent = 1;
-  let current = chain.next;
+    chain: api.DiagnosticMessageChain, host: ts.FormatDiagnosticsHost = defaultFormatHost,
+    indent = 0): string {
   const newLine = host.getNewLine();
-  while (current) {
+  let result = '';
+  if (indent) {
     result += newLine;
+
     for (let i = 0; i < indent; i++) {
       result += '  ';
     }
-    result += current.messageText;
-    const position = current.position;
-    if (position) {
-      result += ` at ${formatDiagnosticPosition(position, host)}`;
+  }
+  result += chain.messageText;
+
+  const position = chain.position;
+  // add position if available, and we are not at the depest frame
+  if (position && indent !== 0) {
+    result += ` at ${formatDiagnosticPosition(position, host)}`;
+  }
+
+  indent++;
+  if (chain.next) {
+    for (const kid of chain.next) {
+      result += flattenDiagnosticMessageChain(kid, host, indent);
     }
-    current = current.next;
-    indent++;
   }
   return result;
 }
