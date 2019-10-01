@@ -38,7 +38,7 @@ explicitly set by calling `MatIconRegistry.setDefaultFontSetClass`.
 ### SVG icons
 
 When an `mat-icon` component displays an SVG icon, it does so by directly inlining the SVG content
-into the page as a child of the component. (Rather than using an <img> tag or a div background
+into the page as a child of the component. (Rather than using an `<img>` tag or a div background
 image). This makes it easier to apply CSS styles to SVG icons. For example, the default color of the
 SVG content is the CSS
 [currentColor](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentColor_keyword)
