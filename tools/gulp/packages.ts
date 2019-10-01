@@ -17,10 +17,6 @@ export const examplesPackage = new BuildPackage('material-examples', [
   googleMapsPackage,
 ]);
 
-// The material package re-exports its secondary entry-points at the root so that all of the
-// components can still be imported through `@angular/material`.
-materialPackage.exportsSecondaryEntryPointsAtRoot = true;
-
 // Some CDK & Material experimental secondary entry-points include SCSS files that should be exposed
 // individually at the release output root. This is different in the Material package because here a
 // full SCSS bundle will be generated.
