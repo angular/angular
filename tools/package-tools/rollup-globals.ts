@@ -134,6 +134,31 @@ export const rollupGlobals = {
   ...rollupYouTubePlayerEntryPoints,
   ...rollupGoogleMapsEntryPoints,
 
+  // For each Angular Material secondary entry-point, we include a testing
+  // tertiary entry-point.
+  ...matSecondaryEntryPoints.reduce(
+      (res, entryPoint) => {
+        return {...res, ...generateRollupEntryPoints(`material/${entryPoint}`, ['testing'])};
+      },
+      []),
+
+  // For each Angular Material experimental secondary entry-point, we include a testing
+  // tertiary entry-point.
+  ...materialExperimentalSecondaryEntryPoints.reduce(
+      (res, entryPoint) => {
+        return {
+          ...res,
+          ...generateRollupEntryPoints(`material-experimental/${entryPoint}`, ['testing'])
+        };
+      },
+      []),
+
+  // Manual entry-points which are not detected automatically. Since we do
+  // not use this file for rollup-globals anymore, just as a backup if the Bazel
+  // migrations does not work out, we can add these entries manually for now.
+  '@angular/material-experimental/form-field/testing/control':
+      'ng.materialExperimental.formField.testing.control',
+
   '@angular/cdk/private/testing': 'ng.cdk.private.testing',
   '@angular/cdk/private/testing/e2e': 'ng.cdk.private.testing.e2e',
 

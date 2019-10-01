@@ -9,7 +9,7 @@
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MatMenuItemHarness} from './menu-item-harness';
-import {MenuHarnessFilters} from '@angular/material/menu/testing/menu-harness-filters';
+import {MenuHarnessFilters} from '@angular/material/menu/testing';
 
 /**
  * Harness for interacting with a MDC-based mat-menu in tests.

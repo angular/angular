@@ -34,7 +34,8 @@
     "format:ts": "git-clang-format HEAD $(git diff HEAD --name-only | grep -v \"\\.d\\.ts\")",
     "format:bazel": "yarn -s bazel:buildifier --lint=fix --mode=fix",
     "format": "yarn -s format:ts && yarn -s format:bazel",
-    "cherry-pick-patch": "ts-node --project tools/cherry-pick-patch/ tools/cherry-pick-patch/cherry-pick-patch.ts"
+    "cherry-pick-patch": "ts-node --project tools/cherry-pick-patch/ tools/cherry-pick-patch/cherry-pick-patch.ts",
+    "check-rollup-globals": "ts-node --project scripts/ scripts/check-rollup-globals.ts"
   },
   "version": "8.2.0",
   "requiredAngularVersion": "^8.0.0 || ^9.0.0-0",

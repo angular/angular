@@ -7,13 +7,33 @@ load(
     "MATERIAL_EXPERIMENTAL_TESTING_ENTRYPOINTS",
 )
 
-# Base rollup globals for everything in the repo.
+# Base rollup globals for everything in the repo. Note that we want to disable
+# sorting of the globals as we manually group dict entries.
+# buildifier: disable=unsorted-dict-items
 ROLLUP_GLOBALS = {
+    # Framework packages.
+    "@angular/animations": "ng.animations",
+    "@angular/common": "ng.common",
+    "@angular/common/http": "ng.common.http",
+    "@angular/common/http/testing": "ng.common.http.testing",
+    "@angular/common/testing": "ng.common.testing",
+    "@angular/core": "ng.core",
+    "@angular/core/testing": "ng.core.testing",
+    "@angular/forms": "ng.forms",
+    "@angular/platform-browser": "ng.platformBrowser",
+    "@angular/platform-browser-dynamic": "ng.platformBrowserDynamic",
+    "@angular/platform-browser-dynamic/testing": "ng.platformBrowserDynamic.testing",
+    "@angular/platform-browser/animations": "ng.platformBrowser.animations",
+    "@angular/platform-server": "ng.platformServer",
+    "@angular/router": "ng.router",
+
+    # Primary entry-points in the project.
     "@angular/cdk": "ng.cdk",
     "@angular/cdk-experimental": "ng.cdkExperimental",
     "@angular/google-maps": "ng.googleMaps",
     "@angular/material": "ng.material",
     "@angular/material-experimental": "ng.materialExperimental",
+    "@angular/material-moment-adapter": "ng.materialMomentAdapter",
     "@angular/youtube-player": "ng.youtubePlayer",
 
     # MDC Web
@@ -47,7 +67,12 @@ ROLLUP_GLOBALS = {
     "@material/tab-scroller": "mdc.tabScroller",
     "@material/text-field": "mdc.textField",
     "@material/top-app-bar": "mdc.topAppBar",
+
+    # Third-party libraries.
     "moment": "moment",
+    "protractor": "protractor",
+    "rxjs": "rxjs",
+    "rxjs/operators": "rxjs.operators",
     "tslib": "tslib",
 }
 

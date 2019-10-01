@@ -17,13 +17,14 @@ CDK_ENTRYPOINTS = [
     "table",
     "text-field",
     "tree",
-
-    # NOTE: "testing" should not be listed here as it will be treated as its own
-    # package that will be included manually in the "ng_package".
+    "testing",
 ]
 
-# List of all entry-point targets of the Angular Material package.
-CDK_TARGETS = ["//src/cdk"] + ["//src/cdk/%s" % ep for ep in CDK_ENTRYPOINTS]
+# List of all entry-point targets of the Angular Material package. Note that
+# we do not want to include "testing" here as it will be treated as a standalone
+# sub-package of the "ng_package".
+CDK_TARGETS = ["//src/cdk"] + \
+              ["//src/cdk/%s" % ep for ep in CDK_ENTRYPOINTS if not ep == "testing"]
 
 # Within the CDK, only a few targets have sass libraries which need to be
 # part of the release package. This list declares all CDK targets with sass

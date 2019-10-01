@@ -38,7 +38,7 @@ class Walker extends Lint.RuleWalker {
 
     this._configPath = path.resolve(process.cwd(), configPath);
     this._config = require(this._configPath).rollupGlobals;
-    this._enabled = fileGlobs.some(p => minimatch(relativeFilePath, p));
+    this._enabled = fileGlobs.every(p => minimatch(relativeFilePath, p));
   }
 
   visitImportDeclaration(node: ts.ImportDeclaration) {

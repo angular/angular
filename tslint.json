@@ -134,7 +134,9 @@
     "missing-rollup-globals": [
       true,
       "./tools/package-tools/rollup-globals.ts",
-      "src/!(a11y-demo|e2e-app|material-examples|universal-app|dev-app)/!(schematics)**/*.ts"
+      "src/**/!(*.spec).ts",
+      "!src/+(a11y-demo|e2e-app|universal-app|dev-app)/**/*.ts",
+      "!src/**/schematics/**/*.ts"
     ],
     "file-name-casing": [true, {
       // Exclude custom lint rule files since they have to always be camel-cased and end

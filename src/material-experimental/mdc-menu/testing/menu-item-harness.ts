@@ -8,7 +8,7 @@
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {MenuItemHarnessFilters} from '@angular/material/menu/testing/menu-harness-filters';
+import {MenuItemHarnessFilters} from '@angular/material/menu/testing';
 
 
 /**

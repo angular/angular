@@ -8,7 +8,7 @@
 
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ButtonHarnessFilters} from '@angular/material/button/testing/button-harness-filters';
+import {ButtonHarnessFilters} from '@angular/material/button/testing';
 
 
 /**
