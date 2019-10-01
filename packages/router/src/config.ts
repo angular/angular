@@ -312,7 +312,7 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
  * the router would apply the redirect even when navigating to the redirect destination,
  * creating an endless loop.
  *
- * In the following example, supplying the 'full' `patchMatch` strategy ensures
+ * In the following example, supplying the 'full' `pathMatch` strategy ensures
  * that the router applies the redirect if and only if navigating to '/'.
  *
  * ```
