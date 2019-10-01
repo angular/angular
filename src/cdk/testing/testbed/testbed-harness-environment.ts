@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HarnessEnvironment} from '@angular/cdk/testing';
 import {ComponentFixture} from '@angular/core/testing';
 import {ComponentHarness, ComponentHarnessConstructor, HarnessLoader} from '../component-harness';
-import {HarnessEnvironment} from '../harness-environment';
 import {TestElement} from '../test-element';
 import {UnitTestElement} from './unit-test-element';
 
@@ -43,8 +43,17 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
   static async harnessForFixture<T extends ComponentHarness>(
       fixture: ComponentFixture<unknown>, harnessType: ComponentHarnessConstructor<T>): Promise<T> {
     const environment = new TestbedHarnessEnvironment(fixture.nativeElement, fixture);
-    await environment._stabilize();
+    await environment.forceStabilize();
     return environment.createComponentHarness(harnessType, fixture.nativeElement);
+  }
+
+  async forceStabilize(): Promise<void> {
+    if (this._destroyed) {
+      throw Error('Harness is attempting to use a fixture that has already been destroyed.');
+    }
+
+    this._fixture.detectChanges();
+    await this._fixture.whenStable();
   }
 
   protected getDocumentRoot(): Element {
@@ -52,7 +61,7 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
   }
 
   protected createTestElement(element: Element): TestElement {
-    return new UnitTestElement(element, this._stabilize.bind(this));
+    return new UnitTestElement(element, () => this.forceStabilize());
   }
 
   protected createEnvironment(element: Element): HarnessEnvironment<Element> {
@@ -60,16 +69,7 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
   }
 
   protected async getAllRawElements(selector: string): Promise<Element[]> {
-    await this._stabilize();
+    await this.forceStabilize();
     return Array.from(this.rawRootElement.querySelectorAll(selector));
-  }
-
-  private async _stabilize(): Promise<void> {
-    if (this._destroyed) {
-      throw Error('Harness is attempting to use a fixture that has already been destroyed.');
-    }
-
-    this._fixture.detectChanges();
-    await this._fixture.whenStable();
   }
 }

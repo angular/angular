@@ -104,11 +104,4 @@ export interface TestElement {
 
   /** Checks whether this element matches the given selector. */
   matchesSelector(selector: string): Promise<boolean>;
-
-  /**
-   * Flushes change detection and async tasks.
-   * In most cases it should not be necessary to call this. However, there may be some edge cases
-   * where it is needed to fully flush animation events.
-   */
-  forceStabilize(): Promise<void>;
 }

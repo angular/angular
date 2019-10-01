@@ -110,6 +110,9 @@ export abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFac
     return new harnessType(this.createEnvironment(element));
   }
 
+  // Part of LocatorFactory interface, subclasses will implement.
+  abstract forceStabilize(): Promise<void>;
+
   /** Gets the root element for the document. */
   protected abstract getDocumentRoot(): E;
 

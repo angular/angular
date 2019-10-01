@@ -142,6 +142,13 @@ export interface LocatorFactory {
    */
   locatorForAll<T extends ComponentHarness>(
       harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T[]>;
+
+  /**
+   * Flushes change detection and async tasks.
+   * In most cases it should not be necessary to call this manually. However, there may be some edge
+   * cases where it is needed to fully flush animation events.
+   */
+  forceStabilize(): Promise<void>;
 }
 
 /**
@@ -244,6 +251,15 @@ export abstract class ComponentHarness {
 
   protected locatorForAll(arg: any) {
     return this.locatorFactory.locatorForAll(arg);
+  }
+
+  /**
+   * Flushes change detection and async tasks.
+   * In most cases it should not be necessary to call this manually. However, there may be some edge
+   * cases where it is needed to fully flush animation events.
+   */
+  protected async forceStabilize() {
+    return this.locatorFactory.forceStabilize();
   }
 }
 

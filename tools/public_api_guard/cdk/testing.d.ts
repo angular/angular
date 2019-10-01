@@ -14,6 +14,7 @@ export declare function clearElement(element: HTMLInputElement | HTMLTextAreaEle
 export declare abstract class ComponentHarness {
     constructor(locatorFactory: LocatorFactory);
     protected documentRootLocatorFactory(): LocatorFactory;
+    protected forceStabilize(): Promise<void>;
     host(): Promise<TestElement>;
     protected locatorFor(selector: string): AsyncFactoryFn<TestElement>;
     protected locatorFor<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
@@ -54,6 +55,7 @@ export declare abstract class HarnessEnvironment<E> implements HarnessLoader, Lo
     protected abstract createEnvironment(element: E): HarnessEnvironment<E>;
     protected abstract createTestElement(element: E): TestElement;
     documentRootLocatorFactory(): LocatorFactory;
+    abstract forceStabilize(): Promise<void>;
     getAllChildLoaders(selector: string): Promise<HarnessLoader[]>;
     getAllHarnesses<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): Promise<T[]>;
     protected abstract getAllRawElements(selector: string): Promise<E[]>;
@@ -92,6 +94,7 @@ export declare function isTextInput(element: Element): element is HTMLInputEleme
 export interface LocatorFactory {
     rootElement: TestElement;
     documentRootLocatorFactory(): LocatorFactory;
+    forceStabilize(): Promise<void>;
     locatorFor(selector: string): AsyncFactoryFn<TestElement>;
     locatorFor<T extends ComponentHarness>(harnessType: ComponentHarnessConstructor<T> | HarnessPredicate<T>): AsyncFactoryFn<T>;
     locatorForAll(selector: string): AsyncFactoryFn<TestElement[]>;
@@ -114,7 +117,6 @@ export interface TestElement {
     clear(): Promise<void>;
     click(relativeX?: number, relativeY?: number): Promise<void>;
     focus(): Promise<void>;
-    forceStabilize(): Promise<void>;
     getAttribute(name: string): Promise<string | null>;
     getCssValue(property: string): Promise<string>;
     getDimensions(): Promise<ElementDimensions>;

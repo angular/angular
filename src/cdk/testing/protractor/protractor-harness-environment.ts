@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HarnessEnvironment} from '@angular/cdk/testing';
 import {by, element as protractorElement, ElementFinder} from 'protractor';
 import {HarnessLoader} from '../component-harness';
-import {HarnessEnvironment} from '../harness-environment';
 import {TestElement} from '../test-element';
 import {ProtractorElement} from './protractor-element';
 
@@ -22,6 +22,8 @@ export class ProtractorHarnessEnvironment extends HarnessEnvironment<ElementFind
   static loader(): HarnessLoader {
     return new ProtractorHarnessEnvironment(protractorElement(by.css('body')));
   }
+
+  async forceStabilize(): Promise<void> {}
 
   protected getDocumentRoot(): ElementFinder {
     return protractorElement(by.css('body'));

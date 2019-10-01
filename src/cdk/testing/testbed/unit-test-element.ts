@@ -144,8 +144,4 @@ export class UnitTestElement implements TestElement {
     return (elementPrototype['matches'] || elementPrototype['msMatchesSelector'])
         .call(this.element, selector);
   }
-
-  async forceStabilize(): Promise<void> {
-    return this._stabilize();
-  }
 }

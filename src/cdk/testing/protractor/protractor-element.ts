@@ -148,6 +148,4 @@ export class ProtractorElement implements TestElement {
                   Element.prototype.msMatchesSelector).call(arguments[0], arguments[1])
           `, this.element, selector);
   }
-
-  async forceStabilize(): Promise<void> {}
 }
