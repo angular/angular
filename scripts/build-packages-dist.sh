@@ -28,12 +28,24 @@ echo ""
 dest_path="dist/releases"
 
 # Path to the bazel-bin directory.
-bazel_bin_path=$(${bazel} info bazel-bin 2> /dev/null)
+bazel_bin_path=$(${bazel} info bazel-bin)
 
 # List of targets that need to be built, e.g. //src/lib, //src/cdk, etc. Note we need to remove all
 # carriage returns because Bazel prints these on Windows. This breaks the Bash array parsing.
 targets=$(${bazel} query --output=label 'attr("tags", "\[.*release-package.*\]", //src/...)' \
-  'intersect kind(".*_package", //src/...)' 2> /dev/null | tr -d "\r")
+  'intersect kind(".*_package", //src/...)' | tr -d "\r")
+
+# Extracts the package name from the Bazel target names.
+# e.g. `src/material:npm_package` will result in "material".
+dirs=`echo "$targets" | sed -e 's/\/\/src\/\(.*\):npm_package/\1/'`
+
+# Walk through each release package and clear previous "npm_package" outputs. This is
+# a workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1219. We need to
+# do this to ensure that the version placeholders are properly populated.
+for pkg in ${dirs}; do
+  pkg_dir="${bazel_bin_path}/src/${pkg}/npm_package"
+  rm -Rf ${pkg_dir}
+done
 
 # Walk through each release package target and build it.
 for target in ${targets}; do
@@ -49,10 +61,6 @@ done
 rm -Rf ${dest_path}
 mkdir -p ${dest_path}
 
-# Extracts the package name from the Bazel target names. e.g. `src/material:npm_package`
-# will result in "material".
-dirs=`echo "$targets" | sed -e 's/\/\/src\/\(.*\):npm_package/\1/'`
-
 # Copy the package output for all built NPM packages into the dist directory.
 for pkg in ${dirs}; do
   pkg_dir="${bazel_bin_path}/src/${pkg}/npm_package"
@@ -61,6 +69,7 @@ for pkg in ${dirs}; do
   if [[ -d ${pkg_dir} ]]; then
     echo "> Copying package output to \"${target_dir}\".."
     rm -rf ${target_dir}
-    cp -R --no-preserve=mode ${pkg_dir} ${target_dir}
+    cp -R ${pkg_dir} ${target_dir}
+    chmod -R u+w ${target_dir}
   fi
 done
