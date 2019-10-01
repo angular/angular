@@ -188,7 +188,7 @@ You can rebuild your library whenever you make changes to it, but this extra ste
 *Incremental builds* functionality improves the library-development experience.
 Every time a file is changed a partial build is performed that emits the amended files.
 
-Incremental builds can be run as a backround process in your dev environment. To take advantage of this feature add the `--watch` flag to the build command:
+Incremental builds can be run as a background process in your dev environment. To take advantage of this feature add the `--watch` flag to the build command:
 
 <code-example language="bash">
 ng build my-lib --watch
