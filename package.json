@@ -44,6 +44,7 @@
     "@bazel/karma": "0.37.1",
     "@bazel/protractor": "0.37.1",
     "@bazel/typescript": "0.37.1",
+    "@cush/sorcery": "^1.4.7",
     "@microsoft/api-extractor": "^7.3.9",
     "@schematics/angular": "^8.0.0-beta.15",
     "@types/angular": "^1.6.47",

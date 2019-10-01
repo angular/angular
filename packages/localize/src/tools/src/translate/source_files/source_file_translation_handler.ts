@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {parseSync, transformFromAstSync} from '@babel/core';
-import {extname, join} from 'path';
+import {extname, join, resolve} from 'path';
 
 import {writeFile} from '../../utils';
 import {OutputPathFn} from '../output_path';
@@ -14,8 +14,7 @@ import {TranslationBundle, TranslationHandler} from '../translator';
 
 import {makeEs2015TranslatePlugin} from './es2015_translate_plugin';
 import {makeEs5TranslatePlugin} from './es5_translate_plugin';
-
-
+import {extractSourceMap, writeSourceMap} from './source_maps';
 
 /**
  * Translate a file by inlining all messages tagged by `$localize` with the appropriate translated
@@ -28,7 +27,7 @@ export class SourceFileTranslationHandler implements TranslationHandler {
   translate(
       sourceRoot: string, relativeFilePath: string, contents: Buffer, outputPathFn: OutputPathFn,
       translations: TranslationBundle[]): void {
-    const sourceCode = contents.toString('utf8');
+    let sourceCode = contents.toString('utf8');
     // A short-circuit check to avoid parsing the file into an AST if it does not contain any
     // `$localize` identifiers.
     if (!sourceCode.includes('$localize')) {
@@ -36,25 +35,34 @@ export class SourceFileTranslationHandler implements TranslationHandler {
         writeFile(outputPathFn(translation.locale, relativeFilePath), contents);
       }
     } else {
-      const ast = parseSync(sourceCode, {sourceRoot, filename: relativeFilePath});
+      const absoluteSourcePath = resolve(sourceRoot, relativeFilePath);
+      const sourceMapInfo = extractSourceMap(absoluteSourcePath, sourceCode);
+      const ast = parseSync(sourceMapInfo.source, {sourceRoot, sourceFileName: relativeFilePath});
       if (!ast) {
         throw new Error(`Unable to parse source file: ${join(sourceRoot, relativeFilePath)}`);
       }
       for (const translationBundle of translations) {
-        const translated = transformFromAstSync(ast, sourceCode, {
+        const translated = transformFromAstSync(ast, undefined, {
           compact: true,
-          generatorOpts: {minified: true},
+          generatorOpts: {
+            minified: true,
+            sourceMaps: true,
+          },
           plugins: [
             makeEs2015TranslatePlugin(translationBundle.translations),
             makeEs5TranslatePlugin(translationBundle.translations)
-          ],
-          filename: relativeFilePath,
-
+          ]
         });
         if (!translated || !translated.code) {
           throw new Error(`Unable to transform source file: ${join(sourceRoot, relativeFilePath)}`);
         }
-        writeFile(outputPathFn(translationBundle.locale, relativeFilePath), translated.code);
+        const translatedFilePath = outputPathFn(translationBundle.locale, relativeFilePath);
+        writeFile(translatedFilePath, translated.code);
+        writeSourceMap(
+            absoluteSourcePath, sourceMapInfo.source,
+            sourceMapInfo.map && sourceMapInfo.map.toObject(), translatedFilePath, translated.code,
+            translated.map || null, sourceMapInfo.isInline);
+        debugger;
       }
     }
   }

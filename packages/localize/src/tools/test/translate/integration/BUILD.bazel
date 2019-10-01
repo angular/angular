@@ -26,6 +26,8 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//tools/testing:node_no_angular",
+        "@npm//@cush/sorcery",
+        "@npm//convert-source-map",
         "@npm//glob",
         "@npm//yargs",
     ],

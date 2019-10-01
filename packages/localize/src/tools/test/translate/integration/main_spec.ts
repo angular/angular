@@ -47,11 +47,11 @@ describe('translateFiles()', () => {
     });
 
     expect(readFileSync(resolve(tmpDir, 'fr', 'test.js'), 'utf8'))
-        .toEqual(`var name="World";var message="Bonjour, "+name+"!";`);
+        .toContain(`let name="World";let message="Bonjour, "+name+"!";`);
     expect(readFileSync(resolve(tmpDir, 'de', 'test.js'), 'utf8'))
-        .toEqual(`var name="World";var message="Guten Tag, "+name+"!";`);
+        .toContain(`let name="World";let message="Guten Tag, "+name+"!";`);
     expect(readFileSync(resolve(tmpDir, 'es', 'test.js'), 'utf8'))
-        .toEqual(`var name="World";var message="Hola, "+name+"!";`);
+        .toContain(`let name="World";let message="Hola, "+name+"!";`);
   });
 
   it('should transform and/or copy files to the destination folders', () => {
@@ -76,11 +76,11 @@ describe('translateFiles()', () => {
         .toEqual('Contents of test-2.txt');
 
     expect(readFileSync(resolve(tmpDir, 'fr', 'test.js'), 'utf8'))
-        .toEqual(`var name="World";var message="Bonjour, "+name+"!";`);
+        .toContain(`let name="World";let message="Bonjour, "+name+"!";`);
     expect(readFileSync(resolve(tmpDir, 'de', 'test.js'), 'utf8'))
-        .toEqual(`var name="World";var message="Guten Tag, "+name+"!";`);
+        .toContain(`let name="World";let message="Guten Tag, "+name+"!";`);
     expect(readFileSync(resolve(tmpDir, 'es', 'test.js'), 'utf8'))
-        .toEqual(`var name="World";var message="Hola, "+name+"!";`);
+        .toContain(`let name="World";let message="Hola, "+name+"!";`);
   });
 });
 

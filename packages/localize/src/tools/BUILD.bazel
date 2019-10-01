@@ -25,6 +25,7 @@ ts_library(
         "@npm//@types/glob",
         "@npm//@types/node",
         "@npm//@types/yargs",
+        "@npm//@types/convert-source-map",
     ],
 )
 
@@ -36,6 +37,8 @@ npm_package(
         ":tools",
         "@npm//@babel/core",
         "@npm//@babel/types",
+        "@npm//@cush/sorcery",
+        "@npm//convert-source-map",
         "@npm//glob",
         "@npm//yargs",
     ],
