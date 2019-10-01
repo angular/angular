@@ -193,3 +193,18 @@ Incremental builds can be run as a background process in your dev environment. T
 <code-example language="bash">
 ng build my-lib --watch
 </code-example>
+
+<div class="alert is-important">
+
+The CLI `build` command uses a different builder and invokes a different build tool for libraries than it does for applications.
+
+* The  build system for apps, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects.
+* The build system for libraries is based on `ng-packagr`. It is only added to your dependencies when you add a library using `ng generate library my-lib`.
+
+The two build systems support different things, and even where they support the same things, they do those things differently.
+This means that the TypeScript source can result in different JavaScript code in a built library than it would in a built application.
+
+For this reason, an app that depends on a library should only use TypeScript path mappings that point to the *built library*.
+TypeScript path mappings should *not* point to the library source `.ts` files.
+
+</div>
