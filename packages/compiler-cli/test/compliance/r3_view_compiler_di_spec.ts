@@ -90,8 +90,8 @@ describe('compiler compliance: dependency injection', () => {
     const def = `
       MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
         token: MyService,
-        factory: function() {
-          return MyService.ngFactoryDef();
+        factory: function(t) {
+          return MyService.ngFactoryDef(t);
         },
         providedIn: null
       });
@@ -121,7 +121,7 @@ describe('compiler compliance: dependency injection', () => {
     expect(matches ? matches.length : 0).toBe(1);
   });
 
-  it('should delegate directly to the alternate factory when setting `useClass` without `deps`',
+  it('should delegate directly to the alternate factory when setting `useFactory` without `deps`',
      () => {
        const files = {
          app: {
@@ -157,7 +157,7 @@ describe('compiler compliance: dependency injection', () => {
        expectEmit(result.source, def, 'Incorrect injectable definition');
      });
 
-  it('should not delegate directly to the alternate factory when setting `useClass` with `deps`',
+  it('should not delegate directly to the alternate factory when setting `useFactory` with `deps`',
      () => {
        const files = {
          app: {
@@ -219,8 +219,8 @@ describe('compiler compliance: dependency injection', () => {
        const factory = `
           MyService.ngInjectableDef = $r3$.ɵɵdefineInjectable({
             token: MyService,
-            factory: function() {
-              return MyAlternateService.ngFactoryDef();
+            factory: function(t) {
+              return MyAlternateService.ngFactoryDef(t);
             },
             providedIn: null
           });
@@ -272,7 +272,7 @@ describe('compiler compliance: dependency injection', () => {
        expectEmit(result.source, factory, 'Incorrect factory definition');
      });
 
-  it('should unwrap forward refs when delegating to a different factory', () => {
+  it('should unwrap forward refs when delegating to a different class', () => {
     const files = {
       app: {
         'spec.ts': `
@@ -292,8 +292,8 @@ describe('compiler compliance: dependency injection', () => {
     const factory = `
       SomeProvider.ngInjectableDef = $r3$.ɵɵdefineInjectable({
         token: SomeProvider,
-        factory: function() {
-          return SomeProviderImpl.ngFactoryDef();
+        factory: function(t) {
+          return SomeProviderImpl.ngFactoryDef(t);
         },
         providedIn: 'root'
       });

@@ -117,7 +117,8 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
 function delegateToFactory(type: o.Expression) {
   return {
     statements: [],
-    // () => meta.type.ngFactoryDef()
-    factory: o.fn([], [new o.ReturnStatement(type.callMethod('ngFactoryDef', []))])
+    // () => meta.type.ngFactoryDef(t)
+    factory: o.fn([new o.FnParam('t', o.DYNAMIC_TYPE)], [new o.ReturnStatement(type.callMethod(
+                                                            'ngFactoryDef', [o.variable('t')]))])
   };
 }

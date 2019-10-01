@@ -951,6 +951,37 @@ describe('di', () => {
             `This will become an error in v10. Please add @Injectable() to the "SubSubClass" class.`);
       }
     });
+
+    it('should instantiate correct class when undecorated class extends an injectable', () => {
+      @Injectable()
+      class MyService {
+        id = 1;
+      }
+
+      class MyRootService extends MyService {
+        id = 2;
+      }
+
+      @Component({template: ''})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App], providers: [MyRootService]});
+      const warnSpy = spyOn(console, 'warn');
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const provider = TestBed.inject(MyRootService);
+
+      expect(provider instanceof MyRootService).toBe(true);
+      expect(provider.id).toBe(2);
+
+      if (ivyEnabled) {
+        expect(warnSpy).toHaveBeenCalledWith(
+            `DEPRECATED: DI is instantiating a token "MyRootService" that inherits its @Injectable decorator but does not provide one itself.\n` +
+            `This will become an error in v10. Please add @Injectable() to the "MyRootService" class.`);
+      }
+    });
   });
 
   describe('inject', () => {
