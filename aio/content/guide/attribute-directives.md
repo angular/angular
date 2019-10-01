@@ -142,7 +142,7 @@ Begin by adding `HostListener` to the list of imported symbols.
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" header="src/app/highlight.directive.ts (imports)" region="imports"></code-example>
 
-Then add two eventhandlers that respond when the mouse enters or leaves,
+Then add two event handlers that respond when the mouse enters or leaves,
 each adorned by the `HostListener` decorator.
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" header="src/app/highlight.directive.ts (mouse-methods)" region="mouse-methods"></code-example>
