@@ -61,8 +61,8 @@ runInEachFileSystem(() => {
 
       const handler = new ComponentDecoratorHandler(
           reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, scopeRegistry, false,
-          new NoopResourceLoader(), [''], false, true, moduleResolver, cycleAnalyzer, refEmitter,
-          NOOP_DEFAULT_IMPORT_RECORDER);
+          new NoopResourceLoader(), [''], false, true, '', moduleResolver, cycleAnalyzer,
+          refEmitter, NOOP_DEFAULT_IMPORT_RECORDER);
       const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
       const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
       if (detected === undefined) {
