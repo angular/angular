@@ -11004,10 +11004,10 @@ try-require@^1.0.0:
   resolved "https://registry.yarnpkg.com/try-require/-/try-require-1.2.1.tgz#34489a2cac0c09c1cc10ed91ba011594d4333be2"
   integrity sha1-NEiaLKwMCcHMEO2RugEVlNQzO+I=
 
-tsickle@0.36.0:
-  version "0.36.0"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.36.0.tgz#d6f47cdd14d009f3fea4e8516cd46c1393f3aa02"
-  integrity sha512-lrEMU5e+efx5DXtrRSGsxgkCOVRw4WeVaOkQ2pMIxCZDY5rISagVyP4yi7t6M396POFSbMHgQMT/vz0HmfxWVA==
+tsickle@0.37.0:
+  version "0.37.0"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.37.0.tgz#cc8a174310ac349913c62477b346db4f342c87d1"
+  integrity sha512-ufUZqLUNqh+kOfr52N/hJ5JbiDO32/CO7ZCteZBX9HA2kiejwEgDaJeJe1GAj2TIu683IgTA/LPKvlns6Liw0w==
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"
@@ -11141,6 +11141,11 @@ typescript@~3.5.3:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"
   integrity sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
+
+typescript@~3.6.3:
+  version "3.6.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.3.tgz#fea942fabb20f7e1ca7164ff626f1a9f3f70b4da"
+  integrity sha512-N7bceJL1CtRQ2RiG0AQME13ksR7DiuQh/QehubYcghzv20tnh+MQnQIuJddTmsbqYj+dztchykemz0zFzlvdQw==
 
 uglify-js@1.2.6, uglify-js@~1.2.5:
   version "1.2.6"
