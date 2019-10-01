@@ -852,6 +852,17 @@ describe('MatCheckbox', () => {
          expect(checkboxInstance.checked).toBe(false);
          expect(ngModel.valid).toBe(false);
        }));
+
+    it('should update the ngModel value when using the `toggle` method', fakeAsync(() => {
+      const checkbox = fixture.debugElement.query(By.directive(MatCheckbox)).componentInstance;
+
+      expect(fixture.componentInstance.isGood).toBe(false);
+
+      checkbox.toggle();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.isGood).toBe(true);
+    }));
   });
 
   describe('with name attribute', () => {

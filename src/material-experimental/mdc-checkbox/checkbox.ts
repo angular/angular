@@ -285,6 +285,7 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   /** Toggles the `checked` state of the checkbox. */
   toggle() {
     this.checked = !this.checked;
+    this._cvaOnChange(this.checked);
   }
 
   /** Handles blur events on the native input. */
