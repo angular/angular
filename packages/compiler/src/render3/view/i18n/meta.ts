@@ -128,16 +128,6 @@ export class I18nMetaVisitor implements html.Visitor {
   visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
 }
 
-export function processI18nMeta(
-    htmlAstWithErrors: ParseTreeResult,
-    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
-  return new ParseTreeResult(
-      html.visitAll(
-          new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
-          htmlAstWithErrors.rootNodes),
-      htmlAstWithErrors.errors);
-}
-
 export function metaFromI18nMessage(message: i18n.Message, id: string | null = null): I18nMeta {
   return {
     id: typeof id === 'string' ? id : message.id || '',

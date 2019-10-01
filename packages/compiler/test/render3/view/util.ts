@@ -10,12 +10,12 @@ import * as e from '../../../src/expression_parser/ast';
 import {Lexer} from '../../../src/expression_parser/lexer';
 import {Parser} from '../../../src/expression_parser/parser';
 import * as html from '../../../src/ml_parser/ast';
-import {HtmlParser} from '../../../src/ml_parser/html_parser';
+import {HtmlParser, ParseTreeResult} from '../../../src/ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../../src/ml_parser/html_whitespaces';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
 import * as a from '../../../src/render3/r3_ast';
 import {Render3ParseResult, htmlAstToRender3Ast} from '../../../src/render3/r3_template_transform';
-import {processI18nMeta} from '../../../src/render3/view/i18n/meta';
+import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta';
 import {BindingParser} from '../../../src/template_parser/binding_parser';
 import {MockSchemaRegistry} from '../../../testing';
 
@@ -102,4 +102,14 @@ export function parseR3(
   const bindingParser =
       new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, null, []);
   return htmlAstToRender3Ast(htmlNodes, bindingParser);
+}
+
+export function processI18nMeta(
+    htmlAstWithErrors: ParseTreeResult,
+    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
+  return new ParseTreeResult(
+      html.visitAll(
+          new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
+          htmlAstWithErrors.rootNodes),
+      htmlAstWithErrors.errors);
 }
