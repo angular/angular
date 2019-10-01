@@ -297,7 +297,7 @@ describes additional `NgFor` directive properties and context properties.
 
 These microsyntax mechanisms are also available to you when you write your own structural directives.
 For example, microsyntax in Angular allows you to write `<div *ngFor="let item of items">{{item}}</div>`
-instead of `<ng-template ngFor [ngForOf]="items"><div>{{item}}</div></ng-template`.
+instead of `<ng-template ngFor [ngForOf]="items"><div>{{item}}</div></ng-template>`.
 The following sections provide detailed information on constraints, grammar,
 and translation of microsyntax.
 
