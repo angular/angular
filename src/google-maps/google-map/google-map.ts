@@ -7,10 +7,8 @@
  */
 
 import {
-  AfterContentInit,
   ChangeDetectionStrategy,
   Component,
-  ContentChildren,
   ElementRef,
   EventEmitter,
   Input,
@@ -18,13 +16,10 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  QueryList,
   ViewEncapsulation,
 } from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, shareReplay, take, takeUntil} from 'rxjs/operators';
-
-import {MapMarker} from '../map-marker/map-marker';
 
 interface GoogleMapsWindow extends Window {
   google?: typeof google;
@@ -62,7 +57,7 @@ export const DEFAULT_WIDTH = '500px';
   template: '<div class="map-container"></div><ng-content></ng-content>',
   encapsulation: ViewEncapsulation.None,
 })
-export class GoogleMap implements OnChanges, OnInit, AfterContentInit, OnDestroy {
+export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   @Input() height = DEFAULT_HEIGHT;
 
   @Input() width = DEFAULT_WIDTH;
@@ -188,8 +183,6 @@ export class GoogleMap implements OnChanges, OnInit, AfterContentInit, OnDestroy
    */
   @Output() zoomChanged = new EventEmitter<void>();
 
-  @ContentChildren(MapMarker) _markers: QueryList<MapMarker>;
-
   private _mapEl: HTMLElement;
   _googleMap!: UpdatedGoogleMap;
 
@@ -232,13 +225,6 @@ export class GoogleMap implements OnChanges, OnInit, AfterContentInit, OnDestroy
     });
 
     this._watchForOptionsChanges(combinedOptionsChanges);
-  }
-
-  ngAfterContentInit() {
-    for (const marker of this._markers.toArray()) {
-      marker._setMap(this._googleMap);
-    }
-    this._watchForMarkerChanges();
   }
 
   ngOnDestroy() {
@@ -471,15 +457,5 @@ export class GoogleMap implements OnChanges, OnInit, AfterContentInit, OnDestroy
             this.mapClick.emit(event);
           }));
     }
-  }
-
-  private _watchForMarkerChanges() {
-    combineLatest(this._googleMapChanges, this._markers.changes)
-        .pipe(takeUntil(this._destroy))
-        .subscribe(([googleMap, markers]) => {
-          for (let marker of markers) {
-            marker._setMap(googleMap);
-          }
-        });
   }
 }

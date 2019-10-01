@@ -2,7 +2,10 @@ import {Component} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
+import {DEFAULT_OPTIONS, UpdatedGoogleMap} from '../google-map/google-map';
 import {
+  createMapConstructorSpy,
+  createMapSpy,
   createMarkerConstructorSpy,
   createMarkerSpy,
   TestingWindow
@@ -12,6 +15,8 @@ import {GoogleMapsModule} from '../google-maps-module';
 import {DEFAULT_MARKER_OPTIONS, MapMarker} from './map-marker';
 
 describe('MapMarker', () => {
+  let mapSpy: jasmine.SpyObj<UpdatedGoogleMap>;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [GoogleMapsModule],
@@ -21,6 +26,9 @@ describe('MapMarker', () => {
 
   beforeEach(() => {
     TestBed.compileComponents();
+
+    mapSpy = createMapSpy(DEFAULT_OPTIONS);
+    createMapConstructorSpy(mapSpy).and.callThrough();
   });
 
   afterEach(() => {
@@ -33,9 +41,6 @@ describe('MapMarker', () => {
     const markerConstructorSpy = createMarkerConstructorSpy(markerSpy).and.callThrough();
 
     const fixture = TestBed.createComponent(TestApp);
-    const fakeMap = {} as unknown as google.maps.Map;
-    const markerComponent = fixture.debugElement.query(By.directive(MapMarker)).componentInstance;
-    markerComponent._setMap(fakeMap);
     fixture.detectChanges();
 
     expect(markerConstructorSpy).toHaveBeenCalledWith({
@@ -43,18 +48,17 @@ describe('MapMarker', () => {
       title: undefined,
       label: undefined,
       clickable: undefined,
-      map: fakeMap
+      map: mapSpy,
     });
   });
 
   it('sets marker inputs', () => {
-    const fakeMap = {} as unknown as google.maps.Map;
     const options: google.maps.MarkerOptions = {
       position: {lat: 3, lng: 5},
       title: 'marker title',
       label: 'marker label',
       clickable: false,
-      map: fakeMap,
+      map: mapSpy,
     };
     const markerSpy = createMarkerSpy(options);
     const markerConstructorSpy = createMarkerConstructorSpy(markerSpy).and.callThrough();
@@ -64,15 +68,12 @@ describe('MapMarker', () => {
     fixture.componentInstance.title = options.title;
     fixture.componentInstance.label = options.label;
     fixture.componentInstance.clickable = options.clickable;
-    const markerComponent = fixture.debugElement.query(By.directive(MapMarker)).componentInstance;
-    markerComponent._setMap(fakeMap);
     fixture.detectChanges();
 
     expect(markerConstructorSpy).toHaveBeenCalledWith(options);
   });
 
   it('sets marker options, ignoring map', () => {
-    const fakeMap = {} as unknown as google.maps.Map;
     const options: google.maps.MarkerOptions = {
       position: {lat: 3, lng: 5},
       title: 'marker title',
@@ -85,15 +86,12 @@ describe('MapMarker', () => {
 
     const fixture = TestBed.createComponent(TestApp);
     fixture.componentInstance.options = options;
-    const markerComponent = fixture.debugElement.query(By.directive(MapMarker)).componentInstance;
-    markerComponent._setMap(fakeMap);
     fixture.detectChanges();
 
-    expect(markerConstructorSpy).toHaveBeenCalledWith({...options, map: fakeMap});
+    expect(markerConstructorSpy).toHaveBeenCalledWith({...options, map: mapSpy});
   });
 
   it('gives precedence to specific inputs over options', () => {
-    const fakeMap = {} as unknown as google.maps.Map;
     const options: google.maps.MarkerOptions = {
       position: {lat: 3, lng: 5},
       title: 'marker title',
@@ -107,7 +105,7 @@ describe('MapMarker', () => {
       label: 'updated label',
       clickable: true,
       icon: 'icon name',
-      map: fakeMap,
+      map: mapSpy,
     };
     const markerSpy = createMarkerSpy(options);
     const markerConstructorSpy = createMarkerConstructorSpy(markerSpy).and.callThrough();
@@ -118,33 +116,9 @@ describe('MapMarker', () => {
     fixture.componentInstance.label = expectedOptions.label;
     fixture.componentInstance.clickable = expectedOptions.clickable;
     fixture.componentInstance.options = options;
-    const markerComponent = fixture.debugElement.query(By.directive(MapMarker)).componentInstance;
-    markerComponent._setMap(fakeMap);
     fixture.detectChanges();
 
     expect(markerConstructorSpy).toHaveBeenCalledWith(expectedOptions);
-  });
-
-  it('sets the map on the marker only once', () => {
-    const markerSpy = createMarkerSpy(DEFAULT_MARKER_OPTIONS);
-    const markerConstructorSpy = createMarkerConstructorSpy(markerSpy).and.callThrough();
-
-    const fixture = TestBed.createComponent(TestApp);
-    const fakeMap = {} as unknown as google.maps.Map;
-    const fakeMap2 = {testValue: 'test'} as unknown as google.maps.Map;
-    const markerComponent = fixture.debugElement.query(By.directive(MapMarker)).componentInstance;
-    markerComponent._setMap(fakeMap);
-    markerComponent._setMap(fakeMap2);
-    fixture.detectChanges();
-
-    expect(markerConstructorSpy).toHaveBeenCalledWith({
-      ...DEFAULT_MARKER_OPTIONS,
-      title: undefined,
-      label: undefined,
-      clickable: undefined,
-      map: fakeMap
-    });
-    expect(markerSpy.setOptions).not.toHaveBeenCalled();
   });
 
   it('exposes methods that provide information about the marker', () => {
@@ -152,9 +126,7 @@ describe('MapMarker', () => {
     createMarkerConstructorSpy(markerSpy).and.callThrough();
 
     const fixture = TestBed.createComponent(TestApp);
-    const fakeMap = {} as unknown as google.maps.Map;
     const markerComponent = fixture.debugElement.query(By.directive(MapMarker)).componentInstance;
-    markerComponent._setMap(fakeMap);
     fixture.detectChanges();
 
     markerSpy.getAnimation.and.returnValue(null);
@@ -199,9 +171,6 @@ describe('MapMarker', () => {
     createMarkerConstructorSpy(markerSpy).and.callThrough();
 
     const fixture = TestBed.createComponent(TestApp);
-    const fakeMap = {} as unknown as google.maps.Map;
-    const markerComponent = fixture.debugElement.query(By.directive(MapMarker)).componentInstance;
-    markerComponent._setMap(fakeMap);
     fixture.detectChanges();
 
     expect(markerSpy.addListener)
@@ -234,13 +203,16 @@ describe('MapMarker', () => {
 
 @Component({
   selector: 'test-app',
-  template: `<map-marker [title]="title"
-                         [position]="position"
-                         [label]="label"
-                         [clickable]="clickable"
-                         [options]="options"
-                         (mapClick)="handleClick()"
-                         (positionChanged)="handlePositionChanged()"></map-marker>`,
+  template: `<google-map>
+               <map-marker [title]="title"
+                           [position]="position"
+                           [label]="label"
+                           [clickable]="clickable"
+                           [options]="options"
+                           (mapClick)="handleClick()"
+                           (positionChanged)="handlePositionChanged()">
+               </map-marker>
+             </google-map>`,
 })
 class TestApp {
   title?: string;

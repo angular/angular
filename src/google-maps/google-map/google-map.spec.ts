@@ -3,7 +3,6 @@ import {async, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {GoogleMapsModule} from '../google-maps-module';
-import {MapMarker} from '../map-marker/map-marker';
 import {
   createMapConstructorSpy,
   createMapSpy,
@@ -240,18 +239,6 @@ describe('GoogleMap', () => {
     expect(mapSpy.addListener).not.toHaveBeenCalledWith('tilt_changed', jasmine.any(Function));
     expect(mapSpy.addListener).not.toHaveBeenCalledWith('zoom_changed', jasmine.any(Function));
   });
-
-  it('calls setMap on child marker components', () => {
-    mapSpy = createMapSpy(DEFAULT_OPTIONS);
-    createMapConstructorSpy(mapSpy).and.callThrough();
-
-    const fixture = TestBed.createComponent(TestApp);
-    const markerComponent = fixture.debugElement.query(By.directive(MapMarker)).componentInstance;
-    spyOn(markerComponent, '_setMap').and.callThrough();
-    fixture.detectChanges();
-
-    expect(markerComponent._setMap).toHaveBeenCalledWith(mapSpy);
-  });
 });
 
 @Component({
@@ -264,7 +251,6 @@ describe('GoogleMap', () => {
                          (mapClick)="handleClick($event)"
                          (centerChanged)="handleCenterChanged()"
                          (mapRightclick)="handleRightclick($event)">
-              <map-marker></map-marker>
             </google-map>`,
 })
 class TestApp {

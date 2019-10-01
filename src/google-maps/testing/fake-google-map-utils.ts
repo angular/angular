@@ -68,11 +68,15 @@ export function createMarkerConstructorSpy(markerSpy: jasmine.SpyObj<google.maps
         return markerSpy;
       });
   const testingWindow: TestingWindow = window;
-  testingWindow.google = {
-    maps: {
-      'Marker': markerConstructorSpy,
-    },
-  };
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['Marker'] = markerConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'Marker': markerConstructorSpy,
+      },
+    };
+  }
   return markerConstructorSpy;
 }
 

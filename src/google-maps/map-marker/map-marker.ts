@@ -16,8 +16,10 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
+
+import {GoogleMap} from '../google-map/google-map';
 
 /**
  * Default options for the Google Maps marker component. Displays a marker
@@ -198,30 +200,26 @@ export class MapMarker implements OnInit, OnDestroy {
       new BehaviorSubject<string|google.maps.MarkerLabel|undefined>(undefined);
   private readonly _clickable = new BehaviorSubject<boolean|undefined>(undefined);
 
-  private readonly _map = new ReplaySubject<google.maps.Map>(1);
-
   private readonly _destroy = new Subject<void>();
 
   private readonly _listeners: google.maps.MapsEventListener[] = [];
 
-  private _hasMap = false;
-
   _marker?: google.maps.Marker;
+
+  constructor(private readonly googleMap: GoogleMap) {}
 
   ngOnInit() {
     const combinedOptionsChanges = this._combineOptions();
 
-    combineLatest(this._map, combinedOptionsChanges)
-        .pipe(takeUntil(this._destroy))
-        .subscribe(([googleMap, options]) => {
-          if (this._marker) {
-            this._marker.setOptions(options);
-          } else {
-            this._marker = new google.maps.Marker(options);
-            this._marker.setMap(googleMap);
-            this._initializeEventHandlers();
-          }
-        });
+    combinedOptionsChanges.pipe(takeUntil(this._destroy)).subscribe(options => {
+      if (this._marker) {
+        this._marker.setOptions(options);
+      } else {
+        this._marker = new google.maps.Marker(options);
+        this._marker.setMap(this.googleMap._googleMap);
+        this._initializeEventHandlers();
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -232,13 +230,6 @@ export class MapMarker implements OnInit, OnDestroy {
     }
     if (this._marker) {
       this._marker.setMap(null);
-    }
-  }
-
-  _setMap(googleMap: google.maps.Map) {
-    if (!this._hasMap) {
-      this._map.next(googleMap);
-      this._hasMap = true;
     }
   }
 
@@ -339,16 +330,15 @@ export class MapMarker implements OnInit, OnDestroy {
   }
 
   private _combineOptions(): Observable<google.maps.MarkerOptions> {
-    return combineLatest(
-               this._options, this._title, this._position, this._label, this._clickable, this._map)
-        .pipe(map(([options, title, position, label, clickable, googleMap]) => {
+    return combineLatest(this._options, this._title, this._position, this._label, this._clickable)
+        .pipe(map(([options, title, position, label, clickable]) => {
           const combinedOptions: google.maps.MarkerOptions = {
             ...options,
             title: title || options.title,
             position: position || options.position,
             label: label || options.label,
             clickable: clickable !== undefined ? clickable : options.clickable,
-            map: googleMap || null,
+            map: this.googleMap._googleMap || null,
           };
           return combinedOptions;
         }));
