@@ -32,6 +32,7 @@ export function main(
   if (configErrors.length) {
     return reportErrorsAndExit(configErrors, /*options*/ undefined, consoleError);
   }
+  warnForDeprecatedOptions(options);
   if (watch) {
     const result = watchMode(project, options, consoleError);
     return reportErrorsAndExit(result.firstCompileResult, options, consoleError);
@@ -224,6 +225,14 @@ export function watchMode(
   return performWatchCompilation(createPerformWatchHost(project, diagnostics => {
     consoleError(formatDiagnostics(diagnostics, getFormatDiagnosticsHost(options)));
   }, options, options => createEmitCallback(options)));
+}
+
+function warnForDeprecatedOptions(options: api.CompilerOptions) {
+  if (options.i18nLegacyMessageIdFormat !== undefined) {
+    console.warn(
+        'The `i18nLegacyMessageIdFormat` option is deprecated.\n' +
+        'Migrate your legacy translation files to the new `$localize` message id format and remove this option.');
+  }
 }
 
 // CLI entry point

@@ -2052,6 +2052,62 @@ runInEachFileSystem(os => {
       expect(jsContents).not.toContain('MSG_EXTERNAL_');
     });
 
+    it('should render legacy id when i18nLegacyMessageIdFormat config is set to xlf', () => {
+      env.tsconfig({i18nLegacyMessageIdFormat: 'xlf'});
+      env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          template: '<div i18n>Some text</div>'
+        })
+        class FooCmp {}`);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain(':@@5dbba0a3da8dff890e20cf76eb075d58900fbcd3:Some text');
+    });
+
+    it('should render legacy id when i18nLegacyMessageIdFormat config is set to xlf2', () => {
+      env.tsconfig({i18nLegacyMessageIdFormat: 'xlf2'});
+      env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          template: '<div i18n>Some text</div>'
+        })
+        class FooCmp {}`);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain(':@@8321000940098097247:Some text');
+    });
+
+    it('should render legacy id when i18nLegacyMessageIdFormat config is set to xmb', () => {
+      env.tsconfig({i18nLegacyMessageIdFormat: 'xmb'});
+      env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          template: '<div i18n>Some text</div>'
+        })
+        class FooCmp {}`);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain(':@@8321000940098097247:Some text');
+    });
+
+    it('should render custom id even if i18nLegacyMessageIdFormat config is set', () => {
+      env.tsconfig({i18nLegacyMessageIdFormat: 'xlf'});
+      env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          template: '<div i18n="@@custom">Some text</div>'
+        })
+        class FooCmp {}`);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain(':@@custom:Some text');
+    });
+
     it('@Component\'s `interpolation` should override default interpolation config', () => {
       env.write(`test.ts`, `
       import {Component} from '@angular/core';
