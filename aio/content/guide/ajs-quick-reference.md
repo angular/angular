@@ -1150,7 +1150,7 @@ The Angular code is shown using TypeScript.
 
       In Angular, you create a component class.
 
-      NOTE: If you are using TypeScript with AngularJS, you must use the `export` keyword to export the component class.
+      NOTE: If you are using TypeScript with Angular, you must use the `export` keyword to export the component class.
 
       For more information, see the [Components](guide/architecture#components)
       section of the [Architecture Overview](guide/architecture) page.
