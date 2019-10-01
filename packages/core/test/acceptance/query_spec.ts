@@ -288,17 +288,17 @@ describe('query logic', () => {
       })
       class App {
         @ViewChild(Required, {static: false}) requiredEl !: Required;
+        viewChildAvailableInAfterViewInit?: boolean;
 
         ngAfterViewInit() {
-          if (this.requiredEl === undefined) {
-            throw Error('can\'t find required element');
-          }
+          this.viewChildAvailableInAfterViewInit = this.requiredEl !== undefined;
         }
       }
 
       const fixture = TestBed.configureTestingModule({declarations: [App, Insertion, Required]})
                           .createComponent(App);
-      expect(() => fixture.detectChanges()).not.toThrow();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.viewChildAvailableInAfterViewInit).toBe(true);
     });
 
   });
