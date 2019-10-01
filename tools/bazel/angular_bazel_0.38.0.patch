@@ -1,0 +1,48 @@
+diff --git node_modules/@angular/bazel/src/esm5.bzl node_modules/@angular/bazel/src/esm5.bzl
+index 98315468fb44..22903a9d772d 100644
+--- node_modules/@angular/bazel/src/esm5.bzl
++++ node_modules/@angular/bazel/src/esm5.bzl
+@@ -30,7 +30,7 @@ ESM5Info = provider(
+ )
+
+ def _map_closure_path(file):
+-    result = file.short_path[:-len(".closure.js")]
++    result = file.short_path[:-len(".mjs")]
+
+     # short_path is meant to be used when accessing runfiles in a binary, where
+     # the CWD is inside the current repo. Therefore files in external repo have a
+diff --git node_modules/@angular/bazel/src/modify_tsconfig.js node_modules/@angular/bazel/src/modify_tsconfig.js
+index 9d3c491598c3..3c997462b247 100644
+--- node_modules/@angular/bazel/src/modify_tsconfig.js
++++ node_modules/@angular/bazel/src/modify_tsconfig.js
+@@ -44,7 +44,7 @@ function main(args) {
+     // ngc-wrapped is expecting POSIX paths and the TypeScript Bazel rules by default only pass
+     // POSIX paths as well.
+     angularCompilerOptions['expectedOut'] = angularCompilerOptions['expectedOut'].map(
+-        f => f.replace(/\.closure\.js$/, '.js').replace(binDir, newOutputBase));
++        f => f.replace(/\.mjs$/, '.js').replace(binDir, newOutputBase));
+   }
+   fs.writeFileSync(output, JSON.stringify(data));
+ }
+diff --git node_modules/@angular/bazel/src/ng_module.bzl node_modules/@angular/bazel/src/ng_module.bzl
+index 9b88fbb51c2e..d2eb8aa135f4 100644
+--- node_modules/@angular/bazel/src/ng_module.bzl
++++ node_modules/@angular/bazel/src/ng_module.bzl
+@@ -237,7 +237,7 @@ def _expected_outs(ctx):
+             continue
+
+         filter_summaries = ctx.attr.filter_summaries
+-        closure_js = [f.replace(".js", ".closure.js") for f in devmode_js if not filter_summaries or not f.endswith(".ngsummary.js")]
++        closure_js = [f.replace(".js", ".mjs") for f in devmode_js if not filter_summaries or not f.endswith(".ngsummary.js")]
+         declarations = [f.replace(".js", ".d.ts") for f in devmode_js]
+
+         devmode_js_files += [ctx.actions.declare_file(basename + ext) for ext in devmode_js]
+@@ -262,7 +262,7 @@ def _expected_outs(ctx):
+     if _should_produce_flat_module_outs(ctx):
+         flat_module_out = _flat_module_out_file(ctx)
+         devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out))
+-        closure_js_files.append(ctx.actions.declare_file("%s.closure.js" % flat_module_out))
++        closure_js_files.append(ctx.actions.declare_file("%s.mjs" % flat_module_out))
+         bundle_index_typings = ctx.actions.declare_file("%s.d.ts" % flat_module_out)
+         declaration_files.append(bundle_index_typings)
+         if is_legacy_ngc:

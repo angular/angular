@@ -2,9 +2,9 @@
 
 load("@npm_angular_bazel//:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@npm_bazel_karma//:defs.bzl", _karma_web_test_suite = "karma_web_test_suite")
+load("@npm_bazel_karma//:index.bzl", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm_bazel_protractor//:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
-load("@npm_bazel_typescript//:defs.bzl", _ts_library = "ts_library")
+load("@npm_bazel_typescript//:index.bzl", _ts_library = "ts_library")
 load("//:packages.bzl", "ANGULAR_LIBRARY_UMDS", "VERSION_PLACEHOLDER_REPLACEMENTS")
 load("//:rollup-globals.bzl", "ROLLUP_GLOBALS")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")

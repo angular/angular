@@ -306,29 +306,29 @@
     "@bazel/bazel-linux_x64" "0.29.0"
     "@bazel/bazel-win32_x64" "0.29.0"
 
-"@bazel/buildifier-darwin_x64@0.28.0":
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier-darwin_x64/-/buildifier-darwin_x64-0.28.0.tgz#bc8c4312596d4cf321062ae4e3f2115be453fef2"
-  integrity sha512-bvWz4W3FzWFqUr65Z/IrrhUuzHzvFnYB3QpPXUlUOI1sx43Ge3pMlndEwhMBOPM2SoRi5Z5rxG0X9NuvuXWw8w==
+"@bazel/buildifier-darwin_x64@0.29.0":
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier-darwin_x64/-/buildifier-darwin_x64-0.29.0.tgz#13dfaf3ea4d89f9d4da00085e894e90b7d302342"
+  integrity sha512-jiQIZo5z1c8oFokD2jObrkB04Bs+7RaUJ6WlHV9BBeJiRMGfRVUBUrOF5eJPk6VB8qknIOfHvJD/Ym5XUc1Zlw==
 
-"@bazel/buildifier-linux_x64@0.28.0":
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier-linux_x64/-/buildifier-linux_x64-0.28.0.tgz#d09dedcfcd1677ddec8fe17fa7e39612dab86b41"
-  integrity sha512-KVXUcT2yZnKcRf4L9qzlYtEHw9SdO4/O6/cyyyybYPzpS3CJ2yIFm6VabXBTXsUp3LXfWc3EE62f8ieHoRJJnw==
+"@bazel/buildifier-linux_x64@0.29.0":
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier-linux_x64/-/buildifier-linux_x64-0.29.0.tgz#0191fc46735a1c281878642673844f2b717cd8dc"
+  integrity sha512-sXXY0gP4oC1nC1G8Baqd7kyBL/y9/qOqftKSkDe2Y7gBoc9GslwyexwDxTSxK0Gun/4Vcvc2eRu7b83hMOxuag==
 
-"@bazel/buildifier-win32_x64@0.28.0":
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier-win32_x64/-/buildifier-win32_x64-0.28.0.tgz#1d2c239753a389f48669a194bf16477c1f15befd"
-  integrity sha512-6E9QZPVzMolcQQKDi5tRJjAFylgzBWbV01/3RiFZb1x4ITZJ74h/FuTRhdYAUPA3n59ge2F3sPtf9Q97RxJU7g==
+"@bazel/buildifier-win32_x64@0.29.0":
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier-win32_x64/-/buildifier-win32_x64-0.29.0.tgz#a63438c7a7d2dc593e626ed6e163e9d8ea93917a"
+  integrity sha512-hnOQfPhQNAIqbrhsHT3MWAyAZSUhKwxzEuZJZoOsGrW8fPonhKysdvfZJqfqJ6vDVYaMJKvLnSO1c9QZRhU7kQ==
 
-"@bazel/buildifier@^0.28.0":
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-0.28.0.tgz#cce8a5b67520f27b611c149bf334b5f86e5e5aa7"
-  integrity sha512-g9F7rEQayXU4SHgbOYhDLk8AzDMhqFNnZVb/xVDeCkbg20MbCGIZDj9pN8NBnowB7OJF4VsvnSV0FB4BVGfpxQ==
+"@bazel/buildifier@^0.29.0":
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-0.29.0.tgz#7984739270c8d1dd23650f87a810e1e6367188d9"
+  integrity sha512-skJ7vVff7x3tB8crBCtJji2wU09uH0uD2N30xfOpVUgsMJSXktAQMj8+RPdMBqJQ9XS5+O5lmRthR35Ua7xQXA==
   optionalDependencies:
-    "@bazel/buildifier-darwin_x64" "0.28.0"
-    "@bazel/buildifier-linux_x64" "0.28.0"
-    "@bazel/buildifier-win32_x64" "0.28.0"
+    "@bazel/buildifier-darwin_x64" "0.29.0"
+    "@bazel/buildifier-linux_x64" "0.29.0"
+    "@bazel/buildifier-win32_x64" "0.29.0"
 
 "@bazel/hide-bazel-files@latest":
   version "0.35.0"
@@ -340,19 +340,19 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.10.3.tgz#2e2b8a1d3e885946eac41db2b1aa6801fb319887"
   integrity sha512-v1nXbMTHVlMM4z4uWp6XiRoHAyUlYggF1SOboLLWRp0+D22kWixqArWqnozLw2mOtnxr97BdLjluWiho6A8Hjg==
 
-"@bazel/jasmine@^0.37.1":
-  version "0.37.1"
-  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.37.1.tgz#e5111f4f913b542cbfad767e0f903be026246c5a"
-  integrity sha512-EQJ2bbmF3w+BeoCMEDY8mKd5lrVuZ4tEc1wqth4Jl2UIYwyEepDAKVMiEeM+seXxmzqle38ksdsf7uSUWMjthA==
+"@bazel/jasmine@^0.38.0":
+  version "0.38.0"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.38.0.tgz#d40bc3fa5b9cdaf9125ff422a1ed5fc25c41203e"
+  integrity sha512-p4faogKschhMiZ4+g5z0On0VkhQzjsa4gCg8WMbHbxwSrjMYVQmiwqwEtNN2jBV0mqRRKOvRrH7O1snD2MyihA==
   dependencies:
     jasmine "~3.4.0"
     jasmine-core "~3.4.0"
     v8-coverage "1.0.9"
 
-"@bazel/karma@^0.37.1":
-  version "0.37.1"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.37.1.tgz#1c2ba937f8a2a442a629d4edd5219c3623192b12"
-  integrity sha512-LwcvQkZJvlSWf7jvZY48GG1PJFINDrKHp59hupK8tTWN726sAAoQzQUp8ZO0e/pHKGcl4X6AvqWw3+MvXsGS7Q==
+"@bazel/karma@^0.38.0":
+  version "0.38.0"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.38.0.tgz#c738f769691196884f985c18a903b326c152854f"
+  integrity sha512-toDlcQy6z69D/aZfzzkWjWd4eAn0gxwJmfCnomsC/P56mWEsFNj1BBjuINEd8xcQhXyBi8q1zHa9MyAoDqrYWQ==
   dependencies:
     jasmine-core "2.8.0"
     karma "^4.0.0"
@@ -366,17 +366,17 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/protractor@^0.37.1":
-  version "0.37.1"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.37.1.tgz#932aaac40a4fc87a62e3ee52f9d748accf339032"
-  integrity sha512-kJNVOlPXhTIuZ7Hfjy4+QPSnj0lifvgw/mFUvP1C+XSlZGV9Jg2FfxX6t7gwl0AI6NXFb5JWOG/igL7W3dJ+hA==
+"@bazel/protractor@^0.38.0":
+  version "0.38.0"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-0.38.0.tgz#08be006d29543fc3c417c4d9f59e1eb927bb2fa6"
+  integrity sha512-omvQwYjvMTd6/xI9WNDfscl9GVhuaXs+lahhv2b7D3DGUuVStihQp4Ux4/xT6jlmOkru2uk38nfes/jfOoalkQ==
   dependencies:
     protractor "^5.4.2"
 
-"@bazel/typescript@^0.37.1":
-  version "0.37.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.37.1.tgz#e740f311597dc0ed9d479ae7a88ea35cb2411e34"
-  integrity sha512-RrZ6rYZTQz0tSwGIGoKykNkhpu8xY3IOAzLA3cmtpNa0pCGEb+PpFBlh//wjcnP8jLg5vK2Qa6jh3SZ2pcYZbg==
+"@bazel/typescript@^0.38.0":
+  version "0.38.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.38.0.tgz#0fce6ac5618a11bf7a9803455c24dbdcdf4a85cd"
+  integrity sha512-3xZNQ1aHBRMPvxyDUR7yHxT5o/2IUkZh0s/eMMBB9GvU/uit0HpxOOdEADHqoID/8afU0SPYX0LKw+jDn6tfFA==
   dependencies:
     protobufjs "6.8.8"
     semver "5.6.0"
