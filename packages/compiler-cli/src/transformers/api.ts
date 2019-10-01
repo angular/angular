@@ -16,7 +16,7 @@ export const SOURCE = 'angular' as 'angular';
 export interface DiagnosticMessageChain {
   messageText: string;
   position?: Position;
-  next?: DiagnosticMessageChain;
+  next?: DiagnosticMessageChain[];
 }
 
 export interface Diagnostic {

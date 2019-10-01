@@ -375,7 +375,7 @@ class SomeComponent {
            }, 1);
 
            const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null);
+               defaultPlatform.injector.get(CompilerFactory, null) !;
            const moduleFactory = compilerFactory.createCompiler().compileModuleSync(
                createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]));
            defaultPlatform.bootstrapModuleFactory(moduleFactory).then(_ => {
@@ -385,7 +385,7 @@ class SomeComponent {
 
       it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
            const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null);
+               defaultPlatform.injector.get(CompilerFactory, null) !;
            const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
                [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]));
            expect(() => defaultPlatform.bootstrapModuleFactory(moduleFactory)).toThrow('Test');
@@ -397,7 +397,7 @@ class SomeComponent {
       it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
          async(() => {
            const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null);
+               defaultPlatform.injector.get(CompilerFactory, null) !;
            const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
                [{provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true}]));
            defaultPlatform.bootstrapModuleFactory(moduleFactory)

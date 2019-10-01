@@ -45,12 +45,12 @@
     "npm-run-all": "^4.1.5",
     "rxjs": "file:../../node_modules/rxjs",
     "serve": "^11.2.0",
-    "tslib": "^1.9.3",
+    "tslib": "file:../../node_modules/tslib",
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.900.0-next.9",
-    "@angular/cli": "9.0.0-next.9",
+    "@angular-devkit/build-angular": "^0.900.0-next.11",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "~2.8.8",

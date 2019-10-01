@@ -14,8 +14,7 @@ describe('shim host', () => {
     const delegate = {} as unknown as ts.CompilerHost;
     const shimsHost = new GeneratedShimsHostWrapper(delegate, []);
 
-    // FIXME: re-enable once fully on TS3.6.
-    // expect(shimsHost.resolveModuleNames).not.toBeDefined();
+    expect(shimsHost.resolveModuleNames).not.toBeDefined();
     expect(shimsHost.resolveTypeReferenceDirectives).not.toBeDefined();
     expect(shimsHost.directoryExists).not.toBeDefined();
     expect(shimsHost.getDirectories).not.toBeDefined();
@@ -30,8 +29,7 @@ describe('shim host', () => {
     } as unknown as ts.CompilerHost;
     const shimsHost = new GeneratedShimsHostWrapper(delegate, []);
 
-    // FIXME: re-enable once fully on TS3.6.
-    // expect(shimsHost.resolveModuleNames).toBeDefined();
+    expect(shimsHost.resolveModuleNames).toBeDefined();
     expect(shimsHost.resolveTypeReferenceDirectives).toBeDefined();
     expect(shimsHost.directoryExists).toBeDefined();
     expect(shimsHost.getDirectories).toBeDefined();
