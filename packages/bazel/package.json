@@ -34,12 +34,12 @@
     "@types/node": "6.0.84",
     "semver": "^5.6.0",
     "shelljs": "0.8.2",
-    "tsickle": "^0.35.0"
+    "tsickle": "^0.37.0"
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
     "@bazel/typescript": "0.*",
-    "typescript": ">=3.4 <3.6"
+    "typescript": ">=3.6 <3.7"
   },
   "repository": {
     "type": "git",

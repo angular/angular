@@ -27,7 +27,7 @@
     "@bazel/protractor": "0.37.1",
     "@bazel/typescript": "0.37.1",
     "@types/jasmine": "2.8.8",
-    "typescript": "3.4.2"
+    "typescript": "3.6.3"
   },
   "scripts": {
     "test": "bazel build ... --noshow_progress && bazel test ...",

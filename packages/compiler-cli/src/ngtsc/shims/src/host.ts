@@ -32,14 +32,11 @@ export interface ShimGenerator {
 export class GeneratedShimsHostWrapper implements ts.CompilerHost {
   constructor(private delegate: ts.CompilerHost, private shimGenerators: ShimGenerator[]) {
     if (delegate.resolveModuleNames !== undefined) {
-      // FIXME: TypeScript 3.6 adds an "options" argument that the code below passes on, but which
-      // still makes the method incompatible with TS3.5. Remove the "as any" cast once fully on 3.6.
-      ((this as ts.CompilerHost) as any).resolveModuleNames =
-          (moduleNames: string[], containingFile: string, reusedNames: (string[] | undefined),
-           redirectedReference: (ts.ResolvedProjectReference | undefined), options: any) =>
-              (delegate as any)
-                  .resolveModuleNames !(
-                      moduleNames, containingFile, reusedNames, redirectedReference, options);
+      this.resolveModuleNames =
+          (moduleNames: string[], containingFile: string, reusedNames: string[],
+           redirectedReference: ts.ResolvedProjectReference, options: ts.CompilerOptions) =>
+              delegate.resolveModuleNames !(
+                  moduleNames, containingFile, reusedNames, redirectedReference, options);
     }
     if (delegate.resolveTypeReferenceDirectives) {
       // Backward compatibility with TypeScript 2.9 and older since return
@@ -59,6 +56,14 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
     }
   }
 
+<<<<<<< HEAD
+=======
+  resolveModuleNames?:
+      (moduleNames: string[], containingFile: string, reusedNames: string[],
+       redirectedReference: ts.ResolvedProjectReference,
+       options: ts.CompilerOptions) => (ts.ResolvedModule | undefined)[];
+
+>>>>>>> feat: typescript 3.6 support
   resolveTypeReferenceDirectives?:
       (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
 
