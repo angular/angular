@@ -397,9 +397,6 @@ This includes both packages: `@angular/platform-webworker` and
 
 See the [dedicated migration guide for Renderer](guide/migration-renderer).
 
-{@a undecorated-classes}
-### Migrating undecorated classes
-  See the [dedicated migration guide for undecorated classes](guide/migration-undecorated-classes).
 
 {@a removed}
 ## Removed APIs
