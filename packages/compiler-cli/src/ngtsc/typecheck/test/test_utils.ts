@@ -197,11 +197,12 @@ export function typecheck(
   const sf = program.getSourceFile(absoluteFrom('/main.ts')) !;
   const checker = program.getTypeChecker();
   const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+  const reflectionHost = new TypeScriptReflectionHost(checker);
   const emitter = new ReferenceEmitter([
     new LocalIdentifierStrategy(),
     new AbsoluteModuleStrategy(
         program, checker, options, host, new TypeScriptReflectionHost(checker)),
-    new LogicalProjectStrategy(checker, logicalFs),
+    new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
   const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, typeCheckFilePath);
 

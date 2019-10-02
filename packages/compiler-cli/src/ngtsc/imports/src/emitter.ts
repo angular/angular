@@ -196,7 +196,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
  * Instead, `LogicalProjectPath`s are used.
  */
 export class LogicalProjectStrategy implements ReferenceEmitStrategy {
-  constructor(private checker: ts.TypeChecker, private logicalFs: LogicalFileSystem) {}
+  constructor(private reflector: ReflectionHost, private logicalFs: LogicalFileSystem) {}
 
   emit(ref: Reference<ts.Node>, context: ts.SourceFile): Expression|null {
     const destSf = getSourceFile(ref.node);
@@ -220,7 +220,7 @@ export class LogicalProjectStrategy implements ReferenceEmitStrategy {
       return null;
     }
 
-    const name = findExportedNameOfNode(ref.node, destSf, this.checker);
+    const name = findExportedNameOfNode(ref.node, destSf, this.reflector);
     if (name === null) {
       // The target declaration isn't exported from the file it's declared in. This is an issue!
       return null;
@@ -237,11 +237,11 @@ export class LogicalProjectStrategy implements ReferenceEmitStrategy {
  * A `ReferenceEmitStrategy` which uses a `FileToModuleHost` to generate absolute import references.
  */
 export class FileToModuleStrategy implements ReferenceEmitStrategy {
-  constructor(private checker: ts.TypeChecker, private fileToModuleHost: FileToModuleHost) {}
+  constructor(private reflector: ReflectionHost, private fileToModuleHost: FileToModuleHost) {}
 
   emit(ref: Reference<ts.Node>, context: ts.SourceFile): Expression|null {
     const destSf = getSourceFile(ref.node);
-    const name = findExportedNameOfNode(ref.node, destSf, this.checker);
+    const name = findExportedNameOfNode(ref.node, destSf, this.reflector);
     if (name === null) {
       return null;
     }

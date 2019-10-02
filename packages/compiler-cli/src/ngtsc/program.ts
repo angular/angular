@@ -460,7 +460,7 @@ export class NgtscProgram implements api.Program {
         // Finally, check if the reference is being written into a file within the project's logical
         // file system, and use a relative import if so. If this fails, ReferenceEmitter will throw
         // an error.
-        new LogicalProjectStrategy(checker, new LogicalFileSystem(this.rootDirs)),
+        new LogicalProjectStrategy(this.reflector, new LogicalFileSystem(this.rootDirs)),
       ]);
     } else {
       // The CompilerHost supports fileNameToModuleName, so use that to emit imports.
@@ -470,7 +470,7 @@ export class NgtscProgram implements api.Program {
         // Then use aliased references (this is a workaround to StrictDeps checks).
         new AliasStrategy(),
         // Then use fileNameToModuleName to emit imports.
-        new FileToModuleStrategy(checker, this.fileToModuleHost),
+        new FileToModuleStrategy(this.reflector, this.fileToModuleHost),
       ]);
       aliasGenerator = new AliasGenerator(this.fileToModuleHost);
     }
