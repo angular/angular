@@ -180,8 +180,7 @@ export class HttpHeaders {
 
   /**
    * Conditionally sets a header value for a given name. If flag is true and if the header name
-   * already exists,
-   * its value is replaced with the given value.
+   * already exists, its value is replaced with the given value.
    *
    * @param flag Boolean flag to perform append header operation.
    * @param name The header name.
