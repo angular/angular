@@ -18,6 +18,7 @@ import {I18N_ATTR, I18N_ATTR_PREFIX, hasI18nAttrs, icuFromI18nMessage} from './u
 
 export type I18nMeta = {
   id?: string,
+  customId?: string,
   description?: string,
   meaning?: string
 };
@@ -47,7 +48,7 @@ export class I18nMetaVisitor implements html.Visitor {
     const parsed: I18nMeta =
         typeof meta === 'string' ? parseI18nMeta(meta) : metaFromI18nMessage(meta as i18n.Message);
     const message = this._createI18nMessage(
-        nodes, parsed.meaning || '', parsed.description || '', parsed.id || '', visitNodeFn);
+        nodes, parsed.meaning || '', parsed.description || '', parsed.customId || '', visitNodeFn);
     if (!message.id) {
       // generate (or restore) message id if not specified in template
       message.id = typeof meta !== 'string' && (meta as i18n.Message).id || decimalDigest(message);
@@ -140,6 +141,7 @@ export function processI18nMeta(
 export function metaFromI18nMessage(message: i18n.Message, id: string | null = null): I18nMeta {
   return {
     id: typeof id === 'string' ? id : message.id || '',
+    customId: message.customId,
     meaning: message.meaning || '',
     description: message.description || ''
   };
@@ -160,7 +162,7 @@ const I18N_ID_SEPARATOR = '@@';
  * @returns Object with id, meaning and description fields
  */
 export function parseI18nMeta(meta?: string): I18nMeta {
-  let id: string|undefined;
+  let customId: string|undefined;
   let meaning: string|undefined;
   let description: string|undefined;
 
@@ -168,14 +170,14 @@ export function parseI18nMeta(meta?: string): I18nMeta {
     const idIndex = meta.indexOf(I18N_ID_SEPARATOR);
     const descIndex = meta.indexOf(I18N_MEANING_SEPARATOR);
     let meaningAndDesc: string;
-    [meaningAndDesc, id] =
+    [meaningAndDesc, customId] =
         (idIndex > -1) ? [meta.slice(0, idIndex), meta.slice(idIndex + 2)] : [meta, ''];
     [meaning, description] = (descIndex > -1) ?
         [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
         ['', meaningAndDesc];
   }
 
-  return {id, meaning, description};
+  return {customId, meaning, description};
 }
 
 /**
@@ -190,8 +192,8 @@ export function serializeI18nHead(meta: I18nMeta, messagePart: string): string {
   if (meta.meaning) {
     metaBlock = `${meta.meaning}|${metaBlock}`;
   }
-  if (meta.id) {
-    metaBlock = `${metaBlock}@@${meta.id}`;
+  if (meta.customId) {
+    metaBlock = `${metaBlock}@@${meta.customId}`;
   }
   if (metaBlock === '') {
     // There is no metaBlock, so we must ensure that any starting colon is escaped.

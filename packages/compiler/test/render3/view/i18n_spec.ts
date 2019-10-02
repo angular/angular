@@ -241,8 +241,8 @@ describe('Utils', () => {
       expect(serializeI18nTemplatePart('abc', ':message')).toEqual(':abc::message');
     });
 
-    function meta(id?: string, meaning?: string, description?: string): I18nMeta {
-      return {id, meaning, description};
+    function meta(customId?: string, meaning?: string, description?: string): I18nMeta {
+      return {customId, meaning, description};
     }
   });
 });

@@ -13,10 +13,11 @@ import localeRo from '@angular/common/locales/ro';
 import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
-import {loadTranslations} from '@angular/localize';
+import {loadTranslations, clearTranslations} from '@angular/localize';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
+import {computeMsgId} from '@angular/compiler';
 
 
 onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
@@ -24,16 +25,19 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     TestBed.configureTestingModule({declarations: [AppComp, DirectiveWithTplRef, UppercasePipe]});
   });
 
-  afterEach(() => { setDelayProjection(false); });
+  afterEach(() => {
+    setDelayProjection(false);
+    clearTranslations();
+  });
 
   it('should translate text', () => {
-    loadTranslations({'3667842621564887364': 'texte'});
+    loadTranslations({[computeMsgId('text')]: 'texte'});
     const fixture = initWithTemplate(AppComp, `<div i18n>text</div>`);
     expect(fixture.nativeElement.innerHTML).toEqual(`<div>texte</div>`);
   });
 
   it('should support interpolations', () => {
-    loadTranslations({'4848371593517801531': 'Bonjour {$INTERPOLATION}!'});
+    loadTranslations({[computeMsgId('Hello {$INTERPOLATION}!')]: 'Bonjour {$INTERPOLATION}!'});
     const fixture = initWithTemplate(AppComp, `<div i18n>Hello {{name}}!</div>`);
     expect(fixture.nativeElement.innerHTML).toEqual(`<div>Bonjour Angular!</div>`);
     fixture.componentRef.instance.name = `John`;
@@ -42,8 +46,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support named interpolations', () => {
-    loadTranslations(
-        {'5429622669757720522': ' Bonjour {$USER_NAME}! Emails: {$AMOUNT_OF_EMAILS_RECEIVED} '});
+    loadTranslations({
+      [computeMsgId(' Hello {$USER_NAME}! Emails: {$AMOUNT_OF_EMAILS_RECEIVED} ')]:
+          ' Bonjour {$USER_NAME}! Emails: {$AMOUNT_OF_EMAILS_RECEIVED} '
+    });
     const fixture = initWithTemplate(AppComp, `
       <div i18n>
         Hello {{ name // i18n(ph="user_name") }}!
@@ -58,7 +64,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support interpolations with custom interpolation config', () => {
-    loadTranslations({'3771704108176831903': 'Bonjour {$INTERPOLATION}'});
+    loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
     const interpolation = ['{%', '%}'] as[string, string];
     TestBed.overrideComponent(AppComp, {set: {interpolation}});
     const fixture = initWithTemplate(AppComp, `<div i18n>Hello {% name %}</div>`);
@@ -68,7 +74,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support &ngsp; in translatable sections', () => {
     // note: the `` unicode symbol represents the `&ngsp;` in translations
-    loadTranslations({'2564699219547368060': 'texte ||'});
+    loadTranslations({[computeMsgId('text ||')]: 'texte ||'});
     const fixture = initWithTemplate(AppCompWithWhitespaces, `<div i18n>text |&ngsp;|</div>`);
 
     expect(fixture.nativeElement.innerHTML).toEqual(`<div>texte | |</div>`);
@@ -76,7 +82,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support interpolations with complex expressions', () => {
     loadTranslations({
-      '3552931695168961643': ' {$INTERPOLATION} - {$INTERPOLATION_1} - {$INTERPOLATION_2} (fr) '
+      [computeMsgId(' {$INTERPOLATION} - {$INTERPOLATION_1} - {$INTERPOLATION_2} ')]:
+          ' {$INTERPOLATION} - {$INTERPOLATION_1} - {$INTERPOLATION_2} (fr) '
     });
     const fixture = initWithTemplate(AppComp, `
       <div i18n>
@@ -99,7 +106,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support elements', () => {
     loadTranslations({
-      '4352419997312772902':
+      [computeMsgId(
+          'Hello {$START_TAG_SPAN}world{$CLOSE_TAG_SPAN} and {$START_TAG_DIV}universe{$CLOSE_TAG_DIV}!',
+          '')]:
           'Bonjour {$START_TAG_SPAN}monde{$CLOSE_TAG_SPAN} et {$START_TAG_DIV}univers{$CLOSE_TAG_DIV}!'
     });
     const fixture = initWithTemplate(
@@ -109,7 +118,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should support removing elements', () => {
-    loadTranslations({'4038508921050216955': 'Bonjour {$START_TAG_SPAN}monde{$CLOSE_TAG_SPAN}'});
+    loadTranslations({
+      [computeMsgId(
+          'Hello {$START_BOLD_TEXT}my{$CLOSE_BOLD_TEXT}{$START_TAG_SPAN}world{$CLOSE_TAG_SPAN}',
+          '')]: 'Bonjour {$START_TAG_SPAN}monde{$CLOSE_TAG_SPAN}'
+    });
     const fixture =
         initWithTemplate(AppComp, `<div i18n>Hello <b>my</b><span>world</span></div><div>!</div>`);
     expect(fixture.nativeElement.innerHTML)
@@ -118,7 +131,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support moving elements', () => {
     loadTranslations({
-      '4352419997312772902':
+      [computeMsgId(
+          'Hello {$START_TAG_SPAN}world{$CLOSE_TAG_SPAN} and {$START_TAG_DIV}universe{$CLOSE_TAG_DIV}!',
+          '')]:
           'Bonjour {$START_TAG_DIV}univers{$CLOSE_TAG_DIV} et {$START_TAG_SPAN}monde{$CLOSE_TAG_SPAN}!'
     });
     const fixture = initWithTemplate(
@@ -129,7 +144,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support template directives', () => {
     loadTranslations({
-      '3546490957396057142':
+      [computeMsgId(
+          'Content: {$START_TAG_DIV}before{$START_TAG_SPAN}middle{$CLOSE_TAG_SPAN}after{$CLOSE_TAG_DIV}!',
+          '')]:
           'Contenu: {$START_TAG_DIV}avant{$START_TAG_SPAN}milieu{$CLOSE_TAG_SPAN}après{$CLOSE_TAG_DIV}!'
     });
     const fixture = initWithTemplate(
@@ -149,9 +166,12 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support multiple i18n blocks', () => {
     loadTranslations({
-      '2954523302699461941': 'traduction {$INTERPOLATION}',
-      '6316306955288477512': 'start {$INTERPOLATION_1} middle {$INTERPOLATION} end',
-      '4435073550869683142': '{$START_TAG_E}{$CLOSE_TAG_E}{$START_TAG_C}traduction{$CLOSE_TAG_C}'
+      [computeMsgId('trad {$INTERPOLATION}')]: 'traduction {$INTERPOLATION}',
+      [computeMsgId('start {$INTERPOLATION} middle {$INTERPOLATION_1} end')]:
+          'start {$INTERPOLATION_1} middle {$INTERPOLATION} end',
+      [computeMsgId(
+          '{$START_TAG_C}trad{$CLOSE_TAG_C}{$START_TAG_D}{$CLOSE_TAG_D}{$START_TAG_E}{$CLOSE_TAG_E}',
+          '')]: '{$START_TAG_E}{$CLOSE_TAG_E}{$START_TAG_C}traduction{$CLOSE_TAG_C}'
     });
     const fixture = initWithTemplate(AppComp, `
       <div>
@@ -170,9 +190,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support multiple sibling i18n blocks', () => {
     loadTranslations({
-      '1789603390900945185': 'Section un',
-      '3131519605456222658': 'Section deux',
-      '1438862747497772785': 'Section trois',
+      [computeMsgId('Section 1')]: 'Section un',
+      [computeMsgId('Section 2')]: 'Section deux',
+      [computeMsgId('Section 3')]: 'Section trois',
     });
     const fixture = initWithTemplate(AppComp, `
       <div>
@@ -186,9 +206,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support multiple sibling i18n blocks inside of a template directive', () => {
     loadTranslations({
-      '1789603390900945185': 'Section un',
-      '3131519605456222658': 'Section deux',
-      '1438862747497772785': 'Section trois',
+      [computeMsgId('Section 1')]: 'Section un',
+      [computeMsgId('Section 2')]: 'Section deux',
+      [computeMsgId('Section 3')]: 'Section trois',
     });
     const fixture = initWithTemplate(AppComp, `
       <ul *ngFor="let item of [1,2,3]">
@@ -204,7 +224,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should properly escape quotes in content', () => {
-    loadTranslations({'7582605960852813916': '\'Guillemets simples\' et "Guillemets doubles"'});
+    loadTranslations({
+      [computeMsgId('\'Single quotes\' and "Double quotes"')]:
+          '\'Guillemets simples\' et "Guillemets doubles"'
+    });
     const fixture =
         initWithTemplate(AppComp, `<div i18n>'Single quotes' and "Double quotes"</div>`);
 
@@ -213,7 +236,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should correctly bind to context in nested template', () => {
-    loadTranslations({'4691107123853093118': 'Article {$INTERPOLATION}'});
+    loadTranslations({[computeMsgId('Item {$INTERPOLATION}')]: 'Article {$INTERPOLATION}'});
     const fixture = initWithTemplate(AppComp, `
           <div *ngFor='let id of items'>
             <div i18n>Item {{ id }}</div>
@@ -233,13 +256,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should handle i18n attribute with directives', () => {
-    loadTranslations({'3771704108176831903': 'Bonjour {$INTERPOLATION}'});
+    loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
     const fixture = initWithTemplate(AppComp, `<div *ngIf="visible" i18n>Hello {{ name }}</div>`);
     expect(fixture.nativeElement.firstChild).toHaveText('Bonjour Angular');
   });
 
   it('should work correctly with event listeners', () => {
-    loadTranslations({'Hello {$INTERPOLATION}': 'Bonjour {$INTERPOLATION}'});
+    loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
 
     @Component(
         {selector: 'app-comp', template: `<div i18n (click)="onClick()">Hello {{ name }}</div>`})
@@ -266,13 +289,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   describe('ng-container and ng-template support', () => {
     it('should support ng-container', () => {
-      loadTranslations({'3667842621564887364': 'texte'});
+      loadTranslations({[computeMsgId('text')]: 'texte'});
       const fixture = initWithTemplate(AppComp, `<ng-container i18n>text</ng-container>`);
       expect(fixture.nativeElement.innerHTML).toEqual(`texte<!--ng-container-->`);
     });
 
     it('should handle single translation message within ng-template', () => {
-      loadTranslations({'3771704108176831903': 'Bonjour {$INTERPOLATION}'});
+      loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
       const fixture =
           initWithTemplate(AppComp, `<ng-template i18n tplRef>Hello {{ name }}</ng-template>`);
 
@@ -283,7 +306,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     // Note: applying structural directives to <ng-template> is typically user error, but it
     // is technically allowed, so we need to support it.
     it('should handle structural directives on ng-template', () => {
-      loadTranslations({'3771704108176831903': 'Bonjour {$INTERPOLATION}'});
+      loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
       const fixture = initWithTemplate(
           AppComp, `<ng-template *ngIf="name" i18n tplRef>Hello {{ name }}</ng-template>`);
 
@@ -293,7 +316,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('should be able to act as child elements inside i18n block (plain text content)', () => {
       loadTranslations({
-        '3250373733165819471':
+        [computeMsgId(
+            '{$START_TAG_NG_TEMPLATE} Hello {$CLOSE_TAG_NG_TEMPLATE}{$START_TAG_NG_CONTAINER} Bye {$CLOSE_TAG_NG_CONTAINER}',
+            '')]:
             '{$START_TAG_NG_TEMPLATE} Bonjour {$CLOSE_TAG_NG_TEMPLATE}{$START_TAG_NG_CONTAINER} Au revoir {$CLOSE_TAG_NG_CONTAINER}'
       });
       const fixture = initWithTemplate(AppComp, `
@@ -313,7 +338,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('should be able to act as child elements inside i18n block (text + tags)', () => {
       loadTranslations({
-        '7109932217076518742':
+        [computeMsgId(
+            '{$START_TAG_NG_TEMPLATE}{$START_TAG_SPAN}Hello{$CLOSE_TAG_SPAN}{$CLOSE_TAG_NG_TEMPLATE}{$START_TAG_NG_CONTAINER}{$START_TAG_SPAN}Hello{$CLOSE_TAG_SPAN}{$CLOSE_TAG_NG_CONTAINER}',
+            '')]:
             '{$START_TAG_NG_TEMPLATE}{$START_TAG_SPAN}Bonjour{$CLOSE_TAG_SPAN}{$CLOSE_TAG_NG_TEMPLATE}{$START_TAG_NG_CONTAINER}{$START_TAG_SPAN}Bonjour{$CLOSE_TAG_SPAN}{$CLOSE_TAG_NG_CONTAINER}'
       });
       const fixture = initWithTemplate(AppComp, `
@@ -336,7 +363,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('should be able to act as child elements inside i18n block (text + pipes)', () => {
       loadTranslations({
-        '2351903444091919458':
+        [computeMsgId(
+            '{$START_TAG_NG_TEMPLATE}Hello {$INTERPOLATION}{$CLOSE_TAG_NG_TEMPLATE}{$START_TAG_NG_CONTAINER}Bye {$INTERPOLATION}{$CLOSE_TAG_NG_CONTAINER}',
+            '')]:
             '{$START_TAG_NG_TEMPLATE}Hej {$INTERPOLATION}{$CLOSE_TAG_NG_TEMPLATE}{$START_TAG_NG_CONTAINER}Vi ses {$INTERPOLATION}{$CLOSE_TAG_NG_CONTAINER}'
       });
       const fixture = initWithTemplate(AppComp, `
@@ -352,7 +381,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('should be able to handle deep nested levels with templates', () => {
       loadTranslations({
-        '3582176345457676':
+        [computeMsgId(
+            '{$START_TAG_SPAN} Hello - 1 {$CLOSE_TAG_SPAN}{$START_TAG_SPAN_1} Hello - 2 {$START_TAG_SPAN_1} Hello - 3 {$START_TAG_SPAN_1} Hello - 4 {$CLOSE_TAG_SPAN}{$CLOSE_TAG_SPAN}{$CLOSE_TAG_SPAN}{$START_TAG_SPAN} Hello - 5 {$CLOSE_TAG_SPAN}',
+            '')]:
             '{$START_TAG_SPAN} Bonjour - 1 {$CLOSE_TAG_SPAN}{$START_TAG_SPAN_1} Bonjour - 2 {$START_TAG_SPAN_1} Bonjour - 3 {$START_TAG_SPAN_1} Bonjour - 4 {$CLOSE_TAG_SPAN}{$CLOSE_TAG_SPAN}{$CLOSE_TAG_SPAN}{$START_TAG_SPAN} Bonjour - 5 {$CLOSE_TAG_SPAN}'
       });
       const fixture = initWithTemplate(AppComp, `
@@ -383,8 +414,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should handle self-closing tags as content', () => {
-      loadTranslations(
-          {'3294715134260231285': '{$START_TAG_SPAN}Mon logo{$TAG_IMG}{$CLOSE_TAG_SPAN}'});
+      loadTranslations({
+        [computeMsgId('{$START_TAG_SPAN}My logo{$TAG_IMG}{$CLOSE_TAG_SPAN}')]:
+            '{$START_TAG_SPAN}Mon logo{$TAG_IMG}{$CLOSE_TAG_SPAN}'
+      });
       const content = `My logo<img src="logo.png" title="Logo">`;
       const fixture = initWithTemplate(AppComp, `
         <ng-container i18n>
@@ -404,6 +437,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should correctly find context for an element inside i18n section in <ng-template>', () => {
+      loadTranslations({
+        [computeMsgId('{$START_LINK}Not logged in{$CLOSE_LINK}')]:
+            '{$START_LINK}Not logged in{$CLOSE_LINK}'
+      });
       @Directive({selector: '[myDir]'})
       class Dir {
         condition = true;
@@ -438,8 +475,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   describe('should support ICU expressions', () => {
     it('with no root node', () => {
-      loadTranslations(
-          {'8806993169187953163': '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'});
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}')]:
+            '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
+      });
       const fixture =
           initWithTemplate(AppComp, `{count, select, 10 {ten} 20 {twenty} other {other}}`);
 
@@ -448,8 +487,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('with no i18n tag', () => {
-      loadTranslations(
-          {'8806993169187953163': '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'});
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}')]:
+            '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
+      });
       const fixture = initWithTemplate(
           AppComp, `<div>{count, select, 10 {ten} 20 {twenty} other {other}}</div>`);
 
@@ -459,9 +500,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('multiple', () => {
       loadTranslations({
-        '3639715378617754400':
+        [computeMsgId(
+            '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
+            '')]:
             '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
-        '484647350062685600': '{VAR_SELECT, select, other {({INTERPOLATION})}}'
+        [computeMsgId('{VAR_SELECT, select, other {({INTERPOLATION})}}')]:
+            '{VAR_SELECT, select, other {({INTERPOLATION})}}',
+        [computeMsgId('{$ICU} - {$ICU_1}')]: '{$ICU} - {$ICU_1}',
       });
       const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural,
         =0 {no <b>emails</b>!}
@@ -487,8 +532,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('with custom interpolation config', () => {
-      loadTranslations(
-          {'8091236997374391053': '{VAR_SELECT, select, 10 {dix} other {{INTERPOLATION}}}'});
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {ten} other {{INTERPOLATION}}}')]:
+            '{VAR_SELECT, select, 10 {dix} other {{INTERPOLATION}}}'
+      });
       const interpolation = ['{%', '%}'] as[string, string];
       TestBed.overrideComponent(AppComp, {set: {interpolation}});
       const fixture =
@@ -499,9 +546,16 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('inside HTML elements', () => {
       loadTranslations({
-        '3639715378617754400':
+        [computeMsgId(
+            '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
+            '')]:
             '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} {START_TAG_SPAN}emails{CLOSE_TAG_SPAN}}}',
-        '484647350062685600': '{VAR_SELECT, select, other {({INTERPOLATION})}}'
+        [computeMsgId('{VAR_SELECT, select, other {({INTERPOLATION})}}')]:
+            '{VAR_SELECT, select, other {({INTERPOLATION})}}',
+        [computeMsgId(
+            '{$START_TAG_SPAN_1}{$ICU}{$CLOSE_TAG_SPAN} - ' +
+            '{$START_TAG_SPAN_1}{$ICU_1}{$CLOSE_TAG_SPAN}')]:
+            '{$START_TAG_SPAN_1}{$ICU}{$CLOSE_TAG_SPAN} - {$START_TAG_SPAN_1}{$ICU_1}{$CLOSE_TAG_SPAN}',
       });
       const fixture = initWithTemplate(AppComp, `<div i18n><span>{count, plural,
         =0 {no <b>emails</b>!}
@@ -529,7 +583,12 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('inside template directives', () => {
-      loadTranslations({'484647350062685600': '{VAR_SELECT, select, other {({INTERPOLATION})}}'});
+      loadTranslations({
+        [computeMsgId('{$START_TAG_SPAN}{$ICU}{$CLOSE_TAG_SPAN}')]:
+            '{$START_TAG_SPAN}{$ICU}{$CLOSE_TAG_SPAN}',
+        [computeMsgId('{VAR_SELECT, select, other {({INTERPOLATION})}}')]:
+            '{VAR_SELECT, select, other {({INTERPOLATION})}}'
+      });
       const fixture = initWithTemplate(AppComp, `<div i18n><span *ngIf="visible">{name, select,
         other {({{name}})}
       }</span></div>`);
@@ -546,7 +605,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('inside ng-container', () => {
-      loadTranslations({'484647350062685600': '{VAR_SELECT, select, other {({INTERPOLATION})}}'});
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, other {({INTERPOLATION})}}')]:
+            '{VAR_SELECT, select, other {({INTERPOLATION})}}'
+      });
       const fixture = initWithTemplate(AppComp, `<ng-container i18n>{name, select,
         other {({{name}})}
       }</ng-container>`);
@@ -554,8 +616,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('inside <ng-template>', () => {
-      loadTranslations(
-          {'8806993169187953163': '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'});
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}')]:
+            '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
+      });
       const fixture = initWithTemplate(
           AppComp, `
         <ng-template i18n tplRef>` +
@@ -569,7 +633,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('nested', () => {
       loadTranslations({
-        '6934090145627876010':
+        [computeMsgId(
+            '{VAR_PLURAL, plural, =0 {zero} other {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}}!}}',
+            '')]:
             '{VAR_PLURAL, plural, =0 {zero} other {{INTERPOLATION} {VAR_SELECT, select, cat {chats} dog {chiens} other {animaux}}!}}'
       });
       const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural,
@@ -589,11 +655,12 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('nested with interpolations in "other" blocks', () => {
-      // Note: for some reason long string causing clang to reformat the entire file.
-      const translation =
-          '{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, ' +
-          'cat {chats} dog {chiens} other {animaux}}!} other {other - {INTERPOLATION}}}';
-      loadTranslations({'3182623695425530660': translation});
+      loadTranslations({
+        [computeMsgId(
+            '{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}}!} other {other - {INTERPOLATION}}}',
+            '')]:
+            '{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, cat {chats} dog {chiens} other {animaux}}!} other {autre - {INTERPOLATION}}}'
+      });
 
       const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural,
         =0 {zero}
@@ -613,15 +680,19 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
       fixture.componentRef.instance.count = 4;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual(`<div>other - 4<!--ICU 5--></div>`);
+      expect(fixture.nativeElement.innerHTML).toEqual(`<div>autre - 4<!--ICU 5--></div>`);
     });
 
-    it('should return the correct plural form for ICU expressions when using a specific locale',
-       () => {
-         registerLocaleData(localeRo);
-         TestBed.configureTestingModule({providers: [{provide: LOCALE_ID, useValue: 'ro'}]});
-         // We could also use `TestBed.overrideProvider(LOCALE_ID, {useValue: 'ro'});`
-         const fixture = initWithTemplate(AppComp, `
+    it('should return the correct plural form for ICU expressions when using a specific locale', () => {
+      loadTranslations({
+        [computeMsgId(
+            '{VAR_PLURAL, plural, =0 {no email} =one {one email} =few {a few emails} =other {lots of emails}}')]:
+            '{VAR_PLURAL, plural, =0 {no email} =one {one email} =few {a few emails} =other {lots of emails}}'
+      });
+      registerLocaleData(localeRo);
+      TestBed.configureTestingModule({providers: [{provide: LOCALE_ID, useValue: 'ro'}]});
+      // We could also use `TestBed.overrideProvider(LOCALE_ID, {useValue: 'ro'});`
+      const fixture = initWithTemplate(AppComp, `
           {count, plural,
             =0 {no email}
             =one {one email}
@@ -629,34 +700,38 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
             =other {lots of emails}
           }`);
 
-         expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 2-->');
+      expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 2-->');
 
-         // Change detection cycle, no model changes
-         fixture.detectChanges();
-         expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 2-->');
+      // Change detection cycle, no model changes
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 2-->');
 
-         fixture.componentInstance.count = 3;
-         fixture.detectChanges();
-         expect(fixture.nativeElement.innerHTML).toEqual('a few emails<!--ICU 2-->');
+      fixture.componentInstance.count = 3;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('a few emails<!--ICU 2-->');
 
-         fixture.componentInstance.count = 1;
-         fixture.detectChanges();
-         expect(fixture.nativeElement.innerHTML).toEqual('one email<!--ICU 2-->');
+      fixture.componentInstance.count = 1;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('one email<!--ICU 2-->');
 
-         fixture.componentInstance.count = 10;
-         fixture.detectChanges();
-         expect(fixture.nativeElement.innerHTML).toEqual('a few emails<!--ICU 2-->');
+      fixture.componentInstance.count = 10;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('a few emails<!--ICU 2-->');
 
-         fixture.componentInstance.count = 20;
-         fixture.detectChanges();
-         expect(fixture.nativeElement.innerHTML).toEqual('lots of emails<!--ICU 2-->');
+      fixture.componentInstance.count = 20;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('lots of emails<!--ICU 2-->');
 
-         fixture.componentInstance.count = 0;
-         fixture.detectChanges();
-         expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 2-->');
-       });
+      fixture.componentInstance.count = 0;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 2-->');
+    });
 
     it('projection', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_PLURAL, plural, =1 {one} other {at least {INTERPOLATION} .}}')]:
+            '{VAR_PLURAL, plural, =1 {one} other {at least {INTERPOLATION} .}}'
+      });
       @Component({selector: 'child', template: '<div><ng-content></ng-content></div>'})
       class Child {
       }
@@ -675,7 +750,6 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         value = 3;
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      loadTranslations({});
 
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -684,6 +758,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('with empty values', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {} 20 {twenty} other {other}}')]:
+            '{VAR_SELECT, select, 10 {} 20 {twenty} other {other}}'
+      });
       const fixture = initWithTemplate(AppComp, `{count, select, 10 {} 20 {twenty} other {other}}`);
 
       const element = fixture.nativeElement;
@@ -691,6 +769,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('inside a container when creating a view via vcr.createEmbeddedView', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_PLURAL, plural, =1 {ONE} other {OTHER}}')]:
+            '{VAR_PLURAL, plural, =1 {ONE} other {OTHER}}'
+      });
       @Directive({
         selector: '[someDir]',
       })
@@ -757,6 +839,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('with nested ICU expression and inside a container when creating a view via vcr.createEmbeddedView',
        () => {
+         loadTranslations({
+           [computeMsgId(
+               '{VAR_PLURAL, plural, =1 {ONE} other {{INTERPOLATION} ' +
+               '{VAR_SELECT, select, cat {cats} dog {dogs} other {animals}}!}}')]:
+               '{VAR_PLURAL, plural, =1 {ONE} other {{INTERPOLATION} ' +
+               '{VAR_SELECT, select, cat {cats} dog {dogs} other {animals}}!}}'
+         });
+
          let dir: Dir|null = null;
          @Directive({
            selector: '[someDir]',
@@ -823,6 +913,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
        });
 
     it('with nested containers', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, A {A } B {B } other {C }}')]:
+            '{VAR_SELECT, select, A {A } B {B } other {C }}',
+        [computeMsgId('{VAR_SELECT, select, A1 {A1 } B1 {B1 } other {C1 }}')]:
+            '{VAR_SELECT, select, A1 {A1 } B1 {B1 } other {C1 }}',
+        [computeMsgId(' {$ICU} ')]: ' {$ICU} ',
+      });
       @Component({
         selector: 'comp',
         template: `
@@ -857,6 +954,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('with named interpolations', () => {
+      loadTranslations({
+        [computeMsgId(
+            '{VAR_SELECT, select, A {A - {PH_A}} ' +
+            'B {B - {PH_B}} other {other - {PH_WITH_SPACES}}}')]:
+            '{VAR_SELECT, select, A {A (translated) - {PH_A}} ' +
+                'B {B (translated) - {PH_B}} other {other (translated) - {PH_WITH_SPACES}}}',
+      });
       @Component({
         selector: 'comp',
         template: `
@@ -881,16 +985,22 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const fixture = TestBed.createComponent(Comp);
       fixture.detectChanges();
 
-      expect(fixture.debugElement.nativeElement.innerHTML).toContain('A - Type A');
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('A (translated) - Type A');
 
       fixture.componentInstance.type = 'C';  // trigger "other" case
       fixture.detectChanges();
 
-      expect(fixture.debugElement.nativeElement.innerHTML).not.toContain('A - Type A');
-      expect(fixture.debugElement.nativeElement.innerHTML).toContain('other - Type C');
+      expect(fixture.debugElement.nativeElement.innerHTML).not.toContain('A (translated) - Type A');
+      expect(fixture.debugElement.nativeElement.innerHTML).toContain('other (translated) - Type C');
     });
 
     it('should work inside an ngTemplateOutlet inside an ngFor', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, A {A } B {B } other {other - {PH_WITH_SPACES}}}')]:
+            '{VAR_SELECT, select, A {A } B {B } other {other - {PH_WITH_SPACES}}}',
+        [computeMsgId('{$ICU} ')]: '{$ICU} '
+      });
+
       @Component({
         selector: 'app',
         template: `
@@ -925,13 +1035,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   describe('should support attributes', () => {
     it('text', () => {
-      loadTranslations({'3667842621564887364': 'texte'});
+      loadTranslations({[computeMsgId('text')]: 'texte'});
       const fixture = initWithTemplate(AppComp, `<div i18n i18n-title title='text'></div>`);
       expect(fixture.nativeElement.innerHTML).toEqual(`<div title="texte"></div>`);
     });
 
     it('interpolations', () => {
-      loadTranslations({'1721737630608625819': 'bonjour {$INTERPOLATION}'});
+      loadTranslations({[computeMsgId('hello {$INTERPOLATION}')]: 'bonjour {$INTERPOLATION}'});
       const fixture =
           initWithTemplate(AppComp, `<div i18n i18n-title title="hello {{name}}"></div>`);
       expect(fixture.nativeElement.innerHTML).toEqual(`<div title="bonjour Angular"></div>`);
@@ -942,14 +1052,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('with pipes', () => {
-      loadTranslations({'5990850149002293021': 'bonjour {$INTERPOLATION}'});
+      loadTranslations({[computeMsgId('hello {$INTERPOLATION}')]: 'bonjour {$INTERPOLATION}'});
       const fixture = initWithTemplate(
           AppComp, `<div i18n i18n-title title="hello {{name | uppercase}}"></div>`);
       expect(fixture.nativeElement.innerHTML).toEqual(`<div title="bonjour ANGULAR"></div>`);
     });
 
     it('multiple attributes', () => {
-      loadTranslations({'1721737630608625819': 'bonjour {$INTERPOLATION}'});
+      loadTranslations({[computeMsgId('hello {$INTERPOLATION}')]: 'bonjour {$INTERPOLATION}'});
       const fixture = initWithTemplate(
           AppComp,
           `<input i18n i18n-title title="hello {{name}}" i18n-placeholder placeholder="hello {{name}}">`);
@@ -964,8 +1074,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('on removed elements', () => {
       loadTranslations({
-        '3667842621564887364': 'texte',
-        '4851941758912026972': 'contenu',
+        [computeMsgId('text')]: 'texte',
+        [computeMsgId('{$START_TAG_SPAN}content{$CLOSE_TAG_SPAN}')]: 'contenu',
       });
       const fixture =
           initWithTemplate(AppComp, `<div i18n><span i18n-title title="text">content</span></div>`);
@@ -973,7 +1083,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('with custom interpolation config', () => {
-      loadTranslations({'6353989911216474113': 'Bonjour {$INTERPOLATION}'});
+      loadTranslations({[computeMsgId('Hello {$INTERPOLATION}', 'm')]: 'Bonjour {$INTERPOLATION}'});
       const interpolation = ['{%', '%}'] as[string, string];
       TestBed.overrideComponent(AppComp, {set: {interpolation}});
       const fixture =
@@ -984,7 +1094,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('in nested template', () => {
-      loadTranslations({'5108705942887033129': 'Article {$INTERPOLATION}'});
+      loadTranslations({[computeMsgId('Item {$INTERPOLATION}', 'm')]: 'Article {$INTERPOLATION}'});
       const fixture = initWithTemplate(AppComp, `
           <div *ngFor='let item of [1,2,3]'>
             <div i18n-title='m|d' title='Item {{ item }}'></div>
@@ -998,7 +1108,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should add i18n attributes on self-closing tags', () => {
-      loadTranslations({'3771704108176831903': 'Bonjour {$INTERPOLATION}'});
+      loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
       const fixture =
           initWithTemplate(AppComp, `<img src="logo.png" i18n-title title="Hello {{ name }}">`);
 
@@ -1007,6 +1117,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should apply i18n attributes during second template pass', () => {
+      loadTranslations({[computeMsgId('Set')]: 'Set'});
       @Directive({
         selector: '[test]',
         inputs: ['test'],
@@ -1044,13 +1155,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('with complex expressions', () => {
       loadTranslations({
-        '305276527729153743': '{$INTERPOLATION} - {$INTERPOLATION_1} - {$INTERPOLATION_2} (fr)'
+        [computeMsgId('{$INTERPOLATION} - {$INTERPOLATION_1} - {$INTERPOLATION_2}')]:
+            '{$INTERPOLATION} - {$INTERPOLATION_1} - {$INTERPOLATION_2} (fr)'
       });
       const fixture = initWithTemplate(AppComp, `
         <div i18n-title title="{{ name | uppercase }} - {{ obj?.a?.b }} - {{ obj?.getA()?.b }}"></div>
       `);
-      // the `obj` field is not yet defined, so 2nd and 3rd interpolations return empty
-      // strings
+      // the `obj` field is not yet defined, so 2nd and 3rd interpolations return empty strings
       expect(fixture.nativeElement.firstChild.title).toEqual(`ANGULAR -  -  (fr)`);
 
       fixture.componentRef.instance.obj = {
@@ -1092,10 +1203,12 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     TestBed.configureTestingModule({declarations: [ClsDir, MyApp]});
     loadTranslations({
       // Note that this translation switches the order of the expressions!
-      '2244013204777604001': 'début {$INTERPOLATION_1} milieu {$INTERPOLATION} fin',
-      '7297507129788731971':
+      [computeMsgId('start {$INTERPOLATION} middle {$INTERPOLATION_1} end')]:
+          'début {$INTERPOLATION_1} milieu {$INTERPOLATION} fin',
+      [computeMsgId(
+          '{VAR_PLURAL, plural, =0 {no {START_BOLD_TEXT}emails{CLOSE_BOLD_TEXT}!} =1 {one {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}')]:
           '{VAR_PLURAL, plural, =0 {aucun {START_BOLD_TEXT}email{CLOSE_BOLD_TEXT}!} =1 {un {START_ITALIC_TEXT}email{CLOSE_ITALIC_TEXT}} other {{INTERPOLATION} emails}}',
-      '7694415136422535717': ' traduction: {$ICU} '
+      [computeMsgId(' trad: {$ICU} ')]: ' traduction: {$ICU} '
     });
     const fixture = TestBed.createComponent(MyApp);
     fixture.detectChanges();
@@ -1138,8 +1251,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     TestBed.configureTestingModule({declarations: [AppComp, MyComp]});
     loadTranslations({
-      '3299467052279745802': 'Bonjour {$INTERPOLATION}',
-      '694232821652669635': 'fonctionne',
+      [computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}',
+      [computeMsgId('works')]: 'fonctionne',
     });
     const fixture = initWithTemplate(
         AppComp,
@@ -1155,8 +1268,19 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support adding/moving/removing nodes', () => {
     loadTranslations({
-      '3934630822967503512':
-          '{$START_TAG_DIV2}{$CLOSE_TAG_DIV2}{$START_TAG_DIV8}{$CLOSE_TAG_DIV8}{$START_TAG_DIV4}{$CLOSE_TAG_DIV4}{$START_TAG_DIV5}{$CLOSE_TAG_DIV5}Bonjour monde{$START_TAG_DIV3}{$CLOSE_TAG_DIV3}{$START_TAG_DIV7}{$CLOSE_TAG_DIV7}'
+      [computeMsgId(
+          '{$START_TAG_DIV2}{$CLOSE_TAG_DIV2}' +
+          '{$START_TAG_DIV3}{$CLOSE_TAG_DIV3}' +
+          '{$START_TAG_DIV4}{$CLOSE_TAG_DIV4}' +
+          '{$START_TAG_DIV5}{$CLOSE_TAG_DIV5}' +
+          '{$START_TAG_DIV6}{$CLOSE_TAG_DIV6}' +
+          '{$START_TAG_DIV7}{$CLOSE_TAG_DIV7}' +
+          '{$START_TAG_DIV8}{$CLOSE_TAG_DIV8}')]: '{$START_TAG_DIV2}{$CLOSE_TAG_DIV2}' +
+          '{$START_TAG_DIV8}{$CLOSE_TAG_DIV8}' +
+          '{$START_TAG_DIV4}{$CLOSE_TAG_DIV4}' +
+          '{$START_TAG_DIV5}{$CLOSE_TAG_DIV5}Bonjour monde' +
+          '{$START_TAG_DIV3}{$CLOSE_TAG_DIV3}' +
+          '{$START_TAG_DIV7}{$CLOSE_TAG_DIV7}'
     });
     const fixture = initWithTemplate(AppComp, `
       <div i18n>
@@ -1195,8 +1319,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
       loadTranslations({
-        '7180841260895623479': 'Enfant de {$INTERPOLATION}',
-        '2325314462315226487':
+        [computeMsgId('Child of {$INTERPOLATION}')]: 'Enfant de {$INTERPOLATION}',
+        [computeMsgId(
+            '{$START_TAG_CHILD}I am projected from' +
+            ' {$START_BOLD_TEXT}{$INTERPOLATION}{$START_TAG_REMOVE_ME_1}{$CLOSE_TAG_REMOVE_ME_1}{$CLOSE_BOLD_TEXT}' +
+            '{$START_TAG_REMOVE_ME_2}{$CLOSE_TAG_REMOVE_ME_2}' +
+            '{$CLOSE_TAG_CHILD}' +
+            '{$START_TAG_REMOVE_ME_3}{$CLOSE_TAG_REMOVE_ME_3}')]:
             '{$START_TAG_CHILD}Je suis projeté depuis {$START_BOLD_TEXT}{$INTERPOLATION}{$CLOSE_BOLD_TEXT}{$CLOSE_TAG_CHILD}'
       });
       const fixture = TestBed.createComponent(Parent);
@@ -1227,8 +1356,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
       loadTranslations({
-        '7180841260895623479': 'Enfant de {$INTERPOLATION}',
-        '7230149585615622873': 'Je suis projeté depuis {$INTERPOLATION}'
+        [computeMsgId('Child of {$INTERPOLATION}')]: 'Enfant de {$INTERPOLATION}',
+        [computeMsgId('I am projected from {$INTERPOLATION}')]:
+            'Je suis projeté depuis {$INTERPOLATION}'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1267,8 +1397,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
 
       TestBed.configureTestingModule({declarations: [Parent, Child, GrandChild]});
-      loadTranslations(
-          {'9156403697449779168': '{$START_BOLD_TEXT}Bonjour{$CLOSE_BOLD_TEXT} monde!'});
+      loadTranslations({
+        [computeMsgId('{$START_BOLD_TEXT}Hello{$CLOSE_BOLD_TEXT} World!')]:
+            '{$START_BOLD_TEXT}Bonjour{$CLOSE_BOLD_TEXT} monde!'
+      });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
@@ -1291,7 +1423,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
 
       TestBed.configureTestingModule({declarations: [Parent, Child, GrandChild]});
-      loadTranslations({'9156403697449779168': 'Bonjour monde!'});
+      loadTranslations(
+          {[computeMsgId('{$START_BOLD_TEXT}Hello{$CLOSE_BOLD_TEXT} World!')]: 'Bonjour monde!'});
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
@@ -1316,7 +1449,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
 
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      loadTranslations({'2827528023268681613': '{$START_TAG_SPAN}Contenu{$CLOSE_TAG_SPAN}'});
+      loadTranslations({
+        [computeMsgId('{$START_TAG_SPAN}{$CLOSE_TAG_SPAN}{$START_TAG_SPAN_1}{$CLOSE_TAG_SPAN}')]:
+            '{$START_TAG_SPAN}Contenu{$CLOSE_TAG_SPAN}'
+      });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
@@ -1337,7 +1473,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
       loadTranslations({
-        '4431461951818971024':
+        [computeMsgId('Content projected from {$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT}')]:
             'Contenu projeté depuis {$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT}'
       });
 
@@ -1366,7 +1502,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
       loadTranslations({
-        '4431461951818971024': '{$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT} a projeté le contenu'
+        [computeMsgId('Content projected from {$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT}')]:
+            '{$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT} a projeté le contenu'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1386,8 +1523,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
       loadTranslations({
-        '3861221266941684467': 'Contenu enfant {$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT}',
-        '6186458652454735259': 'et projection depuis {$INTERPOLATION}'
+        [computeMsgId('Child content {$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT}')]:
+            'Contenu enfant {$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT}',
+        [computeMsgId('and projection from {$INTERPOLATION}')]:
+            'et projection depuis {$INTERPOLATION}'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1396,6 +1535,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should project bare ICU expressions', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_PLURAL, plural, =1 {one} other {at least {INTERPOLATION} .}}')]:
+            '{VAR_PLURAL, plural, =1 {one} other {at least {INTERPOLATION} .}}'
+      });
       @Component({selector: 'child', template: '<div><ng-content></ng-content></div>'})
       class Child {
       }
@@ -1414,7 +1557,6 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         value = 3;
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
-      loadTranslations({});
 
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1438,8 +1580,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
       loadTranslations({
-        '3861221266941684467': 'Contenu enfant {$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT}',
-        '4986299685320703675': 'et projection depuis {$ICU}'
+        [computeMsgId('{VAR_SELECT, select, angular {Angular} other {{INTERPOLATION}}}')]:
+            '{VAR_SELECT, select, angular {Angular} other {{INTERPOLATION}}}',
+        [computeMsgId('Child content {$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT}')]:
+            'Contenu enfant {$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT}',
+        [computeMsgId('and projection from {$ICU}')]: 'et projection depuis {$ICU}'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1466,8 +1611,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
       TestBed.configureTestingModule({declarations: [Parent, Child]});
       loadTranslations({
-        '3861221266941684467': 'Contenu enfant',
-        '6186458652454735259': 'et projection depuis {$INTERPOLATION}'
+        [computeMsgId('Child content {$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT}')]:
+            'Contenu enfant',
+        [computeMsgId('and projection from {$INTERPOLATION}')]:
+            'et projection depuis {$INTERPOLATION}'
       });
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
@@ -1476,6 +1623,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('should display/destroy projected i18n content', () => {
 
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, A {A} B {B} other {other}}')]:
+            '{VAR_SELECT, select, A {A} B {B} other {other}}'
+      });
       @Component({
         selector: 'app',
         template: `
@@ -1553,8 +1704,15 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       }
 
       TestBed.configureTestingModule({declarations: [TextDirective, DivQuery]});
-      loadTranslations(
-          {'3395826043214005257': '{$START_TAG_NG_TEMPLATE}Contenu{$CLOSE_TAG_NG_TEMPLATE}'});
+      loadTranslations({
+        [computeMsgId(
+            '{$START_TAG_NG_TEMPLATE}{$START_TAG_DIV_1}' +
+            '{$START_TAG_DIV}' +
+            '{$START_TAG_SPAN}Content{$CLOSE_TAG_SPAN}' +
+            '{$CLOSE_TAG_DIV}' +
+            '{$CLOSE_TAG_DIV}{$CLOSE_TAG_NG_TEMPLATE}')]:
+            '{$START_TAG_NG_TEMPLATE}Contenu{$CLOSE_TAG_NG_TEMPLATE}'
+      });
       const fixture = initWithTemplate(AppComp, `
           <div-query #q i18n>
             <ng-template>
@@ -1586,6 +1744,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   });
 
   it('should not alloc expando slots when there is no new variable to create', () => {
+    loadTranslations({
+      [computeMsgId('{$START_TAG_DIV} Some content {$CLOSE_TAG_DIV}')]:
+          '{$START_TAG_DIV} Some content {$CLOSE_TAG_DIV}',
+      [computeMsgId(
+          '{$START_TAG_SPAN_1}{$ICU}{$CLOSE_TAG_SPAN} - {$START_TAG_SPAN_1}{$ICU_1}{$CLOSE_TAG_SPAN}')]:
+          '{$START_TAG_SPAN_1}{$ICU}{$CLOSE_TAG_SPAN} - {$START_TAG_SPAN_1}{$ICU_1}{$CLOSE_TAG_SPAN}',
+    });
     @Component({
       template: `
       <div dialog i18n>
