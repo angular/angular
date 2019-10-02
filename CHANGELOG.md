@@ -1,3 +1,13 @@
+<a name="8.2.9"></a>
+## [8.2.9](https://github.com/angular/angular/compare/8.2.8...8.2.9) (2019-10-02)
+
+
+### Bug Fixes
+
+* **upgrade:** fix AngularJsUrlCodec to support Safari ([#32959](https://github.com/angular/angular/issues/32959)) ([57457fb](https://github.com/angular/angular/commit/57457fb))
+
+
+
 <a name="9.0.0-next.8"></a>
 # [9.0.0-next.8](https://github.com/angular/angular/compare/9.0.0-next.7...9.0.0-next.8) (2019-09-25)
 
