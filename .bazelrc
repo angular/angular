@@ -71,11 +71,25 @@ test --test_output=errors
 # any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
 build --define=compile=legacy
 
-###############################
-# Remote Build Execution support
-# Turn on these settings with
-#  --config=remote
-###############################
+#######################
+# Remote HTTP Caching #
+#######################
+build --remote_http_cache=https://storage.googleapis.com/angular-team-cache
+build --remote_accept_cached=true
+build --remote_upload_local_results=false
+
+######################################
+# Remote HTTP Caching writes support #
+# Turn on these settings with        #
+#  --config=-http-caching            #
+######################################
+build:remote-http-caching --remote_upload_local_results=true
+
+##################################
+# Remote Build Execution support #
+# Turn on these settings with    #
+#  --config=remote               #
+##################################
 
 # Load default settings for Remote Build Execution.
 import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/.bazelrc.notoolchain
